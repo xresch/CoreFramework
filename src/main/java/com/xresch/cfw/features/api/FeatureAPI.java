@@ -64,6 +64,7 @@ public class FeatureAPI extends CFWAppFeature {
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
     	app.addAppServlet(ServletAPI.class,  "/api");
+    	app.addUnsecureServlet(ServletAPILogin.class,  "/cfw/apilogin");
 	}
 
 	@Override

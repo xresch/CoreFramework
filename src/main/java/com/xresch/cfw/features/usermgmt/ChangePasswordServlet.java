@@ -1,4 +1,4 @@
-package com.xresch.cfw.servlets.userprofile;
+package com.xresch.cfw.features.usermgmt;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
-import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;

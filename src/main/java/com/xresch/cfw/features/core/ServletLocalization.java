@@ -20,7 +20,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
-public class LocalizationServlet extends HttpServlet
+public class ServletLocalization extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;

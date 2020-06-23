@@ -80,7 +80,12 @@ public class FeatureCore extends CFWAppFeature {
 
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
-		app.addUnsecureServlet(LocalizationServlet.class,  "/cfw/locale");
+		
+		app.addUnsecureServlet(ServletLocalization.class,  	"/cfw/locale");
+		app.addUnsecureServlet(ServletFormHandler.class,	"/cfw/formhandler");
+		app.addUnsecureServlet(ServletAutocomplete.class,  	"/cfw/autocomplete");
+		app.addUnsecureServlet(ServletAssembly.class, 		"/cfw/assembly"); 
+		app.addUnsecureServlet(ServletJARResource.class, 	"/cfw/jarresource");
 	}
 
 	@Override

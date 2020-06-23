@@ -1,4 +1,4 @@
-package com.xresch.cfw.servlets;
+package com.xresch.cfw.features.core;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -18,7 +18,7 @@ import com.xresch.cfw.response.JSONResponse;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
-public class JSONServlet extends HttpServlet
+public class ServletJSON extends HttpServlet
 {
     /**
 	 * 

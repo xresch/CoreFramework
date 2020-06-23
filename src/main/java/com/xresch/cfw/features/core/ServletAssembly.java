@@ -1,4 +1,4 @@
-package com.xresch.cfw.servlets;
+package com.xresch.cfw.features.core;
 
 import java.io.IOException;
 
@@ -16,7 +16,7 @@ import com.xresch.cfw.response.PlaintextResponse;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
-public class AssemblyServlet extends HttpServlet
+public class ServletAssembly extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;

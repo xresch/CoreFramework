@@ -1,4 +1,4 @@
-package com.xresch.cfw.servlets;
+package com.xresch.cfw.login;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -17,12 +17,12 @@ import com.xresch.cfw.logging.CFWLog;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
-public class LogoutServlet extends HttpServlet
+public class ServletLogout extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static Logger logger = CFWLog.getLogger(LogoutServlet.class.getName());
+	private static Logger logger = CFWLog.getLogger(ServletLogout.class.getName());
 
 	/*****************************************************************
 	 *

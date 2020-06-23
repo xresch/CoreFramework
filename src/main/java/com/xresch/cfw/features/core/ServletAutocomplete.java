@@ -1,4 +1,4 @@
-package com.xresch.cfw.servlets;
+package com.xresch.cfw.features.core;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -21,13 +21,13 @@ import com.xresch.cfw.response.JSONResponse;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
-public class AutocompleteServlet extends HttpServlet
+public class ServletAutocomplete extends HttpServlet
 {
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static Logger logger = CFWLog.getLogger(AutocompleteServlet.class.getName());
+	public static Logger logger = CFWLog.getLogger(ServletAutocomplete.class.getName());
 	@Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {

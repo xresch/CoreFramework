@@ -44,18 +44,18 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import com.xresch.cfw.features.api.ServletAPILogin;
+import com.xresch.cfw.features.core.ServletAssembly;
+import com.xresch.cfw.features.core.ServletAutocomplete;
+import com.xresch.cfw.features.core.ServletFormHandler;
+import com.xresch.cfw.features.core.ServletJARResource;
+import com.xresch.cfw.features.usermgmt.ChangePasswordServlet;
 import com.xresch.cfw.handlers.AuthenticationHandler;
 import com.xresch.cfw.handlers.HTTPSRedirectHandler;
 import com.xresch.cfw.handlers.RedirectDefaultPageHandler;
 import com.xresch.cfw.handlers.RequestHandler;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.login.LoginServlet;
-import com.xresch.cfw.servlets.AssemblyServlet;
-import com.xresch.cfw.servlets.AutocompleteServlet;
-import com.xresch.cfw.servlets.FormServlet;
-import com.xresch.cfw.servlets.JARResourceServlet;
-import com.xresch.cfw.servlets.LogoutServlet;
-import com.xresch.cfw.servlets.userprofile.ChangePasswordServlet;
+import com.xresch.cfw.login.ServletLogout;
 import com.xresch.cfw.utils.HandlerChainBuilder;
 
 /**************************************************************************************************************
@@ -247,22 +247,15 @@ public class CFWApplicationExecutor {
 		// Authentication Servlets
 	    if(CFWProperties.AUTHENTICATION_ENABLED) {
 	        this.addAppServlet(LoginServlet.class, "/login");
-	        this.addAppServlet(LogoutServlet.class,  "/logout");
+	        this.addAppServlet(ServletLogout.class,  "/logout");
 	    }
 	  
 		//-----------------------------------------
 		// User Profile Servlets
 	    this.addAppServlet(ChangePasswordServlet.class,  "/changepassword");
 	    
-	    //-----------------------------------------
-	    // CFW Servlets
-	    servletContext.addServlet(ServletAPILogin.class,  "/cfw/apilogin");
-	    servletContext.addServlet(FormServlet.class,  "/cfw/formhandler");
-	    servletContext.addServlet(AutocompleteServlet.class,  "/cfw/autocomplete");
-		//-----------------------------------------
-		// Resource Servlets
-	    servletContext.addServlet(AssemblyServlet.class, "/cfw/assembly"); 
-	    servletContext.addServlet(JARResourceServlet.class, "/cfw/jarresource");
+
+
 	    	    
 	}
 	
