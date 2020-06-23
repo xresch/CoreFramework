@@ -1,1 +1,0 @@
-System.out.println(	com.pengtoolbox.cfw._main.CFW.Dump.dumpObject(		com.pengtoolbox.cfw.datahandling.CFWField.newInteger(			com.pengtoolbox.cfw.datahandling.CFWField.FormFieldType.NONE, 			"ScrapField"		), 		3, 0, null	));com.pengtoolbox.cfw.datahandling.CFWSQL.getStatisticsAsJSON();
