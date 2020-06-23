@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.usermgmt;
+package com.xresch.cfw.features.core.auth;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -19,14 +20,14 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
-public class ChangePasswordServlet extends HttpServlet
+public class ServletChangePassword extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static Logger logger = CFWLog.getLogger(ChangePasswordServlet.class.getName());
+	private static Logger logger = CFWLog.getLogger(ServletChangePassword.class.getName());
 	
-	public ChangePasswordServlet() {
+	public ServletChangePassword() {
 	
 	}
 	

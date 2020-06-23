@@ -1,4 +1,4 @@
-package com.xresch.cfw.login;
+package com.xresch.cfw.features.core.auth;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.usermgmt.User;

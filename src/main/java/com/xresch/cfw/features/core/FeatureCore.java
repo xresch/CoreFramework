@@ -5,8 +5,12 @@ import java.util.Locale;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
+import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.features.core.auth.ServletChangePassword;
+import com.xresch.cfw.features.core.auth.ServletLogin;
+import com.xresch.cfw.features.core.auth.ServletLogout;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -81,6 +85,19 @@ public class FeatureCore extends CFWAppFeature {
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
 		
+		//-----------------------------------------
+		// Authentication Servlets
+	    if(CFWProperties.AUTHENTICATION_ENABLED) {
+	    	app.addAppServlet(ServletLogin.class, "/login");
+	        app.addAppServlet(ServletLogout.class,  "/logout");
+	    }
+	  
+		//-----------------------------------------
+		// User Profile Servlets
+	    app.addAppServlet(ServletChangePassword.class,  "/changepassword");
+	    
+		//-----------------------------------------
+		// Other Servlets
 		app.addUnsecureServlet(ServletLocalization.class,  	"/cfw/locale");
 		app.addUnsecureServlet(ServletFormHandler.class,	"/cfw/formhandler");
 		app.addUnsecureServlet(ServletAutocomplete.class,  	"/cfw/autocomplete");

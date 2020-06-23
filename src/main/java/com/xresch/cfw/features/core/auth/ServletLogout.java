@@ -1,4 +1,4 @@
-package com.xresch.cfw.login;
+package com.xresch.cfw.features.core.auth;
 
 import java.io.IOException;
 import java.util.logging.Logger;

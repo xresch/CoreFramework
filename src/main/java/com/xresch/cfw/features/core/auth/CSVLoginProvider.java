@@ -1,4 +1,4 @@
-package com.xresch.cfw.login;
+package com.xresch.cfw.features.core.auth;
 
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -14,7 +14,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CSVLoginProvider implements LoginProvider {
 	
-	private static Logger logger = CFWLog.getLogger(LoginServlet.class.getName());
+	private static Logger logger = CFWLog.getLogger(ServletLogin.class.getName());
 	private static HashMap<String, String> userCredentials = null;
 	
 	public CSVLoginProvider() {

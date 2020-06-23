@@ -48,14 +48,14 @@ import com.xresch.cfw.features.core.ServletAssembly;
 import com.xresch.cfw.features.core.ServletAutocomplete;
 import com.xresch.cfw.features.core.ServletFormHandler;
 import com.xresch.cfw.features.core.ServletJARResource;
-import com.xresch.cfw.features.usermgmt.ChangePasswordServlet;
+import com.xresch.cfw.features.core.auth.ServletChangePassword;
+import com.xresch.cfw.features.core.auth.ServletLogin;
+import com.xresch.cfw.features.core.auth.ServletLogout;
 import com.xresch.cfw.handlers.AuthenticationHandler;
 import com.xresch.cfw.handlers.HTTPSRedirectHandler;
 import com.xresch.cfw.handlers.RedirectDefaultPageHandler;
 import com.xresch.cfw.handlers.RequestHandler;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.login.LoginServlet;
-import com.xresch.cfw.login.ServletLogout;
 import com.xresch.cfw.utils.HandlerChainBuilder;
 
 /**************************************************************************************************************
@@ -234,29 +234,6 @@ public class CFWApplicationExecutor {
 		}else {
 			this.defaultURL = defaultURL;
 		}
-	}
-
-	/***********************************************************************
-	 * Add the servlets provided by CFW to the given context.
-	 *  LoginServlet on /login
-	 *  LogoutServlet on /logout
-	 ***********************************************************************/
-	public void addCFWServlets() {
-		
-		//-----------------------------------------
-		// Authentication Servlets
-	    if(CFWProperties.AUTHENTICATION_ENABLED) {
-	        this.addAppServlet(LoginServlet.class, "/login");
-	        this.addAppServlet(ServletLogout.class,  "/logout");
-	    }
-	  
-		//-----------------------------------------
-		// User Profile Servlets
-	    this.addAppServlet(ChangePasswordServlet.class,  "/changepassword");
-	    
-
-
-	    	    
 	}
 	
 	/**************************************************************************************************
@@ -489,11 +466,6 @@ public class CFWApplicationExecutor {
 	        .chain(new AuthenticationHandler("/app", defaultURL))
 	        .chain(servletContext);
         
-        //###################################################################
-        // Add CFW Servlets
-        //###################################################################
-        addCFWServlets();
-        // Debug servlet mappings
         //System.out.println(servletContext.dump());
         
         //###################################################################

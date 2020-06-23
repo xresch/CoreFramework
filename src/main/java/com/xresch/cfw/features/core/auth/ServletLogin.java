@@ -1,4 +1,4 @@
-package com.xresch.cfw.login;
+package com.xresch.cfw.features.core.auth;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -22,14 +22,14 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
-public class LoginServlet extends HttpServlet
+public class ServletLogin extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static Logger logger = CFWLog.getLogger(LoginServlet.class.getName());
+	private static Logger logger = CFWLog.getLogger(ServletLogin.class.getName());
 	
-	public LoginServlet() {
+	public ServletLogin() {
 	
 	}
 	
