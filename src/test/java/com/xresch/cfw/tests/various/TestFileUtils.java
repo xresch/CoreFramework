@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
-import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.utils.CFWFiles;
 
 public class TestFileUtils {
@@ -17,10 +17,10 @@ public class TestFileUtils {
 		
 		FileAssembly assembler = new FileAssembly("common", "js");
 		
-		CFWFiles.addAllowedPackage(FileDefinition.CFW_JAR_RESOURCES_PATH);
+		CFWFiles.addAllowedPackage(FeatureCore.RESOURCE_PACKAGE);
 		
 		String assemblyName = assembler.addFile(FileDefinition.HandlingType.FILE, "./testdata", "test.css")
-				.addFile(FileDefinition.HandlingType.JAR_RESOURCE, FileDefinition.CFW_JAR_RESOURCES_PATH +".test", "junit_test.js")
+				.addFile(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE +".test", "junit_test.js")
 				.addFileContent("/* just some comment */")
 				.assemble()
 				.cache()

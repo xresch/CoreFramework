@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.caching.FileDefinition;
+import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -41,7 +41,7 @@ public class ChangePasswordServlet extends HttpServlet
 			
 		HTMLResponse html = new HTMLResponse("Login");
 		StringBuffer content = html.getContent();
-		content.append(CFW.Files.readPackageResource(FileDefinition.CFW_JAR_RESOURCES_PATH + ".html", "changepassword.html"));
+		content.append(CFW.Files.readPackageResource(FeatureCore.RESOURCE_PACKAGE + ".html", "changepassword.html"));
 		
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
@@ -80,7 +80,7 @@ public class ChangePasswordServlet extends HttpServlet
 		
 		HTMLResponse html = new HTMLResponse("Change Password");
 		StringBuffer content = html.getContent();
-		content.append(CFW.Files.readPackageResource(FileDefinition.CFW_JAR_RESOURCES_PATH + ".html", "changepassword.html"));
+		content.append(CFW.Files.readPackageResource(FeatureCore.RESOURCE_PACKAGE + ".html", "changepassword.html"));
 		
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);

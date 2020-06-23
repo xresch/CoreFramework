@@ -10,7 +10,6 @@ import com.xresch.cfw._main.CFW;
 public class FileDefinition {
 
 	public enum HandlingType {FILE, JAR_RESOURCE, STRING}
-	public static final String CFW_JAR_RESOURCES_PATH = "com.xresch.cfw.resources";
 	
 	private HandlingType type; 
 	private String path;

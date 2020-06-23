@@ -11,8 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWContextRequest;
 import com.xresch.cfw._main.SessionData;
-import com.xresch.cfw._main.CFW.Properties;
-import com.xresch.cfw.caching.FileDefinition;
+import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
@@ -38,7 +37,7 @@ public class LoginServlet extends HttpServlet
 		HTMLResponse html = new HTMLResponse("Login");
 		StringBuffer content = html.getContent();
 		
-		String loginHTML = CFW.Files.readPackageResource(FileDefinition.CFW_JAR_RESOURCES_PATH + ".html", "login.html");
+		String loginHTML = CFW.Files.readPackageResource(FeatureCore.RESOURCE_PACKAGE + ".html", "login.html");
 		
 		String url = request.getParameter("url");
 		url = CFW.Security.sanitizeHTML(url);

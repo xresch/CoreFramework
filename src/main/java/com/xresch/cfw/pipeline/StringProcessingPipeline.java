@@ -1,7 +1,7 @@
 package com.xresch.cfw.pipeline;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.caching.FileDefinition;
+import com.xresch.cfw.features.core.FeatureCore;
 
 class StringProcessingPipeline extends Pipeline<String, String> {
 	/*******************************************************************************
@@ -117,14 +117,14 @@ class StringProcessingPipeline extends Pipeline<String, String> {
 
 	public static void main(String... args) throws InterruptedException {
 		StringProcessingPipeline pipe = new StringProcessingPipeline();
-		CFW.Files.addAllowedPackage(FileDefinition.CFW_JAR_RESOURCES_PATH);
+		CFW.Files.addAllowedPackage(FeatureCore.RESOURCE_PACKAGE);
 
 		pipe.removeBlankLines()
 			.removeComments()
 			.trim()
 			//.grep("cfwT", false)
 			//.countLines()
-			.data(CFW.Files.readPackageResource(FileDefinition.CFW_JAR_RESOURCES_PATH + ".test", "cfwjs_test.js").split("\\r\\n|\\n"))
+			.data(CFW.Files.readPackageResource(FeatureCore.RESOURCE_PACKAGE + ".test", "cfwjs_test.js").split("\\r\\n|\\n"))
 			.execute(false);
 			
 		System.out.println(	

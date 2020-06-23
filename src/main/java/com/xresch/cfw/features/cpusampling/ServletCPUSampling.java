@@ -51,7 +51,7 @@ public class ServletCPUSampling extends HttpServlet
 			HTMLResponse html = new HTMLResponse("CPU Sampling");
 			StringBuffer content = html.getContent();
 
-			//html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, FileDefinition.CFW_JAR_RESOURCES_PATH+".js", "cfw_usermgmt.js"));
+			//html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE+".js", "cfw_usermgmt.js"));
 			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureCPUSampling.RESOURCE_PACKAGE, "cfw_cpusampling.js");
 			
 			//------------------------------

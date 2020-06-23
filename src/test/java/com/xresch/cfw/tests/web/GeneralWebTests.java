@@ -80,7 +80,7 @@ public class GeneralWebTests extends WebTestMaster {
 		Assertions.assertTrue(response.contains("<script src=\"/resources/js/custom.js\"></script>"),
 				"html.addJSFileBottomSingle(HandlingType.FILE, ...) adds file resource.");
 		
-		Assertions.assertTrue(response.contains("<script src=\"/cfw/jarresource?pkg=com.xresch.cfw.resources.test&file=junit_test.js\">"),
+		Assertions.assertTrue(response.contains("<script src=\"/cfw/jarresource?pkg=com.xresch.cfw.features.core.resources.test&file=junit_test.js\">"),
 				"html.addJSFileBottomSingle(HandlingType.JAR_RESOURCE, ...) adds package resource.");
 		
 		System.out.println(response);

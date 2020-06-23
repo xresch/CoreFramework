@@ -42,7 +42,7 @@ public class ServletManual extends HttpServlet
 				HTMLResponse html = new HTMLResponse("Manual");
 				StringBuffer content = html.getContent();
 	
-				//html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, FileDefinition.CFW_JAR_RESOURCES_PATH+".js", "cfw_usermgmt.js"));
+				//html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE+".js", "cfw_usermgmt.js"));
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureManual.RESOURCE_PACKAGE, "cfw_manual.js");
 				html.addCSSFile(HandlingType.JAR_RESOURCE, FeatureManual.RESOURCE_PACKAGE, "cfw_manual.css");
 				
