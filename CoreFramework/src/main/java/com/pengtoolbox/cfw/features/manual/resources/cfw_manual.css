@@ -1,0 +1,53 @@
+
+h1, h2{
+	margin-top: 35px;
+}
+
+h3, h4, h5{
+	margin-top: 25px;
+}
+
+p{
+	margin-top: 10px;
+}
+
+#cfw-content  {
+	padding: 0px;
+}
+
+#cfw-container  {
+	max-width: 100%;
+	padding: 0px;
+}
+
+#cfw-manual-page-title {
+    padding-left: 20px;
+}
+#cfw-manual-page-content {
+	padding: 0px 20px 20px 20px;
+}
+
+.cfw-manual-fa-box {
+	height: 16px;
+    width: 16px;
+    float: left;
+    margin-right: 0px; 
+    line-height: 2.0em;
+}
+
+.nav-side-menu li{
+    padding: 2px;
+}
+ul > li.cfw-manual-selected, .nav-side-menu ul .sub-menu > li.cfw-manual-selected:hover{
+    background-color: var(--primary);
+    color:	var(--light);
+}
+
+.nav-side-menu a {
+    display: flex;
+    align-items: baseline;
+}
+
+.nav-side-menu li span {
+	line-height: 2.0em;
+}

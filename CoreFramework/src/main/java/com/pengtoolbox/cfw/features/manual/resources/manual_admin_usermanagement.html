@@ -1,0 +1,104 @@
+
+<p>
+The User Management functionality can be found in the menu under "Admin &gt;&gt; Manager Users".
+The permission required for managing users is "User Management".
+</p>
+
+
+<h2>Setup Authentication Method</h2>
+<p>
+Before starting to create users in the application, you should decide where you want to fetch the credentials from.
+This will be defined in "{APP_FOLDER}/config/cfw.properties" using the property "authentication_method".
+You have the following options to choose from:
+</p>
+<ul>
+	<li><b>DB:&nbsp;</b> The credentials are all setup in the internal database. No other source for credentials will be used</li>
+	<li><b>LDAP:&nbsp;</b> The credentials are validated against an active directory. If the user doesn't exist in the DB, it will be created accordingly. You can still create your own users in the database.</li>
+	<li><b>CSV:&nbsp;</b> Use the "username;password" credentials from a CSV file. If the user doesn't exist in the DB, it will be created accordingly. You can still create your own users in the database. This can be used for test environments or demo setups and is not recommended for productive systems. </li>
+</ul>
+
+
+<h2>Users, Roles and Permissions</h2>
+<p>
+The user management consists of the following three different elements:
+</p>
+<ul>
+	<li><b>Users:&nbsp;</b> A user that can login with username and password. A user can have one or multiple Roles.</li>
+	<li><b>Roles:&nbsp;</b> A role defines what a user can do in the application. It is basically a group of permissions.</li>
+	<li><b>Permissions:&nbsp;</b> A permission grants the rights to certain features in the application.</li>
+</ul>
+
+<h2>Default Elements</h2>
+<p>
+When starting the application the first time, it will initialize the database with the following default elements:
+</p>
+<ul>
+	<li><b>Role "User":&nbsp;</b> The default role for all users. When a user is newly created, this role is assigned to him automatically. Add all permissions a user should have by default to this role. This role cannot be deleted.</li>
+	<li><b>Role "Administrator":&nbsp;</b> A default role for administrators. You can change this role as you see fit. This role cannot be deleted.</li>
+	<li><b>Role "Superuser":&nbsp;</b> The default role for the 'admin' account. It always has all permissions and cannot be changed nor can it be deleted.</li>
+	<li><b>User "admin":&nbsp;</b> The default admin user with role "Superuser". This user is special as the Superuser role cannot be removed from it and has therefore always all permissions. Also this user cannot be deleted.</li>
+</ul>
+
+
+
+<h2>Creating a User</h2>
+<p>
+Here the steps to create a user:
+</p>
+
+<ol>
+	<li><b>Open User Management:&nbsp;</b> Sign in with a user that has the permission "User Management" and go to "Menu  Admin  Manage Users".</li>
+	<li><b>Create User:&nbsp;</b> Click on "Create User", provide a username and a password.</li>
+	<li><b>Confirm and Close Dialog:&nbsp;</b> Confirm creating the user by clicking on "Create User", you will get a popup message in the bottom right corner telling you if the user was successfully created or if there where any issues. Close the dialog when you where successful. </li>
+	<li><b>Add Roles:&nbsp;</b> After creating the user, open the new users settings by clicking the Edit Button with the pen icon. Here you can add the roles to the user to grant him access to the features he need.</li>
+</ol>
+
+<p>
+Please consider the following when managing users:
+</p>
+<ol>
+	<li><b>Disabling Users:&nbsp;</b> You can disable a user by setting the status of the user to "Inactive".</li>
+	<li><b>Sign-out/Sign-in on Changes:&nbsp;</b> As permissions are fetched and cached when the user logs in, he will need to login again so that his permissions will be updated.</li>
+	<li><b>Foreign Users:&nbsp;</b> When the user is set to "Foreign", what means the credentials are checked against another source than the DB, the password reset button will not be available for this user. Also the user will not have the "Change Password" option in the user menu.</li>
+	<li><b>Pre-Creating Foreign Users:&nbsp;</b> You can pre-create a foreign user before he logs in the first time, just use the same username as in the foreign credential source. This can be useful to already grant permissions and avoids that the user has to re-login.</li>
+</ol>
+
+
+
+
+<h2>Creating a Role</h2>
+<p>
+Here the  steps to create a role:
+</p>
+
+<ol>
+	<li><b>Open User Management:&nbsp;</b> Sign in with a user that has the permission "User Management" and go to "Menu  Admin  Manage Users".</li>
+	<li><b>Create Role:&nbsp;</b> Change to the Tab "Roles", click on "Create Role" and provide at least a name for the role.</li>
+	<li><b>Confirm and Close Dialog:&nbsp;</b> Confirm creating the user by clicking on "Create Role", you will get a popup message in the bottom right corner telling you if the role was successfully created or if there where any issues. Close the dialog when you where successful. </li>
+	<li><b>Add Permissions:&nbsp;</b> After creating the role, open the new roles settings by clicking the Edit button with the pen icon. Here you can add the permissions to the role to create a group of permissions need for a specific job users will need to do.</li>
+</ol>
+
+<h2>Permission Tab</h2>
+<p>
+The permission tab provides an overview of all the available permissions.
+As user permissions are create and used in source code, they cannot be created through the user interface.
+</p>
+
+
+<h2>Audit and Debug Permissions</h2>
+<p>
+To audit or debug the user permissions, you can use the API.
+Go to "Menu &gt;&gt; Admin &gt;&gt; API &gt;&gt; User &gt;&gt; getPermissionOverview &gt;&gt; Example" and fetch the data in CSV format 
+to get an easy to read list of all permissions of all users.
+</p>
+
+
+
+<h2>Change DB Password</h2>
+<p>
+The default credentials for the database are user 'sa' with password 'sa'. 
+To change the password connect to the database and use the following SQL:
+</p>
+<pre><code>ALTER USER sa SET PASSWORD 'yourpassword';</code></pre>
+
+

@@ -1,0 +1,59 @@
+
+<h2>Register Language Files</h2>
+<p>
+Use the following methods to register your localization files.
+The second parameter will define the context in where the files will be loaded on client side.
+On server side, always all registered files will be loaded. Therefore make sure you use unique names for your properties.
+The following is an example on how you can register property files:
+</p>
+<pre>
+<code>CFW.Localization.registerLocaleFile(Locale.ENGLISH, "/app/example", new FileDefinition(HandlingType.JAR_RESOURCE, "com.example.package", "lang_en_example.properties"));
+CFW.Localization.registerLocaleFile(Locale.GERMAN, "/app/example", new FileDefinition(HandlingType.JAR_RESOURCE, "com.example.package", "lang_de_example.properties"));
+		</code>
+</pre>
+
+<h2>Localize Strings </h2>
+<p>
+You can use the following notation in anything that will be replied in with an AbstractResponse, like HTMLResponse, JSONResponse or PlaintextResponse.
+The RequestHandler will search the response for the properties and replace them with the localized string.
+</p>
+
+<pre>
+	<code>{!example_property_name!}</code>
+</pre>
+
+<h2>Server Side - CFW.L()</h2>
+<p>To retrieve a string and provide a default value for fallback, you can use the method CFW.L():</p>
+<pre>
+	<code>CFW.L("example_property_name", "Default Value");</code>
+</pre>
+
+<p>Here an example on how to do it with placeholders:</p>
+<pre>
+<code>CFW.L("cfw_dashboard_error_usernotresolved",
+	"The the dashboard owner with name '{1}' could not be resolved. Set the owner to the importing user.",
+	dashboardObject.has("username"))
+</code>
+</pre>
+
+
+<h2>Javascript - CFWL()</h2>
+<p>
+In Javascript, you can retrieve a string and provide a default value for fallback, you can use the function CFWL():
+</p>
+
+<pre>
+	<code>CFWL("example_property_name", "Default Value");</code>
+</pre>
+
+<h2>Language Priority</h2>
+<p>
+Multiple languages are used to determine the locale that will be displayed to the user.
+The application always tries to get a localized value and will fallback to English if the specified languages were not found. 
+Therefore it is recommended to always provide a properties file in English. 
+</p>
+<ul>
+	<li><b>Prio 1:&nbsp;</b>Browser language of the user.</li>
+	<li><b>Prio 2:&nbsp;</b>Application language configured on the configuration page.</li>
+	<li><b>Fallback:&nbsp;</b>When other languages have no match, try to fallback to English.</li>
+</ul>

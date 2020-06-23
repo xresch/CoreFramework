@@ -1,0 +1,37 @@
+
+<h2>Setup Eclipse Workspace</h2>
+<p>To setup the eclipse workspace do the following:</p>
+<ol>
+	<li><strong>Open Workspace:&nbsp;</strong> Open the workspace containing the Coreframework with eclipse.</li>
+	<li><strong>Import Projects:&nbsp;</strong> If the projects are not listed in the project explorer, use &quot;File &gt;&gt; Import...&quot; to import the projects.</li>
+	<li><strong>Create User Library:&nbsp;</strong>
+		<ol>
+			<li>Go to &quot;Window &gt;&gt; Preferences >> Java >> Build Path >> User Libraries&quot; </li>
+			<li>Create a new library and name it &quot;CFW&quot;</li>
+			<li>Add the jar files from &quot;CoreFramework/lib&quot; to the new library.</li>
+			<li>The project should now be able to build without errors.</li>
+		</ol>
+	</li>
+</ol>
+
+<h2>Run</h2>
+<p>To run a project open the applications Main-class and hit the run button in Eclipse.</p>
+<p>Afterwards you can access the application under <a href="http://localhost:8888/">http://localhost:8888/</a> (port is defined in ./config/cfw.properties).</p>
+
+<h2>Export to Standalone Application</h2>
+<p>To export your application do the following:</p>
+<ol>
+	<li>Right click the project folder of your application and choose &quot;Export...&quot;.</li>
+	<li>Choose Runnable Jar File and click next.</li>
+	<li>Select the launch configuration of your application.</li>
+	<li>Choose a path for the resulting jar file.</li>
+	<li>Choose option &quot;Extract required libraries into generated jar&quot;</li>
+	<li>Copy the required files and folders, in general these are:
+		<ul>
+			<li>/config</li>
+			<li>/recources</li>
+			<li>/scripts/start.bat</li>
+			<li>/scripts/stop.bat</li>
+		</ul>
+	</li>
+</ol>

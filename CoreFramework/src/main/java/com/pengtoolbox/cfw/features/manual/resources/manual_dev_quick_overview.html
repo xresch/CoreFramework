@@ -1,0 +1,46 @@
+manual_dev_cfwjs_overview.html
+<h2>Technologies</h2>
+<p>The following technologies are used in the CoreFramework(CFW) and provided out of the box:</p>
+<ul>
+	<li><strong>Jetty:&nbsp;</strong> Embedded web server.</li>
+	<li><strong>H2:&nbsp;</strong> The database with the application.</li>
+	<li>javax.mail</li>
+	<li>GSON</li>
+	<li><strong>Bootstrap:&nbsp;</strong> Main CSS Framework, various themes integrated .</li>
+	<li><strong>Font Awesome:&nbsp;</strong> For all these cool icons..</li>
+	<li>JQuery</li>
+	<li>Highlight.js</li>
+	<li><strong>Summernote.js:&nbsp;</strong> Used as the default WYSIWYG editor.</li>
+</ul>
+
+<h2>Most important Classes and Interfaces</h2>
+<p>The following classes and interfaces are the core of the framework:</p>
+<ul>
+	<li><strong>CFW:&nbsp;</strong> Central class through which various functionality can be accessed in a hierarchical manner, for example:
+		<ul>
+			<li>Context.Request.getSessionData()</li>
+			<li>Context.DB.Config.getConfigAsString()</li>
+			<li>CFW.Registry.Components.addRegularMenuItem()</li>
+		</ul>
+	</li>
+	<li><strong>CFWAppInterface:&nbsp;</strong> Interface to create an application to run with the CFW.</li>
+	<li><strong>CFWAppFeature:&nbsp;</strong> Abstract class that is extended to create features for the application.</li>
+	<li><strong>CFWObject:&nbsp;</strong> Core class to create data objects that are used to:
+		<ul>
+			<li>Create database tables</li>
+			<li>Fetch data from the database</li>
+			<li>Save data to the database</li>
+			<li>Generate forms</li>
+			<li>Create REST APIs</li>
+		</ul>
+	</li>
+	<li><strong>CFWField:&nbsp;</strong> Core class to define advanced fields for CFWObjects.</li>
+	<li><strong>CFWLog:&nbsp;</strong> The interface for logging CFW standard logs.</li>
+	<li><strong>Response:&nbsp;</strong> The following classes are used to create servlet responses:
+		<ul>
+			<li>HTMLResponse</li>
+			<li>JSONResponse</li>
+			<li>PlaintextResponse</li>
+		</ul>
+	</li>
+</ul>

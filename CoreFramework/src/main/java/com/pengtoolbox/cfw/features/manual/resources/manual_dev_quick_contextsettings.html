@@ -1,0 +1,168 @@
+
+<p>Context Settings are a way to define settings for a specific context. A context could be defined as a group of settings for a specific purpose.
+For example you can create context settings to define multiple environments.
+</p>
+
+<h2>Create Class</h2>
+<p>For Defining Context Settings, you have to first implement a class extending AbstractContextSettings, which itself is a sub class of CFWObject.
+Here is an example, check the comments in the code for more details: </p>
+<pre>
+<code>import com.pengtoolbox.cfw._main.CFW;
+import com.pengtoolbox.cfw.datahandling.CFWField;
+import com.pengtoolbox.cfw.datahandling.CFWField.FormFieldType;
+import com.pengtoolbox.cfw.db.DBInterface;
+import com.pengtoolbox.cfw.features.contextsettings.AbstractContextSettings;
+import com.pengtoolbox.cfw.features.dashboard.DashboardWidget;
+import com.pengtoolbox.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
+import com.pengtoolbox.cfw.response.bootstrap.AlertMessage.MessageType;
+
+public class Environment extends AbstractContextSettings {
+	
+	public static final String SETTINGS_TYPE = "Environment";
+	
+	private DBInterface dbInstance = null;
+	
+	public enum EnvironmentFields{
+		URL,
+		API_USER,
+		API_PASSWORD,
+		DB_HOST,
+		DB_PORT,
+		DB_NAME,
+		DB_USER,
+		DB_PASSWORD
+	}
+		
+	private CFWField&lt;String&gt; url = CFWField.newString(FormFieldType.TEXT, EnvironmentFields.URL)
+			.setDescription("The url of the web application, including port number if required. Make sure to include http/https protocol to make sure links will work correctly.");
+	
+	private CFWField&lt;String&gt; apiUser = CFWField.newString(FormFieldType.TEXT, EnvironmentFields.API_USER)
+			.setDescription("The name of the user for fetching the API.");
+	
+	private CFWField&lt;String&gt; apiUserPassword = CFWField.newString(FormFieldType.PASSWORD, EnvironmentFields.API_PASSWORD)
+			.setDescription("The password of the API user.")
+			.disableSecurity()
+			.enableEncryption("API_PW_Salt");
+	
+	private CFWField&lt;String&gt; dbHost = CFWField.newString(FormFieldType.TEXT, EnvironmentFields.DB_HOST)
+			.setDescription("The server name of the database host.");
+	
+	private CFWField&lt;Integer&gt; dbPort = CFWField.newInteger(FormFieldType.NUMBER, EnvironmentFields.DB_PORT)
+			.setDescription("The port used to access the database.");
+	
+	private CFWField&lt;String&gt; dbName = CFWField.newString(FormFieldType.TEXT, EnvironmentFields.DB_NAME)
+			.setDescription("The name of the user for accessing the database.");
+	
+	private CFWField&lt;String&gt; dbUser = CFWField.newString(FormFieldType.TEXT, EnvironmentFields.DB_USER)
+			.setDescription("The name of the user for accessing the database.");
+	
+	private CFWField&lt;String&gt; dbPassword = CFWField.newString(FormFieldType.PASSWORD, EnvironmentFields.DB_PASSWORD)
+			.setDescription("The password of the DB user.")
+			.disableSecurity()
+			.enableEncryption("DB_PW_Salt");
+	
+	// Constructor
+	public Environment() {
+		initializeFields();
+	}
+		
+	// Add the fields
+	private void initializeFields() {
+		this.addFields(url, apiUser, apiUserPassword, dbHost, dbPort, dbName, dbUser, dbPassword);
+	}
+		
+	
+	// Check if the environment is still used or can be deleted. 
+	// This will be executed when the users tries to delete the environment from the UI.
+	@Override
+	public boolean isDeletable(int id) {
+
+		// check if the environment is found in the DB.
+		int count = new DashboardWidget()
+			.selectCount()
+			.whereLike(DashboardWidgetFields.JSON_SETTINGS, "%\"environment\":"+id+"%")
+			.custom("AND (\"TYPE\"='projectstatus' OR \"TYPE\"='monitorstatus')")
+			.getCount();
+		
+		// return result
+		if(count == 0) {
+			return true;
+		}else {
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The Environment cannot be deleted as it is still in use by "+count+"  widget(s).");
+			return false;
+		}
+
+	}
+	
+	// Getters and Setters ...
+	public String url() { return url.getValue(); }
+	
+	public Environment url(String url) {
+		this.url.setValue(url);
+		return this;
+	}
+	
+	// More getters and setters ...
+	
+}
+</code>
+</pre>
+
+<h2>Register Context Settings</h2>
+<p>
+So that the application will load your class, you will need to register the class like this:
+</p>
+
+<pre>
+<code>CFW.Registry.ContextSettings.register(Environment.SETTINGS_TYPE, Environment.class);
+</code>
+</pre>
+
+
+<h2>Read Context Settings</h2>
+<p>
+The settings entered by an admin user will be saved to the database.
+To retrieve all the settings for a given Settings type do the following:
+</p>
+
+<pre>
+<code>ArrayList&lt;AbstractContextSettings&gt; settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(Environment.SETTINGS_TYPE);
+
+for(AbstractContextSettings settings : settingsArray) {
+	Environment current = (Environment)settings;
+	createEnvironment(current);
+	
+}
+</code>
+</pre>
+	
+	
+					
+<h2>Listening on  Changes</h2>
+<p>
+If you want to listen on settings changes, you can add a ContextSettingsChangeListener. 
+The following is an example of a listener that listens to changes of the Environment.class we created.
+For every new, updated or deleted the respective method is executed. This is for example useful, if you 
+create some DB Pool and have to recreate it.
+</p>
+<pre>
+<code>public void initialize() {
+	ContextSettingsChangeListener listener = 
+			new ContextSettingsChangeListener(Environment.SETTINGS_TYPE) {
+		
+		@Override
+		public void onChange(AbstractContextSettings setting, boolean isNew) {
+			Environment env = (Environment)setting;
+			EnvironmentManagement.createEnvironment(env);
+		}
+		
+		@Override
+		public void onDelete(AbstractContextSettings typeSettings) {
+			environmentsCache.remove(typeSettings.getDefaultObject().id());
+		}
+	};
+
+	CFW.DB.ContextSettings.addChangeListener(listener);
+}
+</code>
+</pre>

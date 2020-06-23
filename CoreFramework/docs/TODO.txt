@@ -1,0 +1,129 @@
+
+ALWAYS ON
+=========
+- Create Manual Pages
+- Cleanup console.log() and System.out.println()
+- Localize
+- Check special chars like äöüÄÖÜ in localization property files
+- Add Copyrights
+- Test Cases
+- Test with cache enabled
+
+TODO
+====
+
+- Dashboard: Check Settings - Provide a bulk action to show all settings of all widgets as an overview. 
+- Dashboard: Text Alignment
+- Dashboard: Merge forms, only one button.
+- Dashboard: Widget Fullscreen
+- Dashboard: Favorites
+- Dashboard: Fit Squeeze
+- Dashboard: Filter Widgets
+- Dashboard: Check if resizing/dragging is possible on mobile.
+- Dashboard: Default Error / No Access Tile
+- Dashboard: Default No Data Tile
+- Dashboard: Add Anchor Chooser to Image Widget
+- Dashboard: Add format to reload time widget
+
+
+- Widget: Link
+- Widget: Dashboard Link
+- Widget: CSV Chart
+- Widget: Cards
+- Widget: Panels
+- Widget: Website Checker HTMLUnit
+- Widget: Partial HTML Extractor
+- Widget: Nest other Dashboard
+- Widget: Nest Widget from other Dashboard
+- Widget: Fontawesome Icon 
+- Widget: Current Time Widget
+
+- cfw.js: Create Pagination Renderer
+- cfw.js: Finish javascript CFWFormField
+
+- Security: Enable Decryption for ResultSet to JSON on CFWSQL
+- Security: Change login to two steps, first username, then password field 
+- Security: Add table class to Sanitizer for tables
+
+- Manual: Change chevron icon when page gets expanded/collapsed
+- Manual: Multilingual manual
+- Manual: Print View Button
+
+- CFW: CFWApplicationExecutor - ForwardedRequestCustomizer make it work with reverse proxy
+- CFW: Implement custom shutdown stopping database, application, features, etc...
+- CFW: Move core stuff to core feature
+- CFW: Create loading mechanism for features as plugins
+- CFW: Create javascript sanity check page
+- CFW: Redirect StdOut and StdErr to logfile
+
+- Caching
+  - Create Caching class or us Guava, max entries and access count
+  - Create Cache overview
+    
+- CFWField: Add initFormField(method)
+- CFWField: Form errors add to field.
+- CFWField: FormField.SINGLECOMPLETE
+  - how to load key and label? 
+
+- Spaces!!!
+  - Fetch As JSON Hierarchy
+  - HTML Selector
+  - SpacePermissions in SessionData
+  - Selected Space in SessionData
+  - CFQSQL partial query, select entries for user
+  
+- Image Upload for Summernote Editor
+- SQL Query Cache Overview (hit statistics?)
+- Truncate too long toasts.
+- Show previous toasts all toasts button
+
+- Support Info: Use default Modal, make exceptions unique.
+- Custom Error page CFW.App.createErrorHandler();
+- SPNEGO/Kerberos Authentication
+
+DONE
+====
+- Dashboard: Enable hierarchical categories
+- CFW: Add loading icon to Form Submit button when waiting for reply.
+- Theusinator: Fix Dropdown Issue
+- Config: Added category panels to UI
+- CFWField: Change Autocomplete to take only value/label input.
+- CFWField: TAGS: Change to take value/label input.
+- Security: Create Encryption/Decryption for DB
+- Security: Configuration - do not send Passwords to Browser
+- Security: Check Sanitation of Array Fields
+- CFW: Configuration - Add feature to listen for config changes.
+- Manual: Highlight and expand menu entry on page-parameter links
+- Use addJSFileBottomSingle() instead of addJSFileBottomAssembly() where applicable
+- Localization: create CFW.L()
+- Localization: Improve localize cache names
+- Widget Embed Video
+- Dashboard: Edit to Done Button
+- Dashboard: Add Title to Dashboard
+- Dashboard: Refresh interval
+- Dashboard: Create a dashboard using gridstack.js or similar >> https://dzone.com/articles/7-javascript-libraries-for-dashboards 
+- XSS: Prevent and create Permissions Allow HTML and Allow Javascript
+- PRIO 1: HTML Sanitizer OWASP with WYSIWIG, Allow HTML and or JAVASCRIPT
+- Widget: WYSIWYG HTML
+- Widget: List (Ordered, Unordered)
+- Widget: Checklist
+- Dashboard: Disable new widgets
+- Muuuf widget definition to server side.
+- implement dashboard allow edit only on permissions
+- Implement dashboard load widgets
+- Render Specific Settings
+- change cookie name to CFWSESSIONID
+- Create own file cfw_components.js
+- Splitted assembly js/css into CFW defaults and customs for performance improvements.
+- add description to widget
+- Implement widget remove
+- Change order of Settings for dashboards
+- Tags: Load existing Tags
+- Tags: Display Tags
+- Tags: Save as Key Value Pairs
+- Manual: Documentation Widget Creation
+- Dashboard: Mobile View: Fix edit view
+- Dashboard: Add Owner name to shared list
+- Dashboard: Permission View All
+- Dashboard: Management Page
+- Dashboard: Duplicate Dashboard

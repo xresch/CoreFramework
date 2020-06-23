@@ -1,0 +1,64 @@
+
+<p>You can add a configuration to the configuration page by creating a new configuration object and add it to the database. </p>
+<pre>
+	<code>CFW.DB.Config.oneTimeCreate(
+	new Configuration("Silk Performance Manager", CONFIG_SPM_PROD_URL)
+		.description("The URL of the productive SPM instance.")
+		.type(FormFieldType.TEXT)
+);
+	</code>
+</pre>
+
+
+<h2>Read Configuration</h2>
+<p>
+You can read a configuration by using the methods CFW.DB.Config.getConfigAs*(String configName);
+</p>
+
+<pre>
+<code>CFW.DB.Config.getConfigAsString(FeatureExample.CONFIG_EXAMPLE_HOST);
+CFW.DB.Config.getConfigAsInt(FeatureExample.CONFIG_EXAMPLE_PORT);
+CFW.DB.Config.getConfigAsBoolean(FeatureExample.CONFIG_EXAMPLE_IS_SERVICE);
+</code>
+</pre>
+	
+	
+					
+<h2>Listening on Config Changes</h2>
+<p>
+If you want to listen on config changes, you can add a ConfigChangeListener. 
+The following is an example of a listener that listens to changes to multiple configurations.
+If any of the configurations changes, the onChange()-method is execute once.
+
+</p>
+<pre>
+<code>public void initialize() {
+	
+	//-------------------------------
+	// Create Change Listener
+	ConfigChangeListener listener = new ConfigChangeListener(
+			FeatureExample.CONFIG_EXAMPLE_HOST,
+			FeatureExample.CONFIG_EXAMPLE_PORT, 
+			FeatureExample.CONFIG_EXAMPLE_USER, 
+			FeatureExample.CONFIG_EXAMPLE_PASSWORD
+		) {
+		
+		@Override
+		public void onChange() {
+			//-------------------------------
+			// Will be executed once
+			this.createEnvironments();
+		}
+	};
+	
+	//-------------------------------
+	// Register your Listener
+	CFW.DB.Config.addChangeListener(listener);
+	
+	//-------------------------------
+	// Do your regular Initialization Stuff
+	this.createEnvironments();
+	isInitialized = true;
+}
+</code>
+</pre>

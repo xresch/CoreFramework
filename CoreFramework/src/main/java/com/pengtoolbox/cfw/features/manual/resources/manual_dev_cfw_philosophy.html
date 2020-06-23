@@ -1,0 +1,21 @@
+
+<p>
+The fundamental philosophy of the Core Framework(CFW) is to keep things simple and being able to program new things fast. 
+Here is a list of what the developer had in mind when he created the framework:
+</p>
+
+<ul>
+	<li><b>Keep Tools needed to a minimum:&nbsp;</b> The tools needed for developing should be kept to a minimum. An Eclipse IDE, a DB tool and Git should be all that is needed.  </li>
+	<li><b>Keep Dependencies Low:&nbsp;</b> Dependencies to other frameworks are kept to a minimum. This allows to avoid dependency management tools like Maven/Gradle. The Application is build with Eclipse.  </li>
+	<li><b>Single JAR:&nbsp;</b> The main application functionality should be delivered as a single JAR. Makes it easier to deploy a new version. Only config and resource files should be on the disc.</li>
+	<li><b>Ordered Code:&nbsp;</b> The framework user doesn't have to search for basic functionality, as the code is ordered properly. Most of the functionality can be accessed through CFW.* using code autocompletion.  </li>
+	<li><b>Handle Exceptions Early:&nbsp;</b> Handle exceptions as low in the code as possible and return "null" on errors, instead of propagating the exceptions through the method stack. Automatically add an alert message that will be displayed to the user, when an exception is logged with severity "WARNING" or "SEVERE". </li>
+	<li><b>Couple Tightly:&nbsp;</b> Tightly couple the code inside the framework, to make the code using the framework easier to write. (e.g. CFWObject can be used to create DB tables, SQL Calls, Forms, APIs...)  </li>
+	<li><b>Implement Small Things Yourself:&nbsp;</b> Instead of adding an additional dependency for a small functionality, implement it yourself and make it work together with the rest of the framework. This allows you to grow as a framework developer and know how to implement various functionality and their pitfalls. </li>
+	<li><b>Keep Things Together:&nbsp;</b> Keep code and resources for a feature together. Resources are located in a package next to the java code. Make functionality readable in code and avoid "coding" functionality in configuration files as far as possible.</li>
+	<li><b>Keep it Portable:&nbsp;</b> The framework should be portable. Copy&amp;Paste of Tools and Workspace without installation and minor workspace setup should be possible.</li>
+	<li><b>Fast Restart:&nbsp;</b> When developing, the application should be started fast to keep development fast.</li>
+</ul>
+
+
+

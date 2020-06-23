@@ -1,0 +1,29 @@
+
+<style>
+   #cfw-content{
+   		background-image: url("/resources/images/login_background.jpg");
+   		background-position: center;
+   		background-size: cover;
+   }
+</style>
+<!--h1>Login</h1>
+<div>
+	<p>Please provide your credentials to log into the application.</p>
+	
+</div-->
+
+<div id="cfw-login">
+	<form id="cfw-login-form" class="form" method="post">
+		
+		<div class="form-group">
+			<!-- label for="username" >Username:</label--> 
+			<input type="text" placeholder="Username" class="form-control" style="background-color: white; color: black;" name="username" id="username" autofocus/>
+		</div>
+	    <div class="form-group">
+			<!-- label for="password">Password:</label--> 
+			<input type="password" placeholder="Password"  class="form-control" style="background-color: white; color: black;" name="password" id="password" />
+		</div>	
+		<input type="hidden" name="url" id="url" value="urlvalue" />
+		<input type="submit" class="btn btn-primary w-100" value="{!cfw_core_signin!}">
+	</form>
+</div>

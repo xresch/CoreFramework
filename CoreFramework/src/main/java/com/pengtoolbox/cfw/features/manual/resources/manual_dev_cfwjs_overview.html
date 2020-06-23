@@ -1,0 +1,154 @@
+<h2>cfw.js</h2>
+<p>
+The javascript cfw.js is the client side framework of the Core Framework. It contains helper function and functions to handle the UI.<br/>
+The following functions are the most important: 
+</p>
+<pre>
+<code>// use CFWL for fetching localization properties added on server side with CFW.Localization.registerLocaleFile()
+CFWL('cfw_example_porperty', 'Default Value')
+
+// Send a get request and displays toast messages created on server side with CFW.Context.Request.addAlertMessage(); 
+CFW.http.getJSON('/your/servlet', params, function(data) { /*do something*/ })
+
+// Send a post request and displays toast messages created on server side with CFW.Context.Request.addAlertMessage(); 
+CFW.http.postJSON('/your/servlet', params, function(data) { /*do something*/ })
+
+//Get a form that was already created on server side using new BTForm() or methods like CFWObject.toForm()
+CFW.http.getForm('formName', targetElement);
+
+//Use this method when you have to create a new Form on server side. 
+CFW.http.createForm('/your/servlet', {action: "getform", item: "edituser", id: userID}, targetElement);
+
+//Show a modal panel. Last param is either a function or a string with javascript code.
+CFW.ui.showModal("Your Modal Title", modalBodyContent, "onClose();");
+
+//Show a modal panel to confirm an action. Last param is either a function or a string with javascript code.
+CFW.ui.confirmExecute('Do you really want to remove the item?', 'Remove', "removeItem("+itemID+")" );
+
+//Add Default Toast messages
+CFW.ui.addToastInfo('Here is an info.');
+CFW.ui.addToastSuccess('That worked!');
+CFW.ui.addToastWarning('Pay attention!');
+CFW.ui.addToastDanger('Something went wrong.');
+
+//Add Custom Toast messages
+CFW.ui.addToast(toastTitle, toastBody, style, delay);
+
+//Check if the logged in user has a permission
+CFW.hasPermission("Permission Name")
+
+</code>
+</pre>
+
+<p>
+You can get an overview of all available functions in the cfw.js file, where the variable "CFW" is initialized:
+</p>
+<pre>
+<code>var CFWL = cfw_lang;
+var CFW = {
+	render: {
+		registry: {},
+		registerRenderer: cfw_registerRenderer,
+		getRenderer: cfw_getRenderer,
+	},
+	array: {
+		sortArrayByValueOfObject: cfw_sortArrayByValueOfObject
+	},
+	format: {
+		epochToTimestamp: 	cfw_format_epochToTimestamp,
+		epochToDate: 		cfw_format_epochToDate,
+		objectToHTMLList: 	cfw_objectToHTMLList,
+		csvToObjectArray: 	cfw_format_csvToObjectArray,
+		fieldNameToLabel: 	cfw_format_fieldNameToLabel,
+		capitalize: 		cfw_format_capitalize,
+		formToParams: 		cfw_format_formToParams,
+		formToArray: 		cfw_format_formToArray,
+		formToObject: 		cfw_format_formToObject
+	},
+	
+	http: {
+		readCookie: cfw_readCookie,
+		getURLParams: cfw_getURLParams,
+		getURLParamsDecoded: cfw_getURLParamsDecoded,
+		setURLParam: cfw_setURLParam,
+		secureDecodeURI: cfw_secureDecodeURI,
+		getJSON: cfw_getJSON,
+		postJSON: cfw_postJSON,
+		getForm: cfw_getForm,
+		createForm: cfw_createForm,
+		fetchAndCacheData: cfw_fetchAndCacheData
+	},
+	
+	selection: {
+		selectElementContent: cfw_selectElementContent
+	},
+	utils: {
+		executeCodeOrFunction: cfw_executeCodeOrFunction,
+		randomString: cfw_randomString
+	},
+	ui: {
+		createToggleButton: cfw_createToggleButton,
+		toc: cfw_table_toc,
+		addToast: cfw_addToast,
+		addToastInfo: function(text){cfw_addToast(text, null, "info", CFW.config.toastDelay);},
+		addToastSuccess: function(text){cfw_addToast(text, null, "success", CFW.config.toastDelay);},
+		addToastWarning: function(text){cfw_addToast(text, null, "warning", CFW.config.toastDelay);},
+		addToastDanger: function(text){cfw_addToast(text, null, "danger", CFW.config.toastErrorDelay);},
+		showModal: cfw_showModal,
+		showSmallModal: cfw_showSmallModal,
+		confirmExecute: cfw_confirmExecution,
+		toogleLoader: cfw_toogleLoader,
+		addAlert: cfw_addAlertMessage
+	},
+	hasPermission: cfw_hasPermission,
+
+}</code>
+</pre>
+
+
+<h2>cfw_renderer.js</h2>
+<p>
+The cfw_renderer.js contains default renderers provided by the framework.<br />
+Currently the following renderers are provided:
+</p>
+<ul>
+	<li>html</li>
+	<li>json</li>
+	<li>table</li>
+	<li>tiles</li>
+</ul>
+
+<p>
+To use a renderer:
+</p>
+<pre>
+<code>var tableRenderer = CFW.render.getRenderer('table');
+var cfwTable = tableRenderer.render(dataToRender);</code>
+</pre>
+
+<p>
+To register a new renderer do the following:
+</p>
+<pre>
+<code>CFW.render.registerRenderer("rendererName",
+	new CFWRenderer(
+		function (renderDefinition) {
+			//Your code
+			return htmlOrDomJQueryObject;
+		});
+);</code>
+</pre>
+
+<h2>cfw_components.js</h2>
+<p>
+The cfw_components.js contains components provided by the framework.<br />
+Currently the following components are provided:
+</p>
+<ul>
+	<li>CFWRenderer</li>
+	<li>CFWFormField</li>
+	<li>CFWDate</li>
+	<li>CFWTable</li>
+	<li>CFWPanel</li>
+	<li>CFWToggleButton</li>	
+</ul>

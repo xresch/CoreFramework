@@ -1,0 +1,297 @@
+
+<div id="manual-toc"></div>
+
+<h2>Introduction</h2>
+<p>
+The CFWField is a core class of the framework. It basically is an enhanced form of a class field that holds a value of the class instance.
+Because we create a class for the fields, it is possible to add a lot of commonly needed functions to this fields.
+This makes a lot of implementations much easier, for example:</p>
+<ul>
+	<li><strong>Creating DB Tables:&nbsp;</strong>The column type can be defined on the field, what can be used to automatically create the needed table for saving a field to a Database.</li>
+	<li><strong>ResultSet Mapping:&nbsp;</strong> Values of SQL ResultSets can be mapped using a single function call.</li>
+	<li><strong>Converting to Form:&nbsp;</strong> A collection of CFWFields in a CFWObject can directly be converted to the HTML representation needed for a Form.</li>
+	<li><strong>Mapping Servlet Request Parameters:&nbsp;</strong> You can map servlet request parameters to a collection of CFWFields.  </li>
+	<li><strong>Creating DB Queries:&nbsp;</strong> DB Queries can be created through CFWObject and CFWSQL and converted to a variety of different representations, like a list of CFWObejcts or a JSON string.  </li>
+	<li><strong>Validation:&nbsp;</strong> Default and custom Validators can directly be added to the field.  </li>
+	<li><strong>Autocomplete:&nbsp;</strong> Default customized Autocomplete functionality can directly be added to the field.  </li>
+	<li><strong>API:&nbsp;</strong> An API can be easily created through the CFWObject.  </li>
+</ul>
+
+<h2>CFWField Examples</h2>
+<p>
+Here various examples of various CFWField definitions.
+Create new CFWFields using CFWField.new*() methods.
+You can set the default value for the field using setValue(). If this is not specified it defaults to null.
+</p>
+
+
+<h3>Boolean Field with Default true</h3>
+<p>
+Creates a simple Boolean field. A BooleanValidator is already added by CFWField.newBoolean().
+Sets the default to true.
+</p>
+<pre>
+<code>private CFWField&lt;Boolean&gt; isDeletable = 
+	CFWField.newBoolean(FormFieldType.BOOLEAN, 
+						GroupFields.IS_DELETABLE.toString())
+			.setValue(true);
+</code>
+</pre>
+
+
+<h3>Unique Text Field with Validator</h3>
+<p>
+Creates a text field with a unique constraint on the database column and a length validator.
+Default the default column definition set by newString() is "VARCHAR". 
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; name = 
+	CFWField.newString(FormFieldType.TEXT, 
+					   GroupFields.NAME.toString())
+			.setColumnDefinition("VARCHAR(255) UNIQUE")
+			.addValidator(new LengthValidator(1, 255));
+</code>
+</pre>
+
+<h3>Password Field</h3>
+<p>
+Creates a password field. Password fields will be treated special, in case the value of the field is not null, a dummy value will be put into the form. 
+This will prevent that the actual password can be extracted from the HTML source.
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; dbPassword = 
+	CFWField.newString(FormFieldType.PASSWORD, DBFields.DB_PASSWORD)
+			.setDescription("The password of the DB user.");
+</code>
+</pre>
+
+
+<h3>TextArea as CLOB with 2MB Limit</h3>
+<p>
+Creates a textarea and that will be saved to a CLOB field. Limits the data amount to 2MB with the length validator.
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; description = 
+	CFWField.newString(FormFieldType.TEXTAREA, 
+					   GroupFields.DESCRIPTION.toString())
+			.setColumnDefinition("CLOB")
+			.addValidator(new LengthValidator(-1, 2000000));
+</code>
+</pre>
+
+
+
+<h3>Number with custom Label</h3>
+<p>
+Creates a number field with a custom label.
+By default the name of the CFWField will be used as label like this:
+</p>
+<ul>
+	<li>Change underscores to blank</li>
+	<li>Make all words start with an uppercase letter</li>
+</ul>
+<pre>
+<code>private CFWField&lt;Integer&gt; number = 
+	CFWField.newInteger(FormFieldType.NUMBER, 
+						"Number_Fieldxyz")
+			.setLabel("Enter a Number");
+</code>
+</pre>
+
+
+<h3>Select Field with Description</h3>
+<p>
+Creates a selection box  with the two options "Active" and "Inactive". 
+Adds a description that will be displayed as a tooltip on an info icon in the form in front of the label.
+
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; status = 
+	CFWField.newString(FormFieldType.SELECT, UserDBFields.STATUS.toString())
+			.setColumnDefinition("VARCHAR(31)")
+			.setOptions(new String[] {"Active", "Inactive"})
+			.setDescription("Active users can login, inactive "+
+ 					 "users are prohibited to login.")
+			.addValidator(new LengthValidator(-1, 31));
+</code>
+</pre>
+
+<h3>Select Field with Value/Label Pairs</h3>
+<p>
+Creates a selection box with values and labels. Values will be stored and labels will be for showing the options in the selection box.
+Below sets the default value to Banana.
+</p>
+<pre>
+<code>private CFWField&lt;Integer&gt; keyValSelect = 
+	CFWField.newInteger(FormFieldType.SELECT, "KEY_VAL_SELECT")
+			.setValue(2);
+
+public void initialize() {
+	LinkedHashMap&lt;Integer, String&gt; options = new LinkedHashMap&lt;Integer, String&gt;();
+	options.put(1, "Apple");
+	options.put(2, "Banana");
+	options.put(3, "Plumb");
+	options.put(4, "Strawwberry");
+	keyValSelect.setValueLabelOptions(options);
+		
+	this.addFields(...,keyValSelect, ...);
+}
+
+</code>
+</pre>
+
+
+<h3>Date Field with Default</h3>
+<p>
+Creates a new date picker field with a default epoch time value for "26.01.2020".
+Times will always be converted to epoch time for request parameters and saving to database.
+Dates before 1582 are not supported well because of the cutoff between the Julian and Gregorian calendars.( ISO-8601 standard supported)
+</p>
+<pre>
+<code>private CFWField&lt;Date&gt; date = 
+	CFWField.newDate(FormFieldType.DATEPICKER, "DATE")
+			.setValue(new Date(1580053600000L));
+
+</code>
+</pre>
+
+
+<h3>Timestamp Field</h3>
+<p>
+Creates a new date and time picker field.
+The default will be the current date and time of the users browser when no value is specified.
+Times will always be converted to epoch time for request parameters and saving to database.
+Dates before 1582 are not supported well because of the cutoff between the Julian and Gregorian calendars.( ISO-8601 standard supported)
+</p>
+<pre>
+<code>private CFWField&lt;Timestamp&gt; timestamp =
+	CFWField.newTimestamp(FormFieldType.DATETIMEPICKER, "TIMESTAMP");
+</code>
+</pre>
+
+
+<h3>WYSIWYG Editor</h3>
+<p>
+Creates a WYSIWYG editor with an initial value.
+Please note that you need to use .allowHTML(true) so the user input will not be sanitized.
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; editor = 
+	CFWField.newString(FormFieldType.WYSIWYG, "EDITOR")
+			.allowHTML(true)
+			.setValue("<b>Intial Value:</b> successfull!!!");
+</code>
+</pre>
+
+
+<h3>Default Autocomplete</h3>
+<p>
+Creates a text field with a default autocomplete handler.
+The CFWAutocompleteHandlerDefault will start searching from a single character. 
+It creates a query on the table searching with a LIKE "%searchValue%" statement through the column of the associated field.
+By default it limits the number of results to 10, what can be adjusted through the constructor or with setMasResults().
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; title = CFWField.newString(FormFieldType.TEXT, QuoteFields.QUOTE_TITLE)
+		.setDescription("The title of the quote.")
+		.addValidator(new LengthValidator(3, 512))
+		.setAutocompleteHandler( new CFWAutocompleteHandlerDefault(this.getClass(), 5));
+</code>
+</pre>
+
+
+<h3>Tags Field As String with Custom Autocomplete</h3>
+<p>
+The following creates a tags field that will convert the tags to a comma separated string of tags.
+It has a custom autocomplete handler that returns a maximum of 5 results.
+The LinkedHashMap returned will contain the values as "key/label" pairs.
+The default amount of tags you can set is 128.
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; tags = CFWField.newString(FormFieldType.TAGS, "TAGS")
+		.setValue("foo,test,bar,bla")
+		.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
+			public LinkedHashMap&lt;Object, Object&gt; getAutocompleteData(HttpServletRequest request, String inputValue) {
+				LinkedHashMap&lt;Object, Object&gt;  array = new LinkedHashMap&lt;Object, Object&gt;() ;
+				for(int i = 0; i &lt; this.getMaxResults(); i++ ) {
+					String tag = "Tag_"+inputValue+"_"+i;
+					array.put(tag, tag);
+				}
+				return array;
+			}
+		});
+</code>
+</pre>
+
+<h3>Tags As Array Autocomplete from DB wit maximum 20 Tags</h3>
+<p>
+The following creates a tags field that will convert the tags to an object array and saves it as well to an ARRAY column to the database.
+The autocomplete will get the Tags from the DB interface. The use case this example was fetched from has the tags cached internally to reduce query executions.
+</p>
+<pre>
+<code>private CFWField&lt;Object[]&gt; tags = CFWField.newArray(FormFieldType.TAGS, QuoteFields.TAGS)
+		.setDescription("The tags for this quote.")
+		.addAttribute("maxTags", "20")
+		.setAutocompleteHandler( new CFWAutocompleteHandler(10) {
+			@Override
+			public LinkedHashMap&lt;Object, Object&gt; getAutocompleteData(HttpServletRequest request, String inputValue) {
+				// Find existing tags in DB
+				TreeSet&lt;String&gt; tagsSet = OM.DB.Quotes.getTags();
+				
+				LinkedHashMap&lt;Object, Object&gt; suggestions = new LinkedHashMap&lt;Object, Object&gt;();
+				for(String tag : tagsSet) {
+					if(tag.toLowerCase().contains(inputValue.toLowerCase())) {
+						suggestions.put(tag, tag);
+						if(suggestions.size() >= this.getMaxResults()) {
+							break;
+						}
+					}
+				}
+				return suggestions;
+			}
+		});
+</code>
+</pre>
+
+<h3>Advanced Tag Selector</h3>
+<p>
+With the tag selector you can provide a field where the user can enter a search string and select an object from a database.
+The selector will use a label for the tag, but will hold a key behind the tag, like an ID.<br/>
+This is useful for example to select a User by name from the database but getting the ID of the user for processing.
+Tag selector values will be converted to a LinkedHashMap&lt;String,String&gt; with "key/label" combinations.
+When saved to the DB it will be converted to a JSON string, why the fieldname has to start with "JSON".
+To create a tags selector field always use CFWField.newTagsSelector();<br/>
+The following example shows an example on how to create a tags selector for users.
+</p>
+<pre>
+<code>private CFWField&lt;LinkedHashMap&lt;String,String&gt;&gt; shareWithUsers = 
+	CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_USERS)
+		.setLabel("Share with Users")
+		.setDescription("Share this dashboard only with specific users.")
+		.addAttribute("maxTags", "50")
+		.setValue(null)
+		.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+			public LinkedHashMap&lt;Object, Object&gt; getAutocompleteData(HttpServletRequest request, String searchValue) {
+				return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+			}
+		});
+
+public static LinkedHashMap&lt;Object, Object&gt; autocompleteUser(String searchValue, int maxResults) {
+	
+	if(Strings.isNullOrEmpty(searchValue)) {
+		return new LinkedHashMap&lt;Object, Object&gt;();
+	}
+	
+	return new User()
+		.queryCache(CFWDBUser.class, "autocompleteUser")
+		.select(UserFields.PK_ID.toString(),
+				UserFields.USERNAME.toString())
+		.whereLike(UserFields.USERNAME.toString(), "%"+searchValue+"%")
+		.and().not().is(UserFields.PK_ID, CFW.Context.Request.getUser().id())
+		.limit(maxResults)
+		.getAsLinkedHashMap(UserFields.PK_ID.toString(), 
+							UserFields.USERNAME.toString());
+	
+}
+</code>
+</pre>

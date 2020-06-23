@@ -1,0 +1,17 @@
+
+<p>You can add a permission to the application by creating a new permission object and add it to the database. </p>
+<pre>
+	<code>CFW.DB.Permissions.oneTimeCreate(
+new Permission(MyFeature.MY_PERMISSION_NAME, "user")
+	.description("The description of the permission.")
+	.isDeletable(false),
+true,
+true);
+	</code>
+</pre>
+
+<p>Afterwards you can check the permissions using the request context:</p>
+
+<pre>
+	<code>if( CFW.Context.Request.hasPermission(MyFeature.MY_PERMISSION_NAME) ) {}</code>
+</pre>

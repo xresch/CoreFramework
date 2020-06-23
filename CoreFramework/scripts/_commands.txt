@@ -1,0 +1,5 @@
+#########################################################
+# Count all the lines of all files in the repository
+#########################################################
+git ls-files | xargs wc -l | cat > line_count.txt
+

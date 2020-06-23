@@ -1,0 +1,127 @@
+
+<p>
+The Core Framework provides several helper classes to make it easier to work with SQL.
+Especially tables that are associated with a CFWObject can easily be accessed. 
+</p>
+
+<div id="manual-toc"></div>
+
+<h2>CFWObject - Creating SQLs</h2>
+<p>
+When a CFWObject has set a table name using CFWObject.setTableName(), and is registered with CFW.Registry.Objects.addCFWObject(), 
+a table will be created containing the fields of the object as columns. Because we have the table name and the fields on the CFWObject,
+we can use the CFWObject to create our SQL. Here is an example how this can look like.
+</p>
+
+<pre>
+<code>return (User)new User()
+		.queryCache(CFWDBUser.class, "selectByID")
+		.select()
+		.where(UserFields.PK_ID, id)
+		.getFirstObject();
+</code>
+</pre>
+
+<p>
+Some explanations for the above:
+</p>
+<ul>
+	<li><b>queryCache():&nbsp;</b> (Optional)This returns an instance of CFWSQL, the class used for creating SQLs. The SQL string will only be concatenated once, afterwards it will be read from a cache with the unique name defined by the two parameters. If something doesn't work as expected, make sure you use a unique name. </li>
+	<li><b>select():&nbsp;</b> Starts a "SELECT * FROM TABLE_NAME" for the object you have given. </li>
+	<li><b>where():&nbsp;</b> Adds a "WHERE PK_ID = ?" and saves the value you gave in the second parameter for preparing the statement later. </li>
+	<li><b>getFirstObject():&nbsp;</b> Executes the SQL and retrieves the first record of the result and returns it as a CFWObject. </li>
+</ul>
+	
+					
+<h2>Result Conversion</h2>
+<p>
+One really nice thing about the CFWSQL class is that it provides various methods to get the records of a Result set in a specific format, what saves you a lot of time.
+Here the methods you can use to get your results, most of them will return null on error or an empty list/map:
+</p>
+<pre>
+<code>.getAsJSON()			// String: Returns an JSON array string (better performance than the next two)
+.getAsJSONArray()		// JsonArray: Returns a GSON JsonArray instance
+.getAsJSONElements()		// ArrayList&lt;JsonElement&gt;: Returns an ArrayList of JsonElements.
+
+.getAsCSV()			// String: Returns the data as CSV string
+.getAsXML()			// String: Returns the data as XML string
+.getCount()			// int: returns the number of results as integer, -1 on error
+.getResultSet()			// ResultSet: Returns the result set of the query
+.getAsObjectList()		// ArrayList&lt;CFWObject&gt;: Maps the records to CFWObjects and returns them as an ArrayList 
+
+.getAsStringArrayList(columnName)			// ArrayList&lt;String&gt;: Returns the values of the given column as a string array list 
+.getAsStringArray(columnName)				// String []: Returns the values of the given column as a string array
+.getAsLinkedHashMap(keyColumnName, valueColumnName)	// LinkedHashMap&lt;Object,Object&gt;: Returns the values for the given columns as a sorted map 
+.getKeyValueMap(keyColumnName, valueColumnName)		// HashMap&lt;Object,Object&gt;: Returns the values for the given columns as a unsorted map 
+</code>
+</pre>
+
+
+<h2>Custom SQLs</h2>
+<p>
+You can add custom SQL when you need it. Here some examples how you can do it:
+</p>
+<pre>
+<code>//-------------------------------------------
+// Add Custom AND clause with Braces
+//-------------------------------------------
+int count = new DashboardWidget()
+	.selectCount()
+	.whereLike(DashboardWidgetFields.JSON_SETTINGS, "%\"environment\":"+id+"%")
+	.custom("AND (\"TYPE\"='emp_spmprojectstatus' OR \"TYPE\"='emp_spmmonitorstatus')")
+	.getCount();
+
+//-------------------------------------------
+// Other Way to add Braces
+//-------------------------------------------
+return new Quote()
+	.queryCache(YourClass.class, "YourUniqueName")
+	.select()
+	.whereArrayContains(QuoteFields.TAGS, tag)
+	.and("("+QuoteFields.FK_ID_USER, userID)
+		.or(QuoteFields.IS_SHARED, true)
+	.custom(")")
+	.orderbyDesc(QuoteFields.CREATED_ON.toString())
+	.getAsJSON();
+	
+//-------------------------------------------
+// Add fully customized SQL
+//-------------------------------------------
+MyCFWObject myobject = new MyCFWObject();
+
+new CFWSQL(myobject)
+	.queryCache(YourClass.class, "YourUniqueName")
+	.custom(
+		"SELECT P.* "
+		+"FROM MY_TABLE P "
+		+"JOIN MY_OTHER_TABLE AS GP ON GP.FK_ID = P.PK_ID "
+		+"WHERE GP.CATEGORY = ?;", 
+		myobject.category())
+	.getResultSet();
+</code>
+</pre>
+
+<h2>Use SQL Statement from File</h2>
+<p>
+For more complex queries, it makes sense to store them in a file. Here how you can read the SQL from a file:
+</p>
+<pre>
+<code>return new QuoteListQuoteMap()
+	.queryCache(OMDBQuoteListQuoteMap.class, "getQuotesInListAsJSON")
+	.loadSQLResource(QuotesFeature.RESOURCE_PACKAGE, "om_quotes_getQuotesInList.sql", 
+			quoteListID,
+			userID)
+	.getAsJSON();
+</code>
+</pre>
+
+
+
+<!-- h2></h2>
+<p>
+
+</p>
+<pre>
+<code>
+</code>
+</pre-->

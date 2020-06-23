@@ -1,0 +1,359 @@
+
+<p>
+The Core Framework uses an H2 embedded database to store data. The database file is located under "./datastore/h2database.mv.db".
+There are several classes and functions provided by the framework that help making database handling easier.
+</p>
+
+
+
+<div id="manual-toc"></div>
+
+<h2>Most Important features</h2>
+<p>
+The following are the most important features provided by the Core Framework to work with databases:
+</p>
+
+<ul>
+	<li><b>CFW.DB.*:&nbsp;</b> Interface to access the default CFW standard tables like for Users, Roles or Configuration. Whenever you want to access default objects, you should go through the methods provided by this interface.</li>
+	<li><b>DBInterface.class:&nbsp;</b> An abstract class providing default methods for preparing statements, executing SQLs and doing the exception handling and logging for you.</li>
+	<li><b>CFWDB.class:&nbsp;</b> The implementation of the above DBInterface for the internal H2 database. Normally accessed through "CFW.DB.*".</li>
+	<li><b>CFWDBDefaultOperations.class:&nbsp;</b> A collection of static classes with default operations for various database tasks.</li>
+	<li><b>CFWSQL.class:&nbsp;</b> Helper Class to generate simple SQL statements and converting SQL results.</li>
+</ul>
+
+
+			
+<h2>Fetching Standard Tables</h2>
+<p>
+Use the methods provided by the interface CFW.DB.* to access or manipulate data for CFWObjects provided by the CFW, for example:
+</p>
+<pre>
+<code>CFW.DB.Users.getUserListAsJSON();
+CFW.DB.UserRoleMap.toogleUserInRole();
+CFW.DB.RolePermissionMap.tooglePermissionInRole();
+
+CFW.DB.Permissions.oneTimeCreate();
+CFW.DB.Config.oneTimeCreate();
+
+CFW.DB.Dashboards.selectByID();
+CFW.DB.DashboardWidgets.createGetPrimaryKey();
+</code>
+</pre>
+
+
+<h2>DAO Example - Using CFWDBDefaultOperations</h2>
+<p>
+The following is an example on how to create a Database Access Object(DAO) for a CFWObject using methods provided by CFWDBDefaultOperations.
+Thanks to CFWDBDefaultOperations, copy &amp; pasting of DAOs is easier than having to update all the SQLs by hand afterwards.
+Create your own methods for adding SQLs that are specific for your case. 
+</p>
+<pre>
+<code>public class CFWDBDashboard {
+	
+	// Do this for simplifying copy & pasting
+	private static Class&lt;Dashboard&gt; cfwObjectClass = Dashboard.class;
+	
+	public static Logger logger = CFWLog.getLogger(CFWDBDashboard.class.getName());
+		
+	//####################################################################################################
+	// Preckeck Initialization
+	// These methods will determine if an SQL will be executed or not by returning true or false.
+	//####################################################################################################
+	private static PrecheckHandler prechecksCreateUpdate =  new PrecheckHandler() {
+		public boolean doCheck(CFWObject object) {
+			
+			Dashboard dashboard = (Dashboard)object;
+			
+			if(dashboard == null || dashboard.name().isEmpty()) {
+				new CFWLog(logger)
+					.method("doCheck")
+					.warn("Please specify a name for the dashboard.", new Throwable());
+				return false;
+			}
+
+			return true;
+		}
+	};
+	
+	
+	private static PrecheckHandler prechecksDelete =  new PrecheckHandler() {
+		public boolean doCheck(CFWObject object) {
+			Dashboard dashboard = (Dashboard)object;
+			
+			if(dashboard != null && dashboard.isDeletable() == false) {
+				new CFWLog(logger)
+				.method("doCheck")
+				.severe("The dashboard '"+dashboard.name()+"' cannot be deleted as it is marked as not deletable.", new Throwable());
+				return false;
+			}
+			
+			return true;
+		}
+	};
+		
+	//####################################################################################################
+	// CREATE
+	//####################################################################################################
+	public static boolean	create(Dashboard... items) 	{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, items); }
+	public static boolean 	create(Dashboard item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, item);}
+	public static Integer 	createGetPrimaryKey(Dashboard item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);}
+	
+	//####################################################################################################
+	// UPDATE
+	//####################################################################################################
+	public static boolean 	update(Dashboard... items) 	{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, items); }
+	public static boolean 	update(Dashboard item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, item); }
+	
+	//####################################################################################################
+	// DELETE
+	//####################################################################################################
+	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, DashboardFields.PK_ID.toString(), id); }
+	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(cfwObjectClass, itemIDs); }
+	
+	public static boolean 	deleteMultipleByIDForUser(int userid, String commaSeparatedIDs)	{ 
+		return CFWDBDefaultOperations.deleteMultipleByIDWhere(cfwObjectClass, commaSeparatedIDs, DashboardFields.FK_ID_USER, userid); 
+	} 
+	
+	public static boolean 	deleteByName(String name) 		{ 
+		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, DashboardFields.NAME.toString(), name); 
+	}
+		
+	//####################################################################################################
+	// SELECT
+	//####################################################################################################
+	public static Dashboard selectByID(String id ) {
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardFields.PK_ID.toString(), id);
+	}
+	
+	public static Dashboard selectByID(int id ) {
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardFields.PK_ID.toString(), id);
+	}
+	
+	public static Dashboard selectFirstByName(String name) { 
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardFields.NAME.toString(), name);
+	}
+	
+	//---------------------------------------
+	// A method with a custom SQL
+	public static String getDashboardAsJSON(String id) {
+		
+		return new Dashboard()
+				.queryCache(CFWDBDashboard.class, "getDashboardAsJSON")
+				.select()
+				.where(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+				.or(DashboardFields.IS_SHARED.toString(), true)
+				.where(DashboardFields.PK_ID.toString(), Integer.parseInt(id))
+				.getAsJSON();
+		
+	}
+}
+</code>
+</pre>
+
+
+<h2>Create Custom Database Interface</h2>
+<p>
+If you want to connect to another database, you can create your own implementation of the DBInterface. 
+CFWSQL can partially be used to create and cache SQLs, but not for converting the results to a specific format.
+</p>
+
+<h3>Oracle DB Interface</h3>
+<p>
+Here is an example implementation of creating your own Oracle DB Interface: 
+</p>
+<pre>
+<code>public static DBInterface initializeDBInterface(String servername, int port, String name, String type, String username, String password) {
+	
+	//-----------------------------------------
+	// Create the instance
+	DBInterface db = new DBInterface() {
+		
+		PoolDataSource pooledSource;
+		
+		//-----------------------------------------
+		// static block to initialize DB pool
+		{
+			try {
+				
+				String url = "";
+				if(type.trim().equals("SID")) {
+					//jdbc:oracle:thin:@myHost:myport:sid
+					url = "jdbc:oracle:thin:@"+servername+":"+port+":"+name;
+				}else {
+					//jdbc:oracle:thin:@//myHost:1521/service_name
+					url = "jdbc:oracle:thin:@//"+servername+":"+port+"/"+name;
+				}
+				
+				pooledSource = PoolDataSourceFactory.getPoolDataSource();
+				pooledSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
+				pooledSource.setURL(url);
+				pooledSource.setUser(username);
+				pooledSource.setPassword(password);
+				pooledSource.setInitialPoolSize(5);
+				pooledSource.setMinPoolSize(5);
+				pooledSource.setMaxPoolSize(50);
+				pooledSource.setMaxStatements(20);
+				
+				pooledSource.setMaxConnectionReuseCount(50);
+				pooledSource.setTimeoutCheckInterval(30);
+				pooledSource.setConnectionWaitTimeout(60);
+				pooledSource.setAbandonedConnectionTimeout(20);
+				pooledSource.setMaxIdleTime(330);
+				pooledSource.setInactiveConnectionTimeout(600);
+				pooledSource.setTimeToLiveConnectionTimeout(3600);
+				
+				//----------------------------------
+				// Test connection
+				Connection connection = pooledSource.getConnection();
+				connection.close();
+				
+			} catch (SQLException e) {
+				new CFWLog(logger)
+					.method("initialize")
+					.severe("Exception initializing Database.", e);
+			}
+		}
+		
+		//-----------------------------------------
+		// Implementation of the getConnection Method
+		@Override
+		public Connection getConnection() throws SQLException {
+			
+			//-----------------------------------------
+			// Check needed for 
+			// beginTransaction()
+			// commitTransaction()
+			// and rollbackTransaction()
+			if(transactionConnection.get() != null) {
+				return transactionConnection.get();
+			}else {
+				synchronized (pooledSource) {
+					Connection connection = pooledSource.getConnection();
+					//-----------------------------------------
+					// Add connection to open connections for
+					// force closing it when the application is finished
+					// creating the response and the connection is still open.
+					addOpenConnection(connection);
+					return connection;
+				}
+			}				
+		}
+	};
+
+	return db;
+}</code>
+</pre>
+
+<h3>Microsoft SQLServer Interface</h3>
+<p>
+Here is an example implementation of creating your own SQL Server Interface: 
+</p>
+<pre>
+<code>public static DBInterface initializeDBInterface(String servername, int port, String dbName, String username, String password) {
+	
+	@SuppressWarnings("deprecation")
+	DBInterface db = new DBInterface() {
+		
+		SQLServerConnectionPoolDataSource pooledSource;
+		{
+			try {
+
+				pooledSource = new SQLServerConnectionPoolDataSource();
+				pooledSource.setServerName(servername);
+				pooledSource.setPortNumber(port);
+				
+				pooledSource.setDatabaseName(dbName);
+				pooledSource.setUser(username);
+				pooledSource.setPassword(password);
+				pooledSource.setMultiSubnetFailover(true);
+				
+				//----------------------------------
+				// Test connection
+				pooledSource.setLoginTimeout(5);
+				Connection connection = pooledSource.getConnection();
+				connection.close();
+				
+			} catch (Exception e) {
+				new CFWLog(logger)
+					.method("initialize")
+					.severe("Exception initializing Database.", e);
+			}
+		}
+		
+		@Override
+		public Connection getConnection() throws SQLException {
+			
+			if(transactionConnection.get() != null) {
+				return transactionConnection.get();
+			}else {
+				synchronized (pooledSource) {
+					Connection connection = pooledSource.getConnection();
+					addOpenConnection(connection);
+					return connection;
+				}
+			}				
+		}
+	};
+
+	return db;
+}</code>
+</pre>
+
+<h2>Using Custom Interfaces</h2>
+<p>
+Here are some examples of how to use your DB interface. 
+CFWSQL is partially supported for creating and caching statements, if you get a NullPointerException for some method calls, use CFWSQL.custom() instead. 
+Also values for statement placeholders('?') given to CFWSQLs will not be applied as you only get the SQL string.
+You will have to add the values manually when you execute your query with dbinterface.preparedExecute*().
+
+More about SQL Queries can be found on the page <a href="#" onclick="cfw_manual_loadPage('Development|Quickstart|Executing SQL');">Executing SQL</a>
+</p>
+
+<pre>
+<code>
+//----------------------------------------------------
+// Simple Query, be 'silent' and don't show errors to the user
+//----------------------------------------------------
+ResultSet result = db.preparedExecuteQuerySilent("SELECT * FROM MY_TABLE WHERE VALUE = ?", myValue);
+
+//----------------------------------------------------
+// SQL Query loaded from File
+//----------------------------------------------------
+ResultSet result = dbinterface.preparedExecuteQuery(
+	CFW.Files.readPackageResource(FeatureEMPWidgets.RESOURCE_PACKAGE, "emp_spm_monitor_autocomplete.sql"),
+	"%"+searchValue+"%",
+	"%"+searchValue+"%");
+
+//----------------------------------------------------
+// SQL Query created and cached with 
+//----------------------------------------------------
+String appleSQL = new CFWSQL(null)
+		.queryCache(Example.class, "SelectApplesSQL")
+		.custom("SELECT ID, CATEGORY, TYPE, NAME, COUNT FROM FRUITS ")
+		.where("CATEGORY", null) // value will be irrelevant
+		.and("TYPE", null) // value will be irrelevant
+		.orderbyDesc("NAME")
+		.getStatementCached();
+
+// Value of appleSQL
+// SELECT ID, CATEGORY, TYPE, NAME, COUNT FROM FRUITS  WHERE CATEGORY = ? AND TYPE = ? ORDER BY NAME DESC
+
+ResultSet result = dbinterface.preparedExecuteQuery(appleSQL,
+	"Fruit", // set value for CATEGORY placeholder
+	"Apple" // set value for TYPE placeholder
+	);
+	
+// Convert to JSON
+String json = dbinterface.resultSetToJSON(result);
+
+
+//----------------------------------------------------
+// SQL Query from file
+//----------------------------------------------------
+String appleSQL = new CFWSQL(null)
+		.queryCache(Example.class, "SelectApplesSQL")
+		.loadSQLResource(MyFeature.RESOURCE_PACKAGE, "example_file.sql", 
+		.getStatementCached();
+
+</code>
+</pre>

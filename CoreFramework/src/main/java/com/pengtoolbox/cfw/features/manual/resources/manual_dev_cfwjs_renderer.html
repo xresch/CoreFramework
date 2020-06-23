@@ -1,0 +1,201 @@
+<h2>Register a Renderer</h2>
+<p>
+Renderers are a standardarized way to display data based on a javascript object array.<br/>
+All renderers are created using the component CFWRenderer and can either return an HTML String or a JQuery object. 
+Here is an example of how to register a new renderer that renders a code block to display the data as JSON:
+</p>
+<pre>
+<code>CFW.render.registerRenderer("json",
+	new CFWRenderer(
+		function (renderDef) {
+			var wrapperDiv = $('&lt;div class="flex-grow-1"&gt;');
+			
+			var randomID = CFW.utils.randomString(16);
+			return wrapperDiv.append('&lt;pre id="json-'+randomID+'"&gt;&lt;code&gt;'+JSON.stringify(renderDef.data, null, 2)+'&lt;/code&gt;&lt;/pre&gt;&lt;script&gt;hljs.highlightBlock($("#json-'+randomID+'").get(0));&lt;/script&gt;');
+		}
+	)
+);</code>
+</pre>
+
+<h2>Use a Renderer</h2>
+<p>
+To use the renderer call the getRenderer() method with it's name as a parameter:
+</p>
+<pre>
+<code>var jsonRenderer = CFW.render.getRenderer('json');
+var jsonHTMLString = jsonRenderer.render(dataToRender);</code>
+</pre>
+
+<h2>Renderer Settings</h2>
+<p>
+The CFWRenderer component has the following default settings.
+A renderer can but doesn't have to use the settings.
+The following are the settings and their defaults, see comments for details:
+</p>
+<pre>
+<code>		 this.defaultRenderDefinition = {
+			// (Optional) name of the field that is used as the identifier of the data
+		 	idfield: null,
+		 	
+		 	// (Optional) names of the fields that are used for a titles. Takes the first field from the first object if null
+		 	titlefields: null,
+		 	
+		 	// (Optional) the delimiter used for multiple titles
+		 	titledelimiter: ' ',
+		 	
+		 	// (Optional) Names of the fields that should be rendered and in the current order. If null or undefined, will display all fields
+		 	visiblefields: null,
+		 	
+		 	// (Optional) Custom labels for fields, add them as "{fieldname}: {label}". If a label is not defined for a field, uses the capitalized field name
+		 	labels: {},
+		 	
+		 	// field containing the bootstrap style (primary, info, danger ...) that should be used as the background
+		 	bgstylefield: null,
+		 	
+		    // field containing the bootstrap style (primary, info, danger ...) that should be used as for texts
+		 	textstylefield: null,
+		 	
+		 	// functions that return a customized htmlString to display a customized format, add as "<fieldname>: function(record, value)".  Cannot return a JQuery object.
+		 	customizers: {},
+		 	
+		 	// array of functions that return html for buttons, add as "<fieldname>: function(record, id)". Cannot return a JQuery object.
+		 	actions: [ ],
+		 	
+			// list of functions that should be working with multiple items. fieldname will be used as the button label
+		 	bulkActions: null,
+		 	
+		 	// position of the multi actions, either top|bottom|both|none
+		 	bulkActionsPos: "top",
+		 	
+			// the data that should be rendered as an array
+		 	data: null,
+		 	
+		 	// settings specific for the renderer, add as "rendererSettings.{rendererName}.{setting}"
+		 	rendererSettings: {}
+		 };</code>
+</pre>
+
+
+<h2>Examples Settings</h2>
+<p>
+The minimal data you have to provide to a renderer is the data attribute, all other values have defaults, or the renderer have to handle null values.
+</p>
+<pre>
+<code>var rendererParamsMinimal = {
+	data: [
+		{id: 0, firstname: "Rick", lastname: "Astley", city: "Nirwana", postal_code: 8008, status: 'active'},
+		{id: 1, firstname: "Testika", lastname: "Testonia", city: "Manhattan", postal_code: 9000, status: 'active', bgstyle: 'success', textstyle: 'dark'},
+		{id: 2, firstname: "Theus", lastname: "De Nator", city: "Termi-Nation", postal_code: 666, status: 'blocked', bgstyle: 'danger', textstyle: 'dark'},
+	],
+};
+	var result = CFW.render.getRenderer('table').render(rendererParamsMinimal);</code>
+</pre>
+
+
+<p>
+Here is an example of settings that provide all the available settings:
+</p>
+<pre>
+<code>var rendererParamsFull = {
+	idfield: 'id',
+	bgstylefield: 'bgstyle',
+	textstylefield: 'textstyle',
+	titlefields: ['firstname', 'lastname'],
+	titledelimiter: ' ',
+	visiblefields: ['id', 'firstname', 'lastname', 'postal_code', 'status'],
+	labels: {
+		id: 'ID'
+	},
+	customizers: {
+		status: function(record, value) { return (value == 'active') ? '&lt;div class="badge badge-success"&gt;'+value+'&lt;/div&gt;' : '&lt;div class="badge badge-danger"&gt;'+value+'&lt;/div&gt;' }
+	},
+	actions: [ 
+		function (record, id){ return '&lt;button class="btn btn-sm btn-primary" onclick="alert(\'Edit record '+id+'\')"&gt;&lt;i class="fas fa-pen"&gt;&lt;/i&gt;&lt;/button&gt;'},
+		function (record, id){ return '&lt;button class="btn btn-sm btn-danger" onclick="alert(\'Delete record '+id+'\')"&gt;&lt;i class="fas fa-trash"&gt;&lt;/i&gt;&lt;/button&gt;'},
+	],
+	bulkActions: {
+		"Edit": function (elements, records, values){ alert('Edit records '+values.join(',')+'!'); },
+		"Delete": function (elements, records, values){ $(elements).remove(); },
+	},
+	bulkActionsPos: "both",
+	data: [
+		{id: 0, firstname: "Rick", lastname: "Astley", city: "Nirwana", postal_code: 8008, status: 'active'},
+		{id: 1, firstname: "Testika", lastname: "Testonia", city: "Manhattan", postal_code: 9000, status: 'active', bgstyle: 'success'},
+		{id: 2, firstname: "Theus", lastname: "De Natore", city: "Termi-Nation", postal_code: 666, status: 'blocked', bgstyle: 'danger'},
+		{id: 3, firstname: "Jane", lastname: "De Natore", city: "Termi-Nation", postal_code: 666, status: 'blocked', bgstyle: 'info', textstyle: 'white'},
+	],
+	rendererSettings: {
+		table: {narrow: true, filterable: true},
+		tiles: {sizefactor: 2, showlabels: true }
+	},
+};
+
+var table = CFW.render.getRenderer('table').render(rendererParamsFull);
+var tiles = CFW.render.getRenderer('tiles').render(rendererParamsFull);</code>
+</pre>
+
+
+<h2>Default Renderer</h2>
+
+<h3>Table</h3>
+<p>
+Table renderer will return a JQuery div-Element wrapping the table.<br />
+The following are the available settings with defaults.
+</p>
+<pre>
+<code>rendererParams.rendererSettings.table = {
+	// add a filter field above the table
+	filterable: true,
+	// make the table responsive
+	responsive: true,
+	// highlight hovered rows
+	hover: true,
+	//make the table striped
+	striped: true,
+	// narrow down the row high
+	narrow: false,
+	// stick the header on top when scrolling. Doesn't work when responsive is true
+	stickyheader: false, 
+	// if only a single object is in the data array, make a name/value table instead of creating a column for each 
+	verticalize: false
+}
+var tableDiv = CFW.render.getRenderer('table').render(rendererParams);</code>
+</pre>
+
+<h3>Tiles</h3>
+<p>
+The tiles renderer will return a JQuery div-Element containing all the tiles. It's main purpose is to display data as colored tiles. <br />
+The following are the available settings with defaults.
+</p>
+<pre>
+<code>rendererParams.rendererSettings.tiles = {
+	// size factor for the text in the tile, or tile size of labels are not shown
+	sizefactor: 1,
+	// show or hide labels
+	showlabels: false, 
+	// the border style of the tile, choose between: null | 'none' | 'round' | 'superround' | 'asymmetric' | 'superasymmetric' | 'ellipsis'
+	borderstyle: null
+	// the border that should be applied, like '1px solid black'
+	border: null
+};
+var tilesDiv = CFW.render.getRenderer('tiles').render(rendererParams);</code>
+</pre>
+
+<h3>Panels</h3>
+<p>
+The panels renderer will return a JQuery div-Element containing all the panels. <br />
+Each record will be rendered in it's own expandable panel.
+The renderer doesn't have any specific settings.
+</p>
+<pre>
+<code>var panelsDiv = CFW.render.getRenderer('panels').render(rendererParams);</code>
+</pre>
+
+<h3>JSON</h3>
+<p>
+JSON Renderer will return a JQuery div-Element wrapping a code block with the json representation of the data.<br />
+The renderer doesn't have any specific settings, also it will ignore all the renderer parameters except for the data field.
+</p>
+<pre>
+<code>var jsonDiv = CFW.render.getRenderer('json').render(rendererParams);</code>
+</pre>

@@ -1,0 +1,647 @@
+
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ **************************************************************************************************************/
+ :root {
+	--cfw-excellent: #28a438;
+	--cfw-good: #89bb35;
+	--cfw-warning: #efbf00;
+	--cfw-emergency: #eb8905;
+	--cfw-danger: #c70707;
+	
+	--cfw-blue: #0c62c0;
+    --cfw-indigo: #6610f2;
+    --cfw-purple: #8b43c0;
+    --cfw-pink: #e83e8c;
+    --cfw-red: #bb1b16;
+    --cfw-orange: #fd7e14;
+    --cfw-yellow: #fbca04;
+    --cfw-green: #0eaa0e;
+    --cfw-teal: #20c997;
+    --cfw-cyan: #0894be;
+    --cfw-white: #fff;
+    --cfw-gray: #939393;
+    --cfw-darkgray: #545455;
+    --cfw-black: #000;
+ }
+ 
+/*************************************************************************
+ * Bootstrap Theme extensions
+ *************************************************************************/
+.bg-cfw-excellent{ 		background-color: var(--cfw-excellent); }
+.bg-cfw-good{ 			background-color: var(--cfw-good); }
+.bg-cfw-warning{ 		background-color: var(--cfw-warning); }
+.bg-cfw-emergency{ 		background-color: var(--cfw-emergency); }
+.bg-cfw-danger{ 		background-color: var(--cfw-danger); }
+.bg-cfw-blue {			background-color: var(--cfw-blue); }
+.bg-cfw-indigo {		background-color: var(--cfw-indigo); }
+.bg-cfw-purple {		background-color: var(--cfw-purple); }
+.bg-cfw-pink {			background-color: var(--cfw-pink); }
+.bg-cfw-red {			background-color: var(--cfw-red); }
+.bg-cfw-orange {		background-color: var(--cfw-orange); }
+.bg-cfw-yellow {		background-color: var(--cfw-yellow); }
+.bg-cfw-green {			background-color: var(--cfw-green); }
+.bg-cfw-teal {			background-color: var(--cfw-teal); }
+.bg-cfw-cyan {			background-color: var(--cfw-cyan); }
+.bg-cfw-white {			background-color: var(--cfw-white); }
+.bg-cfw-gray {			background-color: var(--cfw-gray); }
+.bg-cfw-darkgray {		background-color: var(--cfw-darkgray); }
+.bg-cfw-black {			background-color: var(--cfw-black); }
+.bg-cfw-none {			background-color: none; }
+
+.text-cfw-excellent{ 		color: var(--cfw-excellent); }
+.text-cfw-good{ 			color: var(--cfw-good); }
+.text-cfw-warning{ 			color: var(--cfw-warning); }
+.text-cfw-emergency{ 		color: var(--cfw-emergency); }
+.text-cfw-danger{ 			color: var(--cfw-danger); }
+.text-cfw-blue {			color: var(--cfw-blue); }
+.text-cfw-indigo {			color: var(--cfw-indigo); }
+.text-cfw-purple {			color: var(--cfw-purple); }
+.text-cfw-pink {			color: var(--cfw-pink); }
+.text-cfw-red {				color: var(--cfw-red); }
+.text-cfw-orange {			color: var(--cfw-orange); }
+.text-cfw-yellow {			color: var(--cfw-yellow); }
+.text-cfw-green {			color: var(--cfw-green); }
+.text-cfw-teal {			color: var(--cfw-teal); }
+.text-cfw-cyan {			color: var(--cfw-cyan); }
+.text-cfw-white {			color: var(--cfw-white); }
+.text-cfw-gray {			color: var(--cfw-gray); }
+.text-cfw-darkgray {		color: var(--cfw-darkgray); }
+.text-cfw-black {			color: var(--cfw-black); }
+.text-cfw-none {			color: none; }
+
+.border-cfw-excellent{ 		border-color: var(--cfw-excellent); }
+.border-cfw-good{ 			border-color: var(--cfw-good); }
+.border-cfw-warning{ 		border-color: var(--cfw-warning); }
+.border-cfw-emergency{ 		border-color: var(--cfw-emergency); }
+.border-cfw-danger{ 		border-color: var(--cfw-danger); }
+.border-cfw-blue {			border-color: var(--cfw-blue); }
+.border-cfw-indigo {		border-color: var(--cfw-indigo); }
+.border-cfw-purple {		border-color: var(--cfw-purple); }
+.border-cfw-pink {			border-color: var(--cfw-pink); }
+.border-cfw-red {			border-color: var(--cfw-red); }
+.border-cfw-orange {		border-color: var(--cfw-orange); }
+.border-cfw-yellow {		border-color: var(--cfw-yellow); }
+.border-cfw-green {			border-color: var(--cfw-green); }
+.border-cfw-teal {			border-color: var(--cfw-teal); }
+.border-cfw-cyan {			border-color: var(--cfw-cyan); }
+.border-cfw-white {			border-color: var(--cfw-white); }
+.border-cfw-gray {			border-color: var(--cfw-gray); }
+.border-cfw-darkgray {		border-color: var(--cfw-darkgray); }
+.border-cfw-black {			border-color: var(--cfw-black); }
+.border-cfw-none {			border-color: none; }
+
+.table-cfw-excellent, .table-cfw-excellent th, .table-cfw-excellent td, .table-cfw-excellent thead, .table-cfw-excellent tbody, .table-hover .table-cfw-excellent:hover {		background-color: var(--cfw-excellent); }
+.table-cfw-good, .table-cfw-good th, .table-cfw-good td, .table-cfw-good thead, .table-cfw-good tbody, .table-hover .table-cfw-good:hover {		background-color: var(--cfw-good); }
+.table-cfw-warning, .table-cfw-warning th, .table-cfw-warning td, .table-cfw-warning thead, .table-cfw-warning tbody, .table-hover .table-cfw-warning:hover {		background-color: var(--cfw-warning); }
+.table-cfw-emergency, .table-cfw-emergency th, .table-cfw-emergency td, .table-cfw-emergency thead, .table-cfw-emergency tbody, .table-hover .table-cfw-emergency:hover {		background-color: var(--cfw-emergency); }
+.table-cfw-danger, .table-cfw-danger th, .table-cfw-danger td, .table-cfw-danger thead, .table-cfw-danger tbody, .table-hover .table-cfw-danger:hover {		background-color: var(--cfw-danger); }
+.table-cfw-blue, .table-cfw-blue th, .table-cfw-blue td, .table-cfw-blue thead, .table-cfw-blue tbody, .table-hover .table-cfw-blue:hover {		background-color: var(--cfw-blue); }
+.table-cfw-indigo, .table-cfw-indigo th, .table-cfw-indigo td, .table-cfw-indigo thead, .table-cfw-indigo tbody, .table-hover .table-cfw-indigo:hover {		background-color: var(--cfw-indigo); }
+.table-cfw-purple, .table-cfw-purple th, .table-cfw-purple td, .table-cfw-purple thead, .table-cfw-purple tbody, .table-hover .table-cfw-purple:hover {		background-color: var(--cfw-purple); }
+.table-cfw-pink, .table-cfw-pink th, .table-cfw-pink td, .table-cfw-pink thead, .table-cfw-pink tbody, .table-hover .table-cfw-pink:hover {		background-color: var(--cfw-pink); }
+.table-cfw-red, .table-cfw-red th, .table-cfw-red td, .table-cfw-red thead, .table-cfw-red tbody, .table-hover .table-cfw-red:hover {		background-color: var(--cfw-red); }
+.table-cfw-orange, .table-cfw-orange th, .table-cfw-orange td, .table-cfw-orange thead, .table-cfw-orange tbody, .table-hover .table-cfw-orange:hover {		background-color: var(--cfw-orange); }
+.table-cfw-yellow, .table-cfw-yellow th, .table-cfw-yellow td, .table-cfw-yellow thead, .table-cfw-yellow tbody, .table-hover .table-cfw-yellow:hover {		background-color: var(--cfw-yellow); }
+.table-cfw-green, .table-cfw-green th, .table-cfw-green td, .table-cfw-green thead, .table-cfw-green tbody, .table-hover .table-cfw-green:hover {		background-color: var(--cfw-green); }
+.table-cfw-teal, .table-cfw-teal th, .table-cfw-teal td, .table-cfw-teal thead, .table-cfw-teal tbody, .table-hover .table-cfw-teal:hover {		background-color: var(--cfw-teal); }
+.table-cfw-cyan, .table-cfw-cyan th, .table-cfw-cyan td, .table-cfw-cyan thead, .table-cfw-cyan tbody, .table-hover .table-cfw-cyan:hover {		background-color: var(--cfw-cyan); }
+.table-cfw-white, .table-cfw-white th, .table-cfw-white td, .table-cfw-white thead, .table-cfw-white tbody, .table-hover .table-cfw-white:hover {		background-color: var(--cfw-white); }
+.table-cfw-gray, .table-cfw-gray th, .table-cfw-gray td, .table-cfw-gray thead, .table-cfw-gray tbody, .table-hover .table-cfw-gray:hover {		background-color: var(--cfw-gray); }
+.table-cfw-darkgray, .table-cfw-darkgray th, .table-cfw-darkgray td, .table-cfw-darkgray thead, .table-cfw-darkgray tbody, .table-hover .table-cfw-darkgray:hover {	background-color: var(--cfw-darkgray); }
+.table-cfw-black, .table-cfw-black th, .table-cfw-black td, .table-cfw-black thead, .table-cfw-black tbody, .table-hover .table-cfw-black:hover {		background-color: var(--cfw-black); }
+
+ /*************************************************************************
+ * Bootstrap overwrite
+ *************************************************************************/
+.alert {
+    margin-bottom: 0px;
+}
+
+.modal-body{
+	overflow: auto;
+	max-height: 80%; 
+}
+
+/* make navbars same height*/
+.navbar {
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+/* make sure all top navbar items are always white*/
+.navbar-nav > li > a{
+	color: white;
+}
+
+/* Fix for making navbar scrolling*/
+/* .fixed-top .navbar-collapse {
+  max-height: 300px;
+  overflow-y: auto;
+} */
+
+.form-control::placeholder {
+    color: #969696;
+    opacity: 0.7; 
+    font-weight: 200;
+}
+
+/*************************************************************************
+ * Bootstrap Submenus and Menu Enhancements
+ *************************************************************************/
+.dropdown-submenu {
+  position: relative;
+}
+
+.dropdown-submenu a::after {
+  transform: rotate(-90deg);
+  position: absolute;
+  right: 6px;
+  top: .8em;
+}
+
+.dropdown-submenu .dropdown-menu {
+  top: 0;
+  left: 100%;
+  position: absolute;
+}
+
+.dropdown-menu .cfw-menuitem-label {
+  padding-right: 24px; 
+}
+
+.menu-item-icon-only .dropdown-item{
+	padding: 0.25rem 0.5rem;
+}
+
+/*************************************************************************
+ * Bootstrap Sidemenu
+ *************************************************************************/
+.nav-side-menu {
+  overflow: auto;
+  font-family: verdana;
+  font-size: 12px;
+  font-weight: 200;
+  top: 0px;
+  height: 100%;
+  color: #e1ffff;
+}
+
+.menu-content{
+	padding: 0px;
+}
+
+.nav-side-menu .brand {
+  background-color: #23282e;
+  line-height: 50px;
+  display: block;
+  text-align: center;
+  font-size: 14px;
+}
+.nav-side-menu .toggle-btn {
+  display: none;
+}
+.nav-side-menu ul,
+.nav-side-menu li {
+  list-style: none;
+  padding-inline-start: 0px;
+}
+
+.menu-content ul ul,
+.menu-content li ul{
+  margin-left: 20px;
+}
+
+
+.menu-content > ul,
+.menu-content > li {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+  line-height: 35px;
+  cursor: pointer;
+
+  /*    
+    .collapsed{
+       .arrow:before{
+                 font-family: 'Font Awesome 5 Free';
+                 content: "\f053";
+                 display: inline-block;
+                 padding-left:10px;
+                 padding-right: 10px;
+                 vertical-align: middle;
+                 float:right;
+            }
+     }
+*/
+}
+
+/* Closed arrow  */
+.nav-side-menu ul .arrow:before {
+  font-family: 'Font Awesome 5 Free';
+  content: "\f054";
+  font-weight: 900;
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+}
+
+/* opened Arrow */
+.nav-side-menu .show > div > .arrow:before {
+  font-family: 'Font Awesome 5 Free';
+  content: "\f078";
+  font-weight: 900;
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+}
+
+
+
+/* .nav-side-menu ul .sub-menu li:before,
+.nav-side-menu li .sub-menu li:before {
+  font-family: 'Font Awesome 5 Free';
+  content: "\f054";
+  font-weight: 900;
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: middle;
+} */
+
+.nav-side-menu ul .active,
+.nav-side-menu li .active {
+  /* border-left: 3px solid #d19b3d; */
+}
+.nav-side-menu ul .sub-menu li.active,
+.nav-side-menu li .sub-menu li.active {
+  color: #d19b3d;
+}
+.nav-side-menu ul .sub-menu li.active a,
+.nav-side-menu li .sub-menu li.active a {
+  color: #d19b3d;
+}
+.nav-side-menu ul .sub-menu > li,
+.nav-side-menu li .sub-menu > li {
+  border: none;
+  line-height: 28px;
+  border-bottom: 1px solid #23282e;
+  margin-left: 20px;
+}
+
+.nav-side-menu ul .sub-menu li:hover,
+.nav-side-menu li .sub-menu li:hover {
+  background-color: #020203;
+}
+
+.nav-side-menu li {
+  padding-left: 0px;
+  border-left: 3px solid #2e353d;
+  border-bottom: 1px solid #23282e;
+}
+.nav-side-menu li a {
+  text-decoration: none;
+  color: #e1ffff;
+}
+.nav-side-menu li a i {
+  padding-left: 10px;
+  width: 20px;
+  padding-right: 20px;
+}
+.nav-side-menu li:hover {
+  border-left: 3px solid #d19b3d;
+  background-color: #4f5b69;
+  -webkit-transition: all 1s ease;
+  -moz-transition: all 1s ease;
+  -o-transition: all 1s ease;
+  -ms-transition: all 1s ease;
+  transition: all 1s ease;
+}
+@media (max-width: 767px) {
+  .nav-side-menu {
+    position: relative;
+    width: 100%;
+  }
+  .nav-side-menu .toggle-btn {
+    display: block;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 10 !important;
+    padding: 3px;
+    width: 40px;
+    text-align: center;
+  }
+  .brand {
+    text-align: left !important;
+    font-size: 22px;
+    padding-left: 20px;
+    line-height: 50px !important;
+  }
+}
+@media (min-width: 767px) {
+  .nav-side-menu .menu-list .menu-content {
+    display: block;
+  }
+}
+
+ /*************************************************************************
+ * Default Layout
+ *************************************************************************/
+
+#cfw-html{
+	height: 100%;
+}
+
+#cfw-body{
+	height: 100%;
+}
+
+#cfw-logo{
+	width: 32px;
+	height: 32px;
+	margin-right: 10px;
+}
+#cfw-messages {
+	/* padding-top: 56px; */
+}
+
+#cfw-toasts-wrapper {
+    position: absolute;
+    height: 0px;
+    top: 0px;
+    right: 0px;
+}
+
+#cfw-toasts {
+    z-index: 2048;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding-left: 20px;
+}
+
+#cfw-content {
+	min-height: 90%;
+	padding: 40px 20px 20px 20px;
+}
+
+#cfw-container {
+
+}
+
+#cfw-footer {
+	padding: 20px;
+	min-height: 10%;
+	max-height: 200px;
+	background-color: black;
+}
+
+#cfw-footer a {
+	padding: 5px;
+	margin-left: 20px;
+	margin-right: 20px;
+	color: #ccc;
+}
+
+#cfw-login {
+    margin: auto;
+    max-width: 400px;
+    min-width: 300px;
+    padding-top: 100px;
+}
+
+#cfw-default-modal{
+	position: fixed;
+	-ms-overflow-style: none;
+}
+#cfw-default-modal::-webkit-scrollbar{
+	display: none;
+}
+
+#cfw-small-modal{
+	position: fixed;
+	-ms-overflow-style: none;
+}
+#cfw-small-modal::-webkit-scrollbar{
+	display: none;
+}
+
+#cfw-loader {
+	z-index: 1024;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    display: none;
+    background-color: inherit;
+    opacity: 75%;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.cfw-decorator {
+    position: absolute;
+    left: -5px;
+}
+
+.cfw-fa-box {
+    height: 18px;
+    width: 18px;
+    float: left;
+    margin-right: 5px;
+}
+
+.cfw-color-box {
+    height: 18px;
+    width: 18px;
+    float: left;
+    margin-right: 5px;
+    border: 1px solid var(--cfw-darkgray);
+}
+
+/*************************************************************************
+ * Autocomplete
+ *************************************************************************/
+.cfw-autocomplete {
+  /*the container must be positioned relative:*/
+  position: relative;
+  display: inline-block;
+}
+
+.autocomplete-items {
+  position: absolute;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  color: #333;
+  border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9;
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
+
+/*************************************************************************
+ * Flex Classes
+ *************************************************************************/
+
+.flex-row{ display: flex; }
+.flex-column{ display: flex; flex-direction: column;}
+
+.flex-wrap{ flex-wrap: wrap; }
+.flex-nowrap{ flex-wrap: nowrap; }
+
+.flex-align-stretch{align-items: stretch;}
+.flex-align-center{align-items: center;}
+
+.flex-justify-center{justify-content: center;}
+.flex-justify-evenly{justify-content: space-evenly;}
+
+.flex-default{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	align-content: center;
+}
+
+
+.flex-item-grow{
+	flex-grow: 1;
+	margin: 5px;
+}
+
+/*use a div with background-image attribute*/
+.flex-image{
+	min-width: 200px;
+	max-width: 500px;
+	min-height: 200px;
+	background-size: cover; 
+	background-position: center; 
+}
+
+/*************************************************************************
+ * Sticky
+ *************************************************************************/
+
+.cfw-sticky-th {
+    position: sticky;
+    top: 50px;
+    z-index: 999;
+    background: inherit;
+}
+
+/**************************************************************
+ * Scrollbar
+ **************************************************************/
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  direction: rtl;
+  
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--light);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--gray);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-dark);
+}
+
+/*************************************************************************
+ * max viewport width
+ *************************************************************************/
+mvw-5 { max-width: 5vw;}
+mvw-10 { max-width: 10vw;}
+mvw-15 { max-width: 15vw;} 
+mvw-20 { max-width: 20vw;}
+mvw-25 { max-width: 25vw;} 
+mvw-30 { max-width: 30vw;}
+mvw-35 { max-width: 35vw;} 
+mvw-40 { max-width: 40vw;}
+mvw-45 { max-width: 45vw;} 
+mvw-50 { max-width: 50vw;}
+mvw-55 { max-width: 55vw;} 
+mvw-60 { max-width: 60vw;}
+mvw-65 { max-width: 65vw;} 
+mvw-70 { max-width: 70vw;}
+mvw-75 { max-width: 75vw;} 
+mvw-80 { max-width: 80vw;}
+mvw-85 { max-width: 85vw;} 
+mvw-90 { max-width: 90vw;}
+mvw-95 { max-width: 95vw;} 
+mvw-100{ max-width: 100vw;} 
+
+/*************************************************************************
+ * word break and wrap
+ *************************************************************************/
+.word-break-word{ word-break: break-word; }
+.word-break-all{  word-break: break-all; }
+.word-break-keep{ word-break: keep-all; }
+.word-wrap-break{ word-wrap: break-word; }
+
+ 
+/*************************************************************************
+ * Cursors
+ *************************************************************************/
+.cursor-pointer{	cursor: pointer; }
+.cursor-wait{		cursor: wait; }
+.cursor-move{		cursor: move; }
+
+/*************************************************************************
+ * Rotate
+ *************************************************************************/
+.rotate-45{		transform: rotate(45deg);}
+.rotate-90{		transform: rotate(90deg);}
+.rotate-135{	transform: rotate(135deg);}
+.rotate-180{	transform: rotate(180deg);}
+.rotate-225{	transform: rotate(225deg);}
+.rotate-270{	transform: rotate(270deg);}
+.rotate-315{	transform: rotate(315deg);}
+.rotate-360{	transform: rotate(360deg);}
+
+/*************************************************************************
+ * CPU Sampling
+ *************************************************************************/
+ .cfw-cpusampling-percent-block{
+ 	float: left; 
+ 	width: 100px; 
+ 	height: 15px; 
+ 	padding-left: 5px; 
+ 	padding-right: 5px; 
+ 	margin-top: 3px;
+ }
+ 
+ .cfw-cpusampling-percent{
+ 	height: 100%;
+ }
+  
+

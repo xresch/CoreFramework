@@ -1,0 +1,45 @@
+
+<div id="cfw-dashboard-control-panel">
+	<h3 id="dashboardName" class="float-left mr-3 hideOnFullScreen"></h3>
+	<div class="btn-group hideOnFullScreen">
+		<button id="editButton" class="btn btn-sm btn-primary ml-2 d-none" onclick="cfw_dashboard_toggleEditMode();" title="Edit Dashboard"  >
+			<i class="fas fa-pen"></i>&nbsp;{!cfw_core_edit!}
+		</button>
+	</div>
+		<div class="btn-group hideOnFullScreen">
+		<button id="doneButton" class="btn btn-sm btn-primary ml-2 d-none" onclick="cfw_dashboard_toggleEditMode();" title="Done"  >
+			<i class="fas fa-check"></i>&nbsp;{!cfw_core_done!}
+		</button>
+	</div>
+	<div class="btn-group hideOnFullScreen">
+	  <button id="addWidget" class="btn btn-sm btn-success d-none"  title="Add Widget" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		<i class="fas fa-plus-circle"></i>&nbsp;{!cfw_dashboard_addwidget!}
+	  </button>
+	  <ul id="addWidgetDropdown" class="dropdown dropdown-menu">
+	    <li class="dropdown dropdown-submenu show"><a class="dropdown-toggle easter-egg-dropdown" id="cfwEasterEggDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">&nbsp;</a>
+	    	<ul class="dropdown-menu dropdown-submenu" aria-labelledby="cfwEasterEggDropdown" data-submenuof="Easter Eggs">
+	    	</ul>
+	    </li>
+	  </ul>
+	</div>
+	
+	<div class="btn-group hideOnFullScreen">
+	  <select id="refreshSelector" class="form-control form-control-sm" onchange="cfw_dashboard_setReloadInterval(this)" title="Set Refresh Time">
+			<option value="stop">{!cfw_core_reload!} {!cfw_core_off!}</option>
+			<option value="300000">5 {!cfw_core_minutes!}</option>
+			<option value="600000">10 {!cfw_core_minutes!}</option>
+			<option value="900000">15 {!cfw_core_minutes!}</option>
+			<option value="1800000">30 {!cfw_core_minutes!}</option>
+			<option value="3600000">60 {!cfw_core_minutes!}</option>
+		</select>
+	</div>
+	
+	<button id="fullscreenButton" class="btn btn-sm btn-primary ml-2 fullscreenButton" onclick="cfw_dashboard_toggleFullscreenMode();" title="Toggle Fullscreen"  >
+			<i id="fullscreenButtonIcon" class="fas fa-expand"></i>
+	</button>
+</div>
+
+<div class="grid-stack">
+
+  
+</div>
