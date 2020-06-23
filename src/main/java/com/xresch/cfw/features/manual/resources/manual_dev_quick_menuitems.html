@@ -1,0 +1,95 @@
+
+<p>
+You can add menu items by using the following methods:
+</p>
+<ul>
+	<li><strong>CFW.Registry.Components.addRegularMenuItem():&nbsp;</strong> Adds a new item to the regular menu. This while be shown in the navigation bar on the left side.</li>
+	<li><strong>CFW.Registry.Components.addAdminMenuItem():&nbsp;</strong> Adds a new item to the admin menu item. The admin menu item will will be displayed after the regular menu items if the user has the required permissions.</li>
+	<li><strong>CFW.Registry.Components.addAdminCFWMenuItem():&nbsp;</strong> Adds a new item to the admin menu item. These entries will be listed after the items added with addAdminMenuItem().</li>
+</ul>
+
+<h2>Add a Root Menu Item</h2>
+<p>
+To add a menu item as a root item to the regular menu, provide "null" as the second parameter(menuPath).
+</p>
+<pre>
+<code>CFW.Registry.Components.addRegularMenuItem(
+	(MenuItem)new MenuItem("Dashboards")
+		.faicon("fas fa-tachometer-alt")
+	, null);		
+</code>
+</pre>
+
+
+<h2>Add Permissions</h2>
+<p>
+If no permissions are defined, all the users have access to the menu item. If one or more permissions are added to the item, 
+any user that has at least one of the permissions has access to the menu item. Permissions of child items will be propagated to parent items.
+</p>
+<pre>
+<code>CFW.Registry.Components.addRegularMenuItem(
+	(MenuItem)new MenuItem("Dashboards")
+		.faicon("fas fa-tachometer-alt")
+		.addPermission(PERMISSION_DASHBOARD_VIEWER)
+		.addPermission(PERMISSION_DASHBOARD_CREATOR)
+	, null);		
+</code>
+</pre>
+
+<h2>Add Sub Menu Item</h2>
+<p>To add a sub menu, you have to provide a pipe separated string as the second parameter.
+If some of the items of the path do not exist, they will be created.
+</p>
+<pre>
+<code>// Add item Dashboards &gt;&gt; Dashboard List
+CFW.Registry.Components.addRegularMenuItem(
+	(MenuItem)new MenuItem("Dashboard List")
+		.faicon("fas fa-images")
+		.href("/app/dashboard/list")  // Look at this! The item has an href attribute.
+	, "Dashboards");
+	
+// Add item Dashboards &gt;&gt; Foo &gt;&gt; Bar &gt;&gt; Dashboard List
+CFW.Registry.Components.addRegularMenuItem(
+	(MenuItem)new MenuItem("Dashboard List")
+		.faicon("fas fa-images")
+		.href("/app/dashboard/list")
+	, "Dashboards | Foo | Bar");		
+</code>
+</pre>
+
+<h2>Dynamic Menu Item</h2>
+<p>
+Menu Items get created on user login and cached. If you want to create a menu item that is dynamic, 
+like a list of favorites or environments defined in the settings, you need to add a DynamicItemCreator to your item.
+Be aware that the dynamic item creators will be executed on every page load and might introduce a heavy overhead if not handled carfully.
+</p>
+<pre>
+<code>MenuItem environmentsMenu = (MenuItem)new MenuItem("Environments") 
+	.setDynamicCreator(new DynamicItemCreator() {		
+
+		@Override
+		public ArrayList&lt;HierarchicalHTMLItem&gt; createDynamicItems() {
+			
+			ArrayList&lt;AbstractContextSettings&gt; environments = CFW.DB.ContextSettings.getContextSettingsForType(Environment.SETTINGS_TYPE);
+			ArrayList&lt;HierarchicalHTMLItem&gt; childitems = new ArrayList&lt;HierarchicalHTMLItem&gt;();
+			
+			for(AbstractContextSettings current : environments) {
+				Environment spmEnv = (Environment)current;
+				childitems.add(
+					(MenuItem)new MenuItem(spmEnv.getDefaultObject().name())
+						.addPermission(PERMISSION_ENVIRONMENTS)
+						.href("/app/environments?env="+spmEnv.getDefaultObject().id()) 
+				);
+			}
+			return childitems;
+		}
+	});
+	
+environmentsMenu
+	.faicon("fas fa-grip-horizontal")
+	.addPermission(PERMISSION_ENVIRONMENTS);
+	
+// Add item Foo &gt;&gt; Bar &gt;&gt; Environments
+CFW.Registry.Components.addRegularMenuItem(environmentsMenu, "Foo | Bar");		
+</code>
+</pre>

@@ -181,6 +181,13 @@ public class FeatureManual extends CFWAppFeature {
 			);
 		
 		quickstart.addChild(
+				new ManualPage("Add Menu Items")
+					.faicon("fa fa-book")
+					.addPermission(PERMISSION_ADMIN_MANUAL)
+					.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "manual_dev_quick_menuitems.html")
+				);
+		
+		quickstart.addChild(
 				new ManualPage("Working with CFWObjects")
 					.faicon("fas fa-th-large")
 					.addPermission(PERMISSION_ADMIN_MANUAL)
