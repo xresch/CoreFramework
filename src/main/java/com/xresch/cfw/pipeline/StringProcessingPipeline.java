@@ -2,6 +2,7 @@ package com.xresch.cfw.pipeline;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.tests._master.WebTestMaster;
 
 class StringProcessingPipeline extends Pipeline<String, String> {
 	/*******************************************************************************
@@ -117,14 +118,14 @@ class StringProcessingPipeline extends Pipeline<String, String> {
 
 	public static void main(String... args) throws InterruptedException {
 		StringProcessingPipeline pipe = new StringProcessingPipeline();
-		CFW.Files.addAllowedPackage(FeatureCore.RESOURCE_PACKAGE);
+		CFW.Files.addAllowedPackage(WebTestMaster.RESOURCE_PACKAGE);
 
 		pipe.removeBlankLines()
 			.removeComments()
 			.trim()
 			//.grep("cfwT", false)
 			//.countLines()
-			.data(CFW.Files.readPackageResource(FeatureCore.RESOURCE_PACKAGE + ".test", "cfwjs_test.js").split("\\r\\n|\\n"))
+			.data(CFW.Files.readPackageResource(WebTestMaster.RESOURCE_PACKAGE + ".test", "cfwjs_test.js").split("\\r\\n|\\n"))
 			.execute(false);
 			
 		System.out.println(	

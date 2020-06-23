@@ -6,21 +6,20 @@ import org.junit.jupiter.api.Test;
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.tests._master.WebTestMaster;
 import com.xresch.cfw.utils.CFWFiles;
 
 public class TestFileUtils {
-	
-	public static final String INTERNAL_RESOURCES_PATH = "com/pengtoolbox/cfw/resources";
-	
+		
 	@Test
 	public void testFileAssembly() {
 		
 		FileAssembly assembler = new FileAssembly("common", "js");
 		
-		CFWFiles.addAllowedPackage(FeatureCore.RESOURCE_PACKAGE);
+		CFWFiles.addAllowedPackage(WebTestMaster.RESOURCE_PACKAGE);
 		
 		String assemblyName = assembler.addFile(FileDefinition.HandlingType.FILE, "./testdata", "test.css")
-				.addFile(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE +".test", "junit_test.js")
+				.addFile(FileDefinition.HandlingType.JAR_RESOURCE, WebTestMaster.RESOURCE_PACKAGE, "junit_test.js")
 				.addFileContent("/* just some comment */")
 				.assemble()
 				.cache()

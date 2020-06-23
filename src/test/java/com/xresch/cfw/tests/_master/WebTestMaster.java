@@ -15,6 +15,7 @@ public class WebTestMaster {
 
 	protected static CFWApplicationExecutor APP;
 	protected static String TEST_URL;
+	public static String RESOURCE_PACKAGE = "com.xresch.cfw.tests.assets.resources";
 		
 	public static void addServlet(Class<? extends Servlet> clazz, String contextPath) {
 		
@@ -75,7 +76,7 @@ public class WebTestMaster {
 			@Override
 			public void register() {
 				// TODO Auto-generated method stub
-				
+				CFW.Files.addAllowedPackage(RESOURCE_PACKAGE);
 			}
 			
 			@Override

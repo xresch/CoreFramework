@@ -16,6 +16,7 @@ import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.tests._master.WebTestMaster;
 
 public class GeneralTestServlet extends HttpServlet
 {
@@ -35,14 +36,14 @@ public class GeneralTestServlet extends HttpServlet
 		CFWLog log = new CFWLog(logger).method("doGet");
 		
 		HTMLResponse html = new HTMLResponse("Test Page");
-		html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE+".test", "cfwjs_test.js"));
+		html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, WebTestMaster.RESOURCE_PACKAGE, "cfwjs_test.js"));
 		StringBuffer content = html.getContent();
 		
 		//--------------------------
 		// Add single javascripts
 		//--------------------------
 		html.addJSFileBottomSingle(new FileDefinition(FileDefinition.HandlingType.FILE, "/resources/js", "custom.js"));
-		html.addJSFileBottomSingle(new FileDefinition(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE+".test", "junit_test.js"));
+		html.addJSFileBottomSingle(new FileDefinition(FileDefinition.HandlingType.JAR_RESOURCE, WebTestMaster.RESOURCE_PACKAGE, "junit_test.js"));
 		html.addJavascriptCode("/*Test*/Math.random();");
 		
 		//--------------------------

@@ -3,13 +3,14 @@ package com.xresch.cfw._main;
 import java.util.Locale;
 import java.util.logging.Logger;
 
-import com.xresch.cfw.tests.assets.servlets.FormTestServlet;
-import com.xresch.cfw.tests.assets.servlets.GeneralTestServlet;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.tests._master.WebTestMaster;
+import com.xresch.cfw.tests.assets.servlets.FormTestServlet;
+import com.xresch.cfw.tests.assets.servlets.GeneralTestServlet;
 
 public class _MainForTesting implements CFWAppInterface {
 		
@@ -33,6 +34,7 @@ public class _MainForTesting implements CFWAppInterface {
 	@Override
 	public void register() {
 		
+		CFW.Files.addAllowedPackage(WebTestMaster.RESOURCE_PACKAGE);
 		CFW.Localization.registerLocaleFile(Locale.ENGLISH, "/general", new FileDefinition(HandlingType.FILE, "./testdata", "testlang_en.properties"));
 		
 		CFW.Registry.Components.addRegularMenuItem(
