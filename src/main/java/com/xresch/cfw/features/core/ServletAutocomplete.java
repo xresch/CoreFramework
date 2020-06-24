@@ -66,8 +66,12 @@ public class ServletAutocomplete extends HttpServlet
 		// Execute Autocomplete Handler
 		//--------------------------------------------
     	if(field.getAutocompleteHandler() != null) {
-    		LinkedHashMap<Object, Object> suggestions = field.getAutocompleteHandler().getAutocompleteData(request, searchstring);
-    		json.getContent().append(CFW.JSON.toJSON(suggestions));
+    		AutocompleteResult suggestions = field.getAutocompleteHandler().getAutocompleteData(request, searchstring);
+    		if(suggestions != null) {
+    			json.getContent().append(suggestions.toJson());
+    		}else {
+    			json.getContent().append("null");
+    		}
     	}else {
     		json.setSuccess(false);
     		new CFWLog(logger)

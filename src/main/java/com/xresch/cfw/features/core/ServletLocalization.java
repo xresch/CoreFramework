@@ -39,7 +39,7 @@ public class ServletLocalization extends HttpServlet
 		// Fetch LanguagePack
 		JSONResponse json = new JSONResponse();
 		String localeIdentifier = request.getParameter("id");
-		Properties languagePack = CFW.Localization.getLanguagePackeByIdentifier(localeIdentifier);
+		Properties languagePack = CFW.Localization.getLanguagePackByIdentifier(localeIdentifier);
 
 		if(languagePack == null) {
 			json.setSuccess(false);

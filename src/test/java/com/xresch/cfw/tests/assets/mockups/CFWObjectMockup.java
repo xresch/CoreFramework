@@ -6,11 +6,12 @@ import java.util.LinkedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.datahandling.CFWAutocompleteHandler;
 import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.core.AutocompleteList;
+import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.validation.LengthValidator;
 
 public class CFWObjectMockup extends CFWObject{
@@ -45,39 +46,49 @@ public class CFWObjectMockup extends CFWObject{
 			.addAttribute("maxTags", "20")
 			.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
 				
-				public LinkedHashMap<Object, Object> getAutocompleteData(HttpServletRequest request, String inputValue) {
-					LinkedHashMap<Object, Object>  array = new LinkedHashMap<Object, Object>() ;
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+					AutocompleteList list = new AutocompleteList();
+					
 					for(int i = 0; i < this.getMaxResults(); i++ ) {
 						String tag = "Tag_"+inputValue+"_"+i;
-						array.put(tag, tag);
+						list.addItem(tag);
 					}
-					return array;
+					return new AutocompleteResult(list);
 				}
 			});
 	
 	private CFWField<LinkedHashMap<String,String>> tagsselector = CFWField.newTagsSelector("JSON_TAGS_SELECTOR")
-			.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
+			.setAutocompleteHandler(new CFWAutocompleteHandler() {
 				
-				public LinkedHashMap<Object, Object> getAutocompleteData(HttpServletRequest request, String inputValue) {
-					LinkedHashMap<Object, Object>  array = new LinkedHashMap<Object, Object>() ;
-					for(int i = 0; i < 25; i++ ) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+					AutocompleteList list = new AutocompleteList();
+					for(int i = 0; i < 10; i++ ) {
 						String tag = inputValue+"_"+i;
-						array.put("key_"+tag, "Label_"+tag);
+						list.addItem("key_"+tag, "Label_"+tag);
 					}
-					return array;
+					return new AutocompleteResult(list);
 				}
 			});
 	
 	private CFWField<String> autocomplete = CFWField.newString(FormFieldType.TEXT, "AUTOCOMPLETE")
 			.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
 				
-				public LinkedHashMap<Object, Object> getAutocompleteData(HttpServletRequest request, String inputValue) {
-					LinkedHashMap<Object, Object>  array = new LinkedHashMap<Object, Object>() ;
-					for(int i = 0; i < 25; i++ ) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+					AutocompleteList list = new AutocompleteList();
+					for(int i = 0; i < 10; i++ ) {
 						String tag = "Test_"+inputValue+"_"+i;
-						array.put(tag, tag);
+						list.addItem(tag);
 					}
-					return array;
+					
+					AutocompleteList list2 = new AutocompleteList();
+					for(int i = 0; i < 10; i++ ) {
+						String tag = "Foobar_"+inputValue+"_"+i;
+						list2.addItem(tag, tag, "Some example description that should be added.");
+					}
+					
+					return new AutocompleteResult(list)
+							.addList(list2)
+							.setHTMLDescription("<p>This is your HTML Description. Feel free to add some stuff like a list:<p <ol><li>Do this</li><li>Do that</li><li>Do even more...</li></ol>");
 				}
 			});
 	

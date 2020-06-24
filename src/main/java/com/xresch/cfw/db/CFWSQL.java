@@ -15,6 +15,8 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWObject.ForeignKeyDefinition;
+import com.xresch.cfw.features.core.AutocompleteList;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -1245,7 +1247,7 @@ public class CFWSQL {
 	}
 	
 	/***************************************************************
-	 * Execute the Query and gets the result as a string array list.
+	 * Execute the Query and gets the result as a LinkedHashMap.
 	 ***************************************************************/
 	public LinkedHashMap<Object, Object> getAsLinkedHashMap(Object keyColumnName, Object valueColumnName) {
 		
@@ -1275,6 +1277,39 @@ public class CFWSQL {
 		}
 		
 		return resultMap;
+		
+	}
+	
+	/***************************************************************
+	 * Execute the Query and gets the result as a string array list.
+	 ***************************************************************/
+	public AutocompleteResult getAsAutocompleteResult(Object keyColumnName, Object valueColumnName) {
+		
+		AutocompleteList list = new AutocompleteList();
+		if(this.execute()) {
+			
+			if(result == null) {
+				return new AutocompleteResult();
+			}
+			
+			try {
+				while(result.next()) {
+					Object key = result.getObject(keyColumnName.toString());
+					Object value = result.getObject(valueColumnName.toString());
+					list.addItem(key, value);
+				}
+			} catch (SQLException e) {
+				new CFWLog(logger)
+				.method("getAsLinkedHashMap")
+				.severe("Error reading object from database.", e);
+				
+			}finally {
+				CFWDB.close(result);
+			}
+			
+		}
+		
+		return new AutocompleteResult(list);
 		
 	}
 		

@@ -1,10 +1,12 @@
-package com.xresch.cfw.datahandling;
+package com.xresch.cfw.features.core;
 
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
 
 public class CFWAutocompleteHandlerDefault extends CFWAutocompleteHandler {
@@ -22,11 +24,11 @@ public class CFWAutocompleteHandlerDefault extends CFWAutocompleteHandler {
 		this.clazz = clazz;
 	}
 	@Override
-	public LinkedHashMap<Object, Object> getAutocompleteData(HttpServletRequest request, String inputValue)  {
+	public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue)  {
 		
 		CFWField parent = this.getParent();
 		String fieldname = parent.getName();
-		LinkedHashMap<Object, Object> result = null;
+		AutocompleteResult result = null;
 		if( !(parent.getValue() instanceof Object[])) {
 			try {
 				result = clazz.newInstance()
@@ -34,7 +36,8 @@ public class CFWAutocompleteHandlerDefault extends CFWAutocompleteHandler {
 					.whereLike(fieldname, "%"+inputValue+"%")
 					.orderby(fieldname)
 					.limit(this.getMaxResults())
-					.getAsLinkedHashMap(fieldname, fieldname);
+					.getAsAutocompleteResult(fieldname, fieldname);
+				
 			} catch (Exception e) {
 				new CFWLog(logger)
 				.method("getAutocompleteData")

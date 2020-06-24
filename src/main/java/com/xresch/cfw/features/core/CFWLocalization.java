@@ -161,7 +161,7 @@ public class CFWLocalization {
 	/******************************************************************************************
 	 * 
 	 ******************************************************************************************/
-	public static Properties getLanguagePackeByIdentifier(String localeIdentifier) {
+	public static Properties getLanguagePackByIdentifier(String localeIdentifier) {
 		return languageCache.get(localeIdentifier);
 	}
 	/******************************************************************************************

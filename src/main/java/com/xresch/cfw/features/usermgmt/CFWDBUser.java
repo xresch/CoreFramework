@@ -5,11 +5,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.dashboard.Dashboard;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -416,10 +414,10 @@ public class CFWDBUser {
 	 * @param maxResults
 	 * @return true if exists, false otherwise or in case of exception.
 	 ****************************************************************/
-	public static LinkedHashMap<Object, Object> autocompleteUser(String searchValue, int maxResults) {
+	public static AutocompleteResult autocompleteUser(String searchValue, int maxResults) {
 		
 		if(Strings.isNullOrEmpty(searchValue)) {
-			return new LinkedHashMap<Object, Object>();
+			return new AutocompleteResult();
 		}
 		
 		return new User()
@@ -429,7 +427,7 @@ public class CFWDBUser {
 			.whereLike(UserFields.USERNAME.toString(), "%"+searchValue+"%")
 			.and().not().is(UserFields.PK_ID, CFW.Context.Request.getUser().id())
 			.limit(maxResults)
-			.getAsLinkedHashMap(UserFields.PK_ID.toString(), 
+			.getAsAutocompleteResult(UserFields.PK_ID.toString(), 
 								UserFields.USERNAME.toString());
 		
 	}

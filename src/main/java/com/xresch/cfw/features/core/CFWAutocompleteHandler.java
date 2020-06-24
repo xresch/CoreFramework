@@ -1,8 +1,10 @@
-package com.xresch.cfw.datahandling;
+package com.xresch.cfw.features.core;
 
 import java.util.LinkedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
+
+import com.xresch.cfw.datahandling.CFWField;
 
 /**************************************************************************************************************
  * 
@@ -27,7 +29,7 @@ public abstract class CFWAutocompleteHandler {
 	 * @param request 
 	 * @return JSON string
 	 *******************************************************************************/
-	public abstract LinkedHashMap<Object, Object> getAutocompleteData(HttpServletRequest request, String searchValue);
+	public abstract AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue);
 
 	public int getMaxResults() {
 		return maxResults;

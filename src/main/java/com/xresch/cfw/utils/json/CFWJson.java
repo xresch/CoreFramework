@@ -191,6 +191,7 @@ public class CFWJson {
 	 *************************************************************************************/
 	public static void addObject(JsonObject target, String propertyName, Object object) {
 		if(object instanceof String) 			{	target.addProperty(propertyName, (String)object); }
+		else if(object instanceof JsonElement) 	{	target.add(propertyName, (JsonElement)object); }
 		else if(object instanceof Number) 		{	target.addProperty(propertyName, (Number)object); }
 		else if(object instanceof Boolean) 		{	target.addProperty(propertyName, (Boolean)object); }
 		else if(object instanceof Character) 	{	target.addProperty(propertyName, (Character)object); }
@@ -199,7 +200,6 @@ public class CFWJson {
 		else if(object instanceof Blob) 		{	target.addProperty(propertyName, ((Blob)object).toString()); }
 		else if(object instanceof Timestamp) 	{	target.addProperty(propertyName, ((Timestamp)object).getTime()); }
 		else if(object instanceof OffsetDateTime) {	target.addProperty(propertyName, ((OffsetDateTime)object).toInstant().toEpochMilli()); }
-		else if(object instanceof JsonElement) 	{	target.add(propertyName, (JsonElement)object); }
 		else if(object instanceof Object[]) 	{	target.add(propertyName, CFW.JSON.arrayToJsonArray((Object[])object)); }
 		else {	
 			target.add(propertyName, gsonInstance.toJsonTree(object)); 

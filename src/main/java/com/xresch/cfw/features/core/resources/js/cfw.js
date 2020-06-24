@@ -174,6 +174,7 @@ function cfw_initializeTagsField(fieldID, maxTags){
 		maxChars: 1024,
 		trimValue: true,
 		allowDuplicates: false,
+		addOnBlur: false
 //		confirmKeys: [188, 13]
 	});
 	
@@ -186,6 +187,8 @@ function cfw_initializeTagsField(fieldID, maxTags){
 			this.value = '';
 		}
 	});
+	
+	
 	
 }
 /**************************************************************************************
@@ -230,16 +233,17 @@ function cfw_initializeTagsSelectorField(fieldID, maxTags, values){
  * @param fieldID the name of the field
  * @return nothing
  *************************************************************************************/
-function cfw_initializeAutocomplete(formID, fieldName, maxResults, array){
+function cfw_autocompleteInitialize(formID, fieldName, maxResults, array){
 		
-	var currentFocus;
+	CFW.global.autocompleteFocus = -1;
 	var $input = $("#"+fieldName);
 	
 	if($input.attr('data-role') == "tagsinput"){
 		$input = $("#"+fieldName+"-tagsinput")
 	}
+	
 	var inputField = $input.get(0);
-	var autocompleteID = inputField.id + "-autocomplete-list";
+	var autocompleteID = inputField.id + "-autocomplete";
 	
 	// For testing
 	//var array = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla"];
@@ -249,7 +253,7 @@ function cfw_initializeAutocomplete(formID, fieldName, maxResults, array){
 	// ============
 	// execute a function when someone writes in the text field:
 	//--------------------------------------------------------------
-	if(array != null || array != undefined){
+	if(array != null){
 		$input.on('input', function(e) {
 			
 			var filteredArray = [];
@@ -262,19 +266,19 @@ function cfw_initializeAutocomplete(formID, fieldName, maxResults, array){
 			   	var currentValue = array[i];
 			    
 			   	if (currentValue.toUpperCase().indexOf(searchString.toUpperCase()) >= 0) {
-			   		filteredArray.push(currentValue);
+			   		filteredArray.push({value: currentValue, label: currentValue});
 			   	}
 			}
 			//----------------------------
 		    // Show AutoComplete	
-			showAutocomplete(this, filteredArray);
+			cfw_autocompleteShow(this, {lists:[filteredArray], description: null});
 		});
 	}
 	
 	//--------------------------------------------------------------
 	// DYNAMIC SERVER SIDE AUTOCOMPLETE
 	//--------------------------------------------------------------
-	if(array == null || array == undefined){
+	if(array == null){
 		$input.on('input', function(e) {
 			
 			// use a count and set timeout to wait for the user 
@@ -295,7 +299,7 @@ function cfw_initializeAutocomplete(formID, fieldName, maxResults, array){
 					
 					cfw_postJSON('/cfw/autocomplete', params, 
 						function(data) {
-							showAutocomplete(inputField, data.payload);
+							cfw_autocompleteShow(inputField, data.payload);
 						})
 				},
 				500);
@@ -307,23 +311,27 @@ function cfw_initializeAutocomplete(formID, fieldName, maxResults, array){
 	// execute a function presses a key on the keyboard
 	//--------------------------------------------------------------
 	$input.on('keydown',  function(e) {
-		var itemList = document.getElementById(autocompleteID);
-		var itemArray;
 		
-		if (itemList){ itemArray = itemList.getElementsByTagName("div")};
+
+		var itemList = $("#"+autocompleteID);
+		var items;
 		
+		if (itemList != null && itemList.length > 0){ 
+			items = itemList.find(".autocomplete-item")
+		};
+
 		//---------------------------
 		// Down Arrow
 		if (e.keyCode == 40) {
-			  currentFocus++;
-			  markActiveItem(itemArray);
+			  CFW.global.autocompleteFocus++;
+			  markActiveItem(items);
 			  return;
 		}
 		//---------------------------
 		// Up Arrow
 		if (e.keyCode == 38) { 
-			  currentFocus--;
-			  markActiveItem(itemArray);
+			  CFW.global.autocompleteFocus--;
+			  markActiveItem(items);
 			  return;
 		}
 		
@@ -335,136 +343,220 @@ function cfw_initializeAutocomplete(formID, fieldName, maxResults, array){
 			if($input.attr('placeholder') != "Tags"){
 				e.preventDefault();
 			}
-			if (currentFocus > -1) {
+			if (CFW.global.autocompleteFocus > -1) {
 				/* and simulate a click on the "active" item. */
-				if (itemList) itemArray[currentFocus].click();
+				if (itemList) items.eq(CFW.global.autocompleteFocus).click();
 			}else{
 				// Close if nothing selected
-				closeAllAutocomplete();
+				cfw_autocompleteCloseAll();
 			}
 		}
 	});
 	
-	//--------------------------------------------------------------
-	// SHOW AUTOCOMPLETE
-	//--------------------------------------------------------------
-	function showAutocomplete(inputField, values){
-		//----------------------------
-	    // Initialize and Cleanup
-		var itemList;
-		var searchString = inputField.value;
-		var autocompleteID = inputField.id + "-autocomplete-list";
-		var isTagsselector = false;
-		
-		if(inputField.id != null && inputField.id.endsWith('-tagsinput')){
-			isTagsselector = $(inputField).parent().siblings('input').hasClass('cfw-tags-selector');
-		}
-		
-	    closeAllAutocomplete();
-	    if (!searchString) { return false;}
-	    
-	    //----------------------------
-	    // Create Item List
-	    var itemList = document.createElement("DIV");
-	    itemList.setAttribute("id", autocompleteID);
-	    itemList.setAttribute("class", "autocomplete-items col-sm");
-	    
-	    inputField.parentNode.appendChild(itemList);
-	    
-	    console.log(values);
-	    //----------------------------
-	    // Iterate values object
-	    for (key in values) {
-	    	
-		   	var currentValue = key;
-		   	var label = ""+values[key];
-		   			
-			//----------------------------
-			// Create Item
-			var item = document.createElement("DIV");
-			
-			// make the matching letters bold:
-			var index = label.toUpperCase().indexOf(searchString.toUpperCase());
-			if(index == 0){
-				item.innerHTML = "<strong>" + label.substr(0, searchString.length) + "</strong>";
-				item.innerHTML += label.substr(searchString.length);
-			}else if(index > 0){
-				var part1 = label.substr(0, index);
-				var part2 = label.substr(index, searchString.length);
-				var part3 = label.substr(index+searchString.length);
-				item.innerHTML = part1 + "<strong>" +part2+ "</strong>" +part3;
-			}else {
-				item.innerHTML = label;
-			}
-			
-			//-----------------------
-			// Create Field
-			item.innerHTML += '<input type="hidden" value="'+currentValue+'" data-label="'+label+'" data-tagsinput="'+isTagsselector+'">';
-			
-			item.addEventListener("click", function(e) { 
-				var element = $(this).find('input');
-				var value = element.val();
-				var label = element.data('label');
-				var isTagsselector = element.data('tagsinput');
-				
-				if(!isTagsselector){
-					inputField.value = value;
-					closeAllAutocomplete();
-				}else{
-					$(inputField).parent().siblings('input').tagsinput('add', { "value": value , "label": label });
-					inputField.value = '';
-					closeAllAutocomplete();
-				}
-			});
-			itemList.appendChild(item);
-	        
-	    }
-	}
+
 	
 	//--------------------------------------------------------------
 	// a function to classify an item as "active"
 	//--------------------------------------------------------------
-	function markActiveItem(itemArray) {
-		if (!itemArray) return false;
+	function markActiveItem(items) {
+		if (!items) return false;
 		/* start by removing the "active" class on all items: */
-		removeActiveClass(itemArray);
-		if (currentFocus >= itemArray.length) currentFocus = 0;
-		if (currentFocus < 0) currentFocus = (itemArray.length - 1);
+		removeActiveClass(items);
+		if (CFW.global.autocompleteFocus >= items.length) CFW.global.autocompleteFocus = 0;
+		if (CFW.global.autocompleteFocus < 0) CFW.global.autocompleteFocus = (items.length - 1);
 		/* add class "autocomplete-active": */
-		itemArray[currentFocus].classList.add("autocomplete-active");
+		items.eq(CFW.global.autocompleteFocus).addClass("autocomplete-active");
 	}
 	
 	//--------------------------------------------------------------
 	// a function to remove the "active" class from all 
 	// autocomplete items.
 	//--------------------------------------------------------------
-	function removeActiveClass(itemArray) {
-		  for (var i = 0; i < itemArray.length; i++) {
-			  itemArray[i].classList.remove("autocomplete-active");
-		  }
+	function removeActiveClass(items) {
+		items.removeClass("autocomplete-active");
 	}
 	
-	//--------------------------------------------------------------
-	// close all autocomplete lists in the document, except the one 
-	// passed as an argument.
-	//--------------------------------------------------------------
-	function closeAllAutocomplete(elmnt) {	
-		
-		currentFocus = -1;
-	
-		var x = document.getElementsByClassName("autocomplete-items");
-		for (var i = 0; i < x.length; i++) {
-			  if (elmnt != x[i] && elmnt != inputField) {
-				  x[i].parentNode.removeChild(x[i]);
-			  }
-		}
-	}
-	
-	/* execute a function when someone clicks in the document: */
-	document.addEventListener("click", function (e) {
-	    closeAllAutocomplete(e.target);
-	});
+
 }
+
+/**************************************************************************************
+ * close all autocomplete lists in the document.
+ *************************************************************************************/
+function cfw_autocompleteCloseAll() {	
+	CFW.global.autocompleteFocus = -1;
+	$('.autocomplete-wrapper').remove();
+}
+
+/* execute a function when someone clicks in the document: */
+document.addEventListener("click", function (e) {
+    cfw_autocompleteCloseAll();
+});
+
+/**************************************************************************************
+ * Show autocomplete
+ * @param inputField domElement to show the autocomplete for.
+ * @param autocompleteResults JSON object with the structure:
+  {
+	"lists": [
+		[
+			{"value": "Value0", "label": "Label0", "description": "some description or null" },
+			{"value": "Value1", "label": "Label1", "description": "some description or null" },
+			{...}
+		],
+		[
+			{"value": "AnotherValue0", "label": "AnotherLabel0", "description": "some description or null" },
+			{"value": "AnotherValue1", "label": "AnotherLabel1", "description": "some description or null" },
+			{...}
+		],
+		[...]
+	],
+	"description": "<p>This is your HTML Description. Feel free to add some stuff like a list:<p <ol><li>Do this</li><li>Do that</li><li>Do even more...</li></ol>"
+}
+ *************************************************************************************/
+function cfw_autocompleteShow(inputField, autocompleteResults){
+	//----------------------------
+    // Initialize and Cleanup
+	var searchString = inputField.value;
+	var autocompleteID = inputField.id + "-autocomplete";
+	
+	if(inputField.id != null && inputField.id.endsWith('-tagsinput')){
+		isTagsselector = $(inputField).parent().siblings('input').hasClass('cfw-tags-selector');
+	}
+	
+    cfw_autocompleteCloseAll();
+    if (!searchString) { return false;}
+    
+    //----------------------------
+    // Create Multiple Item Lists
+    var autocompleteWrapper = $('<div id="'+autocompleteID+'" class="autocomplete-wrapper">');
+    	
+    var multipleLists = $('<div class="autocomplete-multilist d-flex flex-row">');
+    
+    for(key in autocompleteResults.lists){
+    	var current = autocompleteResults.lists[key];
+    	 multipleLists.append(cfw_autocompleteCreateItemList(inputField, current));
+    }
+    
+    autocompleteWrapper.append(multipleLists);
+	
+    //----------------------------
+    // Add Description
+	if(autocompleteResults.description != null){
+		var description = $('<div class="autocomplete-description">');
+		description.html(autocompleteResults.description);
+		
+		//Do not close autocomplete when clicking into description.
+		description.on("click", function(e) {
+			e.stopPropagation();
+		});
+		
+		$(inputField).parent().append(description);
+	}
+	 autocompleteWrapper.append(description);
+	 
+	 
+	$(inputField).parent().append(autocompleteWrapper);
+	
+}
+
+/**************************************************************************************
+ * Creates a list for the autocomplete multilist.
+ * @param inputField domElement to show the autocomplete for.
+ * @param values an array containing elements like:
+ *    {"value": "Value0", "label": "Label0", "description": "some description or null" }
+ * 
+ *************************************************************************************/
+function cfw_autocompleteCreateItemList(inputField, values){
+	//----------------------------
+    // Initialize and Cleanup
+	var searchString = inputField.value;
+	var autocompleteID = inputField.id + "-autocomplete-list";
+	var isTagsInput = false;
+	var isTagsselector = false;
+
+	if(inputField.id != null && inputField.id.endsWith('-tagsinput')){
+		isTagsInput = true;
+		isTagsselector = $(inputField).parent().siblings('input').hasClass('cfw-tags-selector');
+	}
+	
+	var itemList =  $("<div>");
+	
+	itemList.attr("id", autocompleteID);
+	itemList.addClass("autocomplete-list flex-fill");
+			
+	console.log(values);
+	//----------------------------
+	// Iterate values object
+	for (key in values) {
+		
+	   	var currentValue = values[key].value;
+	   	var label = ""+values[key].label;
+		var description = values[key].description;	
+		
+		//----------------------------
+		// Create Item
+		var item = $('<div class="autocomplete-item">');
+		
+		// make the matching letters bold:
+		var index = label.toUpperCase().indexOf(searchString.toUpperCase());
+		if(index == 0){
+			item.append(
+				"<strong>" + label.substr(0, searchString.length) + "</strong>"
+				+ label.substr(searchString.length)
+				);
+		}else if(index > 0){
+			var part1 = label.substr(0, index);
+			var part2 = label.substr(index, searchString.length);
+			var part3 = label.substr(index+searchString.length);
+			item.append(part1 + "<strong>" +part2+ "</strong>" +part3);
+		}else {
+			item.append(label);
+		}
+		
+		if(description != null){
+			item.append('<p>'+description+'</p>');
+		}
+		
+		//-----------------------
+		// Create Field
+		item.append('<input type="hidden" value="'+currentValue+'" data-label="'+label+'" data-tagsinput="'+isTagsInput+'" data-tagsselector="'+isTagsselector+'">');
+		
+		item.on("click", function(e) { 
+			e.stopPropagation();
+			e.preventDefault()
+			var element = $(this).find('input');
+			var value = element.val();
+			var label = element.data('label');
+			var isTagsInput = element.data('tagsinput');
+			var isTagsselector = element.data('tagsselector');
+			
+			console.log("======"+isTagsInput+""+isTagsselector);
+			if(!isTagsInput){
+				inputField.value = value;
+				cfw_autocompleteCloseAll();
+			}else{
+				console.log("isTagsInput: "+isTagsInput);
+				console.log("isTagsselector: "+isTagsselector);
+				inputField.value = '';
+				
+				if(isTagsselector){
+					// Do for Tagsinput
+					$(inputField).parent().siblings('input').tagsinput('add', { "value": value , "label": label });
+				}else{
+					// Do For Selector
+					$(inputField).parent().siblings('input').tagsinput('add', value);
+					
+				}
+				cfw_autocompleteCloseAll();
+			}
+		});
+		itemList.append(item);
+	    
+	}
+	
+	return itemList;
+}
+
 /**************************************************************************************
  * Initialize a Date and/or Timepicker created with the Java object CFWField.
  * @param fieldID the name of the field
@@ -1894,6 +1986,7 @@ var CFWL = cfw_lang;
 var CFW = {
 	global: {
 		autocompleteCounter: 0,
+		autocompleteFocus: -1,
 		isLocaleFetching: null,
 	},
 	lang: {

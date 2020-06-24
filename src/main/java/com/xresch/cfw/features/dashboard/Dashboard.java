@@ -9,13 +9,14 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.datahandling.CFWAutocompleteHandler;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
+import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
@@ -87,7 +88,7 @@ public class Dashboard extends CFWObject {
 			.setDescription("Share this dashboard only with specific users. If none is specified, all users will see the dashboard.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				public LinkedHashMap<Object, Object> getAutocompleteData(HttpServletRequest request, String searchValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
 					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
 				}
 			});
@@ -98,7 +99,7 @@ public class Dashboard extends CFWObject {
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				
-				public LinkedHashMap<Object, Object> getAutocompleteData(HttpServletRequest request, String searchValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
 					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());
 				}
 			});

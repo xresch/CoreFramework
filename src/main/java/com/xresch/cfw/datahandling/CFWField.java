@@ -28,6 +28,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
@@ -372,7 +373,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			if(this.parent instanceof CFWForm) {
 				String formID = ((CFWForm)this.parent).getFormID();
 				int maxResults = this.getAutocompleteHandler().getMaxResults();
-				((CFWForm)this.parent).javascript.append("cfw_initializeAutocomplete('"+formID+"','"+name+"',"+maxResults+");\r\n");
+				((CFWForm)this.parent).javascript.append("cfw_autocompleteInitialize('"+formID+"','"+name+"',"+maxResults+");\r\n");
 			}
 		}
 		//---------------------------------------------
