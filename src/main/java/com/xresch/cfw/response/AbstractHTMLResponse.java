@@ -43,16 +43,10 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 		cssAssemblies.add(assemblyCSSCustom);
 		
 		String requestID = (String)request.getAttribute(CFW.REQUEST_ATTR_ID);
-		long startNanos = (long)request.getAttribute(CFW.REQUEST_ATTR_STARTNANOS);
-		
+
 		this.addJavascriptData("localeIdentifier", CFW.Localization.getLocaleIdentifierForRequest() );
 		this.addJavascriptData(CFW.REQUEST_ATTR_ID, requestID );
-		this.addJavascriptData(CFW.REQUEST_ATTR_STARTNANOS, String.valueOf(startNanos) );
-		
-		this.addSupportInfo("Timestamp:", CFW.Time.currentTimestamp());
-		this.addSupportInfo("RequestID:", requestID);
-		// Removed to enhance security
-		//this.addSupportInfo("SessionID:", (String)this.request.getSession().getId());
+		this.addJavascriptData("time", CFW.Time.currentTimestamp());
 		
 	}
 	
@@ -118,20 +112,6 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 		cssAssemblies.add(assembly);
 	}
 	
-	public void addSupportInfo(String key, String value){
-	
-		this.supportInfo.append("<div class=\"row\">");
-		
-			this.supportInfo.append("<div class=\"col-md-3\"><label>");
-			this.supportInfo.append(key);
-			this.supportInfo.append("</label></div>");
-			
-			this.supportInfo.append("<div class=\"col-md-9\">");
-			this.supportInfo.append(value);
-			this.supportInfo.append("</div>");
-			
-		this.supportInfo.append("</div>");
-	}
 	
 	protected void appendSectionTitle(StringBuffer buildedPage, String title){ 
 		buildedPage.append("<!--\n");

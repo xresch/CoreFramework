@@ -809,42 +809,6 @@ function cfw_objectToHTMLList(object){
 		
 }
 
-/**************************************************************************************
- * Add an alert message to the message section.
- * Ignores duplicated messages.
- * @param type the type of the alert: INFO, SUCCESS, WARNING, ERROR
- * @param message
- *************************************************************************************/
-function cfw_addAlertMessage(type, message){
-	
-	var clazz = "";
-	
-	switch(type.toLowerCase()){
-		
-		case "success": clazz = "alert-success"; break;
-		case "info": 	clazz = "alert-info"; break;
-		case "warning": clazz = "alert-warning"; break;
-		case "error": 	clazz = "alert-danger"; break;
-		case "severe": 	clazz = "alert-danger"; break;
-		case "danger": 	clazz = "alert-danger"; break;
-		default:	 	clazz = "alert-info"; break;
-		
-	}
-	
-	var htmlString = '<div class="alert alert-dismissible '+clazz+'" role=alert>'
-		+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
-		+ message
-		+"</div>\n";
-	
-	//----------------------------------------------
-	// Add if not already exists
-	var messages = $("#cfw-messages");
-	
-	if (messages.html().indexOf(message) <= 0) {
-		messages.append(htmlString);
-	}
-	
-}
 
 /**************************************************************************************
  * Create a table of contents for the h-elements on the page.
@@ -938,6 +902,43 @@ function cfw_toogleLoader(isVisible){
 		loader.css("display", "flex");
 	}else{
 		loader.css("display", "none");
+	}
+	
+}
+
+/**************************************************************************************
+ * Add an alert message to the message section.
+ * Ignores duplicated messages.
+ * @param type the type of the alert: INFO, SUCCESS, WARNING, ERROR
+ * @param message
+ *************************************************************************************/
+function cfw_addAlertMessage(type, message){
+	
+	var clazz = "";
+	
+	switch(type.toLowerCase()){
+		
+		case "success": clazz = "alert-success"; break;
+		case "info": 	clazz = "alert-info"; break;
+		case "warning": clazz = "alert-warning"; break;
+		case "error": 	clazz = "alert-danger"; break;
+		case "severe": 	clazz = "alert-danger"; break;
+		case "danger": 	clazz = "alert-danger"; break;
+		default:	 	clazz = "alert-info"; break;
+		
+	}
+	
+	var htmlString = '<div class="alert alert-dismissible '+clazz+'" role=alert>'
+		+ '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'
+		+ message
+		+"</div>\n";
+	
+	//----------------------------------------------
+	// Add if not already exists
+	var messages = $("#cfw-messages");
+	
+	if (messages.html().indexOf(message) <= 0) {
+		messages.append(htmlString);
 	}
 	
 }
@@ -1168,6 +1169,74 @@ function cfw_showSmallModal(modalTitle, modalBody, jsCode){
 	smallModal.modal('show');
 }
 
+/**************************************************************************************
+ * Create a model with content.
+ * @param modalID the ID of the modal
+ * @param modalBody the body of the modal
+ * @param jsCode to execute on modal close
+ * @return nothing
+ *************************************************************************************/
+function cfw_reopenModal(modalID){
+	
+	var modal = $("#"+modalID);
+	
+	if(modal.length != 0){
+		modal.modal('show');
+	}
+		
+}
+
+/**************************************************************************************
+ * Show a modal with support Info
+ *************************************************************************************/
+function cfw_showSupportInfoModal(){
+		
+	var modalContent = $('<div>');
+	
+	//=========================================
+	// Javascript Data
+	//=========================================
+	modalContent.append('<h2>Javascript Data</h2>');
+
+	var jsData = [JSDATA];
+	
+	var rendererParams = {
+			data: [JSDATA],
+			customizers: {
+				starttime: function(record, value) { return (value != null ) ? CFW.format.epochToTimestamp(value) : "" }
+			},
+			rendererSettings: {
+				table: {
+					filterable: false,
+					narrow: true,
+					verticalize: true
+				},
+			},
+		};
+	
+	
+	var result = CFW.render.getRenderer('table').render(rendererParams);
+	modalContent.append(result);
+	
+	//=========================================
+	// Toast Messages
+	//=========================================
+	var toastDiv = $("#cfw-toasts");
+	if(toastDiv.length != 0){
+		modalContent.append('<h2>Toast Messages</h2>');
+		var clone = toastDiv.clone();
+		clone.find('.close').remove();
+		clone.find('.toast')
+			.attr('data-autohide', 'false')
+			.removeClass('hide')
+			.addClass('show');
+		modalContent.append(clone.find('.toast').clone());
+	}
+	
+	//=========================================
+	// Show Modal
+	cfw_showModal("Support Info", modalContent);
+}
 
 /**************************************************************************************
  * Create a confirmation modal panel that executes the function passed by the argument
@@ -1913,6 +1982,26 @@ CFW.lang.loadLocalization();
 
 CFW.utils.chainedOnload(function () {
 
+	//-----------------------------------
+	// Setup Keyboard Shortcuts
+	$('body').keyup(function (e){
+		
+		//--------------------------------
+		// Ctrl+Alt+M - Reopen Modal
+		if (e.ctrlKey && event.altKey &&  e.keyCode == 77) {
+			cfw_reopenModal('cfw-default-modal');
+			return;
+		}
+		
+		//--------------------------------
+		// Ctrl+Alt+I - Show Support Info
+		if (e.ctrlKey && event.altKey &&  e.keyCode == 73) {
+			cfw_showSupportInfoModal();
+			return;
+		}
+		
+	});
+	
 	//-----------------------------------
 	// Initialize tooltipy
 	$('[data-toggle="tooltip"]').tooltip();

@@ -276,7 +276,7 @@ public class CFWLog {
 					
 					if(template instanceof AbstractHTMLResponse){
 						if(this.exception != null){
-							((AbstractHTMLResponse)template).addSupportInfo("Exception: ", this.exception);
+							//((AbstractHTMLResponse)template).addSupportInfo("Exception: ", this.exception);
 						}
 					}
 				}

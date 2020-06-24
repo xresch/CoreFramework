@@ -169,16 +169,16 @@ public class HTMLResponse extends AbstractHTMLResponse {
 				
 				//--------------------------
 				// Support Info
-				this.appendSectionTitle(buildedPage, "Support Info");
-				
-				String supportInfoTemplate = CFWFiles.getFileContent(request,CFW.PATH_TEMPLATE_SUPPORTINFO);
-				
-				if(supportInfoTemplate != null){
-					String supportInfoInserted = supportInfoTemplate.replace("{!supportInfo!}", this.supportInfo);	
-					buildedPage.append(supportInfoInserted);
-				}else{
-					buildedPage.append("<!-- FAILED TO LOAD SUPPORT INFO! -->");
-				}
+//				this.appendSectionTitle(buildedPage, "Support Info");
+//				
+//				String supportInfoTemplate = CFWFiles.getFileContent(request,CFW.PATH_TEMPLATE_SUPPORTINFO);
+//				
+//				if(supportInfoTemplate != null){
+//					String supportInfoInserted = supportInfoTemplate.replace("{!supportInfo!}", this.supportInfo);	
+//					buildedPage.append(supportInfoInserted);
+//				}else{
+//					buildedPage.append("<!-- FAILED TO LOAD SUPPORT INFO! -->");
+//				}
 					
 				
 			buildedPage.append("</body>\n");

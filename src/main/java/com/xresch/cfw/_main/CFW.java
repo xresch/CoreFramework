@@ -120,7 +120,6 @@ public class CFW {
 	//##############################################################################
 	public static final String PATH_RESOURCES_HTML = "./resources/html";
 	public static final String PATH_TEMPLATE_FOOTER = PATH_RESOURCES_HTML+"/default_template/footer.html";
-	public static final String PATH_TEMPLATE_SUPPORTINFO = PATH_RESOURCES_HTML+"/default_template/supportInfoModal.html";
 	
 	
 	private static void initializeCore(String[] args) throws Exception{
