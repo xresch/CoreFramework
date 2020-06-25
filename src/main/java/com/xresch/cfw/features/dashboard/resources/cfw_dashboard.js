@@ -1099,8 +1099,8 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 		resizable: {
 		    handles: 'e, se, s, sw, w'
 		  },
-		column: 24, 
-		cellHeight: 40,
+		column: 64, 
+		cellHeight: 5,
 		animate: true,
 		float: true,
 		verticalMargin: 10

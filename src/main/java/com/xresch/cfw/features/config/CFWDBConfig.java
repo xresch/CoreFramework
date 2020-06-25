@@ -137,12 +137,21 @@ public class CFWDBConfig {
 	}
 	
 	/********************************************************************************************
-	 * Returns a config value from cache as integer
+	 * Returns a config value from cache as integer.
 	 * 
 	 ********************************************************************************************/
 	public static int getConfigAsInt(String configName) {
 		return Integer.parseInt(configCache.get(configName));
 	}
+	
+	/********************************************************************************************
+	 * Returns a config value from cache as long.
+	 * 
+	 ********************************************************************************************/
+	public static long getConfigAsLong(String configName) {
+		return Long.parseLong(configCache.get(configName));
+	}
+	
 	
 	
 	/********************************************************************************************

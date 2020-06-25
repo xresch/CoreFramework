@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import com.xresch.cfw.tests._master.WebTestMaster;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.cpusampling.TaskCPUSampling;
 import com.xresch.cfw.schedule.CFWScheduledTask;
 
@@ -93,7 +93,7 @@ public class TestSchedule extends WebTestMaster {
 	@Test
 	public void testThreadSamplingTask() throws Exception {
 		
-		int seconds = CFW.DB.Config.getConfigAsInt(Configuration.CPU_SAMPLING_SECONDS);
+		int seconds = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS);
 		
 		ScheduledFuture<?> future = CFW.Schedule.runPeriodically(0, seconds, new TaskCPUSampling());
 

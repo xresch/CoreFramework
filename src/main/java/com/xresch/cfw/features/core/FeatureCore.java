@@ -8,11 +8,13 @@ import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.db.TaskDatabaseBackup;
+import com.xresch.cfw.features.config.ConfigChangeListener;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.core.auth.ServletChangePassword;
 import com.xresch.cfw.features.core.auth.ServletLogin;
 import com.xresch.cfw.features.core.auth.ServletLogout;
 import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
 /**************************************************************************************************************
@@ -55,6 +57,9 @@ public class FeatureCore extends CFWAppFeature {
 	@Override
 	public void initializeDB() {
 
+		//============================================================
+		// PERMISSIONS
+		//============================================================
 		//-----------------------------------
 		// 
 		CFW.DB.Permissions.oneTimeCreate(
@@ -107,6 +112,27 @@ public class FeatureCore extends CFWAppFeature {
 
 	@Override
 	public void startTasks() {
+		
+		//-------------------------------
+		// Create Change Listener
+		ConfigChangeListener listener = new ConfigChangeListener(
+				FeatureConfiguration.CONFIG_BACKUP_DB_ENABLED,
+				FeatureConfiguration.CONFIG_BACKUP_DB_INTERVAL,
+				FeatureConfiguration.CONFIG_BACKUP_DB_TIME
+			) {
+			
+			@Override
+			public void onChange() {
+				TaskDatabaseBackup.setupTask();
+			}
+		};
+		
+		CFW.DB.Config.addChangeListener(listener);
+		
+		//-------------------------------
+		// Initialize Backup Task
+		TaskDatabaseBackup.setupTask();
+		
 	}
 
 	@Override

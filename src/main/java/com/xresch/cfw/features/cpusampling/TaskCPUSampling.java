@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
-import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.schedule.CFWScheduledTask;
 
@@ -23,14 +23,14 @@ public class TaskCPUSampling extends CFWScheduledTask {
 	
 	// Contains the stack element signature with ID as in the DB
 	private static HashMap<Object, Object> signatureIDMap = CFWDBCPUSampleSignature.getSignaturesAsKeyValueMap();
-	private static int samplingSeconds = CFW.DB.Config.getConfigAsInt(Configuration.CPU_SAMPLING_SECONDS);
+	private static int samplingSeconds = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS);
 	
 	@Override
 	public void execute() {
 		
 		long currentTime = System.currentTimeMillis();
 		// minutes to millis
-		int aggregationMillis = CFW.DB.Config.getConfigAsInt(Configuration.CPU_SAMPLING_AGGREGATION) *60000;
+		int aggregationMillis = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION) *60000;
 		
 		//-----------------------------------
 		// Check Saving
@@ -53,7 +53,7 @@ public class TaskCPUSampling extends CFWScheduledTask {
 	private static void saveAndResetCounters() {
 		
 		Timestamp time = new Timestamp(System.currentTimeMillis());
-		int periodMinutes = CFW.DB.Config.getConfigAsInt(Configuration.CPU_SAMPLING_AGGREGATION);
+		int periodMinutes = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION);
 		
 		CFWDB.beginTransaction();
 			for(CPUSample entry : counterMap.values()) {

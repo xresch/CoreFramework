@@ -7,7 +7,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.SessionData;
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
-import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage;
@@ -33,17 +33,17 @@ public class HTMLResponse extends AbstractHTMLResponse {
 		
 		this.pageTitle = pageTitle;
 		
-		String theme = CFW.DB.Config.getConfigAsString(Configuration.THEME);
+		String theme = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_THEME);
 		if(theme.equals("custom")) {
 			this.addCSSFileCFW(FileDefinition.HandlingType.FILE, "./resources/css", "bootstrap-theme-custom.css");
 		}else {
-			this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "bootstrap-theme-"+CFW.DB.Config.getConfigAsString(Configuration.THEME)+".css");
+			this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "bootstrap-theme-"+CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_THEME)+".css");
 		}
 		this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "bootstrap-tagsinput.css");
 		this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "summernote-bs4.css");
 		this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "jquery-ui.min.css");
 		this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "font-awesome.css");
-		this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "highlightjs_"+CFW.DB.Config.getConfigAsString(Configuration.CODE_THEME)+".css");
+		this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "highlightjs_"+CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_CODE_THEME)+".css");
 		this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "cfw.css");
 		this.addCSSFileCFW(FileDefinition.HandlingType.FILE, "./resources/css", "custom.css");
 		

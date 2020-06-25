@@ -6,15 +6,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.Server;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw._main.CFW.Properties;
+import com.xresch.cfw._main.CFWProperties;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
@@ -127,6 +130,39 @@ public class CFWDB {
 	 ********************************************************************************************/
 	public static void stopDBServer() {
 		server.stop();
+	}
+	
+	/********************************************************************************************
+	 *
+	 ********************************************************************************************/
+	public static void backupDatabaseFile() {
+		
+		String folderPath = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_BACKUP_DB_FOLDER);
+		if(Strings.isNullOrEmpty(folderPath)) {
+			folderPath = "./backup/";
+		}
+		
+		if(!folderPath.endsWith("/") && !folderPath.endsWith("\\") ) {
+			folderPath = folderPath + "/";
+		}
+		
+		File folder = new File(folderPath);
+		folder.mkdirs();
+		if(folder.isDirectory()
+		&& folder.canWrite()) {
+			
+			String filePath = folderPath+"h2_database_backup_"+CFW.Time.formatDate(new Date(),"YYYY-MM-dd_HH-mm")+".zip";
+			new CFWSQL(null).custom("BACKUP TO '"+filePath+"';")
+				.execute();
+			
+			
+		}else {
+			new CFWLog(logger)
+				.method("backupDatabaseFile")
+				.severe("Database backup could not be created, folder is not accessible: "+folderPath);
+		}
+		
+		
 	}
 	
 	

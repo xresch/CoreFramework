@@ -211,8 +211,9 @@ public class CFW {
 		
 		//---------------------------
 		// Register Features
+		CFW.Registry.Features.addFeature(FeatureConfiguration.class);
 		CFW.Registry.Features.addFeature(FeatureCore.class);	
-		CFW.Registry.Features.addFeature(FeatureConfiguration.class);	
+			
 		
 		if(CFW.AppSettings.isContextSettingsEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureContextSettings.class);	

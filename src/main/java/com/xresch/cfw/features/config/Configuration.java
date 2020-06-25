@@ -4,10 +4,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.validation.LengthValidator;
@@ -20,15 +19,6 @@ import com.xresch.cfw.validation.LengthValidator;
 public class Configuration extends CFWObject {
 	
 	public static final String TABLE_NAME = "CFW_CONFIG";
-	public static final String FILE_CACHING = "Cache Files";
-	public static final String THEME = "Theme";
-	public static final String LANGUAGE = "Default Language";
-	public static final String CODE_THEME = "Code Theme";
-	public static final String MENU_TITLE = "Menu Title";
-	public static final String CPU_SAMPLING_SECONDS = "CPU Sampling Seconds";
-	public static final String CPU_SAMPLING_AGGREGATION = "CPU Sampling Aggregation";
-
-	public static final String LOGO_PATH = "Logo Path";
 	
 	public enum ConfigFields{
 		PK_ID,
@@ -100,101 +90,7 @@ public class Configuration extends CFWObject {
 	}
 	
 	public void initDBSecond() {
-		//-----------------------------------------
-		// 
-		//-----------------------------------------
-		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Performance", Configuration.FILE_CACHING)
-				.description("Enables the caching of files read from the disk.")
-				.type(FormFieldType.BOOLEAN)
-				.value("true")
-		);
-		
-		//-----------------------------------------
-		// 
-		//-----------------------------------------
-		
-		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Look and Feel", Configuration.LANGUAGE)
-				.description("Set the default language of the application.")
-				.type(FormFieldType.SELECT)
-				.options(new String[]{"EN", "DE"})
-				.value("EN")
-		);
-		
-		//-----------------------------------------
-		// 
-		//-----------------------------------------
-		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Look and Feel", Configuration.THEME)
-				.description("Set the application look and feel. 'Slate' is the default and recommended theme, all others are not 100% tested. For custom the file has to be placed under ./resources/css/bootstrap-theme-custom.css.")
-				.type(FormFieldType.SELECT)
-				.options(new String[]{"custom", "darkblue", "flatly", "lumen", "materia", "minty", "pulse", "sandstone", "simplex", "slate", "slate-edged", "spacelab", "superhero", "united", "warm-soft", "warm-edged"})
-				.value("slate-edged")
-		);
-		
-		
-		//-----------------------------------------
-		// 
-		//-----------------------------------------
-		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Look and Feel", Configuration.CODE_THEME)
-				.description("Set the style for the code highlighting.")
-				.type(FormFieldType.SELECT)
-				.options(new String[]{"androidstudio", "arduino-light", "magula", "pojoaque", "sunburst", "zenburn"})
-				.value("zenburn")
-		);
-		
-		
-		//-----------------------------------------
-		// 
-		//-----------------------------------------
-		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Look and Feel", Configuration.MENU_TITLE )
-				.description("Set the title displayed in the menu bar. Applies to all new sessions, login/logout required to see the change.")
-				.type(FormFieldType.TEXT)
-				.value("")
-		);
-		
-		
-		
-		//-----------------------------------------
-		// 
-		//-----------------------------------------
-		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Look and Feel", Configuration.LOGO_PATH )
-				.description("The path of the logo displayed in the menu bar. Relativ to the installation directory or a valid URL.")
-				.type(FormFieldType.TEXT)
-				.value("/resources/images/applogo.png")
-		);
-		
-		
-		
-		//-----------------------------------------
-		// 
-		//-----------------------------------------
-		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Performance", Configuration.CPU_SAMPLING_SECONDS )
-				.description("The interval in seconds between two CPU samplings. Changes to this value needs a restart to take effect.")
-				.type(FormFieldType.SELECT)
-				.options(new String[]{"1", "5", "10", "30", "60"})
-				.value("10")
-		);
-		
-		
-		//-----------------------------------------
-		// 
-		//-----------------------------------------
-		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Performance", Configuration.CPU_SAMPLING_AGGREGATION )
-				.description("The period in minutes used for the aggregation of the statistics and writing them to the database.")
-				.type(FormFieldType.SELECT)
-				.options(new Integer[]{3, 15, 60, 240, 720, 1440})
-				.value("3")
-		);
-		
-							
-		CFW.DB.Config.updateCache();
+
 	}
 	
 	/**************************************************************************************

@@ -7,8 +7,8 @@
 			menulabel: CFWL('cfw_widget_cfwrefreshtime', 'Refresh Time'),
 			description: CFWL('cfw_widget_cfwrefreshtime_desc', 'Displays the time the dashboard was refreshed.'),
 			defaulttitle: "",
-			defaultwidth: 4,
-			defaultheight: 1,
+			defaultwidth: 8,
+			defaultheight: 3,
 			createWidgetInstance: function (widgetObject, callback) {	
 				
 				var settings = widgetObject.JSON_SETTINGS;
@@ -26,7 +26,7 @@
 					rotationClass = 'rotate-180';
 				}
 				
-				var labelHTML = '<div class="label-box"><span class="text-center '+rotationClass+'" style="white-space: nowrap; font-size: '+24*settings.sizefactor+'px;"">'
+				var labelHTML = '<div class="label-box"><span class="text-center '+rotationClass+'" style="white-space: nowrap; font-size: '+18*settings.sizefactor+'px;"">'
 								+ new CFWDate().getDateFormatted(settings.format)
 								+'</span></div>'; 
 				

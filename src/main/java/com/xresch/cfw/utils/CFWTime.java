@@ -26,11 +26,20 @@ public class CFWTime {
 		return CFWTime.formatDate(new Date());
 	}
 	
+	
 	/********************************************************************************************
 	 * Get a string representation of the date in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
 	 ********************************************************************************************/
 	public static String formatDate(Date date){
 		return dateFormatter.format(date);
+	}
+	
+	/********************************************************************************************
+	 * Get a string representation of the date in the given format
+	 ********************************************************************************************/
+	public static String formatDate(Date date, String timeFormat){
+		SimpleDateFormat formatter = new SimpleDateFormat(timeFormat);
+		return formatter.format(date);
 	}
 	
 	/********************************************************************************************

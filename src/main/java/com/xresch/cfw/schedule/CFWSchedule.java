@@ -92,7 +92,7 @@ public class CFWSchedule {
     		 
         Timer timer = new Timer(); // Instantiate Timer Object
 
-        System.out.println("Actual Time: "+startDateTime.getTime().toLocaleString());
+        //System.out.println("Actual Time: "+startDateTime.getTime().toLocaleString());
         
         //----------------------------------
         // Increase time to future if immediate

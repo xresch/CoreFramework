@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.tests._master.WebTestMaster;
@@ -56,7 +57,7 @@ public class _MainForTesting implements CFWAppInterface {
 		//###################################################################
         // Change Config
         //################################################################### 
-    	Configuration config = CFW.DB.Config.selectByName(Configuration.FILE_CACHING).value("false");
+    	Configuration config = CFW.DB.Config.selectByName(FeatureConfiguration.CONFIG_FILE_CACHING).value("false");
     	CFW.DB.Config.update(config);
 		
 	}

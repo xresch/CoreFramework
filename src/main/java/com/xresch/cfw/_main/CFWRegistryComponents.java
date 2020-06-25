@@ -3,7 +3,7 @@ package com.xresch.cfw._main;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
-import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.BTFooter;
@@ -140,7 +140,7 @@ public class CFWRegistryComponents {
 	public static BTMenu createMenuInstance(boolean withUserMenus)  {
 		
 		BTMenu menu = new BTMenu();
-		menu.setLabel(CFW.DB.Config.getConfigAsString(Configuration.MENU_TITLE));
+		menu.setLabel(CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_MENU_TITLE));
 		
 		//======================================
 		// Regular Menus

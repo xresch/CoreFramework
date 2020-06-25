@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
-import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.utils.LinkedProperties;
@@ -101,7 +101,7 @@ public class CFWLocalization {
 		// fall back to english
 		localeArray.add(Locale.ENGLISH);
 		
-		String configLanguage = CFW.DB.Config.getConfigAsString(Configuration.LANGUAGE);
+		String configLanguage = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_LANGUAGE);
 		
 		if(configLanguage != null) {
 			Locale defaultLanguage = Locale.forLanguageTag(configLanguage.toLowerCase());
@@ -194,7 +194,7 @@ public class CFWLocalization {
 		
 		//------------------------------
 		// Check is Cached
-		if (languageCache.containsKey(cacheID) && CFW.DB.Config.getConfigAsBoolean(Configuration.FILE_CACHING)) {
+		if (languageCache.containsKey(cacheID) && CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
 			return languageCache.get(cacheID);
 		}else {
 			

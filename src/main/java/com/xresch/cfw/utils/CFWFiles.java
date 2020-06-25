@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -72,7 +72,7 @@ public class CFWFiles {
 	public static String getFileContent(HttpServletRequest request, String path){
 		CFWLog omlogger = new CFWLog(logger).method("getFileContent");
 		
-		if( CFW.DB.Config.getConfigAsBoolean(Configuration.FILE_CACHING) && CFWFiles.permanentStringFileCache.containsKey(path)){
+		if( CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING) && CFWFiles.permanentStringFileCache.containsKey(path)){
 			omlogger.finest("Read file content from cache");
 			return CFWFiles.permanentStringFileCache.get(path);
 		}else{
@@ -186,7 +186,7 @@ public class CFWFiles {
 			packageName = packageName.replaceAll("\\.", "/");
 			String resourcePath = packageName + "/" + filename;
 			
-			if( CFW.DB.Config.getConfigAsBoolean(Configuration.FILE_CACHING) && CFWFiles.permanentStringFileCache.containsKey(resourcePath)){
+			if( CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING) && CFWFiles.permanentStringFileCache.containsKey(resourcePath)){
 				new CFWLog(logger).finest("Read package resource content from cache");
 				return CFWFiles.permanentStringFileCache.get(resourcePath);
 			}else{
@@ -222,7 +222,7 @@ public class CFWFiles {
 			packageName = packageName.replaceAll("\\.", "/");
 			String resourcePath = packageName + "/" + filename;
 			
-			if( CFW.DB.Config.getConfigAsBoolean(Configuration.FILE_CACHING) && CFWFiles.permanentByteFileCache.containsKey(resourcePath)){
+			if( CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING) && CFWFiles.permanentByteFileCache.containsKey(resourcePath)){
 				new CFWLog(logger).finest("Read package resource content from cache");
 				return CFWFiles.permanentByteFileCache.get(resourcePath);
 			}else{

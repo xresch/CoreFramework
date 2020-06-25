@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.schedule.CFWScheduledTask;
 
@@ -16,7 +17,7 @@ public class TaskCPUSamplingAggregation extends CFWScheduledTask {
 	public void execute() {
 		
 		//System.out.println("============= RUN StatsCPUSamplingAggregationTask ============");
-		Configuration config = CFW.DB.Config.selectByName(Configuration.CPU_SAMPLING_AGGREGATION);
+		Configuration config = CFW.DB.Config.selectByName(FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION);
 		Object[] granularities = (Object[])config.options();
 		
 		//----------------------------

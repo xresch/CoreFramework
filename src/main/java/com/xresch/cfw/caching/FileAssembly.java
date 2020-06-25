@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 
 /**************************************************************************************************************
  * 
@@ -99,7 +99,7 @@ public class FileAssembly {
 
 		//--------------------------------
 		// Initialize
-		if(!FileAssembly.hasAssembly((assemblyName)) || !CFW.DB.Config.getConfigAsBoolean(Configuration.FILE_CACHING)) {
+		if(!FileAssembly.hasAssembly((assemblyName)) || !CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
 			
 			StringBuffer concatenatedFile = new StringBuffer();
 			for(FileDefinition fileDef : fileArray.values()) {
@@ -127,7 +127,7 @@ public class FileAssembly {
 	 * @return the name of the assembly
 	 ***********************************************************************/
 	public FileAssembly cache() {
-		if(!FileAssembly.hasAssembly((assemblyName)) || !CFW.DB.Config.getConfigAsBoolean(Configuration.FILE_CACHING)) {
+		if(!FileAssembly.hasAssembly((assemblyName)) || !CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
 			assemblyCache.put(assemblyName, this);
 		}
 		return this;
