@@ -211,11 +211,11 @@ The default amount of tags you can set is 128.
 <code>private CFWField&lt;String&gt; tags = CFWField.newString(FormFieldType.TAGS, "TAGS")
 		.setValue("foo,test,bar,bla")
 		.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
-			public LinkedHashMap&lt;Object, Object&gt; getAutocompleteData(HttpServletRequest request, String inputValue) {
-				LinkedHashMap&lt;Object, Object&gt;  array = new LinkedHashMap&lt;Object, Object&gt;() ;
+			public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+				AutocompleteList list = new AutocompleteList();
 				for(int i = 0; i &lt; this.getMaxResults(); i++ ) {
 					String tag = "Tag_"+inputValue+"_"+i;
-					array.put(tag, tag);
+					list.addItem(tag);
 				}
 				return array;
 			}
@@ -223,7 +223,7 @@ The default amount of tags you can set is 128.
 </code>
 </pre>
 
-<h3>Tags As Array Autocomplete from DB wit maximum 20 Tags</h3>
+<h3>Tags As Array Autocomplete from DB wit maximum 10 Tags</h3>
 <p>
 The following creates a tags field that will convert the tags to an object array and saves it as well to an ARRAY column to the database.
 The autocomplete will get the Tags from the DB interface. The use case this example was fetched from has the tags cached internally to reduce query executions.
@@ -233,21 +233,18 @@ The autocomplete will get the Tags from the DB interface. The use case this exam
 		.setDescription("The tags for this quote.")
 		.addAttribute("maxTags", "20")
 		.setAutocompleteHandler( new CFWAutocompleteHandler(10) {
-			@Override
-			public LinkedHashMap&lt;Object, Object&gt; getAutocompleteData(HttpServletRequest request, String inputValue) {
-				// Find existing tags in DB
-				TreeSet&lt;String&gt; tagsSet = OM.DB.Quotes.getTags();
-				
-				LinkedHashMap&lt;Object, Object&gt; suggestions = new LinkedHashMap&lt;Object, Object&gt;();
-				for(String tag : tagsSet) {
+			public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+					
+				AutocompleteList list = new AutocompleteList();
+				for(String tag : OM.DB.Quotes.getTags()) {
 					if(tag.toLowerCase().contains(inputValue.toLowerCase())) {
-						suggestions.put(tag, tag);
-						if(suggestions.size() >= this.getMaxResults()) {
+						list.addItem(tag);
+						if(list.size() &gt;= this.getMaxResults()) {
 							break;
 						}
 					}
 				}
-				return suggestions;
+				return new AutocompleteResult(list);
 			}
 		});
 </code>
@@ -261,7 +258,7 @@ This is useful for example to select a User by name from the database but gettin
 Tag selector values will be converted to a LinkedHashMap&lt;String,String&gt; with "key/label" combinations.
 When saved to the DB it will be converted to a JSON string, why the fieldname has to start with "JSON".
 To create a tags selector field always use CFWField.newTagsSelector();<br/>
-The following example shows an example on how to create a tags selector for users.
+The following example shows how to create a tags selector for users.
 </p>
 <pre>
 <code>private CFWField&lt;LinkedHashMap&lt;String,String&gt;&gt; shareWithUsers = 
@@ -271,12 +268,12 @@ The following example shows an example on how to create a tags selector for user
 		.addAttribute("maxTags", "50")
 		.setValue(null)
 		.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-			public LinkedHashMap&lt;Object, Object&gt; getAutocompleteData(HttpServletRequest request, String searchValue) {
+			public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
 				return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
 			}
 		});
 
-public static LinkedHashMap&lt;Object, Object&gt; autocompleteUser(String searchValue, int maxResults) {
+public static AutocompleteResult autocompleteUser(String searchValue, int maxResults) {
 	
 	if(Strings.isNullOrEmpty(searchValue)) {
 		return new LinkedHashMap&lt;Object, Object&gt;();
@@ -289,9 +286,39 @@ public static LinkedHashMap&lt;Object, Object&gt; autocompleteUser(String search
 		.whereLike(UserFields.USERNAME.toString(), "%"+searchValue+"%")
 		.and().not().is(UserFields.PK_ID, CFW.Context.Request.getUser().id())
 		.limit(maxResults)
-		.getAsLinkedHashMap(UserFields.PK_ID.toString(), 
+		.getAsAutocompleteResult(UserFields.PK_ID.toString(), 
 							UserFields.USERNAME.toString());
 	
 }
+</code>
+</pre>
+
+<h3>Advanced Autocomplete Example</h3>
+<p>
+The AutcompleteResult class allows you to add multiple AutocompleteLists and a HTML description below the suggestions.
+For each autocomplete item, you can also define a description that will be shown to the user.
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; autocomplete = CFWField.newString(FormFieldType.TEXT, "AUTOCOMPLETE")
+	.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
+		
+		public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+			AutocompleteList list = new AutocompleteList();
+			for(int i = 0; i &lt; 10; i++ ) {
+				String tag = "Test_"+inputValue+"_"+i;
+				list.addItem(tag);
+			}
+			
+			AutocompleteList list2 = new AutocompleteList();
+			for(int i = 0; i &lt; 10; i++ ) {
+				String tag = "Foobar_"+inputValue+"_"+i;
+				list2.addItem(tag, tag, "Some example description that should be added.");
+			}
+			
+			return new AutocompleteResult(list)
+					.addList(list2)
+					.setHTMLDescription("&lt;p&gt;This is your HTML Description. Feel free to add some stuff like a list:&lt;p &lt;ol&gt;&lt;li&gt;Do this&lt;/li&gt;&lt;li&gt;Do that&lt;/li&gt;&lt;li&gt;Do even more...&lt;/li&gt;&lt;/ol&gt;");
+		}
+	});
 </code>
 </pre>

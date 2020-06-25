@@ -75,7 +75,7 @@ public class CFWObjectMockup extends CFWObject{
 				
 				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
 					AutocompleteList list = new AutocompleteList();
-					for(int i = 0; i < 10; i++ ) {
+					for(int i = 0; i < 7; i++ ) {
 						String tag = "Test_"+inputValue+"_"+i;
 						list.addItem(tag);
 					}

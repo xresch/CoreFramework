@@ -47,6 +47,7 @@ public class AutocompleteList {
 		return this;
 	}
 	
+	
 	/*************************************************************************
 	 * Convert to JSON
 	 *************************************************************************/
@@ -59,4 +60,13 @@ public class AutocompleteList {
 		
 		return array;
 	}
+	
+	public  ArrayList<AutocompleteItem> getItems(){
+		return items;
+	}
+	
+	public  int size(){
+		return items.size();
+	}
+	
 }

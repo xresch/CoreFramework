@@ -2075,6 +2075,7 @@ CFW.lang.loadLocalization();
 
 CFW.utils.chainedOnload(function () {
 
+	
 	//-----------------------------------
 	// Setup Keyboard Shortcuts
 	$('body').keyup(function (e){
@@ -2093,6 +2094,13 @@ CFW.utils.chainedOnload(function () {
 			return;
 		}
 		
+	});
+	
+	//-----------------------------------
+	// Add scrolling offset for menu bar
+	$( window ).on('hashchange', function (e){
+		console.log('change');
+		window.scrollBy(0, -60);
 	});
 	
 	//-----------------------------------

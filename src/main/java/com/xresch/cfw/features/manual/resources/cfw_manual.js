@@ -29,15 +29,23 @@ function cfw_manual_printMenu(data){
 	
 	var pagePath = CFW.http.getURLParamsDecoded()["page"];
 	if(pagePath != undefined){
-		cfw_manual_loadPage(pagePath);
+		var index = pagePath.indexOf('#');
+		if(index == -1){
+			cfw_manual_loadPage(pagePath);
+		}else{
+			cfw_manual_loadPage(pagePath.substring(0,index), function(){
+				location.hash = pagePath.substring(index);
+			});
+			
+		}
 	}
 }
 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_manual_loadPage(pagePath){
-	cfw_manual_printContent($('a[data-path="'+pagePath+'"]').get(0));
+function cfw_manual_loadPage(pagePath, callback){
+	cfw_manual_printContent($('a[data-path="'+pagePath+'"]').get(0), callback);
 }
 /******************************************************************
  * 
@@ -94,7 +102,7 @@ function cfw_manual_createMenuItem(pageData){
  * Main method for building the view.
  * 
  ******************************************************************/
-function cfw_manual_printContent(domElement){
+function cfw_manual_printContent(domElement, callback){
 	
 	//---------------------------------------------
 	// Open all parent elements and highlight
@@ -125,13 +133,16 @@ function cfw_manual_printContent(domElement){
 			//------------------------------
 			// Highlight Code Blocks
 			target.find('pre code').each(function(index, element){
-				console.log("highlight");
 				hljs.highlightBlock(element);
 			})
 			
 			//------------------------------
 			// Create TOC
 			CFW.ui.toc(target, "#manual-toc", 'h2');
+			
+			if(callback != null){
+				callback();
+			}
 		}
 	})
 	
