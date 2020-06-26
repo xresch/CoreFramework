@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.cpusampling;
+package com.xresch.cfw.features.analytics;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
-import com.xresch.cfw.features.cpusampling.CPUSample.StatsCPUSampleFields;
+import com.xresch.cfw.features.analytics.CPUSample.StatsCPUSampleFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -135,7 +135,7 @@ public class CFWDBCPUSample {
 		
 		return new CPUSample()
 				.queryCache(CFWDBCPUSample.class, "getForTimeframeAsJSON")
-				.loadSQLResource(FeatureCPUSampling.RESOURCE_PACKAGE, "cpusampling_fetch_by_timeframe.sql", 
+				.loadSQLResource(FeatureSystemAnalytics.RESOURCE_PACKAGE, "cpusampling_fetch_by_timeframe.sql", 
 						earliest, 
 						latest)
 				.getAsJSON();

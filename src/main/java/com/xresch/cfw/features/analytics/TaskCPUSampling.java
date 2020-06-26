@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.cpusampling;
+package com.xresch.cfw.features.analytics;
 
 import java.sql.Timestamp;
 import java.util.HashMap;

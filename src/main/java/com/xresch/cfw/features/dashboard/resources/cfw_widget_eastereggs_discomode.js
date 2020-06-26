@@ -15,8 +15,8 @@
 			menulabel: CFWL('cfw_widget_discomode', "Disco!!!"),
 			description: CFWL('cfw_widget_discomode_desc', "Toggles discomode."),
 			defaulttitle: "",
-			defaultwidth: 1,
-			defaultheight: 1,
+			defaultwidth: 2,
+			defaultheight: 4,
 			createWidgetInstance: function (widgetObject, callback) {		
 				var html = 
 					 '<button class="btn btn-sm btn-primary fa fa-globe" onclick="Disco('+widgetObject.JSON_SETTINGS.discolevel+')" style="height: 100%; width:100%;"></button>'

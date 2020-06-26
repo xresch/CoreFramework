@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.cpusampling;
+package com.xresch.cfw.features.analytics;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -24,7 +24,7 @@ import com.xresch.cfw.validation.NotNullOrEmptyValidator;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
-public class ServletCPUSampling extends HttpServlet
+public class ServletDatabaseAnalytics extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;
@@ -32,7 +32,7 @@ public class ServletCPUSampling extends HttpServlet
 	private static String EARLIEST = "EARLIEST";
 	private static String LATEST = "LATEST";
 	
-	public ServletCPUSampling() {
+	public ServletDatabaseAnalytics() {
 	
 	}
 	
@@ -48,26 +48,18 @@ public class ServletCPUSampling extends HttpServlet
 			String action = request.getParameter("action");
 			
 			if(action == null) {
-			HTMLResponse html = new HTMLResponse("CPU Sampling");
+			HTMLResponse html = new HTMLResponse("Database Analytics");
 			StringBuffer content = html.getContent();
 
 			//html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE+".js", "cfw_usermgmt.js"));
-			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureCPUSampling.RESOURCE_PACKAGE, "cfw_cpusampling.js");
+			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureSystemAnalytics.RESOURCE_PACKAGE, "cfw_dbanalytics.js");
 			
-			//------------------------------
-			// Add Content
-			content.append(CFW.Files.readPackageResource(FeatureCPUSampling.RESOURCE_PACKAGE, "cfw_cpusampling.html"));
-			content.append(new TimeInputs().toForm("cfwCPUSamplingTimeInputs", "Load")
-					.onclick("fetchAndRenderForSelectedTimeframe();")
-					.getHTML() 
-				);		
-			
-			html.addJavascriptCode("cfw_cpusampling_draw({tab: 'latest'});");
+			html.addJavascriptCode("cfw_dbanalytics_draw();");
 			
 	        response.setContentType("text/html");
 	        response.setStatus(HttpServletResponse.SC_OK);
 			}else {
-				handleDataRequest(request, response);
+				handleActionRequest(request, response);
 			}
 		}else {
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
@@ -75,21 +67,24 @@ public class ServletCPUSampling extends HttpServlet
         
     }
 	
-	private void handleDataRequest(HttpServletRequest request, HttpServletResponse response) {
+	private void handleActionRequest(HttpServletRequest request, HttpServletResponse response) {
 		
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
-		//String ID = request.getParameter("id");
-		//String IDs = request.getParameter("ids");
-		//int	userID = CFW.Context.Request.getUser().id();
 		
 		JSONResponse jsonResponse = new JSONResponse();
 		
 		switch(action.toLowerCase()) {
-		
+			case "dbsnapshot":		boolean isSuccess = CFW.DB.backupDatabaseFile("./snapshot", "h2_database_snapshot");
+									if(isSuccess) {
+										CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Snapshot created on harddisk under {APP_ROOT}/snapshot.");
+									}else {
+										CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while creating snapshot.");
+									}
+									break;
 			case "fetch": 			
 				switch(item.toLowerCase()) {
-					case "cpusampling": 		getCPUSampling(jsonResponse, request);
+					case "dbanalytics": 		getCPUSampling(jsonResponse, request);
 	  											break;
 	  										
 					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");

@@ -43,7 +43,8 @@ public class TaskDatabaseBackup extends CFWScheduledTask {
 	
 	@Override
 	public void execute() {
-		CFW.DB.backupDatabaseFile();
+		String folderPath = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_BACKUP_DB_FOLDER);
+		CFW.DB.backupDatabaseFile(folderPath, "h2_database_backup");
 	}
 
 }

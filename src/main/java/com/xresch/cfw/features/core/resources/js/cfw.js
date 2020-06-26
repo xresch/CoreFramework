@@ -1582,7 +1582,9 @@ function cfw_getJSON(url, params, callbackFunc){
 	$.get(url, params)
 		  .done(function(response, status, xhr) {
 		    //alert( "done" );
-			  callbackFunc(response, status, xhr);
+			  if(callbackFunc != null){
+				  callbackFunc(response, status, xhr);
+			  }
 		  })
 		  .fail(function(xhr, status, thrownError) {
 			  CFW.ui.addToast("Request failed", "URL: "+url, "danger", CFW.config.toastErrorDelay)

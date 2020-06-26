@@ -135,9 +135,9 @@ public class CFWDB {
 	/********************************************************************************************
 	 *
 	 ********************************************************************************************/
-	public static void backupDatabaseFile() {
+	public static boolean backupDatabaseFile(String folderPath, String filename) {
 		
-		String folderPath = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_BACKUP_DB_FOLDER);
+
 		if(Strings.isNullOrEmpty(folderPath)) {
 			folderPath = "./backup/";
 		}
@@ -151,10 +151,11 @@ public class CFWDB {
 		if(folder.isDirectory()
 		&& folder.canWrite()) {
 			
-			String filePath = folderPath+"h2_database_backup_"+CFW.Time.formatDate(new Date(),"YYYY-MM-dd_HH-mm")+".zip";
+			String filePath = folderPath+filename+"_"+CFW.Time.formatDate(new Date(),"YYYY-MM-dd_HH-mm")+".zip";
 			new CFWSQL(null).custom("BACKUP TO '"+filePath+"';")
 				.execute();
 			
+			return true;
 			
 		}else {
 			new CFWLog(logger)
@@ -162,6 +163,7 @@ public class CFWDB {
 				.severe("Database backup could not be created, folder is not accessible: "+folderPath);
 		}
 		
+		return false;
 		
 	}
 	

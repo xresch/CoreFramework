@@ -3,6 +3,7 @@ package com.xresch.cfw._main;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Logger;
@@ -13,10 +14,11 @@ import javax.servlet.SessionTrackingMode;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.eclipse.jetty.security.ConfigurableSpnegoLoginService;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
-import org.eclipse.jetty.security.SpnegoLoginService;
-import org.eclipse.jetty.security.authentication.SpnegoAuthenticator;
+import org.eclipse.jetty.security.authentication.AuthorizationService;
+import org.eclipse.jetty.security.authentication.ConfigurableSpnegoAuthenticator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -43,14 +45,7 @@ import org.eclipse.jetty.util.security.Constraint;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import com.xresch.cfw.features.api.ServletAPILogin;
-import com.xresch.cfw.features.core.ServletAssembly;
-import com.xresch.cfw.features.core.ServletAutocomplete;
-import com.xresch.cfw.features.core.ServletFormHandler;
-import com.xresch.cfw.features.core.ServletJARResource;
-import com.xresch.cfw.features.core.auth.ServletChangePassword;
-import com.xresch.cfw.features.core.auth.ServletLogin;
-import com.xresch.cfw.features.core.auth.ServletLogout;
+import com.xresch.cfw.features.core.auth.CFWLoginService;
 import com.xresch.cfw.handlers.AuthenticationHandler;
 import com.xresch.cfw.handlers.HTTPSRedirectHandler;
 import com.xresch.cfw.handlers.RedirectDefaultPageHandler;
@@ -255,74 +250,84 @@ public class CFWApplicationExecutor {
 	 * Create an security handler.
 	 * @throws Exception
 	 **************************************************************************************************/
-	public static ConstraintSecurityHandler createSPNEGOSecurityHandler() throws Exception {
-		
-		System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
-	    System.setProperty("java.security.auth.login.config", "./config/kerberos/spnego.conf");
-	    System.setProperty("java.security.krb5.conf", "./config/kerberos/krb5.conf");
-	    System.setProperty("sun.security.krb5.debug", "true");
-	    System.setProperty("sun.security.jgss.debug", "true");
-	    System.setProperty("java.security.debug", "all");
-
-        //System.setProperty("java.security.krb5.realm","EXAMPLE.COM");
-        //System.setProperty("java.security.krb5.kdc","example.net:60088");
-	    
-	    String domainRealm = "EXAMPLE.COM";
-
-	    Constraint constraint = new Constraint();
-	    constraint.setName(Constraint.__SPNEGO_AUTH);
-	    constraint.setRoles(new String[]{domainRealm});
-	    constraint.setAuthenticate(true);
-
-	    ConstraintMapping cm = new ConstraintMapping();
-	    cm.setConstraint(constraint);
-	    cm.setPathSpec("/app/*");
-
-	    SpnegoLoginService loginService = new SpnegoLoginService();
-	    loginService.setConfig("./config/kerberos/spnego.properties");
-	    loginService.setName(domainRealm);
-
-	    ConstraintSecurityHandler sh = new ConstraintSecurityHandler();
-	    sh.setAuthenticator(new SpnegoAuthenticator());
-	    sh.setLoginService(loginService);
-	    sh.setConstraintMappings(new ConstraintMapping[]{cm});
-	    sh.setRealmName(domainRealm);
-	    
-	    return sh;
-	}
-	/**************************************************************************************************
-	 * Create an security handler.
-	 * @throws Exception
-	 **************************************************************************************************/
 //	public static ConstraintSecurityHandler createSPNEGOSecurityHandler() throws Exception {
 //		
 //		System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
 //	    System.setProperty("java.security.auth.login.config", "./config/kerberos/spnego.conf");
-//	    System.setProperty("java.security.krb5.conf", "./config/kerberos/krb5.ini");
+//	    System.setProperty("java.security.krb5.conf", "./config/kerberos/krb5.conf");
+//	    System.setProperty("sun.security.krb5.debug", "true");
+//	    System.setProperty("sun.security.jgss.debug", "true");
+//	    System.setProperty("java.security.debug", "all");
+//
+//        //System.setProperty("java.security.krb5.realm","EXAMPLE.COM");
+//        //System.setProperty("java.security.krb5.kdc","example.net:60088");
 //	    
-//		String domainRealm = "MY.COM";
+//	    String domainRealm = "EXAMPLE.COM";
 //
-//		Constraint constraint = new Constraint();
-//		constraint.setName(Constraint.__SPNEGO_AUTH);
-//		constraint.setRoles(new String[]{domainRealm});
-//		constraint.setAuthenticate(true);
-//		
-//		ConstraintMapping cm = new ConstraintMapping();
-//		cm.setConstraint(constraint);
-//		cm.setPathSpec("/*");
-//		
-//		ConfigurableSpnegoLoginService loginService = new ConfigurableSpnegoLoginService("realm"));
+//	    Constraint constraint = new Constraint();
+//	    constraint.setName(Constraint.__SPNEGO_AUTH);
+//	    constraint.setRoles(new String[]{domainRealm});
+//	    constraint.setAuthenticate(true);
 //
-//		loginService.setKeyTabPath(Paths.get(new URI("./config/kerberos/cfw.keytab")));
-//		loginService.setServiceName("HTTP");
-//		loginService.setHostName("example.com");
-//		
-//		ConstraintSecurityHandler sh = new ConstraintSecurityHandler();
-//		sh.setAuthenticator(new SpnegoAuthenticator());
-//		sh.setLoginService(loginService);
-//		sh.setConstraintMappings(new ConstraintMapping[]{cm});
-//		sh.setRealmName(domainRealm);
+//	    ConstraintMapping cm = new ConstraintMapping();
+//	    cm.setConstraint(constraint);
+//	    cm.setPathSpec("/app/*");
+//
+//	    SpnegoLoginService loginService = new SpnegoLoginService();
+//	    loginService.setConfig("./config/kerberos/spnego.properties");
+//	    loginService.setName(domainRealm);
+//
+//	    ConstraintSecurityHandler sh = new ConstraintSecurityHandler();
+//	    sh.setAuthenticator(new SpnegoAuthenticator());
+//	    sh.setLoginService(loginService);
+//	    sh.setConstraintMappings(new ConstraintMapping[]{cm});
+//	    sh.setRealmName(domainRealm);
+//	    
 //	    return sh;
+//	}
+	
+	/**************************************************************************************************
+	 * Create an security handler.
+	 * @throws Exception
+	 **************************************************************************************************/
+	
+//	private ConstraintSecurityHandler createSPNEGOSecurityHandler() throws Exception {
+//		
+//		System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
+//	    System.setProperty("java.security.auth.login.config", "./config/kerberos/spnego.conf");
+//	    System.setProperty("java.security.krb5.conf", "./config/kerberos/krb5.conf");
+//	    System.setProperty("sun.security.krb5.debug", "true");
+//	    System.setProperty("sun.security.jgss.debug", "true");
+//	    System.setProperty("java.security.debug", "all");
+//	    
+//		String domainRealm = "EXAMPLE.COM";
+//
+//		CFWLoginService authorizationService = new CFWLoginService();
+//
+//        ConfigurableSpnegoLoginService loginService = new ConfigurableSpnegoLoginService(domainRealm, AuthorizationService.from(authorizationService, ""));
+//        loginService.addBean(authorizationService);
+//        loginService.setKeyTabPath(Paths.get("./config/kerberos/cfw.keytab"));
+//        loginService.setServiceName("ldap");
+//        loginService.setHostName("example.net");
+//        server.addBean(loginService);
+//
+//        ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
+//        
+//        Constraint constraint = new Constraint();
+//        constraint.setName(Constraint.__SPNEGO_AUTH);
+//	    constraint.setRoles(new String[]{domainRealm});
+//	    constraint.setAuthenticate(true);
+//
+//        ConstraintMapping mapping = new ConstraintMapping();
+//        mapping.setPathSpec("/app/*");
+//        mapping.setConstraint(constraint);
+//        securityHandler.addConstraintMapping(mapping);
+//        
+//        ConfigurableSpnegoAuthenticator authenticator = new ConfigurableSpnegoAuthenticator();
+//        securityHandler.setAuthenticator(authenticator);
+//        securityHandler.setLoginService(loginService);
+//
+//	    return securityHandler;
 //	}
    
 

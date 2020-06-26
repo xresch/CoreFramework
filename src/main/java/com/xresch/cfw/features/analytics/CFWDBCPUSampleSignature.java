@@ -1,9 +1,9 @@
-package com.xresch.cfw.features.cpusampling;
+package com.xresch.cfw.features.analytics;
 
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import com.xresch.cfw.features.cpusampling.CPUSampleSignature.CPUSampleSignatureFields;
+import com.xresch.cfw.features.analytics.CPUSampleSignature.CPUSampleSignatureFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************

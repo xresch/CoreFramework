@@ -11,6 +11,7 @@ import com.xresch.cfw.db.spaces.CFWDBSpace;
 import com.xresch.cfw.db.spaces.CFWDBSpaceGroup;
 import com.xresch.cfw.db.spaces.Space;
 import com.xresch.cfw.db.spaces.SpaceGroup;
+import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.api.CFWRegistryAPI;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.config.CFWDBConfig;
@@ -20,7 +21,6 @@ import com.xresch.cfw.features.contextsettings.CFWRegistryContextSettings;
 import com.xresch.cfw.features.contextsettings.FeatureContextSettings;
 import com.xresch.cfw.features.core.CFWLocalization;
 import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.features.cpusampling.FeatureCPUSampling;
 import com.xresch.cfw.features.dashboard.CFWDBDashboard;
 import com.xresch.cfw.features.dashboard.CFWDBDashboardWidget;
 import com.xresch.cfw.features.dashboard.CFWRegistryWidgets;
@@ -221,7 +221,7 @@ public class CFW {
 		
 		CFW.Registry.Features.addFeature(FeatureUserManagement.class);	
 		CFW.Registry.Features.addFeature(FeatureAPI.class);	
-		CFW.Registry.Features.addFeature(FeatureCPUSampling.class);		
+		CFW.Registry.Features.addFeature(FeatureSystemAnalytics.class);		
 		CFW.Registry.Features.addFeature(FeatureManual.class);	
 		
 		if(CFW.AppSettings.isDashboardingEnabled()) {

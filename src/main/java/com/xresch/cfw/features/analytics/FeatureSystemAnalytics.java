@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.cpusampling;
+package com.xresch.cfw.features.analytics;
 
 import java.util.concurrent.ScheduledFuture;
 
@@ -18,9 +18,9 @@ import com.xresch.cfw.response.bootstrap.MenuItem;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
-public class FeatureCPUSampling extends CFWAppFeature {
+public class FeatureSystemAnalytics extends CFWAppFeature {
 
-	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.cpusampling.resources";
+	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.analytics.resources";
 	
 	@Override
 	public void register() {
@@ -34,6 +34,13 @@ public class FeatureCPUSampling extends CFWAppFeature {
     	
     	//----------------------------------
     	// Register Regular Menu
+		
+		CFW.Registry.Components.addAdminCFWMenuItem(
+				(MenuItem)new MenuItem("DB Analytics")
+					.faicon("fas fa-microchip")
+					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.href("/app/dbanalytics")	
+				, "System Analytics");
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("CPU Sampling")
@@ -51,6 +58,7 @@ public class FeatureCPUSampling extends CFWAppFeature {
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
     	app.addAppServlet(ServletCPUSampling.class,  "/cpusampling");
+    	app.addAppServlet(ServletDatabaseAnalytics.class,  "/dbanalytics");
 	}
 
 	@Override

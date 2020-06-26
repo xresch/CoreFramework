@@ -106,10 +106,7 @@ public class ServletLogin extends HttpServlet
 					CFW.HTTP.redirectToURL(response, url);
 					return; 
 				}
-				
-				
-			}
-			
+			}	
 		}
 		
 		//Login Failure
