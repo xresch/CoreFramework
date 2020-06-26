@@ -28,10 +28,7 @@ public class ServletDatabaseAnalytics extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;
-	
-	private static String EARLIEST = "EARLIEST";
-	private static String LATEST = "LATEST";
-	
+
 	public ServletDatabaseAnalytics() {
 	
 	}
@@ -77,16 +74,19 @@ public class ServletDatabaseAnalytics extends HttpServlet
 		switch(action.toLowerCase()) {
 			case "dbsnapshot":		boolean isSuccess = CFW.DB.backupDatabaseFile("./snapshot", "h2_database_snapshot");
 									if(isSuccess) {
-										CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Snapshot created on harddisk under {APP_ROOT}/snapshot.");
+										CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Snapshot created on hard disk under {APP_ROOT}/snapshot.");
 									}else {
 										CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while creating snapshot.");
 									}
 									break;
 			case "fetch": 			
 				switch(item.toLowerCase()) {
-					case "dbanalytics": 		getCPUSampling(jsonResponse, request);
+					case "tablerowcount": 		jsonResponse.getContent().append(CFW.DB.selectTableRowCountAsJSON());
 	  											break;
-	  										
+	  											
+					case "querystatistics":		jsonResponse.getContent().append(CFW.DB.selectQueryStatisticsAsJSON());
+												break;		
+	  											
 					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
 												break;
 				}
@@ -101,58 +101,10 @@ public class ServletDatabaseAnalytics extends HttpServlet
 	/*************************************************************************************
 	 * 
 	 *************************************************************************************/
-	private void getCPUSampling(JSONResponse jsonResponse, HttpServletRequest request) {
+	private void getTableRowCount(JSONResponse jsonResponse, HttpServletRequest request) {
 		
-		if( CFW.Context.Request.hasPermission(FeatureCore.PERMISSION_APP_ANALYTICS) ) {
-
-			//--------------------------
-			// Get Input and Validate
-			TimeInputs times = new TimeInputs();
-			if(!times.mapRequestParameters(request)) {
-				return;
-			}
 			
-			//--------------------------
-			// Fetch Data
-			String signatures = CFWDBCPUSampleSignature.getSignatureListAsJSON();
-			String timeseries =  CFWDBCPUSample.getForTimeframeAsJSON(times.getEarliest(), times.getLatest());
 
-			jsonResponse.getContent()
-				.append("{\"signatures\": ").append(signatures)
-				.append(",\"timeseries\": ").append(timeseries)
-				.append("}");
-		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Access to statistics denied.");
-		}
-		
 	}
-	
-	/*************************************************************************************
-	 * 
-	 *************************************************************************************/
-	public class TimeInputs extends CFWObject{
 		
-		public CFWField<Timestamp> earliest = CFWField.newTimestamp(FormFieldType.DATETIMEPICKER, EARLIEST)
-				.setDescription("The earliest time fetched for the CPU sample.")
-				.setValue(new Timestamp(System.currentTimeMillis() - 1000 * 3600))
-				.addValidator(new NotNullOrEmptyValidator());
-		
-		public CFWField<Timestamp> latest = CFWField.newTimestamp(FormFieldType.DATETIMEPICKER, LATEST)
-				.setDescription("The latest time fetched for the CPU sample.")
-				.setValue(new Timestamp(System.currentTimeMillis()))
-				.addValidator(new NotNullOrEmptyValidator());
-		
-		public TimeInputs() {
-			this.addFields(earliest, latest);
-		}
-		
-		public Timestamp getEarliest() {
-			return this.earliest.getValue();
-		}
-		
-		public Timestamp getLatest() {
-			return this.latest.getValue();
-		}
-	}
-	
 }

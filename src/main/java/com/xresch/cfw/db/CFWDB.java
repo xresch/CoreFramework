@@ -18,6 +18,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFW.Properties;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
@@ -98,7 +99,7 @@ public class CFWDB {
 					if(isInitialized) {
 						new CFWLog(logger)
 							.method("getConnection")
-							.finer("DB Connections Active: "+connectionPool.getActiveConnections());
+							.finest("DB Connections Active: "+connectionPool.getActiveConnections());
 						
 						if(transactionConnection.get() != null) {
 							return transactionConnection.get();
@@ -115,6 +116,19 @@ public class CFWDB {
 				}
 				
 			};
+			
+			
+			CFW.DB.preparedExecute("SET QUERY_STATISTICS_MAX_ENTRIES 500;");
+			CFW.DB.preparedExecute("SET QUERY_STATISTICS TRUE;");
+			
+			CFW.DB.preparedExecuteBatch("DROP ALIAS IF EXISTS count_rows;\r\n" + 
+					"create ALIAS count_rows as \r\n" + 
+					"'long countRows(Connection conn, String tableName) \r\n" + 
+					"    throws SQLException {\r\n" + 
+					"ResultSet rs = conn.createStatement().\r\n" + 
+					"    executeQuery(\"select count(*) from \" + tableName);\r\n" + 
+					"rs.next();\r\n" + 
+					"return rs.getLong(1); }';");
 			
 		} catch (SQLException e) {
 			CFWDB.isInitialized = false;
@@ -331,6 +345,30 @@ public class CFWDB {
 		return DBInterface.resultSetToXML(resultSet);
 	}
 	
+	/********************************************************************************************
+	 * Create Testdata for testing purposes
+	 ********************************************************************************************/
+	public static String selectTableRowCountAsJSON() {
+		
+		return new CFWSQL(null)
+			.custom("SELECT TABLE_NAME, COUNT_ROWS(table_name) AS ROW_COUNT" + 
+					" FROM INFORMATION_SCHEMA.TABLES" + 
+					" WHERE table_schema = 'PUBLIC'" + 
+					" ORDER BY TABLE_NAME;")
+			.getAsJSON();
+
+	}
+	
+	/********************************************************************************************
+	 * Create Testdata for testing purposes
+	 ********************************************************************************************/
+	public static String selectQueryStatisticsAsJSON() {
+		
+		return new CFWSQL(null)
+			.loadSQLResource(FeatureCore.RESOURCE_PACKAGE+".sql", "h2_query_statistics.sql")
+			.getAsJSON();
+
+	}
 	/********************************************************************************************
 	 * Create Testdata for testing purposes
 	 ********************************************************************************************/
