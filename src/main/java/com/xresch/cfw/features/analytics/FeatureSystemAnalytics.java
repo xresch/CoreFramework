@@ -53,6 +53,21 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 	@Override
 	public void initializeDB() {
 		
+		//----------------------------------
+    	// Enable SQL Statistics
+		CFW.DB.preparedExecute("SET QUERY_STATISTICS_MAX_ENTRIES 500;");
+		CFW.DB.preparedExecute("SET QUERY_STATISTICS TRUE;");
+		
+		//----------------------------------------
+    	// Procedure: row_count() for table name
+		CFW.DB.preparedExecuteBatch("DROP ALIAS IF EXISTS count_rows;\r\n" + 
+				"create ALIAS count_rows as \r\n" + 
+				"'long countRows(Connection conn, String tableName) \r\n" + 
+				"    throws SQLException {\r\n" + 
+				"ResultSet rs = conn.createStatement().\r\n" + 
+				"    executeQuery(\"select count(*) from \" + tableName);\r\n" + 
+				"rs.next();\r\n" + 
+				"return rs.getLong(1); }';");
 	}
 
 	@Override

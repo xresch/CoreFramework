@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.logging.Logger;
 
+import javax.tools.JavaCompiler;
+
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.Server;
@@ -116,20 +118,7 @@ public class CFWDB {
 				}
 				
 			};
-			
-			
-			CFW.DB.preparedExecute("SET QUERY_STATISTICS_MAX_ENTRIES 500;");
-			CFW.DB.preparedExecute("SET QUERY_STATISTICS TRUE;");
-			
-			CFW.DB.preparedExecuteBatch("DROP ALIAS IF EXISTS count_rows;\r\n" + 
-					"create ALIAS count_rows as \r\n" + 
-					"'long countRows(Connection conn, String tableName) \r\n" + 
-					"    throws SQLException {\r\n" + 
-					"ResultSet rs = conn.createStatement().\r\n" + 
-					"    executeQuery(\"select count(*) from \" + tableName);\r\n" + 
-					"rs.next();\r\n" + 
-					"return rs.getLong(1); }';");
-			
+						
 		} catch (SQLException e) {
 			CFWDB.isInitialized = false;
 			new CFWLog(CFWDB.logger)
