@@ -1,12 +1,14 @@
 package com.xresch.cfw.features.usermgmt;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
@@ -420,16 +422,38 @@ public class CFWDBUser {
 			return new AutocompleteResult();
 		}
 		
-		return new User()
+		ArrayList<CFWObject> userList = new User()
 			.queryCache(CFWDBUser.class, "autocompleteUser")
-			.select(UserFields.PK_ID.toString(),
-					UserFields.USERNAME.toString())
+			.select(UserFields.PK_ID,
+					UserFields.USERNAME,
+					UserFields.FIRSTNAME,
+					UserFields.LASTNAME,
+					UserFields.EMAIL)
 			.whereLike(UserFields.USERNAME.toString(), "%"+searchValue+"%")
 			.and().not().is(UserFields.PK_ID, CFW.Context.Request.getUser().id())
 			.limit(maxResults)
-			.getAsAutocompleteResult(UserFields.PK_ID.toString(), 
-								UserFields.USERNAME.toString());
+			.getAsObjectList();
 		
+		AutocompleteList autocompleteList = new AutocompleteList();
+		for(CFWObject userObject : userList) {
+			User user = (User) userObject;
+			
+			String label = user.username();
+			
+			if(!Strings.isNullOrEmpty(user.firstname())
+			|| !Strings.isNullOrEmpty(user.lastname())) {
+				label += "("+(
+						Strings.nullToEmpty(user.firstname()) 
+						+ " "
+						+ Strings.nullToEmpty(user.lastname())
+					).trim()+")";
+			}
+			
+			autocompleteList.addItem(user.id(), label, user.email());
+			
+		}
+			
+		return new AutocompleteResult(autocompleteList);
 	}
 	
 }
