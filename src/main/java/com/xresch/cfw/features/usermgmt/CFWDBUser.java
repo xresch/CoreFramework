@@ -421,7 +421,7 @@ public class CFWDBUser {
 		if(Strings.isNullOrEmpty(searchValue)) {
 			return new AutocompleteResult();
 		}
-		
+		String likeString = "%"+searchValue.toLowerCase()+"%";
 		ArrayList<CFWObject> userList = new User()
 			.queryCache(CFWDBUser.class, "autocompleteUser")
 			.select(UserFields.PK_ID,
@@ -429,7 +429,9 @@ public class CFWDBUser {
 					UserFields.FIRSTNAME,
 					UserFields.LASTNAME,
 					UserFields.EMAIL)
-			.whereLike(UserFields.USERNAME.toString(), "%"+searchValue+"%")
+			.whereLike("LOWER("+UserFields.USERNAME+")", likeString)
+			.or().like("LOWER("+UserFields.FIRSTNAME+")", likeString)
+			.or().like("LOWER("+UserFields.LASTNAME+")", likeString)
 			.and().not().is(UserFields.PK_ID, CFW.Context.Request.getUser().id())
 			.limit(maxResults)
 			.getAsObjectList();

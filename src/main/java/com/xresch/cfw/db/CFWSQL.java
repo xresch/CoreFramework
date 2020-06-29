@@ -762,7 +762,7 @@ public class CFWSQL {
 	}
 	
 	/****************************************************************
-	 * Adds a WHERE clause to the query.
+	 * Adds a OR clause to the query.
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public CFWSQL or(Object fieldname, Object value, boolean isCaseSensitive) {
