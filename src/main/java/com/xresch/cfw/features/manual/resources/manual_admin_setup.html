@@ -1,0 +1,44 @@
+<p>
+The following is a general setup guide for applications using the Core Framework(CFW).
+Depending on the application there might be additional steps needed to make the system fully functional.
+</p>
+
+<h2>System Requirements</h2>
+
+<ul>
+	<li><b>Java:&nbsp;</b>JDK 1.8 or higher. JRE is not enough, The H2 database needs the javac executable to be able to compile database procedures.</li>
+	<li><b>OS:&nbsp;</b>Windows or Linux</li>
+	<li><b>Capacity:&nbsp;</b>Depends on the implementations used and the load on the system, a minimum of 4GB RAM and 4 x 1.6 GHz Cores is recommended.</li>
+</ul>
+
+
+<h2>Setup Guide</h2>
+<ol>
+	<li><b>Install JDK:&nbsp;</b>Install JDK 1.8 or higher. The /bin-Folder has to be added to the PATH environment variable so that the javac executable can be found.</li>
+	<li><b>Download:&nbsp;</b>Get the .zip-File with the application binaries.</li>
+	<li><b>Unzip:&nbsp;</b>Unzip the files to the folder where the application should be located.</li>
+	<li><b>Configuration:&nbsp;</b>Open ./config/cfw.properties and adjust the properties to fit your needs.</li>
+	<li><b>Start:&nbsp;</b>Start the application using the start script in the root folder.</li>
+	<li><b>Default Login:&nbsp;</b>Use http://localhost:{port}/ to access the application. Use the default user 'admin' with password 'admin'.</li>
+	<li><b>Change Default Password:&nbsp;</b>Change the default password of the admin user using &quot;Menu Bar &gt;&gt; Username &gt;&gt; Change Password&quot;.</li>
+	<li><b>Configuration(Optional):&nbsp;</b>Go to  &quot;Menu Bar &gt;&gt; Admin &gt;&gt; Configuration&quot; to adjust the configuration of your application.</li>
+	<li><b>Context Settings(Optional):&nbsp;</b>If your application provides Context Settings, you might need to add such settings before you can make use of certain features. Go to  &quot;Menubar &gt;&gt; Admin &gt;&gt; Context Settings&quot; to add context settings for your needs.</li>
+	<li><b>Restart:&nbsp;</b>Stop the application, delete the log files, start the application to see if restarts properly and no major issues are present in the logs.</li>
+	<li><b>System Startup:&nbsp;</b>Add the application to your system startup to make sure it runs after the machine gets restarted.</li>
+	<li><b>Manual:&nbsp;</b>After your application is running you can access the other manual pages directly in the application under &quot;Menu Bar &gt;&gt; Manual&quot;</a>.</li>
+</ol>
+
+
+<h2>Troubleshooting</h2>
+<p>Here some tips for troubleshooting the application:</p>
+<ul>
+	<li><b>Log Files:&nbsp;</b>Check the log files for WARNING or SEVERE messages.</li>
+	<li><b>More Logs:&nbsp;</b>To get more detailed logs, adjust the log level in ./config/logging.properties, which is a confugration file for java.util.logging.</li>
+	<li><b>CPU Sampling:&nbsp;</b>If you have performance issues, you can use &quot;Menu Bar &gt;&gt; Admin &gt;&gt; System Analytics &gt;&gt; CPU Sampling&quot; to get insights into what methods consume the most time in the application.</li>
+	<li><b>DB Statistics:&nbsp;</b>You can see soem Database statistics under &quot;Menu Bar &gt;&gt; Admin &gt;&gt; System Analytics &gt;&gt; DB Analytics&quot;.</li>
+</ul>
+
+
+
+
+

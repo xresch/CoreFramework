@@ -1,7 +1,16 @@
 
 <p>
-The general application configuration can be found in the menu under "Admin &gt;&gt; Configuration".
-Here you can adjust the look and feel of the application, performance settings and other properties. 
-Please find more details about every setting by hovering the small info icon on hte left side of the configuration field.
+In this section of the manual you will find details about configuring and managing your application.
+For starters, here the most important things you need to know to configure your application:
 </p>
 
+<ul>
+	<li><b>Default user admin:&nbsp;</b> When starting your application for the first time, the user 'admin' will be created with password 'admin'. Use this user to login and configure your application. Don't forget to change the password.</li>
+	<li><b>{APP_FOLDER}/config/cfw.properties:&nbsp;</b> In this properties file you will find fundamental configurations like the authentication, http, database and mailing settings.</li>
+	<li><b>{APP_FOLDER}/config/logging.properties:&nbsp;</b> Here you can change the log configuration.(java.util.logging) </li>
+	<li><b>Application Configuration:&nbsp;</b> The general application configuration can be found in the menu under "Admin &gt;&gt; Configuration".
+			Here you can adjust the look and feel of the application, performance settings and other properties. 
+			Please find more details about every setting by hovering the small info icon on the left side of the configuration field.
+	</li>
+	<li><b>API:&nbsp;</b> The API provides an easy way to fetch data from the database and do checks on the database contents. This can be helpful to check certain configurations, also there are some APIs that help to do audits for configurations like User &gt;&gt; getUserPermissions.</li>
+</ul>

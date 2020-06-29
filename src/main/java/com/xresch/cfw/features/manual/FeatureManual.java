@@ -91,10 +91,10 @@ public class FeatureManual extends CFWAppFeature {
 	 *****************************************************************/
 	private void registerAdminManual() {
 		
-		TOP_PAGE_ADMIN.addChild(new ManualPage("Introduction")
+		TOP_PAGE_ADMIN.addChild(new ManualPage("Setup")
 				.faicon("fas fa-star")
 				.addPermission(PERMISSION_ADMIN_MANUAL)
-				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "manual_admin_00_intro.html")
+				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "manual_admin_setup.html")
 			);
 		
 		TOP_PAGE_ADMIN.addChild(new ManualPage("Configuration")
