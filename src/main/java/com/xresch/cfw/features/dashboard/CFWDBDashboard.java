@@ -229,6 +229,8 @@ public class CFWDBDashboard {
 	}
 	
 	
+	
+	
 	/***************************************************************
 	 * Return a JSON string for export.
 	 * 
@@ -435,12 +437,41 @@ public class CFWDBDashboard {
 		return true;
 	}
 	
+	
+	/***************************************************************
+	 * 
+	 ****************************************************************/
 	public static boolean isDashboardOfCurrentUser(String dashboardID) {
 		
 		int count = new CFWSQL(new Dashboard())
 			.selectCount()
 			.where(DashboardFields.PK_ID.toString(), dashboardID)
 			.and(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+			.getCount();
+		
+		return count > 0;
+	}
+	
+	
+	/***************************************************************
+	 * 
+	 ****************************************************************/
+	public static boolean hasUserAccessToDashboard(String dashboardID) {
+		
+		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
+			return true;
+		}
+		
+		int userID = CFW.Context.Request.getUser().id();
+		String likeID = "%\""+userID+"\":%";
+		
+		int count = new CFWSQL(new Dashboard())
+			.loadSQLResource(FeatureDashboard.PACKAGE_RESOURCES, "SQL_hasUserAccessToDashboard.sql", 
+					dashboardID, 
+					userID, 
+					userID, 
+					likeID,
+					likeID)
 			.getCount();
 		
 		return count > 0;

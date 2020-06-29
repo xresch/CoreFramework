@@ -42,12 +42,22 @@ public class ServletDashboardView extends HttpServlet
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 			
+			String dashboardID = request.getParameter("id");
 			String action = request.getParameter("action");
 			
 			if(action == null) {
 				HTMLResponse html = new HTMLResponse("Dashboard");
 				StringBuffer content = html.getContent();
 				
+				//---------------------------
+				// Check Access
+				if(!CFW.DB.Dashboards.hasUserAccessToDashboard(dashboardID)) {
+					CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+					return;
+				}
+				
+				//---------------------------
+				// Build Response
 				html.addCSSFile(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "gridstack.min.css");
 				html.addCSSFile(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_dashboard.css");
 				
@@ -61,8 +71,8 @@ public class ServletDashboardView extends HttpServlet
 				// Add widget CSS and JS files based on
 				// user permissions
 				CFW.Registry.Widgets.addFilesToResponse(html);
-				
-				Dashboard dashboard = CFW.DB.Dashboards.selectByID(request.getParameter("id"));
+
+				Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
 				html.setPageTitle(dashboard.name());
 				html.addJavascriptData("dashboardName",  dashboard.name());
 				html.addJavascriptData("canEdit", canEdit(request.getParameter("id")) );
