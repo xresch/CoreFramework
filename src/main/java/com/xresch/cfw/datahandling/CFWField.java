@@ -128,7 +128,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	public static CFWField<String> newString(FormFieldType type, String fieldName){
 		return new CFWField<String>(String.class, type, fieldName)
-				.setColumnDefinition("VARCHAR");
+				.setColumnDefinition("VARCHAR_IGNORECASE");
 	}
 	
 	

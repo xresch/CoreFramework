@@ -10,6 +10,7 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.logging.CFWLog;
@@ -65,7 +66,6 @@ public class Permission extends CFWObject{
 									});
 	
 	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, PermissionFields.DESCRIPTION.toString())
-											.setColumnDefinition("CLOB")
 											.setDescription("The description of the permission.")
 											.addValidator(new LengthValidator(-1, 2000000));
 	
@@ -96,10 +96,6 @@ public class Permission extends CFWObject{
 	 **************************************************************************************/
 	public void updateTable() {
 				
-		//#####################################
-		// v2.0 to v2.1
-		//#####################################
-				
 		//---------------------------
 		// Add defaults to new column category
 		ArrayList<CFWObject> permissionArray = 
@@ -113,6 +109,12 @@ public class Permission extends CFWObject{
 				.update();
 			
 		}
+		
+		//---------------------------
+		// Change Description Data Type
+		new CFWSQL(this)
+			.custom("ALTER TABLE IF EXISTS CFW_PERMISSION ALTER COLUMN IF EXISTS DESCRIPTION SET DATA TYPE VARCHAR;")
+			.execute();
 		
 	}
 

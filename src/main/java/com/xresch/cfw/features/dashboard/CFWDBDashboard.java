@@ -198,34 +198,43 @@ public class CFWDBDashboard {
 	 ****************************************************************/
 	public static String getSharedDashboardListAsJSON() {
 		
-//		SELECT *, (SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER ) AS USERNAME 
-//		FROM CFW_DASHBOARD 
-//		WHERE ( IS_SHARED = TRUE AND JSON_SHARE_WITH_USERS IS NULL )
-//		OR ( IS_SHARED = TRUE AND JSON_SHARE_WITH_USERS LIKE '%"65":%') 
-//		OR JSON_EDITORS LIKE '%"65":%'
-//		ORDER BY LOWER(NAME);
 		int userID = CFW.Context.Request.getUser().id();
-		String likeID = "%\""+userID+"\":%";
-		return new Dashboard()
-				.queryCache(CFWDBDashboard.class, "getSharedDashboardListAsJSON")
-				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
-				.select()
-				.where("("+DashboardFields.IS_SHARED, true)
-						.and()
-							.custom("(")
-								.isNull(DashboardFields.JSON_SHARE_WITH_USERS)
-								.or()
-								.is(DashboardFields.JSON_SHARE_WITH_USERS, "{}")
-								.or()
-								.is(DashboardFields.FK_ID_USER, userID)
-							.custom(")")
-					.custom(")")
-				.or("("+DashboardFields.IS_SHARED.toString(), true)
-						.and().like(DashboardFields.JSON_SHARE_WITH_USERS, likeID)
-					.custom(")")
-				.or().like(DashboardFields.JSON_EDITORS, likeID)
-				.orderby(DashboardFields.NAME)
-				.getAsJSON();
+		String sharedUserslikeID = "%\""+userID+"\":%";
+		
+		//---------------------
+		// Shared with User
+		CFWSQL query =  new CFWSQL(new Dashboard())
+			.loadSQLResource(FeatureDashboard.PACKAGE_RESOURCES, "SQL_getSharedDashboardListAsJSON.sql", 
+					userID,
+					userID,
+					sharedUserslikeID,
+					sharedUserslikeID);
+			
+		
+		//---------------------
+		// Union with Shared Roles
+		query.union()
+			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION)
+			.where(DashboardFields.IS_SHARED, true)
+			.and().custom("(");
+		
+		Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
+		for(int i = 0 ; i < roleArray.length; i++ ) {
+			int roleID = roleArray[i];
+			if(i > 0) {
+				query.or();
+			}
+			query.like(DashboardFields.JSON_SHARE_WITH_ROLES, "%\""+roleID+"\":%");
+		}
+		
+		query.custom(")");
+		
+		//System.out.println(query.getStatementString());
+	
+		return query
+			.custom("ORDER BY NAME")
+			.getAsJSON();
 	}
 	
 	
@@ -458,10 +467,14 @@ public class CFWDBDashboard {
 	 ****************************************************************/
 	public static boolean hasUserAccessToDashboard(String dashboardID) {
 		
+		//-----------------------------------
+		// Check User is Admin
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 			return true;
 		}
 		
+		//-----------------------------------
+		// Check User is Shared/Editor
 		int userID = CFW.Context.Request.getUser().id();
 		String likeID = "%\""+userID+"\":%";
 		
@@ -469,12 +482,32 @@ public class CFWDBDashboard {
 			.loadSQLResource(FeatureDashboard.PACKAGE_RESOURCES, "SQL_hasUserAccessToDashboard.sql", 
 					dashboardID, 
 					userID, 
-					userID, 
 					likeID,
 					likeID)
 			.getCount();
 		
-		return count > 0;
+		if( count > 0) {
+			return true;
+		}
+		
+		//-----------------------------------
+		// Check User has Role
+		Dashboard dashboard = (Dashboard)new CFWSQL(new Dashboard())
+			.select(DashboardFields.JSON_SHARE_WITH_ROLES)
+			.where(DashboardFields.PK_ID, dashboardID)
+			.getFirstObject();
+		
+		LinkedHashMap<String, String> sharedRoles = dashboard.shareWithRoles();
+		
+		if(sharedRoles != null && sharedRoles.size() > 0) {
+			for(String roleID : sharedRoles.keySet()) {
+				if(CFW.Context.Request.hasRole(Integer.parseInt(roleID)) ) {
+					System.out.println("HAS ROLE!!!!");
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 	
 	//####################################################################################################

@@ -1,14 +1,19 @@
 package com.xresch.cfw.features.usermgmt;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.PrecheckHandler;
+import com.xresch.cfw.features.core.AutocompleteList;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
+import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -149,6 +154,31 @@ public class CFWDBRole {
 				.orderby(RoleFields.NAME.toString())
 				.getResultSet();
 		
+	}
+	
+	/****************************************************************
+	 * Returns a AutocompleteResult with roles.
+	 * 
+	 * @param searchValue
+	 * @param maxResults
+	 * @return true if exists, false otherwise or in case of exception.
+	 ****************************************************************/
+	public static AutocompleteResult autocompleteRole(String searchValue, int maxResults) {
+		
+		if(Strings.isNullOrEmpty(searchValue)) {
+			return new AutocompleteResult();
+		}
+		String likeString = "%"+searchValue.toLowerCase()+"%";
+		
+		return new Role()
+			.queryCache(CFWDBRole.class, "autocompleteRole(String, int)")
+			.select(RoleFields.PK_ID,
+					RoleFields.NAME,
+					RoleFields.DESCRIPTION)
+			.whereLike("LOWER("+RoleFields.NAME+")", likeString)
+			.limit(maxResults)
+			.getAsAutocompleteResult(RoleFields.PK_ID, RoleFields.NAME, RoleFields.DESCRIPTION);
+
 	}
 	
 	/***************************************************************

@@ -67,7 +67,6 @@ public class Role extends CFWObject {
 			});
 	
 	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, RoleFields.DESCRIPTION.toString())
-			.setColumnDefinition("CLOB")
 			.setDescription("The description of the role.")
 			.addValidator(new LengthValidator(-1, 2000000));
 	
@@ -129,11 +128,7 @@ public class Role extends CFWObject {
 	 * 
 	 **************************************************************************************/
 	public void updateTable() {
-				
-		//#####################################
-		// v2.0 to v2.1
-		//#####################################
-				
+								
 		//---------------------------
 		// Add defaults to new column category
 		ArrayList<CFWObject> roleArray = 
@@ -147,6 +142,12 @@ public class Role extends CFWObject {
 				.update();
 			
 		}
+
+		//---------------------------
+		// Change Description Data Type
+		new CFWSQL(this)
+			.custom("ALTER TABLE IF EXISTS CFW_ROLE ALTER COLUMN IF EXISTS DESCRIPTION SET DATA TYPE VARCHAR;")
+			.execute();
 		
 	}
 	

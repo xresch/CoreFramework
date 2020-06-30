@@ -76,7 +76,7 @@ public class CFWDB {
 			}
     	}
     	
-		String h2_url 		= "jdbc:h2:tcp://"+server+":"+port+"/"+storePath+"/"+databaseName;
+		String h2_url 		= "jdbc:h2:tcp://"+server+":"+port+"/"+storePath+"/"+databaseName+";IGNORECASE=TRUE";
 		new CFWLog(logger).info("H2 DB URL: "+ h2_url);
 		
 		try {

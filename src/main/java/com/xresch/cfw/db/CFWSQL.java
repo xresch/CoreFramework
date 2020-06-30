@@ -277,9 +277,9 @@ public class CFWSQL {
 	public CFWSQL select() {
 		if(!isQueryCached()) {
 			if(!this.hasColumnSubqueries()) {
-				query.append("SELECT * FROM "+object.getTableName());
+				query.append(" SELECT * FROM "+object.getTableName());
 			}else {
-				query.append("SELECT * "+this.getColumnSubqueriesString()+" FROM "+object.getTableName());
+				query.append(" SELECT * "+this.getColumnSubqueriesString()+" FROM "+object.getTableName());
 			}
 		}
 		return this;
@@ -292,7 +292,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL select(Object ...fieldnames) {
 		if(!isQueryCached()) {
-			query.append("SELECT");
+			query.append(" SELECT");
 			//---------------------------------
 			// Add Fields
 			for(Object fieldname : fieldnames) {
@@ -319,7 +319,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL selectWithout(String ...fieldnames) {
 		if(!isQueryCached()) {
-			query.append("SELECT");
+			query.append(" SELECT");
 			
 			//---------------------------------
 			// Add Fields
@@ -952,7 +952,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL custom(String queryPart) {
 		if(!isQueryCached()) {
-			query.append(queryPart);
+			query.append(" ").append(queryPart).append(" ");
 		}
 		return this;
 	}
@@ -1281,9 +1281,10 @@ public class CFWSQL {
 	}
 	
 	/***************************************************************
-	 * Execute the Query and gets the result as a string array list.
+	 * Execute the Query and gets the result as an AutocompleteResult
+	 * with value and label.
 	 ***************************************************************/
-	public AutocompleteResult getAsAutocompleteResult(Object keyColumnName, Object valueColumnName) {
+	public AutocompleteResult getAsAutocompleteResult(Object valueColumnName, Object labelColumnName) {
 		
 		AutocompleteList list = new AutocompleteList();
 		if(this.execute()) {
@@ -1294,8 +1295,8 @@ public class CFWSQL {
 			
 			try {
 				while(result.next()) {
-					Object key = result.getObject(keyColumnName.toString());
-					Object value = result.getObject(valueColumnName.toString());
+					Object key = result.getObject(valueColumnName.toString());
+					Object value = result.getObject(labelColumnName.toString());
 					list.addItem(key, value);
 				}
 			} catch (SQLException e) {
@@ -1312,6 +1313,42 @@ public class CFWSQL {
 		return new AutocompleteResult(list);
 		
 	}
+	
+	/***************************************************************
+	 * Execute the Query and gets the result as an AutocompleteResult
+	 * with value label, and description.
+	 ***************************************************************/
+	public AutocompleteResult getAsAutocompleteResult(Object valueColumnName, Object labelColumnName, Object descriptionColumnName) {
+		
+		AutocompleteList list = new AutocompleteList();
+		if(this.execute()) {
+			
+			if(result == null) {
+				return new AutocompleteResult();
+			}
+			
+			try {
+				while(result.next()) {
+					Object key = result.getObject(valueColumnName.toString());
+					Object value = result.getObject(labelColumnName.toString());
+					Object description = result.getObject(descriptionColumnName.toString());
+					list.addItem(key, value, description);
+				}
+			} catch (SQLException e) {
+				new CFWLog(logger)
+				.method("getAsLinkedHashMap")
+				.severe("Error reading object from database.", e);
+				
+			}finally {
+				CFWDB.close(result);
+			}
+			
+		}
+		
+		return new AutocompleteResult(list);
+		
+	}
+	
 		
 	/***************************************************************
 	 * Execute the Query and gets the result as JSON string.

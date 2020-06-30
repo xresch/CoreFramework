@@ -79,11 +79,24 @@ public class CFWContextRequest {
 		return null;
 	}
 	
-	public static HashMap<String, Role> getUserRoles() {
+	public static HashMap<Integer, Role> getUserRoles() {
 		if(sessionData.get() != null) {
 			return sessionData.get().getUserRoles();
 		}
 		return null;
+	}
+	
+	public static boolean hasRole(int roleID) {
+		
+		if(!CFW.Properties.AUTHENTICATION_ENABLED) {
+			return true;
+		}
+		
+		if(getUserRoles() != null && getUserRoles().containsKey(roleID)) {
+			return true;
+		}
+
+		return false;
 	}
 	
 	public static HashMap<String, Permission> getUserPermissions() {

@@ -229,7 +229,7 @@ public class CFWDBUser {
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
 	 ****************************************************************/
-	public static HashMap<String, Role> selectRolesForUser(int userID) {
+	public static HashMap<Integer, Role> selectRolesForUser(int userID) {
 		
 		return CFW.DB.UserRoleMap.selectAllRolesForUser(userID);
 	
@@ -239,7 +239,7 @@ public class CFWDBUser {
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
 	 ****************************************************************/
-	public static HashMap<String, Role> selectRolesForUser(User user) {
+	public static HashMap<Integer, Role> selectRolesForUser(User user) {
 		
 		return CFW.DB.UserRoleMap.selectAllRolesForUser(user);
 	
@@ -410,7 +410,7 @@ public class CFWDBUser {
 	}
 	
 	/****************************************************************
-	 * Returns a LinkedHashMap with users for CFWAutocomleteHandler.
+	 * Returns a AutocompleteResult with users.
 	 * 
 	 * @param searchValue
 	 * @param maxResults

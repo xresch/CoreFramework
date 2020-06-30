@@ -218,7 +218,7 @@ public class CFWDBUserRoleMap {
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
 	 ****************************************************************/
-	public static HashMap<String, Role> selectAllRolesForUser(User user) {
+	public static HashMap<Integer, Role> selectAllRolesForUser(User user) {
 		if( user == null) {
 			new CFWLog(logger)
 				.method("create")
@@ -234,7 +234,7 @@ public class CFWDBUserRoleMap {
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
 	 ****************************************************************/
-	public static HashMap<String, Role> selectAllRolesForUser(int userID) {
+	public static HashMap<Integer, Role> selectAllRolesForUser(int userID) {
 		
 		
 		String selectRolesForUser = "SELECT * FROM "+Role.TABLE_NAME+" G "
@@ -245,12 +245,12 @@ public class CFWDBUserRoleMap {
 		ResultSet result = CFWDB.preparedExecuteQuery(selectRolesForUser, 
 				userID);
 		
-		HashMap<String, Role> roleMap = new HashMap<String, Role>(); 
+		HashMap<Integer, Role> roleMap = new HashMap<Integer, Role>(); 
 		
 		try {
 			while(result != null && result.next()) {
 				Role role = new Role(result);
-				roleMap.put(role.name(), role);
+				roleMap.put(role.id(), role);
 			}
 		} catch (SQLException e) {
 			new CFWLog(logger)

@@ -399,12 +399,12 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		//--------------------------------------
 		// Test selectRolesForUser()
 		System.out.println("================= Test selectRolesForUser() =================");
-		HashMap<String, Role> roles = CFW.DB.Users.selectRolesForUser(testuserB);
+		HashMap<Integer, Role> roles = CFW.DB.Users.selectRolesForUser(testuserB);
 		
 		Assertions.assertEquals(2, roles.size(), "Testuser2 is part of 2 roles.");
-		Assertions.assertTrue(roles.containsKey(testroleA.name()), "User is part of testroleA.");
-		Assertions.assertTrue(roles.containsKey(testroleB.name()), "User is part of testroleB.");
-		Assertions.assertFalse(roles.containsKey(testroleC.name()), "User is NOT part of testroleC.");
+		Assertions.assertTrue(roles.containsKey(testroleA.id()), "User is part of testroleA.");
+		Assertions.assertTrue(roles.containsKey(testroleB.id()), "User is part of testroleB.");
+		Assertions.assertFalse(roles.containsKey(testroleC.id()), "User is NOT part of testroleC.");
 		
 		//--------------------------------------
 		// Test remove UserRoleMapping when role is deleted

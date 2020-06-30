@@ -22,7 +22,7 @@ public class SessionData {
 	private boolean isLoggedIn = false;
 	private boolean hasManualPages = false;
 	private User user = null;
-	private HashMap<String, Role> userRoles = new HashMap<String, Role>();
+	private HashMap<Integer, Role> userRoles = new HashMap<Integer, Role>();
 	private HashMap<String, Permission> userPermissions = new HashMap<String, Permission>();
 	private static LinkedHashMap<String,CFWForm> formMap = new LinkedHashMap<String,CFWForm>();
 	
@@ -73,7 +73,7 @@ public class SessionData {
 	
 	
 	
-	public HashMap<String, Role> getUserRoles() {
+	public HashMap<Integer, Role> getUserRoles() {
 		return userRoles;
 	}
 

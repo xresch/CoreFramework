@@ -13,11 +13,14 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.LengthValidator;
@@ -38,6 +41,7 @@ public class Dashboard extends CFWObject {
 		DESCRIPTION,
 		IS_SHARED,
 		JSON_SHARE_WITH_USERS,
+		JSON_SHARE_WITH_ROLES,
 		JSON_EDITORS,
 		IS_DELETABLE,
 		IS_RENAMABLE,
@@ -80,16 +84,26 @@ public class Dashboard extends CFWObject {
 	
 	private CFWField<Boolean> isShared = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.IS_SHARED)
 			.apiFieldType(FormFieldType.TEXT)
-			.setDescription("Make the dashboard shared with other people or keep it private.")
+			.setDescription("Make the dashboard shared with other people or keep it private. If no users or roles are specified, the dashboard is shared with all users having access to the dashboard features.")
 			.setValue(false);
 	
 	private CFWField<LinkedHashMap<String,String>> shareWithUsers = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_USERS)
 			.setLabel("Share with Users")
-			.setDescription("Share this dashboard only with specific users. If none is specified, all users will see the dashboard.")
+			.setDescription("Share this dashboard with specific users.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
 					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+				}
+			});
+	
+	private CFWField<LinkedHashMap<String,String>> shareWithRoles = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_ROLES)
+			.setLabel("Share with Roles")
+			.setDescription("Share this dashboard with the users having at least one of the specified roles.")
+			.setValue(null)
+			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+					return CFW.DB.Roles.autocompleteRole(searchValue, this.getMaxResults());					
 				}
 			});
 	
@@ -138,9 +152,21 @@ public class Dashboard extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyOwner, name, description, isShared, shareWithUsers, editors, isDeletable, isRenamable);
+		this.addFields(id, foreignKeyOwner, name, description, isShared, shareWithUsers, shareWithRoles, editors, isDeletable, isRenamable);
 	}
 		
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	public void updateTable() {
+								
+		//---------------------------
+		// Change Description Data Type
+		new CFWSQL(this)
+			.custom("ALTER TABLE IF EXISTS CFW_DASHBOARD ALTER COLUMN IF EXISTS NAME SET DATA TYPE VARCHAR_IGNORECASE;")
+			.execute();
+		
+	}
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
@@ -163,6 +189,7 @@ public class Dashboard extends CFWObject {
 						DashboardFields.DESCRIPTION.toString(),
 						DashboardFields.IS_SHARED.toString(),
 						DashboardFields.JSON_SHARE_WITH_USERS.toString(),
+						DashboardFields.JSON_SHARE_WITH_ROLES.toString(),
 						DashboardFields.JSON_EDITORS.toString(),
 						DashboardFields.IS_DELETABLE.toString(),
 						DashboardFields.IS_RENAMABLE.toString(),		
@@ -245,6 +272,14 @@ public class Dashboard extends CFWObject {
 		return this;
 	}
 	
+	public LinkedHashMap<String,String> shareWithRoles() {
+		return shareWithRoles.getValue();
+	}
+	
+	public Dashboard shareWithRoles(LinkedHashMap<String,String> value) {
+		this.shareWithRoles.setValue(value);
+		return this;
+	}
 	public LinkedHashMap<String,String> editors() {
 		return editors.getValue();
 	}
