@@ -13,10 +13,10 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
-public class WidgetEasterEggsSnow extends WidgetDefinition {
+public class WidgetEasterEggsFireworks extends WidgetDefinition {
 
 	@Override
-	public String getWidgetType() {return "cfw_easteregg_fireworks";}
+	public String getWidgetType() {return "cfw_easteregg_snow";}
 
 	@Override
 	public CFWObject getSettings() {
@@ -36,7 +36,7 @@ public class WidgetEasterEggsSnow extends WidgetDefinition {
 
 	@Override
 	public ArrayList<FileDefinition> getJavascriptFiles() {
-		FileDefinition js = new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_widget_eastereggs_fireworks.js");
+		FileDefinition js = new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_widget_eastereggs_snow.js");
 		ArrayList<FileDefinition> array = new ArrayList<FileDefinition>();
 		array.add(js);
 		return array;
@@ -48,11 +48,4 @@ public class WidgetEasterEggsSnow extends WidgetDefinition {
 		return map;
 	}
 
-	@Override
-	public ArrayList<FileDefinition> getCSSFiles() {
-		FileDefinition js = new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_widget_eastereggs_fireworks.css");
-		ArrayList<FileDefinition> array = new ArrayList<FileDefinition>();
-		array.add(js);
-		return array;
-	}
 }
