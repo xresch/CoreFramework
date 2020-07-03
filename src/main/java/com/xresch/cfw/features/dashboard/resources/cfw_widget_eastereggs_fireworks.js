@@ -15,7 +15,7 @@
 			menulabel: CFWL('cfw_widget_fireworks', "Fireworks"),
 			description: CFWL('cfw_widget_fireworks_desc', "Adds some explosions to your dashboard."),
 			defaulttitle: "",
-			defaultwidth: 2,
+			defaultwidth: 4,
 			defaultheight: 4,
 			createWidgetInstance: function (widgetObject, callback) {		
 				
@@ -486,13 +486,13 @@ function FireworkParticle(oC,isRandom,type,baseX,baseY,obeyBoundaries) {
   };
 
   this.setOpacity = function(n) { // where n = 0..100
-	  self.oImg.style.opacity = 1/(n/2);
-	  if	  (n > 90) { self.oImg.style.fontSize = '8px';}
-	  else  if(n > 70) { self.oImg.style.fontSize = '7px';}
-	  else  if(n > 50) { self.oImg.style.fontSize = '6px';}
-	  else  if(n > 30) { self.oImg.style.fontSize = '5px';}
-	  else  if(n > 10) { self.oImg.style.fontSize = '4px';}
-	  else  { self.oImg.style.fontSize = '3px';}
+	  self.oImg.style.opacity = 1/( (101-n)/2);
+	  if	  (n > 90) { self.oImg.style.fontSize = '6px';}
+	  else  if(n > 70) { self.oImg.style.fontSize = '5px';}
+	  else  if(n > 50) { self.oImg.style.fontSize = '4px';}
+	  else  if(n > 30) { self.oImg.style.fontSize = '3px';}
+	  else  if(n > 10) { self.oImg.style.fontSize = '2px';}
+	  else  { self.oImg.style.fontSize = '2px';}
     //self.oImg.style.marginLeft = -100+(n*GLOBAL_FWC.particleXY/10)+'px';
   };
 

@@ -15,7 +15,7 @@
 			menulabel: CFWL('cfw_widget_discomode', "Disco!!!"),
 			description: CFWL('cfw_widget_discomode_desc', "Toggles discomode."),
 			defaulttitle: "",
-			defaultwidth: 2,
+			defaultwidth: 4,
 			defaultheight: 4,
 			createWidgetInstance: function (widgetObject, callback) {		
 				var html = 

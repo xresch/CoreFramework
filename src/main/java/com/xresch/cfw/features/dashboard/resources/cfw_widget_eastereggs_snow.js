@@ -15,7 +15,7 @@
 			menulabel: CFWL('cfw_widget_snow', "Snow"),
 			description: CFWL('cfw_widget_snow_desc', "Adds some weather to your dashboard."),
 			defaulttitle: "",
-			defaultwidth: 2,
+			defaultwidth: 4,
 			defaultheight: 4,
 			createWidgetInstance: function (widgetObject, callback) {		
 				
@@ -77,7 +77,7 @@ var cfw_widget_easteregg_snowStorm = (function(window, document) {
   this.followMouse = false;        // Snow movement can respond to the user's mouse
   this.snowColor = '#fff';        // Don't eat (or use?) yellow snow.
   this.snowCharacter = '<i class="far fa-snowflake fa-xs"></i>';  // &bull; = bullet, &middot; is square on some systems etc.
-  this.snowStick = true;          // Whether or not snow should "stick" at the bottom. When off, will never collect.
+  this.snowStick = false;          // Whether or not snow should "stick" at the bottom. When off, will never collect.
   this.targetElement = null; // element which snow will be appended to (null = document.body) - can be an element ID eg. 'myDiv', or a DOM node reference
   this.useMeltEffect = false;      // When recycling fallen snow (or rarely, when falling), have it "melt" and fade out if browser supports it
   this.useTwinkleEffect = false;  // Allow snow to randomly "flicker" in and out of view while falling

@@ -26,7 +26,7 @@
 .fireworkParticle {
  /* elements that explode from the container */
  position:absolute;
- font-size: 8px;
+ font-size: 6px;
  width:10px;
  height:10px;
  overflow:hidden;
