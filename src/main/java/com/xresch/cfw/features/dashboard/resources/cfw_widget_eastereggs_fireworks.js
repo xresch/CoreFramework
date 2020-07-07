@@ -114,8 +114,9 @@ function Animator() {
   writeDebug('Animator()');
   this.tweens = [];
   this.tweens['default'] = [1,2,3,4,5,6,7,8,9,10,9,8,7,6,5,4,3,2,1];
-  this.tweens.blast = [12,12,11,10,10,9,8,7,6,5,4,3,2,1];
-  this.tweens.fade = [10,10,10,10,10,10,10,10,10,10];
+  this.tweens.blast = [16,12,11,10,9,9,8,7,6,5,4,3,2,1];
+  this.tweens.blastreverse = [1,2,3,4,5,6,7,8,9,10,10,11,12,12];
+  this.tweens.fade = [10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10];
   this.queue = [];
   this.queue.IDs = [];
   this.active = false;
@@ -337,7 +338,7 @@ function Firework(oC,startX,startY,burstX,burstY,burstType,nRadius,nParticles,nC
     for (var i=self.particles.length; i--;) {
       self.particles[i].moveRel();
       self.particles[i].nextState();
-      self.particles[i].setOpacity(GLOBAL_FWC.tweenFade[self.frame]);
+      self.particles[i].setOpacity(GLOBAL_FWC.tweenFade[self.frame]+20);
     }
     if (self.frame++>=self.tween.length) {
       self.active = false;
@@ -486,7 +487,7 @@ function FireworkParticle(oC,isRandom,type,baseX,baseY,obeyBoundaries) {
   };
 
   this.setOpacity = function(n) { // where n = 0..100
-	  self.oImg.style.opacity = 1/( (101-n)/2);
+	  self.oImg.style.opacity = 0.15+1/( (101-n)/2);
 	  if	  (n > 90) { self.oImg.style.fontSize = '6px';}
 	  else  if(n > 70) { self.oImg.style.fontSize = '5px';}
 	  else  if(n > 50) { self.oImg.style.fontSize = '4px';}
@@ -575,7 +576,7 @@ function FireworkParticle(oC,isRandom,type,baseX,baseY,obeyBoundaries) {
     self.type = t;
     switch(t){
     	case 1: 	self.oImg.style.color = "white"; 	break;
-    	case 2: 	self.oImg.style.color = "red"; 	break;
+    	case 2: 	self.oImg.style.color = "red"; 		break;
     	case 3: 	self.oImg.style.color = "yellow"; 	break;
     	case 4: 	self.oImg.style.color = "green"; 	break;
     	case 5: 	self.oImg.style.color = "blue"; 	break;
@@ -588,6 +589,11 @@ function FireworkParticle(oC,isRandom,type,baseX,baseY,obeyBoundaries) {
   self.setType(type);
   self.oC.appendChild(self.o);
 
+  this.randomizedRGBA = function(r,g,b){
+	  var red = (r + 10*(Math.random()*2)-1) )
+	  return 'rgba('
+	  			+
+  }
 }
 
 function createFirework(nRadius,nParticles,nCircles,nBurstType,startX,startY,burstX,burstY,allowRandom,obeyBoundaries) {

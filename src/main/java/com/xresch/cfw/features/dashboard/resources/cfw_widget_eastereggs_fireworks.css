@@ -27,6 +27,7 @@
  /* elements that explode from the container */
  position:absolute;
  font-size: 6px;
+ opacity: 0.8;
  width:10px;
  height:10px;
  overflow:hidden;
