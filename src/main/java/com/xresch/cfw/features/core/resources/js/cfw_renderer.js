@@ -62,7 +62,9 @@ CFW.render.registerRenderer("tiles",
 				// the border style of the tile, choose between: null | 'none' | 'round' | 'superround' | 'asymmetric' | 'superasymmetric' | 'ellipsis'
 				borderstyle: null,
 				// the border that should be applied, like '1px solid black'
-				border: null
+				border: null,
+				// show a popover with details about the data when hovering a tile
+				popover: true
 			};
 			
 			var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.tiles);
@@ -147,7 +149,7 @@ CFW.render.registerRenderer("tiles",
 						definition.rendererSettings.table = {};
 					}
 					definition.rendererSettings.table.verticalize = true;
-					
+					definition.rendererSettings.table.striped = true;
 					//remove alertstyle and textstyle
 					var visiblefields = Object.keys(definition.data);
 					visiblefields.pop();
@@ -163,6 +165,20 @@ CFW.render.registerRenderer("tiles",
 							renderer.render(definition))
 					;
 				})
+				
+				//=====================================
+				// Add Details Popover
+				if(settings.popover){
+					currentTile.popover({
+						trigger: 'hover',
+						html: true,
+						placement: 'auto',
+						boundary: 'window',
+						// title: 'Details',
+						sanitize: false,
+						content: cfw_render_tiles_createDetailsTable(currentRecord, renderDef)
+					})
+				}
 				
 				//=====================================
 				// Create Tile
@@ -215,6 +231,34 @@ CFW.render.registerRenderer("tiles",
 	)
 );
 
+function cfw_render_tiles_createDetailsTable(entry, renderDef){
+	
+	//-------------------------
+	// Create render definition
+	var definition = Object.assign({}, renderDef);
+	definition.data = entry;
+	
+	if(definition.rendererSettings.table == null){
+		definition.rendererSettings.table = {};
+	}
+	definition.rendererSettings.table.verticalize = true;
+	definition.rendererSettings.table.narrow = true;
+	definition.rendererSettings.table.filter = false;
+	//remove alertstyle and textstyle
+	var visiblefields = Object.keys(definition.data);
+	visiblefields.pop();
+	visiblefields.pop();
+	
+	definition.visiblefields = visiblefields;
+	
+	//-------------------------
+	// Show Details Modal
+	var renderer = CFW.render.getRenderer('table');
+	var wrappedTable = renderer.render(definition);
+	var sizingDiv = $('<div style="font-size: smaller;">');
+	sizingDiv.append(wrappedTable);
+	return sizingDiv;
+}
 
 /******************************************************************
  * 
@@ -291,7 +335,7 @@ CFW.render.registerRenderer("table",
 			//===================================================
 			// Create Table
 			//===================================================
-			var cfwTable = new CFWTable(settings.verticalize);
+			var cfwTable = new CFWTable(settings);
 			
 			//-----------------------------------
 			// Create Headers
