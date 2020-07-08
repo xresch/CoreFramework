@@ -589,11 +589,6 @@ function FireworkParticle(oC,isRandom,type,baseX,baseY,obeyBoundaries) {
   self.setType(type);
   self.oC.appendChild(self.o);
 
-  this.randomizedRGBA = function(r,g,b){
-	  var red = (r + 10*(Math.random()*2)-1) )
-	  return 'rgba('
-	  			+
-  }
 }
 
 function createFirework(nRadius,nParticles,nCircles,nBurstType,startX,startY,burstX,burstY,allowRandom,obeyBoundaries) {
