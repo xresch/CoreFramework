@@ -44,7 +44,30 @@ class CFWRenderer{
 			// the data that should be rendered as an array
 		 	data: null,
 		 	// settings specific for the renderer, add as "rendererSettings.{rendererName}.{setting}"
-		 	rendererSettings: {}
+		 	rendererSettings: {},
+		 	getCustomizedValue: function(record, fieldname){
+		 		
+			 		var value = record[fieldname];
+			 		if(this.customizers[fieldname] == null){
+						return value;
+					}else{
+						var customizer = this.customizers[fieldname];
+						return customizer(record, value);
+					}
+			 	},
+		 	getTitleHTML:  function(record){
+		 		var title = "";
+		 		for(var j = 0; j < this.titlefields.length; j++){
+					var fieldname = this.titlefields[j];
+					title += this.getCustomizedValue(record,fieldname);
+					
+					if(j < this.titlefields.length-1){
+						title += this.titledelimiter;
+					}
+					
+				}
+		 		return title;
+			},
 		 };
 		  
 	 }

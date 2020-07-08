@@ -187,15 +187,8 @@ CFW.render.registerRenderer("tiles",
 
 					//-------------------------
 					// Create Title
-					var tileTitle = '';
-					for(var j = 0; j < renderDef.titlefields.length; j++){
-						var fieldname = renderDef.titlefields[j];
-						tileTitle += currentRecord[fieldname];
-						if(j < renderDef.titlefields.length-1){
-							tileTitle += renderDef.titledelimiter;
-						}
-						
-					}
+					var tileTitle = renderDef.getTitleHTML(currentRecord);
+
 					currentTile.append('<span class="text-center" style="font-size: '+18*settings.sizefactor+'px;"><b>'+tileTitle+'</b></span>');
 					//-------------------------
 					// Add field Values as Cells
@@ -404,6 +397,7 @@ CFW.render.registerRenderer("table",
 					if(renderDef.customizers[fieldname] == null){
 						
 						if(settings.verticalize){
+							//value already customized and may be a JQuery Object
 							var cell = $('<td>');
 							cell.append(value);
 							row.append(cell);
@@ -519,16 +513,8 @@ CFW.render.registerRenderer("panels",
 				};
 				 
 				//---------------------------
-				// Resolve Title
-				var titleString = "";
-				for (var j = 0; j < renderDef.titlefields.length; j++) {
-					if (j != 0) {
-						titleString += renderDef.titledelimiter;
-					}
-					titleString += currentRecord[renderDef.titlefields[j]];
-				}
-				
-				panelSettings.title.append(titleString);	
+				// Resolve Title				
+				panelSettings.title.append(renderDef.getTitleHTML(currentRecord));	
 				
 				//-------------------------
 				// Checkboxes for selects
