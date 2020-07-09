@@ -19,7 +19,7 @@
 			defaultheight: 4,
 			createWidgetInstance: function (widgetObject, callback) {		
 				var html = 
-					 '<button class="btn btn-sm btn-primary fa fa-globe" onclick="Disco('+widgetObject.JSON_SETTINGS.discolevel+')" style="height: 100%; width:100%;"></button>'
+					 '<button class="btn btn-sm text-white bg-cfw-purple fa fa-globe" onclick="cfw_widget_toggleDisco('+widgetObject.JSON_SETTINGS.discolevel+')" style="height: 100%; width:100%;"></button>'
 					;
 				callback(widgetObject, html);
 				
@@ -36,7 +36,7 @@
 	);
 })();
 
-function getRandomColor() {
+function cfw_getRandomColor() {
 	var letters = '0123456789ABCDEF';
 	var color = '#';
 	for (var i = 0; i < 6; i++) {
@@ -48,12 +48,12 @@ function getRandomColor() {
 var discoSet = window.localStorage.getItem("Disco");
 var discoToggle = null;
 
-function Disco(level) {
+function cfw_widget_toggleDisco(level) {
 	var speed = (1000 - level) / 100;
 	if (discoSet == null && discoToggle == null) {
 		$('[id^="widget-"]').addClass("fa-spin");
 		discoSet = setInterval(function(){ 
-			var bodyColor = getRandomColor();
+			var bodyColor = cfw_getRandomColor();
 			//$('[id^="widget-"]').addClass("fa-spin");
 			$('[id^="widget-"]').css('animation', 'fa-spin '+speed+'s infinite linear');
 			$('body').css("background-color", bodyColor);
