@@ -43,12 +43,14 @@ function cfw_manual_createPrintView(pageGUID){
 			cssLink.href = CFW_MANUAL_HOST_URL+href;
 			printView.document.head.appendChild(cssLink);
 		}
-	}
+	}	
 	
+	//--------------------------
+	// Override Bootstrap Style
 	var cssLink = printView.document.createElement("link");
 	cssLink.rel = "stylesheet";
 	cssLink.media = "screen, print";
-	cssLink.href = CFW_MANUAL_HOST_URL+"/cfw/jarresource?pkg=com.xresch.cfw.features.core.resources.css&file=bootstrap.css";
+	cssLink.href = CFW_MANUAL_HOST_URL+"/cfw/jarresource?pkg=com.xresch.cfw.features.core.resources.css&file=bootstrap-theme-bootstrap.css";
 	printView.document.head.appendChild(cssLink);
 		
 	//--------------------------
@@ -70,7 +72,7 @@ function cfw_manual_createPrintView(pageGUID){
 	//--------------------------
 	//create window title	
 	var title = printView.document.createElement("title");
-	title.innerHTML = "Quotes Print View";
+	title.innerHTML = "Manual";
 	printView.document.head.appendChild(title);
 	
 	//--------------------------
@@ -85,35 +87,67 @@ function cfw_manual_createPrintView(pageGUID){
 		+'table, pre, code, p { page-break-inside:auto }'
 		+'tr    { page-break-inside:avoid; page-break-after:auto }'
 		+'#paper {'
-			+'padding: 7mm;'
-			+'width: 80%;'
+			+'padding: 20mm;'
+			+'width: 100%;'
 			+'border-collapse: collapse;'
 		+'}'
 		+'img{'
 			+'padding-bottom: 5mm;' 
 		+'}'
-		+'h1, h2, h3{'
+		+'h1{'
+			+'page-break-before: always;' 
+		+'}'
+		+'.page-break{'
+			+'page-break-before: always;' 
+		+'}'
+		+'h1 {font-size: 32px;}' 
+		+'h2 {font-size: 30px;}' 
+		+'h3 {font-size: 28px;}' 
+		+'h4 {font-size: 26px;}'
+		+'h5 {font-size: 24px;}'
+		+'h6 {font-size: 22px;}'
+		+'div, p, span, table {font-size: 20px;}' 
+		+'h1, h2, h3, h4, h5, h6{'
 			+'padding-top: 5mm;' 
+		+'}'
+		+'#print-toc > h1, #doc-title, h1 + div > h1,  h1 + div > .page-break, h2 + div > .page-break, h3 + div > .page-break, h4 + div > .page-break{'
+			+'page-break-before: avoid;' 
 		+'}'
 		'</style>';
 	
 	parent.append(cssString);
 		
-
-
 	//--------------------------
 	// Print as Text
-	var parentPage = CFW_MANUAL_GUID_PAGE_MAP[pageGUID];
-	if(parentPage != null){
-		title.innerHTML = 'Manual - '+parentPage.title;
+	var parentPages = [];
+	var titleString = "Application Manual";
+	if(pageGUID != null){
+		//--------------------------
+		// Print Current Page
+		var parentPages = [CFW_MANUAL_GUID_PAGE_MAP[pageGUID]];
+		titleString = 'Manual - '+parentPages[0].title;
+	}else{
+		//--------------------------
+		// Print Full manual
+		$('#menu-content > li > a').each(function(){
+			var id = $(this).attr('id');
+			parentPages.push(CFW_MANUAL_GUID_PAGE_MAP[id]);
+		});
+		
+	}
+	
+	if(parentPages.length != 0){
+		title.innerHTML = titleString;
 		var paper = $('<div id="paper">');
 		var printTOC = $('<div id="print-toc">');
 		
-		paper.append('<h1>Manual - '+parentPage.title+'</h1>');
+		paper.append('<h1 id="doc-title">'+titleString+'</h1>');
 		paper.append(printTOC);
 		parent.append(paper);
 		
-		cfw_manual_addPageToPrintView(paper, parentPage);
+		for(var i = 0; i < parentPages.length; i++){
+			cfw_manual_addPageToPrintView(paper, parentPages[i], 0);
+		}
 		
 		var progressInterval = window.setInterval(function(){
 			if(CFW_MANUAL_COUNTER_PRINT_IN_PROGRESS == 0){
@@ -130,11 +164,13 @@ function cfw_manual_createPrintView(pageGUID){
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_manual_addPageToPrintView(parentContainer, page){
-		
+function cfw_manual_addPageToPrintView(parentContainer, page, headerOffset){
+	
+	var head = headerOffset+1;
+	
 	var guid = "page-"+CFW.utils.randomString(16);
 	var pageDiv = $('<div id="'+guid+'">');
-	pageDiv.append('<h1>'+page.title+'</h1>');
+	pageDiv.append('<h'+head+' class="page-break">'+page.title+'</h'+head+'>');
 	parentContainer.append(pageDiv);
 	
 	if(page.hasContent){
@@ -142,9 +178,8 @@ function cfw_manual_addPageToPrintView(parentContainer, page){
 		CFW.http.getJSON("./manual", {action: "fetch", item: "page", path: page.path}, function (data){
 			if(data.payload != undefined){
 				var pageData = data.payload;
-				var enhancedContent = pageData.content.replace(/"\/cfw/g, '"'+CFW_MANUAL_HOST_URL+'/cfw')
-	
-				pageDiv.find('h1').first(1).after(enhancedContent);
+				var enhancedContent = cfw_manual_preparePageForPrint(pageData.content, head);				
+				pageDiv.find('h'+head).first(1).after(enhancedContent);
 				pageDiv.find('pre code').each(function(index, element){
 					hljs.highlightBlock(element);
 				})
@@ -155,12 +190,47 @@ function cfw_manual_addPageToPrintView(parentContainer, page){
 	
 	if(!CFW.utils.isNullOrEmpty(page.children)){
 		for(var i = 0; i < page.children.length; i++){
-			cfw_manual_addPageToPrintView(pageDiv, page.children[i]);
+			cfw_manual_addPageToPrintView(pageDiv, page.children[i], headerOffset+1);
+		}
+	}
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_manual_preparePageForPrint(pageContent, headerOffset){
+	console.log('===== cfw_manual_preparePageForPrint =====')
+	//------------------------------
+	// Replace relative paths
+	pageContent = CFW.utils.replaceAll(pageContent, '"/cfw', '"'+CFW_MANUAL_HOST_URL+'/cfw');
+	pageContent = CFW.utils.replaceAll(pageContent, '"/app', '"'+CFW_MANUAL_HOST_URL+'/app');
+	
+	//------------------------------
+	// Find first Header Level
+	var level = 0;
+	for(var level = 1; level <= 7; level++){
+		console.log('find level'+level)
+		if(level == 7){ level = -1; break;}
+		if(pageContent.indexOf('<h'+level) > -1){
+			break;
+		}
+	}
+		
+	//------------------------------
+	// Replace Headers
+	if(level != -1){
+		console.log('has level'+level)
+		var offset = headerOffset - level + 1;
+		for(var i = 5; i > 0; i-- ){
+			console.log('replace ')
+			var newLevel = (i+offset <= 6) ? i+offset : 6;
+			console.log('replace h'+i+' with h'+newLevel)
+			pageContent = CFW.utils.replaceAll(pageContent, 'h'+i+'>', 'h'+newLevel+'>');
 		}
 	}
 	
+	return pageContent;
 }
-
 
 /******************************************************************
  * 

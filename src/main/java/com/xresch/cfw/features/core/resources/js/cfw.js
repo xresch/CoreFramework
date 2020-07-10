@@ -13,7 +13,7 @@
  * Chains the function after the existing window.onload function.
  *
  *************************************************************************************/
-function cfw_chainedOnload(func) {
+function cfw_utils_chainedOnload(func) {
   var oldonload = window.onload;
   if (typeof window.onload != 'function') {
     window.onload = func;
@@ -33,7 +33,7 @@ function cfw_chainedOnload(func) {
  * Either executes a function or evaluates a string a s javascript code.
  *
  *************************************************************************************/
-function cfw_executeCodeOrFunction(jsCodeOrFunction){
+function cfw_utils_executeCodeOrFunction(jsCodeOrFunction){
 	if(typeof jsCodeOrFunction === "function"){
 		jsCodeOrFunction();
 	}else{
@@ -45,8 +45,41 @@ function cfw_executeCodeOrFunction(jsCodeOrFunction){
  * returns a random string
  *
  *************************************************************************************/
-function cfw_randomString(maxChars){
+function cfw_utils_randomString(maxChars){
 	return Math.random().toString(maxChars).substring(2, maxChars /2) + Math.random().toString(36).substring(2, maxChars /2);
+}
+
+
+/************************************************************************************************
+ * Check if a string value is null or empty string
+ ************************************************************************************************/
+function cfw_utils_isNullOrEmpty(value){
+
+	if(value === undefined || value === null ||  value === '' || (typeof value === 'string' && value.trim() == '') ){
+		return true;
+	}
+	
+	return false;
+}
+
+/************************************************************************************************
+ * Replaces all occurences of one string with another.
+ ************************************************************************************************/
+function cfw_utils_replaceAll(string, search, replace) {
+  return string.split(search).join(replace);
+}
+
+/************************************************************************************************
+ * Converts null and undefined to the specified nullToThis value.
+ * 
+ ************************************************************************************************/
+function cfw_utils_nullTo(value, nullToThis){
+
+	if(value === undefined || value === null ){
+		return nullToThis;
+	}
+	
+	return value;
 }
 
 /**************************************************************************************
@@ -913,7 +946,7 @@ function cfw_objectToHTMLList(object){
 function cfw_table_toc(contentAreaSelector, resultSelector, headerTag){
 	
 	var target = $(resultSelector);
-	var headers = $(contentAreaSelector).find("h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible, h7:visible, h8:visible, h9:visible");
+	var headers = $(contentAreaSelector).find("h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible");
 	
 	var h = "h1";
 	if(headerTag != null){
@@ -1180,7 +1213,7 @@ function cfw_showModal(modalTitle, modalBody, jsCode){
 	// Add Callback
 	if(jsCode != null){
 		defaultModal.on('hidden.bs.modal', function () {
-			cfw_executeCodeOrFunction(jsCode);
+			cfw_utils_executeCodeOrFunction(jsCode);
 			$("#"+modalID).off('hidden.bs.modal');
 		});	
 	}
@@ -1248,7 +1281,7 @@ function cfw_showSmallModal(modalTitle, modalBody, jsCode){
 	if(jsCode != null){
 
 		smallModal.on('hidden.bs.modal', function () {
-			cfw_executeCodeOrFunction(jsCode);
+			cfw_utils_executeCodeOrFunction(jsCode);
 			$("#"+modalID).off('hidden.bs.modal');
 		});	
 	}
@@ -1955,30 +1988,7 @@ function cfw_lang(key, defaultValue){
 	}
 
 }
-/************************************************************************************************
- * Check if a string value is null or empty string
- ************************************************************************************************/
-function cfw_isNullOrEmpty(value){
 
-	if(value === undefined || value === null ||  value === '' || (typeof value === 'string' && value.trim() == '') ){
-		return true;
-	}
-	
-	return false;
-}
-
-/************************************************************************************************
- * Converts null and undefined to the specified nullToThis value.
- * 
- ************************************************************************************************/
-function cfw_nullTo(value, nullToThis){
-
-	if(value === undefined || value === null ){
-		return nullToThis;
-	}
-	
-	return value;
-}
 /********************************************************************
  * CFW FRAMEWORK STRUCTURE
  * -----------------------
@@ -2045,11 +2055,12 @@ var CFW = {
 		selectElementContent: cfw_selectElementContent
 	},
 	utils: {
-		executeCodeOrFunction: cfw_executeCodeOrFunction,
-		randomString: cfw_randomString,
-		chainedOnload: cfw_chainedOnload,
-		isNullOrEmpty: cfw_isNullOrEmpty,
-		nullTo: cfw_nullTo
+		executeCodeOrFunction: cfw_utils_executeCodeOrFunction,
+		randomString: cfw_utils_randomString,
+		chainedOnload: cfw_utils_chainedOnload,
+		isNullOrEmpty: cfw_utils_isNullOrEmpty,
+		nullTo: cfw_utils_nullTo,
+		replaceAll: cfw_utils_replaceAll
 	},
 	ui: {
 		createToggleButton: cfw_createToggleButton,
