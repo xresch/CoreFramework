@@ -693,8 +693,8 @@ CFW.render.registerRenderer("chart",
 				
 				if(datasets[label] == undefined){
 					hue += CFW.utils.randomInt(30,50);
-					var borderColor = CFW.colors.randomHSL(hue, 50,100,40,70);
-					var bgColor = borderColor.replace('1.0)', '0.5)');
+					var borderColor = CFW.colors.randomHSL(hue,65,100,45,65);
+					var bgColor = borderColor.replace('1.0)', '0.65)');
 					datasets[label] = {
 							label: label, 
 							data: [], 
