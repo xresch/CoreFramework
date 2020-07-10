@@ -36,24 +36,17 @@
 	);
 })();
 
-function cfw_getRandomColor() {
-	var letters = '0123456789ABCDEF';
-	var color = '#';
-	for (var i = 0; i < 6; i++) {
-	  color += letters[Math.floor(Math.random() * 16)];
-	}
-	return color;
-}
-
 var discoSet = window.localStorage.getItem("Disco");
 var discoToggle = null;
-
+var discoColor = 0;
 function cfw_widget_toggleDisco(level) {
 	var speed = (1000 - level) / 100;
 	if (discoSet == null && discoToggle == null) {
 		$('[id^="widget-"]').addClass("fa-spin");
 		discoSet = setInterval(function(){ 
-			var bodyColor = cfw_getRandomColor();
+			discoColor += CFW.utils.randomInt(20,40);
+			var bodyColor = CFW.colors.randomHSL(discoColor, 40,70,30,70);
+			console.log(bodyColor);
 			//$('[id^="widget-"]').addClass("fa-spin");
 			$('[id^="widget-"]').css('animation', 'fa-spin '+speed+'s infinite linear');
 			$('body').css("background-color", bodyColor);

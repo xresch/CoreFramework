@@ -81,6 +81,57 @@ function cfw_utils_nullTo(value, nullToThis){
 	
 	return value;
 }
+/************************************************************************************************
+ * Returns a Random integer between min(inclusive) and max(exclusive).
+ ************************************************************************************************/
+function cfw_utils_randomInt(min, max) {
+	return Math.floor(Math.random() * (max - min) + min);
+}
+
+/************************************************************************************************
+ * Creates a random RGB string like "rgba(112, 54, 210, 1.0)" 
+ ************************************************************************************************/
+function cfw_colors_randomRGB() {
+	var r = Math.floor(Math.random()*255);
+	var g = Math.floor(Math.random()*255);
+	var b = Math.floor(Math.random()*255);
+	
+	return 'rgba('+r+','+g+','+b+', 1.0)';
+	
+}
+
+
+/************************************************************************************************
+ * Creates a random HSL string like "hsla(112, 54, 210, 1.0)" 
+ * @param minS The minimum saturation in percent
+ * @param maxS The maximum saturation in percent
+ * @param minL The minimum Lightness in percent
+ * @param maxL The maximum Lightness in percent
+ ************************************************************************************************/
+function cfw_colors_randomHSL(minS, maxS, minL, maxL) {
+	var h = CFW.utils.randomInt(0,256);
+	var s = CFW.utils.randomInt(minS, maxS);
+	var l = CFW.utils.randomInt(minL, maxL);
+	
+	return 'hsla('+h+','+s+'%,'+l+'%, 1.0)';
+}
+
+/************************************************************************************************
+ * Creates a random HSL string like "hsla(112, 54, 210, 1.0)" for the given Hue.
+ * @param hue the hue or any integer value (remainder for hue % 256 will be used)
+ * @param minS The minimum saturation in percent
+ * @param maxS The maximum saturation in percent
+ * @param minL The minimum Lightness in percent
+ * @param maxL The maximum Lightness in percent
+ ************************************************************************************************/
+function cfw_colors_randomHSL(hue, minS, maxS, minL, maxL) {
+	
+	var s = CFW.utils.randomInt(minS, maxS);
+	var l = CFW.utils.randomInt(minL, maxL);
+	
+	return 'hsla('+hue % 256+','+s+'%,'+l+'%, 1.0)';
+}
+
 
 /**************************************************************************************
  * Filters items in the selected DOM nodes.
@@ -517,7 +568,6 @@ function cfw_autocompleteCreateItemList(inputField, values){
 	itemList.attr("id", autocompleteID);
 	itemList.addClass("autocomplete-list flex-fill");
 			
-	console.log(values);
 	//----------------------------
 	// Iterate values object
 	for (key in values) {
@@ -563,13 +613,13 @@ function cfw_autocompleteCreateItemList(inputField, values){
 			var isTagsInput = element.data('tagsinput');
 			var isTagsselector = element.data('tagsselector');
 			
-			console.log("======"+isTagsInput+""+isTagsselector);
+			//console.log("======"+isTagsInput+""+isTagsselector);
 			if(!isTagsInput){
 				inputField.value = value;
 				cfw_autocompleteCloseAll();
 			}else{
-				console.log("isTagsInput: "+isTagsInput);
-				console.log("isTagsselector: "+isTagsselector);
+				//console.log("isTagsInput: "+isTagsInput);
+				//console.log("isTagsselector: "+isTagsselector);
 				inputField.value = '';
 				
 				if(isTagsselector){
@@ -2060,7 +2110,12 @@ var CFW = {
 		chainedOnload: cfw_utils_chainedOnload,
 		isNullOrEmpty: cfw_utils_isNullOrEmpty,
 		nullTo: cfw_utils_nullTo,
-		replaceAll: cfw_utils_replaceAll
+		replaceAll: cfw_utils_replaceAll,
+		randomInt: cfw_utils_randomInt,
+	},
+	colors: {
+		randomRGB: cfw_colors_randomRGB,
+		randomHSL: cfw_colors_randomHSL,
 	},
 	ui: {
 		createToggleButton: cfw_createToggleButton,

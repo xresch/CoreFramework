@@ -68,6 +68,19 @@ class CFWRenderer{
 				}
 		 		return title;
 			},
+			getTitleString:  function(record){
+		 		var title = "";
+		 		for(var j = 0; j < this.titlefields.length; j++){
+					var fieldname = this.titlefields[j];
+					title += record[fieldname];
+					
+					if(j < this.titlefields.length-1){
+						title += this.titledelimiter;
+					}
+					
+				}
+		 		return title;
+			},
 		 };
 		  
 	 }

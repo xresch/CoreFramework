@@ -47,7 +47,6 @@ TODO
 
 - Manual: Change chevron icon when page gets expanded/collapsed
 - Manual: Multilingual manual
-- Manual: Print View Button
 
 - CFW: CFWApplicationExecutor - ForwardedRequestCustomizer make it work with reverse proxy
 - CFW: Implement custom shutdown stopping database, application, features, etc...
@@ -83,6 +82,7 @@ TODO
 
 DONE
 ====
+- Manual: Print View Button
 - Dashboard: Enable hierarchical categories
 - CFW: Add loading icon to Form Submit button when waiting for reply.
 - Theusinator: Fix Dropdown Issue

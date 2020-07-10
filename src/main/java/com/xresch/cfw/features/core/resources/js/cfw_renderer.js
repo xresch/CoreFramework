@@ -1,3 +1,27 @@
+/******************************************************************
+ * Execute a multi action.
+ * Element needs the following JQuery.data() attributes:
+ *   - checkboxSelector: JQuery selection string without ":checked"
+ *   - function: the function that should be executed
+ ******************************************************************/
+function cfw_internal_executeMultiAction(buttonElement){
+	
+	var checkboxSelector = $(buttonElement).data('checkboxSelector');
+	var callbackFunction = $(buttonElement).data('function');
+		
+	var recordContainerArray = [];
+	var valuesArray = [];
+	var recordsArray = [];
+	
+	$.each($(checkboxSelector+':checked'), function(){
+		valuesArray.push( $(this).val() );
+		recordsArray.push( $(this).data('record') );
+		recordContainerArray.push( $(this).closest('.cfwRecordContainer').get(0) );
+	});
+	
+	callbackFunction(recordContainerArray, recordsArray, valuesArray);
+	
+}
 
 /******************************************************************
  * 
@@ -621,27 +645,162 @@ CFW.render.registerRenderer("panels",
 	})
 );
 
+
 /******************************************************************
- * Execute a multi action.
- * Element needs the following JQuery.data() attributes:
- *   - checkboxSelector: JQuery selection string without ":checked"
- *   - function: the function that should be executed
+ * 
  ******************************************************************/
-function cfw_internal_executeMultiAction(buttonElement){
-	
-	var checkboxSelector = $(buttonElement).data('checkboxSelector');
-	var callbackFunction = $(buttonElement).data('function');
-		
-	var recordContainerArray = [];
-	var valuesArray = [];
-	var recordsArray = [];
-	
-	$.each($(checkboxSelector+':checked'), function(){
-		valuesArray.push( $(this).val() );
-		recordsArray.push( $(this).data('record') );
-		recordContainerArray.push( $(this).closest('.cfwRecordContainer').get(0) );
-	});
-	
-	callbackFunction(recordContainerArray, recordsArray, valuesArray);
-	
-}
+
+CFW.render.registerRenderer("chart",
+	new CFWRenderer(
+		function (renderDef) {
+			
+			var workspace = $('#cfw-chartrenderer-workspace');
+
+			if(workspace.length == 0){
+				workspace = $('<div id="cfw-chartrenderer-workspace" style="width: 500px;">');
+				$('body').append(workspace);				
+			}
+			//========================================
+			// Render Specific settings
+			var defaultSettings = {
+				// The type of the chart: line|bar|radar|pie|doughnut|polarArea|bubble|scatter
+				charttype: 'line',
+				// show or hide the legend
+				showlegend: true, 
+				// make the chart responsive
+				responsive: true,
+				// The name of the field which contains the values for the x-axis
+				xfield: null,
+				// The name of the field which contains the values for the y-axis
+				yfield: null,
+				
+			};
+			
+			var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
+			
+			
+			//========================================
+			// Create Datasets
+			var datasets = {};
+			var hue = CFW.utils.randomInt(0,255); 
+			
+			for(var i = 0; i < renderDef.data.length; i++){
+				var currentRecord = renderDef.data[i];
+				
+				//----------------------------
+				// Create Label & Dataset
+				var label = renderDef.getTitleString(currentRecord);
+				
+				if(datasets[label] == undefined){
+					hue += CFW.utils.randomInt(30,50);
+					var borderColor = CFW.colors.randomHSL(hue, 50,100,40,70);
+					var bgColor = borderColor.replace('1.0)', '0.5)');
+					datasets[label] = {
+							label: label, 
+							data: [], 
+							backgroundColor: bgColor,
+				            borderColor: borderColor,
+				            borderWidth: 1
+						};
+				}
+				
+				if(settings.xfield == null){
+					datasets[label].data.push(currentRecord[settings.yfield]);
+				}else{
+					datasets[label].data.push({
+						t: currentRecord[settings.xfield], 
+						y: currentRecord[settings.yfield]
+					});
+				}
+			}
+			
+			//========================================
+			// Create ChartJS Data Object
+			var data = {
+				    datasets: []
+				};
+			
+			for(label in datasets){
+				data.datasets.push(datasets[label]);
+			}
+
+			console.log('===== data =====');
+			console.log(data);
+			//========================================
+			// Create ChartJS Data Object
+			var chartCanvas = $('<canvas class="chartJSCanvas" width="100%">');
+			var chartCtx = chartCanvas.get(0).getContext("2d");
+			workspace.append(chartCanvas);
+			
+			new Chart(chartCtx, {
+			    type: settings.charttype,
+			    data: data,
+			    options: {
+			    	//responsive: true,
+			    	maintainAspectRatio: false,
+			    	legend: {
+			    		position: 'bottom'
+			    	},
+			    	animation: {
+						duration: 0
+					},
+					scales: {
+						xAxes: [{
+							type: 'time',
+							distribution: 'series',
+							offset: true,
+							ticks: {
+								major: {
+									enabled: true,
+									//fontStyle: 'bold'
+								},
+								source: 'data',
+								autoSkip: true,
+								//autoSkipPadding: 75,
+								//maxRotation: 0,
+								//sampleSize: 1000
+							},
+							
+						}],
+						yAxes: [{
+							gridLines: {
+								drawBorder: false,
+								color: 'rgb(128,128,128)'
+							},
+							scaleLabel: {
+								display: false,
+								labelString: 'Closing price ($)'
+							},
+							ticks: {
+								major: {
+									enabled: true,
+									//fontStyle: 'bold'
+								},
+								source: 'data',
+								autoSkip: true,
+								autoSkipPadding: 10,
+								//sampleSize: 1000
+							},
+						}]
+					},
+					tooltips: {
+						intersect: false,
+						mode: 'index',
+						callbacks: {
+							label: function(tooltipItem, myData) {
+								var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+								if (label) {
+									label += ': ';
+								}
+								label += parseFloat(tooltipItem.value).toFixed(2);
+								return label;
+							}
+						}
+					}
+			    }
+			});
+			
+			return chartCanvas;
+		}
+	)
+);

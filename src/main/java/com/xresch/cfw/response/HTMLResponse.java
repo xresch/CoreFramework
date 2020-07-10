@@ -33,6 +33,8 @@ public class HTMLResponse extends AbstractHTMLResponse {
 		
 		this.pageTitle = pageTitle;
 		
+		//------------------------------------------
+		// CSS
 		String theme = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_THEME);
 		if(theme.equals("custom")) {
 			this.addCSSFileCFW(FileDefinition.HandlingType.FILE, "./resources/css", "bootstrap-theme-custom.css");
@@ -44,9 +46,12 @@ public class HTMLResponse extends AbstractHTMLResponse {
 		this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "jquery-ui.min.css");
 		this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "font-awesome.css");
 		this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "highlightjs_"+CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_CODE_THEME)+".css");
+		this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "chartjs.css");
 		this.addCSSFileCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "cfw.css");
 		this.addCSSFileCFW(FileDefinition.HandlingType.FILE, "./resources/css", "custom.css");
 		
+		//------------------------------------------
+		// Javascript
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "jquery-3.4.1.min.js");
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "jquery-ui-1.12.3.min.js");
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "bootstrap.bundle.min.js");
@@ -55,6 +60,8 @@ public class HTMLResponse extends AbstractHTMLResponse {
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "summernote-bs4.min.js");
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "highlight.js");
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "lodash-full-4.17.15.min.js");
+		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "moment-2.27.0.min.js"); // required by ChartJS
+		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-2.93.min.js"); 
 		
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "cfw_components.js");
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "cfw.js");
