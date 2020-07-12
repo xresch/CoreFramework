@@ -654,12 +654,6 @@ CFW.render.registerRenderer("chart",
 	new CFWRenderer(
 		function (renderDef) {
 			
-			var workspace = $('#cfw-chartrenderer-workspace');
-
-			if(workspace.length == 0){
-				workspace = $('<div id="cfw-chartrenderer-workspace" style="width: 500px;">');
-				$('body').append(workspace);				
-			}
 			//========================================
 			// Render Specific settings
 			var defaultSettings = {
@@ -678,6 +672,16 @@ CFW.render.registerRenderer("chart",
 			
 			var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
 			
+			//========================================
+			// Create Workspace
+			// ChartJS needs a DOM element to use
+			// getComputedStyle.
+			var workspace = $('#cfw-chartrenderer-workspace');
+
+			if(workspace.length == 0){
+				workspace = $('<div id="cfw-chartrenderer-workspace" style="display: none;">');
+				$('body').append(workspace);				
+			}
 			
 			//========================================
 			// Create Datasets
@@ -736,7 +740,7 @@ CFW.render.registerRenderer("chart",
 			    type: settings.charttype,
 			    data: data,
 			    options: {
-			    	//responsive: true,
+			    	responsive: true,
 			    	maintainAspectRatio: false,
 			    	legend: {
 			    		position: 'bottom'
@@ -786,21 +790,32 @@ CFW.render.registerRenderer("chart",
 					tooltips: {
 						intersect: false,
 						mode: 'index',
-						callbacks: {
-							label: function(tooltipItem, myData) {
-								var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-								if (label) {
-									label += ': ';
-								}
-								label += parseFloat(tooltipItem.value).toFixed(2);
-								return label;
-							}
-						}
-					}
+//						callbacks: {
+//							label: function(tooltipItem, myData) {
+//								var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+//								if (label) {
+//									label += ': ';
+//								}
+//								label += parseFloat(tooltipItem.value).toFixed(2);
+//								return label;
+//							}
+//						}
+					},
+					layout: {
+			            padding: {
+			                left: 10,
+			                right: 10,
+			                top: 10,
+			                bottom: 10
+			            }
+			        }
 			    }
 			});
 			
-			return chartCanvas;
+			// Wrap canvas to avoid scrollbars 
+			var wrapper = $('<div class="cfw-chartjs-wrapper" style="width: 100%; height: 100%;">');
+			wrapper.append(chartCanvas);
+			return wrapper;
 		}
 	)
 );
