@@ -691,7 +691,7 @@ CFW.render.registerRenderer("chart",
 			//========================================
 			// Create Datasets
 			var datasets = {};
-			var hue = CFW.utils.randomInt(0,255); 
+			var hue = 120; 
 			
 			for(var i = 0; i < renderDef.data.length; i++){
 				var currentRecord = renderDef.data[i];
@@ -701,7 +701,7 @@ CFW.render.registerRenderer("chart",
 				var label = renderDef.getTitleString(currentRecord);
 				
 				if(datasets[label] == undefined){
-					hue += CFW.utils.randomInt(30,50);
+					hue += 30;
 					var borderColor = CFW.colors.randomHSL(hue,65,100,45,65);
 					var bgColor = borderColor.replace('1.0)', '0.65)');
 					datasets[label] = {
