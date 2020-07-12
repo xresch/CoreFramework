@@ -17,6 +17,16 @@ import com.xresch.cfw.features.core.auth.ServletLogout;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
+import io.prometheus.client.exporter.MetricsServlet;
+import io.prometheus.client.hotspot.BufferPoolsExports;
+import io.prometheus.client.hotspot.ClassLoadingExports;
+import io.prometheus.client.hotspot.DefaultExports;
+import io.prometheus.client.hotspot.GarbageCollectorExports;
+import io.prometheus.client.hotspot.MemoryAllocationExports;
+import io.prometheus.client.hotspot.MemoryPoolsExports;
+import io.prometheus.client.hotspot.StandardExports;
+import io.prometheus.client.hotspot.ThreadExports;
+
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
@@ -102,6 +112,18 @@ public class FeatureCore extends CFWAppFeature {
 	    app.addAppServlet(ServletChangePassword.class,  "/changepassword");
 	    
 		//-----------------------------------------
+		// Prometheus Endpoint
+	    new GarbageCollectorExports().register();
+	    new ThreadExports().register();
+	    new StandardExports().register();
+	    new MemoryPoolsExports().register();
+	    new MemoryAllocationExports().register();
+	    new ClassLoadingExports().register();
+	    new BufferPoolsExports().register();
+	    
+	    app.addUnsecureServlet(MetricsServlet.class,  	"/metrics");
+		
+	    //-----------------------------------------
 		// Other Servlets
 		app.addUnsecureServlet(ServletLocalization.class,  	"/cfw/locale");
 		app.addUnsecureServlet(ServletFormHandler.class,	"/cfw/formhandler");

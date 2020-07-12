@@ -32,6 +32,7 @@ import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.handler.ShutdownHandler;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.DefaultSessionIdManager;
@@ -52,6 +53,8 @@ import com.xresch.cfw.handlers.RedirectDefaultPageHandler;
 import com.xresch.cfw.handlers.RequestHandler;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.HandlerChainBuilder;
+
+import io.prometheus.client.jetty.JettyStatisticsCollector;
 
 /**************************************************************************************************************
  * 
@@ -463,13 +466,21 @@ public class CFWApplicationExecutor {
         ContextHandler contextHandler = new ContextHandler("/");	 
         servletContext.setSessionHandler(createSessionHandler("/"));
         
+        //------------------------------------
+        //Prometheus Statistics
+        StatisticsHandler stats = new StatisticsHandler();
+        new JettyStatisticsCollector(stats).register();
         
+        //----------------------------------
+        // Build Handler Chain
         new HandlerChainBuilder(contextHandler)
 	        .chain(new GzipHandler())
+	        .chain(stats)
 	    	.chain(new RequestHandler())
 	    	//.chain(createSPNEGOSecurityHandler())
 	        .chain(new AuthenticationHandler("/app", defaultURL))
 	        .chain(servletContext);
+        
         
         //System.out.println(servletContext.dump());
         
