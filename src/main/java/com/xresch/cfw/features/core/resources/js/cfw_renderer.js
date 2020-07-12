@@ -659,6 +659,8 @@ CFW.render.registerRenderer("chart",
 			var defaultSettings = {
 				// The type of the chart: line|bar|radar|pie|doughnut|polarArea|bubble|scatter
 				charttype: 'line',
+				// stack the bars, lines etc...
+				stacked: false,
 				// show or hide the legend
 				showlegend: true, 
 				// make the chart responsive
@@ -667,7 +669,10 @@ CFW.render.registerRenderer("chart",
 				xfield: null,
 				// The name of the field which contains the values for the y-axis
 				yfield: null,
-				
+				// The suggested minimum value for the y axis 
+				ymin: 0,
+				// The suggested maximum value for the y axis 
+				ymax: null
 			};
 			
 			var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
@@ -728,19 +733,12 @@ CFW.render.registerRenderer("chart",
 				data.datasets.push(datasets[label]);
 			}
 
-			console.log('===== data =====');
-			console.log(data);
-			//========================================
-			// Create ChartJS Data Object
-			var chartCanvas = $('<canvas class="chartJSCanvas" width="100%">');
-			var chartCtx = chartCanvas.get(0).getContext("2d");
-			workspace.append(chartCanvas);
 			
-			new Chart(chartCtx, {
-			    type: settings.charttype,
-			    data: data,
-			    options: {
-			    	responsive: true,
+			//========================================
+			// Create Options
+			
+			var chartOptions =  {
+			    	responsive: settings.responsive,
 			    	maintainAspectRatio: false,
 			    	legend: {
 			    		position: 'bottom'
@@ -753,6 +751,7 @@ CFW.render.registerRenderer("chart",
 							type: 'time',
 							distribution: 'series',
 							offset: true,
+							stacked: settings.stacked,
 							ticks: {
 								major: {
 									enabled: true,
@@ -760,13 +759,14 @@ CFW.render.registerRenderer("chart",
 								},
 								source: 'data',
 								autoSkip: true,
-								//autoSkipPadding: 75,
+								autoSkipPadding: 15,
 								//maxRotation: 0,
 								//sampleSize: 1000
 							},
 							
 						}],
 						yAxes: [{
+							stacked: settings.stacked,
 							gridLines: {
 								drawBorder: false,
 								color: 'rgb(128,128,128)'
@@ -776,14 +776,14 @@ CFW.render.registerRenderer("chart",
 								labelString: 'Closing price ($)'
 							},
 							ticks: {
+								source: 'data',
+								autoSkip: true,
+								autoSkipPadding: 10,
+								//sampleSize: 1000,
 								major: {
 									enabled: true,
 									//fontStyle: 'bold'
 								},
-								source: 'data',
-								autoSkip: true,
-								autoSkipPadding: 10,
-								//sampleSize: 1000
 							},
 						}]
 					},
@@ -809,7 +809,21 @@ CFW.render.registerRenderer("chart",
 			                bottom: 10
 			            }
 			        }
-			    }
+			    };
+			console.log(chartOptions)
+			if(settings.ymin != null){ chartOptions.scales.yAxes[0].ticks.suggestedMin = settings.ymin; }
+			if(settings.ymax != null){ chartOptions.scales.yAxes[0].ticks.suggestedMax = settings.ymax; }
+			
+			//========================================
+			// Create Chart
+			var chartCanvas = $('<canvas class="chartJSCanvas" width="100%">');
+			var chartCtx = chartCanvas.get(0).getContext("2d");
+			workspace.append(chartCanvas);
+			
+			new Chart(chartCtx, {
+			    type: settings.charttype,
+			    data: data,
+			    options: chartOptions
 			});
 			
 			// Wrap canvas to avoid scrollbars 
