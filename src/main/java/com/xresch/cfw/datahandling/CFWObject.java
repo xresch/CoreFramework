@@ -172,10 +172,11 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public void addAllFields(CFWField<?>[] fields) {
+	public CFWObject addAllFields(CFWField<?>[] fields) {
 		for(CFWField<?> field : fields) {
 			this.addField(field);
 		}
+		return this;
 	}
 	
 	/****************************************************************

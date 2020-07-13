@@ -162,11 +162,13 @@ function cfw_colors_getThresholdStyle(value, tExellent, tGood, tWarning, tEmerge
 	if(isDisabled) { return "cfw-darkgray"; }
 	
 	if(isNaN(value)
-	|| CFW.utils.isNullOrEmpty(tExellent)
-	|| CFW.utils.isNullOrEmpty(tGood)
-	|| CFW.utils.isNullOrEmpty(tWarning)
-	|| CFW.utils.isNullOrEmpty(tEmergency)
-	|| CFW.utils.isNullOrEmpty(tDanger)
+	|| (
+		CFW.utils.isNullOrEmpty(tExellent)
+	   && CFW.utils.isNullOrEmpty(tGood)
+	   && CFW.utils.isNullOrEmpty(tWarning)
+	   && CFW.utils.isNullOrEmpty(tEmergency)
+	   && CFW.utils.isNullOrEmpty(tDanger)
+	   )
 	){
 		return "cfw-none";
 	}
