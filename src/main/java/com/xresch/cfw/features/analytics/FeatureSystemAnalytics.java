@@ -48,6 +48,14 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
 					.href("/app/cpusampling")	
 				, "System Analytics");
+		
+		CFW.Registry.Components.addAdminCFWMenuItem(
+				(MenuItem)new MenuItem("Metrics")
+					.faicon("fas fa-thermometer-half")
+					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.href("/metrics")	
+					.addAttribute("target", "_blank")
+				, "System Analytics");
 	}
 
 	@Override

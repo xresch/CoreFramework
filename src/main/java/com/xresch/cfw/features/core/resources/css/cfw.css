@@ -466,6 +466,20 @@
     border: 1px solid var(--cfw-darkgray);
 }
 
+.cfw-tile{
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	justify-content: center !important;
+	flex-grow: 1 !important;
+	margin: 0rem 0.125rem 0.25rem 0.125rem;
+	cursor: pointer;
+	text-align: center !important;
+}
+
+	d-flex p-2 m-1 cursor-pointer bg-cfw-excellent text-white flex-column flex-grow-1 justify-content-center align-items-center text-center
+
+
 /*************************************************************************
  * Autocomplete
  *************************************************************************/

@@ -118,7 +118,7 @@ function cfw_colors_randomHSL(minS, maxS, minL, maxL) {
 
 /************************************************************************************************
  * Creates a random HSL string like "hsla(112, 54, 210, 1.0)" for the given Hue.
- * @param hue the hue or any integer value (remainder for hue % 256 will be used)
+ * @param hue the hue or any integer value (remainder for hue % 360 will be used)
  * @param minS The minimum saturation in percent
  * @param maxS The maximum saturation in percent
  * @param minL The minimum Lightness in percent
@@ -129,8 +129,93 @@ function cfw_colors_randomHSL(hue, minS, maxS, minL, maxL) {
 	var s = CFW.utils.randomInt(minS, maxS);
 	var l = CFW.utils.randomInt(minL, maxL);
 	
-	return 'hsla('+hue % 256+','+s+'%,'+l+'%, 1.0)';
+	return 'hsla('+hue % 360+','+s+'%,'+l+'%, 1.0)';
 }
+
+/************************************************************************************************
+ * Returns a cfw style string for the value based on the defined thresholds e.g "cfw-excellent".
+ * You can use the string for creating a class like: 
+ *   "bg-cfw-excellent"
+ *   "text-cfw-excellent"
+ *   "border-cfw-excellent"
+ *   "table-cfw-excellent"
+ *   
+ * If all the thresholds are null/undefined or the value is NaN returns an "cfw-none".
+ * You can define thresholds values increasing from Excellent to Danger, or from Danger to Excellent.
+ * You can let thresholds undefined/null to skip the color. Values below the lowest threshold value
+ * will result in "cfw-gray".
+ * 
+ * If isDisabled is set to "true", returns "cfw-darkgray".
+ * 
+ * @param value the value that should be thresholded
+ * @param tExellent the threshold for excellent
+ * @param tGood the threshold for good
+ * @param tWarning the threshold for warning
+ * @param tEmergency the threshold for emergency
+ * @param tDanger the threshold for danger
+ * @param isDisabled define if the thresholding is disabled
+ ************************************************************************************************/
+function cfw_colors_getThresholdStyle(value, tExellent, tGood, tWarning, tEmergency, tDanger, isDisabled) {
+
+	//---------------------------
+	// Initial Checks
+	if(isDisabled) { return "cfw-darkgray"; }
+	
+	if(isNaN(value)
+	|| CFW.utils.isNullOrEmpty(tExellent)
+	|| CFW.utils.isNullOrEmpty(tGood)
+	|| CFW.utils.isNullOrEmpty(tWarning)
+	|| CFW.utils.isNullOrEmpty(tEmergency)
+	|| CFW.utils.isNullOrEmpty(tDanger)
+	){
+		return "cfw-none";
+	}
+
+	//---------------------------
+	// Find Threshold direction
+	var direction = 'HIGH_TO_LOW';
+	var thresholds = [tExellent, tGood, tWarning, tEmergency, tDanger];
+	var firstDefined = null;
+
+	for(var i = 0; i < thresholds.length; i++){
+		var current = thresholds[i];
+		if (!CFW.utils.isNullOrEmpty(current)){
+			if(firstDefined == null){
+				firstDefined = current;
+			}else{
+				if(current != null && firstDefined < current ){
+					direction = 'LOW_TO_HIGH';
+				}
+				break;
+			}
+		}
+	}
+
+	//---------------------------
+	// Set Colors for Thresholds
+
+	var styleString = "cfw-gray";
+	
+	if(direction == 'HIGH_TO_LOW'){
+		if 		(!CFW.utils.isNullOrEmpty(tExellent) 	&& value >= tExellent) 	{ styleString = "cfw-excellent"; } 
+		else if (!CFW.utils.isNullOrEmpty(tGood) 		&& value >= tGood) 		{ styleString = "cfw-good"; } 
+		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value >= tWarning) 	{ styleString = "cfw-warning"; } 
+		else if (!CFW.utils.isNullOrEmpty(tEmergency) 	&& value >= tEmergency) { styleString = "cfw-emergency"; } 
+		else if (!CFW.utils.isNullOrEmpty(tDanger) 		&& value >= tDanger)  	{ styleString = "cfw-danger"; } 
+		else																	{ styleString = "cfw-gray"; } 
+	}else{
+		if 		(!CFW.utils.isNullOrEmpty(tDanger) 		&& value>= tDanger)  	{ styleString = "cfw-danger"; } 
+		else if (!CFW.utils.isNullOrEmpty(tEmergency) 	&& value>= tEmergency) 	{ styleString = "cfw-emergency"; } 
+		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value>= tWarning) 	{ styleString = "cfw-warning"; } 
+		else if (!CFW.utils.isNullOrEmpty(tGood) 		&& value>= tGood) 		{ styleString = "cfw-good"; } 
+		else if (!CFW.utils.isNullOrEmpty(tExellent) 	&& value>= tExellent) 	{ styleString = "cfw-excellent"; } 	
+		else																	{ styleString = "cfw-gray"; } 
+	}
+	
+	return styleString;
+}
+
+
 
 
 /**************************************************************************************
@@ -2055,6 +2140,11 @@ var CFW = {
 		get: cfw_lang,
 		loadLocalization: cfw_loadLocalization,
 	},
+	colors: {
+		randomRGB: cfw_colors_randomRGB,
+		randomHSL: cfw_colors_randomHSL,
+		getThresholdStyle: cfw_colors_getThresholdStyle,
+	},
 	config: {
 		toastDelay: 	 3000,
 		toastErrorDelay: 10000
@@ -2112,10 +2202,6 @@ var CFW = {
 		nullTo: cfw_utils_nullTo,
 		replaceAll: cfw_utils_replaceAll,
 		randomInt: cfw_utils_randomInt,
-	},
-	colors: {
-		randomRGB: cfw_colors_randomRGB,
-		randomHSL: cfw_colors_randomHSL,
 	},
 	ui: {
 		createToggleButton: cfw_createToggleButton,
