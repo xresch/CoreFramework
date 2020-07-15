@@ -71,13 +71,17 @@ class CFWRenderer{
 			getTitleString:  function(record){
 		 		var title = "";
 		 		for(var j = 0; j < this.titlefields.length; j++){
-					var fieldname = this.titlefields[j];
-					title += record[fieldname];
-					
-					if(j < this.titlefields.length-1){
-						title += this.titledelimiter;
+
+		 			var fieldname = this.titlefields[j];
+		 			var value = record[fieldname];
+		 			
+		 			if( value != null){
+		 				if(j != 0 && title.length > 0 ){
+		 					title += this.titledelimiter;
+		 				}
+						title += value;
 					}
-					
+
 				}
 		 		return title;
 			},
