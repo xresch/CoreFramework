@@ -730,6 +730,7 @@ function cfw_renderer_chart(renderDef) {
 	    	responsive: settings.responsive,
 	    	maintainAspectRatio: false,
 	    	legend: {
+	    		display: settings.showlegend,
 	    		position: 'bottom'
 	    	},
 	    	animation: {
