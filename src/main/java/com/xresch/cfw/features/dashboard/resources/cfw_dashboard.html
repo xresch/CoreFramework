@@ -12,6 +12,39 @@
 		</button>
 	</div>
 	<div class="btn-group hideOnFullScreen">
+		<div class="dropdown">
+			<button id="timeframeSelectorButton" class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				Timeframe
+			</button>
+			<div class="dropdown-menu" style="width: 350px;" aria-labelledby="dropdownMenuButton">
+				<div class="row">
+					<div class="col-6">
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '5-m');">{!cfw_core_last!} 5 {!cfw_core_minutes!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '15-m');">{!cfw_core_last!} 15 {!cfw_core_minutes!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '30-m');">{!cfw_core_last!} 30 {!cfw_core_minutes!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '1-h');">{!cfw_core_last!} 1 {!cfw_core_hour!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '2-h');">{!cfw_core_last!} 2 {!cfw_core_hours!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '4-h');">{!cfw_core_last!} 4 {!cfw_core_hours!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '6-h');">{!cfw_core_last!} 6 {!cfw_core_hours!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '12-h');">{!cfw_core_last!} 12 {!cfw_core_hours!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '24-h');">{!cfw_core_last!} 24 {!cfw_core_hours!}</a>
+					</div>
+					<div class="col-6">
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '2-d');">{!cfw_core_last!} 2 {!cfw_core_days!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '7-d');">{!cfw_core_last!} 7 {!cfw_core_days!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '14-d');">{!cfw_core_last!} 14 {!cfw_core_days!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '1-M');">{!cfw_core_last!} 1 {!cfw_core_month!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '2-M');">{!cfw_core_last!} 2 {!cfw_core_months!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '3-M');">{!cfw_core_last!} 3 {!cfw_core_months!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '6-M');">{!cfw_core_last!} 6 {!cfw_core_months!}</a>
+						<a class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframeLatest(this, '1-y');">{!cfw_core_last!} 1 {!cfw_core_year!}</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="btn-group hideOnFullScreen">
 	  <button id="addWidget" class="btn btn-sm btn-success d-none"  title="Add Widget" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 		<i class="fas fa-plus-circle"></i>&nbsp;{!cfw_dashboard_addwidget!}
 	  </button>
@@ -22,7 +55,7 @@
 	    </li>
 	  </ul>
 	</div>
-	
+
 	<div class="btn-group hideOnFullScreen">
 	  <select id="refreshSelector" class="form-control form-control-sm" onchange="cfw_dashboard_setReloadInterval(this)" title="Set Refresh Time">
 			<option value="stop">{!cfw_core_reload!} {!cfw_core_off!}</option>

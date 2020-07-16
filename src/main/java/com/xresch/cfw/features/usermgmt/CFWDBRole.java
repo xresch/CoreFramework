@@ -186,14 +186,13 @@ public class CFWDBRole {
 	 * 
 	 ****************************************************************/
 	public static String getUsersForRoleAsJSON(String roleID) {
-		System.out.println("roleID:"+roleID);
+
 		String JSON = new Role()
 				.queryCache(CFWDBRole.class, "getUsersForRoleAsJSON")
 				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, 
 						"sql_users_for_role.sql", 
 						Integer.parseInt(roleID))
 				.getAsJSON();
-		System.out.println("JSON:"+JSON);
 		
 		return JSON;
 	}

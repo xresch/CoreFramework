@@ -60,7 +60,7 @@ public class HTMLResponse extends AbstractHTMLResponse {
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "summernote-bs4.min.js");
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "highlight.js");
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "lodash-full-4.17.15.min.js");
-		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "moment-2.27.0.min.js"); // required by ChartJS
+		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "moment-2.27.0.js"); // required by ChartJS
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-2.93.min.js"); 
 		
 		this.addJSFileBottomCFW(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "cfw_components.js");

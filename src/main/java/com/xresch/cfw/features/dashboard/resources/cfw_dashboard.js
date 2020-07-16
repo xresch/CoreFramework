@@ -23,6 +23,24 @@ var CFW_DASHBOARD_HISTORY_POSITION = 0;
 // Bundle of commands to redo/undo
 var CFW_DASHBOARD_COMMAND_BUNDLE = null;
 
+var CFW_DASHBOARD_TIME_EARLIEST_EPOCH = null;
+var CFW_DASHBOARD_TIME_LATEST_EPOCH = null;
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_dashboard_setTimeframeLatest(element, preset){
+	
+	var label = $(element).text();
+	$('#timeframeSelectorButton').text(label);
+	CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
+	
+	var split = preset.split('-');
+	CFW_DASHBOARD_TIME_EARLIEST_EPOCH = moment().utc().subtract(split[0], split[1]).utc().valueOf();
+		
+	console.log('CFW_DASHBOARD_TIME_LATEST_EPOCH: '+moment.utc(CFW_DASHBOARD_TIME_LATEST_EPOCH).format());
+	console.log('CFW_DASHBOARD_TIME_EARLIEST_EPOCH: '+moment.utc(CFW_DASHBOARD_TIME_EARLIEST_EPOCH).format());
+}
+
 /******************************************************************
  * 
  ******************************************************************/
