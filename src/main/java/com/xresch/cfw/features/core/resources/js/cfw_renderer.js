@@ -804,7 +804,7 @@ function cfw_renderer_chart(renderDef) {
 	            }
 	        }
 	    };
-	console.log(chartOptions)
+
 	if(settings.ymin != null){ chartOptions.scales.yAxes[0].ticks.suggestedMin = settings.ymin; }
 	if(settings.ymax != null){ chartOptions.scales.yAxes[0].ticks.suggestedMax = settings.ymax; }
 	

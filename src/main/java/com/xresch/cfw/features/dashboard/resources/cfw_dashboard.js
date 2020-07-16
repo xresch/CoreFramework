@@ -1047,6 +1047,12 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 		$('body').keyup(function (e){
 			
 			//--------------------------------
+			// Abort if Modal is open
+			if($('.modal.show').length > 0){
+				return;
+			}
+			
+			//--------------------------------
 			// Ctrl+Y - Trigger Redo
 			if (e.ctrlKey && e.keyCode == 89) {
 				cfw_dashboard_triggerRedo()
@@ -1068,20 +1074,20 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			}
 			
 			//--------------------------------
-			// Ctrl+Alt+A -  Toggle Delete/Duplicate Mode
+			// Ctrl+Alt+A -  Toggle Advanced Edit Mode
 			if ( e.ctrlKey && event.altKey && e.keyCode == 65) {
 				
 				if(!CFW_DASHBOARD_EDIT_MODE){
 					cfw_dashboard_toggleEditMode();
 				}
 				
-				var deleteActionButtons = $('.actionicon-delete, .actionicon-duplicate, .actionicon-edit');
-				if(deleteActionButtons.first().hasClass('d-none')){
+				var actionButtons = $('.actionicon-delete, .actionicon-duplicate, .actionicon-edit');
+				if(actionButtons.first().hasClass('d-none')){
 					CFW_DASHBOARD_EDIT_MODE_ADVANCED = true;
-					deleteActionButtons.removeClass('d-none');
+					actionButtons.removeClass('d-none');
 				}else{
 					CFW_DASHBOARD_EDIT_MODE_ADVANCED = false;
-					deleteActionButtons.addClass('d-none');
+					actionButtons.addClass('d-none');
 				}
 				
 				return;
