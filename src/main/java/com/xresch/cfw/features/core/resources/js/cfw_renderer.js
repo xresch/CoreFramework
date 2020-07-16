@@ -295,6 +295,9 @@ function cfw_renderer_table(renderDef) {
 	}
 	
 	var settings = renderDef.rendererSettings.table;
+	if (settings == null){
+		settings = {};
+	}
 	//-----------------------------------
 	// Verticalize Single Records
 	if(renderDef.data.length == 1 && settings.verticalize){
@@ -772,7 +775,7 @@ function cfw_renderer_chart(renderDef) {
 					ticks: {
 						source: 'data',
 						autoSkip: true,
-						autoSkipPadding: 10,
+						autoSkipPadding: 15,
 						//sampleSize: 1000,
 						major: {
 							enabled: true,

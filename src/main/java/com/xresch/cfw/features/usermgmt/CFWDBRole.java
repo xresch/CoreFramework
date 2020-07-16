@@ -1,7 +1,6 @@
 package com.xresch.cfw.features.usermgmt;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -9,11 +8,10 @@ import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
-import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
-import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -179,6 +177,25 @@ public class CFWDBRole {
 			.limit(maxResults)
 			.getAsAutocompleteResult(RoleFields.PK_ID, RoleFields.NAME, RoleFields.DESCRIPTION);
 
+	}
+	
+	
+	/***************************************************************
+	 * Return a list of all user that have the specified role as a
+	 * JSON string.
+	 * 
+	 ****************************************************************/
+	public static String getUsersForRoleAsJSON(String roleID) {
+		System.out.println("roleID:"+roleID);
+		String JSON = new Role()
+				.queryCache(CFWDBRole.class, "getUsersForRoleAsJSON")
+				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, 
+						"sql_users_for_role.sql", 
+						Integer.parseInt(roleID))
+				.getAsJSON();
+		System.out.println("JSON:"+JSON);
+		
+		return JSON;
 	}
 	
 	/***************************************************************

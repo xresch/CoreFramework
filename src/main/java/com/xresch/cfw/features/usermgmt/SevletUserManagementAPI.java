@@ -74,7 +74,9 @@ public class SevletUserManagementAPI extends HttpServlet {
 										  		
 							case "user": 			content.append(CFW.DB.Users.getUserAsJSON(ID));
 					  								break;			
-					  							
+							case "usersforrole": 	content.append(CFW.DB.Roles.getUsersForRoleAsJSON(ID));
+													break;						
+					  								
 							case "userrolemap": 	content.append(CFW.DB.UserRoleMap.getUserRoleMapForUserAsJSON(ID));
 					  								break;		
 					  							

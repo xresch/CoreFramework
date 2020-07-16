@@ -171,13 +171,27 @@ function cfw_usermgmt_editRole(roleID){
 	
 	cfw_usermgmt_createToggleTable(permissionDiv, "rolepermissionmap", roleID)
 	
+	//-----------------------------------
+	// Users in Role
+	//-----------------------------------
+	var usersInRoleDiv = $('<div id="cfw-usermgmt-roles">');
+	usersInRoleDiv.append('<h2>'+CFWL('cfw_usermgmt_users_in_role', "Users in Role")+'</h2>');
+	allDiv.append(usersInRoleDiv);
+	
 	CFW.ui.showModal("Edit Role", allDiv, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'roles'})");
 	
 	//-----------------------------------
 	// Load Form
 	//-----------------------------------
 	CFW.http.createForm(CFW_USRMGMT_URL, {action: "getform", item: "editrole", id: roleID}, detailsDiv);
-	
+	CFW.http.getJSON(CFW_USRMGMT_URL, {action: "fetch", item: "usersforrole", id: roleID}, function(data){
+		if(data.payload != null){
+			usersInRoleDiv
+			var tableRenderer = CFW.render.getRenderer('table');
+			var table = tableRenderer.render({data: data.payload});
+			usersInRoleDiv.append(table);
+		}
+	});
 }
 
 /******************************************************************
