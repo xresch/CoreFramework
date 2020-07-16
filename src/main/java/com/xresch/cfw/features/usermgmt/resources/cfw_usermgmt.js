@@ -186,9 +186,26 @@ function cfw_usermgmt_editRole(roleID){
 	CFW.http.createForm(CFW_USRMGMT_URL, {action: "getform", item: "editrole", id: roleID}, detailsDiv);
 	CFW.http.getJSON(CFW_USRMGMT_URL, {action: "fetch", item: "usersforrole", id: roleID}, function(data){
 		if(data.payload != null){
-			usersInRoleDiv
+			var renderSettings = {
+					data: data.payload,
+					visiblefields: ['USER_ID', 'USERNAME', 'FIRSTNAME','LASTNAME'],
+					actions: [
+						function(record, value){//Toggle Button
+							var params = {action: "update", item: "userrolemap", itemid: record.USER_ID, listitemid: roleID};
+							var cfwToggleButton = CFW.ui.createToggleButton(CFW_USRMGMT_URL, params, true);
+							
+							if(record.IS_REMOVABLE != null && !record.IS_REMOVABLE){
+								cfwToggleButton.setLocked();
+							}
+							console.log(cfwToggleButton.button);
+							return cfwToggleButton.button;
+						}
+					]
+			}
+
+			
 			var tableRenderer = CFW.render.getRenderer('table');
-			var table = tableRenderer.render({data: data.payload});
+			var table = tableRenderer.render(renderSettings);
 			usersInRoleDiv.append(table);
 		}
 	});

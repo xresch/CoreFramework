@@ -326,10 +326,11 @@ function cfw_renderer_table(renderDef) {
 			if(renderDef.idfield != null){
 				id = singleRecord[renderDef.idfield];
 			}
+			var actionDiv = $('<div>');
 			for(var fieldKey in renderDef.actions){
-				actionButtonHTML += renderDef.actions[fieldKey](singleRecord, id );
+				actionDiv.append(renderDef.actions[fieldKey](singleRecord, id ));
 			}
-			singleRecordData.push({name: "Actions", value: actionButtonHTML});
+			singleRecordData.push({name: "Actions", value: actionDiv});
 		}
 		//-------------------------
 		// Override Settings
@@ -437,7 +438,7 @@ function cfw_renderer_table(renderDef) {
 				
 			}
 		}
-		
+		row.append(cellHTML);
 		//-------------------------
 		// Add Action buttons
 		var id = null;
@@ -445,10 +446,11 @@ function cfw_renderer_table(renderDef) {
 			id = currentRecord[renderDef.idfield];
 		}
 		for(var fieldKey in renderDef.actions){
-			
-			cellHTML += '<td>'+renderDef.actions[fieldKey](currentRecord, id )+'</td>';
+			var td = $('<td>');
+			td.append(renderDef.actions[fieldKey](currentRecord, id ));
+			row.append(td);
 		}
-		row.append(cellHTML);
+
 		cfwTable.addRow(row);
 	}
 	

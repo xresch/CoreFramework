@@ -188,9 +188,9 @@ function cfw_dashboardlist_printDashboards(data, type){
 		// View Button
 		var actionButtons = [ 
 			function (record, id){ 
-				return '<td><a class="btn btn-success btn-sm" role="button" href="/app/dashboard/view?id='+id+'&title='+encodeURIComponent(record.NAME)+'" alt="View" title="View" >'
+				return '<a class="btn btn-success btn-sm" role="button" href="/app/dashboard/view?id='+id+'&title='+encodeURIComponent(record.NAME)+'" alt="View" title="View" >'
 				+ '<i class="fa fa-eye"></i>'
-				+ '</a></td>';
+				+ '</a>';
 			}];
 
 		//-------------------------
@@ -202,12 +202,12 @@ function cfw_dashboardlist_printDashboards(data, type){
 				function (record, id){ 
 					var htmlString = '';
 					if(JSDATA.userid == record.FK_ID_USER || type == 'admindashboards'){
-						htmlString += '<td><button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
+						htmlString += '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
 							+'onclick="cfw_dashboardlist_editDashboard('+id+');">'
 							+ '<i class="fa fa-pen"></i>'
-							+ '</button></td>';
+							+ '</button>';
 					}else{
-						htmlString += '<td>&nbsp;</td>';
+						htmlString += '&nbsp;';
 					}
 					return htmlString;
 				});
@@ -219,10 +219,10 @@ function cfw_dashboardlist_printDashboards(data, type){
 			// Duplicate Button
 			actionButtons.push(
 				function (record, id){
-					var htmlString = '<td><button class="btn btn-warning btn-sm" alt="Duplicate" title="Duplicate" '
+					var htmlString = '<button class="btn btn-warning btn-sm" alt="Duplicate" title="Duplicate" '
 							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <b>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</b> and add it to your dashboards.\', \'Do it!\', \'cfw_dashboardlist_duplicate('+id+');\')">'
 							+ '<i class="fas fa-clone"></i>'
-							+ '</button></td>';
+							+ '</button>';
 					
 					return htmlString;
 				});
@@ -236,12 +236,12 @@ function cfw_dashboardlist_printDashboards(data, type){
 				function (record, id){
 					var htmlString = '';
 					if(JSDATA.userid == record.FK_ID_USER || type == 'admindashboards'){
-						htmlString += '<td><button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
+						htmlString += '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
 							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the dashboard <b>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</b>?\', \'Delete\', \'cfw_dashboardlist_delete('+id+');\')">'
 							+ '<i class="fa fa-trash"></i>'
-							+ '</button></td>';
+							+ '</button>';
 					}else{
-						htmlString += '<td>&nbsp;</td>';
+						htmlString += '&nbsp;';
 					}
 					return htmlString;
 				});

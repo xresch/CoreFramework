@@ -306,7 +306,7 @@ public class CFWDBUserRoleMap {
 		
 		//----------------------------------
 		// Check input format
-		if(userID == null ^ !userID.matches("\\d+")) {
+		if(userID == null || !userID.matches("\\d+")) {
 			new CFWLog(logger)
 			.method("toogleUserInRole")
 			.severe("The userID '"+userID+"' is not a number.");
@@ -315,7 +315,7 @@ public class CFWDBUserRoleMap {
 		
 		//----------------------------------
 		// Check input format
-		if(roleID == null ^ !roleID.matches("\\d+")) {
+		if(roleID == null || !roleID.matches("\\d+")) {
 			new CFWLog(logger)
 			.method("toogleUserInRole")
 			.severe("The roleID '"+userID+"' is not a number.");
