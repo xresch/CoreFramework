@@ -703,7 +703,9 @@ function cfw_renderer_chart(renderDef) {
 					data: [], 
 					backgroundColor: bgColor,
 		            borderColor: borderColor,
-		            borderWidth: 1
+		            borderWidth: 1,
+		            spanGaps: false,
+		            lineTension: 0
 				};
 		}
 		
@@ -744,7 +746,7 @@ function cfw_renderer_chart(renderDef) {
 			scales: {
 				xAxes: [{
 					type: 'time',
-					distribution: 'series',
+					distribution: 'linear',
 					offset: true,
 					stacked: settings.stacked,
 					gridLines: {
