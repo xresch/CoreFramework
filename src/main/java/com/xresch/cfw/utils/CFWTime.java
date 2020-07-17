@@ -2,6 +2,8 @@ package com.xresch.cfw.utils;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -102,6 +104,29 @@ public class CFWTime {
 		else  									{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, -90, 0, 0); }
 
 		return ageOutOffset;
+	}
+	
+	
+	/********************************************************************************************
+	 * Returns an interval string like "15s", "5m" or "1h". 
+	 * @return string
+	 ********************************************************************************************/
+	public static String calculateDatapointInterval(long earliestMillis, long latestMillis, int maxPoints) {
+		
+		Duration d = Duration.between(Instant.ofEpochMilli(earliestMillis), Instant.ofEpochMilli(latestMillis));
+		long seconds = d.toMillis() / 1000;
+		
+		if((seconds / 15) < maxPoints) { return "15s"; }
+		else if((seconds / 30) < maxPoints) { return "30s"; }
+		else if((seconds / 60) < maxPoints) { return "1m"; }
+		else if((seconds / 300) < maxPoints) { return "5m"; }
+		else if((seconds / 900) < maxPoints) { return "15m"; }
+		else if((seconds / 1800) < maxPoints) { return "30m"; }
+		else if((seconds / 3600) < maxPoints) { return "1h"; }
+		else if((seconds / (3600*6) ) < maxPoints) { return "6h"; }
+		else if((seconds / (3600*24) ) < maxPoints) { return "24h"; }
+		
+		return "7d";
 	}
 	
 

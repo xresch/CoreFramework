@@ -23,22 +23,25 @@ var CFW_DASHBOARD_HISTORY_POSITION = 0;
 // Bundle of commands to redo/undo
 var CFW_DASHBOARD_COMMAND_BUNDLE = null;
 
-var CFW_DASHBOARD_TIME_EARLIEST_EPOCH = null;
-var CFW_DASHBOARD_TIME_LATEST_EPOCH = null;
+var CFW_DASHBOARD_TIME_PRESET = "30m";
+var CFW_DASHBOARD_TIME_EARLIEST_EPOCH = moment().utc().subtract(30, 'm').utc().valueOf();
+var CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_dashboard_setTimeframeLatest(element, preset){
+function cfw_dashboard_setTimeframe(element, preset){
+	
+	window.localStorage.setItem("dashboard-timeframe-preset-"+CFW_DASHBOARDVIEW_PARAMS.id, preset);
 	
 	var label = $(element).text();
 	$('#timeframeSelectorButton').text(label);
-	CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
-	
+
 	var split = preset.split('-');
 	CFW_DASHBOARD_TIME_EARLIEST_EPOCH = moment().utc().subtract(split[0], split[1]).utc().valueOf();
 		
-	console.log('CFW_DASHBOARD_TIME_LATEST_EPOCH: '+moment.utc(CFW_DASHBOARD_TIME_LATEST_EPOCH).format());
-	console.log('CFW_DASHBOARD_TIME_EARLIEST_EPOCH: '+moment.utc(CFW_DASHBOARD_TIME_EARLIEST_EPOCH).format());
+	CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
+	
+	cfw_dashboard_draw();
 }
 
 /******************************************************************
@@ -237,6 +240,8 @@ function cfw_dashboard_registerWidget(widgetUniqueType, widgetObject){
 			defaultheight: null,
 			// Override to customize initial widget defaultwidth. If null, default value defined in DashboardWidget.java is used.
 			defaultwidth: null,
+			//Set to true if this widget uses the time from the global timeframe picker. Timeframe will be added to the settings with the fields timeframe_earliest/timeframe_latest.
+			usetimeframe: false,
 			// function that creates the widget content and returns them to the framework by calling the callback function
 			createWidgetInstance: function (widgetObject, callback) {			
 						
@@ -832,7 +837,16 @@ function cfw_dashboard_fetchWidgetData(widgetObject, callback) {
 	delete params.guid;
 	delete params.JSON_SETTINGS;
 	
-	params.JSON_SETTINGS = JSON.stringify(widgetObject.JSON_SETTINGS);
+	var definition = CFW.dashboard.getWidgetDefinition(widgetObject.TYPE);
+	
+	var settings = widgetObject.JSON_SETTINGS;
+	if(definition.usetimeframe){
+		var settings = _.cloneDeep(settings);
+		settings.timeframe_earliest = CFW_DASHBOARD_TIME_EARLIEST_EPOCH;
+		settings.timeframe_latest = CFW_DASHBOARD_TIME_LATEST_EPOCH;
+	}
+	
+	params.JSON_SETTINGS = JSON.stringify(settings);
 	
 		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){
 			callback(data);
@@ -1260,13 +1274,20 @@ function cfw_dashboard_initialDraw(){
 	
 	//addTestdata();
 	
-	cfw_dashboard_draw();
+	var timeframePreset =window.localStorage.getItem("dashboard-timeframe-preset-"+CFW_DASHBOARDVIEW_PARAMS.id);
+	if(timeframePreset != null && timeframePreset != 'null' && timeframePreset != 'custom' ){
+		cfw_dashboard_setTimeframe($('#time-preset-'+timeframePreset), timeframePreset);
+	}else{
+		cfw_dashboard_draw();
+	}
 	
 	var refreshInterval = window.localStorage.getItem("dashboard-reload-interval-id"+CFW_DASHBOARDVIEW_PARAMS.id);
 	if(refreshInterval != null && refreshInterval != 'null' &&refreshInterval != 'stop' ){
 		$("#refreshSelector").val(refreshInterval);
 		cfw_dashboard_setReloadInterval("#refreshSelector");
 	}
+	
+	
 }
 /******************************************************************
  * Main method for building the view.
