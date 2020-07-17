@@ -46,7 +46,38 @@
 							<a id="time-preset-24-M" class="dropdown-item" href="#" onclick="cfw_dashboard_setTimeframe(this, '24-M');">{!cfw_core_last!} 24 {!cfw_core_months!}</a>
 						</div>
 					</div>
+					<div class="row m-1">
+						<div class="col-sm-12"><b>Custom Timeframe:</b></div>
+					</div>
+					<div class="row m-1">  
+						<label class="col-sm-2 col-form-label col-form-label-sm" for="CUSTOM_EARLIEST">Earliest:</label>   
+						<div class="col-sm-10">
+							<div class="custom-control-inline w-100 mr-0">
+		    					<input id="CUSTOM_EARLIEST-datepicker" type="date" onchange="cfw_updateTimeField('CUSTOM_EARLIEST')" class="col-md-8 form-control form-control-sm">
+		    					<input id="CUSTOM_EARLIEST-timepicker" type="time" onchange="cfw_updateTimeField('CUSTOM_EARLIEST')" class="col-md-4 form-control form-control-sm">	   
+		    					<input id="CUSTOM_EARLIEST" type="hidden" class="form-control" placeholder="Earliest" name="CUSTOM_EARLIEST" onkeydown="return event.key != 'Enter';">
+							</div>
+						</div>
+					</div>
+					<div class="row m-1">  
+						<label class="col-sm-2 col-form-label col-form-label-sm" for="CUSTOM_LATEST">Latest:</label>   
+						<div class="col-sm-10">  
+							<div class="custom-control-inline w-100 mr-0">
+		    					<input id="CUSTOM_LATEST-datepicker" type="date" onchange="cfw_updateTimeField('CUSTOM_LATEST')" class="col-md-8 form-control form-control-sm">
+		    					<input id="CUSTOM_LATEST-timepicker" type="time" onchange="cfw_updateTimeField('CUSTOM_LATEST')" class="col-md-4 form-control form-control-sm">	   
+		    					<input id="CUSTOM_LATEST" type="hidden" class="form-control" placeholder="Latest" name="CUSTOM_LATEST" onkeydown="return event.key != 'Enter';">
+							</div>
+						</div>
+					</div>
+					<div class="row m-1">
+						<div class="col-sm-12">
+							<button class="btn btn-sm bg-cfw-cyan text-white" onclick="cfw_dashboard_confirmCustomTimeframe();" type="button">
+								Set Timeframe
+							</button>
+						</div>
+					</div>
 				</div>
+				
 			</div>
 			<button class="btn btn-sm bg-cfw-cyan text-white btn-inline" onclick="cfw_dashboard_shiftTimeframe('later');" type="button">
 				<i class="fas fa-chevron-right"></i>

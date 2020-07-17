@@ -394,6 +394,66 @@ function cfw_initializeTagsSelectorField(fieldID, maxTags, values){
 		tagsfield.tagsinput('add', { "value": key , "label": values[key] });
 	}
 
+}
+
+/**************************************************************************************
+ * Initialize a Date and/or Timepicker created with the Java object CFWField.
+ * @param fieldID the name of the field
+ * @param epochMillis the initial date in epoch time or null
+ * @return nothing
+ *************************************************************************************/
+function cfw_initializeTimefield(fieldID, epochMillis){
+	
+	var id = '#'+fieldID;
+	var datepicker = $(id+'-datepicker');
+	var timepicker = $(id+'-timepicker');
+	
+	if(datepicker.length == 0){
+		CFW.ui.addToastDanger('Error: the datepicker field is unknown: '+fieldID);
+		return;
+	}
+	
+	if(epochMillis != null){
+		$(id).val(epochMillis);
+		date = new CFWDate(epochMillis);
+		datepicker.first().val(date.getDateForInput());
+		
+		if(timepicker.length > 0 != null){
+			timepicker.first().val(date.getTimeForInput());
+		}
+	}
+		
+}
+
+/**************************************************************************************
+ * Update a Date and/or Timepicker created with the Java object CFWField.
+ * @param fieldID the name of the field
+ * @return nothing
+ *************************************************************************************/
+function cfw_updateTimeField(fieldID){
+	
+	var id = '#'+fieldID;
+	var datepicker = $(id+'-datepicker');
+	var timepicker = $(id+'-timepicker');
+	
+	if(datepicker.length == 0){
+		CFW.ui.addToastDanger('Error: the datepicker field is unknown: '+fieldID)
+	}
+	
+	var dateString = datepicker.first().val();
+	
+	if(timepicker.length > 0){
+		var timeString = timepicker.first().val();
+		if(timeString.length > 0 ){
+			dateString = dateString +"T"+timeString;
+		}
+	}
+	
+	if(dateString.length > 0){
+		$(id).val(Date.parse(dateString));
+	}else{
+		$(id).val('');
+	}
 	
 }
 
@@ -727,66 +787,6 @@ function cfw_autocompleteCreateItemList(inputField, values){
 	return itemList;
 }
 
-/**************************************************************************************
- * Initialize a Date and/or Timepicker created with the Java object CFWField.
- * @param fieldID the name of the field
- * @param epochMillis the initial date in epoch time or null
- * @return nothing
- *************************************************************************************/
-function cfw_initializeTimefield(fieldID, epochMillis){
-	
-	var id = '#'+fieldID;
-	var datepicker = $(id+'-datepicker');
-	var timepicker = $(id+'-timepicker');
-	
-	if(datepicker.length == 0){
-		CFW.ui.addToastDanger('Error: the datepicker field is unknown: '+fieldID);
-		return;
-	}
-	
-	if(epochMillis != null){
-		date = new CFWDate(epochMillis);
-		datepicker.first().val(date.getDateForInput());
-		
-		if(timepicker.length > 0 != null){
-			timepicker.first().val(date.getTimeForInput());
-		}
-	}
-		
-
-}
-
-/**************************************************************************************
- * Update a Date and/or Timepicker created with the Java object CFWField.
- * @param fieldID the name of the field
- * @return nothing
- *************************************************************************************/
-function cfw_updateTimeField(fieldID){
-	
-	var id = '#'+fieldID;
-	var datepicker = $(id+'-datepicker');
-	var timepicker = $(id+'-timepicker');
-	
-	if(datepicker.length == 0){
-		CFW.ui.addToastDanger('Error: the datepicker field is unknown: '+fieldID)
-	}
-	
-	var dateString = datepicker.first().val();
-	
-	if(timepicker.length > 0){
-		var timeString = timepicker.first().val();
-		if(timeString.length > 0 ){
-			dateString = dateString +"T"+timeString;
-		}
-	}
-	
-	if(dateString.length > 0){
-		$(id).val(Date.parse(dateString));
-	}else{
-		$(id).val('');
-	}
-	
-}
 
 /**************************************************************************************
  * Sort an object array by the values for the given key.
