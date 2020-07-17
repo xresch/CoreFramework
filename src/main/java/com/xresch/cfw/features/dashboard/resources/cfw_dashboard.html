@@ -13,12 +13,12 @@
 	</div>
 	<div class="btn-group hideOnFullScreen">
 		<div id="timeframePicker" class="btn-group d-none">
-			<button class="btn btn-sm bg-cfw-cyan text-white btn-inline" onclick="cfw_dashboard_shiftTimeframe('earlier');" type="button">
+			<button class="btn btn-sm btn-primary btn-inline" onclick="cfw_dashboard_shiftTimeframe('earlier');" type="button">
 				<i class="fas fa-chevron-left"></i>
 			</button>
 			
 			<div class="dropdown">
-				<button id="timeframeSelectorButton" class="btn btn-sm bg-cfw-cyan text-white dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<button id="timeframeSelectorButton" class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					{!cfw_core_last!} 30 {!cfw_core_minutes!}
 				</button>
 				<div class="dropdown-menu" style="width: 350px;" aria-labelledby="dropdownMenuButton">
@@ -71,7 +71,7 @@
 					</div>
 					<div class="row m-1">
 						<div class="col-sm-12">
-							<button class="btn btn-sm bg-cfw-cyan text-white" onclick="cfw_dashboard_confirmCustomTimeframe();" type="button">
+							<button class="btn btn-sm btn-primary" onclick="cfw_dashboard_confirmCustomTimeframe();" type="button">
 								Set Timeframe
 							</button>
 						</div>
@@ -79,7 +79,7 @@
 				</div>
 				
 			</div>
-			<button class="btn btn-sm bg-cfw-cyan text-white btn-inline" onclick="cfw_dashboard_shiftTimeframe('later');" type="button">
+			<button class="btn btn-sm btn-primary btn-inline" onclick="cfw_dashboard_shiftTimeframe('later');" type="button">
 				<i class="fas fa-chevron-right"></i>
 			</button>
 		</div>
