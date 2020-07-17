@@ -651,7 +651,7 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// Render Specific settings
 	var defaultSettings = {
-		// The type of the chart: line|bar|radar|pie|doughnut|polarArea|bubble|scatter
+		// The type of the chart: line|area|bar|radar|pie|doughnut|polarArea|bubble|scatter
 		charttype: 'line',
 		// stack the bars, lines etc...
 		stacked: false,
@@ -671,6 +671,15 @@ function cfw_renderer_chart(renderDef) {
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
 	
+	
+	//========================================
+	// Initialize
+	var doFill = false;
+	if(settings.charttype == 'area'){
+		settings.charttype = 'line';
+		doFill = true;
+	}
+	
 	//========================================
 	// Create Workspace
 	// ChartJS needs a DOM element to use
@@ -681,6 +690,7 @@ function cfw_renderer_chart(renderDef) {
 		workspace = $('<div id="cfw-chartrenderer-workspace" style="display: none;">');
 		$('body').append(workspace);				
 	}
+
 	
 	//========================================
 	// Create Datasets
@@ -702,11 +712,13 @@ function cfw_renderer_chart(renderDef) {
 					label: label, 
 					data: [], 
 					backgroundColor: bgColor,
+					fill: doFill,
 		            borderColor: borderColor,
 		            borderWidth: 1,
 		            spanGaps: false,
 		            lineTension: 0
 				};
+			
 		}
 		
 		if(settings.xfield == null){

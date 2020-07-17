@@ -47,6 +47,34 @@ function cfw_dashboard_setTimeframe(element, preset){
 
 /******************************************************************
  * 
+ * @param direction 'earlier' or 'later'
+ ******************************************************************/
+function cfw_dashboard_shiftTimeframe(direction){
+	
+	$('#timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
+	
+	var offsetMillis = CFW_DASHBOARD_TIME_LATEST_EPOCH - CFW_DASHBOARD_TIME_EARLIEST_EPOCH;
+	
+	if(direction == 'earlier'){
+		CFW_DASHBOARD_TIME_LATEST_EPOCH = CFW_DASHBOARD_TIME_EARLIEST_EPOCH;
+		CFW_DASHBOARD_TIME_EARLIEST_EPOCH = CFW_DASHBOARD_TIME_EARLIEST_EPOCH - offsetMillis;
+	}else{
+		CFW_DASHBOARD_TIME_EARLIEST_EPOCH = CFW_DASHBOARD_TIME_LATEST_EPOCH;
+		CFW_DASHBOARD_TIME_LATEST_EPOCH = CFW_DASHBOARD_TIME_LATEST_EPOCH + offsetMillis;
+	}
+	
+	//-----------------------------------------
+	// Disable Refresh
+	var refreshSelector = $("#refreshSelector");
+	if(refreshSelector.val() != 'stop'){
+		$("#refreshSelector").val('stop');
+		cfw_dashboard_setReloadInterval("#refreshSelector");
+	}
+	
+	cfw_dashboard_draw();
+}
+/******************************************************************
+ * 
  ******************************************************************/
 function cfw_dashboard_startCommandBundle(){
 	if(CFW_DASHBOARD_EDIT_MODE){
@@ -843,7 +871,7 @@ function cfw_dashboard_fetchWidgetData(widgetObject, callback) {
 	var settings = widgetObject.JSON_SETTINGS;
 	if(definition.usetimeframe){
 		if(!CFW_DASHBOARD_TIME_ENABLED){
-			$('#timeframeSelectorButton').removeClass('d-none');
+			$('#timeframePicker').removeClass('d-none');
 			CFW_DASHBOARD_TIME_ENABLED = true;
 		}
 		var settings = _.cloneDeep(settings);
