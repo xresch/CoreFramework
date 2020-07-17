@@ -66,7 +66,7 @@ var cfw_widget_easteregg_snowStorm = (function(window, document) {
   // --- common properties ---
 
   this.autoStart = false;          // Whether the snow should start automatically or not.
-  this.excludeMobile = true;      // Snow is likely to be bad news for mobile phones' CPUs (and batteries.) Enable at your own risk.
+  this.excludeMobile = false;      // Snow is likely to be bad news for mobile phones' CPUs (and batteries.) Enable at your own risk.
   this.flakesMax = 128;           // Limit total amount of snow made (falling + sticking)
   this.flakesMaxActive = 128;      // Limit amount of snow falling at once (less = lower CPU use)
   this.animationInterval = 60;    // Theoretical "miliseconds per frame" measurement. 20 = fast + smooth, but high CPU use. 50 = more conservative, but slower
@@ -91,8 +91,8 @@ var cfw_widget_easteregg_snowStorm = (function(window, document) {
   this.flakeRightOffset = 0;      // Right margin/gutter space on edge of container
   this.flakeWidth = 16;            // Max pixel width reserved for snow element
   this.flakeHeight = 20;           // Max pixel height reserved for snow element
-  this.vMaxX = 5;                 // Maximum X velocity range for snow
-  this.vMaxY = 4;                 // Maximum Y velocity range for snow
+  this.vMaxX = 4;                 // Maximum X velocity range for snow
+  this.vMaxY = 2;                 // Maximum Y velocity range for snow
   this.zIndex = 32;                // CSS stacking order applied to each snowflake
 
   // --- "No user-serviceable parts inside" past this point, yadda yadda ---
