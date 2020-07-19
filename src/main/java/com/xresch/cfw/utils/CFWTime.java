@@ -119,11 +119,16 @@ public class CFWTime {
 		if((seconds / 15) < maxPoints) { return "15s"; }
 		else if((seconds / 30) < maxPoints) { return "30s"; }
 		else if((seconds / 60) < maxPoints) { return "1m"; }
+		else if((seconds / 120) < maxPoints) { return "2m"; }
 		else if((seconds / 300) < maxPoints) { return "5m"; }
+		else if((seconds / 600) < maxPoints) { return "10m"; }
 		else if((seconds / 900) < maxPoints) { return "15m"; }
 		else if((seconds / 1800) < maxPoints) { return "30m"; }
 		else if((seconds / 3600) < maxPoints) { return "1h"; }
+		else if((seconds / (2600*2) ) < maxPoints) { return "2h"; }
+		else if((seconds / (2600*4) ) < maxPoints) { return "4h"; }
 		else if((seconds / (3600*6) ) < maxPoints) { return "6h"; }
+		else if((seconds / (3600*12) ) < maxPoints) { return "12h"; }
 		else if((seconds / (3600*24) ) < maxPoints) { return "24h"; }
 		
 		return "7d";
