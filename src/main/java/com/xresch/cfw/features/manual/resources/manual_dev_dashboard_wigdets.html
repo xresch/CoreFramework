@@ -43,6 +43,9 @@ The following are the fields of the widgetDefinition and the default values:
 		// Override to customize initial widget defaultwidth. If null, default value defined in DashboardWidget.java is used.
 		defaultwidth: null,
 		
+		//Set to true if this widget uses the time from the global timeframe picker. Timeframe will be added to the settings with the fields timeframe_earliest/timeframe_latest.
+		usetimeframe: false,
+			
 		// function that creates the widget content and returns them to the framework by calling the callback function
 		createWidgetInstance: function (widgetObject, callback) {	
 			callback(widgetObject, "Please specify a function on your widgetDefinition.createWidgetInstance.");
@@ -260,4 +263,37 @@ CFW.dashboard.registerWidget("example_widget",
 		[...]
 	}
 );</code>
+</pre>
+
+
+<h2>Creating a Timeframe Widget</h2>
+<p>
+A timeframe widget will use the timeframe set by the global timepicker.
+Such a widget needs to set the field "usetimeframe" to true in order for the timepicker to get displayed.
+</p>
+<pre>
+<code>CFW.dashboard.registerWidget("cfw_example_timeframe",
+	{
+		category: "Example | Timeframe",
+		menuicon: "fas fa-clock",
+		menulabel: CFWL('cfw_example_timeframe', "Timeframe Widget"),
+		description: CFWL('cfw_example_timeframe_desc', "This widget uses the global timeframe from the timeframe picker."), 
+		usetimeframe: true,
+		[...]
+	}
+);</code>
+</pre>
+
+<p>
+When a widget does above, the framework will add the two fields timeframe_earliest/timeframe_latest to the JsonObject settings 
+passed to the server-side fetchData()-Method. The fields contain unix epoch time in milliseconds and can be used to fetch the data
+for the specified time range.
+</p>
+<pre>
+<code>@Override
+public void fetchData(JSONResponse response, JsonObject settings) { 
+	long earliest = settings.get("timeframe_earliest").getAsLong();
+	long latest = settings.get("timeframe_latest").getAsLong();
+	[...]
+}</code>
 </pre>
