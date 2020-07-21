@@ -651,7 +651,7 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// Render Specific settings
 	var defaultSettings = {
-		// The type of the chart: line|area|bar|radar|pie|doughnut|polarArea|bubble|scatter
+		// The type of the chart: line|area|bar|scatter (to be done radar|pie|doughnut|polarArea|bubble)
 		charttype: 'line',
 		// stack the bars, lines etc...
 		stacked: false,
@@ -666,7 +666,11 @@ function cfw_renderer_chart(renderDef) {
 		// The suggested minimum value for the y axis 
 		ymin: 0,
 		// The suggested maximum value for the y axis 
-		ymax: null
+		ymax: null,
+		//the type of the x axis: linear|logarithmic|category|time
+		xtype: 'time',
+		//the type of the y axis: linear|logarithmic|category|time
+		ytype: 'linear',
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
@@ -725,7 +729,7 @@ function cfw_renderer_chart(renderDef) {
 			datasets[label].data.push(currentRecord[settings.yfield]);
 		}else{
 			datasets[label].data.push({
-				t: currentRecord[settings.xfield], 
+				x: currentRecord[settings.xfield], 
 				y: currentRecord[settings.yfield]
 			});
 		}
@@ -750,14 +754,18 @@ function cfw_renderer_chart(renderDef) {
 	    	maintainAspectRatio: false,
 	    	legend: {
 	    		display: settings.showlegend,
-	    		position: 'bottom'
+	    		position: 'bottom',
+	    		labels: {
+	    			boxWidth: 16,
+	    			
+	    		}
 	    	},
 	    	animation: {
 				duration: 0
 			},
 			scales: {
 				xAxes: [{
-					type: 'time',
+					type: settings.xtype,
 					distribution: 'linear',
 					offset: true,
 					stacked: settings.stacked,
@@ -780,6 +788,7 @@ function cfw_renderer_chart(renderDef) {
 				}],
 				yAxes: [{
 					stacked: settings.stacked,
+					type: settings.ytype,
 					gridLines: {
 						drawBorder: false,
 						color: 'rgba(128,128,128, 0.8)'
