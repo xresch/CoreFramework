@@ -651,7 +651,7 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// Render Specific settings
 	var defaultSettings = {
-		// The type of the chart: line|area|bar|scatter (to be done radar|pie|doughnut|polarArea|bubble)
+		// The type of the chart: line|linestepped|area|areastepped|bar|scatter (to be done radar|pie|doughnut|polarArea|bubble)
 		charttype: 'line',
 		// stack the bars, lines etc...
 		stacked: false,
@@ -671,6 +671,8 @@ function cfw_renderer_chart(renderDef) {
 		xtype: 'time',
 		//the type of the y axis: linear|logarithmic|category|time
 		ytype: 'linear',
+		//the radius for the points shown on line and area charts
+		pointradius: 0,
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
@@ -679,11 +681,20 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// Initialize
 	var doFill = false;
+	var isLineStepped = false;
+	
 	if(settings.charttype == 'area'){
 		settings.charttype = 'line';
 		doFill = true;
+	}else if(settings.charttype == 'linestepped'){
+		settings.charttype = 'line';
+		isLineStepped = true;
+	}else if(settings.charttype == 'areastepped'){
+		settings.charttype = 'line';
+		doFill = true;
+		isLineStepped = true;
 	}
-	
+		
 	//========================================
 	// Create Workspace
 	// ChartJS needs a DOM element to use
@@ -720,29 +731,48 @@ function cfw_renderer_chart(renderDef) {
 		            borderColor: borderColor,
 		            borderWidth: 1,
 		            spanGaps: false,
-		            lineTension: 0
+		            steppedLine: isLineStepped,
+		            lineTension: 0,
+		            cfwSum: 0,
+		            cfwCount: 0
 				};
 			
 		}
 		
+		var value = currentRecord[settings.yfield];
+		
 		if(settings.xfield == null){
-			datasets[label].data.push(currentRecord[settings.yfield]);
+			datasets[label].data.push(value);
+			//datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
+			//datasets[label].cfwCount += 1;
 		}else{
 			datasets[label].data.push({
 				x: currentRecord[settings.xfield], 
-				y: currentRecord[settings.yfield]
+				y: value
 			});
+			//datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
+			//datasets[label].cfwCount += 1;
 		}
 	}
 	
 	//========================================
 	// Create ChartJS Data Object
-	var data = {
-		    datasets: []
-		};
-	
-	for(label in datasets){
-		data.datasets.push(datasets[label]);
+	var data = {};
+	if(settings.charttype != 'radar'){
+		data.datasets = [];
+		
+		for(label in datasets){
+			data.datasets.push(datasets[label]);
+		}
+	}else{
+		data.labels = []
+		data.datasets = [{data: []}];
+		
+		for(label in datasets){
+			data.labels.push(label)
+			data.datasets[0].data.push(datasets[label].cfwSum / datasets[label].cfwCount);
+		}
+		console.log(data)
 	}
 
 	
@@ -809,6 +839,11 @@ function cfw_renderer_chart(renderDef) {
 					},
 				}]
 			},
+			elements: {
+                point:{
+                    radius: settings.pointradius
+                }
+            },
 			tooltips: {
 				intersect: false,
 				mode: 'index',
