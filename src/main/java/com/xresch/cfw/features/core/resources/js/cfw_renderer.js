@@ -651,7 +651,7 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// Render Specific settings
 	var defaultSettings = {
-		// The type of the chart: line|linestepped|area|areastepped|bar|scatter (to be done radar|pie|doughnut|polarArea|bubble)
+		// The type of the chart: line|steppedline|area|steppedarea|bar|scatter (to be done radar|pie|doughnut|polarArea|bubble)
 		charttype: 'line',
 		// stack the bars, lines etc...
 		stacked: false,
@@ -681,18 +681,22 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// Initialize
 	var doFill = false;
-	var isLineStepped = false;
+	var isSteppedline = false;
 	
 	if(settings.charttype == 'area'){
 		settings.charttype = 'line';
 		doFill = true;
-	}else if(settings.charttype == 'linestepped'){
+	}else if(settings.charttype == 'steppedline'){
 		settings.charttype = 'line';
-		isLineStepped = true;
-	}else if(settings.charttype == 'areastepped'){
+		isSteppedline = true;
+	}else if(settings.charttype == 'steppedarea'){
 		settings.charttype = 'line';
 		doFill = true;
-		isLineStepped = true;
+		isSteppedline = true;
+	}else if(settings.charttype == 'scatter'){
+		if(settings.pointradius == 0){
+			settings.pointradius = 2;
+		}
 	}
 		
 	//========================================
@@ -731,7 +735,7 @@ function cfw_renderer_chart(renderDef) {
 		            borderColor: borderColor,
 		            borderWidth: 1,
 		            spanGaps: false,
-		            steppedLine: isLineStepped,
+		            steppedLine: isSteppedline,
 		            lineTension: 0,
 		            cfwSum: 0,
 		            cfwCount: 0

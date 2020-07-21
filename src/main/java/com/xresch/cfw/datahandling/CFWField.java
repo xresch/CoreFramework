@@ -576,7 +576,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		}
 		//---------------------------------
 		// Create Field
-		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"tagsinput\" class=\"form-control\" "+this.getAttributesString()+"/>");
+		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"tagsinput\" class=\"form-control "+this.getAttributeValue("class")+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
 			if(type.equals(FormFieldType.TAGS_SELECTOR)) {
@@ -601,7 +601,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		if(this.value != null) {
 			value = this.value.toString();
 		}
-		html.append("<textarea class=\"form-control\" "+this.getAttributesString()+">"+value+"</textarea>");
+		html.append("<textarea class=\"form-control "+this.getAttributeValue("class")+"\" "+this.getAttributesString()+">"+value+"</textarea>");
 	}
 	
 	/***********************************************************************************
