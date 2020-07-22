@@ -565,7 +565,7 @@ public class CFWObject {
 	 * @param field names
 	 * @return CFWQuery for method chaining
 	 ****************************************************************/
-	public CFWSQL select(String ...fieldnames) {
+	public CFWSQL select(Object ...fieldnames) {
 		return new CFWSQL(this).select(fieldnames);
 	}
 	

@@ -571,7 +571,7 @@ function cfw_autocompleteInitialize(formID, fieldName, maxResults, array){
 		if (e.keyCode == 13) {
 			/* If the ENTER key is pressed, prevent the form from being submitted. 
 			 * Still do it for tagsinput.js fields*/
-			if($input.attr('placeholder') != "Tags"){
+			if($input.attr('placeholder') != "Tags" && $input.prop("tagName") != "TEXTAREA"){
 				e.preventDefault();
 			}
 			if (CFW.global.autocompleteFocus > -1) {
@@ -749,7 +749,9 @@ function cfw_autocompleteCreateItemList(inputField, values){
 		
 		//-----------------------
 		// Create Field
-		item.append('<input type="hidden" value="'+currentValue+'" data-label="'+label+'" data-tagsinput="'+isTagsInput+'" data-tagsselector="'+isTagsselector+'">');
+		var hiddenInput = $('<input type="hidden" data-label="'+label+'" data-tagsinput="'+isTagsInput+'" data-tagsselector="'+isTagsselector+'">');
+		hiddenInput.val(currentValue);
+		item.append(hiddenInput);
 		
 		item.on("click", function(e) { 
 			e.stopPropagation();

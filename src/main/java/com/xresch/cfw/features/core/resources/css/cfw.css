@@ -669,8 +669,8 @@
 .word-break-keep{ word-break: keep-all; }
 .word-wrap-break{ word-wrap: break-word; }
 
- .textarea-nowrap {
-  white-space:nowrap;
+.textarea-nowrap {
+  white-space: pre;
   overflow:scroll;
 }
 
