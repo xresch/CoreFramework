@@ -120,10 +120,28 @@
     margin-bottom: 0px;
 }
 
+.modal-content{
+	max-height: 95vh;
+}
+
+.modal-header {
+    padding: 0.3rem 0.5rem;
+
+}
+.modal-title {
+    padding-left: 0.5rem;
+
+}
 .modal-body{
 	overflow: auto;
 	max-height: 80%; 
 }
+
+.modal-footer {
+    padding: 0.5rem;
+
+}
+
 
 /* make navbars same height*/
 .navbar {
@@ -651,7 +669,11 @@
 .word-break-keep{ word-break: keep-all; }
 .word-wrap-break{ word-wrap: break-word; }
 
- 
+ .textarea-nowrap {
+  white-space:nowrap;
+  overflow:scroll;
+}
+
 /*************************************************************************
  * Cursors
  *************************************************************************/

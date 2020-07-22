@@ -182,6 +182,16 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
+	public CFWObject addAllFields(LinkedHashMap<String,CFWField<?>> fields) {
+		for(CFWField<?> field : fields.values()) {
+			this.addField(field);
+		}
+		return this;
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
 	public void addFields(CFWField<?> ...fields) {
 		for(CFWField<?> field : fields) {
 			this.addField(field);
