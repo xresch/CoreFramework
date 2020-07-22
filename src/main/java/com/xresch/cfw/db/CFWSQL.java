@@ -1213,6 +1213,7 @@ public class CFWSQL {
 	public String[] getAsStringArray(Object columnName) {
 		return getAsStringArrayList(columnName).toArray(new String[] {});
 	}
+	
 	/***************************************************************
 	 * Execute the Query and gets the result as a string array list.
 	 ***************************************************************/

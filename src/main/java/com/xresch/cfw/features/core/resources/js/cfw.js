@@ -656,6 +656,7 @@ function cfw_autocompleteShow(inputField, autocompleteResults){
 	
     cfw_autocompleteCloseAll();
     if (!searchString) { return false;}
+    if(autocompleteResults == null){ return false;};
     
     //----------------------------
     // Create Multiple Item Lists
