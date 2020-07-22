@@ -9,6 +9,28 @@ public class AutocompleteItem {
 	private Object label;
 	private Object description;
 	
+	//Methods: 
+	//exchange - fully replaces the current value of the input element (default)
+	//replace - replaces the last occurence of the search string with the value of the item
+	private String method = "exchange";
+	
+	public  AutocompleteItem() {}
+	
+	public  AutocompleteItem(Object value) {
+		this.value = value;
+	}
+	
+	public  AutocompleteItem(Object value, Object label) {
+		this.value = value;
+		this.label = label;
+	}
+	
+	public AutocompleteItem(Object value, Object label, Object description) {
+		this.value = value;
+		this.label = label;
+		this.description = description;
+	}
+	
 	public Object value() {
 		return value;
 	}
@@ -17,7 +39,7 @@ public class AutocompleteItem {
 		this.value = value;
 		return this;
 	}
-	
+		
 	public Object label() {
 		return label;
 	}
@@ -36,6 +58,10 @@ public class AutocompleteItem {
 		return this;
 	}
 	
+	public AutocompleteItem setMethodReplace(String replaceThis) {
+		this.method = "replace:"+replaceThis;
+		return this;
+	}
 	/*************************************************************************
 	 * Convert to JSON
 	 *************************************************************************/
@@ -45,7 +71,7 @@ public class AutocompleteItem {
 		CFW.JSON.addObject(jsonItem, "value", value);
 		CFW.JSON.addObject(jsonItem, "label", label);
 		CFW.JSON.addObject(jsonItem, "description", description);
-		
+		CFW.JSON.addObject(jsonItem, "method", method);
 		return jsonItem;
 	}
 

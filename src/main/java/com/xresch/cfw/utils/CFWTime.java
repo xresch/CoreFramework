@@ -114,8 +114,9 @@ public class CFWTime {
 	public static String calculateDatapointInterval(long earliestMillis, long latestMillis, int maxPoints) {
 		
 		Duration d = Duration.between(Instant.ofEpochMilli(earliestMillis), Instant.ofEpochMilli(latestMillis));
-		long seconds = d.toMillis() / 1000;
 		
+		long seconds = d.toMillis() / 1000;
+		System.out.println("seconds:"+seconds);
 		if((seconds / 15) < maxPoints) { return "15s"; }
 		else if((seconds / 30) < maxPoints) { return "30s"; }
 		else if((seconds / 60) < maxPoints) { return "1m"; }

@@ -698,17 +698,17 @@ function cfw_autocompleteShow(inputField, autocompleteResults){
  *    {"value": "Value0", "label": "Label0", "description": "some description or null" }
  * 
  *************************************************************************************/
-function cfw_autocompleteCreateItemList(inputField, values){
+function cfw_autocompleteCreateItemList(targetInputField, values){
 	//----------------------------
     // Initialize and Cleanup
-	var searchString = inputField.value;
-	var autocompleteID = inputField.id + "-autocomplete-list";
+	var searchString = targetInputField.value;
+	var autocompleteID = targetInputField.id + "-autocomplete-list";
 	var isTagsInput = false;
 	var isTagsselector = false;
 
-	if(inputField.id != null && inputField.id.endsWith('-tagsinput')){
+	if(targetInputField.id != null && targetInputField.id.endsWith('-tagsinput')){
 		isTagsInput = true;
-		isTagsselector = $(inputField).parent().siblings('input').hasClass('cfw-tags-selector');
+		isTagsselector = $(targetInputField).parent().siblings('input').hasClass('cfw-tags-selector');
 	}
 	
 	var itemList =  $("<div>");
@@ -723,7 +723,8 @@ function cfw_autocompleteCreateItemList(inputField, values){
 	   	var currentValue = values[key].value;
 	   	var label = ""+values[key].label;
 		var description = values[key].description;	
-		
+		// Methods: exchange | replace
+		var method = values[key].method;	
 		//----------------------------
 		// Create Item
 		var item = $('<div class="autocomplete-item">');
@@ -765,19 +766,28 @@ function cfw_autocompleteCreateItemList(inputField, values){
 			
 			//console.log("======"+isTagsInput+""+isTagsselector);
 			if(!isTagsInput){
-				inputField.value = value;
+				if(method == 'exchange'){
+					console.log('exchange');
+					targetInputField.value = value;
+				}else if(method.startsWith('replace:')){
+					var stringToReplace = method.substring('replace:'.length);
+					console.log('replace:'+stringToReplace);
+					var tempValue = targetInputField.value;
+					tempValue = tempValue.substring(0, tempValue.lastIndexOf(stringToReplace));
+					targetInputField.value = tempValue + value;
+				}
 				cfw_autocompleteCloseAll();
 			}else{
 				//console.log("isTagsInput: "+isTagsInput);
 				//console.log("isTagsselector: "+isTagsselector);
-				inputField.value = '';
+				targetInputField.value = '';
 				
 				if(isTagsselector){
 					// Do for Tagsinput
-					$(inputField).parent().siblings('input').tagsinput('add', { "value": value , "label": label });
+					$(targetInputField).parent().siblings('input').tagsinput('add', { "value": value , "label": label });
 				}else{
 					// Do For Selector
-					$(inputField).parent().siblings('input').tagsinput('add', value);
+					$(targetInputField).parent().siblings('input').tagsinput('add', value);
 					
 				}
 				cfw_autocompleteCloseAll();

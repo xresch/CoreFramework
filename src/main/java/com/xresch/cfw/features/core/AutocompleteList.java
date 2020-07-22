@@ -20,7 +20,7 @@ public class AutocompleteList {
 	 * @return
 	 *************************************************************************/
 	public AutocompleteList addItem(Object value) {
-		items.add(new AutocompleteItem().value(value).label(value));
+		items.add(new AutocompleteItem(value,value));
 		return this;
 	}
 	
@@ -31,7 +31,7 @@ public class AutocompleteList {
 	 * @return
 	 *************************************************************************/
 	public AutocompleteList addItem(Object value, Object label) {
-		items.add(new AutocompleteItem().value(value).label(label));
+		items.add(new AutocompleteItem(value, label));
 		return this;
 	}
 	
@@ -43,7 +43,19 @@ public class AutocompleteList {
 	 * @return
 	 *************************************************************************/
 	public AutocompleteList addItem(Object value, Object label, Object description) {
-		items.add(new AutocompleteItem().value(value).label(label).description(description));
+		items.add(new AutocompleteItem(value, label, description));
+		return this;
+	}
+	
+	/*************************************************************************
+	 * Add an item to the autocomplete result.
+	 * @param value
+	 * @param label
+	 * @param description
+	 * @return
+	 *************************************************************************/
+	public AutocompleteList addItem(AutocompleteItem item) {
+		items.add(item);
 		return this;
 	}
 	
