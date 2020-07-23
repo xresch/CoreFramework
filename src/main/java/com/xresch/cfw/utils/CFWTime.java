@@ -106,6 +106,17 @@ public class CFWTime {
 		return ageOutOffset;
 	}
 	
+	/********************************************************************************************
+	 * Returns the number of seconds between two epoch 
+	 * @return string
+	 ********************************************************************************************/
+	public static long calculateSecondsBetween(long earliestMillis, long latestMillis) {
+		Duration d = Duration.between(Instant.ofEpochMilli(earliestMillis), Instant.ofEpochMilli(latestMillis));
+		
+		long seconds = d.toMillis() / 1000;
+		
+		return seconds;
+	}
 	
 	/********************************************************************************************
 	 * Returns an interval string like "15s", "5m" or "1h". 
@@ -113,10 +124,8 @@ public class CFWTime {
 	 ********************************************************************************************/
 	public static String calculateDatapointInterval(long earliestMillis, long latestMillis, int maxPoints) {
 		
-		Duration d = Duration.between(Instant.ofEpochMilli(earliestMillis), Instant.ofEpochMilli(latestMillis));
-		
-		long seconds = d.toMillis() / 1000;
-		System.out.println("seconds:"+seconds);
+		long seconds = calculateSecondsBetween(earliestMillis, latestMillis);
+
 		if((seconds / 15) < maxPoints) { return "15s"; }
 		else if((seconds / 30) < maxPoints) { return "30s"; }
 		else if((seconds / 60) < maxPoints) { return "1m"; }

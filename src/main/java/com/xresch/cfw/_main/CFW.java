@@ -1,9 +1,19 @@
 package com.xresch.cfw._main;
 
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.logging.Logger;
+
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 import com.xresch.cfw.cli.ArgumentsException;
 import com.xresch.cfw.cli.CFWCommandLineInterface;
+import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWRegistryObjects;
 import com.xresch.cfw.db.CFWDB;
@@ -33,6 +43,7 @@ import com.xresch.cfw.features.usermgmt.CFWDBRolePermissionMap;
 import com.xresch.cfw.features.usermgmt.CFWDBUser;
 import com.xresch.cfw.features.usermgmt.CFWDBUserRoleMap;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.mail.CFWMail;
 import com.xresch.cfw.schedule.CFWSchedule;
 import com.xresch.cfw.utils.CFWDump;
@@ -50,6 +61,8 @@ import com.xresch.cfw.validation.CFWValidation;
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
 public class CFW {
+	
+	private static Logger logger = CFWLog.getLogger(CFW.class.getName());
 	
 	//##############################################################################
 	// Hierarchical Binding
@@ -145,6 +158,26 @@ public class CFW {
 
 		
 	}
+	
+	public static void loadExtentions() {
+		
+       Reflections reflections = new Reflections(new ConfigurationBuilder()
+            //.filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("com.xresch.cfw.")))
+            .filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("java.")))
+            .setUrls(ClasspathHelper.forClassLoader())
+            //.setScanners(new SubTypesScanner(), new TypeAnnotationsScanner())
+       );
+       
+       Set<Class<?>> types = reflections.getTypesAnnotatedWith(CFWExtention.class);
+       System.out.println("Reflect.");
+       for(Class<?> clazz : types) {
+    	   if(CFWAppFeature.class.isAssignableFrom(clazz)) {
+    		   System.out.println("Load CFW Extention:"+clazz.getName());
+    		   new CFWLog(logger).method("loadExtentions").info("Load CFW Extention:"+clazz.getName());
+    		   CFW.Registry.Features.addFeature((Class<? extends CFWAppFeature>)clazz);
+    	   }
+       }
+	}
 
 	/***********************************************************************
 	 * Create an instance of the CFWDefaultApp.
@@ -232,6 +265,10 @@ public class CFW {
 		//---------------------------
 		// Application Register
 		appToStart.register();
+		
+		//---------------------------
+		// Load Extentions
+		loadExtentions();
 		
 		//---------------------------
 		// Feature Register

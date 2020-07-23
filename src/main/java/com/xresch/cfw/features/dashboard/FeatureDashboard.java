@@ -61,6 +61,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Widgets.add(new WidgetEasterEggsDiscoMode());
 		CFW.Registry.Widgets.add(new WidgetEasterEggsSnow());
 		CFW.Registry.Widgets.add(new WidgetEasterEggsFireworks());
+		
 		//----------------------------------
     	// Register Menu
 		CFW.Registry.Components.addRegularMenuItem(
