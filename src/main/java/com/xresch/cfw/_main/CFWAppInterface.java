@@ -3,7 +3,6 @@ package com.xresch.cfw._main;
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
 public interface CFWAppInterface {
 
@@ -26,7 +25,7 @@ public interface CFWAppInterface {
 	 * Add servlets and start the application.
 	 * Make sure to call app.start();
 	 ************************************************************************************/
-	public void startApp(CFWApplicationExecutor app);
+	public void startApp(CFWApplicationExecutor executor);
 	
 	
 	/************************************************************************************

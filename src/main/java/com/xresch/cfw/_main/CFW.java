@@ -5,15 +5,12 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
 import com.xresch.cfw.cli.ArgumentsException;
 import com.xresch.cfw.cli.CFWCommandLineInterface;
-import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWRegistryObjects;
 import com.xresch.cfw.db.CFWDB;
@@ -159,7 +156,13 @@ public class CFW {
 		
 	}
 	
-	public static void loadExtentions() {
+	/***********************************************************************
+	 * Searches all classes annotated with @CFWExtentionApplication and 
+	 * returns an instance of the first finding.
+	 * 
+	 ***********************************************************************/
+	@SuppressWarnings("unchecked")
+	public static CFWAppInterface loadExtentionApplication() {
 		
        Reflections reflections = new Reflections(new ConfigurationBuilder()
             //.filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("com.xresch.cfw.")))
@@ -168,12 +171,43 @@ public class CFW {
             //.setScanners(new SubTypesScanner(), new TypeAnnotationsScanner())
        );
        
-       Set<Class<?>> types = reflections.getTypesAnnotatedWith(CFWExtention.class);
-       System.out.println("Reflect.");
+       Set<Class<?>> types = reflections.getTypesAnnotatedWith(CFWExtensionApplication.class);
+       
+       for(Class<?> clazz : types) {
+    	   if(CFWAppInterface.class.isAssignableFrom(clazz)) {
+    		   new CFWLog(logger).method("loadExtentionApplication").info("Load CFW Extension Application:"+clazz.getName());
+    		   
+    		  try {
+				CFWAppInterface instance = (CFWAppInterface)clazz.newInstance();
+				return instance;
+			} catch (InstantiationException | IllegalAccessException e) {
+				new CFWLog(logger).method("loadExtentionApplication").severe("Error loading CFW Extension Application:"+clazz.getName(), e);
+			}
+    	   }
+       }
+       
+       return null;
+	}
+	
+	/***********************************************************************
+	 * Searches all classes annotated with @CFWExtentionFeature and adds 
+	 * them to the registry.
+	 * 
+	 ***********************************************************************/
+	@SuppressWarnings("unchecked")
+	private static void loadExtensionFeatures() {
+		
+       Reflections reflections = new Reflections(new ConfigurationBuilder()
+            //.filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("com.xresch.cfw.")))
+            .filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("java.")))
+            .setUrls(ClasspathHelper.forClassLoader())
+            //.setScanners(new SubTypesScanner(), new TypeAnnotationsScanner())
+       );
+       
+       Set<Class<?>> types = reflections.getTypesAnnotatedWith(CFWExtensionFeature.class);
        for(Class<?> clazz : types) {
     	   if(CFWAppFeature.class.isAssignableFrom(clazz)) {
-    		   System.out.println("Load CFW Extention:"+clazz.getName());
-    		   new CFWLog(logger).method("loadExtentions").info("Load CFW Extention:"+clazz.getName());
+    		   new CFWLog(logger).method("loadExtensionFeatures").info("Load CFW Extension:"+clazz.getName());
     		   CFW.Registry.Features.addFeature((Class<? extends CFWAppFeature>)clazz);
     	   }
        }
@@ -219,14 +253,22 @@ public class CFW {
     	
 	    //--------------------------------
 	    // Start Application
-		CFWApplicationExecutor app = new CFWApplicationExecutor(args);
+		CFWApplicationExecutor executor = new CFWApplicationExecutor(args);
 		
 		for(CFWAppFeature feature : features) {
-			feature.addFeature(app);
+			feature.addFeature(executor);
 		}
 		
-		appToStart.startApp(app);
+		appToStart.startApp(executor);
 		
+		
+		try {
+			executor.start();
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.method("initializeApp")
+				.severe("Exception occured during application startup.", e);
+		}
 	}
 	
 	/***********************************************************************
@@ -268,7 +310,7 @@ public class CFW {
 		
 		//---------------------------
 		// Load Extentions
-		loadExtentions();
+		loadExtensionFeatures();
 		
 		//---------------------------
 		// Feature Register

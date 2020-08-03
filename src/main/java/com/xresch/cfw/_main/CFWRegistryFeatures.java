@@ -1,9 +1,10 @@
 package com.xresch.cfw._main;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.logging.Logger;
 
-import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -15,14 +16,14 @@ public class CFWRegistryFeatures {
 	
 	public static Logger logger = CFWLog.getLogger(CFWRegistryFeatures.class.getName());
 	
-	private static ArrayList<Class<? extends CFWAppFeature>> featureClassArray = new ArrayList<Class<? extends CFWAppFeature>>();
+	private static LinkedHashSet<Class<? extends CFWAppFeature>> featureClassSet = new LinkedHashSet<Class<? extends CFWAppFeature>>();
 	
 	/***********************************************************************
 	 * Adds a CFWObject class to the registry.
 	 * @param objectClass
 	 ***********************************************************************/
 	public static void addFeature(Class<? extends CFWAppFeature> objectClass)  {
-		featureClassArray.add(objectClass);
+		featureClassSet.add(objectClass);
 	}
 	
 	/***********************************************************************
@@ -30,15 +31,15 @@ public class CFWRegistryFeatures {
 	 * @param objectClass
 	 ***********************************************************************/
 	public static void removeCFWObject(Class<? extends CFWAppFeature> objectClass)  {
-		featureClassArray.remove(objectClass);
+		featureClassSet.remove(objectClass);
 	}
 	
 	/***********************************************************************
 	 * Removes a CFWObject class to the registry.
 	 * @param objectClass
 	 ***********************************************************************/
-	public static ArrayList<Class<? extends CFWAppFeature>> getCFWObjectList()  {
-		return featureClassArray;
+	public static LinkedHashSet<Class<? extends CFWAppFeature>> getCFWObjectList()  {
+		return featureClassSet;
 	}
 	
 	/***********************************************************************
@@ -48,7 +49,7 @@ public class CFWRegistryFeatures {
 	public static ArrayList<CFWAppFeature> getFeatureInstances()  {
 		ArrayList<CFWAppFeature> instanceArray = new ArrayList<CFWAppFeature>();
 		
-		for(Class<? extends CFWAppFeature> clazz : featureClassArray) {
+		for(Class<? extends CFWAppFeature> clazz : featureClassSet) {
 			try {
 				CFWAppFeature instance = clazz.newInstance();
 				instanceArray.add(instance);

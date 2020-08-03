@@ -65,6 +65,7 @@ public class CFWApplicationExecutor {
 	
 	private Server server;
 	private MultipartConfigElement globalMultipartConfig;
+	private boolean isStarted = false;
 	
 	ServletContextHandler servletContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
 	
@@ -458,6 +459,9 @@ public class CFWApplicationExecutor {
 	 **************************************************************************************************/
 	public void start() throws Exception {
 		
+		if(isStarted) {
+			return;
+		}
         //###################################################################
         // Create Handler chain
         //###################################################################
