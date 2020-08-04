@@ -20,12 +20,12 @@ public class _Main {
     	// Create empty Default if null
     	if(app == null) {
     		app = new CFWAppInterface() {
-				@Override public void stopApp() {}
-				@Override public void startTasks() {}
-				@Override public void startApp(CFWApplicationExecutor app) {}
-				@Override public void settings() {}
+    			@Override public void settings() { CFW.AppSettings.setEnableDashboarding(true); }
+				@Override public void startApp(CFWApplicationExecutor executor) { executor.setDefaultURL("/dashboard/list", true); }
 				@Override public void register() {}
 				@Override public void initializeDB() {}
+				@Override public void startTasks() {}
+				@Override public void stopApp() {}
 			};
     	}
     	
