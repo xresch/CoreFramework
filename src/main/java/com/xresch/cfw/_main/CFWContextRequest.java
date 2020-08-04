@@ -141,6 +141,16 @@ public class CFWContextRequest {
 	}
 	
 	/****************************************************************
+	 * Adds a localized "Access Denied" error message.
+	 *   
+	 ****************************************************************/
+	public static void addMessageAccessDenied(){
+		addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));		
+	}
+	
+	
+	
+	/****************************************************************
 	 * Returns a collection of alert Messages
 	 *   
 	 * @return Map or null

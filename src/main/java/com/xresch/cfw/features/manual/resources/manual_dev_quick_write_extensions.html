@@ -1,0 +1,71 @@
+
+<p>With the CoreFramework version 1.0.0 and later, you can extend your application.</br>
+With the new version, CFW is delivered as a .jar-File that will be used to host and run an application that can be placed in the folder "./extensions".
+Additional extensions can be written and placed in the same folder as described here.</p>
+
+<h2>Example Project</h2>
+<p>You can find an example project in the following GitHub repository: <a target="_blank" href="https://github.com/xresch/CoreFramework_ExtensionExample">CoreFramework_ExtensionExample</a></p>
+
+<h2>How it works</h2>
+<p>The mechanism is quite simple. You can write your application as before, except that you need to add annotations to your application class and your features.
+Here is an example of the annotations: </p>
+
+<pre>
+<code>/***************************************************************
+ * Use @CFWExtensionApplication to mark a class implementing 
+ * CFWAppInterface that should be loaded on server startup.
+ * If @CFWExtensionApplication is found multiple times on the 
+ * classpath, only the first one is used.
+ * Do not use this if you are extending an existing application.
+ **************************************************************/
+@CFWExtensionApplication
+public class ExampleExtensionApplication implements CFWAppInterface {
+	...
+}
+
+/***************************************************************
+ * Use @CFWExtensionFeature to mark a class extending 
+ * CFWAppFeature that should be loaded on server startup.
+ * The features marked with @CFWExtensionFeature are loaded after
+ * all features registered with CFW.Registry.Features.addFeature().
+ * The order is not predictable, except you create a feature that
+ * registers other features with above method.
+ **************************************************************/
+@CFWExtensionFeature
+public class FeatureExtensionTest extends CFWAppFeature {
+	...
+}</code>
+</pre>
+
+
+<h2>Building the Extensions</h2>
+<p>When you build your extension, include all your class files but exclude the CFW dependencies.
+Copy your extension.jar file and any additional dependencies to:</p>
+
+<pre>
+<code>{APP_ROOT}/extensions</code>
+</pre>
+
+<h2>Testing during Development</h2>
+<p>To test your extension during development, you can create a small main method like the following to run the CFW server with your extension: </p>
+
+<pre>
+<code>package com.xresch.cfw.example.main;
+
+import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWAppInterface;
+
+public class _MainForTesting {
+			
+    public static void main( String[] args ) throws Exception
+    {
+    	//------------------------------------
+    	// Load application Extension
+    	CFWAppInterface app = CFW.loadExtentionApplication();
+
+    	//------------------------------------
+    	// Start Application
+    	CFW.initializeApp(app, args);
+    }
+}</code>
+</pre>

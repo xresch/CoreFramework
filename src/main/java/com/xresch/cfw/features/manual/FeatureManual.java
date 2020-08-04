@@ -179,6 +179,11 @@ public class FeatureManual extends CFWAppFeature {
 				.addPermission(PERMISSION_ADMIN_MANUAL)
 				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "manual_dev_quick_create_feature.html")
 			);
+		quickstart.addChild(new ManualPage("Write Extensions")
+				.faicon("fas fa-plug")
+				.addPermission(PERMISSION_ADMIN_MANUAL)
+				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "manual_dev_quick_write_extensions.html")
+			);
 		
 		quickstart.addChild(new ManualPage("Create a Servlet")
 				.faicon("fas fa-server")
