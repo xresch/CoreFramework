@@ -31,8 +31,10 @@ public class CFWSecurity {
 			.allowCommonInlineFormattingElements()
 			.allowStandardUrlProtocols()
 			.allowStyling()
-		    .allowElements("a", "table", "thead", "tbody", "th",  "tr", "td", "div", "i", "b", "strong", "ol", "ul", "li")
+		    .allowElements("a", "table", "thead", "tbody", "th", "tr", "td", "div", "i", "b", "strong", "ol", "ul", "li", "font", "h1", "h2", "h3", "h4", "h5", "h6")
 		    .allowAttributes("href").onElements("a")
+		    .allowAttributes("size").onElements("font")
+		    .allowAttributes("class", "style").globally()
 		    .toFactory();
 
 	private static final String htmlEscapes[][] = new String[][]{
