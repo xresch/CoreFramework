@@ -54,8 +54,7 @@ import com.xresch.cfw.validation.CFWValidation;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @author Reto Scheiwiller, (c) Copyright 2020
  **************************************************************************************************************/
 public class CFW {
 	
