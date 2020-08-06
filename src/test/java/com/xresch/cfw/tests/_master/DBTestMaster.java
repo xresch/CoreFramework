@@ -6,7 +6,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main._MainForTesting;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.logging.CFWLog;
 

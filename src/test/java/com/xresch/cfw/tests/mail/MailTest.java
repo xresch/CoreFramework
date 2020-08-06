@@ -3,19 +3,17 @@ package com.xresch.cfw.tests.mail;
 import java.io.File;
 import java.io.IOException;
 
-import org.junit.Test;
-
 import com.xresch.cfw._main.CFW;
 
 public class MailTest {
 	
-	@Test
+	//@Test
 	public void testMail() throws IOException {
 		CFW.Properties.loadProperties(CFW.CLI.getValue(CFW.CLI.CONFIG_FILE));
 	    CFW.Mail.sendFromNoReply("test@pengtoolbox.io", "Testing Subject", "<!DOCTYPE HTML><html>SimpleEmail Testing Body. <strong>STRONG</strong></html>");
 	}
 	
-	@Test
+	//@Test
 	public void testMailWithAttachment() throws IOException {
 		CFW.Properties.loadProperties(CFW.CLI.getValue(CFW.CLI.CONFIG_FILE));
 		

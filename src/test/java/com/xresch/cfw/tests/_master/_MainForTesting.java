@@ -1,15 +1,17 @@
-package com.xresch.cfw._main;
+package com.xresch.cfw.tests._master;
 
 import java.util.Locale;
 import java.util.logging.Logger;
 
+import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWAppInterface;
+import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.MenuItem;
-import com.xresch.cfw.tests._master.WebTestMaster;
 import com.xresch.cfw.tests.assets.servlets.FormTestServlet;
 import com.xresch.cfw.tests.assets.servlets.GeneralTestServlet;
 

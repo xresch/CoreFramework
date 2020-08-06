@@ -2,8 +2,6 @@ package com.xresch.cfw.tests._master;
 
 import javax.servlet.Servlet;
 
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletMapping;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -65,7 +63,7 @@ public class WebTestMaster {
 				t.start();
 
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(10000);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

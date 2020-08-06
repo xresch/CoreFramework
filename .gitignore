@@ -2,3 +2,4 @@
 /datastore
 /.settings/org.eclipse.core.resources.prefs
 /log
+/target/
