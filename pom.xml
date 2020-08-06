@@ -18,7 +18,7 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<jettyVersion>9.4.15.v20190215</jettyVersion>
+		<jettyVersion>9.4.31.v20200723</jettyVersion>
 		<prometheusVersion>0.9.0</prometheusVersion>
 
 		<skipTests>true</skipTests>
