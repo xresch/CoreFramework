@@ -24,7 +24,7 @@ TODO
 - Dashboard: Default No Data Tile
 - Dashboard: Add Anchor Chooser to Image Widget
 - Dashboard: Add format to reload time widget
-
+- Dashboard: Console with Logs
 
 - Widget: Link
 - Widget: Dashboard Link
@@ -37,6 +37,9 @@ TODO
 - Widget: Nest Widget from other Dashboard
 - Widget: Fontawesome Icon 
 - Widget: Current Time Widget
+- Widget: Collaboration: Chat
+- Widget: Collaboration: Logbook
+
 
 - cfw.js: Create Pagination Renderer
 - cfw.js: Finish javascript CFWFormField
