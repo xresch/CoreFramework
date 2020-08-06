@@ -12,6 +12,7 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
@@ -457,6 +458,14 @@ public abstract class DBInterface {
 		} 
 		
 		log.custom("sql", sql).end();
+		
+		if(logger.isLoggable(Level.FINER) && prepared != null ) {
+			new CFWLog(logger)
+				.method("preparedExecuteQuery")
+				.custom("preparedStatement", prepared.toString())
+				.finest("Debug: Prepared Statement");
+		}
+		 
 		return result;
 	}
 	

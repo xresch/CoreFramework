@@ -43,6 +43,7 @@ public class Dashboard extends CFWObject {
 		JSON_SHARE_WITH_USERS,
 		JSON_SHARE_WITH_ROLES,
 		JSON_EDITORS,
+		JSON_EDITOR_ROLES,
 		IS_DELETABLE,
 		IS_RENAMABLE,
 	}
@@ -99,7 +100,7 @@ public class Dashboard extends CFWObject {
 	
 	private CFWField<LinkedHashMap<String,String>> shareWithRoles = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_ROLES)
 			.setLabel("Share with Roles")
-			.setDescription("Share this dashboard with the users having at least one of the specified roles.")
+			.setDescription("")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
@@ -109,7 +110,7 @@ public class Dashboard extends CFWObject {
 	
 	private CFWField<LinkedHashMap<String,String>> editors = CFWField.newTagsSelector(DashboardFields.JSON_EDITORS)
 			.setLabel("Editors")
-			.setDescription("Allow other users to view and edit the dashboard, even when the dashboard is not shared.")
+			.setDescription("Allow the specified users to view and edit the dashboard, even when the dashboard is not shared.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				
@@ -118,6 +119,16 @@ public class Dashboard extends CFWObject {
 				}
 			});
 	
+	private CFWField<LinkedHashMap<String,String>> editorRoles = CFWField.newTagsSelector(DashboardFields.JSON_EDITOR_ROLES)
+			.setLabel("Editor Roles")
+			.setDescription("Allow users having at least one of the specified roles to view and edit the dashboard, even when the dashboard is not shared.")
+			.setValue(null)
+			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+				
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+					return CFW.DB.Roles.autocompleteRole(searchValue, this.getMaxResults());
+				}
+			});
 	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, DashboardFields.IS_DELETABLE.toString())
 			.setDescription("Flag to define if the dashboard can be deleted or not.")
 			.setColumnDefinition("BOOLEAN")
@@ -152,7 +163,7 @@ public class Dashboard extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyOwner, name, description, isShared, shareWithUsers, shareWithRoles, editors, isDeletable, isRenamable);
+		this.addFields(id, foreignKeyOwner, name, description, isShared, shareWithUsers, shareWithRoles, editors, editorRoles, isDeletable, isRenamable);
 	}
 		
 	/**************************************************************************************
@@ -191,6 +202,7 @@ public class Dashboard extends CFWObject {
 						DashboardFields.JSON_SHARE_WITH_USERS.toString(),
 						DashboardFields.JSON_SHARE_WITH_ROLES.toString(),
 						DashboardFields.JSON_EDITORS.toString(),
+						DashboardFields.JSON_EDITOR_ROLES.toString(),
 						DashboardFields.IS_DELETABLE.toString(),
 						DashboardFields.IS_RENAMABLE.toString(),		
 				};
@@ -286,6 +298,15 @@ public class Dashboard extends CFWObject {
 	
 	public Dashboard editors(LinkedHashMap<String,String> editors) {
 		this.editors.setValue(editors);
+		return this;
+	}
+	
+	public LinkedHashMap<String,String> editorRoles() {
+		return editorRoles.getValue();
+	}
+	
+	public Dashboard editorRoles(LinkedHashMap<String,String> value) {
+		this.editorRoles.setValue(value);
 		return this;
 	}
 	

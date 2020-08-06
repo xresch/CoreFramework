@@ -309,12 +309,25 @@ public class ServletDashboardView extends HttpServlet
 		Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
 		User user = CFW.Context.Request.getUser();
 		
+		//--------------------------------------
+		// Check User is Dashboard owner, admin
+		// or listed in editors
 		if( dashboard.foreignKeyOwner().equals(user.id())
 		|| ( dashboard.editors() != null && dashboard.editors().containsKey(user.id().toString()) )
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 			return true;
-		}else {
-			return false;
 		}
+		
+		//--------------------------------------
+		// Check User has Editor Role
+		if(dashboard.editorRoles() != null) {
+			for(int roleID : CFW.Context.Request.getUserRoles().keySet()) {
+				if (dashboard.editorRoles().containsKey(""+roleID)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 }

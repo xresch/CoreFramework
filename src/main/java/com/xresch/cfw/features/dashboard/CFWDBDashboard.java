@@ -211,7 +211,7 @@ public class CFWDBDashboard {
 					sharedUserslikeID);
 			
 		
-		//---------------------
+		//-------------------------
 		// Union with Shared Roles
 		query.union()
 			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
@@ -230,6 +230,22 @@ public class CFWDBDashboard {
 		
 		query.custom(")");
 		
+		//-------------------------
+		// Union with Editor Roles
+		query.union()
+			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION)
+			.where().custom("(");
+		
+		for(int i = 0 ; i < roleArray.length; i++ ) {
+			int roleID = roleArray[i];
+			if(i > 0) {
+				query.or();
+			}
+			query.like(DashboardFields.JSON_EDITOR_ROLES, "%\""+roleID+"\":%");
+		}
+		
+		query.custom(")");
 		//System.out.println(query.getStatementString());
 	
 		return query
@@ -491,22 +507,37 @@ public class CFWDBDashboard {
 		}
 		
 		//-----------------------------------
-		// Check User has Role
+		// Get Dashboard 
 		Dashboard dashboard = (Dashboard)new CFWSQL(new Dashboard())
-			.select(DashboardFields.JSON_SHARE_WITH_ROLES)
+			.select(DashboardFields.JSON_SHARE_WITH_ROLES, DashboardFields.JSON_EDITOR_ROLES)
 			.where(DashboardFields.PK_ID, dashboardID)
 			.getFirstObject();
 		
+		//-----------------------------------
+		// Check User has Shared Role
 		LinkedHashMap<String, String> sharedRoles = dashboard.shareWithRoles();
 		
 		if(sharedRoles != null && sharedRoles.size() > 0) {
 			for(String roleID : sharedRoles.keySet()) {
+				if(CFW.Context.Request.hasRole(Integer.parseInt(roleID)) ) {
+					return true;
+				}
+			}
+		}
+		
+		//-----------------------------------
+		// Check User has Editor Role
+		LinkedHashMap<String, String> editorRoles = dashboard.editorRoles();
+		
+		if(editorRoles != null && editorRoles.size() > 0) {
+			for(String roleID : editorRoles.keySet()) {
 				if(CFW.Context.Request.hasRole(Integer.parseInt(roleID)) ) {
 					System.out.println("HAS ROLE!!!!");
 					return true;
 				}
 			}
 		}
+		
 		return false;
 	}
 	
