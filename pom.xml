@@ -1,12 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<!-- ================= PROJECT INFORMATION ================== -->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.xresch</groupId>
 	<artifactId>cfw</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
+	
+	<name>cfw</name>
+	<description>CoreFramework is a java application boilerplate providing various functionalities like user management, configurations, API and dashboarding out of the box.</description>
+	<url>https://github.com/xresch/CoreFramework</url>
 
+	<!-- ================= LICENSES ================== -->
 	<licenses>
 		<license>
 			<name>CFW License</name>
@@ -14,6 +21,37 @@
 		</license>
 	</licenses>
 
+	<!-- ================= DEVELOPERS ================== -->
+	<developers>
+		<developer>
+			<name>Reto Scheiwiller</name>
+			<email>reto.scheiwiller5@bluewin.ch</email>
+			<organization>xresch</organization>
+			<organizationUrl>http://www.xresch.com</organizationUrl>
+		</developer>
+	</developers>
+
+	<!-- ================= SCM ================== -->
+	<scm>
+		<connection>scm:git:git://github.com/xresch/CoreFramework.git</connection>
+		<developerConnection>scm:git:ssh://github.com/xresch/CoreFramework.git</developerConnection>
+		<url>https://github.com/xresch/CoreFramework/tree/master</url>
+	</scm>
+
+
+	<!-- ================= DISTRIBUTION MANAGEMENT ================== -->
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
+
+	<!-- ================= PROPERTIES ================== -->
 	<properties>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -22,8 +60,11 @@
 		<prometheusVersion>0.9.0</prometheusVersion>
 
 		<skipTests>true</skipTests>
+		<skipJavadoc>true</skipJavadoc>
+		<skipSigning>false</skipSigning>
 	</properties>
 
+	<!-- ================= DEPENDENCIES ================== -->
 	<dependencies>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
@@ -234,6 +275,7 @@
 					</execution>
 				</executions>
 				<configuration>
+					<skip>${skipJavadoc}</skip>
 					<additionalparam>-Xdoclint:none</additionalparam>
 					<additionalOptions>-Xdoclint:none</additionalOptions>
 					<additionalJOption>-Xdoclint:none</additionalJOption>
@@ -255,6 +297,30 @@
 					</descriptorRefs>
 				</configuration>
 			</plugin>
+
+			<!-- ================= GPG SIGN ================== -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.6</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<skip>${skipSigning}</skip>
+					<gpgArguments>
+						<arg>--pinentry-mode</arg>
+						<arg>loopback</arg>
+					</gpgArguments>
+				</configuration>
+			</plugin>
+
 
 			<!-- ================= SITE ================== -->
 			<plugin>

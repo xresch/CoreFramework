@@ -1,5 +1,39 @@
 #########################################################
-# Count all the lines of all files in the repository
+# Repositoriy
 #########################################################
+
+#----------------------------------------------------
+# Count all the lines of all files in the repository
+#----------------------------------------------------
 git ls-files | xargs wc -l | cat > line_count.txt
 
+#----------------------------------------------------
+# Create bare share repository
+#----------------------------------------------------
+mkdir Foldername
+cd Foldername
+git init --bare --shared
+
+#########################################################
+# GPG
+#########################################################
+
+##### Create Key #####
+gpg --gen-key
+
+##### List Keys #####
+gpg --list-keys
+gpg --list-secret-keys
+
+##### Change Expiration #####
+gpg --edit-key {key-id}
+   command: list - show all keys
+   command: key {index} select sub key to work on
+   command: expire - use '0' for never
+   command: save
+   
+##### make key available #####
+gpg --keyserver hkp://pool.sks-keyservers.net --send-keys {key-id}
+
+##### get key #####
+gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys {key-id}
