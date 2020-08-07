@@ -187,6 +187,7 @@
 
 		<plugins>
 
+			<!-- ================= COMPILER ================== -->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
@@ -196,7 +197,7 @@
 				</configuration>
 			</plugin>
 
-
+			<!-- ================= SUREFIRE ================== -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -206,6 +207,40 @@
 				</configuration>
 			</plugin>
 
+			<!-- ================= SOURCES ================== -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- ================= JAVADOC ================== -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<additionalparam>-Xdoclint:none</additionalparam>
+					<additionalOptions>-Xdoclint:none</additionalOptions>
+					<additionalJOption>-Xdoclint:none</additionalJOption>
+				</configuration>
+			</plugin>
+
+			<!-- ================= ASSEMBLY ================== -->
 			<!-- mvn clean compile assembly:single -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -221,17 +256,19 @@
 				</configuration>
 			</plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.7.1</version>
-            </plugin>
+			<!-- ================= SITE ================== -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.7.1</version>
+			</plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.0.0</version>
-            </plugin>
+			<!-- ================= PROJECT INFO ================== -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>3.0.0</version>
+			</plugin>
 
 		</plugins>
 	</build>
