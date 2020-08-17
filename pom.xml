@@ -7,7 +7,7 @@
 	<groupId>com.xresch</groupId>
 	<artifactId>cfw</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	
 	<name>cfw</name>
 	<description>CoreFramework is a java application boilerplate providing various functionalities like user management, configurations, API and dashboarding out of the box.</description>
@@ -60,7 +60,7 @@
 		<prometheusVersion>0.9.0</prometheusVersion>
 
 		<skipTests>true</skipTests>
-		<skipJavadoc>true</skipJavadoc>
+		<skipJavadoc>false</skipJavadoc>
 		<skipSigning>false</skipSigning>
 	</properties>
 
@@ -314,9 +314,13 @@
 				</executions>
 				<configuration>
 					<skip>${skipSigning}</skip>
-					<gpgArguments>
+					<gpgArguments> 
 						<arg>--pinentry-mode</arg>
 						<arg>loopback</arg>
+						<arg>--status-fd</arg>
+						<arg>--yes</arg>
+						<arg>--always-trust</arg>
+						
 					</gpgArguments>
 				</configuration>
 			</plugin>

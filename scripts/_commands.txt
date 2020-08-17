@@ -1,5 +1,5 @@
 #########################################################
-# Repositoriy
+# Repository
 #########################################################
 
 #----------------------------------------------------
@@ -14,12 +14,39 @@ mkdir Foldername
 cd Foldername
 git init --bare --shared
 
+
+#########################################################
+# Maven Settings
+#########################################################
+<settings>
+	<servers>
+		<server>
+			<id>ossrh</id>
+			<username>xresch</username>
+			<password>{password}</password>
+		</server>
+	</servers>
+
+	<profiles>
+		<profile>
+			<id>ossrh</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<gpg.executable>C:\Program Files (x86)\GnuPG\bin\gpg.exe</gpg.executable>
+				<gpg.passphrase>{password}</gpg.passphrase>
+			</properties>
+		</profile>
+	</profiles>
+</settings>
+
 #########################################################
 # GPG
 #########################################################
 
 ##### Create Key #####
-gpg --gen-key
+gpg --full-generate-key
 
 ##### List Keys #####
 gpg --list-keys
@@ -37,3 +64,6 @@ gpg --keyserver hkp://pool.sks-keyservers.net --send-keys {key-id}
 
 ##### get key #####
 gpg --keyserver hkp://pool.sks-keyservers.net --recv-keys {key-id}
+
+##### Sign File #####
+gpg -ab cfw-1.0.0-SNAPSHOT.jar
