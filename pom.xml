@@ -218,7 +218,7 @@
 
 		<testResources>
 			<testResource>
-				<directory>src/test/javax</directory>
+				<directory>src/test/java</directory>
 				<excludes>
 					<exclude>**/*.java</exclude>
 				</excludes>
