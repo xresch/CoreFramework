@@ -34,8 +34,6 @@
 						replicatedWidgetObject.HEIGHT 	= widgetObject.HEIGHT;
 						replicatedWidgetObject.WIDTH 	= widgetObject.WIDTH;
 						replicatedWidgetObject.TITLE 	= widgetObject.TITLE;
-
-						console.log(replicatedWidgetObject);
 						
 						var replicatedDefinition = CFW.dashboard.getWidgetDefinition(replicatedWidgetObject.TYPE);
 						
@@ -70,9 +68,6 @@
 								    subWidgetObject.X		= widgetInstance.attr("data-gs-x");
 								    subWidgetObject.Y		= widgetInstance.attr("data-gs-y");
 
-//								    if(callback != null){
-//								    	callback(subWidgetObject);
-//								    }
 								}
 							);
 							}catch(err){
