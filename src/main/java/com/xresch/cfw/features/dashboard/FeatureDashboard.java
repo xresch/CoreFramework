@@ -47,7 +47,6 @@ public class FeatureDashboard extends CFWAppFeature {
 		
     	//----------------------------------
     	// Register Widgets
-		CFW.Registry.Widgets.add(new WidgetHelloWorld());
 		CFW.Registry.Widgets.add(new WidgetText());
 		CFW.Registry.Widgets.add(new WidgetLabel());
 		CFW.Registry.Widgets.add(new WidgetList());
@@ -58,6 +57,9 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Widgets.add(new WidgetWebsite());
 		CFW.Registry.Widgets.add(new WidgetYoutubeVideo());
 		CFW.Registry.Widgets.add(new WidgetRefreshTime());
+		CFW.Registry.Widgets.add(new WidgetReplica());
+		
+		CFW.Registry.Widgets.add(new WidgetHelloWorld());
 		CFW.Registry.Widgets.add(new WidgetEasterEggsDiscoMode());
 		CFW.Registry.Widgets.add(new WidgetEasterEggsSnow());
 		CFW.Registry.Widgets.add(new WidgetEasterEggsFireworks());

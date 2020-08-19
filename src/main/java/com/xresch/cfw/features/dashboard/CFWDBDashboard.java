@@ -14,8 +14,11 @@ import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
+import com.xresch.cfw.features.usermgmt.CFWDBUser;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -465,7 +468,7 @@ public class CFWDBDashboard {
 	
 	/***************************************************************
 	 * 
-	 ****************************************************************/
+	 ***************************************************************/
 	public static boolean isDashboardOfCurrentUser(String dashboardID) {
 		
 		int count = new CFWSQL(new Dashboard())
@@ -480,7 +483,7 @@ public class CFWDBDashboard {
 	
 	/***************************************************************
 	 * 
-	 ****************************************************************/
+	 ***************************************************************/
 	public static boolean hasUserAccessToDashboard(String dashboardID) {
 		
 		//-----------------------------------
@@ -539,6 +542,26 @@ public class CFWDBDashboard {
 		}
 		
 		return false;
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public static AutocompleteResult autocompleteDashboard(String searchValue, int maxResults) {
+		
+		if(Strings.isNullOrEmpty(searchValue)) {
+			return new AutocompleteResult();
+		}
+		
+		return new Dashboard()
+			.queryCache(CFWDBDashboard.class, "autocompleteDashboard")
+			.select(DashboardFields.PK_ID.toString(),
+					DashboardFields.NAME.toString())
+			.whereLike(DashboardFields.NAME.toString(), "%"+searchValue+"%")
+			.limit(maxResults)
+			.getAsAutocompleteResult(DashboardFields.PK_ID.toString(), 
+					DashboardFields.NAME.toString());
+		
 	}
 	
 	//####################################################################################################

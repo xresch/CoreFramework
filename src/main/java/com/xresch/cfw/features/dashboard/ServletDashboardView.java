@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
@@ -88,9 +89,10 @@ public class ServletDashboardView extends HttpServlet
 		}
         
     }
+	
 	/*****************************************************************
 	 *
-	 ******************************************************************/
+	 *****************************************************************/
 	@Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
@@ -105,6 +107,9 @@ public class ServletDashboardView extends HttpServlet
         
     }
 	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
 	private void handleDataRequest(HttpServletRequest request, HttpServletResponse response) {
 		
 		String action = request.getParameter("action");
@@ -169,6 +174,9 @@ public class ServletDashboardView extends HttpServlet
 		}
 	}
 	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
 	private void fetchWidgets(JSONResponse response, String dashboardID) {
 		
 		Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
@@ -181,7 +189,10 @@ public class ServletDashboardView extends HttpServlet
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to view this dashboard.");
 		}
 	}
-		
+	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
 	private void createWidget(JSONResponse response, String type, String dashboardID) {
 
 		if(canEdit(dashboardID)) {
@@ -208,10 +219,17 @@ public class ServletDashboardView extends HttpServlet
 
 	}
 	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
 	private void updateWidget(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
 		
 		String dashboardID = request.getParameter("FK_ID_DASHBOARD");
 
+		//Prevent saving when DashboardID is null (e.g. needed for Replica Widget)
+		if(Strings.isNullOrEmpty(dashboardID)) {
+			return;
+		}
 		if(canEdit(dashboardID)) {
 			//----------------------------
 			// Get Values
@@ -242,7 +260,10 @@ public class ServletDashboardView extends HttpServlet
 		}
 
 	}
-		
+	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
 	private void deleteWidget(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
 		
 		String dashboardID = request.getParameter("dashboardid");
@@ -260,7 +281,9 @@ public class ServletDashboardView extends HttpServlet
 
 	}
 	
-	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
 	private void getSettingsForm(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
 		
 		String dashboardID = request.getParameter("FK_ID_DASHBOARD");
@@ -289,6 +312,9 @@ public class ServletDashboardView extends HttpServlet
 
 	}
 	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
 	private void getWidgetData(HttpServletRequest request, HttpServletResponse response, JSONResponse jsonResponse) {
 		
 		//----------------------------
@@ -304,6 +330,9 @@ public class ServletDashboardView extends HttpServlet
 					
 	}
 	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
 	private boolean canEdit(String dashboardID) {
 		
 		Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);

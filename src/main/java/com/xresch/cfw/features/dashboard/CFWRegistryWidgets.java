@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.dashboard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
@@ -31,8 +32,11 @@ public class CFWRegistryWidgets {
 		if(!definitionArray.containsKey(definition.getWidgetType())) {
 			definitionArray.put(definition.getWidgetType(),definition);
 			
-			for(Entry<Locale, FileDefinition> entry : definition.getLocalizationFiles().entrySet()) {
-				CFW.Localization.registerLocaleFile(entry.getKey(), "/app/dashboard/view", entry.getValue());
+			HashMap<Locale, FileDefinition> localeFiles = definition.getLocalizationFiles();
+			if(localeFiles != null) {
+				for(Entry<Locale, FileDefinition> entry : localeFiles.entrySet()) {
+					CFW.Localization.registerLocaleFile(entry.getKey(), "/app/dashboard/view", entry.getValue());
+				}
 			}
 		}else {
 			new CFWLog(logger)

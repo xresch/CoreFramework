@@ -12,6 +12,7 @@ import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.logging.CFWLog;
@@ -127,6 +128,20 @@ public class CFWDBDashboardWidget {
 	}
 	
 	/***************************************************************
+	 * Return the widget as JSON string.
+	 * 
+	 ****************************************************************/
+	public static String getWidgetAsJSON(String widgetID) {
+		
+		return new DashboardWidget()
+				.queryCache(CFWDBDashboardWidget.class, "getWidgetAsJSON")
+				.select()
+				.where(DashboardWidgetFields.PK_ID, widgetID)
+				.getAsJSON();
+		
+	}
+	
+	/***************************************************************
 	 * Return a JSON string for export.
 	 * 
 	 * @return Returns a JsonArray or null on error.
@@ -150,6 +165,31 @@ public class CFWDBDashboardWidget {
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 			return null;
 		}
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public static AutocompleteResult autocompleteWidget(String dashboardID, String searchValue, int maxResults) {
+		
+		if(Strings.isNullOrEmpty(searchValue)) {
+			return null;
+		}
+		
+		if(Strings.isNullOrEmpty(dashboardID)) {
+			CFW.Context.Request.addAlertMessage(MessageType.INFO, "Please select a dashboard first.");
+		}
+		
+		return new DashboardWidget()
+			.queryCache(CFWDBDashboardWidget.class, "autocompleteWidget")
+			.select(DashboardWidgetFields.PK_ID,
+					DashboardWidgetFields.TITLE)
+			.whereLike(DashboardWidgetFields.TITLE, "%"+searchValue+"%")
+			.and(DashboardWidgetFields.FK_ID_DASHBOARD, dashboardID)
+			.limit(maxResults)
+			.getAsAutocompleteResult(DashboardWidgetFields.PK_ID.toString(), 
+					DashboardWidgetFields.TITLE);
+		
 	}
 
 }
