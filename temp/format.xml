@@ -1,0 +1,22 @@
+<settings>
+	<servers>
+		<server>
+			<id>ossrh</id>
+			<username>xresch</username>
+			<password>{password}</password>
+		</server>
+	</servers>
+
+	<profiles>
+		<profile>
+			<id>ossrh</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<gpg.executable>C:\Program Files (x86)\GnuPG\bin\gpg.exe</gpg.executable>
+				<gpg.passphrase>{password}</gpg.passphrase>
+			</properties>
+		</profile>
+	</profiles>
+</settings>

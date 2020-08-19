@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.google.gson.JsonObject;
-import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.response.JSONResponse;
@@ -27,9 +28,10 @@ public abstract class WidgetDefinition {
 	/************************************************************
 	 * Create a json response containing the data you need for 
 	 * your widget.
+	 * @param request TODO
 	 * @return JSON string
 	 ************************************************************/
-	public abstract void fetchData(JSONResponse response, JsonObject settings);
+	public abstract void fetchData(HttpServletRequest request, JSONResponse response, JsonObject settings);
 
 	/************************************************************
 	 * Return the file definitions of the javascript part of the 

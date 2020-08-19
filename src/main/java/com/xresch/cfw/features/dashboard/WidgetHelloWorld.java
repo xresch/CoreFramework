@@ -62,7 +62,7 @@ public class WidgetHelloWorld extends WidgetDefinition {
 	}
 
 	@Override
-	public void fetchData(JSONResponse response, JsonObject settings) { 
+	public void fetchData(HttpServletRequest request, JSONResponse response, JsonObject settings) { 
 		//int number = settings.get("number").getAsInt();
 		String number = settings.get("number").getAsString();
 		response.getContent().append("\"{!cfw_widget_helloworld_serverside!} "+number+"\"");

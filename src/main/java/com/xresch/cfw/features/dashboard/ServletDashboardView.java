@@ -300,7 +300,7 @@ public class ServletDashboardView extends HttpServlet
 		
 		//----------------------------
 		// Create Response
-		definition.fetchData(jsonResponse, jsonSettingsObject);
+		definition.fetchData(null, jsonResponse, jsonSettingsObject);
 					
 	}
 	

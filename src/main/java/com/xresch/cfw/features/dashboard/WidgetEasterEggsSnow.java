@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.google.gson.JsonObject;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
-import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.validation.NumberRangeValidator;
 
 public class WidgetEasterEggsSnow extends WidgetDefinition {
 
@@ -32,7 +31,7 @@ public class WidgetEasterEggsSnow extends WidgetDefinition {
 	}
 
 	@Override
-	public void fetchData(JSONResponse response, JsonObject settings) { }
+	public void fetchData(HttpServletRequest request, JSONResponse response, JsonObject settings) { }
 
 	@Override
 	public ArrayList<FileDefinition> getJavascriptFiles() {
