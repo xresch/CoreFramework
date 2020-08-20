@@ -12,7 +12,7 @@
 function cfw_config_changeToPanels(){
 	
 	var categoriesArray = JSON.parse(JSDATA.categories);
-	for(key in categoriesArray){
+	for(var key in categoriesArray){
 		var category = categoriesArray[key];
 		
 		 var panelSettings = {

@@ -95,7 +95,7 @@ function cfw_contextsettings_edit(id){
  ******************************************************************/
 function cfw_contextsettings_delete(id){
 	
-	params = {action: "delete", item: "contextsettings", id: id};
+	var params = {action: "delete", item: "contextsettings", id: id};
 	CFW.http.getJSON(CFW_CTXSETTINGS_URL, params, 
 		function(data) {
 			if(data.success){

@@ -26,10 +26,10 @@ we can use the CFWObject to create our SQL. Here is an example how this can look
 Some explanations for the above:
 </p>
 <ul>
-	<li><b>queryCache():&nbsp;</b> (Optional)This returns an instance of CFWSQL, the class used for creating SQLs. The SQL string will only be concatenated once, afterwards it will be read from a cache with the unique name defined by the two parameters. If something doesn't work as expected, make sure you use a unique name. </li>
-	<li><b>select():&nbsp;</b> Starts a "SELECT * FROM TABLE_NAME" for the object you have given. </li>
-	<li><b>where():&nbsp;</b> Adds a "WHERE PK_ID = ?" and saves the value you gave in the second parameter for preparing the statement later. </li>
-	<li><b>getFirstObject():&nbsp;</b> Executes the SQL and retrieves the first record of the result and returns it as a CFWObject. </li>
+	<li><strong>queryCache():&nbsp;</strong> (Optional)This returns an instance of CFWSQL, the class used for creating SQLs. The SQL string will only be concatenated once, afterwards it will be read from a cache with the unique name defined by the two parameters. If something doesn't work as expected, make sure you use a unique name. </li>
+	<li><strong>select():&nbsp;</strong> Starts a "SELECT * FROM TABLE_NAME" for the object you have given. </li>
+	<li><strong>where():&nbsp;</strong> Adds a "WHERE PK_ID = ?" and saves the value you gave in the second parameter for preparing the statement later. </li>
+	<li><strong>getFirstObject():&nbsp;</strong> Executes the SQL and retrieves the first record of the result and returns it as a CFWObject. </li>
 </ul>
 	
 					

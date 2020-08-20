@@ -186,7 +186,7 @@ function cfw_dashboard_triggerUndo(){
 							//----------------------------------
 							// Iterate all Changes in Bundle
 							for(var i = 0;i < commandBundle.length ;i++){
-								current = commandBundle[i];
+								var current = commandBundle[i];
 								current.undo(current.undoData);
 								var widgetObject = $("#"+current.undoData.guid).data('widgetObject');
 								if(widgetObject != null){
@@ -558,7 +558,7 @@ function cfw_dashboard_editWidget(widgetGUID){
 	//-----------------------------------
 	// Initialize Forms
 	if(customForm != null){
-		formID = $(customForm).attr("id");
+		var formID = $(customForm).attr("id");
 		// workaround, force evaluation
 		eval($(customForm).find("script").text());
 		eval("intializeForm_"+formID+"();");
@@ -1222,7 +1222,7 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 		
 			var grid = this;
 			var i = 0;
-			for(key in items){
+			for(var key in items){
 				
 				var currentItem = items[key].el;
 			

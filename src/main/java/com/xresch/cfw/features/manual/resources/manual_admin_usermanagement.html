@@ -12,9 +12,9 @@ This will be defined in "{APP_FOLDER}/config/cfw.properties" using the property 
 You have the following options to choose from:
 </p>
 <ul>
-	<li><b>DB:&nbsp;</b> The credentials are all setup in the internal database. No other source for credentials will be used</li>
-	<li><b>LDAP:&nbsp;</b> The credentials are validated against an active directory. If the user doesn't exist in the DB, it will be created accordingly. You can still create your own users in the database.</li>
-	<li><b>CSV:&nbsp;</b> Use the "username;password" credentials from a CSV file. If the user doesn't exist in the DB, it will be created accordingly. You can still create your own users in the database. This can be used for test environments or demo setups and is not recommended for productive systems. </li>
+	<li><strong>DB:&nbsp;</strong> The credentials are all setup in the internal database. No other source for credentials will be used</li>
+	<li><strong>LDAP:&nbsp;</strong> The credentials are validated against an active directory. If the user doesn't exist in the DB, it will be created accordingly. You can still create your own users in the database.</li>
+	<li><strong>CSV:&nbsp;</strong> Use the "username;password" credentials from a CSV file. If the user doesn't exist in the DB, it will be created accordingly. You can still create your own users in the database. This can be used for test environments or demo setups and is not recommended for productive systems. </li>
 </ul>
 
 
@@ -23,9 +23,9 @@ You have the following options to choose from:
 The user management consists of the following three different elements:
 </p>
 <ul>
-	<li><b>Users:&nbsp;</b> A user that can login with username and password. A user can have one or multiple Roles.</li>
-	<li><b>Roles:&nbsp;</b> A role defines what a user can do in the application. It is basically a group of permissions.</li>
-	<li><b>Permissions:&nbsp;</b> A permission grants the rights to certain features in the application.</li>
+	<li><strong>Users:&nbsp;</strong> A user that can login with username and password. A user can have one or multiple Roles.</li>
+	<li><strong>Roles:&nbsp;</strong> A role defines what a user can do in the application. It is basically a group of permissions.</li>
+	<li><strong>Permissions:&nbsp;</strong> A permission grants the rights to certain features in the application.</li>
 </ul>
 
 <h2>Default Elements</h2>
@@ -33,10 +33,10 @@ The user management consists of the following three different elements:
 When starting the application the first time, it will initialize the database with the following default elements:
 </p>
 <ul>
-	<li><b>Role "User":&nbsp;</b> The default role for all users. When a user is newly created, this role is assigned to him automatically. Add all permissions a user should have by default to this role. This role cannot be deleted.</li>
-	<li><b>Role "Administrator":&nbsp;</b> A default role for administrators. You can change this role as you see fit. This role cannot be deleted.</li>
-	<li><b>Role "Superuser":&nbsp;</b> The default role for the 'admin' account. It always has all permissions and cannot be changed nor can it be deleted.</li>
-	<li><b>User "admin":&nbsp;</b> The default admin user with role "Superuser". This user is special as the Superuser role cannot be removed from it and has therefore always all permissions. Also this user cannot be deleted.</li>
+	<li><strong>Role "User":&nbsp;</strong> The default role for all users. When a user is newly created, this role is assigned to him automatically. Add all permissions a user should have by default to this role. This role cannot be deleted.</li>
+	<li><strong>Role "Administrator":&nbsp;</strong> A default role for administrators. You can change this role as you see fit. This role cannot be deleted.</li>
+	<li><strong>Role "Superuser":&nbsp;</strong> The default role for the 'admin' account. It always has all permissions and cannot be changed nor can it be deleted.</li>
+	<li><strong>User "admin":&nbsp;</strong> The default admin user with role "Superuser". This user is special as the Superuser role cannot be removed from it and has therefore always all permissions. Also this user cannot be deleted.</li>
 </ul>
 
 
@@ -47,20 +47,20 @@ Here the steps to create a user:
 </p>
 
 <ol>
-	<li><b>Open User Management:&nbsp;</b> Sign in with a user that has the permission "User Management" and go to "Menu  Admin  Manage Users".</li>
-	<li><b>Create User:&nbsp;</b> Click on "Create User", provide a username and a password.</li>
-	<li><b>Confirm and Close Dialog:&nbsp;</b> Confirm creating the user by clicking on "Create User", you will get a popup message in the bottom right corner telling you if the user was successfully created or if there where any issues. Close the dialog when you where successful. </li>
-	<li><b>Add Roles:&nbsp;</b> After creating the user, open the new users settings by clicking the Edit Button with the pen icon. Here you can add the roles to the user to grant him access to the features he need.</li>
+	<li><strong>Open User Management:&nbsp;</strong> Sign in with a user that has the permission "User Management" and go to "Menu  Admin  Manage Users".</li>
+	<li><strong>Create User:&nbsp;</strong> Click on "Create User", provide a username and a password.</li>
+	<li><strong>Confirm and Close Dialog:&nbsp;</strong> Confirm creating the user by clicking on "Create User", you will get a popup message in the bottom right corner telling you if the user was successfully created or if there where any issues. Close the dialog when you where successful. </li>
+	<li><strong>Add Roles:&nbsp;</strong> After creating the user, open the new users settings by clicking the Edit Button with the pen icon. Here you can add the roles to the user to grant him access to the features he need.</li>
 </ol>
 
 <p>
 Please consider the following when managing users:
 </p>
 <ol>
-	<li><b>Disabling Users:&nbsp;</b> You can disable a user by setting the status of the user to "Inactive".</li>
-	<li><b>Sign-out/Sign-in on Changes:&nbsp;</b> As permissions are fetched and cached when the user logs in, he will need to login again so that his permissions will be updated.</li>
-	<li><b>Foreign Users:&nbsp;</b> When the user is set to "Foreign", what means the credentials are checked against another source than the DB, the password reset button will not be available for this user. Also the user will not have the "Change Password" option in the user menu.</li>
-	<li><b>Pre-Creating Foreign Users:&nbsp;</b> You can pre-create a foreign user before he logs in the first time, just use the same username as in the foreign credential source. This can be useful to already grant permissions and avoids that the user has to re-login.</li>
+	<li><strong>Disabling Users:&nbsp;</strong> You can disable a user by setting the status of the user to "Inactive".</li>
+	<li><strong>Sign-out/Sign-in on Changes:&nbsp;</strong> As permissions are fetched and cached when the user logs in, he will need to login again so that his permissions will be updated.</li>
+	<li><strong>Foreign Users:&nbsp;</strong> When the user is set to "Foreign", what means the credentials are checked against another source than the DB, the password reset button will not be available for this user. Also the user will not have the "Change Password" option in the user menu.</li>
+	<li><strong>Pre-Creating Foreign Users:&nbsp;</strong> You can pre-create a foreign user before he logs in the first time, just use the same username as in the foreign credential source. This can be useful to already grant permissions and avoids that the user has to re-login.</li>
 </ol>
 
 
@@ -72,10 +72,10 @@ Here the  steps to create a role:
 </p>
 
 <ol>
-	<li><b>Open User Management:&nbsp;</b> Sign in with a user that has the permission "User Management" and go to "Menu  Admin  Manage Users".</li>
-	<li><b>Create Role:&nbsp;</b> Change to the Tab "Roles", click on "Create Role" and provide at least a name for the role.</li>
-	<li><b>Confirm and Close Dialog:&nbsp;</b> Confirm creating the user by clicking on "Create Role", you will get a popup message in the bottom right corner telling you if the role was successfully created or if there where any issues. Close the dialog when you where successful. </li>
-	<li><b>Add Permissions:&nbsp;</b> After creating the role, open the new roles settings by clicking the Edit button with the pen icon. Here you can add the permissions to the role to create a group of permissions need for a specific job users will need to do.</li>
+	<li><strong>Open User Management:&nbsp;</strong> Sign in with a user that has the permission "User Management" and go to "Menu  Admin  Manage Users".</li>
+	<li><strong>Create Role:&nbsp;</strong> Change to the Tab "Roles", click on "Create Role" and provide at least a name for the role.</li>
+	<li><strong>Confirm and Close Dialog:&nbsp;</strong> Confirm creating the user by clicking on "Create Role", you will get a popup message in the bottom right corner telling you if the role was successfully created or if there where any issues. Close the dialog when you where successful. </li>
+	<li><strong>Add Permissions:&nbsp;</strong> After creating the role, open the new roles settings by clicking the Edit button with the pen icon. Here you can add the permissions to the role to create a group of permissions need for a specific job users will need to do.</li>
 </ol>
 
 <h2>Permission Tab</h2>

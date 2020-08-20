@@ -234,7 +234,7 @@ function cfw_filterItems(context, searchField, itemSelector){
 	var filterContext = $(context);
 	var input = $(searchField);
 	
-	filter = input.val().toUpperCase();
+	var filter = input.val().toUpperCase();
 	
 	filterContext.find(itemSelector).each(function( index ) {
 		  
@@ -390,7 +390,7 @@ function cfw_initializeTagsSelectorField(fieldID, maxTags, values){
 //		}
 	});
 	
-	for(key in values){
+	for(var key in values){
 		tagsfield.tagsinput('add', { "value": key , "label": values[key] });
 	}
 
@@ -415,7 +415,7 @@ function cfw_initializeTimefield(fieldID, epochMillis){
 	
 	if(epochMillis != null){
 		$(id).val(epochMillis);
-		date = new CFWDate(epochMillis);
+		var date = new CFWDate(epochMillis);
 		datepicker.first().val(date.getDateForInput());
 		
 		if(timepicker.length > 0 != null){
@@ -660,11 +660,7 @@ function cfw_autocompleteShow(inputField, autocompleteResults){
     // Initialize and Cleanup
 	var searchString = inputField.value;
 	var autocompleteID = inputField.id + "-autocomplete";
-	
-	if(inputField.id != null && inputField.id.endsWith('-tagsinput')){
-		isTagsselector = $(inputField).parent().siblings('input').hasClass('cfw-tags-selector');
-	}
-	
+		
     cfw_autocompleteCloseAll();
     if (!searchString) { return false;}
     if(autocompleteResults == null){ return false;};
@@ -1060,7 +1056,7 @@ function cfw_format_formToArray(formOrID){
  *************************************************************************************/
 function cfw_objectToHTMLList(object){
 	
-	htmlString = '<ul>';
+	var htmlString = '<ul>';
 	
 	if(Array.isArray(object)){
 		for(var i = 0; i < object.length; i++ ){
@@ -1117,11 +1113,11 @@ function cfw_table_toc(contentAreaSelector, resultSelector, headerTag){
 	}
 	//------------------------------
 	//Loop all visible headers
-	currentLevel = 1;
-	resultHTML = '<'+h+'>Table of Contents</'+h+'><ul>';
-	for(i = 0; i < headers.length ; i++){
-		head = headers[i];
-		headLevel = head.tagName[1];
+	var currentLevel = 1;
+	var resultHTML = '<'+h+'>Table of Contents</'+h+'><ul>';
+	for(var i = 0; i < headers.length ; i++){
+		var head = headers[i];
+		var headLevel = head.tagName[1];
 		
 		//------------------------------
 		//increase list depth
@@ -1254,9 +1250,7 @@ function cfw_addToast(toastTitle, toastBody, style, delay){
 				'<div id="cfw-toasts-wrapper" aria-live="polite" aria-atomic="true">'
 			  + '  <div id="cfw-toasts"></div>'
 			  + '</div>');
-		
-		toastWrapper;
-		
+				
 		body.prepend(toastWrapper);
 		toastDiv = $("#"+toastsID);
 	}
@@ -1642,7 +1636,7 @@ function cfw_getURLParamsDecoded()
     
     for(var i = 0; i < keyValuePairs.length; i++)
     {
-        splitted = keyValuePairs[i].split('=');
+        var splitted = keyValuePairs[i].split('=');
         var key = cfw_secureDecodeURI(splitted[0])
         vars[key] = cfw_secureDecodeURI(splitted[1]);
     }
@@ -1713,6 +1707,7 @@ function cfw_setURLParam(name, value){
  * @return decoded URI or the same URI in case of errors.
  *************************************************************************************/
 function cfw_secureDecodeURI(uri){
+	var decoded;
 	try{
 		decoded = decodeURIComponent(uri);
 	}catch(err){
@@ -1904,7 +1899,7 @@ function cfw_createForm(url, params, targetElement, callback){
 		  .done(function(response, status, xhr) {
 			  if(response.payload != null){
 			      $(targetElement).append(response.payload.html);
-			      formID = $(targetElement).find('form').attr("id");
+			      var formID = $(targetElement).find('form').attr("id");
 	              eval("intializeForm_"+formID+"();");
 	              
 	              //--------------------------
@@ -1942,19 +1937,21 @@ function cfw_createForm(url, params, targetElement, callback){
  * @param targetElement the element in which the form should be placed
  *************************************************************************************/
 function cfw_postForm(url, formID, callback){
-	// switch summernote to wysiwyg view, will not save in code view
+	// switch summernote to wysiwyg view, at it will not save in code view
 	$('.btn-codeview.active').click();
 	
 	$(formID+'-submitButton').prepend('<i class="fa fa-cog fa-spin fa-fw mr-1 loaderMarker"></i>')
 	
-		window.setTimeout( 
-		cfw_postJSON(url, CFW.format.formToParams(formID), function (data,status,xhr){
-			$(formID+'-submitButton .loaderMarker').remove();
-			if(callback != null){
-				callback(data,status,xhr);
-			}
-		}),
-	5);
+	window.setTimeout( 
+		function(){
+			cfw_postJSON(url, CFW.format.formToParams(formID), function (data,status,xhr){
+				$(formID+'-submitButton .loaderMarker').remove();
+				if(callback != null){
+					callback(data,status,xhr);
+				}
+			})
+		},
+	50);
 	
 }
 

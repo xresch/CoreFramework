@@ -96,7 +96,7 @@ function cfw_dashboardlist_delete(ids){
 				CFW.cache.clearCache();
 				cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS);
 			}else{
-				CFW.ui.showSmallModal("Error!", '<span>The selected '+item+' could <b style="color: red">NOT</b> be deleted.</span>');
+				CFW.ui.showSmallModal("Error!", '<span>The selected '+item+' could <b style="color: red">NOT</strong> be deleted.</span>');
 			}
 	});
 }
@@ -220,7 +220,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 			actionButtons.push(
 				function (record, id){
 					var htmlString = '<button class="btn btn-warning btn-sm" alt="Duplicate" title="Duplicate" '
-							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <b>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</b> and add it to your dashboards.\', \'Do it!\', \'cfw_dashboardlist_duplicate('+id+');\')">'
+							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong> and add it to your dashboards.\', \'Do it!\', \'cfw_dashboardlist_duplicate('+id+');\')">'
 							+ '<i class="fas fa-clone"></i>'
 							+ '</button>';
 					
@@ -237,7 +237,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 					var htmlString = '';
 					if(JSDATA.userid == record.FK_ID_USER || type == 'admindashboards'){
 						htmlString += '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the dashboard <b>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</b>?\', \'Delete\', \'cfw_dashboardlist_delete('+id+');\')">'
+							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the dashboard <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Delete\', \'cfw_dashboardlist_delete('+id+');\')">'
 							+ '<i class="fa fa-trash"></i>'
 							+ '</button>';
 					}else{

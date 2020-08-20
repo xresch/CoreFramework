@@ -207,7 +207,7 @@ function cfw_renderer_tiles(renderDef) {
 			// Create Title
 			var tileTitle = renderDef.getTitleHTML(currentRecord);
 
-			currentTile.append('<span class="text-center" style="font-size: '+18*settings.sizefactor+'px;"><b>'+tileTitle+'</b></span>');
+			currentTile.append('<span class="text-center" style="font-size: '+18*settings.sizefactor+'px;"><strong>'+tileTitle+'</strong></span>');
 			//-------------------------
 			// Add field Values as Cells
 			for(var key in renderDef.visiblefields){
@@ -564,7 +564,7 @@ function cfw_renderer_panels (renderDef) {
 			
 			if(renderDef.customizers[fieldname] == null){
 				if(value != null){
-					itemHTML += '<li><b>' + renderDef.labels[fieldname] + ':</b> ' + value + '</li>';
+					itemHTML += '<li><strong>' + renderDef.labels[fieldname] + ':</strong> ' + value + '</li>';
 				}else{
 					itemHTML += '&nbsp;';
 				}
@@ -573,7 +573,7 @@ function cfw_renderer_panels (renderDef) {
 				itemHTML = '';
 				var customizer = renderDef.customizers[fieldname];
 				var customizedValue = customizer(currentRecord, value)
-				var item = $('<li><b>' + renderDef.labels[fieldname] + ':</b></li>');
+				var item = $('<li><strong>' + renderDef.labels[fieldname] + ':</strong></li>');
 				item.append(customizedValue);
 				list.append(item);
 			}

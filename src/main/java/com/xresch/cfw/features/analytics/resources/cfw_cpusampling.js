@@ -55,10 +55,10 @@ function cfw_cpusampling_prepareData(data){
 
 	for(var i = 0; i < timeseries.length; i++){
 		var current = timeseries[i];
-		signatureID = current.FK_ID_SIGNATURE;
-		parentID = current.FK_ID_PARENT;
+		var signatureID = current.FK_ID_SIGNATURE;
+		var parentID = current.FK_ID_PARENT;
 		if(current.FK_ID_PARENT == null){
-			signature = GLOBAL_SIGNATURES[current.FK_ID_SIGNATURE]
+			var signature = GLOBAL_SIGNATURES[current.FK_ID_SIGNATURE]
 			if(!TOP_ELEMENTS.includes(signature)){
 				TOP_ELEMENTS.push(signature);
 			}
@@ -70,7 +70,7 @@ function cfw_cpusampling_prepareData(data){
 			//------------------------
 			// Push Parent
 			for(var j = i-1; j >= 0; j --){
-				potentialParentTimes = timeseries[j];
+				var potentialParentTimes = timeseries[j];
 				if(potentialParentTimes.FK_ID_SIGNATURE == parentID){
 					GLOBAL_SIGNATURES[signatureID].parents.push(potentialParentTimes);
 					break;
@@ -82,7 +82,7 @@ function cfw_cpusampling_prepareData(data){
 		
 	//------------------------------------------
 	// Sort, calculate Percentages and find bottoms
-	for(id in GLOBAL_SIGNATURES){
+	for(var id in GLOBAL_SIGNATURES){
 
 		var current = GLOBAL_SIGNATURES[id];
 		var children = current.children;
@@ -172,8 +172,8 @@ function cfw_cpusampling_printTopDown(){
 	
 	//------------------------------------------
 	// Create Hierarchy
-	for(id in TOP_ELEMENTS){
-		current = TOP_ELEMENTS[id];
+	for(var id in TOP_ELEMENTS){
+		var current = TOP_ELEMENTS[id];
 		current.percentageTopDown = (current.totalCallsTopDown / totalTopCalls)*100;
 		cfw_cpusampling_printHierarchyDiv(parent, current, id)
 	}

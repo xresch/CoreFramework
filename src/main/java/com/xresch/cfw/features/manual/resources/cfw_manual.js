@@ -113,7 +113,7 @@ function cfw_manual_createPrintView(pageGUID){
 		+'#print-toc > h1, #doc-title, h1 + div > h1,  h1 + div > .page-break, h2 + div > .page-break, h3 + div > .page-break, h4 + div > .page-break{'
 			+'page-break-before: avoid;' 
 		+'}'
-		'</style>';
+		+'</style>';
 	
 	parent.append(cssString);
 		

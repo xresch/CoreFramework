@@ -17,8 +17,8 @@ function cfw_apioverview_formResult(data, status, xhr){
 	
 	//-------------------------------
 	// URL
-	form = $('#cfw-apioverview-samplemodal form');
-	serialized = form.serialize();
+	var form = $('#cfw-apioverview-samplemodal form');
+	var serialized = form.serialize();
 	
 	//-------------------------------
 	// Regex hack remove empty params
@@ -33,7 +33,7 @@ function cfw_apioverview_formResult(data, status, xhr){
 	serialized = serialized.replace(/&[^=]+=$/g, "&");
 	//console.log(serialized)
 	
-	sampleURL = $('#cfw-apioverview-sampleurl');
+	var sampleURL = $('#cfw-apioverview-sampleurl');
 	
 	var url = window.location.href 
 			+ "?apiName="+MODAL_CURRENT_NAME
@@ -45,14 +45,14 @@ function cfw_apioverview_formResult(data, status, xhr){
 	
 	//-------------------------------
 	// Sample CURL
-	curl = $('#cfw-apioverview-samplecurl');
-	cookie = JSDATA.id;
-	curlString = 'curl -H "Cookie: CFWSESSIONID='+cookie+'" -X GET "'+url+'"';
+	var curl = $('#cfw-apioverview-samplecurl');
+	var cookie = JSDATA.id;
+	var curlString = 'curl -H "Cookie: CFWSESSIONID='+cookie+'" -X GET "'+url+'"';
 	curl.text(curlString);
 	hljs.highlightBlock(curl.get(0));
 	//-------------------------------
 	// Sample Response
-	responseElement = $('#cfw-apioverview-response');
+	var responseElement = $('#cfw-apioverview-response');
 	responseElement.html('');
     
 	var contentType = xhr.getResponseHeader("content-type") || "";
@@ -113,12 +113,12 @@ function cfw_apioverview_printLoginPanel(parent){
 	
 	//---------------------------
 	// Create Panel Content
-	url = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
-	apiURL = url +"/cfw/apilogin";
-	html = '<p>Send a post request to <a target="_blank" href="'+apiURL+'">'+apiURL+'</a> with the following parameters in the post body: </p>';
+	var url = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+	var apiURL = url +"/cfw/apilogin";
+	var html = '<p>Send a post request to <a target="_blank" href="'+apiURL+'">'+apiURL+'</a> with the following parameters in the post body: </p>';
 	html += '<ul>';
-	html += '  <li><b>username: </b>The username for accessing the api.</li>';
-	html += '  <li><b>password: </b>The password of the user.</li>';
+	html += '  <li><strong>username: </strong>The username for accessing the api.</li>';
+	html += '  <li><strong>password: </strong>The password of the user.</li>';
 	html += '</ul>';
 	html += '<p>To use the APIs, add the cookie you have recieved to the HTTP Header "Cookie" of the requests. For example:</p>';
 	html += '<pre class="cfwApiOverviewCode"><code>Cookie: CFWSESSIONID=node01ab2c3d4e5f61xhc7f6puqsab1</code></pre>';
@@ -146,7 +146,7 @@ function cfw_apioverview_printLoginPanel(parent){
 	
 	//---------------------------
 	// Highlight Code Blocks
-	codeblocks = $(".cfwApiOverviewCode");
+	var codeblocks = $(".cfwApiOverviewCode");
 	hljs.highlightBlock(codeblocks.get(0));
 	hljs.highlightBlock(codeblocks.get(1));
 	hljs.highlightBlock(codeblocks.get(2));
@@ -174,9 +174,9 @@ function cfw_apioverview_printOverview(data){
 		//--------------------------------
 		// Create Data Structure
 		for(var i = 0; i < count; i++){
-			current = data.payload[i];
-			name = current.name;
-			action = current.action;
+			var current = data.payload[i];
+			var name = current.name;
+			var action = current.action;
 			if(panels[name] == undefined){
 				panels[name] = {}
 			}
@@ -196,7 +196,7 @@ function cfw_apioverview_printOverview(data){
 		// Create Panels
 		
 		for(name in panels){
-			current = panels[name];
+			 var current = panels[name];
 			
 			 var panelSettings = {
 						cardstyle: 'cfw-blue',
@@ -207,7 +207,7 @@ function cfw_apioverview_printOverview(data){
 				};
 
 			for(action in current){
-				sub = current[action];
+				var sub = current[action];
 				
 				//----------------------------------------
 				// Create Panel Content
@@ -226,10 +226,10 @@ function cfw_apioverview_printOverview(data){
 
 					cfwTable.addHeaders(['Name','Type','Description']);
 					
-					htmlRows = '';
+					var htmlRows = '';
 					for(var j = 0; j < sub.params.length; j++){
 						//{"name": "pk_id", "type": "Integer", "description": "null"}
-						paramDef = sub.params[j];
+						var paramDef = sub.params[j];
 						htmlRows += '<tr>'
 						htmlRows += '<td>'+paramDef.name+'</td>';
 						htmlRows += '<td>'+paramDef.type+'</td>';
@@ -253,7 +253,7 @@ function cfw_apioverview_printOverview(data){
 					htmlRows = '';
 					for(var j = 0; j < sub.returnValues.length; j++){
 						//{"name": "pk_id", "type": "Integer", "description": "null"}
-						returnValue = sub.returnValues[j];
+						var returnValue = sub.returnValues[j];
 						htmlRows += '<tr>'
 						htmlRows += '<td>'+returnValue.name+'</td>';
 						htmlRows += '<td>'+returnValue.type+'</td>';

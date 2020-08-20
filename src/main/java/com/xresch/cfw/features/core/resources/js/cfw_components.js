@@ -577,7 +577,7 @@ class CFWDate{
 //	</div>
  * 
  ******************************************************************/
-CFW_GLOBAL_PANEL_COUNTER = 0;
+var CFW_GLOBAL_PANEL_COUNTER = 0;
 
 class CFWPanel{
 	
