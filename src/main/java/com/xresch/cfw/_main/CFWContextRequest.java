@@ -83,7 +83,7 @@ public class CFWContextRequest {
 		if(sessionData.get() != null) {
 			return sessionData.get().getUserRoles();
 		}
-		return null;
+		return new HashMap<Integer, Role>();
 	}
 	
 	public static boolean hasRole(int roleID) {
@@ -103,7 +103,7 @@ public class CFWContextRequest {
 		if(sessionData.get() != null) {
 			return sessionData.get().getUserPermissions();
 		}
-		return null;
+		return new HashMap<String, Permission>();
 	}
 	
 	public static boolean hasPermission(String permissionName) {

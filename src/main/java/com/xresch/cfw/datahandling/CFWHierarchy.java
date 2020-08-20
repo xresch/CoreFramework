@@ -115,7 +115,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		Integer parentID = parent.getPrimaryField().getValue();
 		Integer childID = child.getPrimaryField().getValue();
 		
-		if(parentID == childID) {
+		if(parentID.equals(childID) ) {
 			new CFWLog(logger)
 				.method("setParent")
 				.severe("Cannot set an object as it's own parent.", new IllegalArgumentException());

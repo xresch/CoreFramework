@@ -130,19 +130,21 @@ public abstract class CFWDBDefaultOperations<O extends CFWObject> {
 		
 		ArrayList<CFWObject> objectArray = CFWDBDefaultOperations.selectBy(cfwObjectClass, column, value);
 		
+		boolean isSuccess = true;
 		for(CFWObject object : objectArray) {
 			if(precheck != null && !precheck.doCheck(object)) {
-				return false;
+				isSuccess = false;
+				continue;
 			}
 			
-			return object
+			isSuccess &= object
 					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteBy"+column)
 					.delete()
 					.where(column, value)
 					.executeDelete();
 		}
 		
-		return false;
+		return isSuccess;
 	}
 	
 	/***************************************************************

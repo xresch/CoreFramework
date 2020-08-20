@@ -587,7 +587,7 @@ function cfw_autocompleteInitialize(formID, fieldName, maxResults, array){
 			}
 			if (CFW.global.autocompleteFocus > -1) {
 				/* and simulate a click on the "active" item. */
-				if (itemList) items.eq(CFW.global.autocompleteFocus).click();
+				if (itemList != null && items != null) items.eq(CFW.global.autocompleteFocus).click();
 			}else{
 				// Close if nothing selected
 				cfw_autocompleteCloseAll();

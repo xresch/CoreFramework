@@ -143,10 +143,10 @@ function cfw_cpusampling_prepareData(data){
 function cfw_cpusampling_printTabContent(){
 		
 	switch(CURRENT_TAB){
-		case 'TopDown': 	cfw_cpusampling_printTopDown(parent);
+		case 'TopDown': 	cfw_cpusampling_printTopDown();
 							break;
 						
-		case 'BottomUp': 	cfw_cpusampling_printBottomUp(parent);
+		case 'BottomUp': 	cfw_cpusampling_printBottomUp();
 							break;
 	}
 	
@@ -183,7 +183,7 @@ function cfw_cpusampling_printTopDown(){
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_cpusampling_printBottomUp(parent){
+function cfw_cpusampling_printBottomUp(){
 	
 	parent = $("#cpu-samppling-tabcontent");
 	parent.html('');

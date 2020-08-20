@@ -177,6 +177,10 @@ public class CFWDBConfig {
 	 ********************************************************************************************/
 	public static boolean oneTimeCreate(Configuration configuration) {
 		
+		if(configuration == null) {
+			return false;
+		}
+		
 		boolean result = true; 
 		if(!CFW.DB.Config.checkConfigExists(configuration)) {
 			
@@ -458,10 +462,9 @@ public class CFWDBConfig {
 	 * @return true if exists, false otherwise or in case of exception.
 	 ****************************************************************/
 	public static boolean checkConfigExists(Configuration config) {
-		if(config != null) {
-			return checkConfigExists(config.name());
-		}
-		return false;
+		if(config == null) { return false;}
+		
+		return checkConfigExists(config.name());
 	}
 	
 	/****************************************************************

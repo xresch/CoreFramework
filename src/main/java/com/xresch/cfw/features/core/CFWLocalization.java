@@ -66,7 +66,7 @@ public class CFWLocalization {
 		if(value != null) {
 			return MessageFormat.format(value, placeholders);
 		}else {
-			return MessageFormat.format(value, placeholders);
+			return MessageFormat.format(defaultValue, placeholders);
 		}
 	}
 	

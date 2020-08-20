@@ -88,7 +88,6 @@ public class FileDefinition {
 		}
 	}
 	
-	
 	public int hashCode(){
 		return (path + filename + content).hashCode();
 	}

@@ -40,6 +40,7 @@ public class CFWDBSpace {
 			new CFWLog(logger)
 				.method("create")
 				.warn("The space cannot be null.", new IllegalArgumentException());
+			return false;
 		}
 		
 		if(space.name() == null || space.name().isEmpty()) {

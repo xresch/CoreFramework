@@ -62,8 +62,7 @@ public class APIDefinitionSQL extends APIDefinition{
 				
 				ArrayList<CFWField> affectedFields = new ArrayList<CFWField>();
 				ArrayList<String> fieldnames = new ArrayList<String>();
-				boolean success = true;
-				
+
 				// iterate parameters
 				while(params.hasMoreElements()) {
 					String current = params.nextElement();
@@ -82,33 +81,29 @@ public class APIDefinitionSQL extends APIDefinition{
 				
 				//----------------------------------
 				// Create Response
-				if(success) {
 					
-					ResultSet result = executor.execute(sqlAPIDef, object);
-					 
-					String format = request.getParameter(APIFORMAT);
-					if(format == null || format.equals("")) {
-						format = "JSON";
-					}
-					if(format.toUpperCase().equals(ReturnFormat.JSON.toString())) {
-						json.getContent().append(CFWDB.resultSetToJSON(result));
-						
-					}else if(format.toUpperCase().equals(ReturnFormat.CSV.toString())){		
-						PlaintextResponse plaintext = new PlaintextResponse();
-						plaintext.getContent().append(CFWDB.resultSetToCSV(result, ";"));
-						
-					}else if(format.toUpperCase().equals(ReturnFormat.XML.toString())){		
-						PlaintextResponse plaintext = new PlaintextResponse();
-						plaintext.getContent().append(CFWDB.resultSetToXML(result));
-					}
+				ResultSet result = executor.execute(sqlAPIDef, object);
+				 
+				String format = request.getParameter(APIFORMAT);
+				if(format == null || format.equals("")) {
+					format = "JSON";
+				}
+				if(format.toUpperCase().equals(ReturnFormat.JSON.toString())) {
+					json.getContent().append(CFWDB.resultSetToJSON(result));
 					
-					CFWDB.close(result);
+				}else if(format.toUpperCase().equals(ReturnFormat.CSV.toString())){		
+					PlaintextResponse plaintext = new PlaintextResponse();
+					plaintext.getContent().append(CFWDB.resultSetToCSV(result, ";"));
 					
-				}else {
-					response.setStatus(HttpStatus.BAD_REQUEST_400);
+				}else if(format.toUpperCase().equals(ReturnFormat.XML.toString())){		
+					PlaintextResponse plaintext = new PlaintextResponse();
+					plaintext.getContent().append(CFWDB.resultSetToXML(result));
 				}
 				
-				json.setSuccess(success);
+				CFWDB.close(result);
+
+				
+				json.setSuccess(true);
 
 			}
 		});		

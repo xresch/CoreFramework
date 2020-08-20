@@ -169,7 +169,7 @@ public abstract class DBInterface {
 				.method("commitTransaction")
 				.severe("Error occured on commit transaction.", e);
 		} finally {
-			transactionConnection.set(null);
+			transactionConnection.remove();
 			if(con != null) { 
 				try {
 					removeOpenConnection(con);
@@ -212,7 +212,7 @@ public abstract class DBInterface {
 				.method("rollbackTransaction")
 				.severe("Error occured on rollback transaction.", e);
 		} finally {
-			transactionConnection.set(null);
+			transactionConnection.remove();
 			if(con != null) { 
 				try {
 					con.setAutoCommit(true);
