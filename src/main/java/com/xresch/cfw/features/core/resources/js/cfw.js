@@ -778,11 +778,13 @@ function cfw_autocompleteCreateItemList(targetInputField, values){
 			//console.log("======"+isTagsInput+""+isTagsselector);
 			if(!isTagsInput){
 				if(method == 'exchange'){
-					console.log('exchange');
 					targetInputField.value = value;
+					
+				}else if(method == 'append'){
+					targetInputField.value = targetInputField.value + value;
+					
 				}else if(method.startsWith('replace:')){
 					var stringToReplace = method.substring('replace:'.length);
-					console.log('replace:'+stringToReplace);
 					var tempValue = targetInputField.value;
 					tempValue = tempValue.substring(0, tempValue.lastIndexOf(stringToReplace));
 					targetInputField.value = tempValue + value;

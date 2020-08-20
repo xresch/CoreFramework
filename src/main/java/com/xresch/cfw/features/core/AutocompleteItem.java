@@ -62,6 +62,10 @@ public class AutocompleteItem {
 		this.method = "replace:"+replaceThis;
 		return this;
 	}
+	public AutocompleteItem setMethodAppend() {
+		this.method = "append";
+		return this;
+	}
 	/*************************************************************************
 	 * Convert to JSON
 	 *************************************************************************/

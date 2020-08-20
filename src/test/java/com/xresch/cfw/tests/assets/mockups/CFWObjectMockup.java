@@ -6,9 +6,11 @@ import java.util.LinkedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.core.AutocompleteItem;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
@@ -92,6 +94,47 @@ public class CFWObjectMockup extends CFWObject{
 				}
 			});
 	
+		private CFWField<String> autocompleteMethods = CFWField.newString(FormFieldType.TEXT, "AUTOCOMPLETE_METHODS")
+			.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
+				
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+					
+					if (Strings.isNullOrEmpty(inputValue)) return null;
+					
+					AutocompleteList list = new AutocompleteList();
+					
+					for(int i = 0; i < 5; i++ ) {
+						String[] splitted = inputValue.split(" ");
+						String lastWord = splitted[splitted.length-1];
+						
+						list.addItem(
+							new AutocompleteItem(
+								lastWord.toUpperCase()+i, 
+								"Replace with "+lastWord.toUpperCase()+i, 
+								"Replace last word with uppercase.")
+									.setMethodReplace(lastWord)
+						);
+					}
+					
+					AutocompleteList list2 = new AutocompleteList();
+					for(int i = 0; i < 5; i++ ) {
+						String[] splitted = inputValue.split(" ");
+						String lastWord = splitted[splitted.length-1];
+						
+						list2.addItem(
+								new AutocompleteItem(
+									lastWord.toUpperCase()+i, 
+									"Append "+lastWord.toUpperCase()+i, 
+									"Append last word as uppercase.")
+										.setMethodAppend()
+							);
+					}
+					
+					return new AutocompleteResult(list)
+							.addList(list2)
+							.setHTMLDescription("<p>Example of autocomplete methods replace and append.</ol>");
+				}
+			});
 	public CFWObjectMockup() {
 		
 		initialize();
@@ -106,7 +149,22 @@ public class CFWObjectMockup extends CFWObject{
 		options.put(4, "Strawwberry");
 		keyValSelect.setOptions(options);
 		
-		this.addFields(firstname, lastname, withValue, description, textarea, number, date, timestamp, select, keyValSelect, editor, tags, tagsselector, autocomplete);
+		this.addFields(
+				firstname
+				, lastname
+				, withValue
+				, description
+				, textarea
+				, number
+				, date
+				, timestamp
+				, select
+				, keyValSelect
+				, editor
+				, tags
+				, tagsselector
+				, autocomplete
+				, autocompleteMethods);
 	}
 
 }
