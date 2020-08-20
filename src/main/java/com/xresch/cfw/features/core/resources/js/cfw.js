@@ -516,7 +516,17 @@ function cfw_autocompleteInitialize(formID, fieldName, maxResults, array){
 			// finishing his input before sending a request to the
 			// server. Reduces overhead.
 			var currentCount = ++CFW.global.autocompleteCounter;
-
+			
+			//----------------------------
+			// Show Loader
+			var loader = $input.parent().find('#autocomplete-loader');
+			if(loader.length == 0){
+				var loader = $('<div id="autocomplete-loader"><small><i class="fa fa-cog fa-spin fa-1x"></i><span>&nbsp;Loading...</span></small></div>');
+				$input.after(loader);
+			}
+			
+			//----------------------------
+			// Load Autocomlete
 			setTimeout(
 				function(){
 					
@@ -530,6 +540,7 @@ function cfw_autocompleteInitialize(formID, fieldName, maxResults, array){
 					
 					cfw_postJSON('/cfw/autocomplete', params, 
 						function(data) {
+							loader.remove();
 							cfw_autocompleteShow(inputField, data.payload);
 						})
 				},
