@@ -88,7 +88,7 @@ public class CFWSecurity {
 
 		StringBuilder builder = new StringBuilder();
 		
-		Random random = new Random();
+		Random random = CFWRandom.getInstance();
 		for(int i = 0; i < byteCount; i++) {
 			builder.append(CHARS.charAt(random.nextInt(CHARS.length()-1)));
 		}
@@ -107,7 +107,7 @@ public class CFWSecurity {
 
 		StringBuilder builder = new StringBuilder();
 		
-		Random random = new Random();
+		Random random = CFWRandom.getInstance();
 		for(int i = 0; i < byteCount; i++) {
 			builder.append(CHARS.charAt(random.nextInt(51)));
 		}

@@ -17,7 +17,9 @@ import com.xresch.cfw._main.CFW;
 public class CFWTime {
 	
 	public static final String TIME_FORMAT = "YYYY-MM-dd'T'HH:mm:ss.SSS";
-	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(CFWTime.TIME_FORMAT);
+	
+	// Don't use as static as it is not thread safe
+	//public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(CFWTime.TIME_FORMAT);
 	
 	/********************************************************************************************
 	 * Get a timestamp string of the current time in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
@@ -33,7 +35,7 @@ public class CFWTime {
 	 * Get a string representation of the date in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
 	 ********************************************************************************************/
 	public static String formatDate(Date date){
-		return dateFormatter.format(date);
+		return new SimpleDateFormat(CFWTime.TIME_FORMAT).format(date);
 	}
 	
 	/********************************************************************************************

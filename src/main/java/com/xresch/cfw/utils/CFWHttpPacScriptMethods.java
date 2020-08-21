@@ -48,7 +48,6 @@ public class CFWHttpPacScriptMethods {
 	private final static List<String> MONTH = Collections.unmodifiableList(
 	        Arrays.asList("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"));
 
-	private static Calendar currentTime;
 
 	/*************************************************************************
 	 * Constructor
@@ -331,18 +330,6 @@ public class CFWHttpPacScriptMethods {
 		}
 	}
 
-	/*************************************************************************
-	 * Sets a calendar with the current time. If this is set all date and time
-	 * based methods will use this calendar to determine the current time
-	 * instead of the real time. This is only be used by unit tests and is not
-	 * part of the public API.
-	 * 
-	 * @param cal
-	 *            a Calendar to set.
-	 ************************************************************************/
-	public static void setCurrentTime(Calendar cal) {
-		currentTime = cal;
-	}
 
 	/*************************************************************************
 	 * Gets a calendar set to the current time. This is used by the date and
@@ -353,11 +340,7 @@ public class CFWHttpPacScriptMethods {
 	 *            or local time.
 	 * @return a Calendar set to the current time.
 	 ************************************************************************/
-
 	private static Calendar getCurrentTime(boolean useGmt) {
-		if (currentTime != null) { // Only used for unit tests
-			return (Calendar) currentTime.clone();
-		}
 		return Calendar.getInstance(useGmt ? TimeZone.getTimeZone(GMT) : TimeZone.getDefault());
 	}
 

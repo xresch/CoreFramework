@@ -114,7 +114,7 @@ public class CFWHttp {
 				
 				//------------------------------
 				// Cache PAC Contents
-				if(response.getStatus() <= 299) {
+				if(response != null && response.getStatus() <= 299) {
 					proxyPAC = response.getResponseBody();
 					
 					if(proxyPAC == null || !proxyPAC.contains("FindProxyForURL")) {
@@ -419,8 +419,10 @@ public class CFWHttp {
 	        if (bufferedReader != null) {
 	            try {
 	                bufferedReader.close();
-	            } catch (IOException ex) {
-	                throw ex;
+	            } catch (IOException e) {
+	            	new CFWLog(logger)
+						.method("getRequestBody")
+						.severe("Exception occured while closing reader.", e);
 	            }
 	        }
 	    }

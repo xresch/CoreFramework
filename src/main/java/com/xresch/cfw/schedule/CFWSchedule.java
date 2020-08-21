@@ -112,7 +112,7 @@ public class CFWSchedule {
 	        }
         }
         
-        timer.schedule(task, startDateTime.getTime(), intervalSec*1000);
+        timer.schedule(task, startDateTime.getTime(), intervalSec*1000L);
 
         return timer;
 	 }

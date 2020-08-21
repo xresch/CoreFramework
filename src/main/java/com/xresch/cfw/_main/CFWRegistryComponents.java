@@ -103,7 +103,7 @@ public class CFWRegistryComponents {
 		//-----------------------
 		// Check Argument
 		if(menuPath == null || menuPath.trim().length() == 0) {
-			targetItemList.put(itemToAdd.getLabel(), itemToAdd);
+			targetItemList.put(itemToAdd.getMenuName(), itemToAdd);
 			//System.out.println("Add "+item.getLabel());
 			return;
 		}
@@ -273,7 +273,7 @@ public class CFWRegistryComponents {
 			MenuItem current = items[i];
 			builder.append(currentPrefix)
 				   .append("|--> ")
-				   .append(current.getLabel()).append("\n");
+				   .append(current.getMenuName()).append("\n");
 			if(objectCount > 1 && (i != objectCount-1)) {
 				builder.append(dumpMenuItemHierarchy(currentPrefix+"|  ", current.getSubMenuItems()));
 			}else{

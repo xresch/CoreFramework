@@ -52,7 +52,7 @@ public class MenuItem extends HierarchicalHTMLItem {
 		super.addChild(childItem);
 		
 		if(childItem instanceof MenuItem) {
-			childMenuItems.put(((MenuItem)childItem).getLabel(), (MenuItem)childItem);
+			childMenuItems.put(((MenuItem)childItem).getMenuName(), (MenuItem)childItem);
 			this.addPermissions(((MenuItem)childItem).getPermissions());
 		}
 		return this;
@@ -188,16 +188,16 @@ public class MenuItem extends HierarchicalHTMLItem {
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public String getLabel() {
+	public String getMenuName() {
 		return menuName;
 	}
 	
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public MenuItem setLabel(String label) {
+	public MenuItem setMenuName(String menuName) {
 		fireChange();
-		this.menuName = label;
+		this.menuName = menuName;
 		return this;
 	}
 	
