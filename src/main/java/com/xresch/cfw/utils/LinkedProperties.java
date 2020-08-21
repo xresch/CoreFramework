@@ -24,12 +24,12 @@ public class LinkedProperties extends Properties {
         return Collections.<Object>enumeration(keys);
     }
 
-    public Object put(Object key, Object value) {
+    public synchronized Object put(Object key, Object value) {
         keys.add(key);
         return super.put(key, value);
     }
     
-    public void putAll(Map<? extends Object, ? extends Object> map) {
+    public synchronized void putAll(Map<? extends Object, ? extends Object> map) {
         keys.addAll(map.keySet());
         super.putAll(map);
     }
