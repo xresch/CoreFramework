@@ -89,10 +89,10 @@ public class TestCFWField {
 				.enableEncryption("myTestSalt123")
 				.setValue(" ");
 		
-		String emptyStringEncrypted = fieldNull.getValueEncrypted();
+		String emptyStringEncrypted = fieldEmptyString.getValueEncrypted();
 		System.out.println("emptyStringEncrypted: "+emptyStringEncrypted);
 		
-		Assertions.assertEquals(null, emptyStringEncrypted, "Empty String will be encrypted to null.");
+		Assertions.assertEquals("cfwenc:HN7bo/8t7ocFiXnRB9x+Ig==", emptyStringEncrypted, "Empty String will be encrypted to null.");
 		
 				
 	}
@@ -114,6 +114,10 @@ public class TestCFWField {
 		String valueDecrypted = field.decryptValue(valueEncrypted);
 		System.out.println("Encrypted: "+valueEncrypted);
 		System.out.println("Decrypted: "+valueDecrypted);
+		
+		Assertions.assertEquals(valueToEncrypt, valueDecrypted, "Empty String will be encrypted to null.");
+		
+		
 		
 	}
 }
