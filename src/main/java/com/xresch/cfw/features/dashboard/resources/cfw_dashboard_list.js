@@ -87,7 +87,7 @@ function cfw_dashboardlist_editDashboard(id){
  ******************************************************************/
 function cfw_dashboardlist_delete(ids){
 	
-	params = {action: "delete", item: "dashboards", ids: ids};
+	var params = {action: "delete", item: "dashboards", ids: ids};
 	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, params, 
 		function(data) {
 			if(data.success){

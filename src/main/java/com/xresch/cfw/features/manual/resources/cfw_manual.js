@@ -78,7 +78,7 @@ function cfw_manual_createPrintView(pageGUID){
 	//--------------------------
 	//Create CSS
 	
-	cssString = '<style  media="print, screen">'
+	var cssString = '<style  media="print, screen">'
 		+'html, body {'
 			+'margin: 0px;'
 			+'padding: 0px;'

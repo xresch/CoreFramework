@@ -2,7 +2,7 @@ package com.xresch.cfw.features.query;
 
 public class CFWTokenText extends CFWToken {
 
-	public boolean wasQuoted = false;
+	private boolean wasQuoted = false;
 	
 	public CFWTokenText(String text) {
 		super(text);

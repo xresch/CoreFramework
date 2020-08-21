@@ -216,9 +216,9 @@ function cfw_usermgmt_editRole(roleID){
  ******************************************************************/
 function cfw_usermgmt_delete(item, ids){
 	
-	url = "./usermanagement/data";
+	var url = "./usermanagement/data";
 	
-	params = {action: "delete", item: item, ids: ids};
+	var params = {action: "delete", item: item, ids: ids};
 	CFW.http.getJSON(url, params, 
 		function(data) {
 			if(data.success){
@@ -240,7 +240,7 @@ function cfw_usermgmt_delete(item, ids){
  ******************************************************************/
 function cfw_usermgmt_printUserList(data){
 	
-	parent = $("#tab-content");
+	var parent = $("#tab-content");
 	
 	var cfwTable = new CFWTable();
 	
@@ -264,7 +264,7 @@ function cfw_usermgmt_printUserList(data){
 		}
 
 		
-		htmlString = "";
+		var htmlString = "";
 		for(var i = 0; i < resultCount; i++){
 			var current = data.payload[i];
 			htmlString += '<tr>';
@@ -323,7 +323,7 @@ function cfw_usermgmt_printUserList(data){
  ******************************************************************/
 function cfw_usermgmt_printRoleList(data){
 	
-	parent = $("#tab-content");
+	var parent = $("#tab-content");
 	
 	//--------------------------------
 	// Button
@@ -389,7 +389,7 @@ function cfw_usermgmt_printRoleList(data){
  ******************************************************************/
 function cfw_usermgmt_printPermissionList(data){
 	
-	parent = $("#tab-content");
+	var parent = $("#tab-content");
 	
 	var cfwTable = new CFWTable();
 	cfwTable.addHeaders(['ID', "Name", "Description"]);
