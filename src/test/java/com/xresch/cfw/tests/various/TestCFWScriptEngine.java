@@ -9,7 +9,7 @@ import com.xresch.cfw.utils.CFWScriptEngine;
 
 public class TestCFWScriptEngine {
 	
-	@Test
+	//@Test
 	public void printAvailableEngines() {
 		
 		CFW.Scripting.printAvailableEngines();
