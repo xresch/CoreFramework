@@ -213,7 +213,7 @@ public class Role extends CFWObject {
 		
 		Role userRole = CFW.DB.Roles.selectFirstByName(CFWDBRole.CFW_ROLE_USER);
 		
-		if(userRole == null) {
+		if(userRole != null) {
 			userRole.isRenamable(false);
 			CFW.DB.Roles.update(userRole);
 		}else {

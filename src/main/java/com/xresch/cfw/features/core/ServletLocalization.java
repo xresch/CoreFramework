@@ -8,8 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.http.HttpStatus;
-
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.response.JSONResponse;
@@ -43,7 +41,7 @@ public class ServletLocalization extends HttpServlet
 
 		if(languagePack == null) {
 			json.setSuccess(false);
-			response.setStatus(HttpStatus.NOT_FOUND_404);
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return;
 		}
 		
