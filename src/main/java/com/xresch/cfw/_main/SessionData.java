@@ -1,5 +1,6 @@
 package com.xresch.cfw._main;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,7 +18,12 @@ import com.xresch.cfw.response.bootstrap.BTMenu;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
-public class SessionData {
+public class SessionData implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	private boolean isLoggedIn = false;
 	private boolean hasManualPages = false;

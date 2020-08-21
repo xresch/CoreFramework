@@ -76,7 +76,7 @@ public class Pipeline<I, O> {
 			new CFWLog(logger)
 				.method("execute")
 				.warn("Pipeline execution was interupted.", e);
-			
+			Thread.currentThread().interrupt();
 			return null;
 		}	
 		
@@ -88,6 +88,7 @@ public class Pipeline<I, O> {
 	 * @param args
 	 * @return
 	 *************************************************************************************/
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void add(PipelineAction nextAction) {
 		
 		if(actionArray.size() > 0) {
@@ -140,10 +141,11 @@ public class Pipeline<I, O> {
 			System.err.println(dumpActionStatus());
 			
 			try {
-				Thread.sleep(1000*intervalSeconds);
+				Thread.sleep(1000L*intervalSeconds);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				Thread.currentThread().interrupt();
 			}
 		}
 	}
