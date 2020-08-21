@@ -7,6 +7,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 abstract class PipelineAction<I, O> extends Thread {
 	
+	protected Object synchLock = new Object();
 	protected Pipeline<O, ?> parent = null;
 	protected PipelineAction<?, I> previousAction = null;
 	protected PipelineAction<O, ?> nextAction = null;
@@ -37,8 +38,8 @@ abstract class PipelineAction<I, O> extends Thread {
 					//---------------------------
 					// Wake up next action
 					if(nextAction != null) {
-						synchronized(nextAction) {
-							nextAction.notifyAll();
+						synchronized(nextAction.synchLock) {
+							nextAction.synchLock.notifyAll();
 						}
 					}
 					//---------------------------
@@ -119,12 +120,13 @@ abstract class PipelineAction<I, O> extends Thread {
 	
 	public void waitForInput(long millis) {
 		if(previousAction != null && !previousAction.isDone()) {
-			synchronized(this) {
+			synchronized(this.synchLock) {
 				try {
-					this.wait(millis);
+					this.synchLock.wait(millis);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					Thread.currentThread().interrupt();
 				}
 			}
 		}

@@ -1,6 +1,6 @@
 package com.xresch.cfw.pipeline;
 
-class StringProcessingPipeline extends Pipeline<String, String> {
+public class StringProcessingPipeline extends Pipeline<String, String> {
 	/*******************************************************************************
 	 * Constructor
 	 *******************************************************************************/
@@ -72,10 +72,13 @@ class StringProcessingPipeline extends Pipeline<String, String> {
 			@Override
 			void execute() throws Exception {
 				
-				while(!previousAction.isDone()) {
-					while(!inQueue.isEmpty()) {
-						inQueue.poll().trim();
-						counter++;
+				while(true) {
+					if(previousAction == null || previousAction.isDone()) {
+						while(!inQueue.isEmpty()) {
+							inQueue.poll();
+							counter++;
+						}
+						break;
 					}
 					this.waitForInput(50);
 				}
@@ -112,24 +115,4 @@ class StringProcessingPipeline extends Pipeline<String, String> {
 		return this;
 	}
 
-//	public static void main(String... args) throws InterruptedException {
-//		StringProcessingPipeline pipe = new StringProcessingPipeline();
-//		CFW.Files.addAllowedPackage(WebTestMaster.RESOURCE_PACKAGE);
-//
-//		pipe.removeBlankLines()
-//			.removeComments()
-//			.trim()
-//			//.grep("cfwT", false)
-//			//.countLines()
-//			.data(CFW.Files.readPackageResource(WebTestMaster.RESOURCE_PACKAGE + ".test", "cfwjs_test.js").split("\\r\\n|\\n"))
-//			.execute(false);
-//			
-//		System.out.println(	
-//			pipe.waitForComplete()
-//				.resultToString()
-//		);
-//
-//		System.out.println("All threads terminated");
-//	   
-//	}
 }
