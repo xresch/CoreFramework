@@ -168,14 +168,14 @@ public class Role extends CFWObject {
 		
 		Role superuserRole = CFW.DB.Roles.selectFirstByName(CFWDBRole.CFW_ROLE_SUPERUSER);
 		
-		if(superuserRole == null) {
+		if(superuserRole != null) {
+			superuserRole.isRenamable(false);
+			CFW.DB.Roles.update(superuserRole);
+		}else {
 			new CFWLog(logger)
 			.method("createDefaultRoles")
 			.severe("User role '"+CFWDBRole.CFW_ROLE_SUPERUSER+"' was not found in the database.");
 		}
-		
-		superuserRole.isRenamable(false);
-		CFW.DB.Roles.update(superuserRole);
 		
 		//-----------------------------------------
 		// Create Role Admin
@@ -190,14 +190,16 @@ public class Role extends CFWObject {
 		
 		Role adminRole = CFW.DB.Roles.selectFirstByName(CFWDBRole.CFW_ROLE_ADMIN);
 		
-		if(adminRole == null) {
+		if(adminRole != null) {
+			adminRole.isRenamable(false);
+			CFW.DB.Roles.update(adminRole);
+		}else {
 			new CFWLog(logger)
 			.method("createDefaultRoles")
 			.severe("User role '"+CFWDBRole.CFW_ROLE_ADMIN+"' was not found in the database.");
 		}
 		
-		adminRole.isRenamable(false);
-		CFW.DB.Roles.update(adminRole);
+		
 		//-----------------------------------------
 		// Create Role User
 		//-----------------------------------------
@@ -212,13 +214,15 @@ public class Role extends CFWObject {
 		Role userRole = CFW.DB.Roles.selectFirstByName(CFWDBRole.CFW_ROLE_USER);
 		
 		if(userRole == null) {
+			userRole.isRenamable(false);
+			CFW.DB.Roles.update(userRole);
+		}else {
 			new CFWLog(logger)
 			.method("createDefaultRoles")
 			.severe("User role '"+CFWDBRole.CFW_ROLE_USER+"' was not found in the database.");
 		}
 		
-		userRole.isRenamable(false);
-		CFW.DB.Roles.update(userRole);
+		
 		
 	}
 	

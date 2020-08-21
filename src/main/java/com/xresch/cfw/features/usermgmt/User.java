@@ -250,7 +250,9 @@ public class User extends CFWObject {
 		}
 		
 		//Needed for Upgrade
-		CFW.DB.UserRoleMap.updateIsDeletable(adminUser.id(), superuserRole.id(), false);
+		if(adminUser != null && superuserRole != null) {
+			CFW.DB.UserRoleMap.updateIsDeletable(adminUser.id(), superuserRole.id(), false);
+		}
 
 		if(!CFW.DB.UserRoleMap.checkIsUserInRole(adminUser, superuserRole)) {
 			new CFWLog(logger)
