@@ -56,7 +56,7 @@ public class LogFormatterJSON extends Formatter {
 			//-------------------------
 			// URL
 			buf.append(", \"webParams\":\"");
-			buf.append(log.queryString);
+			buf.append(CFW.JSON.escapeString(log.queryString));
 			buf.append("\"");
 			
 			//-------------------------

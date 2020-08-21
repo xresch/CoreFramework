@@ -40,16 +40,18 @@ public class FileCanWriteValidator extends AbstractValidator {
 				return false;
 			}
 		}else{
+			boolean success = true;
 			try {
-				file.mkdirs();
-				file.createNewFile();
-				file.delete();
+				success &= file.mkdirs();
+				success &= file.createNewFile();
+				success &= file.delete();
 			} catch (IOException e) {
 				this.setInvalidMessage("File cannot be written: '"+file.getAbsolutePath()+"'");
 				return false;
 			}
+			return success;
 		}
 		
-		return true;
+		return false;
 	}
 }

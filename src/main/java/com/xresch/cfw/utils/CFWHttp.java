@@ -75,8 +75,14 @@ public class CFWHttp {
 	 * Redirects to the specified url.
 	 * @throws IOException 
 	 ******************************************************************************************************/
-	public static void redirectToURL(HttpServletResponse response, String url ) throws IOException {
-		response.sendRedirect(response.encodeRedirectURL(url));
+	public static void redirectToURL(HttpServletResponse response, String url ) {
+		try {
+			response.sendRedirect(response.encodeRedirectURL(url));
+		} catch (IOException e) {
+			new CFWLog(logger)
+				.method("redirectToURL")
+				.severe("Error sending redirect.", e);
+		}
 	}
 	
 	/******************************************************************************************************
