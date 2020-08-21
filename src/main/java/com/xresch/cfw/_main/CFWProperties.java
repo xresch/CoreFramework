@@ -13,7 +13,7 @@ import com.xresch.cfw.utils.LinkedProperties;
  **************************************************************************************************************/
 public class CFWProperties {
 
-	public static final LinkedProperties configProperties = new LinkedProperties();
+	private static final LinkedProperties configProperties = new LinkedProperties();
 	
 	//##########################################################################################
 	// APPLICATION

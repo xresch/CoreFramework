@@ -23,9 +23,9 @@ public class CFWDBConfig {
 	public static Logger logger = CFWLog.getLogger(CFWDBConfig.class.getName());
 	
 	//name/value pairs of configuration elements
-	public static LinkedHashMap<String, String> configCache = new LinkedHashMap<String, String>();
+	private static LinkedHashMap<String, String> configCache = new LinkedHashMap<String, String>();
 	
-	public static ArrayList<ConfigChangeListener> changeListeners = new ArrayList<ConfigChangeListener>();
+	private static ArrayList<ConfigChangeListener> changeListeners = new ArrayList<ConfigChangeListener>();
 	
 	/********************************************************************************************
 	 * Creates the table and default admin user if not already exists.

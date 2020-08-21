@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.core;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -9,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
+import com.xresch.cfw.features.config.CFWDBConfig;
+import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * 
@@ -17,13 +20,12 @@ import com.xresch.cfw._main.CFWProperties;
  **************************************************************************************************************/
 public class ServletJARResource extends HttpServlet
 {
-
+	public static Logger logger = CFWLog.getLogger(ServletJARResource.class.getName());
 	private static final long serialVersionUID = 1L;
 
 	@Override
     protected void doGet( HttpServletRequest request,
-                          HttpServletResponse response ) throws ServletException,
-                                                        IOException
+                          HttpServletResponse response ) throws ServletException                              
     {
 		String pkg = request.getParameter("pkg");		
 		String file = request.getParameter("file");
@@ -35,8 +37,13 @@ public class ServletJARResource extends HttpServlet
 			response.addHeader("Cache-Control", "max-age="+CFWProperties.BROWSER_RESOURCE_MAXAGE);
 			response.setStatus(HttpServletResponse.SC_OK);
 			
-			response.getOutputStream().write(fontContent);
-
+			try {
+				response.getOutputStream().write(fontContent);
+			}catch(IOException e) {
+				new CFWLog(logger)
+					.method("doGet")
+					.severe("Error writing response.", e);
+			}
 	        //response.setContentType("application/font-"+fontType);
 	        
 	        

@@ -67,7 +67,11 @@ public class CFWDB {
 		File datastoreFile = new File(storePath+"/"+databaseName+".mv.db");
     	if(!datastoreFile.isFile()) {
     		try {
-				datastoreFile.createNewFile();
+				if(!datastoreFile.createNewFile()) {
+					new CFWLog(logger)
+						.method("startDatabase")
+						.severe("Error creating database file.");
+				};
 			} catch (IOException e) {
 				new CFWLog(logger)
 				.method("startDatabase")
