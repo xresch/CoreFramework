@@ -27,7 +27,7 @@ public class CFWDBDashboardWidget {
 	
 	private static Class<DashboardWidget> cfwObjectClass = DashboardWidget.class;
 	
-	public static Logger logger = CFWLog.getLogger(CFWDBDashboardWidget.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBDashboardWidget.class.getName());
 		
 	//####################################################################################################
 	// Preckeck Initialization

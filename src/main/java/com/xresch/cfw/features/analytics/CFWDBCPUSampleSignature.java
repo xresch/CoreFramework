@@ -13,7 +13,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWDBCPUSampleSignature {
 	
-	public static Logger logger = CFWLog.getLogger(CFWDBCPUSampleSignature.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBCPUSampleSignature.class.getName());
 		
 	/********************************************************************************************
 	 * Creates a new signature in the DB and returns it's primary key.

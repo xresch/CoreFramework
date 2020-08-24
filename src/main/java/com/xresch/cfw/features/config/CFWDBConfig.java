@@ -20,7 +20,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWDBConfig {
 	
-	public static Logger logger = CFWLog.getLogger(CFWDBConfig.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBConfig.class.getName());
 	
 	//name/value pairs of configuration elements
 	private static LinkedHashMap<String, String> configCache = new LinkedHashMap<String, String>();

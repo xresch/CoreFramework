@@ -58,7 +58,7 @@ import com.xresch.cfw.validation.CFWValidation;
  **************************************************************************************************************/
 public class CFW {
 	
-	private static Logger logger = CFWLog.getLogger(CFW.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFW.class.getName());
 	
 	//##############################################################################
 	// Hierarchical Binding
@@ -66,7 +66,7 @@ public class CFW {
 	public static String L(String key, String defaultText) { return CFW.Localization.getLocalized(key, defaultText); }
 	public static String L(String key, String defaultTextWithPlaceholders, Object placeholderValues) { return CFW.Localization.getLocalized(key, defaultTextWithPlaceholders, placeholderValues); }
 	
-	public class AppSettings extends CFWAppSettings {}
+	public static class AppSettings extends CFWAppSettings {}
 	public static class DB extends CFWDB {
 		public static class Config extends CFWDBConfig{};
 		public static class ContextSettings extends CFWDBContextSettings{};
@@ -87,28 +87,28 @@ public class CFW {
 		public static class Session extends CFWContextSession{};
 	}
 	
-	public class CLI extends CFWCommandLineInterface {}
-	public class Dump extends CFWDump {}
-	public class Security extends CFWSecurity {}
-	public class Files extends CFWFiles {}
-	public class HTTP extends CFWHttp {}
-	public class JSON extends CFWJson {}
-	public class Localization extends CFWLocalization {}
-	public class Mail extends CFWMail {}
-	public class Properties extends CFWProperties {}
-	public class Registry {
-		public class API extends CFWRegistryAPI {}
-		public class Components extends CFWRegistryComponents {} 
-		public class ContextSettings extends CFWRegistryContextSettings {} 
-		public class Features extends CFWRegistryFeatures {} 
-		public class Manual extends CFWRegistryManual {} 
-		public class Objects extends CFWRegistryObjects {} 
-		public class Widgets extends CFWRegistryWidgets {} 
+	public static class CLI extends CFWCommandLineInterface {}
+	public static class Dump extends CFWDump {}
+	public static class Security extends CFWSecurity {}
+	public static class Files extends CFWFiles {}
+	public static class HTTP extends CFWHttp {}
+	public static class JSON extends CFWJson {}
+	public static class Localization extends CFWLocalization {}
+	public static class Mail extends CFWMail {}
+	public static class Properties extends CFWProperties {}
+	public static class Registry {
+		public static class API extends CFWRegistryAPI {}
+		public static class Components extends CFWRegistryComponents {} 
+		public static class ContextSettings extends CFWRegistryContextSettings {} 
+		public static class Features extends CFWRegistryFeatures {} 
+		public static class Manual extends CFWRegistryManual {} 
+		public static class Objects extends CFWRegistryObjects {} 
+		public static class Widgets extends CFWRegistryWidgets {} 
 	}
-	public class Schedule extends CFWSchedule {}
-	public class Scripting extends CFWScripting {}
-	public class Time extends CFWTime {}
-	public class Validation extends CFWValidation {}
+	public static class Schedule extends CFWSchedule {}
+	public static class Scripting extends CFWScripting {}
+	public static class Time extends CFWTime {}
+	public static class Validation extends CFWValidation {}
 	
 	
 	

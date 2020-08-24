@@ -17,7 +17,7 @@ import com.xresch.cfw.tests.assets.servlets.GeneralTestServlet;
 
 public class _MainForTesting implements CFWAppInterface {
 		
-	public static Logger logger = CFWLog.getLogger(_MainForTesting.class.getName());
+	private static final Logger logger = CFWLog.getLogger(_MainForTesting.class.getName());
 	protected static CFWLog log = new CFWLog(logger);
 	
     public static void main( String[] args ) throws Exception

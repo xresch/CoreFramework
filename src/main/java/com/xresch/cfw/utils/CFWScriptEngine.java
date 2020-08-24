@@ -11,7 +11,7 @@ import com.xresch.cfw.logging.CFWLog;
 public class CFWScriptEngine {
 	
 	private ScriptEngine engine = null;
-	public static Logger logger = CFWLog.getLogger(CFWScriptEngine.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWScriptEngine.class.getName());
 	
 	public CFWScriptEngine(ScriptEngine engine) {
 		this.engine = engine;

@@ -3,6 +3,7 @@ package com.xresch.cfw.features.api;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +23,8 @@ import com.xresch.cfw.utils.CFWArrayUtils;
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
 public class APIDefinitionSQL extends APIDefinition{
+	
+	private static final Logger logger = CFWLog.getLogger(APIDefinitionSQL.class.getName());
 	
 	private static final String APIFORMAT = "APIFORMAT";
 	private APISQLExecutor executor;

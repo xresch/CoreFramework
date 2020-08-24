@@ -21,7 +21,7 @@ public class CFWDBContextSettings {
 	
 	private static Class<ContextSettings> cfwObjectClass = ContextSettings.class;
 	
-	public static Logger logger = CFWLog.getLogger(CFWDBContextSettings.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBContextSettings.class.getName());
 	
 	private static ArrayList<ContextSettingsChangeListener> changeListeners = new ArrayList<ContextSettingsChangeListener>();
 	

@@ -27,7 +27,7 @@ public class ServletAutocomplete extends HttpServlet
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static Logger logger = CFWLog.getLogger(ServletAutocomplete.class.getName());
+	private static final Logger logger = CFWLog.getLogger(ServletAutocomplete.class.getName());
 	@Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {

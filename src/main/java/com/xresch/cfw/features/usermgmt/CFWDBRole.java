@@ -28,7 +28,7 @@ public class CFWDBRole {
 	
 	private static Class<Role> cfwObjectClass = Role.class;
 	
-	public static Logger logger = CFWLog.getLogger(CFWDBRole.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBRole.class.getName());
 		
 	
 	//####################################################################################################

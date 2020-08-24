@@ -14,7 +14,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWRegistryFeatures {
 	
-	public static Logger logger = CFWLog.getLogger(CFWRegistryFeatures.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWRegistryFeatures.class.getName());
 	
 	private static LinkedHashSet<Class<? extends CFWAppFeature>> featureClassSet = new LinkedHashSet<Class<? extends CFWAppFeature>>();
 	

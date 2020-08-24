@@ -22,7 +22,7 @@ import com.xresch.cfw.utils.CFWFiles;
  **************************************************************************************************************/
 public class HTMLResponse extends AbstractHTMLResponse {
 	
-	public static Logger logger = CFWLog.getLogger(HTMLResponse.class.getName());
+	private static final Logger logger = CFWLog.getLogger(HTMLResponse.class.getName());
 	
 	/*******************************************************************************
 	 * 

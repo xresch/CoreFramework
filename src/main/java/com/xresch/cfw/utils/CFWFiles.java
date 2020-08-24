@@ -36,7 +36,7 @@ public class CFWFiles {
 	/** Only packages in this list can be accessed with readPackageResource*().*/
 	private static final ArrayList<String> allowedPackages = new ArrayList<String>();
 	
-	public static Logger logger = CFWLog.getLogger(CFWFiles.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWFiles.class.getName());
 	
 	static String[] cachedFiles = new String[15];
 	static int fileCounter = 0;

@@ -2,6 +2,7 @@ package com.xresch.cfw.features.api;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +23,9 @@ import com.xresch.cfw.utils.CFWArrayUtils;
  **************************************************************************************************************/
 public class APIDefinitionFetch extends APIDefinition{
 	
-	private static final String APIFORMAT = "APIFORMAT";
+	private static final Logger logger = CFWLog.getLogger(APIDefinitionFetch.class.getName());
+	
+	protected static final String APIFORMAT = "APIFORMAT";
 	
 	public APIDefinitionFetch(Class<? extends CFWObject> clazz,
 							  String apiName, 

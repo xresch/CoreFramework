@@ -13,7 +13,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWDBSpaceGroup {
 
-	public static Logger logger = CFWLog.getLogger(CFWDBSpaceGroup.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBSpaceGroup.class.getName());
 	
 	/********************************************************************************************
 	 * Creates multiple SpaceGroups in the DB.

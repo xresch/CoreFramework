@@ -20,7 +20,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class ServletJARResource extends HttpServlet
 {
-	public static Logger logger = CFWLog.getLogger(ServletJARResource.class.getName());
+	private static final Logger logger = CFWLog.getLogger(ServletJARResource.class.getName());
 	private static final long serialVersionUID = 1L;
 
 	@Override

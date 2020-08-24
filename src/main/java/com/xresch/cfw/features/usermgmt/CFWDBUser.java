@@ -20,7 +20,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWDBUser {
 
-	public static Logger logger = CFWLog.getLogger(CFWDBUser.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBUser.class.getName());
 	
 	
 	/********************************************************************************************

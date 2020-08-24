@@ -13,7 +13,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWRegistryContextSettings {
 	
-	public static Logger logger = CFWLog.getLogger(CFWRegistryContextSettings.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWRegistryContextSettings.class.getName());
 	
 	private static LinkedHashMap<String, Class<? extends AbstractContextSettings>> contextSettings = new LinkedHashMap<String, Class<? extends AbstractContextSettings>>();
 	

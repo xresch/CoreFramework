@@ -20,7 +20,7 @@ public class CFWDBRolePermissionMap {
 
 	private static final String TABLE_NAME = new RolePermissionMap().getTableName();
 	
-	public static Logger logger = CFWLog.getLogger(CFWDBRolePermissionMap.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBRolePermissionMap.class.getName());
 	
 
 	/********************************************************************************************

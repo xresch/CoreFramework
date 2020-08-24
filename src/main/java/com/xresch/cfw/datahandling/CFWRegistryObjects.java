@@ -12,7 +12,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWRegistryObjects {
 	
-	public static Logger logger = CFWLog.getLogger(CFWRegistryObjects.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWRegistryObjects.class.getName());
 	
 	private static ArrayList<Class<? extends CFWObject>> cfwObjects = new ArrayList<Class<? extends CFWObject>>();
 	

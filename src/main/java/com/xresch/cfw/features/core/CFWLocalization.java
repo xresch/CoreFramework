@@ -27,7 +27,7 @@ import com.xresch.cfw.utils.LinkedProperties;
  **************************************************************************************************************/
 public class CFWLocalization {
 	
-	public static Logger logger = CFWLog.getLogger(CFWLocalization.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWLocalization.class.getName());
 	
 	public static final String LOCALE_LB  = "{!";
 	public static final String LOCALE_RB = "!}";

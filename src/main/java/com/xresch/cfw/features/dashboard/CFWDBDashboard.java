@@ -31,7 +31,7 @@ public class CFWDBDashboard {
 	
 	private static Class<Dashboard> cfwObjectClass = Dashboard.class;
 	
-	public static Logger logger = CFWLog.getLogger(CFWDBDashboard.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBDashboard.class.getName());
 		
 	//####################################################################################################
 	// Preckeck Initialization

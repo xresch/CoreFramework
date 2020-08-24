@@ -13,7 +13,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public abstract class CFWDBDefaultOperations<O extends CFWObject> {
 	
-	public static Logger logger = CFWLog.getLogger(CFWDBDefaultOperations.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBDefaultOperations.class.getName());
 	
 	
 	/********************************************************************************************

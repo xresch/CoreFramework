@@ -27,7 +27,7 @@ public class ServletFormHandler extends HttpServlet
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public static Logger logger = CFWLog.getLogger(ServletFormHandler.class.getName());
+	private static final Logger logger = CFWLog.getLogger(ServletFormHandler.class.getName());
 	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {

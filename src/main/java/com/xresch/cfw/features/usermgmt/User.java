@@ -245,6 +245,12 @@ public class User extends CFWObject {
 		//-----------------------------------------
 		Role superuserRole = CFW.DB.Roles.selectFirstByName(CFWDBRole.CFW_ROLE_SUPERUSER);
 		
+		if(superuserRole == null) {
+			new CFWLog(logger)
+			.method("createDefaultUsers")
+			.severe("Role 'Superuser' was not found in the database.");
+			return;
+		}
 		if(!CFW.DB.UserRoleMap.checkIsUserInRole(adminUser, superuserRole)) {
 			CFW.DB.UserRoleMap.addUserToRole(adminUser, superuserRole, false);
 		}

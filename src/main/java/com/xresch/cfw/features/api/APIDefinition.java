@@ -16,7 +16,7 @@ import com.xresch.cfw.utils.CFWArrayUtils;
  **************************************************************************************************************/
 public class APIDefinition {
 	
-	public static Logger logger = CFWLog.getLogger(APIDefinition.class.getName());
+	private static final Logger logger = CFWLog.getLogger(APIDefinition.class.getName());
 	
 	@Expose()
 	@SerializedName("name")

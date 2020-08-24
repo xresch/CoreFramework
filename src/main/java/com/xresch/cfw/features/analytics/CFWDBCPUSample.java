@@ -16,7 +16,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWDBCPUSample {
 	
-	public static Logger logger = CFWLog.getLogger(CFWDBCPUSample.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBCPUSample.class.getName());
 		
 	/********************************************************************************************
 	 * Creates a new cpuSample in the DB and returns it's primary key.

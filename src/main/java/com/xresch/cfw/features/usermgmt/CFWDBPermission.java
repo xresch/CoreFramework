@@ -17,7 +17,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWDBPermission {
 
-	public static Logger logger = CFWLog.getLogger(CFWDBPermission.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBPermission.class.getName());
 	
 	
 	/********************************************************************************************

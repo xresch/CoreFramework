@@ -20,7 +20,7 @@ import com.xresch.cfw.response.AbstractHTMLResponse;
  **************************************************************************************************************/
 public class CFWRegistryWidgets {
 	
-	public static Logger logger = CFWLog.getLogger(CFWRegistryWidgets.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWRegistryWidgets.class.getName());
 	
 	private static LinkedHashMap<String, WidgetDefinition> definitionArray = new LinkedHashMap<String, WidgetDefinition>();
 	

@@ -13,7 +13,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWRegistryAPI {
 	
-	public static Logger logger = CFWLog.getLogger(CFWRegistryAPI.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWRegistryAPI.class.getName());
 	
 	private static LinkedHashMap<String, APIDefinition> definitionArray = new LinkedHashMap<String, APIDefinition>();
 	

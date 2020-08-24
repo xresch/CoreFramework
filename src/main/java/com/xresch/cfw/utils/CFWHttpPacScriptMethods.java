@@ -36,7 +36,7 @@ import com.xresch.cfw.logging.CFWLog;
  */
 public class CFWHttpPacScriptMethods {
 
-	public static Logger logger = CFWLog.getLogger(CFWHttpPacScriptMethods.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWHttpPacScriptMethods.class.getName());
 
 	public static final String OVERRIDE_LOCAL_IP = "com.btr.proxy.pac.overrideLocalIP";
 

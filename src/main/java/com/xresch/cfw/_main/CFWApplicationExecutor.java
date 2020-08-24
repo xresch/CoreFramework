@@ -65,7 +65,7 @@ public class CFWApplicationExecutor {
 	static DefaultSessionIdManager idmanager;
 	private SessionHandler sessionHandler;	
 	
-	public static Logger logger = CFWLog.getLogger(CFW.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFW.class.getName());
 	
 	public WebAppContext applicationContext;
 	
