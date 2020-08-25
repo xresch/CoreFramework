@@ -135,7 +135,8 @@ public class CFWHierarchy<T extends CFWObject> {
 		//-------------------------------
 		// Check if last parent was already
 		// set.
-		LinkedHashMap<String, CFWField<?>> parentFields = parent.getFields();
+		@SuppressWarnings("rawtypes")
+		LinkedHashMap<String, CFWField> parentFields = parent.getFields();
 		int childLevels = child.getHierarchyLevels();
 		
 		if( parentFields.get(labels[(childLevels-1)]).getValue() != null) {

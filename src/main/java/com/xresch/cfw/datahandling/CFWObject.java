@@ -27,7 +27,8 @@ public class CFWObject {
 	
 	//------------------------
 	// General
-	private LinkedHashMap<String, CFWField<?>> fields = new LinkedHashMap<String, CFWField<?>>();
+	@SuppressWarnings("rawtypes")
+	private LinkedHashMap<String, CFWField> fields = new LinkedHashMap<String, CFWField>();
 	protected int hierarchyLevels = 0;
 	protected  CFWObject parent;
 	protected  LinkedHashMap<Integer, CFWObject> childObjects = new LinkedHashMap<Integer, CFWObject>();
@@ -192,7 +193,8 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public void addFields(CFWField<?> ...fields) {
+	@SuppressWarnings("rawtypes")
+	public void addFields(CFWField ...fields) {
 		for(CFWField<?> field : fields) {
 			this.addField(field);
 		}
@@ -201,7 +203,7 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public void addFields(LinkedHashMap<String, CFWField<?>> fields) {
+	public void addFields(LinkedHashMap<String, CFWField> fields) {
 		this.fields.putAll(fields);
 	}
 	
@@ -228,7 +230,8 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public LinkedHashMap<String, CFWField<?>> getFields(){
+	@SuppressWarnings("rawtypes")
+	public LinkedHashMap<String, CFWField> getFields(){
 		return fields;
 	}
 	

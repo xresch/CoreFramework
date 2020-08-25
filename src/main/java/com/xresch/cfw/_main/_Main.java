@@ -22,10 +22,10 @@ public class _Main {
     		app = new CFWAppInterface() {
     			@Override public void settings() { CFW.AppSettings.setEnableDashboarding(true); }
 				@Override public void startApp(CFWApplicationExecutor executor) { executor.setDefaultURL("/dashboard/list", true); }
-				@Override public void register() {}
-				@Override public void initializeDB() {}
-				@Override public void startTasks() {}
-				@Override public void stopApp() {}
+				@Override public void register() { /* Do nothing */ }
+				@Override public void initializeDB() { /* Do nothing */ }
+				@Override public void startTasks() { /* Do nothing */ }
+				@Override public void stopApp() { /* Do nothing */ }
 			};
     	}
     	

@@ -35,7 +35,8 @@ public class CFWSQL {
 	private boolean isQueryCached = false;
 	
 	private CFWObject object;
-	private LinkedHashMap<String, CFWField<?>> fields;
+	@SuppressWarnings("rawtypes")
+	private LinkedHashMap<String, CFWField> fields;
 	private LinkedHashMap<String, String> columnSubqueries;
 	
 	private StringBuilder query = new StringBuilder();

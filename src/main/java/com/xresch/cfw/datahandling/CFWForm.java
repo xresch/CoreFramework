@@ -30,7 +30,8 @@ public class CFWForm extends HierarchicalHTMLItem {
 	public StringBuilder javascript = new StringBuilder();
 	
 	// Contains the fields with field name as key
-	public LinkedHashMap<String, CFWField<?>> fields = new LinkedHashMap<String, CFWField<?>>();
+	@SuppressWarnings("rawtypes")
+	public LinkedHashMap<String, CFWField> fields = new LinkedHashMap<String, CFWField>();
 	
 	private CFWFormHandler formHandler = null;
 	private boolean isAPIForm = false;
@@ -103,10 +104,10 @@ public class CFWForm extends HierarchicalHTMLItem {
 				"<script id=\"script-"+formID+"\">\r\n" + 
 				"	function intializeForm_"+formID+"(){\r\n"+
 				"		$('[data-toggle=\"tooltip\"]').tooltip();\r\n"+		
-						javascript.toString()+
+				"		"+javascript.toString()+
 				"	}\r\n" + 
 				"	window.addEventListener('DOMContentLoaded', function() {\r\n" + 
-				"       intializeForm_"+formID+"();"+
+				"		intializeForm_"+formID+"();"+
 				"});\r\n"+
 				"</script>"
 				);
@@ -140,7 +141,8 @@ public class CFWForm extends HierarchicalHTMLItem {
 	/***********************************************************************************
 	 * Returns a hashmap with fields. The keys are the names of the fields.
 	 ***********************************************************************************/
-	public LinkedHashMap<String, CFWField<?>> getFields() {
+	@SuppressWarnings("rawtypes")
+	public LinkedHashMap<String, CFWField> getFields() {
 		return fields;
 	}
 	public String getFormID() {

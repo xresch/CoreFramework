@@ -518,7 +518,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		// Create Field
 		
 		html.append("<input id=\""+name+"-datepicker\" type=\"date\" onchange=\"cfw_updateTimeField('"+name+"')\" class=\"form-control\" placeholder=\"Date\" >\r\n" + 
-				"	<input id=\""+name+"\" type=\"hidden\" class=\"form-control\" "+this.getAttributesString()+">\r\n");
+				"<input id=\""+name+"\" type=\"hidden\" class=\"form-control\" "+this.getAttributesString()+">\r\n");
 		
 		if(this.parent instanceof CFWForm) {
 			((CFWForm)this.parent).javascript.append("cfw_initializeTimefield('"+name+"', "+epochTime+");\r\n");
@@ -553,9 +553,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//---------------------------------
 		// Create Field
 		html.append("  <div class=\"custom-control-inline w-100 mr-0\">\r\n"
-					+ "    <input id=\""+name+"-datepicker\" type=\"date\" onchange=\"cfw_updateTimeField('"+name+"')\" class=\"col-md-9 form-control\" >\r\n"
-					+ "    <input id=\""+name+"-timepicker\" type=\"time\" onchange=\"cfw_updateTimeField('"+name+"')\" class=\"col-md-3 form-control\">"
-					+ "	   <input id=\""+name+"\" type=\"hidden\" class=\"form-control\" "+this.getAttributesString()+">\r\n" 
+						+ "<input id=\""+name+"-datepicker\" type=\"date\" onchange=\"cfw_updateTimeField('"+name+"')\" class=\"col-md-9 form-control\" >\r\n"
+						+ "<input id=\""+name+"-timepicker\" type=\"time\" onchange=\"cfw_updateTimeField('"+name+"')\" class=\"col-md-3 form-control\">"
+						+ "<input id=\""+name+"\" type=\"hidden\" class=\"form-control\" "+this.getAttributesString()+">\r\n" 
 					+ "</div>\r\n");
 		
 		if(this.parent instanceof CFWForm) {
@@ -872,7 +872,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		return this;
 	}
 		
-	public LinkedHashMap<?, ?> getValueLabelOptions() {
+	@SuppressWarnings("rawtypes")
+	public LinkedHashMap getValueLabelOptions() {
 		return valueLabelOptions;
 	}
 	
@@ -1025,6 +1026,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * Returns the value encrypted.
 	 * Will be ignored 
 	 ******************************************************************************************************/
+	@SuppressWarnings("unchecked")
 	public  T getValueEncrypted() {
 		if(encryptionSalt == null 
 		|| value == null ) {
@@ -1247,7 +1249,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * 
 	 * @return CFWFieldChangeHandler<?> 
 	 ******************************************************************************************************/
-	public CFWFieldChangeHandler<?> getChangeHandler() {
+	@SuppressWarnings("rawtypes")
+	public CFWFieldChangeHandler getChangeHandler() {
 		return changeHandler;
 	}
 	
@@ -1291,7 +1294,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * @return true if successful, false otherwise
 	 ******************************************************************************************************/
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static boolean mapAndValidateParamsToFields(HttpServletRequest request, HashMap<String,CFWField<?>> fields) {
+	public static boolean mapAndValidateParamsToFields(HttpServletRequest request, HashMap<String,CFWField> fields) {
 		
 		Enumeration<String> parameters = request.getParameterNames();
 		boolean result = true;
@@ -1324,7 +1327,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * @return true if successful, false otherwise
 	 ******************************************************************************************************/
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static boolean mapAndValidateJsonToFields(JsonObject json, HashMap<String,CFWField<?>> fields) {
+	public static boolean mapAndValidateJsonToFields(JsonObject json, HashMap<String,CFWField> fields) {
 		
 		Set<String> members = json.keySet();
 		boolean result = true;
@@ -1367,7 +1370,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * @return true if successful, false otherwise
 	 ******************************************************************************************************/
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static boolean mapResultSetColumnsToFields(ResultSet result, HashMap<String,CFWField<?>> fields) {
+	public static boolean mapResultSetColumnsToFields(ResultSet result, HashMap<String,CFWField> fields) {
 		
 		ResultSetMetaData metadata;
 		boolean success = true;

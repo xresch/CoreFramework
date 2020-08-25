@@ -26,7 +26,7 @@ public class SessionData implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private boolean isLoggedIn = false;
-	private boolean hasManualPages = false;
+
 	private User user = null;
 	private HashMap<Integer, Role> userRoles = new HashMap<Integer, Role>();
 	private HashMap<String, Permission> userPermissions = new HashMap<String, Permission>();
