@@ -1,10 +1,5 @@
 package com.xresch.cfw.tests.mail;
 
-import java.io.File;
-import java.io.IOException;
-
-import com.xresch.cfw._main.CFW;
-
 public class MailTest {
 	
 //	//@Test

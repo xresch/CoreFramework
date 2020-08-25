@@ -3,9 +3,9 @@ package com.xresch.cfw.tests.web;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.tests._master.WebTestMaster;
 import com.xresch.cfw.tests.assets.servlets.GeneralTestServlet;
-import com.xresch.cfw._main.CFW;
 
 public class GeneralWebTests extends WebTestMaster {
 

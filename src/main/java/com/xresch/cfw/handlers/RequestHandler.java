@@ -13,8 +13,8 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.SessionData;
 import com.xresch.cfw._main.CFW.Context;
+import com.xresch.cfw._main.SessionData;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.logging.CFWLog;
 

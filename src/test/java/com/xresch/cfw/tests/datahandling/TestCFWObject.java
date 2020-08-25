@@ -1,21 +1,21 @@
 package com.xresch.cfw.tests.datahandling;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.Date;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import com.xresch.cfw.tests._master.DBTestMaster;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.usermgmt.Role;
+import com.xresch.cfw.tests._master.DBTestMaster;
 
 public class TestCFWObject extends DBTestMaster{
 	protected static Role testgroupA;

@@ -4,10 +4,10 @@ package com.xresch.cfw.tests.web;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import com.xresch.cfw.tests.assets.mockups.MenuItemMockup;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.BTMenu;
 import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.tests.assets.mockups.MenuItemMockup;
 
 public class MenuTests {
 

@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.logging.CFWLog;

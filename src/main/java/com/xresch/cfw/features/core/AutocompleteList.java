@@ -3,8 +3,6 @@ package com.xresch.cfw.features.core;
 import java.util.ArrayList;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.xresch.cfw._main.CFW;
 
 public class AutocompleteList {
 	

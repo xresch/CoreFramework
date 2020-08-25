@@ -4,8 +4,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import com.xresch.cfw.tests._master.DBTestMaster;
 import com.xresch.cfw.db.CFWSQL;
+import com.xresch.cfw.tests._master.DBTestMaster;
 
 public class TestCFWSQL extends DBTestMaster {
 

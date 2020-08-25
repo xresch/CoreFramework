@@ -1,10 +1,8 @@
 package com.xresch.cfw.features.analytics;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.analytics.CPUSample.StatsCPUSampleFields;
 import com.xresch.cfw.logging.CFWLog;

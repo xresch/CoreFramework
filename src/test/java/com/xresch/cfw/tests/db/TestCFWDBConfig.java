@@ -4,10 +4,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import com.xresch.cfw.tests._master.DBTestMaster;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.tests._master.DBTestMaster;
 
 public class TestCFWDBConfig extends DBTestMaster {
 

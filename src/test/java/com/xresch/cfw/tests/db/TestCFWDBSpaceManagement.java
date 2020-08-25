@@ -4,14 +4,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import com.xresch.cfw.tests._master.DBTestMaster;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWHierarchy;
-import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.spaces.Space;
-import com.xresch.cfw.db.spaces.SpaceGroup;
 import com.xresch.cfw.db.spaces.Space.SpaceFields;
+import com.xresch.cfw.db.spaces.SpaceGroup;
+import com.xresch.cfw.tests._master.DBTestMaster;
 
 public class TestCFWDBSpaceManagement extends DBTestMaster {
 

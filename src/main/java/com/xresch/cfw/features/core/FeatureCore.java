@@ -20,7 +20,6 @@ import com.xresch.cfw.response.bootstrap.MenuItem;
 import io.prometheus.client.exporter.MetricsServlet;
 import io.prometheus.client.hotspot.BufferPoolsExports;
 import io.prometheus.client.hotspot.ClassLoadingExports;
-import io.prometheus.client.hotspot.DefaultExports;
 import io.prometheus.client.hotspot.GarbageCollectorExports;
 import io.prometheus.client.hotspot.MemoryAllocationExports;
 import io.prometheus.client.hotspot.MemoryPoolsExports;

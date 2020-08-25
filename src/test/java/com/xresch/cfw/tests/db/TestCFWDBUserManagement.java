@@ -6,11 +6,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import com.xresch.cfw.tests._master.DBTestMaster;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.tests._master.DBTestMaster;
 import com.xresch.cfw.utils.CFWSecurity;
 
 public class TestCFWDBUserManagement extends DBTestMaster {

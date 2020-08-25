@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
-import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.usermgmt.RolePermissionMap.RolePermissionMapFields;

@@ -2,14 +2,11 @@ package com.xresch.cfw.handlers;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.rewrite.handler.RedirectRegexRule;
-import org.eclipse.jetty.rewrite.handler.RewriteHandler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 

@@ -9,8 +9,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import javax.tools.JavaCompiler;
-
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.Server;
@@ -19,10 +17,7 @@ import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFW.Properties;
 import com.xresch.cfw._main.CFWProperties;
-import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 

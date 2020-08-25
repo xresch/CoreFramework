@@ -8,7 +8,6 @@ import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
-import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;

@@ -2,15 +2,11 @@ package com.xresch.cfw.features.analytics;
 
 import java.util.concurrent.ScheduledFuture;
 
-import org.eclipse.jetty.servlet.ServletContextHandler;
-
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
 /**************************************************************************************************************

@@ -1,6 +1,5 @@
 package com.xresch.cfw.features.core;
 
-import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;

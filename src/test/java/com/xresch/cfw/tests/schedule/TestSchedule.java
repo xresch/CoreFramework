@@ -7,11 +7,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import com.xresch.cfw.tests._master.WebTestMaster;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.analytics.TaskCPUSampling;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.schedule.CFWScheduledTask;
+import com.xresch.cfw.tests._master.WebTestMaster;
 
 public class TestSchedule extends WebTestMaster {
 

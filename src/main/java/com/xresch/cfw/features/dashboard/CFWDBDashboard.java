@@ -16,9 +16,7 @@ import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
-import com.xresch.cfw.features.usermgmt.CFWDBUser;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 

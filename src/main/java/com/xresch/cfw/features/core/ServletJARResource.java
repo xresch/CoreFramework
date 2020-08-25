@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
-import com.xresch.cfw.features.config.CFWDBConfig;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************

@@ -9,10 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw._main.SessionData;
 import com.xresch.cfw.features.core.auth.LoginFacade;
-import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.PlaintextResponse;

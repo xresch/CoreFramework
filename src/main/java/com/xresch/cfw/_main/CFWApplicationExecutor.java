@@ -5,7 +5,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.logging.Logger;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
@@ -43,7 +42,6 @@ import com.xresch.cfw.handlers.AuthenticationHandler;
 import com.xresch.cfw.handlers.HTTPSRedirectHandler;
 import com.xresch.cfw.handlers.RedirectDefaultPageHandler;
 import com.xresch.cfw.handlers.RequestHandler;
-import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.HandlerChainBuilder;
 
 import io.prometheus.client.jetty.JettyStatisticsCollector;
@@ -64,8 +62,6 @@ public class CFWApplicationExecutor {
 	private String defaultURL = "/";
 	static DefaultSessionIdManager idmanager;
 	private SessionHandler sessionHandler;	
-	
-	private static final Logger logger = CFWLog.getLogger(CFW.class.getName());
 	
 	public WebAppContext applicationContext;
 	

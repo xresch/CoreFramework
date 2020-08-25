@@ -1,7 +1,6 @@
 package com.xresch.cfw.features.core;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;

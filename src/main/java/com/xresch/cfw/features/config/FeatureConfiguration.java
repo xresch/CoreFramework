@@ -1,18 +1,11 @@
 package com.xresch.cfw.features.config;
 
-import java.sql.Timestamp;
-import java.util.concurrent.ScheduledFuture;
-
-import org.eclipse.jetty.servlet.ServletContextHandler;
-
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
-import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
 /**************************************************************************************************************

@@ -13,7 +13,6 @@ import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage;
 import com.xresch.cfw.response.bootstrap.BTFooter;
 import com.xresch.cfw.response.bootstrap.BTMenu;
-import com.xresch.cfw.utils.CFWFiles;
 
 /**************************************************************************************************************
  * 

@@ -60,6 +60,9 @@ public class CFW {
 	
 	private static final Logger logger = CFWLog.getLogger(CFW.class.getName());
 	
+	private CFW() {
+		// hide constructor
+	}
 	//##############################################################################
 	// Hierarchical Binding
 	//##############################################################################

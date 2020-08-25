@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -13,7 +12,6 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
