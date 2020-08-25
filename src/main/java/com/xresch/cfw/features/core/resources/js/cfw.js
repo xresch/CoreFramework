@@ -261,7 +261,7 @@ function cfw_filterTable(searchField){
 	var table = $(searchField).data("table");
 	var input = searchField;
 
-	filter = input.value.toUpperCase();
+	var filter = input.value.toUpperCase();
 
 	table.find("tbody tr, >tr").each(function( index ) {
 
@@ -671,7 +671,7 @@ function cfw_autocompleteShow(inputField, autocompleteResults){
     	
     var multipleLists = $('<div class="autocomplete-multilist d-flex flex-row">');
     
-    for(key in autocompleteResults.lists){
+    for(var key in autocompleteResults.lists){
     	var current = autocompleteResults.lists[key];
     	 multipleLists.append(cfw_autocompleteCreateItemList(inputField, current));
     }
@@ -1661,7 +1661,7 @@ function cfw_getURLParams()
     
     for(var i = 0; i < keyValuePairs.length; i++)
     {
-        splitted = keyValuePairs[i].split('=');
+        var splitted = keyValuePairs[i].split('=');
         vars[splitted[0]] = splitted[1];
     }
     

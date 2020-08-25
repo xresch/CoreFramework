@@ -114,7 +114,7 @@ function cfw_contextsettings_delete(id){
  ******************************************************************/
 function cfw_contextsettings_duplicate(id){
 	
-	params = {action: "duplicate", item: "contextsettings", id: id};
+	var params = {action: "duplicate", item: "contextsettings", id: id};
 	CFW.http.getJSON(CFW_CTXSETTINGS_URL, params, 
 		function(data) {
 			if(data.success){

@@ -191,7 +191,7 @@ function cfw_cpusampling_printBottomUp(){
 	//------------------------------------------
 	// Calculate Percentages for top elements
 	var totalBottomCalls = 0;
-	for(id in BOTTOM_ELEMENTS){
+	for(var id in BOTTOM_ELEMENTS){
 		totalBottomCalls += BOTTOM_ELEMENTS[id].totalCallsBottomUp;
 	}
 	
@@ -199,8 +199,8 @@ function cfw_cpusampling_printBottomUp(){
 	
 	//------------------------------------------
 	// Create Hierarchy
-	for(id in BOTTOM_ELEMENTS){
-		current = BOTTOM_ELEMENTS[id];
+	for(var id in BOTTOM_ELEMENTS){
+		var current = BOTTOM_ELEMENTS[id];
 		current.percentageBottomUp = (current.totalCallsBottomUp / totalBottomCalls)*100;
 		cfw_cpusampling_printHierarchyDiv(parent, current, id)
 	}

@@ -1,12 +1,13 @@
 package com.xresch.cfw.tests.pipeline;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.pipeline.StringProcessingPipeline;
 import com.xresch.cfw.tests._master.WebTestMaster;
 
-public class PipelineTests {
+public class TestPipeline {
 
 	@Test
 	public void testPipeline() throws InterruptedException {
@@ -49,11 +50,11 @@ public class PipelineTests {
 			.countLines()
 			.data(CFW.Files.readPackageResource(WebTestMaster.RESOURCE_PACKAGE, "cfwjs_test.js").split("\\r\\n|\\n"))
 			.execute(false);
-			
-		System.out.println(	"### Line Count After: "+
-			pipe.waitForComplete()
-				.resultToString()
-		);
+		
+		String lineCountAfter = pipe.waitForComplete().resultToString();
+		System.out.println(	"### Line Count After: "+lineCountAfter);
+		
+		Assertions.assertEquals("54", lineCountAfter.trim());
 	   
 	}
 }

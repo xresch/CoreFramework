@@ -346,7 +346,7 @@ function cfw_usermgmt_printRoleList(data){
 			CFW.ui.addAlert("info", "Hmm... seems there aren't any roles in the list.");
 		}
 
-		htmlString = "";
+		var htmlString = "";
 		for(var i = 0; i < resultCount; i++){
 			var current = data.payload[i];
 			htmlString += '<tr>';
@@ -401,7 +401,7 @@ function cfw_usermgmt_printPermissionList(data){
 			CFW.ui.addAlert("info", "Hmm... seems there aren't any permissions in the list.");
 		}
 
-		htmlString = "";
+		var htmlString = "";
 		for(var i = 0; i < resultCount; i++){
 			var current = data.payload[i];
 			htmlString += '<tr>';
@@ -443,7 +443,7 @@ function cfw_usermgmt_draw(options){
 	function(){
 
 		
-		url = "./usermanagement/data"
+		var url = "./usermanagement/data"
 		switch(options.tab){
 		
 			case "users":			CFW.http.fetchAndCacheData(url, {action: "fetch", item: "users"}, "users", cfw_usermgmt_printUserList);

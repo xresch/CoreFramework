@@ -106,7 +106,7 @@ function cfw_dashboardlist_delete(ids){
  ******************************************************************/
 function cfw_dashboardlist_duplicate(id){
 	
-	params = {action: "duplicate", item: "dashboard", id: id};
+	var params = {action: "duplicate", item: "dashboard", id: id};
 	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, params, 
 		function(data) {
 			if(data.success){

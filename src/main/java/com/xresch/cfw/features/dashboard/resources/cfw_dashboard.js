@@ -226,7 +226,7 @@ function cfw_dashboard_triggerRedo(){
 							//----------------------------------
 							// Clear All Widgets
 							for(var i = 0;i < commandBundle.length ;i++){
-								current = commandBundle[i];
+								var current = commandBundle[i];
 								current.redo(current.redoData);
 								var widgetObject = $("#"+current.redoData.guid).data('widgetObject');
 								if(widgetObject != null){
