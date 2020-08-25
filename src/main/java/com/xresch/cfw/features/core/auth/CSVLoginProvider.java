@@ -20,7 +20,7 @@ public class CSVLoginProvider implements LoginProvider {
 	public CSVLoginProvider() {
 		
 		if(userCredentials == null) {
-			this.loadCredentials();
+			CSVLoginProvider.loadCredentials();
 		}
 	}
 	
@@ -64,7 +64,7 @@ public class CSVLoginProvider implements LoginProvider {
 		return null;
 	}
 	
-	private void loadCredentials() {
+	private static void loadCredentials() {
 		CFWLog log = new CFWLog(logger).method("loadCredentials");
 		
 		//------------------------------

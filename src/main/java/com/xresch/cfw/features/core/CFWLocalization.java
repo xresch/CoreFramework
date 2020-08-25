@@ -221,24 +221,19 @@ public class CFWLocalization {
 					) {
 						
 						FileDefinition def = entry.getValue();
-	
-						StringReader reader = null;
-						try {
-							Properties currentProps = new Properties();
-							String propertiesString = def.readContents();
-							if(propertiesString != null) {
-								reader = new StringReader(propertiesString) ;
+						Properties currentProps = new Properties();
+						String propertiesString = def.readContents();
+						
+						if(propertiesString != null) {
+							try (StringReader reader = new StringReader(propertiesString);) {
+								
 								currentProps.load( reader );
 								mergedPorperties.putAll(currentProps);
-							}
-							
-						} catch (IOException e) {
-							new CFWLog(logger)
-								.method("getLocaleProperties")
-								.severe("Error while reading language pack.", e);
-						}finally {
-							if(reader!= null) {
-								reader.close();
+								
+							} catch (IOException e) {
+								new CFWLog(logger)
+									.method("getLocaleProperties")
+									.severe("Error while reading language pack.", e);
 							}
 						}
 					}

@@ -36,7 +36,7 @@ public class FileCanWriteValidator extends AbstractValidator {
 			return false;
 		}
 
-		if (file != null && file.exists()) {
+		if (file.exists()) {
 			if (!file.canWrite()) {
 				this.setInvalidMessage("File cannot be written: '" + file.getAbsolutePath() + "'");
 				return false;

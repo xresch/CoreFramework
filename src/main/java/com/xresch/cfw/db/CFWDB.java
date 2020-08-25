@@ -66,7 +66,7 @@ public class CFWDB {
 					new CFWLog(logger)
 						.method("startDatabase")
 						.severe("Error creating database file.");
-				};
+				}
 			} catch (IOException e) {
 				new CFWLog(logger)
 				.method("startDatabase")

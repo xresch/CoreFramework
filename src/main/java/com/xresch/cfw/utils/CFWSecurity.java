@@ -34,7 +34,7 @@ public class CFWSecurity {
 			.allowAttributes("href").onElements("a").allowAttributes("size").onElements("font")
 			.allowAttributes("class", "style").globally().toFactory();
 
-	private static final String htmlEscapes[][] = new String[][] { { "&", "&amp;" }, { "<", "&lt;" }, { ">", "&gt;" },
+	private static final String[][] htmlEscapes = new String[][] { { "&", "&amp;" }, { "<", "&lt;" }, { ">", "&gt;" },
 			{ "\"", "&quot;" }, { "\'", "&#x27;" }, { "/", "&#x2F;" } };
 
 	/******************************************************************************

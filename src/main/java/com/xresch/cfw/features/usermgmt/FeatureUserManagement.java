@@ -16,7 +16,7 @@ import com.xresch.cfw.response.bootstrap.MenuItem;
  **************************************************************************************************************/
 public class FeatureUserManagement extends CFWAppFeature {
 
-	public static final String PERMISSION_CPU_SAMPlING = "CPU Sampling";
+	public static final String PERMISSION_CPU_SAMPLING = "CPU Sampling";
 	
 
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.usermgmt.resources";

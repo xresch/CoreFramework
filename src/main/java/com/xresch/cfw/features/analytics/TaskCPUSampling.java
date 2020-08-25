@@ -15,7 +15,7 @@ import com.xresch.cfw.schedule.CFWScheduledTask;
 
 public class TaskCPUSampling extends CFWScheduledTask {
 	
-	private static long lastSave = System.currentTimeMillis();
+	private long lastSave = System.currentTimeMillis();
 	private static Logger logger = CFWLog.getLogger(TaskCPUSampling.class.getName());
 	
 	// Contains "parentID -> signatureID" as key and the number of occurences as value.

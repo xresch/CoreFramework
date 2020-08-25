@@ -78,9 +78,7 @@ public class CFWFiles {
 		}else{
 			omlogger.finest("Read from disk into cache");
 			
-			BufferedReader reader = null;
-			try{
-				reader = new BufferedReader(new InputStreamReader(new FileInputStream(path),"utf-8"));
+			try( BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8)) ){
 				
 				StringBuffer contentBuffer = new StringBuffer();
 				String line;
@@ -105,16 +103,6 @@ public class CFWFiles {
 					.severe("Could not read file: "+path, e);
 				
 				return null;
-			}finally {
-				if(reader != null) {
-					try {
-						reader.close();
-					} catch (IOException e) {
-						new CFWLog(logger)
-							.method("getFileContent")
-							.severe("Error closing File Reader.", e);
-					}
-				}
 			}
 			
 		}
@@ -261,13 +249,12 @@ public class CFWFiles {
 			return null;
 		}
 		
-		BufferedReader reader = null;
+		
 		String line = "";
 		StringBuffer buffer = new StringBuffer();
 		
-		try {
-			reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-	
+		try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)) ){
+			
 			while( (line = reader.readLine()) != null) {
 				buffer.append(line).append("\n");
 				//line = reader.readLine();
@@ -276,15 +263,6 @@ public class CFWFiles {
 		} catch (IOException e) {
 			new CFWLog(logger).log(Level.SEVERE, "IOException: ", e);
 			e.printStackTrace();
-		}finally {
-			try {
-				if(reader != null) {
-					reader.close();
-				}
-			} catch (IOException e) {
-				new CFWLog(logger).log(Level.SEVERE, "IOException", e);
-				e.printStackTrace();
-			}
 		}
 		
 		String result = buffer.toString();

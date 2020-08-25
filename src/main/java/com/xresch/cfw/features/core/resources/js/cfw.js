@@ -521,7 +521,7 @@ function cfw_autocompleteInitialize(formID, fieldName, maxResults, array){
 			// Show Loader
 			var loader = $input.parent().find('#autocomplete-loader');
 			if(loader.length == 0){
-				var loader = $('<div id="autocomplete-loader"><small><i class="fa fa-cog fa-spin fa-1x"></i><span>&nbsp;Loading...</span></small></div>');
+				loader = $('<div id="autocomplete-loader"><small><i class="fa fa-cog fa-spin fa-1x"></i><span>&nbsp;Loading...</span></small></div>');
 				$input.after(loader);
 			}
 			
@@ -725,7 +725,7 @@ function cfw_autocompleteCreateItemList(targetInputField, values){
 			
 	//----------------------------
 	// Iterate values object
-	for (key in values) {
+	for (var key in values) {
 		
 	   	var currentValue = values[key].value;
 	   	var label = ""+values[key].label;

@@ -31,10 +31,13 @@ public class FileCanReadValidator extends AbstractValidator {
 			file = new File((String)value);
 		}else if(value instanceof File) {
 			file = (File)value;
+		} else {
+			this.setInvalidMessage("Unsupported type for FileCanWriteValidator: '" + value.getClass().getName() + "'");
+			return false;
 		}
 		
 		
-		if(file != null && file.canRead()){
+		if(file.canRead()){
 			return true;
 		}else {
 			this.setInvalidMessage("File cannot be read: '"+value+"'");

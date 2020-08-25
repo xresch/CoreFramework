@@ -395,38 +395,31 @@ public class CFWHttp {
 	 * @param url used for the request.
 	 * @return String response
 	 ******************************************************************************************************/
-	public static String getRequestBody(HttpServletRequest request) throws IOException {
+	public static String getRequestBody(HttpServletRequest request){
 
 	    String body = null;
 	    StringBuilder stringBuilder = new StringBuilder();
-	    BufferedReader bufferedReader = null;
-
-	    try {
-	        InputStream inputStream = request.getInputStream();
-	        if (inputStream != null) {
-	            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-	            char[] charBuffer = new char[128];
+        
+	    try (
+	    	InputStream inputStream = request.getInputStream();
+	    	BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream)) 
+	    ) {
+	    	if (inputStream != null) {
+		    	char[] charBuffer = new char[128];
 	            int bytesRead = -1;
+	            
 	            while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
 	                stringBuilder.append(charBuffer, 0, bytesRead);
 	            }
-	        } else {
+	    	} else {
 	            stringBuilder.append("");
 	        }
-	    } catch (IOException ex) {
-	        throw ex;
-	    } finally {
-	        if (bufferedReader != null) {
-	            try {
-	                bufferedReader.close();
-	            } catch (IOException e) {
-	            	new CFWLog(logger)
-						.method("getRequestBody")
-						.severe("Exception occured while closing reader.", e);
-	            }
-	        }
-	    }
-
+	    } catch (IOException e) {
+	    	new CFWLog(logger)
+				.method("getRequestBody")
+				.severe("Exception occured while reading request body. ", e);
+	    } 
+        
 	    body = stringBuilder.toString();
 	    return body;
 	}

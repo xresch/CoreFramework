@@ -29,6 +29,7 @@ public class AsyncLogHandler extends FileHandler implements Runnable {
 		worker.start();
 	}
 
+	@Override
 	public synchronized void publish(LogRecord record) {
 		try {
 			logQueue.put(record);
