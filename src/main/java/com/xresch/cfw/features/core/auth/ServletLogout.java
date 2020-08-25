@@ -36,7 +36,7 @@ public class ServletLogout extends HttpServlet
 		SessionData data = CFW.Context.Request.getSessionData(); 	
 		data.triggerLogout();
 		
-		response.sendRedirect(response.encodeRedirectURL("./login"));
+		CFW.HTTP.redirectToURL(response, "./login");
         
     }
 	

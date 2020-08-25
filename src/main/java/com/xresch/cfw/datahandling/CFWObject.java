@@ -48,12 +48,6 @@ public class CFWObject {
 		public String ondelete;
 	}
 	
-	/****************************************************************
-	 * 
-	 ****************************************************************/
-	public CFWObject() {
-
-	}
 	
 	/****************************************************************
 	 * 
@@ -203,6 +197,7 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
+	@SuppressWarnings("rawtypes")
 	public void addFields(LinkedHashMap<String, CFWField> fields) {
 		this.fields.putAll(fields);
 	}
@@ -210,14 +205,16 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public CFWField<?> getField(String name) {
+	@SuppressWarnings("rawtypes")
+	public CFWField getField(String name) {
 		return fields.get(name);
 	}
 	
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public CFWField<?> getFieldIgnoreCase(String name) {
+	@SuppressWarnings("rawtypes")
+	public CFWField getFieldIgnoreCase(String name) {
 		
 		for(String current : fields.keySet()) {
 			if(current.toLowerCase().equals(name.toLowerCase())) {
@@ -445,10 +442,6 @@ public class CFWObject {
 		this.childObjects = childObjects;
 	}
 	
-//	public CFWObject addChildObject(CFWObject child) {
-//		this.childObjects.put(((Integer)child.getPrimaryField().getValue()), child);
-//		return this;
-//	}
 	
 	/****************************************************************
 	 * 
@@ -486,7 +479,7 @@ public class CFWObject {
 	 * @return CFWQuery for method chaining
 	 ****************************************************************/
 	public void migrateTable() {
-		
+		//can be overridden
 	}
 
 	/****************************************************************
@@ -506,7 +499,7 @@ public class CFWObject {
 	 * @return CFWQuery for method chaining
 	 ****************************************************************/
 	public void updateTable() {
-		
+		//can be overridden
 	}
 	
 	/****************************************************************
@@ -515,7 +508,7 @@ public class CFWObject {
 	 * 
 	 ****************************************************************/
 	public void initDB() {
-		
+		//can be overridden
 	}
 	
 	/****************************************************************
@@ -524,7 +517,7 @@ public class CFWObject {
 	 * dependency on other data created first.
 	 ****************************************************************/
 	public void initDBSecond() {
-		
+		//can be overridden
 	}
 	
 	/****************************************************************
@@ -533,7 +526,7 @@ public class CFWObject {
 	 * dependency on other data created first.
 	 ****************************************************************/
 	public void initDBThird() {
-		
+		//can be overridden
 	}
 	
 	/****************************************************************

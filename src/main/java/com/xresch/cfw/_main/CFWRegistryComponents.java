@@ -99,12 +99,11 @@ public class CFWRegistryComponents {
 	 * @param Class that extends from BTMenu
 	 ***********************************************************************/
 	private static void addMenuItem(LinkedHashMap<String, MenuItem> targetItemList, MenuItem itemToAdd, String menuPath)  {
-		//System.out.println("======= Path :"+menuPath+" ======== ");
+		
 		//-----------------------
 		// Check Argument
 		if(menuPath == null || menuPath.trim().length() == 0) {
 			targetItemList.put(itemToAdd.getMenuName(), itemToAdd);
-			//System.out.println("Add "+item.getLabel());
 			return;
 		}
 		
@@ -128,7 +127,6 @@ public class CFWRegistryComponents {
 			}
 			if(i == pathTokens.length-1) {
 				parentItem.addChild(itemToAdd);
-				//System.out.println("add "+itemToAdd.getLabel()+" to subitems of: "+currentToken);
 			}
 		}
 	}

@@ -339,7 +339,7 @@ public class CFWDB {
 	}
 	
 	/********************************************************************************************
-	 * Create Testdata for testing purposes
+	 * 
 	 ********************************************************************************************/
 	public static String selectTableRowCountAsJSON() {
 		
@@ -353,7 +353,7 @@ public class CFWDB {
 	}
 	
 	/********************************************************************************************
-	 * Create Testdata for testing purposes
+	 * 
 	 ********************************************************************************************/
 	public static String selectQueryStatisticsAsJSON() {
 		
@@ -362,82 +362,6 @@ public class CFWDB {
 			.getAsJSON();
 
 	}
-	/********************************************************************************************
-	 * Create Testdata for testing purposes
-	 ********************************************************************************************/
-	public static void createTestData() {
-		
-		Role testroleA, testroleB, testroleC;
-		User testuserA, testuserB, testuserC;
-		
-		Permission  permissionA, permissionAA, permissionAAA, 
-					permissionB, permissionBB,
-					permissionC;
-		//------------------------------
-		// Roles
-		CFW.DB.Roles.create(new Role("TestroleA", "user").description("This is the testrole A."));
-		testroleA = CFW.DB.Roles.selectFirstByName("TestroleA");
-		
-		CFW.DB.Roles.create(new Role("TestroleB", "user").description("This is the testrole B."));
-		testroleB = CFW.DB.Roles.selectFirstByName("TestroleB");
-		
-		CFW.DB.Roles.create(new Role("TestroleC", "user").description("This is the testrole C."));
-		testroleC = CFW.DB.Roles.selectFirstByName("TestroleC");
-		
-		//------------------------------
-		// Users
-		CFW.DB.Users.create(new User("TestuserA")
-				.setNewPassword("TestuserA", "TestuserA")
-				.email("testuserA@cfwtest.com")
-				.firstname("Testika")
-				.lastname("Testonia"));
-		testuserA = CFW.DB.Users.selectByUsernameOrMail("TestuserA");
-		CFW.DB.UserRoleMap.addUserToRole(testuserA, testroleA, true);
-		CFW.DB.UserRoleMap.addUserToRole(testuserA, testroleB, true);
-		CFW.DB.UserRoleMap.addUserToRole(testuserA, testroleC, true);
-		
-		CFW.DB.Users.create(new User("TestuserB")
-				.setNewPassword("TestuserB", "TestuserB")
-				.email("testuserB@cfwtest.com")
-				.firstname("Jane")
-				.lastname("Doe"));
-		testuserB = CFW.DB.Users.selectByUsernameOrMail("TestuserB");
-		CFW.DB.UserRoleMap.addUserToRole(testuserB, testroleA, true);
-		CFW.DB.UserRoleMap.addUserToRole(testuserB, testroleB, true);
-		
-		CFW.DB.Users.create(new User("TestuserC")
-				.setNewPassword("TestuserC", "TestuserC")
-				.email("testuserC@cfwtest.com")
-				.firstname("Paola")
-				.lastname("Pernandez"));	
-		testuserC = CFW.DB.Users.selectByUsernameOrMail("TestuserC");
-		CFW.DB.UserRoleMap.addUserToRole(testuserC, testroleC, true);
-		
-		//------------------------------
-		// Permissions
-		CFW.DB.Permissions.create(new Permission("PermissionA", "user").description("This is the permission A."));
-		permissionA = CFW.DB.Permissions.selectByName("PermissionA");
-		CFW.DB.RolePermissionMap.addPermissionToRole(permissionA, testroleA, true);
-		
-		CFW.DB.Permissions.create(new Permission("PermissionAA", "user").description("This is the permission AA."));
-		permissionAA = CFW.DB.Permissions.selectByName("PermissionAA");
-		CFW.DB.RolePermissionMap.addPermissionToRole(permissionAA, testroleA, true);
-		
-		CFW.DB.Permissions.create(new Permission("PermissionAAA", "user").description("This is the permission AAA."));
-		permissionAAA = CFW.DB.Permissions.selectByName("PermissionAAA");
-		CFW.DB.RolePermissionMap.addPermissionToRole(permissionAAA, testroleA, true);
-		
-		CFW.DB.Permissions.create(new Permission("PermissionB", "user").description("This is the permission B."));
-		permissionB = CFW.DB.Permissions.selectByName("PermissionB");
-		CFW.DB.RolePermissionMap.addPermissionToRole(permissionB, testroleB, true);
-		
-		CFW.DB.Permissions.create(new Permission("PermissionBB", "user").description("This is the permission BB."));
-		permissionBB = CFW.DB.Permissions.selectByName("PermissionBB");
-		CFW.DB.RolePermissionMap.addPermissionToRole(permissionBB, testroleB, true);
-		
-		CFW.DB.Permissions.create(new Permission("PermissionC", "user").description("This is the permission C."));
-		permissionC = CFW.DB.Permissions.selectByName("PermissionC");
-		CFW.DB.RolePermissionMap.addPermissionToRole(permissionC, testroleC, true);
-	}
+
 
 }

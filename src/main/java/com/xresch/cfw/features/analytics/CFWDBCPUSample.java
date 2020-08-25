@@ -147,17 +147,7 @@ public class CFWDBCPUSample {
 	 * @return true if successful, false otherwise
 	 ****************************************************************/
 	public static boolean aggregateStatistics(Timestamp startTime, Timestamp endTime, int newGranularity) {
-		
-		//CFW.DB.preparedExecute("BEGIN; SET @startTime = ?", startTime);
-		//CFW.DB.preparedExecute("SET @endTime = ?;", endTime);
-		//CFW.DB.preparedExecute("SET @newGranularity = ?;", newGranularity);
-		
-//		boolean success =  new StatsCPUSample()
-//		.queryCache(CFWDBStatsCPUSample.class, "aggregateStatistics")
-//		.loadSQLResource("com.xresch.cfw.resources.sql", "cpusampling_aggregation.sql"
-//		,startTime, endTime, newGranularity)
-//		.executeBatch();
-		
+				
 		CFWDB.beginTransaction();
 		boolean success = true;
 		int cacheCounter = 0;
@@ -226,7 +216,6 @@ public class CFWDBCPUSample {
 				.execute();
 		
 		
-		//CFWDB.rollbackTransaction();
 		if(success) {
 			CFWDB.commitTransaction();
 		}else {

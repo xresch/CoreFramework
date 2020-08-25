@@ -458,14 +458,7 @@ public abstract class DBInterface {
 		} 
 		
 		log.custom("sql", sql).end();
-		
-		if(logger.isLoggable(Level.FINER) && prepared != null ) {
-			new CFWLog(logger)
-				.method("preparedExecuteQuery")
-				.custom("preparedStatement", prepared.toString())
-				.finest("Debug: Prepared Statement");
-		}
-		 
+				 
 		return result;
 	}
 	
@@ -482,8 +475,8 @@ public abstract class DBInterface {
 		if(values != null) {
 			for(int i = 0; i < values.length ; i++) {
 				Object currentValue = values[i];
-				// Could be a better solution
-				//prepared.setObject(i+1, currentValue);
+				// TODO: Could be a better solution: prepared.setObject(i+1, currentValue);
+				
 				if		(currentValue instanceof String) 	{ prepared.setString(i+1, (String)currentValue); }
 				else if	(currentValue instanceof char[]) 	{ prepared.setString(i+1, new String((char[])currentValue)); }
 				else if (currentValue instanceof Integer) 	{ prepared.setInt(i+1, (Integer)currentValue); }
@@ -500,8 +493,14 @@ public abstract class DBInterface {
 				else { throw new RuntimeException("Unsupported database field type: "+ currentValue.getClass().getName());}
 			}
 		}
-		new CFWLog(logger).custom("preparedSQL", prepared.toString()).finest("Prepared SQL");
-		//System.out.println(prepared);
+		
+		if(logger.isLoggable(Level.FINEST) && prepared != null ) {
+			new CFWLog(logger)
+				.method("prepareStatement")
+				.custom("preparedSQL", prepared.toString())
+				.finest("Debug: Prepared Statement");
+		}
+
 	}
 	
 	/********************************************************************************************
@@ -571,13 +570,14 @@ public abstract class DBInterface {
 			if(resultSet == null) {
 				return "";
 			}
+			
 			//--------------------------------------
 			// Check has results
-// Excluded as MSSQL might throw errors			
-//			resultSet.beforeFirst();
-//			if(!resultSet.isBeforeFirst()) {
-//				return "";
-//			}
+			/* Excluded as MSSQL might throw errors			
+			resultSet.beforeFirst();
+			if(!resultSet.isBeforeFirst()) {
+				return "";
+			} */
 			
 			//--------------------------------------
 			// Iterate results
@@ -633,11 +633,11 @@ public abstract class DBInterface {
 			}
 			//--------------------------------------
 			// Check has results
-// Excluded as MSSQL might throw errors			
-//			resultSet.beforeFirst();
-//			if(!resultSet.isBeforeFirst()) {
-//				return "<data></data>";
-//			}
+			/* Excluded as MSSQL might throw errors			
+			resultSet.beforeFirst();
+			if(!resultSet.isBeforeFirst()) {
+				return "<data></data>";			
+			}*/
 			
 			//--------------------------------------
 			// Iterate results

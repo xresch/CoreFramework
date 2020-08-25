@@ -165,42 +165,6 @@ public class CFWApplicationExecutor {
 		return session;
 	}
 	
-//	/**************************************************************************************************
-//	 * Returns a ServletContextHandler that can be accesses with a prior user login.
-//	 * Adds several handlers like gzipHandler, SessionHandler, AuthenticationHandler and RequestHandler.
-//	 * 
-//	 * @param the relative path of the context, CFWConfig.BASE_URL will be prepended.
-//	 **************************************************************************************************/
-//	private ServletContextHandler getSecureContext(String relativePath){
-//        
-//		//-------------------------------
-//        // Check if exists
-//        //-------------------------------
-//		if(servletContextArray.containsKey(relativePath)) {
-//			return servletContextArray.get(relativePath);
-//		}
-//		
-//        //-------------------------------
-//        // Create HandlerChain
-//        //-------------------------------
-//        ContextHandler secureContext = new ContextHandler(CFWProperties.BASE_URL+""+relativePath);
-//        ServletContextHandler servletContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
-//        servletContext.setSessionHandler(createSessionHandler(relativePath));
-//        
-//
-//        new HandlerChainBuilder(secureContext)
-//        	.chain(new GzipHandler())
-//	        .chain(new RequestHandler())
-//	        .chain(servletContext);
-//       
-//        secureContextArray.put(relativePath, secureContext);
-//        servletContextArray.put(relativePath, servletContext);
-//        
-//        //Login, Logout and Resource Servlets
-//        addCFWServlets(servletContext);
-//        
-//        return servletContext;
-//	}
 	
 	public Server getServer() {
 		return server;
@@ -240,92 +204,7 @@ public class CFWApplicationExecutor {
 	    ErrorHandler handler = new ErrorHandler();
 	    return handler;
 	}
-	
-
-	/**************************************************************************************************
-	 * Create an security handler.
-	 * @throws Exception
-	 **************************************************************************************************/
-//	public static ConstraintSecurityHandler createSPNEGOSecurityHandler() throws Exception {
-//		
-//		System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
-//	    System.setProperty("java.security.auth.login.config", "./config/kerberos/spnego.conf");
-//	    System.setProperty("java.security.krb5.conf", "./config/kerberos/krb5.conf");
-//	    System.setProperty("sun.security.krb5.debug", "true");
-//	    System.setProperty("sun.security.jgss.debug", "true");
-//	    System.setProperty("java.security.debug", "all");
-//
-//        //System.setProperty("java.security.krb5.realm","EXAMPLE.COM");
-//        //System.setProperty("java.security.krb5.kdc","example.net:60088");
-//	    
-//	    String domainRealm = "EXAMPLE.COM";
-//
-//	    Constraint constraint = new Constraint();
-//	    constraint.setName(Constraint.__SPNEGO_AUTH);
-//	    constraint.setRoles(new String[]{domainRealm});
-//	    constraint.setAuthenticate(true);
-//
-//	    ConstraintMapping cm = new ConstraintMapping();
-//	    cm.setConstraint(constraint);
-//	    cm.setPathSpec("/app/*");
-//
-//	    SpnegoLoginService loginService = new SpnegoLoginService();
-//	    loginService.setConfig("./config/kerberos/spnego.properties");
-//	    loginService.setName(domainRealm);
-//
-//	    ConstraintSecurityHandler sh = new ConstraintSecurityHandler();
-//	    sh.setAuthenticator(new SpnegoAuthenticator());
-//	    sh.setLoginService(loginService);
-//	    sh.setConstraintMappings(new ConstraintMapping[]{cm});
-//	    sh.setRealmName(domainRealm);
-//	    
-//	    return sh;
-//	}
-	
-	/**************************************************************************************************
-	 * Create an security handler.
-	 * @throws Exception
-	 **************************************************************************************************/
-	
-//	private ConstraintSecurityHandler createSPNEGOSecurityHandler() throws Exception {
-//		
-//		System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
-//	    System.setProperty("java.security.auth.login.config", "./config/kerberos/spnego.conf");
-//	    System.setProperty("java.security.krb5.conf", "./config/kerberos/krb5.conf");
-//	    System.setProperty("sun.security.krb5.debug", "true");
-//	    System.setProperty("sun.security.jgss.debug", "true");
-//	    System.setProperty("java.security.debug", "all");
-//	    
-//		String domainRealm = "EXAMPLE.COM";
-//
-//		CFWLoginService authorizationService = new CFWLoginService();
-//
-//        ConfigurableSpnegoLoginService loginService = new ConfigurableSpnegoLoginService(domainRealm, AuthorizationService.from(authorizationService, ""));
-//        loginService.addBean(authorizationService);
-//        loginService.setKeyTabPath(Paths.get("./config/kerberos/cfw.keytab"));
-//        loginService.setServiceName("ldap");
-//        loginService.setHostName("example.net");
-//        server.addBean(loginService);
-//
-//        ConstraintSecurityHandler securityHandler = new ConstraintSecurityHandler();
-//        
-//        Constraint constraint = new Constraint();
-//        constraint.setName(Constraint.__SPNEGO_AUTH);
-//	    constraint.setRoles(new String[]{domainRealm});
-//	    constraint.setAuthenticate(true);
-//
-//        ConstraintMapping mapping = new ConstraintMapping();
-//        mapping.setPathSpec("/app/*");
-//        mapping.setConstraint(constraint);
-//        securityHandler.addConstraintMapping(mapping);
-//        
-//        ConfigurableSpnegoAuthenticator authenticator = new ConfigurableSpnegoAuthenticator();
-//        securityHandler.setAuthenticator(authenticator);
-//        securityHandler.setLoginService(loginService);
-//
-//	    return securityHandler;
-//	}
-   
+	   
 
 	/***********************************************************************
 	 * Setup and returns a SessionHandler
@@ -377,7 +256,6 @@ public class CFWApplicationExecutor {
 	    // Configure the ResourceHandler. Setting the resource base indicates where the files should be served out of.
 	    // In this example it is the current directory but it can be configured to anything that the jvm has access to.
 	    resourceHandler.setDirectoriesListed(false);
-	    //resource_handler.setWelcomeFiles(new String[]{ "/"+PA.config("pa_application_name")+"/harupload" });
 	    resourceHandler.setResourceBase("./resources");
 	
 	    // Add the ResourceHandler to the server.
@@ -476,10 +354,7 @@ public class CFWApplicationExecutor {
 	    	//.chain(createSPNEGOSecurityHandler())
 	        .chain(new AuthenticationHandler("/app", defaultURL))
 	        .chain(servletContext);
-        
-        
-        //System.out.println(servletContext.dump());
-        
+                
         //###################################################################
         // Create Handler Collection
         //###################################################################
@@ -537,6 +412,13 @@ public class CFWApplicationExecutor {
         } catch (IOException ex) {
             System.err.println("Stop Jetty failed: " + ex.getMessage());
         }
+	}
+	
+	/**************************************************************************************************
+	 * 
+	 **************************************************************************************************/
+	public String dumpServletContext() {
+        return servletContext.dump();
 	}
 
 

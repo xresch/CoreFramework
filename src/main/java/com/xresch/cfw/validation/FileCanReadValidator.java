@@ -34,7 +34,7 @@ public class FileCanReadValidator extends AbstractValidator {
 		}
 		
 		
-		if(file.canRead()){
+		if(file != null && file.canRead()){
 			return true;
 		}else {
 			this.setInvalidMessage("File cannot be read: '"+value+"'");

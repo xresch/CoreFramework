@@ -117,7 +117,7 @@ public class CFW {
 	//##############################################################################
 
 	public static final String REQUEST_ATTR_ID = "requestID";
-	//public static final String REQUEST_ATTR_TEMPLATE = "pageTemplate";
+
 	public static final String REQUEST_ATTR_STARTNANOS = "starttime";
 	public static final String REQUEST_ATTR_ENDNANOS = "endtime";
 	
@@ -325,8 +325,7 @@ public class CFW {
 		for(CFWObject object : objectArray) {
 			CFW.Registry.API.addAll(object.getAPIDefinitions());
 		}
-		//System.out.println("============ API Registry Entries =============");
-		//System.out.println(CFW.Registry.API.getJSONArray());
+
 	}
 	
 	

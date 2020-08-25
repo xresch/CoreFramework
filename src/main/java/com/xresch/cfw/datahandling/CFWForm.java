@@ -95,7 +95,6 @@ public class CFWForm extends HierarchicalHTMLItem {
 		
 		//---------------------------
 		// Create Submit Button
-		//html.append("<input id=\""+formID+"-submitButton\" type=\"button\" onclick=\""+onclick+"\" class=\"form-control btn-primary mt-2\" value=\""+submitLabel+"\">");
 		html.append("<button id=\""+formID+"-submitButton\" type=\"button\" onclick=\""+onclick+"\" class=\"form-control btn-primary mt-2\">"+submitLabel+"</button>");
 		
 		//---------------------------

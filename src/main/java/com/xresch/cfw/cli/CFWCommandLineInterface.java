@@ -53,38 +53,6 @@ public abstract class CFWCommandLineInterface {
 
 	
 	/***********************************************************
-	 * Before resolving all the arguments, first set the log 
-	 * levels if specified.
-	 * 
-	 ***********************************************************/
-//	protected void loadLogLevels(String[] argArray) {
-//		
-//		// Load default values and overwrite if specified
-//		String consoleLevel = this.getValue(CONFIG_LOGLEVEL_CONSOLE).toUpperCase();
-//		String fileLevel = this.getValue(CONFIG_LOGLEVEL_FILE).toUpperCase();
-//		
-//		for(String argument : argArray){
-//			if(argument.startsWith(CONFIG_LOGLEVEL_CONSOLE)){
-//				consoleLevel = argument.split("=")[1].toUpperCase();
-//			}
-//			if(argument.startsWith(CONFIG_LOGLEVEL_FILE)){
-//				fileLevel = argument.split("=")[1].toUpperCase();
-//			}
-//		}
-//		
-//		LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
-//		Configuration config = ctx.getConfiguration();
-//		
-//		ConsoleAppender consoleAppender = (ConsoleAppender)config.getAppender("CONSOLE");
-//		ThresholdFilter consoleFilter = ThresholdFilter.createFilter(Level.getLevel(consoleLevel), Result.ACCEPT, Result.DENY);
-//		consoleAppender.addFilter(consoleFilter);
-//		
-//		RollingFileAppender fileAppender = (RollingFileAppender)config.getAppender("ROLLING_FILE");
-//		ThresholdFilter fileFilter = ThresholdFilter.createFilter(Level.getLevel(fileLevel), Result.ACCEPT, Result.DENY);
-//		fileAppender.addFilter(fileFilter);
-//	}
-	
-	/***********************************************************
 	 * Resolves the command line arguments and stores them in
 	 * the internal argument list.
 	 * 
@@ -145,55 +113,6 @@ public abstract class CFWCommandLineInterface {
 		resolveArguments(args);
 	}
 	
-//	/***********************************************************
-//	 * Resolves the arguments from a file and stores them in
-//	 * the internal argument list.
-//	 * 
-//	 * @param configFilePath the path of the config file
-//	 * @throws ArgumentsException 
-//	 * 
-//	 ***********************************************************/
-//	private static void readArgumentsFromFile(String configFilePath) throws ArgumentsException {
-//		ArrayList<String> argArrayList = new ArrayList<String>();
-//		
-//		//-------------------------------------------
-//		// Read config File
-//		BufferedReader bf = null;
-//		try {
-//			bf = new BufferedReader(new FileReader(configFilePath));
-//			
-//			boolean hasMoreLines = true;
-//			while(hasMoreLines){
-//			 
-//				String line = bf.readLine();
-//				
-//				if(line != null && !line.trim().isEmpty() && !line.startsWith("#")){
-//					argArrayList.add(line);
-//				}else{
-//					if(line == null) hasMoreLines = false;
-//				}
-//			}
-//			
-//			//-------------------------------------------
-//			// overwrite CommandLine-Arguments
-//			resolveArguments(argArrayList);
-//			
-//		} catch (FileNotFoundException e) {
-//			new CFWLog(logger).severe("specified config file not found:"+e.getMessage());
-//		} catch (IOException e) {
-//			new CFWLog(logger).severe("error while reading config file:"+e.getMessage());
-//		} finally{
-//			if(bf != null){
-//				try {
-//					bf.close();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//		
-//	}
-
 	/***********************************************************
 	 * Print a usage listing with supported arguments.
 	 * 

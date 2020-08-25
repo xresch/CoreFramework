@@ -136,43 +136,6 @@ public class Space extends CFWObject {
 	 * 
 	 **************************************************************************************/
 	public void initDB() {
-		
-//		Integer spacegroupid = CFW.DB.SpaceGroups.selectByName(SpaceGroup.CFW_SPACEGROUP_TESTSPACE).id();
-//		
-//		//-----------------------------------------
-//		// 
-//		//-----------------------------------------
-//		
-//		if(!CFW.DB.Spaces.checkSpaceExists("MySpace")) {
-//			CFW.DB.Spaces.create(
-//					new Space(spacegroupid, "MySpace")
-//						.description("A space for spacing away.")
-//						.isDeletable(true)
-//						.isRenamable(true)
-//			);
-//		}
-//		
-//		Space parentSpace = CFW.DB.Spaces.selectByName("MySpace");
-//		//-----------------------------------------
-//		// 
-//		//-----------------------------------------
-//		for(int i = 0; i < 11; i++) {
-//			String spacename = "SubSpace"+i;
-//			if(!CFW.DB.Spaces.checkSpaceExists(spacename)) {
-//				
-//				Space subSpace = new Space(spacegroupid, spacename)
-//					.description("A sub space for spacing away.")
-//					.isDeletable(true)
-//					.isRenamable(true);
-//				
-//				if(subSpace.setParent(parentSpace)) {
-//					CFW.DB.Spaces.create(subSpace);
-//					parentSpace = CFW.DB.Spaces.selectByName(spacename);
-//					System.out.println(parentSpace.getFieldsAsKeyValueString());
-//				}
-//			}
-//
-//		}
 				
 	}
 	

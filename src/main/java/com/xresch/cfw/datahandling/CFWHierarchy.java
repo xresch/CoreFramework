@@ -21,7 +21,7 @@ import com.xresch.cfw.utils.CFWArrayUtils;
 public class CFWHierarchy<T extends CFWObject> {
 	
 	private static Logger logger = CFWLog.getLogger(CFWHierarchy.class.getName());
-	public static final int maxLevels = 32;
+	public static final int MAX_LEVELS = 32;
 	
 	private static String[] labels =  new String [] { 
 			  "P0", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9",
@@ -71,10 +71,10 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		//-------------------------------
 		// Argument check
-		if(levels > maxLevels) {
+		if(levels > MAX_LEVELS) {
 			new CFWLog(logger)
 				.method("setHierarchyLevels")
-				.severe("Cannot set levels to '"+levels+"'. The maximum allowed levels is: "+maxLevels, new IllegalArgumentException());
+				.severe("Cannot set levels to '"+levels+"'. The maximum allowed levels is: "+MAX_LEVELS, new IllegalArgumentException());
 			
 			return;
 		}
@@ -301,13 +301,13 @@ public class CFWHierarchy<T extends CFWObject> {
 		Integer parentPrimaryValue = root.getPrimaryKey();
 		String[] finalResultFields = CFWArrayUtils.merge(parentFieldnames, resultFields);
 		
-		//String queryCacheID = root.getClass()+parentPrimaryFieldname+parentPrimaryValue+Arrays.deepToString(finalResultFields);
+		//Check if caching makes sense. e.g. String queryCacheID = root.getClass()+parentPrimaryFieldname+parentPrimaryValue+Arrays.deepToString(finalResultFields);
 		
 		//----------------------------------------------
 		// if primaryValue is null fetch All
 		if(parentPrimaryValue == null) {
 			CFWSQL statement = root.select(finalResultFields);
-					//.queryCache(CFWHierarchy.class, queryCacheID);
+
 			
 			if(partialWhereClauseFilter != null) {
 				statement
@@ -329,11 +329,6 @@ public class CFWHierarchy<T extends CFWObject> {
 			.where(parentPrimaryFieldname, parentPrimaryValue)
 			.getFirstObject();
 		
-//		System.out.println("=================== Parent ==================");
-//		System.out.println(parent.getFieldsAsKeyValueString());
-//		
-//		System.out.println("*** Parent Labels ***");
-//		System.out.println(Arrays.toString(getParentFieldnames(root)));
 		
 		//---------------------------------
 		// Create Select Statement, union
@@ -341,7 +336,6 @@ public class CFWHierarchy<T extends CFWObject> {
 		Integer parentValue = null;
 		
 		CFWSQL statement = root.select(finalResultFields)
-				//.queryCache(CFWHierarchy.class, queryCacheID)
 				.where(parentPrimaryFieldname, parentPrimaryValue)
 				.append(partialWhereClauseFilter)	
 				.union()
