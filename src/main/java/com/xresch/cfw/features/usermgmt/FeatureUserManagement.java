@@ -53,7 +53,7 @@ public class FeatureUserManagement extends CFWAppFeature {
 
 	@Override
 	public void initializeDB() {
-		
+		//nothing to do
 	}
 
 	@Override
@@ -64,9 +64,9 @@ public class FeatureUserManagement extends CFWAppFeature {
 	}
 
 	@Override
-	public void startTasks() {}
+	public void startTasks() { /* nothing to do */ }
 
 	@Override
-	public void stopFeature() {}
+	public void stopFeature() { /* nothing to do */ }
 
 }

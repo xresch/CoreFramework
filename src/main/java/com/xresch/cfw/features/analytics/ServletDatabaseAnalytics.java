@@ -29,10 +29,6 @@ public class ServletDatabaseAnalytics extends HttpServlet
 
 	private static final long serialVersionUID = 1L;
 
-	public ServletDatabaseAnalytics() {
-	
-	}
-	
 	/*****************************************************************
 	 *
 	 ******************************************************************/
@@ -96,15 +92,6 @@ public class ServletDatabaseAnalytics extends HttpServlet
 								break;
 								
 		}
-	}
-		
-	/*************************************************************************************
-	 * 
-	 *************************************************************************************/
-	private void getTableRowCount(JSONResponse jsonResponse, HttpServletRequest request) {
-		
-			
-
 	}
 		
 }

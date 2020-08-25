@@ -29,9 +29,6 @@ public class ServletLogin extends HttpServlet
 	
 	private static Logger logger = CFWLog.getLogger(ServletLogin.class.getName());
 	
-	public ServletLogin() {
-	
-	}
 	
 	protected void createLoginPage( HttpServletRequest request, HttpServletResponse response ) {
 		HTMLResponse html = new HTMLResponse("Login");

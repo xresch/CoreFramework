@@ -120,7 +120,7 @@ public class FeatureDashboard extends CFWAppFeature {
 
 	@Override
 	public void startTasks() {
-
+		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -130,15 +130,7 @@ public class FeatureDashboard extends CFWAppFeature {
 	}
 	
 	private void registerDashboardManual() {
-		
-		// Creating Dashboards
-		//   The Dashboard List
-		//   Editing a Dashboard
-		//   Adding Widgets
-		
-		// Widgets
-		//   Default Widgets
-		
+				
 		//----------------------------------
 		//
 		ROOT_MANUAL_PAGE.addChild(

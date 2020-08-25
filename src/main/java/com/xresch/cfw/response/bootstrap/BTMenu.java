@@ -17,8 +17,6 @@ public class BTMenu extends HierarchicalHTMLItem {
 	private UserMenuItem userMenuItem = null;
 	private ArrayList<MenuItem> rightMenuItems = new ArrayList<MenuItem>();
 	
-	public BTMenu() {
-	}
 	
 	/***********************************************************************************
 	 * Create the HTML representation of this item.

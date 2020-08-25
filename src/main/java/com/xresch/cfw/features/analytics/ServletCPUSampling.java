@@ -32,9 +32,6 @@ public class ServletCPUSampling extends HttpServlet
 	private static String EARLIEST = "EARLIEST";
 	private static String LATEST = "LATEST";
 	
-	public ServletCPUSampling() {
-	
-	}
 	
 	/*****************************************************************
 	 *

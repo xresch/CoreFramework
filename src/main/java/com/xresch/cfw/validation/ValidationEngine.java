@@ -15,12 +15,6 @@ public class ValidationEngine {
 	private ArrayList<IValidator> validatorArray = new ArrayList<IValidator>();
 	private String invalidMessages = "";
 	
-	//####################################################################################
-	// CONSTRUCTORS
-	//####################################################################################
-	public ValidationEngine(){
-		
-	}
 	
 	//####################################################################################
 	// CLASS METHODS

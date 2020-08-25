@@ -89,9 +89,6 @@ public class Configuration extends CFWObject {
 		this.addFields(id, name, description, type, value, options, category);
 	}
 	
-	public void initDBSecond() {
-
-	}
 	
 	/**************************************************************************************
 	 * 

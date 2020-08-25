@@ -27,9 +27,6 @@ public class ServletChangePassword extends HttpServlet
 	
 	private static Logger logger = CFWLog.getLogger(ServletChangePassword.class.getName());
 	
-	public ServletChangePassword() {
-	
-	}
 	
 	/*****************************************************************
 	 *

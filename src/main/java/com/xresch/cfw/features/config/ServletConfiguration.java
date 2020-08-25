@@ -33,10 +33,6 @@ public class ServletConfiguration extends HttpServlet
 	
 	private static Logger logger = CFWLog.getLogger(ServletConfiguration.class.getName());
 	
-	public ServletConfiguration() {
-	
-	}
-	
 	/*****************************************************************
 	 *
 	 ******************************************************************/

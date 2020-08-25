@@ -13,8 +13,6 @@ public class LinkedProperties extends Properties {
 	
 	private final HashSet<Object> keys = new LinkedHashSet<Object>();
 
-    public LinkedProperties() {
-    }
 
     public Iterable<Object> orderedKeys() {
         return Collections.list(keys());

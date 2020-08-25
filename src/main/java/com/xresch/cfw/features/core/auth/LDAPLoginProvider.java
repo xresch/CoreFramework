@@ -21,8 +21,6 @@ import com.xresch.cfw.features.usermgmt.User.UserFields;
  **************************************************************************************************************/
 public class LDAPLoginProvider implements LoginProvider {
 
-	public LDAPLoginProvider() {}
-	
 	@Override
 	public User checkCredentials(String username, String password) {
 

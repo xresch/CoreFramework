@@ -61,12 +61,12 @@ public class FeatureContextSettings extends CFWAppFeature {
 
 	@Override
 	public void startTasks() {
-
+		// nothing to do
 	}
 
 	@Override
 	public void stopFeature() {
-
+		// nothing to do
 	}
 
 }

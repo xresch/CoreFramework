@@ -33,7 +33,9 @@ public class WidgetList extends WidgetDefinition {
 	}
 
 	@Override
-	public void fetchData(HttpServletRequest request, JSONResponse response, JsonObject settings) { }
+	public void fetchData(HttpServletRequest request, JSONResponse response, JsonObject settings) {
+		// nothing to do
+	}
 
 	@Override
 	public ArrayList<FileDefinition> getJavascriptFiles() {

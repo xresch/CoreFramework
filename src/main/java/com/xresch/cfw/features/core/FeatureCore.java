@@ -159,6 +159,7 @@ public class FeatureCore extends CFWAppFeature {
 
 	@Override
 	public void stopFeature() {
+		// nothing to do
 	}
 
 }

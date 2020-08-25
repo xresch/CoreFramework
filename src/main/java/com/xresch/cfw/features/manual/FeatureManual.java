@@ -77,12 +77,12 @@ public class FeatureManual extends CFWAppFeature {
 
 	@Override
 	public void startTasks() {
-
+		// nothing to do
 	}
 
 	@Override
 	public void stopFeature() {
-		// TODO Auto-generated method stub
+		// nothing to do
 		
 	}
 	

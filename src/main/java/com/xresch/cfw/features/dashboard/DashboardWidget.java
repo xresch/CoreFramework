@@ -121,20 +121,7 @@ public class DashboardWidget extends CFWObject {
 		this.setTableName(TABLE_NAME);
 		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titleFontsize, contentFontsize, footer, bgcolor, fgcolor, settings);
 	}
-		
-	/**************************************************************************************
-	 * Migrate Table
-	 **************************************************************************************/
-	public void migrateTable() {
-		
-	}
-	
-	/**************************************************************************************
-	 * 
-	 **************************************************************************************/
-	public void updateTable() {
-						
-	}
+
 	
 	/**************************************************************************************
 	 * 

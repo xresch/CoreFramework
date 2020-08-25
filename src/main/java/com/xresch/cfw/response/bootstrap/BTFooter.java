@@ -10,9 +10,7 @@ public class BTFooter extends HierarchicalHTMLItem {
 	
 	private String label = "&nbsp;";
 	
-	public BTFooter() {
-	}
-	
+
 	/***********************************************************************************
 	 * Create the HTML representation of this item.
 	 * @return String html for this item. 

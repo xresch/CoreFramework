@@ -69,7 +69,7 @@ public class FeatureAPI extends CFWAppFeature {
 
 	@Override
 	public void startTasks() {
-
+		// nothing to start
 	}
 
 	@Override

@@ -30,9 +30,6 @@ public class ServletAPILogin extends HttpServlet
 	
 	private static Logger logger = CFWLog.getLogger(ServletAPILogin.class.getName());
 	
-	public ServletAPILogin() {
-	
-	}
 	
 	/*****************************************************************
 	 *

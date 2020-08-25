@@ -22,10 +22,7 @@ public class ServletManual extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;
-	
-	public ServletManual() {
-	
-	}
+
 	
 	/*****************************************************************
 	 *

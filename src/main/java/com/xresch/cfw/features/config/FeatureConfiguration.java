@@ -239,10 +239,12 @@ public class FeatureConfiguration extends CFWAppFeature {
 
 	@Override
 	public void startTasks() {
+		// nothing to start
 	}
 
 	@Override
 	public void stopFeature() {
+		// nothing to stop
 	}
 
 }
