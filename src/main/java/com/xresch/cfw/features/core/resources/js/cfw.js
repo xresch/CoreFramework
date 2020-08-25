@@ -1263,7 +1263,7 @@ function cfw_addToast(toastTitle, toastBody, style, delay){
 		style = "primary";
 	}
 	
-	var clazz = style;
+	var clazz;
 	switch(style.toLowerCase()){
 	
 		case "success": clazz = "success"; break;
@@ -1314,7 +1314,6 @@ function cfw_addToast(toastTitle, toastBody, style, delay){
  *************************************************************************************/
 function cfw_showModal(modalTitle, modalBody, jsCode){
 	
-	var body = $("body");
 	var modalID = 'cfw-default-modal';
 	
 	var defaultModal = $("#"+modalID);
@@ -1392,7 +1391,6 @@ function cfw_showModal(modalTitle, modalBody, jsCode){
  *************************************************************************************/
 function cfw_showSmallModal(modalTitle, modalBody, jsCode){
 	
-	var body = $("body");
 	var modalID = 'cfw-small-modal';
 	
 	var smallModal = $("#"+modalID);
@@ -1479,8 +1477,6 @@ function cfw_showSupportInfoModal(){
 	// Javascript Data
 	//=========================================
 	modalContent.append('<h2>Javascript Data</h2>');
-
-	var jsData = [JSDATA];
 	
 	var rendererParams = {
 			data: [JSDATA],

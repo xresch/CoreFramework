@@ -226,16 +226,13 @@ function cfw_cpusampling_printHierarchyDiv(domTarget, element, parentID){
 	GUID += 1;
 	var id = 0;
 	var title = "";
-	var children = [];
 	
 	if(element.signature == undefined){
 		id = element.FK_ID_SIGNATURE;
 		title = GLOBAL_SIGNATURES[element.FK_ID_SIGNATURE].signature;
-		children = GLOBAL_SIGNATURES[element.FK_ID_SIGNATURE].children;
 	}else{
 		id = element.id;
 		title = element.signature;
-		children = element.children;
 	}	
 	
 	//-------------------------------------
@@ -300,12 +297,8 @@ function cfw_cpusampling_printChildren(domElement){
 	var titleLink = $(domElement);
 	if(titleLink.attr('data-recursive') == "true") return;
 	var guid = titleLink.attr('data-guid');
-	var parentID = titleLink.attr('data-parentid');
 	var signatureID = titleLink.attr('data-signatureid');
 	
-//	console.log("guid-"+guid);
-//	console.log("parentID-"+parentID);
-//	console.log("signatureID-"+signatureID);
 	
 	var domTarget = $("#children-of-"+guid);
 	var element = GLOBAL_SIGNATURES[signatureID];
@@ -338,8 +331,6 @@ function cfw_cpusampling_navigateChildren(e, domElement){
 	
 	var elementLink = $(domElement);
 	var guid = elementLink.attr('data-guid');
-	var parentID = elementLink.attr('data-parentid');
-	var signatureID = elementLink.attr('data-signatureid');
 	
 	var elementChildren = $("#children-of-"+guid);
 	
@@ -429,9 +420,7 @@ function cfw_cpusampling_collapseChildren(domElement){
 	
 	var titleLink = $(domElement);
 	var guid = titleLink.attr('data-guid');
-	var parentID = titleLink.attr('data-parentid');
-	var signatureID = titleLink.attr('data-signatureid');
-	
+
 	var domTarget = $("#children-of-"+guid);
 
 	if(domTarget.css('display') == "none"){
