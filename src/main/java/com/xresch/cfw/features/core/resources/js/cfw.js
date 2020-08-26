@@ -1492,7 +1492,6 @@ function cfw_showSupportInfoModal(){
 			},
 		};
 	
-	
 	var result = CFW.render.getRenderer('table').render(rendererParams);
 	modalContent.append(result);
 	
