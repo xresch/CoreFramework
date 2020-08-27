@@ -1,6 +1,8 @@
 package com.xresch.cfw.features.dashboard;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
@@ -10,10 +12,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
+import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.usermgmt.User;
@@ -478,7 +482,12 @@ public class CFWDBDashboard {
 		return count > 0;
 	}
 	
-	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public static boolean hasUserAccessToDashboard(int dashboardID) {
+		return hasUserAccessToDashboard(dashboardID+"");
+	}
 	/***************************************************************
 	 * 
 	 ***************************************************************/
@@ -551,14 +560,37 @@ public class CFWDBDashboard {
 			return new AutocompleteResult();
 		}
 		
-		return new Dashboard()
+		ResultSet resultSet = new Dashboard()
 			.queryCache(CFWDBDashboard.class, "autocompleteDashboard")
-			.select(DashboardFields.PK_ID.toString(),
-					DashboardFields.NAME.toString())
-			.whereLike(DashboardFields.NAME.toString(), "%"+searchValue+"%")
+			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+			.select(DashboardFields.PK_ID,
+					DashboardFields.NAME)
+			.whereLike(DashboardFields.NAME, "%"+searchValue+"%")
 			.limit(maxResults)
-			.getAsAutocompleteResult(DashboardFields.PK_ID.toString(), 
-					DashboardFields.NAME.toString());
+			.getResultSet();
+		
+		//------------------------------------
+		// Filter by Access
+		AutocompleteList list = new AutocompleteList();
+		try {
+			while(resultSet != null && resultSet.next()) {
+				int id = resultSet.getInt("PK_ID");
+				if(hasUserAccessToDashboard(id)) {
+					String name = resultSet.getString("NAME");
+					String owner = resultSet.getString("OWNER");
+					list.addItem(id, name, "Owner: "+owner);
+				}
+			}
+		} catch (SQLException e) {
+			new CFWLog(logger)
+				.method("autocompleteDashboard")
+				.severe("Error while autocomplete dashboards.", new Throwable());
+		} finally {
+			CFWDB.close(resultSet);
+		}
+
+		
+		return new AutocompleteResult(list);
 		
 	}
 	
