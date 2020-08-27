@@ -211,7 +211,12 @@ public class FeatureManual extends CFWAppFeature {
 					.addPermission(PERMISSION_ADMIN_MANUAL)
 					.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "manual_dev_quick_cfwfields.html")
 				);
-		
+		quickstart.addChild(
+				new ManualPage("Autocomplete Fields")
+					.faicon("fas fa-magic")
+					.addPermission(PERMISSION_ADMIN_MANUAL)
+					.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "manual_dev_quick_autocomplete.html")
+				);
 		quickstart.addChild(
 				new ManualPage("Accessing Databases")
 					.faicon("fas fa-database")

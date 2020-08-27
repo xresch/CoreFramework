@@ -1,0 +1,237 @@
+
+<div id="manual-toc"></div>
+
+<h2>Introduction</h2>
+<p>
+The CFWField provides out of the box a autocomplete functionality, which can be used to give the user a 
+list of suggestions to choose from. Here you will find a list of various examples how you can create
+autocomplete fields.
+</p>
+
+<h2>Default Autocomplete</h2>
+<p>
+Creates a text field with a default autocomplete handler.
+The CFWAutocompleteHandlerDefault will start searching from a single character. 
+It creates a query on the table searching with a LIKE "%searchValue%" statement through the column of the associated field.
+By default it limits the number of results to 10, what can be adjusted through the constructor or with setMasResults().
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; title = CFWField.newString(FormFieldType.TEXT, QuoteFields.QUOTE_TITLE)
+		.setDescription("The title of the quote.")
+		.addValidator(new LengthValidator(3, 512))
+		.setAutocompleteHandler( new CFWAutocompleteHandlerDefault(this.getClass(), 5));
+</code>
+</pre>
+
+
+<h2>Tags Field As String with Custom Autocomplete</h2>
+<p>
+The following creates a tags field that will convert the tags to a comma separated string of tags.
+It has a custom autocomplete handler that returns a maximum of 5 results.
+The LinkedHashMap returned will contain the values as "key/label" pairs.
+The default amount of tags you can set is 128.
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; tags = CFWField.newString(FormFieldType.TAGS, "TAGS")
+		.setValue("foo,test,bar,bla")
+		.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
+			public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+				AutocompleteList list = new AutocompleteList();
+				for(int i = 0; i &lt; this.getMaxResults(); i++ ) {
+					String tag = "Tag_"+inputValue+"_"+i;
+					list.addItem(tag);
+				}
+				return array;
+			}
+		});
+</code>
+</pre>
+
+<h2>Tags As Array Autocomplete from DB wit maximum 10 Tags</h2>
+<p>
+The following creates a tags field that will convert the tags to an object array and saves it as well to an ARRAY column to the database.
+The autocomplete will get the Tags from the DB interface. The use case this example was fetched from has the tags cached internally to reduce query executions.
+</p>
+<pre>
+<code>private CFWField&lt;Object[]&gt; tags = CFWField.newArray(FormFieldType.TAGS, QuoteFields.TAGS)
+		.setDescription("The tags for this quote.")
+		.addAttribute("maxTags", "20")
+		.setAutocompleteHandler( new CFWAutocompleteHandler(10) {
+			public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+					
+				AutocompleteList list = new AutocompleteList();
+				for(String tag : OM.DB.Quotes.getTags()) {
+					if(tag.toLowerCase().contains(inputValue.toLowerCase())) {
+						list.addItem(tag);
+						if(list.size() &gt;= this.getMaxResults()) {
+							break;
+						}
+					}
+				}
+				return new AutocompleteResult(list);
+			}
+		});
+</code>
+</pre>
+
+<h2>Advanced Tag Selector</h2>
+<p>
+With the tag selector you can provide a field where the user can enter a search string and select an object from a database.
+The selector will use a label for the tag, but will hold a key behind the tag, like an ID.<br/>
+This is useful for example to select a User by name from the database but getting the ID of the user for processing.
+Tag selector values will be converted to a LinkedHashMap&lt;String,String&gt; with "key/label" combinations.
+When saved to the DB it will be converted to a JSON string, why the fieldname has to start with "JSON".
+To create a tags selector field always use CFWField.newTagsSelector();<br/>
+The following example shows how to create a tags selector for users.
+</p>
+<pre>
+<code>private CFWField&lt;LinkedHashMap&lt;String,String&gt;&gt; shareWithUsers = 
+	CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_USERS)
+		.setLabel("Share with Users")
+		.setDescription("Share this dashboard only with specific users.")
+		.addAttribute("maxTags", "50")
+		.setValue(null)
+		.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+			public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+				return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+			}
+		});
+
+public static AutocompleteResult autocompleteUser(String searchValue, int maxResults) {
+	
+	if(Strings.isNullOrEmpty(searchValue)) {
+		return new LinkedHashMap&lt;Object, Object&gt;();
+	}
+	
+	return new User()
+		.queryCache(CFWDBUser.class, "autocompleteUser")
+		.select(UserFields.PK_ID.toString(),
+				UserFields.USERNAME.toString())
+		.whereLike(UserFields.USERNAME.toString(), "%"+searchValue+"%")
+		.and().not().is(UserFields.PK_ID, CFW.Context.Request.getUser().id())
+		.limit(maxResults)
+		.getAsAutocompleteResult(UserFields.PK_ID.toString(), 
+							UserFields.USERNAME.toString());
+	
+}
+</code>
+</pre>
+
+<h2>Advanced Autocomplete Example</h2>
+<p>
+The AutcompleteResult class allows you to add multiple AutocompleteLists and a HTML description below the suggestions.
+For each autocomplete item, you can also define a description that will be shown to the user.
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; autocomplete = CFWField.newString(FormFieldType.TEXT, "AUTOCOMPLETE")
+	.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
+		
+		public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+			AutocompleteList list = new AutocompleteList();
+			for(int i = 0; i &lt; 10; i++ ) {
+				String tag = "Test_"+inputValue+"_"+i;
+				list.addItem(tag);
+			}
+			
+			AutocompleteList list2 = new AutocompleteList();
+			for(int i = 0; i &lt; 10; i++ ) {
+				String tag = "Foobar_"+inputValue+"_"+i;
+				list2.addItem(tag, tag, "Some example description that should be added.");
+			}
+			
+			return new AutocompleteResult(list)
+					.addList(list2)
+					.setHTMLDescription("&lt;p&gt;This is your HTML Description. Feel free to add some stuff like a list:&lt;p &lt;ol&gt;&lt;li&gt;Do this&lt;/li&gt;&lt;li&gt;Do that&lt;/li&gt;&lt;li&gt;Do even more...&lt;/li&gt;&lt;/ol&gt;");
+		}
+	});
+</code>
+</pre>
+
+<h2>Advanced Autocomplete: Multiple Lists and Description</h2>
+<p>
+The AutcompleteResult class allows you to add multiple AutocompleteLists and a HTML description below the suggestions.
+For each autocomplete item, you can also define a description that will be shown to the user.
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; autocomplete = CFWField.newString(FormFieldType.TEXT, "AUTOCOMPLETE")
+	.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
+		
+		public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+			AutocompleteList list = new AutocompleteList();
+			for(int i = 0; i &lt; 10; i++ ) {
+				String tag = "Test_"+inputValue+"_"+i;
+				list.addItem(tag);
+			}
+			
+			AutocompleteList list2 = new AutocompleteList();
+			for(int i = 0; i &lt; 10; i++ ) {
+				String tag = "Foobar_"+inputValue+"_"+i;
+				list2.addItem(tag, tag, "Some example description that should be added.");
+			}
+			
+			return new AutocompleteResult(list)
+					.addList(list2)
+					.setHTMLDescription("&lt;p&gt;This is your HTML Description. Feel free to add some stuff like a list:&lt;p &lt;ol&gt;&lt;li&gt;Do this&lt;/li&gt;&lt;li&gt;Do that&lt;/li&gt;&lt;li&gt;Do even more...&lt;/li&gt;&lt;/ol&gt;");
+		}
+	});
+</code>
+</pre>
+
+<h2>Advanced Autocomplete: Replace and Append</h2>
+<p>
+By default the autocomplete functionality will override the current value of the field. 
+You can change this behaviour to the following other options:
+</p>
+<ul>
+	<li><strong>Replace:</strong> Replaces a defined string with another.</li>
+	<li><strong>Append:</strong> Appends the value to the current value.</li>
+</ul>
+
+<h3>Replace</h3>
+<p>
+The replace method is useful in case you only want to change the last word or line of a field.
+Use the function AutocompleteItem.setMethodReplace(stringToReplace) to use this method and define what should be replaced.</br>
+The following example will replace the last word with UPPERCASE:  
+</p>
+<pre>
+<code>AutocompleteList list = new AutocompleteList();
+
+for(int i = 0; i &lt; 5; i++ ) {
+	String[] splitted = inputValue.split(" ");
+	String lastWord = splitted[splitted.length-1];
+	
+	list.addItem(
+		new AutocompleteItem(
+			lastWord.toUpperCase()+i, 
+			"Replace with "+lastWord.toUpperCase()+i, 
+			"Replace last word with uppercase.")
+				.setMethodReplace(lastWord) 
+	);
+}
+</code>
+</pre>
+
+
+<h3>Append</h3>
+<p>
+The append method is useful in case you want to add the suggested value at the end of the current value.
+Use the function AutocompleteItem..setMethodAppend() to use this method.</br>
+The following example will append the last word as UPPERCASE:  
+</p>
+<pre>
+<code>AutocompleteList list2 = new AutocompleteList();
+for(int i = 0; i &lt; 5; i++ ) {
+	String[] splitted = inputValue.split(" ");
+	String lastWord = splitted[splitted.length-1];
+	
+	list2.addItem(
+			new AutocompleteItem(
+				lastWord.toUpperCase()+i, 
+				"Append "+lastWord.toUpperCase()+i, 
+				"Append last word as uppercase.")
+					.setMethodAppend()
+		);
+}
+
+</code>
+</pre>

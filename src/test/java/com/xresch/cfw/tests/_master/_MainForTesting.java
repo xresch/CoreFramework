@@ -3,6 +3,8 @@ package com.xresch.cfw.tests._master;
 import java.util.Locale;
 import java.util.logging.Logger;
 
+import org.junit.Test;
+
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppInterface;
 import com.xresch.cfw._main.CFWApplicationExecutor;
@@ -20,8 +22,10 @@ public class _MainForTesting implements CFWAppInterface {
 	private static final Logger logger = CFWLog.getLogger(_MainForTesting.class.getName());
 	protected static CFWLog log = new CFWLog(logger);
 	
-    public static void main( String[] args ) throws Exception
+	@Test
+    public void startApp() throws Exception
     {
+		String[] args = new String[] {};
     	_MainForTesting main = new _MainForTesting();
     	CFW.initializeApp(main, args);
         //###################################################################

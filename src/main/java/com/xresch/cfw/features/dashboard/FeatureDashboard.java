@@ -185,6 +185,14 @@ public class FeatureDashboard extends CFWAppFeature {
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_widgets_staticwidgets.html")
 			);
 		
+		widgets.addChild(
+				new ManualPage("Timeframe Widgets")
+					.faicon("fas fa-clock")
+					.addPermission(PERMISSION_DASHBOARD_VIEWER)
+					.addPermission(PERMISSION_DASHBOARD_CREATOR)
+					.addPermission(PERMISSION_DASHBOARD_ADMIN)
+					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_widgets_timeframe.html")
+			);
 		//----------------------------------
 		//
 		ROOT_MANUAL_PAGE.addChild(

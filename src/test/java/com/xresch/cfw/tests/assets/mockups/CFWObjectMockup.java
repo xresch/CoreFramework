@@ -135,6 +135,8 @@ public class CFWObjectMockup extends CFWObject{
 							.setHTMLDescription("<p>Example of autocomplete methods replace and append.</ol>");
 				}
 			});
+		
+		
 	public CFWObjectMockup() {
 		
 		initialize();
