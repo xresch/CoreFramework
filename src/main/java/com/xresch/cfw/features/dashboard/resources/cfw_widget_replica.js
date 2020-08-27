@@ -58,8 +58,8 @@
 								    var subWidgetObject = $(widgetInstance).data('widgetObject');
 								    
 								    if(!CFW_DASHBOARD_EDIT_MODE){
-								    	grid.movable('#'+widgetObject.guid, false);
-								    	grid.resizable('#'+widgetObject.guid, false);
+								    	grid.movable('#'+subWidgetObject.guid, false);
+								    	grid.resizable('#'+subWidgetObject.guid, false);
 								    }
 								    //----------------------------
 								    // Update Data
