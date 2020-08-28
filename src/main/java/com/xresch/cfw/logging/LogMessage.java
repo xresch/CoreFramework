@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
  **************************************************************************************************************/
 public class LogMessage {
 	
+	protected boolean isMinimal = false;
 	protected long starttimeNanos = -1;
 	protected long endtimeNanos = -1;
 	protected long durationMillis = -1;
@@ -37,6 +38,7 @@ public class LogMessage {
 	
 	protected LogMessage(CFWLog log) {
 		
+		this.isMinimal = log.isMinimal;
 		this.starttimeNanos = log.starttimeNanos;
 		this.endtimeNanos = log.endtimeNanos;
 		this.durationMillis = log.durationMillis;

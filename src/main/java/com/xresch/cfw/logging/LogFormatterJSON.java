@@ -19,19 +19,33 @@ public class LogFormatterJSON extends Formatter {
 		
 		StringBuilder buf = new StringBuilder(1000);
 		LogMessage log = (LogMessage)rec.getParameters()[0];
+		
+
+		
 		buf.append("{");
+
 		
 			//-------------------------
 			// Timestamp
 			buf.append("\"timestamp\":\"");
 			buf.append(CFW.Time.formatDate(new Date(rec.getMillis())));
 			buf.append("\"");
-			
+						
 			//-------------------------
 			// Level
 			buf.append(", \"level\":\"");
 			buf.append(rec.getLevel());
 			buf.append("\"");
+			
+			//-------------------------
+			// Check is Plain
+			if(log.isMinimal) {
+				buf.append(", \"message\":\"");
+				buf.append(CFW.JSON.escapeString(rec.getMessage()));
+				buf.append("\"");
+				buf.append("}\n");
+				return rec.getMessage();
+			}
 			
 			//-------------------------
 			// user
@@ -92,7 +106,7 @@ public class LogFormatterJSON extends Formatter {
 			//-------------------------
 			// message
 			buf.append(", \"message\":\"");
-			buf.append(rec.getMessage());
+			buf.append(CFW.JSON.escapeString(rec.getMessage()));
 			buf.append("\"");
 			
 			//-------------------------

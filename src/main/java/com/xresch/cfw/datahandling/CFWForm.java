@@ -2,12 +2,14 @@ package com.xresch.cfw.datahandling;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
@@ -19,6 +21,8 @@ import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
 public class CFWForm extends HierarchicalHTMLItem {
+	
+	private static Logger logger = CFWLog.getLogger(CFWForm.class.getName());
 	
 	public static final String FORM_ID = "cfw-formID";
 	private String formID = "";
@@ -124,8 +128,8 @@ public class CFWForm extends HierarchicalHTMLItem {
 		if(!fields.containsKey(field.getName())) {
 			fields.put(field.getName(), field);
 		}else {
-			System.out.println("CFWField.addField()");
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The field with name '"+field.getName()+"' was already added to the object.");
+			new CFWLog(logger)
+				.warn("The field with name '"+field.getName()+"' was already added to the object.", new Throwable());
 		}
 		
 		this.addChild(field);

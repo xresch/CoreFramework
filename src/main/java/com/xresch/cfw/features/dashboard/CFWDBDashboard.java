@@ -251,7 +251,6 @@ public class CFWDBDashboard {
 		}
 		
 		query.custom(")");
-		//System.out.println(query.getStatementString());
 	
 		return query
 			.custom("ORDER BY NAME")
@@ -417,27 +416,30 @@ public class CFWDBDashboard {
 				// Create Dashboard
 				Integer newDashboardID = CFW.DB.Dashboards.createGetPrimaryKey(dashboard);
 				if(newDashboardID == null) {
+					new CFWLog(logger)
+						.method("importByJson")
+						.severe("Dashboard '"+dashboard.name()+"' could not be imported.");
 					continue;
 				}
-				System.out.println("after null");
+
 				//-----------------------------
 				// Create Widgets
 				if(dashboardObject.has("widgets")) {
-					System.out.println("after haswidgets");
+					
 					//-----------------------------
 					// Check format
 					if(!dashboardObject.get("widgets").isJsonArray()) {
 						CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
 						continue;
 					}
-					System.out.println("after format check");
+					
 					//-----------------------------
 					// Create Widgets
 					JsonArray widgetsArray = dashboardObject.get("widgets").getAsJsonArray();
 					for(JsonElement widgetElement : widgetsArray) {
-						System.out.println("in loop");
+						
 						if(widgetElement.isJsonObject()) {
-							System.out.println("in isObject");
+							
 							JsonObject widgetObject = widgetElement.getAsJsonObject();
 							//-----------------------------
 							// Map values
@@ -542,7 +544,7 @@ public class CFWDBDashboard {
 		if(editorRoles != null && editorRoles.size() > 0) {
 			for(String roleID : editorRoles.keySet()) {
 				if(CFW.Context.Request.hasRole(Integer.parseInt(roleID)) ) {
-					System.out.println("HAS ROLE!!!!");
+					
 					return true;
 				}
 			}

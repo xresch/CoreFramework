@@ -967,7 +967,7 @@ public class CFWSQL {
 			if(!isQueryCached()) {
 				query.append(partialQuery.getStatementString());
 			}
-			System.out.println("### Values: "+Arrays.toString(partialQuery.values.toArray()));
+			
 			values.addAll(partialQuery.values);
 		}
 		return this;

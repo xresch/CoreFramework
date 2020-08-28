@@ -27,6 +27,7 @@ public class CFWLog {
 	
 	private static boolean isLoggingInitialized = false;
 	
+	protected boolean isMinimal = false;
 	protected long tempStartNanos = -1;
 	protected long starttimeNanos = -1;
 	protected long endtimeNanos = -1;
@@ -81,6 +82,14 @@ public class CFWLog {
 		return this;
 	}
 	
+	/***********************************************************************
+	 * Make the next log minimal. Only the timestamp, level and the message will be
+	 * printed.
+	 ***********************************************************************/
+	public CFWLog minimal(boolean isPlain) {
+		this.isMinimal = isPlain;
+		return this;
+	}
 
 	/***********************************************************************
 	 * Initializes the logging.

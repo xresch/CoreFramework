@@ -63,8 +63,10 @@ public abstract class DBInterface {
 
 			try {
 				if(!con.isClosed()) {
-					counter++;			
-					System.out.println("ForceClose: "+con.getClass());
+					counter++;
+					new CFWLog(logger)
+						.minimal(true)
+						.warn("DBInterface.forceCloseRemainingConnections: "+con.getClass());
 					con.close();
 				}
 				connArray.remove(con);
