@@ -573,7 +573,6 @@ function cfw_dashboard_editWidget(widgetGUID){
 function cfw_dashboard_duplicateWidget(widgetGUID) {
 	var widgetInstance = $('#'+widgetGUID);
 	var widgetObject = widgetInstance.data("widgetObject");
-	var widgetDef = CFW.dashboard.getWidgetDefinition(widgetObject.TYPE);
 	
 	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'widget', type: widgetObject.TYPE, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
 			var newWidgetObject = data.payload;
@@ -716,97 +715,7 @@ function cfw_dashboard_removeWidgetFromGrid(widgetElement) {
 };
 
 
-/************************************************************************************************
- * 
- ************************************************************************************************/
-function cfw_dashboard_createWidgetElement(widgetObject){
-	
-	//---------------------------------------
-	// Merge Data
-	CFW_DASHBOARD_WIDGET_GUID++;
-	var defaultOptions = {
-			guid: 'widget-'+CFW_DASHBOARD_WIDGET_GUID,
-			TITLE: "",
-			TITLE_FONTSIZE: 16,
-			CONTENT_FONTSIZE: 16,
-			FOOTER: "",
-			BGCOLOR: "",
-			FGCOLOR: "",
-			JSON_SETTINGS: {}
-	}
-	
-	var merged = Object.assign({}, defaultOptions, widgetObject);
-	
-	//---------------------------------------
-	// Resolve Classes
-	var FGCOLORClass = '';
-	var borderClass = '';
-	if(merged.FGCOLOR != null && merged.FGCOLOR.trim().length > 0){
-		FGCOLORClass = 'text-'+merged.FGCOLOR;
-		borderClass = 'border-'+merged.FGCOLOR;
-	}
-	
-	var BGCOLORClass = '';
-	if(merged.BGCOLOR != null && merged.BGCOLOR.trim().length > 0){
-		BGCOLORClass = 'bg-'+merged.BGCOLOR;
-	}
-	
-	var settingsDisplayClass = 'd-none';
-	if(CFW_DASHBOARD_EDIT_MODE){
-		settingsDisplayClass = '';
-	}
-	
-	var advancedDisplayClass = 'd-none';
-	if(CFW_DASHBOARD_EDIT_MODE_ADVANCED){
-		advancedDisplayClass = '';
-	}
-	
-	var htmlString =
-		'<div class="grid-stack-item-content card d-flex '+BGCOLORClass+' '+FGCOLORClass+'">'
-		+'	<div role="button" class="cfw-dashboard-widget-actionicons '+settingsDisplayClass+'">'
-		+'		<div role="button" class="actionicon-delete '+advancedDisplayClass+'" onclick="cfw_dashboard_removeWidget(\''+merged.guid+'\')"><i class="fas fa-times"></i></div>'
-		+'		<div role="button" class="actionicon-duplicate '+advancedDisplayClass+'" onclick="cfw_dashboard_duplicateWidget(\''+merged.guid+'\')"><i class="fas fa-clone"></i></div>'
-		+'		<div role="button" class="actionicon-edit '+advancedDisplayClass+'" onclick="cfw_dashboard_editWidget(\''+merged.guid+'\')"><i class="fas fa-pen"></i></div>'
-		+'		<div role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-cog"></i></div>'
-		+'		<div class="dropdown-menu">'
-		+'			<a class="dropdown-item" onclick="cfw_dashboard_editWidget(\''+merged.guid+'\')"><i class="fas fa-pen"></i>&nbsp;'+CFWL('cfw_core_edit', 'Edit')+'</a>'
-		+'			<a class="dropdown-item" onclick="cfw_dashboard_duplicateWidget(\''+merged.guid+'\')"><i class="fas fa-clone"></i>&nbsp;'+CFWL('cfw_core_duplicate', 'Duplicate')+'</a>'
-		//'			<div class="dropdown-divider"></div>'
-		+'			<a class="dropdown-item" onclick="cfw_dashboard_removeWidgetConfirmed(\''+merged.guid+'\')"><i class="fas fa-trash"></i>&nbsp;'+CFWL('cfw_core_remove', 'Remove')+'</a>'
-		+'		</div>'
-		+'	</div>'
 
-	if(merged.TITLE != null && merged.TITLE != ''){
-		htmlString += 
-		 '     	  <div class="cfw-dashboard-widget-title border-bottom '+borderClass+'" style="font-size: '+merged.TITLE_FONTSIZE+'px;">'
-		+'		  	<span>'+merged.TITLE+'</span>'
-		+'		  </div>'
-	}
-	
-	if(merged.content != null && merged.content != ''
-	|| merged.FOOTER != null && merged.FOOTER != ''){
-		htmlString += 
-			'<div class="cfw-dashboard-widget-body" style="font-size: '+merged.CONTENT_FONTSIZE+'px;">';
-				if(merged.FOOTER != null && merged.FOOTER != ''){
-					htmlString +=
-					'		 <div class="cfw-dashboard-widget-footer border-top '+borderClass+'">'
-					+			merged.FOOTER
-					+'		  </div>'
-				}
-		htmlString += '</div>';
-	}
-	htmlString += '</div>';
-	
-	var widgetItem = $('<div id="'+merged.guid+'" data-id="'+merged.widgetID+'"  class="grid-stack-item">');
-	widgetItem.append(htmlString);
-	widgetItem.data("widgetObject", merged)
-	
-	if(merged.content != null && merged.content != ''){
-		widgetItem.find('.cfw-dashboard-widget-body').append(merged.content);
-	}
-
-	return widgetItem;
-}
 
 /************************************************************************************************
  * 
@@ -963,6 +872,99 @@ function cfw_dashboard_rerenderWidget(widgetGUID) {
 	cfw_dashboard_createWidgetInstance(widgetObject, false);
 	
 }
+
+/************************************************************************************************
+ * Creates the HTML element and returns it as a jQuery object.
+ ************************************************************************************************/
+function cfw_dashboard_createWidgetHTMLElement(widgetObject){
+	
+	//---------------------------------------
+	// Merge Data
+	CFW_DASHBOARD_WIDGET_GUID++;
+	var defaultOptions = {
+			guid: 'widget-'+CFW_DASHBOARD_WIDGET_GUID,
+			TITLE: "",
+			TITLE_FONTSIZE: 16,
+			CONTENT_FONTSIZE: 16,
+			FOOTER: "",
+			BGCOLOR: "",
+			FGCOLOR: "",
+			JSON_SETTINGS: {}
+	}
+	
+	var merged = Object.assign({}, defaultOptions, widgetObject);
+	
+	//---------------------------------------
+	// Resolve Classes
+	var FGCOLORClass = '';
+	var borderClass = '';
+	if(merged.FGCOLOR != null && merged.FGCOLOR.trim().length > 0){
+		FGCOLORClass = 'text-'+merged.FGCOLOR;
+		borderClass = 'border-'+merged.FGCOLOR;
+	}
+	
+	var BGCOLORClass = '';
+	if(merged.BGCOLOR != null && merged.BGCOLOR.trim().length > 0){
+		BGCOLORClass = 'bg-'+merged.BGCOLOR;
+	}
+	
+	var settingsDisplayClass = 'd-none';
+	if(CFW_DASHBOARD_EDIT_MODE){
+		settingsDisplayClass = '';
+	}
+	
+	var advancedDisplayClass = 'd-none';
+	if(CFW_DASHBOARD_EDIT_MODE_ADVANCED){
+		advancedDisplayClass = '';
+	}
+	
+	var htmlString =
+		'<div class="grid-stack-item-content card d-flex '+BGCOLORClass+' '+FGCOLORClass+'">'
+		+'	<div role="button" class="cfw-dashboard-widget-actionicons '+settingsDisplayClass+'">'
+		+'		<div role="button" class="actionicon-delete '+advancedDisplayClass+'" onclick="cfw_dashboard_removeWidget(\''+merged.guid+'\')"><i class="fas fa-times"></i></div>'
+		+'		<div role="button" class="actionicon-duplicate '+advancedDisplayClass+'" onclick="cfw_dashboard_duplicateWidget(\''+merged.guid+'\')"><i class="fas fa-clone"></i></div>'
+		+'		<div role="button" class="actionicon-edit '+advancedDisplayClass+'" onclick="cfw_dashboard_editWidget(\''+merged.guid+'\')"><i class="fas fa-pen"></i></div>'
+		+'		<div role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-cog"></i></div>'
+		+'		<div class="dropdown-menu">'
+		+'			<a class="dropdown-item" onclick="cfw_dashboard_editWidget(\''+merged.guid+'\')"><i class="fas fa-pen"></i>&nbsp;'+CFWL('cfw_core_edit', 'Edit')+'</a>'
+		+'			<a class="dropdown-item" onclick="cfw_dashboard_duplicateWidget(\''+merged.guid+'\')"><i class="fas fa-clone"></i>&nbsp;'+CFWL('cfw_core_duplicate', 'Duplicate')+'</a>'
+		//'			<div class="dropdown-divider"></div>'
+		+'			<a class="dropdown-item" onclick="cfw_dashboard_removeWidgetConfirmed(\''+merged.guid+'\')"><i class="fas fa-trash"></i>&nbsp;'+CFWL('cfw_core_remove', 'Remove')+'</a>'
+		+'		</div>'
+		+'	</div>'
+
+	if(merged.TITLE != null && merged.TITLE != ''){
+		htmlString += 
+		 '     	  <div class="cfw-dashboard-widget-title border-bottom '+borderClass+'" style="font-size: '+merged.TITLE_FONTSIZE+'px;">'
+		+'		  	<span>'+merged.TITLE+'</span>'
+		+'		  </div>'
+	}
+	
+	if(merged.content != null && merged.content != ''
+	|| merged.FOOTER != null && merged.FOOTER != ''){
+		htmlString += 
+			'<div class="cfw-dashboard-widget-body" style="font-size: '+merged.CONTENT_FONTSIZE+'px;">';
+				if(merged.FOOTER != null && merged.FOOTER != ''){
+					htmlString +=
+					'		 <div class="cfw-dashboard-widget-footer border-top '+borderClass+'">'
+					+			merged.FOOTER
+					+'		  </div>'
+				}
+		htmlString += '</div>';
+	}
+	htmlString += '</div>';
+	
+	var widgetItem = $('<div id="'+merged.guid+'" data-id="'+merged.widgetID+'"  class="grid-stack-item">');
+	widgetItem.append(htmlString);
+	widgetItem.data("widgetObject", merged)
+	
+	if(merged.content != null && merged.content != ''){
+		widgetItem.find('.cfw-dashboard-widget-body').append(merged.content);
+	}
+
+	return widgetItem;
+}
+
 /************************************************************************************************
  * 
  ************************************************************************************************/
@@ -971,11 +973,11 @@ function cfw_dashboard_createWidgetInstance(widgetObject, doAutoposition, callba
 	
 	if(widgetDefinition != null){
 		try{
-		var widgetInstance = widgetDefinition.createWidgetInstance(widgetObject, 
+		widgetDefinition.createWidgetInstance(widgetObject, 
 			function(widgetObject, widgetContent){
 				
 				widgetObject.content = widgetContent;
-				var widgetInstance = CFW.dashboard.createWidget(widgetObject);
+				var widgetInstance = cfw_dashboard_createWidgetHTMLElement(widgetObject);
 
 				var grid = $('.grid-stack').data('gridstack');
 
@@ -987,7 +989,7 @@ function cfw_dashboard_createWidgetInstance(widgetObject, doAutoposition, callba
 			    		doAutoposition);
 			   
 			    //----------------------------
-			    // Reload Widget from Instance
+			    // Get Widget with applied default values
 			    widgetObject = $(widgetInstance).data('widgetObject');
 			    
 			    //----------------------------
@@ -1002,7 +1004,8 @@ function cfw_dashboard_createWidgetInstance(widgetObject, doAutoposition, callba
 			    widgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
 			    widgetObject.X		= widgetInstance.attr("data-gs-x");
 			    widgetObject.Y		= widgetInstance.attr("data-gs-y");
-
+			    $(widgetInstance).data('widgetObject', widgetObject);
+			    
 			    cfw_dashboard_saveWidgetState(widgetObject);
 			    
 			    if(callback != null){
@@ -1025,7 +1028,6 @@ CFW.dashboard = {
 		registerWidget: 		cfw_dashboard_registerWidget,
 		getWidgetDefinition: 	cfw_dashboard_getWidgetDefinition,
 		registerCategory: 		cfw_dashboard_registerCategory,
-		createWidget:   		cfw_dashboard_createWidgetElement,
 		getSettingsForm:		cfw_dashboard_getSettingsForm,
 		fetchWidgetData: 		cfw_dashboard_fetchWidgetData,
 };
@@ -1035,7 +1037,6 @@ CFW.dashboard = {
  * 
  ******************************************************************/
 function cfw_dashboard_toggleFullscreenMode(){
-	var grid = $('.grid-stack').data('gridstack');
 	
 	if(CFW_DASHBOARD_FULLSCREEN_MODE){
 		CFW_DASHBOARD_FULLSCREEN_MODE = false;
@@ -1227,8 +1228,6 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 		 
 		cfw_dashboard_startCommandBundle();
 		
-			var grid = this;
-			var i = 0;
 			for(var key in items){
 				
 				var currentItem = items[key].el;
@@ -1256,88 +1255,6 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			}
 		cfw_dashboard_completeCommandBundle();
 	});
-	
-}
-
-function addTestdata(){
-	
-	var rendererTestdata = {
-		 	idfield: 'id',
-		 	bgstylefield: 'bgstyle',
-		 	textstylefield: 'textstyle',
-		 	titlefields: ['firstname', 'lastname'],
-		 	titledelimiter: ' ',
-		 	visiblefields: ['id', 'firstname', 'lastname', 'postal_code', 'status'],
-		 	labels: {
-		 		id: 'ID'
-		 	},
-		 	customizers: {
-		 		status: function(record, value) { return (value == 'active') ? '<div class="badge badge-success">'+value+'</div>' : '<div class="badge badge-danger">'+value+'</div>' }
-		 	},
-			actions: [ 
-				function (record, id){ return '<button class="btn btn-sm btn-primary" onclick="alert(\'Edit record '+id+'\')"><i class="fas fa-pen"></i></button>'},
-				function (record, id){ return '<button class="btn btn-sm btn-danger" onclick="alert(\'Delete record '+id+'\')"><i class="fas fa-trash"></i></button>'},
-			],
-			bulkActions: {
-				"Edit": function (elements, records, values){ alert('Edit records '+values.join(',')+'!'); },
-				"Delete": function (elements, records, values){ $(elements).remove(); },
-			},
-			bulkActionsPos: "both",
-			data: [
-				{id: 0, firstname: "Jane", lastname: "Doe", city: "Nirwana", postal_code: 8008, status: 'active'},
-				{id: 1, firstname: "Testika", lastname: "Testonia", city: "Manhattan", postal_code: 9000, status: 'active', bgstyle: 'success'},
-				{id: 2, firstname: "Theus", lastname: "De Natore", city: "Termi-Nation", postal_code: 666, status: 'blocked', bgstyle: 'danger'},
-				{id: 3, firstname: "Jane", lastname: "De Natore", city: "Termi-Nation", postal_code: 666, status: 'blocked', bgstyle: 'info', textstyle: 'white'},
-			],
-			rendererSettings: {
-				table: {narrow: true, filterable: true}
-			},
-		};
-
-		var rendererTestdataMinimal = {
-				data: [
-					{id: 0, firstname: "Jane", lastname: "Doe", city: "Nirwana", postal_code: 8008, status: 'active'},
-					{id: 1, firstname: "Testika", lastname: "Testonia", city: "Manhattan", postal_code: 9000, status: 'active', bgstyle: 'success', textstyle: 'dark'},
-					{id: 2, firstname: "Theus", lastname: "De Nator", city: "Termi-Nation", postal_code: 666, status: 'blocked', bgstyle: 'danger', textstyle: 'dark'},
-				],
-			};
-	
-		
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_table', X:0, Y:0, HEIGHT: 5, WIDTH: 5, TITLE: "Table Test Maximal",
-//		JSON_SETTINGS: {
-//			tableData: rendererTestdata
-//		}
-//	});
-	
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_table', X:6, Y:0, HEIGHT: 5, WIDTH: 7, TITLE: "Table Test Lot of Data", 
-//		JSON_SETTINGS: {
-//			delimiter: ';',
-//			narrow: true,
-//			striped: true,
-//			filter: true,
-//			tableData: "PK_ID;TIME;FK_ID_SIGNATURE;FK_ID_PARENT;COUNT;MIN;AVG;MAX;GRANULARITY\n2943;2020-02-01 15:51:21.606;1;null;540;180;180;180;15\n2944;2020-02-01 15:51:21.606;2;null;540;180;180;180;15\n2945;2020-02-01 15:51:21.606;3;2;540;180;180;180;15\n2946;2020-02-01 15:51:21.606;4;3;540;180;180;180;15\n2947;2020-02-01 15:51:21.606;4;53;540;180;180;180;15\n2948;2020-02-01 15:51:21.606;4;74;2430;690;810;1020;15\n2949;2020-02-01 15:51:21.606;5;4;3510;1050;1170;1380;15\n2950;2020-02-01 15:51:21.606;5;67;1080;340;360;380;15\n2951;2020-02-01 15:51:21.606;6;null;540;180;180;180;15\n2952;2020-02-01 15:51:21.606;7;6;540;180;180;180;15\n2953;2020-02-01 15:51:21.606;7;12;540;180;180;180;15\n2954;2020-02-01 15:51:21.606;8;7;1080;360;360;360;15\n2955;2020-02-01 15:51:21.606;9;8;1080;360;360;360;15\n2956;2020-02-01 15:51:21.606;10;9;1080;360;360;360;15\n2957;2020-02-01 15:51:21.606;11;10;540;180;180;180;15\n2958;2020-02-01 15:51:21.606;12;11;540;180;180;180;15\n2959;2020-02-01 15:51:21.606;13;10;540;180;180;180;15"
-//		}
-//	});
-	
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_website', X:6, Y:0, HEIGHT: 4, WIDTH: 7, TITLE: "", JSON_SETTINGS: { url: "/app/cpusampling" } } );
-//	
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_table', X:0, Y:0, HEIGHT: 4, WIDTH: 5, TITLE: "Table Test Minimal", 
-//		JSON_SETTINGS: {
-//			tableData: rendererTestdataMinimal 
-//		}
-//	});
-//	
-//	cfw_dashboard_createWidgetInstance({TYPE: 'cfw_image', X:6, Y:0, HEIGHT: 4, WIDTH: 7, TITLE: "", JSON_SETTINGS: { url: "/resources/images/login_background.jpg" } } );
-//	
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_text', X:0, Y:0, HEIGHT: 2, WIDTH: 2, TITLE: "Test Success", BGCOLOR: "success", FGCOLOR: "light" , JSON_SETTINGS: { } });
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_text', X:11, Y:0, HEIGHT: 5, WIDTH: 2, TITLE: "Test Danger", BGCOLOR: "danger", FGCOLOR: "light"});
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_text', X:8, Y:0, HEIGHT: 3, WIDTH: 2, TITLE: "Test Primary and Object", BGCOLOR: "primary", FGCOLOR: "light", data: {firstname: "Jane", lastname: "Doe", street: "Fantasyroad 22", city: "Nirwana", postal_code: "8008" }, JSON_SETTINGS: { }});
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_text', X:7, Y:0, HEIGHT: 5, WIDTH: 3, TITLE: "Test Light and Array", BGCOLOR: "light", FGCOLOR: "secondary", data: ["Test", "Foo", "Bar", 3, 2, 1], JSON_SETTINGS: { }});
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_text', X:2, Y:0, HEIGHT: 2, WIDTH: 4, TITLE: "Test Matrix", BGCOLOR: "dark", FGCOLOR: "success", data: "Mister ÄÄÄÄÄÄÄÄÄÄÄnderson.", JSON_SETTINGS: { }});
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_text', X:9, Y:0, HEIGHT: 2, WIDTH: 4, TITLE: "Test Warning", BGCOLOR: "warning", FGCOLOR: "dark", JSON_SETTINGS: { }});
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_text', X:3, Y:0, HEIGHT: 4, WIDTH: 5, JSON_SETTINGS: { }});
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_text', X:0, Y:0, HEIGHT: 3, WIDTH: 3, JSON_SETTINGS: { }});
-//	cfw_dashboard_createWidgetInstance({TYPE:'cfw_text', JSON_SETTINGS: { }});
 	
 }
 

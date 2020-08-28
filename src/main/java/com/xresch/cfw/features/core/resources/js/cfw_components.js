@@ -432,7 +432,6 @@ class CFWDate{
 	 fillDigits(value, digits){
 		
 		var stringValue = ''+value;
-		var length = stringValue.length;
 		
 		for(var i = stringValue.length; i < digits;i++){
 			stringValue = '0'+stringValue;
@@ -605,7 +604,7 @@ class CFWPanel{
 		
 		if(this.settings.cardstyle != null){
 			panelClasses += ' border-'+this.settings.cardstyle;
-			panelHeaderClasses += 'bg-'+this.settings.cardstyle;
+			panelHeaderClasses += ' bg-'+this.settings.cardstyle;
 		}
 		
 		if(this.settings.textstyle != null){
@@ -625,7 +624,7 @@ class CFWPanel{
 		//----------------------------
 		// Create Header
 		this.panelHeader = $(document.createElement("div"));
-		this.panelHeader.addClass("card-header text-light bg-"+this.settings.cardstyle);
+		this.panelHeader.addClass(panelHeaderClasses);
 		this.panelHeader.attr("id", "panelHead"+this.counter);
 		this.panelHeader.attr("role", "button");
 		this.panelHeader.attr("data-toggle", "collapse");		

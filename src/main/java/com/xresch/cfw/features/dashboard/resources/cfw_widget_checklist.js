@@ -29,7 +29,7 @@
 			 		var checked = "";
 			 		var strikethrough = ''; 
 
-			 		if(value.toLowerCase().startsWith("x")){
+			 		if(value.toLowerCase().startsWith("x ")){
 			 			value = value.slice(1);
 			 			checked = 'checked="checked"';
 			 			if(widgetObject.JSON_SETTINGS.strikethrough){
@@ -48,19 +48,7 @@
 				callback(widgetObject, checkboxGroup);
 				
 			},
-			
-			getEditForm: function (widgetObject) {
-				return CFW.dashboard.getSettingsForm(widgetObject);
-			},
-			
-			onSave: function (form, widgetObject) {
-				var settingsForm = $(form);
-				widgetObject.JSON_SETTINGS = CFW.format.formToObject(form);
-				//widgetObject.JSON_SETTINGS.content = settingsForm.find('textarea[name="content"]').val();
-				//widgetObject.JSON_SETTINGS.strikethrough = ( settingsForm.find('input[name="strikethrough"]:checked').val() == "true" );
-				return true;
-			}
-			
+						
 		}
 	);
 })();
@@ -69,7 +57,7 @@
 function cfw_widget_checklist_checkboxChange(checkboxElement){
 	var checkbox = $(checkboxElement);
 	var isChecked = checkbox.prop("checked");
-	var group = checkbox.closest('.form-group');
+	var group = checkbox.closest('.grid-stack-item');
 	
 	if(JSDATA.canEdit){
 
