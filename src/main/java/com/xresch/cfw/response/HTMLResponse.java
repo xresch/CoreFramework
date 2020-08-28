@@ -70,9 +70,9 @@ public class HTMLResponse extends AbstractHTMLResponse {
 	}
 		
 	@Override
-	public StringBuffer buildResponse() {
+	public StringBuilder buildResponse() {
 		
-		StringBuffer buildedPage = new StringBuffer();
+		StringBuilder buildedPage = new StringBuilder();
 		
 		buildedPage.append("<!DOCTYPE html>\n");
 		buildedPage.append("<html id=\"cfw-html\">\n");

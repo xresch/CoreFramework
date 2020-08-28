@@ -34,23 +34,24 @@ TODO
 - Widget: Website Checker HTMLUnit
 - Widget: Partial HTML Extractor
 - Widget: Nest other Dashboard
-- Widget: Nest Widget from other Dashboard
 - Widget: Fontawesome Icon 
 - Widget: Current Time Widget
 - Widget: Collaboration: Chat
 - Widget: Collaboration: Logbook
 
-
 - cfw.js: Create Pagination Renderer
 - cfw.js: Finish javascript CFWFormField
+- cfw.js: Check Session Timeout
+
+- API: Add Token mechanism
 
 - Security: Enable Decryption for ResultSet to JSON on CFWSQL
 - Security: Change login to two steps, first username, then password field 
-- Security: Add table class to Sanitizer for tables
 
 - Manual: Change chevron icon when page gets expanded/collapsed
-- Manual: Multilingual manual
+- Manual: Multi language pages
 
+- CFW: Implement Stop
 - CFW: CFWApplicationExecutor - ForwardedRequestCustomizer make it work with reverse proxy
 - CFW: Implement custom shutdown stopping database, application, features, etc...
 - CFW: Move core stuff to core feature
@@ -77,14 +78,25 @@ TODO
 - Image Upload for Summernote Editor
 - SQL Query Cache Overview (hit statistics?)
 - Truncate too long toasts.
-- Show previous toasts all toasts button
 
-- Support Info: Use default Modal, make exceptions unique.
+
 - Custom Error page CFW.App.createErrorHandler();
-- SPNEGO/Kerberos Authentication
+- OpenSAML Authentication
 
 DONE
 ====
+
+------- Current -------
+BREAKING CHANGES:
+HTMLResponse: Changed StringBuffer to StringBuilder
+
+CHANGES:
+- Support Info: Use default Modal, make exceptions unique.
+- Show previous toasts all toasts button
+- Security: Add table class to Sanitizer for tables
+- Widget: Nest Widget from other Dashboard
+
+------- v.1.0.0 -------
 - Manual: Print View Button
 - Dashboard: Enable hierarchical categories
 - CFW: Add loading icon to Form Submit button when waiting for reply.

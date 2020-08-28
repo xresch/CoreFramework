@@ -113,7 +113,7 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 	}
 	
 	
-	protected void appendSectionTitle(StringBuffer buildedPage, String title){ 
+	protected void appendSectionTitle(StringBuilder buildedPage, String title){ 
 		buildedPage.append("<!--\n");
 		buildedPage.append("==================================================\n");
 		buildedPage.append(title);

@@ -38,7 +38,7 @@ public class ServletChangePassword extends HttpServlet
 		log.info(request.getRequestURL().toString());
 			
 		HTMLResponse html = new HTMLResponse("Login");
-		StringBuffer content = html.getContent();
+		StringBuilder content = html.getContent();
 		content.append(CFW.Files.readPackageResource(FeatureCore.RESOURCE_PACKAGE + ".html", "changepassword.html"));
 		
         response.setContentType("text/html");
@@ -77,7 +77,7 @@ public class ServletChangePassword extends HttpServlet
 		}
 		
 		HTMLResponse html = new HTMLResponse("Change Password");
-		StringBuffer content = html.getContent();
+		StringBuilder content = html.getContent();
 		content.append(CFW.Files.readPackageResource(FeatureCore.RESOURCE_PACKAGE + ".html", "changepassword.html"));
 		
         response.setContentType("text/html");

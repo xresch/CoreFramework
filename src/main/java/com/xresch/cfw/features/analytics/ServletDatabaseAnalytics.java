@@ -37,7 +37,7 @@ public class ServletDatabaseAnalytics extends HttpServlet
 			
 			if(action == null) {
 			HTMLResponse html = new HTMLResponse("Database Analytics");
-			StringBuffer content = html.getContent();
+			StringBuilder content = html.getContent();
 
 			//html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE+".js", "cfw_usermgmt.js"));
 			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureSystemAnalytics.RESOURCE_PACKAGE, "cfw_dbanalytics.js");

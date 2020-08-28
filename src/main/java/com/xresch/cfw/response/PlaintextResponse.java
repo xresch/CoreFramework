@@ -15,7 +15,7 @@ public class PlaintextResponse extends AbstractResponse {
 	}
 
 	@Override
-	public StringBuffer buildResponse() {
+	public StringBuilder buildResponse() {
 		return this.content;
 	}
 	

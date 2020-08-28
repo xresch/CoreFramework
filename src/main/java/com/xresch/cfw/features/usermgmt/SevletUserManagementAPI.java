@@ -56,7 +56,7 @@ public class SevletUserManagementAPI extends HttpServlet {
 		// Fetch Data
 		//-------------------------------------------
 		JSONResponse jsonResponse = new JSONResponse();
-		StringBuffer content = jsonResponse.getContent();
+		StringBuilder content = jsonResponse.getContent();
 
 		if(CFW.Context.Request.hasPermission(Permission.CFW_USER_MANAGEMENT)) {
 			

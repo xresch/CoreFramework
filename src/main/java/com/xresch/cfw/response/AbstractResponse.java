@@ -11,7 +11,7 @@ import com.xresch.cfw._main.CFW;
  **************************************************************************************************************/
 public abstract class AbstractResponse {
 
-	protected StringBuffer content = new StringBuffer();
+	protected StringBuilder content = new StringBuilder();
 	protected HttpServletRequest request;
 	protected boolean useGlobaleLocale = false;
 	
@@ -24,18 +24,18 @@ public abstract class AbstractResponse {
 	//##############################################################################
 	// Class Methods
 	//##############################################################################
-	public abstract StringBuffer buildResponse();
+	public abstract StringBuilder buildResponse();
 	public abstract int getEstimatedSizeChars();
 	
 	//##############################################################################
 	// Getters
 	//##############################################################################
-	public StringBuffer getContent() { return content;}
+	public StringBuilder getContent() { return content;}
 
 	//##############################################################################
 	// Setters
 	//##############################################################################
-	public void setContent(StringBuffer content) {this.content = content;}
+	public void setContent(StringBuilder content) {this.content = content;}
 
 	public boolean useGlobaleLocale() {
 		return this.useGlobaleLocale;

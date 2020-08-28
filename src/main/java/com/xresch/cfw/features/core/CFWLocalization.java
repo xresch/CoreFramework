@@ -263,7 +263,7 @@ public class CFWLocalization {
 				langMap = getAllProperties();
 			}
 			
-			StringBuffer sb = template.buildResponse();
+			StringBuilder sb = template.buildResponse();
 			
 			int fromIndex = 0;
 			int leftIndex = 0;

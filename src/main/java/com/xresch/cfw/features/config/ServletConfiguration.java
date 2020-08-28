@@ -45,7 +45,7 @@ public class ServletConfiguration extends HttpServlet
 				
 		HTMLResponse html = new HTMLResponse("Configuration Management");
 		
-		StringBuffer content = html.getContent();
+		StringBuilder content = html.getContent();
 		
 		if(CFW.Context.Request.hasPermission(FeatureConfiguration.PERMISSION_CONFIGURATION)) {
 			

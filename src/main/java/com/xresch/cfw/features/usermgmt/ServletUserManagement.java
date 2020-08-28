@@ -41,7 +41,7 @@ public class ServletUserManagement extends HttpServlet
 		
 		HTMLResponse html = new HTMLResponse("User Management");
 		
-		StringBuffer content = html.getContent();
+		StringBuilder content = html.getContent();
 		
 		if(CFW.Context.Request.hasPermission(Permission.CFW_USER_MANAGEMENT)) {
 			

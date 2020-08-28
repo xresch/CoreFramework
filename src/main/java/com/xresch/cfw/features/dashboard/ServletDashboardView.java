@@ -45,7 +45,7 @@ public class ServletDashboardView extends HttpServlet
 			
 			if(action == null) {
 				HTMLResponse html = new HTMLResponse("Dashboard");
-				StringBuffer content = html.getContent();
+				StringBuilder content = html.getContent();
 				
 				//---------------------------
 				// Check Access

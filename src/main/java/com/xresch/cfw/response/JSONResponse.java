@@ -17,9 +17,9 @@ public class JSONResponse extends AbstractTemplateJSON {
 	}
 
 	@Override
-	public StringBuffer buildResponse() {
+	public StringBuilder buildResponse() {
 		
-		StringBuffer builder = new StringBuffer("{"); 
+		StringBuilder builder = new StringBuilder("{"); 
 		
 		//----------------------------
 		// Success

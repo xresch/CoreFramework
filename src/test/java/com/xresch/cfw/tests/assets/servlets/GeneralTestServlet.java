@@ -37,7 +37,7 @@ public class GeneralTestServlet extends HttpServlet
 		
 		HTMLResponse html = new HTMLResponse("Test Page");
 		html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, WebTestMaster.RESOURCE_PACKAGE, "cfwjs_test.js"));
-		StringBuffer content = html.getContent();
+		StringBuilder content = html.getContent();
 		
 		//--------------------------
 		// Add single javascripts

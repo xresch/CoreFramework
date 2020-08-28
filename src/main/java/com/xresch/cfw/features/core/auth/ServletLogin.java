@@ -32,7 +32,7 @@ public class ServletLogin extends HttpServlet
 	
 	protected void createLoginPage( HttpServletRequest request, HttpServletResponse response ) {
 		HTMLResponse html = new HTMLResponse("Login");
-		StringBuffer content = html.getContent();
+		StringBuilder content = html.getContent();
 		
 		String loginHTML = CFW.Files.readPackageResource(FeatureCore.RESOURCE_PACKAGE + ".html", "login.html");
 		
