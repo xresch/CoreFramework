@@ -563,7 +563,7 @@ public abstract class DBInterface {
 	 * 
 	 ********************************************************************************************/
 	public static String resultSetToCSV(ResultSet resultSet, String delimiter) {
-		StringBuffer csv = new StringBuffer();
+		StringBuilder csv = new StringBuilder();
 		
 		try {
 			
@@ -624,7 +624,7 @@ public abstract class DBInterface {
 	 * 
 	 ********************************************************************************************/
 	public static String resultSetToXML(ResultSet resultSet) {
-		StringBuffer json = new StringBuffer();
+		StringBuilder json = new StringBuilder();
 		
 		try {
 			

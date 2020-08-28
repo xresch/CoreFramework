@@ -217,7 +217,7 @@ public class CFWLog {
 			//-------------------------
 			if(throwable != null){
 				
-				StringBuffer buffer = new StringBuffer();
+				StringBuilder buffer = new StringBuilder();
 				buffer.append(throwable.getClass());
 				buffer.append(": ");
 				buffer.append(throwable.getMessage());

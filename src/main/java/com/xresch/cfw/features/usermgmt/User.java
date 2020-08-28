@@ -192,6 +192,7 @@ public class User extends CFWObject {
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
+	@Override
 	public void initDBSecond() {
 		
 		//-----------------------------------------
@@ -281,6 +282,7 @@ public class User extends CFWObject {
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
+	@Override
 	public ArrayList<APIDefinition> getAPIDefinitions() {
 		ArrayList<APIDefinition> apis = new ArrayList<APIDefinition>();
 		

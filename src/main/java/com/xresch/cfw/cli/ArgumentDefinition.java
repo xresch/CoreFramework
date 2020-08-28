@@ -58,6 +58,7 @@ public class ArgumentDefinition extends AbstractValidatable<String> {
 		return defaultValue;
 	}
 	
+	@Override
 	public String getValue() {
 		if(!CFW.Validation.isNullOrEmptyString(super.getValue())) {
 			return super.getValue();

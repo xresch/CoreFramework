@@ -67,11 +67,11 @@ public class CFWDump {
         }
 
         ctx.callCount++;
-        StringBuffer tabs = new StringBuffer();
+        StringBuilder tabs = new StringBuilder();
         for (int k = 0; k < ctx.callCount; k++) {
             tabs.append("\t");
         }
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder builder = new StringBuilder();
         Class oClass = o.getClass();
 
         String oSimpleName = getSimpleNameWithoutArrayQualifier(oClass);
@@ -82,42 +82,42 @@ public class CFWDump {
         if (oClass.isArray()) {
             //buffer.append("\n");
             //buffer.append(tabs.toString().substring(1));
-            buffer.append(" [");
+            builder.append(" [");
             int rowCount = ctx.maxArrayElements == 0 ? Array.getLength(o) : Math.min(ctx.maxArrayElements, Array.getLength(o));
             for (int i = 0; i < rowCount; i++) {
-            	buffer.append("\n");
-            	buffer.append(tabs.toString());
+            	builder.append("\n");
+            	builder.append(tabs.toString());
                 try {
                     Object value = Array.get(o, i);
-                    buffer.append(dumpValue(value, ctx));
+                    builder.append(dumpValue(value, ctx));
                 } catch (Exception e) {
-                    buffer.append(e.getMessage());
+                    builder.append(e.getMessage());
                 }
                 if (i < Array.getLength(o) - 1)
-                    buffer.append(",");
+                    builder.append(",");
                 
             }
             if (rowCount < Array.getLength(o)) {
-            	buffer.append("\n");
-                buffer.append(tabs.toString());
-                buffer.append(Array.getLength(o) - rowCount + " more array elements...");
+            	builder.append("\n");
+                builder.append(tabs.toString());
+                builder.append(Array.getLength(o) - rowCount + " more array elements...");
                 
             }
-            buffer.append("]");
+            builder.append("]");
         } else {
-            buffer.append("\n");
-            buffer.append(tabs.toString().substring(1));
-            buffer.append("{\n");
-            buffer.append(tabs.toString());
-            buffer.append("hashCode: " + o.hashCode());
-            buffer.append("\n");
+            builder.append("\n");
+            builder.append(tabs.toString().substring(1));
+            builder.append("{\n");
+            builder.append(tabs.toString());
+            builder.append("hashCode: " + o.hashCode());
+            builder.append("\n");
             while (oClass != null && oClass != Object.class) {
                 Field[] fields = oClass.getDeclaredFields();
 
                 if (ctx.ignoreList.get(oClass.getSimpleName()) == null) {
                     if (oClass != o.getClass()) {
-                        buffer.append(tabs.toString());
-                        buffer.append("===== Inherited - " + oSimpleName + " =====\n");
+                        builder.append(tabs.toString());
+                        builder.append("===== Inherited - " + oSimpleName + " =====\n");
                     }
 
                     for (int i = 0; i < fields.length; i++) {
@@ -126,9 +126,9 @@ public class CFWDump {
                         String fName = fields[i].getName();
 
                         fields[i].setAccessible(true);
-                        buffer.append(tabs.toString());
-                        buffer.append(fName + "(" + fSimpleName + ")");
-                        buffer.append("=");
+                        builder.append(tabs.toString());
+                        builder.append(fName + "(" + fSimpleName + ")");
+                        builder.append("=");
 
                         if (ctx.ignoreList.get(":" + fName) == null &&
                             ctx.ignoreList.get(fSimpleName + ":" + fName) == null &&
@@ -136,15 +136,15 @@ public class CFWDump {
 
                             try {
                                 Object value = fields[i].get(o);
-                                buffer.append(dumpValue(value, ctx));
+                                builder.append(dumpValue(value, ctx));
                             } catch (Exception e) {
-                                buffer.append(e.getMessage());
+                                builder.append(e.getMessage());
                             }
-                            buffer.append("\n");
+                            builder.append("\n");
                         }
                         else {
-                            buffer.append("<Ignored>");
-                            buffer.append("\n");
+                            builder.append("<Ignored>");
+                            builder.append("\n");
                         }
                     }
                     oClass = oClass.getSuperclass();
@@ -155,11 +155,11 @@ public class CFWDump {
                     oSimpleName = "";
                 }
             }
-            buffer.append(tabs.toString().substring(1));
-            buffer.append("}");
+            builder.append(tabs.toString().substring(1));
+            builder.append("}");
         }
         ctx.callCount--;
-        return buffer.toString();
+        return builder.toString();
     }
 
     /*************************************************************************

@@ -23,16 +23,16 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class CFWContextRequest {
 	
-	private static InheritableThreadLocal<HttpServletRequest> httpRequest = new InheritableThreadLocal<HttpServletRequest>();
-	private static InheritableThreadLocal<HttpServletResponse> httpResponse = new InheritableThreadLocal<HttpServletResponse>();
+	private static InheritableThreadLocal<HttpServletRequest> httpRequest = new InheritableThreadLocal<>();
+	private static InheritableThreadLocal<HttpServletResponse> httpResponse = new InheritableThreadLocal<>();
 	
-	private static InheritableThreadLocal<AbstractResponse> responseContent = new InheritableThreadLocal<AbstractResponse>();
-	private static InheritableThreadLocal<SessionData> sessionData = new InheritableThreadLocal<SessionData>();
+	private static InheritableThreadLocal<AbstractResponse> responseContent = new InheritableThreadLocal<>();
+	private static InheritableThreadLocal<SessionData> sessionData = new InheritableThreadLocal<>();
 	
-	private static InheritableThreadLocal<LinkedHashMap<String,AlertMessage>> messageArray = new InheritableThreadLocal<LinkedHashMap<String,AlertMessage>>();
+	private static InheritableThreadLocal<LinkedHashMap<String,AlertMessage>> messageArray = new InheritableThreadLocal<>();
 		
 	private static int localeFilesID = 0;
-	private static HashMap<String, FileDefinition> localeFiles = new HashMap<String, FileDefinition>();
+	private static HashMap<String, FileDefinition> localeFiles = new HashMap<>();
 	
 	public static void clearRequestContext() {
 		httpRequest.set(null);
@@ -133,7 +133,7 @@ public class CFWContextRequest {
 	public static void addAlertMessage(MessageType type, String message){
 		
 		if(messageArray.get() == null) {
-			messageArray.set(new LinkedHashMap<String,AlertMessage>());
+			messageArray.set(new LinkedHashMap<>());
 		}
 		
 		messageArray.get().put(message, new AlertMessage(type, message));
@@ -167,7 +167,7 @@ public class CFWContextRequest {
 	 ****************************************************************/
 	public static Collection<AlertMessage> getAlertMessages() {
 		if(messageArray.get() == null) {
-			return new ArrayList<AlertMessage>();
+			return new ArrayList<>();
 		}
 		return messageArray.get().values();
 	}

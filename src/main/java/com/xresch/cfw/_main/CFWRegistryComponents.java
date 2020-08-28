@@ -21,13 +21,13 @@ import com.xresch.cfw.response.bootstrap.UserMenuItem;
 public class CFWRegistryComponents {
 	private static Logger logger = CFWLog.getLogger(CFWRegistryComponents.class.getName());
 	
-	private static LinkedHashMap<String, MenuItem> regularMenuItems = new LinkedHashMap<String, MenuItem>();
-	private static LinkedHashMap<String, MenuItem> userMenuItems = new LinkedHashMap<String, MenuItem>();
+	private static LinkedHashMap<String, MenuItem> regularMenuItems = new LinkedHashMap<>();
+	private static LinkedHashMap<String, MenuItem> userMenuItems = new LinkedHashMap<>();
 	
-	private static LinkedHashMap<String, MenuItem> adminMenuItems = new LinkedHashMap<String, MenuItem>();
+	private static LinkedHashMap<String, MenuItem> adminMenuItems = new LinkedHashMap<>();
 	
 	// Admin items of the Core Framework
-	private static LinkedHashMap<String, MenuItem> adminMenuItemsCFW = new LinkedHashMap<String, MenuItem>();
+	private static LinkedHashMap<String, MenuItem> adminMenuItemsCFW = new LinkedHashMap<>();
 	
 	private static Class<?> defaultFooterClass = null;
 

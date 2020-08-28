@@ -28,9 +28,9 @@ public class SessionData implements Serializable {
 	private boolean isLoggedIn = false;
 
 	private User user = null;
-	private HashMap<Integer, Role> userRoles = new HashMap<Integer, Role>();
-	private HashMap<String, Permission> userPermissions = new HashMap<String, Permission>();
-	private static LinkedHashMap<String,CFWForm> formMap = new LinkedHashMap<String,CFWForm>();
+	private HashMap<Integer, Role> userRoles = new HashMap<>();
+	private HashMap<String, Permission> userPermissions = new HashMap<>();
+	private static LinkedHashMap<String,CFWForm> formMap = new LinkedHashMap<>();
 	
 	private BTMenu menu;
 	private BTFooter footer;

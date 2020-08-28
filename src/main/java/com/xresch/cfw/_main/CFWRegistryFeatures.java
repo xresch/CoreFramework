@@ -15,7 +15,7 @@ public class CFWRegistryFeatures {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWRegistryFeatures.class.getName());
 	
-	private static LinkedHashSet<Class<? extends CFWAppFeature>> featureClassSet = new LinkedHashSet<Class<? extends CFWAppFeature>>();
+	private static LinkedHashSet<Class<? extends CFWAppFeature>> featureClassSet = new LinkedHashSet<>();
 	
 	/***********************************************************************
 	 * Adds a CFWObject class to the registry.
@@ -46,7 +46,7 @@ public class CFWRegistryFeatures {
 	 * @param objectClass
 	 ***********************************************************************/
 	public static ArrayList<CFWAppFeature> getFeatureInstances()  {
-		ArrayList<CFWAppFeature> instanceArray = new ArrayList<CFWAppFeature>();
+		ArrayList<CFWAppFeature> instanceArray = new ArrayList<>();
 		
 		for(Class<? extends CFWAppFeature> clazz : featureClassSet) {
 			try {

@@ -21,8 +21,8 @@ public abstract class CFWCommandLineInterface {
 	public static final String CONFIG_FILE = "-config.file";
 	public static final String STOP = "-stop";
 	
-	protected static LinkedHashMap<String,String> loadedArguments = new LinkedHashMap<String,String>();
-	protected static LinkedHashMap<String,ArgumentDefinition> supportedArgumentsMap = new LinkedHashMap<String,ArgumentDefinition>();
+	protected static LinkedHashMap<String,String> loadedArguments = new LinkedHashMap<>();
+	protected static LinkedHashMap<String,ArgumentDefinition> supportedArgumentsMap = new LinkedHashMap<>();
 
 	protected static ArrayList<String> invalidMessages;
 	
@@ -139,7 +139,7 @@ public abstract class CFWCommandLineInterface {
 		
 		boolean isValid = true;
 		
-		invalidMessages = new ArrayList<String>();
+		invalidMessages = new ArrayList<>();
 		
 		for(String argumentKey : loadedArguments.keySet()){
 			String argumentValue = loadedArguments.get(argumentKey);
@@ -244,7 +244,7 @@ public abstract class CFWCommandLineInterface {
 	}
 	
 	public static void clearLoadedArguments() {
-		loadedArguments = new LinkedHashMap<String,String>();
+		loadedArguments = new LinkedHashMap<>();
 	}
 	
 }

@@ -14,7 +14,7 @@ public class ArgumentsException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 	private String argument = "";
-	private ArrayList<String> messageArray = new ArrayList<String>();
+	private ArrayList<String> messageArray = new ArrayList<>();
 
 	//####################################################################################
 	// CONSTRUCTORS

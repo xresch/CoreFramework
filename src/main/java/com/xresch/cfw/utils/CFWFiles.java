@@ -80,7 +80,7 @@ public class CFWFiles {
 			
 			try( BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8)) ){
 				
-				StringBuffer contentBuffer = new StringBuffer();
+				StringBuilder contentBuffer = new StringBuilder();
 				String line;
 				
 				while( (line = reader.readLine()) != null) {
@@ -251,7 +251,7 @@ public class CFWFiles {
 		
 		
 		String line = "";
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		
 		try(BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)) ){
 			
@@ -284,7 +284,7 @@ public class CFWFiles {
 			return null;
 		}
 		
-		StringBuffer stringBuffer = new StringBuffer();
+		StringBuilder stringBuffer = new StringBuilder();
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		
 		try {

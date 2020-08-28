@@ -19,6 +19,7 @@ public abstract class AbstractContextSettings extends CFWObject {
 	 * like id, type and description.
 	 * This will be set by CFW.DB.ContextSettings.getContextSettingsForType(type).
 	 **************************************************************/
+	@Override
 	public ContextSettings getDefaultObject() {
 		return wrapper;
 	}

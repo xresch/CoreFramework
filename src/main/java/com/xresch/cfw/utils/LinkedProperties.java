@@ -17,16 +17,19 @@ public class LinkedProperties extends Properties {
     public Iterable<Object> orderedKeys() {
         return Collections.list(keys());
     }
-
+    
+    @Override
     public Enumeration<Object> keys() {
         return Collections.<Object>enumeration(keys);
     }
-
+    
+    @Override
     public synchronized Object put(Object key, Object value) {
         keys.add(key);
         return super.put(key, value);
     }
     
+    @Override
     public synchronized void putAll(Map<? extends Object, ? extends Object> map) {
         keys.addAll(map.keySet());
         super.putAll(map);

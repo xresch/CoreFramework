@@ -26,12 +26,12 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 	
 	protected ArrayList<FileDefinition> singleJSBottom = new ArrayList<FileDefinition>();
 	
-	protected StringBuffer head = new StringBuffer();
-	protected StringBuffer menu = new StringBuffer();
-	protected StringBuffer footer = new StringBuffer();
-	protected StringBuffer supportInfo = new StringBuffer();
-	protected StringBuffer javascript = new StringBuffer();
-	protected StringBuffer javascriptData = new StringBuffer("JSDATA = {};\n");
+	protected StringBuilder head = new StringBuilder();
+	protected StringBuilder menu = new StringBuilder();
+	protected StringBuilder footer = new StringBuilder();
+	protected StringBuilder supportInfo = new StringBuilder();
+	protected StringBuilder javascript = new StringBuilder();
+	protected StringBuilder javascriptData = new StringBuilder("JSDATA = {};\n");
 	
 	public AbstractHTMLResponse(){
 		super();
@@ -137,20 +137,20 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 	// Getters
 	//##############################################################################
 	public String getPageTitle() { return pageTitle; }
-	public StringBuffer getHead() { return head; }
-	public StringBuffer getMenu() { return menu; }
-	public StringBuffer getFooter() {return footer;}
-	public StringBuffer getJavascript() {return javascript;}
-	public StringBuffer getSupportInfo() {return supportInfo;}
+	public StringBuilder getHead() { return head; }
+	public StringBuilder getMenu() { return menu; }
+	public StringBuilder getFooter() {return footer;}
+	public StringBuilder getJavascript() {return javascript;}
+	public StringBuilder getSupportInfo() {return supportInfo;}
 
 	//##############################################################################
 	// Setters
 	//##############################################################################
 	public void setPageTitle(String pageTitle) { this.pageTitle = pageTitle; }
-	public void setHead(StringBuffer head) { this.head = head; }
-	public void setMenu(StringBuffer menu) { this.menu = menu; }
-	public void setFooter(StringBuffer footer) {this.footer = footer;}
-	public void setSupportInfo(StringBuffer comments) {this.supportInfo = comments;}
+	public void setHead(StringBuilder head) { this.head = head; }
+	public void setMenu(StringBuilder menu) { this.menu = menu; }
+	public void setFooter(StringBuilder footer) {this.footer = footer;}
+	public void setSupportInfo(StringBuilder comments) {this.supportInfo = comments;}
 	
 	
 }

@@ -22,7 +22,7 @@ public class RegexValidator extends AbstractValidator {
 		if(value.toString().matches(pattern)){
 			return true;
 		}else{
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			sb.append("The value of the argument ");
 			sb.append(this.getValidatable().getName());
 			sb.append(" did not match the pattern '");

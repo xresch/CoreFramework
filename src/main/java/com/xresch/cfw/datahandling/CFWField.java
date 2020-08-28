@@ -625,6 +625,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * @param key the key of the attribute.
 	 * @return instance for chaining
 	 ***********************************************************************************/
+	@Override
 	@SuppressWarnings("unchecked")
 	public CFWField<T> addAttribute(String name, String value) {
 		return (CFWField<T>)super.addAttribute(name, value);
@@ -637,6 +638,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * @param name the name of the attribute.
 	 * @return instance for chaining
 	 ***********************************************************************************/
+	@Override
 	@SuppressWarnings("unchecked")
 	public CFWField<T> removeAttribute(String name) {
 		return (CFWField<T>)super.removeAttribute(name);

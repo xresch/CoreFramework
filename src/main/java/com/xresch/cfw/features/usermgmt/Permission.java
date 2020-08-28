@@ -94,6 +94,7 @@ public class Permission extends CFWObject{
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
+	@Override
 	public void updateTable() {
 				
 		//---------------------------
@@ -121,6 +122,7 @@ public class Permission extends CFWObject{
 	/**************************************************************************************
 	 * Roles have to exists
 	 **************************************************************************************/
+	@Override
 	public void initDBSecond() {
 		
 		Role adminRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_ADMIN);
@@ -146,6 +148,7 @@ public class Permission extends CFWObject{
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
+	@Override
 	public ArrayList<APIDefinition> getAPIDefinitions() {
 		ArrayList<APIDefinition> apis = new ArrayList<APIDefinition>();
 		

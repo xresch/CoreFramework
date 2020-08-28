@@ -167,6 +167,7 @@ public class Dashboard extends CFWObject {
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
+	@Override
 	public void updateTable() {
 								
 		//---------------------------
@@ -179,6 +180,7 @@ public class Dashboard extends CFWObject {
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
+	@Override
 	public ArrayList<APIDefinition> getAPIDefinitions() {
 		ArrayList<APIDefinition> apis = new ArrayList<APIDefinition>();
 		

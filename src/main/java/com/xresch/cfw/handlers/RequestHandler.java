@@ -29,6 +29,7 @@ public class RequestHandler extends HandlerWrapper
 	
 	private static Object syncLock = new Object();
 	
+	@Override
     public void handle( String target,
                         Request baseRequest,
                         HttpServletRequest request,

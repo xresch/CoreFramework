@@ -27,9 +27,10 @@ public enum Ternary{
 	}
 	
 	/*******************************************
-	 * Return boolean or false if NEITHER.
+	 * Return boolean or "dontcare" if NEITHER.
 	 * @return "true", "false" or "dontcare"
 	 *******************************************/
+	@Override
 	public String toString() {
 		if(o instanceof Boolean) {
 			return ((Boolean)o).toString();

@@ -48,6 +48,7 @@ public class MenuItem extends HierarchicalHTMLItem {
 	 * Overrloaded addChild to handle sub menu items.
 	 * @return String html for this item. 
 	 ***********************************************************************************/
+	@Override
 	public MenuItem addChild(HierarchicalHTMLItem childItem) {
 		super.addChild(childItem);
 		

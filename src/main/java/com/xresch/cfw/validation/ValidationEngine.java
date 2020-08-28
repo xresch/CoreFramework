@@ -28,7 +28,7 @@ public class ValidationEngine {
 		
 		boolean isValid = true;
 		invalidMessages = "";
-		StringBuffer messages = new StringBuffer();
+		StringBuilder messages = new StringBuilder();
 		
 		for(IValidator validator : validatorArray){
 			
@@ -59,7 +59,7 @@ public class ValidationEngine {
 		
 		boolean isValid = true;
 		invalidMessages = "";
-		StringBuffer messages = new StringBuffer();
+		StringBuilder messages = new StringBuilder();
 		
 		for(IValidator validator : validatorArray){
 			

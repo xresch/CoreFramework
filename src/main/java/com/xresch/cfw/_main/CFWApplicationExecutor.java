@@ -219,7 +219,7 @@ public class CFWApplicationExecutor {
 	    sessionHandler.setUsingCookies(true);
 	    sessionHandler.setSecureRequestOnly(false);
 	    
-	    HashSet<SessionTrackingMode> trackingModes = new HashSet<SessionTrackingMode>();
+	    HashSet<SessionTrackingMode> trackingModes = new HashSet<>();
 	    trackingModes.add(SessionTrackingMode.COOKIE);
 	    sessionHandler.setSessionTrackingModes(trackingModes);
 	    sessionHandler.getSessionCookieConfig().setPath(path);
@@ -273,7 +273,7 @@ public class CFWApplicationExecutor {
 	 ***********************************************************************/
 	private static Server createServer() {
 		Server server = new Server();
-		ArrayList<Connector> connectorArray = new ArrayList<Connector>();
+		ArrayList<Connector> connectorArray = new ArrayList<>();
 		
 		CFWApplicationExecutor.idmanager = new DefaultSessionIdManager(server);
 	    server.setSessionIdManager(CFWApplicationExecutor.idmanager);
@@ -356,7 +356,7 @@ public class CFWApplicationExecutor {
         //###################################################################
         
         //Connect all relevant Handlers
-        ArrayList<Handler> handlerArray = new ArrayList<Handler>();
+        ArrayList<Handler> handlerArray = new ArrayList<>();
         handlerArray.add(new ShutdownHandler(CFW.Properties.APPLICATION_ID, true, true));
         handlerArray.add(new HTTPSRedirectHandler());
         handlerArray.add(new RedirectDefaultPageHandler(defaultURL));

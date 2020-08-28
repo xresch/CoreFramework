@@ -32,7 +32,8 @@ public class AuthenticationHandler extends HandlerWrapper
 		this.defaultURL = defaultURL;
 			
 	}
-
+	
+	@Override
     public void handle( String target,
                         Request baseRequest,
                         HttpServletRequest request,

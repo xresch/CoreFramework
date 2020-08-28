@@ -93,6 +93,7 @@ public class Configuration extends CFWObject {
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
+	@Override
 	public ArrayList<APIDefinition> getAPIDefinitions() {
 		ArrayList<APIDefinition> apis = new ArrayList<APIDefinition>();
 						

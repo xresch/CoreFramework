@@ -69,13 +69,9 @@ public class UserRoleMap extends CFWObject {
 	/**************************************************************************************
 	 * Migrate Table
 	 **************************************************************************************/
+	@Override
 	public void migrateTable() {
-		
-		
-		//###############################################
-		// Migration from 2.0 to 2.1
-		//###############################################
-		
+				
 		//---------------------------
 		// Rename Column 
 		CFWSQL.renameColumn("CFW_USER_GROUP_MAP", "FK_ID_GROUP",  UserRoleMapFields.FK_ID_ROLE.toString());
@@ -100,6 +96,7 @@ public class UserRoleMap extends CFWObject {
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
+	@Override
 	public ArrayList<APIDefinition> getAPIDefinitions() {
 		ArrayList<APIDefinition> apis = new ArrayList<APIDefinition>();
 				

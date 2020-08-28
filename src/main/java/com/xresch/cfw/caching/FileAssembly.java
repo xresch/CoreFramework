@@ -15,10 +15,10 @@ import com.xresch.cfw.features.config.FeatureConfiguration;
 public class FileAssembly {
 	
 	/** Static field to store the assembled results by their file names. */
-	private static final LinkedHashMap<String,FileAssembly> assemblyCache = new LinkedHashMap<String, FileAssembly>();
+	private static final LinkedHashMap<String,FileAssembly> assemblyCache = new LinkedHashMap<>();
 	
 	// only add a file once
-	private LinkedHashMap<Integer, FileDefinition> fileMap = new LinkedHashMap<Integer, FileDefinition>();
+	private LinkedHashMap<Integer, FileDefinition> fileMap = new LinkedHashMap<>();
 	
 	private String inputName = "";
 	private String assemblyName = "";
@@ -101,7 +101,7 @@ public class FileAssembly {
 		// Initialize
 		if(!FileAssembly.hasAssembly((assemblyName)) || !CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
 			
-			StringBuffer concatenatedFile = new StringBuffer();
+			StringBuilder concatenatedFile = new StringBuilder();
 			for(FileDefinition fileDef : fileMap.values()) {
 				
 				
