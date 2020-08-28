@@ -438,7 +438,7 @@ public class CFWHttp {
 		public CFWHttpResponse(HttpURLConnection conn) {
 			
 			BufferedReader in = null;
-			StringBuffer buffer = new StringBuffer();
+			StringBuilder builder = new StringBuilder();
 			
 			try{
 				
@@ -464,11 +464,11 @@ public class CFWHttp {
 		        String inputLine;
 		
 		        while ((inputLine = in.readLine()) != null) {
-		        	buffer.append(inputLine);
-		        	buffer.append("\n");
+		        	builder.append(inputLine);
+		        	builder.append("\n");
 		        }
 		        
-		        body = buffer.toString();
+		        body = builder.toString();
 		        
 		        
 			}catch(Exception e) {

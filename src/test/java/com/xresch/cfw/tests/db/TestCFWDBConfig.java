@@ -57,10 +57,10 @@ public class TestCFWDBConfig extends DBTestMaster {
 		System.out.println("===== CONFIG =====");
 		System.out.println(config.dumpFieldsAsKeyValueString());
 
-		Assertions.assertTrue(config != null);
-		Assertions.assertTrue(config.name().equals(configname));
-		Assertions.assertTrue(config.description().equals("Testdescription"));
-		Assertions.assertTrue(config.type().equals("TEXT"));
+		Assertions.assertNotNull(config);
+		Assertions.assertEquals(config.name(), configname);
+		Assertions.assertEquals(config.description(), "Testdescription");
+		Assertions.assertEquals(config.type(), "TEXT");
 		
 		//--------------------------------------
 		// UPDATE
@@ -78,20 +78,20 @@ public class TestCFWDBConfig extends DBTestMaster {
 		System.out.println("===== UPDATED CONFIG =====");
 		System.out.println(updatedConfig.dumpFieldsAsKeyValueString());
 		
-		Assertions.assertTrue(config != null);
-		Assertions.assertTrue(config.name().equals(confignameUpdated));
-		Assertions.assertTrue(config.description().equals("Testdescription2"));
+		Assertions.assertNotNull(config);
+		Assertions.assertEquals(config.name(), confignameUpdated);
+		Assertions.assertEquals(config.description(), "Testdescription2");
 		
 		//--------------------------------------
 		// SELECT BY ID
 		Configuration configByID = CFW.DB.Config.selectByID(updatedConfig.id());
 		
-		Assertions.assertTrue(configByID != null, "Config is selected by ID.");
+		Assertions.assertNotNull(configByID, "Config is selected by ID.");
 		
 		//--------------------------------------
 		// Read from cache
 		String cachedValue = CFW.DB.Config.getConfigAsString(confignameUpdated);
-		Assertions.assertTrue(cachedValue.contentEquals("B"), "Current value is read from cache.");
+		Assertions.assertEquals(cachedValue, "B", "Current value is read from cache.");
 		
 		//--------------------------------------
 		// DELETE

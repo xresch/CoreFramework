@@ -101,11 +101,8 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		String salt = CFW.Security.createPasswordSalt(31);
 		String hashtext = CFWSecurity.createPasswordHash("admin", salt);
 		
-        Assertions.assertTrue(salt.length() == 31);
+        Assertions.assertEquals(salt.length(), 31);
         Assertions.assertTrue(hashtext.length() <= 127);
-        
-		//System.out.println("Salt: "+salt);
-        //System.out.println("Hashtext: "+hashtext);
         
 		//--------------------------------------
 		// Check Initial Password
@@ -182,17 +179,17 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		//System.out.println("===== USER =====");
 		//System.out.println(user.getKeyValueString());
 
-		Assertions.assertTrue(user != null);
-		Assertions.assertTrue(user.username().equals(username));
-		Assertions.assertTrue(user.email().equals("t.testonia@cfw.com"));
-		Assertions.assertTrue(user.firstname().equals("Testika"));
-		Assertions.assertTrue(user.lastname().equals("Testonia"));
-		Assertions.assertTrue(user.passwordHash().equals("hash"));
-		Assertions.assertTrue(user.passwordSalt().equals("salt"));
-		Assertions.assertTrue(user.status().equals("BLOCKED"));
-		Assertions.assertTrue(user.isDeletable() == false);
-		Assertions.assertTrue(user.isRenamable() == false);
-		Assertions.assertTrue(user.isForeign() == true);
+		Assertions.assertNotNull(user);
+		Assertions.assertEquals(user.username(), username);
+		Assertions.assertEquals(user.email(), "t.testonia@cfw.com");
+		Assertions.assertEquals(user.firstname(), "Testika");
+		Assertions.assertEquals(user.lastname(), "Testonia");
+		Assertions.assertEquals(user.passwordHash(), "hash");
+		Assertions.assertEquals(user.passwordSalt(), "salt");
+		Assertions.assertEquals(user.status(), "BLOCKED");
+		Assertions.assertFalse(user.isDeletable());
+		Assertions.assertFalse(user.isRenamable());
+		Assertions.assertTrue(user.isForeign());
 		
 		//--------------------------------------
 		// SELECT BY USERNAME CASE INSENSITIVE
@@ -207,7 +204,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		//--------------------------------------
 		// CHECK NOT RENAMABME
 		user.username("notRenamable");
-		Assertions.assertFalse(user.username().equals("notRenamable"), "The user is not renamed, returns false.");
+		Assertions.assertNotEquals(user.username(), "notRenamable", "The user is not renamed, returns false.");
 		Assertions.assertTrue(CFW.DB.Users.checkUsernameExists(username), "The user still exists.");
 		
 		//--------------------------------------
@@ -237,17 +234,17 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		System.out.println(updatedUser.dumpFieldsAsKeyValueString());
 		
 		Assertions.assertTrue(CFW.DB.Users.checkUsernameExists(updatedUser), "User exists, checkUsernameExists(user) works.");
-		Assertions.assertTrue(updatedUser != null);
-		Assertions.assertTrue(updatedUser.username().equals(usernameUpdated));
-		Assertions.assertTrue(updatedUser.email().equals("t.testonia2@cfw.com"));
-		Assertions.assertTrue(updatedUser.firstname().equals("Testika2"));
-		Assertions.assertTrue(updatedUser.lastname().equals("Testonia2"));
-		Assertions.assertTrue(updatedUser.passwordHash().equals("hash2"));
-		Assertions.assertTrue(updatedUser.passwordSalt().equals("salt2"));
-		Assertions.assertTrue(updatedUser.status().equals("Inactive"));
-		Assertions.assertTrue(updatedUser.isDeletable() == true);
-		Assertions.assertTrue(updatedUser.isRenamable() == true);
-		Assertions.assertTrue(updatedUser.isForeign() == false);
+		Assertions.assertNotNull(updatedUser);
+		Assertions.assertEquals(updatedUser.username(), usernameUpdated);
+		Assertions.assertEquals(updatedUser.email(), "t.testonia2@cfw.com");
+		Assertions.assertEquals(updatedUser.firstname(), "Testika2");
+		Assertions.assertEquals(updatedUser.lastname(), "Testonia2");
+		Assertions.assertEquals(updatedUser.passwordHash(), "hash2");
+		Assertions.assertEquals(updatedUser.passwordSalt(), "salt2");
+		Assertions.assertEquals(updatedUser.status(), "Inactive");
+		Assertions.assertTrue(updatedUser.isDeletable());
+		Assertions.assertTrue(updatedUser.isRenamable());
+		Assertions.assertFalse(updatedUser.isForeign());
 
 		
 		//--------------------------------------
@@ -313,10 +310,10 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		//System.out.println(role.getKeyValueString());
 
 		Assertions.assertTrue(CFW.DB.Roles.checkExistsByName(role), "Role created successfully, checkRoleExists(Role) works.");
-		Assertions.assertTrue(role != null);
-		Assertions.assertTrue(role.name().equals(rolename));
-		Assertions.assertTrue(role.description().equals("Testdescription"));
-		Assertions.assertTrue(role.isDeletable() == false);
+		Assertions.assertNotNull(role);
+		Assertions.assertEquals(role.name(), rolename);
+		Assertions.assertEquals(role.description(), "Testdescription");
+		Assertions.assertFalse(role.isDeletable());
 		
 		//--------------------------------------
 		// CHECK NOT DELETABLE
@@ -338,16 +335,16 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		//System.out.println("===== UPDATED GROUP =====");
 		//System.out.println(updatedRole.getKeyValueString());
 		
-		Assertions.assertTrue(role != null);
-		Assertions.assertTrue(role.name().equals(rolenameUpdated));
-		Assertions.assertTrue(role.description().equals("Testdescription2"));
-		Assertions.assertTrue(role.isDeletable() == true);
+		Assertions.assertNotNull(role);
+		Assertions.assertEquals(role.name(), rolenameUpdated);
+		Assertions.assertEquals(role.description(), "Testdescription2");
+		Assertions.assertTrue(role.isDeletable());
 		
 		//--------------------------------------
 		// SELECT BY ID
 		Role roleByID = CFW.DB.Roles.selectByID(updatedRole.id());
 		
-		Assertions.assertTrue(roleByID != null, "Role is selected by ID.");
+		Assertions.assertNotNull(roleByID, "Role is selected by ID.");
 		//--------------------------------------
 		// DELETE
 		CFW.DB.Roles.deleteByID(updatedRole.id());
@@ -467,9 +464,9 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		//System.out.println(permission.getKeyValueString());
 
 		Assertions.assertTrue(CFW.DB.Permissions.checkExistsByName(permission), "Permission created successfully, checkPermissionExists(Permission) works.");
-		Assertions.assertTrue(permission != null);
-		Assertions.assertTrue(permission.name().equals(permissionname));
-		Assertions.assertTrue(permission.description().equals("Testdescription"));
+		Assertions.assertNotNull(permission);
+		Assertions.assertEquals(permission.name(), permissionname);
+		Assertions.assertEquals(permission.description(), "Testdescription");
 		
 		//--------------------------------------
 		// CHECK NOT DELETABLE
@@ -490,15 +487,15 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		//System.out.println("===== UPDATED PERMISSION =====");
 		//System.out.println(updatedPermission.getKeyValueString());
 		
-		Assertions.assertTrue(permission != null);
-		Assertions.assertTrue(permission.name().equals(permissionnameUpdated));
-		Assertions.assertTrue(permission.description().equals("Testdescription2"));
+		Assertions.assertNotNull(permission);
+		Assertions.assertEquals(permission.name(), permissionnameUpdated);
+		Assertions.assertEquals(permission.description(), "Testdescription2");
 		
 		//--------------------------------------
 		// SELECT BY ID
 		Permission permissionByID = CFW.DB.Permissions.selectByID(updatedPermission.id());
 		
-		Assertions.assertTrue(permissionByID != null, "Permission is selected by ID.");
+		Assertions.assertNotNull(permissionByID, "Permission is selected by ID.");
 		//--------------------------------------
 		// DELETE
 		CFW.DB.Permissions.deleteByID(updatedPermission.id());

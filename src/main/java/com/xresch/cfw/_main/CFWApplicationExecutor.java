@@ -65,7 +65,7 @@ public class CFWApplicationExecutor {
 	
 	public WebAppContext applicationContext;
 	
-	public CFWApplicationExecutor(String[] args) throws Exception {  
+	public CFWApplicationExecutor() throws Exception {  
 		sessionHandler = CFWApplicationExecutor.createSessionHandler("/");
 		
     	//---------------------------------------
@@ -191,7 +191,7 @@ public class CFWApplicationExecutor {
 	 * Create an error handler.
 	 * @throws Exception
 	 **************************************************************************************************/
-	public static ErrorHandler createErrorHandler() throws Exception {
+	public static ErrorHandler createErrorHandler() {
 //	    ErrorPageErrorHandler errorHandler = new ErrorPageErrorHandler();
 //	    errorHandler.addErrorPage(404, "/missing.html");
 //	    context.setErrorHandler(errorHandler);
@@ -206,7 +206,7 @@ public class CFWApplicationExecutor {
 	 * Setup and returns a SessionHandler
 	 * @param string 
 	 ***********************************************************************/
-	public static SessionHandler createSessionHandler(String string) {
+	public static SessionHandler createSessionHandler(String path) {
 	
 	    SessionHandler sessionHandler = new SessionHandler();
 	    
@@ -222,7 +222,7 @@ public class CFWApplicationExecutor {
 	    HashSet<SessionTrackingMode> trackingModes = new HashSet<SessionTrackingMode>();
 	    trackingModes.add(SessionTrackingMode.COOKIE);
 	    sessionHandler.setSessionTrackingModes(trackingModes);
-	    sessionHandler.getSessionCookieConfig().setPath("/");
+	    sessionHandler.getSessionCookieConfig().setPath(path);
 	    sessionHandler.getSessionCookieConfig().setHttpOnly(true);
 	    sessionHandler.getSessionCookieConfig().setName("CFWSESSIONID");
 	    

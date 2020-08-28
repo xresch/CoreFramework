@@ -20,10 +20,10 @@ public class TestsCFWJson {
 						+"\"name\": \"value\""
 				+"}");
 		
-		Assertions.assertTrue(result.size() == 3, "3 entries are found in the map.");
-		Assertions.assertTrue(result.get("key").equals("label"), "value is mapped correctly.");
-		Assertions.assertTrue(result.get("12").equals("object"), "value is mapped correctly.");
-		Assertions.assertTrue(result.get("name").equals("value"), "value is mapped correctly.");
+		Assertions.assertEquals(result.size(), 3, "3 entries are found in the map.");
+		Assertions.assertEquals(result.get("key"), "label", "value is mapped correctly.");
+		Assertions.assertEquals(result.get("12"), "object", "value is mapped correctly.");
+		Assertions.assertEquals(result.get("name"), "value", "value is mapped correctly.");
 	}
 	
 }

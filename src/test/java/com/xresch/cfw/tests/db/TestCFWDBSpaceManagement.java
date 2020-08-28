@@ -101,9 +101,9 @@ public class TestCFWDBSpaceManagement extends DBTestMaster {
 		System.out.println("===== CONFIG =====");
 		System.out.println(spacegroup.dumpFieldsAsKeyValueString());
 
-		Assertions.assertTrue(spacegroup != null);
-		Assertions.assertTrue(spacegroup.name().equals(spacegroupname));
-		Assertions.assertTrue(spacegroup.description().equals("Testdescription"));
+		Assertions.assertNotNull(spacegroup);
+		Assertions.assertEquals(spacegroup.name(), spacegroupname);
+		Assertions.assertEquals(spacegroup.description(), "Testdescription");
 		
 		//--------------------------------------
 		// UPDATE
@@ -119,15 +119,15 @@ public class TestCFWDBSpaceManagement extends DBTestMaster {
 		System.out.println("===== UPDATED CONFIG =====");
 		System.out.println(updatedConfig.dumpFieldsAsKeyValueString());
 		
-		Assertions.assertTrue(spacegroup != null);
-		Assertions.assertTrue(spacegroup.name().equals(spacegroupnameUpdated));
-		Assertions.assertTrue(spacegroup.description().equals("Testdescription2"));
+		Assertions.assertNotNull(spacegroup);
+		Assertions.assertEquals(spacegroup.name(), spacegroupnameUpdated);
+		Assertions.assertEquals(spacegroup.description(), "Testdescription2");
 		
 		//--------------------------------------
 		// SELECT BY ID
 		SpaceGroup spacegroupByID = CFW.DB.SpaceGroups.selectByID(updatedConfig.id());
 		
-		Assertions.assertTrue(spacegroupByID != null, "Config is selected by ID.");
+		Assertions.assertNotNull(spacegroupByID, "Config is selected by ID.");
 		
 		//--------------------------------------
 		// DELETE

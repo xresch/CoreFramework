@@ -1,5 +1,6 @@
 package com.xresch.cfw._main;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -134,14 +135,17 @@ public class CFW {
 	public static final String PATH_TEMPLATE_FOOTER = PATH_RESOURCES_HTML+"/default_template/footer.html";
 	
 	
-	private static void initializeCore(String[] args) throws Exception{
+	private static void initializeCore(String[] args) throws ArgumentsException, IOException{
 		
 		//------------------------------------
 		// Command Line Arguments
 		CFW.CLI.readArguments(args);
 
 		if (!CFW.CLI.validateArguments()) {
-			System.out.println("Issues loading arguments: \n"+CFW.CLI.getInvalidMessagesAsString());
+			new CFWLog(logger)
+				.method("initializeCore")
+				.severe("Issues loading arguments: "+CFW.CLI.getInvalidMessagesAsString());
+			
 			CFW.CLI.printUsage();
 			throw new ArgumentsException(CFW.CLI.getInvalidMessages());
 		}
@@ -255,7 +259,7 @@ public class CFW {
     	
 	    //--------------------------------
 	    // Start Application
-		CFWApplicationExecutor executor = new CFWApplicationExecutor(args);
+		CFWApplicationExecutor executor = new CFWApplicationExecutor();
 		
 		for(CFWAppFeature feature : features) {
 			feature.addFeature(executor);
