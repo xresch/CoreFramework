@@ -498,21 +498,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		//---------------------------------
 		// Set initial value
-		String epochTime = null;
-		if(this.value != null) {
-			
-			if(value instanceof Date) {
-				epochTime = ""+((Date)value).getTime();
-				this.addAttribute("value", ""+epochTime);
-			}else if(value instanceof Timestamp) {
-				epochTime = ""+((Timestamp)value).getTime();
-				this.addAttribute("value", ""+epochTime);
-			}else {
-				epochTime = value.toString();
-				this.addAttribute("value", ""+value.toString());
-			}
-
-		}
+		String epochTime = this.toEpochTimeString(this.value);
+		this.addAttribute("value", epochTime);
 		
 		//---------------------------------
 		// Create Field
@@ -534,21 +521,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		//---------------------------------
 		// Set initial value
-		String epochTime = null;
-		if(this.value != null) {
-			
-			if(value instanceof Date) {
-				epochTime = ""+((Date)value).getTime();
-				this.addAttribute("value", ""+epochTime);
-			}else if(value instanceof Timestamp) {
-				epochTime = ""+((Timestamp)value).getTime();
-				this.addAttribute("value", ""+epochTime);
-			}else {
-				epochTime = value.toString();
-				this.addAttribute("value", ""+value.toString());
-			}
-
-		}
+		String epochTime = this.toEpochTimeString(this.value);
+		this.addAttribute("value", epochTime);
 		
 		//---------------------------------
 		// Create Field
@@ -562,6 +536,29 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			((CFWForm)this.parent).javascript.append("cfw_initializeTimefield('"+name+"', "+epochTime+");\r\n");
 		}
 				
+	}
+	
+	/********************************************************************************************
+	 * Used to get the epoch time as a string to create a time field.
+	 * @return string
+	 ********************************************************************************************/
+	private String toEpochTimeString(Object value) {
+		String epochTime = null;
+		if(value != null) {
+			
+			if(value instanceof Date) {
+				epochTime = ""+((Date)value).getTime();
+				
+			}else if(value instanceof Timestamp) {
+				epochTime = ""+((Timestamp)value).getTime();
+				this.addAttribute("value", ""+epochTime);
+			}else {
+				epochTime = value.toString();
+				this.addAttribute("value", ""+value.toString());
+			}
+		}
+		
+		return epochTime;
 	}
 	
 	/***********************************************************************************
