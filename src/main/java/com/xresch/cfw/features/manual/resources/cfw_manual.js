@@ -34,10 +34,10 @@ function cfw_manual_createPrintView(pageGUID){
 	//--------------------------
 	// Copy Styles
 	var stylesheets = $('link[rel="stylesheet"]');
-	for(var i = 0; i < stylesheets.length; i++){
-		var href = stylesheets.eq(i).attr('href');
+	for(let i = 0; i < stylesheets.length; i++){
+		let href = stylesheets.eq(i).attr('href');
 		if(!CFW.utils.isNullOrEmpty(href) && href.startsWith('/cfw')){
-			var cssLink = printView.document.createElement("link");
+			let cssLink = printView.document.createElement("link");
 			cssLink.rel = "stylesheet";
 			cssLink.media = "screen, print";
 			cssLink.href = CFW_MANUAL_HOST_URL+href;
@@ -47,7 +47,7 @@ function cfw_manual_createPrintView(pageGUID){
 	
 	//--------------------------
 	// Override Bootstrap Style
-	var cssLink = printView.document.createElement("link");
+	let cssLink = printView.document.createElement("link");
 	cssLink.rel = "stylesheet";
 	cssLink.media = "screen, print";
 	cssLink.href = CFW_MANUAL_HOST_URL+"/cfw/jarresource?pkg=com.xresch.cfw.features.core.resources.css&file=bootstrap-theme-bootstrap.css";
@@ -57,11 +57,11 @@ function cfw_manual_createPrintView(pageGUID){
 	// Copy Scripts
 	var javascripts = $('#javascripts script');
 	console.log(javascripts);
-	for(var i = 0; i < javascripts.length; i++){
+	for(let i = 0; i < javascripts.length; i++){
 		console.log("A");
-		var source = javascripts.eq(i).attr('src');
+		let source = javascripts.eq(i).attr('src');
 		if(!CFW.utils.isNullOrEmpty(source) && source.startsWith('/cfw')){
-			var script = printView.document.createElement("script");
+			let script = printView.document.createElement("script");
 			script.src = CFW_MANUAL_HOST_URL+source;
 			printView.document.head.appendChild(script);
 		}
@@ -124,7 +124,7 @@ function cfw_manual_createPrintView(pageGUID){
 	if(pageGUID != null){
 		//--------------------------
 		// Print Current Page
-		var parentPages = [CFW_MANUAL_GUID_PAGE_MAP[pageGUID]];
+		parentPages = [CFW_MANUAL_GUID_PAGE_MAP[pageGUID]];
 		titleString = 'Manual - '+parentPages[0].title;
 	}else{
 		//--------------------------
@@ -145,7 +145,7 @@ function cfw_manual_createPrintView(pageGUID){
 		paper.append(printTOC);
 		parent.append(paper);
 		
-		for(var i = 0; i < parentPages.length; i++){
+		for(let i = 0; i < parentPages.length; i++){
 			cfw_manual_addPageToPrintView(paper, parentPages[i], 0);
 		}
 		
@@ -208,7 +208,7 @@ function cfw_manual_preparePageForPrint(pageContent, headerOffset){
 	//------------------------------
 	// Find first Header Level
 	var level = 0;
-	for(var level = 1; level <= 7; level++){
+	for(level = 1; level <= 7; level++){
 		console.log('find level'+level)
 		if(level == 7){ level = -1; break;}
 		if(pageContent.indexOf('<h'+level) > -1){

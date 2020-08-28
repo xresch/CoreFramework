@@ -54,9 +54,11 @@
 								    		false);
 								   
 								    //----------------------------
-								    // Disable widget
+								    // Reload Widget from Instance
 								    var subWidgetObject = $(widgetInstance).data('widgetObject');
 								    
+								    //----------------------------
+								    // Check Edit Mode
 								    if(!CFW_DASHBOARD_EDIT_MODE){
 								    	grid.movable('#'+subWidgetObject.guid, false);
 								    	grid.resizable('#'+subWidgetObject.guid, false);

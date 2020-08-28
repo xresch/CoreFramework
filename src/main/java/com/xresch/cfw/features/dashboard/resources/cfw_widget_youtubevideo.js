@@ -20,14 +20,13 @@
 				if(widgetObject.JSON_SETTINGS.url.includes('/embed')){
 					finalURL = widgetObject.JSON_SETTINGS.url;
 				}else if(widgetObject.JSON_SETTINGS.url.includes('/watch?v=')){
-					var regex = /watch\?v=([^&]+)/g;
-					var groups = regex.exec(widgetObject.JSON_SETTINGS.url);
-					  
+					let regex = /watch\?v=([^&]+)/g;
+					let groups = regex.exec(widgetObject.JSON_SETTINGS.url);
 					finalURL = 'https://www.youtube.com/embed/'+groups[1];
+					
 				}else if(widgetObject.JSON_SETTINGS.url.includes('youtu.be/')){
-					var regex = /youtu.be\/(.+)/g;
-					var groups = regex.exec(widgetObject.JSON_SETTINGS.url);
-					  
+					let regex = /youtu.be\/(.+)/g;
+					let groups = regex.exec(widgetObject.JSON_SETTINGS.url);
 					finalURL = 'https://www.youtube.com/embed/'+groups[1];
 				}
 					

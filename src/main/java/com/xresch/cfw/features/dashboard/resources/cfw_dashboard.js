@@ -215,7 +215,7 @@ function cfw_dashboard_triggerRedo(){
 		// Check Position
 		if(CFW_DASHBOARD_COMMAND_HISTORY.length != CFW_DASHBOARD_HISTORY_POSITION){
 			CFW_DASHBOARD_HISTORY_POSITION++;
-			var commandBundle = CFW_DASHBOARD_COMMAND_HISTORY[CFW_DASHBOARD_HISTORY_POSITION-1];
+			commandBundle = CFW_DASHBOARD_COMMAND_HISTORY[CFW_DASHBOARD_HISTORY_POSITION-1];
 			
 			CFW.ui.toogleLoader(true);
 			window.setTimeout( 
@@ -906,21 +906,26 @@ function cfw_dashboard_fetchWidgetData(widgetObject, callback) {
 	var definition = CFW.dashboard.getWidgetDefinition(widgetObject.TYPE);
 	
 	var settings = widgetObject.JSON_SETTINGS;
+	
+	//----------------------------
+	// Check has Timeframe
 	if(definition.usetimeframe){
 		if(!CFW_DASHBOARD_TIME_ENABLED){
 			$('#timeframePicker').removeClass('d-none');
 			CFW_DASHBOARD_TIME_ENABLED = true;
 		}
-		var settings = _.cloneDeep(settings);
+		settings = _.cloneDeep(settings);
 		settings.timeframe_earliest = CFW_DASHBOARD_TIME_EARLIEST_EPOCH;
 		settings.timeframe_latest = CFW_DASHBOARD_TIME_LATEST_EPOCH;
 	}
 	
+	//----------------------------
+	// Fetch Data
 	params.JSON_SETTINGS = JSON.stringify(settings);
 	
-		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){
-			callback(data);
-		});
+	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){
+		callback(data);
+	});
 
 	
 	return formHTML;
@@ -982,9 +987,11 @@ function cfw_dashboard_createWidgetInstance(widgetObject, doAutoposition, callba
 			    		doAutoposition);
 			   
 			    //----------------------------
-			    // Disable widget
-			    var widgetObject = $(widgetInstance).data('widgetObject');
+			    // Reload Widget from Instance
+			    widgetObject = $(widgetInstance).data('widgetObject');
 			    
+			    //----------------------------
+			    // Check Edit Mode
 			    if(!CFW_DASHBOARD_EDIT_MODE){
 			    	grid.movable('#'+widgetObject.guid, false);
 			    	grid.resizable('#'+widgetObject.guid, false);
