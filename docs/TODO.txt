@@ -91,6 +91,8 @@ BREAKING CHANGES:
 HTMLResponse: Changed StringBuffer to StringBuilder
 
 CHANGES:
+- Context Settings: Fixed button display
+- Code improvements from SonarQube findings
 - Added System Analytics >> Servlet Context Tree
 - Support Info: Use default Modal, make exceptions unique.
 - Show previous toasts all toasts button

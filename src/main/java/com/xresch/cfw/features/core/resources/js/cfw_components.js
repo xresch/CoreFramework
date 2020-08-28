@@ -119,7 +119,7 @@ class CFWRenderer{
 			 // resolve default visible fields
 			 if(definition.visiblefields == null){ 
 				 definition.visiblefields = [];
-				 for(var key in firstObject){
+				 for(let key in firstObject){
 					 definition.visiblefields.push(key);
 				 }
 			 }
@@ -135,8 +135,8 @@ class CFWRenderer{
 		 
 		 //---------------------------
 		 // Create Labels
-		 for(var key in definition.visiblefields){
-			var fieldname = definition.visiblefields[key];
+		 for(let key in definition.visiblefields){
+			let fieldname = definition.visiblefields[key];
 			if(definition.labels[fieldname] == null){
 				definition.labels[fieldname] = CFW.format.fieldNameToLabel(fieldname);
 			}

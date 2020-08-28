@@ -227,7 +227,7 @@ function cfw_apioverview_printOverview(data){
 					cfwTable.addHeaders(['Name','Type','Description']);
 					
 					var htmlRows = '';
-					for(var j = 0; j < sub.params.length; j++){
+					for(let j = 0; j < sub.params.length; j++){
 						//{"name": "pk_id", "type": "Integer", "description": "null"}
 						var paramDef = sub.params[j];
 						htmlRows += '<tr>'
@@ -251,7 +251,7 @@ function cfw_apioverview_printOverview(data){
 					returnTable.addHeaders(['Name','Type','Description']);
 					
 					htmlRows = '';
-					for(var j = 0; j < sub.returnValues.length; j++){
+					for(let j = 0; j < sub.returnValues.length; j++){
 						//{"name": "pk_id", "type": "Integer", "description": "null"}
 						var returnValue = sub.returnValues[j];
 						htmlRows += '<tr>'

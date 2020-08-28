@@ -130,6 +130,7 @@ function cfw_renderer_tiles(renderDef) {
 		
 		if(settings.borderstyle != null){
 			var baseradius = 10;
+			var radius;
 			switch(settings.borderstyle.toLowerCase()){
 				case 'round':  			currentTile.css('border-radius', baseradius * settings.sizefactor+'px');
 										break;
@@ -137,12 +138,12 @@ function cfw_renderer_tiles(renderDef) {
 				case 'superround':  	currentTile.css('border-radius', baseradius * 2 * settings.sizefactor+'px');
 										break;
 				
-				case 'asymmetric':  	var radius = baseradius * 2.4 * settings.sizefactor+'px ';
+				case 'asymmetric':  	radius = baseradius * 2.4 * settings.sizefactor+'px ';
 										radius += baseradius * 0.8 * settings.sizefactor+'px';
 										currentTile.css('border-radius', radius);
 										break;
 										
-				case 'superasymmetric':	var radius = baseradius * 5 * settings.sizefactor+'px ';
+				case 'superasymmetric':	radius = baseradius * 5 * settings.sizefactor+'px ';
 										radius += baseradius * 2 * settings.sizefactor+'px';
 										currentTile.css('border-radius', radius);
 										break;
@@ -301,19 +302,19 @@ function cfw_renderer_table(renderDef) {
 	//-----------------------------------
 	// Verticalize Single Records
 	if(renderDef.data.length == 1 && settings.verticalize){
-		var singleRecordData = [];
-		var singleRecord = renderDef.data[0]
+		let singleRecordData = [];
+		let singleRecord = renderDef.data[0]
 		
 		//----------------------
 		// Fields
-		for(var i in renderDef.visiblefields){
-			var fieldname = renderDef.visiblefields[i];
-			var label = CFW.format.fieldNameToLabel(fieldname);
-			var finalValue = singleRecord[fieldname];
+		for(let i in renderDef.visiblefields){
+			let fieldname = renderDef.visiblefields[i];
+			let label = CFW.format.fieldNameToLabel(fieldname);
+			let finalValue = singleRecord[fieldname];
 			
 			if(renderDef.customizers[fieldname] != null){
-				var customizer = renderDef.customizers[fieldname];
-				finalValue = customizer(currentRecord, finalValue);
+				let customizer = renderDef.customizers[fieldname];
+				finalValue = customizer(singleRecord, finalValue);
 			}
 			singleRecordData.push({name: label, value: finalValue});
 		}
@@ -321,13 +322,13 @@ function cfw_renderer_table(renderDef) {
 		//-------------------------
 		// Add Action buttons
 		if(renderDef.actions.length > 0){
-			var id = null;
-			var actionButtonHTML = "";
+			let id = null;
+			let actionButtonHTML = "";
 			if(renderDef.idfield != null){
 				id = singleRecord[renderDef.idfield];
 			}
 			var actionDiv = $('<div>');
-			for(var fieldKey in renderDef.actions){
+			for(let fieldKey in renderDef.actions){
 				actionDiv.append(renderDef.actions[fieldKey](singleRecord, id ));
 			}
 			singleRecordData.push({name: "Actions", value: actionDiv});
@@ -356,25 +357,25 @@ function cfw_renderer_table(renderDef) {
 	var selectorGroupClass;
 	if(renderDef.bulkActions != null){
 		selectorGroupClass = "table-checkboxes-"+CFW.utils.randomString(16);
-		var checkbox = $('<input type="checkbox" onclick="$(\'.'+selectorGroupClass+':visible\').prop(\'checked\', $(this).is(\':checked\') )" >');
+		let checkbox = $('<input type="checkbox" onclick="$(\'.'+selectorGroupClass+':visible\').prop(\'checked\', $(this).is(\':checked\') )" >');
 		
 		cfwTable.addHeader(checkbox);
 	}
 	
-	for(var key in renderDef.visiblefields){
-		var fieldname = renderDef.visiblefields[key];
+	for(let key in renderDef.visiblefields){
+		let fieldname = renderDef.visiblefields[key];
 		cfwTable.addHeader(renderDef.labels[fieldname]);
 	}
 	
-	for(var key in renderDef.actions){
+	for(let key in renderDef.actions){
 		cfwTable.addHeader("&nbsp;");
 	}
 				
 	//-----------------------------------
 	// Print Records
-	for(var i = 0; i < renderDef.data.length; i++ ){
-		var currentRecord = renderDef.data[i];
-		var row = $('<tr class="cfwRecordContainer">');
+	for(let i = 0; i < renderDef.data.length; i++ ){
+		let currentRecord = renderDef.data[i];
+		let row = $('<tr class="cfwRecordContainer">');
 		
 		//-------------------------
 		// Add Styles
@@ -397,12 +398,12 @@ function cfw_renderer_table(renderDef) {
 		var cellHTML = '';
 		if(renderDef.bulkActions != null){
 			
-			var value = "";
+			let value = "";
 			if(renderDef.idfield != null){
 				value = currentRecord[renderDef.idfield];
 			}
-			var checkboxCell = $('<td>');
-			var checkbox = $('<input class="'+selectorGroupClass+'" type="checkbox" value="'+value+'">');
+			let checkboxCell = $('<td>');
+			let checkbox = $('<input class="'+selectorGroupClass+'" type="checkbox" value="'+value+'">');
 			checkbox.data('idfield', renderDef.idfield);
 			checkbox.data('record', currentRecord);
 			checkboxCell.append(checkbox);
@@ -411,15 +412,15 @@ function cfw_renderer_table(renderDef) {
 		
 		//-------------------------
 		// Add field Values as Cells
-		for(var key in renderDef.visiblefields){
-			var fieldname = renderDef.visiblefields[key];
-			var value = currentRecord[fieldname];
+		for(let key in renderDef.visiblefields){
+			let fieldname = renderDef.visiblefields[key];
+			let value = currentRecord[fieldname];
 			
 			if(renderDef.customizers[fieldname] == null){
 				
 				if(settings.verticalize){
 					//value already customized and may be a JQuery Object
-					var cell = $('<td>');
+					let cell = $('<td>');
 					cell.append(value);
 					row.append(cell);
 				}else if(value != null){
@@ -430,9 +431,9 @@ function cfw_renderer_table(renderDef) {
 			}else{
 				row.append(cellHTML);
 				cellHTML = "";
-				var customizer = renderDef.customizers[fieldname];
-				var customizedValue = customizer(currentRecord, value);
-				var cell = $('<td>');
+				let customizer = renderDef.customizers[fieldname];
+				let customizedValue = customizer(currentRecord, value);
+				let cell = $('<td>');
 				cell.append(customizedValue);
 				row.append(cell);
 				
@@ -441,12 +442,12 @@ function cfw_renderer_table(renderDef) {
 		row.append(cellHTML);
 		//-------------------------
 		// Add Action buttons
-		var id = null;
+		let id = null;
 		if(renderDef.idfield != null){
 			id = currentRecord[renderDef.idfield];
 		}
-		for(var fieldKey in renderDef.actions){
-			var td = $('<td>');
+		for(let fieldKey in renderDef.actions){
+			let td = $('<td>');
 			td.append(renderDef.actions[fieldKey](currentRecord, id ));
 			row.append(td);
 		}
@@ -459,16 +460,16 @@ function cfw_renderer_table(renderDef) {
 	if(renderDef.bulkActions == null){
 		return cfwTable.getTable();
 	}else{
-		var wrapperDiv = cfwTable.getTable();
+		let wrapperDiv = cfwTable.getTable();
 		
-		var actionsDivTop  = $('<div class="m-1">');
-		var actionsDivBottom  = $('<div class="m-1">');
-		for(var buttonLabel in renderDef.bulkActions){
+		let actionsDivTop  = $('<div class="m-1">');
+		let actionsDivBottom  = $('<div class="m-1">');
+		for(let buttonLabel in renderDef.bulkActions){
 			//----------------------------
 			// Top 
 			if(renderDef.bulkActionsPos == 'both' || renderDef.bulkActionsPos == 'top' ){
-				var func = renderDef.bulkActions[buttonLabel];
-				var button = $('<button class="btn btn-sm btn-primary mr-1" onclick="cfw_internal_executeMultiAction(this)">'+buttonLabel+'</button>');
+				let func = renderDef.bulkActions[buttonLabel];
+				let button = $('<button class="btn btn-sm btn-primary mr-1" onclick="cfw_internal_executeMultiAction(this)">'+buttonLabel+'</button>');
 				button.data('checkboxSelector', '.'+selectorGroupClass); 
 				button.data("function", func); 
 				actionsDivTop.append(button);
@@ -477,8 +478,8 @@ function cfw_renderer_table(renderDef) {
 			//----------------------------
 			// Bottom
 			if(renderDef.bulkActionsPos == 'both' || renderDef.bulkActionsPos == 'bottom' ){
-				var func = renderDef.bulkActions[buttonLabel];
-				var button = $('<button class="btn btn-sm btn-primary mr-1" onclick="cfw_internal_executeMultiAction(this)">'+buttonLabel+'</button>');
+				let func = renderDef.bulkActions[buttonLabel];
+				let button = $('<button class="btn btn-sm btn-primary mr-1" onclick="cfw_internal_executeMultiAction(this)">'+buttonLabel+'</button>');
 				button.data('checkboxSelector', '.'+selectorGroupClass); 
 				button.data("function", func); 
 				actionsDivBottom.append(button);
@@ -509,22 +510,21 @@ function cfw_renderer_panels (renderDef) {
 	}
 	
 	//===================================================
-	// Create Table
+	// Create Pannels
 	//===================================================
-	//TODO: Wrapper Diff flex-grow-1 / w-100 h-100
-	//var cfwTable = new CFWTable(renderDef.rendererSettings.table);
 	var wrapper = $("<div class='flex-grow-1'>");
 	
 	var selectorGroupClass = "panel-checkboxes-"+CFW.utils.randomString(16);
+	
 	//-----------------------------------
 	// Print Records
-	for(var i = 0; i < renderDef.data.length; i++ ){
+	for(let i = 0; i < renderDef.data.length; i++ ){
 		
 		//---------------------------
 		// Preprarations
-		var currentRecord = renderDef.data[i];
+		let currentRecord = renderDef.data[i];
 		
-		 var panelSettings = {
+		let panelSettings = {
 				cardstyle: currentRecord[renderDef.bgstylefield],
 				textstyle: currentRecord[renderDef.textstylefield],
 				textstyleheader: null,
@@ -540,13 +540,13 @@ function cfw_renderer_panels (renderDef) {
 		// Checkboxes for selects
 		if(renderDef.bulkActions != null){
 			
-			var value = "";
+			let value = "";
 			if(renderDef.idfield != null){
 				value = currentRecord[renderDef.idfield];
 			}
 			
-			var checkboxDiv = $('<div>');
-			var checkbox = $('<input class="form-input float-left mt-1 mr-2 '+selectorGroupClass+'" type="checkbox" value="'+value+'" >');
+			let checkboxDiv = $('<div>');
+			let checkbox = $('<input class="form-input float-left mt-1 mr-2 '+selectorGroupClass+'" type="checkbox" value="'+value+'" >');
 			checkbox.data('idfield', renderDef.idfield);
 			checkbox.data('record', currentRecord);
 			checkboxDiv.append(checkbox);
@@ -556,11 +556,11 @@ function cfw_renderer_panels (renderDef) {
 		
 		//-------------------------
 		// Add field Values as Unordered List
-		var list = $("<ul>");
-		var itemHTML = '';
-		for(var key in renderDef.visiblefields){
-			var fieldname = renderDef.visiblefields[key];
-			var value = currentRecord[fieldname];
+		let list = $("<ul>");
+		let itemHTML = '';
+		for(let key in renderDef.visiblefields){
+			let fieldname = renderDef.visiblefields[key];
+			let value = currentRecord[fieldname];
 			
 			if(renderDef.customizers[fieldname] == null){
 				if(value != null){
@@ -571,9 +571,9 @@ function cfw_renderer_panels (renderDef) {
 			}else{
 				list.append(itemHTML);
 				itemHTML = '';
-				var customizer = renderDef.customizers[fieldname];
-				var customizedValue = customizer(currentRecord, value)
-				var item = $('<li><strong>' + renderDef.labels[fieldname] + ':</strong></li>');
+				let customizer = renderDef.customizers[fieldname];
+				let customizedValue = customizer(currentRecord, value)
+				let item = $('<li><strong>' + renderDef.labels[fieldname] + ':</strong></li>');
 				item.append(customizedValue);
 				list.append(item);
 			}
@@ -605,14 +605,14 @@ function cfw_renderer_panels (renderDef) {
 	//----------------------------------
 	// Create multi buttons
 	if(renderDef.bulkActions != null){
-		var actionsDivTop  = $('<div class="m-1">');
-		var actionsDivBottom  = $('<div class="m-1">');
-		for(var buttonLabel in renderDef.bulkActions){
+		let actionsDivTop  = $('<div class="m-1">');
+		let actionsDivBottom  = $('<div class="m-1">');
+		for(let buttonLabel in renderDef.bulkActions){
 			//----------------------------
 			// Top 
 			if(renderDef.bulkActionsPos == 'both' || renderDef.bulkActionsPos == 'top' ){
-				var func = renderDef.bulkActions[buttonLabel];
-				var button = $('<button class="btn btn-sm btn-primary mr-1" onclick="cfw_internal_executeMultiAction(this)">'+buttonLabel+'</button>');
+				let func = renderDef.bulkActions[buttonLabel];
+				let button = $('<button class="btn btn-sm btn-primary mr-1" onclick="cfw_internal_executeMultiAction(this)">'+buttonLabel+'</button>');
 				button.data('checkboxSelector', '.'+selectorGroupClass); 
 				button.data("function", func); 
 				actionsDivTop.append(button);
@@ -621,8 +621,8 @@ function cfw_renderer_panels (renderDef) {
 			//----------------------------
 			// Bottom
 			if(renderDef.bulkActionsPos == 'both' || renderDef.bulkActionsPos == 'bottom' ){
-				var func = renderDef.bulkActions[buttonLabel];
-				var button = $('<button class="btn btn-sm btn-primary mr-1" onclick="cfw_internal_executeMultiAction(this)">'+buttonLabel+'</button>');
+				let func = renderDef.bulkActions[buttonLabel];
+				let button = $('<button class="btn btn-sm btn-primary mr-1" onclick="cfw_internal_executeMultiAction(this)">'+buttonLabel+'</button>');
 				button.data('checkboxSelector', '.'+selectorGroupClass); 
 				button.data("function", func); 
 				actionsDivBottom.append(button);

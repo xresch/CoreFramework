@@ -154,10 +154,10 @@ function cfw_contextsettings_printContextSettings(data){
 		actionButtons.push(
 			function (record, id){ 
 				var htmlString = '';
-				htmlString += '<td><button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
+				htmlString += '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
 					+'onclick="cfw_contextsettings_edit('+id+');">'
 					+ '<i class="fa fa-pen"></i>'
-					+ '</button></td>';
+					+ '</button>';
 				return htmlString;
 			});
 		
@@ -167,10 +167,10 @@ function cfw_contextsettings_printContextSettings(data){
 		// Duplicate Button
 		actionButtons.push(
 			function (record, id){
-				var htmlString = '<td><button class="btn btn-warning btn-sm" alt="Duplicate" title="Duplicate" '
+				var htmlString = '<button class="btn btn-warning btn-sm" alt="Duplicate" title="Duplicate" '
 						+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of the selected settings.\', \'Do it!\', \'cfw_contextsettings_duplicate('+id+');\')">'
 						+ '<i class="fas fa-clone"></i>'
-						+ '</button></td>';
+						+ '</button>';
 				
 				return htmlString;
 			});
@@ -182,10 +182,10 @@ function cfw_contextsettings_printContextSettings(data){
 				function (record, id){
 					var htmlString = '';
 
-					htmlString += '<td><button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
+					htmlString += '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
 						+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the settings?\', \'Delete\', \'cfw_contextsettings_delete('+id+');\')">'
 						+ '<i class="fa fa-trash"></i>'
-						+ '</button></td>';
+						+ '</button>';
 
 					return htmlString;
 			});

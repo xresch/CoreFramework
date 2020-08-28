@@ -47,7 +47,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("Serlet Context Tree")
+				(MenuItem)new MenuItem("Servlet Context Tree")
 					.faicon("fas fa-sitemap")
 					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
 					.href("/app/servletcontexttree")	

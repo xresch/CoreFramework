@@ -1574,11 +1574,11 @@ function cfw_confirmExecution(message, confirmLabel, jsCodeOrFunction){
 }
 
 
-function cfw_confirmExecution_Execute(source, action){
+function cfw_confirmExecution_Execute(sourceElement, action){
 	
-	var source = $(source);
-	var modalID = source.data('modalID');
-	var jsCode = source.data('jsCode');
+	var $source = $(sourceElement);
+	var modalID = $source.data('modalID');
+	var jsCode = $source.data('jsCode');
 	
 	var modal = $('#'+modalID);
 	
@@ -1626,10 +1626,10 @@ function cfw_getURLParamsDecoded()
     
     var keyValuePairs = [];
     if ( window.location.href.indexOf('?') > -1){
-    	var keyValuePairs = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    	keyValuePairs = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
     }
     
-    for(var i = 0; i < keyValuePairs.length; i++)
+    for(let i = 0; i < keyValuePairs.length; i++)
     {
         var splitted = keyValuePairs[i].split('=');
         var key = cfw_secureDecodeURI(splitted[0])
@@ -1651,10 +1651,10 @@ function cfw_getURLParams()
     
     var keyValuePairs = [];
     if ( window.location.href.indexOf('?') > -1){
-    	var keyValuePairs = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    	keyValuePairs = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
     }
     
-    for(var i = 0; i < keyValuePairs.length; i++)
+    for(let i = 0; i < keyValuePairs.length; i++)
     {
         var splitted = keyValuePairs[i].split('=');
         vars[splitted[0]] = splitted[1];
