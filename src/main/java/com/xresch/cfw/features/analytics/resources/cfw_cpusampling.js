@@ -22,9 +22,7 @@ var CURRENT_TAB = "TopDown";
  * 
  ******************************************************************/
 function cfw_cpusampling_prepareData(data){
-	
-	console.log(data);
-	
+		
 	//------------------------------------------
 	// Initialize
 	var signatures = data.payload.signatures;
@@ -35,8 +33,8 @@ function cfw_cpusampling_prepareData(data){
 	
 	//------------------------------------------
 	// Convert Signatures
-	for(var i = 0; i < signatures.length; i++){
-		var current = signatures[i];
+	for(let i = 0; i < signatures.length; i++){
+		let current = signatures[i];
 		GLOBAL_SIGNATURES[current.PK_ID] = 
 			{ 
 				id:			current.PK_ID, 
@@ -53,12 +51,12 @@ function cfw_cpusampling_prepareData(data){
 	// top elements
 	var timeseries = data.payload.timeseries;
 
-	for(var i = 0; i < timeseries.length; i++){
-		var current = timeseries[i];
-		var signatureID = current.FK_ID_SIGNATURE;
-		var parentID = current.FK_ID_PARENT;
+	for(let i = 0; i < timeseries.length; i++){
+		let current = timeseries[i];
+		let signatureID = current.FK_ID_SIGNATURE;
+		let parentID = current.FK_ID_PARENT;
 		if(current.FK_ID_PARENT == null){
-			var signature = GLOBAL_SIGNATURES[current.FK_ID_SIGNATURE]
+			let signature = GLOBAL_SIGNATURES[current.FK_ID_SIGNATURE]
 			if(!TOP_ELEMENTS.includes(signature)){
 				TOP_ELEMENTS.push(signature);
 			}
@@ -69,8 +67,8 @@ function cfw_cpusampling_prepareData(data){
 			
 			//------------------------
 			// Push Parent
-			for(var j = i-1; j >= 0; j --){
-				var potentialParentTimes = timeseries[j];
+			for(let j = i-1; j >= 0; j --){
+				let potentialParentTimes = timeseries[j];
 				if(potentialParentTimes.FK_ID_SIGNATURE == parentID){
 					GLOBAL_SIGNATURES[signatureID].parents.push(potentialParentTimes);
 					break;
@@ -82,12 +80,12 @@ function cfw_cpusampling_prepareData(data){
 		
 	//------------------------------------------
 	// Sort, calculate Percentages and find bottoms
-	for(var id in GLOBAL_SIGNATURES){
+	for(let id in GLOBAL_SIGNATURES){
 
-		var current = GLOBAL_SIGNATURES[id];
-		var children = current.children;
-		var parents = current.parents;
-		console.log(GLOBAL_SIGNATURES[id]);
+		let current = GLOBAL_SIGNATURES[id];
+		let children = current.children;
+		let parents = current.parents;
+
 		CFW.array.sortArrayByValueOfObject(children, 'COUNT', true);
 		
 		//------------------------------------
@@ -105,33 +103,30 @@ function cfw_cpusampling_prepareData(data){
 		//------------------------------------
 		// Get Total Count Top Down
 		current.totalCallsTopDown = 0;
-		for(var i = 0; i < children.length; i++){
+		for(let i = 0; i < children.length; i++){
 			current.totalCallsTopDown += children[i].COUNT;
 		}
 		
 		//------------------------------------
 		// Get Total Count Bottom Up
 		current.totalCallsBottomUp = 0;
-		for(var i = 0; i < parents.length; i++){
+		for(let i = 0; i < parents.length; i++){
 			current.totalCallsBottomUp += parents[i].COUNT;
 		}
 		
 		//------------------------------------
 		// Calculate Percentage Top Down
-		for(var i = 0; i < children.length; i++){
+		for(let i = 0; i < children.length; i++){
 			children[i].percentageTopDown = (children[i].COUNT / current.totalCallsTopDown) * 100;
 		}
 		
 		//------------------------------------
 		// Calculate Percentage Bottom Up
-		for(var i = 0; i < parents.length; i++){
+		for(let i = 0; i < parents.length; i++){
 			parents[i].percentageBottomUp = (parents[i].COUNT / current.totalCallsBottomUp) * 100;
 		}
 	}
 	
-	console.log(GLOBAL_SIGNATURES);
-	console.log(TOP_ELEMENTS);
-	console.log(BOTTOM_ELEMENTS);
 	
 	cfw_cpusampling_printTabContent();
 }
@@ -241,11 +236,7 @@ function cfw_cpusampling_printHierarchyDiv(domTarget, element, parentID){
 		
 	var isRecursion = false;
 	var recursiveLabel = "";
-//	console.log("===================");
-//	console.log("signatureID = "+signatureID);
-//	console.log("domTarget.parent().attr('id') = "+domTarget.parent().attr('id'));
-//	console.log("domTarget.closest('#'+signatureID).length = "+domTarget.closest('#'+signatureID).length);
-	
+
 	if(domTarget.closest('#'+signatureID).length > 0 ){
 		recursiveLabel = '<div class="badge badge-danger ml-2">Recursion</div>';
 		isRecursion = true;
@@ -277,15 +268,9 @@ function cfw_cpusampling_printHierarchyDiv(domTarget, element, parentID){
 					     + '<div id="'+childcontainerID+'" class="cfw-cpusampling-children w-100" style=" padding-left: 15px;">'
 				   + '</div>';
 	
-	//console.log(domTarget);		   
+	   
 	domTarget.append(htmlString);
 	
-	//-------------------------------------
-	// Handle children
-//	var newLevel = level + 1;
-//	for(var i = 0; i < children.length; i++ ){
-//		cfw_cpusampling_printHierarchyDiv(newLevel, domTarget, children[i]);
-//	}
 }
 
 /******************************************************************
@@ -342,7 +327,7 @@ function cfw_cpusampling_navigateChildren(e, domElement){
 	// Right Arrow
 	// Open children
 	if (e.keyCode == 39) {
-		console.log("RIGHT");
+		
 		  if(elementChildren.children().length == 0){
 			  cfw_cpusampling_printChildren(domElement);
 		  }else{
@@ -356,7 +341,7 @@ function cfw_cpusampling_navigateChildren(e, domElement){
 	// Down Arrow 
 	// Next element
 	if (e.keyCode == 40) {
-		console.log("DOWN");
+		
 		e.preventDefault();
 		
 		//------------------------
@@ -384,7 +369,7 @@ function cfw_cpusampling_navigateChildren(e, domElement){
 	//---------------------------
 	// Left Arrow
 	if (e.keyCode == 37) { 
-		  console.log("LEFT");
+		  
 		  parentLink.focus();
 		  parentChildren.css('display', 'none');
 		  return;
@@ -393,7 +378,7 @@ function cfw_cpusampling_navigateChildren(e, domElement){
 	//---------------------------
 	// Up Arrow 
 	if (e.keyCode == 38) { 
-		console.log("UP");
+		
 		e.preventDefault();
 		
 		var prevLink = elementLink.parent().parent().prev().find('a:visible').last().focus();

@@ -67,7 +67,7 @@ public class ServletCPUSampling extends HttpServlet
 				handleDataRequest(request, response);
 			}
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Context.Request.addMessageAccessDenied();
 		}
         
     }
@@ -76,9 +76,6 @@ public class ServletCPUSampling extends HttpServlet
 		
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
-		//String ID = request.getParameter("id");
-		//String IDs = request.getParameter("ids");
-		//int	userID = CFW.Context.Request.getUser().id();
 		
 		JSONResponse jsonResponse = new JSONResponse();
 		

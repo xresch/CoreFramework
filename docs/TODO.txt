@@ -91,6 +91,7 @@ BREAKING CHANGES:
 HTMLResponse: Changed StringBuffer to StringBuilder
 
 CHANGES:
+- Added System Analytics >> Servlet Context Tree
 - Support Info: Use default Modal, make exceptions unique.
 - Show previous toasts all toasts button
 - Security: Add table class to Sanitizer for tables

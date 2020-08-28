@@ -30,20 +30,28 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
     	
     	//----------------------------------
     	// Register Regular Menu
+		String SYSTEM_ANALYTICS = "System Analytics";
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("DB Analytics")
-					.faicon("fas fa-microchip")
+					.faicon("fas fa-database")
 					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
 					.href("/app/dbanalytics")	
-				, "System Analytics");
+				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("CPU Sampling")
 					.faicon("fas fa-microchip")
 					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
 					.href("/app/cpusampling")	
-				, "System Analytics");
+				, SYSTEM_ANALYTICS);
+		
+		CFW.Registry.Components.addAdminCFWMenuItem(
+				(MenuItem)new MenuItem("Serlet Context Tree")
+					.faicon("fas fa-sitemap")
+					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.href("/app/servletcontexttree")	
+				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("Metrics")
@@ -51,7 +59,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
 					.href("/metrics")	
 					.addAttribute("target", "_blank")
-				, "System Analytics");
+				, SYSTEM_ANALYTICS);
 	}
 
 	@Override
@@ -78,6 +86,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 	public void addFeature(CFWApplicationExecutor app) {	
     	app.addAppServlet(ServletCPUSampling.class,  "/cpusampling");
     	app.addAppServlet(ServletDatabaseAnalytics.class,  "/dbanalytics");
+    	app.addAppServlet(ServletContextTree.class,  "/servletcontexttree");
 	}
 
 	@Override
