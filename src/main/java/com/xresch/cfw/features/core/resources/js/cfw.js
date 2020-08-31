@@ -766,37 +766,35 @@ function cfw_autocompleteCreateItemList(targetInputField, values){
 			e.stopPropagation();
 			e.preventDefault()
 			var element = $(this).find('input');
-			var value = element.val();
-			var label = element.data('label');
-			var isTagsInput = element.data('tagsinput');
-			var isTagsselector = element.data('tagsselector');
+			var itemValue = element.val();
+			var itemLabel = element.data('label');
+			var itemIsTagsInput = element.data('tagsinput');
+			var itemIsTagsSelector = element.data('tagsselector');
 			
-			//console.log("======"+isTagsInput+""+isTagsselector);
-			if(!isTagsInput){
+			if(!itemIsTagsInput){
 				if(method == 'exchange'){
-					targetInputField.value = value;
+					targetInputField.value = itemValue;
 					
 				}else if(method == 'append'){
-					targetInputField.value = targetInputField.value + value;
+					targetInputField.value = targetInputField.value + itemValue;
 					
 				}else if(method.startsWith('replace:')){
 					var stringToReplace = method.substring('replace:'.length);
 					var tempValue = targetInputField.value;
 					tempValue = tempValue.substring(0, tempValue.lastIndexOf(stringToReplace));
-					targetInputField.value = tempValue + value;
+					targetInputField.value = tempValue + itemValue;
 				}
 				cfw_autocompleteCloseAll();
 			}else{
-				//console.log("isTagsInput: "+isTagsInput);
-				//console.log("isTagsselector: "+isTagsselector);
+
 				targetInputField.value = '';
 				
-				if(isTagsselector){
-					// Do for Tagsinput
-					$(targetInputField).parent().siblings('input').tagsinput('add', { "value": value , "label": label });
+				if(itemIsTagsSelector){
+					// Do for Selector
+					$(targetInputField).parent().siblings('input').tagsinput('add', { "value": itemValue , "label": itemLabel });
 				}else{
-					// Do For Selector
-					$(targetInputField).parent().siblings('input').tagsinput('add', value);
+					// Do For TagsInput
+					$(targetInputField).parent().siblings('input').tagsinput('add', itemValue);
 					
 				}
 				cfw_autocompleteCloseAll();

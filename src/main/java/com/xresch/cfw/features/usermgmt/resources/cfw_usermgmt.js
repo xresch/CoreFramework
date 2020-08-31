@@ -23,8 +23,8 @@ function cfw_usermgmt_createToggleTable(parent, mapName, itemID){
 	CFW.http.getJSON(CFW_USRMGMT_URL, {action: "fetch", item: mapName, id: itemID}, 
 		function(data) {
 			if(data.payload != null){
+				
 				var htmlString = "";
-				htmlString += '';
 				var cfwTable = new CFWTable();
 				
 				cfwTable.addHeaders(['&nbsp;',
@@ -84,7 +84,6 @@ function cfw_usermgmt_createUser(){
  ******************************************************************/
 function cfw_usermgmt_editUser(userID){
 	
-	var url = "./usermanagement/data";
 	var allDiv = $('<div id="cfw-usermgmt">');	
 
 	//-----------------------------------
@@ -117,7 +116,6 @@ function cfw_usermgmt_editUser(userID){
  ******************************************************************/
 function cfw_usermgmt_resetPassword(userID){
 	
-	var url = "./usermanagement/data";
 	var allDiv = $('<div id="cfw-usermgmt">');	
 
 	//-----------------------------------

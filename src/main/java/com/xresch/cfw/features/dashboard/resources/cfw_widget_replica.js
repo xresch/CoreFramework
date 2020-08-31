@@ -38,7 +38,7 @@
 						var replicatedDefinition = CFW.dashboard.getWidgetDefinition(replicatedWidgetObject.TYPE);
 						
 						try{
-							var widgetInstance = replicatedDefinition.createWidgetInstance(replicatedWidgetObject, 
+							replicatedDefinition.createWidgetInstance(replicatedWidgetObject, 
 								function(replicatedWidgetObject, widgetContent, subWidgetObject = widgetObject){
 									
 									subWidgetObject.content = widgetContent;
