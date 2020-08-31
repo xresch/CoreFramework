@@ -429,7 +429,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//-----------------------------------
 		// handle options
 		if(valueLabelOptions != null) {
+			
 			for(Object optionValue : valueLabelOptions.keySet()) {
+				
 				String currentLabel = valueLabelOptions.get(optionValue).toString();
 				if(optionValue.toString().equals(stringVal)) {
 					html.append("<option value=\""+optionValue+"\" selected>")
@@ -594,11 +596,11 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			this.addAttribute("rows", "5");
 		}
 		this.removeAttribute("value");
-		String value = "";
+		String inputValue = "";
 		if(this.value != null) {
-			value = this.value.toString();
+			inputValue = this.value.toString();
 		}
-		html.append("<textarea class=\"form-control "+this.getAttributeValue("class")+"\" "+this.getAttributesString()+">"+value+"</textarea>");
+		html.append("<textarea class=\"form-control "+this.getAttributeValue("class")+"\" "+this.getAttributesString()+">"+inputValue+"</textarea>");
 	}
 	
 	/***********************************************************************************
@@ -654,22 +656,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * @return true if all validators returned true, false otherwise
 	 *************************************************************************/ 
 	public boolean validate(){
-		
-		boolean isValid = true;
-		
-		if(validatorArray != null) {
-			
-			invalidMessages = new ArrayList<String>();
-			for(IValidator validator : validatorArray){
-				
-				if(!validator.validate(value)){
-					invalidMessages.add(validator.getInvalidMessage());
-					isValid=false;
-				}
-			}
-		}
-		
-		return isValid;
+		return this.validateValue(value);
 	}
 	
 	/*************************************************************************
@@ -1194,7 +1181,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 						throw new Exception();
 					}
 				});
-			} catch (Throwable e) {
+			} catch (Exception e) {
 				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error handling password field. Refresh the page and try again.");
 				return false;
 			}

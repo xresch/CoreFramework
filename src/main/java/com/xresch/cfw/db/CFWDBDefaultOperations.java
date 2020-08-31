@@ -11,7 +11,7 @@ import com.xresch.cfw.logging.CFWLog;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
-public abstract class CFWDBDefaultOperations<O extends CFWObject> {
+public  class CFWDBDefaultOperations {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBDefaultOperations.class.getName());
 	
@@ -22,10 +22,10 @@ public abstract class CFWDBDefaultOperations<O extends CFWObject> {
 	 * @return true if all created successful
 	 * 
 	 ********************************************************************************************/
-	public static <O extends CFWObject> boolean create(PrecheckHandler precheck, O... cfwObjects) {
+	public static boolean create(PrecheckHandler precheck, CFWObject... cfwObjects) {
 		
 		boolean result = true;
-		for(O object : cfwObjects) {
+		for(CFWObject object : cfwObjects) {
 			result &= create(precheck, object);
 		}
 		
@@ -38,7 +38,7 @@ public abstract class CFWDBDefaultOperations<O extends CFWObject> {
 	 * @return true if successful, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static <O extends CFWObject> boolean create(PrecheckHandler precheck, O object) {
+	public static boolean create(PrecheckHandler precheck, CFWObject object) {
 		
 		if(object == null) {
 			new CFWLog(logger)
@@ -63,7 +63,7 @@ public abstract class CFWDBDefaultOperations<O extends CFWObject> {
 	 * @return primary key or null if not successful
 	 * 
 	 ********************************************************************************************/
-	public static <O extends CFWObject> Integer createGetPrimaryKey(PrecheckHandler precheck, O object) {
+	public static Integer createGetPrimaryKey(PrecheckHandler precheck, CFWObject object) {
 		
 		if(object == null) {
 			new CFWLog(logger)
@@ -88,10 +88,10 @@ public abstract class CFWDBDefaultOperations<O extends CFWObject> {
 	 * @return true if all updated successful
 	 * 
 	 ********************************************************************************************/
-	public static <O extends CFWObject> boolean update(PrecheckHandler precheck, O... cfwObjects) {
+	public static boolean update(PrecheckHandler precheck, CFWObject... cfwObjects) {
 		
 		boolean result = true;
-		for(O object : cfwObjects) {
+		for(CFWObject object : cfwObjects) {
 			result &= update(precheck, object);
 		}
 		
@@ -102,7 +102,7 @@ public abstract class CFWDBDefaultOperations<O extends CFWObject> {
 	 * @param object
 	 * @return true or false
 	 ****************************************************************/
-	public static <O extends CFWObject> boolean update(PrecheckHandler precheck, O object) {
+	public static boolean update(PrecheckHandler precheck, CFWObject object) {
 		
 		if(object == null) {
 			new CFWLog(logger)
@@ -126,7 +126,7 @@ public abstract class CFWDBDefaultOperations<O extends CFWObject> {
 	 * @param object
 	 * @return true or false
 	 ****************************************************************/
-	public static <O extends CFWObject> boolean deleteBy(PrecheckHandler precheck, Class<? extends CFWObject> cfwObjectClass, String column, Object value) {
+	public static boolean deleteBy(PrecheckHandler precheck, Class<? extends CFWObject> cfwObjectClass, String column, Object value) {
 		
 		ArrayList<CFWObject> objectArray = CFWDBDefaultOperations.selectBy(cfwObjectClass, column, value);
 		
@@ -152,7 +152,7 @@ public abstract class CFWDBDefaultOperations<O extends CFWObject> {
 	 * @param object
 	 * @return true or false
 	 ****************************************************************/
-	public static <O extends CFWObject> boolean deleteFirstBy(PrecheckHandler precheck, Class<? extends CFWObject> cfwObjectClass, String column, Object value) {
+	public static boolean deleteFirstBy(PrecheckHandler precheck, Class<? extends CFWObject> cfwObjectClass, String column, Object value) {
 		
 		CFWObject object = CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, column, value);
 		
@@ -177,7 +177,7 @@ public abstract class CFWDBDefaultOperations<O extends CFWObject> {
 	 * @param ids separated by comma
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
-	public static <O extends CFWObject> boolean deleteMultipleByID(Class<? extends CFWObject> cfwObjectClass, String commaSeparatedIDs) {
+	public static boolean deleteMultipleByID(Class<? extends CFWObject> cfwObjectClass, String commaSeparatedIDs) {
 		
 		//----------------------------------
 		// Check input format
@@ -211,7 +211,7 @@ public abstract class CFWDBDefaultOperations<O extends CFWObject> {
 	 * @param ids separated by comma
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
-	public static <O extends CFWObject> boolean deleteMultipleByIDWhere(
+	public static boolean deleteMultipleByIDWhere(
 											Class<? extends CFWObject> cfwObjectClass, 
 											String commaSeparatedIDs,
 											Object fieldnameToCheck,
@@ -298,7 +298,7 @@ public abstract class CFWDBDefaultOperations<O extends CFWObject> {
 	 * @param id of the role
 	 * @return Returns a role or null if not found or in case of exception.
 	 ****************************************************************/
-	public static <O extends CFWObject> boolean checkExistsBy(Class<? extends CFWObject> cfwObjectClass, String column, Object value ) {
+	public static boolean checkExistsBy(Class<? extends CFWObject> cfwObjectClass, String column, Object value ) {
 		
 		try {
 			int count = cfwObjectClass.newInstance()
