@@ -450,7 +450,6 @@ public abstract class DBInterface {
 				if(conn != null && transactionConnection == null) { 
 					removeOpenConnection(conn);
 					conn.close(); 
-					conn = null;
 				}
 				if(prepared != null) { prepared.close(); }
 			} catch (SQLException e2) {
@@ -516,7 +515,6 @@ public abstract class DBInterface {
 			if(!conn.isClosed()) {
 				removeOpenConnection(conn);
 				conn.close();
-				conn = null;
 			}
 		} catch (SQLException e) {
 			new CFWLog(logger)

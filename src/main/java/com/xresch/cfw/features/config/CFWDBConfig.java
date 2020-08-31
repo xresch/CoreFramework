@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
@@ -177,7 +178,7 @@ public class CFWDBConfig {
 	 ********************************************************************************************/
 	public static boolean oneTimeCreate(Configuration configuration) {
 		
-		if(configuration == null) {
+		if(configuration == null || Strings.isNullOrEmpty(configuration.name()) ) {
 			return false;
 		}
 		
@@ -185,8 +186,10 @@ public class CFWDBConfig {
 		if(!CFW.DB.Config.checkConfigExists(configuration)) {
 			
 			result &= CFW.DB.Config.create(configuration);
-			configuration = CFW.DB.Config.selectByName(configuration.name());
 			
+			if( CFW.DB.Config.selectByName(configuration.name()) == null ) {
+				result = false;
+			}
 		}
 		
 		return result;

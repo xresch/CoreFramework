@@ -145,9 +145,7 @@ public class CFWDBCPUSampleSignature {
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
 	public static boolean deleteByName(String name) {
-		
-		CPUSampleSignature signature = selectByName(name);
-		
+				
 		return new CPUSampleSignature()
 				.queryCache(CFWDBCPUSampleSignature.class, "deleteByName")
 				.delete()

@@ -779,6 +779,6 @@ function cfw_createToggleButton(url, params, isEnabled){
 }
 
 function cfw_toggleTheToggleButton(button){
-	var CFWToggleButton = $(button).data('instance');
-	CFWToggleButton.onClick();
+	let toggleButton = $(button).data('instance');
+	toggleButton.onClick();
 }

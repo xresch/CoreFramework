@@ -46,8 +46,6 @@ public class AuthenticationHandler extends HandlerWrapper
     		//##################################
         	// Handle unsecured servlets
         	//##################################
-    		String uri = request.getRequestURI().toString();
-
     		if(!request.getRequestURI().toString().startsWith(securePath)) {
     			this._handler.handle(target, baseRequest, request, response);
     			return;

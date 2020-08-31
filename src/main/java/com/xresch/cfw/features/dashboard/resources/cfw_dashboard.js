@@ -169,7 +169,6 @@ function cfw_dashboard_addUndoableOperation(widgetObjectOld, widgetObjectNew, un
 function cfw_dashboard_triggerUndo(){
 
 	if(CFW_DASHBOARD_EDIT_MODE){
-		var commandBundle = [];
 		
 		//----------------------------------
 		// Check Position
@@ -309,20 +308,20 @@ function cfw_dashboard_registerWidget(widgetUniqueType, widgetObject){
 			//Set to true if this widget uses the time from the global timeframe picker. Timeframe will be added to the settings with the fields timeframe_earliest/timeframe_latest.
 			usetimeframe: false,
 			// function that creates the widget content and returns them to the framework by calling the callback function
-			createWidgetInstance: function (widgetObject, callback) {			
+			createWidgetInstance: function (widgetObject2, callback) {			
 						
-				callback(widgetObject, "Please specify a function on your widgetDefinition.createWidgetInstance.");
+				callback(widgetObject2, "Please specify a function on your widgetDefinition.createWidgetInstance.");
 				
 			},
 			
 			// Must return a html string representing a HTML form. Or null if no settings are needed for this widget.
-			getEditForm: function (widgetObject) {
-				return CFW.dashboard.getSettingsForm(widgetObject);
+			getEditForm: function (widgetObject3) {
+				return CFW.dashboard.getSettingsForm(widgetObject3);
 			},
 			
 			// Store the values to the widgetObject. Return true if the data should be saved to the server, false otherwise.
-			onSave: function (form, widgetObject) {
-				widgetObject.JSON_SETTINGS = CFW.format.formToObject(form);
+			onSave: function (form, widgetObject4) {
+				widgetObject4.JSON_SETTINGS = CFW.format.formToObject(form);
 				return true;
 			}
 	}
@@ -748,27 +747,24 @@ function cfw_dashboard_addWidget(type, optionalRedoWidgetObject) {
 					widgetObject.WIDTH  = widgetDefinition.defaultwidth;
 				}
 
-				//var merged = Object.assign({}, widgetDefinition.defaultValues, widgetObject);
-
-				cfw_dashboard_createWidgetInstance(widgetObject, true, function(widgetObject){
+				cfw_dashboard_createWidgetInstance(widgetObject, true, function(subWidgetObject){
 					
 				    //----------------------------------
 					// Add Undoable Operation
 					
 					cfw_dashboard_startCommandBundle();
+					
 						cfw_dashboard_addUndoableOperation(
-								widgetObject, 
-								widgetObject, 
+								subWidgetObject, 
+								subWidgetObject, 
 								cfw_dashboard_undoCreate, 
 								cfw_dashboard_redoCreate
 						);
+						
 					cfw_dashboard_completeCommandBundle();
 					
 				});
-				
-				//----------------------------------
-				// Add Undo State
-				//cfw_dashboard_addUndoableOperation();
+
 			}
 		}
 	);
@@ -974,42 +970,42 @@ function cfw_dashboard_createWidgetInstance(widgetObject, doAutoposition, callba
 	if(widgetDefinition != null){
 		try{
 		widgetDefinition.createWidgetInstance(widgetObject, 
-			function(widgetObject, widgetContent){
+			function(subWidgetObject, widgetContent){
 				
-				widgetObject.content = widgetContent;
-				var widgetInstance = cfw_dashboard_createWidgetHTMLElement(widgetObject);
+				subWidgetObject.content = widgetContent;
+				var widgetInstance = cfw_dashboard_createWidgetHTMLElement(subWidgetObject);
 
 				var grid = $('.grid-stack').data('gridstack');
 
 			    grid.addWidget($(widgetInstance),
-			    		widgetObject.X, 
-			    		widgetObject.Y, 
-			    		widgetObject.WIDTH, 
-			    		widgetObject.HEIGHT, 
+			    		subWidgetObject.X, 
+			    		subWidgetObject.Y, 
+			    		subWidgetObject.WIDTH, 
+			    		subWidgetObject.HEIGHT, 
 			    		doAutoposition);
 			   
 			    //----------------------------
 			    // Get Widget with applied default values
-			    widgetObject = $(widgetInstance).data('widgetObject');
+			    subWidgetObject = $(widgetInstance).data('widgetObject');
 			    
 			    //----------------------------
 			    // Check Edit Mode
 			    if(!CFW_DASHBOARD_EDIT_MODE){
-			    	grid.movable('#'+widgetObject.guid, false);
-			    	grid.resizable('#'+widgetObject.guid, false);
+			    	grid.movable('#'+subWidgetObject.guid, false);
+			    	grid.resizable('#'+subWidgetObject.guid, false);
 			    }
 			    //----------------------------
 			    // Update Data
-			    widgetObject.WIDTH	= widgetInstance.attr("data-gs-width");
-			    widgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
-			    widgetObject.X		= widgetInstance.attr("data-gs-x");
-			    widgetObject.Y		= widgetInstance.attr("data-gs-y");
-			    $(widgetInstance).data('widgetObject', widgetObject);
+			    subWidgetObject.WIDTH	= widgetInstance.attr("data-gs-width");
+			    subWidgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
+			    subWidgetObject.X		= widgetInstance.attr("data-gs-x");
+			    subWidgetObject.Y		= widgetInstance.attr("data-gs-y");
+			    $(widgetInstance).data('widgetObject', subWidgetObject);
 			    
-			    cfw_dashboard_saveWidgetState(widgetObject);
+			    cfw_dashboard_saveWidgetState(subWidgetObject);
 			    
 			    if(callback != null){
-			    	callback(widgetObject);
+			    	callback(subWidgetObject);
 			    }
 			}
 		);

@@ -40,7 +40,6 @@ public class ServletAPI extends HttpServlet
 
 		if(CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)) {
 			String name = request.getParameter("apiName");
-			String action = request.getParameter("actionName");
 			String data = request.getParameter("overviewdata");
 			
 			//Use the name of the APIDefinition

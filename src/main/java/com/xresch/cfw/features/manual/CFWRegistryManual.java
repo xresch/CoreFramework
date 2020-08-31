@@ -55,7 +55,7 @@ public class CFWRegistryManual {
 		// Handle Path
 		String[] pathTokens = pagePath.split("\\Q|\\E");
 		ManualPage parentItem = null;
-		LinkedHashMap<String, ManualPage> currentSubPage = targetPageList;
+
 		for(int i = 0; i < pathTokens.length; i++) {
 			String currentToken = pathTokens[i].trim();
 			

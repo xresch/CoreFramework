@@ -93,8 +93,8 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 	public void startTasks() {
 
 		int seconds = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS);
-		ScheduledFuture<?> sampling = CFW.Schedule.runPeriodically(0, seconds, new TaskCPUSampling());
-		ScheduledFuture<?> aggregation = CFW.Schedule.runPeriodically(0, 600, new TaskCPUSamplingAggregation());
+		CFW.Schedule.runPeriodically(0, seconds, new TaskCPUSampling());
+		CFW.Schedule.runPeriodically(0, 600, new TaskCPUSamplingAggregation());
 	}
 
 	@Override

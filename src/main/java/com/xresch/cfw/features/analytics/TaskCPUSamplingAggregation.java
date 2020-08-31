@@ -16,7 +16,6 @@ public class TaskCPUSamplingAggregation extends CFWScheduledTask {
 	
 	public void execute() {
 		
-		//System.out.println("============= RUN StatsCPUSamplingAggregationTask ============");
 		Configuration config = CFW.DB.Config.selectByName(FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION);
 		Object[] granularities = (Object[])config.options();
 		
@@ -33,11 +32,6 @@ public class TaskCPUSamplingAggregation extends CFWScheduledTask {
 			// Get timespan 
 			Timestamp oldest = CFWDBCPUSample.getOldestAgedRecord(granularity, ageOutTime);
 			Timestamp youngest = CFWDBCPUSample.getYoungestAgedRecord(granularity, ageOutTime);
-//			System.out.println("=========================================");
-//			System.out.println("granularity:"+granularity);
-//			System.out.println("oldest:"+oldest);
-//			System.out.println("youngest:"+youngest);
-//			System.out.println("ageOutTime:"+ageOutTime.toString());
 			
 			if(oldest == null || youngest == null ) {
 				//nothing to aggregate for this granularity
@@ -53,13 +47,11 @@ public class TaskCPUSamplingAggregation extends CFWScheduledTask {
 			Timestamp endTime = CFW.Time.offsetTimestamp(oldest, 0, 0, 0, granularity);
 			
 			while(endTime.getTime() < youngest.getTime()) {
-//				System.out.println("---------- Aggregate ----------");
-//				System.out.println("startTime:"+startTime.toString());
-//				System.out.println("endTime:"+endTime.toString());
-				boolean success = CFWDBCPUSample.aggregateStatistics(startTime, endTime, granularity);
+
+				CFWDBCPUSample.aggregateStatistics(startTime, endTime, granularity);
 				startTime =  CFW.Time.offsetTimestamp(startTime, 0, 0, 0, granularity);
 				endTime = CFW.Time.offsetTimestamp(endTime, 0, 0, 0, granularity);
-//				System.out.println("success: "+success);
+
 			}
 
 		}

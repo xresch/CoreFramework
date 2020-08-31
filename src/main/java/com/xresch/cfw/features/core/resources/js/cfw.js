@@ -1000,8 +1000,8 @@ function cfw_format_formToArray(formOrID){
 	
 	//---------------------------
 	// Convert String true/false to boolean
-	for(var i in paramsArray){
-		var current = paramsArray[i].value;
+	for(let i in paramsArray){
+		let current = paramsArray[i].value;
 		if(typeof current == 'string'){
 			if(!(current === '') && !isNaN(current)){
 				paramsArray[i].value = Number(current);
@@ -1018,21 +1018,21 @@ function cfw_format_formToArray(formOrID){
 	var tagsselector = $(formOrID).find('.cfw-tags-selector');
 	if(tagsselector.length > 0){
 		tagsselector.each(function(){
-			var current = $(this);
-			var name = current.attr('name');
+			let current = $(this);
+			let name = current.attr('name');
 			
 			//---------------------------
 			// Find in parameters
-			for(var i in paramsArray){
+			for(let i in paramsArray){
 				if(paramsArray[i].name == name){
 					
 					//---------------------------
 					// Create object
-					var items = current.tagsinput('items');
+					let items = current.tagsinput('items');
 					var object = {};
 					for (var j in items){
-						var value = items[j].value;
-						var label = items[j].label;
+						let value = items[j].value;
+						let label = items[j].label;
 						object[value] = label;
 					}
 					//---------------------------
@@ -2292,7 +2292,7 @@ CFW.utils.chainedOnload(function () {
 		var $subMenu = $(this).next(".dropdown-menu");
 		$subMenu.toggleClass('show');
 
-		$(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function(e) {
+		$(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function(event) {
 		  $('.dropdown-submenu .show').removeClass("show");
 		});
 

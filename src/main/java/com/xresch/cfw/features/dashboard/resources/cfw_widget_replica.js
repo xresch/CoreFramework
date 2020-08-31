@@ -39,10 +39,10 @@
 						
 						try{
 							replicatedDefinition.createWidgetInstance(replicatedWidgetObject, 
-								function(replicatedWidgetObject, widgetContent, subWidgetObject = widgetObject){
+								function(subReplicatedWidgetObject, widgetContent, subWidgetObject = widgetObject){
 									
 									subWidgetObject.content = widgetContent;
-									var widgetInstance = CFW.dashboard.createWidget(subWidgetObject);
+									var widgetInstance = cfw_dashboard_createWidgetHTMLElement(subWidgetObject);
 
 									var grid = $('.grid-stack').data('gridstack');
 

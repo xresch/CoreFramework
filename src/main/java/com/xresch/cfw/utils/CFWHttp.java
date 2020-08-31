@@ -180,7 +180,9 @@ public class CFWHttp {
 						
 						String[] splitted = proxyDef.trim().split(" ");
 						CFWProxy cfwProxy = instance.new CFWProxy();
-						String port = "80";
+						
+						String port;
+						
 						cfwProxy.type = splitted[0];
 						if(splitted.length > 1) {
 							String hostport = splitted[1];
@@ -239,7 +241,7 @@ public class CFWHttp {
 				//--------------------------------------------------
 				// Return direct if no proxies were returned by PAC
 				if(proxiesArray.isEmpty()) {
-					return proxiedConnection = (HttpURLConnection)new URL(url).openConnection();
+					return (HttpURLConnection)new URL(url).openConnection();
 				}
 				
 				//--------------------------------------------------

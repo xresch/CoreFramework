@@ -41,7 +41,7 @@ public class WidgetHelloWorld extends WidgetDefinition {
 								
 								public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
 									AutocompleteList list = new AutocompleteList();
-									LinkedHashMap<Object, Object>  array = new LinkedHashMap<Object, Object>() ;
+									
 									for(int i = 0; i < 25; i++ ) {
 										String tag = inputValue+"_"+i;
 										list.addItem("key_"+tag, "hobby_"+tag);
