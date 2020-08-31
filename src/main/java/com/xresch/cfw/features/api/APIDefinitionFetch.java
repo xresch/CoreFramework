@@ -74,13 +74,14 @@ public class APIDefinitionFetch extends APIDefinition{
 					
 					CFWField field = object.getFieldIgnoreCase(current);
 
-					if(field != null) {
-						if(currentValue != null && !currentValue.isEmpty()) {
-							field.setValueValidated(request.getParameter(current));
-							affectedFields.add(field);
-							fieldnames.add(field.getName());
-						}
+					if(field != null 
+					&& currentValue != null 
+					&& !currentValue.isEmpty()) {
+						field.setValueValidated(request.getParameter(current));
+						affectedFields.add(field);
+						fieldnames.add(field.getName());
 					}
+					
 				}
 				
 				//----------------------------------

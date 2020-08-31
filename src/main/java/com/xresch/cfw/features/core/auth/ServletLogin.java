@@ -88,21 +88,20 @@ public class ServletLogin extends HttpServlet
 			User user = LoginFacade.getInstance().checkCredentials(username, password);
 			
 			
-			if(user != null) {
+			if(user != null 
+			&& user.status() != null 
+			&& user.status().toUpperCase().equals("ACTIVE")) {
+				//Login success
+				SessionData data = CFW.Context.Request.getSessionData(); 
+				data.resetUser();
+				data.setUser(user);
+				data.triggerLogin();
 				
-				if(user.status() != null && user.status().toUpperCase().equals("ACTIVE")) {
-					//Login success
-					SessionData data = CFW.Context.Request.getSessionData(); 
-					data.resetUser();
-					data.setUser(user);
-					data.triggerLogin();
-					
-					if(url == null || url.isEmpty()) {
-						url = CFW.Context.App.getApp().getDefaultURL();
-					}
-					CFW.HTTP.redirectToURL(response, url);
-					return; 
+				if(url == null || url.isEmpty()) {
+					url = CFW.Context.App.getApp().getDefaultURL();
 				}
+				CFW.HTTP.redirectToURL(response, url);
+				return; 
 			}	
 		}
 		

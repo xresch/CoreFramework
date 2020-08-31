@@ -28,9 +28,9 @@ import com.xresch.cfw.validation.LengthValidator;
  **************************************************************************************************************/
 public class User extends CFWObject {
 	
-	private static Logger logger = CFWLog.getLogger(User.class.getName());
+	private static final Logger logger = CFWLog.getLogger(User.class.getName());
 	
-	public static String TABLE_NAME = "CFW_USER";
+	public static final String TABLE_NAME = "CFW_USER";
 	
 	public enum UserFields{
 		PK_ID, 

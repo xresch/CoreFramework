@@ -51,12 +51,10 @@ public class ServletLocalization extends HttpServlet
 			//-----------------------
 			// Check ETag
 			String requestEtag = request.getHeader("If-None-Match");
-			if(requestEtag != null) {
-				// gzip handler will append "--gzip", therefore check on starts with
-				if(requestEtag.startsWith(""+fileEtag)) {
-					response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-					return;
-				}
+			// gzip handler will append "--gzip", therefore check on starts with
+			if(requestEtag != null && requestEtag.startsWith(""+fileEtag)) {
+				response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+				return;
 			}
 			
 			//-----------------------

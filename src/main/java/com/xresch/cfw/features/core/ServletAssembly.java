@@ -42,12 +42,10 @@ public class ServletAssembly extends HttpServlet
 			//-----------------------
 			// Check ETag
 			String etag = request.getHeader("If-None-Match");
-			if(etag != null) {
-				// gzip handler will append "--gzip", therefore check on starts with
-				if(etag.startsWith(""+assembly.getEtag())) {
-					response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
-					return;
-				}
+			// gzip handler will append "--gzip", therefore check on starts with
+			if(etag != null && etag.startsWith(""+assembly.getEtag())) {
+				response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+				return;
 			}
 			
 			//-----------------------

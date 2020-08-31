@@ -21,9 +21,9 @@ import com.xresch.cfw.logging.CFWLog;
 public class CFWDBRole {
 
 	
-	public static String CFW_ROLE_SUPERUSER = "Superuser";
-	public static String CFW_ROLE_ADMIN = "Administrator";
-	public static String CFW_ROLE_USER = "User";
+	public static final String CFW_ROLE_SUPERUSER = "Superuser";
+	public static final String CFW_ROLE_ADMIN = "Administrator";
+	public static final String CFW_ROLE_USER = "User";
 	
 	private static Class<Role> cfwObjectClass = Role.class;
 	

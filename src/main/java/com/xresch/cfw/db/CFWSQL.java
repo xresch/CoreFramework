@@ -344,6 +344,36 @@ public class CFWSQL {
 		return this;
 	}
 	
+	
+	/****************************************************************
+	 * Creates the insert statement used by insert()
+	 * and insertGetPrimaryKey();
+	 ****************************************************************/
+	private void createInsertStatement(Object ...fieldnames) {
+		
+			StringBuilder columnNames = new StringBuilder("(");
+			StringBuilder placeholders = new StringBuilder("(");
+			
+			for(Object fieldname : fieldnames) {
+				CFWField<?> field = fields.get(fieldname.toString());
+				if(field != object.getPrimaryField()) {
+					if(!isQueryCached()) {
+						columnNames.append(field.getName()).append(",");
+						placeholders.append("?,");
+					}
+					this.addFieldValue(field);
+				}
+			}
+			
+			//Replace last comma with closing brace
+			columnNames.deleteCharAt(columnNames.length()-1).append(")");
+			placeholders.deleteCharAt(placeholders.length()-1).append(")");
+			if(!isQueryCached()) {	
+				query.append("INSERT INTO "+object.getTableName()+" "+columnNames
+					  + " VALUES "+placeholders+";");
+			}
+
+	}
 	/****************************************************************
 	 * Creates an insert statement including all fields and executes
 	 * the statement with the values assigned to the fields of the
@@ -363,29 +393,8 @@ public class CFWSQL {
 	 * @return boolean
 	 ****************************************************************/
 	public boolean insert(Object ...fieldnames) {
-		
-			StringBuilder columnNames = new StringBuilder("(");
-			StringBuilder placeholders = new StringBuilder("(");
+		createInsertStatement(fieldnames);
 			
-			for(Object fieldname : fieldnames) {
-				CFWField<?> field = fields.get(fieldname.toString());
-				if(field != object.getPrimaryField()) {
-					if(!isQueryCached()) {
-						columnNames.append(field.getName()).append(",");
-						placeholders.append("?,");
-					}
-					this.addFieldValue(field);
-				}
-			}
-			
-			//Replace last comma with closing brace
-			columnNames.deleteCharAt(columnNames.length()-1).append(")");
-			placeholders.deleteCharAt(placeholders.length()-1).append(")");
-			if(!isQueryCached()) {	
-				query.append("INSERT INTO "+object.getTableName()+" "+columnNames
-					  + " VALUES "+placeholders+";");
-			}
-
 		return this.execute();
 	}
 	
@@ -396,8 +405,7 @@ public class CFWSQL {
 	 * @return  primary key or null if not successful
 	 ****************************************************************/
 	public Integer insertGetPrimaryKey() {
-
-		return insertGetPrimaryKey(fields.keySet().toArray(new String[] {}));
+		return insertGetPrimaryKey(fields.keySet().toArray(new Object[] {}));
 	}
 	
 	/****************************************************************
@@ -408,29 +416,8 @@ public class CFWSQL {
 	 * @return  id or null if not successful
 	 ****************************************************************/
 	public Integer insertGetPrimaryKey(Object ...fieldnames) {
+		createInsertStatement(fieldnames);
 		
-			StringBuilder columnNames = new StringBuilder("(");
-			StringBuilder placeholders = new StringBuilder("(");
-			
-			for(Object fieldname : fieldnames) {
-				CFWField<?> field = fields.get(fieldname.toString());
-				if(field != object.getPrimaryField()) {
-					if(!isQueryCached()) {
-						columnNames.append(field.getName()).append(",");
-						placeholders.append("?,");
-					}
-					this.addFieldValue(field);
-				}
-			}
-			
-			//Replace last comma with closing brace
-			columnNames.deleteCharAt(columnNames.length()-1).append(")");
-			placeholders.deleteCharAt(placeholders.length()-1).append(")");
-			if(!isQueryCached()) {	
-				query.append("INSERT INTO "+object.getTableName()+" "+columnNames
-					  + " VALUES "+placeholders+";");
-			}
-
 		return this.executeInsertGetPrimaryKey();
 	}
 	
@@ -441,7 +428,7 @@ public class CFWSQL {
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public boolean update() {
-		return update(fields.keySet().toArray(new String[] {}));
+		return update(fields.keySet().toArray(new Object[] {}));
 	}
 	
 	/****************************************************************
@@ -492,15 +479,16 @@ public class CFWSQL {
 	 * @param fieldnames
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
+	@SuppressWarnings("rawtypes")
 	public boolean updateWithout(String ...fieldnames) {
 		
 		StringBuilder columnNames = new StringBuilder();
 		StringBuilder placeholders = new StringBuilder();
 		Arrays.sort(fieldnames);
-		for(String name : fields.keySet()) {
+		for(Entry<String, CFWField> entry : fields.entrySet()) {
 			//add if name is not in fieldnames
-			if(Arrays.binarySearch(fieldnames, name) < 0) {
-				CFWField<?> field = fields.get(name);
+			if(Arrays.binarySearch(fieldnames, entry.getKey()) < 0) {
+				CFWField<?> field = entry.getValue();
 				if(!field.equals(object.getPrimaryField())) {
 					
 					if(!isQueryCached()) {
@@ -1120,12 +1108,11 @@ public class CFWSQL {
 	public CFWObject getFirstObject() {
 		
 		try {
-			if(this.execute()) {
-				if(result.next()) {
-					CFWObject object = this.object.getClass().newInstance();
-					object.mapResultSet(result);
-					return object;
-				}
+			if(this.execute() && result.next()) {
+				CFWObject instance = this.object.getClass().newInstance();
+				instance.mapResultSet(result);
+				return instance;
+				
 			}
 		}catch (SQLException | InstantiationException | IllegalAccessException e) {
 			new CFWLog(logger)
@@ -1373,8 +1360,8 @@ public class CFWSQL {
 		ArrayList<CFWObject> objects = this.getAsObjectList();
 		ArrayList<JsonElement> elements = new ArrayList<JsonElement>();
 		
-		for(CFWObject object : objects) {
-			elements.add(object.toJSONElement());
+		for(CFWObject current : objects) {
+			elements.add(current.toJSONElement());
 		}
 		
 		return elements;
@@ -1388,8 +1375,8 @@ public class CFWSQL {
 		ArrayList<CFWObject> objects = this.getAsObjectList();
 		JsonArray elements = new JsonArray();
 		
-		for(CFWObject object : objects) {
-			elements.add(object.toJSONElement());
+		for(CFWObject current : objects) {
+			elements.add(current.toJSONElement());
 		}
 		
 		return elements;
@@ -1424,19 +1411,21 @@ public class CFWSQL {
 	/***************************************************************
 	 * Execute the Query and gets the result as XML string.
 	 ****************************************************************/
-	public static String getStatisticsAsJSON() {
+	public static String getCacheStatisticsAsJSON() {
 		
 		StringBuilder json = new StringBuilder("[");
 		
 		if(!queryCache.isEmpty()) {
-			for(String key : queryCache.keySet()) {
-				String statement = queryCache.get(key);
+			
+			for(Entry<String, String> entry : queryCache.entrySet()) {
+				String statement = entry.getValue();
 				int count = cacheHitCount.get(statement);
-				json.append("{ \"name\": \"").append(CFW.JSON.escapeString(key)).append("\", ")
+				json.append("{ \"name\": \"").append( CFW.JSON.escapeString(entry.getKey()) ).append("\", ")
 				.append("\"query\": \"").append(CFW.JSON.escapeString(statement)).append("\", ")
 				.append("\"count\": ").append(count).append("},");
 			}
 			json.deleteCharAt(json.length()-1); //remove last comma
+			
 		}
 		
 		return json.append("]").toString();

@@ -253,17 +253,16 @@ public abstract class DBInterface {
 			
 			//-----------------------------------------
 			// Prepare Statement
-			this.prepareStatement(prepared, values);
+			prepareStatement(prepared, values);
 			
 			//-----------------------------------------
 			// Execute
 			boolean isResultSet = prepared.execute();
 
-			if(!isResultSet) {
-				if(prepared.getUpdateCount() > 0) {
-					result = true;
-				}
+			if(!isResultSet && prepared.getUpdateCount() > 0) {
+				result = true;
 			}
+			
 		} catch (SQLException e) {
 			log.severe("Database Error: "+e.getMessage(), e);
 		} finally {

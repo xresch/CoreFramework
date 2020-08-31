@@ -271,7 +271,7 @@ public  class CFWDBDefaultOperations {
 	/***************************************************************
 	 * Select a role by it's name.
 	 * @param id of the role
-	 * @return Returns a role or null if not found or in case of exception.
+	 * @return Returns an array(can be empty)
 	 ****************************************************************/
 	@SuppressWarnings("unchecked")
 	public static <O extends CFWObject> ArrayList<O> selectBy(Class<? extends CFWObject> cfwObjectClass, String column, Object value ) {
@@ -289,7 +289,31 @@ public  class CFWDBDefaultOperations {
 			.warn("Error while instanciating object.", e);
 		} 
 		
-		return null;
+		return new ArrayList<>();
+
+	}
+	
+	/***************************************************************
+	 * Select a role by it's name.
+	 * @param id of the role
+	 * @return Returns an JsonArray as string (can be empty array)
+	 ****************************************************************/
+	public static String selectByAsJSON(Class<? extends CFWObject> cfwObjectClass, String column, Object value ) {
+		
+		try {
+			return cfwObjectClass.newInstance()
+					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.selectByAsJSON"+column)
+					.select()
+					.where(column, value)
+					.getAsJSON();
+			
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.method("selectByAsJSON")
+				.warn("Error while instanciating object.", e);
+		} 
+		
+		return "[]";
 
 	}
 	

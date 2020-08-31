@@ -1331,7 +1331,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 							result = false;
 						}
 					}else if( element.isJsonObject() || element.isJsonArray() ){
-						if(!field.setValueValidated(CFW.JSON.gsonInstance.toJson(element)) ){
+						if(!field.setValueValidated(CFW.JSON.toJSON(element)) ){
 							result = false;
 						}
 					}

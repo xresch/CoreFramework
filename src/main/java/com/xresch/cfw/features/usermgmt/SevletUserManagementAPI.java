@@ -171,11 +171,10 @@ public class SevletUserManagementAPI extends HttpServlet {
 				@Override
 				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
 					
-					if(origin.mapRequestParameters(request)) {
+					if(origin.mapRequestParameters(request) 
+					&& CFW.DB.Users.update((User)origin)) {
 						
-						if(CFW.DB.Users.update((User)origin)) {
-							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
-						}
+						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
 							
 					}
 					
@@ -202,12 +201,9 @@ public class SevletUserManagementAPI extends HttpServlet {
 				@Override
 				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
 					
-					if(origin.mapRequestParameters(request)) {
-						
-						if(CFW.DB.Roles.update((Role)origin)) {
-							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
-						}
-							
+					if(origin.mapRequestParameters(request)
+					&& CFW.DB.Roles.update((Role)origin)) {
+						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");	
 					}
 					
 				}

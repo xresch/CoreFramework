@@ -57,13 +57,12 @@ public class TaskCPUSampling extends CFWScheduledTask {
 		
 		CFWDB.beginTransaction();
 			for(CPUSample entry : counterMap.values()) {
-				if(entry.count() != 0) {
-					if(entry.time(time)
-					  .prepareStatistics(samplingSeconds)
-					  .granularity(periodMinutes).insert()) {
-						
-						entry.count(0);
-					}	
+				if(entry.count() != 0 
+				&& entry.time(time)
+				    .prepareStatistics(samplingSeconds)
+				    .granularity(periodMinutes).insert() ) 
+				{	
+					entry.count(0);
 				}
 			}
 		CFWDB.commitTransaction();

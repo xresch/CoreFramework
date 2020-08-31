@@ -63,14 +63,15 @@ public class ValidationEngine {
 		
 		for(IValidator validator : validatorArray){
 			
-			if(validator.getTag().matches(regex)){
-				if(!validator.validate()){
-					messages.append("- ");
-					messages.append(validator.getInvalidMessage());
-					messages.append("\n");
-					
-					isValid=false;
-				}
+			if(validator.getTag().matches(regex) 
+			&& !validator.validate()){
+				
+				messages.append("- ");
+				messages.append(validator.getInvalidMessage());
+				messages.append("\n");
+				
+				isValid=false;
+				
 			}
 		}
 		

@@ -17,7 +17,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWDBUserRoleMap {
 
-	public static String TABLE_NAME = new UserRoleMap().getTableName();
+	public static final String TABLE_NAME = new UserRoleMap().getTableName();
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBUserRoleMap.class.getName());
 	

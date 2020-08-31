@@ -29,11 +29,11 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWJson {
 	
-	private static Logger logger = CFWLog.getLogger(CFWJson.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWJson.class.getName());
 	
-	public static Gson gsonInstance;
+	private static Gson gsonInstance;
 	
-	public static Gson gsonInstanceEncrypted;
+	private static Gson gsonInstanceEncrypted;
 	static{
 		//Type cfwobjectListType = new TypeToken<LinkedHashMap<CFWObject>>() {}.getType();
 		
@@ -50,7 +50,7 @@ public class CFWJson {
 	}
 			
 	
-	public static Gson exposedOnlyInstance = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
+	private static Gson exposedOnlyInstance = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
 			.serializeNulls().create();
 
 	/*************************************************************************************

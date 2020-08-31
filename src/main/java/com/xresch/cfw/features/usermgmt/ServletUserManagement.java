@@ -81,15 +81,14 @@ public class ServletUserManagement extends HttpServlet
 							.isForeign(casted.getIsForeign())
 							.setNewPassword(casted.getPassword(), casted.getRepeatedPassword());
 					
-					if(newUser != null) {
-						if(CFW.DB.Users.create(newUser)) {
+					if(newUser != null && CFW.DB.Users.create(newUser)) {
 							
-							User userFromDB = CFW.DB.Users.selectByUsernameOrMail(newUser.username());
-							if (CFW.DB.UserRoleMap.addUserToRole(userFromDB, CFW.DB.Roles.CFW_ROLE_USER, true)) {
-								CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "User created successfully!");
-								return;
-							}
+						User userFromDB = CFW.DB.Users.selectByUsernameOrMail(newUser.username());
+						if (CFW.DB.UserRoleMap.addUserToRole(userFromDB, CFW.DB.Roles.CFW_ROLE_USER, true)) {
+							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "User created successfully!");
+							return;
 						}
+						
 					}
 				}
 
