@@ -17,6 +17,9 @@ import com.xresch.cfw._main.CFW.Context;
 import com.xresch.cfw._main.SessionData;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.HTMLResponse;
+import com.xresch.cfw.response.PlaintextResponse;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -39,6 +42,7 @@ public class RequestHandler extends HandlerWrapper
     	
     	CFW.Context.Request.setRequest(request);
     	CFW.Context.Request.setHttpServletResponse(response);
+    	
     	//##################################
     	// Before
     	//##################################
@@ -93,12 +97,19 @@ public class RequestHandler extends HandlerWrapper
     	//workaround maxInactiveInterval=-1 issue
     	session.setMaxInactiveInterval(CFW.Properties.SESSION_TIMEOUT);
     	
-
     	//##################################
     	// Call Wrapped Handler
     	//##################################
-    	this._handler.handle(target, baseRequest, request, response);
     	
+    	String userAgent = request.getHeader("User-Agent");
+    	if(!userAgent.contains("MSIE ") 
+    	&& !userAgent.contains("Trident/")) {
+        	this._handler.handle(target, baseRequest, request, response);
+    	}else {
+    		PlaintextResponse plain = new PlaintextResponse();
+    		plain.getContent().append("This application does not work with Internet Explorer. Please use a modern Browser like Chrome, Edge or Safari");
+    	}
+
     	//##################################
     	// After
     	//##################################
