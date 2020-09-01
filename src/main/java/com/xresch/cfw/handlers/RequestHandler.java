@@ -107,7 +107,7 @@ public class RequestHandler extends HandlerWrapper
         	this._handler.handle(target, baseRequest, request, response);
     	}else {
     		PlaintextResponse plain = new PlaintextResponse();
-    		plain.getContent().append("This application does not work with Internet Explorer. Please use a modern Browser like Chrome, Edge or Safari");
+    		plain.getContent().append("This application does not work with Internet Explorer. Please use a modern browser like Chrome, Edge or Safari.");
     	}
 
     	//##################################

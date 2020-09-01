@@ -170,13 +170,14 @@ public class CFW {
 	@SuppressWarnings("unchecked")
 	public static CFWAppInterface loadExtentionApplication() {
 		
-       Reflections reflections = new Reflections(new ConfigurationBuilder()
-            //.filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("com.xresch.cfw.")))
-            .filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("java.")))
-            .setUrls(ClasspathHelper.forClassLoader())
-            //.setScanners(new SubTypesScanner(), new TypeAnnotationsScanner())
-       );
-       
+//       Reflections reflections = new Reflections(new ConfigurationBuilder()
+//            //.filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("com.xresch.cfw.")))
+//            .filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("java.")))
+//            .setUrls(ClasspathHelper.forClassLoader())
+//            //.setScanners(new SubTypesScanner(), new TypeAnnotationsScanner())
+//       );
+		
+       Reflections reflections = new Reflections("");
        Set<Class<?>> types = reflections.getTypesAnnotatedWith(CFWExtensionApplication.class);
        
        for(Class<?> clazz : types) {
@@ -203,13 +204,13 @@ public class CFW {
 	@SuppressWarnings("unchecked")
 	private static void loadExtensionFeatures() {
 		
-       Reflections reflections = new Reflections(new ConfigurationBuilder()
-            //.filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("com.xresch.cfw.")))
-            .filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("java.")))
-            .setUrls(ClasspathHelper.forClassLoader())
-            //.setScanners(new SubTypesScanner(), new TypeAnnotationsScanner())
-       );
-       
+//       Reflections reflections = new Reflections(new ConfigurationBuilder()
+//            //.filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("com.xresch.cfw.")))
+//            .filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("java.")))
+//            .setUrls(ClasspathHelper.forClassLoader())
+//            //.setScanners(new SubTypesScanner(), new TypeAnnotationsScanner())
+//       );
+	   Reflections reflections = new Reflections("");
        Set<Class<?>> types = reflections.getTypesAnnotatedWith(CFWExtensionFeature.class);
        for(Class<?> clazz : types) {
     	   if(CFWAppFeature.class.isAssignableFrom(clazz)) {
