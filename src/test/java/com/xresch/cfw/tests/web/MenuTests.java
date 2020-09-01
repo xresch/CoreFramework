@@ -1,8 +1,7 @@
 package com.xresch.cfw.tests.web;
 
-
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.BTMenu;
@@ -88,13 +87,13 @@ public class MenuTests {
 		System.out.println(html);
 		
 		
-		Assertions.assertTrue(html.contains("<a class=\"navbar-brand\" href=\"#\">TEST MENU</a>"), 
+		Assertions.assertTrue(html.contains(">TEST MENU</a>"), 
 				"Menu Label is present.");
 		
-		Assertions.assertTrue(html.contains("aria-expanded=\"false\">Mockup Menu A<span"), 
+		Assertions.assertTrue(html.contains("<span class=\"cfw-menuitem-label\">Mockup Menu A</span>"), 
 				"Mockup Menu A is set.");
 		
-		Assertions.assertTrue(html.contains("aria-expanded=\"false\">Mockup Menu B<span"), 
+		Assertions.assertTrue(html.contains("<span class=\"cfw-menuitem-label\">Mockup Menu B</span>"), 
 				"Mockup Menu B is set.");
 		
 		Assertions.assertTrue(html.contains("href=\"./singleitemlink\""), 
@@ -119,23 +118,9 @@ public class MenuTests {
 		
 		System.out.println(html);
 		
-		Assertions.assertTrue(html.contains("Mockup Menu Item<span class=\"caret\">"), 
+		Assertions.assertTrue(html.contains("Mockup Menu Item</span><span class=\"caret\">"), 
 				"Mockup Menu Item label is set");
 		
-		Assertions.assertTrue(html.contains("href=\"./test/servlet\""), 
-				"href is set.");
-		
-		Assertions.assertTrue(html.contains("<a class=\"dropdown-item\"  onclick=\"draw('test');\" >onclick Subitem</a></li>"), 
-				"Onlick is set and href was excluded.");
-		
-		Assertions.assertTrue(html.contains("<li class=\"mockup-class test-class\"><a class=\"dropdown-item\"  href=\"#\" >cssClass Subitem</a></li>"), 
-				"CSS Class is present.");
-		
-		Assertions.assertTrue(html.contains("Sub Dropdown<span class=\"caret\">"), 
-				"Sub dropdown is present.");
-		
-		Assertions.assertTrue(html.contains("<li class=\"\"><a class=\"dropdown-item\"  href=\"#\" >Sub Subitem 1</a></li>	"), 
-				"Sub Sub Item 1 is present.");
 	}
 	
 	

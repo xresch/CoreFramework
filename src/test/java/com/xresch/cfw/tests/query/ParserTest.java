@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw.features.query.CFWToken;
 import com.xresch.cfw.features.query.ContextualTokenizer;

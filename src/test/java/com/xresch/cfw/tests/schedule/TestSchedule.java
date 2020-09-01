@@ -5,7 +5,8 @@ import java.util.Date;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.analytics.TaskCPUSampling;
@@ -13,6 +14,7 @@ import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.schedule.CFWScheduledTask;
 import com.xresch.cfw.tests._master.WebTestMaster;
 
+@Tag("development")
 public class TestSchedule extends WebTestMaster {
 
 	public static boolean isExecuted = false;
@@ -97,7 +99,7 @@ public class TestSchedule extends WebTestMaster {
 		
 		ScheduledFuture<?> future = CFW.Schedule.runPeriodically(0, seconds, new TaskCPUSampling());
 
-		ScheduledFuture<?> terminator = CFW.Schedule.runPeriodically(20000, 1, new CFWScheduledTask() {
+		ScheduledFuture<?> terminator = CFW.Schedule.runPeriodically(100, 1, new CFWScheduledTask() {
 			@Override
 			public void execute() {
 				System.out.println("Terminate");

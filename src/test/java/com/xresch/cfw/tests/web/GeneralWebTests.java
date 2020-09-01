@@ -1,7 +1,7 @@
 package com.xresch.cfw.tests.web;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.tests._master.WebTestMaster;

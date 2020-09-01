@@ -3,8 +3,8 @@ package com.xresch.cfw.tests.validation;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw.validation.AbstractValidatable;
 import com.xresch.cfw.validation.BooleanValidator;
@@ -132,7 +132,7 @@ public class CFWValidationTests {
 		Assertions.assertFalse(validateThis.setValueValidated(".email@domain.com"), "Is an invalid email address");
 		Assertions.assertFalse(validateThis.setValueValidated("email.@domain.com"), "Is an invalid email address");
 		Assertions.assertFalse(validateThis.setValueValidated("email..email@domain.com"), "Is an invalid email address");
-		Assertions.assertFalse(validateThis.setValueValidated("あいうえお@domain.com"), "Is an invalid email address");
+		Assertions.assertFalse(validateThis.setValueValidated("ã�‚ã�„ã�†ã�ˆã�Š@domain.com"), "Is an invalid email address");
 		Assertions.assertFalse(validateThis.setValueValidated("email@domain.com (Joe Smith)"), "Is an invalid email address");
 		Assertions.assertFalse(validateThis.setValueValidated("email@domain"), "Is an invalid email address");
 		Assertions.assertFalse(validateThis.setValueValidated("email@-domain.com"), "Is an invalid email address");

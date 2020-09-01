@@ -1,29 +1,20 @@
 package com.xresch.cfw.tests._master;
 
-import java.util.logging.Logger;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
-import com.xresch.cfw.logging.CFWLog;
 
 public class DBTestMaster extends WebTestMaster {
 	
-	private static Logger logger = CFWLog.getLogger(DBTestMaster.class.getName());
-	
-	@BeforeClass
-	public static void a_startDefaultApplication() throws Exception {
-		
-//		CFW.initializeApp(new _MainForTesting(), new String [] {});
-//		//CFW.initialize("./config/cfw.properties");
-//		CFWDB.initialize();
+	@BeforeAll
+	public static void startTransaction() throws Exception {
 		
 		CFWDB.beginTransaction();
 	}
 	
-	@AfterClass
+	@AfterAll
 	public static void stopDefaultApplication() throws Exception {
 		CFWDB.rollbackTransaction();
 		System.out.println("========== ALERTS =========");

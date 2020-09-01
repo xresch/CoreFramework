@@ -8,11 +8,24 @@
 	<artifactId>cfw</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0.4</version>
-	
+
 	<name>cfw</name>
 	<description>CoreFramework is a java application boilerplate providing various functionalities like user management, configurations, API and dashboarding out of the box.</description>
 	<url>https://github.com/xresch/CoreFramework</url>
 
+	<!-- ================= PROPERTIES ================== -->
+	<properties>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<jettyVersion>9.4.31.v20200723</jettyVersion>
+		<prometheusVersion>0.9.0</prometheusVersion>
+
+		<skipTests>true</skipTests>
+		<skipJavadoc>false</skipJavadoc>
+		<skipSigning>false</skipSigning>
+	</properties>
+	
 	<!-- ================= LICENSES ================== -->
 	<licenses>
 		<license>
@@ -51,18 +64,6 @@
 		</repository>
 	</distributionManagement>
 
-	<!-- ================= PROPERTIES ================== -->
-	<properties>
-
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-		<jettyVersion>9.4.31.v20200723</jettyVersion>
-		<prometheusVersion>0.9.0</prometheusVersion>
-
-		<skipTests>true</skipTests>
-		<skipJavadoc>false</skipJavadoc>
-		<skipSigning>false</skipSigning>
-	</properties>
 
 	<!-- ================= DEPENDENCIES ================== -->
 	<dependencies>
@@ -171,6 +172,14 @@
 		<!-- ============================ SCOPE: TESTING ============================== -->
 		<!-- ========================================================================== -->
 
+		<!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-runner -->
+		<dependency>
+			<groupId>org.junit.platform</groupId>
+			<artifactId>junit-platform-runner</artifactId>
+			<version>1.6.2</version>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/junit/junit -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -183,6 +192,14 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.6.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
 			<version>5.6.2</version>
 			<scope>test</scope>
 		</dependency>
@@ -227,9 +244,15 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M5</version>
 				<configuration>
 					<skipTests>${skipTests}</skipTests>
-					<runOrder>alphabetical</runOrder>
+					<includes>
+						<include>**/*TestSuiteAll.java</include>
+					</includes>
+					<!-- excludes>
+						<exclude>com.xresch.cfw.tests._master.*</exclude>
+					</excludes-->
 				</configuration>
 			</plugin>
 
@@ -299,13 +322,13 @@
 				</executions>
 				<configuration>
 					<skip>${skipSigning}</skip>
-					<gpgArguments> 
+					<gpgArguments>
 						<arg>--pinentry-mode</arg>
 						<arg>loopback</arg>
 						<arg>--status-fd</arg>
 						<arg>--yes</arg>
 						<arg>--always-trust</arg>
-						
+
 					</gpgArguments>
 				</configuration>
 			</plugin>

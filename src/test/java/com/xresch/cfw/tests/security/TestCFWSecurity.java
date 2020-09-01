@@ -2,8 +2,8 @@ package com.xresch.cfw.tests.security;
 
 import java.sql.SQLException;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 

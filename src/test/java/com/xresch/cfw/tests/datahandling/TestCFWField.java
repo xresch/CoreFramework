@@ -2,8 +2,8 @@ package com.xresch.cfw.tests.datahandling;
 
 import java.sql.SQLException;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;

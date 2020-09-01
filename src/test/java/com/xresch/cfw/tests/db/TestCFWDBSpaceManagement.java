@@ -1,8 +1,9 @@
 package com.xresch.cfw.tests.db;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWHierarchy;
@@ -15,10 +16,9 @@ import com.xresch.cfw.tests._master.DBTestMaster;
 public class TestCFWDBSpaceManagement extends DBTestMaster {
 
 	
-	@BeforeClass
+	@BeforeAll
 	public static void fillWithTestData() {
 		
-
 		//----------------------------------------
 		// Create SpaceGroups
 		CFW.DB.SpaceGroups.create(new SpaceGroup("SpaceGroupA"));

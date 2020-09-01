@@ -41,6 +41,12 @@ public class CFWDB {
 	 ********************************************************************************************/
 	public static void startDBServer() {
 		
+		if(isInitialized) {
+			new CFWLog(logger)
+				.method("startDBServer")
+				.warn("Database was already initialized.");
+			return;
+		}
     	//---------------------------------------
     	// Get variables
 		String server 		= CFWProperties.DB_SERVER;
@@ -64,12 +70,12 @@ public class CFWDB {
     		try {
 				if(!datastoreFile.createNewFile()) {
 					new CFWLog(logger)
-						.method("startDatabase")
+						.method("startDBServer")
 						.severe("Error creating database file.");
 				}
 			} catch (IOException e) {
 				new CFWLog(logger)
-				.method("startDatabase")
+				.method("startDBServer")
 				.severe("Error creating database file.", e);
 				
 			}

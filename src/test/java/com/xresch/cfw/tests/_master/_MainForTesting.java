@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.logging.Logger;
 
 import org.junit.Test;
+import org.junit.jupiter.api.Tag;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppInterface;
@@ -17,6 +18,7 @@ import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.tests.assets.servlets.FormTestServlet;
 import com.xresch.cfw.tests.assets.servlets.GeneralTestServlet;
 
+@Tag("development")
 public class _MainForTesting implements CFWAppInterface {
 		
 	private static final Logger logger = CFWLog.getLogger(_MainForTesting.class.getName());

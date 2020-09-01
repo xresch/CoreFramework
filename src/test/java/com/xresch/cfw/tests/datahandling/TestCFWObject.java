@@ -5,9 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
@@ -20,7 +20,7 @@ import com.xresch.cfw.tests._master.DBTestMaster;
 public class TestCFWObject extends DBTestMaster{
 	protected static Role testgroupA;
 	
-	@BeforeClass
+	@BeforeAll
 	public static void createTestData() {
 		
 		//------------------------------

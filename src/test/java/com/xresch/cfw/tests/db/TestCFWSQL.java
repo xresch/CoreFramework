@@ -1,8 +1,7 @@
 package com.xresch.cfw.tests.db;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.tests._master.DBTestMaster;
@@ -10,11 +9,6 @@ import com.xresch.cfw.tests._master.DBTestMaster;
 public class TestCFWSQL extends DBTestMaster {
 
 	
-	@BeforeClass
-	public static void fillWithTestData() {
-		
-	}
-
 	@Test
 	public void testCreateSQL() {
 		
@@ -28,7 +22,7 @@ public class TestCFWSQL extends DBTestMaster {
 		
 		System.out.println(appleSQL);
 		
-		Assertions.assertEquals("SELECT ID, CATEGORY, TYPE, NAME, COUNT FROM FRUITS  WHERE CATEGORY = ? AND TYPE = ? ORDER BY NAME DESC", 
+		Assertions.assertEquals(" SELECT ID, CATEGORY, TYPE, NAME, COUNT FROM FRUITS   WHERE CATEGORY = ? AND TYPE = ? ORDER BY NAME DESC", 
 				appleSQL,
 				"The SQL is created.");
 				

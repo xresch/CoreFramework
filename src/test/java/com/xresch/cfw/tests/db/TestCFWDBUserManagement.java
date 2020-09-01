@@ -2,9 +2,9 @@ package com.xresch.cfw.tests.db;
 
 import java.util.HashMap;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.usermgmt.Permission;
@@ -32,9 +32,10 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 	
 	protected static Permission permissionC;
 	
-	@BeforeClass
+	@BeforeAll
 	public static void fillWithTestData() {
 		
+
 		//------------------------------
 		// Roles
 		CFW.DB.Roles.create(new Role("TestroleA", "user"));
