@@ -290,7 +290,7 @@
 			</plugin>
 
 			<!-- ================= LICENSE ================== -->
-			<!-- mvn license:add-third-party -->
+			<!-- mvn license:add-third-party license:download-licenses -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
