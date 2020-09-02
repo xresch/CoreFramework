@@ -61,12 +61,18 @@ public class CFWLog {
 		
 	}
 	
+	/***********************************************************************
+	 * Change the auto detected method to a custom value.
+	 ***********************************************************************/
 	public CFWLog method(String method){
 		
 		this.sourceMethod = method;
 		return this;
 	}
 	
+	/***********************************************************************
+	 * Add a custom field to the log.
+	 ***********************************************************************/
 	public CFWLog custom(String key, String value) {
 		
 		if(customEntries == null) {

@@ -88,6 +88,7 @@ DONE
 ------- Current -------
 - CFWLog: auto detect method, making call to CFWLog.method() optional
 - Reduced footprint of log
+- Added System Analytics >> System Properties
 
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message

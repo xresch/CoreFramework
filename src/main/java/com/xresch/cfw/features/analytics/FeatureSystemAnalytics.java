@@ -54,6 +54,14 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
+				(MenuItem)new MenuItem("System Properties")
+					.faicon("fas fa-cubes")
+					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.href("/app/systemproperties")	
+				, SYSTEM_ANALYTICS);
+		
+		
+		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("Metrics")
 					.faicon("fas fa-thermometer-half")
 					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
@@ -87,6 +95,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
     	app.addAppServlet(ServletCPUSampling.class,  "/cpusampling");
     	app.addAppServlet(ServletDatabaseAnalytics.class,  "/dbanalytics");
     	app.addAppServlet(ServletContextTree.class,  "/servletcontexttree");
+    	app.addAppServlet(ServletSystemProperties.class,  "/systemproperties");
 	}
 
 	@Override

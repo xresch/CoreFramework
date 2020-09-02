@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.analytics;
 
 import java.io.IOException;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,11 +17,10 @@ import com.xresch.cfw.response.HTMLResponse;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
  **************************************************************************************************************/
-public class ServletContextTree extends HttpServlet
+public class ServletSystemProperties extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;
-	
 	
 	/*****************************************************************
 	 *
@@ -31,24 +31,27 @@ public class ServletContextTree extends HttpServlet
 
 		if(CFW.Context.Request.hasPermission(FeatureCore.PERMISSION_APP_ANALYTICS)) {
 			
-			HTMLResponse html = new HTMLResponse("Servlet Context Tree");
+			HTMLResponse html = new HTMLResponse("System Properties");
 			StringBuilder content = html.getContent();
 
 			
 			//------------------------------
 			// Add Content
-
-			content.append("<h1>Servlet Context Tree</h1>");		
-			content.append("<div>");	
-			System.out.println(CFW.Context.App.getApp().dumpServletContext());
-			content.append(
-					CFW.Context.App.getApp()
-					.dumpServletContext()
-					.replaceAll("\\r\\n|\\n", "<br>")
-					.replaceAll(" ", "&nbsp;"));
-			content.append("</div>");	
-
-	        response.setContentType("text/html");
+			content.append("<h1>System Properties</h1>");		
+			content.append("<div class=\"table-responsive\">");	
+			
+			content.append("<table class=\"table table-sm table-striped\">");
+			content.append("<thead><tr><th>Name</th><th>Name</th></tr></thead>");
+			content.append("<tbody>");
+				for(Entry<Object, Object> entry : System.getProperties().entrySet()) {
+					
+					content.append("<tr>")
+						.append("<td>"+entry.getKey()+"</td>")
+						.append("<td>"+entry.getValue()+"</td>")
+					.append("</tr>");
+				}
+			content.append("</tbody></table>");
+			
 	        response.setStatus(HttpServletResponse.SC_OK);
 		
 		}else {
