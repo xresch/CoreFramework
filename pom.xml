@@ -25,7 +25,7 @@
 		<skipJavadoc>false</skipJavadoc>
 		<skipSigning>false</skipSigning>
 	</properties>
-	
+
 	<!-- ================= LICENSES ================== -->
 	<licenses>
 		<license>
@@ -91,11 +91,12 @@
 			<version>${jettyVersion}</version>
 		</dependency>
 
-		<!-- dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.1.0</version>
-		</dependency -->
+		<!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.7</version>
+		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/io.prometheus/simpleclient -->
 		<dependency>
@@ -250,9 +251,7 @@
 					<includes>
 						<include>**/*TestSuiteAll.java</include>
 					</includes>
-					<!-- excludes>
-						<exclude>com.xresch.cfw.tests._master.*</exclude>
-					</excludes-->
+					<!-- excludes> <exclude>com.xresch.cfw.tests._master.*</exclude> </excludes -->
 				</configuration>
 			</plugin>
 
@@ -289,15 +288,15 @@
 					<additionalJOption>-Xdoclint:none</additionalJOption>
 				</configuration>
 			</plugin>
-			
+
 			<!-- ================= LICENSE ================== -->
 			<!-- mvn license:add-third-party -->
 			<plugin>
-			    <groupId>org.codehaus.mojo</groupId>
-			    <artifactId>license-maven-plugin</artifactId>
-			    <version>2.0.0</version>			    
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.0.0</version>
 			</plugin>
-			
+
 			<!-- ================= ASSEMBLY ================== -->
 			<!-- mvn clean compile assembly:single -->
 			<plugin>
