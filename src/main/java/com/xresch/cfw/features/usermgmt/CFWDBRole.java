@@ -40,14 +40,12 @@ public class CFWDBRole {
 			
 			if(role.name() == null || role.name().isEmpty()) {
 				new CFWLog(logger)
-					.method("doCheck")
 					.warn("Please specify a name for the role.", new Throwable());
 				return false;
 			}
 			
 			if(checkExistsByName(role)) {
 				new CFWLog(logger)
-					.method("doCheck")
 					.warn("The role with the name '"+role.name()+"' already exists.", new Throwable());
 				return false;
 			}
@@ -63,7 +61,6 @@ public class CFWDBRole {
 			
 			if(role.name() == null || role.name().isEmpty()) {
 				new CFWLog(logger)
-					.method("doCheck")
 					.warn("The name of the role cannot be null.", new Throwable());
 				return false;
 			}
@@ -79,7 +76,6 @@ public class CFWDBRole {
 			
 			if(role != null && role.isDeletable() == false) {
 				new CFWLog(logger)
-				.method("doCheck")
 				.severe("The role '"+role.name()+"' cannot be deleted as it is marked as not deletable.", new Throwable());
 				return false;
 			}

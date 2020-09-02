@@ -46,21 +46,18 @@ public class CFWDBUser {
 		
 		if( user == null) {
 			new CFWLog(logger)
-				.method("create")
 				.severe("The user cannot be null");
 			return false;
 		}
 		
 		if( user.username() == null || user.username().isEmpty() ) {
 			new CFWLog(logger)
-				.method("create")
 				.severe("Please provide at least one character for the username.");
 			return false;
 		}
 		
 		if( checkUsernameExists(user.username())) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The user '"+user.username()+"' cannot be created as a user with this name already exists.");
 			return false;
 		}
@@ -70,7 +67,6 @@ public class CFWDBUser {
 		&& checkEmailExists(user.email())) {
 			
 			new CFWLog(logger)
-				.method("create")
 				.warn("The user '"+user.username()+"' cannot be created as the email '"+user.email()+"' is already used by another account.");
 			return false;
 		}
@@ -91,7 +87,6 @@ public class CFWDBUser {
 		
 		if( usernameOrMail == null) {
 			new CFWLog(logger)
-				.method("selectByUsernameOrMail")
 				.severe("The user or eMail cannot be null.");
 			return null;
 		}
@@ -263,7 +258,6 @@ public class CFWDBUser {
 		
 		if(user == null) {
 			new CFWLog(logger)
-			.method("update")
 			.severe("The user cannot be null.");
 			return false;
 		}
@@ -279,7 +273,6 @@ public class CFWDBUser {
 			
 			if(!user.isRenamable()) {
 				new CFWLog(logger)
-				.method("update")
 				.severe("The user '"+user.username()+"' cannot be renamed as it is marked as not renamable.");
 				return false;
 			}
@@ -304,7 +297,6 @@ public class CFWDBUser {
 		
 		if(user != null && user.isDeletable() == false) {
 			new CFWLog(logger)
-			.method("deleteByID")
 			.severe("The user '"+user.username()+"' cannot be deleted as it is marked as not deletable.");
 			return false;
 		}
@@ -330,7 +322,6 @@ public class CFWDBUser {
 		// Check input format
 		if(resultIDs == null ^ !resultIDs.matches("(\\d,?)+")) {
 			new CFWLog(logger)
-			.method("deleteMultipleByID")
 			.severe("The userID's '"+resultIDs+"' are not a comma separated list of strings.");
 			return false;
 		}

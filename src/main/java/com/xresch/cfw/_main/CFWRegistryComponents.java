@@ -55,7 +55,6 @@ public class CFWRegistryComponents {
 	public static void addAdminMenuItem(MenuItem itemToAdd, String menuPath)  {
 		if(itemToAdd.getPermissions().size() == 0){
 			new CFWLog(logger)
-			.method("addAdminMenuItem")
 			.severe("Coding Issue: Admin menu items need at least 1 permission.");
 		}
 		addMenuItem(adminMenuItems, itemToAdd, menuPath);
@@ -72,7 +71,6 @@ public class CFWRegistryComponents {
 	public static void addAdminCFWMenuItem(MenuItem itemToAdd, String menuPath)  {
 		if(itemToAdd.getPermissions().size() == 0){
 			new CFWLog(logger)
-			.method("addAdminCFWMenuItem")
 			.severe("Coding Issue: Admin menu items need at least 1 permission.");
 		}
 		addMenuItem(adminMenuItemsCFW, itemToAdd, menuPath);

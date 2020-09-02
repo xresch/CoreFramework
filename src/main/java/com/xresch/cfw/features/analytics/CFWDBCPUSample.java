@@ -26,7 +26,6 @@ public class CFWDBCPUSample {
 		
 		if(cpuSample == null) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The cpuSample cannot be null");
 			return null;
 		}

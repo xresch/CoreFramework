@@ -213,7 +213,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	public static CFWField<LinkedHashMap<String,String>> newTagsSelector(String fieldName){
 		if(!fieldName.startsWith("JSON_")) {
 			new CFWLog(logger)
-				.method("newTagsSelector")
 				.severe("Fieldname of TAG_SELECTOR fields have to start with 'JSON_'.", new InstantiationException());
 			return null;
 		}
@@ -966,7 +965,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		if(this.isDisabled()) { 
 			new CFWLog(logger)
-			.method("changeValue")
 			.severe("The field '"+this.name+"' cannot be changed as the field is disabled.");
 			return false; 
 		}
@@ -1034,7 +1032,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		       
 			}catch (Exception e) {
 				new CFWLog(logger)
-					.method("getValueDecrypted")
 					.severe("Could not encrypt the value.", e);
 			}
 			
@@ -1066,7 +1063,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		        
 			} catch (Exception e) {
 				new CFWLog(logger)
-					.method("getValueDecrypted")
 					.severe("Could not decrypt value.", e);
 			}
 			
@@ -1118,7 +1114,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				else if(valueClass == Object[].class)	{ return this.changeValue(null); }
 				else {	
 					new CFWLog(logger)
-					.method("setValueConvert")
 					.severe("The choosen type is not supported: "+valueClass.getName());
 					return false;
 				}
@@ -1139,7 +1134,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			
 			else {
 				new CFWLog(logger)
-					.method("setValueConvert")
 					.severe("The choosen type is not supported: "+valueClass.getName());
 				return false;
 			}
@@ -1297,7 +1291,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					}
 				}else {
 					new CFWLog(logger)
-						.method("mapAndValidateParamsToFields")
 						.silent(true)
 						.finest("The field with name '"+key+"' is unknown for this type.");
 				}
@@ -1340,7 +1333,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					}
 				}else {
 					new CFWLog(logger)
-						.method("mapAndValidateJsonToFields")
 						.silent(true)
 						.finest("The field with name '"+key+"' is unknown for this type.");
 				}
@@ -1405,7 +1397,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				}else {
 					success = false;
 					new CFWLog(logger)
-						.method("mapResultSetColumnsToFields")
 						.silent(true)
 						.finest("The object doesn't contain a field with name '"+colName+"'.");
 				}
@@ -1414,7 +1405,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		} catch (SQLException e) {
 			success = false;
 			new CFWLog(logger)
-				.method("mapResultSetColumnsToFields")
 				.severe("SQL Exception occured while trying to map ResultSet to fields. Check Cursor position.", e);
 		}
 		

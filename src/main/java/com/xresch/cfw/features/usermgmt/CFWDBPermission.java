@@ -74,21 +74,18 @@ public class CFWDBPermission {
 		
 		if(permission == null) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The permission cannot be null");
 			return false;
 		}
 		
 		if(permission.name() == null || permission.name().isEmpty()) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("Please specify a name for the permission to create.");
 			return false;
 		}
 		
 		if(checkExistsByName(permission)) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The permission '"+permission.name()+"' cannot be created as a permission with this name already exists.");
 			return false;
 		}
@@ -184,14 +181,12 @@ public class CFWDBPermission {
 		
 		if(permission == null) {
 			new CFWLog(logger)
-				.method("update")
 				.warn("The permission that should be updated cannot be null");
 			return false;
 		}
 		
 		if(permission.name() == null || permission.name().isEmpty()) {
 			new CFWLog(logger)
-				.method("update")
 				.warn("Please specify a name for the permission.");
 			return false;
 		}
@@ -212,7 +207,6 @@ public class CFWDBPermission {
 		Permission permission = selectByID(id);
 		if(permission != null) {
 			new CFWLog(logger)
-			.method("deleteByID")
 			.severe("The permission '"+permission.name()+"' cannot be deleted as it is marked as not deletable.");
 			return false;
 		}
@@ -236,7 +230,6 @@ public class CFWDBPermission {
 		// Check input format
 		if(resultIDs == null ^ !resultIDs.matches("(\\d,?)+")) {
 			new CFWLog(logger)
-			.method("deleteMultipleByID")
 			.severe("The userID's '"+resultIDs+"' are not a comma separated list of strings.");
 			return false;
 		}
@@ -259,7 +252,6 @@ public class CFWDBPermission {
 		Permission permission = selectByName(name);
 		if(permission != null) {
 			new CFWLog(logger)
-			.method("deleteByName")
 			.severe("The permission '"+permission.name()+"' cannot be deleted as it is marked as not deletable.");
 			return false;
 		}

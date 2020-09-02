@@ -105,7 +105,6 @@ public class CFWObject {
 				form.addField(fields.get(fieldName));
 			}else {
 				new CFWLog(logger)
-				.method("toForm")
 				.severe("The field '"+fieldName+"' is not known for this CFWObject.");
 			}
 		}
@@ -156,7 +155,6 @@ public class CFWObject {
 			fields.put(field.getName(), field);
 		}else {
 			new CFWLog(logger)
-				.method("addField")
 				.severe("The field with name '"+field.getName()+"' was already added to this object. Check the naming of the field.");
 		}
 		
@@ -283,7 +281,6 @@ public class CFWObject {
 			this.primaryField = primaryField;
 		}else {
 			new CFWLog(logger)
-				.method("setPrimaryField")
 				.severe("Attempt to set a second primary key on CFWObject. ", new IllegalStateException());
 		}
 		return this;

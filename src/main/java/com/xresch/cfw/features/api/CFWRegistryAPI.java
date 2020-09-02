@@ -33,7 +33,6 @@ public class CFWRegistryAPI {
 			definitionArray.put(fullname,definition);
 		}else {
 			new CFWLog(logger)
-				.method("add")
 				.warn("An API definition with name'"+fullname+"' was already defined. Appending a number to the name.");
 			
 			int i = 0;

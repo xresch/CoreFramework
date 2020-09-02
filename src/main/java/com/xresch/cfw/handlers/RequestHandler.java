@@ -17,9 +17,7 @@ import com.xresch.cfw._main.CFW.Context;
 import com.xresch.cfw._main.SessionData;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.PlaintextResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -47,8 +45,8 @@ public class RequestHandler extends HandlerWrapper
     	// Before
     	//##################################
     	
-    	CFWLog log = new CFWLog(logger)
-    			.method("handle");
+    	CFWLog log = new CFWLog(logger);
+    	
     	// Used to calculate deltaStart by OMLogger.log()
     	// minus 1ms to be always first
     	

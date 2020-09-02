@@ -40,7 +40,6 @@ public class CFWRegistryWidgets {
 			}
 		}else {
 			new CFWLog(logger)
-				.method("add")
 				.severe("A widget with definition with name'"+definition.getWidgetType()+"' was already defined. Could not add the definition to the registry.", new Throwable());
 		}
 	}

@@ -73,7 +73,6 @@ public abstract class DBInterface {
 			} catch (SQLException e) {
 				new CFWLog(logger)
 					.silent(true)
-					.method("forceCloseRemainingConnections")
 					.severe("Error on forced closing of DB connection.", e);
 			}
 		}
@@ -81,7 +80,6 @@ public abstract class DBInterface {
 		if(counter > 0) {
 			new CFWLog(logger)
 				.silent(true)
-				.method("forceCloseRemainingConnections")
 				.warn(""+counter+" database connection(s) not closed properly.");
 		}
 	}
@@ -125,7 +123,6 @@ public abstract class DBInterface {
 		
 		if(transactionConnection.get() != null) {
 			new CFWLog(logger)
-				.method("beginTransaction")
 				.severe("A transaction was already started for this thread. Use commitTransaction() before starting another one.");
 			return;
 		}
@@ -135,11 +132,10 @@ public abstract class DBInterface {
 			con.setAutoCommit(false);
 			transactionConnection.set(con);
 			addOpenConnection(con);
-			new CFWLog(logger).method("beginTransaction").finer("DB transaction started.");
+			new CFWLog(logger).finer("DB transaction started.");
 			
 		} catch (SQLException e) {
 			new CFWLog(logger)
-				.method("beginTransaction")
 				.severe("Error while retrieving DB connection.", e);
 		}
 		
@@ -155,7 +151,6 @@ public abstract class DBInterface {
 		
 		if(transactionConnection.get() == null) {
 			new CFWLog(logger)
-				.method("commitTransaction")
 				.severe("There is no running transaction. Use beginTransaction() before using commit.");
 			return;
 		}
@@ -165,10 +160,9 @@ public abstract class DBInterface {
 		try {
 			con = transactionConnection.get();
 			con.commit();
-			new CFWLog(logger).method("commitTransaction").finer("DB transaction committed.");
+			new CFWLog(logger).finer("DB transaction committed.");
 		} catch (SQLException e) {
 			new CFWLog(logger)
-				.method("commitTransaction")
 				.severe("Error occured on commit transaction.", e);
 		} finally {
 			transactionConnection.remove();
@@ -179,7 +173,6 @@ public abstract class DBInterface {
 					con.close();
 				} catch (SQLException e) {
 					new CFWLog(logger)
-						.method("commitTransaction")
 						.severe("Error occured closing DB resources.", e);
 				}
 				
@@ -198,7 +191,6 @@ public abstract class DBInterface {
 		
 		if(transactionConnection.get() == null) {
 			new CFWLog(logger)
-				.method("rollbackTransaction")
 				.severe("There is no running transaction. Use beginTransaction() before using commit.");
 			return;
 		}
@@ -208,10 +200,10 @@ public abstract class DBInterface {
 		try {
 			con = transactionConnection.get();
 			con.rollback();
-			new CFWLog(logger).method("rollbackTransaction").finer("DB transaction rolled back.");
+			new CFWLog(logger)
+				.finer("DB transaction rolled back.");
 		} catch (SQLException e) {
 			new CFWLog(logger)
-				.method("rollbackTransaction")
 				.severe("Error occured on rollback transaction.", e);
 		} finally {
 			transactionConnection.remove();
@@ -222,7 +214,6 @@ public abstract class DBInterface {
 					removeOpenConnection(con);
 				} catch (SQLException e) {
 					new CFWLog(logger)
-						.method("rollbackTransaction")
 						.severe("Error occured closing DB resources.", e);
 				}
 				
@@ -240,7 +231,7 @@ public abstract class DBInterface {
 	 ********************************************************************************************/
 	public boolean preparedExecute(String sql, Object... values){	
         
-		CFWLog log = new CFWLog(logger).method("preparedExecute").start();
+		CFWLog log = new CFWLog(logger).start();
 		Connection conn = null;
 		PreparedStatement prepared = null;
 
@@ -290,7 +281,7 @@ public abstract class DBInterface {
 	 ********************************************************************************************/
 	public boolean preparedExecuteBatch(String sql, Object... values){	
         
-		CFWLog log = new CFWLog(logger).method("preparedExecuteBatch").start();
+		CFWLog log = new CFWLog(logger).start();
 		Connection conn = null;
 		PreparedStatement prepared = null;
 
@@ -347,7 +338,7 @@ public abstract class DBInterface {
 	 ********************************************************************************************/
 	public Integer preparedInsertGetKey(String sql, String generatedKeyName, Object... values){	
         
-		CFWLog log = new CFWLog(logger).method("preparedInsertGetKey").start();
+		CFWLog log = new CFWLog(logger).start();
 		Connection conn = null;
 		PreparedStatement prepared = null;
 
@@ -422,7 +413,6 @@ public abstract class DBInterface {
 	private ResultSet preparedExecuteQuery(boolean isSilent, String sql, Object... values){	
         
 		CFWLog log = new CFWLog(logger)
-				.method("preparedExecuteQuery")
 				.start();
 		
 		Connection conn = null;
@@ -496,7 +486,6 @@ public abstract class DBInterface {
 		
 		if(logger.isLoggable(Level.FINEST) && prepared != null ) {
 			new CFWLog(logger)
-				.method("prepareStatement")
 				.custom("preparedSQL", prepared.toString())
 				.finest("Debug: Prepared Statement");
 		}
@@ -517,7 +506,6 @@ public abstract class DBInterface {
 			}
 		} catch (SQLException e) {
 			new CFWLog(logger)
-				.method("close")
 				.severe("Exception occured while closing connection. ", e);
 		}
 	}
@@ -542,7 +530,6 @@ public abstract class DBInterface {
 			}
 		} catch (SQLException e) {
 			new CFWLog(logger)
-				.method("close")
 				.severe("Exception occured while closing ResultSet. ", e);
 		}
 	}
@@ -608,7 +595,6 @@ public abstract class DBInterface {
 			
 		} catch (SQLException e) {
 				new CFWLog(logger)
-					.method("resultSetToCSV")
 					.severe("Exception occured while converting ResultSet to CSV.", e);
 				
 				return "";
@@ -660,7 +646,6 @@ public abstract class DBInterface {
 			
 		} catch (SQLException e) {
 				new CFWLog(logger)
-					.method("resultSetToXML")
 					.severe("Exception occured while converting ResultSet to XML.", e);
 				
 				return "<data></data>";

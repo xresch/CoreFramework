@@ -29,7 +29,6 @@ public class CFWScriptEngine {
 			engine.eval(script);
 		} catch (ScriptException e) {
 			new CFWLog(logger)
-				.method("executeJavascript")
 				.severe("An exception occured while executing a javascript: "+e.getMessage(), e);
 				e.printStackTrace();
 		}
@@ -58,11 +57,9 @@ public class CFWScriptEngine {
 			
 		} catch (NoSuchMethodException e) {
 			new CFWLog(logger)
-				.method("executeJavascript")
 				.severe("The method '"+methodName+"' doesn't exist. ", e);
 		} catch (ScriptException e) {
 			new CFWLog(logger)
-				.method("executeJavascript")
 				.severe("An exception occured while executing a javascript: "+e.getMessage(), e);
 				e.printStackTrace();
 		}
@@ -86,7 +83,6 @@ public class CFWScriptEngine {
 			
 		} catch (ScriptException e) {
 			new CFWLog(logger)
-			.method("executeJavascript")
 			.severe("An exception occured while executing a javascript: "+e.getMessage(), e);
 			e.printStackTrace();
 		}

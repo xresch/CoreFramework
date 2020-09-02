@@ -38,21 +38,18 @@ public class CFWDBSpaceGroup {
 		
 		if(SpaceGroup == null) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The SpaceGroup cannot be null");
 			return false;
 		}
 		
 		if(SpaceGroup.name() == null || SpaceGroup.name().isEmpty()) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("Please specify a name for the SpaceGroup to create.");
 			return false;
 		}
 		
 		if(checkSpaceGroupExists(SpaceGroup)) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The SpaceGroup '"+SpaceGroup.name()+"' cannot be created as a SpaceGroup with this name already exists.");
 			return false;
 		}
@@ -144,14 +141,12 @@ public class CFWDBSpaceGroup {
 		
 		if(SpaceGroup == null) {
 			new CFWLog(logger)
-				.method("update")
 				.warn("The SpaceGroup that should be updated cannot be null");
 			return false;
 		}
 		
 		if(SpaceGroup.name() == null || SpaceGroup.name().isEmpty()) {
 			new CFWLog(logger)
-				.method("update")
 				.warn("Please specify a name for the SpaceGroup.");
 			return false;
 		}
@@ -188,7 +183,6 @@ public class CFWDBSpaceGroup {
 		// Check input format
 		if(resultIDs == null ^ !resultIDs.matches("(\\d,?)+")) {
 			new CFWLog(logger)
-			.method("deleteMultipleByID")
 			.severe("The userID's '"+resultIDs+"' are not a comma separated list of strings.");
 			return false;
 		}
@@ -211,7 +205,6 @@ public class CFWDBSpaceGroup {
 		SpaceGroup SpaceGroup = selectByName(name);
 		if(SpaceGroup != null) {
 			new CFWLog(logger)
-			.method("deleteByName")
 			.severe("The SpaceGroup '"+SpaceGroup.name()+"' cannot be deleted as it is marked as not deletable.");
 			return false;
 		}

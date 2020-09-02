@@ -143,7 +143,6 @@ public class CFW {
 
 		if (!CFW.CLI.validateArguments()) {
 			new CFWLog(logger)
-				.method("initializeCore")
 				.severe("Issues loading arguments: "+CFW.CLI.getInvalidMessagesAsString());
 			
 			CFW.CLI.printUsage();
@@ -182,13 +181,13 @@ public class CFW {
        
        for(Class<?> clazz : types) {
     	   if(CFWAppInterface.class.isAssignableFrom(clazz)) {
-    		   new CFWLog(logger).method("loadExtentionApplication").info("Load CFW Extension Application:"+clazz.getName());
+    		   new CFWLog(logger).info("Load CFW Extension Application:"+clazz.getName());
     		   
     		  try {
 				CFWAppInterface instance = (CFWAppInterface)clazz.newInstance();
 				return instance;
 			} catch (InstantiationException | IllegalAccessException e) {
-				new CFWLog(logger).method("loadExtentionApplication").severe("Error loading CFW Extension Application:"+clazz.getName(), e);
+				new CFWLog(logger).severe("Error loading CFW Extension Application:"+clazz.getName(), e);
 			}
     	   }
        }
@@ -214,7 +213,7 @@ public class CFW {
        Set<Class<?>> types = reflections.getTypesAnnotatedWith(CFWExtensionFeature.class);
        for(Class<?> clazz : types) {
     	   if(CFWAppFeature.class.isAssignableFrom(clazz)) {
-    		   new CFWLog(logger).method("loadExtensionFeatures").info("Load CFW Extension:"+clazz.getName());
+    		   new CFWLog(logger).info("Load CFW Extension:"+clazz.getName());
     		   CFW.Registry.Features.addFeature((Class<? extends CFWAppFeature>)clazz);
     	   }
        }
@@ -273,7 +272,6 @@ public class CFW {
 			executor.start();
 		} catch (Exception e) {
 			new CFWLog(logger)
-				.method("initializeApp")
 				.severe("Exception occured during application startup.", e);
 		}
 	}

@@ -33,8 +33,6 @@ public class GeneralTestServlet extends HttpServlet
                                                         IOException
     {
 		
-		CFWLog log = new CFWLog(logger).method("doGet");
-		
 		HTMLResponse html = new HTMLResponse("Test Page");
 		html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, WebTestMaster.RESOURCE_PACKAGE, "cfwjs_test.js"));
 		StringBuilder content = html.getContent();
@@ -62,10 +60,10 @@ public class GeneralTestServlet extends HttpServlet
 		//Add messages by log exception
 		//------------------------------
 		Throwable severe = new ArrayIndexOutOfBoundsException("You went over the bounds.");
-		log.severe("Test - Oops!!!Something went severly wrong...", severe);
+		new CFWLog(logger).severe("Test - Oops!!!Something went severly wrong...", severe);
 		
 		Throwable warn = new NumberFormatException("The format is Wrong!!!");
-		log.warn("Test - Oops!!! some warning...", warn);
+		new CFWLog(logger).warn("Test - Oops!!! some warning...", warn);
 		
 		//------------------------------
 		// Test cannot read file

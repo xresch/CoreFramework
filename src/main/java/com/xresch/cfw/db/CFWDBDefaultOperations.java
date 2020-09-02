@@ -42,7 +42,6 @@ public  class CFWDBDefaultOperations {
 		
 		if(object == null) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The object cannot be null", new Throwable());
 			return false;
 		}
@@ -67,7 +66,6 @@ public  class CFWDBDefaultOperations {
 		
 		if(object == null) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The object cannot be null", new Throwable());
 			return null;
 		}
@@ -106,7 +104,6 @@ public  class CFWDBDefaultOperations {
 		
 		if(object == null) {
 			new CFWLog(logger)
-				.method("update")
 				.warn("The role that should be updated cannot be null");
 			return false;
 		}
@@ -183,7 +180,6 @@ public  class CFWDBDefaultOperations {
 		// Check input format
 		if(commaSeparatedIDs == null ^ !commaSeparatedIDs.matches("(\\d,?)+")) {
 			new CFWLog(logger)
-			.method("deleteMultipleByID")
 			.severe("The input '"+commaSeparatedIDs+"' are not a comma separated list of IDs.");
 			return false;
 		}
@@ -198,7 +194,6 @@ public  class CFWDBDefaultOperations {
 			
 		} catch (Exception e) {
 			new CFWLog(logger)
-				.method("deleteMultipleByID")
 				.warn("Error while instanciating object.", e);
 			return false;
 		}
@@ -221,7 +216,6 @@ public  class CFWDBDefaultOperations {
 		// Check input format
 		if(commaSeparatedIDs == null ^ !commaSeparatedIDs.matches("(\\d,?)+")) {
 			new CFWLog(logger)
-			.method("deleteMultipleByIDWhere")
 			.severe("The input '"+commaSeparatedIDs+"' are not a comma separated list of IDs.");
 			return false;
 		}
@@ -237,7 +231,6 @@ public  class CFWDBDefaultOperations {
 			
 		} catch (Exception e) {
 			new CFWLog(logger)
-				.method("deleteMultipleByIDWhere")
 				.warn("Error while instanciating object.", e);
 			return false;
 		}
@@ -260,7 +253,6 @@ public  class CFWDBDefaultOperations {
 					.getFirstObject();
 		} catch (Exception e) {
 			new CFWLog(logger)
-				.method("selectFirstBy")
 				.warn("Error while instanciating object.", e);
 		} 
 		
@@ -285,7 +277,6 @@ public  class CFWDBDefaultOperations {
 			
 		} catch (Exception e) {
 			new CFWLog(logger)
-			.method("selectBy")
 			.warn("Error while instanciating object.", e);
 		} 
 		
@@ -309,7 +300,6 @@ public  class CFWDBDefaultOperations {
 			
 		} catch (Exception e) {
 			new CFWLog(logger)
-				.method("selectByAsJSON")
 				.warn("Error while instanciating object.", e);
 		} 
 		
@@ -336,7 +326,6 @@ public  class CFWDBDefaultOperations {
 			
 		} catch (Exception e) {
 			new CFWLog(logger)
-				.method("checkExistsBy")
 				.warn("Error while instanciating object.", e);
 		} 
 		

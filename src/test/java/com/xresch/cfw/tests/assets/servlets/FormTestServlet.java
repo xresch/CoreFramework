@@ -30,9 +30,7 @@ public class FormTestServlet extends HttpServlet
 
 	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException{
-		
-		CFWLog log = new CFWLog(logger).method("doGet");
-		
+				
 		HTMLResponse html = new HTMLResponse("Test Page");
 		StringBuilder content = html.getContent();
 		  

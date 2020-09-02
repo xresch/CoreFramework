@@ -71,7 +71,6 @@ public class CFWDBConfig {
 			
 		} catch (SQLException e) {
 			new CFWLog(logger)
-			.method("updateCache")
 			.severe("Error updating configuration cache.", e);
 			return false;
 		}finally {
@@ -205,21 +204,18 @@ public class CFWDBConfig {
 		
 		if(config == null) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The config cannot be null");
 			return false;
 		}
 		
 		if(config.name() == null || config.name().isEmpty()) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("Please specify a name for the config to create.");
 			return false;
 		}
 		
 		if(checkConfigExists(config)) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The config '"+config.name()+"' cannot be created as a config with this name already exists.");
 			return false;
 		}
@@ -345,14 +341,12 @@ public class CFWDBConfig {
 		
 		if(config == null) {
 			new CFWLog(logger)
-				.method("update")
 				.warn("The config that should be updated cannot be null");
 			return false;
 		}
 		
 		if(config.name() == null || config.name().isEmpty()) {
 			new CFWLog(logger)
-				.method("update")
 				.warn("Please specify a name for the config.");
 			return false;
 		}
@@ -397,7 +391,6 @@ public class CFWDBConfig {
 		Configuration config = selectByID(id);
 		if(config == null ) {
 			new CFWLog(logger)
-			.method("deleteByID")
 			.severe("The config with id '"+id+"'+could not be found.");
 			return false;
 		}
@@ -421,7 +414,6 @@ public class CFWDBConfig {
 		// Check input format
 		if(resultIDs == null ^ !resultIDs.matches("(\\d,?)+")) {
 			new CFWLog(logger)
-			.method("deleteMultipleByID")
 			.severe("The userID's '"+resultIDs+"' are not a comma separated list of strings.");
 			return false;
 		}
@@ -444,7 +436,6 @@ public class CFWDBConfig {
 		Configuration config = selectByName(name);
 		if(config == null ) {
 			new CFWLog(logger)
-			.method("deleteByID")
 			.severe("The config with name '"+name+"'+could not be found.");
 			return false;
 		}

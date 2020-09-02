@@ -40,7 +40,6 @@ public class ServletJARResource extends HttpServlet
 				response.getOutputStream().write(fontContent);
 			}catch(IOException e) {
 				new CFWLog(logger)
-					.method("doGet")
 					.severe("Error writing response.", e);
 			}
 	        //response.setContentType("application/font-"+fontType);

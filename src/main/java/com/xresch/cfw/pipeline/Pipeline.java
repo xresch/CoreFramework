@@ -37,7 +37,6 @@ public class Pipeline<I, O> {
 		// Check has Actions
 		if(actionArray.size() == 0) {
 			new CFWLog(logger)
-				.method("execute")
 				.warn("No actions in pipeline.", new Throwable());
 			
 			return null;
@@ -74,7 +73,6 @@ public class Pipeline<I, O> {
 			latch.await();
 		} catch (InterruptedException e) {
 			new CFWLog(logger)
-				.method("execute")
 				.warn("Pipeline execution was interupted.", e);
 			Thread.currentThread().interrupt();
 			return null;

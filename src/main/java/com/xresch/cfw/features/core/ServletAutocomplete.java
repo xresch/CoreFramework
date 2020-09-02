@@ -43,7 +43,6 @@ public class ServletAutocomplete extends HttpServlet
     	if(form == null) {
     		json.setSuccess(false);
     		new CFWLog(logger)
-	    		.method("doGet")
 	    		.severe("The form with ID '"+formid+"' could not be found. Try to refresh the page");
     		return;
     	}
@@ -56,7 +55,6 @@ public class ServletAutocomplete extends HttpServlet
     	if(field == null) {
     		json.setSuccess(false);
     		new CFWLog(logger)
-	    		.method("doGet")
 	    		.severe("The field with name '"+fieldname+"' could not be found. Try to refresh the page.");
     		return;
     	}
@@ -74,7 +72,6 @@ public class ServletAutocomplete extends HttpServlet
     	}else {
     		json.setSuccess(false);
     		new CFWLog(logger)
-	    		.method("doGet")
 	    		.severe("The field with name '"+fieldname+"' doesn't have an autocomplete handler.");
     		return;
     	}

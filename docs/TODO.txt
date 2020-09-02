@@ -85,12 +85,14 @@ TODO
 
 DONE
 ====
-
 ------- Current -------
-BREAKING CHANGES:
-HTMLResponse: Changed StringBuffer to StringBuilder
+- CFWLog: auto detect method, making call to CFWLog.method() optional
+- Reduced footprint of log
 
-CHANGES:
+------- v1.0.4 -------
+- added check for Internet Explorer and print not supported message
+- Fixed JDK11 reflection issue
+- replaced all StringBuffer to StringBuilder
 - Checkbox Widget: fixed positioning issue when clicking checkboxes after creation
 - Context Settings: Fixed button display
 - Code improvements from SonarQube findings
@@ -98,7 +100,8 @@ CHANGES:
 - Support Info: Use default Modal, make exceptions unique.
 - Show previous toasts all toasts button
 - Security: Add table class to Sanitizer for tables
-- Widget: Nest Widget from other Dashboard
+- Added Widget Replica: Replicate Widget from other Dashboard
+- Migrated test cases to JUnit 5
 
 ------- v.1.0.0 -------
 - Manual: Print View Button

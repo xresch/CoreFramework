@@ -179,8 +179,7 @@ public class CFWJson {
 		try {
 			result = new JsonParser().parse(jsonString);
 		}catch(Exception e) {
-			new CFWLog(logger) 
-			.method("jsonStringToJsonElement")
+			new CFWLog(logger)
 			.severe("Error parsing jsonString: "+jsonString, e);
 		}
 		return result;

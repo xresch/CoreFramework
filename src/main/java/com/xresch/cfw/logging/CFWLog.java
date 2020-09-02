@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw._main.SessionData;
-import com.xresch.cfw.response.AbstractHTMLResponse;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -53,12 +52,18 @@ public class CFWLog {
 
 	public CFWLog(Logger logger){
 		this.logger = logger;
+		
+		if(logger != null){
+			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+			StackTraceElement cfwLogInstantiatingMethod = stacktrace[2];
+			sourceMethod = cfwLogInstantiatingMethod.getMethodName();
+		}
+		
 	}
 	
 	public CFWLog method(String method){
 		
 		this.sourceMethod = method;
-		
 		return this;
 	}
 	
@@ -173,21 +178,31 @@ public class CFWLog {
 		
 		//
 		starttimeNanos = tempStartNanos;
-		this.log(Level.INFO, "Duration Log", null);
+		this.log(Level.INFO, "Duration[ms]", null);
 				
 	}
 	
 	/***********************************************************************
-	 * Ends a measurement and logs a duration log with level INFO.
+	 * Ends a measurement and logs a duration log with the specified level.
 	 * 
 	 ***********************************************************************/
-	public void end(String message){
-		
-		//
+	public void end(Level level){
 		starttimeNanos = tempStartNanos;
-		this.log(Level.INFO, message, null);
+		this.log(level, "Duration[ms]", null);		
+	}
+	
+	/***********************************************************************
+	 * Ends a measurement and logs a duration log with the specified level
+	 * and message.
+	 * 
+	 ***********************************************************************/
+	public void end(Level level, String message){
+		
+		starttimeNanos = tempStartNanos;
+		this.log(level, message, null);
 				
 	}
+	
 	
 	public void all(String message){this.log(Level.ALL, message, null);}
 	public void config(String message){this.log(Level.CONFIG, message, null);}

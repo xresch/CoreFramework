@@ -43,9 +43,6 @@ public class SevletUserManagementAPI extends HttpServlet {
 		//-------------------------------------------
 		// Initialize
 		//-------------------------------------------
-		CFWLog log = new CFWLog(logger).method("doGet");
-		log.info(request.getRequestURL().toString());
-		
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
 		String ID = request.getParameter("id");

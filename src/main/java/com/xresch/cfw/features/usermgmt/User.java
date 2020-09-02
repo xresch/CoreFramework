@@ -62,7 +62,6 @@ public class User extends CFWObject {
 				public boolean handle(String oldValue, String newValue) {
 					if(username.isDisabled()) { 
 						new CFWLog(logger)
-						.method("handle")
 						.severe("The username cannot be changed as the field is disabled.");
 						return false; 
 					}
@@ -214,7 +213,6 @@ public class User extends CFWObject {
 			
 			if(anonUser == null) {
 				new CFWLog(logger)
-				.method("createDefaultUsers")
 				.severe("User 'anonymous' was not found in the database.");
 			}
 		}
@@ -237,7 +235,6 @@ public class User extends CFWObject {
 		
 		if(adminUser == null) {
 			new CFWLog(logger)
-			.method("createDefaultUsers")
 			.severe("User 'admin' was not found in the database.");
 		}
 		
@@ -248,7 +245,6 @@ public class User extends CFWObject {
 		
 		if(superuserRole == null) {
 			new CFWLog(logger)
-			.method("createDefaultUsers")
 			.severe("Role 'Superuser' was not found in the database.");
 			return;
 		}
@@ -263,7 +259,6 @@ public class User extends CFWObject {
 
 		if(!CFW.DB.UserRoleMap.checkIsUserInRole(adminUser, superuserRole)) {
 			new CFWLog(logger)
-			.method("createDefaultUsers")
 			.severe("User 'admin' is not assigned to role 'Superuser'.");
 		}
 		
@@ -427,7 +422,6 @@ public class User extends CFWObject {
 		
 		if(!password.equals(repeatedPassword)) {
 			new CFWLog(logger)
-			.method("setInitialPassword")
 			.severe("The two provided passwords are not equal.");
 			return null;
 		}
@@ -442,14 +436,12 @@ public class User extends CFWObject {
 		
 		if(!passwordValidation(oldPassword)) {
 			new CFWLog(logger)
-			.method("changePassword")
 			.severe("The provided old password was wrong.");
 			return false;
 		}
 		
 		if(!password.equals(repeatedPassword)) {
 			new CFWLog(logger)
-			.method("changePassword")
 			.severe("The two provided passwords are not equal.");
 			return false;
 		}else {

@@ -43,7 +43,6 @@ public class CFWDB {
 		
 		if(isInitialized) {
 			new CFWLog(logger)
-				.method("startDBServer")
 				.warn("Database was already initialized.");
 			return;
 		}
@@ -70,12 +69,10 @@ public class CFWDB {
     		try {
 				if(!datastoreFile.createNewFile()) {
 					new CFWLog(logger)
-						.method("startDBServer")
 						.severe("Error creating database file.");
 				}
 			} catch (IOException e) {
 				new CFWLog(logger)
-				.method("startDBServer")
 				.severe("Error creating database file.", e);
 				
 			}
@@ -105,7 +102,6 @@ public class CFWDB {
 					
 					if(isInitialized) {
 						new CFWLog(logger)
-							.method("getConnection")
 							.finest("DB Connections Active: "+connectionPool.getActiveConnections());
 						
 						if(transactionConnection.get() != null) {
@@ -127,7 +123,6 @@ public class CFWDB {
 		} catch (SQLException e) {
 			CFWDB.isInitialized = false;
 			new CFWLog(CFWDB.logger)
-				.method("initialize")
 				.severe("Issue initializing H2 Database.", e);
 			e.printStackTrace();
 		}
@@ -167,7 +162,6 @@ public class CFWDB {
 			
 		}else {
 			new CFWLog(logger)
-				.method("backupDatabaseFile")
 				.severe("Database backup could not be created, folder is not accessible: "+folderPath);
 		}
 		
@@ -187,11 +181,9 @@ public class CFWDB {
 			
 			if(CFW.DB.Users.update(admin)) {
 				new CFWLog(logger)
-				.method("resetAdminPW")
 				.info("Admin password was reset to default!");
 			}else{
 				new CFWLog(logger)
-				.method("resetAdminPW")
 				.warn("Admin password was reset failed!");
 			};
 		}

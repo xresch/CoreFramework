@@ -38,21 +38,18 @@ public class CFWDBSpace {
 		
 		if(space == null) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The space cannot be null.", new IllegalArgumentException());
 			return false;
 		}
 		
 		if(space.name() == null || space.name().isEmpty()) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("Please specify a name for the space to create.", new IllegalStateException());
 			return false;
 		}
 		
 		if(checkSpaceExists(space)) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The space '"+space.name()+"' cannot be created as a space with this name already exists.");
 			return false;
 		}
@@ -144,14 +141,12 @@ public class CFWDBSpace {
 		
 		if(space == null) {
 			new CFWLog(logger)
-				.method("update")
 				.warn("The space that should be updated cannot be null");
 			return false;
 		}
 		
 		if(space.name() == null || space.name().isEmpty()) {
 			new CFWLog(logger)
-				.method("update")
 				.warn("Please specify a name for the space.");
 			return false;
 		}
@@ -181,7 +176,6 @@ public class CFWDBSpace {
 		Space space = selectByID(id);
 		if(space != null && space.isDeletable() == false) {
 			new CFWLog(logger)
-			.method("deleteByID")
 			.severe("The space '"+space.name()+"' cannot be deleted as it is marked as not deletable.");
 			return false;
 		}
@@ -206,7 +200,6 @@ public class CFWDBSpace {
 		// Check input format
 		if(resultIDs == null ^ !resultIDs.matches("(\\d,?)+")) {
 			new CFWLog(logger)
-			.method("deleteMultipleByID")
 			.severe("The userID's '"+resultIDs+"' are not a comma separated list of strings.");
 			return false;
 		}
@@ -230,7 +223,6 @@ public class CFWDBSpace {
 		Space space = selectByName(name);
 		if(space != null && space.isDeletable() == false) {
 			new CFWLog(logger)
-			.method("deleteByName")
 			.severe("The space '"+space.name()+"' cannot be deleted as it is marked as not deletable.");
 			return false;
 		}

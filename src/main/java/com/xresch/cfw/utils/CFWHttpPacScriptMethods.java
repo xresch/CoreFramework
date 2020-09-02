@@ -111,7 +111,6 @@ public class CFWHttpPacScriptMethods {
 			return true;
 		} catch (UnknownHostException ex) {
 			new CFWLog(logger)
-				.method("executeJavascript")
 				.fine("Hostname not resolveable: "+host);
 		}
 		return false;
@@ -183,7 +182,6 @@ public class CFWHttpPacScriptMethods {
 			return ina.getHostAddress();
 		} catch (UnknownHostException e) {
 			new CFWLog(logger)
-				.method("executeJavascript")
 				.fine("DNS not resolveable: "+host);
 		}
 		return "";
@@ -234,7 +232,6 @@ public class CFWHttpPacScriptMethods {
 			return "";
 		} catch (IOException e) {
 			new CFWLog(logger)
-				.method("executeJavascript")
 				.fine("Local address not resolvable.");
 			return "";
 		}
@@ -642,7 +639,6 @@ public class CFWHttpPacScriptMethods {
 			}
 		} catch (UnknownHostException e) {
 			new CFWLog(logger)
-				.method("executeJavascript")
 				.fine("DNS name not resolvable: "+host);
 		}
 		return result.toString();
@@ -692,7 +688,6 @@ public class CFWHttpPacScriptMethods {
 			return result.toString();
 		} catch (Exception e) {
 			new CFWLog(logger)
-			.method("executeJavascript")
 			.fine("Cannot sort invalid IP list: "+ipAddressList);
 			return "";
 		}

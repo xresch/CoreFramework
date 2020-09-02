@@ -56,7 +56,6 @@ public class APIDefinitionFetch extends APIDefinition{
 					object = clazz.newInstance();
 				} catch (Exception e) {
 					new CFWLog(logger)
-						.method("handleRequest")
 						.severe("Could not create instance for '"+clazz.getSimpleName()+"'. Check if you have a constructor without parameters.", e);
 				
 					json.setSuccess(false);

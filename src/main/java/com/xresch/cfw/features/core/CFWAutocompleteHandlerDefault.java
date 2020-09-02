@@ -39,7 +39,6 @@ public class CFWAutocompleteHandlerDefault extends CFWAutocompleteHandler {
 				
 			} catch (Exception e) {
 				new CFWLog(logger)
-				.method("getAutocompleteData")
 				.severe("Exception occured while trying to instanciate a CFWObject.", e);
 			} 
 		}else {

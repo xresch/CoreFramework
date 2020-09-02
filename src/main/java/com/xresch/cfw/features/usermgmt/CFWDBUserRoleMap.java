@@ -44,21 +44,18 @@ public class CFWDBUserRoleMap {
 		
 		if(user == null || role == null ) {
 			new CFWLog(logger)
-				.method("addUserToRole")
 				.warn("User and role cannot be null.");
 			return false;
 		}
 		
 		if(user.id() < 0 || role.id() < 0) {
 			new CFWLog(logger)
-				.method("addUserToRole")
 				.warn("User-ID and role-ID are not set correctly.");
 			return false;
 		}
 		
 		if(checkIsUserInRole(user, role)) {
 			new CFWLog(logger)
-				.method("addUserToRole")
 				.warn("The user '"+user.username()+"' is already part of the role '"+role.name()+"'.");
 			return false;
 		}
@@ -99,14 +96,12 @@ public class CFWDBUserRoleMap {
 		
 		if(user == null || role == null ) {
 			new CFWLog(logger)
-				.method("removeUserFromRole")
 				.warn("User and role cannot be null.");
 			return false;
 		}
 		
 		if(!checkIsUserInRole(user, role)) {
 			new CFWLog(logger)
-				.method("removeUserFromRole")
 				.warn("The user '"+user.username()+"' is not part of the role '"+role.name()+"' and cannot be removed.");
 			return false;
 		}
@@ -172,7 +167,6 @@ public class CFWDBUserRoleMap {
 			return checkIsUserInRole(user.id(), role.id());
 		}else {
 			new CFWLog(logger)
-				.method("checkIsUserInRole")
 				.severe("The user and role cannot be null. User: '"+user+"', Role: '"+role+"'");
 			
 		}
@@ -200,7 +194,6 @@ public class CFWDBUserRoleMap {
 			}
 		} catch (Exception e) {
 			new CFWLog(logger)
-			.method("roleExists")
 			.severe("Exception occured while checking of role exists.", e);
 			
 			return false;
@@ -221,7 +214,6 @@ public class CFWDBUserRoleMap {
 	public static HashMap<Integer, Role> selectAllRolesForUser(User user) {
 		if( user == null) {
 			new CFWLog(logger)
-				.method("create")
 				.severe("The user cannot be null");
 			return null;
 		}
@@ -254,7 +246,6 @@ public class CFWDBUserRoleMap {
 			}
 		} catch (SQLException e) {
 			new CFWLog(logger)
-			.method("selectRolesForUser")
 			.severe("Error while selecting roles for the user with id '"+userID+"'.", e);
 			return null;
 		}finally {
@@ -277,7 +268,6 @@ public class CFWDBUserRoleMap {
 		// Check input format
 		if(userID == null ^ !userID.matches("\\d+")) {
 			new CFWLog(logger)
-			.method("deleteMultipleByID")
 			.severe("The userID '"+userID+"' is not a number.");
 			return "[]";
 		}
@@ -308,7 +298,6 @@ public class CFWDBUserRoleMap {
 		// Check input format
 		if(userID == null || !userID.matches("\\d+")) {
 			new CFWLog(logger)
-			.method("toogleUserInRole")
 			.severe("The userID '"+userID+"' is not a number.");
 			return false;
 		}
@@ -317,7 +306,6 @@ public class CFWDBUserRoleMap {
 		// Check input format
 		if(roleID == null || !roleID.matches("\\d+")) {
 			new CFWLog(logger)
-			.method("toogleUserInRole")
 			.severe("The roleID '"+userID+"' is not a number.");
 			return false;
 		}

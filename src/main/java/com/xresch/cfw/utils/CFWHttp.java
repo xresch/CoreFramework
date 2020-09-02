@@ -48,7 +48,6 @@ public class CFWHttp {
 			return URLEncoder.encode(toEncode, StandardCharsets.UTF_8.toString());
 		} catch (UnsupportedEncodingException e) {
 			new CFWLog(logger)
-				.method("encode")
 				.severe("Exception while encoding: "+e.getMessage(), e);	
 		}
 		
@@ -80,7 +79,6 @@ public class CFWHttp {
 			response.sendRedirect(response.encodeRedirectURL(url));
 		} catch (IOException e) {
 			new CFWLog(logger)
-				.method("redirectToURL")
 				.severe("Error sending redirect.", e);
 		}
 	}
@@ -108,7 +106,6 @@ public class CFWHttp {
 			    
 				} catch (Exception e) {
 					new CFWLog(logger)
-						.method("sendGETRequest")
 						.severe("Exception occured.", e);
 				} 
 				
@@ -198,7 +195,6 @@ public class CFWHttp {
 								cfwProxy.port = Integer.parseInt(port);
 							}catch(Throwable e) {
 								new CFWLog(logger)
-									.method("getProxies")
 									.silent(true)
 									.severe("Error parsing port to integer.", e);
 							}
@@ -213,7 +209,6 @@ public class CFWHttp {
 				
 			} catch (MalformedURLException e) {
 				new CFWLog(logger)
-					.method("getProxies")
 					.severe("Resolving URL failed as it is malformed.", e);
 			}
 		}
@@ -266,17 +261,14 @@ public class CFWHttp {
 				//-------------------------------------
 				// None of the addresses were resolved
 				new CFWLog(logger)
-					.method("createProxiedURLConnection")
 					.warn("The proxy addresses couldn't be resolved.");
 			}
 		} catch (MalformedURLException e) {
 			new CFWLog(logger)
-				.method("createProxiedURLConnection")
 				.severe("The URL is malformed.", e);
 			
 		} catch (IOException e) {
 			new CFWLog(logger)
-				.method("createProxiedURLConnection")
 				.severe("An IO error occured.", e);
 		}
 		
@@ -302,7 +294,6 @@ public class CFWHttp {
 	    
 		} catch (Exception e) {
 			new CFWLog(logger)
-				.method("sendGETRequest")
 				.severe("Exception occured.", e);
 		} 
 		
@@ -349,7 +340,6 @@ public class CFWHttp {
 	    
 		} catch (Exception e) {
 			new CFWLog(logger)
-				.method("sendPOSTRequest")
 				.severe("Exception occured.", e);
 		} 
 		
@@ -418,7 +408,6 @@ public class CFWHttp {
 	        }
 	    } catch (IOException e) {
 	    	new CFWLog(logger)
-				.method("getRequestBody")
 				.severe("Exception occured while reading request body. ", e);
 	    } 
         
@@ -475,7 +464,6 @@ public class CFWHttp {
 		        
 			}catch(Exception e) {
 				new CFWLog(responseLogger)
-					.method("<init>")
 					.severe("Exception occured while accessing URL: "+e.getMessage(), e);
 			}finally {
 				if(in != null) {
@@ -483,7 +471,6 @@ public class CFWHttp {
 						in.close();
 					} catch (IOException e) {
 						new CFWLog(responseLogger)
-							.method("<init>")
 							.severe("Exception occured while closing http stream.", e);
 					}
 				}

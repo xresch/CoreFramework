@@ -126,7 +126,6 @@ public class CFWScripting {
 			engine.eval(functionBuilder.toString());
 		} catch (ScriptException e) {
 			new CFWLog(logger)
-			.method("createEngineWithAdditionalMethods")
 			.severe("The engine could not be initialized correctly.", e);
 		}
 		

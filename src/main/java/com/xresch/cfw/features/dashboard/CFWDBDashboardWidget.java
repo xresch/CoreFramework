@@ -37,7 +37,6 @@ public class CFWDBDashboardWidget {
 			
 			if(widget == null ) {
 				new CFWLog(logger)
-					.method("doCheck")
 					.warn("The widget cannot be null.", new Throwable());
 				return false;
 			}

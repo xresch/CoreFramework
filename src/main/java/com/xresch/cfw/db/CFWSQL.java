@@ -142,7 +142,6 @@ public class CFWSQL {
 		// Create Table
 		if(object.getPrimaryField() == null) {
 			new CFWLog(logger)
-				.method("createTable")
 				.severe("CFWObjects need a primary field to create a table out of them. ", new IllegalStateException());
 		}
 		
@@ -161,7 +160,6 @@ public class CFWSQL {
 				success &= CFWDB.preparedExecute(addColumnIsRenamable);
 			}else {
 				new CFWLog(logger)
-					.method("createTable")
 					.severe("The field "+field.getName()+" is missing a columnDefinition. Use CFWField.setColumnDefinition(). ");
 				success &= false;
 			}
@@ -184,7 +182,6 @@ public class CFWSQL {
 				
 			} catch (Exception e) {
 				new CFWLog(logger)
-				.method("createTable")
 				.severe("An error occured trying to create foreign keys for table: "+object.getTableName(), e);
 			} 
 			
@@ -1029,7 +1026,6 @@ public class CFWSQL {
 			
 		}else {
 			new CFWLog(logger)
-			.method("executeInsertGetKey")
 			.severe("The query is not an insert statement: "+statement);
 			
 			return null;
@@ -1116,7 +1112,6 @@ public class CFWSQL {
 			}
 		}catch (SQLException | InstantiationException | IllegalAccessException e) {
 			new CFWLog(logger)
-			.method("getFirstObject")
 			.severe("Error reading object from database.", e);
 			
 		}finally {
@@ -1148,8 +1143,7 @@ public class CFWSQL {
 				}
 			} catch (SQLException | InstantiationException | IllegalAccessException e) {
 				new CFWLog(logger)
-				.method("getObjectList")
-				.severe("Error reading object from database.", e);
+					.severe("Error reading object from database.", e);
 				
 			}finally {
 				CFWDB.close(result);
@@ -1182,7 +1176,6 @@ public class CFWSQL {
 				}
 			} catch (SQLException e) {
 				new CFWLog(logger)
-				.method("getKeyValueMap")
 				.severe("Error reading object from database.", e);
 				
 			}finally {
@@ -1222,7 +1215,6 @@ public class CFWSQL {
 				}
 			} catch (SQLException e) {
 				new CFWLog(logger)
-				.method("getAsStringArray")
 				.severe("Error reading object from database.", e);
 				
 			}finally {
@@ -1256,7 +1248,6 @@ public class CFWSQL {
 				}
 			} catch (SQLException e) {
 				new CFWLog(logger)
-				.method("getAsLinkedHashMap")
 				.severe("Error reading object from database.", e);
 				
 			}finally {
@@ -1290,7 +1281,6 @@ public class CFWSQL {
 				}
 			} catch (SQLException e) {
 				new CFWLog(logger)
-				.method("getAsLinkedHashMap")
 				.severe("Error reading object from database.", e);
 				
 			}finally {
@@ -1325,7 +1315,6 @@ public class CFWSQL {
 				}
 			} catch (SQLException e) {
 				new CFWLog(logger)
-				.method("getAsLinkedHashMap")
 				.severe("Error reading object from database.", e);
 				
 			}finally {

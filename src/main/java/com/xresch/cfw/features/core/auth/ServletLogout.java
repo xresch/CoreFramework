@@ -30,8 +30,6 @@ public class ServletLogout extends HttpServlet
 	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-		CFWLog log = new CFWLog(logger).method("doGet");
-		log.info(request.getRequestURL().toString());
 		
 		SessionData data = CFW.Context.Request.getSessionData(); 	
 		data.triggerLogout();

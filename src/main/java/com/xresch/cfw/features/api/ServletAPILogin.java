@@ -44,10 +44,7 @@ public class ServletAPILogin extends HttpServlet
 	 ******************************************************************/
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		CFWLog log = new CFWLog(logger).method("doPost");
-		log.info(request.getRequestURL().toString());
-		
+				
 		//--------------------------
 		// Get Credentials
 		String username = request.getParameter("username");

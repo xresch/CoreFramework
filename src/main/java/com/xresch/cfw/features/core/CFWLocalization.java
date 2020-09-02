@@ -232,7 +232,6 @@ public class CFWLocalization {
 								
 							} catch (IOException e) {
 								new CFWLog(logger)
-									.method("getLocaleProperties")
 									.severe("Error while reading language pack.", e);
 							}
 						}
@@ -289,7 +288,6 @@ public class CFWLocalization {
 					}else{
 						//TODO: Localize message
 						new CFWLog(logger)
-							.method("writeLocalized")
 							.finest("Localization Parameter was missing the right bound");
 					
 						break;

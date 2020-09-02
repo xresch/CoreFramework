@@ -40,7 +40,6 @@ public class ManualPage {
 		
 		if(title.contains("|")) {
 			new CFWLog(logger)
-			.method("<init>")
 			.severe("Title cannot contain '|'.", new Exception());
 		}
 		

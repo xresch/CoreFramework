@@ -55,14 +55,12 @@ public class CFWDBContextSettings {
 			
 			if(settings == null || settings.name().isEmpty()) {
 				new CFWLog(logger)
-					.method("doCheck")
 					.severe("Please specify a name for the environment.", new Throwable());
 				return false;
 			}
 			
 			if(checkExistsIgnoreCurrent(settings)) {
 				new CFWLog(logger)
-					.method("doCheck")
 					.severe("A setting of type '"+settings.type()+"' and the name '"+settings.name()+"' already exists.", new Throwable());
 				return false;
 			}

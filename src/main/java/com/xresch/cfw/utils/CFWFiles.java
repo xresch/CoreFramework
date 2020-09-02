@@ -70,13 +70,12 @@ public class CFWFiles {
 	 * 
 	 ***********************************************************************/
 	public static String getFileContent(HttpServletRequest request, String path){
-		CFWLog omlogger = new CFWLog(logger).method("getFileContent");
-		
+
 		if( CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING) && CFWFiles.permanentStringFileCache.containsKey(path)){
-			omlogger.finest("Read file content from cache");
+			new CFWLog(logger).finest("Read file content from cache");
 			return CFWFiles.permanentStringFileCache.get(path);
 		}else{
-			omlogger.finest("Read from disk into cache");
+			new CFWLog(logger).finest("Read from disk into cache");
 			
 			try( BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8)) ){
 				
@@ -99,7 +98,6 @@ public class CFWFiles {
 			} catch (IOException e) {
 				//TODO: Localize message
 				new CFWLog(logger)
-					.method("getFileContent")
 					.severe("Could not read file: "+path, e);
 				
 				return null;
@@ -129,7 +127,6 @@ public class CFWFiles {
 		} catch (IOException e) {
 			//TODO: Localize message
 			new CFWLog(logger)
-				.method("writeFileContent")
 				.severe("Could not write file: "+path, e);
 		}
 			
@@ -195,7 +192,6 @@ public class CFWFiles {
 					CFWFiles.permanentStringFileCache.put(resourcePath, fileContent);
 				} catch (IOException e) {
 					new CFWLog(logger)
-					.method("readPackageResource")
 					.severe("Error while reading resource from package: "+resourcePath, e);
 				}
 

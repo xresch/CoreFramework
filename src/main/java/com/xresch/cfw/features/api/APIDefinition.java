@@ -63,7 +63,6 @@ public class APIDefinition {
 			instance = createObjectInstance();
 		} catch (Exception e) {
 			new CFWLog(logger)
-				.method("APIDefinition.<init>")
 				.severe("Could not create instance for '"+clazz.getSimpleName()+"'. Check if you have a constructor without parameters.", e);
 			return;
 		}
@@ -114,7 +113,6 @@ public class APIDefinition {
 			}
 		} catch (Exception e) {
 			new CFWLog(logger)
-				.method("handleRequest")
 				.severe("Could not create instance for '"+getObjectClass().getSimpleName()+"'. Check if you have a constructor without parameters.", e);
 		}
 		return object;

@@ -33,28 +33,24 @@ public class CFWDBRolePermissionMap {
 		
 		if(permission == null) {
 			new CFWLog(logger)
-				.method("addPermissionToRole")
 				.warn("Permission cannot be null.");
 			return false;
 		}
 		
 		if(role == null) {
 			new CFWLog(logger)
-				.method("addPermissionToRole")
 				.warn("Role cannot be null.");
 			return false;
 		}
 		
 		if(permission.id() < 0 || role.id() < 0) {
 			new CFWLog(logger)
-				.method("addPermissionToRole")
 				.warn("Permission-ID and role-ID are not set correctly.");
 			return false;
 		}
 		
 		if(checkIsPermissionInRole(permission, role)) {
 			new CFWLog(logger)
-				.method("addPermissionToRole")
 				.warn("The permission '"+permission.name()+"' is already part of the role '"+role.name()+"'.");
 			return false;
 		}
@@ -73,14 +69,12 @@ public class CFWDBRolePermissionMap {
 		
 		if(permissionID < 0 || roleID < 0) {
 			new CFWLog(logger)
-				.method("addPermissionToRole")
 				.warn("Permission-ID or role-ID are not set correctly.");
 			return false;
 		}
 		
 		if(checkIsPermissionInRole(permissionID, roleID)) {
 			new CFWLog(logger)
-				.method("addPermissionToRole")
 				.warn("The permission '"+permissionID+"' is already part of the role '"+roleID+"'.");
 			return false;
 		}
@@ -131,21 +125,18 @@ public class CFWDBRolePermissionMap {
 		
 		if(permission == null || role == null ) {
 			new CFWLog(logger)
-				.method("addPermissionToRole")
 				.warn("Permission and role cannot be null.");
 			return false;
 		}
 		
 		if(permission.id() < 0 || role.id() < 0) {
 			new CFWLog(logger)
-				.method("addPermissionToRole")
 				.warn("Permission-ID and role-ID are not set correctly.");
 			return false;
 		}
 		
 		if(!checkIsPermissionInRole(permission, role)) {
 			new CFWLog(logger)
-				.method("addPermissionToRole")
 				.warn("The permission '"+permission.name()+"' is not part of the role '"+role.name()+"' and cannot be removed.");
 			return false;
 		}
@@ -163,7 +154,6 @@ public class CFWDBRolePermissionMap {
 		
 		if(!checkIsPermissionInRole(permissionID, roleID)) {
 			new CFWLog(logger)
-				.method("removePermissionFromRole")
 				.warn("The permission '"+permissionID+"' is not part of the role '"+ roleID+"' and cannot be removed.");
 			return false;
 		}
@@ -195,7 +185,6 @@ public class CFWDBRolePermissionMap {
 			return checkIsPermissionInRole(permission.id(), role.id());
 		}else {
 			new CFWLog(logger)
-				.method("checkIsPermissionInRole")
 				.severe("The user and role cannot be null. User: '"+permission+"', Role: '"+role+"'");
 			
 		}
@@ -252,7 +241,6 @@ public class CFWDBRolePermissionMap {
 		
 		if( role == null) {
 			new CFWLog(logger)
-				.method("create")
 				.severe("The user cannot be null");
 			return null;
 		}
@@ -274,7 +262,6 @@ public class CFWDBRolePermissionMap {
 			}
 		} catch (SQLException e) {
 			new CFWLog(logger)
-			.method("selectRolesForUser")
 			.severe("Error while selecting permissions for the role '"+role.name()+"'.", e);
 			return null;
 		}finally {
@@ -302,7 +289,6 @@ public class CFWDBRolePermissionMap {
 			}
 		} catch (SQLException e) {
 			new CFWLog(logger)
-			.method("selectRolesForUser")
 			.severe("Error while selecting permissions for the role '"+user.username()+"'.", e);
 			return null;
 		}finally {
@@ -322,7 +308,6 @@ public class CFWDBRolePermissionMap {
 		
 		if( user == null) {
 			new CFWLog(logger)
-				.method("create")
 				.severe("The user cannot be null.");
 			return null;
 		}
@@ -374,7 +359,6 @@ public class CFWDBRolePermissionMap {
 		// Check input format
 		if(roleID == null ^ !roleID.matches("\\d+")) {
 			new CFWLog(logger)
-			.method("getPermissionMapForRoleAsJSON")
 			.severe("The roleID '"+roleID+"' is not a number.");
 			return "[]";
 		}
@@ -403,8 +387,7 @@ public class CFWDBRolePermissionMap {
 		// Check input format
 		if(permissionID == null ^ !permissionID.matches("\\d+")) {
 			new CFWLog(logger)
-			.method("toogleUserInRole")
-			.severe("The userID '"+permissionID+"' is not a number.");
+				.severe("The userID '"+permissionID+"' is not a number.");
 			return false;
 		}
 		
@@ -412,7 +395,6 @@ public class CFWDBRolePermissionMap {
 		// Check input format
 		if(roleID == null ^ !roleID.matches("\\d+")) {
 			new CFWLog(logger)
-			.method("toogleUserInRole")
 			.severe("The roleID '"+permissionID+"' is not a number.");
 			return false;
 		}

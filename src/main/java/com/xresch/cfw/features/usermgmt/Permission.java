@@ -57,7 +57,6 @@ public class Permission extends CFWObject{
 										public boolean handle(String oldValue, String newValue) {
 											if(name.isDisabled()) { 
 												new CFWLog(logger)
-												.method("handle")
 												.severe("The name cannot be changed as the field is disabled.");
 												return false; 
 											}
@@ -139,7 +138,6 @@ public class Permission extends CFWObject{
 			CFW.DB.RolePermissionMap.addPermissionToRole(userManagement, adminRole, true);
 			if(userManagement == null) {
 				new CFWLog(logger)
-				.method("createDefaultPermissions")
 				.severe("User permission '"+Permission.CFW_USER_MANAGEMENT+"' was not found in the database.");
 			}
 		}

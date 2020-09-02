@@ -101,7 +101,6 @@ public class TaskCPUSampling extends CFWScheduledTask {
 						signatureIDMap.put(signatureString, signatureID);
 					}else {
 						new CFWLog(logger)
-							.method("run")
 							.severe("Insert of new signature failed.");
 					}
 				}else {

@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 
 /**************************************************************************************************************
@@ -24,10 +25,9 @@ public class LogFormatterJSON extends Formatter {
 		
 		buf.append("{");
 
-		
 			//-------------------------
 			// Timestamp
-			buf.append("\"timestamp\":\"");
+			buf.append("\"time\":\"");
 			buf.append(CFW.Time.formatDate(new Date(rec.getMillis())));
 			buf.append("\"");
 						
@@ -48,18 +48,17 @@ public class LogFormatterJSON extends Formatter {
 			}
 			
 			//-------------------------
+			// Delta
+			buf.append(", \"delta\":\"");
+			buf.append(log.deltaStartMillis);
+			buf.append("\"");
+			
+			//-------------------------
 			// user
 			buf.append(", \"user\":\"");
 			buf.append(log.userID);
 			buf.append("\"");
 			
-			//-------------------------
-			// URL
-			buf.append(", \"deltaStartMillis\":\"");
-			buf.append(log.deltaStartMillis);
-			buf.append("\"");
-			
-
 			
 			//-------------------------
 			// URL
@@ -112,7 +111,7 @@ public class LogFormatterJSON extends Formatter {
 			//-------------------------
 			// Duration Millisecond
 			if(log.durationMillis != -1){
-				buf.append(", \"durationMillis\":\"");
+				buf.append(", \"duration\":\"");
 				buf.append(log.durationMillis);
 				buf.append("\"");
 			}

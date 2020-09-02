@@ -65,14 +65,13 @@ public class CSVLoginProvider implements LoginProvider {
 	}
 	
 	private static void loadCredentials() {
-		CFWLog log = new CFWLog(logger).method("loadCredentials");
-		
+
 		//------------------------------
 		// Load File
 		String credentials = CFW.Files.getFileContent(null, CFW.Properties.AUTHENTICATION_CSV_FILE);
 		
 		if(credentials == null) {
-			log.severe("Credential file could not be loaded: "+CFW.Properties.AUTHENTICATION_CSV_FILE);
+			new CFWLog(logger).severe("Credential file could not be loaded: "+CFW.Properties.AUTHENTICATION_CSV_FILE);
 			return;
 		}
 		
@@ -86,7 +85,7 @@ public class CSVLoginProvider implements LoginProvider {
 			if(userAndPW.length == 2) {
 				userCredentials.put(userAndPW[0], userAndPW[1]);
 			}else {
-				log.severe("Error loading user credentials.");
+				new CFWLog(logger).severe("Error loading user credentials.");
 			}
 		}
 	}

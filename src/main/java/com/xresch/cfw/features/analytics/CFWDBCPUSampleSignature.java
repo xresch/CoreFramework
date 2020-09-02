@@ -25,21 +25,18 @@ public class CFWDBCPUSampleSignature {
 		
 		if(signature == null) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The signature cannot be null");
 			return null;
 		}
 		
 		if(signature.signature() == null || signature.signature().isEmpty()) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("Please specify a name for the signature to create.");
 			return null;
 		}
 		
 		if(checkStatsMethodSignatureExists(signature)) {
 			new CFWLog(logger)
-				.method("create")
 				.warn("The signature '"+signature.signature()+"' cannot be created as a signature with this name already exists.");
 			return null;
 		}

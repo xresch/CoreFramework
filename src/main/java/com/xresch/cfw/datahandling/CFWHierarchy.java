@@ -73,7 +73,6 @@ public class CFWHierarchy<T extends CFWObject> {
 		// Argument check
 		if(levels > MAX_LEVELS) {
 			new CFWLog(logger)
-				.method("setHierarchyLevels")
 				.severe("Cannot set levels to '"+levels+"'. The maximum allowed levels is: "+MAX_LEVELS, new IllegalArgumentException());
 			
 			return;
@@ -104,7 +103,6 @@ public class CFWHierarchy<T extends CFWObject> {
 		// Argument check
 		if(parent.getClass() != child.getClass()) {
 			new CFWLog(logger)
-				.method("setParent")
 				.severe("The class of the two provided objects is not the same.", new IllegalArgumentException());
 			
 			return false;
@@ -117,7 +115,6 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		if(parentID.equals(childID) ) {
 			new CFWLog(logger)
-				.method("setParent")
 				.severe("Cannot set an object as it's own parent.", new IllegalArgumentException());
 			
 			return false;
@@ -141,7 +138,6 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		if( parentFields.get(labels[(childLevels-1)]).getValue() != null) {
 			new CFWLog(logger)
-				.method("setParent")
 				.severe("Cannot set the parent as the maximum hierarchy depth is reached.", new IllegalStateException());
 			
 			return false;
@@ -169,7 +165,6 @@ public class CFWHierarchy<T extends CFWObject> {
 			((CFWField<Integer>)child.getField(labels[i])).setValue(parent.primaryField.getValue());
 		}else {
 			new CFWLog(logger)
-				.method("setParent")
 				.severe("Cannot set the parent as the maximum hierarchy depth is reached.", new IllegalStateException());
 			return false;
 		}

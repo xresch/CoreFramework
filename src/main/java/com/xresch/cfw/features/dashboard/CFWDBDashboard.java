@@ -45,7 +45,6 @@ public class CFWDBDashboard {
 			
 			if(dashboard == null || dashboard.name().isEmpty()) {
 				new CFWLog(logger)
-					.method("doCheck")
 					.warn("Please specify a name for the dashboard.", new Throwable());
 				return false;
 			}
@@ -61,7 +60,6 @@ public class CFWDBDashboard {
 			
 			if(dashboard != null && dashboard.isDeletable() == false) {
 				new CFWLog(logger)
-				.method("doCheck")
 				.severe("The dashboard '"+dashboard.name()+"' cannot be deleted as it is marked as not deletable.", new Throwable());
 				return false;
 			}
@@ -330,13 +328,11 @@ public class CFWDBDashboard {
 				array = object.get("payload").getAsJsonArray();
 			}else {
 				new CFWLog(logger)
-					.method("importByJson")
 					.severe(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."), new Exception());
 				return false;
 			}
 		}else {
 			new CFWLog(logger)
-				.method("importByJson")
 				.severe(CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."), new Exception());
 			return false;
 		}
@@ -417,7 +413,6 @@ public class CFWDBDashboard {
 				Integer newDashboardID = CFW.DB.Dashboards.createGetPrimaryKey(dashboard);
 				if(newDashboardID == null) {
 					new CFWLog(logger)
-						.method("importByJson")
 						.severe("Dashboard '"+dashboard.name()+"' could not be imported.");
 					continue;
 				}
@@ -585,7 +580,6 @@ public class CFWDBDashboard {
 			}
 		} catch (SQLException e) {
 			new CFWLog(logger)
-				.method("autocompleteDashboard")
 				.severe("Error while autocomplete dashboards.", new Throwable());
 		} finally {
 			CFWDB.close(resultSet);

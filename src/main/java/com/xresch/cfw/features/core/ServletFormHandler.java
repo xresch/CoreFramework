@@ -43,7 +43,6 @@ public class ServletFormHandler extends HttpServlet
     	if(form == null) {
     		json.setSuccess(false);
     		new CFWLog(logger)
-	    		.method("doGet")
 	    		.severe("The form with ID '"+id+"' could not be found. Try to refresh the page");
     		return;
     	}
@@ -84,7 +83,6 @@ public class ServletFormHandler extends HttpServlet
     	if(form == null) {
     		json.setSuccess(false);
     		new CFWLog(logger)
-	    		.method("doGet")
 	    		.severe("The form with ID '"+formID+"' could not be found.");
     		return;
     	}

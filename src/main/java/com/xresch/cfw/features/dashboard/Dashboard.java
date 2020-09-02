@@ -68,7 +68,6 @@ public class Dashboard extends CFWObject {
 				public boolean handle(String oldValue, String newValue) {
 					if(name.isDisabled()) { 
 						new CFWLog(logger)
-						.method("handle")
 						.severe("The name cannot be changed as the field is disabled.");
 						return false; 
 					}
