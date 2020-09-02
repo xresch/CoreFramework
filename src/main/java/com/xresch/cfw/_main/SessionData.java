@@ -35,12 +35,12 @@ public class SessionData implements Serializable {
 	private HashMap<String, Permission> userPermissions = new HashMap<>();
 	
 	//formID and form
-	private static Cache<String, CFWForm> formCache = CFW.Caching.addCache("Form Cache", 
-		CacheBuilder.newBuilder()
-			.initialCapacity(10)
-			.maximumSize(500)
+	private Cache<String, CFWForm> formCache = CacheBuilder.newBuilder()
+			.initialCapacity(5)
+			.maximumSize(20)
 			.expireAfterAccess(CFW.Properties.SESSION_TIMEOUT, TimeUnit.SECONDS)
-	);
+			.build();
+	
 		
 	//private static LinkedHashMap<String,CFWForm> formMap = new LinkedHashMap<>();
 	

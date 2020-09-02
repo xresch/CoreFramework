@@ -7,11 +7,15 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWObject.ForeignKeyDefinition;
@@ -28,8 +32,13 @@ import com.xresch.cfw.logging.CFWLog;
 public class CFWSQL {
 	
 	private static Logger logger = CFWLog.getLogger(CFWSQL.class.getName());
-	private static HashMap<String, String> queryCache = new HashMap<String, String>();
-	private static HashMap<String, Integer> cacheHitCount = new HashMap<String, Integer>();
+	
+	private static final Cache<String, String> queryCache = CFW.Caching.addCache("CFW SQL Cache", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(300)
+				.maximumSize(3000)
+				.expireAfterAccess(24, TimeUnit.HOURS)
+		);
 	
 	private String queryName = null;
 	private boolean isQueryCached = false;
@@ -76,18 +85,12 @@ public class CFWSQL {
 		String statement;
 		
 		if(isQueryCached()) {
-			statement = queryCache.get(queryName);
+			statement = queryCache.getIfPresent(queryName);
 			
-			if(cacheHitCount.containsKey(statement)) {
-				cacheHitCount.put(statement, cacheHitCount.get(statement)+1);
-			}else {
-				cacheHitCount.put(statement, 1);
-			}
 		}else {
 			statement = query.toString();
 			if(queryName != null) {
 				queryCache.put(queryName, statement);
-				cacheHitCount.put(statement, 1);
 			}
 		}
 		
@@ -123,7 +126,7 @@ public class CFWSQL {
 		
 		if(isQueryCached) { return true; }
 		
-		if(queryName != null && queryCache.containsKey(queryName)) {
+		if(queryName != null && queryCache.asMap().containsKey(queryName)) {
 			//only check cache once
 			isQueryCached = true;
 			return true;
@@ -1395,31 +1398,6 @@ public class CFWSQL {
 		
 		return string;
 		
-	}
-	
-	/***************************************************************
-	 * Execute the Query and gets the result as XML string.
-	 ****************************************************************/
-	public static String getCacheStatisticsAsJSON() {
-		
-		StringBuilder json = new StringBuilder("[");
-		
-		if(!queryCache.isEmpty()) {
-			
-			for(Entry<String, String> entry : queryCache.entrySet()) {
-				String statement = entry.getValue();
-				int count = cacheHitCount.get(statement);
-				json.append("{ \"name\": \"").append( CFW.JSON.escapeString(entry.getKey()) ).append("\", ")
-				.append("\"query\": \"").append(CFW.JSON.escapeString(statement)).append("\", ")
-				.append("\"count\": ").append(count).append("},");
-			}
-			json.deleteCharAt(json.length()-1); //remove last comma
-			
-		}
-		
-		return json.append("]").toString();
-		
-	}
-	
+	}	
 	
 }

@@ -41,7 +41,7 @@ public class CFWLocalization {
 	private static int localeFilesID = 0;
 	
 	// key consists of {language}+{contextPath}+{localeFilesID}
-	private static Cache<String, Properties> languageCache = CFW.Caching.addCache("Locale Cache", 
+	private static Cache<String, Properties> languageCache = CFW.Caching.addCache("CFW Locale Cache", 
 		CacheBuilder.newBuilder()
 			.initialCapacity(100)
 			.maximumSize(2000)
