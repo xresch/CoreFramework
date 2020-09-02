@@ -3,19 +3,27 @@ package com.xresch.cfw.caching;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.concurrent.TimeUnit;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class FileAssembly {
 	
 	/** Static field to store the assembled results by their file names. */
-	private static final LinkedHashMap<String,FileAssembly> assemblyCache = new LinkedHashMap<>();
+	private static final Cache<String, FileAssembly> ASSEMBLY_CACHE = CFW.Caching.addCache("Assembly Cache", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(100)
+				.maximumSize(2000)
+				.expireAfterAccess(24, TimeUnit.HOURS)
+		);
 	
 	// only add a file once
 	private LinkedHashMap<Integer, FileDefinition> fileMap = new LinkedHashMap<>();
@@ -99,7 +107,7 @@ public class FileAssembly {
 
 		//--------------------------------
 		// Initialize
-		if(!FileAssembly.hasAssembly((assemblyName)) || !CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
+		if( !FileAssembly.hasAssembly((assemblyName)) ) {
 			
 			StringBuilder concatenatedFile = new StringBuilder();
 			for(FileDefinition fileDef : fileMap.values()) {
@@ -127,8 +135,8 @@ public class FileAssembly {
 	 * @return the name of the assembly
 	 ***********************************************************************/
 	public FileAssembly cache() {
-		if(!FileAssembly.hasAssembly((assemblyName)) || !CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
-			assemblyCache.put(assemblyName, this);
+		if( !FileAssembly.hasAssembly((assemblyName)) ) {
+			ASSEMBLY_CACHE.put(assemblyName, this);
 		}
 		return this;
 	}
@@ -138,7 +146,7 @@ public class FileAssembly {
 	 * @return true or false
 	 ***********************************************************************/
 	public static boolean hasAssembly(String assemblyName) {
-		return assemblyCache.containsKey(assemblyName);
+		return ASSEMBLY_CACHE.asMap().containsKey(assemblyName);
 	}
 	
 	/***********************************************************************
@@ -146,7 +154,7 @@ public class FileAssembly {
 	 * @return FileAssembler instance or null
 	 ***********************************************************************/
 	public static FileAssembly getAssemblyFromCache(String assemblyName) {
-		return assemblyCache.get(assemblyName);
+		return ASSEMBLY_CACHE.getIfPresent(assemblyName);
 	}
 	
 	/***********************************************************************

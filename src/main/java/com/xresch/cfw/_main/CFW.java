@@ -6,10 +6,8 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.reflections.Reflections;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
 
+import com.xresch.cfw.caching.CFWCacheManagement;
 import com.xresch.cfw.cli.ArgumentsException;
 import com.xresch.cfw.cli.CFWCommandLineInterface;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -47,6 +45,7 @@ import com.xresch.cfw.schedule.CFWSchedule;
 import com.xresch.cfw.utils.CFWDump;
 import com.xresch.cfw.utils.CFWFiles;
 import com.xresch.cfw.utils.CFWHttp;
+import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.utils.CFWScripting;
 import com.xresch.cfw.utils.CFWSecurity;
 import com.xresch.cfw.utils.CFWTime;
@@ -84,6 +83,7 @@ public class CFW {
 		public static class Spaces extends CFWDBSpace{};
 		public static class SpaceGroups extends CFWDBSpaceGroup{};
 	}
+	public static class Caching extends CFWCacheManagement {}
 	
 	public static class Context {
 		public static class App extends CFWContextApp{};
@@ -100,6 +100,7 @@ public class CFW {
 	public static class Localization extends CFWLocalization {}
 	public static class Mail extends CFWMail {}
 	public static class Properties extends CFWProperties {}
+	public static class Random extends CFWRandom {}
 	public static class Registry {
 		public static class API extends CFWRegistryAPI {}
 		public static class Components extends CFWRegistryComponents {} 

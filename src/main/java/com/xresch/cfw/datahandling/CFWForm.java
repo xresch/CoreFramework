@@ -18,7 +18,7 @@ import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
 /**************************************************************************************************************
  * Class for creating a form using CFWFields or a CFWObject as a template.
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class CFWForm extends HierarchicalHTMLItem {
 	
@@ -41,12 +41,12 @@ public class CFWForm extends HierarchicalHTMLItem {
 	private boolean isAPIForm = false;
 	private boolean isEmptyForm = false;
 	
-	public CFWForm(String formID, String submitLabel) {
+	public CFWForm(String formUniqueName, String submitLabel) {
 		
-		if(formID.matches(".*[^A-Za-z0-9]+.*")) {
-			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "Don't use any other characters for formIDs than A-Z, a-z and 0-9: '"+formID+"'");
+		if(formUniqueName.matches(".*[^A-Za-z0-9]+.*")) {
+			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "Don't use any other characters for formIDs than A-Z, a-z and 0-9: '"+formUniqueName+"'");
 		}
-		this.formID = formID;
+		this.formID = formUniqueName;
 		this.submitLabel = submitLabel;
 		
 		CFWField<String> formIDField = CFWField.newString(FormFieldType.HIDDEN, CFWForm.FORM_ID);

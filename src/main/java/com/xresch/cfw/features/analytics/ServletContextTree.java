@@ -14,7 +14,7 @@ import com.xresch.cfw.response.HTMLResponse;
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class ServletContextTree extends HttpServlet
 {

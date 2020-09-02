@@ -14,7 +14,7 @@ import com.xresch.cfw.validation.ValidationEngine;
  * It provides default arguments for a configuration file and handling of log levels.
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public abstract class CFWCommandLineInterface {
 	

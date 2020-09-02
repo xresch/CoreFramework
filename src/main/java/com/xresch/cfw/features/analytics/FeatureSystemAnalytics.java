@@ -12,7 +12,7 @@ import com.xresch.cfw.response.bootstrap.MenuItem;
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class FeatureSystemAnalytics extends CFWAppFeature {
 
@@ -60,6 +60,12 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.href("/app/systemproperties")	
 				, SYSTEM_ANALYTICS);
 		
+		CFW.Registry.Components.addAdminCFWMenuItem(
+				(MenuItem)new MenuItem("Cache Statistics")
+					.faicon("fas fa-sd-card")
+					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.href("/app/cachestatistics")	
+				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("Metrics")
@@ -96,6 +102,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
     	app.addAppServlet(ServletDatabaseAnalytics.class,  "/dbanalytics");
     	app.addAppServlet(ServletContextTree.class,  "/servletcontexttree");
     	app.addAppServlet(ServletSystemProperties.class,  "/systemproperties");
+    	app.addAppServlet(ServletCacheStatistics.class,  "/cachestatistics");
 	}
 
 	@Override

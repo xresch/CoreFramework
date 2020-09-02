@@ -16,11 +16,12 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.utils.CFWRandom;
 
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class ServletContextSettings extends HttpServlet
 {
@@ -180,7 +181,7 @@ public class ServletContextSettings extends HttpServlet
 			
 			//--------------------------------
 			// Create Form
-			CFWForm createContextSettingsForm = settings.toForm("cfwCreateContextSettingsForm"+CFW.Security.createRandomStringAtoZ(12),
+			CFWForm createContextSettingsForm = settings.toForm("cfwCreateContextSettingsForm"+CFWRandom.randomStringAlphaNumSpecial(12),
 																	"{!cfw_core_add!}");
 			
 			createContextSettingsForm.setFormHandler(new CFWFormHandler() {

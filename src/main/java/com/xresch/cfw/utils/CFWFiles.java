@@ -12,12 +12,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.logging.CFWLog;
@@ -25,13 +27,25 @@ import com.xresch.cfw.logging.CFWLog;
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class CFWFiles {
 
-
-	private static final HashMap<String,String> permanentStringFileCache = new HashMap<String,String>();
-	private static final HashMap<String,byte[]> permanentByteFileCache = new HashMap<String,byte[]>();
+	private static Cache<String, String> stringFileCache = CFW.Caching.addCache("File Cache[Strings]", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(100)
+				.maximumSize(3000)
+				.expireAfterAccess(10, TimeUnit.HOURS)
+		);
+	
+	private static Cache<String, byte[]> byteFileCache = CFW.Caching.addCache("File Cache[Bytes]", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(100)
+				.maximumSize(3000)
+				.expireAfterAccess(10, TimeUnit.HOURS)
+		);
+	//private static final HashMap<String,String> permanentStringFileCache = new HashMap<String,String>();
+	//private static final HashMap<String,byte[]> permanentByteFileCache = new HashMap<String,byte[]>();
 	
 	/** Only packages in this list can be accessed with readPackageResource*().*/
 	private static final ArrayList<String> allowedPackages = new ArrayList<String>();
@@ -71,9 +85,9 @@ public class CFWFiles {
 	 ***********************************************************************/
 	public static String getFileContent(HttpServletRequest request, String path){
 
-		if( CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING) && CFWFiles.permanentStringFileCache.containsKey(path)){
+		if( CFWFiles.stringFileCache.asMap().containsKey(path) && CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)){
 			new CFWLog(logger).finest("Read file content from cache");
-			return CFWFiles.permanentStringFileCache.get(path);
+			return CFWFiles.stringFileCache.getIfPresent(path);
 		}else{
 			new CFWLog(logger).finest("Read from disk into cache");
 			
@@ -88,7 +102,7 @@ public class CFWFiles {
 				}
 
 				String content = contentBuffer.toString();
-				CFWFiles.permanentStringFileCache.put(path, content);
+				CFWFiles.stringFileCache.put(path, content);
 				
 				// remove UTF-8 byte order mark if present
 				content = content.replace("\uFEFF", "");
@@ -182,14 +196,14 @@ public class CFWFiles {
 			packageName = packageName.replaceAll("\\.", "/");
 			String resourcePath = packageName + "/" + filename;
 			
-			if( CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING) && CFWFiles.permanentStringFileCache.containsKey(resourcePath)){
+			if(CFWFiles.stringFileCache.asMap().containsKey(resourcePath) &&  CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)){
 				new CFWLog(logger).finest("Read package resource content from cache");
-				return CFWFiles.permanentStringFileCache.get(resourcePath);
+				return CFWFiles.stringFileCache.getIfPresent(resourcePath);
 			}else{
 				
 				try(InputStream in = CFWFiles.class.getClassLoader().getResourceAsStream(resourcePath)){
 					fileContent = readContentsFromInputStream(in);
-					CFWFiles.permanentStringFileCache.put(resourcePath, fileContent);
+					CFWFiles.stringFileCache.put(resourcePath, fileContent);
 				} catch (IOException e) {
 					new CFWLog(logger)
 					.severe("Error while reading resource from package: "+resourcePath, e);
@@ -217,14 +231,14 @@ public class CFWFiles {
 			packageName = packageName.replaceAll("\\.", "/");
 			String resourcePath = packageName + "/" + filename;
 			
-			if( CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING) && CFWFiles.permanentByteFileCache.containsKey(resourcePath)){
+			if( CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING) && CFWFiles.byteFileCache.asMap().containsKey(resourcePath)){
 				new CFWLog(logger).finest("Read package resource content from cache");
-				return CFWFiles.permanentByteFileCache.get(resourcePath);
+				return CFWFiles.byteFileCache.asMap().get(resourcePath);
 			}else{
 				
 				InputStream in = CFWFiles.class.getClassLoader().getResourceAsStream(resourcePath);
 				fileContent = readBytesFromInputStream(in);
-				CFWFiles.permanentByteFileCache.put(resourcePath, fileContent);
+				CFWFiles.byteFileCache.put(resourcePath, fileContent);
 			}
 		}else {
 			new CFWLog(logger).severe("Not allowed to read resource from package: "+packageName);
@@ -310,7 +324,7 @@ public class CFWFiles {
 	 * @return nothing
 	 ***********************************************************************/
 	public static void permanentlyCacheFile(String filename, String fileContent) {
-		CFWFiles.permanentStringFileCache.put(filename, fileContent);
+		CFWFiles.stringFileCache.put(filename, fileContent);
 	}
 	
 	/***********************************************************************
@@ -319,7 +333,7 @@ public class CFWFiles {
 	 * @return true or false
 	 ***********************************************************************/
 	public static boolean isFilePermanentlyCached(String filename) {
-		return CFWFiles.permanentStringFileCache.containsKey(filename);
+		return CFWFiles.stringFileCache.asMap().containsKey(filename);
 	}
 	
 	/***********************************************************************
@@ -327,7 +341,7 @@ public class CFWFiles {
 	 * @param index the index of the file to be retrieved
 	 ***********************************************************************/
 	public static String getPermanentlyCachedFile(String filename) {
-		return CFWFiles.permanentStringFileCache.get(filename);
+		return CFWFiles.stringFileCache.asMap().get(filename);
 	}
 	
 	/***********************************************************************

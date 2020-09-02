@@ -5,7 +5,10 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.concurrent.TimeUnit;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
@@ -16,7 +19,7 @@ import com.xresch.cfw.response.bootstrap.BTMenu;
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class SessionData implements Serializable {
 	
@@ -30,14 +33,25 @@ public class SessionData implements Serializable {
 	private User user = null;
 	private HashMap<Integer, Role> userRoles = new HashMap<>();
 	private HashMap<String, Permission> userPermissions = new HashMap<>();
-	private static LinkedHashMap<String,CFWForm> formMap = new LinkedHashMap<>();
+	
+	//formID and form
+	private static Cache<String, CFWForm> formCache = CFW.Caching.addCache("Form Cache", 
+		CacheBuilder.newBuilder()
+			.initialCapacity(10)
+			.maximumSize(500)
+			.expireAfterAccess(CFW.Properties.SESSION_TIMEOUT, TimeUnit.SECONDS)
+	);
+		
+	//private static LinkedHashMap<String,CFWForm> formMap = new LinkedHashMap<>();
 	
 	private BTMenu menu;
 	private BTFooter footer;
 	
-	public SessionData() {
+	public SessionData(String sessionID) {
 		menu = CFW.Registry.Components.createMenuInstance(false);
 		footer = CFW.Registry.Components.createDefaultFooterInstance();
+		
+		
 	}
 	
 	public void triggerLogin() {
@@ -97,23 +111,23 @@ public class SessionData implements Serializable {
 	
 	public void addForm(CFWForm form){
 		
-		//keep cached forms below 7 to prevent memory leaks
-		while(formMap.size() > 7) {
-			formMap.remove(formMap.keySet().toArray()[0]);
-		}
+//		//keep cached forms below 7 to prevent memory leaks
+//		while(formMap.size() > 7) {
+//			formMap.remove(formMap.keySet().toArray()[0]);
+//		}
 		
-		formMap.put(form.getFormID(), form);	
+		formCache.put(form.getFormID(), form);	
 	}
 	
 	public void removeForm(CFWForm form){
-		formMap.remove(form.getFormID(), form);	
+		formCache.invalidate(form.getFormID());	
 	}
 	
 	public CFWForm getForm(String formID) {
-		return formMap.get(formID);
+		return formCache.getIfPresent(formID);
 	}
 	
 	public Collection<CFWForm> getForms() {
-		return formMap.values();
+		return formCache.asMap().values();
 	}
 }

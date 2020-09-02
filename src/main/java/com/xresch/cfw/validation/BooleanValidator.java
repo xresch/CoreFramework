@@ -7,7 +7,7 @@ import com.xresch.cfw.utils.Ternary;
  * is a string representation of "true" or "false".
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class BooleanValidator extends AbstractValidator {
 

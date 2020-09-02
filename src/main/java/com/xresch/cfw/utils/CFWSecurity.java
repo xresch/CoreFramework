@@ -23,8 +23,6 @@ public class CFWSecurity {
 	// Don't change this if you don't want to mess up existing passwords!
 	public static final String INTERNAL_SALT = "1a@2v#3r%9s&7k?";
 
-	public static final String CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12345678901234567890+*%&/()=?!{}[]><:;.,-_+*%&/()=?!{}[]><:;.,-_";
-
 	private static Logger logger = CFWLog.getLogger(CFWSecurity.class.getName());
 
 	private static PolicyFactory htmlPolicy = new HtmlPolicyBuilder().allowCommonBlockElements()
@@ -82,26 +80,7 @@ public class CFWSecurity {
 
 		Random random = CFWRandom.getInstance();
 		for (int i = 0; i < byteCount; i++) {
-			builder.append(CHARS.charAt(random.nextInt(CHARS.length() - 1)));
-		}
-
-		return builder.toString();
-
-	}
-
-	/******************************************************************************
-	 * Creates a random String.
-	 * 
-	 * @param byteCount number of bytes to create
-	 * @return
-	 ******************************************************************************/
-	public static String createRandomStringAtoZ(int byteCount) {
-
-		StringBuilder builder = new StringBuilder();
-
-		Random random = CFWRandom.getInstance();
-		for (int i = 0; i < byteCount; i++) {
-			builder.append(CHARS.charAt(random.nextInt(51)));
+			builder.append(CFWRandom.ALPHA_NUMS_SPECIALS.charAt(random.nextInt(CFWRandom.ALPHA_NUMS_SPECIALS.length() - 1)));
 		}
 
 		return builder.toString();

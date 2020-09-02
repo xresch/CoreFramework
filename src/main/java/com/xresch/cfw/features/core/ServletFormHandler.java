@@ -19,7 +19,7 @@ import com.xresch.cfw.response.JSONResponse;
  * This servlet is used to handle forms that have a BTFormHandler defined.
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class ServletFormHandler extends HttpServlet
 {

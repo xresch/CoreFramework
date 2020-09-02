@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.features.config.FeatureConfiguration;
@@ -23,7 +26,7 @@ import com.xresch.cfw.utils.LinkedProperties;
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class CFWLocalization {
 	
@@ -38,9 +41,14 @@ public class CFWLocalization {
 	private static int localeFilesID = 0;
 	
 	// key consists of {language}+{contextPath}+{localeFilesID}
+	private static Cache<String, Properties> languageCache = CFW.Caching.addCache("Locale Cache", 
+		CacheBuilder.newBuilder()
+			.initialCapacity(100)
+			.maximumSize(2000)
+			.expireAfterAccess(10, TimeUnit.HOURS)
+	);
+	
 	private static LinkedHashMap<String, FileDefinition> localeFiles = new LinkedHashMap<String, FileDefinition>();
-		
-	private static final LinkedHashMap<String,Properties> languageCache = new LinkedHashMap<String, Properties>();
 		
 	/******************************************************************************************
 	 * Return a localized value or the default value
@@ -162,7 +170,7 @@ public class CFWLocalization {
 	 * 
 	 ******************************************************************************************/
 	public static Properties getLanguagePackByIdentifier(String localeIdentifier) {
-		return languageCache.get(localeIdentifier);
+		return languageCache.getIfPresent(localeIdentifier);
 	}
 	/******************************************************************************************
 	 * 
@@ -194,8 +202,8 @@ public class CFWLocalization {
 		
 		//------------------------------
 		// Check is Cached
-		if (languageCache.containsKey(cacheID) && CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
-			return languageCache.get(cacheID);
+		if (languageCache.asMap().containsKey(cacheID) && CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
+			return languageCache.getIfPresent(cacheID);
 		}else {
 			
 			LinkedProperties mergedPorperties = new LinkedProperties();

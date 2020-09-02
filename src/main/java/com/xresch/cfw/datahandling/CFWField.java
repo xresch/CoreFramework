@@ -33,6 +33,7 @@ import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
+import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.utils.TextUtils;
 import com.xresch.cfw.validation.BooleanValidator;
 import com.xresch.cfw.validation.EpochOrTimeValidator;
@@ -44,7 +45,7 @@ import com.xresch.cfw.validation.IntegerValidator;
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T> {
 	
@@ -608,7 +609,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	private void createPasswordField(StringBuilder html) {
 		
 		if(this.value != null && !value.toString().isEmpty()) {
-			String placeholderName = PASSWORD_STUB_PREFIX + CFW.Security.createRandomStringAtoZ(7);
+			String placeholderName = PASSWORD_STUB_PREFIX + CFWRandom.randomStringAlphaNumSpecial(7);
 			pwCache.put(placeholderName, this.value.toString());
 			this.addAttribute("value", placeholderName);
 		}

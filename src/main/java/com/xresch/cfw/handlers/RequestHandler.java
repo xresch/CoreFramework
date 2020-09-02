@@ -22,7 +22,7 @@ import com.xresch.cfw.response.PlaintextResponse;
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class RequestHandler extends HandlerWrapper
 {
@@ -87,7 +87,7 @@ public class RequestHandler extends HandlerWrapper
     	
     	// check outside the loop first to avoid synchronizing when it is not needed
     	if(session.getAttribute(CFW.SESSION_DATA) == null) {
-    		SessionData data = new SessionData();
+    		SessionData data = new SessionData(session.getId());
     		session.setAttribute(CFW.SESSION_DATA, data);
     	};
     	

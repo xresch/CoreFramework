@@ -4,24 +4,34 @@ import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import org.checkerframework.checker.units.qual.K;
+import java.util.logging.Logger;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheStats;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.xresch.cfw.logging.CFWLog;
 
 @SuppressWarnings("rawtypes")
 public class CFWCacheManagement {
+	
+	private static final Logger logger = CFWLog.getLogger(CFWCacheManagement.class.getName());
 	
 	private static SortedMap<String, Cache> cacheMap = Collections.synchronizedSortedMap(new TreeMap<>());
 	
 	/************************************************************************
 	 * 
 	 ************************************************************************/
-	public static <K1 extends Object, V1 extends Object> Cache<K1, V1> addCache(String cacheName, CacheBuilder cacheBuilder) {
+	@SuppressWarnings("unchecked")
+	public static <K1 extends Object, V1 extends Object> Cache<K1, V1> addCache(
+			String cacheName,  CacheBuilder cacheBuilder) {
+		
+		if(cacheMap.containsKey(cacheName)) {
+			new CFWLog(logger)
+				.severe("Failed to add cache. The cache name '"+cacheName+"' is already used.", new IllegalArgumentException());
+			return null;
+		}
 		
 		Cache<K1, V1> cache = cacheBuilder
 				.recordStats()
@@ -48,12 +58,13 @@ public class CFWCacheManagement {
 
 			object.addProperty("name", name);
 			object.addProperty("size", cache.size());
-			object.addProperty("hitCount", stats.hitCount());
-			object.addProperty("hitRate", stats.hitRate());
-			object.addProperty("missCount", stats.missCount());
-			object.addProperty("missRate", stats.missRate());
-			object.addProperty("missRate", stats.evictionCount());
-			
+			object.addProperty("hit_count", stats.hitCount());
+			object.addProperty("hit_rate", stats.hitRate());
+			object.addProperty("miss_count", stats.missCount());
+			object.addProperty("miss_rate", stats.missRate());
+			object.addProperty("eviction_count", stats.evictionCount());
+			object.addProperty("load_penalty_avg", stats.averageLoadPenalty());
+			object.addProperty("request_count", stats.requestCount());
 			array.add(object);
 		}
 		

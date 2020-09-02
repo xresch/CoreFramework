@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public abstract class AbstractValidatable<T> implements IValidatable<T> {
 	

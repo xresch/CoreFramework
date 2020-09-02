@@ -5,7 +5,7 @@ package com.xresch.cfw.validation;
  * is a valid log4j2 log level.
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class LogLevelValidator extends AbstractValidator {
 

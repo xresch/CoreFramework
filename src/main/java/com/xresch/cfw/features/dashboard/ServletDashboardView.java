@@ -17,11 +17,12 @@ import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.utils.CFWRandom;
 
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
- * @license Creative Commons: Attribution-NonCommercial-NoDerivatives 4.0 International
+ * @license MIT-License
  **************************************************************************************************************/
 public class ServletDashboardView extends HttpServlet
 {
@@ -299,7 +300,7 @@ public class ServletDashboardView extends HttpServlet
 			CFWObject settings = definition.getSettings();
 			settings.mapJsonFields(jsonObject);
 			
-			CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFW.Security.createRandomStringAtoZ(6), "n/a-willBeRemoved");
+			CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeRemoved");
 			
 			form.appendToPayload(json);
 			

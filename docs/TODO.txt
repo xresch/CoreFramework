@@ -89,6 +89,8 @@ DONE
 - CFWLog: auto detect method, making call to CFWLog.method() optional
 - Reduced footprint of log
 - Added System Analytics >> System Properties
+- Improved Caching with Guava
+- Adjusted @lincense to MIT
 
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message
