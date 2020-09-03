@@ -87,12 +87,12 @@ public class HTMLResponse extends AbstractHTMLResponse {
 				buildedPage.append(head);
 				for(FileAssembly cssAssembly : cssAssemblies) {
 					if(cssAssembly.hasFiles()) {
-						buildedPage.append("<link rel=\"stylesheet\" href=\""+cssAssembly.assemble().cache().getAssemblyServletPath()+"\" />");
+						buildedPage.append("<link rel=\"stylesheet\" href=\""+cssAssembly.assembleAndCache().getAssemblyServletPath()+"\" />");
 					}
 				}
 
 				if(headjs.hasFiles()) {
-					buildedPage.append("<script src=\""+headjs.assemble().cache().getAssemblyServletPath()+"\"></script>");
+					buildedPage.append("<script src=\""+headjs.assembleAndCache().getAssemblyServletPath()+"\"></script>");
 				}
 			buildedPage.append("</head>\n");
 			
@@ -162,7 +162,7 @@ public class HTMLResponse extends AbstractHTMLResponse {
 				buildedPage.append("<div id=\"javascripts\">");
 				for(FileAssembly jsAssembly : bottomjsAssemblies) {	
 					if(jsAssembly.hasFiles()) {
-						buildedPage.append("<script src=\""+jsAssembly.assemble().cache().getAssemblyServletPath()+"\"></script>");
+						buildedPage.append("<script src=\""+jsAssembly.assembleAndCache().getAssemblyServletPath()+"\"></script>");
 					}
 				}
 				

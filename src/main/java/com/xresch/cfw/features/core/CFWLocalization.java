@@ -7,8 +7,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,7 +47,7 @@ public class CFWLocalization {
 		CacheBuilder.newBuilder()
 			.initialCapacity(100)
 			.maximumSize(2000)
-			.expireAfterAccess(10, TimeUnit.HOURS)
+			.expireAfterAccess(24, TimeUnit.HOURS)
 	);
 	
 	private static LinkedHashMap<String, FileDefinition> localeFiles = new LinkedHashMap<String, FileDefinition>();
@@ -199,59 +201,84 @@ public class CFWLocalization {
 		//------------------------------
 		// Initialize
 		String cacheID = CFW.Localization.getLocaleIdentifier(locales);
-		
+		Properties languagePack = new Properties();
 		//------------------------------
 		// Check is Cached
-		if (languageCache.asMap().containsKey(cacheID) && CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
-			return languageCache.getIfPresent(cacheID);
+		if (!CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
+			languagePack =  loadLanguagePack(locales, requestURI);
+			languageCache.put(cacheID, languagePack);
 		}else {
 			
-			LinkedProperties mergedPorperties = new LinkedProperties();
+			try {
+				languagePack = languageCache.get(cacheID, new Callable<Properties>() {
+					@Override
+					public Properties call() throws Exception {
+						return loadLanguagePack(locales, requestURI);
+					}
+					
+				});
+			} catch (ExecutionException e) {
+				new CFWLog(logger).severe("Error loading language pack from Cache.", e);
+			}
+		}
+		
+		return languagePack;
+	}
 	
-			Locale lastlocale = null;
-			for(Locale locale : locales) {
-				
-				//----------------------------
-				// Skip reoccuring language
-				if(lastlocale != null && locale.getLanguage().equals(lastlocale.getLanguage()) ) {
-					lastlocale = locale;
-					continue;
-				}else {
-					lastlocale = locale;
-				}
-				
-				String language = locale.getLanguage().toLowerCase(); 
-				for(Entry<String, FileDefinition> entry : localeFiles.entrySet()) {
-					String entryID = entry.getKey();
+	/******************************************************************************************
+	 * 
+	 * @param locales, later will override earliers
+	 * @param requestURI of the request, provide to get everything for the selected locales
+	 * @return 
+	 * @throws IOException
+	 ******************************************************************************************/
+	private static Properties loadLanguagePack(Locale[] locales, String requestURI) {
+		
+		LinkedProperties mergedPorperties = new LinkedProperties();
+		
+		Locale lastlocale = null;
+		for(Locale locale : locales) {
+			
+			//----------------------------
+			// Skip reoccuring language
+			if(lastlocale != null && locale.getLanguage().equals(lastlocale.getLanguage()) ) {
+				lastlocale = locale;
+				continue;
+			}else {
+				lastlocale = locale;
+			}
+			
+			String language = locale.getLanguage().toLowerCase(); 
+			for(Entry<String, FileDefinition> entry : localeFiles.entrySet()) {
+				String entryID = entry.getKey();
 
-					if( (language+requestURI).startsWith(entryID.substring(0, entryID.lastIndexOf('-'))) 
-					|| (requestURI == null && entryID.startsWith(language))
-					) {
-						
-						FileDefinition def = entry.getValue();
-						Properties currentProps = new Properties();
-						String propertiesString = def.readContents();
-						
-						if(propertiesString != null) {
-							try (StringReader reader = new StringReader(propertiesString);) {
-								
-								currentProps.load( reader );
-								mergedPorperties.putAll(currentProps);
-								
-							} catch (IOException e) {
-								new CFWLog(logger)
-									.severe("Error while reading language pack.", e);
-							}
+				if( (language+requestURI).startsWith(entryID.substring(0, entryID.lastIndexOf('-'))) 
+				|| (requestURI == null && entryID.startsWith(language))
+				) {
+					
+					FileDefinition def = entry.getValue();
+					Properties currentProps = new Properties();
+					String propertiesString = def.readContents();
+					
+					if(propertiesString != null) {
+						try (StringReader reader = new StringReader(propertiesString);) {
+							
+							currentProps.load( reader );
+							mergedPorperties.putAll(currentProps);
+							
+						} catch (IOException e) {
+							new CFWLog(logger)
+								.severe("Error while reading language pack.", e);
 						}
 					}
 				}
 			}
-			
-			languageCache.put(cacheID, mergedPorperties);
-			
-			return mergedPorperties;
 		}
+
+		return mergedPorperties;
 	}
+	
+	
 	/******************************************************************************************
 	 * 
 	 * @param request

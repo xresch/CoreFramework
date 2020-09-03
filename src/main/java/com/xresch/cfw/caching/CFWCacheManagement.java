@@ -56,15 +56,21 @@ public class CFWCacheManagement {
 			CacheStats stats = cache.stats();
 			JsonObject object = new JsonObject();
 
+			long hitCount = stats.hitCount();
+			double loadTimeAvgMillis = stats.averageLoadPenalty() / 1000000;
+			
 			object.addProperty("name", name);
 			object.addProperty("size", cache.size());
-			object.addProperty("hit_count", stats.hitCount());
+			object.addProperty("request_count", stats.requestCount());
+			object.addProperty("hit_count", hitCount);
 			object.addProperty("hit_rate", stats.hitRate());
 			object.addProperty("miss_count", stats.missCount());
 			object.addProperty("miss_rate", stats.missRate());
 			object.addProperty("eviction_count", stats.evictionCount());
-			object.addProperty("load_penalty_avg", stats.averageLoadPenalty());
-			object.addProperty("request_count", stats.requestCount());
+			object.addProperty("load_time_avg", loadTimeAvgMillis);
+			object.addProperty("load_time_sum", stats.totalLoadTime() / 1000000);
+			object.addProperty("saved_time", loadTimeAvgMillis * hitCount);
+			
 			array.add(object);
 		}
 		

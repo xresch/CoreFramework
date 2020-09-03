@@ -20,11 +20,10 @@ public class TestFileUtils {
 		String assemblyName = assembler.addFile(FileDefinition.HandlingType.FILE, "./testdata", "test.css")
 				.addFile(FileDefinition.HandlingType.JAR_RESOURCE, WebTestMaster.RESOURCE_PACKAGE, "junit_test.js")
 				.addFileContent("/* just some comment */")
-				.assemble()
-				.cache()
+				.assembleAndCache()
 				.getAssemblyName();
 		
-		FileAssembly cachedAssembly = FileAssembly.getAssemblyFromCache(assemblyName);
+		FileAssembly cachedAssembly = FileAssembly.getAssembly(assemblyName);
 		Assertions.assertNotNull(cachedAssembly, "Assembly is not null");
 		
 		System.out.println(cachedAssembly.getAssemblyContent());

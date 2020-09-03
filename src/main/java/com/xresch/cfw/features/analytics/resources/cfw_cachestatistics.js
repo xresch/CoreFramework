@@ -24,7 +24,12 @@ function cfw_cachestatistics_fetchcachestatisticsAndDisplay(){
 				 	titledelimiter: ' ',
 				 	labels: {},
 				 	customizers: {
-				 		STATEMENT: function(record, value){ return '<div class="mvw-30 word-wrap-break">'+value+'</div>';}
+				 		name: function(record, value){ return '<div class="mvw-30 word-wrap-break">'+value+'</div>'; },
+				 		hit_rate: function(record, value){ return (value*100).toFixed(1)+"%"; },
+				 		miss_rate: function(record, value){ return (value*100).toFixed(1)+"%"; },
+				 		load_time_avg: function(record, value){ return value.toFixed(2)+"ms"; },
+				 		load_time_sum: function(record, value){ return value.toFixed(2)+"ms"; },
+				 		saved_time: function(record, value){ return (value/1000).toFixed(2)+"s"; },
 				 	},
 					data: data.payload,
 					rendererSettings: {

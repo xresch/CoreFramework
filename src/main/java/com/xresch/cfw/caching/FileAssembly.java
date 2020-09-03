@@ -1,14 +1,17 @@
 package com.xresch.cfw.caching;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * 
@@ -17,11 +20,13 @@ import com.xresch.cfw.features.config.FeatureConfiguration;
  **************************************************************************************************************/
 public class FileAssembly {
 	
+	private static final Logger logger = CFWLog.getLogger(FileAssembly.class.getName());
+	
 	/** Static field to store the assembled results by their file names. */
 	private static final Cache<String, FileAssembly> ASSEMBLY_CACHE = CFW.Caching.addCache("Assembly Cache", 
 			CacheBuilder.newBuilder()
-				.initialCapacity(100)
-				.maximumSize(2000)
+				.initialCapacity(10)
+				.maximumSize(1000)
 				.expireAfterAccess(24, TimeUnit.HOURS)
 		);
 	
@@ -34,6 +39,7 @@ public class FileAssembly {
 	private String filetype = "";
 	private String contentType = "";
 	private String assemblyContent = "";
+	
 	private int etag = 0;
 	
 	/***********************************************************************
@@ -102,50 +108,69 @@ public class FileAssembly {
 	 * 
 	 * @return the filename that can be used for retrieving the file content.
 	 ***********************************************************************/
-	public FileAssembly assemble() {
+	public FileAssembly assembleAndCache() {
 		
-
 		//--------------------------------
 		// Initialize
-		if( !FileAssembly.hasAssembly((assemblyName)) ) {
-			
-			StringBuilder concatenatedFile = new StringBuilder();
-			for(FileDefinition fileDef : fileMap.values()) {
-				
-				
-				String content = fileDef.readContents();
-				
-				if(content != null  && !content.isEmpty()) {
-					concatenatedFile.append(content).append("\n");
-				}
+		if(CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
+			try {
+				this.assemble();
+				FileAssembly assembly = this;
+				// Do this to get proper cache statistics.
+				ASSEMBLY_CACHE.get(assemblyName, new Callable<FileAssembly>() {
+
+					@Override
+					public FileAssembly call() throws Exception {
+						assembly.assemble();
+						return assembly;
+					}
+					
+				});
+			} catch (ExecutionException e) {
+				new CFWLog(logger).severe("Error occured while handling FileAssembly caching.", e);
 			}
-			
-			assemblyContent = concatenatedFile.toString();
-			etag = assemblyContent.hashCode();
-						
-			assemblyName = inputName + "_" + etag + "." + filetype;
-			assemblyServletPath = "/cfw/assembly?name="+URLEncoder.encode(assemblyName);
+
+		}else {
+			// always assemble and overwrite cache if caching is disabled
+			this.assemble();
+			ASSEMBLY_CACHE.put(assemblyName, this);
 		}
 		
 		return this;
 	}
 	
 	/***********************************************************************
-	 * Store this instance in the cache.
-	 * @return the name of the assembly
+	 * Assembles this file assembly.
+	 * 
+	 * @return the filename that can be used for retrieving the file content.
 	 ***********************************************************************/
-	public FileAssembly cache() {
-		if( !FileAssembly.hasAssembly((assemblyName)) ) {
-			ASSEMBLY_CACHE.put(assemblyName, this);
+	private FileAssembly assemble() {
+		
+		StringBuilder concatenatedFile = new StringBuilder();
+		for(FileDefinition fileDef : fileMap.values()) {
+
+			String content = fileDef.readContents();
+			
+			if(content != null  && !content.isEmpty()) {
+				concatenatedFile.append(content).append("\n");
+			}
 		}
+		
+		assemblyContent = concatenatedFile.toString();
+		etag = assemblyContent.hashCode();
+		
+		assemblyName = inputName + "_" + etag + "." + filetype;
+		assemblyServletPath = "/cfw/assembly?name="+CFW.HTTP.encode(assemblyName);
+		
 		return this;
 	}
+	
 	
 	/***********************************************************************
 	 * Check if the cache contains the specific assembly.
 	 * @return true or false
 	 ***********************************************************************/
-	public static boolean hasAssembly(String assemblyName) {
+	public static boolean isAssemblyCached(String assemblyName) {
 		return ASSEMBLY_CACHE.asMap().containsKey(assemblyName);
 	}
 	
@@ -153,7 +178,7 @@ public class FileAssembly {
 	 * Check if the cache contains the specific assembly.
 	 * @return FileAssembler instance or null
 	 ***********************************************************************/
-	public static FileAssembly getAssemblyFromCache(String assemblyName) {
+	public static FileAssembly getAssembly(String assemblyName) {
 		return ASSEMBLY_CACHE.getIfPresent(assemblyName);
 	}
 	

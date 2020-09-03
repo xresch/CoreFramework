@@ -36,8 +36,8 @@ public class ServletAssembly extends HttpServlet
 		String assemblyName = request.getParameter("name");
 		PlaintextResponse plain = new PlaintextResponse();
 		
-		if(FileAssembly.hasAssembly(assemblyName)) {
-			FileAssembly assembly = FileAssembly.getAssemblyFromCache(assemblyName);
+		if(FileAssembly.isAssemblyCached(assemblyName)) {
+			FileAssembly assembly = FileAssembly.getAssembly(assemblyName);
 			
 			//-----------------------
 			// Check ETag

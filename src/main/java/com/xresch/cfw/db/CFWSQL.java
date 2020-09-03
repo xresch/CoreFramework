@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -15,7 +17,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWObject.ForeignKeyDefinition;
@@ -82,16 +83,26 @@ public class CFWSQL {
 	 * Builds the statement while handling the caching.
 	 ****************************************************************/
 	public String getStatementCached() {
-		String statement;
+		String statement = "";
 		
-		if(isQueryCached()) {
-			statement = queryCache.getIfPresent(queryName);
-			
-		}else {
+		if(queryName == null) {
 			statement = query.toString();
-			if(queryName != null) {
-				queryCache.put(queryName, statement);
+		}else {
+			try {
+				statement = queryCache.get(queryName, new Callable<String>() {
+
+					@Override
+					public String call() throws Exception {
+						isQueryCached = true;
+						return query.toString();
+					}
+
+				});
+			} catch (ExecutionException e) {
+				new CFWLog(logger)
+					.severe("Error loading query from cache.", e);
 			}
+			
 		}
 		
 		return statement;
