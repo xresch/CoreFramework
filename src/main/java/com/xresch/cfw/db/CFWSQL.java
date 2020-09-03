@@ -34,7 +34,7 @@ public class CFWSQL {
 	
 	private static Logger logger = CFWLog.getLogger(CFWSQL.class.getName());
 	
-	private static final Cache<String, String> queryCache = CFW.Caching.addCache("CFW SQL Cache", 
+	private static final Cache<String, String> queryCache = CFW.Caching.addCache("CFW SQL", 
 			CacheBuilder.newBuilder()
 				.initialCapacity(300)
 				.maximumSize(3000)

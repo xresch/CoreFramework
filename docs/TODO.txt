@@ -86,6 +86,7 @@ TODO
 DONE
 ====
 ------- Current -------
+- Dashboard: Added Ruler to Edit Mode
 - CFWLog: auto detect method, making call to CFWLog.method() optional
 - Reduced footprint of log
 - Added System Analytics >> System Properties

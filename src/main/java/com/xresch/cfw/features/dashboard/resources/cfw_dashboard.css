@@ -417,3 +417,52 @@
 	align-items: center;
 	justify-content: center;
 }
+
+/**************************************************************
+ * Dashboard styling
+ **************************************************************/
+.ruler {
+    
+    list-style: none;
+    display: flex;
+    flex: align-content: space-evenly;
+    flex-direction: row;
+    margin: 7px;
+    height: 30px;
+    width: 100%;
+    padding: 0;
+    padding-right: 10px;
+    padding-left: 10px;
+    white-space: nowrap;
+    font-size: x-small;
+}
+
+
+.ruler li {
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+	justify-content: flex-end !important;
+	flex-grow: 1 !important;
+	cursor: pointer;
+	text-align: center !important;
+	position: relative;
+	top: -5px;
+}
+
+.ruler li:after {
+    content: '';
+    position: absolute;
+    border-left: 3px solid #ccc;
+    height: 1em;
+    bottom: -.45em;
+    right: 0.25em;
+}
+
+li:before {
+    content: '';
+    position: absolute;
+    border-left: 1px solid #ccc;
+    height: 30%;
+    right: 55%;
+}

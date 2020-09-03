@@ -33,14 +33,14 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWFiles {
 
-	private static Cache<String, String> stringFileCache = CFW.Caching.addCache("CFW File Cache[Strings]", 
+	private static Cache<String, String> stringFileCache = CFW.Caching.addCache("CFW Files[Strings]", 
 			CacheBuilder.newBuilder()
 				.initialCapacity(100)
 				.maximumSize(1000)
 				.expireAfterAccess(10, TimeUnit.HOURS)
 		);
 	
-	private static Cache<String, byte[]> byteFileCache = CFW.Caching.addCache("CFW File Cache[Bytes]", 
+	private static Cache<String, byte[]> byteFileCache = CFW.Caching.addCache("CFW Files[Bytes]", 
 			CacheBuilder.newBuilder()
 				.initialCapacity(100)
 				.maximumSize(1000)

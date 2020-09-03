@@ -1078,7 +1078,9 @@ function cfw_dashboard_toggleEditMode(){
 		$('.cfw-dashboard-widget-actionicons').addClass('d-none');
 		$('#addWidget').addClass('d-none');
 		$('#doneButton').addClass('d-none');
+		$('#top-ruler').addClass('d-none');
 		$('#editButton').removeClass('d-none');
+		
 		grid.disable();
 		
 	}else{
@@ -1086,7 +1088,9 @@ function cfw_dashboard_toggleEditMode(){
 		$('.cfw-dashboard-widget-actionicons').removeClass('d-none');
 		$('#addWidget').removeClass('d-none');
 		$('#doneButton').removeClass('d-none');
+		$('#top-ruler').removeClass('d-none');
 		$('#editButton').addClass('d-none');
+		
 		grid.enable();
 	}
 }

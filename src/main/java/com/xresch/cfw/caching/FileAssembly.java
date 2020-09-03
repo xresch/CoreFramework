@@ -23,7 +23,7 @@ public class FileAssembly {
 	private static final Logger logger = CFWLog.getLogger(FileAssembly.class.getName());
 	
 	/** Static field to store the assembled results by their file names. */
-	private static final Cache<String, FileAssembly> ASSEMBLY_CACHE = CFW.Caching.addCache("Assembly Cache", 
+	private static final Cache<String, FileAssembly> ASSEMBLY_CACHE = CFW.Caching.addCache("CFW Assembly", 
 			CacheBuilder.newBuilder()
 				.initialCapacity(10)
 				.maximumSize(1000)
