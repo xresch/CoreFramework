@@ -92,7 +92,7 @@ DONE
 - Added System Analytics >> System Properties
 - Improved Caching with Guava
 - Added caching for resolved proxy urls
-- Added caching metrics to Prometheus Endpoint
+- Added metrics for guava cache to prometheus endpoint
 - Adjusted @license to MIT
 - Added check for session timeout in browser when user is logged in 
 
