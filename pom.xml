@@ -133,6 +133,14 @@
 			<version>${prometheusVersion}</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/io.prometheus/simpleclient_guava -->
+		<dependency>
+			<groupId>io.prometheus</groupId>
+			<artifactId>simpleclient_guava</artifactId>
+			<version>${prometheusVersion}</version>
+		</dependency>
+
+
 		<!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
 		<dependency>
 			<groupId>com.h2database</groupId>

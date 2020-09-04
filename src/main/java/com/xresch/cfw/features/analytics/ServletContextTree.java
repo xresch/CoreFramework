@@ -40,7 +40,7 @@ public class ServletContextTree extends HttpServlet
 
 			content.append("<h1>Servlet Context Tree</h1>");		
 			content.append("<div>");	
-			System.out.println(CFW.Context.App.getApp().dumpServletContext());
+			
 			content.append(
 					CFW.Context.App.getApp()
 					.dumpServletContext()

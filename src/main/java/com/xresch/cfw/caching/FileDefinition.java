@@ -16,7 +16,7 @@ public class FileDefinition {
 	private String filename;
 	private String content;
 	
-	
+	private Integer hashCode = null;
 	/***********************************************************************
 	 * Use this constructor with HandlingType FILE and JAR_RESOURCE.
 	 * Use the constructor FileDefinition(String) for HandlingType.STRING.
@@ -62,19 +62,12 @@ public class FileDefinition {
 	}
 
 	/**************************************************************************
-	 * Return the contents set by setContent().
-	 * @return
-	 **************************************************************************/
-	private String getContent() {
-		return content;
-	}
-
-	/**************************************************************************
 	 * Set the contents which should be used when the HandlingType.STRING is used.
 	 * @return
 	 **************************************************************************/
 	public void setContent(String content) {
 		this.content = content;
+		hashCode = null;
 	}
 	
 	/**************************************************************************
@@ -88,8 +81,11 @@ public class FileDefinition {
 		}
 	}
 	
-	public int hashCode(){
-		return (path + filename + content).hashCode();
+	public int getHash(){
+		if(hashCode == null) {
+			hashCode = (path + filename + content).hashCode();
+		}
+		return hashCode;
 	}
 	
 	/**************************************************************************

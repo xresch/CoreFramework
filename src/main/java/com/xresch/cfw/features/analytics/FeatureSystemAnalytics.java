@@ -2,12 +2,23 @@ package com.xresch.cfw.features.analytics;
 
 import java.util.concurrent.ScheduledFuture;
 
+import com.google.common.cache.CacheStats;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.response.bootstrap.MenuItem;
+
+import io.prometheus.client.exporter.MetricsServlet;
+import io.prometheus.client.guava.cache.CacheMetricsCollector;
+import io.prometheus.client.hotspot.BufferPoolsExports;
+import io.prometheus.client.hotspot.ClassLoadingExports;
+import io.prometheus.client.hotspot.GarbageCollectorExports;
+import io.prometheus.client.hotspot.MemoryAllocationExports;
+import io.prometheus.client.hotspot.MemoryPoolsExports;
+import io.prometheus.client.hotspot.StandardExports;
+import io.prometheus.client.hotspot.ThreadExports;
 
 /**************************************************************************************************************
  * 
@@ -103,6 +114,18 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
     	app.addAppServlet(ServletContextTree.class,  "/servletcontexttree");
     	app.addAppServlet(ServletSystemProperties.class,  "/systemproperties");
     	app.addAppServlet(ServletCacheStatistics.class,  "/cachestatistics");
+    	
+		//-----------------------------------------
+		// Prometheus Endpoint
+	    new GarbageCollectorExports().register();
+	    new ThreadExports().register();
+	    new StandardExports().register();
+	    new MemoryPoolsExports().register();
+	    new MemoryAllocationExports().register();
+	    new ClassLoadingExports().register();
+	    new BufferPoolsExports().register();
+	    
+	    app.addUnsecureServlet(MetricsServlet.class,  	"/metrics");
 	}
 
 	@Override

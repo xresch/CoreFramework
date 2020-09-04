@@ -40,6 +40,7 @@ public class FileAssembly {
 	private String contentType = "";
 	private String assemblyContent = "";
 	
+	private int lastEtag = -1;
 	private int etag = 0;
 	
 	/***********************************************************************
@@ -112,16 +113,17 @@ public class FileAssembly {
 		
 		//--------------------------------
 		// Initialize
+		createEtagNameAndPath();
+		
 		if(CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
 			try {
-				this.assemble();
-				FileAssembly assembly = this;
 				// Do this to get proper cache statistics.
+				FileAssembly assembly = this;
 				ASSEMBLY_CACHE.get(assemblyName, new Callable<FileAssembly>() {
 
 					@Override
 					public FileAssembly call() throws Exception {
-						assembly.assemble();
+						assembly.assembleContent();
 						return assembly;
 					}
 					
@@ -132,7 +134,7 @@ public class FileAssembly {
 
 		}else {
 			// always assemble and overwrite cache if caching is disabled
-			this.assemble();
+			this.assembleContent();
 			ASSEMBLY_CACHE.put(assemblyName, this);
 		}
 		
@@ -140,29 +142,45 @@ public class FileAssembly {
 	}
 	
 	/***********************************************************************
-	 * Assembles this file assembly.
+	 * Assembles this file assembly. 
 	 * 
 	 * @return the filename that can be used for retrieving the file content.
 	 ***********************************************************************/
-	private FileAssembly assemble() {
+	private FileAssembly assembleContent() {
 		
-		StringBuilder concatenatedFile = new StringBuilder();
-		for(FileDefinition fileDef : fileMap.values()) {
-
-			String content = fileDef.readContents();
-			
-			if(content != null  && !content.isEmpty()) {
-				concatenatedFile.append(content).append("\n");
+		//----------------------------------
+		// Reload if Etag has changed.
+		if(lastEtag != etag) {
+			StringBuilder concatenatedFile = new StringBuilder();
+			for(FileDefinition fileDef : fileMap.values()) {
+	
+				String content = fileDef.readContents();
+				
+				if(content != null  && !content.isEmpty()) {
+					concatenatedFile.append(content).append("\n");
+				}
 			}
+			
+			assemblyContent = concatenatedFile.toString();
 		}
 		
-		assemblyContent = concatenatedFile.toString();
-		etag = assemblyContent.hashCode();
+		return this;
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
+	private void createEtagNameAndPath() {
 		
+		lastEtag = etag;
+		etag = 0;
+		for(FileDefinition fileDef : fileMap.values()) {
+			etag += fileDef.getHash();
+		}
+				
 		assemblyName = inputName + "_" + etag + "." + filetype;
 		assemblyServletPath = "/cfw/assembly?name="+CFW.HTTP.encode(assemblyName);
-		
-		return this;
+
 	}
 	
 	

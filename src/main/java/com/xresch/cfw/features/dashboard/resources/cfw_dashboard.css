@@ -422,16 +422,17 @@
  * Dashboard styling
  **************************************************************/
 .ruler {
-    
+   /*  background-color: var(--cfw-danger); */
     list-style: none;
     display: flex;
+    color: #ccc;
     flex: align-content: space-evenly;
     flex-direction: row;
     margin: 7px;
     height: 30px;
     width: 100%;
     padding: 0;
-    padding-right: 10px;
+    padding-right: 5px;
     padding-left: 10px;
     white-space: nowrap;
     font-size: x-small;
@@ -444,7 +445,6 @@
 	align-items: center !important;
 	justify-content: flex-end !important;
 	flex-grow: 1 !important;
-	cursor: pointer;
 	text-align: center !important;
 	position: relative;
 	top: -5px;
@@ -459,7 +459,7 @@
     right: 0.25em;
 }
 
-li:before {
+.ruler li:before {
     content: '';
     position: absolute;
     border-left: 1px solid #ccc;

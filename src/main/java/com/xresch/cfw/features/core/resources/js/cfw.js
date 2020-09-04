@@ -28,7 +28,6 @@ function cfw_utils_chainedOnload(func) {
 }
 
 
-
 /**************************************************************************************
  * Either executes a function or evaluates a string a s javascript code.
  *
@@ -2153,6 +2152,7 @@ var CFW = {
 		autocompleteCounter: 0,
 		autocompleteFocus: -1,
 		isLocaleFetching: null,
+		lastServerAccess: moment(),
 	},
 	lang: {
 		get: cfw_lang,
@@ -2268,6 +2268,27 @@ CFW.utils.chainedOnload(function () {
 		
 	});
 	
+	//-----------------------------------
+	// Check Session Timeout
+	if(JSDATA.sessionTimeout != null){
+		
+		$( document ).ajaxComplete(function() {
+			  CFW.global.lastServerAccess = moment();
+		});
+		CFW.global.sessionCheckInterval = window.setInterval(function(){
+			
+			var lastAccessSeconds = CFW.global.lastServerAccess.unix();
+			var currentSeconds = moment().unix();
+			var timeoutSeconds = JSDATA.sessionTimeout;
+			
+			if( (currentSeconds - lastAccessSeconds) > timeoutSeconds ){
+				CFW.ui.showSmallModal("Session Timeout", '<p>Your session has timed out, please refresh your browser.</p>');
+				window.clearInterval(CFW.global.sessionCheckInterval);
+			}
+			
+		}, 30000);
+		
+	}
 	//-----------------------------------
 	// Add scrolling offset for menu bar
 	$( window ).on('hashchange', function (e){

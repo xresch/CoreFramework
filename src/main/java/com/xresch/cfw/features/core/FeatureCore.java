@@ -110,17 +110,6 @@ public class FeatureCore extends CFWAppFeature {
 		// User Profile Servlets
 	    app.addAppServlet(ServletChangePassword.class,  "/changepassword");
 	    
-		//-----------------------------------------
-		// Prometheus Endpoint
-	    new GarbageCollectorExports().register();
-	    new ThreadExports().register();
-	    new StandardExports().register();
-	    new MemoryPoolsExports().register();
-	    new MemoryAllocationExports().register();
-	    new ClassLoadingExports().register();
-	    new BufferPoolsExports().register();
-	    
-	    app.addUnsecureServlet(MetricsServlet.class,  	"/metrics");
 		
 	    //-----------------------------------------
 		// Other Servlets

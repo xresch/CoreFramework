@@ -13,12 +13,15 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw.logging.CFWLog;
 
+import io.prometheus.client.guava.cache.CacheMetricsCollector;
+
 @SuppressWarnings("rawtypes")
 public class CFWCacheManagement {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWCacheManagement.class.getName());
 	
-	private static SortedMap<String, Cache> cacheMap = Collections.synchronizedSortedMap(new TreeMap<>());
+    private static final CacheMetricsCollector cacheMetricsCollector = new CacheMetricsCollector().register();
+	private static final SortedMap<String, Cache> cacheMap = Collections.synchronizedSortedMap(new TreeMap<>());
 	
 	/************************************************************************
 	 * 
@@ -38,6 +41,7 @@ public class CFWCacheManagement {
 				.build();
 		
 		cacheMap.put(cacheName, cache);
+		cacheMetricsCollector.addCache(cacheName, cache);
 		
 		return cache;
 	}
@@ -60,8 +64,8 @@ public class CFWCacheManagement {
 			double loadTimeAvgMillis = stats.averageLoadPenalty() / 1000000;
 			
 			object.addProperty("name", name);
-			object.addProperty("size", cache.size());
-			object.addProperty("request_count", stats.requestCount());
+			object.addProperty("entries", cache.size());
+			object.addProperty("requests", stats.requestCount());
 			object.addProperty("hit_count", hitCount);
 			object.addProperty("hit_rate", stats.hitRate());
 			object.addProperty("miss_count", stats.missCount());
@@ -69,7 +73,7 @@ public class CFWCacheManagement {
 			object.addProperty("eviction_count", stats.evictionCount());
 			object.addProperty("load_time_avg", loadTimeAvgMillis);
 			object.addProperty("load_time_sum", stats.totalLoadTime() / 1000000);
-			object.addProperty("saved_time", loadTimeAvgMillis * hitCount);
+			object.addProperty("load_time_saved", loadTimeAvgMillis * hitCount);
 			
 			array.add(object);
 		}

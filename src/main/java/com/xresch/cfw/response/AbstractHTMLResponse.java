@@ -48,6 +48,10 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 		this.addJavascriptData(CFW.REQUEST_ATTR_ID, requestID );
 		this.addJavascriptData("time", CFW.Time.currentTimestamp());
 		
+		if(CFW.Context.Request.getSessionData().isLoggedIn()) {
+			this.addJavascriptData("sessionTimeout", CFW.Properties.SESSION_TIMEOUT );
+		}
+		
 	}
 	
 	//##############################################################################
