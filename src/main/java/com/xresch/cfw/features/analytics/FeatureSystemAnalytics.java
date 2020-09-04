@@ -79,6 +79,13 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
+				(MenuItem)new MenuItem("Loggers")
+					.faicon("fas fa-book-open")
+					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.href("/app/loggers")	
+				, SYSTEM_ANALYTICS);
+		
+		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("Metrics")
 					.faicon("fas fa-thermometer-half")
 					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
@@ -109,12 +116,15 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
+		
+		//-----------------------------------------
+		// Servlets
     	app.addAppServlet(ServletCPUSampling.class,  "/cpusampling");
     	app.addAppServlet(ServletDatabaseAnalytics.class,  "/dbanalytics");
     	app.addAppServlet(ServletContextTree.class,  "/servletcontexttree");
     	app.addAppServlet(ServletSystemProperties.class,  "/systemproperties");
     	app.addAppServlet(ServletCacheStatistics.class,  "/cachestatistics");
-    	
+    	app.addAppServlet(ServletLoggers.class,  "/loggers");
 		//-----------------------------------------
 		// Prometheus Endpoint
 	    new GarbageCollectorExports().register();
