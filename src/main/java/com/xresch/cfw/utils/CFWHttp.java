@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import javax.servlet.http.Cookie;
@@ -24,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -37,9 +42,15 @@ public class CFWHttp {
 	
 	private static Logger logger = CFWLog.getLogger(CFWHttp.class.getName());
 	
-	private static String proxyPAC = null;
 	private static CFWScriptEngine javascriptEngine = CFW.Scripting.createJavascriptEngine(CFWHttpPacScriptMethods.class);
 	
+	private static String proxyPAC = null;
+	private static Cache<String, ArrayList<CFWProxy>> resolvedProxiesCache = CFW.Caching.addCache("CFW Proxies", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(100)
+				.maximumSize(1000)
+				.expireAfterAccess(1, TimeUnit.HOURS)
+		);
 	private static CFWHttp instance = new CFWHttp();
 	
 	public static String encode(String toEncode) {
@@ -149,6 +160,7 @@ public class CFWHttp {
 	 * 
 	 * @param urlToCall used for the request.
 	 * @return ArrayList<String> with proxy URLs
+	 * @throws  
 	 ******************************************************************************************************/
 	public static ArrayList<CFWProxy> getProxies(String urlToCall) {
 		
@@ -158,66 +170,80 @@ public class CFWHttp {
 		loadPacFile();
 		
 		//------------------------------
-		// Get Proxy PAC
+		// Get Proxy List
 		//------------------------------
-		ArrayList<CFWProxy> proxies = new ArrayList<CFWProxy>();
+		
+		ArrayList<CFWProxy> proxyArray = null;
 		
 		if(CFW.Properties.PROXY_ENABLED && proxyPAC != null) {
 			 URL tempURL;
 			try {
 				tempURL = new URL(urlToCall);
 				String hostname = tempURL.getHost();
-				Object result = javascriptEngine.executeJavascript("FindProxyForURL", urlToCall, hostname);
-				if(result != null) {
-					String[] proxyArray = result.toString()
-						.split(";");
-					
-					for(String proxyDef : proxyArray) {
-						if(proxyDef.trim().isEmpty()) { continue; }
-						
-						String[] splitted = proxyDef.trim().split(" ");
-						CFWProxy cfwProxy = instance.new CFWProxy();
-						
-						String port;
-						
-						cfwProxy.type = splitted[0];
-						if(splitted.length > 1) {
-							String hostport = splitted[1];
-							if(hostport.indexOf(":") != -1) {
-								cfwProxy.host = hostport.substring(0, hostport.indexOf(":"));
-								port = hostport.substring(hostport.indexOf(":")+1);
-							}else {
-								cfwProxy.host = hostport;
-								port = "80";	
-							}
-							
-							try {
-								cfwProxy.port = Integer.parseInt(port);
-							}catch(Throwable e) {
-								new CFWLog(logger)
-									.silent(true)
-									.severe("Error parsing port to integer.", e);
-							}
-							proxies.add(cfwProxy);
-						}
-					}
-//					System.out.println("==== Proxies ====");
-//					System.out.println(CFW.JSON.toJSON(proxyArray));
-//					System.out.println(CFW.JSON.toJSON(proxies));
-					
-				}
 				
-			} catch (MalformedURLException e) {
+				proxyArray = resolvedProxiesCache.get(hostname, new Callable<ArrayList<CFWProxy>>() {
+					@Override
+					public ArrayList<CFWProxy> call() throws Exception {
+						
+						ArrayList<CFWProxy> proxies = new ArrayList<CFWProxy>();
+						
+						Object result = javascriptEngine.executeJavascript("FindProxyForURL", urlToCall, hostname);
+						if(result != null) {
+							String[] proxyArray = result.toString()
+								.split(";");
+							
+							for(String proxyDef : proxyArray) {
+								if(proxyDef.trim().isEmpty()) { continue; }
+								
+								String[] splitted = proxyDef.trim().split(" ");
+								CFWProxy cfwProxy = instance.new CFWProxy();
+								
+								String port;
+								
+								cfwProxy.type = splitted[0];
+								if(splitted.length > 1) {
+									String hostport = splitted[1];
+									if(hostport.indexOf(":") != -1) {
+										cfwProxy.host = hostport.substring(0, hostport.indexOf(":"));
+										port = hostport.substring(hostport.indexOf(":")+1);
+									}else {
+										cfwProxy.host = hostport;
+										port = "80";	
+									}
+									
+									try {
+										cfwProxy.port = Integer.parseInt(port);
+									}catch(Throwable e) {
+										new CFWLog(logger)
+											.silent(true)
+											.severe("Error parsing port to integer.", e);
+									}
+									proxies.add(cfwProxy);
+								}
+							}
+//							System.out.println("==== Proxies ====");
+//							System.out.println(CFW.JSON.toJSON(proxyArray));
+//							System.out.println(CFW.JSON.toJSON(proxies));
+							
+						}
+						return proxies;
+					}
+										
+				});
+				
+			} catch (MalformedURLException | ExecutionException e) {
 				new CFWLog(logger)
-					.severe("Resolving URL failed as it is malformed.", e);
+					.severe("Resolving proxies failed.", e);
 			}
 		}
-		if (proxies.size() == 0){
+		
+		if (proxyArray == null || proxyArray.size() == 0){
+			proxyArray = new ArrayList<CFWProxy>(); 
 			CFWProxy direct = instance.new CFWProxy();
 			direct.type = "DIRECT";
-			proxies.add(direct);
+			proxyArray.add(direct);
 		}
-		return proxies;
+		return proxyArray;
 	}
 
 	/******************************************************************************************************

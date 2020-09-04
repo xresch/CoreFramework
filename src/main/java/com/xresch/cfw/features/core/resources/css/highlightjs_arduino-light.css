@@ -8,7 +8,8 @@ Arduino® Light Theme - Stefania Mellai <s.mellai@arduino.cc>
   display: block;
   overflow-x: auto;
   padding: 0.5em;
-  background: #FFFFFF;
+  background: #eee;
+  border: 1px solid #ccc;
 }
 
 .hljs,

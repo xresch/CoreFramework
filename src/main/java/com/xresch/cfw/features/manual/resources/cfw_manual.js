@@ -54,6 +54,14 @@ function cfw_manual_createPrintView(pageGUID){
 	printView.document.head.appendChild(cssLink);
 		
 	//--------------------------
+	// Override Code Style
+	let cssCodestyleLink = printView.document.createElement("link");
+	cssCodestyleLink.rel = "stylesheet";
+	cssCodestyleLink.media = "screen, print";
+	cssCodestyleLink.href = CFW_MANUAL_HOST_URL+"/cfw/jarresource?pkg=com.xresch.cfw.features.core.resources.css&file=highlightjs_arduino-light.css";
+	printView.document.head.appendChild(cssCodestyleLink);
+	
+	//--------------------------
 	// Copy Scripts
 	var javascripts = $('#javascripts script');
 	console.log(javascripts);

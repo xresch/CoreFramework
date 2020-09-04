@@ -91,6 +91,7 @@ DONE
 - Reduced footprint of log
 - Added System Analytics >> System Properties
 - Improved Caching with Guava
+- Added caching for resolved proxy urls
 - Added caching metrics to Prometheus Endpoint
 - Adjusted @license to MIT
 - Added check for session timeout in browser when user is logged in 

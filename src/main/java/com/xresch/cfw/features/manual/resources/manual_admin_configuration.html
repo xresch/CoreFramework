@@ -14,3 +14,155 @@ For starters, here the most important things you need to know to configure your 
 	</li>
 	<li><strong>API:&nbsp;</strong> The API provides an easy way to fetch data from the database and do checks on the database contents. This can be helpful to check certain configurations, also there are some APIs that help to do audits for configurations like User &gt;&gt; getUserPermissions.</li>
 </ul>
+
+
+
+<h2>Configure HTTP and Ports</h2>
+<p>
+The HTTP settings can be found in the cfw.properties file. Here you can configure the ports and which connectors(HTTP/HTTPS) you want to enable.
+</p>
+<pre><code>cfw_http_enabled=true
+cfw_http_connector_host=0.0.0.0
+cfw_http_port=8888
+
+#Enable to redirect HTTP requests to HTTPS
+cfw_http_redirect_to_https=false
+
+cfw_https_enabled=true
+cfw_https_port=443
+cfw_https_keystore_path=./config/keystore.jks
+cfw_https_keystore_password=123456
+cfw_https_keymanager_password=123456</code></pre>
+
+
+
+<h2>Configure Proxy</h2>
+<p>
+The proxy settings can be found in the cfw.properties file. 
+If the proxy is enabled, all requests using the CFW.HTTP interface will use the configured proxy. 
+</p>
+<pre><code># Enable proxy for http calls made in the backend.
+cfw_proxy_enabled=false
+# Set the location of the proxy file. Either a file on disk, or a URL starting with http/https
+cfw_proxy_pac=./config/proxy.pac</code></pre>
+
+
+
+<h2>Configure Performance</h2>
+<p>
+The performance settings can be found in the cfw.properties file, as well as in the application menu "Admin &gt;&gt; Configuration".
+Here the settings available in the properties file:
+</p>
+<pre><code>#Session Timeout in seconds
+cfw_session_timeout=3600
+
+# Time in seconds to cache resources in the browser
+cfw_browser_resource_maxage=36000</code></pre>
+
+
+
+<h2>Configure Authentication</h2>
+<p>
+The authentication settings can be found in the cfw.properties file.
+Here you can choose between authentication methods like CSV, DB and LDAP.
+</p>
+<pre><code># Choose if you want to prompt for login
+cfw_authentication_enabled=true
+
+# Choose authentication method and set the respective settings
+#   - "CSV":  Use the "username;password" credentials from a file
+#   - "LDAP": Authenticate against a directory
+#   - "DB": Authenticate against the internal database
+authentication_method=DB
+
+# ===== CSV Settings =====
+# The file containing "username;password" credentials
+authentication_csv_file=./config/credentials.csv
+
+
+# ===== LDAP Settings =====
+# The URL with port of the LDAP which should be used for authentication
+authentication_ldap_url=ldap://localhost:10389
+
+# Define if the LDAP connection should be done using ssl
+authentication_ldap_ssl_enabled=false
+
+# The DN of the ldap account used to query the directory
+authentication_ldap_user=uid=admin,ou=system
+
+#The password for above user
+authentication_ldap_password=secret
+
+# The DN of the ldap entry where the users are stored in
+authentication_ldap_searchbase=ou=users,dc=example,dc=com
+
+# The name of the attribute storing the username used for authentication
+authentication_ldap_attribute_username=userid
+
+# The name of the attribute storing the mail of the user
+authentication_ldap_attribute_mail=mail
+
+# The name of the attribute storing the firstname of the user
+authentication_ldap_attribute_firstname=givenName
+
+# The name of the attribute storing the lastname of the user
+authentication_ldap_attribute_lastname=sn</code></pre>
+
+
+<h2>Configure Mailing</h2>
+<p>
+The mailing settings can be found in the cfw.properties file.
+This settings will apply to mails sent using the CFW.Mail interface.
+</p>
+<pre><code># Choose if you want the application to send mails
+cfw_mail_enabled=true
+
+# The smtp host used for sending mails
+cfw_mail_smtp_host=localhost
+
+# the port of the smtp server (Standard Ports: 25/noAuth, 587/starttls, 465/ssl)
+cfw_mail_smtp_port=25
+
+# The method used to authenticate against the smtp server, either of:  NONE | TLS | SSL
+cfw_mail_smtp_authentication=none
+
+# The credentials used for login to the smtp server 
+cfw_mail_smtp_login_mail=test@pengtoolbox.com
+cfw_mail_smtp_login_password=TestPW1234
+
+# The eMails used as the from-addresses
+cfw_mail_smtp_frommail_reply=contact@pengtoolbox.com
+cfw_mail_smtp_frommail_noreply=no-reply@pengtoolbox.com</code></pre>
+
+
+
+<h2>Configure Database </h2>
+<p>
+The database connection settings can be found in the cfw.properties file.
+The database backup settings can be found in the application menu "Admin &gt;&gt; Configuration".
+</p>
+<pre><code># Full DB connection string will look like this >> jdbc:h2:tcp://localhost:8889/./datastore/h2database
+cfw_h2_server=localhost
+cfw_h2_port=8889
+
+#Folder path can be a relative or absolute path like cfw_h2_path=C:/temp/h2store
+cfw_h2_path=./datastore
+cfw_h2_db_name=h2database
+
+cfw_h2_username=sa
+cfw_h2_password=sa</code></pre>
+
+
+<h2>Configure Look and Feel </h2>
+<p>
+The look and feel settings can be found in the application menu "Admin &gt;&gt; Configuration".
+You can choose between different themes, set the applications default language and other settings. 
+</p>
+
+
+<h2>Configure Reset Admin Password </h2>
+<p>
+If you will ever need to reset the admin password, use the following setting in cfw.properties.
+</p>
+<pre><code># Set to true and restart the application to reset the password of the default admin account
+cfw_reset_admin_pw=false</code></pre>

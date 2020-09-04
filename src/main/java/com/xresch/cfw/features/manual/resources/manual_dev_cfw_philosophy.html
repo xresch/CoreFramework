@@ -6,7 +6,7 @@ Here is a list of what the developer had in mind when he created the framework:
 
 <ul>
 	<li><strong>Keep Tools needed to a minimum:&nbsp;</strong> The tools needed for developing should be kept to a minimum. An Eclipse IDE, a DB tool and Git should be all that is needed.  </li>
-	<li><strong>Keep Dependencies Low:&nbsp;</strong> Dependencies to other frameworks are kept to a minimum. This allows to avoid dependency management tools like Maven/Gradle. The Application is build with Eclipse.  </li>
+	<li><strong>Keep Dependencies Low:&nbsp;</strong> Dependencies to other frameworks are kept to a minimum to keep the footprint small and performance high. </li>
 	<li><strong>Single JAR:&nbsp;</strong> The main application functionality should be delivered as a single JAR. Makes it easier to deploy a new version. Only config and resource files should be on the disc.</li>
 	<li><strong>Ordered Code:&nbsp;</strong> The framework user doesn't have to search for basic functionality, as the code is ordered properly. Most of the functionality can be accessed through CFW.* using code autocompletion.  </li>
 	<li><strong>Handle Exceptions Early:&nbsp;</strong> Handle exceptions as low in the code as possible and return "null" on errors, instead of propagating the exceptions through the method stack. Automatically add an alert message that will be displayed to the user, when an exception is logged with severity "WARNING" or "SEVERE". </li>
