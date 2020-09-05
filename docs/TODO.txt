@@ -97,6 +97,7 @@ DONE
 - Adjusted @license to MIT
 - Added check for session timeout in browser when user is logged in 
 - Modal: Reset scroll position on close 
+- Prevent auto-fill on autocomplete fields
 
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message

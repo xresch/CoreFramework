@@ -472,6 +472,7 @@ function cfw_autocompleteInitialize(formID, fieldName, maxResults, array){
 		$input = $("#"+fieldName+"-tagsinput")
 	}
 	
+	$input.attr('autocomplete', 'off');
 	var inputField = $input.get(0);
 	var autocompleteID = inputField.id + "-autocomplete";
 	
