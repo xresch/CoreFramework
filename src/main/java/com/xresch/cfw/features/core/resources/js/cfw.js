@@ -1359,6 +1359,11 @@ function cfw_showModal(modalTitle, modalBody, jsCode){
 //		});
 		$('body').prepend(defaultModal);
 		
+		//-------------------------------------
+		// Reset Scroll Position
+		defaultModal.on('hide.bs.modal', function () {
+			defaultModal.find('.modal-body').scrollTop(0);
+		});	
 
 	}
 
@@ -1377,6 +1382,7 @@ function cfw_showModal(modalTitle, modalBody, jsCode){
 	defaultModal.find('.modal-body').html("").append(modalBody);
 	
 	defaultModal.modal('show');
+
 }
 
 /**************************************************************************************
