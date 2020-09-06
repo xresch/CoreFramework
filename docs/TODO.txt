@@ -90,7 +90,7 @@ DONE
 - CFWLog: auto detect method, making call to CFWLog.method() optional
 - Reduced footprint of log
 - Added System Analytics >> System Properties
-- Added System Analytics >> Logger
+- Added System Analytics >> Log Configuration
 - Improved Caching with Guava
 - Added caching for resolved proxy urls
 - Added metrics for guava cache to prometheus endpoint

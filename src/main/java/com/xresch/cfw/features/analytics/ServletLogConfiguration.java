@@ -16,6 +16,7 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -25,7 +26,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class ServletLoggers extends HttpServlet
+public class ServletLogConfiguration extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;
@@ -42,11 +43,11 @@ public class ServletLoggers extends HttpServlet
 			String action = request.getParameter("action");
 			
 			if(action == null) {
-			HTMLResponse html = new HTMLResponse("Loggers");
+			HTMLResponse html = new HTMLResponse("Log Configuration");
 
-			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureSystemAnalytics.RESOURCE_PACKAGE, "cfw_loggers.js");
+			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureSystemAnalytics.RESOURCE_PACKAGE, "cfw_logconfiguration.js");
 			
-			html.addJavascriptCode("cfw_loggers_draw();");
+			html.addJavascriptCode("cfw_logconfiguration_draw();");
 			
 	        response.setContentType("text/html");
 	        response.setStatus(HttpServletResponse.SC_OK);
@@ -61,24 +62,39 @@ public class ServletLoggers extends HttpServlet
 	
 	private void handleActionRequest(HttpServletRequest request, HttpServletResponse response) {
 		
-		String action = request.getParameter("action");
-		String item = request.getParameter("item");
+		String action = request.getParameter("action").toLowerCase();
+		String item = request.getParameter("item").toLowerCase();
 		
 		JSONResponse jsonResponse = new JSONResponse();
 		
-		switch(action.toLowerCase()) {
+		switch(action) {
 
 			case "fetch": 			
-				switch(item.toLowerCase()) {
+				switch(item) {
 	  											
 					case "loggers":		jsonResponse.getContent().append(getLoggerDetailsAsJSON().toString());
-												break;		
+										break;		
 	  											
-					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
-												break;
+					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+										break;
 				}
 				break;
-						
+				
+			case "update": 			
+				switch(item) {
+	  											
+					case "loglevel":	String loggerName = request.getParameter("loggerName");
+										String newLevel = request.getParameter("level");
+										this.updateLogLevel(jsonResponse, loggerName, newLevel);
+										break;	
+										
+					case "configfile":	CFWLog.initializeLogging();
+										break;
+										
+					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+										break;
+				}
+				break;		
 			default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The action '"+action+"' is not supported.");
 								break;
 								
@@ -112,5 +128,17 @@ public class ServletLoggers extends HttpServlet
 		return array;
 		
 	}
+	
+	private void updateLogLevel(JSONResponse response, String loggerName, String level) {
+				
+		LogManager logManager = LogManager.getLogManager();
+		Logger logger = logManager.getLogger(loggerName);
 		
+		logger.setLevel(Level.parse(level));
+		
+		response.setSuccess(true);
+
+		
+	}
+			
 }
