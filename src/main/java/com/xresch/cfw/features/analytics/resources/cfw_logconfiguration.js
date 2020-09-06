@@ -123,7 +123,7 @@ function cfw_logconfiguration_draw(){
 		//-------------------------------------
 		// Fetch and Print Loggers
 		parent.append('<h1>Log Configuration</h1>'
-				+'<p>List of all the registered loggers.</p>'
+				+'<p>List of all the registered loggers. You can change the log levels during runtime, these settings will be reverted after a application restart or with below reload button.</p>'
 				+'<p><strong style="color: red;">IMPORTANT: </strong>Changing log levels can cause severe performance degradations. Make sure you know what you are doing.</p>'
 				+ '<p><a class="btn btn-sm btn-primary" onclick="cfw_logconfiguration_reloadConfigFile();"><i class="fas fa-upload mr-2"></i>Reload from File</a></p>'
 				+'<p id="loggers"></p>');
