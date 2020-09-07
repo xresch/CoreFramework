@@ -204,7 +204,13 @@ public class CFWFiles {
 						@Override
 						public String call() throws Exception {
 							InputStream in = CFWFiles.class.getClassLoader().getResourceAsStream(resourcePath);
-							return readContentsFromInputStream(in);
+							String contents = readContentsFromInputStream(in);
+							
+							if(contents == null) {
+								contents = ""; 
+								new CFWLog(logger).method("readPackageResource").warn("The loaded resource is null: "+resourcePath);
+							}
+							return contents;
 						}
 						
 					});
@@ -287,7 +293,7 @@ public class CFWFiles {
 			}
 			 
 		} catch (IOException e) {
-			new CFWLog(logger).log(Level.SEVERE, "IOException: ", e);
+			new CFWLog(logger).severe("IOException: ", e);
 			e.printStackTrace();
 		}
 		

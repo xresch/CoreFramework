@@ -213,7 +213,7 @@ public class CFWLocalization {
 				languagePack = languageCache.get(cacheID, new Callable<Properties>() {
 					@Override
 					public Properties call() throws Exception {
-						return loadLanguagePack(locales, requestURI);
+						return CFWLocalization.loadLanguagePack(locales, requestURI);
 					}
 					
 				});

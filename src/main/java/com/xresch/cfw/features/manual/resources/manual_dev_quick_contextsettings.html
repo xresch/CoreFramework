@@ -1,7 +1,16 @@
 
 <p>Context Settings are a way to define settings for a specific context. A context could be defined as a group of settings for a specific purpose.
-For example you can create context settings to define multiple environments.
+For example you can create context settings to define multiple environments. 
+To be able to use the Context Settings Feature, it has to be enabled in the settings method by the class implementing the CFWAppInterface:
+
 </p>
+<pre>
+<code>@Override
+public void settings() {
+	CFW.AppSettings.setEnableContextSettings(true);
+}</code>
+</pre>
+
 
 <h2>Create Class</h2>
 <p>For Defining Context Settings, you have to first implement a class extending AbstractContextSettings, which itself is a sub class of CFWObject.
