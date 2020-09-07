@@ -1293,7 +1293,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				}else {
 					new CFWLog(logger)
 						.silent(true)
-						.finest("The field with name '"+key+"' is unknown for this type.");
+						.finer("The field with name '"+key+"' is unknown for this type.");
 				}
 			}
 		}
@@ -1335,7 +1335,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				}else {
 					new CFWLog(logger)
 						.silent(true)
-						.finest("The field with name '"+key+"' is unknown for this type.");
+						.finer("The field with name '"+key+"' is unknown for this type.");
 				}
 			}
 		}
@@ -1399,7 +1399,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					success = false;
 					new CFWLog(logger)
 						.silent(true)
-						.finest("The object doesn't contain a field with name '"+colName+"'.");
+						.finer("The object doesn't contain a field with name '"+colName+"'.");
 				}
 			}
 		

@@ -102,7 +102,7 @@ public class CFWDB {
 					
 					if(isInitialized) {
 						new CFWLog(logger)
-							.finest("DB Connections Active: "+connectionPool.getActiveConnections());
+							.finer("DB Connections Active: "+connectionPool.getActiveConnections());
 						
 						if(transactionConnection.get() != null) {
 							return transactionConnection.get();

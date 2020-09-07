@@ -46,9 +46,7 @@ public class CFWFiles {
 				.maximumSize(1000)
 				.expireAfterAccess(10, TimeUnit.HOURS)
 		);
-	//private static final HashMap<String,String> permanentStringFileCache = new HashMap<String,String>();
-	//private static final HashMap<String,byte[]> permanentByteFileCache = new HashMap<String,byte[]>();
-	
+
 	/** Only packages in this list can be accessed with readPackageResource*().*/
 	private static final ArrayList<String> allowedPackages = new ArrayList<String>();
 	
