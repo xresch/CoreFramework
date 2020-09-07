@@ -5,9 +5,12 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
+import java.lang.instrument.Instrumentation;
+
+
 public class CFWDump {
     private static CFWDump instance = new CFWDump();
-
+    
     /*************************************************************************
      * 
      * @return

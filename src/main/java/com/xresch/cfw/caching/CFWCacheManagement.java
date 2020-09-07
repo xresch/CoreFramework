@@ -2,6 +2,7 @@ package com.xresch.cfw.caching;
 
 import java.util.Collections;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Logger;
@@ -11,9 +12,11 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheStats;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 
 import io.prometheus.client.guava.cache.CacheMetricsCollector;
+import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 
 @SuppressWarnings("rawtypes")
 public class CFWCacheManagement {
@@ -79,6 +82,56 @@ public class CFWCacheManagement {
 		}
 		
 		return array;
+		
+	}
+	
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	public static String getCacheDetailsAsJSON(String cacheName) {
+		
+		Cache<Object, Object> cache = cacheMap.get(cacheName);
+
+		Set<Entry<Object, Object>> entries = cache.asMap().entrySet();
+		
+		JsonObject cacheDetails = new JsonObject();
+		cacheDetails.addProperty("name", cacheName);
+		cacheDetails.addProperty("entry_count", entries.size());
+
+		if(entries.size() > 0) {
+			cacheDetails.addProperty("clazz", ((Entry<Object, Object>)entries.toArray()[0]).getValue().getClass().getName());
+		}
+		
+		JsonArray array = new JsonArray();
+		int i = 0;
+		for(Entry<Object, Object> entry : entries ) {
+			
+			JsonObject entryDetails = new JsonObject();
+			entryDetails.addProperty("key", entry.getKey().toString());
+			Object value = entry.getValue();
+			String finalValue = "";
+			if(String.class.isAssignableFrom(value.getClass())) {
+				finalValue = value.toString();
+			}else {
+				finalValue = CFW.JSON.toJSON(value);
+			}
+			if(finalValue.length() > 500) {
+				finalValue = finalValue.substring(0, 500)+"\n ... [truncated]";
+			}
+			
+			entryDetails.addProperty("value", finalValue);
+
+			array.add(entryDetails);
+			i++;
+			if(i >= 100) {
+				break;
+			}
+			
+		}
+
+		cacheDetails.add("entries", array);
+
+		return cacheDetails.toString();
 		
 	}
 	

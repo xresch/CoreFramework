@@ -69,8 +69,11 @@ public class ServletCacheStatistics extends HttpServlet
 				switch(item.toLowerCase()) {
 	  											
 					case "cachestatistics":		jsonResponse.getContent().append(CFW.Caching.getCacheStatisticsAsJSON().toString());
-												break;		
-	  											
+												break;	
+												
+					case "cachedetails":		jsonResponse.getContent().append(CFW.Caching.getCacheDetailsAsJSON(request.getParameter("name")));
+												break;								
+												
 					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
 												break;
 				}
