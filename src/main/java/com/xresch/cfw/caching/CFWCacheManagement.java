@@ -16,7 +16,6 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 
 import io.prometheus.client.guava.cache.CacheMetricsCollector;
-import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 
 @SuppressWarnings("rawtypes")
 public class CFWCacheManagement {
