@@ -7,7 +7,7 @@
 	<groupId>com.xresch</groupId>
 	<artifactId>cfw</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.4</version>
+	<version>1.0.5</version>
 
 	<name>cfw</name>
 	<description>CoreFramework is a java application boilerplate providing various functionalities like user management, configurations, API and dashboarding out of the box.</description>
@@ -29,7 +29,7 @@
 	<!-- ================= LICENSES ================== -->
 	<licenses>
 		<license>
-			<name>CFW License</name>
+			<name>MIT License</name>
 			<url>https://github.com/xresch/CoreFramework/blob/master/LICENSE</url>
 		</license>
 	</licenses>
