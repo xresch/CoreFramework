@@ -102,7 +102,12 @@ public class RequestHandler extends HandlerWrapper
     	String userAgent = request.getHeader("User-Agent");
     	if(!userAgent.contains("MSIE ") 
     	&& !userAgent.contains("Trident/")) {
-        	this._handler.handle(target, baseRequest, request, response);
+    		try {
+    			this._handler.handle(target, baseRequest, request, response);
+    		}catch(Throwable e) {
+    			new CFWLog(logger).severe("Unhandled Exception occured.", e);
+    			throw e;
+    		}
     	}else {
     		PlaintextResponse plain = new PlaintextResponse();
     		plain.getContent().append("This application does not work with Internet Explorer. Please use a modern browser like Chrome, Edge or Safari.");
