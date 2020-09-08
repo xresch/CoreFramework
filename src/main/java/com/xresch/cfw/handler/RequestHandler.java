@@ -1,7 +1,9 @@
-package com.xresch.cfw.handlers;
+package com.xresch.cfw.handler;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -38,14 +40,13 @@ public class RequestHandler extends HandlerWrapper
                                                       ServletException
     {
     	
+    	//##################################
+    	// Initialize
+    	//##################################
+    	CFWLog log = new CFWLog(logger);
+    	
     	CFW.Context.Request.setRequest(request);
     	CFW.Context.Request.setHttpServletResponse(response);
-    	
-    	//##################################
-    	// Before
-    	//##################################
-    	
-    	CFWLog log = new CFWLog(logger);
     	
     	// Used to calculate deltaStart by OMLogger.log()
     	// minus 1ms to be always first
@@ -96,35 +97,56 @@ public class RequestHandler extends HandlerWrapper
     	session.setMaxInactiveInterval(CFW.Properties.SESSION_TIMEOUT);
     	
     	//##################################
-    	// Call Wrapped Handler
+    	// Trace Log
     	//##################################
-    	
-    	String userAgent = request.getHeader("User-Agent");
-    	if(!userAgent.contains("MSIE ") 
-    	&& !userAgent.contains("Trident/")) {
-    		try {
-    			this._handler.handle(target, baseRequest, request, response);
-    		}catch(Throwable e) {
-    			new CFWLog(logger).severe("Unhandled Exception occured.", e);
-    			throw e;
+    	if(logger.isLoggable(Level.FINEST)) {
+    		CFWLog traceLog = new CFWLog(logger);
+    		Enumeration<String> headers = request.getHeaderNames();
+    		while(headers.hasMoreElements()) {
+    			String headerName = headers.nextElement();
+    			traceLog.custom(headerName.toLowerCase(), request.getHeader(headerName));
     		}
-    	}else {
-    		PlaintextResponse plain = new PlaintextResponse();
-    		plain.getContent().append("This application does not work with Internet Explorer. Please use a modern browser like Chrome, Edge or Safari.");
+    			
+    		traceLog.finest("Request Headers Tracelog");
     	}
-
+    	
     	//##################################
-    	// After
-    	//##################################
-    	request.setAttribute(CFW.REQUEST_ATTR_ENDNANOS, System.nanoTime());
+    	// Before
+    	//##################################    	
+		try {
+	    		    		    	
+	    	//##################################
+	    	// Call Wrapped Handler
+	    	//##################################
+	    	
+	    	String userAgent = request.getHeader("User-Agent");
+	    	if(userAgent == null
+	    	|| ( !userAgent.contains("MSIE ") 
+	    		&& !userAgent.contains("Trident/")) ) {
+	
+	    		this._handler.handle(target, baseRequest, request, response);
+	    		
+	    	}else {
+	    		PlaintextResponse plain = new PlaintextResponse();
+	    		plain.getContent().append("This application does not work with Internet Explorer. Please use a modern browser like Chrome, Edge or Safari.");
+	    	}
+		}catch(Exception e) {
+			new CFWLog(logger).severe("Unhandled Exception occured.", e);
+			throw e;
+		}finally {
+	    	//##################################
+	    	// After
+	    	//##################################
+	    	request.setAttribute(CFW.REQUEST_ATTR_ENDNANOS, System.nanoTime());
+	    	
+	    	CFWDB.forceCloseRemainingConnections();
+	    	
+	    	CFW.Localization.writeLocalized(request, response);
     	
-    	CFWDB.forceCloseRemainingConnections();
+	    	log.end();
     	
-    	CFW.Localization.writeLocalized(request, response);
-    	
-    	log.end();
-    	
-        baseRequest.setHandled(true);
-        Context.Request.clearRequestContext();
+	    	baseRequest.setHandled(true);
+	    	Context.Request.clearRequestContext();
+		}
     }
 }

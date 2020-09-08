@@ -38,10 +38,10 @@ import org.eclipse.jetty.servlet.ServletMapping;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-import com.xresch.cfw.handlers.AuthenticationHandler;
-import com.xresch.cfw.handlers.HTTPSRedirectHandler;
-import com.xresch.cfw.handlers.RedirectDefaultPageHandler;
-import com.xresch.cfw.handlers.RequestHandler;
+import com.xresch.cfw.handler.AuthenticationHandler;
+import com.xresch.cfw.handler.HTTPSRedirectHandler;
+import com.xresch.cfw.handler.RedirectDefaultPageHandler;
+import com.xresch.cfw.handler.RequestHandler;
 import com.xresch.cfw.utils.HandlerChainBuilder;
 
 import io.prometheus.client.jetty.JettyStatisticsCollector;

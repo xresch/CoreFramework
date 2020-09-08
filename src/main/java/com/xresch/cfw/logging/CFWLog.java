@@ -274,7 +274,7 @@ public class CFWLog {
 				
 				if(CFWProperties.AUTHENTICATION_ENABLED) {
 					SessionData data = CFW.Context.Request.getSessionData(); 
-					if(data.isLoggedIn()) {
+					if(data != null && data.isLoggedIn()) {
 						this.userID = data.getUser().username();
 					}
 				}else {

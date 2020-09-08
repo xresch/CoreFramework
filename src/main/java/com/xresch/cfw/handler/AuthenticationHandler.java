@@ -1,4 +1,4 @@
-package com.xresch.cfw.handlers;
+package com.xresch.cfw.handler;
 
 import java.io.IOException;
 import java.net.URLEncoder;
