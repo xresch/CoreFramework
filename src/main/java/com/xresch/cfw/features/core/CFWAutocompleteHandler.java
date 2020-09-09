@@ -12,6 +12,7 @@ import com.xresch.cfw.datahandling.CFWField;
 public abstract class CFWAutocompleteHandler {
 	
 	private int maxResults = 10;
+	private int minChars = 3;
 	private CFWField parent = null;
 	
 	public CFWAutocompleteHandler() {
@@ -20,6 +21,10 @@ public abstract class CFWAutocompleteHandler {
 	
 	public CFWAutocompleteHandler(int maxResults) {
 		this.maxResults = maxResults;
+	}
+	
+	public CFWAutocompleteHandler(int maxResults, int minChars) {
+		this.minChars = minChars;
 	}
 	
 	/*******************************************************************************
@@ -35,6 +40,15 @@ public abstract class CFWAutocompleteHandler {
 
 	public CFWAutocompleteHandler setMaxResults(int maxResults) {
 		this.maxResults = maxResults;
+		return this;
+	}
+	
+	public int getMinChars() {
+		return minChars;
+	}
+
+	public CFWAutocompleteHandler setMinChars(int minChars) {
+		this.minChars = minChars;
 		return this;
 	}
 

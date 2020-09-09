@@ -42,6 +42,8 @@ TODO
 - cfw.js: Create Pagination Renderer
 - cfw.js: Finish javascript CFWFormField
 - cfw.js: Check Session Timeout
+- cfw.js: Add Tic Tac Toe Loader for Long running requests
+- cfw.js: Progress Bar Loader
 
 - API: Add Token mechanism
 
@@ -51,17 +53,10 @@ TODO
 - Manual: Change chevron icon when page gets expanded/collapsed
 - Manual: Multi language pages
 
-- CFW: Implement Stop
 - CFW: CFWApplicationExecutor - ForwardedRequestCustomizer make it work with reverse proxy
 - CFW: Implement custom shutdown stopping database, application, features, etc...
-- CFW: Move core stuff to core feature
-- CFW: Create loading mechanism for features as plugins
 - CFW: Create javascript sanity check page
 - CFW: Redirect StdOut and StdErr to logfile
-
-- Caching
-  - Create Caching class or us Guava, max entries and access count
-  - Create Cache overview
     
 - CFWField: Add initFormField(method)
 - CFWField: Form errors add to field.
@@ -69,14 +64,14 @@ TODO
   - how to load key and label? 
 
 - Spaces!!!
+  - Important: Manage Hierarchy
   - Fetch As JSON Hierarchy
   - HTML Selector
   - SpacePermissions in SessionData
   - Selected Space in SessionData
-  - CFQSQL partial query, select entries for user
+  - CFWSQL partial query, select entries for user
   
 - Image Upload for Summernote Editor
-- SQL Query Cache Overview (hit statistics?)
 - Truncate too long toasts.
 
 
@@ -98,6 +93,7 @@ DONE
 - Added check for session timeout in browser when user is logged in 
 - Modal: Reset scroll position on close 
 - Prevent auto-fill on autocomplete fields
+- Autocomplete: minimum characters before starting autocomplete(defaults to 3)
 
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message

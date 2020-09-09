@@ -460,10 +460,14 @@ function cfw_updateTimeField(fieldID){
  * Initialize an autocomplete added to a CFWField with setAutocompleteHandler().
  * Can be used to make a static autocomplete using the second parameter.
  * 
- * @param fieldID the name of the field
+ * @param formID the id of the form
+ * @param fieldName the name of the field
+ * @param minChars the minimum amount of chars for triggering the autocomplete
+ * @param maxResults the max number of results listed for the autocomplete
+ * @param array (optional) an array of strings used for the autocomplete
  * @return nothing
  *************************************************************************************/
-function cfw_autocompleteInitialize(formID, fieldName, maxResults, array){
+function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, array){
 		
 	CFW.global.autocompleteFocus = -1;
 	var $input = $("#"+fieldName);
@@ -514,41 +518,44 @@ function cfw_autocompleteInitialize(formID, fieldName, maxResults, array){
 	if(array == null){
 		$input.on('input', function(e) {
 			
-			// use a count and set timeout to wait for the user 
-			// finishing his input before sending a request to the
-			// server. Reduces overhead.
-			var currentCount = ++CFW.global.autocompleteCounter;
-			
-			//----------------------------
-			// Show Loader
-			var loader = $input.parent().find('#autocomplete-loader');
-			if(loader.length == 0){
-				loader = $('<div id="autocomplete-loader"><small><i class="fa fa-cog fa-spin fa-1x"></i><span>&nbsp;Loading...</span></small></div>');
-				$input.after(loader);
-			}
-			
-			//----------------------------
-			// Load Autocomlete
-			setTimeout(
-				function(){
-					
-					if(currentCount != CFW.global.autocompleteCounter){
-						return;
-					}
-					
-					var params = CFW.format.formToParams($input.closest('form'));
-					params.cfwAutocompleteFieldname = fieldName;
-					params.cfwAutocompleteSearchstring = inputField.value;
-					
-					cfw_postJSON('/cfw/autocomplete', params, 
-						function(data) {
-							loader.remove();
-							cfw_autocompleteShow(inputField, data.payload);
-						})
-				},
-				500);
+			// Only do autocomplete if at least N characters are typed			
+			if($input.val().length >= minChars){
+				// use a count and set timeout to wait for the user 
+				// finishing his input before sending a request to the
+				// server. Reduces overhead.
+				var currentCount = ++CFW.global.autocompleteCounter;
 				
+				//----------------------------
+				// Show Loader
+				var loader = $input.parent().find('#autocomplete-loader');
+				if(loader.length == 0){
+					loader = $('<div id="autocomplete-loader"><small><i class="fa fa-cog fa-spin fa-1x"></i><span>&nbsp;Loading...</span></small></div>');
+					$input.after(loader);
+				}
+				
+				//----------------------------
+				// Load Autocomlete
+				setTimeout(
+					function(){
+						
+						if(currentCount != CFW.global.autocompleteCounter){
+							return;
+						}
+						
+						var params = CFW.format.formToParams($input.closest('form'));
+						params.cfwAutocompleteFieldname = fieldName;
+						params.cfwAutocompleteSearchstring = inputField.value;
+						
+						cfw_postJSON('/cfw/autocomplete', params, 
+							function(data) {
+								loader.remove();
+								cfw_autocompleteShow(inputField, data.payload);
+							})
+					},
+					500);
+			}
 		});
+		
 	}
 	
 	//--------------------------------------------------------------

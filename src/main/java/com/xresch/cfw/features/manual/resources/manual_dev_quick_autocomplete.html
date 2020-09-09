@@ -11,9 +11,9 @@ autocomplete fields.
 <h2>Default Autocomplete</h2>
 <p>
 Creates a text field with a default autocomplete handler.
-The CFWAutocompleteHandlerDefault will start searching from a single character. 
 It creates a query on the table searching with a LIKE "%searchValue%" statement through the column of the associated field.
-By default it limits the number of results to 10, what can be adjusted through the constructor or with setMasResults().
+The CFWAutocompleteHandlerDefault will start searching from three characters by default, what can be adjusted through the constructor or with setMinChars(). 
+By default it limits the number of results to 10, what can be adjusted through the constructor or with setMaxResults().
 </p>
 <pre>
 <code>private CFWField&lt;String&gt; title = CFWField.newString(FormFieldType.TEXT, QuoteFields.QUOTE_TITLE)
@@ -27,14 +27,14 @@ By default it limits the number of results to 10, what can be adjusted through t
 <h2>Tags Field As String with Custom Autocomplete</h2>
 <p>
 The following creates a tags field that will convert the tags to a comma separated string of tags.
-It has a custom autocomplete handler that returns a maximum of 5 results.
+It has a custom autocomplete handler that returns a maximum of 5 results and begins autcompleting with 1 character.
 The LinkedHashMap returned will contain the values as "key/label" pairs.
 The default amount of tags you can set is 128.
 </p>
 <pre>
 <code>private CFWField&lt;String&gt; tags = CFWField.newString(FormFieldType.TAGS, "TAGS")
 		.setValue("foo,test,bar,bla")
-		.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
+		.setAutocompleteHandler(new CFWAutocompleteHandler(5, 1) {
 			public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
 				AutocompleteList list = new AutocompleteList();
 				for(int i = 0; i &lt; this.getMaxResults(); i++ ) {

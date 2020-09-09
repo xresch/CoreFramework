@@ -373,7 +373,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 
 			String formID = ((CFWForm)this.parent).getFormID();
 			int maxResults = this.getAutocompleteHandler().getMaxResults();
-			((CFWForm)this.parent).javascript.append("cfw_autocompleteInitialize('"+formID+"','"+name+"',"+maxResults+");\r\n");
+			int minChars = this.getAutocompleteHandler().getMinChars();
+			((CFWForm)this.parent).javascript.append("cfw_autocompleteInitialize('"+formID+"','"+name+"',"+minChars+","+maxResults+");\r\n");
 			
 		}
 		//---------------------------------------------

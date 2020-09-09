@@ -22,6 +22,11 @@ public class CFWAutocompleteHandlerDefault extends CFWAutocompleteHandler {
 		super(maxResults);
 		this.clazz = clazz;
 	}
+	
+	public CFWAutocompleteHandlerDefault(Class<? extends CFWObject> clazz, int maxResults, int minChars) {
+		super(maxResults, minChars);
+		this.clazz = clazz;
+	}
 	@Override
 	public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue)  {
 		
