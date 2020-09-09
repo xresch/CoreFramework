@@ -140,13 +140,20 @@
 			<version>${prometheusVersion}</version>
 		</dependency>
 
-
 		<!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.200</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.onelogin/java-saml -->
+		<dependency>
+			<groupId>com.onelogin</groupId>
+			<artifactId>java-saml</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+
 
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<dependency>
