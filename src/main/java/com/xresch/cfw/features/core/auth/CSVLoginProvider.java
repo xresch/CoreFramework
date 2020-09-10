@@ -12,7 +12,7 @@ import com.xresch.cfw.logging.CFWLog;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class CSVLoginProvider implements LoginProvider {
+public class CSVLoginProvider implements LoginProviderInterface {
 	
 	private static Logger logger = CFWLog.getLogger(ServletLogin.class.getName());
 	private static HashMap<String, String> userCredentials = null;

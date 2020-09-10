@@ -19,7 +19,7 @@ import com.xresch.cfw.features.usermgmt.User.UserFields;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class LDAPLoginProvider implements LoginProvider {
+public class LDAPLoginProvider implements LoginProviderInterface {
 
 	@Override
 	public User checkCredentials(String username, String password) {
@@ -119,49 +119,8 @@ public class LDAPLoginProvider implements LoginProvider {
 		    	
 		    	//------------------------------
 		    	// Create User in DB if not exists
-		    	User userFromDB = null;
-		    	if(!CFW.DB.Users.checkUsernameExists(username)) {
-
-			    	User newUser = new User(username)
-							.isForeign(true)
-							.status("Active")
-							.email(emailString)
-							.firstname(firstnameString)
-							.lastname(lastnameString);
-
-					CFW.DB.Users.create(newUser);
-					userFromDB = CFW.DB.Users.selectByUsernameOrMail(username);
-					
-					CFW.DB.UserRoleMap.addUserToRole(userFromDB, CFW.DB.Roles.CFW_ROLE_USER, true);
-		    	}else{
-		    		userFromDB = CFW.DB.Users.selectByUsernameOrMail(username);
-		    		
-		    		//-----------------------------
-		    		// Update mail if necessary
-		    		if( (mail != null && userFromDB.email() == null)
-		    		 || (mail != null && !userFromDB.email().equals(mail.get(0)) ) ) {
-		    			userFromDB.email(emailString);
-		    			userFromDB.update(UserFields.EMAIL.toString());
-		    		}
-		    		
-		    		//-----------------------------
-		    		// Update firstname if necessary
-		    		if( (firstname != null && userFromDB.firstname() == null)
-		    		 || (firstname != null && !userFromDB.firstname().equals(firstname.get(0)) ) ) {
-		    			userFromDB.firstname(firstnameString);
-		    			userFromDB.update(UserFields.FIRSTNAME.toString());
-		    		}
-		    		
-		    		//-----------------------------
-		    		// Update lastname if necessary
-		    		if( (lastname != null && userFromDB.lastname() == null)
-		    		 || (lastname != null && !userFromDB.lastname().equals(lastname.get(0)) ) ) {
-		    			userFromDB.lastname(lastnameString);
-		    			userFromDB.update(UserFields.LASTNAME.toString());
-		    		}
-		    	}
-		    	
-				return userFromDB;
+		    	User user = LoginUtils.fetchUserCreateIfNotExists(username, emailString, firstnameString, lastnameString);
+		    	return user;
 		    }else {
 		    	return null;
 		    }

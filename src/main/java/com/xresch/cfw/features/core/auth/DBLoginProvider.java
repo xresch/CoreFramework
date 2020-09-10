@@ -8,7 +8,7 @@ import com.xresch.cfw.features.usermgmt.User;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class DBLoginProvider implements LoginProvider {
+public class DBLoginProvider implements LoginProviderInterface {
 	
 	@Override
 	public User checkCredentials(String username, String password) {

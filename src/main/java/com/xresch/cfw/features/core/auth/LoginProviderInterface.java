@@ -7,7 +7,7 @@ import com.xresch.cfw.features.usermgmt.User;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public interface LoginProvider {
+public interface LoginProviderInterface {
 
 	/******************************************************************************
 	 * Check if the username password exists and has to return a User object which

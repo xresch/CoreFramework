@@ -69,7 +69,7 @@ public class ServletLogin extends HttpServlet
 		// Get Credentials
 		String username = request.getParameter("username");
 		String password = request.getParameter("password");
-		String url = request.getParameter("url");
+
 		
 		//--------------------------
 		// Check authorization
@@ -80,29 +80,18 @@ public class ServletLogin extends HttpServlet
 			return; 
 			
 		}else {
-			User user = LoginFacade.getInstance().checkCredentials(username, password);
+			User user = LoginUtils.checkCredentials(username, password);
 			
-			
-			if(user != null 
-			&& user.status() != null 
-			&& user.status().toUpperCase().equals("ACTIVE")) {
-				//Login success
-				SessionData data = CFW.Context.Request.getSessionData(); 
-				data.resetUser();
-				data.setUser(user);
-				data.triggerLogin();
-				
-				if(url == null || url.isEmpty()) {
-					url = CFW.Context.App.getApp().getDefaultURL();
-				}
-				CFW.HTTP.redirectToURL(response, url);
-				return; 
-			}	
+			String redirectTo = request.getParameter("url"); 
+			boolean loginSuccess = LoginUtils.loginUserAndCreateSession(request, response, user, redirectTo);
+			if(!loginSuccess) {
+				//Login Failure
+				createLoginPage(request, response);
+				CFWContextRequest.addAlertMessage(MessageType.ERROR, "Username or password invalid.");
+			}
 		}
 		
-		//Login Failure
-		createLoginPage(request, response);
-		CFWContextRequest.addAlertMessage(MessageType.ERROR, "Username or password invalid.");
+		
 
 	}
 }

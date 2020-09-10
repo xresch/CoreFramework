@@ -1,8 +1,7 @@
 package com.xresch.cfw.features.core.auth;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Properties;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -11,11 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.onelogin.saml2.Auth;
-import com.onelogin.saml2.exception.Error;
 import com.onelogin.saml2.settings.Saml2Settings;
-import com.onelogin.saml2.settings.SettingsBuilder;
-import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.PlaintextResponse;
 
 /**************************************************************************************************************
  * The first servlet to call for the SAML authentication.
@@ -24,12 +21,12 @@ import com.xresch.cfw.logging.CFWLog;
  * @author Reto Scheiwiller, (c) Copyright 2020
  * @license MIT-License
  **************************************************************************************************************/
-public class ServletSAML2Login extends HttpServlet
+public class ServletSAML2Metadata extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static Logger logger = CFWLog.getLogger(ServletSAML2Login.class.getName());
+	private static Logger logger = CFWLog.getLogger(ServletSAML2Metadata.class.getName());
 		
 	/*****************************************************************
 	 *
@@ -45,21 +42,33 @@ public class ServletSAML2Login extends HttpServlet
 	 ******************************************************************/
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
+				
 		try {
+
 			//------------------------------------
-			// Create Auth and Login
+			// Create Auth 
 			Saml2Settings settings = ServletSAML2Utils.getSAMLSettings();
 			Auth auth = new Auth(settings, request, response);
+			settings = auth.getSettings();
+			settings.setSPValidationOnly(true);
+			String metadata = settings.getSPMetadata();
 			
-			String redirectToURL = request.getParameter("url");
-			
-			if(redirectToURL != null) {
-				auth.login(redirectToURL);
-			}else {
-				auth.login(CFW.Context.App.getApp().getDefaultURL());
+			//------------------------------------
+			// Create Response
+			List<String> errors = Saml2Settings.validateMetadata(metadata);
+			if (errors.isEmpty()) {
+				response.setContentType("text/xml; charset=UTF-8");
+				PlaintextResponse plaintext = new PlaintextResponse();
+				plaintext.getContent().append(metadata);
+			} else {
+				response.setContentType("text/html; charset=UTF-8");
+				PlaintextResponse plaintext = new PlaintextResponse();
+				plaintext.getContent().append(metadata);
+				for (String error : errors) {
+					plaintext.getContent().append("<p>"+error+"</p>");
+				}
 			}
-			//auth.login(request.getContextPath() + "/redirect_servlet");
+
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

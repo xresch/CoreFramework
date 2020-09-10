@@ -9,11 +9,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWContextRequest;
 import com.xresch.cfw._main.SessionData;
-import com.xresch.cfw.features.core.auth.LoginFacade;
+import com.xresch.cfw.features.core.auth.LoginUtils;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.PlaintextResponse;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 
 /**************************************************************************************************************
@@ -59,7 +61,7 @@ public class ServletAPILogin extends HttpServlet
 			return; 
 			
 		}else {
-			User user = LoginFacade.getInstance().checkCredentials(username, password);
+			User user = LoginUtils.checkCredentials(username, password);
 			
 			if(user != null) {
 				

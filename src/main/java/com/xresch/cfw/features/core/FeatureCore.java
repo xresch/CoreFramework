@@ -14,6 +14,9 @@ import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.core.auth.ServletChangePassword;
 import com.xresch.cfw.features.core.auth.ServletLogin;
 import com.xresch.cfw.features.core.auth.ServletLogout;
+import com.xresch.cfw.features.core.auth.ServletSAML2AssertionConsumerService;
+import com.xresch.cfw.features.core.auth.ServletSAML2Login;
+import com.xresch.cfw.features.core.auth.ServletSAML2Metadata;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
@@ -104,6 +107,12 @@ public class FeatureCore extends CFWAppFeature {
 	    if(CFWProperties.AUTHENTICATION_ENABLED) {
 	    	app.addAppServlet(ServletLogin.class, "/login");
 	        app.addAppServlet(ServletLogout.class,  "/logout");
+	        
+	        if(CFWProperties.AUTHENTICATION_SAML2_ENABLED) {
+	        	app.addUnsecureServlet(ServletSAML2Metadata.class,	"/cfw/saml2/metadata");
+	        	app.addUnsecureServlet(ServletSAML2Login.class,	"/cfw/saml2/login");
+	        	app.addUnsecureServlet(ServletSAML2AssertionConsumerService.class,	"/cfw/saml2/acs");
+	        }
 	    }
 	  
 		//-----------------------------------------
