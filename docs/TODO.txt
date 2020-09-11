@@ -76,7 +76,7 @@ TODO
 - Create Record Requests / Replay for Performance Tests
 
 - Custom Error page CFW.App.createErrorHandler();
-- OpenSAML Authentication
+
 
 DONE
 ====
@@ -94,6 +94,8 @@ DONE
 - Modal: Reset scroll position on close 
 - Prevent auto-fill on autocomplete fields
 - Autocomplete: minimum characters before starting autocomplete(defaults to 3)
+- Added support for SSO based on SAML
+- Added SLF4J Service Provider to pickup logs from frameworks
 
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message

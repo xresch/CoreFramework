@@ -18,6 +18,7 @@ import com.onelogin.saml2.exception.SettingsException;
 import com.onelogin.saml2.servlet.ServletUtils;
 import com.onelogin.saml2.settings.Saml2Settings;
 import com.onelogin.saml2.settings.SettingsBuilder;
+import com.onelogin.saml2.util.Constants;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
@@ -87,21 +88,29 @@ public class ServletSAML2AssertionConsumerService extends HttpServlet
 				}
 				
 				new CFWLog(logger)
-				.custom("nameId", nameId)
-				.custom("nameIdFormat", nameIdFormat)
-				.custom("sessionIndex", sessionIndex)
-				.custom("nameidNameQualifier", nameidNameQualifier)
-				.custom("nameidSPNameQualifier", nameidSPNameQualifier)
-				.custom("attributes", attributes.toString())
-				.severe("SAML Login Error");
+					.custom("nameId", nameId)
+					.custom("nameIdFormat", nameIdFormat)
+					.custom("sessionIndex", sessionIndex)
+					.custom("nameidNameQualifier", nameidNameQualifier)
+					.custom("nameidSPNameQualifier", nameidSPNameQualifier)
+					.custom("attributes", attributes.toString())
+					.severe("SAML Login Error");
 				
 				return;
 			}
 
-
+			
 			//------------------------------------
 			// Do Login User
-			User user = LoginUtils.fetchUserCreateIfNotExists(nameId, null, null, null);
+			User user;
+			if(nameIdFormat.contentEquals(Constants.NAMEID_EMAIL_ADDRESS)) {
+				String eMail = nameId;
+				nameId = nameId.split("@")[0];
+				user = LoginUtils.fetchUserCreateIfNotExists(nameId, eMail, null, null);
+			}else {
+				user = LoginUtils.fetchUserCreateIfNotExists(nameId, null, null, null);
+			}
+			
 			
 			new CFWLog(logger)
 				.custom("nameId", nameId)
@@ -111,9 +120,10 @@ public class ServletSAML2AssertionConsumerService extends HttpServlet
 				.custom("nameidSPNameQualifier", nameidSPNameQualifier)
 				.custom("attributes", attributes.toString())
 				.finer("SAML Login Success");
-							
+					
+			
 			String redirectTo = request.getParameter("RelayState");
-
+			
 			if (redirectTo == null 
 			|| redirectTo.isEmpty() 
 			|| redirectTo.equals(ServletUtils.getSelfRoutedURLNoQuery(request)) 
@@ -125,7 +135,6 @@ public class ServletSAML2AssertionConsumerService extends HttpServlet
 	    	// Create User in DB if not exists
 	    	LoginUtils.loginUserAndCreateSession(request, response, user, redirectTo);
 
-			
 		} catch (SettingsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

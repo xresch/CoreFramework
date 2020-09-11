@@ -57,16 +57,26 @@ public class CFWLog {
 			StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
 			StackTraceElement cfwLogInstantiatingMethod = stacktrace[2];
 			sourceMethod = cfwLogInstantiatingMethod.getMethodName();
+			sourceClass = cfwLogInstantiatingMethod.getClassName();
 		}
 		
 	}
 	
 	/***********************************************************************
-	 * Change the auto detected method to a custom value.
+	 * Change the auto detected source method to a custom value.
 	 ***********************************************************************/
 	public CFWLog method(String method){
 		
 		this.sourceMethod = method;
+		return this;
+	}
+	
+	/***********************************************************************
+	 * Change the auto detected source class to a custom value.
+	 ***********************************************************************/
+	public CFWLog clazz(String clazz){
+		
+		this.sourceClass = clazz;
 		return this;
 	}
 	
@@ -240,7 +250,7 @@ public class CFWLog {
 				durationMillis = (endtimeNanos - starttimeNanos) / 1000000;
 			}
 			
-			this.sourceClass = logger.getName();
+			//this.sourceClass = logger.getName();
 			
 			//-------------------------
 			// Handle Throwable
