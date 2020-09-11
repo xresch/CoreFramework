@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import com.onelogin.saml2.settings.Saml2Settings;
 import com.onelogin.saml2.settings.SettingsBuilder;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -32,7 +33,8 @@ public class ServletSAML2Utils
 		// Create Auth and Login
 		SettingsBuilder builder = new SettingsBuilder();
 		Properties props = new Properties();
-		props.load(new FileInputStream("./config/saml.properties"));
+		props.load(new FileInputStream(CFW.Properties.AUTHENTICATION_SAML2_CONFIGFILE));
+		
 		settings = builder.fromProperties(props).build();
 		
 		return settings;

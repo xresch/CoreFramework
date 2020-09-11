@@ -91,6 +91,9 @@ public class CFWProperties {
 	/** Enables or disables the SSO SAML2 feature. (Property=cfw_authentication_saml2_enabled, Default="false") */
 	public static boolean AUTHENTICATION_SAML2_ENABLED = false;
 	
+	/** The path to the saml.properties file. (Property=cfw_authentication_saml2_configfile, Default="./config/SAML/saml2.properties") */
+	public static String AUTHENTICATION_SAML2_CONFIGFILE = "./config/SAML/saml2.properties";
+	
 	/** The authentication method which should be used. (Property=authentication_method, Default="csv") */
 	public static String AUTHENTICATION_METHOD = "csv";
 	
@@ -214,7 +217,8 @@ public class CFWProperties {
 		AUTHENTICATION_METHOD 			= CFWProperties.configAsString("authentication_method", AUTHENTICATION_METHOD);
 		AUTHENTICATION_ENABLED 			= CFWProperties.configAsBoolean("cfw_authentication_enabled", AUTHENTICATION_ENABLED);
 		AUTHENTICATION_SAML2_ENABLED 	= CFWProperties.configAsBoolean("cfw_authentication_saml2_enabled", AUTHENTICATION_SAML2_ENABLED);
-
+		AUTHENTICATION_SAML2_CONFIGFILE = CFWProperties.configAsString("cfw_authentication_saml2_configfile", AUTHENTICATION_SAML2_CONFIGFILE);
+		
 		AUTHENTICATION_CSV_FILE			= CFWProperties.configAsString("authentication_csv_file", AUTHENTICATION_CSV_FILE);
 		
 		LDAP_URL 						= CFWProperties.configAsString("authentication_ldap_url", LDAP_URL);
