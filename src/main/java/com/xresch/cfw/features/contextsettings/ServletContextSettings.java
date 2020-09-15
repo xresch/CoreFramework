@@ -197,15 +197,17 @@ public class ServletContextSettings extends HttpServlet
 						
 						boolean areFieldsValid = settings.mapRequestParameters(request);
 						
-						//--------------------------------
-						// Create instance for type
-						CFWObject typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(type);
-						
-						if(typeSettings.mapRequestParameters(request) && areFieldsValid) {
-							settings.settings(typeSettings.toJSONEncrypted());
-	
-							if( CFW.DB.ContextSettings.createGetPrimaryKey(settings) != null ) {
-								CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Context Settings created successfully!");
+						if(areFieldsValid) {
+							//--------------------------------
+							// Create instance for type
+							CFWObject typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(type);
+							
+							if(typeSettings.mapRequestParameters(request) && areFieldsValid) {
+								settings.settings(typeSettings.toJSONEncrypted());
+		
+								if( CFW.DB.ContextSettings.createGetPrimaryKey(settings) != null ) {
+									CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Context Settings created successfully!");
+								}
 							}
 						}
 					}

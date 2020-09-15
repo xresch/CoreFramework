@@ -5,10 +5,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.PrecheckHandler;
+import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.contextsettings.ContextSettings.ContextSettingsFields;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -82,6 +84,7 @@ public class CFWDBContextSettings {
 		}
 	};
 		
+	
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
@@ -107,6 +110,26 @@ public class CFWDBContextSettings {
 			clearCache();
 		}
 		return primaryKey;
+	}
+	
+	/********************************************************************************************
+	 * Creates a new configuration in the DB if the name was not already given.
+	 * All newly created permissions are by default assigned to the Superuser Role.
+	 * 
+	 * @param settings with the values that should be inserted. ID will be set by the Database.
+	 * @return nothing
+	 * 
+	 ********************************************************************************************/
+	public static void oneTimeCreate(ContextSettings settings) {
+		
+		if(settings == null || Strings.isNullOrEmpty(settings.name()) ) {
+			return;
+		}
+
+		if(!CFW.DB.ContextSettings.checkExists(settings)) {
+			CFW.DB.ContextSettings.createGetPrimaryKey(settings);
+		}
+
 	}
 	
 	//####################################################################################################

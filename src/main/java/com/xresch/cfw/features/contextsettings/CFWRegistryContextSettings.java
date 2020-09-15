@@ -21,7 +21,7 @@ public class CFWRegistryContextSettings {
 	 * Adds a CFWObject class to the registry.
 	 * @param objectClass
 	 ***********************************************************************/
-	public static void register(String type, Class<? extends AbstractContextSettings> environmentClass)  {
+	public static void register(String type, Class<? extends AbstractContextSettings> environmentClass)  {		
 		contextSettings.put(type, environmentClass);
 	}
 	
