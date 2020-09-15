@@ -1,30 +1,63 @@
+<div id="manual-toc"></div>
+
 <h2>cfw.js</h2>
 <p>
 The javascript cfw.js is the client side framework of the Core Framework. It contains helper function and functions to handle the UI.<br/>
-The following functions are the most important: 
+The following functions are the most important.
+</p>
+
+<h3>Sending GET and POST Requests</h3>
+<p>
+Use the following methods to send GET or POST requests. 
+These methods will automatically display toast messages created on server side with CFW.Context.Request.addAlertMessage() or with logs of level WARN or SEVERE. 
 </p>
 <pre>
-<code>// use CFWL for fetching localization properties added on server side with CFW.Localization.registerLocaleFile()
-CFWL('cfw_example_porperty', 'Default Value')
-
-// Send a get request and displays toast messages created on server side with CFW.Context.Request.addAlertMessage(); 
+<code class="javascript">// Send a get request and displays toast messages created on server side with CFW.Context.Request.addAlertMessage(); 
 CFW.http.getJSON('/your/servlet', params, function(data) { /*do something*/ })
 
 // Send a post request and displays toast messages created on server side with CFW.Context.Request.addAlertMessage(); 
-CFW.http.postJSON('/your/servlet', params, function(data) { /*do something*/ })
+CFW.http.postJSON('/your/servlet', params, function(data) { /*do something*/ })</code>
+</pre>
 
-//Get a form that was already created on server side using new BTForm() or methods like CFWObject.toForm()
+
+
+<h3>Get and Create Forms</h3>
+<p>
+These two methods are useful to load html forms created with the CFWForm class from the server side.
+</p>
+<pre>
+<code class="javascript">//Get a form that was already created on server side using new BTForm() or methods like CFWObject.toForm()
 CFW.http.getForm('formName', targetElement);
 
 //Use this method when you have to create a new Form on server side. 
-CFW.http.createForm('/your/servlet', {action: "getform", item: "edituser", id: userID}, targetElement);
+CFW.http.createForm('/your/servlet', {action: "getform", item: "edituser", id: userID}, targetElement);</code>
+</pre>
+
+
+
+<h3>Modal Panels</h3>
+<p>
+The following methods can be used to show modal panels.
+</p>
+<pre>
+<code class="javascript">//Show a modal panel. Last param is either a function or a string with javascript code.
+CFW.ui.showModal("Your Modal Title", modalBodyContent, "onClose();");
 
 //Show a modal panel. Last param is either a function or a string with javascript code.
-CFW.ui.showModal("Your Modal Title", modalBodyContent, "onClose();");
+CFW.ui.showSmallModal("Your Modal Title", modalBodyContent, "onClose();");
 
 //Show a modal panel to confirm an action. Last param is either a function or a string with javascript code.
 CFW.ui.confirmExecute('Do you really want to remove the item?', 'Remove', "removeItem("+itemID+")" );
+</code>
+</pre>
 
+
+<h3>Toast Messages</h3>
+<p>
+Here the methods to show toast messages.
+</p>
+<pre>
+<code class="javascript">
 //Add Default Toast messages
 CFW.ui.addToastInfo('Here is an info.');
 CFW.ui.addToastSuccess('That worked!');
@@ -33,18 +66,35 @@ CFW.ui.addToastDanger('Something went wrong.');
 
 //Add Custom Toast messages
 CFW.ui.addToast(toastTitle, toastBody, style, delay);
-
-//Check if the logged in user has a permission
-CFW.hasPermission("Permission Name")
-
 </code>
 </pre>
 
+<h3>Localization</h3>
+<p>
+Use the function CFWL() for fetching localization properties added on server side with CFW.Localization.registerLocaleFile().
+</p>
+<pre>
+<code class="javascript">CFWL('cfw_example_porperty', 'Default Value')</code>
+</pre>
+
+<h3>Checking Permissions</h3>
+<p>
+If you want to adjust your user interface based on user permissions, you can use the following method.
+</p>
+<pre>
+<code class="javascript">
+//Check if the logged in user has a specific permission
+CFW.hasPermission("Permission Name")
+</code>
+</pre>
+
+
+<h3>All available methods</h3>
 <p>
 You can get an overview of all available functions in the cfw.js file, where the variable "CFW" is initialized:
 </p>
 <pre>
-<code>var CFWL = cfw_lang;
+<code class="javascript">var CFWL = cfw_lang;
 var CFW = {
 	render: {
 		registry: {},
@@ -122,7 +172,7 @@ Currently the following renderers are provided:
 To use a renderer:
 </p>
 <pre>
-<code>var tableRenderer = CFW.render.getRenderer('table');
+<code class="javascript">var tableRenderer = CFW.render.getRenderer('table');
 var cfwTable = tableRenderer.render(dataToRender);</code>
 </pre>
 
@@ -130,7 +180,7 @@ var cfwTable = tableRenderer.render(dataToRender);</code>
 To register a new renderer do the following:
 </p>
 <pre>
-<code>CFW.render.registerRenderer("rendererName",
+<code class="javascript">CFW.render.registerRenderer("rendererName",
 	new CFWRenderer(
 		function (renderDefinition) {
 			//Your code
@@ -138,6 +188,7 @@ To register a new renderer do the following:
 		});
 );</code>
 </pre>
+
 
 <h2>cfw_components.js</h2>
 <p>
