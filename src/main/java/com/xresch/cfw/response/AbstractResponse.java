@@ -41,8 +41,8 @@ public abstract class AbstractResponse {
 		return this.useGlobaleLocale;
 	}
 	
-	public void useGlobaleLocale(boolean useGlobaleLocale) {
-		this.useGlobaleLocale = useGlobaleLocale;
+	public void useGlobalLocale(boolean useGlobalLocale) {
+		this.useGlobaleLocale = useGlobalLocale;
 	}
 	
 	

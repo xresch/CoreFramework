@@ -38,7 +38,7 @@ public class ServletFormHandler extends HttpServlet
 		CFWForm form = CFW.Context.Session.getForm(id);
 		
     	JSONResponse json = new JSONResponse();
-    	json.useGlobaleLocale(true);
+    	json.useGlobalLocale(true);
     	
     	if(form == null) {
     		json.setSuccess(false);
@@ -78,15 +78,16 @@ public class ServletFormHandler extends HttpServlet
     	CFWForm form = CFW.Context.Session.getForm(formID);
     	
     	JSONResponse json = new JSONResponse();
-    	json.useGlobaleLocale(true);
+    	json.useGlobalLocale(true);
     	
     	if(form == null) {
     		json.setSuccess(false);
     		new CFWLog(logger)
-	    		.severe("The form with ID '"+formID+"' could not be found.");
+	    		.severe("The form with ID '"+formID+"' could not be found. Please refresh the page and try again.");
     		return;
     	}
     	    	
     	form.getFormHandler().handleForm(request, response, form, form.getOrigin());
+    	
 	}
 }

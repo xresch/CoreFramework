@@ -343,10 +343,11 @@ public class CFWObject {
 		StringBuilder builder = new StringBuilder();
 		
 		for(CFWField<?> field : fields.values()) {
-			builder.append("<br/>")
-			.append(field.getName())
-			.append(": ")
-			.append(field.getValue());
+			builder
+				.append(field.getName())
+				.append(": ")
+				.append(field.getValue())
+				.append("<br/>");
 		}
 
 		return builder.toString();

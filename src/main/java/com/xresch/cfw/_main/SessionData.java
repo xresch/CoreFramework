@@ -64,7 +64,11 @@ public class SessionData implements Serializable {
 	}
 	
 	public void triggerLogout() {
+		
 		isLoggedIn = false;
+		userRoles.clear();
+		userPermissions.clear();
+		formCache.invalidateAll();
 		
 		menu = CFW.Registry.Components.createMenuInstance(false);
 		footer = CFW.Registry.Components.createDefaultFooterInstance();
