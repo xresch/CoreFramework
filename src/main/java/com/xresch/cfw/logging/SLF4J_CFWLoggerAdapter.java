@@ -180,11 +180,11 @@ public final class SLF4J_CFWLoggerAdapter extends LegacyAbstractLogger implement
 	}
 
 	
-	/**
+	/*******************************************************************
 	 * Fill in caller data if possible.
 	 * 
 	 * @param cfwLog The record to update
-	 */
+	 *******************************************************************/
 	final private void fillCallerData(String callerFQCN, CFWLog cfwLog) {
 		StackTraceElement[] steArray = new Throwable().getStackTrace();
 
@@ -215,7 +215,7 @@ public final class SLF4J_CFWLoggerAdapter extends LegacyAbstractLogger implement
 			cfwLog.method(ste.getMethodName());
 		}
 	}
-
+	
 	static String SELF = SLF4J_CFWLoggerAdapter.class.getName();
 	
 	static String SUPER = LegacyAbstractLogger.class.getName();

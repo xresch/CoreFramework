@@ -1294,7 +1294,7 @@ function cfw_addToast(toastTitle, toastBody, style, delay){
 	var toastHTML = '<div class="toast bg-'+clazz+' text-light" role="alert" aria-live="assertive" aria-atomic="true" data-animation="true" '+autohide+'>'
 			+ '  <div class="toast-header bg-'+clazz+' text-light">'
 			//+ '	<img class="rounded mr-2" alt="...">'
-			+ '	<strong class="mr-auto">'+toastTitle+'</strong>'
+			+ '	<strong class="mr-auto word-break-word">'+toastTitle+'</strong>'
 			//+ '	<small class="text-muted">just now</small>'
 			+ '	<button type="button" class="ml-2 mb-auto close" data-dismiss="toast" aria-label="Close">'
 			+ '	  <span aria-hidden="true">&times;</span>'

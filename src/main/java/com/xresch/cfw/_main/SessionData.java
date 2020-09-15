@@ -31,6 +31,7 @@ public class SessionData implements Serializable {
 	private boolean isLoggedIn = false;
 
 	private User user = null;
+	private String sessionID = null;
 	private HashMap<Integer, Role> userRoles = new HashMap<>();
 	private HashMap<String, Permission> userPermissions = new HashMap<>();
 	
@@ -48,6 +49,7 @@ public class SessionData implements Serializable {
 	private BTFooter footer;
 	
 	public SessionData(String sessionID) {
+		this.sessionID = sessionID;
 		menu = CFW.Registry.Components.createMenuInstance(false);
 		footer = CFW.Registry.Components.createDefaultFooterInstance();
 		
@@ -78,6 +80,10 @@ public class SessionData implements Serializable {
 	public boolean isLoggedIn() {
 		return isLoggedIn;
 	}
+	
+	public String getSessionID() {
+		return sessionID;
+	}
 		
 	public User getUser() {
 		return user;
@@ -94,8 +100,6 @@ public class SessionData implements Serializable {
 	public void resetUser() {
 		user = null;
 	}
-	
-	
 	
 	public HashMap<Integer, Role> getUserRoles() {
 		return userRoles;

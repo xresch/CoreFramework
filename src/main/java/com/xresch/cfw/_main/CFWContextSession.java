@@ -26,5 +26,10 @@ public class CFWContextSession {
 	public static Collection<CFWForm> getForms() {
 		return CFW.Context.Request.getSessionData().getForms();
 	}
+	
+	public static String getSessionID() {
+		SessionData data =  CFW.Context.Request.getSessionData();
+		return (data == null) ? null : data.getSessionID();
+	}
 
 }

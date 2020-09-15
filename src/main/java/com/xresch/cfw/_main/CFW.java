@@ -164,10 +164,9 @@ public class CFW {
 	
 	/***********************************************************************
 	 * Searches all classes annotated with @CFWExtentionApplication and 
-	 * returns an instance of the first finding.
+	 * returns an instance of the first finding or an empty default application.
 	 * 
 	 ***********************************************************************/
-	@SuppressWarnings("unchecked")
 	public static CFWAppInterface loadExtentionApplication() {
 		
 //       Reflections reflections = new Reflections(new ConfigurationBuilder()
@@ -227,6 +226,20 @@ public class CFW {
 	 ***********************************************************************/
 	public static void initializeApp(CFWAppInterface appToStart, String[] args) throws Exception {
 		
+	   	//------------------------------------
+	   	// Create empty Default if null
+		if(appToStart == null) {
+	   		appToStart = new CFWAppInterface() {
+	   			@Override public void settings() { CFW.AppSettings.setEnableDashboarding(true); }
+					@Override public void startApp(CFWApplicationExecutor executor) { executor.setDefaultURL("/dashboard/list", true); }
+					@Override public void register() { /* Do nothing */ }
+					@Override public void initializeDB() { /* Do nothing */ }
+					@Override public void startTasks() { /* Do nothing */ }
+					@Override public void stopApp() { /* Do nothing */ }
+				};
+			
+			new CFWLog(logger).warn("Application to start is null, using default empty application.");
+		}
 	    //--------------------------------
 	    // Initialize Core
 		CFW.initializeCore(args);

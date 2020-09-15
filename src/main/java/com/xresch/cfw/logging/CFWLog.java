@@ -275,12 +275,14 @@ public class CFWLog {
 			// Handle Request
 			//-------------------------
 			request = CFW.Context.Request.getRequest();
+			
 			if(request != null){
 
 				this.webURL = request.getRequestURI();
 				this.requestID = (String)request.getAttribute(CFW.REQUEST_ATTR_ID);
 				this.queryString = request.getQueryString();
-				this.sessionID = request.getSession().getId();
+				// Get session id from context, as following might create a StackOverflow on log level FINE: request.getSession().getId();
+				this.sessionID = CFW.Context.Session.getSessionID();
 				
 				if(CFWProperties.AUTHENTICATION_ENABLED) {
 					SessionData data = CFW.Context.Request.getSessionData(); 

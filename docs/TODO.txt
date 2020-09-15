@@ -97,6 +97,7 @@ DONE
 - Added support for SSO based on SAML
 - Added SLF4J Service Provider to pickup logs from frameworks
 - Fixed menus requiring permissions still showing after logout
+- Fixed ContextSettings created with invalid field values
 
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message

@@ -318,7 +318,7 @@ public class CFWDBContextSettings {
 	
 	public static boolean checkExistsIgnoreCurrent(Integer currentID, String type, String name) {	
 		int count = new ContextSettings()
-				.queryCache(CFWDBContextSettings.class, "checkExists")
+				.queryCache(CFWDBContextSettings.class, "checkExistsIgnoreCurrent")
 				.selectCount()
 				.where(ContextSettingsFields.CFW_CTXSETTINGS_TYPE, type)
 				.and(ContextSettingsFields.CFW_CTXSETTINGS_NAME, name)
