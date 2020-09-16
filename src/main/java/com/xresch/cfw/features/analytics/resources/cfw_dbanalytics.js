@@ -106,7 +106,7 @@ function cfw_dbanalytics_draw(){
 		parent.append('<h2>Actions</h2>');
 		parent.append(
 			'<p>'
-				+ '<a class="btn btn-sm btn-primary" onclick="cfw_dbanalytics_createDatabaseSnapshot();"><i class="fas fa-camera-retro mr-2"></i>Create Database Snapshot</a>'
+				+ '<a href="#" class="btn btn-sm btn-primary" onclick="cfw_dbanalytics_createDatabaseSnapshot();"><i class="fas fa-camera-retro mr-2"></i>Create Database Snapshot</a>'
 			+'</p>'
 		);
 		
