@@ -189,14 +189,6 @@
 			<version>2.0.0-alpha1</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-jdk14 -->
-		<!--  dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-			<version>2.0.0-alpha1</version>
-		</dependency -->
-
-
 
 		<!-- ========================================================================== -->
 		<!-- ============================ SCOPE: TESTING ============================== -->
@@ -245,6 +237,9 @@
 				<excludes>
 					<exclude>**/*.java</exclude>
 				</excludes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
 			</resource>
 		</resources>
 
@@ -326,6 +321,23 @@
 				<version>2.0.0</version>
 			</plugin>
 
+			<!-- ================= DEPENDENCY ================== -->
+			<!--  plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<excludeScope>provided</excludeScope>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin -->
+			
 			<!-- ================= ASSEMBLY ================== -->
 			<!-- mvn clean compile assembly:single -->
 			<plugin>
