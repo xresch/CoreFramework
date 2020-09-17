@@ -49,7 +49,7 @@ public class ServletConfiguration extends HttpServlet
 			//--------------------------
 			// Add Form
 			content.append("<h1>Configuration Management</h1>");
-			
+			content.append("<p>Here you can adjust the application configuration. Changes will affect the overall application behavior and therefore all users(e.g. Look and Feel settings). </p>");
 			CFWForm configForm = createConfigForm();
 			content.append(configForm.getHTML());
 			

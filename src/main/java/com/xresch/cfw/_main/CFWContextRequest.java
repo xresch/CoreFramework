@@ -25,6 +25,7 @@ public class CFWContextRequest {
 	
 	private static InheritableThreadLocal<HttpServletRequest> httpRequest = new InheritableThreadLocal<>();
 	private static InheritableThreadLocal<HttpServletResponse> httpResponse = new InheritableThreadLocal<>();
+	private static InheritableThreadLocal<Long> requestStartNanos = new InheritableThreadLocal<>();;
 	
 	private static InheritableThreadLocal<AbstractResponse> responseContent = new InheritableThreadLocal<>();
 	private static InheritableThreadLocal<SessionData> sessionData = new InheritableThreadLocal<>();
@@ -48,6 +49,14 @@ public class CFWContextRequest {
 
 	public static void setRequest(HttpServletRequest request) {
 		CFWContextRequest.httpRequest.set(request);
+	}
+	
+	public static long getRequestStartNanos() {
+		return requestStartNanos.get();
+	}
+
+	public static void setRequestStartNanos(long value) {
+		CFWContextRequest.requestStartNanos.set(value);
 	}
 	
 	public static AbstractResponse getResponse() {

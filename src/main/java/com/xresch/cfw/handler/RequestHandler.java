@@ -43,35 +43,19 @@ public class RequestHandler extends HandlerWrapper
     	//##################################
     	// Initialize
     	//##################################
-    	CFWLog log = new CFWLog(logger);
+    	
+		// Used to calculate deltaStart by OMLogger.log()
+    	// minus 1ms to be always first
+    	long startNanos = System.nanoTime()-1000000;
+    	CFW.Context.Request.setRequestStartNanos(startNanos);
+    	
+    	CFWLog log = new CFWLog(logger).start(startNanos);
     	
     	CFW.Context.Request.setRequest(request);
     	CFW.Context.Request.setHttpServletResponse(response);
     	
-    	// Used to calculate deltaStart by OMLogger.log()
-    	// minus 1ms to be always first
-    	
-    	String startNanosHeader = request.getHeader(CFW.REQUEST_ATTR_STARTNANOS);
-    	long startNanos = -1;
-    	
-    	if(startNanosHeader != null){
-	    	try{
-	    		startNanos = Long.parseLong(startNanosHeader);
-	    		log.start();
-	    		
-	    	}catch(Exception e){
-	    		startNanos = System.nanoTime()-1000000;
-	    		
-	        	log.start(startNanos);
-	    	}
-    	}else{
-    		startNanos = System.nanoTime()-1000000;
-    		
-    		log.start(startNanos);
-    	}
-    	
-    	request.setAttribute(CFW.REQUEST_ATTR_STARTNANOS, startNanos);
-    	
+
+    	    	
     	//---------------------------------------
     	//ReqestID used in logging
     	String requestID = request.getHeader(CFW.REQUEST_ATTR_ID);
@@ -137,8 +121,6 @@ public class RequestHandler extends HandlerWrapper
 	    	//##################################
 	    	// After
 	    	//##################################
-	    	request.setAttribute(CFW.REQUEST_ATTR_ENDNANOS, System.nanoTime());
-	    	
 	    	CFWDB.forceCloseRemainingConnections();
 	    	
 	    	CFW.Localization.writeLocalized(request, response);

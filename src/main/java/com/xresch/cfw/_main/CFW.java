@@ -118,23 +118,10 @@ public class CFW {
 	
 	
 	//##############################################################################
-	// GLOBAL
+	// GLOBALS
 	//##############################################################################
-
 	public static final String REQUEST_ATTR_ID = "requestID";
-
-	public static final String REQUEST_ATTR_STARTNANOS = "starttime";
-	public static final String REQUEST_ATTR_ENDNANOS = "endtime";
-	
-	public static final String SESSION_DATA = "sessionData";
-		
-	
-	//##############################################################################
-	// PATHS
-	//##############################################################################
-	public static final String PATH_RESOURCES_HTML = "./resources/html";
-	public static final String PATH_TEMPLATE_FOOTER = PATH_RESOURCES_HTML+"/default_template/footer.html";
-	
+	public static final String SESSION_DATA = "sessionData";	
 	
 	private static void initializeCore(String[] args) throws ArgumentsException, IOException{
 		
@@ -247,7 +234,7 @@ public class CFW {
 	    //--------------------------------
 	    // Handle Shutdown request.
 	    if (CFW.CLI.isArgumentLoaded(CLI.STOP)) {
-    		CFWApplicationExecutor.stop();
+    		CFWApplicationExecutor.sendStopRequest();
     		appToStart.stopApp();
 			System.exit(0);
     		return;
@@ -273,7 +260,7 @@ public class CFW {
     	
 	    //--------------------------------
 	    // Start Application
-		CFWApplicationExecutor executor = new CFWApplicationExecutor();
+		CFWApplicationExecutor executor = new CFWApplicationExecutor(appToStart);
 		
 		for(CFWAppFeature feature : features) {
 			feature.addFeature(executor);

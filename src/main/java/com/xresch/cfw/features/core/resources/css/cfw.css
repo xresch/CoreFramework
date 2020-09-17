@@ -408,8 +408,8 @@
 	padding: 40px 20px 20px 20px;
 }
 
-#cfw-container {
-
+#cfw-container  {
+	padding: 5px;
 }
 
 #cfw-footer {

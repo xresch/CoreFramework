@@ -127,6 +127,7 @@ public class FeatureCore extends CFWAppFeature {
 		app.addUnsecureServlet(ServletAutocomplete.class,  	"/cfw/autocomplete");
 		app.addUnsecureServlet(ServletAssembly.class, 		"/cfw/assembly"); 
 		app.addUnsecureServlet(ServletJARResource.class, 	"/cfw/jarresource");
+		app.addUnsecureServlet(ServletShutdown.class, 		"/cfw/shutdown");
 	}
 
 	@Override

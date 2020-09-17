@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
@@ -42,6 +43,9 @@ import com.xresch.cfw.handler.AuthenticationHandler;
 import com.xresch.cfw.handler.HTTPSRedirectHandler;
 import com.xresch.cfw.handler.RedirectDefaultPageHandler;
 import com.xresch.cfw.handler.RequestHandler;
+import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.JSONResponse;
+import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
 import com.xresch.cfw.utils.HandlerChainBuilder;
 
 import io.prometheus.client.jetty.JettyStatisticsCollector;
@@ -52,6 +56,8 @@ import io.prometheus.client.jetty.JettyStatisticsCollector;
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWApplicationExecutor {
+	
+	private static final Logger logger = CFWLog.getLogger(CFW.class.getName());
 	
 	private Server server;
 	private MultipartConfigElement globalMultipartConfig;
@@ -65,7 +71,11 @@ public class CFWApplicationExecutor {
 	
 	public WebAppContext applicationContext;
 	
-	public CFWApplicationExecutor() throws Exception {  
+	public CFWAppInterface application;
+	
+	public CFWApplicationExecutor(CFWAppInterface application) throws Exception {  
+		this.application = application;
+		
 		sessionHandler = CFWApplicationExecutor.createSessionHandler("/");
 		
     	//---------------------------------------
@@ -379,7 +389,7 @@ public class CFWApplicationExecutor {
 	/**************************************************************************************************
 	 * 
 	 **************************************************************************************************/
-	public static void stop() {
+	public static void sendStopRequest() {
 		
 		System.out.println("Try to stop running application instance.");
 		
@@ -395,19 +405,60 @@ public class CFWApplicationExecutor {
 		//----------------------------------
 		// Try Stop 
         try {
-        	URL url = new URL(protocol, "localhost", port, "/shutdown?token="+CFW.Properties.APPLICATION_ID);
-        	 HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-             connection.setRequestMethod("POST");
+        	URL url = new URL(protocol, "localhost", port, "/cfw/shutdown?token="+CFW.Properties.APPLICATION_ID);
+        	CFWHttpResponse response = CFW.HTTP.sendGETRequest(url.toString());
+        	 
 
-             if(connection.getResponseCode() == 200) {
+             if(response.getStatus() == 200) {
             	 System.out.println("Shutdown successful.");
+            	 
              }else {
-            	 System.err.println("Jetty returned response code HTTP "+connection.getResponseCode());
+            	 System.err.println("Jetty returned response code HTTP "+response.getStatus());
              }
+             
+             System.out.println(response.getResponseBody());
              
         } catch (IOException ex) {
             System.err.println("Stop Jetty failed: " + ex.getMessage());
         }
+	}
+	
+	/**************************************************************************************************
+	 * 
+	 **************************************************************************************************/
+	public void stop() {
+		
+		CFWLog log = new CFWLog(logger);
+		log.info("Shutdown request recieved");
+
+		
+		//----------------------------------
+		// Shutdown server
+		try {
+			// Jetty Default Shutdown
+			server.stop();
+		} catch (Exception e) {
+			log.severe("Error while stopping applicationserver:"+e.getMessage(), e);
+		}
+		
+		//----------------------------------
+		// Stop Features 
+	    ArrayList<CFWAppFeature> features = CFW.Registry.Features.getFeatureInstances();
+	    
+	    for(CFWAppFeature feature : features) {
+	    	feature.stopFeature();
+	    }
+	    
+		//----------------------------------
+		// Stop Application
+	    application.stopApp();
+	    
+		//----------------------------------
+		// Shutdown Database
+		CFW.DB.stopDBServer();
+			
+		System.exit(0);
+       
 	}
 	
 	/**************************************************************************************************

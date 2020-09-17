@@ -32,18 +32,18 @@ public class CFWLog {
 	protected long endtimeNanos = -1;
 	protected long durationMillis = -1;
 	protected long deltaStartMillis = -1;
-
+	protected int estimatedResponseSizeChars = -1;
+	
 	protected HttpServletRequest request; 
-	protected String webURL;
-	protected String queryString;
-	protected String requestID;
-	protected String userID = "unknown";
-	protected int estimatedResponseSizeChars;
+	protected String webURL = "";
+	protected String queryString = "";
+	protected String requestID  = "";
+	protected String userID = "";
+
 	
-	protected String sessionID;
-	
-	protected String sourceClass;
-	protected String sourceMethod;
+	protected String sessionID  = "";
+	protected String sourceClass  = "";
+	protected String sourceMethod  = "";
 	
 	protected String exception;
 	
@@ -284,21 +284,20 @@ public class CFWLog {
 				// Get session id from context, as following might create a StackOverflow on log level FINE: request.getSession().getId();
 				this.sessionID = CFW.Context.Session.getSessionID();
 				
-				if(CFWProperties.AUTHENTICATION_ENABLED) {
-					SessionData data = CFW.Context.Request.getSessionData(); 
-					if(data != null && data.isLoggedIn()) {
-						this.userID = data.getUser().username();
-					}
-				}else {
-					this.userID = "anonymous";
+
+				SessionData data = CFW.Context.Request.getSessionData(); 
+				if(data != null && data.isLoggedIn()) {
+					this.userID = data.getUser().username();
 				}
+
 					
 				//--------------------------------
 				// Delta Start
+				long requestStartNanos = CFW.Context.Request.getRequestStartNanos();
 				if(starttimeNanos != -1){
-					this.deltaStartMillis = (starttimeNanos - (long)request.getAttribute(CFW.REQUEST_ATTR_STARTNANOS) ) / 1000000;
+					this.deltaStartMillis = (starttimeNanos - requestStartNanos) / 1000000;
 				}else{
-					this.deltaStartMillis = (endtimeNanos - (long)request.getAttribute(CFW.REQUEST_ATTR_STARTNANOS) ) / 1000000;
+					this.deltaStartMillis = (endtimeNanos - requestStartNanos ) / 1000000;
 				}
 				
 				//----------------------------------------

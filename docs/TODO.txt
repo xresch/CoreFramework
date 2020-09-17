@@ -54,7 +54,6 @@ TODO
 - Manual: Multi language pages
 
 - CFW: CFWApplicationExecutor - ForwardedRequestCustomizer make it work with reverse proxy
-- CFW: Implement custom shutdown stopping database, application, features, etc...
 - CFW: Create javascript sanity check page
 - CFW: Redirect StdOut and StdErr to logfile
     
@@ -98,6 +97,7 @@ DONE
 - Added SLF4J Service Provider to pickup logs from frameworks
 - Fixed menus requiring permissions still showing after logout
 - Fixed ContextSettings created with invalid field values
+- CFW: Implement custom shutdown stopping database, application, features, etc...
 
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message
