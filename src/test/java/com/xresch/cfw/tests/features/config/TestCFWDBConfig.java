@@ -1,4 +1,4 @@
-package com.xresch.cfw.tests.db;
+package com.xresch.cfw.tests.features.config;
 
 
 import org.junit.jupiter.api.Assertions;

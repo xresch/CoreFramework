@@ -66,8 +66,12 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public boolean mapJsonFields(JsonObject object) {
-		return CFWField.mapAndValidateJsonToFields(object, fields);
+	public boolean mapJsonFields(JsonElement element) {
+		if(!element.isJsonObject()) {
+			new CFWLog(logger).severe("JsonElement has to be of the type object.", new IllegalArgumentException());
+			return false;
+		}
+		return CFWField.mapAndValidateJsonToFields(element.getAsJsonObject(), fields);
 	}
 	
 	/****************************************************************

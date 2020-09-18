@@ -242,7 +242,7 @@ public class Dashboard extends CFWObject {
 		return foreignKeyOwner.getValue();
 	}
 	
-	public Dashboard foreignKeyUser(Integer foreignKeyUser) {
+	public Dashboard foreignKeyOwner(Integer foreignKeyUser) {
 		this.foreignKeyOwner.setValue(foreignKeyUser);
 		return this;
 	}
@@ -283,11 +283,11 @@ public class Dashboard extends CFWObject {
 		return this;
 	}
 	
-	public LinkedHashMap<String,String> shareWithRoles() {
+	public LinkedHashMap<String,String> sharedWithRoles() {
 		return shareWithRoles.getValue();
 	}
 	
-	public Dashboard shareWithRoles(LinkedHashMap<String,String> value) {
+	public Dashboard sharedWithRoles(LinkedHashMap<String,String> value) {
 		this.shareWithRoles.setValue(value);
 		return this;
 	}

@@ -1,4 +1,4 @@
-package com.xresch.cfw.tests.db;
+package com.xresch.cfw.tests.features.spaces;
 
 
 import org.junit.jupiter.api.Assertions;

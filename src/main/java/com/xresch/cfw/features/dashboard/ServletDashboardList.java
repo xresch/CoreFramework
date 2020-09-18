@@ -168,7 +168,7 @@ public class ServletDashboardList extends HttpServlet
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 			Dashboard duplicate = CFW.DB.Dashboards.selectByID(dashboardID);
 			duplicate.id(null);
-			duplicate.foreignKeyUser(CFW.Context.Request.getUser().id());
+			duplicate.foreignKeyOwner(CFW.Context.Request.getUser().id());
 			duplicate.name(duplicate.name()+"(Copy)");
 			duplicate.isShared(false);
 			duplicate.sharedWithUsers(null);
@@ -225,7 +225,7 @@ public class ServletDashboardList extends HttpServlet
 						
 						origin.mapRequestParameters(request);
 						Dashboard dashboard = (Dashboard)origin;
-						dashboard.foreignKeyUser(CFW.Context.Request.getUser().id());
+						dashboard.foreignKeyOwner(CFW.Context.Request.getUser().id());
 						if( CFW.DB.Dashboards.create(dashboard) ) {
 							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Dashboard created successfully!");
 						}

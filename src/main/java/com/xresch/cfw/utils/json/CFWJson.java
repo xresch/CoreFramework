@@ -104,11 +104,11 @@ public class CFWJson {
 	/*************************************************************************************
 	 * 
 	 *************************************************************************************/
-	public static JsonObject fromJson(String jsonString) {
+	public static JsonElement fromJson(String jsonString) {
 		JsonParser parser = new JsonParser();
-		JsonObject jsonObject = (JsonObject) parser.parse(jsonString);
+		JsonElement jsonElement = parser.parse(jsonString);
 		
-		return jsonObject;
+		return jsonElement;
 	}
 	
 	/*************************************************************************************

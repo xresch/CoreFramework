@@ -1,4 +1,4 @@
-package com.xresch.cfw.tests.various;
+package com.xresch.cfw.tests.cli;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -28,6 +28,10 @@ public class TestCFWCommandLine {
 		
 		Assertions.assertTrue(messages.contains("File cannot be read: './xxxxx/unknownpath.properties'"));
 		Assertions.assertTrue(messages.contains("The argument '-config.unknownargument' is not supported."));
+		
+		// IMPORTANT! Keep this or it will mess up your other tests
+		CFW.CLI.clearLoadedArguments();
+
 	}
 	
 }

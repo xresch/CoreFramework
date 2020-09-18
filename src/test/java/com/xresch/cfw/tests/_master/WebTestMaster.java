@@ -1,5 +1,7 @@
 package com.xresch.cfw.tests._master;
 
+import java.util.logging.Logger;
+
 import javax.servlet.Servlet;
 
 import org.junit.jupiter.api.AfterAll;
@@ -8,9 +10,12 @@ import org.junit.jupiter.api.BeforeAll;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppInterface;
 import com.xresch.cfw._main.CFWApplicationExecutor;
+import com.xresch.cfw.logging.CFWLog;
 
 public class WebTestMaster {
-
+	
+	private static final Logger logger = CFWLog.getLogger(WebTestMaster.class.getName());
+	
 	protected static CFWApplicationExecutor APP;
 	protected static String TEST_URL;
 	public static String RESOURCE_PACKAGE = "com.xresch.cfw.tests.assets.resources";
@@ -28,12 +33,15 @@ public class WebTestMaster {
 	@BeforeAll
 	public static void startDefaultApplication() throws Exception {
 		
+		
 		//---------------------------
 		// Start App only once
 		if (APP != null) {
 			return;
 		}
 
+		
+		System.out.println("===== Start Application ====");
 		//Seperate thread to not make the test thread block
 		Runnable r = new Runnable() {
 
@@ -45,7 +53,8 @@ public class WebTestMaster {
 						
 						@Override
 						public void settings() {
-							
+							CFW.AppSettings.setEnableDashboarding(true);
+							CFW.AppSettings.setEnableContextSettings(true);
 						}
 						@Override
 						public void stopApp() {

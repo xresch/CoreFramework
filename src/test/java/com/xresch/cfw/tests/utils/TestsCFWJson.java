@@ -1,4 +1,4 @@
-package com.xresch.cfw.tests.various;
+package com.xresch.cfw.tests.utils;
 
 import java.util.LinkedHashMap;
 

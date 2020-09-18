@@ -355,17 +355,17 @@ public class CFWDBDashboard {
 					String username = dashboardObject.get("username").getAsString();
 					User owner = CFW.DB.Users.selectByUsernameOrMail(username);
 					if(owner != null) {
-						dashboard.foreignKeyUser(owner.id());
+						dashboard.foreignKeyOwner(owner.id());
 					}else {
 						CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
 								CFW.L("cfw_dashboard_error_usernotresolved",
 									  "The the dashboard owner with name '{1}' could not be resolved. Set the owner to the importing user.",
 									  dashboardObject.has("username"))
 						);
-						dashboard.foreignKeyUser(CFW.Context.Request.getUser().id());
+						dashboard.foreignKeyOwner(CFW.Context.Request.getUser().id());
 					}
 				}else {
-					dashboard.foreignKeyUser(CFW.Context.Request.getUser().id());
+					dashboard.foreignKeyOwner(CFW.Context.Request.getUser().id());
 				}
 				
 				
@@ -522,7 +522,7 @@ public class CFWDBDashboard {
 		
 		//-----------------------------------
 		// Check User has Shared Role
-		LinkedHashMap<String, String> sharedRoles = dashboard.shareWithRoles();
+		LinkedHashMap<String, String> sharedRoles = dashboard.sharedWithRoles();
 		
 		if(sharedRoles != null && sharedRoles.size() > 0) {
 			for(String roleID : sharedRoles.keySet()) {
@@ -598,6 +598,36 @@ public class CFWDBDashboard {
 		if(item != null) {
 			return checkExistsByName(item.name());
 		}
+		return false;
+	}
+	
+	/*****************************************************************
+	 * Checks if the current user can edit the dashboard.
+	 *****************************************************************/
+	public static boolean checkCanEdit(String dashboardID) {
+		
+		Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
+		User user = CFW.Context.Request.getUser();
+		
+		//--------------------------------------
+		// Check User is Dashboard owner, admin
+		// or listed in editors
+		if( dashboard.foreignKeyOwner().equals(user.id())
+		|| ( dashboard.editors() != null && dashboard.editors().containsKey(user.id().toString()) )
+		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
+			return true;
+		}
+		
+		//--------------------------------------
+		// Check User has Editor Role
+		if(dashboard.editorRoles() != null) {
+			for(int roleID : CFW.Context.Request.getUserRoles().keySet()) {
+				if (dashboard.editorRoles().containsKey(""+roleID)) {
+					return true;
+				}
+			}
+		}
+		
 		return false;
 	}
 		

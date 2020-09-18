@@ -24,7 +24,6 @@ public class SerializerResultSet implements JsonSerializer<ResultSet> {
 	public JsonElement serialize(ResultSet resultSet, Type type, JsonSerializationContext context) {
 		
 		JsonArray result = new JsonArray();
-		
 		ResultSetMetaData metadata;
 		try {
 			metadata = resultSet.getMetaData();
@@ -53,7 +52,6 @@ public class SerializerResultSet implements JsonSerializer<ResultSet> {
 			
 			e.printStackTrace();
 		}
-				
 		return result;
 	}
 

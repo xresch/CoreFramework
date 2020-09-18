@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.dashboard;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -8,16 +9,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWRandom;
+import com.xresch.cfw.utils.json.CFWJson;
 
 /**************************************************************************************************************
  * 
@@ -26,7 +29,7 @@ import com.xresch.cfw.utils.CFWRandom;
  **************************************************************************************************************/
 public class ServletDashboardView extends HttpServlet
 {
-
+	private static final Logger logger = CFWLog.getLogger(ServletDashboardView.class.getName());
 	private static final long serialVersionUID = 1L;
 	
 	
@@ -74,7 +77,7 @@ public class ServletDashboardView extends HttpServlet
 				Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
 				html.setPageTitle(dashboard.name());
 				html.addJavascriptData("dashboardName",  dashboard.name());
-				html.addJavascriptData("canEdit", canEdit(request.getParameter("id")) );
+				html.addJavascriptData("canEdit", CFW.DB.Dashboards.checkCanEdit(request.getParameter("id")) );
 				html.addJavascriptCode("cfw_dashboard_initialDraw();");
 				
 		        response.setContentType("text/html");
@@ -179,7 +182,7 @@ public class ServletDashboardView extends HttpServlet
 		
 		Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
 		
-		if(dashboard.isShared() || canEdit(dashboardID)) {
+		if(dashboard.isShared() || CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
 			response.getContent().append(CFW.DB.DashboardWidgets.getWidgetsForDashboardAsJSON(dashboardID));
 			
@@ -193,7 +196,7 @@ public class ServletDashboardView extends HttpServlet
 	 *****************************************************************/
 	private void createWidget(JSONResponse response, String type, String dashboardID) {
 
-		if(canEdit(dashboardID)) {
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
 			//----------------------------
 			// Create Widget
@@ -228,19 +231,19 @@ public class ServletDashboardView extends HttpServlet
 		if(Strings.isNullOrEmpty(dashboardID)) {
 			return;
 		}
-		if(canEdit(dashboardID)) {
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			//----------------------------
 			// Get Values
 			String widgetType = request.getParameter("TYPE");
 			String JSON_SETTINGS = request.getParameter("JSON_SETTINGS");
-			JsonObject jsonObject = CFW.JSON.fromJson(JSON_SETTINGS);
+			JsonElement jsonElement = CFW.JSON.fromJson(JSON_SETTINGS);
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 			
 			//----------------------------
 			// Validate
 			CFWObject settings = definition.getSettings();
 			
-			boolean isValid = settings.mapJsonFields(jsonObject);
+			boolean isValid = settings.mapJsonFields(jsonElement);
 			
 			if(isValid) {
 				DashboardWidget widgetToUpdate = new DashboardWidget();
@@ -266,7 +269,7 @@ public class ServletDashboardView extends HttpServlet
 		
 		String dashboardID = request.getParameter("dashboardid");
 		
-		if(canEdit(dashboardID)) {
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
 			String widgetID = request.getParameter("widgetid");
 			
@@ -286,19 +289,19 @@ public class ServletDashboardView extends HttpServlet
 		
 		String dashboardID = request.getParameter("FK_ID_DASHBOARD");
 
-		if(canEdit(dashboardID)) {
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
 			//----------------------------
 			// Get Values
 			String widgetType = request.getParameter("TYPE");
 			String JSON_SETTINGS = request.getParameter("JSON_SETTINGS");
-			JsonObject jsonObject = CFW.JSON.fromJson(JSON_SETTINGS);
+			JsonElement jsonElement = CFW.JSON.fromJson(JSON_SETTINGS);
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 			
 			//----------------------------
 			// Create Form
 			CFWObject settings = definition.getSettings();
-			settings.mapJsonFields(jsonObject);
+			settings.mapJsonFields(jsonElement);
 			
 			CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeRemoved");
 			
@@ -319,42 +322,18 @@ public class ServletDashboardView extends HttpServlet
 		// Get Values
 		String widgetType = request.getParameter("TYPE");
 		String JSON_SETTINGS = request.getParameter("JSON_SETTINGS");
-		JsonObject jsonSettingsObject = CFW.JSON.fromJson(JSON_SETTINGS);
+		JsonElement jsonSettingsObject = CFW.JSON.fromJson(JSON_SETTINGS);
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 		
 		//----------------------------
 		// Create Response
-		definition.fetchData(null, jsonResponse, jsonSettingsObject);
+		if(jsonSettingsObject.isJsonObject()) {
+		definition.fetchData(null, jsonResponse, jsonSettingsObject.getAsJsonObject());
+		}else {
+			new CFWLog(logger).warn("Widget Data was not of the correct type.", new IllegalArgumentException());
+		}
 					
 	}
 	
-	/*****************************************************************
-	 *
-	 *****************************************************************/
-	private boolean canEdit(String dashboardID) {
-		
-		Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
-		User user = CFW.Context.Request.getUser();
-		
-		//--------------------------------------
-		// Check User is Dashboard owner, admin
-		// or listed in editors
-		if( dashboard.foreignKeyOwner().equals(user.id())
-		|| ( dashboard.editors() != null && dashboard.editors().containsKey(user.id().toString()) )
-		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
-			return true;
-		}
-		
-		//--------------------------------------
-		// Check User has Editor Role
-		if(dashboard.editorRoles() != null) {
-			for(int roleID : CFW.Context.Request.getUserRoles().keySet()) {
-				if (dashboard.editorRoles().containsKey(""+roleID)) {
-					return true;
-				}
-			}
-		}
-		
-		return false;
-	}
+
 }

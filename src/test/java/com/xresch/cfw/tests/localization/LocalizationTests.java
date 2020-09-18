@@ -4,6 +4,9 @@ import java.util.Locale;
 import java.util.Properties;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
@@ -14,14 +17,17 @@ public class LocalizationTests {
 	
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.tests.localization";
 	
-	@Test
-	public void testLocaleMerging() {
+	@BeforeAll
+	public static void loadLocaleFiles() {
 		
 		CFW.Files.addAllowedPackage(RESOURCE_PACKAGE);
 		
 		CFW.Localization.registerLocaleFile(Locale.ENGLISH, "", new FileDefinition(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "testlang_en.properties"));
 		CFW.Localization.registerLocaleFile(Locale.ENGLISH, "", new FileDefinition(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "testlangoverride_en.properties"));
 		CFW.Localization.registerLocaleFile(Locale.GERMAN, "", new FileDefinition(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "testlang_de.properties"));
+	}
+	@Test
+	public void testLocaleMerging() {
 		
 		Properties result = CFW.Localization.getLanguagePack(new Locale[] {Locale.ENGLISH, Locale.GERMAN}, "");
 		
@@ -40,16 +46,12 @@ public class LocalizationTests {
 	}
 	
 	@Test
+	@Tag("development")
 	public void testLocaleCFWL() {
-		
-		CFW.Files.addAllowedPackage(RESOURCE_PACKAGE);
-		
-		CFW.Localization.registerLocaleFile(Locale.ENGLISH, "", new FileDefinition(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "testlang_en.properties"));
-		CFW.Localization.registerLocaleFile(Locale.ENGLISH, "", new FileDefinition(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "testlangoverride_en.properties"));
-		CFW.Localization.registerLocaleFile(Locale.GERMAN, "", new FileDefinition(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "testlang_de.properties"));
-		
-		Assertions.assertTrue(CFW.L("cfw_test_stayenglish", "Default value").contentEquals("stayEnglish"), "Value is returned correctly." );
-		Assertions.assertTrue(CFW.L("cfw_test_doesntexists", "Default Value").contentEquals("Default Value"), "Default Value is used." );
+
+		System.out.println("cfw_test_stayenglish: "+ CFW.L("cfw_test_stayenglish", "Default value"));
+		Assertions.assertEquals("stayEnglish", CFW.L("cfw_test_stayenglish", "Default value"), "Value is returned correctly." );
+		Assertions.assertEquals("Default Value", CFW.L("cfw_test_doesntexists", "Default Value"), "Default Value is used." );
 
 	}
 
