@@ -878,9 +878,6 @@ function cfw_renderer_chart(renderDef) {
 
 	//========================================
 	// Set Min Max
-	if(settings.xmin != null){ chartOptions.scales.xAxes[0].ticks.suggestedMin = settings.xmin; }
-	if(settings.xmax != null){ chartOptions.scales.xAxes[0].ticks.suggestedMax = settings.xmax; }
-	
 	if(settings.ymin != null){ chartOptions.scales.yAxes[0].ticks.suggestedMin = settings.ymin; }
 	if(settings.ymax != null){ chartOptions.scales.yAxes[0].ticks.suggestedMax = settings.ymax; }
 
@@ -904,3 +901,143 @@ function cfw_renderer_chart(renderDef) {
 }
 
 CFW.render.registerRenderer("chart", new CFWRenderer(cfw_renderer_chart) );
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_paginator(renderDef) {
+	
+	//========================================
+	// Render Specific settings
+	var defaultSettings = {
+			// The available renderers which can be choosen with the Display As option
+			renderers: ['table'],
+			// The number of items options
+			sizes: [10, 25, 50, 100, 200, 500, 1000, 0],
+			// The size selected by default
+			defaultsize: 25,
+			// enable sorting. 
+			sortable: 25,
+			// the interface to fetch the data from
+			datainterface: {
+				//The url to fetch the data from. If null the data from rendererSettings.data will be used.
+				url:  null,
+				//The  param name for the maximum size of the result
+				sizeparam:  'size',
+				//The param name for the result offset
+				offsetparam: 'offset',
+				//The offset for fetching the results
+				sortbyparam: 'sortby',
+				//The offset for fetching the results
+				sortdirectionparam: 'sort',
+				//The filter string used for filtering the results
+				filterparam: 'filter',
+				//The name of the field containing the total number of rows
+				totalrowsfield: 'TOTAL_ROWS',
+			},
+	};
+	
+
+	//var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.paginator);
+	var settings = _.merge({}, defaultSettings, renderDef.rendererSettings.paginator);
+	console.log(settings);
+	
+	let paginatorDiv = $('<div class="cfw-paginator">');
+	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(50, 50, 1));
+	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(100, 50, 1));
+	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(5000, 50, 1));
+	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(5000, 50, 10));
+	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(505, 50, 1));
+	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(505, 50, 2));
+	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(505, 50, 3));
+
+	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(500, 25, 9));
+		
+	return paginatorDiv;
+	
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_paginator_createPageListItem(page, label, isActive) {
+	return '<li class="page-item '+(isActive ? 'active':'')+'"><a class="page-link" href="#'+page+'">'+label+'</a></li>';
+}
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_paginator_createNavigationHTML(recordCount, pageSize, pageActive) {
+	
+	var totalPages = Math.ceil(recordCount / pageSize);
+	
+	var html = 
+		'<nav aria-label="Page Navigation">'
+			+'<ul class="pagination justify-content-center">'
+			+ cfw_renderer_paginator_createPageListItem(1,'<i class="fas fa-angle-double-left"></i>', false)
+			+ cfw_renderer_paginator_createPageListItem(((pageActive > 1) ? pageActive-1 : 1),'<i class="fas fa-angle-left"></i>', false);
+			
+	var pageListItems = '';
+	
+
+	//============================================
+	// Create Lower Pages
+	let lowerBoundary = pageActive;
+	if(pageActive <= 5){
+		//-----------------------------
+		// Linear Progression
+		for(let i = 1; i <= 5 && i <= totalPages; i++ ){
+			pageListItems += cfw_renderer_paginator_createPageListItem(i,i, i == pageActive);
+			lowerBoundary = i;
+		}
+		
+	}else{
+		//-----------------------------
+		// Binary Search Progression
+		let pageDiffLower = Math.ceil(pageActive / 2);
+		let currentPage = pageActive - pageDiffLower;
+		console.log("pageActive"+pageActive);
+		console.log("pageDiffLower"+pageDiffLower);
+		console.log("currentPage"+currentPage);
+		for(let i = 1; i < 5 && currentPage >= 1; i++ ){
+			console.log(cfw_renderer_paginator_createPageListItem(currentPage,currentPage, false));
+			pageListItems = 
+				cfw_renderer_paginator_createPageListItem(currentPage,currentPage, false)
+				+ pageListItems;
+				
+			pageDiffLower = Math.ceil(pageDiffLower / 2);
+			currentPage -= pageDiffLower;
+		}
+		
+		//-------------------------------------
+		// Add Active Page
+		pageListItems += cfw_renderer_paginator_createPageListItem(pageActive,pageActive, true);
+		
+	}
+	
+	
+	//-------------------------------------
+	// Create Higher Pages
+	let upperBoundary = (lowerBoundary*3 > totalPages) ? totalPages : lowerBoundary*2;
+	let pageDiffHigher = Math.ceil((upperBoundary - lowerBoundary) / 2);
+	currentPage = lowerBoundary + pageDiffHigher;
+	for(let i = 1; i < 5 && currentPage < totalPages; i++ ){
+				
+		pageListItems += cfw_renderer_paginator_createPageListItem(currentPage, currentPage, false);
+		pageDiffHigher = Math.ceil(pageDiffHigher / 2);
+		currentPage += pageDiffHigher;
+	}
+	
+	//-------------------------------------
+	// Add Navigate Forward Buttons
+	html += pageListItems;
+	html +=
+		cfw_renderer_paginator_createPageListItem(((pageActive < totalPages) ? pageActive+1 : totalPages),'<i class="fas fa-angle-right"></i>', false)
+		+ cfw_renderer_paginator_createPageListItem(totalPages,'<i class="fas fa-angle-double-right"></i>', false);
+	
+			
+	html +='</ul></nav>';
+
+	return html;
+}
+
+CFW.render.registerRenderer("paginator", new CFWRenderer(cfw_renderer_paginator) );

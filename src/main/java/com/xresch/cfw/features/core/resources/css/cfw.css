@@ -165,6 +165,10 @@
     font-weight: 200;
 }
 
+.page-item.active .page-link {
+	background-color: var(--primary)
+}
+
 /*************************************************************************
  * Bootstrap Submenus and Menu Enhancements
  *************************************************************************/
