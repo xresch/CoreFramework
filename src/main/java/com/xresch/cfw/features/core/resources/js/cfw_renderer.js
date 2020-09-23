@@ -942,16 +942,12 @@ function cfw_renderer_paginator(renderDef) {
 	var settings = _.merge({}, defaultSettings, renderDef.rendererSettings.paginator);
 	console.log(settings);
 	
-	let paginatorDiv = $('<div class="cfw-paginator">');
-	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(50, 50, 1));
-	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(100, 50, 1));
-	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(5000, 50, 1));
-	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(5000, 50, 10));
-	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(505, 50, 1));
-	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(505, 50, 2));
-	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(505, 50, 3));
-
-	paginatorDiv.append(cfw_renderer_paginator_createNavigationHTML(500, 25, 9));
+	let paginatorID = "paginator-"+CFW.utils.randomString(12);
+	let paginatorDiv = $('<div class="cfw-paginator" id="'+paginatorID+'">');
+	paginatorDiv.data('renderDef', renderDef);
+	paginatorDiv.data('settings', settings);
+	
+	cfw_renderer_paginator_renderPage(paginatorDiv, 1);
 		
 	return paginatorDiv;
 	
@@ -960,79 +956,107 @@ function cfw_renderer_paginator(renderDef) {
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_paginator_createPageListItem(page, label, isActive) {
-	return '<li class="page-item '+(isActive ? 'active':'')+'"><a class="page-link" href="#'+page+'">'+label+'</a></li>';
+function cfw_renderer_paginator_renderPage(paginatorIDOrJQuery, pageToRender) {
+	
+
+	var paginatorDiv = $(paginatorIDOrJQuery);
+	var paginatorID = '#'+paginatorDiv.attr('id');
+	var renderDef = paginatorDiv.data('renderDef');
+	var settings = paginatorDiv.data('settings');
+	
+	
+	var pageSize = 10;
+	var offset = pageSize * (pageToRender-1);
+
+	//-------------------------------------
+	// Get Render Results
+	let renderDefClone = _.cloneDeep(renderDef);
+	var totalRecords = renderDefClone.data.length;
+
+	renderDefClone.data = _.slice(renderDefClone.data, offset, offset+pageSize);
+	var renderResult = CFW.render.getRenderer('table').render(renderDefClone);
+	
+	//-------------------------------------
+	// Create Paginator
+	var pageNavigation = cfw_renderer_paginator_createNavigationHTML(paginatorID, totalRecords, pageSize, pageToRender);
+	
+	paginatorDiv.html('');
+	paginatorDiv.append(pageNavigation);
+	paginatorDiv.append(renderResult);
+	paginatorDiv.append(pageNavigation);
+	
+
+	
+}
+
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_paginator_createPageListItem(paginatorID, page, label, isActive) {
+	return '<li class="page-item '+(isActive ? 'active':'')+'">'
+				+'<a class="page-link" href="#" onclick="cfw_renderer_paginator_renderPage(\''+paginatorID+'\', '+page+')">'+label+'</a>'
+			+'</li>';
 }
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_paginator_createNavigationHTML(recordCount, pageSize, pageActive) {
+function cfw_renderer_paginator_createNavigationHTML(paginatorID, totalRecords, pageSize, pageActive) {
 	
-	var totalPages = Math.ceil(recordCount / pageSize);
+	var totalPages = Math.ceil(totalRecords / pageSize);
 	
 	var html = 
 		'<nav aria-label="Page Navigation">'
-			+'<ul class="pagination justify-content-center">'
-			+ cfw_renderer_paginator_createPageListItem(1,'<i class="fas fa-angle-double-left"></i>', false)
-			+ cfw_renderer_paginator_createPageListItem(((pageActive > 1) ? pageActive-1 : 1),'<i class="fas fa-angle-left"></i>', false);
+			+'<ul class="pagination pagination-sm justify-content-center">'
+			+ cfw_renderer_paginator_createPageListItem(paginatorID, 1,'<i class="fas fa-angle-double-left"></i>', false)
+			+ cfw_renderer_paginator_createPageListItem(paginatorID, ((pageActive > 1) ? pageActive-1 : 1),'<i class="fas fa-angle-left"></i>', false);
 			
 	var pageListItems = '';
 	
 
 	//============================================
-	// Create Lower Pages
-	let lowerBoundary = pageActive;
-	if(pageActive <= 5){
-		//-----------------------------
-		// Linear Progression
-		for(let i = 1; i <= 5 && i <= totalPages; i++ ){
-			pageListItems += cfw_renderer_paginator_createPageListItem(i,i, i == pageActive);
-			lowerBoundary = i;
-		}
+	// Create Pages
+
+	pageListItems += cfw_renderer_paginator_createPageListItem(paginatorID, pageActive, pageActive, true);
+	let pagesCreated = 1;
+
+	//-------------------------------
+	// Lower Pages
+	let currentPage = pageActive-1;
+	for(let i = 1; i < 4 && currentPage >= 1; i++ ){
+		pageListItems = 
+			cfw_renderer_paginator_createPageListItem(paginatorID, currentPage,currentPage, false)
+			+ pageListItems ;
 		
-	}else{
-		//-----------------------------
-		// Binary Search Progression
-		let pageDiffLower = Math.ceil(pageActive / 2);
-		let currentPage = pageActive - pageDiffLower;
-		console.log("pageActive"+pageActive);
-		console.log("pageDiffLower"+pageDiffLower);
-		console.log("currentPage"+currentPage);
-		for(let i = 1; i < 5 && currentPage >= 1; i++ ){
-			console.log(cfw_renderer_paginator_createPageListItem(currentPage,currentPage, false));
-			pageListItems = 
-				cfw_renderer_paginator_createPageListItem(currentPage,currentPage, false)
-				+ pageListItems;
-				
-			pageDiffLower = Math.ceil(pageDiffLower / 2);
-			currentPage -= pageDiffLower;
-		}
-		
-		//-------------------------------------
-		// Add Active Page
-		pageListItems += cfw_renderer_paginator_createPageListItem(pageActive,pageActive, true);
-		
+		pagesCreated++;
+		currentPage--;
+	}
+	if(currentPage > 2){
+		var jumpPage = Math.ceil(currentPage / 2);
+		pageListItems = cfw_renderer_paginator_createPageListItem(paginatorID, jumpPage,jumpPage, false)
+						+ pageListItems;
+		pagesCreated++;
 	}
 	
-	
-	//-------------------------------------
-	// Create Higher Pages
-	let upperBoundary = (lowerBoundary*3 > totalPages) ? totalPages : lowerBoundary*2;
-	let pageDiffHigher = Math.ceil((upperBoundary - lowerBoundary) / 2);
-	currentPage = lowerBoundary + pageDiffHigher;
-	for(let i = 1; i < 5 && currentPage < totalPages; i++ ){
-				
-		pageListItems += cfw_renderer_paginator_createPageListItem(currentPage, currentPage, false);
-		pageDiffHigher = Math.ceil(pageDiffHigher / 2);
-		currentPage += pageDiffHigher;
+	//-------------------------------
+	// Higher Pages
+	currentPage = pageActive+1;
+	for(; pagesCreated < 8 && currentPage <= totalPages; ){
+		pageListItems += cfw_renderer_paginator_createPageListItem(paginatorID, currentPage,currentPage, false);
+		pagesCreated++;
+		currentPage++;
 	}
-	
+	if(currentPage < totalPages-1){
+		var jumpPage = currentPage+Math.ceil((totalPages-currentPage) / 2);
+		pageListItems += cfw_renderer_paginator_createPageListItem(paginatorID, jumpPage,jumpPage, false);
+	}
+
+		
 	//-------------------------------------
 	// Add Navigate Forward Buttons
 	html += pageListItems;
-	html +=
-		cfw_renderer_paginator_createPageListItem(((pageActive < totalPages) ? pageActive+1 : totalPages),'<i class="fas fa-angle-right"></i>', false)
-		+ cfw_renderer_paginator_createPageListItem(totalPages,'<i class="fas fa-angle-double-right"></i>', false);
+	html +=cfw_renderer_paginator_createPageListItem(paginatorID, ((pageActive < totalPages) ? pageActive+1 : totalPages),'<i class="fas fa-angle-right"></i>', false)
+		 + cfw_renderer_paginator_createPageListItem(paginatorID, totalPages,'<i class="fas fa-angle-double-right"></i>', false);
 	
 			
 	html +='</ul></nav>';
