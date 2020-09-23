@@ -481,21 +481,38 @@ class CFWDate{
 	 /********************************************
 	  * Adds a header using a string.
 	  ********************************************/
-	 addHeader(header){
+	 addHeader(header, clazz){
 		 var th = $('<th>');
-		 th.append(header);
+		 var div = $('<div>');
+		 
+		 if(clazz != null){
+			 th.addClass(clazz);
+		 }
+		 
+		 th.append(div);
+		 div.append(header);
 		 this.thead.append(th);
 	 }
 	 
 	 /********************************************
 	  * Adds headers using a string array.
 	  ********************************************/
-	 addHeaders(stringArray){
+	 addHeaders(headerStringArray, classesArray){
 		 
 		 var htmlString = "";
-		 for(var i = 0; i < stringArray.length; i++){
-			 htmlString += '<th>'+stringArray[i]+'</th>';
+		 
+		 for(var i = 0; i < headerStringArray.length; i++){
+			 
+			 if(classesArray == null || classesArray.length == 0){
+				 htmlString += '<th><span>'+headerStringArray[i]+'</span></th>';
+		 	 }else{
+		 		 if(i <= classesArray.length-1 ){
+		 			 htmlString += '<th class="'+classesArray[i]+'"><span>'+headerStringArray[i]+'</span></th>';
+		 		 }
+		 	 }
+			 
 		 }
+
 		 this.thead.append(htmlString);
 	 }
 	 

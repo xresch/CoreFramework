@@ -26,7 +26,7 @@ function cfw_cachestatistics_showCacheDetails(element){
 				 	titledelimiter: ' ',
 				 	labels: {},
 				 	customizers: {
-				 		key: function(record, value){ return '<p class="mvw-15 word-wrap-break">'+value+'</p>'; },
+				 		key: function(record, value){ return '<p class="maxvw-15 word-wrap-break">'+value+'</p>'; },
 				 		value: function(record, value){ 
 				 			let adjustedValue = value.replace(/\n/g, "<br />");
 				 			return $('<p class="word-break-all word-wrap-break">').text(adjustedValue); 
@@ -76,7 +76,7 @@ function cfw_cachestatistics_fetchcachestatisticsAndDisplay(){
 				 	titledelimiter: ' ',
 				 	labels: {},
 				 	customizers: {
-				 		name: function(record, value){ return '<a href="#" class="mvw-30 word-wrap-break" onclick="cfw_cachestatistics_showCacheDetails(this)">'+value+'</a>'; },
+				 		name: function(record, value){ return '<a href="#" class="maxvw-30 word-wrap-break" onclick="cfw_cachestatistics_showCacheDetails(this)">'+value+'</a>'; },
 				 		hit_rate: function(record, value){ return (value*100).toFixed(1)+"%"; },
 				 		miss_rate: function(record, value){ return (value*100).toFixed(1)+"%"; },
 				 		load_time_avg: function(record, value){ return value.toFixed(2)+"ms"; },
@@ -118,8 +118,9 @@ function cfw_cachestatistics_draw(){
 				
 		parent.append('<h2>Cache Statistics</h2>'
 				+'<p>'
-				+'Statistics for all registered caches. Click on a cache name to get a list of the first 100 entries in the cache.'
-				+'The value of the entries will either be the value itself if values are Strings, or a a Json representation of the cached object.'
+				+'Statistics for all registered caches. The Load Time statistics are inaccurate in some cases and are much lower than the actual time needed for loading. '
+				+'<br/> Click on a cache name to get a list of the first 100 entries in the cache.'
+				+'The value of the entries will either be the value itself if values are Strings, or a JSON representation of the cached object.'
 				+'Only the first 500 characters are shown for an entry, longer entries will be truncated.'
 				+'</p>'
 				+'<p id="cachestatistics"></p>');

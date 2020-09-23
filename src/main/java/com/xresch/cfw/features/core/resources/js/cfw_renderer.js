@@ -278,16 +278,19 @@ function cfw_renderer_tiles_createDetailsTable(entry, renderDef){
  ******************************************************************/
 function cfw_renderer_table(renderDef) {
 	
-	// renderDef.rendererSettings.table same as CFWTable Settings
-	// plus verticalize: false
-//	{
-//		filterable: true,
-//		responsive: true,
-//		hover: true,
-//		striped: true,
-//		narrow: false,
-//		stickyheader: false, 
-//	 }
+	//========================================
+	// Render Specific settings
+	var defaultSettings = {
+			filterable: true,
+			responsive: true,
+			hover: true,
+			striped: true,
+			narrow: false,
+			stickyheader: false, 
+			// define if single element arrays should be converted into vertical table (convert columns to rows)
+			verticalize: false,
+			headerclasses: [],
+	};
 	
 	//-----------------------------------
 	// Check Data
@@ -295,10 +298,8 @@ function cfw_renderer_table(renderDef) {
 		return "<span>Unable to convert data into table.</span>";
 	}
 	
-	var settings = renderDef.rendererSettings.table;
-	if (settings == null){
-		settings = {};
-	}
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.table);
+
 	//-----------------------------------
 	// Verticalize Single Records
 	if(renderDef.data.length == 1 && settings.verticalize){
@@ -362,9 +363,12 @@ function cfw_renderer_table(renderDef) {
 		cfwTable.addHeader(checkbox);
 	}
 	
-	for(let key in renderDef.visiblefields){
-		let fieldname = renderDef.visiblefields[key];
-		cfwTable.addHeader(renderDef.labels[fieldname]);
+	for(let i = 0; i < renderDef.visiblefields.length; i++){
+		let fieldname = renderDef.visiblefields[i];
+		cfwTable.addHeader(
+				renderDef.labels[fieldname], 
+				(i <= settings.headerclasses.length-1 ? settings.headerclasses[i] : null)
+		);
 	}
 	
 	for(let key in renderDef.actions){
@@ -872,8 +876,14 @@ function cfw_renderer_chart(renderDef) {
 	        }
 	    };
 
+	//========================================
+	// Set Min Max
+	if(settings.xmin != null){ chartOptions.scales.xAxes[0].ticks.suggestedMin = settings.xmin; }
+	if(settings.xmax != null){ chartOptions.scales.xAxes[0].ticks.suggestedMax = settings.xmax; }
+	
 	if(settings.ymin != null){ chartOptions.scales.yAxes[0].ticks.suggestedMin = settings.ymin; }
 	if(settings.ymax != null){ chartOptions.scales.yAxes[0].ticks.suggestedMax = settings.ymax; }
+
 	
 	//========================================
 	// Create Chart

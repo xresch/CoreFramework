@@ -67,7 +67,7 @@ function cfw_dbanalytics_fetchQueryStatisticsAndDisplay(){
 				 	titledelimiter: ' ',
 				 	labels: {},
 				 	customizers: {
-				 		STATEMENT: function(record, value){ return '<div class="mvw-30 word-wrap-break">'+value+'</div>';}
+				 		STATEMENT: function(record, value){ return '<div class="maxvw-30 word-wrap-break">'+value+'</div>';}
 				 	},
 					data: data.payload,
 					rendererSettings: {
