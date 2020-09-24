@@ -905,27 +905,37 @@ CFW.render.registerRenderer("chart", new CFWRenderer(cfw_renderer_chart) );
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_paginator(renderDef) {
+function cfw_renderer_dataviewer(renderDef) {
 	
 	//========================================
 	// Render Specific settings
 	var defaultSettings = {
 			// The available renderers which can be choosen with the Display As option
-			renderers: ['table'],
-			// The number of items options
-			sizes: [10, 25, 50, 100, 200, 500, 1000, 0],
+			renderers: [
+				{name: 'table'}
+			],
+			// The initial page to be drawn.
+			initialpage: 1,
+			// The number of items options for the page size selector. -1 stands for "All".
+			sizes: [10, 25, 50, 100, 200, 500, 1000, -1],
 			// The size selected by default
-			defaultsize: 25,
+			defaultsize: 50,
 			// enable sorting. 
-			sortable: 25,
+			sortable: false,
 			// the interface to fetch the data from
 			datainterface: {
 				//The url to fetch the data from. If null the data from rendererSettings.data will be used.
 				url:  null,
+				//The item which should be fetched from the server.
+				item:  'default',
+				//The param name for the item the action should be applied to
+				itemparam:  'item',
+				//The param name for the action executed by the dataviewer
+				actionparam:  'action',
 				//The  param name for the maximum size of the result
 				sizeparam:  'size',
-				//The param name for the result offset
-				offsetparam: 'offset',
+				//The param name for the page to fetch
+				pageparam: 'pagenumber',
 				//The offset for fetching the results
 				sortbyparam: 'sortby',
 				//The offset for fetching the results
@@ -933,83 +943,191 @@ function cfw_renderer_paginator(renderDef) {
 				//The filter string used for filtering the results
 				filterparam: 'filter',
 				//The name of the field containing the total number of rows
-				totalrowsfield: 'TOTAL_ROWS',
+				totalrowsfield: 'TOTAL_RECORDS',
 			},
 	};
 	
 
-	//var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.paginator);
-	var settings = _.merge({}, defaultSettings, renderDef.rendererSettings.paginator);
+	//var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.dataviewer);
+	var settings = _.merge({}, defaultSettings, renderDef.rendererSettings.dataviewer);
 	console.log(settings);
 	
-	let paginatorID = "paginator-"+CFW.utils.randomString(12);
-	let paginatorDiv = $('<div class="cfw-paginator" id="'+paginatorID+'">');
-	paginatorDiv.data('renderDef', renderDef);
-	paginatorDiv.data('settings', settings);
+	let dataviewerID = "dataviewer-"+CFW.utils.randomString(12);
+	let dataviewerDiv = $('<div class="cfw-dataviewer" id="'+dataviewerID+'">');
 	
-	cfw_renderer_paginator_renderPage(paginatorDiv, 1);
+	dataviewerDiv.data('renderDef', renderDef);
+	dataviewerDiv.data('settings', settings);
+	
+	
+	dataviewerDiv.append(cfw_renderer_dataviewer_createMenuHTML(dataviewerID, settings));
+	dataviewerDiv.append('<div class="cfw-dataviewer-content">');
+	
+	cfw_renderer_dataviewer_fireChange(dataviewerDiv, settings.initialpage);
 		
-	return paginatorDiv;
+	return dataviewerDiv;
 	
+}
+
+CFW.render.registerRenderer("dataviewer", new CFWRenderer(cfw_renderer_dataviewer) );
+
+/******************************************************************
+ * 
+ * @param dataviewerIDOrJQuery cssSelector string like '#dataviewer-6a5b39ai' or a JQuery object
+ * @param pageToRender page number
+ ******************************************************************/
+function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) {
+	
+	//-------------------------------------
+	// Initialize
+	var dataviewerDiv = $(dataviewerIDOrJQuery);
+	var settingsDiv = dataviewerDiv.find('.cfw-dataviewer-settings');
+	var targetDiv = dataviewerDiv.find('.cfw-dataviewer-content');
+	var dataviewerID = "#"+dataviewerDiv.attr('id');
+	var renderDef = dataviewerDiv.data('renderDef');
+	var settings = dataviewerDiv.data('settings');
+	
+	//-------------------------------------
+	// Handle Page to Render
+	if(pageToRender == null || pageToRender == undefined){
+		pageToRender = dataviewerDiv.data('currentpage');
+		if(pageToRender == null || pageToRender == undefined){
+			pageToRender = 1;
+		}
+	}
+	
+	dataviewerDiv.data('currentpage', pageToRender);
+	
+	//-------------------------------------
+	// Get Settings
+	var pageSize = settingsDiv.find('select[name="pagesize"]').val();
+	var offset = pageSize * (pageToRender-1);
+	
+	//-------------------------------------
+	// Get Render Results
+	if(settings.datainterface.url == null){
+		let totalRecords = renderDef.data.length;
+
+		let dataToRender = _.slice(renderDef.data, offset, offset+pageSize);
+		cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
+	}else{
+		
+		let params = {};
+		params[settings.datainterface.actionparam] = "fetchpartial";
+		params[settings.datainterface.sizeparam] = pageSize;
+		params[settings.datainterface.pageparam] = pageToRender;
+		params[settings.datainterface.itemparam] = settings.datainterface.item;
+//		params[settings.datainterface.sortbyparam] = ;
+//		params[settings.datainterface.sortdirectionparam] = ;
+//		params[settings.datainterface.filterparam] = ;
+//		params[settings.datainterface.totalrowsfield] = ;
+		
+		CFW.http.getJSON(settings.datainterface.url, params, function(data){
+			
+			if(data.payload != null){
+				let dataToRender = data.payload;
+				let totalRecords = (dataToRender.length > 0) ? dataToRender[0][settings.datainterface.totalrowsfield] : 0;
+				
+				cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
+			}
+		}
+	);
+	}
+			
 }
 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_paginator_renderPage(paginatorIDOrJQuery, pageToRender) {
+function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender) {
 	
-
-	var paginatorDiv = $(paginatorIDOrJQuery);
-	var paginatorID = '#'+paginatorDiv.attr('id');
-	var renderDef = paginatorDiv.data('renderDef');
-	var settings = paginatorDiv.data('settings');
-	
-	
-	var pageSize = 10;
-	var offset = pageSize * (pageToRender-1);
-
+	console.log("test2"+dataviewerDiv);
 	//-------------------------------------
-	// Get Render Results
+	// Initialize
+	//var dataviewerDiv = $(dataviewerID);
+	var settingsDiv = dataviewerDiv.find('.cfw-dataviewer-settings');
+	var targetDiv = dataviewerDiv.find('.cfw-dataviewer-content');
+	var dataviewerID = "#"+dataviewerDiv.attr('id');
+	var renderDef = dataviewerDiv.data('renderDef');
+	var settings = dataviewerDiv.data('settings');
+	
+	
+	//-------------------------------------
+	// Get Settings
+	//var totalRecords = dataToRender.length;
+	var pageSize = settingsDiv.find('select[name="pagesize"]').val();
+	var offset = pageSize * (pageToRender-1);
+	
+	console.log("offset"+offset);
+	console.log("pageSize"+pageSize);
+	
+	//-------------------------------------
+	// Call Renderer
 	let renderDefClone = _.cloneDeep(renderDef);
-	var totalRecords = renderDefClone.data.length;
-
-	renderDefClone.data = _.slice(renderDefClone.data, offset, offset+pageSize);
+	renderDefClone.data = dataToRender;
 	var renderResult = CFW.render.getRenderer('table').render(renderDefClone);
 	
 	//-------------------------------------
 	// Create Paginator
-	var pageNavigation = cfw_renderer_paginator_createNavigationHTML(paginatorID, totalRecords, pageSize, pageToRender);
+	var pageNavigation = cfw_renderer_dataviewer_createNavigationHTML(dataviewerID, totalRecords, pageSize, pageToRender);
 	
-	paginatorDiv.html('');
-	paginatorDiv.append(pageNavigation);
-	paginatorDiv.append(renderResult);
-	paginatorDiv.append(pageNavigation);
+	targetDiv.html('');
+	targetDiv.append(pageNavigation);
+	targetDiv.append(renderResult);
+	targetDiv.append(pageNavigation);
+}
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings) {
+	
+	var onchangeAttribute = ' onchange="cfw_renderer_dataviewer_fireChange(\'#'+dataviewerID+'\', 1)" ';
+	var html = '<div class="cfw-dataviewer-settings">';
 	
 
+	html += '<div class="float-right">'
+		+'	<label for="pagesize">Page Size:&nbsp;</label>'
+		+'	<select name="pagesize" class="form-control form-control-sm" title="Choose Page Size" '+onchangeAttribute+'>'
 	
+		for(key in dataviewerSettings.sizes){
+			var size = dataviewerSettings.sizes[key];
+			var selected = (size == dataviewerSettings.defaultsize) ? 'selected' : '';
+			
+			if(size != -1){
+				html += '<option value="'+size+'" '+selected+'>'+size+'</option>';
+			}else{
+				html += '<option value="'+size+'" '+selected+'>All</option>';
+			}
+		}
+	
+	html += '	</select>'
+			+'</div>'
+			+'</div>';
+	
+	return html;
 }
 
 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_paginator_createPageListItem(paginatorID, page, label, isActive) {
+function cfw_renderer_dataviewer_createPageListItem(dataviewerID, page, label, isActive) {
 	return '<li class="page-item '+(isActive ? 'active':'')+'">'
-				+'<a class="page-link" href="#" onclick="cfw_renderer_paginator_renderPage(\''+paginatorID+'\', '+page+')">'+label+'</a>'
+				+'<a class="page-link" href="#" onclick="cfw_renderer_dataviewer_fireChange(\''+dataviewerID+'\', '+page+')">'+label+'</a>'
 			+'</li>';
 }
+
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_paginator_createNavigationHTML(paginatorID, totalRecords, pageSize, pageActive) {
+function cfw_renderer_dataviewer_createNavigationHTML(dataviewerID, totalRecords, pageSize, pageActive) {
 	
 	var totalPages = Math.ceil(totalRecords / pageSize);
 	
 	var html = 
 		'<nav aria-label="Page Navigation">'
-			+'<ul class="pagination pagination-sm justify-content-center">'
-			+ cfw_renderer_paginator_createPageListItem(paginatorID, 1,'<i class="fas fa-angle-double-left"></i>', false)
-			+ cfw_renderer_paginator_createPageListItem(paginatorID, ((pageActive > 1) ? pageActive-1 : 1),'<i class="fas fa-angle-left"></i>', false);
+			+'<ul class="pagination pagination-sm justify-content-end">'
+			+ cfw_renderer_dataviewer_createPageListItem(dataviewerID, 1,'<i class="fas fa-angle-double-left"></i>', false)
+			+ cfw_renderer_dataviewer_createPageListItem(dataviewerID, ((pageActive > 1) ? pageActive-1 : 1),'<i class="fas fa-angle-left"></i>', false);
 			
 	var pageListItems = '';
 	
@@ -1017,7 +1135,7 @@ function cfw_renderer_paginator_createNavigationHTML(paginatorID, totalRecords, 
 	//============================================
 	// Create Pages
 
-	pageListItems += cfw_renderer_paginator_createPageListItem(paginatorID, pageActive, pageActive, true);
+	pageListItems += cfw_renderer_dataviewer_createPageListItem(dataviewerID, pageActive, pageActive, true);
 	let pagesCreated = 1;
 
 	//-------------------------------
@@ -1025,7 +1143,7 @@ function cfw_renderer_paginator_createNavigationHTML(paginatorID, totalRecords, 
 	let currentPage = pageActive-1;
 	for(let i = 1; i < 4 && currentPage >= 1; i++ ){
 		pageListItems = 
-			cfw_renderer_paginator_createPageListItem(paginatorID, currentPage,currentPage, false)
+			cfw_renderer_dataviewer_createPageListItem(dataviewerID, currentPage,currentPage, false)
 			+ pageListItems ;
 		
 		pagesCreated++;
@@ -1033,7 +1151,7 @@ function cfw_renderer_paginator_createNavigationHTML(paginatorID, totalRecords, 
 	}
 	if(currentPage > 2){
 		var jumpPage = Math.ceil(currentPage / 2);
-		pageListItems = cfw_renderer_paginator_createPageListItem(paginatorID, jumpPage,jumpPage, false)
+		pageListItems = cfw_renderer_dataviewer_createPageListItem(dataviewerID, jumpPage,jumpPage, false)
 						+ pageListItems;
 		pagesCreated++;
 	}
@@ -1042,26 +1160,24 @@ function cfw_renderer_paginator_createNavigationHTML(paginatorID, totalRecords, 
 	// Higher Pages
 	currentPage = pageActive+1;
 	for(; pagesCreated < 8 && currentPage <= totalPages; ){
-		pageListItems += cfw_renderer_paginator_createPageListItem(paginatorID, currentPage,currentPage, false);
+		pageListItems += cfw_renderer_dataviewer_createPageListItem(dataviewerID, currentPage,currentPage, false);
 		pagesCreated++;
 		currentPage++;
 	}
 	if(currentPage < totalPages-1){
 		var jumpPage = currentPage+Math.ceil((totalPages-currentPage) / 2);
-		pageListItems += cfw_renderer_paginator_createPageListItem(paginatorID, jumpPage,jumpPage, false);
+		pageListItems += cfw_renderer_dataviewer_createPageListItem(dataviewerID, jumpPage,jumpPage, false);
 	}
 
 		
 	//-------------------------------------
 	// Add Navigate Forward Buttons
 	html += pageListItems;
-	html +=cfw_renderer_paginator_createPageListItem(paginatorID, ((pageActive < totalPages) ? pageActive+1 : totalPages),'<i class="fas fa-angle-right"></i>', false)
-		 + cfw_renderer_paginator_createPageListItem(paginatorID, totalPages,'<i class="fas fa-angle-double-right"></i>', false);
+	html +=cfw_renderer_dataviewer_createPageListItem(dataviewerID, ((pageActive < totalPages) ? pageActive+1 : totalPages),'<i class="fas fa-angle-right"></i>', false)
+		 + cfw_renderer_dataviewer_createPageListItem(dataviewerID, totalPages,'<i class="fas fa-angle-double-right"></i>', false);
 	
 			
 	html +='</ul></nav>';
 
 	return html;
 }
-
-CFW.render.registerRenderer("paginator", new CFWRenderer(cfw_renderer_paginator) );

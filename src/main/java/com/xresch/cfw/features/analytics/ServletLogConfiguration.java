@@ -85,7 +85,7 @@ public class ServletLogConfiguration extends HttpServlet
 	  											
 					case "loglevel":	String loggerName = request.getParameter("loggerName");
 										String newLevel = request.getParameter("level");
-										this.updateLogLevel(jsonResponse, loggerName, newLevel);
+										this.setLogLevel(jsonResponse, loggerName, newLevel);
 										break;	
 										
 					case "configfile":	CFWLog.initializeLogging();
@@ -111,7 +111,8 @@ public class ServletLogConfiguration extends HttpServlet
 		while(loggerNames.hasMoreElements()) {
 			
 			String name = loggerNames.nextElement();
-			Logger logger = logManager.getLogger(name);
+			//Do not use LogManager.getLogger() as it may return null
+			Logger logger = Logger.getLogger(name);
 			Level level = logger.getLevel();
 			
 			if(level != null) {
@@ -129,10 +130,10 @@ public class ServletLogConfiguration extends HttpServlet
 		
 	}
 	
-	private void updateLogLevel(JSONResponse response, String loggerName, String level) {
+	private void setLogLevel(JSONResponse response, String loggerName, String level) {
 				
-		LogManager logManager = LogManager.getLogManager();
-		Logger logger = logManager.getLogger(loggerName);
+		//Do not use LogManager.getLogger() as it may return null
+		Logger logger = Logger.getLogger(loggerName);
 		
 		logger.setLevel(Level.parse(level));
 		
