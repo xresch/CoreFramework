@@ -2,6 +2,8 @@ package com.xresch.cfw.logging;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -10,10 +12,11 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw._main.SessionData;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+
+import io.prometheus.client.Counter;
 
 /**************************************************************************************************************
  * 
@@ -21,7 +24,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWLog {
-	
+		
 	protected Logger logger;
 	
 	private static boolean isLoggingInitialized = false;
@@ -50,6 +53,19 @@ public class CFWLog {
 	protected LinkedHashMap<String,String> customEntries = null;
 	protected boolean silent = false;
 
+	
+
+	private static final Counter logCounter = Counter.build()
+	         .name("cfw_logs_total")
+	         .help("Number of log events occured.")
+	         .labelNames("level")
+	         .register();
+	
+	// private static final HashMap<Level, Counter> levelCounters = new HashMap<>();
+	
+	/***********************************************************************
+	 * Constructor
+	 ***********************************************************************/
 	public CFWLog(Logger logger){
 		this.logger = logger;
 		
@@ -240,7 +256,8 @@ public class CFWLog {
 	public void log(Level level, String message, Throwable throwable){
 		//check logging level before proceeding
 		if(logger != null && logger.isLoggable(level)){
-			
+			logCounter.labels("TOTAL").inc();
+			logCounter.labels(level.toString()).inc();
 			//-------------------------
 			// Calculate Time
 			//-------------------------

@@ -99,6 +99,8 @@ DONE
 - Fixed ContextSettings created with invalid field values
 - CFW: Implement custom shutdown stopping database, application, features, etc...
 - CFWSQL: Added simplified caching method CFWSQL.queryCache();
+- /metrics: Added counters for log events;
+
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message
 - Fixed JDK11 reflection issue
