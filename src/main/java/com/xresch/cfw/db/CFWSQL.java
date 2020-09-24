@@ -130,6 +130,23 @@ public class CFWSQL {
 	}
 	
 	/****************************************************************
+	 * Caches the query using the signature of the calling method.
+	 * Slightly less performant than the other method but error
+	 * prone to copy & paste mistakes.
+	 * 
+	 * return CFWSQL for chaining
+	 ****************************************************************/
+	public CFWSQL queryCache() {
+		
+		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+		StackTraceElement cfwLogInstantiatingMethod = stacktrace[2];
+		this.queryName = cfwLogInstantiatingMethod.toString();
+		return this;
+	}
+	
+
+	
+	/****************************************************************
 	 * Check if the fieldname is valid.
 	 * @return true if valid, false otherwise
 	 ****************************************************************/

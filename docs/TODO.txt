@@ -98,7 +98,7 @@ DONE
 - Fixed menus requiring permissions still showing after logout
 - Fixed ContextSettings created with invalid field values
 - CFW: Implement custom shutdown stopping database, application, features, etc...
-
+- CFWSQL: Added simplified caching method CFWSQL.queryCache();
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message
 - Fixed JDK11 reflection issue
