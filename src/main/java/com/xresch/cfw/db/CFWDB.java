@@ -92,9 +92,7 @@ public class CFWDB {
 			CFWDB.dataSource.setURL(h2_url);
 			CFWDB.dataSource.setUser(username);
 			CFWDB.dataSource.setPassword(password);
-			
-			CFWDB.isInitialized = true;
-			
+						
 			db = new DBInterface() {
 
 				@Override
@@ -119,7 +117,13 @@ public class CFWDB {
 				}
 				
 			};
-						
+			
+			CFWDB.isInitialized = true;
+			
+			initializeFullTextSearch();
+			
+
+			
 		} catch (SQLException e) {
 			CFWDB.isInitialized = false;
 			new CFWLog(CFWDB.logger)
@@ -134,6 +138,18 @@ public class CFWDB {
 	public static void stopDBServer() {
 		server.stop();
 	}
+	
+	
+	/********************************************************************************************
+	 *
+	 ********************************************************************************************/
+	private static void initializeFullTextSearch() {
+		preparedExecute("CREATE ALIAS IF NOT EXISTS FTL_INIT FOR \"org.h2.fulltext.FullTextLucene.init\"");
+		preparedExecute("CALL FTL_INIT()");
+	}
+	
+	
+	
 	
 	/********************************************************************************************
 	 *

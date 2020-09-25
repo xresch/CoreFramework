@@ -165,28 +165,32 @@ public class CFWSQL {
 		
 	
 	/****************************************************************
-	 * 
+	 * Create the table for the associated CFWObject.
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public boolean createTable() {
+		
 		//------------------------------------
-		// Create Table
+		// Check has primary field
 		if(object.getPrimaryField() == null) {
 			new CFWLog(logger)
-				.severe("CFWObjects need a primary field to create a table out of them. ", new IllegalStateException());
+				.severe("CFWObjects need a primary field to create a table out of it. ", new IllegalStateException());
+			return false;
 		}
 		
 		//------------------------------------
 		// Create Table
 		boolean success = true;
-		String createTableSQL = "CREATE TABLE IF NOT EXISTS "+object.getTableName();
+		String tableName = object.getTableName();
+		
+		String createTableSQL = "CREATE TABLE IF NOT EXISTS "+tableName;
 		success &= CFWDB.preparedExecute(createTableSQL);
 		
 		//------------------------------------
 		// Create Columns
 		for(CFWField<?> field : fields.values()) {
 			if(field.getColumnDefinition() != null) {
-				String addColumnIsRenamable = "ALTER TABLE "+object.getTableName()
+				String addColumnIsRenamable = "ALTER TABLE "+tableName
 				 +" ADD COLUMN IF NOT EXISTS "+field.getName()+" "+field.getColumnDefinition();
 				success &= CFWDB.preparedExecute(addColumnIsRenamable);
 			}else {
@@ -204,8 +208,8 @@ public class CFWSQL {
 				foreignTable = fkd.foreignObject.newInstance().getTableName();
 					
 				// Example String: ALTER TABLE PUBLIC.CORE_USERROLE_TO_PARAMETER ADD CONSTRAINT IF NOT EXISTS PUBLIC.CURTBP_USER_ID FOREIGN KEY(USER_ID) REFERENCES PUBLIC.CORE_USER(ID) NOCHECK;
-				String createForeignKeysSQL = "ALTER TABLE "+object.getTableName()
-				  + " ADD CONSTRAINT IF NOT EXISTS PUBLIC.FK_"+object.getTableName()+"_"+fkd.fieldname
+				String createForeignKeysSQL = "ALTER TABLE "+tableName
+				  + " ADD CONSTRAINT IF NOT EXISTS PUBLIC.FK_"+tableName+"_"+fkd.fieldname
 				  + " FOREIGN KEY ("+fkd.fieldname
 				  + ") REFERENCES "+foreignTable+"("+fkd.foreignFieldname+") ON DELETE "+fkd.ondelete;
 			
@@ -213,9 +217,24 @@ public class CFWSQL {
 				
 			} catch (Exception e) {
 				new CFWLog(logger)
-				.severe("An error occured trying to create foreign keys for table: "+object.getTableName(), e);
+				.severe("An error occured trying to create foreign keys for table: "+tableName, e);
 			} 
 			
+		}
+		//------------------------------------
+		// Create Fulltext Search Index
+		if(object.hasFulltextSearch()) {
+			
+			// Check index exists
+			int count = new CFWSQL(null)
+			.custom("SELECT COUNT(*) FROM FTL.INDEXES WHERE \"TABLE\" = ?", tableName)
+			.getCount();
+			
+			if(count == 0) {
+				new CFWLog(logger).info("Creating fulltext search index for table '"+tableName+"'. this might take some time.");
+				success &= CFWDB.preparedExecute("CALL FTL_CREATE_INDEX('PUBLIC', '"+tableName+"', NULL);");
+				
+			}
 		}
 		
 		return success;
@@ -1426,6 +1445,6 @@ public class CFWSQL {
 		
 		return string;
 		
-	}	
+	}
 	
 }

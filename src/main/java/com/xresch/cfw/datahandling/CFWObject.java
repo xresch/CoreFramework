@@ -35,6 +35,7 @@ public class CFWObject {
 	//---------------------------
 	// Database
 	protected String tableName; 
+	protected boolean isFulltextSearchEnabled = false;
 	protected CFWField<Integer> primaryField = null;
 	private ArrayList<ForeignKeyDefinition> foreignKeys = new ArrayList<ForeignKeyDefinition>();
 	
@@ -254,7 +255,21 @@ public class CFWObject {
 		this.tableName = tableName;
 		return this;
 	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	public CFWObject enableFulltextSearch() {
+		this.isFulltextSearchEnabled = true;
+		return this;
+	}
 			
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	public boolean hasFulltextSearch() {
+		return isFulltextSearchEnabled;
+	}
 	/*****************************************************************************
 	 * Override this method to register API definitions.
 	 * 

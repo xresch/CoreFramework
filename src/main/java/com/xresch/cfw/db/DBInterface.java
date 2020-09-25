@@ -269,7 +269,7 @@ public abstract class DBInterface {
 			
 		}
 		
-		log.custom("sql", sql).end();
+		log.custom("sql", sql).end(Level.FINE);
 		return result;
 	}
 	
@@ -323,7 +323,7 @@ public abstract class DBInterface {
 			
 		}
 		
-		log.custom("sql", sql).end();
+		log.custom("sql", sql).end(Level.FINE);
 		return result;
 	}
 	
@@ -377,7 +377,7 @@ public abstract class DBInterface {
 			
 		}
 		
-		log.custom("sql", sql).end();
+		log.custom("sql", sql).end(Level.FINE);
 		return generatedID;
 	}
 	/********************************************************************************************
@@ -447,7 +447,7 @@ public abstract class DBInterface {
 			}
 		} 
 		
-		log.custom("sql", sql).end();
+		log.custom("sql", sql).end(Level.FINE);
 				 
 		return result;
 	}

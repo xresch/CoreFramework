@@ -20,10 +20,11 @@
 
 		<jettyVersion>9.4.31.v20200723</jettyVersion>
 		<prometheusVersion>0.9.0</prometheusVersion>
-
+		<luceneVersion>5.5.5</luceneVersion>
+		
 		<skipTests>true</skipTests>
-		<skipJavadoc>false</skipJavadoc>
-		<skipSigning>false</skipSigning>
+		<skipJavadoc>true</skipJavadoc>
+		<skipSigning>true</skipSigning>
 	</properties>
 
 	<!-- ================= LICENSES ================== -->
@@ -145,6 +146,27 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.200</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>${luceneVersion}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-queryparser -->
+		<dependency>
+		    <groupId>org.apache.lucene</groupId>
+		    <artifactId>lucene-queryparser</artifactId>
+		    <version>${luceneVersion}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
+		<dependency>
+		    <groupId>org.apache.lucene</groupId>
+		    <artifactId>lucene-analyzers-common</artifactId>
+		    <version>${luceneVersion}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.onelogin/java-saml -->
@@ -322,22 +344,12 @@
 			</plugin>
 
 			<!-- ================= DEPENDENCY ================== -->
-			<!--  plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>install</phase>
-						<goals>
-							<goal>copy-dependencies</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>${project.build.directory}/lib</outputDirectory>
-							<excludeScope>provided</excludeScope>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin -->
-			
+			<!-- plugin> <artifactId>maven-dependency-plugin</artifactId> <executions> 
+				<execution> <phase>install</phase> <goals> <goal>copy-dependencies</goal> 
+				</goals> <configuration> <outputDirectory>${project.build.directory}/lib</outputDirectory> 
+				<excludeScope>provided</excludeScope> </configuration> </execution> </executions> 
+				</plugin -->
+
 			<!-- ================= ASSEMBLY ================== -->
 			<!-- mvn clean compile assembly:single -->
 			<plugin>
