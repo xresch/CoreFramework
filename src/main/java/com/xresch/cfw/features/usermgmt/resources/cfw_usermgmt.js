@@ -231,10 +231,9 @@ function cfw_usermgmt_delete(item, ids){
 }
 
 /******************************************************************
- * Print the list of users;
+ * Example of pagination of static data using the dataviewer render.
  * 
  * @param data as returned by CFW.http.getJSON()
- * @return 
  ******************************************************************/
 function cfw_usermgmt_printUserList(data){
 	
@@ -250,9 +249,9 @@ function cfw_usermgmt_printUserList(data){
 	
 	parent.append(createButton);
 	
+	
 	//--------------------------------
 	// Table
-	cfwTable.addHeaders(['ID', 'Username', "eMail", "Firstname", "Lastname", "Status", "Last Login", "&nbsp;", "&nbsp;", "&nbsp;"]);
 	
 	if(data.payload != undefined){
 		
@@ -260,56 +259,94 @@ function cfw_usermgmt_printUserList(data){
 		if(resultCount == 0){
 			CFW.ui.addAlert("info", "Hmm... seems there aren't any users in the list.");
 		}
+				
+		
+		//======================================
+		// Prepare actions
+		var actionButtons = [];
+		
+		//-------------------------
+		// Reset Password Button
+		actionButtons.push(
+			function (record, id){ 
+				if(!record.IS_FOREIGN){
+					return '<button class="btn btn-warning btn-sm" alt="Reset Password" title="Reset Password" '
+						+'onclick="cfw_usermgmt_resetPassword('+id+');">'
+						+ '<i class="fas fa-unlock-alt"></i>'
+						+ '</button></td>';
+				}else{
+					return '&nbsp;';
+				}
+
+			});
+
+		//-------------------------
+		// Edit Button
+		actionButtons.push(
+			function (record, id){ 
+				return 	'<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
+					+'onclick="cfw_usermgmt_editUser('+id+');">'
+					+ '<i class="fa fa-pen"></i>'
+					+ '</button>&nbsp;';
+
+			});
 
 		
-		var htmlString = "";
-		for(var i = 0; i < resultCount; i++){
-			var current = data.payload[i];
-			htmlString += '<tr>';
-			htmlString += '<td>'+current.PK_ID+'</td>';
-			htmlString += '<td>'+current.USERNAME+'</td>';
-			htmlString += '<td>'+CFW.utils.nullTo(current.EMAIL, '-')+'</td>';
-			htmlString += '<td>'+CFW.utils.nullTo(current.FIRSTNAME, '-')+'</td>';
-			htmlString += '<td>'+CFW.utils.nullTo(current.LASTNAME, '-')+'</td>';
-			htmlString += '<td><span class="badge badge-'+((current.STATUS.toLowerCase() == "active")? 'success' : 'danger') +'">'+current.STATUS+'</td>';
-			htmlString += '<td>'+CFW.format.epochToTimestamp(current.LAST_LOGIN)+'</td>';
-			
-			//Reset Password Button
-			if(!current.IS_FOREIGN){
-				htmlString += '<td><button class="btn btn-warning btn-sm" alt="Reset Password" title="Reset Password" '
-					+'onclick="cfw_usermgmt_resetPassword('+current.PK_ID+');">'
-					+ '<i class="fas fa-unlock-alt"></i>'
-					+ '</button></td>';
-			}else{
-				htmlString += '<td></td>';
-			}
-			
-			//Edit Button
-			
-			htmlString += '<td><button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
-				+'onclick="cfw_usermgmt_editUser('+current.PK_ID+');">'
-				+ '<i class="fa fa-pen"></i>'
-				+ '</button>&nbsp;</td>';
-			
-			//Delete Button
-			if(current.IS_DELETABLE){
-				htmlString += '<td><button class="btn btn-danger btn-sm" alt="Delete" title="Delete"  '
-					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the user?\', \'Delete\', \'cfw_usermgmt_delete(\\\'users\\\','+current.PK_ID+');\')">'
-					+ '<i class="fa fa-trash"></i>'
-					+ '</button></td>';
-			}else{
-				htmlString += '<td>&nbsp;</td>';
-			}
-			
-			htmlString += '</tr>';
-		}
+		//-------------------------
+		// Delete Button
+		actionButtons.push(
+			function (record, id){
+				if(record.IS_DELETABLE){
+					return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete"  '
+						+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the user?\', \'Delete\', \'cfw_usermgmt_delete(\\\'users\\\','+id+');\')">'
+						+ '<i class="fa fa-trash"></i>'
+						+ '</button>';
+				}else{
+					return '&nbsp;';
+				}
+
+			});
 		
-		cfwTable.addRows(htmlString);
+
+		//-----------------------------------
+		// Render Data
+		var rendererSettings = {
+				data: data.payload,
+			 	idfield: 'PK_ID',
+			 	bgstylefield: null,
+			 	textstylefield: null,
+			 	titlefields: ['NAME'],
+			 	titledelimiter: ' ',
+			 	visiblefields: ['PK_ID', 'USERNAME', 'EMAIL', 'FIRSTNAME', 'LASTNAME', 'STATUS', "LAST_LOGIN"],
+			 	labels: {
+			 		PK_ID: "ID",
+			 	},
+			 	customizers: {
+			 		EMAIL: function(record, value) { return CFW.utils.nullTo(value, '-'); },
+			 		FIRSTNAME: function(record, value) { return CFW.utils.nullTo(value, '-'); },
+			 		LASTNAME: function(record, value) { return CFW.utils.nullTo(value, '-'); },
+			 		STATUS: function(record, value) { return '<span class="badge badge-'+((value.toLowerCase() == "active")? 'success' : 'danger') +'">'+value+'</span>'; },
+			 		LAST_LOGIN: function(record, value) { return CFW.format.epochToTimestamp(value); },
+			 	},
+				actions: actionButtons,
+//				bulkActions: {
+//					"Edit": function (elements, records, values){ alert('Edit records '+values.join(',')+'!'); },
+//					"Delete": function (elements, records, values){ $(elements).remove(); },
+//				},
+//				bulkActionsPos: "both",
+				
+				rendererSettings: {
+					dataviewer: {},
+					table: { filterable: false}
+				},
+			};
 		
-		cfwTable.appendTo(parent);
+		var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
+		
+		parent.append(renderResult);
+		
 	}else{
-		CFW.ui.addToastDanger('Something went wrong and no users can be displayed.');
-		
+		CFW.ui.addAlert('error', 'Something went wrong and no users can be displayed.');
 	}
 }
 

@@ -1099,7 +1099,6 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings
 	var onchangeAttribute = ' onchange="cfw_renderer_dataviewer_fireChange(\'#'+dataviewerID+'\', 1)" ';
 	var html = '<div class="cfw-dataviewer-settings">';
 	
-
 	//--------------------------------------
 	// Page Size
 	html += '<div class="float-right ml-2">'
@@ -1138,7 +1137,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings
  ******************************************************************/
 function cfw_renderer_dataviewer_createPageListItem(dataviewerID, page, label, isActive) {
 	return '<li class="page-item '+(isActive ? 'active':'')+'">'
-				+'<a class="page-link" href="#" onclick="cfw_renderer_dataviewer_fireChange(\''+dataviewerID+'\', '+page+')">'+label+'</a>'
+				+'<a class="page-link" onclick="cfw_renderer_dataviewer_fireChange(\''+dataviewerID+'\', '+page+')">'+label+'</a>'
 			+'</li>';
 }
 
