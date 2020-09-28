@@ -325,9 +325,9 @@ public class CFWSQL {
 	public CFWSQL select() {
 		if(!isQueryCached()) {
 			if(!this.hasColumnSubqueries()) {
-				query.append(" SELECT * FROM "+object.getTableName());
+				query.append(" SELECT T.* FROM "+object.getTableName()+" T ");
 			}else {
-				query.append(" SELECT * "+this.getColumnSubqueriesString()+" FROM "+object.getTableName());
+				query.append(" SELECT T.* "+this.getColumnSubqueriesString()+" FROM "+object.getTableName()+" T ");
 			}
 		}
 		return this;
@@ -344,7 +344,7 @@ public class CFWSQL {
 			//---------------------------------
 			// Add Fields
 			for(Object fieldname : fieldnames) {
-					query.append(" ").append(fieldname).append(",");
+					query.append(" T.").append(fieldname).append(",");
 			}
 			query.deleteCharAt(query.length()-1);
 			
@@ -354,7 +354,7 @@ public class CFWSQL {
 				query.append(this.getColumnSubqueriesString());
 			}
 			
-			query.append(" FROM "+object.getTableName());
+			query.append(" FROM "+object.getTableName()+" T ");
 		}
 		return this;
 	}
@@ -375,7 +375,7 @@ public class CFWSQL {
 			for(String name : fields.keySet()) {
 				//add if name is not in fieldnames
 				if(Arrays.binarySearch(fieldnames, name) < 0) {
-					query.append(" ").append(name).append(",");
+					query.append(" T.").append(name).append(",");
 				}
 			}
 			query.deleteCharAt(query.length()-1);
@@ -386,11 +386,18 @@ public class CFWSQL {
 				query.append(this.getColumnSubqueriesString());
 			}
 			
-			query.append(" FROM "+object.getTableName());
+			query.append(" FROM "+object.getTableName()+" T ");
 		}
 		return this;
 	}
 	
+	
+	/****************************************************************
+	 * initializes a new Fulltext search.
+	 ****************************************************************/
+	public CFWSQLLuceneQuery fulltextSearch() {
+		return new CFWSQLLuceneQuery(this);
+	}
 	
 	/****************************************************************
 	 * Creates the insert statement used by insert()
@@ -1377,7 +1384,7 @@ public class CFWSQL {
 		
 	}
 	
-		
+	
 	/***************************************************************
 	 * Execute the Query and gets the result as JSON string.
 	 ****************************************************************/
@@ -1445,6 +1452,13 @@ public class CFWSQL {
 		
 		return string;
 		
+	}
+	
+	/***************************************************************
+	 * Returns the CFWObject the instance was created with
+	 ****************************************************************/
+	public CFWObject getObject() {
+		return this.object;
 	}
 	
 }

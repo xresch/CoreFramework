@@ -66,6 +66,7 @@ public abstract class DBInterface {
 					counter++;
 					new CFWLog(logger)
 						.minimal(true)
+						.silent(true)
 						.warn("DBInterface.forceCloseRemainingConnections: "+con.getClass());
 					con.close();
 				}

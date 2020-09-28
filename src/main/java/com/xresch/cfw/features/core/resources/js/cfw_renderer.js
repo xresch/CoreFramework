@@ -941,7 +941,7 @@ function cfw_renderer_dataviewer(renderDef) {
 				//The offset for fetching the results
 				sortdirectionparam: 'sort',
 				//The filter string used for filtering the results
-				filterparam: 'filter',
+				filterqueryparam: 'filterquery',
 				//The name of the field containing the total number of rows
 				totalrowsfield: 'TOTAL_RECORDS',
 			},
@@ -977,7 +977,7 @@ CFW.render.registerRenderer("dataviewer", new CFWRenderer(cfw_renderer_dataviewe
  ******************************************************************/
 function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) {
 	
-	//-------------------------------------
+	//=====================================================
 	// Initialize
 	var dataviewerDiv = $(dataviewerIDOrJQuery);
 	var settingsDiv = dataviewerDiv.find('.cfw-dataviewer-settings');
@@ -986,7 +986,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	var renderDef = dataviewerDiv.data('renderDef');
 	var settings = dataviewerDiv.data('settings');
 	
-	//-------------------------------------
+	//=====================================================
 	// Handle Page to Render
 	if(pageToRender == null || pageToRender == undefined){
 		pageToRender = dataviewerDiv.data('currentpage');
@@ -997,24 +997,40 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	
 	dataviewerDiv.data('currentpage', pageToRender);
 	
-	//-------------------------------------
+	//=====================================================
 	// Get Settings
 	var pageSize = settingsDiv.find('select[name="pagesize"]').val();
+	var filterquery = settingsDiv.find('input[name="filterquery"]').val();
 	var offset = pageSize * (pageToRender-1);
 	
-	//-------------------------------------
+	//=====================================================
 	// Get Render Results
 	if(settings.datainterface.url == null){
-		let totalRecords = renderDef.data.length;
-
-		let dataToRender = _.slice(renderDef.data, offset, offset+pageSize);
-		cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
+		
+		//-------------------------------------
+		// Static 
+		if(CFW.utils.isNullOrEmpty(filterquery)){
+			let totalRecords = renderDef.data.length;
+			let dataToRender = _.slice(renderDef.data, offset, offset+pageSize);
+			cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
+		}else{
+			
+			let filteredData = _.filter(renderDef.data, function(o) { 
+				    return JSON.stringify(o).includes(filterquery); 
+			});
+			let totalRecords = filteredData.length;
+			let dataToRender = _.slice(filteredData, offset, offset+pageSize);
+			cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
+		}
 	}else{
 		
+		//-------------------------------------
+		// Dynamic
 		let params = {};
 		params[settings.datainterface.actionparam] = "fetchpartial";
 		params[settings.datainterface.sizeparam] = pageSize;
 		params[settings.datainterface.pageparam] = pageToRender;
+		params[settings.datainterface.filterqueryparam] = filterquery;
 		params[settings.datainterface.itemparam] = settings.datainterface.item;
 //		params[settings.datainterface.sortbyparam] = ;
 //		params[settings.datainterface.sortdirectionparam] = ;
@@ -1084,7 +1100,9 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings
 	var html = '<div class="cfw-dataviewer-settings">';
 	
 
-	html += '<div class="float-right">'
+	//--------------------------------------
+	// Page Size
+	html += '<div class="float-right ml-2">'
 		+'	<label for="pagesize">Page Size:&nbsp;</label>'
 		+'	<select name="pagesize" class="form-control form-control-sm" title="Choose Page Size" '+onchangeAttribute+'>'
 	
@@ -1100,8 +1118,16 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings
 		}
 	
 	html += '	</select>'
-			+'</div>'
 			+'</div>';
+	
+	//--------------------------------------
+	// Filter Query
+	html += '<div class="float-right  ml-2">'
+		+'	<label for="filterquery">Filter:&nbsp;</label>'
+		+'	<input type="text" name="filterquery" placeholder="Filter..." class="form-control form-control-sm" title="Filter the Results" '+onchangeAttribute+'>'
+		+'</div>';
+	
+	html += '</div>';
 	
 	return html;
 }
