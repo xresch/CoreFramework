@@ -854,6 +854,7 @@ function cfw_renderer_chart(renderDef) {
             },
 			tooltips: {
 				intersect: false,
+				enabled: false,
 				mode: 'index',
 //				callbacks: {
 //					label: function(tooltipItem, myData) {
@@ -865,6 +866,77 @@ function cfw_renderer_chart(renderDef) {
 //						return label;
 //					}
 //				}
+				custom: function(tooltipModel) {
+	                // Tooltip Element
+	                var $tooltip = $('#chartjs-tooltip');
+
+	                // Create element on first render
+	                if ($tooltip.length === 0) {
+	                    $tooltip = $('<div id="chartjs-tooltip" class="bg-cfw-black"><table></table></div>');
+	                    $('body').append($tooltip);
+	                }
+
+	                // Hide if no tooltip
+	                if (tooltipModel.opacity === 0) {
+	                    $tooltip.css('opacity', 0);
+	                    return;
+	                }
+
+	                // Set caret Position
+	                $tooltip.removeClass('above below no-transform');
+	                if (tooltipModel.yAlign) {
+	                    $tooltip.addClass(tooltipModel.yAlign);
+	                } else {
+	                    $tooltip.addClass('no-transform');
+	                }
+
+	                function getBody(bodyItem) {
+	                    return bodyItem.lines;
+	                }
+
+	                // Set Text
+	                if (tooltipModel.body) {
+	                    var titleLines = tooltipModel.title || [];
+	                    var bodyLines = tooltipModel.body.map(getBody);
+
+	                    var innerHtml = '<thead>';
+
+	                    titleLines.forEach(function(title) {
+	                        innerHtml += '<tr><th>' + title + '</th></tr>';
+	                    });
+	                    innerHtml += '</thead><tbody>';
+
+	                    bodyLines.forEach(function(body, i) {
+	                        var colors = tooltipModel.labelColors[i];
+
+	                        var div = '<div class="cfw-color-box" '
+	                        			  +'style=" background:' + colors.backgroundColor
+	                        					+'; border-color:' + colors.borderColor
+	                        				   + '; border-width: 2px;">&nbsp;</div>';
+	                        
+	                        innerHtml += '<tr><td>' + div + body + '</td></tr>';
+	                    });
+	                    innerHtml += '</tbody>';
+
+	                    var tableRoot = $tooltip.find('table');
+	                    tableRoot.html(innerHtml);
+	                }
+
+	                // `this` will be the overall tooltip
+	                var position = this._chart.canvas.getBoundingClientRect();
+
+	                // Display, position, and set styles for font
+	                $tooltip.css('opacity', 1);
+	                $tooltip.css('position', 'absolute');
+	                $tooltip.css('left', position.left + window.pageXOffset + tooltipModel.caretX + 'px');
+	                $tooltip.css('top', position.top + window.pageYOffset + tooltipModel.caretY + 'px');
+	                $tooltip.css('fontFamily', tooltipModel._bodyFontFamily);
+	                $tooltip.css('fontSize', tooltipModel.bodyFontSize + 'px');
+	                $tooltip.css('fontStyle', tooltipModel._bodyFontStyle);
+	                $tooltip.css('padding', tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px');
+	                $tooltip.css('pointerEvents', 'none');
+	                $tooltip.css('z-index', 128);
+	            }
 			},
 			layout: {
 	            padding: {

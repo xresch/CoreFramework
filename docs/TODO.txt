@@ -100,6 +100,8 @@ DONE
 - CFW: Implement custom shutdown stopping database, application, features, etc...
 - CFWSQL: Added simplified caching method CFWSQL.queryCache();
 - /metrics: Added counters for log events
+- renderer: added dataviewer renderer
+- User Management: use dataviewer for user table
 
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message

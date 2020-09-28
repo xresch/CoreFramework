@@ -337,7 +337,7 @@ function cfw_usermgmt_printUserList(data){
 				
 				rendererSettings: {
 					dataviewer: {},
-					table: { filterable: false}
+					table: { filterable: false },
 				},
 			};
 		
