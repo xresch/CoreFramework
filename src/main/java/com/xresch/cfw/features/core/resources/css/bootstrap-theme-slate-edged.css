@@ -3106,6 +3106,7 @@ input[type="button"].btn-block {
   word-wrap: break-word;
   background-color: #23313d;
   background-clip: border-box;
+  margin: 5px;
   border: 1px solid rgba(0, 0, 0, 0.6); }
   .card > hr {
     margin-right: 0;
@@ -3134,7 +3135,7 @@ input[type="button"].btn-block {
 .card-header {
   padding: 0.75rem 1.25rem;
   margin-bottom: 0;
-  background-color: #58595e;
+  background-color: #151f28;
   border-bottom: 1px solid rgba(0, 0, 0, 0.6); }
   .card-header + .list-group .list-group-item:first-child {
     border-top: 0; }

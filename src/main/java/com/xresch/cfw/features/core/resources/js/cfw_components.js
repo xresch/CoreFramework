@@ -617,11 +617,12 @@ class CFWPanel{
 		//----------------------------
 		// resolve classes
 		var panelClasses = 'cfwRecordContainer card';
-		var panelHeaderClasses = 'card-header';
+		var panelHeaderClasses = 'card-header cursor-pointer';
 		
 		if(this.settings.cardstyle != null){
 			panelClasses += ' border-'+this.settings.cardstyle;
 			panelHeaderClasses += ' bg-'+this.settings.cardstyle;
+			
 		}
 		
 		if(this.settings.textstyle != null){

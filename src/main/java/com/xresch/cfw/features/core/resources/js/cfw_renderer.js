@@ -52,13 +52,64 @@ CFW.render.registerRenderer("json", new CFWRenderer(cfw_renderer_json));
 /******************************************************************
  * 
  ******************************************************************/
-CFW.render.registerRenderer("csv",
-	new CFWRenderer(
-		function (renderDef) {
+function cfw_renderer_csv(renderDef) {
+	
+	//-----------------------------------
+	// Render Specific settings
+	var defaultSettings = {
+		// the delimter for the csv
+		delimiter: ';',
+	};
+	
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.csv);
+	
+	//-----------------------------------
+	// Target Element
+	let pre = $('<pre class="card p-3">');
+	let code = $('<code ondblclick="CFW.selection.selectElementContent(this)">');
+	pre.append(code);
+	
+	//-----------------------------------
+	// Headers
+	let headers = '';
+	for(var key in renderDef.visiblefields){
+		var fieldname = renderDef.visiblefields[key];
+		
+		headers += renderDef.labels[fieldname] + settings.delimiter;
+	}
+	// remove last semicolon
+	headers = headers.substring(0, headers.length-1);
+	code.append(headers+"\n");
+	
+	//-----------------------------------
+	// Print Records
+	for(let i = 0; i < renderDef.data.length; i++ ){
+		let currentRecord = renderDef.data[i];
+		let record = "";
+		for(var key in renderDef.visiblefields){
+			var fieldname = renderDef.visiblefields[key];
+			var value = currentRecord[fieldname];
 			
+			if(typeof value === "object" ){
+				value = JSON.stringify(value);
+			}else{
+				if(value != null){
+					value = (""+value).replace('\n', '\\n');
+				}else{
+					value = "";
+				}
+			}
+			
+			record += value + settings.delimiter;
 		}
-	)
-);
+		// remove last semicolon
+		record = record.substring(0, record.length-1);
+		code.append(record+"\n");
+	}
+
+	return pre;
+}
+CFW.render.registerRenderer("csv",  new CFWRenderer(cfw_renderer_csv));
 
 /******************************************************************
  * 
@@ -781,7 +832,7 @@ function cfw_renderer_chart(renderDef) {
 			data.labels.push(label)
 			data.datasets[0].data.push(datasets[label].cfwSum / datasets[label].cfwCount);
 		}
-		console.log(data)
+
 	}
 
 	
@@ -1134,7 +1185,6 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
  ******************************************************************/
 function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender) {
 	
-	console.log("test2"+dataviewerDiv);
 	//-------------------------------------
 	// Initialize
 	//var dataviewerDiv = $(dataviewerID);
@@ -1151,10 +1201,7 @@ function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRe
 	var pageSize = settingsDiv.find('select[name="pagesize"]').val();
 	
 	var offset = pageSize * (pageToRender-1);
-	
-	console.log("offset"+offset);
-	console.log("pageSize"+pageSize);
-	
+		
 	//-------------------------------------
 	// Prepare Renderer
 	

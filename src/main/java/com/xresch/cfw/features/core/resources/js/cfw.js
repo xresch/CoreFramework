@@ -2049,7 +2049,7 @@ function cfw_clearCache(){
 /**************************************************************************************
  * Select all the content of the given element.
  * For example to select everything inside a given DIV element using 
- * <div onclick="selectElementContent(this)">.
+ * <div ondblclick="selectElementContent(this)">.
  * @param el the dom element 
  *************************************************************************************/
 function cfw_selectElementContent(el) {
