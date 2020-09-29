@@ -39,9 +39,7 @@ TODO
 - Widget: Collaboration: Chat
 - Widget: Collaboration: Logbook
 
-- cfw.js: Create Pagination Renderer
 - cfw.js: Finish javascript CFWFormField
-- cfw.js: Check Session Timeout
 - cfw.js: Add Tic Tac Toe Loader for Long running requests
 - cfw.js: Progress Bar Loader
 
@@ -102,7 +100,7 @@ DONE
 - /metrics: Added counters for log events
 - renderer: added dataviewer renderer
 - User Management: use dataviewer for user table
-
+- Chart Renderer: fixed tooltip overflow, not cropped anymore.
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message
 - Fixed JDK11 reflection issue

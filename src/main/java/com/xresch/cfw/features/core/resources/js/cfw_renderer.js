@@ -55,6 +55,7 @@ CFW.render.registerRenderer("json", new CFWRenderer(cfw_renderer_json));
 CFW.render.registerRenderer("csv",
 	new CFWRenderer(
 		function (renderDef) {
+			
 		}
 	)
 );
@@ -76,7 +77,7 @@ function cfw_renderer_tiles(renderDef) {
 		// size factor for the text in the tile, or tile size of labels are not shown
 		sizefactor: 1,
 		// show or hide labels
-		showlabels: false, 
+		showlabels: true, 
 		// the border style of the tile, choose between: null | 'none' | 'round' | 'superround' | 'asymmetric' | 'superasymmetric' | 'ellipsis'
 		borderstyle: null,
 		// the border that should be applied, like '1px solid black'
@@ -982,9 +983,16 @@ function cfw_renderer_dataviewer(renderDef) {
 	//========================================
 	// Render Specific settings
 	var defaultSettings = {
-			// The available renderers which can be choosen with the Display As option
+			// The available renderers which can be chosen with the Display As option
 			renderers: [
-				{name: 'table'}
+				{	label: 'Table',
+					name: 'table',
+					renderdef: {
+						rendererSettings: {
+							table: {filterable: false},
+						},
+					}
+				}
 			],
 			// The initial page to be drawn.
 			initialpage: 1,
@@ -1019,10 +1027,8 @@ function cfw_renderer_dataviewer(renderDef) {
 			},
 	};
 	
-
 	//var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.dataviewer);
-	var settings = _.merge({}, defaultSettings, renderDef.rendererSettings.dataviewer);
-	console.log(settings);
+	var settings = _.merge({}, defaultSettings, renderDef.rendererSettings.dataviewer);	
 	
 	let dataviewerID = "dataviewer-"+CFW.utils.randomString(12);
 	let dataviewerDiv = $('<div class="cfw-dataviewer" id="'+dataviewerID+'">');
@@ -1136,23 +1142,34 @@ function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRe
 	var targetDiv = dataviewerDiv.find('.cfw-dataviewer-content');
 	var dataviewerID = "#"+dataviewerDiv.attr('id');
 	var renderDef = dataviewerDiv.data('renderDef');
-	var settings = dataviewerDiv.data('settings');
+	var dataviewerSettings = dataviewerDiv.data('settings');
 	
 	
 	//-------------------------------------
 	// Get Settings
 	//var totalRecords = dataToRender.length;
 	var pageSize = settingsDiv.find('select[name="pagesize"]').val();
+	
 	var offset = pageSize * (pageToRender-1);
 	
 	console.log("offset"+offset);
 	console.log("pageSize"+pageSize);
 	
 	//-------------------------------------
+	// Prepare Renderer
+	
+	let renderDefOverrides = dataviewerSettings.renderers[0].renderdef;
+	let rendererName = dataviewerSettings.renderers[0].name;
+	if(dataviewerSettings.renderers.length > 1){
+		var renderIndex = settingsDiv.find('select[name="displayas"]').val();
+		renderDefOverrides = dataviewerSettings.renderers[renderIndex].renderdef;
+		rendererName = dataviewerSettings.renderers[renderIndex].name;
+	}
+	//-------------------------------------
 	// Call Renderer
-	let renderDefClone = _.cloneDeep(renderDef);
+	let renderDefClone = Object.assign({}, renderDef, renderDefOverrides);
 	renderDefClone.data = dataToRender;
-	var renderResult = CFW.render.getRenderer('table').render(renderDefClone);
+	var renderResult = CFW.render.getRenderer(rendererName).render(renderDefClone);
 	
 	//-------------------------------------
 	// Create Paginator
@@ -1171,6 +1188,25 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings
 	var onchangeAttribute = ' onchange="cfw_renderer_dataviewer_fireChange(\'#'+dataviewerID+'\', 1)" ';
 	var html = '<div class="cfw-dataviewer-settings">';
 	
+	//--------------------------------------
+	// Display As
+	
+	if(dataviewerSettings.renderers.length > 1){
+		
+		html += '<div class="float-right ml-2">'
+			+'	<label for="displayas">Display As:&nbsp;</label>'
+			+'	<select name="displayas" class="form-control form-control-sm" title="Choose Display" '+onchangeAttribute+'>'
+		
+			for(key in dataviewerSettings.renderers){
+				var renderer = dataviewerSettings.renderers[key];
+
+				html += '<option value="'+key+'" >'+renderer.label+'</option>';
+
+			}
+		
+		html += '	</select>'
+				+'</div>';
+	}
 	//--------------------------------------
 	// Page Size
 	html += '<div class="float-right ml-2">'
