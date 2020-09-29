@@ -1146,9 +1146,9 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			let dataToRender = _.slice(renderDef.data, offset, offset+pageSize);
 			cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
 		}else{
-			
+			filterquery = filterquery.toLowerCase();
 			let filteredData = _.filter(renderDef.data, function(o) { 
-				    return JSON.stringify(o).includes(filterquery); 
+				    return JSON.stringify(o).toLowerCase().includes(filterquery); 
 			});
 			let totalRecords = filteredData.length;
 			let dataToRender = _.slice(filteredData, offset, offset+pageSize);
