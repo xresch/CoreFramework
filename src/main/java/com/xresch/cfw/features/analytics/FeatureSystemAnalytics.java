@@ -1,8 +1,5 @@
 package com.xresch.cfw.features.analytics;
 
-import java.util.concurrent.ScheduledFuture;
-
-import com.google.common.cache.CacheStats;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
@@ -11,7 +8,6 @@ import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
 import io.prometheus.client.exporter.MetricsServlet;
-import io.prometheus.client.guava.cache.CacheMetricsCollector;
 import io.prometheus.client.hotspot.BufferPoolsExports;
 import io.prometheus.client.hotspot.ClassLoadingExports;
 import io.prometheus.client.hotspot.GarbageCollectorExports;

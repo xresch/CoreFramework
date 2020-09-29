@@ -166,7 +166,6 @@ function cfw_dashboardlist_printDashboards(data, type){
 		var resultCount = data.payload.length;
 		if(resultCount == 0){
 			CFW.ui.addToastInfo("Hmm... seems there aren't any dashboards in the list.");
-			return;
 		}
 		
 		//-----------------------------------
@@ -260,7 +259,6 @@ function cfw_dashboardlist_printDashboards(data, type){
 			 	visiblefields: showFields,
 			 	labels: {
 			 		PK_ID: "ID",
-			 		USERNAME: 'Owner',
 			 		IS_SHARED: 'Shared'
 			 	},
 			 	customizers: {
@@ -282,11 +280,50 @@ function cfw_dashboardlist_printDashboards(data, type){
 //				bulkActionsPos: "both",
 				data: data.payload,
 				rendererSettings: {
-					table: {narrow: false, filterable: true}
+					dataviewer:{
+						renderers: [
+							{	label: 'Table',
+								name: 'table',
+								renderdef: {
+									rendererSettings: {
+										table: {filterable: false},
+									},
+								}
+							},
+							{	label: 'Panels',
+								name: 'panels',
+								renderdef: {}
+							},
+							{	label: 'Tiles',
+								name: 'tiles',
+								renderdef: {
+									visiblefields: showFields,
+									rendererSettings: {
+										tiles: {
+											popover: false,
+											border: '2px solid black'
+										},
+									},
+									
+								}
+							},
+							{	label: 'CSV',
+								name: 'csv',
+								renderdef: {
+									visiblefields: null
+								}
+							},
+							{	label: 'JSON',
+								name: 'json',
+								renderdef: {}
+							}
+						],
+					},
+					table: {filterable: false}
 				},
 			};
 				
-		var renderResult = CFW.render.getRenderer('table').render(rendererSettings);	
+		var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
 		
 		parent.append(renderResult);
 		

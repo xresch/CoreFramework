@@ -28,8 +28,7 @@ function cfw_cachestatistics_showCacheDetails(element){
 				 	customizers: {
 				 		key: function(record, value){ return '<p class="maxvw-15 word-wrap-break">'+value+'</p>'; },
 				 		value: function(record, value){ 
-				 			let adjustedValue = value.replace(/\n/g, "<br />");
-				 			return $('<p class="word-break-all word-wrap-break">').text(adjustedValue); 
+				 			return $('<p class="word-break-all word-wrap-break">').text(value); 
 				 		},
 				 	},
 					data: data.payload.entries,
