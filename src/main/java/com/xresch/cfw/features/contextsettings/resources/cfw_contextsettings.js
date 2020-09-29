@@ -200,7 +200,7 @@ function cfw_contextsettings_printContextSettings(data){
 			 	bgstylefield: null,
 			 	textstylefield: null,
 			 	titlefields: ['CFW_CTXSETTINGS_NAME'],
-			 	titledelimiter: ' ',
+			 	titleformat: '{0}',
 			 	visiblefields: ['CFW_CTXSETTINGS_TYPE', 'CFW_CTXSETTINGS_NAME', 'CFW_CTXSETTINGS_DESCRIPTION'],
 			 	labels: {
 			 		CFW_CTXSETTINGS_TYPE: CFWL('cfw_core_type', 'Type'),

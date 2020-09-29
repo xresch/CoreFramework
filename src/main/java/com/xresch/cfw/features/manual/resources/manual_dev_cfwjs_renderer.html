@@ -40,8 +40,8 @@ The following are the settings and their defaults, see comments for details:
 		 	// (Optional) names of the fields that are used for a titles. Takes the first field from the first object if null
 		 	titlefields: null,
 		 	
-		 	// (Optional) the delimiter used for multiple titles
-		 	titledelimiter: ' ',
+		 	// (Optional) The format of the title using '{index}' as placeholders 
+		 	titleformat: '{0}',
 		 	
 		 	// (Optional) Names of the fields that should be rendered and in the current order. If null or undefined, will display all fields
 		 	visiblefields: null,
@@ -101,7 +101,7 @@ Here is an example of settings that provide all the available settings:
 	bgstylefield: 'bgstyle',
 	textstylefield: 'textstyle',
 	titlefields: ['firstname', 'lastname'],
-	titledelimiter: ' ',
+	titleformat: '{0} {1}',
 	visiblefields: ['id', 'firstname', 'lastname', 'postal_code', 'status'],
 	labels: {
 		id: 'ID'

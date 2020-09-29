@@ -31,7 +31,7 @@ function cfw_dbanalytics_fetchRowCountAndDisplay(){
 				 	bgstylefield: null,
 				 	textstylefield: null,
 				 	titlefields: ['TABLE_NAME'],
-				 	titledelimiter: ' ',
+				 	titleformat: '{0}',
 				 	visiblefields: ['TABLE_NAME', 'ROW_COUNT'],
 				 	labels: {},
 				 	customizers: {},
@@ -64,7 +64,7 @@ function cfw_dbanalytics_fetchQueryStatisticsAndDisplay(){
 				 	bgstylefield: null,
 				 	textstylefield: null,
 				 	titlefields: ['STATEMENT'],
-				 	titledelimiter: ' ',
+				 	titleformat: '{0}',
 				 	labels: {},
 				 	customizers: {
 				 		STATEMENT: function(record, value){ return '<div class="maxvw-30 word-wrap-break">'+value+'</div>';}

@@ -83,7 +83,7 @@ function cfw_logconfiguration_fetchLoggersAndDisplay(){
 				 	bgstylefield: null,
 				 	textstylefield: null,
 				 	titlefields: ['name'],
-				 	titledelimiter: ' ',
+				 	titleformat: '{0}',
 				 	labels: {},
 				 	customizers: {
 				 		level: function(record, value){

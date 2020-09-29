@@ -24,7 +24,7 @@ class CFWRenderer{
 		 	// (Optional) names of the fields that are used for a titles. Takes the first field from the first object if null
 		 	titlefields: null,
 		 	// (Optional) the delimiter used for multiple titles
-		 	titledelimiter: ' ',
+		 	titleformat: '{0}',
 		 	// (Optional) Names of the fields that should be rendered and in the current order. If null or undefined, will display all fields
 		 	visiblefields: null,
 		 	// (Optional) Custom labels for fields, add them as "{fieldname}: {label}". If a label is not defined for a field, uses the capitalized field name
@@ -56,16 +56,14 @@ class CFWRenderer{
 					}
 			 	},
 		 	getTitleHTML:  function(record){
-		 		var title = "";
+		 		var title = this.titleformat;
 		 		for(var j = 0; j < this.titlefields.length; j++){
 					var fieldname = this.titlefields[j];
-					title += this.getCustomizedValue(record,fieldname);
+					let value = this.getCustomizedValue(record,fieldname);
 					
-					if(j < this.titlefields.length-1){
-						title += this.titledelimiter;
-					}
-					
+					title = title.replace('{'+j+'}', value);
 				}
+		 		title = title.replace(/\{\d\}/g, '');
 		 		return title;
 			},
 			getTitleString:  function(record){
@@ -77,13 +75,13 @@ class CFWRenderer{
 		 			
 		 			if( value != null){
 		 				if(j != 0 && title.length > 0 ){
-		 					title += this.titledelimiter;
+		 					title += this.titleformat;
 		 				}
 						title += value;
 					}
 
 				}
-		 		return title;
+		 		return title.trim();
 			},
 		 };
 		  
@@ -608,6 +606,8 @@ class CFWPanel{
 			textstyleheader: null,
 			// the title of the panel
 			title: "&nbsp;",
+			//additional content on the right side of the title
+			titleright: "&nbsp;",
 			//the content of the panel
 			body: "&nbsp;",
 		}
@@ -617,7 +617,7 @@ class CFWPanel{
 		//----------------------------
 		// resolve classes
 		var panelClasses = 'cfwRecordContainer card';
-		var panelHeaderClasses = 'card-header cursor-pointer';
+		var panelHeaderClasses = 'card-header';
 		
 		if(this.settings.cardstyle != null){
 			panelClasses += ' border-'+this.settings.cardstyle;
@@ -643,10 +643,7 @@ class CFWPanel{
 		// Create Header
 		this.panelHeader = $(document.createElement("div"));
 		this.panelHeader.addClass(panelHeaderClasses);
-		this.panelHeader.attr("id", "panelHead"+this.counter);
-		this.panelHeader.attr("role", "button");
-		this.panelHeader.attr("data-toggle", "collapse");		
-		this.panelHeader.attr("data-target", "#collapse"+this.counter);			
+		this.panelHeader.attr("id", "panelHead"+this.counter);	
 	 }
 		 
 	 /********************************************
@@ -656,9 +653,19 @@ class CFWPanel{
 	 getPanel(){
 		//----------------------------
 		// Populate Header
-		this.panelHeader.html("");
-		this.panelHeader.append(this.settings.title); 
-			
+		let panelTitle = $('<span>');
+		panelTitle.append(this.settings.title);
+		panelTitle.addClass('cursor-pointer');
+		panelTitle.attr("role", "button");
+		panelTitle.attr("data-toggle", "collapse");		
+		panelTitle.attr("data-target", "#collapse"+this.counter);		
+		
+		let headerRight = $('<div class="position-absolute" style="top: 10px; right: 10px;">');
+		
+		this.panelHeader.html(""); 
+		this.panelHeader.append(panelTitle);
+		headerRight.append(this.settings.titleright); 
+		this.panelHeader.append(headerRight);
 		this.panel.append(this.panelHeader);
 
 		//----------------------------

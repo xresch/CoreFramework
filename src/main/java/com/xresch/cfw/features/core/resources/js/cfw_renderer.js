@@ -585,6 +585,7 @@ function cfw_renderer_panels (renderDef) {
 				textstyle: currentRecord[renderDef.textstylefield],
 				textstyleheader: null,
 				title: $('<div>'),
+				titleright: "&nbsp;",
 				body: "&nbsp;",
 		};
 		 
@@ -592,6 +593,21 @@ function cfw_renderer_panels (renderDef) {
 		// Resolve Title				
 		panelSettings.title.append(renderDef.getTitleHTML(currentRecord));	
 		
+		//-------------------------
+		// Add Action buttons
+		if(renderDef.actions.length > 0){
+			let id = null;
+			if(renderDef.idfield != null){
+				id = currentRecord[renderDef.idfield];
+			}
+			
+			let actionDiv = $('<div>')
+			for(let fieldKey in renderDef.actions){
+				actionDiv.append(renderDef.actions[fieldKey](currentRecord, id ));
+			}
+			
+			panelSettings.titleright = actionDiv;
+		}
 		//-------------------------
 		// Checkboxes for selects
 		if(renderDef.bulkActions != null){
@@ -616,23 +632,10 @@ function cfw_renderer_panels (renderDef) {
 		let itemHTML = '';
 		for(let key in renderDef.visiblefields){
 			let fieldname = renderDef.visiblefields[key];
-			let value = currentRecord[fieldname];
-			
-			if(renderDef.customizers[fieldname] == null){
-				if(value != null){
-					itemHTML += '<li><strong>' + renderDef.labels[fieldname] + ':</strong> ' + value + '</li>';
-				}else{
-					itemHTML += '&nbsp;';
-				}
-			}else{
-				list.append(itemHTML);
-				itemHTML = '';
-				let customizer = renderDef.customizers[fieldname];
-				let customizedValue = customizer(currentRecord, value)
-				let item = $('<li><strong>' + renderDef.labels[fieldname] + ':</strong></li>');
-				item.append(customizedValue);
-				list.append(item);
-			}
+			let value =renderDef.getCustomizedValue(currentRecord,fieldname);
+		
+			itemHTML += '<li><strong>' + renderDef.labels[fieldname] + ':</strong> ' + value + '</li>';
+
 		}
 		list.append(itemHTML);
 		
@@ -1214,7 +1217,7 @@ function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRe
 	}
 	//-------------------------------------
 	// Call Renderer
-	let renderDefClone = Object.assign({}, renderDef, renderDefOverrides);
+	let renderDefClone = _.assign({}, renderDef, renderDefOverrides);
 	renderDefClone.data = dataToRender;
 	var renderResult = CFW.render.getRenderer(rendererName).render(renderDefClone);
 	

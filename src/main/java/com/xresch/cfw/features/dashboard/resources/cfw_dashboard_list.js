@@ -256,7 +256,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 			 	bgstylefield: null,
 			 	textstylefield: null,
 			 	titlefields: ['NAME'],
-			 	titledelimiter: ' ',
+			 	titleformat: '{0}',
 			 	visiblefields: showFields,
 			 	labels: {
 			 		PK_ID: "ID",

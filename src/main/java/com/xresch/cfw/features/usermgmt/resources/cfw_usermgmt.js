@@ -287,7 +287,7 @@ function cfw_usermgmt_printUserList(data){
 				return 	'<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
 					+'onclick="cfw_usermgmt_editUser('+id+');">'
 					+ '<i class="fa fa-pen"></i>'
-					+ '</button>&nbsp;';
+					+ '</button>';
 
 			});
 
@@ -315,8 +315,8 @@ function cfw_usermgmt_printUserList(data){
 			 	idfield: 'PK_ID',
 			 	bgstylefield: null,
 			 	textstylefield: null,
-			 	titlefields: ['NAME'],
-			 	titledelimiter: ' ',
+			 	titlefields: ['USERNAME', 'FIRSTNAME', 'LASTNAME'],
+			 	titleformat: '{0} ({1} {2})',
 			 	visiblefields: ['PK_ID', 'USERNAME', 'EMAIL', 'FIRSTNAME', 'LASTNAME', 'STATUS', "LAST_LOGIN"],
 			 	labels: {
 			 		PK_ID: "ID",
@@ -336,7 +336,67 @@ function cfw_usermgmt_printUserList(data){
 //				bulkActionsPos: "both",
 				
 				rendererSettings: {
-					dataviewer: {},
+					dataviewer: {
+						renderers: [
+							{	label: 'Table',
+								name: 'table',
+								renderdef: {
+									rendererSettings: {
+										table: {filterable: false},
+									},
+								}
+							},
+							{	label: 'Smaller Table',
+								name: 'table',
+								renderdef: {
+									actions: [],
+									rendererSettings: {
+										table: {filterable: false, narrow: true},
+									},
+								}
+							},
+							{	label: 'Panels',
+								name: 'panels',
+								renderdef: {
+								 	customizers: {
+								 		EMAIL: function(record, value) { return CFW.utils.nullTo(value, ''); },
+								 		FIRSTNAME: function(record, value) { return CFW.utils.nullTo(value, ''); },
+								 		LASTNAME: function(record, value) { return CFW.utils.nullTo(value, ''); },
+								 		STATUS: function(record, value) { return '<span class="badge badge-'+((value.toLowerCase() == "active")? 'success' : 'danger') +'">'+value+'</span>'; },
+								 		LAST_LOGIN: function(record, value) { return CFW.format.epochToTimestamp(value); },
+								 	},
+								}
+							},
+							{	label: 'Tiles',
+								name: 'tiles',
+								renderdef: {
+									visiblefields: ['PK_ID', 'EMAIL', 'STATUS', "LAST_LOGIN"],
+									customizers: {
+										EMAIL: function(record, value) { return CFW.utils.nullTo(value, ''); },
+								 		FIRSTNAME: function(record, value) { return CFW.utils.nullTo(value, ''); },
+								 		LASTNAME: function(record, value) { return CFW.utils.nullTo(value, ''); },
+								 		STATUS: function(record, value) { return '<span class="badge badge-'+((value.toLowerCase() == "active")? 'success' : 'danger') +'">'+value+'</span>'; },
+								 		LAST_LOGIN: function(record, value) { return CFW.format.epochToTimestamp(value); },
+								 	},
+									rendererSettings: {
+										tiles: {
+											popover: false,
+											border: '2px solid black'
+										},
+									},
+									
+								}
+							},
+							{	label: 'CSV',
+								name: 'csv',
+								renderdef: {}
+							},
+							{	label: 'JSON',
+								name: 'json',
+								renderdef: {}
+							}
+						]
+					},
 					table: { filterable: false },
 				},
 			};

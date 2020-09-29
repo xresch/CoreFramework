@@ -23,7 +23,7 @@ function cfw_cachestatistics_showCacheDetails(element){
 				 	bgstylefield: null,
 				 	textstylefield: null,
 				 	titlefields: ['key'],
-				 	titledelimiter: ' ',
+				 	titleformat: '{0}',
 				 	labels: {},
 				 	customizers: {
 				 		key: function(record, value){ return '<p class="maxvw-15 word-wrap-break">'+value+'</p>'; },
@@ -73,7 +73,7 @@ function cfw_cachestatistics_fetchcachestatisticsAndDisplay(){
 				 	bgstylefield: null,
 				 	textstylefield: null,
 				 	titlefields: ['name'],
-				 	titledelimiter: ' ',
+				 	titleformat: '{0}',
 				 	labels: {},
 				 	customizers: {
 				 		name: function(record, value){ return '<a href="#" class="maxvw-30 word-wrap-break" onclick="cfw_cachestatistics_showCacheDetails(this)">'+value+'</a>'; },
