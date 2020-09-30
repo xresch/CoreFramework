@@ -699,6 +699,113 @@ class CFWPanel{
  }
 
 /******************************************************************
+ * Creates a CFWCard
+ * 
+//	<div class="card">
+//	  <div class="card-header">
+//	    Featured
+//	  </div>
+//	  <div class="card-body">
+//	    <h5 class="card-title">Special title treatment</h5>
+//	    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+//	    <a href="#" class="btn btn-primary">Go somewhere</a>
+//	  </div>
+//	</div>
+ * 
+ ******************************************************************/
+var CFW_GLOBAL_CARD_COUNTER = 0;
+
+class CFWCard{
+	
+	 constructor(customSettings){
+		 
+		 this.settings = {
+			// the style to define the cards color
+			cardstyle: null,
+			// the style used for the text
+			textstyle: null,
+			// the style used for the header text, if null, textstyle will be used
+			textstyleheader: null,
+			// the title of the card
+			title: "&nbsp;",
+			//additional content on the right side of the title
+			titleright: "&nbsp;",
+			//the content of the card
+			body: "&nbsp;",
+		}
+		 
+		 Object.assign(this.settings, customSettings);
+		 
+		//----------------------------
+		// resolve classes
+		var cardClasses = 'cfwRecordContainer card';
+		var cardHeaderClasses = 'card-header';
+		
+		if(this.settings.cardstyle != null){
+			cardClasses += ' border-'+this.settings.cardstyle;
+			cardHeaderClasses += ' bg-'+this.settings.cardstyle;
+			
+		}
+		
+		if(this.settings.textstyle != null){
+			cardClasses += ' text-'+this.settings.textstyle;
+		} 
+		
+		if(this.settings.textstyleheader != null){
+			cardHeaderClasses += ' text-'+this.settings.textstyleheader;
+		} 
+		//----------------------------
+	    // Create Card
+		this.card = $(document.createElement("div"));
+		this.card.addClass(cardClasses);
+		 
+		 this.counter = CFW_GLOBAL_CARD_COUNTER++;
+		
+		//----------------------------
+		// Create Header
+		this.cardHeader = $(document.createElement("div"));
+		this.cardHeader.addClass(cardHeaderClasses);
+		this.cardHeader.attr("id", "cardHead"+this.counter);	
+	 }
+		 
+	 /********************************************
+	  * Return the JQuery Card object
+	  * @param 
+	  ********************************************/
+	 getCard(){
+		//----------------------------
+		// Populate Header
+		let cardTitle = $('<span>');
+		cardTitle.append(this.settings.title);		
+		let headerRight = $('<div class="position-absolute" style="top: 10px; right: 10px;">');
+		
+		this.cardHeader.html(""); 
+		this.cardHeader.append(cardTitle);
+		headerRight.append(this.settings.titleright); 
+		this.cardHeader.append(headerRight);
+		this.card.append(this.cardHeader);
+
+		//----------------------------
+		// Create Body
+		var cardBody = $(document.createElement("div"));
+		cardBody.addClass("card-body");
+		this.card.append(cardBody);
+		cardBody.append(this.settings.body);
+		
+		return this.card;
+		 
+	 }
+	 
+	 /********************************************
+	  * Append the card to the jquery object.
+	  * @param parent JQuery object
+	  ********************************************/
+	 appendTo(parent){
+		 parent.append(this.getCard()); 
+	 }
+ }
+
+/******************************************************************
  * Print the list of results found in the database.
  * 
  * @param parent JQuery object

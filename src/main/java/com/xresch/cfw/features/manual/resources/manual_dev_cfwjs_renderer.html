@@ -1,3 +1,6 @@
+
+<div id="manual-toc"></div>
+
 <h2>Register a Renderer</h2>
 <p>
 Renderers are a standardarized way to display data based on a javascript object array.<br/>
@@ -33,46 +36,46 @@ A renderer can but doesn't have to use the settings.
 The following are the settings and their defaults, see comments for details:
 </p>
 <pre>
-<code>		 this.defaultRenderDefinition = {
-			// (Optional) name of the field that is used as the identifier of the data
-		 	idfield: null,
-		 	
-		 	// (Optional) names of the fields that are used for a titles. Takes the first field from the first object if null
-		 	titlefields: null,
-		 	
-		 	// (Optional) The format of the title using '{index}' as placeholders 
-		 	titleformat: '{0}',
-		 	
-		 	// (Optional) Names of the fields that should be rendered and in the current order. If null or undefined, will display all fields
-		 	visiblefields: null,
-		 	
-		 	// (Optional) Custom labels for fields, add them as "{fieldname}: {label}". If a label is not defined for a field, uses the capitalized field name
-		 	labels: {},
-		 	
-		 	// field containing the bootstrap style (primary, info, danger ...) that should be used as the background
-		 	bgstylefield: null,
-		 	
-			// field containing the bootstrap style (primary, info, danger ...) that should be used as for texts
-		 	textstylefield: null,
-		 	
-		 	// functions that return a customized htmlString to display a customized format, add as "<fieldname>: function(record, value)".  Cannot return a JQuery object.
-		 	customizers: {},
-		 	
-		 	// array of functions that return html for buttons, add as "<fieldname>: function(record, id)". Can return a JQuery object.
-		 	actions: [ ],
-		 	
-			// list of functions that should be working with multiple items. fieldname will be used as the button label
-		 	bulkActions: null,
-		 	
-		 	// position of the multi actions, either top|bottom|both|none
-		 	bulkActionsPos: "top",
-		 	
-			// the data that should be rendered as an array
-		 	data: null,
-		 	
-		 	// settings specific for the renderer, add as "rendererSettings.{rendererName}.{setting}"
-		 	rendererSettings: {}
-		 };</code>
+<code>this.defaultRenderDefinition = {
+	// (Optional) name of the field that is used as the identifier of the data
+ 	idfield: null,
+ 	
+ 	// (Optional) names of the fields that are used for a titles. Takes the first field from the first object if null
+ 	titlefields: null,
+ 	
+ 	// The format of the title using '{index}' as placeholders 
+ 	titleformat: '{0}',
+ 	
+ 	// (Optional) Names of the fields that should be rendered and in the current order. If null or undefined, will display all fields
+ 	visiblefields: null,
+ 	
+ 	// (Optional) Custom labels for fields, add them as "{fieldname}: {label}". If a label is not defined for a field, uses the capitalized field name
+ 	labels: {},
+ 	
+ 	// field containing the bootstrap style (primary, info, danger ...) that should be used as the background
+ 	bgstylefield: null,
+ 	
+	// field containing the bootstrap style (primary, info, danger ...) that should be used as for texts
+ 	textstylefield: null,
+ 	
+ 	// functions that return a customized htmlString to display a customized format, add as "<fieldname>: function(record, value)".  Cannot return a JQuery object.
+ 	customizers: {},
+ 	
+ 	// array of functions that return html for buttons, add as "<fieldname>: function(record, id)". Can return a JQuery object.
+ 	actions: [ ],
+ 	
+	// list of functions that should be working with multiple items. fieldname will be used as the button label
+ 	bulkActions: null,
+ 	
+ 	// position of the multi actions, either top|bottom|both|none
+ 	bulkActionsPos: "top",
+ 	
+	// the data that should be rendered as an array
+ 	data: null,
+ 	
+ 	// settings specific for the renderer, add as "rendererSettings.{rendererName}.{setting}"
+ 	rendererSettings: {}
+ };</code>
 </pre>
 
 
@@ -135,7 +138,12 @@ var tiles = CFW.render.getRenderer('tiles').render(rendererParamsFull);</code>
 </pre>
 
 
-<h2>Default Renderer</h2>
+
+
+
+<h2>CFW Renderer</h2>
+<p>The following renderers are provided by CFW out-of-the-box.</p>
+
 
 <h3>Table</h3>
 <p>
@@ -201,3 +209,262 @@ The renderer doesn't have any specific settings, also it will ignore all the ren
 <pre>
 <code>var jsonDiv = CFW.render.getRenderer('json').render(rendererParams);</code>
 </pre>
+
+
+<h3>CSV</h3>
+<p>
+CSV Renderer will return a JQuery pre-Element wrapping a code block with the csv representation of the data.
+</p>
+<pre>
+<code>var rendererParams.rendererSettings.csv = {
+	// the delimiter for the csv
+	delimiter: ';',
+};
+var csvPre = CFW.render.getRenderer('csv').render(rendererParams);</code>
+</pre>
+
+
+
+<h3>Data Viewer</h3>
+<p>
+The dataviewer renderer wraps other renderers and adds various functionality:
+</p>
+<ul>
+<li><strong>Display As:</strong> A dropdown to choose from various renderer definitions. Will only be shown if more than one renderer is defined. By default a table renderer is defined and the dropdown is not available.</li>
+<li><strong>Pagination:</strong> Adds pagination to the data, either on a static array of objects, or dynamically loaded from server side. Page Size can be chosen from a dropdown.</li>
+<li><strong>Filtering:</strong> Adds a filter field to filter the data.</li>
+</ul>
+
+<h4>Data Viewer Parameters</h4>
+<p>
+The following are the available parameters with default values and how to use the renderer:
+</p>
+<pre>
+<code>var rendererParams.rendererSettings.dataviewer = {
+	// The available renderers which can be chosen with the Display As option
+	renderers: [
+		{	
+			label: 'Table', // Label to display on the UI
+			name: 'table',  // the name of the renderer
+			// Override the default renderer settings
+			renderdef: {
+				rendererSettings: {
+					table: {filterable: false},
+				},
+			}
+		}
+	],
+	// The initial page to be drawn.
+	initialpage: 1,
+	// The number of items options for the page size selector. -1 stands for "All".
+	sizes: [10, 25, 50, 100, 200, 500, 1000, -1],
+	// The size selected by default
+	defaultsize: 50,
+	// the interface to fetch the data from
+	datainterface: {
+		//The url to fetch the data from. If null the data from rendererSettings.data will be used.
+		url:  null,
+		//The item which should be fetched from the server.
+		item:  'default',
+		//The param name for the item the action should be applied to
+		itemparam:  'item',
+		//The param name for the action executed by the dataviewer
+		actionparam:  'action',
+		//The  param name for the maximum size of the result
+		sizeparam:  'pagesize',
+		//The param name for the page to fetch
+		pageparam: 'pagenumber',
+		//The filter string used for filtering the results
+		filterqueryparam: 'filterquery',
+		//The name of the field containing the total number of rows
+		totalrowsfield: 'TOTAL_RECORDS',
+	},
+};
+var dataviewerDiv = CFW.render.getRenderer('dataviewer').render(rendererParams);</code>
+</pre>
+
+<h4>Example - Simple Table with Static Data</h4>
+<p>
+The following code creates a dataviewer for pre-fetched data.
+The 'data.payload' is an array containing the full list of data.
+</p>
+<pre>
+<code>var rendererSettings = {
+	data: data.payload,
+	idfield: 'PK_ID',
+	bgstylefield: null,
+	textstylefield: null,
+	titlefields: ['FIRSTNAME'],
+	titleformat: '{0}',
+	visiblefields: ['PK_ID', 'FIRSTNAME', 'LASTNAME', 'LOCATION', "EMAIL", "LIKES_TIRAMISU"],
+	labels: {},
+	customizers: {},
+	actions: [],				
+	rendererSettings: {
+		dataviewer: {},
+	},
+};
+
+var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	</code>
+</pre>
+
+<h4>Example - Advanced with Dynamic Fetching from Server</h4>
+<p>
+This example defines the URL in the data interface. This will cause the dataviewer to ignore the rendererSettings.data field and fetch the data from the server.
+Also it defines multiple renderers (Table, Smaller Table, Panels, Tiles, CSV, JSON) which can be chosen by the user from the 'Display As' dropdown.
+</p>
+<pre>
+<code>var rendererSettings = {
+	data: null,
+	idfield: 'PK_ID',
+	bgstylefield: null,
+	textstylefield: null,
+	titlefields: ['FIRSTNAME', 'LASTNAME'],
+	titleformat: '{0} {1}',
+	visiblefields: ['PK_ID', 'FIRSTNAME', 'LASTNAME', 'LOCATION', "EMAIL", "LIKES_TIRAMISU"],
+	labels: {},
+	customizers: { },
+	actions: [],
+	rendererSettings: {
+		dataviewer: {
+			datainterface: {
+				url: './jsexamples',
+				item: 'personlist'
+			},
+			renderers: [
+				{	
+					label: 'Table',
+					name: 'table',
+					renderdef: {
+						rendererSettings: {
+							table: {filterable: false},
+						},
+					}
+				},
+				{	
+					label: 'Smaller Table',
+					name: 'table',
+					renderdef: {
+						visiblefields: ['FIRSTNAME', 'LASTNAME', 'EMAIL', 'LIKES_TIRAMISU'],
+						actions: [],
+						rendererSettings: {
+							table: {filterable: false, narrow: true},
+						},
+					}
+				},
+				{	
+					label: 'Panels',
+					name: 'panels',
+					renderdef: {}
+				},
+				{	
+					label: 'Tiles',
+					name: 'tiles',
+					renderdef: {
+						visiblefields: ['PK_ID', 'LOCATION', "EMAIL", "LIKES_TIRAMISU"],
+						rendererSettings: {
+							tiles: {
+								popover: false,
+								border: '2px solid black'
+							},
+						},
+						
+					}
+				},
+				{	
+					label: 'CSV',
+					name: 'csv',
+					renderdef: {}
+				},
+				{	
+					label: 'JSON',
+					name: 'json',
+					renderdef: {}
+				}
+			]
+		},
+	},
+};
+	
+var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);</code>
+</pre>
+
+
+<p>
+The DataViewer will create requests like the following to fetch the data from the server.
+</p>
+<pre>
+<code>// Page 1 with 50 entries
+./jsexamples?action=fetchpartial&pagesize=50&pagenumber=1&filterquery=&item=personlist
+// Page 2 with 50 entries
+./jsexamples?action=fetchpartial&pagesize=50&pagenumber=2&filterquery=&item=personlist
+//and so on...</code>
+</pre>
+
+<p>
+Here some example code on how to process the request on the server side.
+</p>
+<pre>
+<code>/**************************************************************************************
+ * Method for handling requests for data. Can be called by doGet() or doPost() method. 
+ *************************************************************************************/
+private void handleDataRequest(HttpServletRequest request, HttpServletResponse response) {
+	
+	String action = request.getParameter("action");
+	String item = request.getParameter("item");
+
+	JSONResponse jsonResponse = new JSONResponse();		
+
+	switch(action.toLowerCase()) {
+	
+		case "fetchpartial": 			
+			switch(item.toLowerCase()) {
+				case "personlist": 		
+					String pagesize = request.getParameter("pagesize");
+					String pagenumber = request.getParameter("pagenumber");
+					String filterquery = request.getParameter("filterquery");
+					jsonResponse.getContent().append(PersonDBMethods.getPartialPersonListAsJSON(pagesize, pagenumber, filterquery));
+					break;
+			}
+			break;	
+	}
+}
+		
+/**************************************************************************************
+ * Overloaded method to convert string params to integers
+ *************************************************************************************/
+public static String getPartialPersonListAsJSON(String pageSize, String pageNumber, String filterquery) {
+	return getPartialPersonListAsJSON(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery);
+}
+
+/**************************************************************************************
+ * Fetch data from the CFW database.
+ *************************************************************************************/
+public static String getPartialPersonListAsJSON(int pageSize, int pageNumber, String filterquery) {	
+	
+	if(Strings.isNullOrEmpty(filterquery)) {
+		//-------------------------------------
+		// Unfiltered
+		return new CFWSQL(new Person())
+			.queryCache()
+			.columnSubquery("TOTAL_RECORDS", "COUNT(*) OVER()")
+			.select()
+			.limit(pageSize)
+			.offset(pageSize*(pageNumber-1))
+			.getAsJSON();
+	}else {
+		//-------------------------------------
+		// Filter with fulltext search
+		// Enabled by CFWObject.enableFulltextSearch()
+		// on the Person Object
+		return new CFWSQL(new Person())
+				.queryCache()
+				.select()
+				.fulltextSearch()
+					.custom(filterquery)
+					.build(pageSize, pageSize*(pageNumber-1))
+				.getAsJSON();
+	}
+}	</code>
+</pre>
+

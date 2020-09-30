@@ -122,6 +122,7 @@
 
 .modal-content{
 	max-height: 95vh;
+	padding: 5px;
 }
 
 .modal-header {
@@ -467,7 +468,7 @@
 
 .cfw-decorator {
     position: absolute;
-    left: -5px;
+    left: -15px;
 }
 
 .cfw-fa-box {

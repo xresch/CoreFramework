@@ -57,7 +57,7 @@ function cfw_renderer_csv(renderDef) {
 	//-----------------------------------
 	// Render Specific settings
 	var defaultSettings = {
-		// the delimter for the csv
+		// the delimiter for the csv
 		delimiter: ';',
 	};
 	
@@ -640,21 +640,7 @@ function cfw_renderer_panels (renderDef) {
 		list.append(itemHTML);
 		
 		panelSettings.body = list;
-		
-		//-------------------------
-		// Add Action buttons
-		// TODO: IGNORE!!! for now....
-//				var id = null;
-//				if(renderDef.idfield != null){
-//					id = currentRecord[renderDef.idfield];
-//				}
-//				for(var fieldKey in renderDef.actions){
-//					
-//					cellHTML += '<td>'+renderDef.actions[fieldKey](currentRecord, id )+'</td>';
-//				}
-//				row.append(cellHTML);
-//				cfwTable.addRow(row);
-		
+				
 		//-------------------------
 		// Add Panel to Wrapper
 		var cfwPanel = new CFWPanel(panelSettings);
@@ -701,6 +687,157 @@ function cfw_renderer_panels (renderDef) {
 
 CFW.render.registerRenderer("panels", new CFWRenderer(cfw_renderer_panels) );
 
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_cards (renderDef) {
+				
+	//-----------------------------------
+	// Render Specific settings
+	var defaultSettings = {
+		// the number of columns the cards should be displayed in
+		maxcolumns: 3,
+	};
+	
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.cards);
+	
+	//===================================================
+	// Create Pannels
+	//===================================================
+	var wrapper = $("<div class='flex-grow-1'>");
+	
+	var selectorGroupClass = "card-checkboxes-"+CFW.utils.randomString(16);
+	
+	//-----------------------------------
+	// Print Records
+	var row = $('<div class="row">');
+	for(let i = 0; i < renderDef.data.length; i++ ){
+		
+		//---------------------------
+		// Preprarations
+		let currentRecord = renderDef.data[i];
+		
+		let cardSettings = {
+				cardstyle: currentRecord[renderDef.bgstylefield],
+				textstyle: currentRecord[renderDef.textstylefield],
+				textstyleheader: null,
+				title: $('<div>'),
+				titleright: "&nbsp;",
+				body: "&nbsp;",
+		};
+		 
+		//---------------------------
+		// Resolve Title				
+		cardSettings.title.append(renderDef.getTitleHTML(currentRecord));	
+		
+		//-------------------------
+		// Add Action buttons
+		if(renderDef.actions.length > 0){
+			let id = null;
+			if(renderDef.idfield != null){
+				id = currentRecord[renderDef.idfield];
+			}
+			
+			let actionDiv = $('<div>')
+			for(let fieldKey in renderDef.actions){
+				actionDiv.append(renderDef.actions[fieldKey](currentRecord, id ));
+			}
+			
+			cardSettings.titleright = actionDiv;
+		}
+		//-------------------------
+		// Checkboxes for selects
+		if(renderDef.bulkActions != null){
+			
+			let value = "";
+			if(renderDef.idfield != null){
+				value = currentRecord[renderDef.idfield];
+			}
+			
+			let checkboxDiv = $('<div>');
+			let checkbox = $('<input class="form-input float-left mt-1 mr-2 '+selectorGroupClass+'" type="checkbox" value="'+value+'" >');
+			checkbox.data('idfield', renderDef.idfield);
+			checkbox.data('record', currentRecord);
+			checkboxDiv.append(checkbox);
+			
+			cardSettings.title.prepend(checkboxDiv);
+		}
+		
+		//-------------------------
+		// Add field Values as Unordered List
+		let list = $("<ul>");
+		let itemHTML = '';
+		for(let key in renderDef.visiblefields){
+			let fieldname = renderDef.visiblefields[key];
+			let value =renderDef.getCustomizedValue(currentRecord,fieldname);
+		
+			itemHTML += '<li><strong>' + renderDef.labels[fieldname] + ':</strong> ' + value + '</li>';
+
+		}
+		list.append(itemHTML);
+		
+		cardSettings.body = list;
+				
+		//-------------------------
+		// Add Card to Row
+		var cfwCard = new CFWCard(cardSettings);
+		row.append(cfwCard);
+		//new row
+		if( i > 0 && (i % settings.maxcolumns) == 0){
+			wrapper.append(row);
+			row = $('<div class="row">');
+		}
+		var column = $('<div class="col-sm">');
+		
+		cfwCard.appendTo(column);
+		row.append(column);
+		
+		//-------------------------
+		// Add Last Row 
+		if(i == renderDef.data.length-1){
+			wrapper.append(row);
+		}
+	}
+	
+	//----------------------------------
+	// Create multi buttons
+	if(renderDef.bulkActions != null){
+		let actionsDivTop  = $('<div class="m-1">');
+		let actionsDivBottom  = $('<div class="m-1">');
+		for(let buttonLabel in renderDef.bulkActions){
+			//----------------------------
+			// Top 
+			if(renderDef.bulkActionsPos == 'both' || renderDef.bulkActionsPos == 'top' ){
+				let func = renderDef.bulkActions[buttonLabel];
+				let button = $('<button class="btn btn-sm btn-primary mr-1" onclick="cfw_internal_executeMultiAction(this)">'+buttonLabel+'</button>');
+				button.data('checkboxSelector', '.'+selectorGroupClass); 
+				button.data("function", func); 
+				actionsDivTop.append(button);
+			}
+			
+			//----------------------------
+			// Bottom
+			if(renderDef.bulkActionsPos == 'both' || renderDef.bulkActionsPos == 'bottom' ){
+				let func = renderDef.bulkActions[buttonLabel];
+				let button = $('<button class="btn btn-sm btn-primary mr-1" onclick="cfw_internal_executeMultiAction(this)">'+buttonLabel+'</button>');
+				button.data('checkboxSelector', '.'+selectorGroupClass); 
+				button.data("function", func); 
+				actionsDivBottom.append(button);
+			}
+		}
+		
+		if(renderDef.bulkActionsPos == 'both' || renderDef.bulkActionsPos == 'top' ){
+			wrapper.prepend(actionsDivTop);
+		}
+		if(renderDef.bulkActionsPos == 'both' || renderDef.bulkActionsPos == 'bottom' ){
+			wrapper.append(actionsDivBottom);
+		}
+		
+	}
+	return wrapper;
+}
+
+CFW.render.registerRenderer("cards", new CFWRenderer(cfw_renderer_cards) );
 
 /******************************************************************
  * 
@@ -1039,8 +1176,10 @@ function cfw_renderer_dataviewer(renderDef) {
 	var defaultSettings = {
 			// The available renderers which can be chosen with the Display As option
 			renderers: [
-				{	label: 'Table',
-					name: 'table',
+				{	
+					label: 'Table', // Label to display on the UI
+					name: 'table',  // the name of the renderer
+					// Override the default renderer settings
 					renderdef: {
 						rendererSettings: {
 							table: {filterable: false},
@@ -1055,7 +1194,7 @@ function cfw_renderer_dataviewer(renderDef) {
 			// The size selected by default
 			defaultsize: 50,
 			// enable sorting. 
-			sortable: false,
+			//sortable: false,
 			// the interface to fetch the data from
 			datainterface: {
 				//The url to fetch the data from. If null the data from rendererSettings.data will be used.
@@ -1067,13 +1206,13 @@ function cfw_renderer_dataviewer(renderDef) {
 				//The param name for the action executed by the dataviewer
 				actionparam:  'action',
 				//The  param name for the maximum size of the result
-				sizeparam:  'size',
+				sizeparam:  'pagesize',
 				//The param name for the page to fetch
 				pageparam: 'pagenumber',
 				//The offset for fetching the results
-				sortbyparam: 'sortby',
+				//sortbyparam: 'sortby',
 				//The offset for fetching the results
-				sortdirectionparam: 'sort',
+				//sortdirectionparam: 'sort',
 				//The filter string used for filtering the results
 				filterqueryparam: 'filterquery',
 				//The name of the field containing the total number of rows
@@ -1133,7 +1272,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	// Get Settings
 	var pageSize = settingsDiv.find('select[name="pagesize"]').val();
 	var filterquery = settingsDiv.find('input[name="filterquery"]').val();
-	var offset = pageSize * (pageToRender-1);
+	var offset = (pageSize > 0 ) ? pageSize * (pageToRender-1): 0;
 	
 	//=====================================================
 	// Get Render Results
@@ -1144,6 +1283,10 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 		if(CFW.utils.isNullOrEmpty(filterquery)){
 			let totalRecords = renderDef.data.length;
 			let dataToRender = _.slice(renderDef.data, offset, offset+pageSize);
+			if(pageSize == -1){
+				dataToRender = renderDef.data;
+			}
+			console.log(dataToRender);
 			cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
 		}else{
 			filterquery = filterquery.toLowerCase();
@@ -1152,6 +1295,9 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			});
 			let totalRecords = filteredData.length;
 			let dataToRender = _.slice(filteredData, offset, offset+pageSize);
+			if(pageSize == -1){
+				dataToRender = filteredData;
+			}			
 			cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
 		}
 	}else{

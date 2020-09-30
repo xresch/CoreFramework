@@ -322,9 +322,9 @@ function cfw_usermgmt_printUserList(data){
 			 		PK_ID: "ID",
 			 	},
 			 	customizers: {
-			 		EMAIL: function(record, value) { return CFW.utils.nullTo(value, '-'); },
-			 		FIRSTNAME: function(record, value) { return CFW.utils.nullTo(value, '-'); },
-			 		LASTNAME: function(record, value) { return CFW.utils.nullTo(value, '-'); },
+			 		EMAIL: function(record, value) { return CFW.utils.nullTo(value, ''); },
+			 		FIRSTNAME: function(record, value) { return CFW.utils.nullTo(value, ''); },
+			 		LASTNAME: function(record, value) { return CFW.utils.nullTo(value, ''); },
 			 		STATUS: function(record, value) { return '<span class="badge badge-'+((value.toLowerCase() == "active")? 'success' : 'danger') +'">'+value+'</span>'; },
 			 		LAST_LOGIN: function(record, value) { return CFW.format.epochToTimestamp(value); },
 			 	},
@@ -357,27 +357,16 @@ function cfw_usermgmt_printUserList(data){
 							},
 							{	label: 'Panels',
 								name: 'panels',
-								renderdef: {
-								 	customizers: {
-								 		EMAIL: function(record, value) { return CFW.utils.nullTo(value, ''); },
-								 		FIRSTNAME: function(record, value) { return CFW.utils.nullTo(value, ''); },
-								 		LASTNAME: function(record, value) { return CFW.utils.nullTo(value, ''); },
-								 		STATUS: function(record, value) { return '<span class="badge badge-'+((value.toLowerCase() == "active")? 'success' : 'danger') +'">'+value+'</span>'; },
-								 		LAST_LOGIN: function(record, value) { return CFW.format.epochToTimestamp(value); },
-								 	},
-								}
+								renderdef: {}
+							},
+							{	label: 'Cards',
+								name: 'cards',
+								renderdef: {}
 							},
 							{	label: 'Tiles',
 								name: 'tiles',
 								renderdef: {
 									visiblefields: ['PK_ID', 'EMAIL', 'STATUS', "LAST_LOGIN"],
-									customizers: {
-										EMAIL: function(record, value) { return CFW.utils.nullTo(value, ''); },
-								 		FIRSTNAME: function(record, value) { return CFW.utils.nullTo(value, ''); },
-								 		LASTNAME: function(record, value) { return CFW.utils.nullTo(value, ''); },
-								 		STATUS: function(record, value) { return '<span class="badge badge-'+((value.toLowerCase() == "active")? 'success' : 'danger') +'">'+value+'</span>'; },
-								 		LAST_LOGIN: function(record, value) { return CFW.format.epochToTimestamp(value); },
-								 	},
 									rendererSettings: {
 										tiles: {
 											popover: false,
