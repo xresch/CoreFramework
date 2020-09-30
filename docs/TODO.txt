@@ -99,6 +99,8 @@ DONE
 - CFWSQL: Added simplified caching method CFWSQL.queryCache();
 - /metrics: Added counters for log events
 - renderer: added dataviewer renderer
+- renderer: added csv renderer
+- renderer: added cards renderer
 - User Management: use dataviewer for user table
 - Dashboard List: use dataviewer
 - Chart Renderer: fixed tooltip overflow, not cropped anymore.

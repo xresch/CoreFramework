@@ -260,6 +260,8 @@ The following are the available parameters with default values and how to use th
 	sizes: [10, 25, 50, 100, 200, 500, 1000, -1],
 	// The size selected by default
 	defaultsize: 50,
+	// if a store ID is provided, the settings will be saved and restored when refreshing the viewer or the page.
+	storeid: null,
 	// the interface to fetch the data from
 	datainterface: {
 		//The url to fetch the data from. If null the data from rendererSettings.data will be used.
@@ -327,6 +329,7 @@ Also it defines multiple renderers (Table, Smaller Table, Panels, Tiles, CSV, JS
 	actions: [],
 	rendererSettings: {
 		dataviewer: {
+			storeid: 'exampleid',
 			datainterface: {
 				url: './jsexamples',
 				item: 'personlist'

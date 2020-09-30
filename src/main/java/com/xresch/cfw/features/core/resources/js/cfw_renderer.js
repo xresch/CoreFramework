@@ -1193,6 +1193,8 @@ function cfw_renderer_dataviewer(renderDef) {
 			sizes: [10, 25, 50, 100, 200, 500, 1000, -1],
 			// The size selected by default
 			defaultsize: 50,
+			// if a store ID is provided, the settings will be saved and restored when refreshing the viewer or the page.
+			storeid: null,
 			// enable sorting. 
 			//sortable: false,
 			// the interface to fetch the data from
@@ -1272,7 +1274,14 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	// Get Settings
 	var pageSize = settingsDiv.find('select[name="pagesize"]').val();
 	var filterquery = settingsDiv.find('input[name="filterquery"]').val();
+	var rendererIndex = settingsDiv.find('select[name="displayas"]').val();
 	var offset = (pageSize > 0 ) ? pageSize * (pageToRender-1): 0;
+	
+	if(settings.storeid != null){
+		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][pageSize]', pageSize);
+		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][filterquery]', filterquery);
+		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][rendererIndex]', rendererIndex);
+	}
 	
 	//=====================================================
 	// Get Render Results
@@ -1343,7 +1352,6 @@ function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRe
 	var renderDef = dataviewerDiv.data('renderDef');
 	var dataviewerSettings = dataviewerDiv.data('settings');
 	
-	
 	//-------------------------------------
 	// Get Settings
 	//var totalRecords = dataToRender.length;
@@ -1357,9 +1365,9 @@ function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRe
 	let renderDefOverrides = dataviewerSettings.renderers[0].renderdef;
 	let rendererName = dataviewerSettings.renderers[0].name;
 	if(dataviewerSettings.renderers.length > 1){
-		var renderIndex = settingsDiv.find('select[name="displayas"]').val();
-		renderDefOverrides = dataviewerSettings.renderers[renderIndex].renderdef;
-		rendererName = dataviewerSettings.renderers[renderIndex].name;
+		var rendererIndex = settingsDiv.find('select[name="displayas"]').val();
+		renderDefOverrides = dataviewerSettings.renderers[rendererIndex].renderdef;
+		rendererName = dataviewerSettings.renderers[rendererIndex].name;
 	}
 	//-------------------------------------
 	// Call Renderer
@@ -1381,23 +1389,36 @@ function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRe
  ******************************************************************/
 function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings) {
 	
+	//--------------------------------------
+	// Initialize Variables
 	var onchangeAttribute = ' onchange="cfw_renderer_dataviewer_fireChange(\'#'+dataviewerID+'\', 1)" ';
 	var html = '<div class="cfw-dataviewer-settings">';
 	
 	//--------------------------------------
-	// Display As
+	// Prepare Settings
+	var selectedRendererIndex = 0;
+	var selectedSize = dataviewerSettings.defaultsize;
+	var filterquery = '';
 	
+	if(dataviewerSettings.storeid != null){
+		selectedRendererIndex 	= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][rendererIndex]', selectedRendererIndex);
+		selectedSize 			= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][pageSize]', selectedSize);
+		filterquery 			= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][filterquery]', filterquery);
+	}
+	
+	//--------------------------------------
+	// Display As
 	if(dataviewerSettings.renderers.length > 1){
 		
 		html += '<div class="float-right ml-2">'
 			+'	<label for="displayas">Display As:&nbsp;</label>'
 			+'	<select name="displayas" class="form-control form-control-sm" title="Choose Display" '+onchangeAttribute+'>'
 		
-			for(key in dataviewerSettings.renderers){
-				var renderer = dataviewerSettings.renderers[key];
-
-				html += '<option value="'+key+'" >'+renderer.label+'</option>';
-
+			for(index in dataviewerSettings.renderers){
+				var renderer = dataviewerSettings.renderers[index];
+				var selected = (index == selectedRendererIndex) ? 'selected' : '';
+				
+				html += '<option value="'+index+'" '+selected+'>'+renderer.label+'</option>';
 			}
 		
 		html += '	</select>'
@@ -1411,7 +1432,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings
 	
 		for(key in dataviewerSettings.sizes){
 			var size = dataviewerSettings.sizes[key];
-			var selected = (size == dataviewerSettings.defaultsize) ? 'selected' : '';
+			var selected = (size == selectedSize) ? 'selected' : '';
 			
 			if(size != -1){
 				html += '<option value="'+size+'" '+selected+'>'+size+'</option>';
@@ -1427,7 +1448,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings
 	// Filter Query
 	html += '<div class="float-right  ml-2">'
 		+'	<label for="filterquery">Filter:&nbsp;</label>'
-		+'	<input type="text" name="filterquery" placeholder="Filter..." class="form-control form-control-sm" title="Filter the Results" '+onchangeAttribute+'>'
+		+'	<input type="text" name="filterquery" class="form-control form-control-sm" value="'+filterquery+'" placeholder="Filter..."  title="Filter the Results" '+onchangeAttribute+'>'
 		+'</div>';
 	
 	html += '</div>';

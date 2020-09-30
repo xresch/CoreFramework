@@ -346,7 +346,7 @@ function cfw_dashboardlist_initialDraw(){
 	
 	cfw_dashboardlist_createTabs();
 	
-	var tabToDisplay = CFW.cache.retrieveValue("dashboardlist-lasttab", "mydashboards");
+	var tabToDisplay = CFW.cache.retrieveValueForPage("dashboardlist-lasttab", "mydashboards");
 	
 	if(CFW.hasPermission('Dashboard Viewer') 
 	&& !CFW.hasPermission('Dashboard Creator') 
@@ -362,7 +362,7 @@ function cfw_dashboardlist_initialDraw(){
 function cfw_dashboardlist_draw(options){
 	CFW_DASHBOARDLIST_LAST_OPTIONS = options;
 	
-	CFW.cache.storeValue("dashboardlist-lasttab", options.tab);
+	CFW.cache.storeValueForPage("dashboardlist-lasttab", options.tab);
 	$("#tab-content").html("");
 	
 	CFW.ui.toogleLoader(true);

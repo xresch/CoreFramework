@@ -337,6 +337,7 @@ function cfw_usermgmt_printUserList(data){
 				
 				rendererSettings: {
 					dataviewer: {
+						storeid: 'userlist',
 						renderers: [
 							{	label: 'Table',
 								name: 'table',

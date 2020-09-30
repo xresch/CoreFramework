@@ -2001,25 +2001,55 @@ function cfw_getHostURL() {
 	return location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
 };
 
+/**************************************************************************************
+* Returns the current URL path.
+ *************************************************************************************/
+function cfw_getURLPath() {
+	return location.pathname;
+};
 
 /**************************************************************************************
 * Function to store a value in the local storage.
-* @param key name of the cookie
-* @param value value of the cookie
-* @param exdays number of days after which the cookie gets deleted
+* @param key 
+* @param value
  *************************************************************************************/
 function cfw_storeValue(key, value) {
 	window.localStorage.setItem("cfw-"+key, value);
 };
 
 /**************************************************************************************
-* Function to get a cookie
-* @param key name of the cookie to get
+* Function to store a value in the local storage for the current page.
+* @param key 
+* @param value
+ *************************************************************************************/
+function cfw_storeValueForPage(key, value) {
+	window.localStorage.setItem("cfw-["+CFW.http.getURLPath()+"]:"+key, value);
+};
+
+/**************************************************************************************
+* Function to retrieve a stored value.
+* @param key 
+* @param defaultValue if there is nothing stored
 * @return either the value of the cookie or an empty string
  *************************************************************************************/
 function cfw_retrieveValue(key, defaultValue) {
 	
 	var item = window.localStorage.getItem("cfw-"+key);
+    if(item != null){
+    	return item;
+    }
+	return defaultValue;
+};
+
+/**************************************************************************************
+* Function to retrieve a value that was stored for the page.
+* @param key 
+* @param defaultValue if there is nothing stored
+* @return either the value of the cookie or an empty string
+ *************************************************************************************/
+function cfw_retrieveValueForPage(key, defaultValue) {
+	
+	var item = window.localStorage.getItem("cfw-["+CFW.http.getURLPath()+"]:"+key);
     if(item != null){
     	return item;
     }
@@ -2189,7 +2219,9 @@ var CFW = {
 		removeFromCache: cfw_removeFromCache,
 		clearCache: cfw_clearCache,
 		storeValue: cfw_storeValue,
-		retrieveValue: cfw_retrieveValue
+		storeValueForPage: cfw_storeValueForPage,
+		retrieveValue: cfw_retrieveValue,
+		retrieveValueForPage: cfw_retrieveValueForPage
 	},
 	render: {
 		registry: {},
@@ -2217,6 +2249,7 @@ var CFW = {
 		getURLParamsDecoded: cfw_getURLParamsDecoded,
 		setURLParam: cfw_setURLParam,
 		getHostURL: cfw_getHostURL,
+		getURLPath: cfw_getURLPath,
 		secureDecodeURI: cfw_secureDecodeURI,
 		getJSON: cfw_getJSON,
 		postJSON: cfw_postJSON,
