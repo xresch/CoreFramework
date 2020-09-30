@@ -281,6 +281,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 				data: data.payload,
 				rendererSettings: {
 					dataviewer:{
+						storeid: 'dashboards-'+type,
 						renderers: [
 							{	label: 'Table',
 								name: 'table',
@@ -292,6 +293,10 @@ function cfw_dashboardlist_printDashboards(data, type){
 							},
 							{	label: 'Panels',
 								name: 'panels',
+								renderdef: {}
+							},
+							{	label: 'Cards',
+								name: 'cards',
 								renderdef: {}
 							},
 							{	label: 'Tiles',
