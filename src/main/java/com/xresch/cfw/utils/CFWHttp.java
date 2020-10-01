@@ -539,4 +539,23 @@ public class CFWHttp {
 		public int port = 80;
 		
 	}
+
+	/**************************************************************************************
+	 * Returns the API token if provided.
+	 * @param request
+	 * @return token or null
+	 **************************************************************************************/
+	public static String getCFWAPIToken(HttpServletRequest request) {
+		
+		if(request.getRequestURI().equals("/app/api")) {
+			String token = request.getParameter("apitoken");
+			if(!Strings.isNullOrEmpty(token)) { return token; }
+	
+			token = request.getHeader("API-Token");
+			if(!Strings.isNullOrEmpty(token)) { return token; }
+	
+		}
+		
+		return null;
+	}
 }

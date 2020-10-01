@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWForm;
@@ -29,17 +30,61 @@ public class ServletAPI extends HttpServlet
 	private static final long serialVersionUID = 1L;
 	
 	private static Logger logger = CFWLog.getLogger(ServletAPI.class.getName());
-	
 
 	/*****************************************************************
 	 *
 	 ******************************************************************/
 	@Override
-    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
-    {
+	protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+		doHandling(request, response);
+	}
+	
+	/*****************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+		doHandling(request, response);
+	}
+	
+	/*****************************************************************
+	 *
+	 ******************************************************************/
+	protected void doHandling( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+	{
+		String token = CFW.HTTP.getCFWAPIToken(request);
+    	if(!Strings.isNullOrEmpty(token)) {
+			handleAPIRequest(request, response);
+    	}else {
+    		handleUserBasedAPI(request, response);
+    	}
+	}
+	
+	/*****************************************************************
+	 *
+	 ******************************************************************/
+	protected void handleTokenBased( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+	{
+		String apiName = request.getParameter("apiName");
+		String action = request.getParameter("actionName");
+		
+		//if(token hasPermissions){
+			handleAPIRequest(request, response);
+		//} else{
+		// new JSONResponse
+		// error message
+		//}
+			
+		
+	}
+	/*****************************************************************
+	 *
+	 ******************************************************************/
+	protected void handleUserBasedAPI( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+	{
 
 		if(CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)) {
-			String name = request.getParameter("apiName");
+			String apiName = request.getParameter("apiName");
 			String data = request.getParameter("overviewdata");
 			
 			//Use the name of the APIDefinition
@@ -47,7 +92,7 @@ public class ServletAPI extends HttpServlet
 			
 
 			
-			if(name != null) {
+			if(apiName != null) {
 				handleAPIRequest(request, response);
 				return;
 			}

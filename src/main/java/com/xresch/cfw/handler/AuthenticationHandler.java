@@ -10,11 +10,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw._main.SessionData;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.HTMLResponse;
+import com.xresch.cfw.utils.CFWHttp;
 
 /**************************************************************************************************************
  * 
@@ -40,68 +43,127 @@ public class AuthenticationHandler extends HandlerWrapper
                         HttpServletResponse response ) throws IOException,
                                                       ServletException
     {
-    	
-    	if(CFWProperties.AUTHENTICATION_ENABLED) {
+		//##################################
+    	// Handle unsecured servlets
+    	//##################################
+    	if(!CFWProperties.AUTHENTICATION_ENABLED) {
+    		loginAsAnonymous(target, baseRequest, request, response);
+    		return;
+    	}
     		
-    		//##################################
-        	// Handle unsecured servlets
-        	//##################################
-    		if(!request.getRequestURI().toString().startsWith(securePath)) {
-    			this._handler.handle(target, baseRequest, request, response);
-    			return;
-    		}
-    		
-    		
-    		//##################################
-        	// Get Session
-        	//##################################
-
-        	SessionData data = CFW.Context.Request.getSessionData(); 
-        	
-        	if(data.isLoggedIn()) {
-	        	//##################################
-	        	// Call Wrapped Handler
-	        	//##################################
-	        	this._handler.handle(target, baseRequest, request, response);
-	    		
-	        	AbstractResponse template = CFW.Context.Request.getResponse();
-	    		if(template instanceof HTMLResponse) {
-	    			((HTMLResponse)template).addJavascriptData("userid", data.getUser().id());
-	    		}
-        	}else {
-        		if(request.getRequestURI().toString().endsWith("/login")
-        		   || request.getRequestURI().toString().contains("/login;jsessionid")) {
-        			this._handler.handle(target, baseRequest, request, response);
-        		}else {
-        			
-        			String query = "";
-        			if(request.getQueryString() != null && !request.getQueryString().equals("#")) {
-        				query = "?"+request.getQueryString();
-        			}
-        			if(!CFWProperties.AUTHENTICATION_SAML2_ENABLED) {
-        				CFW.HTTP.redirectToURL(response, "/app/login?url="+CFW.HTTP.encode(request.getRequestURI()+query));
-        			}else {
-        				CFW.HTTP.redirectToURL(response, "/cfw/saml2/login?url="+CFW.HTTP.encode(request.getRequestURI()+query));
-        			}
-        		}
-        	}
-	
-    	}else {
-    		//---------------------------------
-    		// Login as anonymous
-    		if(CFW.Context.Request.getUser() == null) {
-    			CFW.Context.Request.getSessionData().setUser(CFW.DB.Users.selectByUsernameOrMail("anonymous"));
-    			CFW.Context.Session.getSessionData().triggerLogin();
-    		}
-    		
+		//##################################
+    	// Handle Unsecured servlets
+    	//##################################
+		if(!request.getRequestURI().toString().startsWith(securePath)) {
+			this._handler.handle(target, baseRequest, request, response);
+			return;
+		}
+		
+		//##################################
+    	// Handle Unsecured servlets
+    	//##################################
+		if(!request.getRequestURI().toString().startsWith(securePath)) {
+			this._handler.handle(target, baseRequest, request, response);
+			return;
+		}
+		
+		//##################################
+    	// Handle API Token Requests
+    	//##################################
+		String token = CFW.HTTP.getCFWAPIToken(request);
+		System.out.println(token);
+    	if(!Strings.isNullOrEmpty(token)) {
+    		SessionData data = CFW.Context.Request.getSessionData(); 
+    		User tokenUser = new User("apitoken["+token+"]");
+    		data.setUser(tokenUser);
+    		data.isLoggedIn(true);
     		this._handler.handle(target, baseRequest, request, response);
-        	AbstractResponse template = CFW.Context.Request.getResponse();
-    		if(template instanceof HTMLResponse) {
-    			((HTMLResponse)template).addJavascriptData("userid", CFW.Context.Request.getUser().id());
-    		}
+    		
+    		//-----------------------------------
+    		// Cleanup session setting timout 
+    		// to 30 seconds
+    		request.getSession().setMaxInactiveInterval(30);
     	}
     	
-
-    	
+    	//##################################
+    	// Handle Secured Servlets
+    	//##################################
+		SessionData data = CFW.Context.Request.getSessionData(); 
+    	if(data.isLoggedIn()) {
+        	//##################################
+        	// Call Wrapped Handler
+        	//##################################
+        	this._handler.handle(target, baseRequest, request, response);
+    		
+        	AbstractResponse template = CFW.Context.Request.getResponse();
+    		if(template instanceof HTMLResponse) {
+    			
+    			((HTMLResponse)template).addJavascriptData("userid", data.getUser().id());
+    		}
+    	}else {
+    		handleLogin(target, baseRequest, request, response);
+    	}
+	
     }
+	
+	
+	/**************************************************************************************
+	 * Handle the login for the application.
+	 * @param target
+	 * @param baseRequest
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 * @throws ServletException
+	 **************************************************************************************/
+	private void handleLogin( String target,
+            Request baseRequest,
+            HttpServletRequest request,
+            HttpServletResponse response ) throws IOException,
+                                          ServletException{
+		
+		if(request.getRequestURI().toString().endsWith("/login")
+		   || request.getRequestURI().toString().contains("/login;jsessionid")) {
+			this._handler.handle(target, baseRequest, request, response);
+		}else {
+			
+			String query = "";
+			if(request.getQueryString() != null && !request.getQueryString().equals("#")) {
+				query = "?"+request.getQueryString();
+			}
+			if(!CFWProperties.AUTHENTICATION_SAML2_ENABLED) {
+				CFW.HTTP.redirectToURL(response, "/app/login?url="+CFW.HTTP.encode(request.getRequestURI()+query));
+			}else {
+				CFW.HTTP.redirectToURL(response, "/cfw/saml2/login?url="+CFW.HTTP.encode(request.getRequestURI()+query));
+			}
+		}
+	}
+	
+	/**************************************************************************************
+	 * If authentication is disabled log in as anonymous.
+	 * @param target
+	 * @param baseRequest
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 * @throws ServletException
+	 **************************************************************************************/
+	private void loginAsAnonymous( String target,
+            Request baseRequest,
+            HttpServletRequest request,
+            HttpServletResponse response ) throws IOException,
+                                          ServletException{
+		//---------------------------------
+		// Login as anonymous
+		if(CFW.Context.Request.getUser() == null) {
+			CFW.Context.Request.getSessionData().setUser(CFW.DB.Users.selectByUsernameOrMail("anonymous"));
+			CFW.Context.Session.getSessionData().triggerLogin();
+		}
+		
+		this._handler.handle(target, baseRequest, request, response);
+    	AbstractResponse template = CFW.Context.Request.getResponse();
+		if(template instanceof HTMLResponse) {
+			((HTMLResponse)template).addJavascriptData("userid", CFW.Context.Request.getUser().id());
+		}
+	}
 }

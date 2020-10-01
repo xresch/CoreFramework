@@ -80,6 +80,10 @@ public class SessionData implements Serializable {
 		return isLoggedIn;
 	}
 	
+	public void isLoggedIn(boolean isLoggedIn) {
+		 this.isLoggedIn = isLoggedIn;
+	}
+	
 	public String getSessionID() {
 		return sessionID;
 	}
