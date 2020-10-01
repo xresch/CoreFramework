@@ -84,6 +84,7 @@ public class LoginUtils {
 			SessionData data = CFW.Context.Request.getSessionData(); 
 			data.resetUser();
 			data.setUser(user);
+			data.setClientIP(CFW.HTTP.getClientIP(request));
 			data.triggerLogin();
 			
 			if(redirectTo == null || redirectTo.isEmpty()) {

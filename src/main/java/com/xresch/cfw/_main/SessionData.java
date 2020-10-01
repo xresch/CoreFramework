@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.cache.Cache;
@@ -31,6 +30,7 @@ public class SessionData implements Serializable {
 	private boolean isLoggedIn = false;
 
 	private User user = null;
+	private String clientIP = "";
 	private String sessionID = null;
 	private HashMap<Integer, Role> userRoles = new HashMap<>();
 	private HashMap<String, Permission> userPermissions = new HashMap<>();
@@ -41,9 +41,6 @@ public class SessionData implements Serializable {
 			.maximumSize(20)
 			.expireAfterAccess(CFW.Properties.SESSION_TIMEOUT, TimeUnit.SECONDS)
 			.build();
-	
-		
-	//private static LinkedHashMap<String,CFWForm> formMap = new LinkedHashMap<>();
 	
 	private BTMenu menu;
 	private BTFooter footer;
@@ -75,6 +72,8 @@ public class SessionData implements Serializable {
 		menu = CFW.Registry.Components.createMenuInstance(false);
 		footer = CFW.Registry.Components.createDefaultFooterInstance();
 		user = null;
+		
+		CFW.Context.App.getApp().removeSession(sessionID);
 	}
 	
 	public boolean isLoggedIn() {
@@ -117,16 +116,19 @@ public class SessionData implements Serializable {
 		return footer;
 	}
 	
-	public void addForm(CFWForm form){
-		
-//		//keep cached forms below 7 to prevent memory leaks
-//		while(formMap.size() > 7) {
-//			formMap.remove(formMap.keySet().toArray()[0]);
-//		}
-		
+	public void addForm(CFWForm form){		
 		formCache.put(form.getFormID(), form);	
 	}
 	
+	
+	public String getClientIP() {
+		return clientIP;
+	}
+
+	public void setClientIP(String clientIP) {
+		this.clientIP = clientIP;
+	}
+
 	public void removeForm(CFWForm form){
 		formCache.invalidate(form.getFormID());	
 	}

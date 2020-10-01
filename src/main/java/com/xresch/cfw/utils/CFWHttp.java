@@ -442,6 +442,22 @@ public class CFWHttp {
 	}
 	
 	/******************************************************************************************************
+	 * Get clientIP
+	 ******************************************************************************************************/
+	public static String getClientIP(HttpServletRequest request) {
+
+        String remoteAddr = "";
+
+        if (request != null) {
+            remoteAddr = request.getHeader("X-FORWARDED-FOR");
+            if (remoteAddr == null || "".equals(remoteAddr)) {
+                remoteAddr = request.getRemoteAddr();
+            }
+        }
+
+        return remoteAddr;
+    }
+	/******************************************************************************************************
 	 * Inner Class for HTTP Response
 	 ******************************************************************************************************/
 	public class CFWHttpResponse {

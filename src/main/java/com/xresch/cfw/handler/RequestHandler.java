@@ -17,6 +17,7 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFW.Context;
 import com.xresch.cfw._main.SessionData;
+import com.xresch.cfw._main.SessionTracker;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.PlaintextResponse;
@@ -124,7 +125,6 @@ public class RequestHandler extends HandlerWrapper
 	    	CFWDB.forceCloseRemainingConnections();
 	    	
 	    	CFW.Localization.writeLocalized(request, response);
-    	
 	    	log.end();
     	
 	    	baseRequest.setHandled(true);

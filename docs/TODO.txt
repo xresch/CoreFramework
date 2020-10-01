@@ -104,6 +104,7 @@ DONE
 - User Management: use dataviewer for user table
 - Dashboard List: use dataviewer
 - Chart Renderer: fixed tooltip overflow, not cropped anymore.
+- Added "System Analytics >> Session Overview"
 
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message

@@ -172,6 +172,19 @@ public class CFWApplicationExecutor {
 	}
 	
 	
+	/**************************************************************************************************
+	 * Remove Session
+	 * 
+	 * @param sessionID
+	 * @return if the session was removed
+	 **************************************************************************************************/
+	public HttpSession removeSession(String sessionID){
+		
+		return sessionHandler.removeSession(sessionID, true);
+
+	}
+	
+	
 	public Server getServer() {
 		return server;
 	}
@@ -209,6 +222,36 @@ public class CFWApplicationExecutor {
 		// Extend ErrorHandler and overwrite methods to create custom error page
 	    ErrorHandler handler = new ErrorHandler();
 	    return handler;
+	}
+	
+	/**************************************************************************************************
+	 * Add Session Tracker to handler.
+	 * @throws Exception
+	 **************************************************************************************************/
+	private static void addSessionTracker(Handler handler)
+	{
+	    if (handler == null)
+	    {
+	        return; // skip
+	    }
+
+	    if (handler instanceof HandlerCollection)
+	    {
+	        HandlerCollection handlers = (HandlerCollection) handler;
+	        for (Handler child : handlers.getHandlers())
+	        {
+	            addSessionTracker(child);
+	        }
+	    }
+	    else
+	    {
+	        if (handler instanceof ServletContextHandler)
+	        {
+	            ServletContextHandler context = (ServletContextHandler) handler;
+	            SessionHandler sessionHandler = context.getSessionHandler();
+	            new SessionTracker(handler.getServer(), sessionHandler);
+	        }
+	    }
 	}
 	   
 
@@ -345,6 +388,7 @@ public class CFWApplicationExecutor {
         // Build Handler Chain
         ContextHandler contextHandler = new ContextHandler("/");	 
         servletContext.setSessionHandler(createSessionHandler("/"));
+        addSessionTracker(servletContext);
         
         //------------------------------------
         //Prometheus Statistics
@@ -360,7 +404,7 @@ public class CFWApplicationExecutor {
 	    	//.chain(createSPNEGOSecurityHandler())
 	        .chain(new AuthenticationHandler("/app", defaultURL))
 	        .chain(servletContext);
-                
+               
         //###################################################################
         // Create Handler Collection
         //###################################################################
@@ -377,6 +421,7 @@ public class CFWApplicationExecutor {
         handlerCollection.setHandlers(handlerArray.toArray(new Handler[] {}));
         server.setHandler(handlerCollection);
         
+
         //###################################################################
         // Startup
         //###################################################################

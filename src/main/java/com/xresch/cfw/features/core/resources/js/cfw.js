@@ -862,6 +862,35 @@ function cfw_format_epochToTimestamp(epoch){
 }
 
 /**************************************************************************************
+ * Create a clock string in the format HH:mm:ss
+ * @param millis milliseconds
+ * @return clock string
+ *************************************************************************************/
+function cfw_format_millisToClock(millis){
+
+  if(millis != null){
+	  return moment.utc(millis).format("HH:mm:ss");
+  }
+  
+  return "";
+}
+
+/**************************************************************************************
+ * Create a clock string in the format HH:mm:ss
+ * @param millis milliseconds
+ * @return clock string
+ *************************************************************************************/
+function cfw_format_millisToDuration(millis){
+
+  if(millis != null){
+	  return moment.utc(millis).format("HH[h] mm[m] ss[s]");
+  }
+  
+  return "";
+}
+
+
+/**************************************************************************************
  * Create a date string
  * @param epoch unix epoch milliseconds since 01.01.1970
  * @return date as string
@@ -2234,6 +2263,8 @@ var CFW = {
 	format: {
 		epochToTimestamp: 	cfw_format_epochToTimestamp,
 		epochToDate: 		cfw_format_epochToDate,
+		millisToClock: 		cfw_format_millisToClock,
+		millisToDuration: 	cfw_format_millisToDuration,
 		objectToHTMLList: 	cfw_objectToHTMLList,
 		csvToObjectArray: 	cfw_format_csvToObjectArray,
 		fieldNameToLabel: 	cfw_format_fieldNameToLabel,

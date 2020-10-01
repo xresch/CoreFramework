@@ -73,7 +73,7 @@ public class ServletAPILogin extends HttpServlet
 					data.setUser(user);
 					
 					//--------------------------------
-					// Create session in other context
+					// Create Session
 					if(CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)) {
 						data.triggerLogin();
 						plaintext.getContent().append("CFWSESSIONID="+CFW.Context.Request.getRequest().getSession().getId());
