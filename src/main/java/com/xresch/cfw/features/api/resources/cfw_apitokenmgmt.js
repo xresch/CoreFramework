@@ -9,6 +9,52 @@ var CFW_APITOKENMGMT_URL = "./tokenmanagement";
 
 
 /******************************************************************
+ * 
+ ******************************************************************/
+function cfw_apitokenmgmt_createToggleTable(parent, mapName, tokenID){
+
+	CFW.http.getJSON(CFW_APITOKENMGMT_URL, {action: "fetch", item: 'permissionmap', tokenid: tokenID}, 
+		function(data) {
+			if(data.payload != null){
+				
+				var htmlString = "";
+				var cfwTable = new CFWTable();
+				
+				cfwTable.addHeaders(['&nbsp;', 'API', 'Action']);
+				
+				var resultCount = data.payload.length;
+				if(resultCount == 0){
+					CFW.ui.addAlert("info", "Hmm... seems there aren't any roles in the list.");
+				}
+
+				for(var i = 0; i < resultCount; i++){
+					var current = data.payload[i];
+					var row = $('<tr>');
+					
+					//Toggle Button
+					var params = {action: "update", item: mapName, tokenid: tokenID, permissionid: current.PK_ID};
+					var cfwToggleButton = CFW.ui.createToggleButton(CFW_APITOKENMGMT_URL, params, (current.TOKEN_ID == tokenID));
+					
+					var buttonCell = $("<td>");
+					cfwToggleButton.appendTo(buttonCell);
+					row.append(buttonCell);
+					
+					row.append('<td>'+current.API_NAME+'</td>'
+							  +'<td>'+current.ACTION_NAME+'</td>');
+					
+					cfwTable.addRow(row);
+				}
+				
+				
+				cfwTable.appendTo(parent);
+				
+			}else{
+				CFW.ui.addAlert('error', '<span>The '+mapName+' data for the id '+tokenID+' could not be loaded.</span>');
+			}	
+		}
+	);
+}
+/******************************************************************
  * Create Role
  ******************************************************************/
 function cfw_apitokenmgmt_addToken(){
@@ -29,14 +75,26 @@ function cfw_apitokenmgmt_addToken(){
  ******************************************************************/
 function cfw_apitokenmgmt_edit(id){
 	
+	var allDiv = $('<div id="cfw-usermgmt">');	
 	//-----------------------------------
 	// Details
 	//-----------------------------------
-	var detailsDiv = $('<div id="jsexamples-details">');
+	var detailsDiv = $('<div id="apitokenmgmt-details">');
+	detailsDiv.append('<h2>Token Details</h2>');
+	allDiv.append(detailsDiv);
+	
+	//-----------------------------------
+	// Permissions
+	//-----------------------------------
+	var permissionDiv = $('<div id="apitokenmgmt-permissions">');
+	permissionDiv.append('<h2>Token Permissions</h2>');
+	allDiv.append(permissionDiv);
+	
+	cfw_apitokenmgmt_createToggleTable(permissionDiv, "permissionmap", id);
 	
 	CFW.ui.showModal(
 		"Edit Token", 
-		detailsDiv, 
+		allDiv, 
 		"CFW.cache.clearCache(); cfw_apitokenmgmt_draw()"
 	);
 	
@@ -44,6 +102,38 @@ function cfw_apitokenmgmt_edit(id){
 	// Load Form
 	//-----------------------------------
 	CFW.http.createForm(CFW_APITOKENMGMT_URL, {action: "getform", item: "edittoken", id: id}, detailsDiv);
+	
+}
+
+/******************************************************************
+ * Edit user
+ ******************************************************************/
+function cfw_usermgmt_editUser(userID){
+	
+	var allDiv = $('<div id="cfw-usermgmt">');	
+
+	//-----------------------------------
+	// User Details
+	//-----------------------------------
+	var detailsDiv = $('<div id="cfw-usermgmt-details">');
+	detailsDiv.append('<h2>'+CFWL('cfw_usermgmt_user', 'User')+'Details</h2>');
+	allDiv.append(detailsDiv);
+	
+	//-----------------------------------
+	// Roles
+	//-----------------------------------
+	var roleDiv = $('<div id="cfw-usermgmt-roles">');
+	roleDiv.append('<h2>'+CFWL('cfw_usermgmt_roles', "Roles")+'</h2>');
+	allDiv.append(roleDiv);
+	
+	cfw_usermgmt_createToggleTable(roleDiv, "userrolemap", userID)
+	
+	CFW.ui.showModal("Edit User", allDiv, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'users'})");
+	
+	//-----------------------------------
+	// Load Form
+	//-----------------------------------
+	CFW.http.createForm(CFW_USRMGMT_URL, {action: "getform", item: "edituser", id: userID}, detailsDiv);
 	
 }
 

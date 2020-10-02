@@ -30,6 +30,11 @@ public class CFWRegistryAPI {
 	public static void add(APIDefinition definition)  {
 		String fullname = getFullyQualifiedName(definition);
 		if(!definitionArray.containsKey(fullname)) {
+			APITokenPermissionDBMethods.oneTimeCreate(
+					new APITokenPermission()
+					.apiName(definition.getApiName())
+					.actionName(definition.getActionName())
+			);
 			definitionArray.put(fullname,definition);
 		}else {
 			new CFWLog(logger)

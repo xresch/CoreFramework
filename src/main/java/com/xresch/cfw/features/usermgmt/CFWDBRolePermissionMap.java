@@ -205,31 +205,7 @@ public class CFWDBRolePermissionMap {
 			.where(RolePermissionMapFields.FK_ID_PERMISSION.toString(), permissionid)
 			.and(RolePermissionMapFields.FK_ID_ROLE.toString(), roleid)
 			.getCount();
-			
-			
-//		String checkIsPermissionInRole = "SELECT COUNT(*) FROM "+TABLE_NAME
-//				+" WHERE "+RolePermissionMapFields.FK_ID_PERMISSION+" = ?"
-//				+" AND "+RolePermissionMapFields.FK_ID_ROLE+" = ?";
-//		
-//		ResultSet result = CFW.DB.preparedExecuteQuery(checkIsPermissionInRole, permissionid, roleid);
-//		
-//		try {
-//			if(result != null && result.next()) {
-//				int count = result.getInt(1);
-//				return (count == 0) ? false : true;
-//			}
-//		} catch (Exception e) {
-//			new CFWLog(logger)
-//			.method("checkIsPermissionInRole")
-//			.severe("Exception occured while checking of role exists.", e);
-//			
-//			return false;
-//		}finally {
-//			CFWDB.close(result);
-//		}
-//		
-//		
-//		return false;
+
 	}
 	
 	/***************************************************************

@@ -80,6 +80,11 @@ public class ServletAPITokenManagement extends HttpServlet
 				switch(item.toLowerCase()) {
 					case "tokenlist": 		jsonResponse.getContent().append(APITokenDBMethods.getTokenListAsJSON());
 	  										break;
+	  										
+					case "permissionmap": 	String tokenID = request.getParameter("tokenid");
+											jsonResponse.getContent().append(APITokenPermissionMapDBMethods.getPermissionMapForTokenID(tokenID));
+					
+					break;	
 				}
 				break;
 						
@@ -104,6 +109,19 @@ public class ServletAPITokenManagement extends HttpServlet
 										break;
 				}
 				break;	
+				
+			case "update": 			
+				switch(item.toLowerCase()) {
+												
+					case "permissionmap": 		String tokenID = request.getParameter("tokenid");
+												String permissionID = request.getParameter("permissionid");
+												jsonResponse.setSuccess(APITokenPermissionMapDBMethods.tooglePermissionForToken(permissionID, tokenID));
+												break;
+	
+					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+										break;
+				}
+				break;
 				
 			case "getform": 			
 				switch(item.toLowerCase()) {

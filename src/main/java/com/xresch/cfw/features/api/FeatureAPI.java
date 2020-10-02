@@ -32,6 +32,8 @@ public class FeatureAPI extends CFWAppFeature {
 		//----------------------------------
 		// Register Objects
 		CFW.Registry.Objects.addCFWObject(APIToken.class);
+		CFW.Registry.Objects.addCFWObject(APITokenPermission.class);
+		CFW.Registry.Objects.addCFWObject(APITokenPermissionMap.class);
 		
     	//----------------------------------
     	// Register Menu Entry

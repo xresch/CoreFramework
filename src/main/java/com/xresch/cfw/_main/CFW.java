@@ -239,6 +239,10 @@ public class CFW {
     		return;
 	    }
 		
+		//---------------------------
+		// Start Database 
+		CFW.DB.startDBServer(); 
+		
 	    //--------------------------------
 	    // Register Components
 	    appToStart.settings();
@@ -253,6 +257,11 @@ public class CFW {
 	    // Start Database 	
     	initializeDatabase(appToStart, features);
 		
+		//---------------------------
+		// Load API Definitions
+		ArrayList<CFWObject> objectArray = CFW.Registry.Objects.getCFWObjectInstances();
+		loadAPIDefinitions(objectArray);
+
 	    //--------------------------------
 	    // Start Scheduled Tasks
     	initializeScheduledTasks(appToStart, features);
@@ -323,16 +332,16 @@ public class CFW {
 			feature.register();
 		}
 		
-		//---------------------------
-		// Register APIs
-		ArrayList<CFWObject> objectArray = CFW.Registry.Objects.getCFWObjectInstances();
-		
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
+	private static void loadAPIDefinitions(ArrayList<CFWObject> objectArray) {
 		for(CFWObject object : objectArray) {
 			CFW.Registry.API.addAll(object.getAPIDefinitions());
 		}
-
 	}
-	
 	
 	/***********************************************************************
 	 * Starts and initializes the Database. Iterates over all Objects in the 
@@ -341,11 +350,7 @@ public class CFW {
 	 * @param CFWAppInterface application to start
 	 ***********************************************************************/
 	private static void initializeDatabase(CFWAppInterface appToStart, ArrayList<CFWAppFeature> features) {
-		
-		//---------------------------
-		// Start Database 
-		CFW.DB.startDBServer(); 
-		
+				
 		//---------------------------
 		// Iterate over Registered Objects
     	ArrayList<CFWObject> objectArray = CFW.Registry.Objects.getCFWObjectInstances();

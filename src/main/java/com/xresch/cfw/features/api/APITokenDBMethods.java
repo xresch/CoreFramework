@@ -2,7 +2,6 @@ package com.xresch.cfw.features.api;
 
 import java.util.logging.Logger;
 
-import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -37,7 +36,6 @@ public class APITokenDBMethods {
 			return true;
 		}
 	};
-	
 	
 	private static PrecheckHandler prechecksDelete =  new PrecheckHandler() {
 		public boolean doCheck(CFWObject object) {
@@ -93,7 +91,6 @@ public class APITokenDBMethods {
 	public static APIToken selectFirstByToken(String name) { 
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, APITokenFields.TOKEN.toString(), name);
 	}
-	
 	
 	
 	public static String getTokenListAsJSON() {

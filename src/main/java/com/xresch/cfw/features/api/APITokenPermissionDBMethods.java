@@ -25,9 +25,9 @@ public class APITokenPermissionDBMethods {
 	private static PrecheckHandler prechecksCreateUpdate =  new PrecheckHandler() {
 		public boolean doCheck(CFWObject object) {
 			
-			APITokenPermission apiToken = (APITokenPermission)object;
+			APITokenPermission permission = (APITokenPermission)object;
 			
-			if(apiToken == null || apiToken.token().isEmpty()) {
+			if(permission == null || permission.apiName().isEmpty() || permission.actionName().isEmpty()) {
 				new CFWLog(logger)
 					.warn("Please specify a token.", new Throwable());
 				return false;
@@ -51,6 +51,13 @@ public class APITokenPermissionDBMethods {
 	public static boolean 	create(APITokenPermission item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, item);}
 	public static Integer 	createGetPrimaryKey(APITokenPermission item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);}
 	
+	public static boolean oneTimeCreate(APITokenPermission item){
+		
+		if( !checkExistsByAPI(item.apiName(), item.actionName()) ) {
+			return CFWDBDefaultOperations.create(prechecksCreateUpdate, item);
+		}
+		else return false;
+	}
 	
 	//####################################################################################################
 	// UPDATE
@@ -103,6 +110,17 @@ public class APITokenPermissionDBMethods {
 		return new CFWSQL(new APITokenPermission())
 				.queryCache()
 				.selectCount()
+				.getCount();
+		
+	}
+	
+	public static boolean checkExistsByAPI(String apiName, String actionName) {
+		
+		return 0 < new CFWSQL(new APITokenPermission())
+				.queryCache()
+				.selectCount()
+				.where(APITokenPermissionFields.API_NAME, apiName)
+				.and(APITokenPermissionFields.ACTION_NAME, actionName)
 				.getCount();
 		
 	}
