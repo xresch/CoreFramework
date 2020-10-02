@@ -88,8 +88,8 @@ public class APITokenDBMethods {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, APITokenFields.PK_ID.toString(), id);
 	}
 	
-	public static APIToken selectFirstByToken(String name) { 
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, APITokenFields.TOKEN.toString(), name);
+	public static APIToken selectFirstByToken(String token) { 
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, APITokenFields.TOKEN.toString(), token);
 	}
 	
 	

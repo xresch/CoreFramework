@@ -18,7 +18,7 @@ function cfw_apitokenmgmt_createToggleTable(parent, mapName, tokenID){
 			if(data.payload != null){
 				
 				var htmlString = "";
-				var cfwTable = new CFWTable();
+				var cfwTable = new CFWTable({narrow: true});
 				
 				cfwTable.addHeaders(['&nbsp;', 'API', 'Action']);
 				

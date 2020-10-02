@@ -181,7 +181,7 @@ public class APITokenPermissionMapDBMethods {
 	 * @return return true if user was added, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean addPermissionToAPIToken(Permission permission, APIToken token, boolean isDeletable) {
+	public static boolean addPermissionToAPIToken(APITokenPermission permission, APIToken token, boolean isDeletable) {
 		
 		if(permission == null) {
 			new CFWLog(logger)
@@ -203,7 +203,7 @@ public class APITokenPermissionMapDBMethods {
 		
 		if(checkHasTokenThePermission(token, permission)) {
 			new CFWLog(logger)
-				.warn("The permission '"+permission.name()+"' is already part of the token '"+token.token()+"'.");
+			.warn("The permission '"+permission.apiName()+"."+permission.actionName()+"' is already assigned to the token '"+token.token()+"'.");
 			return false;
 		}
 		
@@ -246,7 +246,7 @@ public class APITokenPermissionMapDBMethods {
 	 * @return return true if user was added, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean removePermissionFromAPIToken(Permission permission, APIToken token) {
+	public static boolean removePermissionFromAPIToken(APITokenPermission permission, APIToken token) {
 		
 		if(permission == null || token == null ) {
 			new CFWLog(logger)
@@ -262,7 +262,7 @@ public class APITokenPermissionMapDBMethods {
 		
 		if(!checkHasTokenThePermission(token, permission)) {
 			new CFWLog(logger)
-				.warn("The permission '"+permission.name()+"' is not part of the token '"+token.token()+"' and cannot be removed.");
+				.warn("The permission '"+permission.apiName()+"."+permission.actionName()+"' is not part of the token '"+token.token()+"' and cannot be removed.");
 			return false;
 		}
 		
@@ -294,18 +294,32 @@ public class APITokenPermissionMapDBMethods {
 	
 	
 	/****************************************************************
+	 * Check if the permission exists by name.
+	 * 
+	 * @param permission to check
+	 * @return true if exists, false otherwise or in case of exception.
+	 ****************************************************************/
+	public static boolean checkHasTokenThePermission(String token, String apiName, String actionName) {
+		
+		APIToken apiToken = APITokenDBMethods.selectFirstByToken(token);
+		APITokenPermission permission = APITokenPermissionDBMethods.selectFirst(apiName, actionName);
+
+		return checkHasTokenThePermission(apiToken, permission);
+
+	}
+	/****************************************************************
 	 * Check if the permission is assigned to the given token.
 	 * 
 	 * @param permission to check
 	 * @return true if exists, false otherwise or in case of exception.
 	 ****************************************************************/
-	public static boolean checkHasTokenThePermission(APIToken token, Permission permission ) {
+	public static boolean checkHasTokenThePermission(APIToken token, APITokenPermission permission ) {
 		
 		if(permission != null && token != null) {
 			return checkHasTokenThePermission(token.id(), permission.id());
 		}else {
 			new CFWLog(logger)
-				.severe("The user and token cannot be null. User: '"+permission+"', APIToken: '"+token+"'");
+				.severe("The permission and token cannot be null. Permission: '"+permission+"', APIToken: '"+token+"'");
 			
 		}
 		return false;

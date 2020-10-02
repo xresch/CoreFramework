@@ -7,6 +7,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
+import com.xresch.cfw.features.api.APIToken.APITokenFields;
 import com.xresch.cfw.features.api.APITokenPermission.APITokenPermissionFields;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -93,6 +94,15 @@ public class APITokenPermissionDBMethods {
 	
 	public static APITokenPermission selectByID(int id ) {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, APITokenPermissionFields.PK_ID.toString(), id);
+	}
+	
+	public static APITokenPermission selectFirst(String apiName, String actionName) { 
+		return (APITokenPermission)new CFWSQL(new APITokenPermission())
+				.queryCache()
+				.select()
+				.where(APITokenPermissionFields.API_NAME, apiName)
+				.and(APITokenPermissionFields.ACTION_NAME, actionName)
+				.getFirstObject();
 	}
 		
 	

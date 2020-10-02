@@ -17,11 +17,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw.features.usermgmt.User;
 
+import io.prometheus.client.Gauge;
+
 public class SessionTracker implements HttpSessionListener, HttpSessionIdListener, ServletContextListener {
 	
 	private final Server server;
 	private static SessionHandler sessionHandler;
 	private String contextPath;
+	
+	private static final Gauge sessionCounter = Gauge.build()
+	         .name("cfw_sessions_count")
+	         .help("Total number of session currently open in the application.")
+	         .register();
 	
 	//Do not hold references to session object itself, as it might mess up GC.
 	private static HashSet<String> sessionIDs = new HashSet<>();
@@ -30,7 +37,6 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 		this.server = server;
 		sessionHandler = handler;
 		sessionHandler.addEventListener(this);
-
 	}
 
 	public String getContextPath() {
@@ -62,6 +68,7 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 		synchronized (sessionIDs) {
 			System.out.println("Add Session");
 			sessionIDs.add(se.getSession().getId());
+			sessionCounter.inc();
 		}
 	}
 
@@ -70,6 +77,7 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 		synchronized (sessionIDs) {
 			System.out.println("Destroy Session");
 			sessionIDs.remove(se.getSession().getId());
+			sessionCounter.dec();
 		}
 
 	}

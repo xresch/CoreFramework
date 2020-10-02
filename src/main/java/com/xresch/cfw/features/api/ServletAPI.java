@@ -54,7 +54,7 @@ public class ServletAPI extends HttpServlet
 	{
 		String token = CFW.HTTP.getCFWAPIToken(request);
     	if(!Strings.isNullOrEmpty(token)) {
-			handleAPIRequest(request, response);
+    		handleTokenBased(request, response, token);
     	}else {
     		handleUserBasedAPI(request, response);
     	}
@@ -63,22 +63,22 @@ public class ServletAPI extends HttpServlet
 	/*****************************************************************
 	 *
 	 ******************************************************************/
-	protected void handleTokenBased( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+	protected void handleTokenBased( HttpServletRequest request, HttpServletResponse response, String token ) throws ServletException, IOException
 	{
 		
 		// curl -X GET "http://localhost:8888/app/api?apitoken=dias-fjkdlafjak&apiName=User&actionName=fetchData&PK_ID=1&"
 		// curl -H "API-Token: Header-Token-5bn3jk5" -X GET "http://localhost:8888/app/api?apiName=User&actionName=fetchData&PK_ID=1&"
 		
 		String apiName = request.getParameter("apiName");
-		String action = request.getParameter("actionName");
+		String actionName = request.getParameter("actionName");
 		
-		//if(token hasPermissions){
+		if(APITokenPermissionMapDBMethods.checkHasTokenThePermission(token, apiName, actionName)){
 			handleAPIRequest(request, response);
-		//} else{
-		// new JSONResponse
-		// error message
-		//}
-			
+		}else {
+			JSONResponse json = new JSONResponse();
+			json.setSuccess(false);
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The token does not have access to the API '"+apiName+"."+actionName+"'");
+		}
 		
 	}
 	/*****************************************************************

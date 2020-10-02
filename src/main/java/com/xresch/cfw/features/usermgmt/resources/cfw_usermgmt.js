@@ -25,7 +25,7 @@ function cfw_usermgmt_createToggleTable(parent, mapName, itemID){
 			if(data.payload != null){
 				
 				var htmlString = "";
-				var cfwTable = new CFWTable();
+				var cfwTable = new CFWTable({narrow: true});
 				
 				cfwTable.addHeaders(['&nbsp;',
 					CFWL('cfw_usermgmt_name'),

@@ -47,7 +47,6 @@ public class ServletAPITokenManagement extends HttpServlet
 
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureAPI.RESOURCE_PACKAGE, "cfw_apitokenmgmt.js");
 				
-
 				html.addJavascriptCode("cfw_apitokenmgmt_draw();");
 				
 		        response.setContentType("text/html");
