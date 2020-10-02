@@ -105,6 +105,7 @@ DONE
 - Dashboard List: use dataviewer
 - Chart Renderer: fixed tooltip overflow, not cropped anymore.
 - Added "System Analytics >> Session Overview"
+- Added API Token Mechanism
 - Added cfw_session_count to metrics 
 
 
