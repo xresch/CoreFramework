@@ -1486,7 +1486,7 @@ function cfw_renderer_dataviewer_createNavigationHTML(dataviewerID, totalRecords
 	// HTML
 	var html = 
 		'<nav aria-label="Page Navigation" class="d-flex justify-content-end align-items-center mb-2">'
-			+'<span class="mr-2"><strong>'+totalRecords+'</strong> '+itemText+' / <strong>'+totalPages+'</strong> '+pagesText+'</span>'
+			+'<span class="mr-2"><strong>'+totalRecords+'</strong> '+itemText+' on <strong>'+totalPages+'</strong> '+pagesText+'</span>'
 			+'<ul class="pagination pagination-sm m-0">'
 			+ cfw_renderer_dataviewer_createPageListItem(dataviewerID, 1,'<i class="fas fa-angle-double-left"></i>', false)
 			+ cfw_renderer_dataviewer_createPageListItem(dataviewerID, ((pageActive > 1) ? pageActive-1 : 1),'<i class="fas fa-angle-left"></i>', false);
