@@ -95,7 +95,7 @@ public class TestCFWDBSpaceManagement extends DBTestMaster {
 		Assertions.assertTrue(CFW.DB.SpaceGroups.checkSpaceGroupExists(spacegroupname), "Config created successfully, checkConfigExists(String) works.");
 
 		//--------------------------------------
-		// SELECT BY TOKEN
+		// SELECT BY NAME
 		SpaceGroup spacegroup = CFW.DB.SpaceGroups.selectByName(spacegroupname);
 		
 		System.out.println("===== CONFIG =====");

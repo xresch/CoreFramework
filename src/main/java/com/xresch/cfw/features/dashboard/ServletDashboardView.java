@@ -48,7 +48,7 @@ public class ServletDashboardView extends HttpServlet
 			String action = request.getParameter("action");
 			
 			if(action == null) {
-				HTMLResponse html = new HTMLResponse("APIToken");
+				HTMLResponse html = new HTMLResponse("Dashboard");
 				StringBuilder content = html.getContent();
 				
 				//---------------------------

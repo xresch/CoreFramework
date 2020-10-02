@@ -88,7 +88,8 @@ function cfw_renderer_csv(renderDef) {
 		let record = "";
 		for(var key in renderDef.visiblefields){
 			var fieldname = renderDef.visiblefields[key];
-			var value = renderDef.getCustomizedValue(currentRecord, fieldname);
+			// do not use customized values as it might return html
+			var value = currentRecord[fieldname];
 			
 			if(typeof value === "object" ){
 				value = JSON.stringify(value);

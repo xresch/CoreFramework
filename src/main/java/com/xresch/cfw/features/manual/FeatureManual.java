@@ -299,10 +299,10 @@ public class FeatureManual extends CFWAppFeature {
 	 *****************************************************************/
 	private void registerDeveloperDashboard(ManualPage parent) {
 		
-		ManualPage dashboard = new ManualPage("APIToken").faicon("fas fa-tachometer-alt").addPermission(PERMISSION_ADMIN_MANUAL);
+		ManualPage dashboard = new ManualPage("Dashboard").faicon("fas fa-tachometer-alt").addPermission(PERMISSION_ADMIN_MANUAL);
 		parent.addChild(dashboard);
 		
-		dashboard.addChild(new ManualPage("Creating APIToken Widgets")
+		dashboard.addChild(new ManualPage("Creating Dashboard Widgets")
 				.faicon("fas fa-th")
 				.addPermission(PERMISSION_ADMIN_MANUAL)
 				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "manual_dev_dashboard_wigdets.html")
