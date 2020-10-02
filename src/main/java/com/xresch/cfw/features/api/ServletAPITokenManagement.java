@@ -151,7 +151,7 @@ public class ServletAPITokenManagement extends HttpServlet
 				if(origin != null) {
 					if(origin.mapRequestParameters(request)) {
 						APIToken token = (APIToken)origin;
-						
+						token.foreignKeyCreator(CFW.Context.Request.getUser().id());
 						if(APITokenDBMethods.create(token) ) {
 							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Token created successfully!");
 						}

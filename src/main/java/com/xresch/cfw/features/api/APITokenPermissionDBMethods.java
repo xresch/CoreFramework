@@ -3,22 +3,21 @@ package com.xresch.cfw.features.api;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
-import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
-import com.xresch.cfw.features.api.APIToken.APITokenFields;
+import com.xresch.cfw.features.api.APITokenPermission.APITokenPermissionFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * @author Reto Scheiwiller
  **************************************************************************************************************/
-public class APITokenDBMethods {
+public class APITokenPermissionDBMethods {
 	
-	private static Class<APIToken> cfwObjectClass = APIToken.class;
+	private static Class<APITokenPermission> cfwObjectClass = APITokenPermission.class;
 	
-	public static Logger logger = CFWLog.getLogger(APITokenDBMethods.class.getName());
+	public static Logger logger = CFWLog.getLogger(APITokenPermissionDBMethods.class.getName());
 		
 	//####################################################################################################
 	// Preckeck Initialization
@@ -26,7 +25,7 @@ public class APITokenDBMethods {
 	private static PrecheckHandler prechecksCreateUpdate =  new PrecheckHandler() {
 		public boolean doCheck(CFWObject object) {
 			
-			APIToken apiToken = (APIToken)object;
+			APITokenPermission apiToken = (APITokenPermission)object;
 			
 			if(apiToken == null || apiToken.token().isEmpty()) {
 				new CFWLog(logger)
@@ -48,31 +47,30 @@ public class APITokenDBMethods {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(APIToken... items) 	{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, items); }
-	public static boolean 	create(APIToken item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, item);}
-	public static Integer 	createGetPrimaryKey(APIToken item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);}
+	public static boolean	create(APITokenPermission... items) 	{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, items); }
+	public static boolean 	create(APITokenPermission item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, item);}
+	public static Integer 	createGetPrimaryKey(APITokenPermission item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);}
 	
 	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(APIToken... items) 	{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, items); }
-	public static boolean 	update(APIToken item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, item); }
+	public static boolean 	update(APITokenPermission... items) 	{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, items); }
+	public static boolean 	update(APITokenPermission item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, item); }
 	
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################	
-	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, APITokenFields.PK_ID.toString(), id); }
+	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, APITokenPermissionFields.PK_ID.toString(), id); }
 	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(cfwObjectClass, itemIDs); }
 	
 	//####################################################################################################
 	// DUPLICATE
 	//####################################################################################################
 	public static boolean duplicateByID(String id ) {
-		APIToken item = selectByID(id);
+		APITokenPermission item = selectByID(id);
 		if(item != null) {
 			item.id(null);
-			item.foreignKeyCreator(CFW.Context.Request.getUser().id());
 			return create(item);
 		}
 		
@@ -82,25 +80,19 @@ public class APITokenDBMethods {
 	//####################################################################################################
 	// SELECT
 	//####################################################################################################
-	public static APIToken selectByID(String id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, APITokenFields.PK_ID.toString(), id);
+	public static APITokenPermission selectByID(String id ) {
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, APITokenPermissionFields.PK_ID.toString(), id);
 	}
 	
-	public static APIToken selectByID(int id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, APITokenFields.PK_ID.toString(), id);
+	public static APITokenPermission selectByID(int id ) {
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, APITokenPermissionFields.PK_ID.toString(), id);
 	}
-	
-	public static APIToken selectFirstByToken(String name) { 
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, APITokenFields.TOKEN.toString(), name);
-	}
-	
-	
-	
-	public static String getTokenListAsJSON() {
 		
-		return new CFWSQL(new APIToken())
+	
+	public static String getTokenPermissionListAsJSON() {
+		
+		return new CFWSQL(new APITokenPermission())
 				.queryCache()
-				.columnSubquery("CREATED_BY", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 				.select()
 				.getAsJSON();
 		
@@ -108,7 +100,7 @@ public class APITokenDBMethods {
 	
 	public static int getCount() {
 		
-		return new CFWSQL(new APIToken())
+		return new CFWSQL(new APITokenPermission())
 				.queryCache()
 				.selectCount()
 				.getCount();

@@ -134,12 +134,12 @@ public class APIToken extends CFWObject {
 		return this;
 	}
 	
-	public Integer foreignKeyOwner() {
+	public Integer foreignKeyCreator() {
 		return foreignKeyCreator.getValue();
 	}
 	
-	public APIToken foreignKeyOwner(Integer foreignKeyUser) {
-		this.foreignKeyCreator.setValue(foreignKeyUser);
+	public APIToken foreignKeyCreator(Integer foreignKeyCreator) {
+		this.foreignKeyCreator.setValue(foreignKeyCreator);
 		return this;
 	}
 		

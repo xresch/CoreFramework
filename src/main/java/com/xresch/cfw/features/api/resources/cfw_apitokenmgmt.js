@@ -153,7 +153,7 @@ function cfw_apitokenmgmt_printTokenList(data){
 			 	textstylefield: null,
 			 	titlefields: ['TOKEN'],
 			 	titleformat: '{0}',
-			 	visiblefields: ['PK_ID', 'TOKEN', 'DESCRIPTION', 'JSON_RESPONSIBLE_USERS'],
+			 	visiblefields: ['PK_ID', 'TOKEN', 'DESCRIPTION', 'JSON_RESPONSIBLE_USERS', 'CREATED_BY'],
 			 	labels: {
 			 		PK_ID: "ID",
 			 	},
@@ -183,7 +183,7 @@ function cfw_apitokenmgmt_printTokenList(data){
 							{	label: 'Smaller Table',
 								name: 'table',
 								renderdef: {
-									visiblefields: ['PK_ID', 'TOKEN', 'JSON_RESPONSIBLE_USERS'],
+									visiblefields: ['PK_ID', 'TOKEN', 'JSON_RESPONSIBLE_USERS', 'CREATED_BY'],
 									actions: [],
 									rendererSettings: {
 										table: {filterable: false, narrow: true},

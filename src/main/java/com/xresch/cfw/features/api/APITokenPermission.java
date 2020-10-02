@@ -30,14 +30,12 @@ import com.xresch.cfw.validation.LengthValidator;
  **************************************************************************************************************/
 public class APITokenPermission extends CFWObject {
 	
-	public static final String TABLE_NAME = "CFW_APITOKEN";
+	public static final String TABLE_NAME = "CFW_APITOKEN_PERMISSION";
 	
 	public enum APITokenPermissionFields{
 		PK_ID,
-		FK_ID_TOKEN,
-		TOKEN,
-		DESCRIPTION,
-		JSON_RESPONSIBLE_USERS,
+		API_NAME,
+		ACTION_NAME,
 	}
 
 	private static Logger logger = CFWLog.getLogger(APITokenPermission.class.getName());
@@ -47,29 +45,15 @@ public class APITokenPermission extends CFWObject {
 			.setDescription("The id of the permission.")
 			.apiFieldType(FormFieldType.NUMBER);
 	
-	private CFWField<Integer> foreignKeyToken = CFWField.newInteger(FormFieldType.HIDDEN, APITokenPermissionFields.FK_ID_TOKEN)
-			.setForeignKeyCascade(this, APIToken.class, APITokenPermissionFields.PK_ID)
-			.setDescription("The id of the token which has this permission.")
-			.apiFieldType(FormFieldType.NUMBER);
-	
-	private CFWField<String> token = CFWField.newString(FormFieldType.TEXT, APITokenPermissionFields.TOKEN)
-			.setDescription("The token which can be used to access the API.")
+	private CFWField<String> apiName = CFWField.newString(FormFieldType.TEXT, APITokenPermissionFields.API_NAME)
+			.setDescription("The apiName which can be used to access the API.")
 			.addValidator(new LengthValidator(1, 512))
 			.setValue(CFW.Random.randomStringAlphaNumerical(64));
 	
-	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, APITokenPermissionFields.DESCRIPTION)
-			.setDescription("An optional description for the token.")
+	private CFWField<String> actionName = CFWField.newString(FormFieldType.TEXT, APITokenPermissionFields.ACTION_NAME)
+			.setDescription("The action name of this permission.")
 			.addValidator(new LengthValidator(-1, 2000000));
 	
-
-	private CFWField<LinkedHashMap<String,String>> responsibleUsers = CFWField.newTagsSelector(APITokenPermissionFields.JSON_RESPONSIBLE_USERS)
-			.setLabel("Responsible Users")
-			.setDescription("Specify the users responsible for this token.")
-			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
-					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
-				}
-			});
 	
 	public APITokenPermission() {
 		initializeFields();
@@ -82,7 +66,7 @@ public class APITokenPermission extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyToken, token, description, responsibleUsers);
+		this.addFields(id, apiName, actionName);
 	}
 		
 	/**************************************************************************************
@@ -96,17 +80,15 @@ public class APITokenPermission extends CFWObject {
 		String[] inputFields = 
 				new String[] {
 						APITokenPermissionFields.PK_ID.toString(), 
-						APITokenPermissionFields.FK_ID_TOKEN.toString(),
-						APITokenPermissionFields.TOKEN.toString(),
+						APITokenPermissionFields.API_NAME.toString(),
+						APITokenPermissionFields.ACTION_NAME.toString(),
 				};
 		
 		String[] outputFields = 
 				new String[] {
 						APITokenPermissionFields.PK_ID.toString(), 
-						APITokenPermissionFields.FK_ID_TOKEN.toString(),
-						APITokenPermissionFields.TOKEN.toString(),
-						APITokenPermissionFields.DESCRIPTION.toString(),
-						APITokenPermissionFields.JSON_RESPONSIBLE_USERS.toString(),
+						APITokenPermissionFields.API_NAME.toString(),
+						APITokenPermissionFields.ACTION_NAME.toString(),
 				};
 
 		//----------------------------------
@@ -133,41 +115,22 @@ public class APITokenPermission extends CFWObject {
 		this.id.setValue(id);
 		return this;
 	}
-	
-	public Integer foreignKeyOwner() {
-		return foreignKeyToken.getValue();
-	}
-	
-	public APITokenPermission foreignKeyOwner(Integer foreignKeyUser) {
-		this.foreignKeyToken.setValue(foreignKeyUser);
-		return this;
-	}
-		
+			
 	public String token() {
-		return token.getValue();
+		return apiName.getValue();
 	}
 	
 	public APITokenPermission token(String name) {
-		this.token.setValue(name);
+		this.apiName.setValue(name);
 		return this;
 	}
 	
 	public String description() {
-		return description.getValue();
+		return actionName.getValue();
 	}
 
 	public APITokenPermission description(String description) {
-		this.description.setValue(description);
-		return this;
-	}
-
-	
-	public LinkedHashMap<String,String> responsibleUsers() {
-		return responsibleUsers.getValue();
-	}
-	
-	public APITokenPermission responsibleUsers(LinkedHashMap<String,String> responsibleUsers) {
-		this.responsibleUsers.setValue(responsibleUsers);
+		this.actionName.setValue(description);
 		return this;
 	}
 		
