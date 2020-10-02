@@ -94,7 +94,7 @@ function cfw_apitokenmgmt_printTokenList(data){
 	//--------------------------------
 	// Button
 	var addTokenButton = $('<button class="btn btn-sm btn-success mb-2" onclick="cfw_apitokenmgmt_addToken()">'
-						+ '<i class="fas fa-plus-circle"></i>Add Token</button>');
+						+ '<i class="mr-1 fas fa-plus-circle"></i>Add Token</button>');
 
 	parent.append(addTokenButton);
 	
@@ -153,7 +153,7 @@ function cfw_apitokenmgmt_printTokenList(data){
 			 	textstylefield: null,
 			 	titlefields: ['TOKEN'],
 			 	titleformat: '{0}',
-			 	visiblefields: ['PK_ID', 'TOKEN', 'DESCRIPTION', "JSON_RESPONSIBLE_USERS"],
+			 	visiblefields: ['PK_ID', 'TOKEN', 'DESCRIPTION', 'JSON_RESPONSIBLE_USERS'],
 			 	labels: {
 			 		PK_ID: "ID",
 			 	},
@@ -171,6 +171,42 @@ function cfw_apitokenmgmt_printTokenList(data){
 				rendererSettings: {
 					dataviewer: {
 						storeid: 'tokenlist',
+						renderers: [
+							{	label: 'Table',
+								name: 'table',
+								renderdef: {
+									rendererSettings: {
+										table: {filterable: false},
+									},
+								}
+							},
+							{	label: 'Smaller Table',
+								name: 'table',
+								renderdef: {
+									visiblefields: ['PK_ID', 'TOKEN', 'JSON_RESPONSIBLE_USERS'],
+									actions: [],
+									rendererSettings: {
+										table: {filterable: false, narrow: true},
+									},
+								}
+							},
+							{	label: 'Panels',
+								name: 'panels',
+								renderdef: {}
+							},
+							{	label: 'Cards',
+								name: 'cards',
+								renderdef: {}
+							},
+							{	label: 'CSV',
+								name: 'csv',
+								renderdef: {}
+							},
+							{	label: 'JSON',
+								name: 'json',
+								renderdef: {}
+							}
+						],
 					},
 				},
 			};
