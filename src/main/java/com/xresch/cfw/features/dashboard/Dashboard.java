@@ -172,7 +172,7 @@ public class Dashboard extends CFWObject {
 		//---------------------------
 		// Change Description Data Type
 		new CFWSQL(this)
-			.custom("ALTER TABLE IF EXISTS CFW_DASHBOARD ALTER COLUMN IF EXISTS NAME SET DATA TYPE VARCHAR_IGNORECASE;")
+			.custom("ALTER TABLE IF EXISTS CFW_DASHBOARD ALTER COLUMN IF EXISTS TOKEN SET DATA TYPE VARCHAR_IGNORECASE;")
 			.execute();
 		
 	}
@@ -187,7 +187,7 @@ public class Dashboard extends CFWObject {
 		String[] inputFields = 
 				new String[] {
 						DashboardFields.PK_ID.toString(), 
-//						DashboardFields.CATEGORY.toString(),
+//						APITokenFields.CATEGORY.toString(),
 						DashboardFields.NAME.toString(),
 				};
 		

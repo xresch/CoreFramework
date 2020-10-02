@@ -18,15 +18,15 @@ import com.xresch.cfw.response.bootstrap.MenuItem;
  **************************************************************************************************************/
 public class FeatureDashboard extends CFWAppFeature {
 	
-	public static final String PERMISSION_DASHBOARD_VIEWER = "Dashboard Viewer";
-	public static final String PERMISSION_DASHBOARD_CREATOR = "Dashboard Creator";
-	public static final String PERMISSION_DASHBOARD_ADMIN = "Dashboard Admin";
+	public static final String PERMISSION_DASHBOARD_VIEWER = "APIToken Viewer";
+	public static final String PERMISSION_DASHBOARD_CREATOR = "APIToken Creator";
+	public static final String PERMISSION_DASHBOARD_ADMIN = "APIToken Admin";
 
 	
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.dashboard.resources";
 	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.dashboard.manual";
 	
-	public static final ManualPage ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, new ManualPage("Dashboard").faicon("fas fa-tachometer-alt"));
+	public static final ManualPage ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, new ManualPage("APIToken").faicon("fas fa-tachometer-alt"));
 	
 	@Override
 	public void register() {
@@ -74,7 +74,7 @@ public class FeatureDashboard extends CFWAppFeature {
 				, null);
 				
 		CFW.Registry.Components.addRegularMenuItem(
-				(MenuItem)new MenuItem("Dashboard List")
+				(MenuItem)new MenuItem("APIToken List")
 					.faicon("fas fa-images")
 					.addPermission(PERMISSION_DASHBOARD_VIEWER)
 					.addPermission(PERMISSION_DASHBOARD_CREATOR)

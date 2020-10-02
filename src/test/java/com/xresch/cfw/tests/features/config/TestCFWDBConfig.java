@@ -52,7 +52,7 @@ public class TestCFWDBConfig extends DBTestMaster {
 		Assertions.assertTrue(CFW.DB.Config.checkConfigExists(configname), "Config created successfully, checkConfigExists(String) works.");
 
 		//--------------------------------------
-		// SELECT BY NAME
+		// SELECT BY TOKEN
 		Configuration config = CFW.DB.Config.selectByName(configname);
 		
 		System.out.println("===== CONFIG =====");

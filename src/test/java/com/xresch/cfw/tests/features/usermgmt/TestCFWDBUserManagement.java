@@ -304,7 +304,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		Assertions.assertTrue(CFW.DB.Roles.checkExistsByName(rolename), "Role created successfully, checkRoleExists(String) works.");
 
 		//--------------------------------------
-		// SELECT BY NAME
+		// SELECT BY TOKEN
 		Role role = CFW.DB.Roles.selectFirstByName(rolename);
 		
 		//System.out.println("===== USER =====");
@@ -458,7 +458,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		Assertions.assertTrue(CFW.DB.Permissions.checkExistsByName(permissionname), "Permission created successfully, checkPermissionExists(String) works.");
 
 		//--------------------------------------
-		// SELECT BY NAME
+		// SELECT BY TOKEN
 		Permission permission = CFW.DB.Permissions.selectByName(permissionname);
 		
 		//System.out.println("===== USER =====");

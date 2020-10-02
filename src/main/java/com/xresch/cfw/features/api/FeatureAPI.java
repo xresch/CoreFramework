@@ -20,6 +20,7 @@ public class FeatureAPI extends CFWAppFeature {
 	private static Logger logger = CFWLog.getLogger(FeatureAPI.class.getName());
 	
 	public static final String PERMISSION_CFW_API = "API";
+	public static final String PERMISSION_CFW_APITOKEN_MGMT = "API Token Managment";
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.api.resources";
 	
 	@Override
@@ -28,9 +29,12 @@ public class FeatureAPI extends CFWAppFeature {
 		// Register Package
 		CFW.Files.addAllowedPackage(RESOURCE_PACKAGE);
     	
+		//----------------------------------
+		// Register Objects
+		CFW.Registry.Objects.addCFWObject(APIToken.class);
+		
     	//----------------------------------
     	// Register Menu Entry
-
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("API")
 					.faicon("fas fa-code")
@@ -45,25 +49,30 @@ public class FeatureAPI extends CFWAppFeature {
 		Role adminRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_ADMIN);
 		//Role userRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_USER);
 		
-		//-----------------------------------
+		//-----------------------------------------
 		// 
 		//-----------------------------------------
-		// API
-		//-----------------------------------------
-		if(!CFW.DB.Permissions.checkExistsByName(PERMISSION_CFW_API)) {
-			CFW.DB.Permissions.create(new Permission(PERMISSION_CFW_API, "user")
-				.description("User can access the API.")
-			);
+		
+		CFW.DB.Permissions.oneTimeCreate(
+			new Permission(PERMISSION_CFW_API, "user")
+				.description("User can access the API."),
+				true,
+				false
+		);
 			
-			Permission permission = CFW.DB.Permissions.selectByName(PERMISSION_CFW_API);
-			CFW.DB.RolePermissionMap.addPermissionToRole(permission, adminRole, true);
-		}
+		CFW.DB.Permissions.oneTimeCreate(
+			new Permission(PERMISSION_CFW_APITOKEN_MGMT, "user")
+				.description("User can manage API Tokens."),
+				true,
+				false
+		);
 
 	}
 
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
     	app.addAppServlet(ServletAPI.class,  "/api");
+    	app.addAppServlet(ServletAPITokenManagement.class,  "/api/tokenmanagement");
     	app.addUnsecureServlet(ServletAPILogin.class,  "/cfw/apilogin");
 	}
 

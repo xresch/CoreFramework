@@ -34,7 +34,7 @@ public class ServletDashboardList extends HttpServlet
 	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-		HTMLResponse html = new HTMLResponse("Dashboard List");
+		HTMLResponse html = new HTMLResponse("APIToken List");
 		
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_VIEWER)
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
@@ -191,7 +191,7 @@ public class ServletDashboardList extends HttpServlet
 				}
 				
 				if(success) {
-					CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Dashboard duplicated successfully.");
+					CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "APIToken duplicated successfully.");
 				}
 				jsonResponse.setSuccess(success);
 				
@@ -211,7 +211,7 @@ public class ServletDashboardList extends HttpServlet
 	private void createForms() {
 				
 		//--------------------------------------
-		// Create Dashboard Form
+		// Create APIToken Form
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 			CFWForm createDashboardForm = new Dashboard().toForm("cfwCreateDashboardForm", "{!cfw_dashboard_create!}");
@@ -227,7 +227,7 @@ public class ServletDashboardList extends HttpServlet
 						Dashboard dashboard = (Dashboard)origin;
 						dashboard.foreignKeyOwner(CFW.Context.Request.getUser().id());
 						if( CFW.DB.Dashboards.create(dashboard) ) {
-							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Dashboard created successfully!");
+							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "APIToken created successfully!");
 						}
 					}
 					
@@ -247,7 +247,7 @@ public class ServletDashboardList extends HttpServlet
 			
 			if(dashboard != null) {
 				
-				CFWForm editDashboardForm = dashboard.toForm("cfwEditDashboardForm"+ID, "Update Dashboard");
+				CFWForm editDashboardForm = dashboard.toForm("cfwEditDashboardForm"+ID, "Update APIToken");
 				
 				editDashboardForm.setFormHandler(new CFWFormHandler() {
 					

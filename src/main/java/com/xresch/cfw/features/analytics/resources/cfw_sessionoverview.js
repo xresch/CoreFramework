@@ -14,20 +14,7 @@ function cfw_sessionoverview_fetchsessionoverviewAndDisplay(){
 		
 		if(data.payload != null){
 			//-----------------------------------
-			// Render Data
-			
-//			ALIVE_TIME: 1657
-//			CLIENT_IP: "0:0:0:0:0:0:0:1"
-//			CREATION_TIME: 1601550102191
-//			EXPIRATION_TIME: 1601553703771
-//			FIRSTNAME: null
-//			LASTNAME: null
-//			LAST_ACCESS_TIME: 1601550103771
-//			SESSION_ID: "node01fh4m2fram1qtkbl24f7mm5lk0"
-//			SESSION_ID_EXTENDED: "node01fh4m2fram1qtkbl24f7mm5lk0.node0"
-//			SESSION_TIMOUT: 3600
-//			USERNAME: "admin"
-			
+			// Render Data			
 			var timestampFormatter = function(record, value){ return CFW.format.epochToTimestamp(value); };
 			var durationFormatter = function(record, value){ return CFW.format.millisToDuration(value); };
 			

@@ -70,7 +70,7 @@ public class TestPerformanceCreateQuery {
 		CFWSQL sql = new CFWSQL(new User());
 		for(int i = 0; i < 10000; i++) {
 			sql.queryCache(TestPerformanceCreateQuery.class, "testBiggerQuery")
-				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 			    .select()
 				.where(UserFields.PK_ID, 2)
 				.and("somefield", "somevalue")
@@ -96,7 +96,7 @@ public class TestPerformanceCreateQuery {
 		CFWSQL sql = new CFWSQL(new User());
 		for(int i = 0; i < 10000; i++) {
 			sql.queryCache()
-				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 			    .select()
 				.where(UserFields.PK_ID, 2)
 				.and("somefield", "somevalue")
@@ -122,7 +122,7 @@ public class TestPerformanceCreateQuery {
 		CFWSQL sql = new CFWSQL(new User());
 		for(int i = 0; i < 10000; i++) {
 			sql.queryCache(TestPerformanceCreateQuery.class, "testBiggerQuery")
-				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 			    .select()
 				.where(UserFields.PK_ID, 2)
 				.and("somefield", "somevalue")
@@ -148,7 +148,7 @@ public class TestPerformanceCreateQuery {
 		CFWSQL sql = new CFWSQL(new User());
 		for(int i = 0; i < 10000; i++) {
 			sql.queryCache()
-				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 			    .select()
 				.where(UserFields.PK_ID, 2)
 				.and("somefield", "somevalue")
@@ -179,7 +179,7 @@ public class TestPerformanceCreateQuery {
 		CFWSQL sql = new CFWSQL(new User());
 		for(int i = 0; i < 10000; i++) {
 			sql.queryCache()
-				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 			    .select()
 				.where(UserFields.PK_ID, 2)
 				.and("somefield", "somevalue")

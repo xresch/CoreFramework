@@ -161,6 +161,14 @@ function cfw_apioverview_printOverview(data){
 	
 	parent.append("<h1>API Overview</h1>");
 	
+	if(CFW.hasPermission('API Token Managment')){
+		var managementButton = $('<a class="btn btn-sm btn-primary mb-2" role="button" href="./api/tokenmanagement" >'
+				+ '<i class="fas fa-ticket-alt mr-1"></i>Manage Tokens</button>');
+	
+		parent.append(managementButton);
+	}
+	
+	
 	if(data.payload != undefined){
 		cfw_apioverview_printLoginPanel(parent);
 		//--------------------------------

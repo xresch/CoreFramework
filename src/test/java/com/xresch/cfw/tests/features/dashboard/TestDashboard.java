@@ -122,13 +122,13 @@ public class TestDashboard extends DBTestMaster {
 		
 		
 		//----------------------------------------
-		// Create Dashboard
+		// Create APIToken
 		String boardName = "testDashboardAllHaveAccess";
 		CFW.DB.Dashboards.create(
 			new Dashboard()
 				.name(boardName)
 				.foreignKeyOwner(userCreator.getPrimaryKey())
-				.description("Test Dashboard")
+				.description("Test APIToken")
 				.isShared(true)
 				.sharedWithUsers(sharedWithUser)
 				.sharedWithRoles(sharedWithRoles)
@@ -141,7 +141,7 @@ public class TestDashboard extends DBTestMaster {
 		boardAllSpecificAccess = CFW.DB.Dashboards.selectFirstByName(boardName);
 		
 		//----------------------------------------
-		// Create Dashboard
+		// Create APIToken
 		boardName = "testDashboardSharedWithAll";
 		CFW.DB.Dashboards.create(
 			new Dashboard()
@@ -154,7 +154,7 @@ public class TestDashboard extends DBTestMaster {
 		boardSharedWithAll = CFW.DB.Dashboards.selectFirstByName(boardName);
 		
 		//----------------------------------------
-		// Create Dashboard
+		// Create APIToken
 		boardName = "testDashboardMinimalAccess";
 		CFW.DB.Dashboards.create(
 			new Dashboard()
@@ -167,7 +167,7 @@ public class TestDashboard extends DBTestMaster {
 		boardMinimalAccess = CFW.DB.Dashboards.selectFirstByName(boardName);
 		
 		//----------------------------------------
-		// Create  Dashboard
+		// Create  APIToken
 		boardName = "testDashboardOtherCreator";
 		CFW.DB.Dashboards.create(
 			new Dashboard()
@@ -187,7 +187,7 @@ public class TestDashboard extends DBTestMaster {
 	public void testCreateDashboard() {
 				
 		Assertions.assertEquals("testDashboardAllHaveAccess", boardAllSpecificAccess.name());
-		Assertions.assertEquals("Test Dashboard", boardAllSpecificAccess.description());
+		Assertions.assertEquals("Test APIToken", boardAllSpecificAccess.description());
 		Assertions.assertEquals(userCreator.getPrimaryKey(), boardAllSpecificAccess.foreignKeyOwner());
 		Assertions.assertTrue(boardAllSpecificAccess.isShared());
 		Assertions.assertTrue(boardAllSpecificAccess.sharedWithUsers().containsKey(userViewer.id()+""));
@@ -229,7 +229,7 @@ public class TestDashboard extends DBTestMaster {
 		Assertions.assertTrue(jsonSharedDashboards.contains(boardSharedWithAll.name()) );
 		
 		//----------------------------------------
-		// Assert Admin Dashboard Access
+		// Assert Admin APIToken Access
 		String jsonAdminDashboards = CFW.DB.Dashboards.getAdminDashboardListAsJSON();
 		Assertions.assertEquals("[]", jsonAdminDashboards);
 		
@@ -278,7 +278,7 @@ public class TestDashboard extends DBTestMaster {
 		Assertions.assertTrue(jsonSharedDashboards.contains(boardSharedWithAll.name()) );
 		
 		//----------------------------------------
-		// Assert Admin Dashboard Access
+		// Assert Admin APIToken Access
 		String jsonAdminDashboards = CFW.DB.Dashboards.getAdminDashboardListAsJSON();
 		Assertions.assertEquals("[]", jsonAdminDashboards);
 		
@@ -323,7 +323,7 @@ public class TestDashboard extends DBTestMaster {
 		Assertions.assertTrue(jsonSharedDashboards.contains(boardSharedWithAll.name()) );
 		
 		//----------------------------------------
-		// Assert Admin Dashboard Access
+		// Assert Admin APIToken Access
 		String jsonAdminDashboards = CFW.DB.Dashboards.getAdminDashboardListAsJSON();
 		JsonElement adminBoards = CFW.JSON.fromJson(jsonAdminDashboards);
 		Assertions.assertTrue(adminBoards.isJsonArray());
@@ -373,7 +373,7 @@ public class TestDashboard extends DBTestMaster {
 		Assertions.assertTrue(jsonSharedDashboards.contains(boardSharedWithAll.name()) );
 		
 		//----------------------------------------
-		// Assert Admin Dashboard Access
+		// Assert Admin APIToken Access
 		String jsonAdminDashboards = CFW.DB.Dashboards.getAdminDashboardListAsJSON();
 		Assertions.assertEquals("[]", jsonAdminDashboards);
 		
@@ -417,7 +417,7 @@ public class TestDashboard extends DBTestMaster {
 		Assertions.assertTrue(jsonSharedDashboards.contains(boardSharedWithAll.name()) );
 		
 		//----------------------------------------
-		// Assert Admin Dashboard Access
+		// Assert Admin APIToken Access
 		String jsonAdminDashboards = CFW.DB.Dashboards.getAdminDashboardListAsJSON();
 		Assertions.assertEquals("[]", jsonAdminDashboards);
 		
@@ -460,7 +460,7 @@ public class TestDashboard extends DBTestMaster {
 		Assertions.assertTrue(jsonSharedDashboards.contains(boardSharedWithAll.name()) );
 		
 		//----------------------------------------
-		// Assert Admin Dashboard Access
+		// Assert Admin APIToken Access
 		String jsonAdminDashboards = CFW.DB.Dashboards.getAdminDashboardListAsJSON();
 		Assertions.assertEquals("[]", jsonAdminDashboards);
 		

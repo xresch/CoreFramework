@@ -14,15 +14,15 @@ public class TestCFWSQL extends DBTestMaster {
 		
 		String appleSQL = new CFWSQL(null)
 				.queryCache(this.getClass(), "SelectApplesSQL")
-				.custom("SELECT ID, CATEGORY, TYPE, NAME, COUNT FROM FRUITS ")
+				.custom("SELECT ID, CATEGORY, TYPE, TOKEN, COUNT FROM FRUITS ")
 				.where("CATEGORY", "Fruit")
 				.and("TYPE", "Apple")
-				.orderbyDesc("NAME")
+				.orderbyDesc("TOKEN")
 				.getStatementCached();
 		
 		System.out.println(appleSQL);
 		
-		Assertions.assertEquals(" SELECT ID, CATEGORY, TYPE, NAME, COUNT FROM FRUITS   WHERE CATEGORY = ? AND TYPE = ? ORDER BY NAME DESC", 
+		Assertions.assertEquals(" SELECT ID, CATEGORY, TYPE, TOKEN, COUNT FROM FRUITS   WHERE CATEGORY = ? AND TYPE = ? ORDER BY TOKEN DESC", 
 				appleSQL,
 				"The SQL is created.");
 				

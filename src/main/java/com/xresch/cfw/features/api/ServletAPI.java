@@ -65,6 +65,10 @@ public class ServletAPI extends HttpServlet
 	 ******************************************************************/
 	protected void handleTokenBased( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
 	{
+		
+		// curl -X GET "http://localhost:8888/app/api?apitoken=dias-fjkdlafjak&apiName=User&actionName=fetchData&PK_ID=1&"
+		// curl -H "API-Token: Header-Token-5bn3jk5" -X GET "http://localhost:8888/app/api?apiName=User&actionName=fetchData&PK_ID=1&"
+		
 		String apiName = request.getParameter("apiName");
 		String action = request.getParameter("actionName");
 		

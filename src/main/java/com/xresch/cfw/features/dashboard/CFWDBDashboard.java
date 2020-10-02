@@ -148,13 +148,13 @@ public class CFWDBDashboard {
 	 * @return Returns a resultSet with all dashboards or null.
 	 ****************************************************************/
 //	public static ResultSet getSharedDashboardList() {
-//		// SELECT (SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER ) AS USERNAME, * FROM CFW_DASHBOARD WHERE IS_SHARED = TRUE ORDER BY LOWER(NAME)
-//		return new Dashboard()
+//		// SELECT (SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR ) AS USERNAME, * FROM CFW_DASHBOARD WHERE IS_SHARED = TRUE ORDER BY LOWER(TOKEN)
+//		return new APIToken()
 //				.queryCache(CFWDBDashboard.class, "getSharedDashboardList")
-//				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+//				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 //				.select()
-//				.where(DashboardFields.IS_SHARED.toString(), true)
-//				.orderby(DashboardFields.NAME.toString())
+//				.where(APITokenFields.IS_SHARED.toString(), true)
+//				.orderby(APITokenFields.TOKEN.toString())
 //				.getResultSet();
 //		
 //	}
@@ -184,7 +184,7 @@ public class CFWDBDashboard {
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 			return new Dashboard()
 				.queryCache(CFWDBDashboard.class, "getAdminDashboardListAsJSON")
-				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 				.select()
 				.orderby(DashboardFields.NAME.toString())
 				.getAsJSON();
@@ -217,7 +217,7 @@ public class CFWDBDashboard {
 		//-------------------------
 		// Union with Shared Roles
 		query.union()
-			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION)
 			.where(DashboardFields.IS_SHARED, true)
 			.and().custom("(");
@@ -236,7 +236,7 @@ public class CFWDBDashboard {
 		//-------------------------
 		// Union with Editor Roles
 		query.union()
-			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION)
 			.where().custom("(");
 		
@@ -251,7 +251,7 @@ public class CFWDBDashboard {
 		query.custom(")");
 	
 		return query
-			.custom("ORDER BY NAME")
+			.custom("ORDER BY TOKEN")
 			.getAsJSON();
 	}
 	
@@ -348,7 +348,7 @@ public class CFWDBDashboard {
 				dashboard.mapJsonFields(dashboardObject);
 				
 				//-----------------------------
-				// Reset Dashboard ID and Owner
+				// Reset APIToken ID and Owner
 				dashboard.id(null);
 				
 				if(keepOwner && dashboardObject.has("username")) {
@@ -409,11 +409,11 @@ public class CFWDBDashboard {
 				}
 				
 				//-----------------------------
-				// Create Dashboard
+				// Create APIToken
 				Integer newDashboardID = CFW.DB.Dashboards.createGetPrimaryKey(dashboard);
 				if(newDashboardID == null) {
 					new CFWLog(logger)
-						.severe("Dashboard '"+dashboard.name()+"' could not be imported.");
+						.severe("APIToken '"+dashboard.name()+"' could not be imported.");
 					continue;
 				}
 
@@ -442,7 +442,7 @@ public class CFWDBDashboard {
 							widget.mapJsonFields(widgetObject);
 							
 							//-----------------------------
-							// Reset Dashboard ID and Owner
+							// Reset APIToken ID and Owner
 							widget.foreignKeyDashboard(newDashboardID);
 							
 							//-----------------------------
@@ -514,7 +514,7 @@ public class CFWDBDashboard {
 		}
 		
 		//-----------------------------------
-		// Get Dashboard 
+		// Get APIToken 
 		Dashboard dashboard = (Dashboard)new CFWSQL(new Dashboard())
 			.select(DashboardFields.JSON_SHARE_WITH_ROLES, DashboardFields.JSON_EDITOR_ROLES)
 			.where(DashboardFields.PK_ID, dashboardID)
@@ -559,7 +559,7 @@ public class CFWDBDashboard {
 		
 		ResultSet resultSet = new Dashboard()
 			.queryCache(CFWDBDashboard.class, "autocompleteDashboard")
-			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_CREATOR")
 			.select(DashboardFields.PK_ID,
 					DashboardFields.NAME)
 			.whereLike(DashboardFields.NAME, "%"+searchValue+"%")
@@ -573,7 +573,7 @@ public class CFWDBDashboard {
 			while(resultSet != null && resultSet.next()) {
 				int id = resultSet.getInt("PK_ID");
 				if(hasUserAccessToDashboard(id)) {
-					String name = resultSet.getString("NAME");
+					String name = resultSet.getString("TOKEN");
 					String owner = resultSet.getString("OWNER");
 					list.addItem(id, name, "Owner: "+owner);
 				}
@@ -610,7 +610,7 @@ public class CFWDBDashboard {
 		User user = CFW.Context.Request.getUser();
 		
 		//--------------------------------------
-		// Check User is Dashboard owner, admin
+		// Check User is APIToken owner, admin
 		// or listed in editors
 		if( dashboard.foreignKeyOwner().equals(user.id())
 		|| ( dashboard.editors() != null && dashboard.editors().containsKey(user.id().toString()) )

@@ -108,7 +108,7 @@ public class TestCFWObject extends DBTestMaster{
 		
 		String jsonHierarchy = CFW.JSON.toJSON(role);
 		System.out.println(jsonHierarchy);
-		Assertions.assertEquals("{\"PK_ID\":1,\"CATEGORY\":\"user\",\"NAME\":\"Top Role\",\"DESCRIPTION\":\"Test top role.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"children\":[{\"PK_ID\":2,\"CATEGORY\":\"user\",\"NAME\":\"Sub Role\",\"DESCRIPTION\":\"Test sub role.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"children\":[]},{\"PK_ID\":3,\"CATEGORY\":\"user\",\"NAME\":\"Sub Role B\",\"DESCRIPTION\":\"Test sub role B.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"children\":[{\"PK_ID\":4,\"CATEGORY\":\"user\",\"NAME\":\"Sub Role B Child\",\"DESCRIPTION\":\"Test sub role B child.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"children\":[]}]}]}",
+		Assertions.assertEquals("{\"PK_ID\":1,\"CATEGORY\":\"user\",\"TOKEN\":\"Top Role\",\"DESCRIPTION\":\"Test top role.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"children\":[{\"PK_ID\":2,\"CATEGORY\":\"user\",\"TOKEN\":\"Sub Role\",\"DESCRIPTION\":\"Test sub role.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"children\":[]},{\"PK_ID\":3,\"CATEGORY\":\"user\",\"TOKEN\":\"Sub Role B\",\"DESCRIPTION\":\"Test sub role B.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"children\":[{\"PK_ID\":4,\"CATEGORY\":\"user\",\"TOKEN\":\"Sub Role B Child\",\"DESCRIPTION\":\"Test sub role B child.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"children\":[]}]}]}",
 				jsonHierarchy,
 				"Object is serialized.");
 	}

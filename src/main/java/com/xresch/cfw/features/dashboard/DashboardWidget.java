@@ -106,7 +106,7 @@ public class DashboardWidget extends CFWObject {
 		initializeFields();
 	}
 	
-//	public Dashboard(String name, String category) {
+//	public APIToken(String name, String category) {
 //		initializeFields();
 //		this.name.setValue(name);
 //		this.category.setValue(category);
