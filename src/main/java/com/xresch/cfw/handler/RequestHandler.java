@@ -41,9 +41,9 @@ public class RequestHandler extends HandlerWrapper
                                                       ServletException
     {
     	
-    	//##################################
+    	//==========================================
     	// Initialize
-    	//##################################
+    	//==========================================
     	
 		// Used to calculate deltaStart by OMLogger.log()
     	// minus 1ms to be always first
@@ -66,9 +66,9 @@ public class RequestHandler extends HandlerWrapper
     	
     	request.setAttribute(CFW.REQUEST_ATTR_ID, requestID);
     	
-    	//##################################
+    	//==========================================
     	// Get Session
-    	//##################################
+    	//==========================================
     	HttpSession session = request.getSession();
     	
     	// check outside the loop first to avoid synchronizing when it is not needed
@@ -78,12 +78,25 @@ public class RequestHandler extends HandlerWrapper
     	};
     	
     	CFW.Context.Request.setSessionData((SessionData)session.getAttribute(CFW.SESSION_DATA));
-    	//workaround maxInactiveInterval=-1 issue
-    	session.setMaxInactiveInterval(CFW.Properties.SESSION_TIMEOUT);
     	
-    	//##################################
+    	//==========================================
+    	// Set Session Timeout
+    	//==========================================
+    	//workaround maxInactiveInterval=-1 issue
+    	if(CFW.Context.Session.getSessionData().isLoggedIn()) {
+    		session.setMaxInactiveInterval(CFW.Properties.SESSION_TIMEOUT);
+    	}else {
+    		if(request.getRequestURI().equals("/metrics")) {
+    			session.setMaxInactiveInterval(10);
+    		}else {
+    			session.setMaxInactiveInterval(600);
+    		}
+    		
+    	}
+    	
+    	//==========================================
     	// Trace Log
-    	//##################################
+    	//==========================================
     	if(logger.isLoggable(Level.FINEST)) {
     		CFWLog traceLog = new CFWLog(logger);
     		Enumeration<String> headers = request.getHeaderNames();
@@ -95,14 +108,14 @@ public class RequestHandler extends HandlerWrapper
     		traceLog.finest("Request Headers Tracelog");
     	}
     	
-    	//##################################
+    	//==========================================
     	// Before
-    	//##################################    	
+    	//==========================================    	
 		try {
 	    		    		    	
-	    	//##################################
+	    	//==========================================
 	    	// Call Wrapped Handler
-	    	//##################################
+	    	//==========================================
 	    	
 	    	String userAgent = request.getHeader("User-Agent");
 	    	if(userAgent == null
@@ -119,9 +132,9 @@ public class RequestHandler extends HandlerWrapper
 			new CFWLog(logger).severe("Unhandled Exception occured.", e);
 			throw e;
 		}finally {
-	    	//##################################
+	    	//==========================================
 	    	// After
-	    	//##################################
+	    	//==========================================
 	    	CFWDB.forceCloseRemainingConnections();
 	    	
 	    	CFW.Localization.writeLocalized(request, response);

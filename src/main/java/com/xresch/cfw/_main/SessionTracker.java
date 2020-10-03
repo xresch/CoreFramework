@@ -142,7 +142,7 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 					sessionDetails.addProperty("SESSION_TIMOUT", sessionTimoutMillis);
 					sessionDetails.addProperty("ALIVE_TIME", lifetimeMillis);
 					sessionDetails.addProperty("EXPIRATION_TIME", expirationMillis);
-	
+					sessionDetails.addProperty("IS_LOGGED_IN", data.isLoggedIn());
 					User user = data.getUser();
 					if(user != null) {
 						sessionDetails.addProperty("USERNAME", user.username());
