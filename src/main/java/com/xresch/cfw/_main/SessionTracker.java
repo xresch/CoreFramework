@@ -53,7 +53,6 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		System.out.println("contextInitialized");
 		contextPath = sce.getServletContext().getContextPath();
 	}
 
@@ -66,7 +65,6 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 	@Override
 	public void sessionCreated(HttpSessionEvent se) {
 		synchronized (sessionIDs) {
-			System.out.println("Add Session");
 			sessionIDs.add(se.getSession().getId());
 			sessionCounter.inc();
 		}
@@ -75,7 +73,6 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 	@Override
 	public void sessionDestroyed(HttpSessionEvent se) {
 		synchronized (sessionIDs) {
-			System.out.println("Destroy Session");
 			sessionIDs.remove(se.getSession().getId());
 			sessionCounter.dec();
 		}
@@ -85,7 +82,6 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 	@Override
 	public void sessionIdChanged(HttpSessionEvent event, String oldSessionId) {
 		synchronized (sessionIDs) {
-			System.out.println("Change Session");
 			sessionIDs.add(oldSessionId);
 			sessionIDs.add(event.getSession().getId());
 		}

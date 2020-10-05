@@ -71,7 +71,7 @@ public class AuthenticationHandler extends HandlerWrapper
     	// Handle API Token Requests
     	//##################################
 		String token = CFW.HTTP.getCFWAPIToken(request);
-		System.out.println(token);
+
     	if(!Strings.isNullOrEmpty(token)) {
     		SessionData data = CFW.Context.Request.getSessionData(); 
     		User tokenUser = new User("apitoken["+token+"]");

@@ -94,15 +94,14 @@ public class ServletAPI extends HttpServlet
 			//----------------------------
 			// Check For Result
 			try {
-				CFW.Context.Request.addAlertMessage(MessageType.INFO, "ApiName and/or action was not provided. List of permissions for this token is returned.");
+				CFW.Context.Request.addAlertMessage(MessageType.INFO, "ApiName and/or action was not provided. List of permitted APIs for this token is returned.");
 				JsonArray array = new JsonArray();
 				while(result.next()) {
 					JsonObject object = new JsonObject();
 					String name = result.getString("API_NAME");
 					String action = result.getString("ACTION_NAME");
 					APIDefinition apidef = CFW.Registry.API.getDefinition(name, action);
-					System.out.println("apidef");
-					System.out.println(apidef);
+					
 					if(apidef != null) {
 						array.add(apidef.getJSON());
 					}
