@@ -115,20 +115,35 @@ function cfw_apioverview_printLoginPanel(parent){
 	// Create Panel Content
 	var url = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
 	var apiURL = url +"/cfw/apilogin";
-	var html = '<p>Send a post request to <a target="_blank" href="'+apiURL+'">'+apiURL+'</a> with the following parameters in the post body: </p>';
-	html += '<ul>';
-	html += '  <li><strong>username: </strong>The username for accessing the api.</li>';
-	html += '  <li><strong>password: </strong>The password of the user.</li>';
-	html += '</ul>';
-	html += '<p>To use the APIs, add the cookie you have recieved to the HTTP Header "Cookie" of the requests. For example:</p>';
-	html += '<pre class="cfwApiOverviewCode"><code>Cookie: CFWSESSIONID=node01ab2c3d4e5f61xhc7f6puqsab1</code></pre>';
+	var html = 
+		 '<h2>User-Based Access</h2>'
+		+'<p>Send a post request to <a target="_blank" href="'+apiURL+'">'+apiURL+'</a> with the following parameters in the post body: </p>'
+		+ '<ul>'
+		+ '  <li><strong>username: </strong>The username for accessing the api.</li>'
+		+ '  <li><strong>password: </strong>The password of the user.</li>'
+		+ '</ul>'
+		+ '<p>To use the APIs, add the cookie you have recieved to the HTTP Header "Cookie" of the requests. For example:</p>'
+		+ '<pre class="cfwApiOverviewCode"><code>Cookie: CFWSESSIONID=node01ab2c3d4e5f61xhc7f6puqsab1</code></pre>'
 	
-	html += '<p>Here is an example login request using curl that will return the SessionID string:</p>';
-	html += '<pre class="cfwApiOverviewCode"><code>curl -X POST --data \'username=apiUser&password=apiUserPW\' \'http://localhost:8888/cfw/apilogin\'</code></pre>';
+	html += '<p>Here is an example login request using curl that will return the SessionID string:</p>'
+			'<pre class="cfwApiOverviewCode"><code>curl -X POST --data \'username=apiUser&password=apiUserPW\' \'http://localhost:8888/cfw/apilogin\'</code></pre>';
 	
 	var cookie = JSDATA.id;
 	html += '<p>Afterwards you can use the SessionID to access the API, here is an example. You can create examples for each API using the :</p>';
 	html += '<pre class="cfwApiOverviewCode"><code>curl -H "Cookie: CFWSESSIONID='+cookie+'" -X GET \''+window.location.href+'?apiName=User&actionName=fetchData\'</code></pre>';
+	
+	html += 
+		 '<h2>Token-Based Access</h2>'
+		+'<p>The API can be accessed by tokens. This is the recommended way to access the API.</p>'
+		+ '<ul>'
+		+ '  <li><strong>Permissions: </strong>Tokens get access to the APIs it needs, while users have access to the whole API.</li>'
+		+ '  <li><strong>Session Timeout: </strong>Sessions created with tokens time out faster than user sessions.</li>'
+		+ '  <li><strong>No Login: </strong>No login is needed to access the API.</li>'
+		+ '</ul>'
+		+ '<p>To use the API with tokens,  either provide the token with the header \'API-Token\' or with the parameter \'apitoken\'. For example:</p>'
+		+ '<pre class="cfwApiOverviewCode"><code>'
+		+ 'curl -H "API-Token: exampletoken-IYQIf" -X GET "http://localhost:8888/app/api?apiName=User&actionName=fetchData"\n'
+		+ 'curl -X GET "http://localhost:8888/app/api?apitoken=exampletoken-IYQIf&apiName=User&actionName=fetchData"</code></pre>'
 	
 	//---------------------------
 	// Create Panel
