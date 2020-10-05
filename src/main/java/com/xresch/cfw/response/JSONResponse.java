@@ -1,5 +1,6 @@
 package com.xresch.cfw.response;
 
+import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -42,6 +43,10 @@ public class JSONResponse extends AbstractTemplateJSON {
 		// Close and Return
 		builder.append("}"); 
 		return builder;
+	}
+	
+	public void setPayLoad(JsonElement element) {
+		this.getContent().append(element.toString());
 	}
 	
 	@Override

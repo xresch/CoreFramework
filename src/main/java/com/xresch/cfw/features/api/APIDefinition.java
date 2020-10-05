@@ -2,6 +2,8 @@ package com.xresch.cfw.features.api;
 
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.xresch.cfw.datahandling.CFWField;
@@ -157,62 +159,52 @@ public class APIDefinition {
 		this.requestHandler = requestHandler;
 	}
 
-	public String getJSON() {
+	public JsonObject getJSON() {
 			
-		StringBuilder json = new StringBuilder("{");
-		json.append("\"name\"").append(": \"").append(apiName)
-			.append("\", \"action\"").append(": \"").append(actionName)
-			.append("\", \"description\"").append(": \"").append(description).append("\"");
+		JsonObject object = new JsonObject();
+		object.addProperty("name", apiName);
+		object.addProperty("action", actionName);
+		object.addProperty("description", description);
 		
 		//-----------------------------------
 		//resolve parameters
 		if(inputFieldnames != null && instance != null) {
-			json.append(", \"params\"").append(": [");
+			JsonArray params = new JsonArray();
+			object.add("params", params);
 			
-			int counter = 0;
 			for(String name : inputFieldnames) {
 				CFWField<?> field = instance.getField(name);
-				//ignore unavailable fields that where added to the base CFWOBject
+				//ignore unavailable fields that where added to the base CFWObject
 				if(field != null) {
-					counter++;
-					json.append("{\"name\"").append(": \"").append(field.getName())
-					.append("\", \"type\"").append(": \"").append(field.getValueClass().getSimpleName())
-					.append("\", \"description\"").append(": \"").append(field.getDescription()).append("\"},");
+					JsonObject paramObject = new JsonObject();
+					paramObject.addProperty("name", field.getName());
+					paramObject.addProperty("type", field.getValueClass().getSimpleName());
+					paramObject.addProperty("description", field.getDescription());
+					params.add(paramObject);
 				}
 			}
-			
-			if(counter > 0) {
-				json.deleteCharAt(json.length()-1); //remove last comma
-			}
-			json.append("]");
 		}
 		
 		//-----------------------------------
-		//resolve parameters
+		// Resolve Return Values
 		if(outputFieldnames != null) {
-			json.append(", \"returnValues\"").append(": [");
+			JsonArray returnValues = new JsonArray();
+			object.add("returnValues", returnValues);
 			
-			int counter = 0;
 			for(String name : outputFieldnames) {
 				CFWField<?> field = instance.getField(name);
+				//ignore unavailable fields that where added to the base CFWObject
 				if(field != null) {
-					counter++;
-					json.append("{\"name\"").append(": \"").append(field.getName())
-					.append("\", \"type\"").append(": \"").append(field.getValueClass().getSimpleName())
-					.append("\", \"description\"").append(": \"").append(field.getDescription()).append("\"},");
+					JsonObject returnValueObject = new JsonObject();
+					returnValueObject.addProperty("name", field.getName());
+					returnValueObject.addProperty("type", field.getValueClass().getSimpleName());
+					returnValueObject.addProperty("description", field.getDescription());
+					returnValues.add(returnValueObject);
 				}
 			}
-			
-			if(counter > 0) {
-				json.deleteCharAt(json.length()-1); //remove last comma
-			}
-			
-			json.append("]");
-			
 		}
-		
-		json.append("}");
-		return json.toString();
+
+		return object;
 	}
 	
 	

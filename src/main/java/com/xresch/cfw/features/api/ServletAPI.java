@@ -1,6 +1,8 @@
 package com.xresch.cfw.features.api;
 
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -9,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWForm;
@@ -72,6 +76,52 @@ public class ServletAPI extends HttpServlet
 		String apiName = request.getParameter("apiName");
 		String actionName = request.getParameter("actionName");
 		
+		//------------------------------------------
+		// Check if the parameters are given correctly
+		// else return list of permissions
+		if(Strings.isNullOrEmpty(apiName) || Strings.isNullOrEmpty(actionName)) {
+			JSONResponse json = new JSONResponse();
+			ResultSet result = APITokenPermissionMapDBMethods.getPermissionsForToken(token);
+			
+			//----------------------------
+			// Check No Result
+			if(result == null) {
+				json.setSuccess(false);
+				CFW.Context.Request.addAlertMessage(MessageType.WARNING, "This token seems to miss permissions. Please contact the guy in charge of the token to grant you permissions.");
+				return;
+			}
+			
+			//----------------------------
+			// Check For Result
+			try {
+				CFW.Context.Request.addAlertMessage(MessageType.INFO, "ApiName and/or action was not provided. List of permissions for this token is returned.");
+				JsonArray array = new JsonArray();
+				while(result.next()) {
+					JsonObject object = new JsonObject();
+					String name = result.getString("API_NAME");
+					String action = result.getString("ACTION_NAME");
+					APIDefinition apidef = CFW.Registry.API.getDefinition(name, action);
+					System.out.println("apidef");
+					System.out.println(apidef);
+					if(apidef != null) {
+						array.add(apidef.getJSON());
+					}
+				}
+				
+				json.setPayLoad(array);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}finally {
+				CFW.DB.close(result);
+			}
+			json.setSuccess(true);
+			return;
+		}
+		
+		//------------------------------------------
+		// Check if token has permission and handle
+		// request
 		if(APITokenPermissionMapDBMethods.checkHasTokenThePermission(token, apiName, actionName)){
 			handleAPIRequest(request, response);
 		}else {
@@ -112,7 +162,7 @@ public class ServletAPI extends HttpServlet
 			// Return data for overview Page
 			if(data != null) {
 				JSONResponse json = new JSONResponse();
-				json.getContent().append(CFW.Registry.API.getJSONArray());
+				json.setPayLoad(CFW.Registry.API.getJSONArray());
 				return;
 			}
 		

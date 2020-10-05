@@ -1,9 +1,11 @@
 package com.xresch.cfw.features.api;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -91,22 +93,15 @@ public class CFWRegistryAPI {
 	 * Returns all API definitions as JSON array.
 	 * @param definition
 	 ***********************************************************************/
-	public static String getJSONArray()  {
+	public static JsonArray getJSONArray()  {
 		
-		StringBuilder json = new StringBuilder();
-		
-		json.append("["); 
+		JsonArray array = new JsonArray();
+ 
 		for(APIDefinition definition : definitionArray.values()) {
-			json.append(definition.getJSON()).append(",");
+			array.add(definition.getJSON());
 		}
 		
-		//--------------------------
-		//remove last comma
-		if(definitionArray.size()>0) {
-			json.deleteCharAt(json.length()-1); 
-		}
-		json.append("]");
-		return json.toString();
+		return array;
 	}
 	 
 }

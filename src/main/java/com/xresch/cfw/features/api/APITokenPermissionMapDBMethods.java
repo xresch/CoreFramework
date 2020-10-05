@@ -91,23 +91,25 @@ public class APITokenPermissionMapDBMethods {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, APITokenPermissionMapFields.PK_ID.toString(), id);
 	}
 		
-	
+	/***************************************************************
+	 * 
+	 ****************************************************************/
+	public static ResultSet getPermissionsForToken(String token) {
+				
+		return new CFWSQL(null)
+				.queryCache()
+				.loadSQLResource(FeatureAPI.RESOURCE_PACKAGE, "sql_getPermissionsForToken.sql", token)
+				.getResultSet();
+
+	}
 	/***************************************************************
 	 * 
 	 ****************************************************************/
 	public static String getPermissionMapForTokenID(String tokenID) {
-		
-		//----------------------------------
-		// Check input format
-		if(tokenID == null ^ !tokenID.matches("\\d+")) {
-			new CFWLog(logger)
-			.severe("The tokenID '"+tokenID+"' is not a number.");
-			return "[]";
-		}
-		
+				
 		return new CFWSQL(null)
 				.queryCache()
-				.loadSQLResource(FeatureAPI.RESOURCE_PACKAGE, "sql_permissionsForTokenID.sql", tokenID)
+				.loadSQLResource(FeatureAPI.RESOURCE_PACKAGE, "sql_getPermissionMapForTokenID.sql", tokenID)
 				.getAsJSON();
 
 	}

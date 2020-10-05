@@ -2,6 +2,7 @@ package com.xresch.cfw.response;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 
 /**************************************************************************************************************
@@ -36,7 +37,7 @@ public abstract class AbstractResponse {
 	// Setters
 	//##############################################################################
 	public void setContent(StringBuilder content) {this.content = content;}
-
+	
 	public boolean useGlobaleLocale() {
 		return this.useGlobaleLocale;
 	}
