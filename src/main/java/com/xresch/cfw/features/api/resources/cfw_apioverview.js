@@ -116,13 +116,35 @@ function cfw_apioverview_printLoginPanel(parent){
 	var url = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
 	var apiURL = url +"/cfw/apilogin";
 	var html = 
-		 '<h2>User-Based Access</h2>'
-		+'<p>Send a post request to <a target="_blank" href="'+apiURL+'">'+apiURL+'</a> with the following parameters in the post body: </p>'
+		 '<h2>Token-Based Access</h2>'
+		+'<p>The API can be accessed by tokens. This is the recommended way to grant access to the API.</p>'
+		+ '<ul>'
+		+ '  <li><strong>Permissions: </strong>Tokens get access to the APIs it needs, while users have access to the whole API.</li>'
+		+ '  <li><strong>Session Timeout: </strong>Sessions created with tokens time out faster than user sessions.</li>'
+		+ '  <li><strong>No Login: </strong>No login is needed to access the API.</li>'
+		+ '</ul>';
+	
+	html += 
+		  '<p>To use the API with tokens,  either provide the token with the header \'API-Token\' or with the parameter \'apitoken\'. For example:</p>'
+		+ '<pre class="cfwApiOverviewCode"><code>'
+		+ 'curl -H "API-Token: exampletoken-IYQIf" -X GET "http://localhost:8888/app/api?apiName=User&actionName=fetchData"\n'
+		+ 'curl -X GET "http://localhost:8888/app/api?apitoken=exampletoken-IYQIf&apiName=User&actionName=fetchData"</code></pre>';
+	
+	html += 
+		  '<p>To get a list of all available APIs and actions for a token, call the api URL without providing actionName or apiName:</p>'
+		+ '<pre class="cfwApiOverviewCode"><code>'
+		+ 'curl -H "API-Token: exampletoken-IYQIf" -X GET "http://localhost:8888/app/api"\n'
+		+ 'curl -X GET "http://localhost:8888/app/api?apitoken=exampletoken-IYQIf"</code></pre>';
+	
+	html +=	
+		'<h2>User-Based Access</h2>'
+		+'<p>Users can get access to this API user interface with the corresponding API permission. This can be useful for manual data extractions or for development purposes.</p>'
+		+'<p>To login with a REST request, send a post request to <a target="_blank" href="'+apiURL+'">'+apiURL+'</a> with the following parameters in the post body: </p>'
 		+ '<ul>'
 		+ '  <li><strong>username: </strong>The username for accessing the api.</li>'
 		+ '  <li><strong>password: </strong>The password of the user.</li>'
 		+ '</ul>'
-		+ '<p>To use the APIs, add the cookie you have recieved to the HTTP Header "Cookie" of the requests. For example:</p>'
+		+ '<p>To use the APIs, add the cookie you have received to the HTTP Header "Cookie" of the requests. For example:</p>'
 		+ '<pre class="cfwApiOverviewCode"><code>Cookie: CFWSESSIONID=node01ab2c3d4e5f61xhc7f6puqsab1</code></pre>'
 	
 	html += '<p>Here is an example login request using curl that will return the SessionID string:</p>'
@@ -132,18 +154,7 @@ function cfw_apioverview_printLoginPanel(parent){
 	html += '<p>Afterwards you can use the SessionID to access the API, here is an example. You can create examples for each API using the :</p>';
 	html += '<pre class="cfwApiOverviewCode"><code>curl -H "Cookie: CFWSESSIONID='+cookie+'" -X GET \''+window.location.href+'?apiName=User&actionName=fetchData\'</code></pre>';
 	
-	html += 
-		 '<h2>Token-Based Access</h2>'
-		+'<p>The API can be accessed by tokens. This is the recommended way to access the API.</p>'
-		+ '<ul>'
-		+ '  <li><strong>Permissions: </strong>Tokens get access to the APIs it needs, while users have access to the whole API.</li>'
-		+ '  <li><strong>Session Timeout: </strong>Sessions created with tokens time out faster than user sessions.</li>'
-		+ '  <li><strong>No Login: </strong>No login is needed to access the API.</li>'
-		+ '</ul>'
-		+ '<p>To use the API with tokens,  either provide the token with the header \'API-Token\' or with the parameter \'apitoken\'. For example:</p>'
-		+ '<pre class="cfwApiOverviewCode"><code>'
-		+ 'curl -H "API-Token: exampletoken-IYQIf" -X GET "http://localhost:8888/app/api?apiName=User&actionName=fetchData"\n'
-		+ 'curl -X GET "http://localhost:8888/app/api?apitoken=exampletoken-IYQIf&apiName=User&actionName=fetchData"</code></pre>'
+
 	
 	//---------------------------
 	// Create Panel
