@@ -1,6 +1,5 @@
 package com.xresch.cfw.features.api;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;

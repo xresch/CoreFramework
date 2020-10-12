@@ -13,6 +13,11 @@
 			"description": "Returns execution logs of the monitors for the specified project and timeframe.",
 			"params": [
 				{
+					"name": "APIFORMAT",
+					"type": "String",
+					"description": "The return format of the api call."
+				},
+				{
 					"name": "ENVIRONMENT_ID",
 					"type": "Integer",
 					"description": "The id of the environment."
@@ -31,11 +36,33 @@
 					"name": "PROJECT_ID",
 					"type": "Integer",
 					"description": "The id of the project."
+				}
+			],
+			"returnValues": [
+				{
+					"name": "TIMESTAMP",
+					"type": "Long",
+					"description": "The time of the execution log (unixe timestamp, milliseconds since 01.01.1970)."
 				},
 				{
-					"name": "APIFORMAT",
+					"name": "MONITOR_NAME",
 					"type": "String",
-					"description": "The return format of the api call."
+					"description": "The name of the monitor."
+				},
+				{
+					"name": "LOCATION_NAME",
+					"type": "String",
+					"description": "The name of the location defined in SPM."
+				},
+				{
+					"name": "LOG_MESSAGE",
+					"type": "String",
+					"description": "The message of the execution log."
+				},
+				{
+					"name": "STATUS",
+					"type": "String",
+					"description": "The status of the execution. Tells if the script was executed successfully. Does not give a status about if the monitored application is working."
 				}
 			]
 		},
@@ -44,6 +71,11 @@
 			"action": "getExecutionLogsForMonitor",
 			"description": "Returns execution logs of a single monitor for the specified timeframe.",
 			"params": [
+				{
+					"name": "APIFORMAT",
+					"type": "String",
+					"description": "The return format of the api call."
+				},
 				{
 					"name": "ENVIRONMENT_ID",
 					"type": "Integer",
@@ -68,13 +100,9 @@
 					"name": "MONITOR_NAME",
 					"type": "String",
 					"description": "The name of the monitor."
-				},
-				{
-					"name": "APIFORMAT",
-					"type": "String",
-					"description": "The return format of the api call."
 				}
-			]
+			],
+			"returnValues": []
 		},
 		{
 			"name": "SPM",
@@ -82,6 +110,11 @@
 			"description": "Returns information about service target violation and service uptime for a project.",
 			"params": [
 				{
+					"name": "APIFORMAT",
+					"type": "String",
+					"description": "The return format of the api call."
+				},
+				{
 					"name": "ENVIRONMENT_ID",
 					"type": "Integer",
 					"description": "The id of the environment."
@@ -100,13 +133,9 @@
 					"name": "PROJECT_ID",
 					"type": "Integer",
 					"description": "The id of the project."
-				},
-				{
-					"name": "APIFORMAT",
-					"type": "String",
-					"description": "The return format of the api call."
 				}
-			]
+			],
+			"returnValues": []
 		},
 		{
 			"name": "SPM",
@@ -114,6 +143,11 @@
 			"description": "Returns a list of service target violations for a project occurred in the specified timeframe.",
 			"params": [
 				{
+					"name": "APIFORMAT",
+					"type": "String",
+					"description": "The return format of the api call."
+				},
+				{
 					"name": "ENVIRONMENT_ID",
 					"type": "Integer",
 					"description": "The id of the environment."
@@ -132,13 +166,9 @@
 					"name": "PROJECT_ID",
 					"type": "Integer",
 					"description": "The id of the project."
-				},
-				{
-					"name": "APIFORMAT",
-					"type": "String",
-					"description": "The return format of the api call."
 				}
-			]
+			],
+			"returnValues": []
 		},
 		{
 			"name": "SPM",
@@ -146,9 +176,13 @@
 			"description": "Returns the current status for the selected monitor.",
 			"params": [
 				{
+					"name": "APIFORMAT",
+					"type": "String",
+					"description": "The return format of the api call."
+				},
+				{
 					"name": "ENVIRONMENT_ID",
-					"type": "Integer",
-					"description": "The id of the environment."
+					"100  4285  100  4285    0     0   232k      0 --:--:-- --:--:-- --:--:--  232ke environment."
 				},
 				{
 					"name": "MONITOR_ID",
@@ -159,13 +193,9 @@
 					"name": "MEASURE",
 					"type": "String",
 					"description": "The measure to fetch."
-				},
-				{
-					"name": "APIFORMAT",
-					"type": "String",
-					"description": "The return format of the api call."
 				}
-			]
+			],
+			"returnValues": []
 		}
 	]
 }

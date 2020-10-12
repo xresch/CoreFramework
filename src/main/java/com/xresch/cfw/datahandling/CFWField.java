@@ -146,6 +146,18 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	//===========================================
+	// Long
+	//===========================================
+	public static CFWField<Long> newLong(FormFieldType type, Enum<?> fieldName){
+		return newLong(type, fieldName.toString());
+	}
+	public static CFWField<Long> newLong(FormFieldType type, String fieldName){
+		return new CFWField<Long>(Long.class, type, fieldName)
+				.setColumnDefinition("BIGINT")
+				.addValidator(new IntegerValidator());
+	}
+	
+	//===========================================
 	// Float
 	//===========================================
 	public static CFWField<Integer> newFloat(FormFieldType type, Enum<?> fieldName){

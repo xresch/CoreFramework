@@ -22,17 +22,12 @@ public class APIDefinition {
 	private String actionName;
 	private String description;
 
-	private String[] inputFieldnames = new String[] {};
-	private String[] outputFieldnames = new String[] {};
-	
 	// Fieldname and Field
 	private LinkedHashMap<String, CFWField> inputFields = new LinkedHashMap<>();
 	private LinkedHashMap<String, CFWField> outputFields = new LinkedHashMap<>();
-
 	
 	private Class<? extends CFWObject> clazz;
 	
-
 	private CFWObject instance;
 	
 	private APIRequestHandler requestHandler;
@@ -47,12 +42,12 @@ public class APIDefinition {
 		this.apiName = apiName;
 		this.actionName = actionName;
 		this.clazz = clazz;
-		this.inputFieldnames = inputFieldnames;
-		this.outputFieldnames = outputFieldnames;
-		
+
 		try {
 			instance = createObjectInstance();
 			
+			//----------------------------------------------
+			// Add input fields
 			if(inputFieldnames != null) {
 				for(String name : inputFieldnames) {
 					CFWField field = instance.getField(name);
@@ -61,7 +56,8 @@ public class APIDefinition {
 					}
 				}
 			}
-			
+			//----------------------------------------------
+			// Add output fields
 			if(outputFieldnames != null) {
 				for(String name : outputFieldnames) {
 					CFWField field = instance.getField(name);
@@ -76,6 +72,52 @@ public class APIDefinition {
 			return;
 		}
 		
+	}
+	
+	public APIDefinition(			  
+			  Class<? extends CFWObject> clazz,
+			  String apiName, 
+			  String actionName, 
+			  LinkedHashMap<String, CFWField> inputFields,
+			  LinkedHashMap<String, CFWField> outputFields) {
+		
+		this.apiName = apiName;
+		this.actionName = actionName;
+		this.clazz = clazz;
+		this.inputFields = inputFields;
+		this.outputFields = outputFields;
+		
+		try {
+			instance = createObjectInstance();
+
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.severe("Could not create instance for '"+clazz.getSimpleName()+"'. Check if you have a constructor without parameters.", e);
+			return;
+		}
+	}
+	
+	public APIDefinition(			  
+			  Class<? extends CFWObject> clazz,
+			  String apiName, 
+			  String actionName, 
+			  CFWObject inputFieldsObject,
+			  CFWObject outputFieldsObject) {
+		
+		this.apiName = apiName;
+		this.actionName = actionName;
+		this.clazz = clazz;
+		this.inputFields = inputFieldsObject.getFields();
+		this.outputFields = outputFieldsObject.getFields();
+		
+		try {
+			instance = createObjectInstance();
+
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.severe("Could not create instance for '"+clazz.getSimpleName()+"'. Check if you have a constructor without parameters.", e);
+			return;
+		}
 	}
 	
 	public String getApiName() {
@@ -173,7 +215,7 @@ public class APIDefinition {
 		
 		//-----------------------------------
 		//resolve parameters
-		if(inputFieldnames != null && instance != null) {
+		if(instance != null) {
 			JsonArray params = new JsonArray();
 			object.add("params", params);
 			
@@ -191,7 +233,7 @@ public class APIDefinition {
 		
 		//-----------------------------------
 		// Resolve Return Values
-		if(outputFieldnames != null) {
+		if(instance != null) {
 			JsonArray returnValues = new JsonArray();
 			object.add("returnValues", returnValues);
 			
