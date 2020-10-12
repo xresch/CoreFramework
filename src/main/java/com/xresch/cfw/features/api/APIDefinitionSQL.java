@@ -128,10 +128,7 @@ public class APIDefinitionSQL extends APIDefinition{
 				.setOptions(ReturnFormat.values());
 		
 		objectInstance.addField(apiFormat);
-		
-		if(!CFWArrayUtils.contains(this.getInputFieldnames(), APIFORMAT)) {
-			this.addInputFieldname(APIFORMAT);
-		}
+		this.addInputFields(apiFormat);
 		
 		return objectInstance;
 	}

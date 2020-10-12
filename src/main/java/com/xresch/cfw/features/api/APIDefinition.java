@@ -1,15 +1,13 @@
 package com.xresch.cfw.features.api;
 
+import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.utils.CFWArrayUtils;
 
 /**************************************************************************************************************
  * 
@@ -20,27 +18,18 @@ public class APIDefinition {
 	
 	private static final Logger logger = CFWLog.getLogger(APIDefinition.class.getName());
 	
-	@Expose()
-	@SerializedName("name")
 	private String apiName;
-	
-	@Expose()
-	@SerializedName("action")
 	private String actionName;
-	
-	@Expose()
-	@SerializedName("description")
 	private String description;
 
-	@Expose()
-	@SerializedName("params")
 	private String[] inputFieldnames = new String[] {};
-	
-	@Expose()
-	@SerializedName("returnVales")
 	private String[] outputFieldnames = new String[] {};
 	
+	// Fieldname and Field
+	private LinkedHashMap<String, CFWField> inputFields = new LinkedHashMap<>();
+	private LinkedHashMap<String, CFWField> outputFields = new LinkedHashMap<>();
 
+	
 	private Class<? extends CFWObject> clazz;
 	
 
@@ -63,6 +52,24 @@ public class APIDefinition {
 		
 		try {
 			instance = createObjectInstance();
+			
+			if(inputFieldnames != null) {
+				for(String name : inputFieldnames) {
+					CFWField field = instance.getField(name);
+					if(field != null) {
+						inputFields.put(field.getName(), field);
+					}
+				}
+			}
+			
+			if(outputFieldnames != null) {
+				for(String name : outputFieldnames) {
+					CFWField field = instance.getField(name);
+					if(field != null) {
+						outputFields.put(field.getName(), field);
+					}
+				}
+			}
 		} catch (Exception e) {
 			new CFWLog(logger)
 				.severe("Could not create instance for '"+clazz.getSimpleName()+"'. Check if you have a constructor without parameters.", e);
@@ -126,29 +133,27 @@ public class APIDefinition {
 		this.clazz = clazz;
 	}
 	
+	@SuppressWarnings("rawtypes")
+	public void addInputFields(CFWField... fields) {
+		for(CFWField field : fields) {
+			inputFields.put(field.getName(), field);
+		}
+	}
 	
-	public void setInputFieldnames(String[] inputFieldnames) {
-		this.inputFieldnames = inputFieldnames;
+	@SuppressWarnings("rawtypes")
+	public void addOutputFields(CFWField... fields) {
+		for(CFWField field : fields) {
+			outputFields.put(field.getName(), field);
+		}
 	}
-
-	public void addInputFieldname(String inputFieldname) {
-		inputFieldnames = CFWArrayUtils.add(inputFieldnames, inputFieldname);
-	}
-
+	
 	public String[] getInputFieldnames() {
-		return inputFieldnames;
+		return inputFields.keySet().toArray(new String[]{});
 	}
 
-	public void setOutputFieldnames(String[] outputFieldnames) {
-		this.outputFieldnames = outputFieldnames;
-	}
-	
-	public void addOutputFieldname(String outputFieldname) {
-		outputFieldnames = CFWArrayUtils.add(outputFieldnames, outputFieldname);
-	}
-	
+
 	public String[] getOutputFieldnames() {
-		return outputFieldnames;
+		return outputFields.keySet().toArray(new String[]{});
 	}
 
 	public APIRequestHandler getRequestHandler() {
@@ -172,8 +177,7 @@ public class APIDefinition {
 			JsonArray params = new JsonArray();
 			object.add("params", params);
 			
-			for(String name : inputFieldnames) {
-				CFWField<?> field = instance.getField(name);
+			for(CFWField<?> field : inputFields.values().toArray(new CFWField[] {})) {
 				//ignore unavailable fields that where added to the base CFWObject
 				if(field != null) {
 					JsonObject paramObject = new JsonObject();
@@ -191,8 +195,7 @@ public class APIDefinition {
 			JsonArray returnValues = new JsonArray();
 			object.add("returnValues", returnValues);
 			
-			for(String name : outputFieldnames) {
-				CFWField<?> field = instance.getField(name);
+			for(CFWField<?> field : outputFields.values().toArray(new CFWField[] {})) {
 				//ignore unavailable fields that where added to the base CFWObject
 				if(field != null) {
 					JsonObject returnValueObject = new JsonObject();

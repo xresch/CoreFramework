@@ -136,9 +136,7 @@ public class APIDefinitionFetch extends APIDefinition{
 				.setOptions(ReturnFormat.values());
 		
 		instance.addField(apiFormat);
-		if(!CFWArrayUtils.contains(this.getInputFieldnames(), APIFORMAT)) {
-			this.addInputFieldname(APIFORMAT);
-		}
+		this.addInputFields(apiFormat);
 		
 		return instance;
 	}

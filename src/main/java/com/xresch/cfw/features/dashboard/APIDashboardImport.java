@@ -67,9 +67,7 @@ public class APIDashboardImport extends APIDefinition{
 				.setValue(true);
 		
 		instance.addField(keepOwner);
-		if(!CFWArrayUtils.contains(this.getInputFieldnames(), KEEP_OWNER)) {
-			this.addInputFieldname(KEEP_OWNER);
-		}
+		this.addInputFields(keepOwner);
 		
 		//-----------------------------
 		// JSON Data
@@ -78,9 +76,7 @@ public class APIDashboardImport extends APIDefinition{
 				.addAttribute("rows", "10");
 		
 		instance.addField(jsonData);
-		if(!CFWArrayUtils.contains(this.getInputFieldnames(), JSON_DATA)) {
-			this.addInputFieldname(JSON_DATA);
-		}
+		this.addInputFields(jsonData);
 		
 		return instance;
 	}

@@ -3,165 +3,167 @@
 	"messages": [
 		{
 			"type": "INFO",
-			"message": "ApiName or Action was missiong. List of permissions for this token is returned."
+			"message": "ApiName and/or action was not provided. List of permitted APIs for this token is returned."
 		}
 	],
 	"payload": [
 		{
-			"name": "User",
-			"action": "fetchData",
-			"description": "Standard API to fetch User data. The provided parameters will be used to create a select statement with a WHERE ... AND clause. To retrieve everything leaf all the parameters empty. The standard return format is JSON if the parameter APIFORMAT is not specified.",
+			"name": "SPM",
+			"action": "getExecutionLogsForProject",
+			"description": "Returns execution logs of the monitors for the specified project and timeframe.",
 			"params": [
 				{
-					"name": "PK_ID",
+					"name": "ENVIRONMENT_ID",
 					"type": "Integer",
-					"description": "The user id."
+					"description": "The id of the environment."
 				},
 				{
-					"name": "USERNAME",
-					"type": "String",
-					"description": "The username of the user account."
+					"name": "EARLIEST_TIME",
+					"type": "Timestamp",
+					"description": "The unix time(milliseconds since 01.01.1970 UTC) of the earliest time included in the results."
 				},
 				{
-					"name": "EMAIL",
-					"type": "String",
-					"description": "The user email address."
+					"name": "LATEST_TIME",
+					"type": "Timestamp",
+					"description": "The unix time(milliseconds since 01.01.1970 UTC) of the earliest time included in the results."
 				},
 				{
-					"name": "FIRSTNAME",
-					"type": "String",
-					"description": "The firstname of the user."
-				},
-				{
-					"name": "LASTNAME",
-					"type": "String",
-					"description": "The lastname of the user."
-				},
-				{
-					"name": "STATUS",
-					"type": "String",
-					"description": "Active users can login, inactive users are prohibited to login."
+					"name": "PROJECT_ID",
+					"type": "Integer",
+					"description": "The id of the project."
 				},
 				{
 					"name": "APIFORMAT",
 					"type": "String",
 					"description": "The return format of the api call."
-				}
-			],
-			"returnValues": [
-				{
-					"name": "PK_ID",
-					"type": "Integer",
-					"description": "The user id."
-				},
-				{
-					"name": "USERNAME",
-					"type": "String",
-					"description": "The username of the user account."
-				},
-				{
-					"name": "EMAIL",
-					"type": "String",
-					"description": "The user email address."
-				},
-				{
-					"name": "FIRSTNAME",
-					"type": "String",
-					"description": "The firstname of the user."
-				},
-				{
-					"name": "LASTNAME",
-					"type": "String",
-					"description": "The lastname of the user."
-				},
-				{
-					"name": "STATUS",
-					"type": "String",
-					"description": "Active users can login, inactive users are prohibited to login."
-				},
-				{
-					"name": "DATE_CREATED",
-					"type": "Timestamp",
-					"description": "The date and time the user account was created."
-				},
-				{
-					"name": "LAST_LOGIN",
-					"type": "Timestamp",
-					"description": "The date and time the user has last logged in."
-				},
-				{
-					"name": "IS_DELETABLE",
-					"type": "Boolean",
-					"description": "Flag to define if the user can be deleted or not."
-				},
-				{
-					"name": "IS_RENAMABLE",
-					"type": "Boolean",
-					"description": "Flag to define if the user can be renamed or not."
-				},
-				{
-					"name": "IS_FOREIGN",
-					"type": "Boolean",
-					"description": "Foreign users are managed by other authentication providers like LDAP. Password in database is ignored when a foreign authentication provider is used."
 				}
 			]
 		},
 		{
-			"name": "Role",
-			"action": "fetchData",
-			"description": "Standard API to fetch Role data. The provided parameters will be used to create a select statement with a WHERE ... AND clause. To retrieve everything leaf all the parameters empty. The standard return format is JSON if the parameter APIFORMAT is not specified.",
+			"name": "SPM",
+			"action": "getExecutionLogsForMonitor",
+			"description": "Returns execution logs of a single monitor for the specified timeframe.",
 			"params": [
 				{
-					"name": "PK_ID",
+					"name": "ENVIRONMENT_ID",
 					"type": "Integer",
-					"description": "The id of the role."
+					"description": "The id of the environment."
 				},
 				{
-					"name": "CATEGORY",
-					"type": "String",
-					"description": "The catogery of the role, either 'user' or 'space'."
+					"name": "EARLIEST_TIME",
+					"type": "Timestamp",
+					"description": "The unix time(milliseconds since 01.01.1970 UTC) of the earliest time included in the results."
 				},
 				{
-					"name": "NAME",
+					"name": "LATEST_TIME",
+					"type": "Timestamp",
+					"description": "The unix time(milliseconds since 01.01.1970 UTC) of the earliest time included in the results."
+				},
+				{
+					"name": "PROJECT_ID",
+					"type": "Integer",
+					"description": "The id of the project."
+				},
+				{
+					"name": "MONITOR_NAME",
 					"type": "String",
-					"description": "The name of the role."
+					"description": "The name of the monitor."
 				},
 				{
 					"name": "APIFORMAT",
 					"type": "String",
 					"description": "The return format of the api call."
 				}
-			],
-			"returnValues": [
+			]
+		},
+		{
+			"name": "SPM",
+			"action": "getServiceTargetInfoForProject",
+			"description": "Returns information about service target violation and service uptime for a project.",
+			"params": [
 				{
-					"name": "PK_ID",
+					"name": "ENVIRONMENT_ID",
 					"type": "Integer",
-					"description": "The id of the role."
+					"description": "The id of the environment."
 				},
 				{
-					"name": "CATEGORY",
+					"name": "EARLIEST_TIME",
+					"type": "Timestamp",
+					"description": "The unix time(milliseconds since 01.01.1970 UTC) of the earliest time included in the results."
+				},
+				{
+					"name": "LATEST_TIME",
+					"type": "Timestamp",
+					"description": "The unix time(milliseconds since 01.01.1970 UTC) of the earliest time included in the results."
+				},
+				{
+					"name": "PROJECT_ID",
+					"type": "Integer",
+					"description": "The id of the project."
+				},
+				{
+					"name": "APIFORMAT",
 					"type": "String",
-					"description": "The catogery of the role, either 'user' or 'space'."
+					"description": "The return format of the api call."
+				}
+			]
+		},
+		{
+			"name": "SPM",
+			"action": "getServiceTargetViolationsForProject",
+			"description": "Returns a list of service target violations for a project occurred in the specified timeframe.",
+			"params": [
+				{
+					"name": "ENVIRONMENT_ID",
+					"type": "Integer",
+					"description": "The id of the environment."
 				},
 				{
-					"name": "NAME",
+					"name": "EARLIEST_TIME",
+					"type": "Timestamp",
+					"description": "The unix time(milliseconds since 01.01.1970 UTC) of the earliest time included in the results."
+				},
+				{
+					"name": "LATEST_TIME",
+					"type": "Timestamp",
+					"description": "The unix time(milliseconds since 01.01.1970 UTC) of the earliest time included in the results."
+				},
+				{
+					"name": "PROJECT_ID",
+					"type": "Integer",
+					"description": "The id of the project."
+				},
+				{
+					"name": "APIFORMAT",
 					"type": "String",
-					"description": "The name of the role."
+					"description": "The return format of the api call."
+				}
+			]
+		},
+		{
+			"name": "SPM",
+			"action": "getStatusForMonitor",
+			"description": "Returns the current status for the selected monitor.",
+			"params": [
+				{
+					"name": "ENVIRONMENT_ID",
+					"type": "Integer",
+					"description": "The id of the environment."
 				},
 				{
-					"name": "DESCRIPTION",
+					"name": "MONITOR_ID",
+					"type": "Integer",
+					"description": "The id of the monitor."
+				},
+				{
+					"name": "MEASURE",
 					"type": "String",
-					"description": "The description of the role."
+					"description": "The measure to fetch."
 				},
 				{
-					"name": "IS_DELETABLE",
-					"type": "Boolean",
-					"description": "Flag to define if the role can be deleted or not."
-				},
-				{
-					"name": "IS_RENAMABLE",
-					"type": "Boolean",
-					"description": "Flag to define if the role can be renamed or not."
+					"name": "APIFORMAT",
+					"type": "String",
+					"description": "The return format of the api call."
 				}
 			]
 		}
