@@ -43,6 +43,7 @@ public class CFWSQL {
 	
 	private String queryName = null;
 	private boolean isQueryCached = false;
+	private boolean isNextSelectDistinct = false;
 	
 	private CFWObject object;
 	@SuppressWarnings("rawtypes")
@@ -324,10 +325,17 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL select() {
 		if(!isQueryCached()) {
+			
+			String select = " SELECT";
+			if(isNextSelectDistinct) {
+				select += " DISTINCT";
+				isNextSelectDistinct = false;
+			}
+			
 			if(!this.hasColumnSubqueries()) {
-				query.append(" SELECT T.* FROM "+object.getTableName()+" T ");
+				query.append(select).append(" T.* FROM "+object.getTableName()+" T ");
 			}else {
-				query.append(" SELECT T.* "+this.getColumnSubqueriesString()+" FROM "+object.getTableName()+" T ");
+				query.append(select).append(" T.* "+this.getColumnSubqueriesString()+" FROM "+object.getTableName()+" T ");
 			}
 		}
 		return this;
@@ -340,7 +348,13 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL select(Object ...fieldnames) {
 		if(!isQueryCached()) {
-			query.append(" SELECT");
+			
+			String select = " SELECT";
+			if(isNextSelectDistinct) {
+				select += " DISTINCT";
+				isNextSelectDistinct = false;
+			}
+			query.append(select);
 			//---------------------------------
 			// Add Fields
 			for(Object fieldname : fieldnames) {
@@ -367,7 +381,13 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL selectWithout(String ...fieldnames) {
 		if(!isQueryCached()) {
-			query.append(" SELECT");
+			
+			String select = " SELECT";
+			if(isNextSelectDistinct) {
+				select += " DISTINCT";
+				isNextSelectDistinct = false;
+			}
+			query.append(select);
 			
 			//---------------------------------
 			// Add Fields
@@ -392,6 +412,33 @@ public class CFWSQL {
 	}
 	
 	
+	/****************************************************************
+	 * Begins a SELECT COUNT(*) statement.
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public CFWSQL selectCount() {
+		if(!isQueryCached()) {
+			String select = " SELECT";
+			if(isNextSelectDistinct) {
+				select += " DISTINCT";
+				isNextSelectDistinct = false;
+			}
+			query.append(select);
+			query.append(" COUNT(*) FROM "+object.getTableName());
+		}
+		return this;
+	}
+	
+	/****************************************************************
+	 * Makes the next select distinct.
+	 ****************************************************************/
+	public CFWSQL distinct() {
+		if(!isQueryCached()) {
+			isNextSelectDistinct = true;
+		}
+		return this;
+	}
+
 	/****************************************************************
 	 * initializes a new Fulltext search.
 	 ****************************************************************/
@@ -729,17 +776,6 @@ public class CFWSQL {
 		return this;
 	}
 	/****************************************************************
-	 * Begins a SELECT COUNT(*) statement.
-	 * @return CFWSQL for method chaining
-	 ****************************************************************/
-	public CFWSQL selectCount() {
-		if(!isQueryCached()) {
-			query.append("SELECT COUNT(*) FROM "+object.getTableName());
-		}
-		return this;
-	}
-		
-	/****************************************************************
 	 * Adds an AND to the query.
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
@@ -887,9 +923,9 @@ public class CFWSQL {
 	public CFWSQL orderby(Object fieldname) {
 		if(!isQueryCached()) {
 			if(fields != null && fields.get(fieldname.toString()).getValueClass() == String.class) {
-				query.append(" ORDER BY LOWER("+fieldname+")");
+				query.append(" ORDER BY LOWER(T."+fieldname+")");
 			}else {
-				query.append(" ORDER BY "+fieldname);
+				query.append(" ORDER BY T."+fieldname);
 			}
 		}
 		return this;
@@ -905,9 +941,9 @@ public class CFWSQL {
 			query.append(" ORDER BY");
 			for(Object fieldname : fieldnames) {
 				if(fields != null && fields.get(fieldname.toString()).getValueClass() == String.class) {
-					query.append(" LOWER(").append(fieldname).append("),");
+					query.append(" LOWER(T.").append(fieldname).append("),");
 				}else {
-					query.append(" ").append(fieldname).append(",");
+					query.append(" T.").append(fieldname).append(",");
 				}
 			}
 			query.deleteCharAt(query.length()-1);
@@ -924,9 +960,9 @@ public class CFWSQL {
 	public CFWSQL orderbyDesc(Object fieldname) {
 		if(!isQueryCached()) {				
 			if(fields != null && fields.get(fieldname.toString()).getValueClass() == String.class) {
-				query.append(" ORDER BY LOWER(").append(fieldname).append(") DESC");
+				query.append(" ORDER BY LOWER(T.").append(fieldname).append(") DESC");
 			}else {
-				query.append(" ORDER BY ").append(fieldname).append(" DESC");
+				query.append(" ORDER BY T.").append(fieldname).append(" DESC");
 			}
 		}
 		return this;

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.logging.CFWLog;
 
 public class CFWAutocompleteHandlerDefault extends CFWAutocompleteHandler {
@@ -35,8 +36,9 @@ public class CFWAutocompleteHandlerDefault extends CFWAutocompleteHandler {
 		AutocompleteResult result = null;
 		if( !(parent.getValue() instanceof Object[])) {
 			try {
-				result = clazz.newInstance()
-					.select("DISTINCT "+fieldname)
+				result = new CFWSQL(clazz.newInstance())
+					.distinct()
+					.select(fieldname)
 					.whereLike(fieldname, "%"+inputValue+"%")
 					.orderby(fieldname)
 					.limit(this.getMaxResults())
