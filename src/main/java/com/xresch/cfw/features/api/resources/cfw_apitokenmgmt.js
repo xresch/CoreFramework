@@ -24,7 +24,7 @@ function cfw_apitokenmgmt_createToggleTable(parent, mapName, tokenID){
 				
 				var resultCount = data.payload.length;
 				if(resultCount == 0){
-					CFW.ui.addAlert("info", "Hmm... seems there aren't any roles in the list.");
+					CFW.ui.addAlert("info", "Hmm... seems there aren't any permissions in the list.");
 				}
 
 				for(var i = 0; i < resultCount; i++){
@@ -194,7 +194,7 @@ function cfw_apitokenmgmt_printTokenList(data){
 		
 		var resultCount = data.payload.length;
 		if(resultCount == 0){
-			CFW.ui.addToastInfo("Hmm... seems there aren't any people in the list.");
+			CFW.ui.addToastInfo("Hmm... seems there aren't any tokens in the list.");
 			return;
 		}
 				

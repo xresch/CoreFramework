@@ -603,7 +603,7 @@ class CFWPanel{
 			// the style used for the text
 			textstyle: null,
 			// the style used for the header text, if null, textstyle will be used
-			textstyleheader: null,
+			textstyleheader: "white",
 			// the title of the panel
 			title: "&nbsp;",
 			//additional content on the right side of the title

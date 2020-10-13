@@ -162,7 +162,7 @@ function cfw_apioverview_printLoginPanel(parent){
 	 var panelSettings = {
 			cardstyle: 'cfw-blue',
 			textstyle: null,
-			textstyleheader: null,
+			textstyleheader: 'white',
 			title: "Login and Usage",
 			body: html,
 	};
@@ -235,7 +235,7 @@ function cfw_apioverview_printOverview(data){
 			 var panelSettings = {
 						cardstyle: 'cfw-blue',
 						textstyle: null,
-						textstyleheader: null,
+						textstyleheader: 'white',
 						title: name,
 						body: $('<div>'),
 				};
