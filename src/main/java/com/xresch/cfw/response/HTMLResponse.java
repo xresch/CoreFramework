@@ -4,11 +4,11 @@ import java.util.Collection;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.SessionData;
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.features.usermgmt.SessionData;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage;
 import com.xresch.cfw.response.bootstrap.BTFooter;

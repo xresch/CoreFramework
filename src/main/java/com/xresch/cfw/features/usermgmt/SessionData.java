@@ -1,4 +1,4 @@
-package com.xresch.cfw._main;
+package com.xresch.cfw.features.usermgmt;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -8,10 +8,15 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.Context;
+import com.xresch.cfw._main.CFW.DB;
+import com.xresch.cfw._main.CFW.Properties;
+import com.xresch.cfw._main.CFW.Registry;
+import com.xresch.cfw._main.CFW.Context.App;
+import com.xresch.cfw._main.CFW.DB.Users;
+import com.xresch.cfw._main.CFW.Registry.Components;
 import com.xresch.cfw.datahandling.CFWForm;
-import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.features.usermgmt.Role;
-import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.bootstrap.BTFooter;
 import com.xresch.cfw.response.bootstrap.BTMenu;
 
@@ -39,7 +44,7 @@ public class SessionData implements Serializable {
 	private Cache<String, CFWForm> formCache = CacheBuilder.newBuilder()
 			.initialCapacity(5)
 			.maximumSize(20)
-			.expireAfterAccess(CFW.Properties.SESSION_TIMEOUT, TimeUnit.SECONDS)
+			.expireAfterAccess(CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_USERS), TimeUnit.SECONDS)
 			.build();
 	
 	private BTMenu menu;

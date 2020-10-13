@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
+import com.xresch.cfw.features.usermgmt.SessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage;

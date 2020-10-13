@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
-import com.xresch.cfw._main.SessionData;
+import com.xresch.cfw.features.usermgmt.SessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 

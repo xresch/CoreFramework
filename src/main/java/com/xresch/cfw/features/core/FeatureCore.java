@@ -8,8 +8,10 @@ import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.db.TaskDatabaseBackup;
 import com.xresch.cfw.features.config.ConfigChangeListener;
+import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.core.auth.ServletChangePassword;
 import com.xresch.cfw.features.core.auth.ServletLogin;
@@ -40,6 +42,8 @@ public class FeatureCore extends CFWAppFeature {
 	public static final String PERMISSION_APP_ANALYTICS = "System Analytics";
 	public static final String PERMISSION_ALLOW_HTML = "Allow HTML";
 	public static final String PERMISSION_ALLOW_JAVASCRIPT = "Allow Javascript";
+	
+	public static final String CONFIG_BROWSER_RESOURCE_MAXAGE = "Browser Resource Max Age";
 	
 	@Override
 	public void register() {
@@ -97,6 +101,15 @@ public class FeatureCore extends CFWAppFeature {
 			false,
 			false
 		);	
+		
+    	//----------------------------------
+    	// Register Configurations
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration("Timeouts", CONFIG_BROWSER_RESOURCE_MAXAGE)
+					.description("The maximum time in seconds resources(js, css, images etc...) should be cached in the client's browser.")
+					.type(FormFieldType.NUMBER)
+					.value("36000")
+			);
 	}
 
 	@Override

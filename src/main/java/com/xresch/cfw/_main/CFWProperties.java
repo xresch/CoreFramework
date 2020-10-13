@@ -75,12 +75,7 @@ public class CFWProperties {
 	//##########################################################################################
 	// PERFORMANCE
 	//##########################################################################################		
-	/** Session Time in Seconds. (Property=cfw_session_timeout, Default=36000) */
-	public static int SESSION_TIMEOUT = 36000;
-	
-	/** Time in seconds to cache resources. (Property=cfw_browser_resource_maxage, Default="36000") */
-	public static int BROWSER_RESOURCE_MAXAGE = 36000;
-	
+		
 	
 	//##########################################################################################
 	// AUTHENTICATION
@@ -210,10 +205,7 @@ public class CFWProperties {
 		
 		PROXY_ENABLED 					= CFWProperties.configAsBoolean("cfw_proxy_enabled", PROXY_ENABLED);
 		PROXY_PAC						= CFWProperties.configAsString("cfw_proxy_pac", PROXY_PAC);
-		
-		SESSION_TIMEOUT					= CFWProperties.configAsInt("cfw_session_timeout", SESSION_TIMEOUT);
-		BROWSER_RESOURCE_MAXAGE 		= CFWProperties.configAsInt("cfw_browser_resource_maxage", BROWSER_RESOURCE_MAXAGE);
-		
+				
 		AUTHENTICATION_METHOD 			= CFWProperties.configAsString("authentication_method", AUTHENTICATION_METHOD);
 		AUTHENTICATION_ENABLED 			= CFWProperties.configAsBoolean("cfw_authentication_enabled", AUTHENTICATION_ENABLED);
 		AUTHENTICATION_SAML2_ENABLED 	= CFWProperties.configAsBoolean("cfw_authentication_saml2_enabled", AUTHENTICATION_SAML2_ENABLED);

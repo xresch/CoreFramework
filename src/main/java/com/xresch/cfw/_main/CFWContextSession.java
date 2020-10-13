@@ -3,6 +3,7 @@ package com.xresch.cfw._main;
 import java.util.Collection;
 
 import com.xresch.cfw.datahandling.CFWForm;
+import com.xresch.cfw.features.usermgmt.SessionData;
 
 /**************************************************************************************************************
  * 

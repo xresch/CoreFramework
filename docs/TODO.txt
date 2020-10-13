@@ -107,7 +107,7 @@ DONE
 - Added "System Analytics >> Session Overview"
 - Added API Token Mechanism
 - Added cfw_session_count to metrics 
-
+- Moved timeout settings from cfw.properties to configuration page
 
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message

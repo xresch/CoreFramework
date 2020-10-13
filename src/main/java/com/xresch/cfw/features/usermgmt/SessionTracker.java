@@ -1,4 +1,4 @@
-package com.xresch.cfw._main;
+package com.xresch.cfw.features.usermgmt;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,7 +15,7 @@ import org.eclipse.jetty.server.session.SessionHandler;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw._main.CFW;
 
 import io.prometheus.client.Gauge;
 

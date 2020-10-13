@@ -39,6 +39,8 @@ import org.eclipse.jetty.servlet.ServletMapping;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
+import com.xresch.cfw.features.usermgmt.SessionTracker;
 import com.xresch.cfw.handler.AuthenticationHandler;
 import com.xresch.cfw.handler.HTTPSRedirectHandler;
 import com.xresch.cfw.handler.RedirectDefaultPageHandler;
@@ -267,7 +269,7 @@ public class CFWApplicationExecutor {
 	    sessionHandler.setSessionIdManager(CFWApplicationExecutor.idmanager);
 	    // workaround maxInactiveInterval=-1 issue
 	    // set inactive interval in RequestHandler
-	    sessionHandler.setMaxInactiveInterval(CFW.Properties.SESSION_TIMEOUT);
+	    sessionHandler.setMaxInactiveInterval(CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_VISITORS));
 	    sessionHandler.setHttpOnly(false);
 	    sessionHandler.setUsingCookies(true);
 	    sessionHandler.setSecureRequestOnly(false);

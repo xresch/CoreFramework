@@ -1,6 +1,6 @@
 package com.xresch.cfw.response.bootstrap;
 
-import com.xresch.cfw._main.SessionData;
+import com.xresch.cfw.features.usermgmt.SessionData;
 
 /**************************************************************************************************************
  * 

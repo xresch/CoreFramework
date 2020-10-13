@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.SessionData;
 import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
+import com.xresch.cfw.features.usermgmt.SessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.tests._master.DBTestMaster;
 

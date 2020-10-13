@@ -31,7 +31,7 @@ public class ServletLocalization extends HttpServlet
 	
 		//-----------------------
 		// Response Settings
-		response.addHeader("Cache-Control", "max-age="+CFWProperties.BROWSER_RESOURCE_MAXAGE);
+		response.addHeader("Cache-Control", "max-age="+CFW.DB.Config.getConfigAsInt(FeatureCore.CONFIG_BROWSER_RESOURCE_MAXAGE));
 		
 		//-----------------------
 		// Fetch LanguagePack

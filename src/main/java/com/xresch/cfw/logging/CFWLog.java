@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.SessionData;
+import com.xresch.cfw.features.usermgmt.SessionData;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 

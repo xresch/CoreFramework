@@ -33,7 +33,7 @@ public class ServletJARResource extends HttpServlet
 		byte[] fontContent = CFW.Files.readPackageResourceAsBytes(pkg, file);
 		if(fontContent != null) {
 			
-			response.addHeader("Cache-Control", "max-age="+CFWProperties.BROWSER_RESOURCE_MAXAGE);
+			response.addHeader("Cache-Control", "max-age="+CFW.DB.Config.getConfigAsInt(FeatureCore.CONFIG_BROWSER_RESOURCE_MAXAGE));
 			response.setStatus(HttpServletResponse.SC_OK);
 			
 			try {

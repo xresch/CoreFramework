@@ -16,9 +16,10 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFW.Context;
-import com.xresch.cfw._main.SessionData;
-import com.xresch.cfw._main.SessionTracker;
 import com.xresch.cfw.db.CFWDB;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
+import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.SessionTracker;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.PlaintextResponse;
 
@@ -84,12 +85,12 @@ public class RequestHandler extends HandlerWrapper
     	//==========================================
     	//workaround maxInactiveInterval=-1 issue
     	if(CFW.Context.Session.getSessionData().isLoggedIn()) {
-    		session.setMaxInactiveInterval(CFW.Properties.SESSION_TIMEOUT);
+    		session.setMaxInactiveInterval(CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_USERS));
     	}else {
     		if(request.getRequestURI().equals("/metrics")) {
-    			session.setMaxInactiveInterval(10);
+    			session.setMaxInactiveInterval(CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_API));
     		}else {
-    			session.setMaxInactiveInterval(600);
+    			session.setMaxInactiveInterval(CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_VISITORS));
     		}
     		
     	}
