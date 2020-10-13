@@ -22,7 +22,7 @@ public class TestCFWSQL extends DBTestMaster {
 		
 		System.out.println(appleSQL);
 		
-		Assertions.assertEquals(" SELECT ID, CATEGORY, TYPE, NAME, COUNT FROM FRUITS   WHERE CATEGORY = ? AND TYPE = ? ORDER BY NAME DESC", 
+		Assertions.assertEquals(" SELECT ID, CATEGORY, TYPE, NAME, COUNT FROM FRUITS   WHERE CATEGORY = ? AND TYPE = ? ORDER BY T.NAME DESC", 
 				appleSQL,
 				"The SQL is created.");
 				

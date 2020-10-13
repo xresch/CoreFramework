@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.BTMenu;
 import com.xresch.cfw.response.bootstrap.MenuItem;
-import com.xresch.cfw.tests.assets.mockups.MenuItemMockup;
+import com.xresch.cfw.tests.assets.mockups.MockupMenuItem;
 
 public class MenuTests {
 
@@ -77,8 +77,8 @@ public class MenuTests {
 		
 		BTMenu menu = new BTMenu().setLabel("TEST MENU");
 		
-		menu.addChild(new MenuItemMockup("Mockup Menu A"))
-			.addChild(new MenuItemMockup("Mockup Menu B"))
+		menu.addChild(new MockupMenuItem("Mockup Menu A"))
+			.addChild(new MockupMenuItem("Mockup Menu B"))
 			.addChild(new MenuItem("Single Item").href("./singleitemlink"))
 			.addOneTimeChild(new MenuItem("OneTime Item"));
 
@@ -112,7 +112,7 @@ public class MenuTests {
 	@Test
 	public void testMenuItem() {
 		
-		MenuItemMockup menu = new MenuItemMockup("Mockup Menu Item");
+		MockupMenuItem menu = new MockupMenuItem("Mockup Menu Item");
 		
 		String html = menu.getHTML();
 		

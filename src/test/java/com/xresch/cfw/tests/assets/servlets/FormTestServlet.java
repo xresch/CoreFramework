@@ -17,7 +17,7 @@ import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
-import com.xresch.cfw.tests.assets.mockups.CFWObjectMockup;
+import com.xresch.cfw.tests.assets.mockups.MockupCFWObject;
 
 public class FormTestServlet extends HttpServlet
 {
@@ -48,14 +48,14 @@ public class FormTestServlet extends HttpServlet
 		// Test Form
 		//------------------------------
 //        content.append("<h2>Form Created Through CFWObject</h2>");
-//        content.append(new CFWObjectMockup().toForm("myForm", "Submit!!!").getHTML());
+//        content.append(new MockupCFWObject().toForm("myForm", "Submit!!!").getHTML());
 //        
 //		//------------------------------
 //		// Form with Handler
 //		//------------------------------
 //        
 //        content.append("<h2>Form with BTFormHandler</h2>");
-//        BTForm handledForm = new CFWObjectMockup().toForm("handlerForm", "Handle!!!");
+//        BTForm handledForm = new MockupCFWObject().toForm("handlerForm", "Handle!!!");
 //        
 //        handledForm.setFormHandler(new BTFormHandler() {
 //			@Override
@@ -73,7 +73,7 @@ public class FormTestServlet extends HttpServlet
 		// Form with Handler
 		//------------------------------
         content.append("<h2>Map Requests and Validate</h2>");
-        CFWForm handledForm2 = new CFWObjectMockup().toForm("handlerForm2", "Handle Again!!!");
+        CFWForm handledForm2 = new MockupCFWObject().toForm("handlerForm2", "Handle Again!!!");
         
         handledForm2.setFormHandler(new CFWFormHandler() {
 			@Override

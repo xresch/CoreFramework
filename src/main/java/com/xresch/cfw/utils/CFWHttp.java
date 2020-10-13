@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -71,6 +72,25 @@ public class CFWHttp {
 	public static String  encode(String paramName, String paramValue) {
 		
 		return "&" + encode(paramName) + "=" + encode(paramValue);
+	}
+	
+	/******************************************************************************************************
+	 * Creates a url with the given parameters;
+	 ******************************************************************************************************/
+	public static String  buildURL(String urlWithPath, HashMap<String,String> params) {
+		
+		if(urlWithPath.endsWith("?") || urlWithPath.endsWith("/")) {
+			urlWithPath = urlWithPath.substring(0, urlWithPath.length()-1);
+		}
+		StringBuilder builder = new StringBuilder(urlWithPath);
+		
+		builder.append("?");
+		
+		for(Entry<String,String> param : params.entrySet()) {
+			builder.append(encode(param.getKey(), param.getValue()));
+		}
+		
+		return builder.toString();
 	}
 	
 	/******************************************************************************************************
@@ -302,6 +322,17 @@ public class CFWHttp {
 		
 	}
 	
+	
+	/******************************************************************************************************
+	 * Send a HTTP GET request and returns the result or null in case of error.
+	 * @param url used for the request.
+	 * @param params the parameters which should be added to the request.
+	 * @return String response
+	 ******************************************************************************************************/
+	public static CFWHttpResponse sendGETRequest(String url, HashMap<String, String> params) {
+		return sendGETRequest(buildURL(url, params));
+	}
+		
 	/******************************************************************************************************
 	 * Send a HTTP GET request and returns the result or null in case of error.
 	 * @param url used for the request.

@@ -17,7 +17,7 @@ import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.validation.LengthValidator;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
-public class CFWObjectMockup extends CFWObject{
+public class MockupCFWObject extends CFWObject{
 	
 	//------------------------------------------------------------------------------------------------
 	// A regular text field. The fieldname "FIRSTNAME" will be used to create the label "Firstname"
@@ -211,7 +211,7 @@ public class CFWObjectMockup extends CFWObject{
 	
 	//======================================================================
 	// The default constructor
-	public CFWObjectMockup() {
+	public MockupCFWObject() {
 		
 		initialize();
 	}

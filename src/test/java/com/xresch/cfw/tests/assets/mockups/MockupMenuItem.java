@@ -2,9 +2,9 @@ package com.xresch.cfw.tests.assets.mockups;
 
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
-public class MenuItemMockup extends MenuItem {
+public class MockupMenuItem extends MenuItem {
 
-	public MenuItemMockup(String label) {
+	public MockupMenuItem(String label) {
 		super(label);
 		
 		MenuItem subDropdown = new MenuItem("Sub Dropdown");

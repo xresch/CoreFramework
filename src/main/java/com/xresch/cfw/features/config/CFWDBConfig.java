@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.DB.Config;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.config.Configuration.ConfigFields;
@@ -268,7 +269,8 @@ public class CFWDBConfig {
 		
 		return new Configuration()
 				.queryCache(CFWDBConfig.class, "getCategories")
-				.custom("SELECT DISTINCT(CATEGORY), FROM CFW_CONFIG ")
+				.distinct()
+				.select(ConfigFields.CATEGORY)
 				.orderby(ConfigFields.CATEGORY)
 				.getAsStringArrayList(ConfigFields.CATEGORY);
 		

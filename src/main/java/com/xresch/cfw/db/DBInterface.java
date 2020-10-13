@@ -27,8 +27,8 @@ public abstract class DBInterface {
 
 	protected static Logger logger = CFWLog.getLogger(DBInterface.class.getName());
 	
-	protected ThreadLocal<ArrayList<Connection>> myOpenConnections = new ThreadLocal<ArrayList<Connection>>();
-	protected ThreadLocal<Connection> transactionConnection = new ThreadLocal<Connection>();
+	protected ThreadLocal<ArrayList<Connection>> myOpenConnections = new ThreadLocal<>();
+	protected ThreadLocal<Connection> transactionConnection = new ThreadLocal<>();
 
 	
 	/********************************************************************************************

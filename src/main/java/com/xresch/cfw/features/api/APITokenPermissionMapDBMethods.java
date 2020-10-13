@@ -183,7 +183,7 @@ public class APITokenPermissionMapDBMethods {
 	 * @return return true if user was added, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean addPermissionToAPIToken(APITokenPermission permission, APIToken token, boolean isDeletable) {
+	public static boolean addPermissionToAPIToken(APITokenPermission permission, APIToken token) {
 		
 		if(permission == null) {
 			new CFWLog(logger)
@@ -321,7 +321,7 @@ public class APITokenPermissionMapDBMethods {
 			return checkHasTokenThePermission(token.id(), permission.id());
 		}else {
 			new CFWLog(logger)
-				.severe("The permission and token cannot be null. Permission: '"+permission+"', APIToken: '"+token+"'");
+				.severe("The permission and token cannot be null. Permission: "+permission+", APIToken: "+token+".", new Throwable());
 			
 		}
 		return false;

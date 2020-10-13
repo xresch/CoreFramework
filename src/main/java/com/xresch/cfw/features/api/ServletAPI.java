@@ -82,22 +82,13 @@ public class ServletAPI extends HttpServlet
 		if(Strings.isNullOrEmpty(apiName) || Strings.isNullOrEmpty(actionName)) {
 			JSONResponse json = new JSONResponse();
 			ResultSet result = APITokenPermissionMapDBMethods.getPermissionsForToken(token);
-			
-			//----------------------------
-			// Check No Result
-			if(result == null) {
-				json.setSuccess(false);
-				CFW.Context.Request.addAlertMessage(MessageType.WARNING, "This token seems to miss permissions. Please contact the guy in charge of the token to grant you permissions.");
-				return;
-			}
-			
+						
 			//----------------------------
 			// Check For Result
 			try {
 				CFW.Context.Request.addAlertMessage(MessageType.INFO, "ApiName and/or action was not provided. List of permitted APIs for this token is returned.");
 				JsonArray array = new JsonArray();
 				while(result.next()) {
-					JsonObject object = new JsonObject();
 					String name = result.getString("API_NAME");
 					String action = result.getString("ACTION_NAME");
 					APIDefinition apidef = CFW.Registry.API.getDefinition(name, action);
@@ -109,8 +100,9 @@ public class ServletAPI extends HttpServlet
 				
 				json.setPayLoad(array);
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				new CFWLog(logger).severe("SQLException occurred:"+e.getMessage(), e);
+				json.setSuccess(false);
+				return;
 			}finally {
 				CFW.DB.close(result);
 			}
@@ -126,7 +118,7 @@ public class ServletAPI extends HttpServlet
 		}else {
 			JSONResponse json = new JSONResponse();
 			json.setSuccess(false);
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The token does not have access to the API '"+apiName+"."+actionName+"'");
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The token does not have access to the API "+apiName+"."+actionName+".");
 		}
 		
 	}

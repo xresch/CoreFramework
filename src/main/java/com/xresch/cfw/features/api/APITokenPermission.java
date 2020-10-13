@@ -133,5 +133,9 @@ public class APITokenPermission extends CFWObject {
 		this.actionName.setValue(description);
 		return this;
 	}
+	
+	public String getPermissionName() {
+		return apiName.getValue()+"."+actionName.getValue();
+	}
 		
 }
