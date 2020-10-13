@@ -326,22 +326,50 @@ public class CFWHttp {
 	/******************************************************************************************************
 	 * Send a HTTP GET request and returns the result or null in case of error.
 	 * @param url used for the request.
-	 * @param params the parameters which should be added to the request.
-	 * @return String response
-	 ******************************************************************************************************/
-	public static CFWHttpResponse sendGETRequest(String url, HashMap<String, String> params) {
-		return sendGETRequest(buildURL(url, params));
-	}
-		
-	/******************************************************************************************************
-	 * Send a HTTP GET request and returns the result or null in case of error.
-	 * @param url used for the request.
 	 * @return String response
 	 ******************************************************************************************************/
 	public static CFWHttpResponse sendGETRequest(String url) {
-		
-		try {			
+		return sendGETRequest(url, null, null);
+	}
+	
+	/******************************************************************************************************
+	 * Send a HTTP GET request and returns the result or null in case of error.
+	 * @param url used for the request.
+	 * @param params the parameters which should be added to the request or null
+	 * @return String response
+	 ******************************************************************************************************/
+	public static CFWHttpResponse sendGETRequest(String url, HashMap<String, String> params) {
+		return sendGETRequest(url, params, null);	    	
+	}
+	
+	
+	/******************************************************************************************************
+	 * Send a HTTP GET request and returns the result or null in case of error.
+	 * @param url used for the request.
+	 * @param params the parameters which should be added to the request or null
+	 * @param headers the HTTP headers for the request or null
+	 * @return String response
+	 ******************************************************************************************************/
+	public static CFWHttpResponse sendGETRequest(String url, HashMap<String, String> params, HashMap<String, String> headers) {
+				
+		try {
+			//-----------------------------------
+			// Handle params
+			if(params != null ) {
+				url = buildURL(url, params);
+			}
+			
+			//-----------------------------------
+			// Handle headers
 			HttpURLConnection connection = createProxiedURLConnection(url);
+			
+			if(headers != null ) {
+				for(Entry<String, String> header : headers.entrySet())
+				connection.setRequestProperty(header.getKey(), header.getValue());
+			}
+			
+			//-----------------------------------
+			// Connect and create response
 			if(connection != null) {
 				connection.setRequestMethod("GET");
 				connection.connect();
@@ -351,12 +379,14 @@ public class CFWHttp {
 	    
 		} catch (Exception e) {
 			new CFWLog(logger)
-				.severe("Exception occured.", e);
+				.severe("Exception occured: "+e.getMessage(), e);
 		} 
 		
 		return null;
 	    	
 	}
+		
+
 	
 	/******************************************************************************************************
 	 * Send a HTTP POST request sending JSON with a Content-Type header "application/json; charset=UTF-8".
@@ -488,6 +518,24 @@ public class CFWHttp {
 
         return remoteAddr;
     }
+	/**************************************************************************************
+	 * Returns the API token if provided.
+	 * @param request
+	 * @return token or null
+	 **************************************************************************************/
+	public static String getCFWAPIToken(HttpServletRequest request) {
+		
+		if(request.getRequestURI().equals("/app/api")) {
+			String token = request.getParameter("apitoken");
+			if(!Strings.isNullOrEmpty(token)) { return token; }
+	
+			token = request.getHeader("API-Token");
+			if(!Strings.isNullOrEmpty(token)) { return token; }
+	
+		}
+		
+		return null;
+	}
 	/******************************************************************************************************
 	 * Inner Class for HTTP Response
 	 ******************************************************************************************************/
@@ -569,24 +617,5 @@ public class CFWHttp {
 		public String host;
 		public int port = 80;
 		
-	}
-
-	/**************************************************************************************
-	 * Returns the API token if provided.
-	 * @param request
-	 * @return token or null
-	 **************************************************************************************/
-	public static String getCFWAPIToken(HttpServletRequest request) {
-		
-		if(request.getRequestURI().equals("/app/api")) {
-			String token = request.getParameter("apitoken");
-			if(!Strings.isNullOrEmpty(token)) { return token; }
-	
-			token = request.getHeader("API-Token");
-			if(!Strings.isNullOrEmpty(token)) { return token; }
-	
-		}
-		
-		return null;
 	}
 }

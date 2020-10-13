@@ -128,7 +128,19 @@ public class TestAPITokenManagement extends DBTestMaster {
 		
 		//--------------------------------------
 		// Test Header Token
+		HashMap<String, String> paramsHeaderToken = new HashMap<>();
+		paramsHeaderToken.put("apiName", permissionB.apiName());
+		paramsHeaderToken.put("actionName", permissionB.actionName());
 		
+		HashMap<String, String> headers = new HashMap<>();
+		headers.put("API-Token", testtokenB.token());
+		
+		CFWHttpResponse responseHeaderToken = CFW.HTTP.sendGETRequest(baseURL, paramsHeaderToken, headers);
+		String jsonRoles2 = responseHeaderToken.getResponseBody();
+		
+		System.out.println("================ Response: Test Header Token ================");
+		System.out.println(jsonRoles2);	
+		Assertions.assertTrue(jsonRoles2.contains("\"NAME\":\"Superuser\""), "List of roles is returned.");
 	}
 	
 }
