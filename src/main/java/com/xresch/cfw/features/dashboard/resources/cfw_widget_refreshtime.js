@@ -27,7 +27,7 @@
 				}
 				
 				var labelHTML = '<div class="label-box"><span class="text-center '+rotationClass+'" style="white-space: nowrap; font-size: '+18*settings.sizefactor+'px;"">'
-								+ new CFWDate().getDateFormatted(settings.format)
+								+ new moment().format(settings.format)
 								+'</span></div>'; 
 				
 				callback(widgetObject, labelHTML);

@@ -25,6 +25,7 @@ TODO
 - Dashboard: Add Anchor Chooser to Image Widget
 - Dashboard: Add format to reload time widget
 - Dashboard: Console with Logs
+- Dashboard: Fix Replica Ctrl+Z on Duplicate
 
 - Widget: Link
 - Widget: Dashboard Link

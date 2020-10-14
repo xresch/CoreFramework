@@ -414,11 +414,12 @@ function cfw_initializeTimefield(fieldID, epochMillis){
 	
 	if(epochMillis != null){
 		$(id).val(epochMillis);
-		var date = new CFWDate(epochMillis);
-		datepicker.first().val(date.getDateForInput());
-		
+		var date = moment.utc(epochMillis);
+		console.log(date.format("hh:mm"))
+		datepicker.first().val(date.format("YYYY-MM-DD"));
+
 		if(timepicker.length > 0 != null){
-			timepicker.first().val(date.getTimeForInput());
+			timepicker.first().val(date.format("hh:mm"));
 		}
 	}
 		
@@ -855,7 +856,7 @@ function cfw_sortArrayByValueOfObject(array, key, reverse){
 function cfw_format_epochToTimestamp(epoch){
 
   if(epoch != null){
-	  return new CFWDate(epoch).getDateFormatted('YYYY-MM-DD HH:mm:ss');
+	  return new  moment.utc(epoch).format('YYYY-MM-DD HH:mm:ss');
   }
   
   return "";
