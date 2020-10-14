@@ -84,7 +84,7 @@ public class ServletUserManagement extends HttpServlet
 					if(newUser != null && CFW.DB.Users.create(newUser)) {
 							
 						User userFromDB = CFW.DB.Users.selectByUsernameOrMail(newUser.username());
-						if (CFW.DB.UserRoleMap.addUserToRole(userFromDB, CFW.DB.Roles.CFW_ROLE_USER, true)) {
+						if (CFW.DB.UserRoleMap.addRoleToUser(userFromDB, CFW.DB.Roles.CFW_ROLE_USER, true)) {
 							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "User created successfully!");
 							return;
 						}

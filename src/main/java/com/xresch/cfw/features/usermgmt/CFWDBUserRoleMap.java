@@ -29,8 +29,8 @@ public class CFWDBUserRoleMap {
 	 * @return return true if user was added, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean addUserToRole(User user, String rolename, boolean isDeletable) {
-		return addUserToRole(user, CFW.DB.Roles.selectFirstByName(rolename), isDeletable);
+	public static boolean addRoleToUser(User user, String rolename, boolean isDeletable) {
+		return addRoleToUser(user, CFW.DB.Roles.selectFirstByName(rolename), isDeletable);
 	}
 	
 	/********************************************************************************************
@@ -40,7 +40,7 @@ public class CFWDBUserRoleMap {
 	 * @return return true if user was added, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean addUserToRole(User user, Role role, boolean isDeletable) {
+	public static boolean addRoleToUser(User user, Role role, boolean isDeletable) {
 		
 		if(user == null || role == null ) {
 			new CFWLog(logger)
@@ -60,7 +60,19 @@ public class CFWDBUserRoleMap {
 			return false;
 		}
 		
-		return addUserToRole(user.id(), role.id(), isDeletable);
+		String insertRoleSQL = "INSERT INTO "+TABLE_NAME+" ("
+				  + UserRoleMapFields.FK_ID_USER +", "
+				  + UserRoleMapFields.FK_ID_ROLE +", "
+				  + UserRoleMapFields.IS_DELETABLE +" "
+				  + ") VALUES (?,?,?);";
+		
+		new CFWLog(logger).audit("UPDATE", "User", "Add Role to User: "+user.username()+", Role: "+role.name());
+		return CFWDB.preparedExecute(insertRoleSQL, 
+				user.id(),
+				role.id(),
+				isDeletable
+				);
+		
 	}
 	
 	/********************************************************************************************
@@ -71,18 +83,10 @@ public class CFWDBUserRoleMap {
 	 * @return return true if user was added, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean addUserToRole(int userid, int roleid, boolean isDeletable) {
-		String insertRoleSQL = "INSERT INTO "+TABLE_NAME+" ("
-				  + UserRoleMapFields.FK_ID_USER +", "
-				  + UserRoleMapFields.FK_ID_ROLE +", "
-				  + UserRoleMapFields.IS_DELETABLE +" "
-				  + ") VALUES (?,?,?);";
-		
-		return CFWDB.preparedExecute(insertRoleSQL, 
-				userid,
-				roleid,
-				isDeletable
-				);
+	public static boolean addRoleToUser(int userID, int roleID, boolean isDeletable) {
+		User user = CFW.DB.Users.selectByID(userID);
+		Role role = CFW.DB.Roles.selectByID(roleID);
+		return addRoleToUser(user, role, isDeletable);
 	}
 	
 	/********************************************************************************************
@@ -106,7 +110,21 @@ public class CFWDBUserRoleMap {
 			return false;
 		}
 		
-		return removeUserFromRole(user.id(), role.id());
+		String removeUserFromRoleSQL = "DELETE FROM "+TABLE_NAME
+				+" WHERE "
+				  + UserRoleMapFields.FK_ID_USER +" = ? "
+				  + " AND "
+				  + UserRoleMapFields.FK_ID_ROLE +" = ? "
+				  + " AND "
+				  + UserRoleMapFields.IS_DELETABLE +" = TRUE "
+				  + ";";
+		
+		new CFWLog(logger).audit("UPDATE", "User", "Remove Role from User: "+user.username()+", Role: "+role.name());
+		return CFWDB.preparedExecute(removeUserFromRoleSQL, 
+				user.id(),
+				role.id()
+				);
+		
 	}
 
 	/********************************************************************************************
@@ -117,19 +135,9 @@ public class CFWDBUserRoleMap {
 	 * 
 	 ********************************************************************************************/
 	public static boolean removeUserFromRole(int userID, int roleID) {
-		String removeUserFromRoleSQL = "DELETE FROM "+TABLE_NAME
-				+" WHERE "
-				  + UserRoleMapFields.FK_ID_USER +" = ? "
-				  + " AND "
-				  + UserRoleMapFields.FK_ID_ROLE +" = ? "
-				  + " AND "
-				  + UserRoleMapFields.IS_DELETABLE +" = TRUE "
-				  + ";";
-		
-		return CFWDB.preparedExecute(removeUserFromRoleSQL, 
-				userID,
-				roleID
-				);
+		User user = CFW.DB.Users.selectByID(userID);
+		Role role = CFW.DB.Roles.selectByID(roleID);
+		return removeUserFromRole(user, role);
 	}
 	
 	/********************************************************************************************
@@ -323,7 +331,7 @@ public class CFWDBUserRoleMap {
 		if(checkIsUserInRole(userID, roleID)) {
 			return removeUserFromRole(userID, roleID);
 		}else {
-			return addUserToRole(userID, roleID, true);
+			return addRoleToUser(userID, roleID, true);
 		}
 
 	}

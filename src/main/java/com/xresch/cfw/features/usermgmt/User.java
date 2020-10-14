@@ -249,7 +249,7 @@ public class User extends CFWObject {
 			return;
 		}
 		if(!CFW.DB.UserRoleMap.checkIsUserInRole(adminUser, superuserRole)) {
-			CFW.DB.UserRoleMap.addUserToRole(adminUser, superuserRole, false);
+			CFW.DB.UserRoleMap.addRoleToUser(adminUser, superuserRole, false);
 		}
 		
 		//Needed for Upgrade

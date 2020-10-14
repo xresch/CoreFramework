@@ -87,22 +87,54 @@ public class CFWDBRole {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(Role... items) 	{ return CFWDBDefaultOperations.create(prechecksCreate, items); }
-	public static boolean 	create(Role item) 		{ return CFWDBDefaultOperations.create(prechecksCreate, item);}
+	public static boolean	create(Role... items) 	{ 
+		new CFWLog(logger).audit("CREATE", "Roles", "Multiple Roles");
+		return CFWDBDefaultOperations.create(prechecksCreate, items); 
+	}
+	public static boolean 	create(Role item) 		{ 
+		new CFWLog(logger).audit("CREATE", "Role", "Role: "+item.name());
+		return CFWDBDefaultOperations.create(prechecksCreate, item);
+	}
 	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(Role... items) 	{ return CFWDBDefaultOperations.update(prechecksUpdate, items); }
-	public static boolean 	update(Role item) 		{ return CFWDBDefaultOperations.update(prechecksUpdate, item); }
+	public static boolean 	update(Role... items) 	{ 
+		new CFWLog(logger).audit("UPDATE", "Role", "Multiple Roles");
+		return CFWDBDefaultOperations.update(prechecksUpdate, items); 
+	}
+	public static boolean 	update(Role item) 	{ 
+		new CFWLog(logger).audit("UPDATE", "Role", "Role: "+item.name());
+		return CFWDBDefaultOperations.update(prechecksUpdate, item); 
+	}
 	
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################
-	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, RoleFields.PK_ID.toString(), id); }
-	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(cfwObjectClass, itemIDs); }
+	public static boolean 	deleteByID(int id) 	{ 
+		Role role = selectByID(id);
+		new CFWLog(logger).audit("DELETE", "Role", "Role: "+role.name());
+		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, RoleFields.PK_ID.toString(), id); 
+	}
+	
+	public static boolean 	deleteMultipleByID(String IDs) 	{ 
+		
+		if(IDs == null ^ !IDs.matches("(\\d,?)+")) {
+			new CFWLog(logger)
+			.severe("The role ID's '"+IDs+"' are not a comma separated list of strings.");
+			return false;
+		}
+		
+		boolean success = true;
+		for(String id : IDs.split(",")) {
+			success &= deleteByID(Integer.parseInt(id));
+		}
+
+		return success;
+	}
 	
 	public static boolean 	deleteByName(String name) 		{ 
+		new CFWLog(logger).audit("DELETE", "Role", "Role: "+name);
 		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, RoleFields.NAME.toString(), name); 
 	}
 	

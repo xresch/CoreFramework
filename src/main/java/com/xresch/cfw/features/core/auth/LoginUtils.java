@@ -122,7 +122,7 @@ public class LoginUtils {
 			CFW.DB.Users.create(newUser);
 			userFromDB = CFW.DB.Users.selectByUsernameOrMail(username);
 			
-			CFW.DB.UserRoleMap.addUserToRole(userFromDB, CFW.DB.Roles.CFW_ROLE_USER, true);
+			CFW.DB.UserRoleMap.addRoleToUser(userFromDB, CFW.DB.Roles.CFW_ROLE_USER, true);
     	}else{
     		userFromDB = CFW.DB.Users.selectByUsernameOrMail(username);
     		

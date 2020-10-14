@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.usermgmt.RolePermissionMap.RolePermissionMapFields;
@@ -55,7 +56,19 @@ public class CFWDBRolePermissionMap {
 			return false;
 		}
 		
-		return addPermissionToRole(permission.id(), role.id(), isDeletable);
+		String insertPermissionSQL = "INSERT INTO "+TABLE_NAME+" ("
+				  + RolePermissionMapFields.FK_ID_PERMISSION +", "
+				  + RolePermissionMapFields.FK_ID_ROLE +", "
+				  + RolePermissionMapFields.IS_DELETABLE +" "
+				  + ") VALUES (?,?,?);";
+		
+		new CFWLog(logger).audit("UPDATE", "Role", "Add Permission to Role: "+role.name()+", Permission: "+permission.name());
+		return CFWDB.preparedExecute(insertPermissionSQL, 
+				permission.id(),
+				role.id(),
+				isDeletable
+				);
+		
 	}
 	/********************************************************************************************
 	 * Adds the permission to the specified role.
@@ -79,17 +92,10 @@ public class CFWDBRolePermissionMap {
 			return false;
 		}
 		
-		String insertPermissionSQL = "INSERT INTO "+TABLE_NAME+" ("
-				  + RolePermissionMapFields.FK_ID_PERMISSION +", "
-				  + RolePermissionMapFields.FK_ID_ROLE +", "
-				  + RolePermissionMapFields.IS_DELETABLE +" "
-				  + ") VALUES (?,?,?);";
+		Role role = CFW.DB.Roles.selectByID(roleID);
+		Permission permission = CFW.DB.Permissions.selectByID(permissionID);
 		
-		return CFWDB.preparedExecute(insertPermissionSQL, 
-				permissionID,
-				roleID,
-				isDeletable
-				);
+		return addPermissionToRole(permission, role, isDeletable);
 	}
 	
 	/********************************************************************************************
@@ -141,7 +147,20 @@ public class CFWDBRolePermissionMap {
 			return false;
 		}
 		
-		return removePermissionFromRole(permission.id(), role.id());
+		String removePermissionFromRoleSQL = "DELETE FROM "+TABLE_NAME
+				+" WHERE "
+				  + RolePermissionMapFields.FK_ID_PERMISSION +" = ? "
+				  + " AND "
+				  + RolePermissionMapFields.FK_ID_ROLE +" = ? "
+				  + " AND "
+				  + RolePermissionMapFields.IS_DELETABLE +" = TRUE "
+				  + ";";
+		
+		new CFWLog(logger).audit("UPDATE", "Role", "Remove Permission from Role: "+role.name()+", Permission: "+permission.name());
+		return CFWDB.preparedExecute(removePermissionFromRoleSQL, 
+				permission.id(),
+				role.id()
+				);
 	}
 	/********************************************************************************************
 	 * Remove a permission from the role.
@@ -157,20 +176,11 @@ public class CFWDBRolePermissionMap {
 				.warn("The permission '"+permissionID+"' is not part of the role '"+ roleID+"' and cannot be removed.");
 			return false;
 		}
-		
-		String removePermissionFromRoleSQL = "DELETE FROM "+TABLE_NAME
-				+" WHERE "
-				  + RolePermissionMapFields.FK_ID_PERMISSION +" = ? "
-				  + " AND "
-				  + RolePermissionMapFields.FK_ID_ROLE +" = ? "
-				  + " AND "
-				  + RolePermissionMapFields.IS_DELETABLE +" = TRUE "
-				  + ";";
-		
-		return CFWDB.preparedExecute(removePermissionFromRoleSQL, 
-				permissionID,
-				roleID
-				);
+				
+		Role role = CFW.DB.Roles.selectByID(roleID);
+		Permission permission = CFW.DB.Permissions.selectByID(permissionID);
+		return removePermissionFromRole(permission, role);
+
 	}
 	
 	/****************************************************************

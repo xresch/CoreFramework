@@ -51,18 +51,18 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		// Users
 		CFW.DB.Users.create(new User("TestuserA").setNewPassword("TestuserA", "TestuserA"));
 		testuserA = CFW.DB.Users.selectByUsernameOrMail("TestuserA");
-		CFW.DB.UserRoleMap.addUserToRole(testuserA, testroleA, true);
-		CFW.DB.UserRoleMap.addUserToRole(testuserA, testroleB, true);
-		CFW.DB.UserRoleMap.addUserToRole(testuserA, testroleC, true);
+		CFW.DB.UserRoleMap.addRoleToUser(testuserA, testroleA, true);
+		CFW.DB.UserRoleMap.addRoleToUser(testuserA, testroleB, true);
+		CFW.DB.UserRoleMap.addRoleToUser(testuserA, testroleC, true);
 		
 		CFW.DB.Users.create(new User("TestuserB").setNewPassword("TestuserB", "TestuserB"));
 		testuserB = CFW.DB.Users.selectByUsernameOrMail("TestuserB");
-		CFW.DB.UserRoleMap.addUserToRole(testuserB, testroleA, true);
-		CFW.DB.UserRoleMap.addUserToRole(testuserB, testroleB, true);
+		CFW.DB.UserRoleMap.addRoleToUser(testuserB, testroleA, true);
+		CFW.DB.UserRoleMap.addRoleToUser(testuserB, testroleB, true);
 		
 		CFW.DB.Users.create(new User("TestuserC").setNewPassword("TestuserC", "TestuserC"));	
 		testuserC = CFW.DB.Users.selectByUsernameOrMail("TestuserC");
-		CFW.DB.UserRoleMap.addUserToRole(testuserC, testroleC, true);
+		CFW.DB.UserRoleMap.addRoleToUser(testuserC, testroleC, true);
 		
 		//------------------------------
 		// Permissions
@@ -375,7 +375,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		// Test  addUserToRole()
 		System.out.println("================= Test addUserToRole() =================");
 		User newUserFromDB = CFW.DB.Users.selectByUsernameOrMail("newUser");
-		CFW.DB.UserRoleMap.addUserToRole(newUserFromDB, testroleA, true);
+		CFW.DB.UserRoleMap.addRoleToUser(newUserFromDB, testroleA, true);
 		
 		Assertions.assertTrue(CFW.DB.UserRoleMap.checkIsUserInRole(newUserFromDB, testroleA), "User was added to the role.");
 		
@@ -388,7 +388,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		//--------------------------------------
 		// Test remove UserRoleMapping when user is deleted
 		System.out.println("================= Test remove UserRoleMapping when user is deleted =================");
-		CFW.DB.UserRoleMap.addUserToRole(newUserFromDB, testroleA, true);
+		CFW.DB.UserRoleMap.addRoleToUser(newUserFromDB, testroleA, true);
 		Assertions.assertTrue(CFW.DB.UserRoleMap.checkIsUserInRole(newUserFromDB, testroleA), "User was added to the role.");
 		
 		CFW.DB.Users.deleteByID(newUserFromDB.id());
@@ -415,10 +415,10 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		CFW.DB.Roles.create(roleToDelete);
 		roleToDelete = CFW.DB.Roles.selectFirstByName("TestRoleToDelete");
 		
-		CFW.DB.UserRoleMap.addUserToRole(testuserB, roleToDelete, true);
+		CFW.DB.UserRoleMap.addRoleToUser(testuserB, roleToDelete, true);
 		Assertions.assertTrue(CFW.DB.UserRoleMap.checkIsUserInRole(testuserB, roleToDelete), "User was added to the role.");
 		
-		CFW.DB.UserRoleMap.addUserToRole(testuserC, roleToDelete, true);
+		CFW.DB.UserRoleMap.addRoleToUser(testuserC, roleToDelete, true);
 		Assertions.assertTrue(CFW.DB.UserRoleMap.checkIsUserInRole(testuserC, roleToDelete), "User was added to the role.");
 		
 		CFW.DB.Roles.deleteByID(roleToDelete.id());

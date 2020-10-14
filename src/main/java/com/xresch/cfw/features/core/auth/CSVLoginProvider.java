@@ -55,7 +55,7 @@ public class CSVLoginProvider implements LoginProviderInterface {
 				CFW.DB.Users.create(newUser);
 				User userFromDB = CFW.DB.Users.selectByUsernameOrMail(username);
 				
-				CFW.DB.UserRoleMap.addUserToRole(userFromDB, CFW.DB.Roles.CFW_ROLE_USER, true);
+				CFW.DB.UserRoleMap.addRoleToUser(userFromDB, CFW.DB.Roles.CFW_ROLE_USER, true);
 				
 				return userFromDB;
 			}

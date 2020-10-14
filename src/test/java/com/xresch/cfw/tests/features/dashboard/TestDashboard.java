@@ -80,31 +80,31 @@ public class TestDashboard extends DBTestMaster {
 		// Setup Users
 		CFW.DB.Users.create(new User("TestViewer").setNewPassword("TestViewer", "TestViewer"));
 		userViewer = CFW.DB.Users.selectByUsernameOrMail("TestViewer");
-		CFW.DB.UserRoleMap.addUserToRole(userViewer, roleViewer, true);
+		CFW.DB.UserRoleMap.addRoleToUser(userViewer, roleViewer, true);
 
 		CFW.DB.Users.create(new User("TestCreator").setNewPassword("TestCreator", "TestCreator"));
 		userCreator = CFW.DB.Users.selectByUsernameOrMail("TestCreator");
-		CFW.DB.UserRoleMap.addUserToRole(userCreator, roleCreator, true);
+		CFW.DB.UserRoleMap.addRoleToUser(userCreator, roleCreator, true);
 		
 		CFW.DB.Users.create(new User("TestCreatorTwo").setNewPassword("TestCreatorTwo", "TestCreatorTwo"));
 		userCreatorTwo = CFW.DB.Users.selectByUsernameOrMail("TestCreatorTwo");
-		CFW.DB.UserRoleMap.addUserToRole(userCreatorTwo, roleCreator, true);
+		CFW.DB.UserRoleMap.addRoleToUser(userCreatorTwo, roleCreator, true);
 		
 		CFW.DB.Users.create(new User("TestAdmin").setNewPassword("TestAdmin", "TestAdmin"));
 		userAdmin = CFW.DB.Users.selectByUsernameOrMail("TestAdmin");
-		CFW.DB.UserRoleMap.addUserToRole(userAdmin, roleAdmin, true);
+		CFW.DB.UserRoleMap.addRoleToUser(userAdmin, roleAdmin, true);
 		
 		CFW.DB.Users.create(new User("TestDirectEditor").setNewPassword("TestDirectEditor", "TestDirectEditor"));
 		userDirectEditor = CFW.DB.Users.selectByUsernameOrMail("TestDirectEditor");
-		CFW.DB.UserRoleMap.addUserToRole(userDirectEditor, roleViewer, true);
+		CFW.DB.UserRoleMap.addRoleToUser(userDirectEditor, roleViewer, true);
 		
 		CFW.DB.Users.create(new User("TestEditorByGroup").setNewPassword("TestEditorByGroup", "TestEditorByGroup"));
 		userEditorByRole = CFW.DB.Users.selectByUsernameOrMail("TestEditorByGroup");
-		CFW.DB.UserRoleMap.addUserToRole(userEditorByRole, roleGroupEditors, true);
+		CFW.DB.UserRoleMap.addRoleToUser(userEditorByRole, roleGroupEditors, true);
 
 		CFW.DB.Users.create(new User("TestViewerByRole").setNewPassword("TestViewerByRole", "TestViewerByRole"));
 		userViewerByRole = CFW.DB.Users.selectByUsernameOrMail("TestViewerByRole");
-		CFW.DB.UserRoleMap.addUserToRole(userViewerByRole, roleGroupShared, true);
+		CFW.DB.UserRoleMap.addRoleToUser(userViewerByRole, roleGroupShared, true);
 
 		//----------------------------------------
 		// Create Relations

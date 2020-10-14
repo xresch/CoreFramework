@@ -235,7 +235,7 @@ public class CFWLog {
 				
 	}
 	
-	
+
 	public void all(String message){this.log(Level.ALL, message, null);}
 	public void config(String message){this.log(Level.CONFIG, message, null);}
 	public void finest(String message){this.log(Level.FINEST, message, null);}
@@ -249,6 +249,18 @@ public class CFWLog {
 	public void severe(String message){this.log(Level.SEVERE, message, null);}
 	public void severe(String message, Throwable e){this.log(Level.SEVERE, message, e);}
 
+	/***********************************************************************
+	 * Create an audit entry with level INFO.
+	 * @param action the action for the audit message(e.g. CREATE, UPDATE, DELETE)
+	 * @param item the item affected by the action (e.g. User, Role, Dashboard...)
+	 * @param message the log message, for example details about the affected item 
+	 ***********************************************************************/
+	public void audit(String action, String item, String message){
+		this.custom("auditAction", action);
+		this.custom("auditItem", item);
+		this.log(Level.INFO, message, null);
+	}
+	
 	/***********************************************************************
 	 * This is the main log method that handles all the logging.
 	 * 

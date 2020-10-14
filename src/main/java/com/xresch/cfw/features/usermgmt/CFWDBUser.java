@@ -22,7 +22,6 @@ public class CFWDBUser {
 
 	private static final Logger logger = CFWLog.getLogger(CFWDBUser.class.getName());
 	
-	
 	/********************************************************************************************
 	 * Creates multiple users in the DB.
 	 * @param Users with the values that should be inserted. ID will be set by the Database.
@@ -71,6 +70,7 @@ public class CFWDBUser {
 			return false;
 		}
 		
+		new CFWLog(logger).audit("CREATE", "User", "Username: "+user.username());
 		return user
 				.queryCache(CFWDBUser.class, "create")
 				.insert();
@@ -262,6 +262,8 @@ public class CFWDBUser {
 			return false;
 		}
 		
+		new CFWLog(logger).audit("UPDATE", "User", "Username: "+user.username());
+
 		boolean resultUpdate = 
 			   user.queryCache(CFWDBUser.class, "update")
 					.updateWithout(UserFields.USERNAME.toString());
@@ -279,7 +281,7 @@ public class CFWDBUser {
 			
 			resultRename = 
 					   user.queryCache(CFWDBUser.class, "updateNameOnly")
-							.update(UserFields.USERNAME.toString());
+							.update(UserFields.USERNAME);
 		}
 		
 		return resultUpdate && resultRename;
@@ -301,6 +303,8 @@ public class CFWDBUser {
 			return false;
 		}
 		
+		new CFWLog(logger).audit("DELETE", "User", "Username: "+user.username());
+
 		return new User()
 				.queryCache(CFWDBUser.class, "deleteByID")
 				.delete()
@@ -316,22 +320,22 @@ public class CFWDBUser {
 	 * @param ids of the users separated by comma
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
-	public static boolean deleteMultipleByID(String resultIDs) {
+	public static boolean deleteMultipleByID(String IDs) {
 		
 		//----------------------------------
 		// Check input format
-		if(resultIDs == null ^ !resultIDs.matches("(\\d,?)+")) {
+		if(IDs == null ^ !IDs.matches("(\\d,?)+")) {
 			new CFWLog(logger)
-			.severe("The userID's '"+resultIDs+"' are not a comma separated list of strings.");
+			.severe("The userID's '"+IDs+"' are not a comma separated list of strings.");
 			return false;
 		}
 		
-		return new User()
-				.queryCache(CFWDBUser.class, "deleteMultipleByID")
-				.delete()
-				.whereIn(UserFields.PK_ID.toString(), resultIDs)
-				.and(UserFields.IS_DELETABLE.toString(), true)
-				.executeDelete();
+		boolean success = true;
+		for(String id : IDs.split(",")) {
+			success &= deleteByID(Integer.parseInt(id));
+		}
+
+		return success;
 			
 	}
 	
