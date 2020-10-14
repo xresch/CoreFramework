@@ -112,7 +112,7 @@ public class ServletConfiguration extends HttpServlet
 			    	if(success) {
 			    		json.addAlert(MessageType.SUCCESS, "Saved!");
 			    	}else {
-			    		json.addAlert(MessageType.SUCCESS, "Something went wrong!");
+			    		json.addAlert(MessageType.ERROR, "Something went wrong!");
 			    	}
 			    	
 				}

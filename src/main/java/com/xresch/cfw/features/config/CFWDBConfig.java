@@ -352,7 +352,8 @@ public class CFWDBConfig {
 				.warn("Please specify a name for the config.");
 			return false;
 		}
-				
+		
+		new CFWLog(logger).audit("UPDATE", Configuration.class, "Change config '"+config.name()+"' from '"+configCache.get(config.name())+"' to '"+config.value()+"'");
 		boolean updateResult =  config
 				.queryCache(CFWDBConfig.class, "update")
 				.update();
@@ -368,17 +369,25 @@ public class CFWDBConfig {
 	 * this method.
 	 * 
 	 * @param config
-	 * @return true or false
+	 * @return true if the value was updated
 	 ****************************************************************/
 	public static boolean updateValue(int id, String value) {
 		
 		// does not update cache automatically 
 		
+		Configuration oldConfig = selectByID(id);
+		String oldValue = (oldConfig != null) ? oldConfig.value() : "";
+		
+		if( (oldValue != null  && !oldValue.equals(value))
+		 || (oldValue == null  && !Strings.isNullOrEmpty(value))	) {
+			new CFWLog(logger).audit("UPDATE", Configuration.class, "Change config '"+oldConfig.name()+"' from '"+oldValue+"' to '"+value+"'");
+		}
+		
 		return new Configuration()
-				.id(id)
-				.value(value)
-				.queryCache(CFWDBConfig.class, "updateValue")
-				.update(ConfigFields.VALUE.toString());
+			.id(id)
+			.value(value)
+			.queryCache(CFWDBConfig.class, "updateValue")
+			.update(ConfigFields.VALUE.toString());
 		
 	}
 	
