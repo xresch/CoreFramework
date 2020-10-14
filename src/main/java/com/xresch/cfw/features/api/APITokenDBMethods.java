@@ -18,7 +18,9 @@ public class APITokenDBMethods {
 	private static Class<APIToken> cfwObjectClass = APIToken.class;
 	
 	public static Logger logger = CFWLog.getLogger(APITokenDBMethods.class.getName());
-		
+	
+	private static final String[] auditLogFieldnames = new String[] { APITokenFields.PK_ID.toString(), APITokenFields.TOKEN.toString()};
+	
 	//####################################################################################################
 	// Preckeck Initialization
 	//####################################################################################################
@@ -46,22 +48,22 @@ public class APITokenDBMethods {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(APIToken... items) 	{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, items); }
-	public static boolean 	create(APIToken item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, item);}
+	public static boolean	create(APIToken... items) 	{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, items); }
+	public static boolean 	create(APIToken item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, item);}
 	public static Integer 	createGetPrimaryKey(APIToken item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);}
 	
 	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(APIToken... items) 	{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, items); }
-	public static boolean 	update(APIToken item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, item); }
+	public static boolean 	update(APIToken... items) 	{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, items); }
+	public static boolean 	update(APIToken item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames,  item); }
 	
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################	
-	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, APITokenFields.PK_ID.toString(), id); }
-	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(cfwObjectClass, itemIDs); }
+	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, APITokenFields.PK_ID.toString(), id); }
+	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(prechecksDelete, auditLogFieldnames, cfwObjectClass, itemIDs); }
 	
 	//####################################################################################################
 	// DUPLICATE

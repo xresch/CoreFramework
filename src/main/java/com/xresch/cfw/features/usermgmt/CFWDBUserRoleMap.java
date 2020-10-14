@@ -66,7 +66,7 @@ public class CFWDBUserRoleMap {
 				  + UserRoleMapFields.IS_DELETABLE +" "
 				  + ") VALUES (?,?,?);";
 		
-		new CFWLog(logger).audit("UPDATE", "User", "Add Role to User: "+user.username()+", Role: "+role.name());
+		new CFWLog(logger).audit("UPDATE", User.class, "Add Role to User: "+user.username()+", Role: "+role.name());
 		return CFWDB.preparedExecute(insertRoleSQL, 
 				user.id(),
 				role.id(),
@@ -119,7 +119,7 @@ public class CFWDBUserRoleMap {
 				  + UserRoleMapFields.IS_DELETABLE +" = TRUE "
 				  + ";";
 		
-		new CFWLog(logger).audit("UPDATE", "User", "Remove Role from User: "+user.username()+", Role: "+role.name());
+		new CFWLog(logger).audit("UPDATE", User.class, "Remove Role from User: "+user.username()+", Role: "+role.name());
 		return CFWDB.preparedExecute(removeUserFromRoleSQL, 
 				user.id(),
 				role.id()
@@ -187,7 +187,11 @@ public class CFWDBUserRoleMap {
 	 * @param role to check
 	 * @return true if exists, false otherwise or in case of exception.
 	 ****************************************************************/
-	public static boolean checkIsUserInRole(int userid, int roleid) {
+	public static boolean checkIsUserInRole(Integer userid, Integer roleid) {
+		
+		if(userid == null || roleid == null) {
+			return false;
+		}
 		
 		String checkIsUserInRole = "SELECT COUNT(*) FROM "+TABLE_NAME
 				+" WHERE "+UserRoleMapFields.FK_ID_USER+" = ?"
@@ -234,8 +238,11 @@ public class CFWDBUserRoleMap {
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
 	 ****************************************************************/
-	public static HashMap<Integer, Role> selectAllRolesForUser(int userID) {
+	public static HashMap<Integer, Role> selectAllRolesForUser(Integer userID) {
 		
+		if(userID == null) {
+			return new HashMap<Integer, Role>();
+		}
 		
 		String selectRolesForUser = "SELECT * FROM "+Role.TABLE_NAME+" G "
 				+ " INNER JOIN "+CFWDBUserRoleMap.TABLE_NAME+" M "

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.api.APITokenPermissionMap;
 import com.xresch.cfw.features.usermgmt.SessionData;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -250,6 +251,20 @@ public class CFWLog {
 	public void severe(String message){this.log(Level.SEVERE, message, null);}
 	public void severe(String message, Throwable e){this.log(Level.SEVERE, message, e);}
 
+	
+	
+	
+	/***********************************************************************
+	 * Create an audit entry with level INFO.
+	 * @param action the action for the audit message(e.g. CREATE, UPDATE, DELETE)
+	 * @param itemClass the class of the CFWObject
+	 * @param message the log message, for example details about the affected item 
+	 ***********************************************************************/
+	public void audit(String action, Class<? extends CFWObject> itemClass, String message){
+		this.custom("auditAction", action);
+		this.custom("auditItem", itemClass.getSimpleName());
+		this.log(Level.INFO, message, null);
+	}
 	/***********************************************************************
 	 * Create an audit entry with level INFO.
 	 * @param action the action for the audit message(e.g. CREATE, UPDATE, DELETE)

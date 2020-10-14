@@ -65,7 +65,7 @@ public class APITokenPermissionMapDBMethods {
 	// DELETE
 	//####################################################################################################	
 	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, APITokenPermissionMapFields.PK_ID.toString(), id); }
-	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(cfwObjectClass, itemIDs); }
+	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(prechecksDelete, cfwObjectClass, itemIDs); }
 	
 	//####################################################################################################
 	// DUPLICATE
@@ -209,7 +209,19 @@ public class APITokenPermissionMapDBMethods {
 			return false;
 		}
 		
-		return addPermissionToAPIToken(permission.id(), token.id());
+		new CFWLog(logger).audit(
+				"UPDATE", 
+				APIToken.class, 
+				"Add Permission to API Token: "+token.token()+", Permission: "+permission.getPermissionName() 
+			);
+		
+		return create(
+				new APITokenPermissionMap()
+				.foreignKeyAPIToken(token.id())
+				.foreignKeyPermission(permission.id())
+			);
+		
+		
 	}
 	/********************************************************************************************
 	 * Adds the permission to the specified token.
@@ -227,17 +239,10 @@ public class APITokenPermissionMapDBMethods {
 			return false;
 		}
 		
-		if(checkHasTokenThePermission(tokenID, permissionID)) {
-			new CFWLog(logger)
-				.warn("The permission '"+permissionID+"' is already part of the token '"+tokenID+"'.");
-			return false;
-		}
+		APITokenPermission permission = APITokenPermissionDBMethods.selectByID(permissionID);
+		APIToken token = APITokenDBMethods.selectByID(tokenID);
 		
-		return create(new APITokenPermissionMap()
-				.foreignKeyAPIToken(tokenID)
-				.foreignKeyPermission(permissionID)
-		);
-
+		return addPermissionToAPIToken(permission, token);
 	}
 	
 	
@@ -268,7 +273,20 @@ public class APITokenPermissionMapDBMethods {
 			return false;
 		}
 		
-		return removePermissionFromAPIToken(permission.id(), token.id());
+		new CFWLog(logger).audit(
+				"UPDATE", 
+				APIToken.class, 
+				"Remove Permission from API Token: "+token.token()+", Permission: "+permission.getPermissionName() 
+			);
+		
+		return new CFWSQL(new APITokenPermissionMap())
+				.queryCache()
+				.delete()
+				.where(APITokenPermissionMapFields.FK_ID_PERMISSION, permission.id())
+				.and(APITokenPermissionMapFields.FK_ID_TOKEN, token.id())
+				.executeDelete();
+		
+		
 	}
 	/********************************************************************************************
 	 * Remove a permission from the token.
@@ -279,18 +297,16 @@ public class APITokenPermissionMapDBMethods {
 	 ********************************************************************************************/
 	public static boolean removePermissionFromAPIToken(int permissionID, int tokenID) {
 		
-		if(!checkHasTokenThePermission(tokenID, permissionID)) {
+		if(permissionID < 0 || tokenID < 0) {
 			new CFWLog(logger)
-				.warn("The permission '"+permissionID+"' is not part of the token '"+ tokenID+"' and cannot be removed.");
+				.warn("Permission-ID or token-ID are not set correctly.");
 			return false;
 		}
 		
-		return new CFWSQL(new APITokenPermissionMap())
-			.queryCache()
-			.delete()
-			.where(APITokenPermissionMapFields.FK_ID_PERMISSION, permissionID)
-			.and(APITokenPermissionMapFields.FK_ID_TOKEN, tokenID)
-			.executeDelete();
+		APITokenPermission permission = APITokenPermissionDBMethods.selectByID(permissionID);
+		APIToken token = APITokenDBMethods.selectByID(tokenID);
+		
+		return removePermissionFromAPIToken(permission, token);
 		
 	}
 	

@@ -54,14 +54,7 @@ public class CFWDBDashboardWidget {
 				return false;
 			}
 			
-			// permmision check will be done in ServletDashboardView.java 
-//			if(isWidgetOfCurrentUser(widget) == false
-//			&& !CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
-//				new CFWLog(logger)
-//				.method("doCheck")
-//				.severe("You are not allowed to modify this dashboard", new Throwable());
-//				return false;
-//			}
+			// permmission check will be done in ServletDashboardView.java 
 			
 			return true;
 		}
@@ -85,7 +78,7 @@ public class CFWDBDashboardWidget {
 	//####################################################################################################
 	public static boolean 	deleteByID(String id) 				{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), Integer.parseInt(id)); }
 	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id); }
-	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(cfwObjectClass, itemIDs); }
+	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(prechecksDeleteUpdate, cfwObjectClass, itemIDs); }
 		
 	//####################################################################################################
 	// SELECT

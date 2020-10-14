@@ -91,6 +91,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		CFW.DB.Permissions.create(new Permission("PermissionC", "user"));
 		permissionC = CFW.DB.Permissions.selectByName("PermissionC");
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionC.id(), testroleC.id(), true);
+		
 	}
 	
 	
@@ -361,6 +362,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		// Preparation
 		User newUser = new User("newUser");
 		CFW.DB.Users.create(newUser);
+		newUser = CFW.DB.Users.selectByUsernameOrMail("newUser");
 		CFW.DB.UserRoleMap.removeUserFromRole(newUser, testroleA);
 		
 		Assertions.assertFalse(CFW.DB.UserRoleMap.checkIsUserInRole(newUser, testroleA), "User is not in the role to the role.");
@@ -512,6 +514,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		// Preparation
 		Permission newPermission = new Permission("newPermission", "user");
 		CFW.DB.Permissions.create(newPermission);
+		newPermission = CFW.DB.Permissions.selectByName("newPermission");
 		CFW.DB.RolePermissionMap.removePermissionFromRole(newPermission.id(), testroleA.id());
 		
 		Assertions.assertFalse(CFW.DB.RolePermissionMap.checkIsPermissionInRole(newPermission, testroleA), "Permission is not in the role to the role.");

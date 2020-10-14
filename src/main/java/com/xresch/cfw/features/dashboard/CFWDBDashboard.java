@@ -85,11 +85,11 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################
-	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, DashboardFields.PK_ID.toString(), id); }
-	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(cfwObjectClass, itemIDs); }
+	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, DashboardFields.PK_ID.toString(), id); }
+	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(prechecksDelete, auditLogFieldnames, cfwObjectClass, itemIDs); }
 	
 	public static boolean 	deleteMultipleByIDForUser(int userid, String commaSeparatedIDs)	{ 
-		return CFWDBDefaultOperations.deleteMultipleByIDWhere(cfwObjectClass, commaSeparatedIDs, DashboardFields.FK_ID_USER, userid); 
+		return CFWDBDefaultOperations.deleteMultipleByIDWhere(prechecksDelete, auditLogFieldnames, cfwObjectClass, commaSeparatedIDs, DashboardFields.FK_ID_USER, userid); 
 	} 
 	
 	public static boolean 	deleteByName(String name) 		{ 

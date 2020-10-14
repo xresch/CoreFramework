@@ -9,6 +9,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.APIToken.APITokenFields;
 import com.xresch.cfw.features.api.APITokenPermission.APITokenPermissionFields;
+import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -19,7 +20,8 @@ public class APITokenPermissionDBMethods {
 	private static Class<APITokenPermission> cfwObjectClass = APITokenPermission.class;
 	
 	public static Logger logger = CFWLog.getLogger(APITokenPermissionDBMethods.class.getName());
-		
+	
+
 	//####################################################################################################
 	// Preckeck Initialization
 	//####################################################################################################
@@ -70,7 +72,7 @@ public class APITokenPermissionDBMethods {
 	// DELETE
 	//####################################################################################################	
 	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, APITokenPermissionFields.PK_ID.toString(), id); }
-	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(cfwObjectClass, itemIDs); }
+	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(prechecksDelete, cfwObjectClass, itemIDs); }
 	
 	//####################################################################################################
 	// DUPLICATE

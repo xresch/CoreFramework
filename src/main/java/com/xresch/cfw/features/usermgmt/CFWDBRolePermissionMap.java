@@ -62,7 +62,7 @@ public class CFWDBRolePermissionMap {
 				  + RolePermissionMapFields.IS_DELETABLE +" "
 				  + ") VALUES (?,?,?);";
 		
-		new CFWLog(logger).audit("UPDATE", "Role", "Add Permission to Role: "+role.name()+", Permission: "+permission.name());
+		new CFWLog(logger).audit("UPDATE", Role.class, "Add Permission to Role: "+role.name()+", Permission: "+permission.name());
 		return CFWDB.preparedExecute(insertPermissionSQL, 
 				permission.id(),
 				role.id(),
@@ -156,7 +156,7 @@ public class CFWDBRolePermissionMap {
 				  + RolePermissionMapFields.IS_DELETABLE +" = TRUE "
 				  + ";";
 		
-		new CFWLog(logger).audit("UPDATE", "Role", "Remove Permission from Role: "+role.name()+", Permission: "+permission.name());
+		new CFWLog(logger).audit("UPDATE", Role.class, "Remove Permission from Role: "+role.name()+", Permission: "+permission.name());
 		return CFWDB.preparedExecute(removePermissionFromRoleSQL, 
 				permission.id(),
 				role.id()

@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.CFWArrayUtils;
 
 /**************************************************************************************************************
  * 
@@ -184,6 +185,15 @@ public  class CFWDBDefaultOperations {
 	 * @return true or false
 	 ****************************************************************/
 	public static boolean deleteBy(PrecheckHandler precheck, Class<? extends CFWObject> cfwObjectClass, String column, Object value) {
+		return deleteBy(precheck, null, cfwObjectClass, column, value);
+	}
+	
+	/***************************************************************
+	 * Deletes the objects selected where the �recheck returns true.
+	 * @param object
+	 * @return true or false
+	 ****************************************************************/
+	public static boolean deleteBy(PrecheckHandler precheck, String[] auditLogFieldnames, Class<? extends CFWObject> cfwObjectClass, String column, Object value) {
 		
 		ArrayList<CFWObject> objectArray = CFWDBDefaultOperations.selectBy(cfwObjectClass, column, value);
 		
@@ -193,6 +203,8 @@ public  class CFWDBDefaultOperations {
 				isSuccess = false;
 				continue;
 			}
+			
+			new CFWLog(logger).audit("DELETE", object, auditLogFieldnames);
 			
 			isSuccess &= object
 					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteBy"+column)
@@ -210,6 +222,15 @@ public  class CFWDBDefaultOperations {
 	 * @return true or false
 	 ****************************************************************/
 	public static boolean deleteFirstBy(PrecheckHandler precheck, Class<? extends CFWObject> cfwObjectClass, String column, Object value) {
+		return  deleteFirstBy(precheck, null, cfwObjectClass, column, value);
+	}
+	
+	/***************************************************************
+	 * Deletes the first object selected.
+	 * @param object
+	 * @return true or false
+	 ****************************************************************/
+	public static boolean deleteFirstBy(PrecheckHandler precheck, String[] auditLogFieldnames, Class<? extends CFWObject> cfwObjectClass, String column, Object value) {
 		
 		CFWObject object = CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, column, value);
 		
@@ -218,6 +239,9 @@ public  class CFWDBDefaultOperations {
 		}
 		
 		if(object != null) {
+			
+			new CFWLog(logger).audit("DELETE", object, auditLogFieldnames);
+			
 			return object
 				.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteFirstBy"+column)
 				.deleteTop(1)
@@ -234,7 +258,16 @@ public  class CFWDBDefaultOperations {
 	 * @param ids separated by comma
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
-	public static boolean deleteMultipleByID(Class<? extends CFWObject> cfwObjectClass, String commaSeparatedIDs) {
+	public static boolean deleteMultipleByID(PrecheckHandler precheck, Class<? extends CFWObject> cfwObjectClass, String commaSeparatedIDs) {
+		
+		return  deleteMultipleByID(precheck, null, cfwObjectClass, commaSeparatedIDs);
+	}
+	/****************************************************************
+	 * Deletes multiple items by id.
+	 * @param ids separated by comma
+	 * @return true if successful, false otherwise.
+	 ****************************************************************/
+	public static boolean deleteMultipleByID(PrecheckHandler precheck, String[] auditLogFieldnames, Class<? extends CFWObject> cfwObjectClass, String commaSeparatedIDs) {
 		
 		//----------------------------------
 		// Check input format
@@ -244,19 +277,23 @@ public  class CFWDBDefaultOperations {
 			return false;
 		}
 
+		boolean success = true;
+		
 		try {
 			CFWObject instance = cfwObjectClass.newInstance();
-			return instance
-					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteMultipleByID")
-					.delete()
-					.whereIn(instance.getPrimaryField().getName(), commaSeparatedIDs)
-					.executeDelete();
+			String idColumn = instance.getPrimaryField().getName();
+			
+			for(String id : commaSeparatedIDs.split(",")) {
+				success &= deleteBy(precheck, auditLogFieldnames, cfwObjectClass, idColumn, id);
+			}
 			
 		} catch (Exception e) {
 			new CFWLog(logger)
 				.warn("Error while instanciating object.", e);
 			return false;
 		}
+		
+		return success;
 		
 	}
 	
@@ -267,6 +304,24 @@ public  class CFWDBDefaultOperations {
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
 	public static boolean deleteMultipleByIDWhere(
+											PrecheckHandler precheck, 
+											Class<? extends CFWObject> cfwObjectClass, 
+											String commaSeparatedIDs,
+											Object fieldnameToCheck,
+											Object valueToCheck) {
+		
+		return deleteMultipleByIDWhere(precheck, null, cfwObjectClass, commaSeparatedIDs, fieldnameToCheck, valueToCheck);
+		
+	}
+	/****************************************************************
+	 * Deletes multiple items by id where a certain condition mets.
+	 * This is useful to check if the item is from a specific user
+	 * @param ids separated by comma
+	 * @return true if successful, false otherwise.
+	 ****************************************************************/
+	public static boolean deleteMultipleByIDWhere(
+											PrecheckHandler precheck, 
+											String[] auditLogFieldnames,
 											Class<? extends CFWObject> cfwObjectClass, 
 											String commaSeparatedIDs,
 											Object fieldnameToCheck,
@@ -280,20 +335,42 @@ public  class CFWDBDefaultOperations {
 			return false;
 		}
 
+		boolean success = true;
 		try {
 			CFWObject instance = cfwObjectClass.newInstance();
-			return instance
-					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteMultipleByIDWhere")
-					.delete()
-					.whereIn(instance.getPrimaryField().getName(), commaSeparatedIDs)
+			String primaryFieldname = instance.getPrimaryField().getName();
+			
+			String[] fieldsArray = CFWArrayUtils.merge(new String[] {primaryFieldname}, auditLogFieldnames);
+			
+			ArrayList<CFWObject> objectsToDelete = instance
+					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteMultipleByIDWhere-Select")
+					.select( ((Object[])fieldsArray) )
+					.whereIn(primaryFieldname, commaSeparatedIDs)
 					.and(fieldnameToCheck, valueToCheck)
-					.executeDelete();
+					.getAsObjectList();
+			
+			for(CFWObject object : objectsToDelete) {
+				
+				if(precheck != null && !precheck.doCheck(object)) {
+					success &= false;
+					continue;
+				}
+				
+				new CFWLog(logger).audit("DELETE", object, auditLogFieldnames);
+				success &= 	object
+						.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteMultipleByIDWhere-Delete")
+						.delete()
+						.where(primaryFieldname, object.getPrimaryField().getValue())
+						.executeDelete();
+			}
 			
 		} catch (Exception e) {
 			new CFWLog(logger)
 				.warn("Error while instanciating object.", e);
 			return false;
 		}
+		
+		return success;
 		
 	}
 	
