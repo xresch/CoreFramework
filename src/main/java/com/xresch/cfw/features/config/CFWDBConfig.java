@@ -114,8 +114,6 @@ public class CFWDBConfig {
 					}
 				}
 			}
-			
-			
 		}
 		
 		
@@ -406,6 +404,7 @@ public class CFWDBConfig {
 			return false;
 		}
 		
+		new CFWLog(logger).audit("DELETE", Configuration.class, "Delete configuration: '"+config.name()+"'");
 		return new Configuration()
 				.queryCache(CFWDBConfig.class, "deleteByID")
 				.delete()
@@ -428,7 +427,9 @@ public class CFWDBConfig {
 			.severe("The userID's '"+resultIDs+"' are not a comma separated list of strings.");
 			return false;
 		}
-
+		
+		new CFWLog(logger).audit("DELETE", Configuration.class, "Delete Multiple configurations: '"+resultIDs+"'");
+		
 		return new Configuration()
 				.queryCache(CFWDBConfig.class, "deleteMultipleByID")
 				.delete()
@@ -450,6 +451,8 @@ public class CFWDBConfig {
 			.severe("The config with name '"+name+"'+could not be found.");
 			return false;
 		}
+		
+		new CFWLog(logger).audit("DELETE", Configuration.class, "Delete configuration: '"+config.name()+"'");
 		
 		return new Configuration()
 				.queryCache(CFWDBConfig.class, "deleteByName")
