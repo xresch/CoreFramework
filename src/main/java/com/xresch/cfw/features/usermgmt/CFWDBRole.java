@@ -10,6 +10,8 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.dashboard.Dashboard;
+import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -29,6 +31,7 @@ public class CFWDBRole {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBRole.class.getName());
 		
+	private static final String[] auditLogFieldnames = new String[] { RoleFields.PK_ID.toString(), RoleFields.NAME.toString()};
 	
 	//####################################################################################################
 	// Preckeck Initialization
@@ -87,27 +90,16 @@ public class CFWDBRole {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(Role... items) 	{ 
-		new CFWLog(logger).audit("CREATE", "Roles", "Multiple Roles");
-		return CFWDBDefaultOperations.create(prechecksCreate, items); 
-	}
-	public static boolean 	create(Role item) 		{ 
-		new CFWLog(logger).audit("CREATE", "Role", "Role: "+item.name());
-		return CFWDBDefaultOperations.create(prechecksCreate, item);
-	}
+	public static boolean	create(Role... items) 	{ return CFWDBDefaultOperations.create(prechecksCreate, auditLogFieldnames,items); }
+	public static boolean 	create(Role item) 		{ return CFWDBDefaultOperations.create(prechecksCreate, auditLogFieldnames, item);}
+	public static Integer 	createGetPrimaryKey(Role item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, auditLogFieldnames, item);}
 	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(Role... items) 	{ 
-		new CFWLog(logger).audit("UPDATE", "Role", "Multiple Roles");
-		return CFWDBDefaultOperations.update(prechecksUpdate, items); 
-	}
-	public static boolean 	update(Role item) 	{ 
-		new CFWLog(logger).audit("UPDATE", "Role", "Role: "+item.name());
-		return CFWDBDefaultOperations.update(prechecksUpdate, item); 
-	}
-	
+	public static boolean 	update(Role... items) 	{ return CFWDBDefaultOperations.update(prechecksUpdate, auditLogFieldnames, items); }
+	public static boolean 	update(Role item) 		{ return CFWDBDefaultOperations.update(prechecksUpdate, auditLogFieldnames, item); }
+		
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################

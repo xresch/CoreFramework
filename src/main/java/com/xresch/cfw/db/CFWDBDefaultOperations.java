@@ -15,7 +15,6 @@ public  class CFWDBDefaultOperations {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBDefaultOperations.class.getName());
 	
-	
 	/********************************************************************************************
 	 * Creates multiple items in the DB.
 	 * @param Roles with the values that should be inserted. ID will be set by the Database.
@@ -23,6 +22,15 @@ public  class CFWDBDefaultOperations {
 	 * 
 	 ********************************************************************************************/
 	public static boolean create(PrecheckHandler precheck, CFWObject... cfwObjects) {
+		return create(precheck, null, cfwObjects);
+	}
+	/********************************************************************************************
+	 * Creates multiple items in the DB.
+	 * @param Roles with the values that should be inserted. ID will be set by the Database.
+	 * @return true if all created successful
+	 * 
+	 ********************************************************************************************/
+	public static boolean create(PrecheckHandler precheck, String[] auditLogFieldnames, CFWObject... cfwObjects) {
 		
 		boolean result = true;
 		for(CFWObject object : cfwObjects) {
@@ -40,6 +48,18 @@ public  class CFWDBDefaultOperations {
 	 ********************************************************************************************/
 	public static boolean create(PrecheckHandler precheck, CFWObject object) {
 		
+		return create(precheck, null, object);
+
+	}
+	
+	/********************************************************************************************
+	 * Creates a new item in the DB.
+	 * @param Object with the values that should be inserted. ID will be set by the Database.
+	 * @return true if successful, false otherwise
+	 * 
+	 ********************************************************************************************/
+	public static boolean create(PrecheckHandler precheck,  String[] auditLogFieldnames, CFWObject object) {
+		
 		if(object == null) {
 			new CFWLog(logger)
 				.warn("The object cannot be null", new Throwable());
@@ -49,6 +69,8 @@ public  class CFWDBDefaultOperations {
 		if(precheck != null && !precheck.doCheck(object)) {
 			return false;
 		}
+		
+		new CFWLog(logger).audit("CREATE", object, auditLogFieldnames);
 		
 		return object
 			.queryCache(object.getClass(), "CFWDBDefaultOperations.create")
@@ -63,6 +85,15 @@ public  class CFWDBDefaultOperations {
 	 * 
 	 ********************************************************************************************/
 	public static Integer createGetPrimaryKey(PrecheckHandler precheck, CFWObject object) {
+		return createGetPrimaryKey(precheck, null, object);
+	}
+	/********************************************************************************************
+	 * Creates a new item in the DB.
+	 * @param Object with the values that should be inserted. ID will be set by the Database.
+	 * @return primary key or null if not successful
+	 * 
+	 ********************************************************************************************/
+	public static Integer createGetPrimaryKey(PrecheckHandler precheck,  String[] auditLogFieldnames, CFWObject object) {
 		
 		if(object == null) {
 			new CFWLog(logger)
@@ -73,6 +104,8 @@ public  class CFWDBDefaultOperations {
 		if(precheck != null && !precheck.doCheck(object)) {
 			return null;
 		}
+		
+		new CFWLog(logger).audit("CREATE", object, auditLogFieldnames);
 		
 		return object
 			.queryCache(object.getClass(), "CFWDBDefaultOperations.insertGetPrimaryKey")
@@ -90,7 +123,22 @@ public  class CFWDBDefaultOperations {
 		
 		boolean result = true;
 		for(CFWObject object : cfwObjects) {
-			result &= update(precheck, object);
+			result &= update(precheck, null, object);
+		}
+		
+		return result;
+	}
+	/********************************************************************************************
+	 * Updates multiple items in the DB.
+	 * @param Objects with the values that should be inserted. ID will be set by the Database.
+	 * @return true if all updated successful
+	 * 
+	 ********************************************************************************************/
+	public static boolean update(PrecheckHandler precheck, String[] auditLogFieldnames, CFWObject... cfwObjects) {
+		
+		boolean result = true;
+		for(CFWObject object : cfwObjects) {
+			result &= update(precheck, auditLogFieldnames, object);
 		}
 		
 		return result;
@@ -102,6 +150,16 @@ public  class CFWDBDefaultOperations {
 	 ****************************************************************/
 	public static boolean update(PrecheckHandler precheck, CFWObject object) {
 		
+		return update(precheck, null, object);
+	}
+	
+	/***************************************************************
+	 * Updates the object selecting by ID.
+	 * @param object
+	 * @return true or false
+	 ****************************************************************/
+	public static boolean update(PrecheckHandler precheck, String[] auditLogFieldnames, CFWObject object) {
+		
 		if(object == null) {
 			new CFWLog(logger)
 				.warn("The role that should be updated cannot be null");
@@ -111,7 +169,9 @@ public  class CFWDBDefaultOperations {
 		if(precheck != null && !precheck.doCheck(object)) {
 			return false;
 		}
-				
+		
+		new CFWLog(logger).audit("UPDATE", object, auditLogFieldnames);
+		
 		return object
 				.queryCache(object.getClass(), "CFWDBDefaultOperations.update")
 				.update();

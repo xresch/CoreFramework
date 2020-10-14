@@ -40,7 +40,7 @@ public class Permission extends CFWObject{
 									.setPrimaryKeyAutoIncrement(this)
 									.setDescription("The id of the permission.")
 									.apiFieldType(FormFieldType.NUMBER)
-									.setValue(-999);
+									.setValue(null);
 	
 	private CFWField<String> category = CFWField.newString(FormFieldType.NONE, PermissionFields.CATEGORY.toString())
 									.setColumnDefinition("VARCHAR(32)")

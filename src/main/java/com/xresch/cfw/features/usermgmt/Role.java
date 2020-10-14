@@ -40,7 +40,7 @@ public class Role extends CFWObject {
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the role.")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(-999);
+			.setValue(null);
 	
 	private CFWField<String> category = CFWField.newString(FormFieldType.NONE, RoleFields.CATEGORY.toString())
 			.setColumnDefinition("VARCHAR(32)")

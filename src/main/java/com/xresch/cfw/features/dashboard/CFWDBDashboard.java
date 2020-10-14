@@ -34,9 +34,11 @@ public class CFWDBDashboard {
 	private static Class<Dashboard> cfwObjectClass = Dashboard.class;
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBDashboard.class.getName());
-		
+	
+	private static final String[] auditLogFieldnames = new String[] { DashboardFields.PK_ID.toString(), DashboardFields.NAME.toString()};
+	
 	//####################################################################################################
-	// Preckeck Initialization
+	// Precheck Initialization
 	//####################################################################################################
 	private static PrecheckHandler prechecksCreateUpdate =  new PrecheckHandler() {
 		public boolean doCheck(CFWObject object) {
@@ -71,14 +73,14 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(Dashboard... items) 	{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, items); }
-	public static boolean 	create(Dashboard item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, item);}
-	public static Integer 	createGetPrimaryKey(Dashboard item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);}
+	public static boolean	create(Dashboard... items) 	{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, items); }
+	public static boolean 	create(Dashboard item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, item);}
+	public static Integer 	createGetPrimaryKey(Dashboard item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, auditLogFieldnames, item);}
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(Dashboard... items) 	{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, items); }
-	public static boolean 	update(Dashboard item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, item); }
+	public static boolean 	update(Dashboard... items) 	{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, items); }
+	public static boolean 	update(Dashboard item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, item); }
 	
 	//####################################################################################################
 	// DELETE

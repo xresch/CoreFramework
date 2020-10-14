@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.usermgmt.SessionData;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -259,6 +260,25 @@ public class CFWLog {
 		this.custom("auditAction", action);
 		this.custom("auditItem", item);
 		this.log(Level.INFO, message, null);
+	}
+	
+	/********************************************************************************************
+	 * 
+	 ********************************************************************************************/
+	public void audit(String auditAction, CFWObject object, String[] auditLogFieldnames) {
+		if(auditLogFieldnames != null) {
+			StringBuilder logMessage = new StringBuilder();
+			for(String fieldname : auditLogFieldnames) {
+				logMessage
+					.append(fieldname+": ")
+					.append(object.getField(fieldname).getValue())
+					.append(", ");
+			}
+			
+			audit(auditAction, 
+					object.getClass().getSimpleName(), 
+					logMessage.substring(0, logMessage.length()-2));
+		}	
 	}
 	
 	/***********************************************************************

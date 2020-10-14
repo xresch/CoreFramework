@@ -52,7 +52,7 @@ public class User extends CFWObject {
 								   .setPrimaryKeyAutoIncrement(this)
 								   .setDescription("The user id.")
 								   .apiFieldType(FormFieldType.NUMBER)
-								   .setValue(-999);
+								   .setValue(null);
 	
 	private CFWField<String> username = CFWField.newString(FormFieldType.TEXT, UserFields.USERNAME)
 			.setColumnDefinition("VARCHAR(255) UNIQUE")

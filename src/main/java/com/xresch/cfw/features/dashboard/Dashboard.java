@@ -51,8 +51,7 @@ public class Dashboard extends CFWObject {
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.PK_ID.toString())
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the dashboard.")
-			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(-999);
+			.apiFieldType(FormFieldType.NUMBER);
 	
 	private CFWField<Integer> foreignKeyOwner = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.FK_ID_USER)
 			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)

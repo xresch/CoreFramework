@@ -33,19 +33,19 @@ public class UserRoleMap extends CFWObject {
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the mapping.")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(-999);
+			.setValue(null);
 	
 	private CFWField<Integer> foreignKeyUser = CFWField.newInteger(FormFieldType.HIDDEN, UserRoleMapFields.FK_ID_USER)
 			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
 			.setDescription("The id of the user.")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(-999);
+			.setValue(null);
 	
 	private CFWField<Integer> foreignKeyRole = CFWField.newInteger(FormFieldType.HIDDEN, UserRoleMapFields.FK_ID_ROLE)
 			.setForeignKeyCascade(this, Role.class, RoleFields.PK_ID)
 			.setDescription("The id of the role.")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(-999);
+			.setValue(null);
 	
 	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.HIDDEN, UserRoleMapFields.IS_DELETABLE)
 			.setColumnDefinition("BOOLEAN")
