@@ -291,11 +291,38 @@ public class ServletDashboardList extends HttpServlet
 					@Override
 					public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
 						
+						Dashboard dashboard = (Dashboard)origin;
 						if(origin.mapRequestParameters(request) 
 						&& CFW.DB.Dashboards.update((Dashboard)origin)) {
 							
+							
 							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+							
+							if(!dashboard.isShared()
+							&& (dashboard.sharedWithUsers().size() > 0
+							   || dashboard.sharedWithRoles().size() > 0
+							   || dashboard.editors().size() > 0
+							   || dashboard.editorRoles().size() > 0
+								)
+							) {
 								
+								CFW.Context.Request.addAlertMessage(
+										MessageType.INFO, 
+										"Users won't be able to access your dashboard until you set shared to true. The dashboard was saved as not shared and with at least one shared users or roles. "
+									);
+							}
+							
+							if(dashboard.isShared()
+							&& dashboard.sharedWithUsers().size() == 0
+							&& dashboard.sharedWithRoles().size() == 0
+							&& dashboard.editors().size() == 0
+							&& dashboard.editorRoles().size() == 0) {
+										
+								CFW.Context.Request.addAlertMessage(
+										MessageType.INFO, 
+										"All dashboard users will see this dashboard. The dashboard was saved as shared and no specific shared users or roles. "
+									);
+							}
 						}
 						
 					}

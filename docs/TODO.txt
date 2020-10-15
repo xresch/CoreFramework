@@ -111,6 +111,7 @@ DONE
 - Dashboard: Added Ruler to Edit Mode
 - Dashboard: Added Change Owner button for admins
 - Dashboard: Added Import/Export buttons for dashboard creators and admins
+- Dashboard: Added toast messages for special sharing settings(shared with all users, not shared but users or roles selected)
 - Dashboard List: use dataviewer
 
 ------- v1.0.4 -------

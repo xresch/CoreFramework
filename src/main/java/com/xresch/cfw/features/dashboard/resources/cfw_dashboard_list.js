@@ -61,7 +61,7 @@ function cfw_dashboardlist_createDashboard(){
 function cfw_dashboardlist_importDashboard(){
 	
 	var uploadHTML = 
-		'<p>Select a previously exported dashboard file. If you exported the dashboard from another application or application instance, the widgets might not be able to load correctly.</p>'
+		'<p>Select a previously exported dashboard file. Share settings will be imported as well. If you exported the dashboard from another application or application instance, the widgets might not be able to load correctly.</p>'
 		+'<div class="form-group">'
 			+'<label for="importFile">Select File to Import:</label>'
 			+'<input type="file" class="form-control" name="importFile" id="importFile" />'
