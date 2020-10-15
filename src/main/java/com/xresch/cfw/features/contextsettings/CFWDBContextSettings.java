@@ -12,6 +12,7 @@ import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.contextsettings.ContextSettings.ContextSettingsFields;
+import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -22,6 +23,7 @@ import com.xresch.cfw.logging.CFWLog;
 public class CFWDBContextSettings {
 	
 	private static Class<ContextSettings> cfwObjectClass = ContextSettings.class;
+	private static final String[] auditLogFieldnames = new String[] { ContextSettingsFields.PK_ID.toString(), ContextSettingsFields.CFW_CTXSETTINGS_TYPE.toString(), ContextSettingsFields.CFW_CTXSETTINGS_NAME.toString()};
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBContextSettings.class.getName());
 	
@@ -90,7 +92,7 @@ public class CFWDBContextSettings {
 	//####################################################################################################
 	public static Integer createGetPrimaryKey(ContextSettings item) 		{ 
 		
-		Integer primaryKey = CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);
+		Integer primaryKey = CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, auditLogFieldnames, item);
 		
 		if(primaryKey != null) {
 			
@@ -137,7 +139,7 @@ public class CFWDBContextSettings {
 	//####################################################################################################
 	public static boolean 	update(ContextSettings item) 		{ 
 		
-		boolean success = CFWDBDefaultOperations.update(prechecksCreateUpdate, item);
+		boolean success = CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, item);
 		
 		AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(item.type());
 		typeSettings.mapJsonFields(item.settings());
@@ -164,7 +166,7 @@ public class CFWDBContextSettings {
 		clearCache(); 
 		ContextSettings item = CFW.DB.ContextSettings.selectByID(id);
 		
-		boolean success = CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, ContextSettingsFields.PK_ID.toString(), id); 
+		boolean success = CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, ContextSettingsFields.PK_ID.toString(), id); 
 				
 		if(success) {
 			clearCache();

@@ -31,8 +31,7 @@ public class ContextSettings extends CFWObject {
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, ContextSettingsFields.PK_ID.toString())
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the context setting.")
-			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(-999);
+			.apiFieldType(FormFieldType.NUMBER);
 	
 	private CFWField<String> type = CFWField.newString(FormFieldType.HIDDEN, ContextSettingsFields.CFW_CTXSETTINGS_TYPE.toString())
 			.setColumnDefinition("VARCHAR(255)")
