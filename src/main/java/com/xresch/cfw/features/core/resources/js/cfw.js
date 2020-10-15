@@ -547,7 +547,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 						params.cfwAutocompleteFieldname = fieldName;
 						params.cfwAutocompleteSearchstring = inputField.value;
 						
-						cfw_postJSON('/cfw/autocomplete', params, 
+						cfw_http_postJSON('/cfw/autocomplete', params, 
 							function(data) {
 								loader.remove();
 								cfw_autocompleteShow(inputField, data.payload);
@@ -1642,7 +1642,7 @@ function cfw_confirmExecution_Execute(sourceElement, action){
  * @param 
  * @return object
  ******************************************************************/
-function cfw_readCookie(name) {
+function cfw_http_readCookie(name) {
     var nameEQ = name + "=";
     var cookieArray = document.cookie.split(';');
     for (var i = 0; i < cookieArray.length; i++) {
@@ -1663,7 +1663,7 @@ function cfw_readCookie(name) {
  * @param 
  * @return object
  ******************************************************************/
-function cfw_getURLParamsDecoded()
+function cfw_http_getURLParamsDecoded()
 {
     var vars = {};
     
@@ -1675,8 +1675,8 @@ function cfw_getURLParamsDecoded()
     for(let i = 0; i < keyValuePairs.length; i++)
     {
         var splitted = keyValuePairs[i].split('=');
-        var key = cfw_secureDecodeURI(splitted[0])
-        vars[key] = cfw_secureDecodeURI(splitted[1]);
+        var key = cfw_http_secureDecodeURI(splitted[0])
+        vars[key] = cfw_http_secureDecodeURI(splitted[1]);
     }
     
     return vars;
@@ -1688,7 +1688,7 @@ function cfw_getURLParamsDecoded()
  * @param 
  * @return object
  ******************************************************************/
-function cfw_getURLParams()
+function cfw_http_getURLParams()
 {
     var vars = {};
     
@@ -1712,11 +1712,11 @@ function cfw_getURLParams()
  * @param 
  * @return object
  ******************************************************************/
-function cfw_setURLParam(name, value){
+function cfw_http_setURLParam(name, value){
 
 	//------------------------------
 	// Set or replace param value
-	var params = cfw_getURLParams();
+	var params = cfw_http_getURLParams();
     params[name] = encodeURIComponent(value);
     
 	//------------------------------
@@ -1744,7 +1744,7 @@ function cfw_setURLParam(name, value){
  * @param uri to decode
  * @return decoded URI or the same URI in case of errors.
  *************************************************************************************/
-function cfw_secureDecodeURI(uri){
+function cfw_http_secureDecodeURI(uri){
 	var decoded;
 	try{
 		decoded = decodeURIComponent(uri);
@@ -1806,7 +1806,7 @@ function cfw_handleMessages(response){
  * @param uri to decode
  * @return decoded URI or the same URI in case of errors.
  *************************************************************************************/
-function cfw_getJSON(url, params, callbackFunc){
+function cfw_http_getJSON(url, params, callbackFunc){
 
 	$.get(url, params)
 		  .done(function(response, status, xhr) {
@@ -1847,7 +1847,7 @@ function cfw_getJSON(url, params, callbackFunc){
  * @param uri to decode
  * @return decoded URI or the same URI in case of errors.
  *************************************************************************************/
-function cfw_postJSON(url, params, callbackFunc){
+function cfw_http_postJSON(url, params, callbackFunc){
 
 	$.post(url, params)
 		  .done(function(response, status, xhr) {
@@ -1885,7 +1885,7 @@ function cfw_postJSON(url, params, callbackFunc){
  * @param formid the id of the form
  * @param targetElement the element in which the form should be placed
  *************************************************************************************/
-function cfw_getForm(formid, targetElement){
+function cfw_http_getForm(formid, targetElement){
 
 	$.get('/cfw/formhandler', {id: formid})
 		  .done(function(response) {
@@ -1931,7 +1931,7 @@ function cfw_getForm(formid, targetElement){
  * @param params to pass
  * @param targetElement the element in which the form should be placed
  *************************************************************************************/
-function cfw_createForm(url, params, targetElement, callback){
+function cfw_http_createForm(url, params, targetElement, callback){
 
 	$.get(url, params)
 		  .done(function(response, status, xhr) {
@@ -1982,7 +1982,7 @@ function cfw_postForm(url, formID, callback){
 	
 	window.setTimeout( 
 		function(){
-			cfw_postJSON(url, CFW.format.formToParams(formID), function (data,status,xhr){
+			cfw_http_postJSON(url, CFW.format.formToParams(formID), function (data,status,xhr){
 				$(formID+'-submitButton .loaderMarker').remove();
 				if(callback != null){
 					callback(data,status,xhr);
@@ -2027,14 +2027,14 @@ function cfw_fetchAndCacheData(url, params, key, callback){
 /**************************************************************************************
 * Returns the current URL of the page without the query part.
  *************************************************************************************/
-function cfw_getHostURL() {
+function cfw_http_getHostURL() {
 	return location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
 };
 
 /**************************************************************************************
 * Returns the current URL path.
  *************************************************************************************/
-function cfw_getURLPath() {
+function cfw_http_getURLPath() {
 	return location.pathname;
 };
 
@@ -2183,7 +2183,7 @@ function cfw_loadLocalization(){
 	// 
 	if(CFW.cache.lang == null){
 		$.ajaxSetup({async: false});
-			cfw_getJSON("/cfw/locale", {id: JSDATA.localeIdentifier}, function(data, status, xhr){
+			cfw_http_getJSON("/cfw/locale", {id: JSDATA.localeIdentifier}, function(data, status, xhr){
 				
 				if (xhr.status == 200){
 					window.localStorage.setItem("lang-"+JSDATA.localeIdentifier, JSON.stringify(data.payload) );
@@ -2276,17 +2276,17 @@ var CFW = {
 	},
 	
 	http: {
-		readCookie: cfw_readCookie,
-		getURLParams: cfw_getURLParams,
-		getURLParamsDecoded: cfw_getURLParamsDecoded,
-		setURLParam: cfw_setURLParam,
-		getHostURL: cfw_getHostURL,
-		getURLPath: cfw_getURLPath,
-		secureDecodeURI: cfw_secureDecodeURI,
-		getJSON: cfw_getJSON,
-		postJSON: cfw_postJSON,
-		getForm: cfw_getForm,
-		createForm: cfw_createForm,
+		readCookie: cfw_http_readCookie,
+		getURLParams: cfw_http_getURLParams,
+		getURLParamsDecoded: cfw_http_getURLParamsDecoded,
+		setURLParam: cfw_http_setURLParam,
+		getHostURL: cfw_http_getHostURL,
+		getURLPath: cfw_http_getURLPath,
+		secureDecodeURI: cfw_http_secureDecodeURI,
+		getJSON: cfw_http_getJSON,
+		postJSON: cfw_http_postJSON,
+		getForm: cfw_http_getForm,
+		createForm: cfw_http_createForm,
 		fetchAndCacheData: cfw_fetchAndCacheData
 	},
 	
@@ -2368,8 +2368,8 @@ CFW.utils.chainedOnload(function () {
 			}
 			
 		}, 30000);
-		
 	}
+	
 	//-----------------------------------
 	// Add scrolling offset for menu bar
 	$( window ).on('hashchange', function (e){
