@@ -79,11 +79,11 @@ TODO
 DONE
 ====
 ------- Current -------
-- Dashboard: Added Ruler to Edit Mode
 - CFWLog: auto detect method, making call to CFWLog.method() optional
 - Reduced footprint of log
 - Added System Analytics >> System Properties
 - Added System Analytics >> Log Configuration
+- Added System Analytics >> Session Overview
 - Improved Caching with Guava
 - Added caching for resolved proxy urls
 - Added metrics for guava cache to prometheus endpoint
@@ -103,14 +103,14 @@ DONE
 - renderer: added csv renderer
 - renderer: added cards renderer
 - User Management: use dataviewer for user table
-- Dashboard List: use dataviewer
 - Chart Renderer: fixed tooltip overflow, not cropped anymore.
-- Added "System Analytics >> Session Overview"
 - Added API Token Mechanism
 - Added cfw_session_count to metrics 
 - Moved timeout settings from cfw.properties to configuration page. (and added more timeout settings )
 - Added Audit Logs for important actions (Like User Management CREATE, UPDATE, DELETE)
-
+- Dashboard: Added Ruler to Edit Mode
+- Dashboard: Added Change Owner button for admins
+- Dashboard List: use dataviewer
 
 ------- v1.0.4 -------
 - added check for Internet Explorer and print not supported message

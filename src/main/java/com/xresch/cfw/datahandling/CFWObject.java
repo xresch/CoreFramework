@@ -615,7 +615,7 @@ public class CFWObject {
 	 * @param fieldnames
 	 * @return true if successful, false otherwise
 	 ****************************************************************/
-	public boolean insert(String ...fieldnames) {
+	public boolean insert(Object ...fieldnames) {
 		return new CFWSQL(this).insert(fieldnames);
 	}
 	
@@ -636,7 +636,7 @@ public class CFWObject {
 	 * @param fieldnames
 	 * @return  id or null if not successful
 	 ****************************************************************/
-	public Integer insertGetPrimaryKey(String ...fieldnames) {
+	public Integer insertGetPrimaryKey(Object ...fieldnames) {
 		return new CFWSQL(this).insertGetPrimaryKey(fieldnames);
 	}
 	
@@ -657,7 +657,7 @@ public class CFWObject {
 	 * @param fieldnames
 	 * @return CFWQuery for method chaining
 	 ****************************************************************/
-	public boolean update(String ...fieldnames) {
+	public boolean update(Object ...fieldnames) {
 		return new CFWSQL(this).update(fieldnames);
 	}
 	

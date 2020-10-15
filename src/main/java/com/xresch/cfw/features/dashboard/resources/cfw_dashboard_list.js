@@ -45,7 +45,7 @@ function cfw_dashboardlist_createTabs(){
  ******************************************************************/
 function cfw_dashboardlist_createDashboard(){
 	
-	var html = $('<div id="cfw-usermgmt-createDashboard">');	
+	var html = $('<div id="cfw-dashboard-createDashboard">');	
 
 	CFW.http.getForm('cfwCreateDashboardForm', html);
 	
@@ -55,16 +55,16 @@ function cfw_dashboardlist_createDashboard(){
 	
 }
 /******************************************************************
- * Edit Role
+ * Edit Dashboard
  ******************************************************************/
 function cfw_dashboardlist_editDashboard(id){
 	
-	var allDiv = $('<div id="cfw-usermgmt">');	
+	var allDiv = $('<div id="cfw-dashboard">');	
 
 	//-----------------------------------
 	// Role Details
 	//-----------------------------------
-	var detailsDiv = $('<div id="cfw-usermgmt-details">');
+	var detailsDiv = $('<div id="cfw-dashboard-details">');
 	detailsDiv.append('<h2>'+CFWL('cfw_dashboardlist_dashboard', "Dashboard")+' Details</h2>');
 	allDiv.append(detailsDiv);
 	
@@ -79,6 +79,30 @@ function cfw_dashboardlist_editDashboard(id){
 	// Load Form
 	//-----------------------------------
 	CFW.http.createForm(CFW_DASHBOARDLIST_URL, {action: "getform", item: "editdashboard", id: id}, detailsDiv);
+	
+}
+
+/******************************************************************
+ * Edit Dashboard
+ ******************************************************************/
+function cfw_dashboardlist_changeDashboardOwner(id){
+	
+	//-----------------------------------
+	// Role Details
+	//-----------------------------------
+	var formDiv = $('<div id="cfw-dashboard-details">');
+
+	
+	CFW.ui.showModal(
+			CFWL("cfw_dashboardlist_editDashboard","Edit Dashboard"), 
+			formDiv, 
+			"CFW.cache.clearCache(); cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)"
+	);
+	
+	//-----------------------------------
+	// Load Form
+	//-----------------------------------
+	CFW.http.createForm(CFW_DASHBOARDLIST_URL, {action: "getform", item: "changeowner", id: id}, formDiv);
 	
 }
 
@@ -212,10 +236,27 @@ function cfw_dashboardlist_printDashboards(data, type){
 				});
 		}
 		
+		//-------------------------
+		// Change Owner Button
+		if(CFW.hasPermission('Dashboard Creator') 
+		&& type == 'admindashboards'){
+
+					actionButtons.push(
+						function (record, id){
+							var htmlString = '<button class="btn btn-primary btn-sm" alt="Change Owner" title="Change Owner" '
+									+'onclick="cfw_dashboardlist_changeDashboardOwner('+id+');">'
+									+ '<i class="fas fa-user-edit"></i>'
+									+ '</button>';
+							
+							return htmlString;
+						});
+				}
+		
+		//-------------------------
+		// Duplicate Button
 		if(CFW.hasPermission('Dashboard Creator') 
 		|| CFW.hasPermission('Dashboard Admin')){
-			//-------------------------
-			// Duplicate Button
+
 			actionButtons.push(
 				function (record, id){
 					var htmlString = '<button class="btn btn-warning btn-sm" alt="Duplicate" title="Duplicate" '
