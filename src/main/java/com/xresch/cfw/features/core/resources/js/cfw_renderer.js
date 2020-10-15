@@ -95,7 +95,9 @@ function cfw_renderer_csv(renderDef) {
 				value = JSON.stringify(value);
 			}else{
 				if(value != null){
-					value = (""+value).replace('\n', '\\n');
+					value = (""+value).replaceAll('\n', '\\n')
+									  .replaceAll('\r', '\\r')
+									  .replaceAll('<', '&lt;');
 				}else{
 					value = "";
 				}
