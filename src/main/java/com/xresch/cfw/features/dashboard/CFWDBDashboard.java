@@ -2,7 +2,6 @@ package com.xresch.cfw.features.dashboard;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
@@ -20,6 +19,7 @@ import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
+import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -303,7 +303,7 @@ public class CFWDBDashboard {
 				}
 			}
 			
-			return CFW.JSON.toJSON(elements);
+			return CFW.JSON.toJSONPretty(elements);
 		}else {
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!") );
 			return "[]";
@@ -349,6 +349,9 @@ public class CFWDBDashboard {
 				Dashboard dashboard = new Dashboard();
 				dashboard.mapJsonFields(dashboardObject);
 				
+				String importedName = dashboard.name() +"(Imported)";
+				dashboard.name(importedName);
+				
 				//-----------------------------
 				// Reset Dashboard ID and Owner
 				dashboard.id(null);
@@ -361,7 +364,7 @@ public class CFWDBDashboard {
 					}else {
 						CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
 								CFW.L("cfw_dashboard_error_usernotresolved",
-									  "The the dashboard owner with name '{1}' could not be resolved. Set the owner to the importing user.",
+									  "The the dashboard owner with name '{0}' could not be resolved. Set the owner to the importing user.",
 									  dashboardObject.has("username"))
 						);
 						dashboard.foreignKeyOwner(CFW.Context.Request.getUser().id());
@@ -374,40 +377,79 @@ public class CFWDBDashboard {
 				//-----------------------------
 				// Resolve Shared Users
 				if(dashboard.sharedWithUsers() != null) {
-					LinkedHashMap<String, String> resolvedEditors = new LinkedHashMap<String, String>();
-					for(String username : dashboard.sharedWithUsers().values()) {
-						User user = CFW.DB.Users.selectByUsernameOrMail(username);
+					LinkedHashMap<String, String> resolvedViewers = new LinkedHashMap<String, String>();
+					for(String id : dashboard.sharedWithUsers().keySet()) {
+						User user = CFW.DB.Users.selectByID(Integer.parseInt(id));
 						if(user != null) {
-							resolvedEditors.put(""+user.id(), user.username());
+							
+							resolvedViewers.put(""+user.id(), user.createUserLabel());
 						}else {
 							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
 									CFW.L("cfw_core_error_usernotfound",
-										  "The user '{1}' could not be found.",
-										  username)
+										  "The user '{0}' could not be found.",
+										  dashboard.sharedWithUsers().get(id))
 							);
 						}
 						
 					}
-					dashboard.sharedWithUsers(resolvedEditors);
+					dashboard.sharedWithUsers(resolvedViewers);
 				}
 				
 				//-----------------------------
 				// Resolve Editors
 				if(dashboard.editors() != null) {
 					LinkedHashMap<String, String> resolvedEditors = new LinkedHashMap<String, String>();
-					for(String username : dashboard.editors().values()) {
-						User user = CFW.DB.Users.selectByUsernameOrMail(username);
+					for(String id : dashboard.editors().keySet()) {
+						User user = CFW.DB.Users.selectByID(Integer.parseInt(id));
 						if(user != null) {
 							resolvedEditors.put(""+user.id(), user.username());
 						}else {
 							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
 									CFW.L("cfw_core_error_usernotfound",
-										  "The user '{1}' could not be found.",
-										  username)
+										  "The  user '{0}' could not be found.",
+										  dashboard.editors().get(id))
 							);
 						}
 					}
 					dashboard.editors(resolvedEditors);
+				}
+				
+				//-----------------------------
+				// Resolve Shared Roles
+				if(dashboard.sharedWithRoles() != null) {
+					LinkedHashMap<String, String> resolvedSharedRoles = new LinkedHashMap<String, String>();
+					for(String id : dashboard.sharedWithRoles().keySet()) {
+						Role role = CFW.DB.Roles.selectByID(Integer.parseInt(id));
+						if(role != null) {
+							resolvedSharedRoles.put(""+role.id(), role.name());
+						}else {
+							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
+									CFW.L("cfw_core_error_rolenotfound",
+										  "The  role '{0}' could not be found.",
+										  dashboard.sharedWithRoles().get(id))
+							);
+						}
+					}
+					dashboard.sharedWithRoles(resolvedSharedRoles);
+				}
+				
+				//-----------------------------
+				// Resolve Editor Roles
+				if(dashboard.editorRoles() != null) {
+					LinkedHashMap<String, String> resolvedEditorRoles = new LinkedHashMap<String, String>();
+					for(String id : dashboard.editorRoles().keySet()) {
+						Role role = CFW.DB.Roles.selectByID(Integer.parseInt(id));
+						if(role != null) {
+							resolvedEditorRoles.put(""+role.id(), role.name());
+						}else {
+							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
+									CFW.L("cfw_core_error_rolenotfound",
+										  "The  role '{0}' could not be found.",
+										  dashboard.editorRoles().get(id))
+							);
+						}
+					}
+					dashboard.editorRoles(resolvedEditorRoles);
 				}
 				
 				//-----------------------------

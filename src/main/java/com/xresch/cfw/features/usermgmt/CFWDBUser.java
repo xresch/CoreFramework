@@ -434,19 +434,8 @@ public class CFWDBUser {
 		AutocompleteList autocompleteList = new AutocompleteList();
 		for(CFWObject userObject : userList) {
 			User user = (User) userObject;
-			
-			String label = user.username();
-			
-			if(!Strings.isNullOrEmpty(user.firstname())
-			|| !Strings.isNullOrEmpty(user.lastname())) {
-				label += "("+(
-						Strings.nullToEmpty(user.firstname()) 
-						+ " "
-						+ Strings.nullToEmpty(user.lastname())
-					).trim()+")";
-			}
-			
-			autocompleteList.addItem(user.id(), label, user.email());
+						
+			autocompleteList.addItem(user.id(), user.createUserLabel(), user.email());
 			
 		}
 			

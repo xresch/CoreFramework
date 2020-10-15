@@ -54,6 +54,52 @@ function cfw_dashboardlist_createDashboard(){
 			html, "CFW.cache.clearCache(); cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)");
 	
 }
+
+/******************************************************************
+ * Edit Dashboard
+ ******************************************************************/
+function cfw_dashboardlist_importDashboard(){
+	
+	var uploadHTML = 
+		'<p>Select a previously exported dashboard file. If you exported the dashboard from another application or application instance, the widgets might not be able to load correctly.</p>'
+		+'<div class="form-group">'
+			+'<label for="importFile">Select File to Import:</label>'
+			+'<input type="file" class="form-control" name="importFile" id="importFile" />'
+		+'</div>'
+		+'<button class="form-control btn btn-primary" onclick="cfw_dashboardlist_importDashboardExecute()">'+CFWL('cfw_core_import', 'Import')+'</button>';
+	
+	CFW.ui.showModal(
+			"Import Dashboard", 
+			uploadHTML,
+			"CFW.cache.clearCache(); cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)");
+}
+
+/******************************************************************
+ * Edit Dashboard
+ ******************************************************************/
+function cfw_dashboardlist_importDashboardExecute(){
+	
+	var file = document.getElementById('importFile').files[0];
+	var reader = new FileReader();
+
+	  // Read file into memory as UTF-8
+	  reader.readAsText(file, "UTF-8");
+	  
+	  reader.onload = function loaded(evt) {
+		  // Obtain the read file data
+		  var fileString = evt.target.result;
+		  
+			var params = {action: "import", item: "dashboards", jsonString: fileString};
+			CFW.http.postJSON(CFW_DASHBOARDLIST_URL, params, 
+				function(data) {
+					//do nothing
+				}
+			);
+
+		}
+}
+
+
 /******************************************************************
  * Edit Dashboard
  ******************************************************************/
@@ -68,7 +114,6 @@ function cfw_dashboardlist_editDashboard(id){
 	detailsDiv.append('<h2>'+CFWL('cfw_dashboardlist_dashboard', "Dashboard")+' Details</h2>');
 	allDiv.append(detailsDiv);
 	
-
 	CFW.ui.showModal(
 			CFWL("cfw_dashboardlist_editDashboard","Edit Dashboard"), 
 			allDiv, 
@@ -175,12 +220,20 @@ function cfw_dashboardlist_printDashboards(data, type){
 	//--------------------------------
 	// Button
 	if(type == 'mydashboards'){
-		var createButton = $('<button class="btn btn-sm btn-success mb-2" onclick="cfw_dashboardlist_createDashboard()">'
+		var createButton = $('<button class="btn btn-sm btn-success m-1" onclick="cfw_dashboardlist_createDashboard()">'
 							+ '<i class="fas fa-plus-circle"></i> '+ CFWL('cfw_dashboardlist_createDashboard')
 					   + '</button>');
 	
 		parent.append(createButton);
+		
+		var importButton = $('<button class="btn btn-sm btn-success m-1" onclick="cfw_dashboardlist_importDashboard()">'
+				+ '<i class="fas fa-upload"></i> '+ CFWL('cfw_core_import', 'Import')
+		   + '</button>');
+
+		parent.append(importButton);
+		
 	}
+	
 	
 	//--------------------------------
 	// Table
@@ -268,6 +321,21 @@ function cfw_dashboardlist_printDashboards(data, type){
 				});
 		}
 		
+		//-------------------------
+		// Export Button
+		if(type == 'mydashboards'
+		|| type == 'admindashboards'){
+
+			actionButtons.push(
+				function (record, id){
+					return '<a class="btn btn-warning btn-sm" target="_blank" alt="Export" title="Export" '
+							+' href="'+CFW_DASHBOARDLIST_URL+'?action=fetch&item=export&id='+id+'" download="'+record.NAME.replaceAll(' ', '_')+'_export.json">'
+							+'<i class="fa fa-download"></i>'
+							+ '</a>';
+					
+				});
+		}
+
 		//-------------------------
 		// Delete Button
 		if(type == 'mydashboards'

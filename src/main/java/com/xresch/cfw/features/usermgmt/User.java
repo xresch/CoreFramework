@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -417,6 +418,22 @@ public class User extends CFWObject {
 		return this;
 	}
 	
+	
+	public String createUserLabel() {
+		
+		String label = this.username();
+		
+		if(!Strings.isNullOrEmpty(this.firstname())
+		|| !Strings.isNullOrEmpty(this.lastname()) ) {
+			label += "("+(
+					Strings.nullToEmpty(this.firstname()) 
+					+ " "
+					+ Strings.nullToEmpty(this.lastname())
+				).trim()+")";
+		}
+		
+		return label;
+	}
 
 	public User setNewPassword(String password, String repeatedPassword) {
 		

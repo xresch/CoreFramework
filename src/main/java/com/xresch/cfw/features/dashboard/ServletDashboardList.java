@@ -79,6 +79,15 @@ public class ServletDashboardList extends HttpServlet
 	/******************************************************************
 	 *
 	 ******************************************************************/
+	@Override
+   protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+   {
+		doGet(request, response);       
+   }
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	private void handleDataRequest(HttpServletRequest request, HttpServletResponse response) {
 		
 		String action = request.getParameter("action");
@@ -113,8 +122,11 @@ public class ServletDashboardList extends HttpServlet
 												break;	
 												
 					case "admindashboards": 	jsonResponse.getContent().append(CFW.DB.Dashboards.getAdminDashboardListAsJSON());
+												break;	
+												
+					case "export": 				jsonResponse.getContent().append(CFW.DB.Dashboards.getJsonArrayForExport(ID));
 												break;									
-	  																					
+																										
 					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
 												break;
 				}
@@ -134,6 +146,19 @@ public class ServletDashboardList extends HttpServlet
 				switch(item.toLowerCase()) {
 
 					case "dashboards": 	deleteDashboards(jsonResponse, IDs);
+										break;  
+										
+					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+										break;
+				}
+				break;	
+				
+			case "import": 			
+				switch(item.toLowerCase()) {
+
+					case "dashboards": 	String jsonString = request.getParameter("jsonString");
+										CFW.DB.Dashboards.importByJson(jsonString, false);
+										CFW.Context.Request.addAlertMessage(MessageType.INFO, "Import finished!");
 										break;  
 										
 					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");

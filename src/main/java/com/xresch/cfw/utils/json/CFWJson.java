@@ -32,6 +32,7 @@ public class CFWJson {
 	private static final Logger logger = CFWLog.getLogger(CFWJson.class.getName());
 	
 	private static Gson gsonInstance;
+	private static Gson gsonInstancePretty;
 	
 	private static Gson gsonInstanceEncrypted;
 	static{
@@ -41,6 +42,13 @@ public class CFWJson {
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
 				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
 				.serializeNulls()
+				.create();
+		
+		gsonInstancePretty = new GsonBuilder()
+				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
+				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
+				.serializeNulls()
+				.setPrettyPrinting()
 				.create();
 		
 		gsonInstanceEncrypted = new GsonBuilder()
@@ -78,6 +86,13 @@ public class CFWJson {
 	 *************************************************************************************/
 	public static String toJSON(Object object) {
 		return gsonInstance.toJson(object);
+	}
+	
+	/*************************************************************************************
+	 * 
+	 *************************************************************************************/
+	public static String toJSONPretty(Object object) {
+		return gsonInstancePretty.toJson(object);
 	}
 	
 	/*************************************************************************************
