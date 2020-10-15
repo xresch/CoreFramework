@@ -414,8 +414,10 @@ function cfw_initializeTimefield(fieldID, epochMillis){
 	
 	if(epochMillis != null){
 		$(id).val(epochMillis);
-		var date = moment.utc(epochMillis);
-		console.log(date.format("hh:mm"))
+		let sureInteger = parseInt(epochMillis, 10);
+		console.log("epochMillis: "+epochMillis);
+		console.log("sureInteger: "+sureInteger);
+		var date = moment(sureInteger);
 		datepicker.first().val(date.format("YYYY-MM-DD"));
 
 		if(timepicker.length > 0 != null){
@@ -1719,6 +1721,31 @@ function cfw_http_setURLParam(name, value){
 	var params = cfw_http_getURLParams();
     params[name] = encodeURIComponent(value);
     
+    cfw_http_changeURLQuery(params);
+}
+
+/******************************************************************
+ * Reads the parameters from the URL and returns an object containing
+ * name/value pairs like {"name": "value", "name2": "value2" ...}.
+ * @param 
+ * @return object
+ ******************************************************************/
+function cfw_http_removeURLParam(name, value){
+
+	//------------------------------
+	// Remove param Value
+	var params = cfw_http_getURLParams();
+    delete params[name];
+    
+    cfw_http_changeURLQuery(params);
+
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_http_changeURLQuery(params){
+
 	//------------------------------
 	// Create Query String
     var queryString = "";
@@ -1734,7 +1761,6 @@ function cfw_http_setURLParam(name, value){
     var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?'+queryString;
     window.history.pushState({ path: newurl }, '', newurl);
 
-    
 }
 
 /**************************************************************************************
@@ -1753,36 +1779,6 @@ function cfw_http_secureDecodeURI(uri){
 	}
 	
 	return decoded;
-}
-
-/**************************************************************************************
- * Handle messages of a standard JSON response.
- * 
- * The structure of the response has to contain a array with messages:
- * {
- * 		messages: [
- * 			{
- * 				type: info | success | warning | danger
- * 				message: "string",
- * 				stacktrace: null | "stacketrace string"
- * 			},
- * 			{...}
- * 		],
- * }
- * 
- * @param response the response with messages
- **************************************************************************************/
-function cfw_handleMessages(response){
-	
-	var msgArray = response.messages;
-	  
-	  if(msgArray != undefined
-	  && msgArray != null
-	  && msgArray.length > 0){
-		  for(var i = 0; i < msgArray.length; i++ ){
-			  CFW.ui.addToast(msgArray[i].message, null, msgArray[i].type, CFW.config.toastErrorDelay);
-		  }
-	  }
 }
 
 /**************************************************************************************
@@ -1966,33 +1962,6 @@ function cfw_http_createForm(url, params, targetElement, callback){
 		  });
 }
 
-/**************************************************************************************
- * Calls a rest service that creates a form and returns a standard json format,
- * containing the html of the form in the payload.
- * 
- * @param url to call
- * @param params to pass
- * @param targetElement the element in which the form should be placed
- *************************************************************************************/
-function cfw_postForm(url, formID, callback){
-	// switch summernote to wysiwyg view, at it will not save in code view
-	$('.btn-codeview.active').click();
-	
-	$(formID+'-submitButton').prepend('<i class="fa fa-cog fa-spin fa-fw mr-1 loaderMarker"></i>')
-	
-	window.setTimeout( 
-		function(){
-			cfw_http_postJSON(url, CFW.format.formToParams(formID), function (data,status,xhr){
-				$(formID+'-submitButton .loaderMarker').remove();
-				if(callback != null){
-					callback(data,status,xhr);
-				}
-			})
-		},
-	50);
-	
-}
-
 
 /******************************************************************
  * Method to fetch data from the server with CFW.http.getJSON(). 
@@ -2005,7 +1974,7 @@ function cfw_postForm(url, formID, callback){
  * @return nothing
  *
  ******************************************************************/
-function cfw_fetchAndCacheData(url, params, key, callback){
+function cfw_http_fetchAndCacheData(url, params, key, callback){
 	//---------------------------------------
 	// Fetch and Return Data
 	//---------------------------------------
@@ -2037,6 +2006,62 @@ function cfw_http_getHostURL() {
 function cfw_http_getURLPath() {
 	return location.pathname;
 };
+
+/**************************************************************************************
+ * Calls a rest service that creates a form and returns a standard json format,
+ * containing the html of the form in the payload.
+ * 
+ * @param url to call
+ * @param params to pass
+ * @param targetElement the element in which the form should be placed
+ *************************************************************************************/
+function cfw_internal_postForm(url, formID, callback){
+	// switch summernote to wysiwyg view, at it will not save in code view
+	$('.btn-codeview.active').click();
+	
+	$(formID+'-submitButton').prepend('<i class="fa fa-cog fa-spin fa-fw mr-1 loaderMarker"></i>')
+	
+	window.setTimeout( 
+		function(){
+			cfw_http_postJSON(url, CFW.format.formToParams(formID), function (data,status,xhr){
+				$(formID+'-submitButton .loaderMarker').remove();
+				if(callback != null){
+					callback(data,status,xhr);
+				}
+			})
+		},
+	50);
+	
+}
+/**************************************************************************************
+ * Handle messages of a standard JSON response.
+ * 
+ * The structure of the response has to contain a array with messages:
+ * {
+ * 		messages: [
+ * 			{
+ * 				type: info | success | warning | danger
+ * 				message: "string",
+ * 				stacktrace: null | "stacketrace string"
+ * 			},
+ * 			{...}
+ * 		],
+ * }
+ * 
+ * @param response the response with messages
+ **************************************************************************************/
+function cfw_handleMessages(response){
+	
+	var msgArray = response.messages;
+	  
+	  if(msgArray != undefined
+	  && msgArray != null
+	  && msgArray.length > 0){
+		  for(var i = 0; i < msgArray.length; i++ ){
+			  CFW.ui.addToast(msgArray[i].message, null, msgArray[i].type, CFW.config.toastErrorDelay);
+		  }
+	  }
+}
 
 /**************************************************************************************
 * Function to store a value in the local storage.
@@ -2132,7 +2157,7 @@ function cfw_selectElementContent(el) {
  *************************************************************************************/
 function  cfw_hasPermission(permissionName){
 	$.ajaxSetup({async: false});
-	cfw_fetchAndCacheData("/app/usermanagement/permissions", null, "userPermissions")
+	cfw_http_fetchAndCacheData("/app/usermanagement/permissions", null, "userPermissions")
 	$.ajaxSetup({async: true});
 	
 	if(CFW.cache.data["userPermissions"] != null
@@ -2150,7 +2175,7 @@ function  cfw_hasPermission(permissionName){
  *************************************************************************************/
 function  cfw_getUserID(){
 	$.ajaxSetup({async: false});
-	cfw_fetchAndCacheData("./usermanagement/permissions", null, "userPermissions")
+	cfw_http_fetchAndCacheData("./usermanagement/permissions", null, "userPermissions")
 	$.ajaxSetup({async: true});
 	
 	if(CFW.cache.data["userPermissions"] != null
@@ -2280,6 +2305,7 @@ var CFW = {
 		getURLParams: cfw_http_getURLParams,
 		getURLParamsDecoded: cfw_http_getURLParamsDecoded,
 		setURLParam: cfw_http_setURLParam,
+		removeURLParam: cfw_http_removeURLParam,
 		getHostURL: cfw_http_getHostURL,
 		getURLPath: cfw_http_getURLPath,
 		secureDecodeURI: cfw_http_secureDecodeURI,
@@ -2287,7 +2313,7 @@ var CFW = {
 		postJSON: cfw_http_postJSON,
 		getForm: cfw_http_getForm,
 		createForm: cfw_http_createForm,
-		fetchAndCacheData: cfw_fetchAndCacheData
+		fetchAndCacheData: cfw_http_fetchAndCacheData
 	},
 	
 	selection: {

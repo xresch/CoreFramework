@@ -73,7 +73,7 @@ public class CFWForm extends HierarchicalHTMLItem {
 		
 		//---------------------------
 		// Resolve onClick action
-		String onclick = "cfw_postForm('"+postURL+"', '#"+formID+"', "+resultCallback+")";
+		String onclick = "cfw_internal_postForm('"+postURL+"', '#"+formID+"', "+resultCallback+")";
 		if(this.getAttributes().containsKey("onclick")) {
 			onclick = this.getAttributeValue("onclick");
 			this.removeAttribute("onclick");

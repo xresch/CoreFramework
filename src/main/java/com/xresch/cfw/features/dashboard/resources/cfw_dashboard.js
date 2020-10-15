@@ -46,16 +46,37 @@ function cfw_dashboard_setTimeframe(element, preset){
 	cfw_initializeTimefield('CUSTOM_EARLIEST', CFW_DASHBOARD_TIME_EARLIEST_EPOCH);
 	cfw_initializeTimefield('CUSTOM_LATEST', CFW_DASHBOARD_TIME_LATEST_EPOCH);
 	
+	CFW.http.removeURLParam('earliest');
+	CFW.http.removeURLParam('latest');
 	cfw_dashboard_draw();
 }
 
 /******************************************************************
  * 
- * @param direction 'earlier' or 'later'
  ******************************************************************/
-function cfw_dashboard_confirmCustomTimeframe(){
+function cfw_dashboard_setCustomTimeframe(earliestMillis, latestMillis){
+	
+	console.log('set timeframe earliestMillis:'+earliestMillis)
+	console.log('set timeframe latestMillis:'+latestMillis)
+	
 	$('#timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
 	
+	CFW_DASHBOARD_TIME_EARLIEST_EPOCH = earliestMillis;
+	CFW_DASHBOARD_TIME_LATEST_EPOCH = latestMillis;
+	
+	cfw_initializeTimefield('CUSTOM_EARLIEST', earliestMillis);
+	cfw_initializeTimefield('CUSTOM_LATEST', latestMillis);
+	
+
+	CFW.http.setURLParam('earliest', earliestMillis);
+	CFW.http.setURLParam('latest', latestMillis);
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_dashboard_confirmCustomTimeframe(){
+
 	var earliestMillis = $('#CUSTOM_EARLIEST').val();
 	var latestMillis = $('#CUSTOM_LATEST').val()
 
@@ -63,8 +84,7 @@ function cfw_dashboard_confirmCustomTimeframe(){
 		CFW.ui.addToastWarning("Earliest time has to be before latest time.");
 		return;
 	}
-	CFW_DASHBOARD_TIME_EARLIEST_EPOCH = earliestMillis;
-	CFW_DASHBOARD_TIME_LATEST_EPOCH = latestMillis;
+	cfw_dashboard_setCustomTimeframe(earliestMillis, latestMillis);
 	
 	//-----------------------------------------
 	// Disable Refresh
@@ -97,8 +117,9 @@ function cfw_dashboard_shiftTimeframe(direction){
 	
 	//-----------------------------------------
 	// Update Custom Time Selector
-	cfw_initializeTimefield('CUSTOM_EARLIEST', CFW_DASHBOARD_TIME_EARLIEST_EPOCH);
-	cfw_initializeTimefield('CUSTOM_LATEST', CFW_DASHBOARD_TIME_LATEST_EPOCH);
+	cfw_dashboard_setCustomTimeframe(CFW_DASHBOARD_TIME_EARLIEST_EPOCH, CFW_DASHBOARD_TIME_LATEST_EPOCH);
+	//cfw_initializeTimefield('CUSTOM_EARLIEST', CFW_DASHBOARD_TIME_EARLIEST_EPOCH);
+	//cfw_initializeTimefield('CUSTOM_LATEST', CFW_DASHBOARD_TIME_LATEST_EPOCH);
 	
 	//-----------------------------------------
 	// Disable Refresh
@@ -1268,18 +1289,29 @@ function cfw_dashboard_initialDraw(){
 	
 	//addTestdata();
 	
-	var timeframePreset =window.localStorage.getItem("dashboard-timeframe-preset-"+CFW_DASHBOARDVIEW_PARAMS.id);
-	if(timeframePreset != null && timeframePreset != 'null' && timeframePreset != 'custom' ){
-		cfw_dashboard_setTimeframe($('#time-preset-'+timeframePreset), timeframePreset);
+	//-----------------------------
+	// Get Earliest/Latest from URL
+	if(	CFW_DASHBOARDVIEW_PARAMS.earliest != null && CFW_DASHBOARDVIEW_PARAMS.latest != null){
+		cfw_dashboard_setCustomTimeframe(CFW_DASHBOARDVIEW_PARAMS.earliest, CFW_DASHBOARDVIEW_PARAMS.latest);
 	}else{
-		cfw_dashboard_draw();
+		//-----------------------------
+		// Get last preset
+		var timeframePreset =window.localStorage.getItem("dashboard-timeframe-preset-"+CFW_DASHBOARDVIEW_PARAMS.id);
+		if(timeframePreset != null && timeframePreset != 'null' && timeframePreset != 'custom' ){
+			cfw_dashboard_setTimeframe($('#time-preset-'+timeframePreset), timeframePreset);
+		}
 	}
+	
+	cfw_dashboard_draw();
 	
 	var refreshInterval = window.localStorage.getItem("dashboard-reload-interval-id"+CFW_DASHBOARDVIEW_PARAMS.id);
 	if(refreshInterval != null && refreshInterval != 'null' &&refreshInterval != 'stop' ){
 		$("#refreshSelector").val(refreshInterval);
 		cfw_dashboard_setReloadInterval("#refreshSelector");
 	}
+	
+	
+
 	
 	
 }

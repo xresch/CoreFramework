@@ -109,9 +109,10 @@ DONE
 - Moved timeout settings from cfw.properties to configuration page. (and added more timeout settings )
 - Added Audit Logs for important actions (Like User Management CREATE, UPDATE, DELETE)
 - Dashboard: Added Ruler to Edit Mode
-- Dashboard: Added Change Owner button for admins
-- Dashboard: Added Import/Export buttons for dashboard creators and admins
-- Dashboard: Added toast messages for special sharing settings(shared with all users, not shared but users or roles selected)
+- Dashboard: Added timeframe params to URL
+- Dashboard List: Added Change Owner button for admins
+- Dashboard List: Added Import/Export buttons for dashboard creators and admins
+- Dashboard List: Added toast messages for special sharing settings(shared with all users, not shared but users or roles selected)
 - Dashboard List: use dataviewer
 
 ------- v1.0.4 -------
