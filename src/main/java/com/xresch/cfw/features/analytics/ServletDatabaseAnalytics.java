@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.analytics;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -9,7 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -21,7 +24,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class ServletDatabaseAnalytics extends HttpServlet
 {
-
+	private static final Logger logger = CFWLog.getLogger(ServletDatabaseAnalytics.class.getName());
 	private static final long serialVersionUID = 1L;
 
 	/*****************************************************************
@@ -61,7 +64,8 @@ public class ServletDatabaseAnalytics extends HttpServlet
 		JSONResponse jsonResponse = new JSONResponse();
 		
 		switch(action.toLowerCase()) {
-			case "dbsnapshot":		boolean isSuccess = CFW.DB.backupDatabaseFile("./snapshot", "h2_database_snapshot");
+			case "dbsnapshot":		new CFWLog(logger).audit("CREATE", "DatabaseSnapshot", "Request manual database snapshot.");
+									boolean isSuccess = CFW.DB.backupDatabaseFile("./snapshot", "h2_database_snapshot");
 									if(isSuccess) {
 										CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Snapshot created on hard disk under {APP_ROOT}/snapshot.");
 									}else {

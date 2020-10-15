@@ -28,7 +28,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class ServletLogConfiguration extends HttpServlet
 {
-
+	private static final Logger logger = CFWLog.getLogger(ServletDatabaseAnalytics.class.getName());
 	private static final long serialVersionUID = 1L;
 	
 	/*****************************************************************
@@ -88,7 +88,8 @@ public class ServletLogConfiguration extends HttpServlet
 										this.setLogLevel(jsonResponse, loggerName, newLevel);
 										break;	
 										
-					case "configfile":	CFWLog.initializeLogging();
+					case "configfile":	new CFWLog(logger).audit("UPDATE", "LogLevel", "Reload log levels from logging.properties.");
+										CFWLog.initializeLogging();
 										break;
 										
 					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
@@ -133,9 +134,10 @@ public class ServletLogConfiguration extends HttpServlet
 	private void setLogLevel(JSONResponse response, String loggerName, String level) {
 				
 		//Do not use LogManager.getLogger() as it may return null
-		Logger logger = Logger.getLogger(loggerName);
+		Logger loggerToChange = Logger.getLogger(loggerName);
 		
-		logger.setLevel(Level.parse(level));
+		new CFWLog(logger).audit("UPDATE", "LogLevel", "Change level of logger "+loggerName+" from "+loggerToChange.getLevel().toString()+" to "+level);
+		loggerToChange.setLevel(Level.parse(level));
 		
 		response.setSuccess(true);
 
