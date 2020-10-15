@@ -415,8 +415,7 @@ function cfw_initializeTimefield(fieldID, epochMillis){
 	if(epochMillis != null){
 		$(id).val(epochMillis);
 		let sureInteger = parseInt(epochMillis, 10);
-		console.log("epochMillis: "+epochMillis);
-		console.log("sureInteger: "+sureInteger);
+
 		var date = moment(sureInteger);
 		datepicker.first().val(date.format("YYYY-MM-DD"));
 
@@ -1662,6 +1661,7 @@ function cfw_http_readCookie(name) {
 /******************************************************************
  * Reads the parameters from the URL and returns an object containing
  * name/value pairs like {"name": "value", "name2": "value2" ...}.
+ * Removes any hashtags at the end of parameter values. 
  * @param 
  * @return object
  ******************************************************************/
@@ -1677,8 +1677,13 @@ function cfw_http_getURLParamsDecoded()
     for(let i = 0; i < keyValuePairs.length; i++)
     {
         var splitted = keyValuePairs[i].split('=');
-        var key = cfw_http_secureDecodeURI(splitted[0])
-        vars[key] = cfw_http_secureDecodeURI(splitted[1]);
+        var key = cfw_http_secureDecodeURI(splitted[0]);
+        let paramValue =  cfw_http_secureDecodeURI(splitted[1]);
+        // Remove the annoying hashtag
+        if(paramValue.endsWith('#')){
+        	paramValue = paramValue.substring(0, paramValue.length-1);
+        }
+        vars[key] = paramValue;
     }
     
     return vars;
@@ -1701,8 +1706,13 @@ function cfw_http_getURLParams()
     
     for(let i = 0; i < keyValuePairs.length; i++)
     {
-        var splitted = keyValuePairs[i].split('=');
-        vars[splitted[0]] = splitted[1];
+        let splitted = keyValuePairs[i].split('=');
+        
+        let paramValue =  splitted[1];
+
+        vars[splitted[0]] = paramValue;
+
+
     }
     
     return vars;

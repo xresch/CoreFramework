@@ -30,11 +30,12 @@ var CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_dashboard_setTimeframe(element, preset){
+function cfw_dashboard_setTimeframe(preset){
+
 	
 	window.localStorage.setItem("dashboard-timeframe-preset-"+CFW_DASHBOARDVIEW_PARAMS.id, preset);
-	
-	var label = $(element).text();
+	console.log("preset: "+preset)
+	var label = $("#time-preset-"+preset).text();
 	$('#timeframeSelectorButton').text(label);
 
 	var split = preset.split('-');
@@ -48,6 +49,7 @@ function cfw_dashboard_setTimeframe(element, preset){
 	
 	CFW.http.removeURLParam('earliest');
 	CFW.http.removeURLParam('latest');
+	CFW.http.setURLParam('timeframepreset', preset);
 	cfw_dashboard_draw();
 }
 
@@ -70,6 +72,7 @@ function cfw_dashboard_setCustomTimeframe(earliestMillis, latestMillis){
 
 	CFW.http.setURLParam('earliest', earliestMillis);
 	CFW.http.setURLParam('latest', latestMillis);
+	CFW.http.removeURLParam('timeframepreset');
 }
 
 /******************************************************************
@@ -1287,23 +1290,34 @@ function cfw_dashboard_initialDraw(){
 		
 	cfw_dashboard_initialize('.grid-stack');
 	
-	//addTestdata();
-	
-	//-----------------------------
-	// Get Earliest/Latest from URL
 	if(	CFW_DASHBOARDVIEW_PARAMS.earliest != null && CFW_DASHBOARDVIEW_PARAMS.latest != null){
-		cfw_dashboard_setCustomTimeframe(CFW_DASHBOARDVIEW_PARAMS.earliest, CFW_DASHBOARDVIEW_PARAMS.latest);
-	}else{
 		//-----------------------------
-		// Get last preset
+		// Get Earliest/Latest from URL
+		cfw_dashboard_setCustomTimeframe(CFW_DASHBOARDVIEW_PARAMS.earliest, CFW_DASHBOARDVIEW_PARAMS.latest);
+		cfw_dashboard_draw();
+	}else if(CFW_DASHBOARDVIEW_PARAMS.timeframepreset != null){
+		//-----------------------------
+		// Get Preset from URL
+		cfw_dashboard_setTimeframe(CFW_DASHBOARDVIEW_PARAMS.timeframepreset);
+		// above method calls cfw_dashboard_draw()
+	}else{
+
 		var timeframePreset =window.localStorage.getItem("dashboard-timeframe-preset-"+CFW_DASHBOARDVIEW_PARAMS.id);
 		if(timeframePreset != null && timeframePreset != 'null' && timeframePreset != 'custom' ){
-			cfw_dashboard_setTimeframe($('#time-preset-'+timeframePreset), timeframePreset);
+			//---------------------------------
+			// Get last preset from local store
+			cfw_dashboard_setTimeframe(timeframePreset);
+			cfw_dashboard_draw();
+		}else{
+			//---------------------------------
+			// Just draw with default
+			cfw_dashboard_draw();
 		}
 	}
 	
-	cfw_dashboard_draw();
 	
+	//---------------------------------
+	// Load Refresh interval from local store
 	var refreshInterval = window.localStorage.getItem("dashboard-reload-interval-id"+CFW_DASHBOARDVIEW_PARAMS.id);
 	if(refreshInterval != null && refreshInterval != 'null' &&refreshInterval != 'stop' ){
 		$("#refreshSelector").val(refreshInterval);
