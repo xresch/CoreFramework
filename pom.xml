@@ -20,7 +20,7 @@
 
 		<jettyVersion>9.4.31.v20200723</jettyVersion>
 		<prometheusVersion>0.9.0</prometheusVersion>
-		<luceneVersion>5.5.5</luceneVersion>
+		<luceneVersion>8.6.3</luceneVersion>
 
 		<skipTests>true</skipTests>
 		<skipJavadoc>true</skipJavadoc>
