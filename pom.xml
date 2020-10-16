@@ -7,7 +7,7 @@
 	<groupId>com.xresch</groupId>
 	<artifactId>cfw</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.5</version>
+	<version>2.0.0</version>
 
 	<name>cfw</name>
 	<description>CoreFramework is a java application boilerplate providing various functionalities like user management, configurations, API and dashboarding out of the box.</description>
@@ -21,7 +21,7 @@
 		<jettyVersion>9.4.31.v20200723</jettyVersion>
 		<prometheusVersion>0.9.0</prometheusVersion>
 		<luceneVersion>5.5.5</luceneVersion>
-		
+
 		<skipTests>true</skipTests>
 		<skipJavadoc>true</skipJavadoc>
 		<skipSigning>true</skipSigning>
@@ -157,16 +157,16 @@
 
 		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-queryparser -->
 		<dependency>
-		    <groupId>org.apache.lucene</groupId>
-		    <artifactId>lucene-queryparser</artifactId>
-		    <version>${luceneVersion}</version>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>${luceneVersion}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
 		<dependency>
-		    <groupId>org.apache.lucene</groupId>
-		    <artifactId>lucene-analyzers-common</artifactId>
-		    <version>${luceneVersion}</version>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>${luceneVersion}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.onelogin/java-saml -->
@@ -344,11 +344,21 @@
 			</plugin>
 
 			<!-- ================= DEPENDENCY ================== -->
-			<!-- plugin> <artifactId>maven-dependency-plugin</artifactId> <executions> 
-				<execution> <phase>install</phase> <goals> <goal>copy-dependencies</goal> 
-				</goals> <configuration> <outputDirectory>${project.build.directory}/lib</outputDirectory> 
-				<excludeScope>provided</excludeScope> </configuration> </execution> </executions> 
-				</plugin -->
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>install</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${project.build.directory}/lib</outputDirectory>
+							<excludeScope>provided</excludeScope>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 			<!-- ================= ASSEMBLY ================== -->
 			<!-- mvn clean compile assembly:single -->

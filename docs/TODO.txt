@@ -79,6 +79,8 @@ TODO
 DONE
 ====
 ------- Current -------
+
+------- v2.0.0 -------
 - CFWLog: auto detect method, making call to CFWLog.method() optional
 - Reduced footprint of log
 - Added System Analytics >> System Properties
