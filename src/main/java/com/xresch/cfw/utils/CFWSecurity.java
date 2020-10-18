@@ -87,6 +87,27 @@ public class CFWSecurity {
 
 	}
 
+	/******************************************************************************
+	 * Masks the last X percentage of characters of a string with an asterisk.
+	 * 
+	 * @param string to mask
+	 * @param percentage from 1 to 100
+	 * @return
+	 ******************************************************************************/
+	public static String maskString(String string, int percentage) {
+
+		int length = string.length();
+		int charsToMaskCount = Math.round((float)length / 100 * percentage);
+		System.out.println("charsToMask: "+charsToMaskCount);
+		
+		String mask ="";
+		for(int i = 0; i < charsToMaskCount; i++) { mask += "*";}
+		
+		string = string.substring(0, length-charsToMaskCount)+mask;
+		
+		return string;
+
+	}
 	/*************************************************************************************
 	 * Escape HTML entities to avoid potential html code in a string.
 	 *************************************************************************************/
@@ -100,6 +121,7 @@ public class CFWSecurity {
 		return string;
 	}
 
+	
 	/******************************************************************************
 	 * Sanitizes HTML with OWASP HTML sanitizer:
 	 * 

@@ -23,8 +23,8 @@
 		<luceneVersion>5.5.5</luceneVersion>
 
 		<skipTests>true</skipTests>
-		<skipJavadoc>true</skipJavadoc>
-		<skipSigning>true</skipSigning>
+		<skipJavadoc>false</skipJavadoc>
+		<skipSigning>false</skipSigning>
 	</properties>
 
 	<!-- ================= LICENSES ================== -->

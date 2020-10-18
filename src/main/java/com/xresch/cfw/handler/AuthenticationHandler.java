@@ -75,7 +75,7 @@ public class AuthenticationHandler extends HandlerWrapper
 
     	if(!Strings.isNullOrEmpty(token)) {
     		SessionData data = CFW.Context.Request.getSessionData(); 
-    		User tokenUser = new User("apitoken["+token+"]");
+    		User tokenUser = new User("apitoken["+CFW.Security.maskString(token, 50)+"]");
     		data.setUser(tokenUser);
     		data.isLoggedIn(true);
     		this._handler.handle(target, baseRequest, request, response);
