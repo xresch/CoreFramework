@@ -114,6 +114,17 @@ public class APITokenDBMethods {
 		
 	}
 	
+	public static boolean checkIsTokenActive(String token) {
+		
+		return 0 < new CFWSQL(new APIToken())
+				.queryCache()
+				.selectCount()
+				.where(APITokenFields.IS_ACTIVE, true)
+				.and(APITokenFields.TOKEN, token)
+				.getCount();
+		
+	}
+	
 	
 	
 	

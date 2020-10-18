@@ -37,6 +37,7 @@ public class APIToken extends CFWObject {
 		FK_ID_CREATOR,
 		TOKEN,
 		DESCRIPTION,
+		IS_ACTIVE,
 		JSON_RESPONSIBLE_USERS,
 	}
 
@@ -61,7 +62,10 @@ public class APIToken extends CFWObject {
 			.setDescription("An optional description for the token.")
 			.addValidator(new LengthValidator(-1, 2000000));
 	
-
+	private CFWField<Boolean> isActive = CFWField.newBoolean(FormFieldType.BOOLEAN, APITokenFields.IS_ACTIVE)
+			.setDescription("Define if the token is active. Set to false to disable the token.")
+			.setValue(true);
+	
 	private CFWField<LinkedHashMap<String,String>> responsibleUsers = CFWField.newTagsSelector(APITokenFields.JSON_RESPONSIBLE_USERS)
 			.setLabel("Responsible Users")
 			.setDescription("Specify the users responsible for this token.")
@@ -70,6 +74,8 @@ public class APIToken extends CFWObject {
 					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
 				}
 			});
+	
+
 	
 	public APIToken() {
 		initializeFields();
@@ -82,7 +88,7 @@ public class APIToken extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyCreator, token, description, responsibleUsers);
+		this.addFields(id, foreignKeyCreator, token, description, isActive, responsibleUsers);
 	}
 		
 	/**************************************************************************************
@@ -98,6 +104,7 @@ public class APIToken extends CFWObject {
 						APITokenFields.PK_ID.toString(), 
 						APITokenFields.FK_ID_CREATOR.toString(),
 						APITokenFields.TOKEN.toString(),
+						APITokenFields.IS_ACTIVE.toString(),
 				};
 		
 		String[] outputFields = 
@@ -106,6 +113,7 @@ public class APIToken extends CFWObject {
 						APITokenFields.FK_ID_CREATOR.toString(),
 						APITokenFields.TOKEN.toString(),
 						APITokenFields.DESCRIPTION.toString(),
+						APITokenFields.IS_ACTIVE.toString(),
 						APITokenFields.JSON_RESPONSIBLE_USERS.toString(),
 				};
 
@@ -164,6 +172,15 @@ public class APIToken extends CFWObject {
 	
 	public LinkedHashMap<String,String> responsibleUsers() {
 		return responsibleUsers.getValue();
+	}
+	
+	public APIToken isActive(boolean isActive) {
+		this.isActive.setValue(isActive);
+		return this;
+	}
+	
+	public boolean isActive() {
+		return isActive.getValue();
 	}
 	
 	public APIToken responsibleUsers(LinkedHashMap<String,String> responsibleUsers) {

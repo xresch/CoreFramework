@@ -519,7 +519,7 @@ public class CFWHttp {
         return remoteAddr;
     }
 	/**************************************************************************************
-	 * Returns the API token if provided.
+	 * Returns the API token if provided and if the requested servlet is /app/api.
 	 * @param request
 	 * @return token or null
 	 **************************************************************************************/

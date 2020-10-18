@@ -70,17 +70,23 @@ public class ServletAPI extends HttpServlet
 	protected void handleTokenBased( HttpServletRequest request, HttpServletResponse response, String token ) throws ServletException, IOException
 	{
 		
-		// curl -X GET "http://localhost:8888/app/api?apitoken=dias-fjkdlafjak&apiName=User&actionName=fetchData&PK_ID=1&"
-		// curl -H "API-Token: Header-Token-5bn3jk5" -X GET "http://localhost:8888/app/api?apiName=User&actionName=fetchData&PK_ID=1&"
+		JSONResponse json = new JSONResponse();
 		
-		String apiName = request.getParameter("apiName");
-		String actionName = request.getParameter("actionName");
+		//------------------------------------------
+		// Check if the token is active
+		if(!APITokenDBMethods.checkIsTokenActive(token)) {
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "This token is disabled or does not exist.");
+			json.setSuccess(false);
+			return;
+		}
 		
 		//------------------------------------------
 		// Check if the parameters are given correctly
 		// else return list of permissions
+		String apiName = request.getParameter("apiName");
+		String actionName = request.getParameter("actionName");
+		
 		if(Strings.isNullOrEmpty(apiName) || Strings.isNullOrEmpty(actionName)) {
-			JSONResponse json = new JSONResponse();
 			ResultSet result = APITokenPermissionMapDBMethods.getPermissionsForToken(token);
 						
 			//----------------------------
@@ -116,7 +122,6 @@ public class ServletAPI extends HttpServlet
 		if(APITokenPermissionMapDBMethods.checkHasTokenThePermission(token, apiName, actionName)){
 			handleAPIRequest(request, response);
 		}else {
-			JSONResponse json = new JSONResponse();
 			json.setSuccess(false);
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The token does not have access to the API "+apiName+"."+actionName+".");
 		}

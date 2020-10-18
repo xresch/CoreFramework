@@ -243,9 +243,10 @@ function cfw_apitokenmgmt_printTokenList(data){
 			 	textstylefield: null,
 			 	titlefields: ['TOKEN'],
 			 	titleformat: '{0}',
-			 	visiblefields: ['PK_ID', 'TOKEN', 'DESCRIPTION', 'JSON_RESPONSIBLE_USERS', 'CREATED_BY'],
+			 	visiblefields: ['PK_ID', 'TOKEN', 'DESCRIPTION', 'IS_ACTIVE', 'JSON_RESPONSIBLE_USERS', 'CREATED_BY'],
 			 	labels: {
 			 		PK_ID: "ID",
+			 		JSON_RESPONSIBLE_USERS: "Responsible Users"
 			 	},
 			 	customizers: {
 			 		JSON_RESPONSIBLE_USERS: function(record, value) { 
@@ -255,7 +256,8 @@ function cfw_apitokenmgmt_printTokenList(data){
 			 			}
 			 			return html;
 			 			 
-			 		}
+			 		},
+			 		IS_ACTIVE: function(record, value) { return '<span class="badge badge-'+((value == true)? 'success' : 'danger') +'">'+value+'</span>'; },
 			 	},
 				actions: actionButtons,				
 				rendererSettings: {
@@ -273,7 +275,7 @@ function cfw_apitokenmgmt_printTokenList(data){
 							{	label: 'Smaller Table',
 								name: 'table',
 								renderdef: {
-									visiblefields: ['PK_ID', 'TOKEN', 'JSON_RESPONSIBLE_USERS', 'CREATED_BY'],
+									visiblefields: ['PK_ID', 'TOKEN', 'IS_ACTIVE', 'JSON_RESPONSIBLE_USERS', 'CREATED_BY'],
 									actions: [],
 									rendererSettings: {
 										table: {filterable: false, narrow: true},

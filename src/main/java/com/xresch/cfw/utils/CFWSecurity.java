@@ -98,8 +98,7 @@ public class CFWSecurity {
 
 		int length = string.length();
 		int charsToMaskCount = Math.round((float)length / 100 * percentage);
-		System.out.println("charsToMask: "+charsToMaskCount);
-		
+
 		String mask ="";
 		for(int i = 0; i < charsToMaskCount; i++) { mask += "*";}
 		
