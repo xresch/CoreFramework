@@ -23,6 +23,8 @@ import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
+import io.prometheus.client.Counter;
+
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
@@ -35,6 +37,11 @@ public class ServletAPI extends HttpServlet
 	
 	private static Logger logger = CFWLog.getLogger(ServletAPI.class.getName());
 
+	private static final Counter callCounter = Counter.build()
+	         .name("cfw_api_calls_total")
+	         .help("Number of calls to the API, without logins and calls made through the UI example forms.")
+	         .register();
+	
 	/*****************************************************************
 	 *
 	 ******************************************************************/
@@ -69,7 +76,7 @@ public class ServletAPI extends HttpServlet
 	 ******************************************************************/
 	protected void handleTokenBased( HttpServletRequest request, HttpServletResponse response, String token ) throws ServletException, IOException
 	{
-		
+
 		JSONResponse json = new JSONResponse();
 		
 		//------------------------------------------
@@ -205,6 +212,8 @@ public class ServletAPI extends HttpServlet
 	 * @param response
 	 ****************************************************************************************************/
 	private void handleAPIRequest(HttpServletRequest request, HttpServletResponse response) {
+		
+		callCounter.inc();
 		
 		String apiName = request.getParameter("apiName");
 		String action = request.getParameter("actionName");

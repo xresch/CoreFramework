@@ -53,7 +53,6 @@ public class CFWLog {
 	protected boolean silent = false;
 
 	
-
 	private static final Counter logCounter = Counter.build()
 	         .name("cfw_logs_total")
 	         .help("Number of log events occured.")

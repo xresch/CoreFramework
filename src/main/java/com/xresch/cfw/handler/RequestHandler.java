@@ -19,7 +19,6 @@ import com.xresch.cfw._main.CFW.Context;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.SessionData;
-import com.xresch.cfw.features.usermgmt.SessionTracker;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.PlaintextResponse;
 
@@ -31,9 +30,7 @@ import com.xresch.cfw.response.PlaintextResponse;
 public class RequestHandler extends HandlerWrapper
 {
 	private static Logger logger = CFWLog.getLogger(RequestHandler.class.getName());
-	
-	private static Object syncLock = new Object();
-	
+		
 	@Override
     public void handle( String target,
                         Request baseRequest,
