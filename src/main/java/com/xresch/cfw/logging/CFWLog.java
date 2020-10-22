@@ -2,8 +2,6 @@ package com.xresch.cfw.logging;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -13,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.features.api.APITokenPermissionMap;
 import com.xresch.cfw.features.usermgmt.SessionData;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;

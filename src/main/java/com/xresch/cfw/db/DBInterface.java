@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 
+import io.prometheus.client.Counter;
+
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
@@ -31,6 +33,17 @@ public abstract class DBInterface {
 	protected ThreadLocal<Connection> transactionConnection = new ThreadLocal<>();
 
 	
+	private static final Counter dbcallCounter = Counter.build()
+	         .name("cfw_db_calls_success_count")
+	         .help("Number of database calls executed successfully through the internal CFW DBInterface.")
+	         .labelNames("db")
+	         .register();
+	
+	private static final Counter dbcallErrorCounter = Counter.build()
+	         .name("cfw_db_calls_exception_count")
+	         .help("Number of database calls executed through the internal CFW DBInterface and ended with and exception.")
+	         .labelNames("db")
+	         .register();
 	/********************************************************************************************
 	 * Get a connection from the connection pool or returns the current connection used for the 
 	 * transaction.
@@ -225,6 +238,25 @@ public abstract class DBInterface {
 	
 	/********************************************************************************************
 	 * 
+	 ********************************************************************************************/
+	private void increaseDBCallsCount(Connection conn, boolean isError) {
+		if(conn != null) {
+			String connectionURL;
+			try {
+				connectionURL = conn.getMetaData().getURL();
+				connectionURL = connectionURL.substring(connectionURL.lastIndexOf("/") + 1);
+				if(!isError) {
+					dbcallCounter.labels(connectionURL).inc();
+				}else {
+					dbcallErrorCounter.labels(connectionURL).inc();
+				}
+			} catch (SQLException e) {
+				new CFWLog(logger).severe("Error retrieving connection meta data.", e);
+			}
+		}
+	}
+	/********************************************************************************************
+	 * 
 	 * @param request HttpServletRequest containing session data used for logging information(null allowed).
 	 * @param sql string with placeholders
 	 * @param values the values to be placed in the prepared statement
@@ -241,6 +273,7 @@ public abstract class DBInterface {
 			//-----------------------------------------
 			// Initialize Variables
 			conn = this.getConnection();
+			
 			prepared = conn.prepareStatement(sql);
 			
 			//-----------------------------------------
@@ -254,8 +287,10 @@ public abstract class DBInterface {
 			if(!isResultSet && prepared.getUpdateCount() > 0) {
 				result = true;
 			}
+			increaseDBCallsCount(conn, false);
 			
 		} catch (SQLException e) {
+			increaseDBCallsCount(conn, true);
 			log.severe("Database Error: "+e.getMessage(), e);
 		} finally {
 			try {
@@ -308,8 +343,10 @@ public abstract class DBInterface {
 					break;
 				}
 			}
+			increaseDBCallsCount(conn, false);
 		} catch (SQLException e) {
 			result = false;
+			increaseDBCallsCount(conn, true);
 			log.severe("Database Error: "+e.getMessage(), e);
 		} finally {
 			try {
@@ -363,7 +400,9 @@ public abstract class DBInterface {
 				result.next();
 				generatedID = result.getInt(generatedKeyName);
 			}
+			increaseDBCallsCount(conn, false);
 		} catch (SQLException e) {
+			increaseDBCallsCount(conn, true);
 			log.severe("Database Error: "+e.getMessage(), e);
 		} finally {
 			try {
@@ -432,8 +471,9 @@ public abstract class DBInterface {
 			//-----------------------------------------
 			// Execute
 			result = prepared.executeQuery();
-			
+			increaseDBCallsCount(conn, false);
 		} catch (SQLException e) {
+			increaseDBCallsCount(conn, true);
 			log.silent(isSilent)
 				.severe("Issue executing prepared statement: "+e.getLocalizedMessage(), e);
 			try {

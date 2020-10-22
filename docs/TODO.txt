@@ -79,6 +79,7 @@ TODO
 DONE
 ====
 ------- Current -------
+- Prometheus: Counter for DB calls successful/failed
 
 ------- v2.0.0 -------
 - CFWLog: auto detect method, making call to CFWLog.method() optional
