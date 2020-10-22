@@ -57,30 +57,42 @@ class CFWRenderer{
 			 	},
 		 	getTitleHTML:  function(record){
 		 		var title = this.titleformat;
+		 		
 		 		for(var j = 0; j < this.titlefields.length; j++){
 					var fieldname = this.titlefields[j];
 					let value = this.getCustomizedValue(record,fieldname);
 					
-					title = title.replace('{'+j+'}', value);
+					if(this.titleformat != null){
+						title = title.replace('{'+j+'}', value);
+					}else{
+						title += ' '+value;
+					}
 				}
+		 		
 		 		title = title.replace(/\{\d\}/g, '');
-		 		return title;
+		 		return title.trim();
 			},
+			
 			getTitleString:  function(record){
-		 		var title = "";
+		 		var title = this.titleformat;
+		 		
 		 		for(var j = 0; j < this.titlefields.length; j++){
 
 		 			var fieldname = this.titlefields[j];
 		 			var value = record[fieldname];
 		 			
 		 			if( value != null){
-		 				if(j != 0 && title.length > 0 ){
-		 					title += this.titleformat;
-		 				}
-						title += value;
+		 				
+	 					if(this.titleformat != null){
+							title = title.replace('{'+j+'}', value);
+						}else{
+							title += ' '+value;
+						}
+
 					}
 
 				}
+		 		title = title.replace(/\{\d\}/g, '');
 		 		return title.trim();
 			},
 		 };

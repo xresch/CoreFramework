@@ -909,19 +909,33 @@ function cfw_renderer_chart(renderDef) {
 		$('body').append(workspace);				
 	}
 
+	//========================================
+	// Create titleFormat
+	if(settings.titleformat == null && renderDef.data.length > 0){
+		settings.titleformat = '';
+		let firstRecord = renderDef.data[0];
+		let index = 0;
+		for(let key in firstRecord){
+			if(key == settings.xfield || key == settings.yfield) { continue; }
+			settings.titleformat += key+'="{'+index+'}" / ';
+			index++;
+		}
+		renderDef.titleformat = settings.titleformat.substr(0, settings.titleformat.length-3);
+		
+	}
 	
 	//========================================
 	// Create Datasets
 	var datasets = {};
 	var hue = 120; 
-	
+
 	for(var i = 0; i < renderDef.data.length; i++){
 		var currentRecord = renderDef.data[i];
 		
 		//----------------------------
 		// Create Label & Dataset
 		var label = renderDef.getTitleString(currentRecord);
-		
+		console.log("settings.titleformat:"+settings.titleformat);
 		if(datasets[label] == undefined){
 			hue += 40;
 			var borderColor = CFW.colors.randomHSL(hue,65,100,55,70);

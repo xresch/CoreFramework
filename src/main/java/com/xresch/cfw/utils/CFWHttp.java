@@ -34,6 +34,8 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
+import io.prometheus.client.Counter;
+
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
@@ -65,6 +67,12 @@ public class CFWHttp {
 		
 		return toEncode;
 	}
+	
+	private static final Counter outgoingHTTPCallsCounter = Counter.build()
+	         .name("cfw_http_outgoing_calls_total")
+	         .help("Number of outgoing HTTP calls executed with the CFWHTTP utils.")
+	         .labelNames("method")
+	         .register();
 	
 	/******************************************************************************************************
 	 * Returns an encoded parameter string with leading '&'.
@@ -374,6 +382,7 @@ public class CFWHttp {
 				connection.setRequestMethod("GET");
 				connection.connect();
 				
+				outgoingHTTPCallsCounter.labels("GET").inc();
 				return instance.new CFWHttpResponse(connection);
 			}
 	    
@@ -422,6 +431,8 @@ public class CFWHttp {
 				    byte[] input = body.getBytes("utf-8");
 				    outStream.write(input, 0, input.length);           
 				}
+				
+				outgoingHTTPCallsCounter.labels("POST").inc();
 				return instance.new CFWHttpResponse(connection);
 			}
 	    

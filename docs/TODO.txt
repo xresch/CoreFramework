@@ -79,7 +79,11 @@ TODO
 DONE
 ====
 ------- Current -------
-- Prometheus: Counter for DB calls successful/failed
+- /metrics: added counter for DB calls successful/failed
+- /metrics: added counter for API calls
+- /metrics: added counter for outgoing HTTP calls
+- cfw_components.js >> CFWRenderer: Improved getTitleStringMethod.
+
 
 ------- v2.0.0 -------
 - CFWLog: auto detect method, making call to CFWLog.method() optional
