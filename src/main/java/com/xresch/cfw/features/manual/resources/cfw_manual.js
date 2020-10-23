@@ -64,9 +64,9 @@ function cfw_manual_createPrintView(pageGUID){
 	//--------------------------
 	// Copy Scripts
 	var javascripts = $('#javascripts script');
-	console.log(javascripts);
+
 	for(let i = 0; i < javascripts.length; i++){
-		console.log("A");
+
 		let source = javascripts.eq(i).attr('src');
 		if(!CFW.utils.isNullOrEmpty(source) && source.startsWith('/cfw')){
 			let script = printView.document.createElement("script");
@@ -207,7 +207,7 @@ function cfw_manual_addPageToPrintView(parentContainer, page, headerOffset){
  * 
  ******************************************************************/
 function cfw_manual_preparePageForPrint(pageContent, headerOffset){
-	console.log('===== cfw_manual_preparePageForPrint =====')
+
 	//------------------------------
 	// Replace relative paths
 	pageContent = CFW.utils.replaceAll(pageContent, '"/cfw', '"'+CFW_MANUAL_HOST_URL+'/cfw');
@@ -217,7 +217,7 @@ function cfw_manual_preparePageForPrint(pageContent, headerOffset){
 	// Find first Header Level
 	var level = 0;
 	for(level = 1; level <= 7; level++){
-		console.log('find level'+level)
+
 		if(level == 7){ level = -1; break;}
 		if(pageContent.indexOf('<h'+level) > -1){
 			break;
@@ -227,12 +227,11 @@ function cfw_manual_preparePageForPrint(pageContent, headerOffset){
 	//------------------------------
 	// Replace Headers
 	if(level != -1){
-		console.log('has level'+level)
+
 		var offset = headerOffset - level + 1;
 		for(var i = 5; i > 0; i-- ){
-			console.log('replace ')
+
 			var newLevel = (i+offset <= 6) ? i+offset : 6;
-			console.log('replace h'+i+' with h'+newLevel)
 			pageContent = CFW.utils.replaceAll(pageContent, 'h'+i+'>', 'h'+newLevel+'>');
 		}
 	}

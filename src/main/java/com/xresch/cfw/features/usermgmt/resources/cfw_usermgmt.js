@@ -195,7 +195,6 @@ function cfw_usermgmt_editRole(roleID){
 							if(record.IS_REMOVABLE != null && !record.IS_REMOVABLE){
 								cfwToggleButton.setLocked();
 							}
-							console.log(cfwToggleButton.button);
 							return cfwToggleButton.button;
 						}
 					]

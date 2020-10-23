@@ -50,7 +50,6 @@
     //--------------------------------
     // CFW Modification
     // Copy event handler for autocomplete
-//    console.log($._data(element, 'events'));
 //    this.$input.on('input', $._data(element, 'events').input[0].handler)
 //    this.$input.on('keydown', $._data(element, 'events').keydown[0].handler)
     

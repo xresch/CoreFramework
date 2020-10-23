@@ -46,7 +46,7 @@ function cfw_widget_toggleDisco(level) {
 		discoSet = setInterval(function(){ 
 			discoColor += CFW.utils.randomInt(20,40);
 			var bodyColor = CFW.colors.randomHSL(discoColor, 40,70,30,70);
-			console.log(bodyColor);
+
 			//$('[id^="widget-"]').addClass("fa-spin");
 			$('[id^="widget-"]').css('animation', 'fa-spin '+speed+'s infinite linear');
 			$('body').css("background-color", bodyColor);

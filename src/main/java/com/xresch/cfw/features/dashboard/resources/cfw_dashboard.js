@@ -34,7 +34,7 @@ function cfw_dashboard_setTimeframe(preset){
 
 	
 	window.localStorage.setItem("dashboard-timeframe-preset-"+CFW_DASHBOARDVIEW_PARAMS.id, preset);
-	console.log("preset: "+preset)
+
 	var label = $("#time-preset-"+preset).text();
 	$('#timeframeSelectorButton').text(label);
 
@@ -57,10 +57,7 @@ function cfw_dashboard_setTimeframe(preset){
  * 
  ******************************************************************/
 function cfw_dashboard_setCustomTimeframe(earliestMillis, latestMillis){
-	
-	console.log('set timeframe earliestMillis:'+earliestMillis)
-	console.log('set timeframe latestMillis:'+latestMillis)
-	
+		
 	$('#timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
 	
 	CFW_DASHBOARD_TIME_EARLIEST_EPOCH = earliestMillis;

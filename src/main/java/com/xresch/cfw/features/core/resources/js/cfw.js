@@ -1385,9 +1385,6 @@ function cfw_showModal(modalTitle, modalBody, jsCode){
 		
 		// Prevent other modals to close the modal
 //		defaultModal.on('hidden.bs.modal', function (e) {
-//			  console.log('e.target.id'+e.target.id);
-//			  console.log('modalID'+modalID);
-//			  console.log(e.target);
 //			  if(e.target.id != modalID) { // ignore events which are raised from child modals
 //			    return false;
 //			  }
@@ -2409,7 +2406,6 @@ CFW.utils.chainedOnload(function () {
 	//-----------------------------------
 	// Add scrolling offset for menu bar
 	$( window ).on('hashchange', function (e){
-		console.log('change');
 		window.scrollBy(0, -60);
 	});
 	

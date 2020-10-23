@@ -23,15 +23,10 @@ function cfw_apioverview_formResult(data, status, xhr){
 	//-------------------------------
 	// Regex hack remove empty params
 	serialized = serialized.replace(/cfw-formID.*?&/g, "&");
-	//console.log(serialized)
 	serialized = serialized.replace(/&[^=]+=&/g, "&");
-	//console.log(serialized)
 	serialized = serialized.replace(/&[^=]+=&/g, "&");
-	//console.log(serialized)
 	serialized = serialized.replace(/&[^=]+=&/g, "&");
-	//console.log(serialized)
 	serialized = serialized.replace(/&[^=]+=$/g, "&");
-	//console.log(serialized)
 	
 	var sampleURL = $('#cfw-apioverview-sampleurl');
 	

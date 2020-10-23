@@ -935,7 +935,6 @@ function cfw_renderer_chart(renderDef) {
 		//----------------------------
 		// Create Label & Dataset
 		var label = renderDef.getTitleString(currentRecord);
-		console.log("settings.titleformat:"+settings.titleformat);
 		if(datasets[label] == undefined){
 			hue += 40;
 			var borderColor = CFW.colors.randomHSL(hue,65,100,55,70);
@@ -1312,7 +1311,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			if(pageSize == -1){
 				dataToRender = renderDef.data;
 			}
-			console.log(dataToRender);
+
 			cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
 		}else{
 			filterquery = filterquery.toLowerCase();

@@ -12,7 +12,7 @@
 			createWidgetInstance: function (widgetObject, callback) {	
 				
 				var settings = widgetObject.JSON_SETTINGS;
-				console.log("settings.format: "+settings.format);
+
 				if(settings.format == null || settings.format.trim() == ""){
 					settings.format = "HH:mm";
 				}
