@@ -55,7 +55,8 @@ TODO
 - CFW: CFWApplicationExecutor - ForwardedRequestCustomizer make it work with reverse proxy
 - CFW: Create javascript sanity check page
 - CFW: Redirect StdOut and StdErr to logfile
-    
+- CFW: Cleanup tasks for TageSelector references 
+   
 - CFWField: Add initFormField(method)
 - CFWField: Form errors add to field.
 - CFWField: FormField.SINGLECOMPLETE
@@ -83,8 +84,8 @@ DONE
 - /metrics: added counter for API calls
 - /metrics: added counter for outgoing HTTP calls
 - cfw_components.js >> CFWRenderer: Improved getTitleStringMethod.
-
-
+- Fixed assembly not refreshing unique etags on changed content
+- API Token: Added reminder message to add permissions to newly created tokens
 ------- v2.0.0 -------
 - CFWLog: auto detect method, making call to CFWLog.method() optional
 - Reduced footprint of log

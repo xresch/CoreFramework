@@ -1,6 +1,7 @@
 package com.xresch.cfw.caching;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 
 /**************************************************************************************************************
  * 
@@ -75,15 +76,22 @@ public class FileDefinition {
 	 **************************************************************************/
 	public int getUniqueID(){
 		if(type == HandlingType.STRING ) {
-			return (type + content).hashCode();
+			return (type != null ? type.hashCode() : 0)
+				 + (content != null ? content.hashCode() : 0);
 		}else {
-			return (type + path + filename).hashCode();
+			return (type != null ? type.hashCode() : 0)
+				 + (path != null ? path.hashCode() : 0)
+				 + (filename != null ? filename.hashCode(): 0);
 		}
 	}
 	
 	public int getHash(){
-		if(hashCode == null) {
-			hashCode = (path + filename + content).hashCode();
+		if(hashCode == null || !CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
+			// Hard Refresh
+			readContents();
+			hashCode = (path != null ? path.hashCode() : 0)
+					 + (filename != null ? filename.hashCode(): 0)
+					 + (content != null ? content.hashCode() : 0);
 		}
 		return hashCode;
 	}
@@ -94,23 +102,23 @@ public class FileDefinition {
 	 * @return
 	 **************************************************************************/
 	public String readContents(){
-		String returnContent = "";
+
 		switch(type) {
-			case FILE:			returnContent = CFW.Files.getFileContent(null, path, filename);
+			case FILE:			content = CFW.Files.getFileContent(null, path, filename);
 								break;
 				
-			case JAR_RESOURCE: 	returnContent = CFW.Files.readPackageResource(path, filename);
+			case JAR_RESOURCE: 	content = CFW.Files.readPackageResource(path, filename);
 								break;
 				
-			case STRING: 		returnContent = content;
+			case STRING: 		
 								break;
 				
-			default: 			returnContent = "";
+			default: 			content = "";
 							break;
 							
 		}
-		
-		return returnContent;
+
+		return content;
 	}
 	
 	public String getJavascriptTag(){

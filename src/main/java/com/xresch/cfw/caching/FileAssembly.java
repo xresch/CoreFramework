@@ -171,7 +171,7 @@ public class FileAssembly {
 	 * 
 	 ***********************************************************************/
 	private void createEtagNameAndPath() {
-		
+
 		lastEtag = etag;
 		etag = 0;
 		for(FileDefinition fileDef : fileMap.values()) {
