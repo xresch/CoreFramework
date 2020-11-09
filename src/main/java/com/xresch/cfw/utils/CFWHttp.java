@@ -30,6 +30,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -513,6 +516,8 @@ public class CFWHttp {
 	    return body;
 	}
 	
+	
+		
 	/******************************************************************************************************
 	 * Get clientIP
 	 ******************************************************************************************************/
@@ -611,6 +616,32 @@ public class CFWHttp {
 
 		public String getResponseBody() {
 			return body;
+		}
+		
+		/******************************************************************************************************
+		 * Get the body content of the request as a JsonArray.
+		 * @param url used for the request.
+		 * @return JsonArray or null
+		 ******************************************************************************************************/
+		public JsonArray getRequestBodyAsJsonArray(){
+			
+			JsonElement jsonElement = CFW.JSON.fromJson(body);
+			
+			JsonArray jsonArray = null;
+			if(jsonElement.isJsonArray()) {
+				jsonArray = jsonElement.getAsJsonArray();
+			}else if(jsonElement.isJsonObject()) {
+				JsonObject object = jsonElement.getAsJsonObject();
+				if(object.get("error") != null) {
+					new CFWLog(responseLogger).severe("Error occured while reading http response: "+object.get("error").toString());
+					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error: ");
+					return null;
+				}else {
+					new CFWLog(responseLogger).severe("Error occured while reading http response.");
+				}
+			}
+			
+			return jsonArray;
 		}
 
 		public int getStatus() {
