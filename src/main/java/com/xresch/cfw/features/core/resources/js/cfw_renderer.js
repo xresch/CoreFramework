@@ -372,7 +372,13 @@ function cfw_renderer_table(renderDef) {
 				let customizer = renderDef.customizers[fieldname];
 				finalValue = customizer(singleRecord, finalValue);
 			}
+			else if(renderDef.customizers['value'] != null){
+				let customizer = renderDef.customizers['value'];
+				finalValue = customizer(singleRecord, finalValue);
+			}
+			
 			singleRecordData.push({name: label, value: finalValue});
+			
 		}
 		
 		//-------------------------
