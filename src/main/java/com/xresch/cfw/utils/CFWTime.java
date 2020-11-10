@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import com.xresch.cfw._main.CFW;
 
@@ -146,6 +147,26 @@ public class CFWTime {
 		return "7d";
 	}
 	
+	
+	/********************************************************************************************
+	 * Converts a time from one unit to another unit.
+	 * @return long value rounded down
+	 ********************************************************************************************/
+	public static long convertTimeToUnit(long fromValue, TimeUnit fromUnit, TimeUnit toUnit) {
+		
+		switch(toUnit) {
+			case DAYS: 			return fromUnit.toDays(fromValue);
+			case HOURS:			return fromUnit.toHours(fromValue);
+			case MICROSECONDS: 	return fromUnit.toMicros(fromValue);
+			case MILLISECONDS: 	return fromUnit.toMillis(fromValue);
+			case MINUTES: 		return fromUnit.toMinutes(fromValue);
+			case NANOSECONDS: 	return fromUnit.toNanos(fromValue);
+			case SECONDS: 		return fromUnit.toSeconds(fromValue);
+			default: 			return -1L;
+		}
+
+		
+	}
 
 
 }
