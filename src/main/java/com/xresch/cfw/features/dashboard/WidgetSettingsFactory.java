@@ -20,8 +20,20 @@ public class WidgetSettingsFactory {
 		linearChartTypes.put("steppedarea", "Stepped Area");
 		
 	}
+	
 	/************************************************************************************
-	 * Returns default threashold fields as a LinkedHashMap.
+	 * Returns the default example data boolean field.
+	 * 
+	 * @return
+	 ************************************************************************************/
+	public static CFWField<?> createSampleDataField(){
+		return CFWField.newBoolean(FormFieldType.BOOLEAN, "sampledata")
+		.setLabel("{!cfw_widget_sampledata!}")
+		.setDescription("{!cfw_widget_sampledata_desc!}")
+		.setValue(false);
+	}
+	/************************************************************************************
+	 * Returns default threshold fields as a LinkedHashMap.
 	 * 
 	 * @return
 	 ************************************************************************************/
