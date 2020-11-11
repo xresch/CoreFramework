@@ -885,19 +885,19 @@ function cfw_renderer_chart(renderDef) {
 	
 	//========================================
 	// Initialize
-	var doFill = false;
-	var isSteppedline = false;
+	settings.doFill = false;
+	settings.isSteppedline = false;
 	
 	if(settings.charttype == 'area'){
 		settings.charttype = 'line';
-		doFill = true;
+		settings.doFill = true;
 	}else if(settings.charttype == 'steppedline'){
 		settings.charttype = 'line';
-		isSteppedline = true;
+		settings.isSteppedline = true;
 	}else if(settings.charttype == 'steppedarea'){
 		settings.charttype = 'line';
-		doFill = true;
-		isSteppedline = true;
+		settings.doFill = true;
+		settings.isSteppedline = true;
 	}else if(settings.charttype == 'scatter'){
 		if(settings.pointradius == 0){
 			settings.pointradius = 2;
@@ -932,50 +932,7 @@ function cfw_renderer_chart(renderDef) {
 	
 	//========================================
 	// Create Datasets
-	var datasets = {};
-	var hue = 120; 
-
-	for(var i = 0; i < renderDef.data.length; i++){
-		var currentRecord = renderDef.data[i];
-		
-		//----------------------------
-		// Create Label & Dataset
-		var label = renderDef.getTitleString(currentRecord);
-		if(datasets[label] == undefined){
-			hue += 40;
-			var borderColor = CFW.colors.randomHSL(hue,65,100,55,70);
-			var bgColor = borderColor.replace('1.0)', '0.65)');
-			datasets[label] = {
-					label: label, 
-					data: [], 
-					backgroundColor: bgColor,
-					fill: doFill,
-		            borderColor: borderColor,
-		            borderWidth: 1,
-		            spanGaps: false,
-		            steppedLine: isSteppedline,
-		            lineTension: 0,
-		            cfwSum: 0,
-		            cfwCount: 0
-				};
-			
-		}
-		
-		var value = currentRecord[settings.yfield];
-		
-		if(settings.xfield == null){
-			datasets[label].data.push(value);
-			//datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
-			//datasets[label].cfwCount += 1;
-		}else{
-			datasets[label].data.push({
-				x: currentRecord[settings.xfield], 
-				y: value
-			});
-			//datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
-			//datasets[label].cfwCount += 1;
-		}
-	}
+	var datasets = cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settings)
 	
 	//========================================
 	// Create ChartJS Data Object
@@ -1187,6 +1144,59 @@ function cfw_renderer_chart(renderDef) {
 }
 
 CFW.render.registerRenderer("chart", new CFWRenderer(cfw_renderer_chart) );
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settings) {
+	
+	var datasets = {};
+	var hue = 120; 
+
+	for(var i = 0; i < renderDef.data.length; i++){
+		var currentRecord = renderDef.data[i];
+		
+		//----------------------------
+		// Create Label & Dataset
+		var label = renderDef.getTitleString(currentRecord);
+		if(datasets[label] == undefined){
+			hue += 40;
+			var borderColor = CFW.colors.randomHSL(hue,65,100,55,70);
+			var bgColor = borderColor.replace('1.0)', '0.65)');
+			datasets[label] = {
+					label: label, 
+					data: [], 
+					backgroundColor: bgColor,
+					fill: settings.doFill,
+		            borderColor: borderColor,
+		            borderWidth: 1,
+		            spanGaps: false,
+		            steppedLine: settings.isSteppedline,
+		            lineTension: 0,
+		            cfwSum: 0,
+		            cfwCount: 0
+				};
+			
+		}
+		
+		var value = currentRecord[settings.yfield];
+		
+		if(settings.xfield == null){
+			datasets[label].data.push(value);
+			//datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
+			//datasets[label].cfwCount += 1;
+		}else{
+			datasets[label].data.push({
+				x: currentRecord[settings.xfield], 
+				y: value
+			});
+			//datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
+			//datasets[label].cfwCount += 1;
+		}
+	}
+	
+	return datasets;
+}
 
 /******************************************************************
  * 

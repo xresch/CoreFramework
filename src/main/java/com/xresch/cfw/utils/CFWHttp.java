@@ -618,6 +618,26 @@ public class CFWHttp {
 			return body;
 		}
 		
+		
+
+		
+		/******************************************************************************************************
+		 * Get the body content of the request as a JsonArray.
+		 * @param url used for the request.
+		 * @return JsonArray or null
+		 ******************************************************************************************************/
+		public JsonObject getRequestBodyAsJsonObject(){
+			
+			JsonElement jsonElement = CFW.JSON.fromJson(body);
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+			
+			if(jsonObject == null) {
+				new CFWLog(responseLogger).severe("Error occured while converting http response body to JSON Object.");
+			}
+			
+			return jsonObject;
+
+		}
 		/******************************************************************************************************
 		 * Get the body content of the request as a JsonArray.
 		 * @param url used for the request.
