@@ -858,6 +858,8 @@ function cfw_renderer_chart(renderDef) {
 	var defaultSettings = {
 		// The type of the chart: line|steppedline|area|steppedarea|bar|scatter (to be done radar|pie|doughnut|polarArea|bubble)
 		charttype: 'line',
+		// How should the input data be handled groupbytitle|arrays 
+		datamode: 'groupbytitle',
 		// stack the bars, lines etc...
 		stacked: false,
 		// show or hide the legend
@@ -932,7 +934,12 @@ function cfw_renderer_chart(renderDef) {
 	
 	//========================================
 	// Create Datasets
-	var datasets = cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settings)
+	var datasets;
+	if(settings.datamode == 'groupbytitle'){
+		var datasets = cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settings);
+	}else if(settings.datamode == 'arrays'){
+		var datasets = cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings);
+	}
 	
 	//========================================
 	// Create ChartJS Data Object
@@ -1197,6 +1204,59 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 	
 	return datasets;
 }
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
+	
+	var datasets = {};
+	var hue = 120; 
+
+	for(var i = 0; i < renderDef.data.length; i++){
+		var currentRecord = renderDef.data[i];
+		
+		//----------------------------
+		// Create Label & Dataset
+		var label = renderDef.getTitleString(currentRecord);
+		if(datasets[label] == undefined){
+			hue += 40;
+			var borderColor = CFW.colors.randomHSL(hue,65,100,55,70);
+			var bgColor = borderColor.replace('1.0)', '0.65)');
+			datasets[label] = {
+					label: label, 
+					data: [], 
+					backgroundColor: bgColor,
+					fill: settings.doFill,
+		            borderColor: borderColor,
+		            borderWidth: 1,
+		            spanGaps: false,
+		            steppedLine: settings.isSteppedline,
+		            lineTension: 0,
+		            cfwSum: 0,
+		            cfwCount: 0
+				};
+			
+		}
+		
+		var yArray = currentRecord[settings.yfield];
+		
+		if(settings.xfield == null){
+			datasets[label].data = yArray;
+		}else{
+			var xArray = currentRecord[settings.xfield];
+			
+			for(let i = 0; i < xArray.length; i++)
+			datasets[label].data.push({
+				x: xArray[i], 
+				y: yArray[i]
+			});
+		}
+	}
+	
+	return datasets;
+}
+
 
 /******************************************************************
  * 

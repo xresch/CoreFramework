@@ -84,6 +84,7 @@ DONE
 - /metrics: added counter for API calls
 - /metrics: added counter for outgoing HTTP calls
 - cfw_components.js >> CFWRenderer: Improved getTitleStringMethod.
+- Chart Renderer: added parameter datamode
 - Fixed assembly not refreshing unique etags on changed content
 - API Token: Added reminder message to add permissions to newly created tokens
 ------- v2.0.0 -------
