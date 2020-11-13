@@ -1022,6 +1022,17 @@ function cfw_renderer_chart(renderDef) {
 							enabled: true,
 							//fontStyle: 'bold'
 						},
+						// Custom Tick Format
+						callback: function(value, index, values) {
+							
+							if(value > 1000000){
+								return value / 1000000 +" M";
+							}else if(value > 1000){
+									return value / 1000 +" K";
+							}else{
+								return value;
+							}
+	                    }
 					},
 				}]
 			},
