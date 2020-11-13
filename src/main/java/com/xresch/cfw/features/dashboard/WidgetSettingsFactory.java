@@ -20,6 +20,30 @@ public class WidgetSettingsFactory {
 		linearChartTypes.put("steppedarea", "Stepped Area");
 		
 	}
+		
+	/************************************************************************************
+	 *  
+	 * @return
+	 ************************************************************************************/
+	public static CFWField<?> createDisplayAsSelect(String[] rendererNames, String defaultValue ){
+		return 	CFWField.newString(FormFieldType.SELECT, "renderer")
+					.setLabel("{!cfw_widget_displayas!}")
+					.setDescription("{!cfw_widget_displayas_desc!}")
+					.setOptions(rendererNames)
+					.setValue(defaultValue);
+		
+	}
+	
+	/************************************************************************************
+	 *  
+	 * @return
+	 ************************************************************************************/
+	public static CFWField<?> createDisableBoolean(){
+		return 	CFWField.newBoolean(FormFieldType.BOOLEAN, "disable")
+					.setLabel("{!cfw_widget_disable!}")
+					.setDescription("{!cfw_widget_disable_desc!}")
+					.setValue(false);
+	}
 	
 	/************************************************************************************
 	 * Returns the default example data boolean field.
@@ -32,6 +56,38 @@ public class WidgetSettingsFactory {
 		.setDescription("{!cfw_widget_sampledata_desc!}")
 		.setValue(false);
 	}
+	
+	
+	/************************************************************************************
+	 * Create settings used for tiles: sizefactor, borderstyle, showlabels.
+	 * 
+	 * @return
+	 ************************************************************************************/
+	public static LinkedHashMap<String,CFWField<?>> createTilesSettingsFields(){
+		LinkedHashMap<String,CFWField<?>> fieldsMap = new LinkedHashMap<String,CFWField<?>>();
+		
+		fieldsMap.put("sizefactor", CFWField.newString(FormFieldType.SELECT, "sizefactor")
+				.setLabel("{!cfw_widget_tilessizefactor!}")
+				.setDescription("{!cfw_widget_tilessizefactor_desc!}")
+				.setOptions(new String[]{"0.25", "0.5", "0.75", "1", "1.25", "1.5", "1.75", "2.0", "2.5", "3.0"})
+				.setValue("1"));
+		
+		fieldsMap.put("borderstyle", CFWField.newString(FormFieldType.SELECT, "borderstyle")
+				.setLabel("{!cfw_widget_tilesborderstyle!}")
+				.setDescription("{!cfw_widget_tilesborderstyle_desc!}")
+				.setOptions(new String[]{"None", "Round", "Superround", "Asymmetric", "Superasymmetric", "Ellipsis"})
+				.setValue("None")
+				);		
+		
+		fieldsMap.put("showlabels", CFWField.newBoolean(FormFieldType.BOOLEAN, "showlabels")
+				.setLabel("{!cfw_widget_tilesshowlabels!}")
+				.setDescription("{!cfw_widget_tilesshowlabels_desc!}")
+				.setValue(true)
+				);	
+			
+		return fieldsMap;
+	}
+	
 	/************************************************************************************
 	 * Returns default threshold fields as a LinkedHashMap.
 	 * 

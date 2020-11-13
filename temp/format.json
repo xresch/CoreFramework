@@ -1,1 +1,3504 @@
-{}
+{
+	"totalCount": 1965,
+	"nextPageKey": "__-rq96t3q0BAgAHAQAmYnVpbHRpbjpjbG91ZC5rdWJlcm5ldGVzLnBvZC5jcHVMaW1pdHMAAAAAAAAB9AABAAEqAAD__6ur3q3erQ",
+	"metrics": [
+		{
+			"metricId": "builtin:apps.other.apdex.osAndGeo",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.apdex.osAndVersion",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.crashAffectedUsers.os",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.crashAffectedUsersRate.os",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.crashCount.osAndGeo",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.crashCount.osAndVersion",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.keyUserActions.apdexValue.os",
+			"entityType": [
+				"DEVICE_APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.keyUserActions.count.osAndApdex",
+			"entityType": [
+				"DEVICE_APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.keyUserActions.duration.os",
+			"entityType": [
+				"DEVICE_APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.keyUserActions.reportedErrorCount.os",
+			"entityType": [
+				"DEVICE_APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.keyUserActions.requestCount.os",
+			"entityType": [
+				"DEVICE_APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.keyUserActions.requestDuration.os",
+			"entityType": [
+				"DEVICE_APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.keyUserActions.requestErrorCount.os",
+			"entityType": [
+				"DEVICE_APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.keyUserActions.requestErrorRate.os",
+			"entityType": [
+				"DEVICE_APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.newUsers.os",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.requestCount.osAndProvider",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.requestCount.osAndVersion",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.requestErrorCount.osAndProvider",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.requestErrorCount.osAndVersion",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.requestErrorRate.osAndProvider",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.requestErrorRate.osAndVersion",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.requestTimes.osAndProvider",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.requestTimes.osAndVersion",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.sessionCount.agentVersionAndOs",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.sessionCount.osAndCrashReportingLevel",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.sessionCount.osAndDataCollectionLevel",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.sessionCount.osAndGeo",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.uaCount.geoAndApdex",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.uaCount.osAndApdex",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.uaCount.osAndVersion",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.uaDuration.osAndVersion",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.other.userCount.osAndGeo",
+			"entityType": [
+				"CUSTOM_APPLICATION",
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.affectedUas",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.apdex",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.count.custom.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.count.load.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.count.xhr.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.domInteractive.load.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.duration.custom.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.duration.load.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.duration.xhr.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.firstByte.load.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.firstByte.xhr.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.loadEventEnd.load.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.loadEventStart.load.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.networkContribution.load",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.networkContribution.xhr",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.responseEnd.load.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.responseEnd.xhr.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.serverContribution.load",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.serverContribution.xhr",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.speedIndex.load.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.visuallyComplete.load.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.visuallyComplete.xhr.browser",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.countOfErrors",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.countOfUserActionsWithErrors",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.jsErrorsDuringUa",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.jsErrorsWithoutUa",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.action.percentageOfUserActionsAffectedByErrors",
+			"entityType": [
+				"APPLICATION_METHOD"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.actionCount.custom.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.actionCount.load.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.actionCount.xhr.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.actionCount.category",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.actionCount.summary",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.actionDuration.custom.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.actionDuration.load.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.actionDuration.xhr.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.actionsPerSession",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.activeSessions",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.activeUsersEst",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.affectedUas",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.apdex.userType",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.apdex.userType.geoBig",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.bouncedSessionRatio",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.conversionRate",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.converted",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.domInteractive.load.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.endedSessions",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.firstByte.load.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.firstByte.xhr.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.loadEventEnd.load.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.loadEventStart.load.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.networkContribution.load",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.networkContribution.xhr",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.responseEnd.load.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.responseEnd.xhr.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.serverContribution.load",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.serverContribution.xhr",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.sessionDuration",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.speedIndex.load.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.startedSessions",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.visuallyComplete.load.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.visuallyComplete.xhr.browser",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.countOfErrors",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.countOfErrorsDuringUserActions",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.countOfStandaloneErrors",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.countOfUserActionsWithErrors",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.errorCountForDavis",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.jsErrorsDuringUa",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.jsErrorsWithoutUa",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:apps.web.percentageOfUserActionsAffectedByErrors",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:billing.apps.custom.sessionsWithoutReplayByApplication",
+			"entityType": [
+				"CUSTOM_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:billing.apps.custom.userActionPropertiesByDeviceApplication",
+			"entityType": [
+				"CUSTOM_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:billing.apps.mobile.sessionsWithoutReplayByApplication",
+			"entityType": [
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:billing.apps.mobile.userActionPropertiesByMobileApplication",
+			"entityType": [
+				"MOBILE_APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:billing.apps.web.sessionsWithReplayByApplication",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:billing.apps.web.sessionsWithoutReplayByApplication",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:billing.apps.web.userActionPropertiesByApplication",
+			"entityType": [
+				"APPLICATION"
+			]
+		},
+		{
+			"metricId": "builtin:billing.ddu.log.byDescription",
+			"entityType": []
+		},
+		{
+			"metricId": "builtin:billing.ddu.log.byEntity",
+			"entityType": [
+				"APM_AGENT",
+				"APM_CLUSTER",
+				"APM_CLUSTER_NODE",
+				"APM_SECURITY_GATEWAY",
+				"APM_SERVER",
+				"APM_TENANT",
+				"APPLICATION",
+				"APPLICATION_METHOD",
+				"APPLICATION_METHOD_GROUP",
+				"APPMON_SERVER",
+				"APPMON_SYSTEM_PROFILE",
+				"AUTO_SCALING_GROUP",
+				"AWS_APPLICATION_LOAD_BALANCER",
+				"AWS_AVAILABILITY_ZONE",
+				"AWS_CREDENTIALS",
+				"AWS_LAMBDA_FUNCTION",
+				"AWS_NETWORK_LOAD_BALANCER",
+				"AZURE_API_MANAGEMENT_SERVICE",
+				"AZURE_APPLICATION_GATEWAY",
+				"AZURE_APP_SERVICE_PLAN",
+				"AZURE_COSMOS_DB",
+				"AZURE_CREDENTIALS",
+				"AZURE_EVENT_HUB",
+				"AZURE_EVENT_HUB_NAMESPACE",
+				"AZURE_FUNCTION_APP",
+				"AZURE_IOT_HUB",
+				"AZURE_LOAD_BALANCER",
+				"AZURE_MGMT_GROUP",
+				"AZURE_REDIS_CACHE",
+				"AZURE_REGION",
+				"AZURE_SERVICE_BUS_NAMESPACE",
+				"AZURE_SERVICE_BUS_QUEUE",
+				"AZURE_SERVICE_BUS_TOPIC",
+				"AZURE_SQL_DATABASE",
+				"AZURE_SQL_ELASTIC_POOL",
+				"AZURE_SQL_SERVER",
+				"AZURE_STORAGE_ACCOUNT",
+				"AZURE_SUBSCRIPTION",
+				"AZURE_TENANT",
+				"AZURE_VM",
+				"AZURE_VM_SCALE_SET",
+				"AZURE_WEB_APP",
+				"BOSH_DEPLOYMENT",
+				"BROWSER",
+				"CF_APPLICATION",
+				"CF_APPLICATION_INSTANCE",
+				"CF_FOUNDATION",
+				"CF_ORG",
+				"CF_SPACE",
+				"CINDER_VOLUME",
+				"CLOUD_APPLICATION",
+				"CLOUD_APPLICATION_INSTANCE",
+				"CLOUD_APPLICATION_NAMESPACE",
+				"CONTAINER_GROUP",
+				"CONTAINER_GROUP_INSTANCE",
+				"CREDENTIALS_VAULT",
+				"CUSTOM_APPLICATION",
+				"CUSTOM_DEVICE",
+				"CUSTOM_DEVICE_GROUP",
+				"DATASTORE",
+				"DB_ENDPOINT",
+				"DB_ENDPOINT_GROUP",
+				"DCRUM_APPLICATION",
+				"DCRUM_SERVICE",
+				"DCRUM_SERVICE_INSTANCE",
+				"DEVICE_APPLICATION_METHOD",
+				"DEVICE_APPLICATION_METHOD_GROUP",
+				"DISK",
+				"DOCKER_CONTAINER_GROUP",
+				"DOCKER_CONTAINER_GROUP_INSTANCE",
+				"DYNAMO_DB_TABLE",
+				"EBS_VOLUME",
+				"EC2_INSTANCE",
+				"ELASTIC_LOAD_BALANCER",
+				"ENVIRONMENT",
+				"EXTENSION_TASK_CONFIGURATION",
+				"EXTERNAL_SYNTHETIC_TEST",
+				"EXTERNAL_SYNTHETIC_TEST_STEP",
+				"GCP_ZONE",
+				"GEOLOCATION",
+				"GEOLOC_SITE",
+				"GOOGLE_COMPUTE_ENGINE",
+				"HOST",
+				"HOST_GROUP",
+				"HTTP_CHECK",
+				"HTTP_CHECK_STEP",
+				"HYPERVISOR",
+				"HYPERVISOR_CLUSTER",
+				"HYPERVISOR_DISK",
+				"KUBERNETES_CLUSTER",
+				"KUBERNETES_NODE",
+				"LOG_INSTANCE",
+				"MEASUREMENT",
+				"MEASUREMENT_GROUP",
+				"MOBILE_APPLICATION",
+				"NETWORK_INTERFACE",
+				"NEUTRON_SUBNET",
+				"OPENSTACK_AVAILABILITY_ZONE",
+				"OPENSTACK_COMPUTE_NODE",
+				"OPENSTACK_CREDENTIALS",
+				"OPENSTACK_PROJECT",
+				"OPENSTACK_REGION",
+				"OPENSTACK_VM",
+				"OS",
+				"PROCESS_GROUP",
+				"PROCESS_GROUP_INSTANCE",
+				"QUEUE",
+				"QUEUE_INSTANCE",
+				"RELATIONAL_DATABASE_SERVICE",
+				"REMOTE_PLUGIN_MODULE",
+				"REQUEST_ATTRIBUTE",
+				"S3BUCKET",
+				"SERVICE",
+				"SERVICE_INSTANCE",
+				"SERVICE_METHOD",
+				"SERVICE_METHOD_GROUP",
+				"SOFTWARE_COMPONENT",
+				"SWIFT_CONTAINER",
+				"SYNTHETIC_LOCATION",
+				"SYNTHETIC_TEST",
+				"SYNTHETIC_TEST_STEP",
+				"VCENTER",
+				"VIRTUALMACHINE",
+				"VMWARE_DATACENTER"
+			]
+		},
+		{
+			"metricId": "builtin:billing.ddu.log.total",
+			"entityType": []
+		},
+		{
+			"metricId": "builtin:billing.ddu.metrics.byEntity",
+			"entityType": [
+				"APM_AGENT",
+				"APM_CLUSTER",
+				"APM_CLUSTER_NODE",
+				"APM_SECURITY_GATEWAY",
+				"APM_SERVER",
+				"APM_TENANT",
+				"APPLICATION",
+				"APPLICATION_METHOD",
+				"APPLICATION_METHOD_GROUP",
+				"APPMON_SERVER",
+				"APPMON_SYSTEM_PROFILE",
+				"AUTO_SCALING_GROUP",
+				"AWS_APPLICATION_LOAD_BALANCER",
+				"AWS_AVAILABILITY_ZONE",
+				"AWS_CREDENTIALS",
+				"AWS_LAMBDA_FUNCTION",
+				"AWS_NETWORK_LOAD_BALANCER",
+				"AZURE_API_MANAGEMENT_SERVICE",
+				"AZURE_APPLICATION_GATEWAY",
+				"AZURE_APP_SERVICE_PLAN",
+				"AZURE_COSMOS_DB",
+				"AZURE_CREDENTIALS",
+				"AZURE_EVENT_HUB",
+				"AZURE_EVENT_HUB_NAMESPACE",
+				"AZURE_FUNCTION_APP",
+				"AZURE_IOT_HUB",
+				"AZURE_LOAD_BALANCER",
+				"AZURE_MGMT_GROUP",
+				"AZURE_REDIS_CACHE",
+				"AZURE_REGION",
+				"AZURE_SERVICE_BUS_NAMESPACE",
+				"AZURE_SERVICE_BUS_QUEUE",
+				"AZURE_SERVICE_BUS_TOPIC",
+				"AZURE_SQL_DATABASE",
+				"AZURE_SQL_ELASTIC_POOL",
+				"AZURE_SQL_SERVER",
+				"AZURE_STORAGE_ACCOUNT",
+				"AZURE_SUBSCRIPTION",
+				"AZURE_TENANT",
+				"AZURE_VM",
+				"AZURE_VM_SCALE_SET",
+				"AZURE_WEB_APP",
+				"BOSH_DEPLOYMENT",
+				"BROWSER",
+				"CF_APPLICATION",
+				"CF_APPLICATION_INSTANCE",
+				"CF_FOUNDATION",
+				"CF_ORG",
+				"CF_SPACE",
+				"CINDER_VOLUME",
+				"CLOUD_APPLICATION",
+				"CLOUD_APPLICATION_INSTANCE",
+				"CLOUD_APPLICATION_NAMESPACE",
+				"CONTAINER_GROUP",
+				"CONTAINER_GROUP_INSTANCE",
+				"CREDENTIALS_VAULT",
+				"CUSTOM_APPLICATION",
+				"CUSTOM_DEVICE",
+				"CUSTOM_DEVICE_GROUP",
+				"DATASTORE",
+				"DB_ENDPOINT",
+				"DB_ENDPOINT_GROUP",
+				"DCRUM_APPLICATION",
+				"DCRUM_SERVICE",
+				"DCRUM_SERVICE_INSTANCE",
+				"DEVICE_APPLICATION_METHOD",
+				"DEVICE_APPLICATION_METHOD_GROUP",
+				"DISK",
+				"DOCKER_CONTAINER_GROUP",
+				"DOCKER_CONTAINER_GROUP_INSTANCE",
+				"DYNAMO_DB_TABLE",
+				"EBS_VOLUME",
+				"EC2_INSTANCE",
+				"ELASTIC_LOAD_BALANCER",
+				"ENVIRONMENT",
+				"EXTENSION_TASK_CONFIGURATION",
+				"EXTERNAL_SYNTHETIC_TEST",
+				"EXTERNAL_SYNTHETIC_TEST_STEP",
+				"GCP_ZONE",
+				"GEOLOCATION",
+				"GEOLOC_SITE",
+				"GOOGLE_COMPUTE_ENGINE",
+				"HOST",
+				"HOST_GROUP",
+				"HTTP_CHECK",
+				"HTTP_CHECK_STEP",
+				"HYPERVISOR",
+				"HYPERVISOR_CLUSTER",
+				"HYPERVISOR_DISK",
+				"KUBERNETES_CLUSTER",
+				"KUBERNETES_NODE",
+				"LOG_INSTANCE",
+				"MEASUREMENT",
+				"MEASUREMENT_GROUP",
+				"MOBILE_APPLICATION",
+				"NETWORK_INTERFACE",
+				"NEUTRON_SUBNET",
+				"OPENSTACK_AVAILABILITY_ZONE",
+				"OPENSTACK_COMPUTE_NODE",
+				"OPENSTACK_CREDENTIALS",
+				"OPENSTACK_PROJECT",
+				"OPENSTACK_REGION",
+				"OPENSTACK_VM",
+				"OS",
+				"PROCESS_GROUP",
+				"PROCESS_GROUP_INSTANCE",
+				"QUEUE",
+				"QUEUE_INSTANCE",
+				"RELATIONAL_DATABASE_SERVICE",
+				"REMOTE_PLUGIN_MODULE",
+				"REQUEST_ATTRIBUTE",
+				"S3BUCKET",
+				"SERVICE",
+				"SERVICE_INSTANCE",
+				"SERVICE_METHOD",
+				"SERVICE_METHOD_GROUP",
+				"SOFTWARE_COMPONENT",
+				"SWIFT_CONTAINER",
+				"SYNTHETIC_LOCATION",
+				"SYNTHETIC_TEST",
+				"SYNTHETIC_TEST_STEP",
+				"VCENTER",
+				"VIRTUALMACHINE",
+				"VMWARE_DATACENTER"
+			]
+		},
+		{
+			"metricId": "builtin:billing.ddu.metrics.byEntityRaw",
+			"entityType": [
+				"APM_AGENT",
+				"APM_CLUSTER",
+				"APM_CLUSTER_NODE",
+				"APM_SECURITY_GATEWAY",
+				"APM_SERVER",
+				"APM_TENANT",
+				"APPLICATION",
+				"APPLICATION_METHOD",
+				"APPLICATION_METHOD_GROUP",
+				"APPMON_SERVER",
+				"APPMON_SYSTEM_PROFILE",
+				"AUTO_SCALING_GROUP",
+				"AWS_APPLICATION_LOAD_BALANCER",
+				"AWS_AVAILABILITY_ZONE",
+				"AWS_CREDENTIALS",
+				"AWS_LAMBDA_FUNCTION",
+				"AWS_NETWORK_LOAD_BALANCER",
+				"AZURE_API_MANAGEMENT_SERVICE",
+				"AZURE_APPLICATION_GATEWAY",
+				"AZURE_APP_SERVICE_PLAN",
+				"AZURE_COSMOS_DB",
+				"AZURE_CREDENTIALS",
+				"AZURE_EVENT_HUB",
+				"AZURE_EVENT_HUB_NAMESPACE",
+				"AZURE_FUNCTION_APP",
+				"AZURE_IOT_HUB",
+				"AZURE_LOAD_BALANCER",
+				"AZURE_MGMT_GROUP",
+				"AZURE_REDIS_CACHE",
+				"AZURE_REGION",
+				"AZURE_SERVICE_BUS_NAMESPACE",
+				"AZURE_SERVICE_BUS_QUEUE",
+				"AZURE_SERVICE_BUS_TOPIC",
+				"AZURE_SQL_DATABASE",
+				"AZURE_SQL_ELASTIC_POOL",
+				"AZURE_SQL_SERVER",
+				"AZURE_STORAGE_ACCOUNT",
+				"AZURE_SUBSCRIPTION",
+				"AZURE_TENANT",
+				"AZURE_VM",
+				"AZURE_VM_SCALE_SET",
+				"AZURE_WEB_APP",
+				"BOSH_DEPLOYMENT",
+				"BROWSER",
+				"CF_APPLICATION",
+				"CF_APPLICATION_INSTANCE",
+				"CF_FOUNDATION",
+				"CF_ORG",
+				"CF_SPACE",
+				"CINDER_VOLUME",
+				"CLOUD_APPLICATION",
+				"CLOUD_APPLICATION_INSTANCE",
+				"CLOUD_APPLICATION_NAMESPACE",
+				"CONTAINER_GROUP",
+				"CONTAINER_GROUP_INSTANCE",
+				"CREDENTIALS_VAULT",
+				"CUSTOM_APPLICATION",
+				"CUSTOM_DEVICE",
+				"CUSTOM_DEVICE_GROUP",
+				"DATASTORE",
+				"DB_ENDPOINT",
+				"DB_ENDPOINT_GROUP",
+				"DCRUM_APPLICATION",
+				"DCRUM_SERVICE",
+				"DCRUM_SERVICE_INSTANCE",
+				"DEVICE_APPLICATION_METHOD",
+				"DEVICE_APPLICATION_METHOD_GROUP",
+				"DISK",
+				"DOCKER_CONTAINER_GROUP",
+				"DOCKER_CONTAINER_GROUP_INSTANCE",
+				"DYNAMO_DB_TABLE",
+				"EBS_VOLUME",
+				"EC2_INSTANCE",
+				"ELASTIC_LOAD_BALANCER",
+				"ENVIRONMENT",
+				"EXTENSION_TASK_CONFIGURATION",
+				"EXTERNAL_SYNTHETIC_TEST",
+				"EXTERNAL_SYNTHETIC_TEST_STEP",
+				"GCP_ZONE",
+				"GEOLOCATION",
+				"GEOLOC_SITE",
+				"GOOGLE_COMPUTE_ENGINE",
+				"HOST",
+				"HOST_GROUP",
+				"HTTP_CHECK",
+				"HTTP_CHECK_STEP",
+				"HYPERVISOR",
+				"HYPERVISOR_CLUSTER",
+				"HYPERVISOR_DISK",
+				"KUBERNETES_CLUSTER",
+				"KUBERNETES_NODE",
+				"LOG_INSTANCE",
+				"MEASUREMENT",
+				"MEASUREMENT_GROUP",
+				"MOBILE_APPLICATION",
+				"NETWORK_INTERFACE",
+				"NEUTRON_SUBNET",
+				"OPENSTACK_AVAILABILITY_ZONE",
+				"OPENSTACK_COMPUTE_NODE",
+				"OPENSTACK_CREDENTIALS",
+				"OPENSTACK_PROJECT",
+				"OPENSTACK_REGION",
+				"OPENSTACK_VM",
+				"OS",
+				"PROCESS_GROUP",
+				"PROCESS_GROUP_INSTANCE",
+				"QUEUE",
+				"QUEUE_INSTANCE",
+				"RELATIONAL_DATABASE_SERVICE",
+				"REMOTE_PLUGIN_MODULE",
+				"REQUEST_ATTRIBUTE",
+				"S3BUCKET",
+				"SERVICE",
+				"SERVICE_INSTANCE",
+				"SERVICE_METHOD",
+				"SERVICE_METHOD_GROUP",
+				"SOFTWARE_COMPONENT",
+				"SWIFT_CONTAINER",
+				"SYNTHETIC_LOCATION",
+				"SYNTHETIC_TEST",
+				"SYNTHETIC_TEST_STEP",
+				"VCENTER",
+				"VIRTUALMACHINE",
+				"VMWARE_DATACENTER"
+			]
+		},
+		{
+			"metricId": "builtin:billing.ddu.metrics.byMetric",
+			"entityType": []
+		},
+		{
+			"metricId": "builtin:billing.ddu.metrics.total",
+			"entityType": []
+		},
+		{
+			"metricId": "builtin:billing.ddu.serverless.byDescription",
+			"entityType": []
+		},
+		{
+			"metricId": "builtin:billing.ddu.serverless.byEntity",
+			"entityType": [
+				"APM_AGENT",
+				"APM_CLUSTER",
+				"APM_CLUSTER_NODE",
+				"APM_SECURITY_GATEWAY",
+				"APM_SERVER",
+				"APM_TENANT",
+				"APPLICATION",
+				"APPLICATION_METHOD",
+				"APPLICATION_METHOD_GROUP",
+				"APPMON_SERVER",
+				"APPMON_SYSTEM_PROFILE",
+				"AUTO_SCALING_GROUP",
+				"AWS_APPLICATION_LOAD_BALANCER",
+				"AWS_AVAILABILITY_ZONE",
+				"AWS_CREDENTIALS",
+				"AWS_LAMBDA_FUNCTION",
+				"AWS_NETWORK_LOAD_BALANCER",
+				"AZURE_API_MANAGEMENT_SERVICE",
+				"AZURE_APPLICATION_GATEWAY",
+				"AZURE_APP_SERVICE_PLAN",
+				"AZURE_COSMOS_DB",
+				"AZURE_CREDENTIALS",
+				"AZURE_EVENT_HUB",
+				"AZURE_EVENT_HUB_NAMESPACE",
+				"AZURE_FUNCTION_APP",
+				"AZURE_IOT_HUB",
+				"AZURE_LOAD_BALANCER",
+				"AZURE_MGMT_GROUP",
+				"AZURE_REDIS_CACHE",
+				"AZURE_REGION",
+				"AZURE_SERVICE_BUS_NAMESPACE",
+				"AZURE_SERVICE_BUS_QUEUE",
+				"AZURE_SERVICE_BUS_TOPIC",
+				"AZURE_SQL_DATABASE",
+				"AZURE_SQL_ELASTIC_POOL",
+				"AZURE_SQL_SERVER",
+				"AZURE_STORAGE_ACCOUNT",
+				"AZURE_SUBSCRIPTION",
+				"AZURE_TENANT",
+				"AZURE_VM",
+				"AZURE_VM_SCALE_SET",
+				"AZURE_WEB_APP",
+				"BOSH_DEPLOYMENT",
+				"BROWSER",
+				"CF_APPLICATION",
+				"CF_APPLICATION_INSTANCE",
+				"CF_FOUNDATION",
+				"CF_ORG",
+				"CF_SPACE",
+				"CINDER_VOLUME",
+				"CLOUD_APPLICATION",
+				"CLOUD_APPLICATION_INSTANCE",
+				"CLOUD_APPLICATION_NAMESPACE",
+				"CONTAINER_GROUP",
+				"CONTAINER_GROUP_INSTANCE",
+				"CREDENTIALS_VAULT",
+				"CUSTOM_APPLICATION",
+				"CUSTOM_DEVICE",
+				"CUSTOM_DEVICE_GROUP",
+				"DATASTORE",
+				"DB_ENDPOINT",
+				"DB_ENDPOINT_GROUP",
+				"DCRUM_APPLICATION",
+				"DCRUM_SERVICE",
+				"DCRUM_SERVICE_INSTANCE",
+				"DEVICE_APPLICATION_METHOD",
+				"DEVICE_APPLICATION_METHOD_GROUP",
+				"DISK",
+				"DOCKER_CONTAINER_GROUP",
+				"DOCKER_CONTAINER_GROUP_INSTANCE",
+				"DYNAMO_DB_TABLE",
+				"EBS_VOLUME",
+				"EC2_INSTANCE",
+				"ELASTIC_LOAD_BALANCER",
+				"ENVIRONMENT",
+				"EXTENSION_TASK_CONFIGURATION",
+				"EXTERNAL_SYNTHETIC_TEST",
+				"EXTERNAL_SYNTHETIC_TEST_STEP",
+				"GCP_ZONE",
+				"GEOLOCATION",
+				"GEOLOC_SITE",
+				"GOOGLE_COMPUTE_ENGINE",
+				"HOST",
+				"HOST_GROUP",
+				"HTTP_CHECK",
+				"HTTP_CHECK_STEP",
+				"HYPERVISOR",
+				"HYPERVISOR_CLUSTER",
+				"HYPERVISOR_DISK",
+				"KUBERNETES_CLUSTER",
+				"KUBERNETES_NODE",
+				"LOG_INSTANCE",
+				"MEASUREMENT",
+				"MEASUREMENT_GROUP",
+				"MOBILE_APPLICATION",
+				"NETWORK_INTERFACE",
+				"NEUTRON_SUBNET",
+				"OPENSTACK_AVAILABILITY_ZONE",
+				"OPENSTACK_COMPUTE_NODE",
+				"OPENSTACK_CREDENTIALS",
+				"OPENSTACK_PROJECT",
+				"OPENSTACK_REGION",
+				"OPENSTACK_VM",
+				"OS",
+				"PROCESS_GROUP",
+				"PROCESS_GROUP_INSTANCE",
+				"QUEUE",
+				"QUEUE_INSTANCE",
+				"RELATIONAL_DATABASE_SERVICE",
+				"REMOTE_PLUGIN_MODULE",
+				"REQUEST_ATTRIBUTE",
+				"S3BUCKET",
+				"SERVICE",
+				"SERVICE_INSTANCE",
+				"SERVICE_METHOD",
+				"SERVICE_METHOD_GROUP",
+				"SOFTWARE_COMPONENT",
+				"SWIFT_CONTAINER",
+				"SYNTHETIC_LOCATION",
+				"SYNTHETIC_TEST",
+				"SYNTHETIC_TEST_STEP",
+				"VCENTER",
+				"VIRTUALMACHINE",
+				"VMWARE_DATACENTER"
+			]
+		},
+		{
+			"metricId": "builtin:billing.ddu.serverless.total",
+			"entityType": []
+		},
+		{
+			"metricId": "builtin:billing.ddu.includedMetricPerHost",
+			"entityType": [
+				"HOST"
+			]
+		},
+		{
+			"metricId": "builtin:billing.synthetic.actions",
+			"entityType": [
+				"SYNTHETIC_TEST"
+			]
+		},
+		{
+			"metricId": "builtin:billing.synthetic.external",
+			"entityType": [
+				"EXTERNAL_SYNTHETIC_TEST"
+			]
+		},
+		{
+			"metricId": "builtin:billing.synthetic.requests",
+			"entityType": [
+				"HTTP_CHECK"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.connections.active",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.connections.new",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.errors.alb.http4xx",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.errors.alb.http5xx",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.errors.target.http4xx",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.errors.target.http5xx",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.errors.rejCon",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.errors.targConn",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.errors.tlsNeg",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.bytes",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.lcus",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.requests",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.alb.respTime",
+			"entityType": [
+				"AWS_APPLICATION_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.asg.running",
+			"entityType": [
+				"AUTO_SCALING_GROUP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.asg.stopped",
+			"entityType": [
+				"AUTO_SCALING_GROUP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.asg.terminated",
+			"entityType": [
+				"AUTO_SCALING_GROUP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.az.running",
+			"entityType": [
+				"AWS_CREDENTIALS"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.az.stopped",
+			"entityType": [
+				"AWS_CREDENTIALS"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.az.terminated",
+			"entityType": [
+				"AWS_CREDENTIALS"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.capacityUnits.consumed.read",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.capacityUnits.consumed.write",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.capacityUnits.provisioned.read",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.capacityUnits.provisioned.write",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.capacityUnits.read",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.capacityUnits.write",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.errors.system",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.errors.user",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.requests.latency",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.requests.returnedItems",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.requests.throttled",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.throttledEvents.read",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.throttledEvents.write",
+			"entityType": [
+				"DYNAMO_DB_TABLE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.dynamo.tables",
+			"entityType": [
+				"AWS_CREDENTIALS"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ebs.latency.read",
+			"entityType": [
+				"EBS_VOLUME"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ebs.latency.write",
+			"entityType": [
+				"EBS_VOLUME"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ebs.ops.consumed",
+			"entityType": [
+				"EBS_VOLUME"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ebs.ops.read",
+			"entityType": [
+				"EBS_VOLUME"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ebs.ops.write",
+			"entityType": [
+				"EBS_VOLUME"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ebs.throughput.percent",
+			"entityType": [
+				"EBS_VOLUME"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ebs.throughput.read",
+			"entityType": [
+				"EBS_VOLUME"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ebs.throughput.write",
+			"entityType": [
+				"EBS_VOLUME"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ebs.idleTime",
+			"entityType": [
+				"EBS_VOLUME"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ebs.queue",
+			"entityType": [
+				"EBS_VOLUME"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ec2.cpu.usage",
+			"entityType": [
+				"EC2_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ec2.disk.readOps",
+			"entityType": [
+				"EC2_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ec2.disk.readRate",
+			"entityType": [
+				"EC2_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ec2.disk.writeOps",
+			"entityType": [
+				"EC2_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ec2.disk.writeRate",
+			"entityType": [
+				"EC2_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ec2.net.rx",
+			"entityType": [
+				"EC2_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.ec2.net.tx",
+			"entityType": [
+				"EC2_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.elb.errors.backend.connection",
+			"entityType": [
+				"ELASTIC_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.elb.errors.backend.http2xx",
+			"entityType": [
+				"ELASTIC_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.elb.errors.backend.http3xx",
+			"entityType": [
+				"ELASTIC_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.elb.errors.backend.http4xx",
+			"entityType": [
+				"ELASTIC_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.elb.errors.backend.http5xx",
+			"entityType": [
+				"ELASTIC_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.elb.errors.elb.http4xx",
+			"entityType": [
+				"ELASTIC_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.elb.errors.elb.http5xx",
+			"entityType": [
+				"ELASTIC_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.elb.errors.frontend",
+			"entityType": [
+				"ELASTIC_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.elb.hosts.healthy",
+			"entityType": [
+				"ELASTIC_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.elb.hosts.unhealthy",
+			"entityType": [
+				"ELASTIC_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.elb.latency",
+			"entityType": [
+				"ELASTIC_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.elb.reqCompl",
+			"entityType": [
+				"ELASTIC_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.lambda.concExecutions",
+			"entityType": [
+				"AWS_LAMBDA_FUNCTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.lambda.duration",
+			"entityType": [
+				"AWS_LAMBDA_FUNCTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.lambda.errors",
+			"entityType": [
+				"AWS_LAMBDA_FUNCTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.lambda.errorsRate",
+			"entityType": [
+				"AWS_LAMBDA_FUNCTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.lambda.invocations",
+			"entityType": [
+				"AWS_LAMBDA_FUNCTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.lambda.provConcExecutions",
+			"entityType": [
+				"AWS_LAMBDA_FUNCTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.lambda.provConcInvocations",
+			"entityType": [
+				"AWS_LAMBDA_FUNCTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.lambda.provConcSpilloverInvocations",
+			"entityType": [
+				"AWS_LAMBDA_FUNCTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.lambda.throttlers",
+			"entityType": [
+				"AWS_LAMBDA_FUNCTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.nlb.flow.active",
+			"entityType": [
+				"AWS_NETWORK_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.nlb.flow.new",
+			"entityType": [
+				"AWS_NETWORK_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.nlb.tcp.reset.client",
+			"entityType": [
+				"AWS_NETWORK_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.nlb.tcp.reset.elb",
+			"entityType": [
+				"AWS_NETWORK_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.nlb.tcp.reset.target",
+			"entityType": [
+				"AWS_NETWORK_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.nlb.bytes",
+			"entityType": [
+				"AWS_NETWORK_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.nlb.lcus",
+			"entityType": [
+				"AWS_NETWORK_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.cpu.usage",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.latency.read",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.latency.write",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.memory.freeable",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.memory.swap",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.net.rx",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.net.tx",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.ops.read",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.ops.write",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.throughput.read",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.throughput.write",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.connections",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.free",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.aws.rds.restarts",
+			"entityType": [
+				"RELATIONAL_DATABASE_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.apiMgmt.requests.failed",
+			"entityType": [
+				"AZURE_API_MANAGEMENT_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.apiMgmt.requests.other",
+			"entityType": [
+				"AZURE_API_MANAGEMENT_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.apiMgmt.requests.successful",
+			"entityType": [
+				"AZURE_API_MANAGEMENT_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.apiMgmt.requests.total",
+			"entityType": [
+				"AZURE_API_MANAGEMENT_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.apiMgmt.requests.unauth",
+			"entityType": [
+				"AZURE_API_MANAGEMENT_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.apiMgmt.capacity",
+			"entityType": [
+				"AZURE_API_MANAGEMENT_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.apiMgmt.duration",
+			"entityType": [
+				"AZURE_API_MANAGEMENT_SERVICE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appGateway.backend.settings.pool.host.healthy",
+			"entityType": [
+				"AZURE_APPLICATION_GATEWAY"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appGateway.backend.settings.pool.host.unhealthy",
+			"entityType": [
+				"AZURE_APPLICATION_GATEWAY"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appGateway.backend.settings.traffic.requests.failed",
+			"entityType": [
+				"AZURE_APPLICATION_GATEWAY"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appGateway.backend.settings.traffic.requests.total",
+			"entityType": [
+				"AZURE_APPLICATION_GATEWAY"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appGateway.http.status.response",
+			"entityType": [
+				"AZURE_APPLICATION_GATEWAY"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appGateway.network.connections.count",
+			"entityType": [
+				"AZURE_APPLICATION_GATEWAY"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appGateway.network.throughput",
+			"entityType": [
+				"AZURE_APPLICATION_GATEWAY"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.applicationQueue.requests",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.functions.applicationQueue.requests",
+			"entityType": [
+				"AZURE_FUNCTION_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.functions.execution.count",
+			"entityType": [
+				"AZURE_FUNCTION_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.functions.execution.unitsCount",
+			"entityType": [
+				"AZURE_FUNCTION_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.functions.http.status.http5xx",
+			"entityType": [
+				"AZURE_FUNCTION_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.functions.io.operations.other",
+			"entityType": [
+				"AZURE_FUNCTION_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.functions.io.operations.read",
+			"entityType": [
+				"AZURE_FUNCTION_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.functions.io.operations.write",
+			"entityType": [
+				"AZURE_FUNCTION_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.functions.io.other",
+			"entityType": [
+				"AZURE_FUNCTION_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.functions.io.read",
+			"entityType": [
+				"AZURE_FUNCTION_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.functions.io.write",
+			"entityType": [
+				"AZURE_FUNCTION_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.functions.traffic.bytesReceived",
+			"entityType": [
+				"AZURE_FUNCTION_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.functions.traffic.bytesSent",
+			"entityType": [
+				"AZURE_FUNCTION_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.http.status.http2xx",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.http.status.http403",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.http.status.http5xx",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.io.operations.other",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.io.operations.read",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.io.operations.write",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.io.other",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.io.read",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.io.write",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.response.avg",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.traffic.bytesReceived",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.traffic.bytesSent",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.appService.traffic.requests",
+			"entityType": [
+				"AZURE_WEB_APP"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.cosmos.availableStorage",
+			"entityType": [
+				"AZURE_COSMOS_DB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.cosmos.dataUsage",
+			"entityType": [
+				"AZURE_COSMOS_DB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.cosmos.documentCount",
+			"entityType": [
+				"AZURE_COSMOS_DB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.cosmos.documentQuota",
+			"entityType": [
+				"AZURE_COSMOS_DB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.cosmos.indexUsage",
+			"entityType": [
+				"AZURE_COSMOS_DB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.cosmos.metadataRequests",
+			"entityType": [
+				"AZURE_COSMOS_DB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.cosmos.provisionedThroughput",
+			"entityType": [
+				"AZURE_COSMOS_DB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.cosmos.replicationLatency",
+			"entityType": [
+				"AZURE_COSMOS_DB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.cosmos.requestUnits",
+			"entityType": [
+				"AZURE_COSMOS_DB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.cosmos.requests",
+			"entityType": [
+				"AZURE_COSMOS_DB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.cosmos.serviceAvailability",
+			"entityType": [
+				"AZURE_COSMOS_DB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.capture.backlog",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.capture.bytes",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.capture.msg",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.errors.quotaExceeded",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.errors.server",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.errors.user",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.requests.incoming",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.requests.successful",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.requests.throttled",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.traffic.bytesIn",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.traffic.bytesOut",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.traffic.msgIn",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHub.traffic.msgOut",
+			"entityType": [
+				"AZURE_EVENT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHubNamespace.connections.active",
+			"entityType": [
+				"AZURE_EVENT_HUB_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHubNamespace.connections.closed",
+			"entityType": [
+				"AZURE_EVENT_HUB_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.eventHubNamespace.connections.opened",
+			"entityType": [
+				"AZURE_EVENT_HUB_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.command.abandoned",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.command.completed",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.command.rejected",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.device.connected",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.device.dailyThroughputThrottling",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.device.dataUsage",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.device.registered",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.eventHub.builtInEventHub.messages.delivered",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.eventHub.builtInEventHub.averageLatencyMs",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.eventHub.messages.delivered",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.eventHub.averageLatencyMs",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.messages.dropped",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.messages.invalidForAllEndpoints",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.messages.orphaned",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.messages.sendAttempts",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.messages.sent",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.messages.sentToFallback",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.serviceBus.queues.averageLatencyMs",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.serviceBus.queues.messagesDelivered",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.serviceBus.topics.averageLatencyMs",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.serviceBus.topics.messagesDelivered",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.storageEndpoints.avgLatencyMs",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.storageEndpoints.blobsWritten",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.storageEndpoints.bytesWritten",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.iotHub.storageEndpoints.messageDelivered",
+			"entityType": [
+				"AZURE_IOT_HUB"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.loadbalancer.availability.dipTcp",
+			"entityType": [
+				"AZURE_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.loadbalancer.availability.dipUdp",
+			"entityType": [
+				"AZURE_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.loadbalancer.availability.vip",
+			"entityType": [
+				"AZURE_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.loadbalancer.snatConnection.est",
+			"entityType": [
+				"AZURE_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.loadbalancer.snatConnection.pending",
+			"entityType": [
+				"AZURE_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.loadbalancer.snatConnection.rej",
+			"entityType": [
+				"AZURE_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.loadbalancer.traffic.byteIn",
+			"entityType": [
+				"AZURE_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.loadbalancer.traffic.byteOut",
+			"entityType": [
+				"AZURE_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.loadbalancer.traffic.packetIn",
+			"entityType": [
+				"AZURE_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.loadbalancer.traffic.packetOut",
+			"entityType": [
+				"AZURE_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.loadbalancer.traffic.packetSynIn",
+			"entityType": [
+				"AZURE_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.loadbalancer.traffic.packetSynOut",
+			"entityType": [
+				"AZURE_LOAD_BALANCER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.cache.hits",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.cache.misses",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.cache.read",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.cache.write",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.commands.get",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.commands.set",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.commands.total",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.keys.evicted",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.keys.expired",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.keys.total",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.memory.used",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.memory.usedRss",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.connected",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.load",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.redis.processorTime",
+			"entityType": [
+				"AZURE_REDIS_CACHE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.region.vms.initializing",
+			"entityType": [
+				"AZURE_SUBSCRIPTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.region.vms.running",
+			"entityType": [
+				"AZURE_SUBSCRIPTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.region.vms.stopped",
+			"entityType": [
+				"AZURE_SUBSCRIPTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.connections.active",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.errors.server",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.errors.user",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.messages.count",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.messages.countActive",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.messages.countDeadLettered",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.messages.countScheduled",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.messages.incoming",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.messages.outgoing",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.requests.incoming",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.requests.successful",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.requests.throttled",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.cpu",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.memory",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.namespace.size",
+			"entityType": [
+				"AZURE_SERVICE_BUS_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.queue.errors.server",
+			"entityType": [
+				"AZURE_SERVICE_BUS_QUEUE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.queue.errors.user",
+			"entityType": [
+				"AZURE_SERVICE_BUS_QUEUE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.queue.messages.count",
+			"entityType": [
+				"AZURE_SERVICE_BUS_QUEUE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.queue.messages.countActive",
+			"entityType": [
+				"AZURE_SERVICE_BUS_QUEUE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.queue.messages.countDeadLettered",
+			"entityType": [
+				"AZURE_SERVICE_BUS_QUEUE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.queue.messages.countScheduled",
+			"entityType": [
+				"AZURE_SERVICE_BUS_QUEUE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.queue.messages.incoming",
+			"entityType": [
+				"AZURE_SERVICE_BUS_QUEUE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.queue.messages.outgoing",
+			"entityType": [
+				"AZURE_SERVICE_BUS_QUEUE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.queue.requests.incoming",
+			"entityType": [
+				"AZURE_SERVICE_BUS_QUEUE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.queue.requests.successful",
+			"entityType": [
+				"AZURE_SERVICE_BUS_QUEUE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.queue.requests.throttled",
+			"entityType": [
+				"AZURE_SERVICE_BUS_QUEUE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.queue.size",
+			"entityType": [
+				"AZURE_SERVICE_BUS_QUEUE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.topic.errors.server",
+			"entityType": [
+				"AZURE_SERVICE_BUS_TOPIC"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.topic.errors.user",
+			"entityType": [
+				"AZURE_SERVICE_BUS_TOPIC"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.topic.messages.count",
+			"entityType": [
+				"AZURE_SERVICE_BUS_TOPIC"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.topic.messages.countActive",
+			"entityType": [
+				"AZURE_SERVICE_BUS_TOPIC"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.topic.messages.countDeadLettered",
+			"entityType": [
+				"AZURE_SERVICE_BUS_TOPIC"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.topic.messages.countScheduled",
+			"entityType": [
+				"AZURE_SERVICE_BUS_TOPIC"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.topic.messages.incoming",
+			"entityType": [
+				"AZURE_SERVICE_BUS_TOPIC"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.topic.messages.outgoing",
+			"entityType": [
+				"AZURE_SERVICE_BUS_TOPIC"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.topic.requests.incoming",
+			"entityType": [
+				"AZURE_SERVICE_BUS_TOPIC"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.topic.requests.successful",
+			"entityType": [
+				"AZURE_SERVICE_BUS_TOPIC"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.topic.requests.throttled",
+			"entityType": [
+				"AZURE_SERVICE_BUS_TOPIC"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.serviceBus.topic.size",
+			"entityType": [
+				"AZURE_SERVICE_BUS_TOPIC"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.connections.blockedByFirewall",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.connections.failed",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.connections.successful",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.dtu.limit.count",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.dtu.limit.used",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.dtu.consumptionPerc",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.io.dataRead",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.io.logWrite",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.storage.percent",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.storage.totalBytes",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.storage.xtpPercent",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.cpuPercent",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.deadlocks",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.sessions",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlDatabase.workers",
+			"entityType": [
+				"AZURE_SQL_DATABASE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlElasticPool.dtu.storage.limitBytes",
+			"entityType": [
+				"AZURE_SQL_ELASTIC_POOL"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlElasticPool.dtu.storage.percent",
+			"entityType": [
+				"AZURE_SQL_ELASTIC_POOL"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlElasticPool.dtu.storage.usedBytes",
+			"entityType": [
+				"AZURE_SQL_ELASTIC_POOL"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlElasticPool.dtu.storage.xtpPercent",
+			"entityType": [
+				"AZURE_SQL_ELASTIC_POOL"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlElasticPool.dtu.consumption",
+			"entityType": [
+				"AZURE_SQL_ELASTIC_POOL"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlElasticPool.edtu.limit",
+			"entityType": [
+				"AZURE_SQL_ELASTIC_POOL"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlElasticPool.edtu.used",
+			"entityType": [
+				"AZURE_SQL_ELASTIC_POOL"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlElasticPool.io.dataRead",
+			"entityType": [
+				"AZURE_SQL_ELASTIC_POOL"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlElasticPool.io.logWrite",
+			"entityType": [
+				"AZURE_SQL_ELASTIC_POOL"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlElasticPool.cpuPercent",
+			"entityType": [
+				"AZURE_SQL_ELASTIC_POOL"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlElasticPool.sessions",
+			"entityType": [
+				"AZURE_SQL_ELASTIC_POOL"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.sqlElasticPool.workers",
+			"entityType": [
+				"AZURE_SQL_ELASTIC_POOL"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.blob.transactions",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.blob.transactions.network.latency.success.e2e",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.blob.transactions.network.latency.success.server",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.blob.transactions.network.egress",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.blob.transactions.network.ingress",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.blob.capacity",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.blob.containers",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.blob.entities",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.file.transactions",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.file.transactions.network.latency.success.e2e",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.file.transactions.network.latency.success.server",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.file.transactions.network.egress",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.file.transactions.network.ingress",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.file.capacity",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.file.containers",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.file.entities",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.queue.transactions",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.queue.transactions.network.latency.success.e2e",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.queue.transactions.network.latency.success.server",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.queue.transactions.network.egress",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.queue.transactions.network.ingress",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.queue.capacity",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.queue.containers",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.queue.entities",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.table.transactions",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.table.transactions.network.latency.success.server",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.table.transactions.network.latency.success.server.e2e",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.table.transactions.network.egress",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.table.transactions.network.ingress",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.table.capacity",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.table.containers",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.storage.table.entities",
+			"entityType": [
+				"AZURE_STORAGE_ACCOUNT"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vm.disk.read",
+			"entityType": [
+				"AZURE_VM"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vm.disk.readOps",
+			"entityType": [
+				"AZURE_VM"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vm.disk.write",
+			"entityType": [
+				"AZURE_VM"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vm.disk.writeOps",
+			"entityType": [
+				"AZURE_VM"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vm.network.bytesIn",
+			"entityType": [
+				"AZURE_VM"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vm.network.bytesOut",
+			"entityType": [
+				"AZURE_VM"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vm.cpuUsage",
+			"entityType": [
+				"AZURE_VM"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vmScaleSet.disk.read",
+			"entityType": [
+				"AZURE_VM_SCALE_SET"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vmScaleSet.disk.readOps",
+			"entityType": [
+				"AZURE_VM_SCALE_SET"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vmScaleSet.disk.write",
+			"entityType": [
+				"AZURE_VM_SCALE_SET"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vmScaleSet.disk.writeOps",
+			"entityType": [
+				"AZURE_VM_SCALE_SET"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vmScaleSet.network.bytesIn",
+			"entityType": [
+				"AZURE_VM_SCALE_SET"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vmScaleSet.network.bytesOut",
+			"entityType": [
+				"AZURE_VM_SCALE_SET"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vmScaleSet.vms.initializing",
+			"entityType": [
+				"AZURE_SUBSCRIPTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vmScaleSet.vms.running",
+			"entityType": [
+				"AZURE_SUBSCRIPTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vmScaleSet.vms.stopped",
+			"entityType": [
+				"AZURE_SUBSCRIPTION"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.azure.vmScaleSet.cpuUsage",
+			"entityType": [
+				"AZURE_VM_SCALE_SET"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.cloudfoundry.auctioneer.fetchDuration",
+			"entityType": [
+				"PROCESS_GROUP_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.cloudfoundry.auctioneer.lprFailed",
+			"entityType": [
+				"PROCESS_GROUP_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.cloudfoundry.auctioneer.lprStarted",
+			"entityType": [
+				"PROCESS_GROUP_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.cloudfoundry.auctioneer.taskFailed",
+			"entityType": [
+				"PROCESS_GROUP_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.cloudfoundry.http.badGateways",
+			"entityType": [
+				"PROCESS_GROUP_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.cloudfoundry.http.latency",
+			"entityType": [
+				"PROCESS_GROUP_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.cloudfoundry.http.responses5xx",
+			"entityType": [
+				"PROCESS_GROUP_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.cloudfoundry.http.totalRequests",
+			"entityType": [
+				"PROCESS_GROUP_INSTANCE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.cores",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.cpuAvailable",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.cpuAvailableStatistics",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.cpuLimit",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.cpuLimitStatistics",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.cpuRequested",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.cpuRequestedStatistics",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.memory",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.memoryAvailable",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.memoryAvailableStatistics",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.memoryLimit",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.memoryLimitStatistics",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.memoryRequested",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.memoryRequestedStatistics",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.cluster.nodes",
+			"entityType": [
+				"KUBERNETES_CLUSTER"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.quota.cpuLimits",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.quota.cpuRequests",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.quota.memoryLimits",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.quota.memoryRequests",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.quota.pods",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.quota.usedCpuLimits",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.quota.usedCpuRequests",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.quota.usedMemoryLimits",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.quota.usedMemoryRe100 59010    0 59010    0     0   155k      0 --:--:-- --:--:-- --:--:--  155kId":"builtin:cloud.kubernetes.namespace.quota.usedPods",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.cpuLimits",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.cpuRequests",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.desiredPods",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.memoryLimits",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.memoryRequests",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.runningPods",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.namespace.workloads",
+			"entityType": [
+				"CLOUD_APPLICATION_NAMESPACE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.node.cores",
+			"entityType": [
+				"KUBERNETES_NODE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.node.cpuAvailable",
+			"entityType": [
+				"KUBERNETES_NODE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.node.cpuLimit",
+			"entityType": [
+				"KUBERNETES_NODE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.node.cpuRequested",
+			"entityType": [
+				"KUBERNETES_NODE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.node.memory",
+			"entityType": [
+				"KUBERNETES_NODE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.node.memoryAvailable",
+			"entityType": [
+				"KUBERNETES_NODE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.node.memoryLimit",
+			"entityType": [
+				"KUBERNETES_NODE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.node.memoryRequested",
+			"entityType": [
+				"KUBERNETES_NODE"
+			]
+		},
+		{
+			"metricId": "builtin:cloud.kubernetes.pod.cpuLimits",
+			"entityType": [
+				"CLOUD_APPLICATION_INSTANCE"
+			]
+		}
+	]
+}
