@@ -574,6 +574,16 @@ function cfw_renderer_panels (renderDef) {
 		return "<span>Unable to convert data into table.</span>";
 	}
 	
+	//========================================
+	// Render Specific settings
+	var defaultSettings = {
+		//set to true to make the header smaller
+		narrow: false,
+	};
+	
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.panels);
+	
+	
 	//===================================================
 	// Create Pannels
 	//===================================================
@@ -596,6 +606,7 @@ function cfw_renderer_panels (renderDef) {
 				title: $('<div>'),
 				titleright: "&nbsp;",
 				body: "&nbsp;",
+				narrow: settings.narrow,
 		};
 		 
 		//---------------------------
@@ -706,6 +717,8 @@ function cfw_renderer_cards (renderDef) {
 	var defaultSettings = {
 		// the number of columns the cards should be displayed in
 		maxcolumns: 3,
+		//set to true to make the header smaller
+		narrow: false,
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.cards);
@@ -733,6 +746,7 @@ function cfw_renderer_cards (renderDef) {
 				title: $('<div>'),
 				titleright: "&nbsp;",
 				body: "&nbsp;",
+				narrow: settings.narrow,
 		};
 		 
 		//---------------------------

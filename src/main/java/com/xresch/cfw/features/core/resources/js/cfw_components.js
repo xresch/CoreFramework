@@ -541,6 +541,8 @@ class CFWPanel{
 			titleright: "&nbsp;",
 			//the content of the panel
 			body: "&nbsp;",
+			//set to true to make the header smaller
+			narrow: false,
 		}
 		 
 		 Object.assign(this.settings, customSettings);
@@ -563,6 +565,12 @@ class CFWPanel{
 		if(this.settings.textstyleheader != null){
 			panelHeaderClasses += ' text-'+this.settings.textstyleheader;
 		} 
+		
+		if(this.settings.narrow){
+			panelHeaderClasses += ' p-1 pl-2';
+		} 
+		
+		
 		//----------------------------
 	     // Create Panel
 		 this.panel = $(document.createElement("div"));
@@ -663,6 +671,8 @@ class CFWCard{
 			titleright: "&nbsp;",
 			//the content of the card
 			body: "&nbsp;",
+			//set to true to make the header smaller
+			narrow: false,
 		}
 		 
 		 Object.assign(this.settings, customSettings);
@@ -685,6 +695,12 @@ class CFWCard{
 		if(this.settings.textstyleheader != null){
 			cardHeaderClasses += ' text-'+this.settings.textstyleheader;
 		} 
+		
+		if(this.settings.narrow){
+			cardHeaderClasses += ' p-1 pl-2';
+		} 
+		
+		
 		//----------------------------
 	    // Create Card
 		this.card = $(document.createElement("div"));

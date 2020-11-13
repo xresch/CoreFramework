@@ -65,7 +65,6 @@ function cfw_dashboard_setCustomTimeframe(earliestMillis, latestMillis){
 	
 	cfw_initializeTimefield('CUSTOM_EARLIEST', earliestMillis);
 	cfw_initializeTimefield('CUSTOM_LATEST', latestMillis);
-	
 
 	CFW.http.setURLParam('earliest', earliestMillis);
 	CFW.http.setURLParam('latest', latestMillis);
@@ -1304,7 +1303,7 @@ function cfw_dashboard_initialDraw(){
 			//---------------------------------
 			// Get last preset from local store
 			cfw_dashboard_setTimeframe(timeframePreset);
-			cfw_dashboard_draw();
+			// above method calls cfw_dashboard_draw()
 		}else{
 			//---------------------------------
 			// Just draw with default
