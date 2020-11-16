@@ -90,6 +90,7 @@ DONE
 - API Token: Added reminder message to add permissions to newly created tokens
 - Dashboard: Fixed double drawing on first opening
 - Renderer Panels/Cards: Added narrow option
+- Tags Selector: Hide input field when max tags are reached
 
 ------- v2.0.0 -------
 - CFWLog: auto detect method, making call to CFWLog.method() optional
