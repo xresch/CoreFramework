@@ -88,6 +88,9 @@ DONE
 - Chart Renderer: Changed y axis to format big values as "xxx K" and "xxx M"
 - Fixed assembly not refreshing unique etags on changed content
 - API Token: Added reminder message to add permissions to newly created tokens
+- Dashboard: Fixed double drawing on first opening
+- Renderer Panels/Cards: Added narrow option
+
 ------- v2.0.0 -------
 - CFWLog: auto detect method, making call to CFWLog.method() optional
 - Reduced footprint of log
