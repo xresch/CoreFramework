@@ -1228,6 +1228,22 @@ function cfw_toogleLoader(isVisible){
 	
 }
 
+
+/*******************************************************************************
+ * Returns the html for a Loader with the class cfw-inline-loader.
+ ******************************************************************************/
+function cfw_createLoaderHTML(){
+	
+	return '<div class="cfw-inline-loader">'
+			+'<div class="d-flex flex-column flex-align-center">'
+				+'<i class="fa fa-cog fa-spin fa-2x fa-fw margin-bottom"></i>'
+				+'<p class="m-0">Loading</p>'
+			+'</div>'
+		+'</div>';
+	
+}
+
+
 /**************************************************************************************
  * Add an alert message to the message section.
  * Ignores duplicated messages.
@@ -2347,6 +2363,7 @@ var CFW = {
 		showSmallModal: cfw_showSmallModal,
 		confirmExecute: cfw_confirmExecution,
 		toogleLoader: cfw_toogleLoader,
+		createLoaderHTML: cfw_createLoaderHTML,
 		addAlert: cfw_addAlertMessage
 	},
 	hasPermission: cfw_hasPermission,

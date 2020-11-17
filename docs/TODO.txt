@@ -91,6 +91,7 @@ DONE
 - Dashboard: Fixed double drawing on first opening
 - Renderer Panels/Cards: Added narrow option
 - Tags Selector: Hide input field when max tags are reached
+- Dashboard: Added Loading Placeholder for Widgets
 
 ------- v2.0.0 -------
 - CFWLog: auto detect method, making call to CFWLog.method() optional

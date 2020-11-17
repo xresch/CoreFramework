@@ -984,14 +984,51 @@ function cfw_dashboard_createWidgetHTMLElement(widgetObject){
 /************************************************************************************************
  * 
  ************************************************************************************************/
+function cfw_dashboard_createWidgetLoadingPlaceholder(widgetObject, doAutoposition) {
+	
+	var placeholderWidget = { 
+			guid: 'placeholder-'+CFW.utils.randomString(24), 
+			content: CFW.ui.createLoaderHTML()
+			};
+	
+	widgetObject.placeholderGUID = placeholderWidget.guid;
+	
+	var widgetInstance = cfw_dashboard_createWidgetHTMLElement(placeholderWidget);
+
+	var grid = $('.grid-stack').data('gridstack');
+
+    grid.addWidget($(widgetInstance),
+    		widgetObject.X, 
+    		widgetObject.Y, 
+    		widgetObject.WIDTH, 
+    		widgetObject.HEIGHT, 
+    		doAutoposition);
+    
+}
+/************************************************************************************************
+ * 
+ ************************************************************************************************/
 function cfw_dashboard_createWidgetInstance(widgetObject, doAutoposition, callback) {
 	var widgetDefinition = CFW.dashboard.getWidgetDefinition(widgetObject.TYPE);	
 	
 	if(widgetDefinition != null){
 		try{
+		//---------------------------------------
+		// Add Placeholder	
+		cfw_dashboard_createWidgetLoadingPlaceholder(widgetObject, doAutoposition);
+		
+		//---------------------------------------
+		// Create Instance by Widget Definition
 		widgetDefinition.createWidgetInstance(widgetObject, 
 			function(subWidgetObject, widgetContent){
 				
+				//---------------------------------------
+				// Remove Placeholder
+				var placeholderWidget = $('#'+subWidgetObject.placeholderGUID);
+				cfw_dashboard_removeWidgetFromGrid(placeholderWidget);
+				
+				//---------------------------------------
+				// Add Widget
 				subWidgetObject.content = widgetContent;
 				var widgetInstance = cfw_dashboard_createWidgetHTMLElement(subWidgetObject);
 
