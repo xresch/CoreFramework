@@ -339,7 +339,7 @@ function cfw_initializeTagsField(fieldID, maxTags){
 	//$(id).tagsinput();
 	
 	tagsfield.tagsinput({
-		tagClass: 'btn btn-sm btn-primary mb-1',
+		tagClass: 'cfw-tag btn-primary',
 		maxTags: 255,
 		maxChars: 1024,
 		trimValue: true,
@@ -376,7 +376,7 @@ function cfw_initializeTagsSelectorField(fieldID, maxTags, values){
 	tagsfield.addClass("cfw-tags-selector");
 	
 	tagsfield.tagsinput({
-		tagClass: 'btn btn-sm btn-primary mb-1',
+		tagClass: 'cfw-tag btn-primary',
 		itemValue: 'value',
 		itemText: 'label',
 		maxTags: maxTags,
