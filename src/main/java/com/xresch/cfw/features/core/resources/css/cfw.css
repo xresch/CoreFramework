@@ -516,6 +516,7 @@
 .bootstrap-tagsinput-max input{
 	display: none;
 }
+
 /*************************************************************************
  * Autocomplete
  *************************************************************************/
@@ -524,6 +525,7 @@
   position: relative;
   display: inline-block;
 }
+
 .autocomplete-wrapper {
   position: absolute;
   z-index: 99;

@@ -442,7 +442,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 		parent.append(renderResult);
 		
 	}else{
-		CFW.ui.addAlert('error', 'Something went wrong and no users can be displayed.');
+		CFW.ui.addAlert('error', 'Something went wrong and no dashboards can be displayed.');
 	}
 }
 

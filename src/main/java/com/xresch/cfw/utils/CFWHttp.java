@@ -61,6 +61,9 @@ public class CFWHttp {
 	
 	public static String encode(String toEncode) {
 		
+		if(toEncode == null) {
+			return null;
+		}
 		try {
 			return URLEncoder.encode(toEncode, StandardCharsets.UTF_8.toString());
 		} catch (UnsupportedEncodingException e) {
@@ -399,6 +402,49 @@ public class CFWHttp {
 	}
 		
 
+	/******************************************************************************************************
+	 * Send a HTTP POST request and returns the result or null in case of error.
+	 * @param url used for the request.
+	 * @param params the parameters which should be added to the request or null
+	 * @param headers the HTTP headers for the request or null
+	 * @return String response
+	 ******************************************************************************************************/
+	public static CFWHttpResponse sendPOSTRequest(String url, HashMap<String, String> params, HashMap<String, String> headers) {
+				
+		try {
+			//-----------------------------------
+			// Handle params
+			if(params != null ) {
+				url = buildURL(url, params);
+			}
+			
+			//-----------------------------------
+			// Handle headers
+			HttpURLConnection connection = createProxiedURLConnection(url);
+			
+			if(headers != null ) {
+				for(Entry<String, String> header : headers.entrySet())
+				connection.setRequestProperty(header.getKey(), header.getValue());
+			}
+			
+			//-----------------------------------
+			// Connect and create response
+			if(connection != null) {
+				connection.setRequestMethod("POST");
+				connection.connect();
+				
+				outgoingHTTPCallsCounter.labels("POST").inc();
+				return instance.new CFWHttpResponse(connection);
+			}
+	    
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.severe("Exception occured: "+e.getMessage(), e);
+		} 
+		
+		return null;
+	    	
+	}
 	
 	/******************************************************************************************************
 	 * Send a HTTP POST request sending JSON with a Content-Type header "application/json; charset=UTF-8".
@@ -447,6 +493,8 @@ public class CFWHttp {
 		return null;
 	    	
 	}
+	
+	
 	
 	/******************************************************************************************************
 	 * Creates a map of all cookies in a request.
