@@ -27,7 +27,6 @@ TODO
 - Dashboard: Console with Logs
 - Dashboard: Fix Replica Ctrl+Z on Duplicate
 
-- Widget: Link
 - Widget: Dashboard Link
 - Widget: CSV Chart
 - Widget: Cards
@@ -43,8 +42,6 @@ TODO
 - cfw.js: Finish javascript CFWFormField
 - cfw.js: Add Tic Tac Toe Loader for Long running requests
 - cfw.js: Progress Bar Loader
-
-- API: Add Token mechanism
 
 - Security: Enable Decryption for ResultSet to JSON on CFWSQL
 - Security: Change login to two steps, first username, then password field 
@@ -75,7 +72,6 @@ TODO
 - Create Record Requests / Replay for Performance Tests
 
 - Custom Error page CFW.App.createErrorHandler();
-
 
 DONE
 ====

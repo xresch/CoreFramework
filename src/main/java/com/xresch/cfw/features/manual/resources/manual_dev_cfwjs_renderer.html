@@ -145,6 +145,7 @@ var tiles = CFW.render.getRenderer('tiles').render(rendererParamsFull);</code>
 <p>The following renderers are provided by CFW out-of-the-box.</p>
 
 
+
 <h3>Table</h3>
 <p>
 Table renderer will return a JQuery div-Element wrapping the table.<br />
@@ -170,6 +171,8 @@ The following are the available settings with defaults.
 var tableDiv = CFW.render.getRenderer('table').render(rendererParams);</code>
 </pre>
 
+
+
 <h3>Tiles</h3>
 <p>
 The tiles renderer will return a JQuery div-Element containing all the tiles. It's main purpose is to display data as colored tiles. <br />
@@ -191,15 +194,41 @@ The following are the available settings with defaults.
 var tilesDiv = CFW.render.getRenderer('tiles').render(rendererParams);</code>
 </pre>
 
+
+
 <h3>Panels</h3>
 <p>
 The panels renderer will return a JQuery div-Element containing all the panels. <br />
 Each record will be rendered in it's own expandable panel.
-The renderer doesn't have any specific settings.
+The following are the available settings with defaults.
 </p>
 <pre>
-<code>var panelsDiv = CFW.render.getRenderer('panels').render(rendererParams);</code>
+<code>var defaultSettings = {
+	//set to true to make the header smaller
+	narrow: false,
+};
+var panelsDiv = CFW.render.getRenderer('panels').render(rendererParams);</code>
 </pre>
+
+
+
+<h3>Cards</h3>
+<p>
+The cards renderer will return a JQuery div-Element containing all the cards. <br />
+Each record will be rendered in it's own card.
+The following are the available settings with defaults.
+</p>
+<pre>
+<code>var defaultSettings = {
+	// the number of columns the cards should be displayed in
+	maxcolumns: 3,
+	//set to true to make the header smaller
+	narrow: false,
+};
+var cardsDiv = CFW.render.getRenderer('cards').render(rendererParams);</code>
+</pre>
+
+
 
 <h3>JSON</h3>
 <p>
