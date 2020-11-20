@@ -6,8 +6,8 @@ Depending on the application there might be additional steps needed to make the 
 <h2>System Requirements</h2>
 
 <ul>
-	<li><strong>Java:&nbsp;</strong>JDK 1.8 or higher. JRE is not enough, The H2 database needs the javac executable to be able to compile database procedures.</li>
-	<li><strong>OS:&nbsp;</strong>Windows or Linux</li>
+	<li><strong>Java:&nbsp;</strong>JDK 1.8 or higher. JRE is not enough, The H2 database needs the javac executable on the classpath to be able to compile database procedures.</li>
+	<li><strong>OS:&nbsp;</strong>Operating systems that support Java. Some applications might have limited support for operating systems.</li>
 	<li><strong>Capacity:&nbsp;</strong>Depends on the implementations used and the load on the system, a minimum of 4GB RAM and 4 x 1.6 GHz Cores is recommended.</li>
 </ul>
 
@@ -25,11 +25,13 @@ Depending on the application there might be additional steps needed to make the 
 	<li><strong>Context Settings(Optional):&nbsp;</strong>If your application provides Context Settings, you might need to add such settings before you can make use of certain features. Go to  &quot;Menubar &gt;&gt; Admin &gt;&gt; Context Settings&quot; to add context settings for your needs.</li>
 	<li><strong>Restart:&nbsp;</strong>Stop the application, delete the log files, start the application to see if restarts properly and no major issues are present in the logs.</li>
 	<li><strong>System Startup:&nbsp;</strong>Add the application to your system startup to make sure it runs after the machine gets restarted.</li>
-	<li><strong>Manual:&nbsp;</strong>After your application is running you can access the other manual pages directly in the application under &quot;Menu Bar &gt;&gt; Manual&quot;</a>.</li>
+	<li><strong>Manual:&nbsp;</strong>After your application is running you can access the other manual pages directly in the application under &quot;Menu Bar &gt;&gt; Manual&quot;.</li>
+	<li><strong>Application Setup Guides:&nbsp;</strong>The application built on the Core Framework might ship with additional setup steps you might want to follow.</li>
 </ol>
 
 
 <h2>Troubleshooting</h2>
+<h3>General</h3>
 <p>Here some tips for troubleshooting the application:</p>
 <ul>
 	<li><strong>Log Files:&nbsp;</strong>Check the log files for WARNING or SEVERE messages.</li>
@@ -38,7 +40,11 @@ Depending on the application there might be additional steps needed to make the 
 	<li><strong>DB Statistics:&nbsp;</strong>You can see soem Database statistics under &quot;Menu Bar &gt;&gt; Admin &gt;&gt; System Analytics &gt;&gt; DB Analytics&quot;.</li>
 </ul>
 
-
+<h3>Known Issues</h3>
+<ul>
+	<li><strong>JVM Bind Exception:&nbsp;</strong>This issue is either caused by the ports defined in ./config/cfw.properties are already in use or are not available for other reasons.</li>
+	<li><strong>JavaC / DB Procedure not found:&nbsp;</strong> H2 procedures need the javac executable in the PATH system variable in order to be compiled. Check if the javac is available from the command line by executing the command 'javac.exe' for windows or 'javac' for linux.</li>
+</ul>
 
 
 
