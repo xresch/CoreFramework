@@ -188,7 +188,7 @@ public class TestCFWDBSpaceManagement extends DBTestMaster {
 		parentSpace = CFW.DB.Spaces.selectByName("MySpace");
 		String csv = new CFWHierarchy<Space>(parentSpace)
 				.setFilter(new CFWSQL(parentSpace).and(
-						SpaceFields.FK_ID_SPACEGROUP.toString(), spacegroupid)
+							SpaceFields.FK_ID_SPACEGROUP.toString(), spacegroupid)
 						)
 				.createFetchHierarchyQuery(fieldnames)	
 				.getAsCSV();

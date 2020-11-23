@@ -333,26 +333,26 @@ public class CFWHierarchy<T extends CFWObject> {
 		CFWSQL statement = root.select(finalResultFields)
 				.where(parentPrimaryFieldname, parentPrimaryValue)
 				.append(partialWhereClauseFilter)	
-				.union()
-				.select(finalResultFields);
+				;
 				
-		int i = 0;
+				//--------------------------------------------
+				// Filter by the parent object, which will always
+				// show up in the same P... field.
+				int i = 0;
+				
+				for(; i < parentFieldnames.length; i++) {
+					parentValue = (Integer)parent.getField(parentFieldnames[i]).getValue();
+					
+					if(parentValue == null) {
+						statement
+							.or().custom("(")
+								.custom(parentFieldnames[i]+" = ?", parentPrimaryValue)
+								.append(partialWhereClauseFilter)
+							.custom(")");
 		
-		//--------------------------------------------
-		// Filter by the parent object, which will always
-		// show up in the same P... field.
-		
-		for(; i < parentFieldnames.length; i++) {
-			parentValue = (Integer)parent.getField(parentFieldnames[i]).getValue();
-			
-			if(parentValue == null) {
-				statement
-					.where(parentFieldnames[i], parentPrimaryValue)
-					.append(partialWhereClauseFilter)	;
-
-				break;
-			}
-		}
+						break;
+					}
+				}
 		
 		//--------------------------------------------
 		// Set ordering
