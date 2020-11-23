@@ -1,4 +1,4 @@
-package com.xresch.cfw.db.spaces;
+package com.xresch.cfw.features.spaces;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

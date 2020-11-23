@@ -1,4 +1,4 @@
-package com.xresch.cfw.db.spaces;
+package com.xresch.cfw.features.spaces;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,9 +9,9 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.db.spaces.SpaceGroup.SpaceGroupFields;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
+import com.xresch.cfw.features.spaces.SpaceGroup.SpaceGroupFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.LengthValidator;
 

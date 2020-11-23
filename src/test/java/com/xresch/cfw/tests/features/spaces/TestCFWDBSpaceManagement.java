@@ -8,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.db.CFWSQL;
-import com.xresch.cfw.db.spaces.Space;
-import com.xresch.cfw.db.spaces.Space.SpaceFields;
-import com.xresch.cfw.db.spaces.SpaceGroup;
+import com.xresch.cfw.features.spaces.Space;
+import com.xresch.cfw.features.spaces.SpaceGroup;
+import com.xresch.cfw.features.spaces.Space.SpaceFields;
 import com.xresch.cfw.tests._master.DBTestMaster;
 
 public class TestCFWDBSpaceManagement extends DBTestMaster {

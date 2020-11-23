@@ -1,9 +1,9 @@
-package com.xresch.cfw.db.spaces;
+package com.xresch.cfw.features.spaces;
 
 import java.sql.ResultSet;
 import java.util.logging.Logger;
 
-import com.xresch.cfw.db.spaces.SpaceGroup.SpaceGroupFields;
+import com.xresch.cfw.features.spaces.SpaceGroup.SpaceGroupFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************

@@ -1,7 +1,7 @@
 package com.xresch.cfw.tests.performance;
 
-import com.xresch.cfw.db.spaces.Space;
-import com.xresch.cfw.db.spaces.SpaceGroup;
+import com.xresch.cfw.features.spaces.Space;
+import com.xresch.cfw.features.spaces.SpaceGroup;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
 
