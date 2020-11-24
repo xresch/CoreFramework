@@ -31,8 +31,21 @@ public class CFWArrayUtils {
 		return copy;
 	}
 	
+	/*********************************************************************************
+	 * Converts an object array into a string array using the toString()-Method of the
+	 * objects.
+	 * 
+	 * @param objectArray
+	 * @return
+	 *********************************************************************************/
 	public static String[] objectToStringArray(Object[] objectArray) {
-		return Arrays.copyOf(objectArray, objectArray.length, String[].class);
+		String[] resultArray = new String[objectArray.length];
+		for(int i=0; i < objectArray.length; i++) {
+			resultArray[i] = objectArray[i].toString();
+		}
+		// Not working with none String values like Enums
+		//return Arrays.copyOf(objectArray, objectArray.length, String[].class);
+		return resultArray;
 	}
 		
 	public static String[] merge(String[] firstArray, String[] secondArray) {

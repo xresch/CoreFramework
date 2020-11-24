@@ -207,9 +207,10 @@ public class CFWHierarchy<T extends CFWObject> {
 			
 			//Find last ParentID that is not null in fields P0 ... Pn, ignore Primary Field
 			for(int i=0; i < parentAndPrimaryFieldnames.length-1; i++) {
+				
 				Integer parentValue = (Integer)object.getField(parentAndPrimaryFieldnames[i]).getValue();
-				System.out.println("before: "+i);
 				if(parentValue == null) {
+					
 					if( i == 0 ) {
 						//is a root object
 						objectHierarchy.put(object.getPrimaryField().getValue(), object);
