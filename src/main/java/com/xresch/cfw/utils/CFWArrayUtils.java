@@ -31,6 +31,10 @@ public class CFWArrayUtils {
 		return copy;
 	}
 	
+	public static String[] objectToStringArray(Object[] objectArray) {
+		return Arrays.copyOf(objectArray, objectArray.length, String[].class);
+	}
+		
 	public static String[] merge(String[] firstArray, String[] secondArray) {
 		
 		int fal = firstArray.length;        

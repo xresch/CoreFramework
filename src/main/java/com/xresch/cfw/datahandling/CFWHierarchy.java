@@ -3,9 +3,11 @@ package com.xresch.cfw.datahandling;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.logging.CFWLog;
@@ -32,7 +34,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	
 	private CFWSQL partialWhereClauseFilter;
 	private T root;
-	private String[] parentFieldnames;
+	private String[] parentAndPrimaryFieldnames;
 	// both maps with primary key and object
 	private LinkedHashMap<Integer, T> objectListFlat = new LinkedHashMap<Integer, T>();
 	private LinkedHashMap<Integer, T> objectHierarchy = new LinkedHashMap<Integer, T>();
@@ -47,7 +49,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 *****************************************************************************/
 	public CFWHierarchy(T root){
 		this.root = root;
-		parentFieldnames = getParentFieldnames(root);
+		parentAndPrimaryFieldnames = getParentAndPrimaryFieldnames(root);
 	}
 	
 	/*****************************************************************************
@@ -180,8 +182,10 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * @return true if successful, false otherwise.
 	 * 
 	 *****************************************************************************/
-	public static String[] getParentFieldnames(CFWObject object) {
-		return Arrays.copyOfRange(labels, 0, object.hierarchyLevels);
+	public static String[] getParentAndPrimaryFieldnames(CFWObject object) {
+		String[] parentFields = Arrays.copyOfRange(labels, 0, object.hierarchyLevels);
+		String[] withPrimaryField = CFWArrayUtils.add(parentFields, object.getPrimaryField().getName());
+		return withPrimaryField;
 	}
 	
 	/*****************************************************************************
@@ -193,25 +197,25 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * @return true if successful, false otherwise.
 	 * 
 	 *****************************************************************************/
-	public CFWHierarchy<T> fetchAndCreateHierarchy(String... resultFields) {
+	public CFWHierarchy<T> fetchAndCreateHierarchy(Object... resultFields) {
 		
 		ArrayList<T>objectArray = fetchFlatList(resultFields);
+		objectListFlat.clear();
 		
 		for(T object : objectArray) {
 			objectListFlat.put(object.getPrimaryField().getValue(), object);
 			
-			//Find last ParentID that is not null in fields P0 ... Pn
-			for(int i=0; i < parentFieldnames.length; i++) {
-				Integer parentValue = (Integer)object.getField(parentFieldnames[i]).getValue();
-				
+			//Find last ParentID that is not null in fields P0 ... Pn, ignore Primary Field
+			for(int i=0; i < parentAndPrimaryFieldnames.length-1; i++) {
+				Integer parentValue = (Integer)object.getField(parentAndPrimaryFieldnames[i]).getValue();
+				System.out.println("before: "+i);
 				if(parentValue == null) {
-					
 					if( i == 0 ) {
 						//is a root object
 						objectHierarchy.put(object.getPrimaryField().getValue(), object);
 					}else {
 						//is a child object
-						Integer lastParentID = (Integer)object.getField(parentFieldnames[i-1]).getValue();
+						Integer lastParentID = (Integer)object.getField(parentAndPrimaryFieldnames[i-1]).getValue();
 						objectListFlat.get(lastParentID).childObjects.put(object.getPrimaryKey(), object);
 					}
 					
@@ -257,6 +261,26 @@ public class CFWHierarchy<T extends CFWObject> {
 	}
 	
 	/*****************************************************************************
+	 *  
+	 *****************************************************************************/
+	public JsonArray toJSONArray() {
+		
+		//-----------------------------------
+		//Create Prefix
+		StringBuilder builder = new StringBuilder();
+		
+		JsonArray array = new JsonArray();
+		CFWObject[] topLevelObjects = objectHierarchy.values().toArray(new CFWObject[] {});
+
+		for(int i = 0; i < topLevelObjects.length; i++) {
+			CFWObject object = topLevelObjects[i];
+			array.add(object.toJSONElement());
+		}
+		
+		return array;
+	}
+	
+	/*****************************************************************************
 	 * Set the parent object of this object and adds it to the 
 	 * The childs db entry has to be updated manually afterwards.
 	 * 
@@ -265,7 +289,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * @return true if successful, false otherwise.
 	 * 
 	 *****************************************************************************/
-	public ArrayList<T> fetchFlatList(String... resultFields) {
+	public ArrayList<T> fetchFlatList(Object... resultFields) {
 		return (ArrayList<T>)createFetchHierarchyQuery(resultFields)
 					.getAsObjectList();
 	}
@@ -290,11 +314,11 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * @param 
 	 * @return CFWSQL pre-created statement
 	 *****************************************************************************/
-	public CFWSQL createFetchHierarchyQuery(String... resultFields) {
+	public CFWSQL createFetchHierarchyQuery(Object... resultFields) {
 		
 		String parentPrimaryFieldname = root.getPrimaryField().getName();
 		Integer parentPrimaryValue = root.getPrimaryKey();
-		String[] finalResultFields = CFWArrayUtils.merge(parentFieldnames, resultFields);
+		String[] finalResultFields = CFWArrayUtils.merge(parentAndPrimaryFieldnames, CFWArrayUtils.objectToStringArray(resultFields));
 		
 		//Check if caching makes sense. e.g. String queryCacheID = root.getClass()+parentPrimaryFieldname+parentPrimaryValue+Arrays.deepToString(finalResultFields);
 		
@@ -311,7 +335,7 @@ public class CFWHierarchy<T extends CFWObject> {
 			}
 			
 			statement
-				.orderby(parentFieldnames)
+				.orderby(parentAndPrimaryFieldnames)
 				.nullsFirst();
 			
 			return statement;
@@ -320,7 +344,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		//---------------------------------
 		// get all parent fields with values
 		// of the parent element
-		CFWObject parent = root.select(parentFieldnames)
+		CFWObject parent = root.select(parentAndPrimaryFieldnames)
 			.where(parentPrimaryFieldname, parentPrimaryValue)
 			.getFirstObject();
 		
@@ -340,13 +364,13 @@ public class CFWHierarchy<T extends CFWObject> {
 				// show up in the same P... field.
 				int i = 0;
 				
-				for(; i < parentFieldnames.length; i++) {
-					parentValue = (Integer)parent.getField(parentFieldnames[i]).getValue();
+				for(; i < parentAndPrimaryFieldnames.length; i++) {
+					parentValue = (Integer)parent.getField(parentAndPrimaryFieldnames[i]).getValue();
 					
 					if(parentValue == null) {
 						statement
 							.or().custom("(")
-								.custom(parentFieldnames[i]+" = ?", parentPrimaryValue)
+								.custom(parentAndPrimaryFieldnames[i]+" = ?", parentPrimaryValue)
 								.append(partialWhereClauseFilter)
 							.custom(")");
 		
@@ -356,7 +380,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		//--------------------------------------------
 		// Set ordering
-		statement.orderby(parentFieldnames)
+		statement.orderby(parentAndPrimaryFieldnames)
 				 .nullsFirst();
 		
 		return statement;

@@ -31,6 +31,7 @@ import com.xresch.cfw.features.manual.CFWRegistryManual;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.spaces.CFWDBSpace;
 import com.xresch.cfw.features.spaces.CFWDBSpaceGroup;
+import com.xresch.cfw.features.spaces.FeatureSpaces;
 import com.xresch.cfw.features.spaces.Space;
 import com.xresch.cfw.features.spaces.SpaceGroup;
 import com.xresch.cfw.features.usermgmt.CFWDBPermission;
@@ -216,13 +217,16 @@ public class CFW {
 	   	// Create empty Default if null
 		if(appToStart == null) {
 	   		appToStart = new CFWAppInterface() {
-	   			@Override public void settings() { CFW.AppSettings.setEnableDashboarding(true); }
-					@Override public void startApp(CFWApplicationExecutor executor) { executor.setDefaultURL("/dashboard/list", true); }
-					@Override public void register() { /* Do nothing */ }
-					@Override public void initializeDB() { /* Do nothing */ }
-					@Override public void startTasks() { /* Do nothing */ }
-					@Override public void stopApp() { /* Do nothing */ }
-				};
+	   			@Override public void settings() { 
+	   					CFW.AppSettings.enableDashboarding(true); 
+	   					CFW.AppSettings.enableSpaces(true); 
+	   			}
+				@Override public void startApp(CFWApplicationExecutor executor) { executor.setDefaultURL("/dashboard/list", true); }
+				@Override public void register() { /* Do nothing */ }
+				@Override public void initializeDB() { /* Do nothing */ }
+				@Override public void startTasks() { /* Do nothing */ }
+				@Override public void stopApp() { /* Do nothing */ }
+			};
 			
 			new CFWLog(logger).warn("Application to start is null, using default empty application.");
 		}
@@ -316,6 +320,9 @@ public class CFW {
 			CFW.Registry.Features.addFeature(FeatureDashboard.class);	
 		}
 		
+		if(CFW.AppSettings.isSpacesEnabled()) {
+			CFW.Registry.Features.addFeature(FeatureSpaces.class);	
+		}
 		
 		//---------------------------
 		// Application Register

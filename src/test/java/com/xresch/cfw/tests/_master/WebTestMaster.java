@@ -53,8 +53,8 @@ public class WebTestMaster {
 						
 						@Override
 						public void settings() {
-							CFW.AppSettings.setEnableDashboarding(true);
-							CFW.AppSettings.setEnableContextSettings(true);
+							CFW.AppSettings.enableDashboarding(true);
+							CFW.AppSettings.enableContextSettings(true);
 						}
 						@Override
 						public void stopApp() {

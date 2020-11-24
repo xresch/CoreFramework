@@ -38,8 +38,9 @@ public class _MainForTesting implements CFWAppInterface {
 
 	@Override
 	public void settings() {
-		CFW.AppSettings.setEnableDashboarding(true);
-		CFW.AppSettings.setEnableContextSettings(true);
+		CFW.AppSettings.enableDashboarding(true);
+		CFW.AppSettings.enableContextSettings(true);
+		CFW.AppSettings.enableSpaces(true);
 	}
 	@Override
 	public void register() {

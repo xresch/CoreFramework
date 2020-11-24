@@ -131,8 +131,8 @@ public class FeatureCore extends CFWAppFeature {
 		//-----------------------------------------
 		// User Profile Servlets
 	    app.addAppServlet(ServletChangePassword.class,  "/changepassword");
+	    app.addAppServlet(ServletSortHierarchy.class,  "/sorthierarchy");
 	    
-		
 	    //-----------------------------------------
 		// Other Servlets
 		app.addUnsecureServlet(ServletLocalization.class,  	"/cfw/locale");

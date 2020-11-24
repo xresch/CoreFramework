@@ -5,12 +5,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.spaces.Space;
-import com.xresch.cfw.features.spaces.SpaceGroup;
 import com.xresch.cfw.features.spaces.Space.SpaceFields;
+import com.xresch.cfw.features.spaces.SpaceGroup;
 import com.xresch.cfw.tests._master.DBTestMaster;
 
 public class TestCFWDBSpaceManagement extends DBTestMaster {
@@ -181,7 +182,6 @@ public class TestCFWDBSpaceManagement extends DBTestMaster {
 		//-----------------------------------------
 		String[] fieldnames = 
 				new String[] {
-					SpaceFields.PK_ID.toString(),
 					SpaceFields.NAME.toString(),
 				};
 				
@@ -242,7 +242,7 @@ public class TestCFWDBSpaceManagement extends DBTestMaster {
 
 		String hierarchyDump =  new CFWHierarchy<Space>(new Space(2, "dummyWithIDNull"))
 				.fetchAndCreateHierarchy(fieldnames)
-				.dumpHierarchy(fieldnames);
+				.dumpHierarchy(new String[] {SpaceFields.PK_ID.toString(), SpaceFields.NAME.toString()});
 		
 		System.out.println("============= HIERARCHY DUMP =============");
 		System.out.println(hierarchyDump);
@@ -251,6 +251,16 @@ public class TestCFWDBSpaceManagement extends DBTestMaster {
 		Assertions.assertTrue(hierarchyDump.matches("[\\S\\s]*--> \\d+ - FacespaceB[\\S\\s]*"), "Root element is in list.");
 		Assertions.assertTrue(hierarchyDump.matches("[\\S\\s]*\\|                  \\|--> \\d+ - Subface8[\\S\\s]*"), "Hierarchy is visualized.");
 
+		//-----------------------------------------
+		// Fetch all with primaryID null
+		//-----------------------------------------
+
+		JsonArray array =  new CFWHierarchy<Space>(new Space(2, "dummyWithIDNull"))
+				.fetchAndCreateHierarchy(fieldnames)
+				.toJSONArray();
+		
+		System.out.println("============= JSON Array =============");
+		System.out.println(CFW.JSON.toJSONPretty(array));
 	}
 	
 }
