@@ -66,21 +66,27 @@ function cfw_sorthierarchy_printSortableHierarchy(data){
 * @param data as returned by CFW.http.getJSON()
 * @return 
 ******************************************************************/
+//cache for better performance
+var GLOBAL_NOT_DRAGGED_DROPTARGETS=null;
 function cfw_sorthierarchy_printHierarchyElement(level, $parent, object){
 	//--------------------------------------
 	// Create Draggable element
 	var draggableItem = $('<div id="sortable-item-'+object.PK_ID+'" class="cfw-draggable" draggable="true">')
-	var draggableHeader = $('<div id="sortable-header-'+object.PK_ID+'" class="cfw-draggable-handle card-header">'+object.NAME+'</div>');
+	var draggableHeader = $('<div id="sortable-header-'+object.PK_ID+'" class="cfw-draggable-handle card-header">'
+			+'<i class="fa fa-grip-vertical mr-2"></i>'+object.NAME
+			+'</div>');
 	
 	draggableItem.on('dragstart', function(e){
 		var draggable = $('.cfw-draggable.dragging');
 		if(draggable.length == 0){
+			GLOBAL_NOT_DRAGGED_DROPTARGETS=$('.cfw-draggable:not(.dragging) .cfw-droptarget').toArray();
 			$(this).addClass('dragging');
 		}
 	});
 	
 	draggableItem.on('dragend', function(e){
 		$(this).removeClass('dragging');
+		GLOBAL_NOT_DRAGGED_DROPTARGETS=null;
 	});
 	
 	draggableItem.on('dragover', function(e){
@@ -91,12 +97,12 @@ function cfw_sorthierarchy_printHierarchyElement(level, $parent, object){
 		
 		//--------------------------------------
 		// Get Closests Drop Target
-		var droptargetElements = $('.cfw-draggable:not(.dragging) .cfw-droptarget ').toArray();
+		//var droptargetElements = $('.cfw-draggable:not(.dragging) .cfw-droptarget').toArray();
 
-		var dropTarget = droptargetElements.reduce(function(closest, currentTarget) {
-			let box = $(currentTarget).closest('.cfw-draggable').get(0).getBoundingClientRect();
-			//let offset = e.clientY - box.top - box.height / 2;
-			let offset = e.clientY - box.top;
+		var dropTarget = GLOBAL_NOT_DRAGGED_DROPTARGETS.reduce(function(closest, currentTarget) {
+			let box = $(currentTarget).prev('.cfw-draggable-handle').get(0).getBoundingClientRect();
+			let offset = e.clientY - box.top - box.height / 2;
+			//let offset = e.clientY - box.top;
 			
 			if (offset < 0 && offset > closest.offset) {
 				return { offset: offset, element: $(currentTarget) };
@@ -107,12 +113,10 @@ function cfw_sorthierarchy_printHierarchyElement(level, $parent, object){
 		}, { offset: Number.NEGATIVE_INFINITY }).element;
 		
 
-
-
 		//var dropTarget = dropTargetParent.find('> ul');
-		console.log("===========================");
-		console.log(draggable);
-		console.log(dropTarget);
+//		console.log("===========================");
+//		console.log(draggable);
+//		console.log(dropTarget);
 		
 		//--------------------------------------
 		// Append: make sure droptarget is not 
@@ -120,7 +124,7 @@ function cfw_sorthierarchy_printHierarchyElement(level, $parent, object){
 	    if (dropTarget != null 
 	    && draggable.find('#'+dropTarget.attr('id')).length == 0) {
 	    	//draggable.detach();
-	    	dropTarget.append(draggable);
+	    	dropTarget.prepend(draggable);
 	    }
 	});
 	
