@@ -521,6 +521,22 @@
 	text-align: center !important;
 }
 
+.cfw-draggable{
+}
+
+.cfw-draggable-handle{
+	cursor: move;
+}
+
+.cfw-draggable.dragging{
+	opacity: 0.5;
+}
+
+.cfw-droptarget{
+	border-color: var(--primary);
+	
+}
+
 
 /*************************************************************************
  * Tags Input
