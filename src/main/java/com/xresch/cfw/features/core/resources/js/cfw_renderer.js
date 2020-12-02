@@ -1669,7 +1669,8 @@ function cfw_renderer_hierarchy_sorter(renderDef) {
 	// Render Specific settings
 	var defaultSettings = {
 		// the delimiter for the csv
-		//delimiter: ';',
+		url: '/app/sorthierarchy',
+			
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.hierarchy_sorter);
@@ -1685,7 +1686,7 @@ function cfw_renderer_hierarchy_sorter(renderDef) {
 		console.log('testggg');		
 		for(key in renderDef.data){
 			console.log('test');
-			cfw_renderer_hierarchy_sorter_printHierarchyElement(0, resultWrapper, renderDef.data[key])
+			cfw_renderer_hierarchy_sorter_printHierarchyElement(renderDef, settings, resultWrapper, renderDef.data[key])
 		}
 		
 	}else{
@@ -1703,12 +1704,12 @@ CFW.render.registerRenderer("hierarchy_sorter",  new CFWRenderer(cfw_renderer_hi
 ******************************************************************/
 //cache for better performance
 var GLOBAL_NOT_DRAGGED_DROPTARGETS=null;
-function cfw_renderer_hierarchy_sorter_printHierarchyElement(level, $parent, object){
+function cfw_renderer_hierarchy_sorter_printHierarchyElement(renderDef, settings, parent, currentItem){
 	//--------------------------------------
 	// Create Draggable element
-	var draggableItem = $('<div id="sortable-item-'+object.PK_ID+'" class="cfw-draggable" draggable="true">')
-	var draggableHeader = $('<div id="sortable-header-'+object.PK_ID+'" class="cfw-draggable-handle card-header p-2 pl-3">'
-			+'<i class="fa fa-arrows-alt-v mr-2"></i>'+object.NAME
+	var draggableItem = $('<div id="sortable-item-'+currentItem.PK_ID+'" class="cfw-draggable" draggable="true">')
+	var draggableHeader = $('<div id="sortable-header-'+currentItem.PK_ID+'" class="cfw-draggable-handle card-header p-2 pl-3">'
+			+'<i class="fa fa-arrows-alt-v mr-2"></i>'+renderDef.getTitleHTML(currentItem)
 			+'</div>');
 	
 	draggableItem.on('dragstart', function(e){
@@ -1765,15 +1766,15 @@ function cfw_renderer_hierarchy_sorter_printHierarchyElement(level, $parent, obj
 	
 	//--------------------------------------
 	// Create Children
-	var childlist = $('<div id="children-'+object.PK_ID+'" class="cfw-droptarget pl-4">')
+	var childlist = $('<div id="children-'+currentItem.PK_ID+'" class="cfw-droptarget pl-4">')
 
-	for(key in object.children){
-		cfw_renderer_hierarchy_sorter_printHierarchyElement(level++, childlist, object.children[key]);
+	for(key in currentItem.children){
+		cfw_renderer_hierarchy_sorter_printHierarchyElement(renderDef, settings, childlist, currentItem.children[key]);
 	}
 	
 	//--------------------------------------
 	// Append 
 	draggableItem.append(draggableHeader)
 	draggableItem.append(childlist);
-	$parent.append(draggableItem);
+	parent.append(draggableItem);
 }

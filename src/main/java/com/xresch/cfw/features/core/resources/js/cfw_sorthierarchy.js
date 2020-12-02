@@ -13,17 +13,17 @@ var URL_PARAMS=CFW.http.getURLParams();
 /******************************************************************
  * Delete
  ******************************************************************/
-function jsexamples_duplicate(id){
-	
-	params = {action: "duplicate", item: "person", id: id};
-	CFW.http.getJSON(SORTHIERARCHY_URL, params, 
-		function(data) {
-			if(data.success){
-				CFW.cache.clearCache();
-				jsexamples_draw(JSEXAMPLES_LAST_OPTIONS);
-			}
-	});
-}
+//function jsexamples_duplicate(id){
+//	
+//	params = {action: "duplicate", item: "person", id: id};
+//	CFW.http.getJSON(SORTHIERARCHY_URL, params, 
+//		function(data) {
+//			if(data.success){
+//				CFW.cache.clearCache();
+//				jsexamples_draw(JSEXAMPLES_LAST_OPTIONS);
+//			}
+//	});
+//}
 
 /******************************************************************
  *

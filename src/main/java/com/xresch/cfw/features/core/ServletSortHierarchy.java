@@ -71,7 +71,6 @@ public class ServletSortHierarchy extends HttpServlet
 		// Check Inputs
 		//--------------------------------------------
     	if( type == null || config == null) {
-
     		new CFWLog(logger)
 	    		.severe("Error while attempting to sort the hierarchy: Type was not defined or config was not found.");
     		return;
@@ -81,7 +80,6 @@ public class ServletSortHierarchy extends HttpServlet
 		//--------------------------------------------
     	
 		if(config != null && config.canAccessHierarchy(rootID)) {
-			
 			String action = request.getParameter("action");
 			
 			if(action == null) {
@@ -126,12 +124,12 @@ public class ServletSortHierarchy extends HttpServlet
 //			}
 //		}
 		
-
+		
 		switch(action.toLowerCase()) {
 		
 			case "fetch": 			
 				switch(item.toLowerCase()) {
-					case "hierarchy": 			fetchHierarchy(jsonResponse, rootID, config);
+					case "hierarchy": 			System.out.println("B"); fetchHierarchy(jsonResponse, rootID, config);
 	  											break;
 	  																						
 					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
@@ -152,8 +150,7 @@ public class ServletSortHierarchy extends HttpServlet
 		CFWObject parentObject = instance.select()
 									.where(primaryFieldName, rootID)
 									.getFirstObject();
-		
-		System.out.println(config.getFieldsToRetrieve().length);
+				
 		CFWHierarchy hierarchy = new CFWHierarchy(parentObject)
 				.fetchAndCreateHierarchy(config.getFieldsToRetrieve());
 		
