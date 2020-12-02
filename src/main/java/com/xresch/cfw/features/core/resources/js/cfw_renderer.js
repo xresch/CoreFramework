@@ -1659,3 +1659,121 @@ function cfw_renderer_dataviewer_createNavigationHTML(dataviewerID, totalRecords
 
 	return html;
 }
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_hierarchy_sorter(renderDef) {
+	
+	//-----------------------------------
+	// Render Specific settings
+	var defaultSettings = {
+		// the delimiter for the csv
+		//delimiter: ';',
+	};
+	
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.hierarchy_sorter);
+	
+	//-----------------------------------
+	// Target Element
+	let resultWrapper = $('<div>');
+		
+	//--------------------------------
+	// Table
+	
+	if(renderDef.data != undefined){
+		console.log('testggg');		
+		for(key in renderDef.data){
+			console.log('test');
+			cfw_renderer_hierarchy_sorter_printHierarchyElement(0, resultWrapper, renderDef.data[key])
+		}
+		
+	}else{
+		CFW.ui.addAlert('error', 'Something went wrong and no items can be displayed.');
+	}
+	return resultWrapper;
+}
+CFW.render.registerRenderer("hierarchy_sorter",  new CFWRenderer(cfw_renderer_hierarchy_sorter));
+
+
+/******************************************************************
+*
+* @param data as returned by CFW.http.getJSON()
+* @return 
+******************************************************************/
+//cache for better performance
+var GLOBAL_NOT_DRAGGED_DROPTARGETS=null;
+function cfw_renderer_hierarchy_sorter_printHierarchyElement(level, $parent, object){
+	//--------------------------------------
+	// Create Draggable element
+	var draggableItem = $('<div id="sortable-item-'+object.PK_ID+'" class="cfw-draggable" draggable="true">')
+	var draggableHeader = $('<div id="sortable-header-'+object.PK_ID+'" class="cfw-draggable-handle card-header p-2 pl-3">'
+			+'<i class="fa fa-arrows-alt-v mr-2"></i>'+object.NAME
+			+'</div>');
+	
+	draggableItem.on('dragstart', function(e){
+		var draggable = $('.cfw-draggable.dragging');
+		if(draggable.length == 0){
+			GLOBAL_NOT_DRAGGED_DROPTARGETS=$('.cfw-draggable:not(.dragging) .cfw-droptarget').toArray();
+			$(this).addClass('dragging');
+		}
+	});
+	
+	draggableItem.on('dragend', function(e){
+		$(this).removeClass('dragging');
+		GLOBAL_NOT_DRAGGED_DROPTARGETS=null;
+	});
+	
+	draggableItem.on('dragover', function(e){
+		
+		e.preventDefault();
+		
+		var draggable = $('.cfw-draggable.dragging');
+		
+		//--------------------------------------
+		// Get Closests Drop Target
+		//var droptargetElements = $('.cfw-draggable:not(.dragging) .cfw-droptarget').toArray();
+
+		var dropTarget = GLOBAL_NOT_DRAGGED_DROPTARGETS.reduce(function(closest, currentTarget) {
+			let box = $(currentTarget).prev('.cfw-draggable-handle').get(0).getBoundingClientRect();
+			let offset = e.clientY - box.top - box.height / 2;
+			//let offset = e.clientY - box.top;
+			
+			if (offset < 0 && offset > closest.offset) {
+				return { offset: offset, element: $(currentTarget) };
+			} else {
+				return closest;
+			}
+			
+		}, { offset: Number.NEGATIVE_INFINITY }).element;
+		
+
+		//var dropTarget = dropTargetParent.find('> ul');
+//		console.log("===========================");
+//		console.log(draggable);
+//		console.log(dropTarget);
+		
+		//--------------------------------------
+		// Append: make sure droptarget is not 
+		// a child of draggable
+	    if (dropTarget != null 
+	    && draggable.find('#'+dropTarget.attr('id')).length == 0) {
+	    	//draggable.detach();
+	    	dropTarget.prepend(draggable);
+	    }
+	});
+	
+	//--------------------------------------
+	// Create Children
+	var childlist = $('<div id="children-'+object.PK_ID+'" class="cfw-droptarget pl-4">')
+
+	for(key in object.children){
+		cfw_renderer_hierarchy_sorter_printHierarchyElement(level++, childlist, object.children[key]);
+	}
+	
+	//--------------------------------------
+	// Append 
+	draggableItem.append(draggableHeader)
+	draggableItem.append(childlist);
+	$parent.append(draggableItem);
+}

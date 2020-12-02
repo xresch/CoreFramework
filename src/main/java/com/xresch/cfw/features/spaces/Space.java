@@ -47,17 +47,13 @@ public class Space extends CFWObject {
 		IS_RENAMABLE,
 	}
 
-	private static CFWHierarchyConfig hierarchyConfig = new CFWHierarchyConfig(Space.class, 16, SpaceFields.NAME) {
+	private static CFWHierarchyConfig hierarchyConfig = new CFWHierarchyConfig(Space.class, 10, SpaceFields.NAME) {
 		
 		@Override
-		public boolean canSort(String sortedElementID, String targetParentID) {
-			return true;
-		}
+		public boolean canSort(String sortedElementID, String targetParentID) { return true; }
 		
 		@Override
-		public boolean canAccessHierarchy(String rootElementID) {
-			return true;
-		}
+		public boolean canAccessHierarchy(String rootElementID) { return true; }
 	};
 	
 	private static Logger logger = CFWLog.getLogger(Space.class.getName());

@@ -3,10 +3,7 @@ package com.xresch.cfw.features.spaces;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
-import com.xresch.cfw.datahandling.CFWHierarchyConfig;
-import com.xresch.cfw.features.core.ServletSortHierarchy;
 import com.xresch.cfw.features.manual.ManualPage;
-import com.xresch.cfw.features.spaces.Space.SpaceFields;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
 /**************************************************************************************************************
