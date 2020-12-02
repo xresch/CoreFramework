@@ -23,7 +23,7 @@ import com.xresch.cfw.utils.CFWArrayUtils;
 public class CFWHierarchy<T extends CFWObject> {
 	
 	private static Logger logger = CFWLog.getLogger(CFWHierarchy.class.getName());
-	public static final int MAX_LEVELS = 32;
+	public static final int MAX_ALLOWED_DEPTH = 32;
 	
 	private static String[] labels =  new String [] { 
 			  "P0", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9",
@@ -69,13 +69,14 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * 
 	 * 
 	 *****************************************************************************/
-	public static void setHierarchyLevels(CFWObject object, int levels) {
+	public static void setHierarchyLevels(CFWObject object, CFWHierarchyConfig hierarchyConfig) {
 		
 		//-------------------------------
 		// Argument check
-		if(levels > MAX_LEVELS) {
+		int maxDepth = hierarchyConfig.getMaxDepth();
+		if(maxDepth > MAX_ALLOWED_DEPTH) {
 			new CFWLog(logger)
-				.severe("Cannot set levels to '"+levels+"'. The maximum allowed levels is: "+MAX_LEVELS, new IllegalArgumentException());
+				.severe("Cannot set levels to '"+maxDepth+"'. The maximum allowed levels is: "+MAX_ALLOWED_DEPTH, new IllegalArgumentException());
 			
 			return;
 		}
@@ -83,8 +84,8 @@ public class CFWHierarchy<T extends CFWObject> {
 		//------------------------------------
 		// Add Parent Fields
 		// P0... P1... Pn...
-		object.hierarchyLevels = levels;
-		for(int i = 0; i < levels; i++) {
+		object.hierarchyConfig = hierarchyConfig;
+		for(int i = 0; i < maxDepth; i++) {
 			object.addField(
 				CFWField.newInteger(FormFieldType.NONE, labels[i])
 					.setDescription("ID of parent number "+i+" in the same table.")
@@ -183,7 +184,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * 
 	 *****************************************************************************/
 	public static String[] getParentAndPrimaryFieldnames(CFWObject object) {
-		String[] parentFields = Arrays.copyOfRange(labels, 0, object.hierarchyLevels);
+		String[] parentFields = Arrays.copyOfRange(labels, 0, object.hierarchyConfig.getMaxDepth());
 		String[] withPrimaryField = CFWArrayUtils.add(parentFields, object.getPrimaryField().getName());
 		return withPrimaryField;
 	}

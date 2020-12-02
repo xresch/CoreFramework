@@ -28,7 +28,7 @@ public class CFWObject {
 	// General
 	@SuppressWarnings("rawtypes")
 	private LinkedHashMap<String, CFWField> fields = new LinkedHashMap<String, CFWField>();
-	protected int hierarchyLevels = 0;
+	protected CFWHierarchyConfig hierarchyConfig = null;
 	protected  CFWObject parent;
 	protected  LinkedHashMap<Integer, CFWObject> childObjects = new LinkedHashMap<Integer, CFWObject>();
 	
@@ -427,21 +427,28 @@ public class CFWObject {
 	 * 
 	 ****************************************************************/
 	public boolean isHierarchical() {
-		return (hierarchyLevels > 0);
+		return (hierarchyConfig != null);
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	public CFWHierarchyConfig getHierarchyConfig() {
+		return hierarchyConfig;		
 	}
 	
 	/****************************************************************
 	 * 
 	 ****************************************************************/
 	public int getHierarchyLevels() {
-		return hierarchyLevels;		
+		return hierarchyConfig.getMaxDepth();		
 	}
 	
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public void setHierarchyLevels(int hierarchyLevels) {
-		CFWHierarchy.setHierarchyLevels(this, hierarchyLevels);
+	public void setHierarchyConfig(CFWHierarchyConfig hierarchyConfig) {
+		CFWHierarchy.setHierarchyLevels(this, hierarchyConfig);
 	}
 	
 	/****************************************************************

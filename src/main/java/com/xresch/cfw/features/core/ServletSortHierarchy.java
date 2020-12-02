@@ -13,6 +13,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWHierarchyConfig;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.spaces.Space;
 import com.xresch.cfw.logging.CFWLog;
@@ -33,20 +34,20 @@ public class ServletSortHierarchy extends HttpServlet
 	private static final Logger logger = CFWLog.getLogger(ServletSortHierarchy.class.getName());
 	
 	//name of type and associated SortConfig
-	private static final HashMap<String, HierarchicalSortConfig> sortConfigMap = new HashMap<>();
+	private static final HashMap<String, CFWHierarchyConfig> sortConfigMap = new HashMap<>();
 	
 	/***************************************************************************
 	 * 
 	 ***************************************************************************/
-    public static void addConfig(HierarchicalSortConfig config){
+    public static void addConfig(CFWHierarchyConfig config){
     	
-    	if( sortConfigMap.containsKey(config.getType()) ) {
+    	if( sortConfigMap.containsKey(config.getConfigIdentifier()) ) {
     		new CFWLog(logger)
-    		.severe("Error: A HierarchicalSortConfig with the type "+config.getType()+" was already registered.");
+    		.severe("Error: A CFWHierarchyConfig with the type "+config.getConfigIdentifier()+" was already registered.");
     		return;
     	}
     	
-		sortConfigMap.put(config.getType(), config);
+		sortConfigMap.put(config.getConfigIdentifier(), config);
     }
 	
     
@@ -63,7 +64,7 @@ public class ServletSortHierarchy extends HttpServlet
 		String type = request.getParameter("type");
 		String rootID = request.getParameter("rootid");
 
-		HierarchicalSortConfig config = sortConfigMap.get(type);
+		CFWHierarchyConfig config = sortConfigMap.get(type);
 		HTMLResponse html = new HTMLResponse("Sort Hierarchy");
 		
 		//--------------------------------------------
@@ -79,7 +80,7 @@ public class ServletSortHierarchy extends HttpServlet
 		// Execute Autocomplete Handler
 		//--------------------------------------------
     	
-		if(config != null && config.canAccess(rootID)) {
+		if(config != null && config.canAccessHierarchy(rootID)) {
 			
 			String action = request.getParameter("action");
 			
@@ -103,7 +104,7 @@ public class ServletSortHierarchy extends HttpServlet
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private void handleDataRequest(HttpServletRequest request, HttpServletResponse response, HierarchicalSortConfig config) {
+	private void handleDataRequest(HttpServletRequest request, HttpServletResponse response, CFWHierarchyConfig config) {
 		
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
@@ -144,7 +145,7 @@ public class ServletSortHierarchy extends HttpServlet
 		}
 	}
 	
-	private void fetchHierarchy(JSONResponse jsonResponse, String rootID, HierarchicalSortConfig config) {
+	private void fetchHierarchy(JSONResponse jsonResponse, String rootID, CFWHierarchyConfig config) {
 		
 		CFWObject instance = config.getCFWObjectInstance();
 		String primaryFieldName = instance.getPrimaryField().getName();
@@ -152,9 +153,9 @@ public class ServletSortHierarchy extends HttpServlet
 									.where(primaryFieldName, rootID)
 									.getFirstObject();
 		
-		System.out.println(config.getFieldnames().length);
+		System.out.println(config.getFieldsToRetrieve().length);
 		CFWHierarchy hierarchy = new CFWHierarchy(parentObject)
-				.fetchAndCreateHierarchy(config.getFieldnames());
+				.fetchAndCreateHierarchy(config.getFieldsToRetrieve());
 		
 		jsonResponse.getContent().append(hierarchy.toJSONArray().toString());
 	}

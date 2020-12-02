@@ -1,6 +1,7 @@
 package com.xresch.cfw.utils;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**************************************************************************************************************
  * 
@@ -29,6 +30,29 @@ public class CFWRandom {
 	public static String randomFirstnameOfGod() { return getRandomFromArray(firstnameGods); }
 	public static String randomLastnameSweden() { return getRandomFromArray(lastnameSweden); }
 	public static String randomMythicalLocation() { return getRandomFromArray(mythicalLocations); }
+	
+	/******************************************************************************
+	 * Creates a random integer between 0(inclusive) and the given number(inclusive).
+	 * 
+	 * @param byteCount number of bytes to create
+	 * @return
+	 ******************************************************************************/
+	public static Integer randomFromZeroToInteger(int upperInclusive) {
+		
+		return ThreadLocalRandom.current().nextInt(upperInclusive+1);
+	}
+	
+	/******************************************************************************
+	 * Creates a random integer between 0 and the given number(inclusive).
+	 * 
+	 * @param byteCount number of bytes to create
+	 * @return
+	 ******************************************************************************/
+	public static Integer randomIntegerInRange(int lowerInclusive, int upperInclusive) {
+		
+		return ThreadLocalRandom.current().nextInt(lowerInclusive, upperInclusive+1);
+	}
+	
 
 	/******************************************************************************
 	 * Creates a random String containing alphanumerical characters.
@@ -40,7 +64,7 @@ public class CFWRandom {
 	
 		StringBuilder builder = new StringBuilder();
 	
-		Random random = getInstance();
+		//Random random = getInstance();
 		for (int i = 0; i < byteCount; i++) {
 			builder.append(ALPHA_NUMS_SPECIALS.charAt(random.nextInt(51)));
 		}
@@ -58,7 +82,7 @@ public class CFWRandom {
 	
 		StringBuilder builder = new StringBuilder();
 	
-		Random random = getInstance();
+		//Random random = getInstance();
 		for (int i = 0; i < byteCount; i++) {
 			builder.append(ALPHA_NUMS_SPECIALS.charAt(random.nextInt(51)));
 		}

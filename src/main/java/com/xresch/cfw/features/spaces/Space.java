@@ -8,9 +8,11 @@ import java.util.logging.Logger;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
+import com.xresch.cfw.datahandling.CFWHierarchyConfig;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
+import com.xresch.cfw.features.spaces.Space.SpaceFields;
 import com.xresch.cfw.features.spaces.SpaceGroup.SpaceGroupFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.LengthValidator;
@@ -45,6 +47,19 @@ public class Space extends CFWObject {
 		IS_RENAMABLE,
 	}
 
+	private static CFWHierarchyConfig hierarchyConfig = new CFWHierarchyConfig(Space.class, 16, SpaceFields.NAME) {
+		
+		@Override
+		public boolean canSort(String sortedElementID, String targetParentID) {
+			return true;
+		}
+		
+		@Override
+		public boolean canAccessHierarchy(String rootElementID) {
+			return true;
+		}
+	};
+	
 	private static Logger logger = CFWLog.getLogger(Space.class.getName());
 	
 	private CFWField<Integer> foreignKeySpaceGroup = CFWField.newInteger(FormFieldType.NONE, SpaceFields.FK_ID_SPACEGROUP.toString())
@@ -126,7 +141,7 @@ public class Space extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.setHierarchyLevels(10);
+		this.setHierarchyConfig(hierarchyConfig);
 		this.addFields(foreignKeySpaceGroup, id, name, description, isDeletable, isRenamable);
 	}
 	

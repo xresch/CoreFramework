@@ -3,7 +3,7 @@ package com.xresch.cfw.features.spaces;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
-import com.xresch.cfw.features.core.HierarchicalSortConfig;
+import com.xresch.cfw.datahandling.CFWHierarchyConfig;
 import com.xresch.cfw.features.core.ServletSortHierarchy;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.spaces.Space.SpaceFields;
@@ -42,21 +42,6 @@ public class FeatureSpaces extends CFWAppFeature {
 		CFW.Registry.Objects.addCFWObject(Space.class);
 		CFW.Registry.Objects.addCFWObject(SpaceGroup.class);
 		
-    	//----------------------------------
-    	// Register Objects
-		ServletSortHierarchy.addConfig(new HierarchicalSortConfig("spaces", Space.class, SpaceFields.NAME) {
-			
-			@Override
-			public boolean canSort(String sortedElementID, String targetParentID) {
-				return true;
-			}
-			
-			@Override
-			public boolean canAccess(String rootElementID) {
-				return true;
-			}
-		});
-		
 		//----------------------------------
     	// Register Menu
 		CFW.Registry.Components.addRegularMenuItem(
@@ -71,7 +56,7 @@ public class FeatureSpaces extends CFWAppFeature {
 					.faicon("fas fa-images")
 					//.addPermission(PERMISSION_DASHBOARD_VIEWER)
 					//.addPermission(PERMISSION_DASHBOARD_CREATOR)
-					.href("/app/sorthierarchy?type=spaces")
+					.href("/app/sorthierarchy?type=space")
 				, "Spaces");
 		
 		//----------------------------------

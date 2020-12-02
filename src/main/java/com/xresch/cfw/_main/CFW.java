@@ -23,6 +23,7 @@ import com.xresch.cfw.features.contextsettings.CFWRegistryContextSettings;
 import com.xresch.cfw.features.contextsettings.FeatureContextSettings;
 import com.xresch.cfw.features.core.CFWLocalization;
 import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.features.core.ServletSortHierarchy;
 import com.xresch.cfw.features.dashboard.CFWDBDashboard;
 import com.xresch.cfw.features.dashboard.CFWDBDashboardWidget;
 import com.xresch.cfw.features.dashboard.CFWRegistryWidgets;
@@ -259,12 +260,21 @@ public class CFW {
 	    
 	    //--------------------------------
 	    // Start Database 	
-    	initializeDatabase(appToStart, features);
+		ArrayList<CFWObject> objectArray = CFW.Registry.Objects.getCFWObjectInstances();
+    	initializeDatabase(appToStart, features, objectArray);
 		
 		//---------------------------
 		// Load API Definitions
-		ArrayList<CFWObject> objectArray = CFW.Registry.Objects.getCFWObjectInstances();
 		loadAPIDefinitions(objectArray);
+		
+		//---------------------------
+		// Load Hierarchy definitions
+		for(CFWObject object : objectArray) {
+			if(object.isHierarchical()) {
+				ServletSortHierarchy.addConfig(object.getHierarchyConfig());
+			}
+		}
+		
 
 	    //--------------------------------
 	    // Start Scheduled Tasks
@@ -356,12 +366,10 @@ public class CFW {
 	 * @param features 
 	 * @param CFWAppInterface application to start
 	 ***********************************************************************/
-	private static void initializeDatabase(CFWAppInterface appToStart, ArrayList<CFWAppFeature> features) {
+	private static void initializeDatabase(CFWAppInterface appToStart, ArrayList<CFWAppFeature> features, ArrayList<CFWObject> objectArray) {
 				
 		//---------------------------
 		// Iterate over Registered Objects
-    	ArrayList<CFWObject> objectArray = CFW.Registry.Objects.getCFWObjectInstances();
-    	
     	for(CFWObject object : objectArray) {
     		if(object.getTableName() != null) {
     			object.migrateTable();

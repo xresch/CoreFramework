@@ -1,35 +1,48 @@
-package com.xresch.cfw.features.core;
+package com.xresch.cfw.datahandling;
 
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.features.dashboard.ServletDashboardList;
 import com.xresch.cfw.logging.CFWLog;
 
 //###########################################################################################
 // 
 //###########################################################################################
-public abstract class HierarchicalSortConfig {
+public abstract class CFWHierarchyConfig {
 	
-	private static final Logger logger = CFWLog.getLogger(HierarchicalSortConfig.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWHierarchyConfig.class.getName());
 	
-	private String type = "";
+	private String configIdentifier = "";
 	private Object[] fieldnames = null;
 	private Class<? extends CFWObject> clazz;
+	private int maxHierarchyDepth = 0;
 	
-	public HierarchicalSortConfig(String type, Class<? extends CFWObject> clazz, Object... fieldnames) {
-		this.type = type;
+	/***********************************************************************
+	 * Create a hierarchy config.
+	 * @param clazz of the CFWObject that will be hierarchical.
+	 * @param maxHierarchyDepth maximum number of levels in the hierarchy
+	 * @param 
+	 ***********************************************************************/
+	public CFWHierarchyConfig(Class<? extends CFWObject> clazz, int maxHierarchyDepth, Object... fieldsToRetrieve) {
+		this.configIdentifier = clazz.getSimpleName().toLowerCase();
 		this.clazz = clazz;
-		this.fieldnames = fieldnames;
+		this.maxHierarchyDepth = maxHierarchyDepth;
+		this.fieldnames = fieldsToRetrieve;
 	}
 	
-	public String getType() {
-		return this.type;
+	public String setConfigIdentifier() {
+		return this.configIdentifier;
 	}
 	
-	public Object[] getFieldnames() {
+	public String getConfigIdentifier() {
+		return this.configIdentifier;
+	}
+	
+	public Object[] getFieldsToRetrieve() {
 		return this.fieldnames;
+	}
+	
+	public int getMaxDepth() {
+		return this.maxHierarchyDepth;
 	}
 	
 	/***********************************************************************
@@ -50,16 +63,18 @@ public abstract class HierarchicalSortConfig {
 	}
 	
 	/***************************************************************************
-	 * Return true if the user is allowed to access the type hierarchy starting
+	 * Return true if the user is allowed to access the hierarchy starting
 	 * from the given root element.
 	 * @param rootElementID the id of the root element. Can be null for the full hierarchy.
 	 * @return true if has access, false otherwise
 	 ***************************************************************************/
-	public abstract boolean canAccess(String rootElementID);
+	public abstract boolean canAccessHierarchy(String rootElementID);
 	
 	/***************************************************************************
-	 * Return true if the user is allowed to sort the sorted element into the
-	 * target element.
+	 * Return true if:
+	 *  - the user is allowed to sort the sorted element into the target element.
+	 *  - The sorted element can be part of the target element.
+	 *  
 	 ***************************************************************************/
 	public abstract boolean canSort(String sortedElementID, String targetParentID);
 	
