@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.manual.ManualPage;
+import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.tests._master.WebTestMaster;
 
-public class ManualPagesTests {
+public class ManualPagesTests extends WebTestMaster {
 
 	@Test
 	public void testMenuRegistry() {
@@ -63,7 +65,8 @@ public class ManualPagesTests {
 		
 		//---------------------------
 		// Create and Check Menu
-		JsonArray pagesArray = CFW.Registry.Manual.getManualPagesForUserAsJSON();
+		SessionData stubData = new SessionData("sessionID");
+		JsonArray pagesArray = CFW.Registry.Manual.getManualPagesForUserAsJSON(stubData);
 		System.out.println("========= JSON =========\n"+pagesArray.toString());
 		
 	}

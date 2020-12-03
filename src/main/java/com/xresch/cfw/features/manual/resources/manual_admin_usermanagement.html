@@ -58,7 +58,8 @@ Please consider the following when managing users:
 </p>
 <ol>
 	<li><strong>Disabling Users:&nbsp;</strong> You can disable a user by setting the status of the user to "Inactive".</li>
-	<li><strong>Sign-out/Sign-in on Changes:&nbsp;</strong> As permissions are fetched and cached when the user logs in, he will need to login again so that his permissions will be updated.</li>
+	<li><strong>Auto Role Reload:&nbsp;</strong> If you add or remove a user in roles, the user doesn't have to re-login anymore as in previous versions of CFW(version &lt;=2.0.1) for the changes to be applied.</li>
+	<li><strong>Sign-out/Sign-in on Permission Changes:&nbsp;</strong> As permissions are fetched and cached when the user logs in, users will need to login again so that the permissions will be updated.</li>
 	<li><strong>Foreign Users:&nbsp;</strong> When the user is set to "Foreign", what means the credentials are checked against another source than the DB, the password reset button will not be available for this user. Also the user will not have the "Change Password" option in the user menu.</li>
 	<li><strong>Pre-Creating Foreign Users:&nbsp;</strong> You can pre-create a foreign user before he logs in the first time, just use the same username as in the foreign credential source. This can be useful to already grant permissions and avoids that the user has to re-login.</li>
 </ol>

@@ -115,6 +115,7 @@ public class SevletUserManagementAPI extends HttpServlet {
 							case "userrolemap": 		userID = request.getParameter("itemid");
 														roleID = request.getParameter("listitemid");
 														jsonResponse.setSuccess(CFW.DB.UserRoleMap.toogleUserInRole(userID, roleID));
+														SessionTracker.updateUserRights(Integer.parseInt(userID));
 														break;
 														
 							case "rolepermissionmap": 	roleID = request.getParameter("itemid");

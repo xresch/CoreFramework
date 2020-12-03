@@ -52,16 +52,12 @@ public class SessionData implements Serializable {
 	
 	public SessionData(String sessionID) {
 		this.sessionID = sessionID;
-		menu = CFW.Registry.Components.createMenuInstance(false);
-		footer = CFW.Registry.Components.createDefaultFooterInstance();
-		
-		
+		loadMenu(false);		
 	}
 	
 	public void triggerLogin() {
 		isLoggedIn = true;
-		menu = CFW.Registry.Components.createMenuInstance(true);
-		footer = CFW.Registry.Components.createDefaultFooterInstance();
+		loadMenu(true);
 		if(user != null) {
 			user.lastLogin(new Timestamp(System.currentTimeMillis())).update();
 		}
@@ -74,8 +70,7 @@ public class SessionData implements Serializable {
 		userPermissions.clear();
 		formCache.invalidateAll();
 		
-		menu = CFW.Registry.Components.createMenuInstance(false);
-		footer = CFW.Registry.Components.createDefaultFooterInstance();
+		loadMenu(false);
 		user = null;
 		
 		CFW.Context.App.getApp().removeSession(sessionID);
@@ -100,9 +95,21 @@ public class SessionData implements Serializable {
 	public void setUser(User user) {
 		if(user != null) {
 			this.user = user;
+			loadUserPermissions();
+		}
+	}
+	
+	public void loadUserPermissions() {
+		if(user != null) {
 			this.userRoles = CFW.DB.Users.selectRolesForUser(user);
 			this.userPermissions = CFW.DB.Users.selectPermissionsForUser(user);
+			loadMenu(true);
 		}
+	}
+	
+	public void loadMenu(boolean withUserMenu) {
+		menu = CFW.Registry.Components.createMenuInstance(this, withUserMenu);
+		footer = CFW.Registry.Components.createDefaultFooterInstance();
 	}
 	
 	public void resetUser() {

@@ -7,6 +7,7 @@ import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.features.manual.CFWRegistryManual;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -26,7 +27,13 @@ public class FeatureDashboard extends CFWAppFeature {
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.dashboard.resources";
 	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.dashboard.manual";
 	
-	public static final ManualPage ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, new ManualPage("Dashboard").faicon("fas fa-tachometer-alt"));
+	public static final ManualPage ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
+					new ManualPage("Dashboard")
+						.faicon("fas fa-tachometer-alt")
+						.addPermission(PERMISSION_DASHBOARD_VIEWER)
+						.addPermission(PERMISSION_DASHBOARD_CREATOR)
+						.addPermission(PERMISSION_DASHBOARD_ADMIN)
+				);
 	
 	@Override
 	public void register() {
@@ -71,6 +78,7 @@ public class FeatureDashboard extends CFWAppFeature {
 					.faicon("fas fa-tachometer-alt")
 					.addPermission(PERMISSION_DASHBOARD_VIEWER)
 					.addPermission(PERMISSION_DASHBOARD_CREATOR)
+					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 				, null);
 				
 		CFW.Registry.Components.addRegularMenuItem(
@@ -78,6 +86,7 @@ public class FeatureDashboard extends CFWAppFeature {
 					.faicon("fas fa-images")
 					.addPermission(PERMISSION_DASHBOARD_VIEWER)
 					.addPermission(PERMISSION_DASHBOARD_CREATOR)
+					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 					.href("/app/dashboard/list")
 				, "Dashboards");
 		
@@ -130,7 +139,7 @@ public class FeatureDashboard extends CFWAppFeature {
 	}
 	
 	private void registerDashboardManual() {
-				
+
 		//----------------------------------
 		//
 		ROOT_MANUAL_PAGE.addChild(
@@ -203,9 +212,7 @@ public class FeatureDashboard extends CFWAppFeature {
 					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_tips_tricks.html")
 			);
-		
-		
-			
+					
 	}
 
 }

@@ -11,6 +11,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.features.usermgmt.SessionData;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -128,14 +129,15 @@ public class ManualPage {
 	 * permissions for the page
 	 * @return String html for this item. 
 	 ***********************************************************************************/
-	public JsonObject toJSONObjectForMenu() {
+	public JsonObject toJSONObjectForMenu(SessionData sessionData) {
 		
 		//----------------------------------
 		// Check Permissions
 		if(permissions.size() > 0) {
 
 			boolean hasPermission = false;
-			HashMap<String, Permission> usersPermissions = CFW.Context.Request.getUserPermissions();
+			HashMap<String, Permission> usersPermissions = sessionData.getUserPermissions();
+
 			for(String permission : permissions) {
 				if(usersPermissions.containsKey(permission)) {
 					hasPermission = true;
@@ -160,7 +162,7 @@ public class ManualPage {
 		if(childPages.size() > 0) {
 			JsonArray children = new JsonArray();
 			for(ManualPage page : childPages.values()) {
-				JsonObject object = page.toJSONObjectForMenu();
+				JsonObject object = page.toJSONObjectForMenu(sessionData);
 				if(object != null) {
 					children.add(object);
 				}

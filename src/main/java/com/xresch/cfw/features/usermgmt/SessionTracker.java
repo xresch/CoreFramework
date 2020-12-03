@@ -82,8 +82,23 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 	@Override
 	public void sessionIdChanged(HttpSessionEvent event, String oldSessionId) {
 		synchronized (sessionIDs) {
-			sessionIDs.add(oldSessionId);
+			sessionIDs.remove(oldSessionId);
 			sessionIDs.add(event.getSession().getId());
+		}
+	}
+	
+	public static void updateUserRights(int userID){
+		synchronized (sessionIDs) {
+			
+			for(String id : sessionIDs.toArray(new String[] {})) {
+				Session session = sessionHandler.getSession(id);
+				SessionData data = (SessionData)session.getAttribute(CFW.SESSION_DATA);
+				
+				User user = data.getUser();
+				if(user != null && user.id() == userID) {
+					data.loadUserPermissions();
+				}
+			}
 		}
 	}
 	

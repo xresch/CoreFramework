@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.manual.FeatureManual;
+import com.xresch.cfw.features.usermgmt.SessionData;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.BTFooter;
 import com.xresch.cfw.response.bootstrap.BTMenu;
@@ -133,7 +134,7 @@ public class CFWRegistryComponents {
 	 * Create a instance of the menu.
 	 * @return a Bootstrap Menu instance
 	 ***********************************************************************/
-	public static BTMenu createMenuInstance(boolean withUserMenus)  {
+	public static BTMenu createMenuInstance(SessionData sessionData, boolean withUserMenus)  {
 		
 		BTMenu menu = new BTMenu();
 		menu.setLabel(CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_MENU_TITLE));
@@ -171,10 +172,12 @@ public class CFWRegistryComponents {
 			
 			//---------------------------
 			// Manual
-			if(CFW.Registry.Manual.getManualPagesForUserAsJSON().size() > 0
-			&& CFW.Context.Request.hasPermission(FeatureManual.PERMISSION_MANUAL)) {
+			
+			if(CFW.Registry.Manual.getManualPagesForUserAsJSON(sessionData).size() > 0
+			&& sessionData.getUserPermissions().containsKey(FeatureManual.PERMISSION_MANUAL)) {
 				menu.addRightMenuItem(
-						(MenuItem)new MenuItem("Manual", "{!cfw_core_manual!}") 
+						//(MenuItem)new MenuItem("Manual", "{!cfw_core_manual!}") 
+						(MenuItem)new MenuItem("") 
 						.faicon("fas fa-book")
 						.addPermission(FeatureManual.PERMISSION_MANUAL)
 						.href("/app/manual")
@@ -183,7 +186,7 @@ public class CFWRegistryComponents {
 			
 			//---------------------------
 			// User Menu
-			UserMenuItem userParentMenu = new UserMenuItem(CFW.Context.Session.getSessionData());	
+			UserMenuItem userParentMenu = new UserMenuItem(sessionData);	
 			menu.setUserMenuItem(userParentMenu);
 			
 			for(MenuItem item : userMenuItems.values() ) {
@@ -194,7 +197,7 @@ public class CFWRegistryComponents {
 				userParentMenu.addChild(new MenuItemDivider());
 			}
 		
-			if(!CFW.Context.Request.getUser().isForeign()) {
+			if(!sessionData.getUser().isForeign()) {
 				userParentMenu.addChild(new MenuItem("Change Password").faicon("fas fa-key").href("/app/changepassword"));
 			}
 			
