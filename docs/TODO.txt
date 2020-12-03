@@ -78,6 +78,7 @@ DONE
 ------- Current -------
 - Roles: Reload user roles when changed, no re-login required anymore(adding Permissions to role still requires relogin)
 - Build: bumped various library versions to latest
+- Data Viewer: Fixed displayed page count when PageSize:All is selected.
 
 ------- v2.0.1 -------
 - /metrics: added counter for DB calls successful/failed

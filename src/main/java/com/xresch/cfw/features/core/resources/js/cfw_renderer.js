@@ -1589,7 +1589,8 @@ function cfw_renderer_dataviewer_createPageListItem(dataviewerID, page, label, i
 function cfw_renderer_dataviewer_createNavigationHTML(dataviewerID, totalRecords, pageSize, pageActive) {
 	//============================================
 	// Variables
-	var totalPages = Math.ceil(totalRecords / pageSize);
+	
+	var totalPages = (pageSize == -1) ? 1 : Math.ceil(totalRecords / pageSize);
 	
 	var itemText = "Items";
 	if(totalRecords == 1) { itemText = "Item"}
