@@ -1704,7 +1704,9 @@ CFW.render.registerRenderer("hierarchy_sorter",  new CFWRenderer(cfw_renderer_hi
 ******************************************************************/
 //cache for better performance
 var GLOBAL_NOT_DRAGGED_DROPTARGETS=null;
+var GLOBAL_LAST_DRAGOVER=null;
 function cfw_renderer_hierarchy_sorter_printHierarchyElement(renderDef, settings, parent, currentItem){
+	
 	//--------------------------------------
 	// Create Draggable element
 	var draggableItem = $('<div id="sortable-item-'+currentItem.PK_ID+'" class="cfw-draggable" draggable="true">')
@@ -1716,6 +1718,7 @@ function cfw_renderer_hierarchy_sorter_printHierarchyElement(renderDef, settings
 		var draggable = $('.cfw-draggable.dragging');
 		if(draggable.length == 0){
 			GLOBAL_NOT_DRAGGED_DROPTARGETS=$('.cfw-draggable:not(.dragging) .cfw-droptarget').toArray();
+			GLOBAL_LAST_DRAGOVER=Date.now();
 			$(this).addClass('dragging');
 		}
 	});
@@ -1725,20 +1728,28 @@ function cfw_renderer_hierarchy_sorter_printHierarchyElement(renderDef, settings
 		GLOBAL_NOT_DRAGGED_DROPTARGETS=null;
 	});
 	
+	
 	draggableItem.on('dragover', function(e){
 		
 		e.preventDefault();
 		
-		var draggable = $('.cfw-draggable.dragging');
+		//---------------------------------------------------------
+		// Major Performance Improvement: do only all 100ms as
+		// dragover event is executed a hell lot of times
+		//---------------------------------------------------------
+		if(Date.now() - GLOBAL_LAST_DRAGOVER < 100){
+			return;
+		}
+		GLOBAL_LAST_DRAGOVER = Date.now();
 		
 		//--------------------------------------
-		// Get Closests Drop Target
-		//var droptargetElements = $('.cfw-draggable:not(.dragging) .cfw-droptarget').toArray();
-
+		// Evaluate Closest Drop Target
+		//--------------------------------------
+		var draggable = $('.cfw-draggable.dragging');
+		
 		var dropTarget = GLOBAL_NOT_DRAGGED_DROPTARGETS.reduce(function(closest, currentTarget) {
 			let box = $(currentTarget).prev('.cfw-draggable-handle').get(0).getBoundingClientRect();
 			let offset = e.clientY - box.top - box.height / 2;
-			//let offset = e.clientY - box.top;
 			
 			if (offset < 0 && offset > closest.offset) {
 				return { offset: offset, element: $(currentTarget) };
