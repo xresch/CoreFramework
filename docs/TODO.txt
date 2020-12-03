@@ -77,7 +77,7 @@ DONE
 ====
 ------- Current -------
 - Roles: Reload user roles when changed, no re-login required anymore(adding Permissions to role still requires relogin)
-
+- Build: bumped jetty version to 9.4.35.v20201120
 ------- v2.0.1 -------
 - /metrics: added counter for DB calls successful/failed
 - /metrics: added counter for API calls
