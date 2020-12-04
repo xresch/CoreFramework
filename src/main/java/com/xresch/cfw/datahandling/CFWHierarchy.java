@@ -101,22 +101,22 @@ public class CFWHierarchy<T extends CFWObject> {
 	/*****************************************************************************
 	 * Checks if the child can moved to the parent using CFWHierarchyConfig.canSort().
 	 * Moves the child if true and returns true if successful.
-	 * CFWHierarchyConfig.canSort() is repsonsible for creating error messages.
+	 * CFWHierarchyConfig.canSort() is responsible for creating error messages.
 	 * 
 	 * @return true if successful, false otherwise.
 	 *****************************************************************************/
-	public static boolean setParent(CFWHierarchyConfig config, String parentID, String childID) {
+	public static boolean updateParent(CFWHierarchyConfig config, String parentID, String childID) {
 		
 		if(!NumberUtils.isDigits(parentID)) {
 			new CFWLog(logger).severe("parentID is not a integer.", new IllegalArgumentException());
 			return false;
 		}
-		if(NumberUtils.isDigits(childID)) {
+		if(!NumberUtils.isDigits(childID)) {
 			new CFWLog(logger).severe("childID is not an integer.", new IllegalArgumentException());
 			return false;
 		}
 		
-		return CFWHierarchy.setParent(config, Integer.parseInt(parentID), Integer.parseInt(childID));		
+		return CFWHierarchy.updateParent(config, Integer.parseInt(parentID), Integer.parseInt(childID));		
 	}
 	
 	/*****************************************************************************
@@ -127,7 +127,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * @return true if successful, false otherwise.
 	 *****************************************************************************/
 	@SuppressWarnings("unchecked")
-	public static boolean setParent(CFWHierarchyConfig config, int parentID, int childID) {
+	public static boolean updateParent(CFWHierarchyConfig config, int parentID, int childID) {
 
 		CFWObject instance = config.getCFWObjectInstance();
 		String primaryFieldName = instance.getPrimaryField().getName();
@@ -136,20 +136,34 @@ public class CFWHierarchy<T extends CFWObject> {
 			return false;
 		}
 		
+		//------------------------------------------
+		// Resolve Parent Object
 		CFWObject parentObject = instance.select()
 				.where(primaryFieldName, parentID)
 				.getFirstObject();
 		
-		CFWObject childObject = instance.select()
-				.where(primaryFieldName, childID)
-				.getFirstObject();
-		
-		if(parentObject == null || childObject == null) {
+		if(parentObject == null) {
+			new CFWLog(logger).severe("Parent could not be found in the database.", new IllegalArgumentException());
 			return false;
 		}
 		
-		return setParent(parentObject, childObject);
+		//------------------------------------------
+		// Resolve Child Object
+		CFWObject childObject = instance.select()
+				.where(primaryFieldName, childID)
+				.getFirstObject();
+
+		if(childObject == null) {
+			new CFWLog(logger).severe("Child could not be found in the database.", new IllegalArgumentException());
+			return false;
+		}
+		System.out.println("parent: "+parentObject.toJSON());
+		System.out.println("before: "+childObject.toJSON());
+		System.out.println("work: "+setParent(parentObject, childObject));
+		System.out.println("after: "+childObject.toJSON());
+		return childObject.update();
 	}
+	
 	/*****************************************************************************
 	 * Set the parent object of the child and adds it to the list of children.
 	 * The childs db entry has to be updated manually afterwards.
@@ -162,9 +176,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		//-------------------------------
 		// Argument check
 		if(parent.getClass() != child.getClass()) {
-			new CFWLog(logger)
-				.severe("The class of the two provided objects is not the same.", new IllegalArgumentException());
-			
+			new CFWLog(logger).severe("The class of the two provided objects is not the same.", new IllegalArgumentException());
 			return false;
 		}
 		
@@ -186,7 +198,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		if(parent.childObjects == null) {
 			parent.childObjects = new LinkedHashMap<Integer, CFWObject>();
 		}
-		parent.childObjects.put(((Integer)child.getPrimaryField().getValue()), child);
+		parent.childObjects.put(childID, child);
 		
 
 		//-------------------------------
@@ -194,9 +206,9 @@ public class CFWHierarchy<T extends CFWObject> {
 		// set.
 		@SuppressWarnings("rawtypes")
 		LinkedHashMap<String, CFWField> parentFields = parent.getFields();
-		int childLevels = child.getHierarchyLevels();
+		int maxDepthLevels = parent.getHierarchyConfig().getMaxDepth();
 		
-		if( parentFields.get(labels[(childLevels-1)]).getValue() != null) {
+		if( parentFields.get(labels[(maxDepthLevels-1)]).getValue() != null) {
 			new CFWLog(logger)
 				.severe("Cannot set the parent as the maximum hierarchy depth is reached.", new IllegalStateException());
 			
@@ -209,7 +221,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		Integer parentValue = null;
 		
 		int i = 0;
-		for(; i < childLevels; i++) {
+		for(; i < maxDepthLevels; i++) {
 			parentValue = ((CFWField<Integer>)parentFields.get(labels[i])).getValue();
 			if(parentValue != null) {
 				((CFWField<Integer>)child.getField(labels[i])).setValue(parentValue);
@@ -222,6 +234,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		// set this object as the next parent. Only if the last
 		// parent in the hierarchy was not already set.
 		if(parentValue == null) {
+			// i is at index of the last parent slot that was "null"
 			((CFWField<Integer>)child.getField(labels[i])).setValue(parent.primaryField.getValue());
 		}else {
 			new CFWLog(logger)
@@ -232,6 +245,44 @@ public class CFWHierarchy<T extends CFWObject> {
 		return true;
 	}
 	
+	/*****************************************************************************
+	 * Returns the number of parents an object currently has in the upper hierarchy.
+	 * 
+	 * @return true if successful, false otherwise.
+	 *****************************************************************************/
+	@SuppressWarnings("unchecked")
+	public static int getUsedParentSlotsCount(CFWObject object) {
+		
+		if(object == null || object.isHierarchical()){
+			return 0;
+		}
+		
+		int i;
+		int maxObjectDepth = object.getHierarchyConfig().getMaxDepth();
+		for(i = 0; i < maxObjectDepth ;i++){
+			if(object.getField(labels[i]).getValue() == null) {
+				return i;
+			}
+		}
+		return 0;
+	}
+	
+	/*****************************************************************************
+	 * Returns the number of available parent slots for an object.
+	 * 
+	 * @return true if successful, false otherwise.
+	 *****************************************************************************/
+	@SuppressWarnings("unchecked")
+	public static int getAvailableParentSlotsCount(CFWObject object) {
+		
+		if(object == null || object.isHierarchical()){
+			return 0;
+		}
+		
+		int maxObjectDepth = object.getHierarchyConfig().getMaxDepth();
+		int usedSlots = getUsedParentSlotsCount(object);
+		return maxObjectDepth - usedSlots;
+	}
 	
 	/*****************************************************************************
 	 * Set the parent object of this object and adds it to the 
@@ -244,46 +295,6 @@ public class CFWHierarchy<T extends CFWObject> {
 		String[] parentFields = Arrays.copyOfRange(labels, 0, object.hierarchyConfig.getMaxDepth());
 		String[] withPrimaryField = CFWArrayUtils.add(parentFields, object.getPrimaryField().getName());
 		return withPrimaryField;
-	}
-	
-	/*****************************************************************************
-	 * Set the parent object of this object and adds it to the 
-	 * The childs db entry has to be updated manually afterwards.
-	 * 
-	 * @param object used as first parent, primaryField will be used for selection.
-	 *        Set to null to retrieve the full hierarchy.
-	 * @return true if successful, false otherwise.
-	 * 
-	 *****************************************************************************/
-	public CFWHierarchy<T> fetchAndCreateHierarchy(Object... resultFields) {
-		
-		ArrayList<T>objectArray = fetchFlatList(resultFields);
-		objectListFlat.clear();
-		
-		for(T object : objectArray) {
-			objectListFlat.put(object.getPrimaryField().getValue(), object);
-			
-			//Find last ParentID that is not null in fields P0 ... Pn, ignore Primary Field
-			for(int i=0; i < parentAndPrimaryFieldnames.length-1; i++) {
-				
-				Integer parentValue = (Integer)object.getField(parentAndPrimaryFieldnames[i]).getValue();
-				if(parentValue == null) {
-					
-					if( i == 0 ) {
-						//is a root object
-						objectHierarchy.put(object.getPrimaryField().getValue(), object);
-					}else {
-						//is a child object
-						Integer lastParentID = (Integer)object.getField(parentAndPrimaryFieldnames[i-1]).getValue();
-						objectListFlat.get(lastParentID).childObjects.put(object.getPrimaryKey(), object);
-					}
-					
-					break;
-				}
-			}
-		}
-		
-		return this;
 	}
 	
 	/*****************************************************************************
@@ -339,6 +350,58 @@ public class CFWHierarchy<T extends CFWObject> {
 		return array;
 	}
 	
+	/*****************************************************************************
+	 * Set the parent object of this object and adds it to the 
+	 * The childs db entry has to be updated manually afterwards.
+	 * 
+	 * @param object used as first parent, primaryField will be used for selection.
+	 *        Set to null to retrieve the full hierarchy.
+	 * @return true if successful, false otherwise.
+	 * 
+	 *****************************************************************************/
+	public CFWHierarchy<T> fetchAndCreateHierarchy(Object... resultFields) {
+		
+		ArrayList<T>objectArray = fetchFlatList(resultFields);
+		objectListFlat.clear();
+		//-----------------------------------------
+		//Iterate over all objects
+		for(T current : objectArray) {
+			objectListFlat.put(current.getPrimaryField().getValue(), current);
+			
+			//-----------------------------------------
+			// Iterate over Parent Fields of current object
+			int parentCount = parentAndPrimaryFieldnames.length-1;
+			for(int i=0; i < parentCount; i++) {
+				
+				//-----------------------------------------
+				//Find last ParentID that is not null in fields P0 ... Pn, ignore Primary Field
+				Integer parentValue = (Integer)current.getField(parentAndPrimaryFieldnames[i]).getValue();
+				if(parentValue == null) {
+					
+					if( i == 0 ) {
+						//is a root object
+						objectHierarchy.put(current.getPrimaryField().getValue(), current);
+					}else {
+						//is a child object
+						Integer lastParentID = (Integer)current.getField(parentAndPrimaryFieldnames[i-1]).getValue();
+						objectListFlat.get(lastParentID).childObjects.put(current.getPrimaryKey(), current);
+					}
+					
+					//stop and go to next object
+					break;
+				}else if(i == parentCount-1) {
+					//-----------------------------------------
+					// Handle Last Parent Field
+					Integer lastParentID = (Integer)current.getField(parentAndPrimaryFieldnames[i]).getValue();
+					objectListFlat.get(lastParentID).childObjects.put(current.getPrimaryKey(), current);
+					break;
+				}
+			}
+		}
+		
+		return this;
+	}
+
 	/*****************************************************************************
 	 * Set the parent object of this object and adds it to the 
 	 * The childs db entry has to be updated manually afterwards.

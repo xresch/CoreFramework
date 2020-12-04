@@ -105,8 +105,8 @@ public class ServletHierarchy extends HttpServlet
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
 		String rootID = request.getParameter("rootid");
-		String sortedElementID = request.getParameter("elementid");
-		String targetParentID = request.getParameter("targetid");
+		String childID = request.getParameter("childid");
+		String parentID = request.getParameter("parentid");
 		
 		JSONResponse jsonResponse = new JSONResponse();
 		
@@ -135,7 +135,7 @@ public class ServletHierarchy extends HttpServlet
 				
 			case "update": 			
 				switch(item.toLowerCase()) {
-					case "parent": 				updateParent(jsonResponse, config, targetParentID, sortedElementID);
+					case "parent": 				updateParent(jsonResponse, config, parentID, childID);
 	  											break;
 	  																						
 					default: 					CFW.Messages.itemNotSupported(item);
@@ -151,9 +151,9 @@ public class ServletHierarchy extends HttpServlet
 	
 	
 
-	private void updateParent(JSONResponse jsonResponse, CFWHierarchyConfig config, String targetParentID, String sortedElementID) {
+	private void updateParent(JSONResponse jsonResponse, CFWHierarchyConfig config, String parentID, String childID) {
 		
-		jsonResponse.setSuccess(CFWHierarchy.setParent(config, targetParentID, sortedElementID));
+		jsonResponse.setSuccess(CFWHierarchy.updateParent(config, parentID, childID));
 	}
 		
 	@SuppressWarnings({ "rawtypes", "unchecked" })

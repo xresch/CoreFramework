@@ -25,8 +25,13 @@ public abstract class CFWHierarchyConfig {
 	public CFWHierarchyConfig(Class<? extends CFWObject> clazz, int maxHierarchyDepth, Object... fieldsToRetrieve) {
 		this.configIdentifier = clazz.getSimpleName().toLowerCase();
 		this.clazz = clazz;
-		this.maxHierarchyDepth = maxHierarchyDepth;
 		this.fieldnames = fieldsToRetrieve;
+		
+		if(maxHierarchyDepth <= CFWHierarchy.MAX_ALLOWED_DEPTH) {
+			this.maxHierarchyDepth = maxHierarchyDepth;
+		}else {
+			new CFWLog(logger).severe("Max allowed hierarchy depth is: "+CFWHierarchy.MAX_ALLOWED_DEPTH, new IllegalArgumentException());
+		}
 	}
 	
 	public String setConfigIdentifier() {
