@@ -131,7 +131,7 @@ public class FeatureCore extends CFWAppFeature {
 		//-----------------------------------------
 		// User Profile Servlets
 	    app.addAppServlet(ServletChangePassword.class,  "/changepassword");
-	    app.addAppServlet(ServletSortHierarchy.class,  "/sorthierarchy");
+	    app.addAppServlet(ServletHierarchy.class,  "/sorthierarchy");
 	    
 	    //-----------------------------------------
 		// Other Servlets

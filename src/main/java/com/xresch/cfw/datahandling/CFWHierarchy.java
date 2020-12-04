@@ -7,10 +7,15 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
+import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWArrayUtils;
 
 /***************************************************************************************************************************
@@ -93,6 +98,58 @@ public class CFWHierarchy<T extends CFWObject> {
 		}
 	}
 	
+	/*****************************************************************************
+	 * Checks if the child can moved to the parent using CFWHierarchyConfig.canSort().
+	 * Moves the child if true and returns true if successful.
+	 * CFWHierarchyConfig.canSort() is repsonsible for creating error messages.
+	 * 
+	 * @return true if successful, false otherwise.
+	 *****************************************************************************/
+	public static boolean setParent(CFWHierarchyConfig config, String parentID, String childID) {
+		
+		if(!NumberUtils.isDigits(parentID)) {
+			new CFWLog(logger).severe("parentID is not a integer.", new IllegalArgumentException());
+			return false;
+		}
+		if(NumberUtils.isDigits(childID)) {
+			new CFWLog(logger).severe("childID is not an integer.", new IllegalArgumentException());
+			return false;
+		}
+		
+		return CFWHierarchy.setParent(config, Integer.parseInt(parentID), Integer.parseInt(childID));		
+	}
+	
+	/*****************************************************************************
+	 * Checks if the child can moved to the parent using CFWHierarchyConfig.canSort().
+	 * Moves the child if true and returns true if successful.
+	 * CFWHierarchyConfig.canSort() is repsonsible for creating error messages.
+	 * 
+	 * @return true if successful, false otherwise.
+	 *****************************************************************************/
+	@SuppressWarnings("unchecked")
+	public static boolean setParent(CFWHierarchyConfig config, int parentID, int childID) {
+
+		CFWObject instance = config.getCFWObjectInstance();
+		String primaryFieldName = instance.getPrimaryField().getName();
+		
+		if(!config.canSort(parentID, childID)) {
+			return false;
+		}
+		
+		CFWObject parentObject = instance.select()
+				.where(primaryFieldName, parentID)
+				.getFirstObject();
+		
+		CFWObject childObject = instance.select()
+				.where(primaryFieldName, childID)
+				.getFirstObject();
+		
+		if(parentObject == null || childObject == null) {
+			return false;
+		}
+		
+		return setParent(parentObject, childObject);
+	}
 	/*****************************************************************************
 	 * Set the parent object of the child and adds it to the list of children.
 	 * The childs db entry has to be updated manually afterwards.

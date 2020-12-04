@@ -151,24 +151,6 @@ public class CFWContextRequest {
 	}
 	
 	/****************************************************************
-	 * Adds a localized "Access Denied" error message.
-	 *   
-	 ****************************************************************/
-	public static void addMessageAccessDenied(){
-		addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));		
-	}
-	
-	/****************************************************************
-	 * Adds a localized "No Permission" error message.
-	 *   
-	 ****************************************************************/
-	public static void addMessageNoPermission(){
-		addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_nopermission", "You do not have the required permission to execute this action."));		
-	}
-	
-	
-	
-	/****************************************************************
 	 * Returns a collection of alert Messages
 	 *   
 	 * @return Map or null

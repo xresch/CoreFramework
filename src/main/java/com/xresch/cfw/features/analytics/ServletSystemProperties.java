@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.response.HTMLResponse;
 
@@ -55,7 +56,7 @@ public class ServletSystemProperties extends HttpServlet
 	        response.setStatus(HttpServletResponse.SC_OK);
 		
 		}else {
-			CFW.Context.Request.addMessageAccessDenied();
+			CFW.Messages.accessDenied();
 		}
         
     }

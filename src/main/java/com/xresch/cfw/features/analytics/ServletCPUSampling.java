@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -67,7 +68,7 @@ public class ServletCPUSampling extends HttpServlet
 				handleDataRequest(request, response);
 			}
 		}else {
-			CFW.Context.Request.addMessageAccessDenied();
+			CFWMessages.accessDenied();
 		}
         
     }
@@ -86,12 +87,12 @@ public class ServletCPUSampling extends HttpServlet
 					case "cpusampling": 		getCPUSampling(jsonResponse, request);
 	  											break;
 	  										
-					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 					CFW.Messages.itemNotSupported(item);
 												break;
 				}
 				break;
 						
-			default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The action '"+action+"' is not supported.");
+			default: 			CFW.Messages.actionNotSupported(action);
 								break;
 								
 		}

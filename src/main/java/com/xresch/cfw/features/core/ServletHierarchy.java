@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -27,11 +28,11 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @author Reto Scheiwiller, (c) Copyright 2020
  * @license MIT-License
  **************************************************************************************************************/
-public class ServletSortHierarchy extends HttpServlet
+public class ServletHierarchy extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = CFWLog.getLogger(ServletSortHierarchy.class.getName());
+	private static final Logger logger = CFWLog.getLogger(ServletHierarchy.class.getName());
 	
 	//name of type and associated SortConfig
 	private static final HashMap<String, CFWHierarchyConfig> sortConfigMap = new HashMap<>();
@@ -61,16 +62,16 @@ public class ServletSortHierarchy extends HttpServlet
 		//--------------------------------------------
 		// Execute Autocomplete Handler
 		//--------------------------------------------
-		String type = request.getParameter("type");
+		String configid = request.getParameter("configid");
 		String rootID = request.getParameter("rootid");
 
-		CFWHierarchyConfig config = sortConfigMap.get(type);
-		HTMLResponse html = new HTMLResponse("Sort Hierarchy");
+		CFWHierarchyConfig config = sortConfigMap.get(configid);
+		JSONResponse json = new JSONResponse();
 		
 		//--------------------------------------------
 		// Check Inputs
 		//--------------------------------------------
-    	if( type == null || config == null) {
+    	if( configid == null || config == null) {
     		new CFWLog(logger)
 	    		.severe("Error while attempting to sort the hierarchy: Type was not defined or config was not found.");
     		return;
@@ -79,22 +80,16 @@ public class ServletSortHierarchy extends HttpServlet
 		// Execute Autocomplete Handler
 		//--------------------------------------------
     	
-		if(config != null && config.canAccessHierarchy(rootID)) {
+		if(config.canAccessHierarchy(rootID)) {
 			String action = request.getParameter("action");
 			
-			if(action == null) {
-
-				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE+".js", "cfw_sorthierarchy.js");
-				
-				html.addJavascriptCode("cfw_sorthierarchy_draw();");
-				
-		        response.setContentType("text/html");
-		        response.setStatus(HttpServletResponse.SC_OK);
+			if(action != null) {
+				handleDataRequest(request, response, config, json);
 			}else {
-				handleDataRequest(request, response, config);
+				new CFWLog(logger).severe("Action was not defined.");
 			}
 		}else {
-			CFW.Context.Request.addMessageAccessDenied();
+			CFWMessages.accessDenied();
 		}
 	
     }
@@ -102,7 +97,10 @@ public class ServletSortHierarchy extends HttpServlet
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private void handleDataRequest(HttpServletRequest request, HttpServletResponse response, CFWHierarchyConfig config) {
+	private void handleDataRequest( HttpServletRequest request, 
+									HttpServletResponse response, 
+									CFWHierarchyConfig config, 
+									JSONResponse json) {
 		
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
@@ -110,8 +108,6 @@ public class ServletSortHierarchy extends HttpServlet
 		String sortedElementID = request.getParameter("elementid");
 		String targetParentID = request.getParameter("targetid");
 		
-		//int	userID = CFW.Context.Request.getUser().id();
-			
 		JSONResponse jsonResponse = new JSONResponse();
 		
 		//--------------------------------------
@@ -129,28 +125,56 @@ public class ServletSortHierarchy extends HttpServlet
 		
 			case "fetch": 			
 				switch(item.toLowerCase()) {
-					case "hierarchy": 			System.out.println("B"); fetchHierarchy(jsonResponse, rootID, config);
+					case "hierarchy": 			fetchHierarchy(jsonResponse, rootID, config);
 	  											break;
 	  																						
-					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 					CFW.Messages.itemNotSupported(item);
 												break;
 				}
 				break;
-									
-			default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The action '"+action+"' is not supported.");
+				
+			case "update": 			
+				switch(item.toLowerCase()) {
+					case "parent": 				updateParent(jsonResponse, config, targetParentID, sortedElementID);
+	  											break;
+	  																						
+					default: 					CFW.Messages.itemNotSupported(item);
+												break;
+				}
+				break;		
+			
+			default: 			CFW.Messages.actionNotSupported(action);
 								break;
-								
+													
 		}
 	}
 	
+	
+
+	private void updateParent(JSONResponse jsonResponse, CFWHierarchyConfig config, String targetParentID, String sortedElementID) {
+		
+		jsonResponse.setSuccess(CFWHierarchy.setParent(config, targetParentID, sortedElementID));
+	}
+		
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void fetchHierarchy(JSONResponse jsonResponse, String rootID, CFWHierarchyConfig config) {
 		
 		CFWObject instance = config.getCFWObjectInstance();
 		String primaryFieldName = instance.getPrimaryField().getName();
-		CFWObject parentObject = instance.select()
-									.where(primaryFieldName, rootID)
-									.getFirstObject();
-				
+		CFWObject parentObject = null;
+		
+		if(rootID != null) {
+			parentObject = instance.select()
+				.where(primaryFieldName, rootID)
+				.getFirstObject();
+		}else {
+			//---------------------------------------
+			// Fetch All elements in table by using
+			// primary key null
+			parentObject = instance;
+			parentObject.getPrimaryField().setValue(null);
+		}
+											
 		CFWHierarchy hierarchy = new CFWHierarchy(parentObject)
 				.fetchAndCreateHierarchy(config.getFieldsToRetrieve());
 		

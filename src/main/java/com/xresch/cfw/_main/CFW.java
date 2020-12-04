@@ -23,7 +23,7 @@ import com.xresch.cfw.features.contextsettings.CFWRegistryContextSettings;
 import com.xresch.cfw.features.contextsettings.FeatureContextSettings;
 import com.xresch.cfw.features.core.CFWLocalization;
 import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.features.core.ServletSortHierarchy;
+import com.xresch.cfw.features.core.ServletHierarchy;
 import com.xresch.cfw.features.dashboard.CFWDBDashboard;
 import com.xresch.cfw.features.dashboard.CFWDBDashboardWidget;
 import com.xresch.cfw.features.dashboard.CFWRegistryWidgets;
@@ -95,12 +95,12 @@ public class CFW {
 	
 	public static class CLI extends CFWCommandLineInterface {}
 	public static class Dump extends CFWDump {}
-	public static class Security extends CFWSecurity {}
 	public static class Files extends CFWFiles {}
 	public static class HTTP extends CFWHttp {}
 	public static class JSON extends CFWJson {}
 	public static class Localization extends CFWLocalization {}
 	public static class Mail extends CFWMail {}
+	public static class Messages extends CFWMessages {}
 	public static class Properties extends CFWProperties {}
 	public static class Random extends CFWRandom {}
 	public static class Registry {
@@ -114,6 +114,7 @@ public class CFW {
 	}
 	public static class Schedule extends CFWSchedule {}
 	public static class Scripting extends CFWScripting {}
+	public static class Security extends CFWSecurity {}
 	public static class Time extends CFWTime {}
 	public static class Validation extends CFWValidation {}
 	
@@ -271,7 +272,7 @@ public class CFW {
 		// Load Hierarchy definitions
 		for(CFWObject object : objectArray) {
 			if(object.isHierarchical()) {
-				ServletSortHierarchy.addConfig(object.getHierarchyConfig());
+				ServletHierarchy.addConfig(object.getHierarchyConfig());
 			}
 		}
 		

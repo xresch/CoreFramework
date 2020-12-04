@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
@@ -55,7 +56,7 @@ public class ServletAPITokenManagement extends HttpServlet
 				handleDataRequest(request, response);
 			}
 		}else {
-			CFW.Context.Request.addMessageAccessDenied();
+			CFWMessages.accessDenied();
 		}
         
     }
@@ -82,8 +83,10 @@ public class ServletAPITokenManagement extends HttpServlet
 	  										
 					case "permissionmap": 	String tokenID = request.getParameter("tokenid");
 											jsonResponse.getContent().append(APITokenPermissionMapDBMethods.getPermissionMapForTokenID(tokenID));
-					
-					break;	
+											break;
+											
+					default: 				CFW.Messages.itemNotSupported(item);
+											break;	
 				}
 				break;
 						
@@ -93,7 +96,7 @@ public class ServletAPITokenManagement extends HttpServlet
 					case "token": 		deleteToken(jsonResponse, ID);
 										break;  
 										
-					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 			CFW.Messages.itemNotSupported(item);
 										break;
 				}
 				break;	
@@ -104,7 +107,7 @@ public class ServletAPITokenManagement extends HttpServlet
 					case "token": 	 	duplicateToken(jsonResponse, ID);
 										break;  
 										
-					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 			CFW.Messages.itemNotSupported(item);
 										break;
 				}
 				break;	
@@ -117,7 +120,7 @@ public class ServletAPITokenManagement extends HttpServlet
 												jsonResponse.setSuccess(APITokenPermissionMapDBMethods.tooglePermissionForToken(permissionID, tokenID));
 												break;
 	
-					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 			CFW.Messages.itemNotSupported(item);
 										break;
 				}
 				break;
@@ -127,12 +130,12 @@ public class ServletAPITokenManagement extends HttpServlet
 					case "edittoken": 	createEditForm(jsonResponse, ID);
 					break;
 					
-					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 			CFW.Messages.itemNotSupported(item);
 										break;
 				}
 				break;
 						
-			default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The action '"+action+"' is not supported.");
+			default: 			CFW.Messages.actionNotSupported(action);
 								break;
 								
 		}

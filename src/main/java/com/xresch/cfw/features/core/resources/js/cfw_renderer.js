@@ -1671,7 +1671,8 @@ function cfw_renderer_hierarchy_sorter(renderDef) {
 	var defaultSettings = {
 		// the delimiter for the csv
 		url: '/app/sorthierarchy',
-			
+		// the id of the hierarchy config, by default the lowercase classname of the hierarchical CFWObject. (Default of this setting: null) 
+		configid: null,
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.hierarchy_sorter);
@@ -1687,7 +1688,7 @@ function cfw_renderer_hierarchy_sorter(renderDef) {
 		console.log('testggg');		
 		for(key in renderDef.data){
 			console.log('test');
-			cfw_renderer_hierarchy_sorter_printHierarchyElement(renderDef, settings, resultWrapper, renderDef.data[key])
+			cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings, resultWrapper, renderDef.data[key])
 		}
 		
 	}else{
@@ -1706,7 +1707,18 @@ CFW.render.registerRenderer("hierarchy_sorter",  new CFWRenderer(cfw_renderer_hi
 //cache for better performance
 var GLOBAL_NOT_DRAGGED_DROPTARGETS=null;
 var GLOBAL_LAST_DRAGOVER=null;
-function cfw_renderer_hierarchy_sorter_printHierarchyElement(renderDef, settings, parent, currentItem){
+function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings, parent, currentItem){
+	
+}
+/******************************************************************
+*
+* @param data as returned by CFW.http.getJSON()
+* @return 
+******************************************************************/
+//cache for better performance
+var GLOBAL_NOT_DRAGGED_DROPTARGETS=null;
+var GLOBAL_LAST_DRAGOVER=null;
+function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings, parent, currentItem){
 	
 	//--------------------------------------
 	// Create Draggable element
@@ -1781,7 +1793,7 @@ function cfw_renderer_hierarchy_sorter_printHierarchyElement(renderDef, settings
 	var childlist = $('<div id="children-'+currentItem.PK_ID+'" class="cfw-droptarget pl-4">')
 
 	for(key in currentItem.children){
-		cfw_renderer_hierarchy_sorter_printHierarchyElement(renderDef, settings, childlist, currentItem.children[key]);
+		cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings, childlist, currentItem.children[key]);
 	}
 	
 	//--------------------------------------

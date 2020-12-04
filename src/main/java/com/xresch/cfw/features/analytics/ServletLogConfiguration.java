@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.logging.CFWLog;
@@ -55,7 +56,7 @@ public class ServletLogConfiguration extends HttpServlet
 				handleActionRequest(request, response);
 			}
 		}else {
-			CFW.Context.Request.addMessageAccessDenied();
+			CFWMessages.accessDenied();
 		}
         
     }
@@ -75,7 +76,7 @@ public class ServletLogConfiguration extends HttpServlet
 					case "loggers":		jsonResponse.getContent().append(getLoggerDetailsAsJSON().toString());
 										break;		
 	  											
-					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 			CFW.Messages.itemNotSupported(item);
 										break;
 				}
 				break;
@@ -92,11 +93,11 @@ public class ServletLogConfiguration extends HttpServlet
 										CFWLog.initializeLogging();
 										break;
 										
-					default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 			CFW.Messages.itemNotSupported(item);
 										break;
 				}
 				break;		
-			default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The action '"+action+"' is not supported.");
+			default: 			CFW.Messages.actionNotSupported(action);
 								break;
 								
 		}

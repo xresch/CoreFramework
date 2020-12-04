@@ -75,7 +75,9 @@ public abstract class CFWHierarchyConfig {
 	 *  - the user is allowed to sort the sorted element into the target element.
 	 *  - The sorted element can be part of the target element.
 	 *  
+	 * This method is responsible for creating error messages.
+	 *  
 	 ***************************************************************************/
-	public abstract boolean canSort(String sortedElementID, String targetParentID);
+	public abstract boolean canSort(int sortedElementID, int targetParentID);
 	
 }

@@ -41,21 +41,13 @@ public class FeatureSpaces extends CFWAppFeature {
 		
 		//----------------------------------
     	// Register Menu
-		CFW.Registry.Components.addRegularMenuItem(
-				(MenuItem)new MenuItem("Spaces")
-					.faicon("fas fa-tachometer-alt")
-					//.addPermission(PERMISSION_DASHBOARD_VIEWER)
-					//.addPermission(PERMISSION_DASHBOARD_CREATOR)
-				, null);
+//		CFW.Registry.Components.addRegularMenuItem(
+//				(MenuItem)new MenuItem("Spaces")
+//					.faicon("fas fa-tachometer-alt")
+//					//.addPermission(PERMISSION_DASHBOARD_VIEWER)
+//					//.addPermission(PERMISSION_DASHBOARD_CREATOR)
+//				, null);
 				
-		CFW.Registry.Components.addRegularMenuItem(
-				(MenuItem)new MenuItem("Sort Hierarchy")
-					.faicon("fas fa-images")
-					//.addPermission(PERMISSION_DASHBOARD_VIEWER)
-					//.addPermission(PERMISSION_DASHBOARD_CREATOR)
-					.href("/app/sorthierarchy?type=space")
-				, "Spaces");
-		
 		//----------------------------------
     	// Register Manual
 		registerSpacesManual();
