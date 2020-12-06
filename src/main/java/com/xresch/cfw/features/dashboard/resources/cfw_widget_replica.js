@@ -41,6 +41,13 @@
 							replicatedDefinition.createWidgetInstance(replicatedWidgetObject, 
 								function(subReplicatedWidgetObject, widgetContent, subWidgetObject = widgetObject){
 									
+									//---------------------------------------
+									// Remove Placeholder
+									var placeholderWidget = $('#'+subWidgetObject.placeholderGUID);
+									cfw_dashboard_removeWidgetFromGrid(placeholderWidget);
+									
+									//---------------------------------------
+									// Add Widget
 									subWidgetObject.content = widgetContent;
 									var widgetInstance = cfw_dashboard_createWidgetHTMLElement(subWidgetObject);
 
