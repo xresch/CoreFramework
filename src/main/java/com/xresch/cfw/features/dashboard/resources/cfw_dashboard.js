@@ -1350,11 +1350,17 @@ function cfw_dashboard_initialDraw(){
 	
 	
 	//---------------------------------
-	// Load Refresh interval from local store
-	var refreshInterval = window.localStorage.getItem("dashboard-reload-interval-id"+CFW_DASHBOARDVIEW_PARAMS.id);
-	if(refreshInterval != null && refreshInterval != 'null' &&refreshInterval != 'stop' ){
-		$("#refreshSelector").val(refreshInterval);
+	// Load Refresh interval from URL or Local store
+	var refreshParam = CFW_DASHBOARDVIEW_PARAMS.refreshinterval;
+	if(refreshParam != null){
+		$("#refreshSelector").val(refreshParam);
 		cfw_dashboard_setReloadInterval("#refreshSelector");
+	}else{
+		var refreshInterval = window.localStorage.getItem("dashboard-reload-interval-id"+CFW_DASHBOARDVIEW_PARAMS.id);
+		if(refreshInterval != null && refreshInterval != 'null' && refreshInterval != 'stop' ){
+			$("#refreshSelector").val(refreshInterval);
+			cfw_dashboard_setReloadInterval("#refreshSelector");
+		}
 	}
 	
 	

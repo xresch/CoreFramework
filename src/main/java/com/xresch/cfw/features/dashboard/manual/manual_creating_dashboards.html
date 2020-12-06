@@ -20,6 +20,8 @@ For each dashboard in the list you can have the following actions(Dashboard View
 	<li><strong>Delete:&nbsp;</strong> Permanently deletes a dashboard.</li>
 </ul>
 
+
+
 <h2>Dashboard Settings</h2>
 <p>
 By clicking on the edit button the Dashboard settings will open.
@@ -31,6 +33,17 @@ You can provide a name and a description for the dashboard, as well as define ho
 	<li><strong>Editors:&nbsp;</strong> Users specified as "Editors" can always access the dashboard, regardless if "Is Shared" is true or false. These users can change the dashboard content but not these settings itself.</li>
 </ul>
 <img class="img-fluid" src="/cfw/jarresource?pkg=com.xresch.cfw.features.dashboard.manual&file=manual_creating_dashboards_screenshot_settings.jpg">
+
+
+
+<h2>Refresh Interval Parameter</h2>
+<p>
+By default, the refresh interval of the dashboard is set to "off". If the users changes the interval, the setting will be saved in the local storage 
+of the browser. As this might be deleted, you can add the parameter &quot;refreshinterval&quot; to the URL and save the link as a favorite to always get the refresh interval set.
+</p>
+<pre><code>http://localhost:8888/app/dashboard/view?id=1345&title=Example&refreshinterval=300000</code></pre>
+
+
 
 <h2>Adding Widgets</h2>
 <p>

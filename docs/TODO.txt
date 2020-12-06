@@ -80,6 +80,7 @@ DONE
 - Build: bumped various library versions to latest
 - Data Viewer: Fixed displayed page count when PageSize:All is selected.
 - CFW.Messages: Created separate class to handle default messages.
+- Dashboard: Added refresh interval parameter to URL.
 
 ------- v2.0.1 -------
 - /metrics: added counter for DB calls successful/failed
