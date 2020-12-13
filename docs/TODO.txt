@@ -81,7 +81,7 @@ DONE
 - Data Viewer: Fixed displayed page count when PageSize:All is selected.
 - CFW.Messages: Created separate class to handle default messages.
 - Dashboard: Added refresh interval parameter to URL.
-
+- Role Management: Fixed Nullpointer on changing roles while API-Token Session is active.
 ------- v2.0.1 -------
 - /metrics: added counter for DB calls successful/failed
 - /metrics: added counter for API calls
