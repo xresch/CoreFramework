@@ -344,6 +344,8 @@ function cfw_renderer_table(renderDef) {
 			stickyheader: false, 
 			// define if single element arrays should be converted into vertical table (convert columns to rows)
 			verticalize: false,
+			// define if the verticalized fieldnames should be capitalized and underscores removed
+			verticalizelabelize: true,
 			headerclasses: [],
 	};
 	
@@ -365,7 +367,10 @@ function cfw_renderer_table(renderDef) {
 		// Fields
 		for(let i in renderDef.visiblefields){
 			let fieldname = renderDef.visiblefields[i];
-			let label = CFW.format.fieldNameToLabel(fieldname);
+			let label = fieldname;
+			if(settings.verticalizelabelize){
+				label = CFW.format.fieldNameToLabel(fieldname);
+			}
 			let finalValue = singleRecord[fieldname];
 			
 			if(renderDef.customizers[fieldname] != null){
