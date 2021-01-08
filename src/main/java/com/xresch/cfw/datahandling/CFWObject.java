@@ -484,6 +484,9 @@ public class CFWObject {
 	 * Set the parent object of this object and adds it to the 
 	 * The childs db entry has to be updated manually afterwards.
 	 * 
+	 * IMPORTANT: The child object must contain all it's children or the hierarchy will
+	 * not be updated properly.
+	 * 
 	 * @return true if succesful, false otherwise.
 	 * 
 	 ****************************************************************/

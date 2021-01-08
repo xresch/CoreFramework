@@ -8,13 +8,14 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWHierarchy;
+import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.spaces.Space;
 import com.xresch.cfw.features.spaces.Space.SpaceFields;
 import com.xresch.cfw.features.spaces.SpaceGroup;
 import com.xresch.cfw.tests._master.DBTestMaster;
 
-public class TestCFWDBSpaceManagement extends DBTestMaster {
+public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 
 	
 	@BeforeAll
@@ -144,7 +145,7 @@ public class TestCFWDBSpaceManagement extends DBTestMaster {
 		int spacegroupid = CFW.DB.SpaceGroups.selectByName(SpaceGroup.CFW_SPACEGROUP_TESTSPACE).id();
 		
 		//-----------------------------------------
-		// 
+		// Create MySpace Parent
 		//-----------------------------------------
 		if(!CFW.DB.Spaces.checkSpaceExists("MySpace")) {
 			CFW.DB.Spaces.create(
@@ -158,7 +159,7 @@ public class TestCFWDBSpaceManagement extends DBTestMaster {
 		Space parentSpace = CFW.DB.Spaces.selectByName("MySpace");
 		
 		//-----------------------------------------
-		// 
+		// Create MySpace Children
 		//-----------------------------------------
 		for(int i = 0; i < 10; i++) {
 			String spacename = "SubSpace"+i;
@@ -180,9 +181,9 @@ public class TestCFWDBSpaceManagement extends DBTestMaster {
 		//-----------------------------------------
 		// All subelements of MySpace including MySpace
 		//-----------------------------------------
-		String[] fieldnames = 
-				new String[] {
-					SpaceFields.NAME.toString(),
+		Object[] fieldnames = 
+				new Object[] {
+					SpaceFields.NAME,
 				};
 				
 		parentSpace = CFW.DB.Spaces.selectByName("MySpace");
@@ -222,7 +223,6 @@ public class TestCFWDBSpaceManagement extends DBTestMaster {
 		//-----------------------------------------
 		// Fetch all with primaryID null
 		//-----------------------------------------
-
 		csv = new CFWHierarchy<Space>(new Space(2, "dummyWithIDNull"))
 				.setFilter(
 					new CFWSQL(null).and(
@@ -254,13 +254,59 @@ public class TestCFWDBSpaceManagement extends DBTestMaster {
 		//-----------------------------------------
 		// Fetch all with primaryID null
 		//-----------------------------------------
-
 		JsonArray array =  new CFWHierarchy<Space>(new Space(2, "dummyWithIDNull"))
 				.fetchAndCreateHierarchy(fieldnames)
 				.toJSONArray();
 		
 		System.out.println("============= JSON Array =============");
 		System.out.println(CFW.JSON.toJSONPretty(array));
+		
+		//-----------------------------------------
+		// Test Circular Reference Check 
+		//-----------------------------------------
+		Space subspace2 = CFW.DB.Spaces.selectByName("SubSpace2");
+		Space subspace5 = CFW.DB.Spaces.selectByName("SubSpace5");
+		
+		Assertions.assertFalse(subspace2.setParent(subspace2), "Cannot set as it's own parent.");
+		Assertions.assertFalse(subspace5.setParent(subspace2), "Cannot set parent as it would cause a circular reference.");
+		
+		//-----------------------------------------
+		// Test Parent Slots Counts
+		//-----------------------------------------
+		int depth = subspace2.getHierarchyConfig().getMaxDepth();
+		int used =  CFWHierarchy.getUsedParentSlotsCount(subspace2);
+		int available =  CFWHierarchy.getAvailableParentSlotsCount(subspace2);
+		
+		System.out.println("============= Test ParentSlots Counter =============");
+		System.out.println("depth:"+depth);
+		System.out.println("used:"+used);
+		System.out.println("available:"+available);
+		
+		Assertions.assertEquals(3, used, "Used Parent slots are 3.");
+		Assertions.assertEquals(depth-used, available, "Available parent slots are "+(depth-used)+".");
+		
+		//-----------------------------------------
+		// Test Child Depth Counter
+		//-----------------------------------------
+		Space subspace2WithHierarchy = new CFWHierarchy<>(subspace2)
+				.fetchAndCreateHierarchy()
+				.getSingleRootObject();
+		
+		Space subspace5WithHierarchy = new CFWHierarchy<>(subspace5)
+				.fetchAndCreateHierarchy()
+				.getSingleRootObject();
+		
+		System.out.println("============= Test Child Depth Counter =============");
+		System.out.println(CFW.JSON.toJSONPretty( 
+				new CFWHierarchy<Space>(subspace5)
+					.fetchAndCreateHierarchy()
+					.toJSONArray()
+				)
+			);
+
+		Assertions.assertEquals(8, CFWHierarchy.getMaxDepthOfHierarchy(subspace2WithHierarchy, 0), "Max Depth is 8.");
+		Assertions.assertEquals(5, CFWHierarchy.getMaxDepthOfHierarchy(subspace5WithHierarchy, 0), "Max Depth is 5.");
+		
 	}
-	
+		
 }

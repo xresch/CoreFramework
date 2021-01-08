@@ -76,6 +76,7 @@ public class ServletHierarchy extends HttpServlet
 	    		.severe("Error while attempting to sort the hierarchy: Type was not defined or config was not found.");
     		return;
     	}
+    	
 		//--------------------------------------------
 		// Execute Autocomplete Handler
 		//--------------------------------------------
