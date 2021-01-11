@@ -154,7 +154,14 @@ public class ServletHierarchy extends HttpServlet
 
 	private void updateParent(JSONResponse jsonResponse, CFWHierarchyConfig config, String parentID, String childID) {
 		
-		jsonResponse.setSuccess(CFWHierarchy.updateParent(config, parentID, childID));
+		if(CFWHierarchy.updateParent(config, parentID, childID)) {
+			jsonResponse.setSuccess(true);
+			CFW.Messages.saved();
+		}else{
+			// error messages are created by CFWHierarchy.updateParent();
+			jsonResponse.setSuccess(false);
+		};
+		
 	}
 		
 	@SuppressWarnings({ "rawtypes", "unchecked" })

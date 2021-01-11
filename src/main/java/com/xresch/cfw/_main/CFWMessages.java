@@ -9,6 +9,14 @@ public class CFWMessages {
 	 * Request Context.
 	 *   
 	 ****************************************************************/
+	public static void saved(){
+		CFWContextRequest.addAlertMessage(MessageType.SUCCESS, CFW.L("cfw_core_success_saved", "Saved!"));		
+	}
+	/****************************************************************
+	 * Adds a localized "Access Denied" error message to the
+	 * Request Context.
+	 *   
+	 ****************************************************************/
 	public static void accessDenied(){
 		CFWContextRequest.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));		
 	}

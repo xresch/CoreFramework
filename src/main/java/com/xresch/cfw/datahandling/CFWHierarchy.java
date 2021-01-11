@@ -201,8 +201,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		// MaxDepth Check
 		int maxChildDepth = getMaxDepthOfHierarchy(childWithHierarchy, 0);
 		int availableParentSlots = getAvailableParentSlotsCount(parentWithHierarchy);
-		System.out.println("maxChildDepth:"+maxChildDepth);
-		System.out.println("availableParentSlots:"+availableParentSlots);
+
 		if(availableParentSlots < maxChildDepth) {
 			new CFWLog(logger).severe("The parent cannot be set as the max hierarchy depth would be reached.(maxChildDepth:"+maxChildDepth+", availableParentSlots:"+availableParentSlots+")", new IllegalArgumentException());
 			return false;
@@ -394,10 +393,6 @@ public class CFWHierarchy<T extends CFWObject> {
 				// circular reference if the id was already present in the idCheckerSet
 				// and size has therefore not increased
 				if(idCheckSet.size() == tempSize) {
-					System.out.println("======== Parent ==========");
-					System.out.println(CFW.JSON.toJSONPretty(newParent));
-					System.out.println("======== Child ==========");
-					System.out.println(CFW.JSON.toJSONPretty(child));
 					new CFWLog(logger)
 						.severe("Cannot set the new parent as it would cause a circular reference.(parentID="+parentID+", childID="+childID+", circularReferenceID="+childID+")", new IllegalStateException());
 					return true;
@@ -559,7 +554,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 *****************************************************************************/
 	public CFWHierarchy<T> fetchAndCreateHierarchy(Object... resultFields) {
 		
-		if(resultFields == null) {
+		if(resultFields == null || resultFields.length == 0) {
 			resultFields = root.getFieldnames();
 		}
 		
@@ -658,7 +653,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 *****************************************************************************/
 	public CFWSQL createFetchHierarchyQuery(Object... resultFields) {
 		
-		if(resultFields == null) {
+		if(resultFields == null || resultFields.length == 0) {
 			resultFields = root.getFieldnames();
 		}
 		
