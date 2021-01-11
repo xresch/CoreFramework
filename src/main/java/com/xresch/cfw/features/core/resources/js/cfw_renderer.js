@@ -1705,10 +1705,14 @@ CFW.render.registerRenderer("hierarchy_sorter",  new CFWRenderer(cfw_renderer_hi
 
 /******************************************************************
 *
-* @param data as returned by CFW.http.getJSON()
+* @param configID the name of the hierarchy config
+* @param parentElement the parent JQuery element
+* @param oldParent where the element was dragged from
+* @param oldPrev the old previous element on dragstart
+* @param childElement the dragged element
 * @return 
 ******************************************************************/
-function cfw_renderer_hierarchysorter_moveChildToParent(configID, parentElement, childElement){
+function cfw_renderer_hierarchysorter_moveChildToParent(configID, parentElement, oldParent, oldPrev, childElement){
 	
 	var parentID = parentElement.data('parentid');
 	var childID = childElement.data('childid');
@@ -1719,10 +1723,26 @@ function cfw_renderer_hierarchysorter_moveChildToParent(configID, parentElement,
 		function(data) {
 			CFW_GLOBAL_HIERARCHYSORTER.parentUpdateInProgress = false;
 		
-//			if(data.success){
-//				CFW.cache.clearCache();
-//				jsexamples_draw(JSEXAMPLES_LAST_OPTIONS);
-//			}
+			//------------------------------------------
+			// if the parent could not be updated
+			// move the child back to the old location
+			if(!data.success){
+				if(oldPrev.length != 0){
+					oldPrev.after(childElement);
+				}else{
+					oldParent.prepend(childElement);
+				}
+				
+				// Let it blink 3 times
+				childElement.find('.card-header').addClass('bg-primary')
+				childElement.fadeOut(500).fadeIn(500)
+					.fadeOut(500).fadeIn(500, function(){
+						childElement.find('.card-header').removeClass('bg-primary')
+					}); 
+				
+				
+				
+			}
 	});
 }
 
@@ -1734,6 +1754,8 @@ function cfw_renderer_hierarchysorter_moveChildToParent(configID, parentElement,
 ******************************************************************/
 //cache for better performance
 var CFW_GLOBAL_HIERARCHYSORTER = {
+		oldParent: null,
+		oldPrev: null,
 		notDraggedDroptargets : null,
 		lastDragoverMillis : null, 
 		parentUpdateInProgress : false,
@@ -1748,8 +1770,13 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 			+'</div>');
 	
 	draggableItem.on('dragstart', function(e){
+		//-----------------------------
+		// get dragged element, if none makr the current object as dragged
 		var draggable = $('.cfw-draggable.dragging');
+		
 		if(draggable.length == 0){
+			CFW_GLOBAL_HIERARCHYSORTER.oldParent = $(this).parent();
+			CFW_GLOBAL_HIERARCHYSORTER.oldPrev = $(this).prev();
 			CFW_GLOBAL_HIERARCHYSORTER.notDraggedDroptargets=$('.cfw-draggable:not(.dragging) .cfw-droptarget').toArray();
 			CFW_GLOBAL_HIERARCHYSORTER.lastDragoverMillis=Date.now();
 			$(this).addClass('dragging');
@@ -1765,7 +1792,13 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 			var childElement = $(this);
 			var parentElement = $(this).parent();
 
-			cfw_renderer_hierarchysorter_moveChildToParent(settings.configid, parentElement, childElement);
+			cfw_renderer_hierarchysorter_moveChildToParent(
+						settings.configid, 
+						parentElement, 
+						CFW_GLOBAL_HIERARCHYSORTER.oldParent, 
+						CFW_GLOBAL_HIERARCHYSORTER.oldPrev, 
+						childElement
+					);
 			
 			$(this).removeClass('dragging');
 			CFW_GLOBAL_HIERARCHYSORTER.notDraggedDroptargets=null;

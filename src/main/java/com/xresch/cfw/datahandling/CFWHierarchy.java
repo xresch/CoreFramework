@@ -436,7 +436,7 @@ public class CFWHierarchy<T extends CFWObject> {
 				return i;
 			}
 		}
-		return 0;
+		return maxObjectDepth;
 	}
 	
 	/*****************************************************************************
@@ -469,13 +469,14 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		if(currentMaxDepth == 0) { currentMaxDepth = 1; }
 		
+		int localMaxDepth = currentMaxDepth;
 		for(Entry<Integer, CFWObject> entry : rootWithHierarchy.getChildObjects().entrySet()) {
 			int depthCount = getMaxDepthOfHierarchy(entry.getValue(), currentMaxDepth+1);
-			if(depthCount > currentMaxDepth) {
-				currentMaxDepth = depthCount;
+			if(depthCount > localMaxDepth) {
+				localMaxDepth = depthCount;
 			}
 		}
-		return currentMaxDepth;
+		return localMaxDepth;
 	}
 	
 	/*****************************************************************************
@@ -548,88 +549,13 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * 
 	 * @param resultFields names of the fields to be fetched additionally to the parent fields.
 	 *        Fetches all fields if null;
-	 *        
 	 * @return true if successful, false otherwise.
 	 * 
 	 *****************************************************************************/
-	public CFWHierarchy<T> fetchAndCreateHierarchy(Object... resultFields) {
-		
-		if(resultFields == null || resultFields.length == 0) {
-			resultFields = root.getFieldnames();
-		}
-		
-		ArrayList<T>objectArray = fetchFlatList(resultFields);
-		objectListFlat.clear();
-		//-----------------------------------------
-		//Iterate over all objects
-		for(T current : objectArray) {
-			objectListFlat.put(current.getPrimaryField().getValue(), current);
-			
-			Integer rootID = root.getPrimaryKey();
-			Integer currentID = current.getPrimaryKey();
-			if( (rootID == null && currentID == null) 
-			 || (rootID != null && rootID.equals(currentID)) ) {
-				//-------------------------
-				// is a root of the hierarchy
-				objectHierarchy.put(current.getPrimaryField().getValue(), current);
-				continue;
-			}
-			//-----------------------------------------
-			// Iterate over Parent Fields of current object
-			int parentCount = parentAndPrimaryFieldnames.length-1;
-			for(int i=0; i < parentCount; i++) {
-				
-				//-----------------------------------------
-				//Find last ParentID that is not null in fields P0 ... Pn, ignore Primary Field
-				Integer parentValue = (Integer)current.getField(parentAndPrimaryFieldnames[i]).getValue();
-				if(parentValue == null) {
-					
-					if( i == 0 ) {
-						//-------------------------
-						// is a root of the hierarchy
-						objectHierarchy.put(current.getPrimaryField().getValue(), current);
-					}else {
-						
-					
-						Integer lastParentID = (Integer)current.getField(parentAndPrimaryFieldnames[i-1]).getValue();
-						if(objectListFlat.get(lastParentID) == null) {
-							
-							//-------------------------
-							// is a root of the hierarchy
-							new CFWLog(logger).warn("This could should actually never be reached, included to have a fallback and prevent errors.");
-							objectHierarchy.put(current.getPrimaryField().getValue(), current);
-						}else {
-							//-------------------------
-							//is a child 
-							objectListFlat.get(lastParentID).childObjects.put(current.getPrimaryKey(), current);
-						}
-					}
-					
-					//stop and go to next object
-					break;
-				}else if(i == parentCount-1) {
-					//-----------------------------------------
-					// Handle Last Parent Field
-					Integer lastParentID = (Integer)current.getField(parentAndPrimaryFieldnames[i]).getValue();
-					objectListFlat.get(lastParentID).childObjects.put(current.getPrimaryKey(), current);
-					break;
-				}
-			}
-		}
-		
-		return this;
-	}
-
-	/*****************************************************************************
-	 * 
-	 * @param resultFields names of the fields to be fetched additionally to the parent fields.
-	 *        Fetches all fields if null;
-	 * @return true if successful, false otherwise.
-	 * 
-	 *****************************************************************************/
-	public ArrayList<T> fetchFlatList(Object... resultFields) {
-		return (ArrayList<T>)createFetchHierarchyQuery(resultFields)
-					.getAsObjectList();
+	@SuppressWarnings("unchecked")
+	public LinkedHashMap<Integer, T> fetchFlatList(Object... resultFields) {
+		return (LinkedHashMap<Integer, T>)createFetchHierarchyQuery(resultFields)
+					.getAsKeyObjectMap();
 	}
 	
 	/*****************************************************************************
@@ -644,6 +570,83 @@ public class CFWHierarchy<T extends CFWObject> {
 					.getResultSet();
 	}
 	
+	/*****************************************************************************
+	 * 
+	 * @param resultFields names of the fields to be fetched additionally to the parent fields.
+	 *        Fetches all fields if null;
+	 *        
+	 * @return true if successful, false otherwise.
+	 * 
+	 *****************************************************************************/
+	public CFWHierarchy<T> fetchAndCreateHierarchy(Object... resultFields) {
+		
+		if(resultFields == null || resultFields.length == 0) {
+			resultFields = root.getFieldnames();
+		}
+		
+		objectListFlat = fetchFlatList(resultFields);
+
+		//-----------------------------------------
+		//Iterate over all objects
+		Integer rootID = root.getPrimaryKey();
+		for(Entry<Integer, T> currentEntry : objectListFlat.entrySet()) {
+			
+			T currentItem = currentEntry.getValue();
+			Integer currentID = currentItem.getPrimaryKey();
+			
+			if( (rootID == null && currentID == null) 
+			 || (rootID != null && rootID.equals(currentID)) ) {
+				//-------------------------
+				// is a root of the hierarchy
+				objectHierarchy.put(currentID, currentItem);
+				continue;
+			}
+			//-----------------------------------------
+			// Iterate over Parent Fields of current object
+			int parentCount = parentAndPrimaryFieldnames.length-1;
+			for(int i=0; i < parentCount; i++) {
+				
+				//-----------------------------------------
+				//Find last ParentID that is not null in fields P0 ... Pn, ignore Primary Field
+				Integer parentValue = (Integer)currentItem.getField(parentAndPrimaryFieldnames[i]).getValue();
+				if(parentValue == null) {
+					
+					if( i == 0 ) {
+						//-------------------------
+						// is a root of the hierarchy
+						objectHierarchy.put(currentID, currentItem);
+					}else {
+						
+					
+						Integer lastParentID = (Integer)currentItem.getField(parentAndPrimaryFieldnames[i-1]).getValue();
+						if(objectListFlat.get(lastParentID) == null) {
+							
+							//-------------------------
+							// is a root of the hierarchy
+							new CFWLog(logger).warn("This could should actually never be reached, included to have a fallback and prevent errors.(elementID: "+currentID+")");
+							objectHierarchy.put(currentID, currentItem);
+						}else {
+							//-------------------------
+							//is a child 
+							objectListFlat.get(lastParentID).childObjects.put(currentID, currentItem);
+						}
+					}
+					
+					//stop and go to next object
+					break;
+				}else if(i == parentCount-1) {
+					//-----------------------------------------
+					// Handle Last Parent Field
+					Integer lastParentID = (Integer)currentItem.getField(parentAndPrimaryFieldnames[i]).getValue();
+					objectListFlat.get(lastParentID).childObjects.put(currentID, currentItem);
+					break;
+				}
+			}
+		}
+		
+		return this;
+	}
+
 	/*****************************************************************************
 	 * 
 	 * @param resultFields names of the fields to be fetched additionally to the parent fields.

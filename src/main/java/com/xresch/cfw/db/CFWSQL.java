@@ -1249,6 +1249,40 @@ public class CFWSQL {
 	}
 	
 	/***************************************************************
+	 * Execute the Query and gets the result as a map of primary
+	 * keys and objects.
+	 ****************************************************************/
+	public LinkedHashMap<Integer, CFWObject> getAsKeyObjectMap() {
+		
+		LinkedHashMap<Integer, CFWObject> objectMap = new LinkedHashMap<>();
+		
+		if(this.execute()) {
+			
+			if(result == null) {
+				return objectMap;
+			}
+			
+			try {
+				while(result.next()) {
+					CFWObject current = object.getClass().newInstance();
+					current.mapResultSet(result);
+					objectMap.put(current.getPrimaryKey(), current);
+				}
+			} catch (SQLException | InstantiationException | IllegalAccessException e) {
+				new CFWLog(logger)
+					.severe("Error reading objects from database.", e);
+				
+			}finally {
+				CFWDB.close(result);
+			}
+			
+		}
+		
+		return objectMap;
+		
+	}
+	
+	/***************************************************************
 	 * Execute the Query and gets the result as a key value map.
 	 ****************************************************************/
 	public HashMap<Object, Object> getKeyValueMap(String keyColumnName, String valueColumnName) {
