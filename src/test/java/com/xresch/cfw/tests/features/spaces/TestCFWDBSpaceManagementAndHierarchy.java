@@ -265,10 +265,17 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 		// Test Circular Reference Check 
 		//-----------------------------------------
 		Space subspace2 = CFW.DB.Spaces.selectByName("SubSpace2");
-		Space subspace5 = CFW.DB.Spaces.selectByName("SubSpace5");
+		Space subspace2WithHierarchy = new CFWHierarchy<>(subspace2)
+				.fetchAndCreateHierarchy()
+				.getSingleRootObject();
 		
-		Assertions.assertFalse(subspace2.setParent(subspace2), "Cannot set as it's own parent.");
-		Assertions.assertFalse(subspace5.setParent(subspace2), "Cannot set parent as it would cause a circular reference.");
+		Space subspace5 = CFW.DB.Spaces.selectByName("SubSpace5");
+		Space subspace5WithHierarchy = new CFWHierarchy<>(subspace5)
+				.fetchAndCreateHierarchy()
+				.getSingleRootObject();
+		
+		Assertions.assertFalse(subspace2WithHierarchy.setParent(subspace2WithHierarchy), "Cannot set as it's own parent.");
+		Assertions.assertFalse(subspace2WithHierarchy.setParent(subspace5WithHierarchy), "Cannot set parent as it would cause a circular reference.");
 		
 		//-----------------------------------------
 		// Test Parent Slots Counts
@@ -288,11 +295,12 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 		//-----------------------------------------
 		// Test Child Depth Counter
 		//-----------------------------------------
-		Space subspace2WithHierarchy = new CFWHierarchy<>(subspace2)
+		
+		// refresh data as previous fail might have messed things up
+		subspace2WithHierarchy = new CFWHierarchy<>(subspace2)
 				.fetchAndCreateHierarchy()
 				.getSingleRootObject();
-		
-		Space subspace5WithHierarchy = new CFWHierarchy<>(subspace5)
+		subspace5WithHierarchy = new CFWHierarchy<>(subspace5)
 				.fetchAndCreateHierarchy()
 				.getSingleRootObject();
 		
@@ -306,6 +314,33 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 
 		Assertions.assertEquals(8, CFWHierarchy.getMaxDepthOfHierarchy(subspace2WithHierarchy, 0), "Max Depth is 8.");
 		Assertions.assertEquals(5, CFWHierarchy.getMaxDepthOfHierarchy(subspace5WithHierarchy, 0), "Max Depth is 5.");
+		
+		//-----------------------------------------
+		// Test Child Max Depth: Negative
+		//-----------------------------------------
+		Space subface7 = CFW.DB.Spaces.selectByName("Subface7");
+		Space subface7WithHierarchy = new CFWHierarchy<>(subface7)
+				.fetchAndCreateHierarchy()
+				.getSingleRootObject();
+		
+		Assertions.assertFalse(subspace5WithHierarchy.setParent(subface7WithHierarchy), "Subface 8 does not have enough free parent slots(has 2, needs 5).");
+		
+		//-----------------------------------------
+		// Test Child Max Depth: Positive
+		//-----------------------------------------
+		
+		// Refresh data as previous fail might have messed things up
+		subspace5WithHierarchy = new CFWHierarchy<>(subspace5)
+				.fetchAndCreateHierarchy()
+				.getSingleRootObject();
+		
+		Space subface4 = CFW.DB.Spaces.selectByName("Subface4");
+		Space subface4WithHierarchy = new CFWHierarchy<>(subface4)
+				.fetchAndCreateHierarchy()
+				.getSingleRootObject();
+		
+		
+		Assertions.assertTrue(subspace5WithHierarchy.setParent(subface4WithHierarchy), "Subface 4 has enough free parent slots(has 5, needs 5).");
 		
 	}
 		

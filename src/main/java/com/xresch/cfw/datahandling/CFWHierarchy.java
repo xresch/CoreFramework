@@ -192,6 +192,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		//-------------------------------
 		// Circular Reference Check
+		
 		if(checkCausesCircularReference(parentWithHierarchy, childWithHierarchy)){
 			return false;
 		}
@@ -200,9 +201,10 @@ public class CFWHierarchy<T extends CFWObject> {
 		// MaxDepth Check
 		int maxChildDepth = getMaxDepthOfHierarchy(childWithHierarchy, 0);
 		int availableParentSlots = getAvailableParentSlotsCount(parentWithHierarchy);
-		
+		System.out.println("maxChildDepth:"+maxChildDepth);
+		System.out.println("availableParentSlots:"+availableParentSlots);
 		if(availableParentSlots < maxChildDepth) {
-			new CFWLog(logger).severe("The parent cannot be set as the max hierarchy depth would be reached.", new IllegalArgumentException());
+			new CFWLog(logger).severe("The parent cannot be set as the max hierarchy depth would be reached.(maxChildDepth:"+maxChildDepth+", availableParentSlots:"+availableParentSlots+")", new IllegalArgumentException());
 			return false;
 		}
 		
@@ -215,8 +217,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		parentWithHierarchy.childObjects.put(childWithHierarchy.getPrimaryKey(), childWithHierarchy);
 		
 		//-------------------------------
-		// Check if last parent was already
-		// set.
+		// Check if last parent was already set.
 		@SuppressWarnings("rawtypes")
 		LinkedHashMap<String, CFWField> parentFields = parentWithHierarchy.getFields();
 		int maxDepthLevels = parentWithHierarchy.getHierarchyConfig().getMaxDepth();
@@ -257,7 +258,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		//-----------------------------------------------------
 		// Do for all children of the childWithHierarchy
 		boolean isSuccess = true;
-		for(Entry<Integer, CFWObject> entry : childWithHierarchy.childObjects.entrySet()) {
+		for(Entry<Integer, CFWObject> entry : childWithHierarchy.getChildObjects().entrySet()) {
 			isSuccess &= CFWHierarchy.setParent(childWithHierarchy, entry.getValue());
 		}
 		
@@ -365,27 +366,61 @@ public class CFWHierarchy<T extends CFWObject> {
 		}
 		
 		//--------------------------------
-		// Iterate childs hierarchy
+		// Check Child
+		int currentSize = idCheckSet.size();
+		idCheckSet.add(childID);
+		
+		//circular reference if the id was already present in the idCheckerSet
+		// and size has therefore not increased
+		if(idCheckSet.size() == currentSize) {
+			new CFWLog(logger)
+				.severe("Cannot set the new parent as it would cause a circular reference.(parentID="+parentID+", childID="+childID+", circularReferenceID="+childID+")", new IllegalStateException());
+			return true;
+		}
+		
+		//--------------------------------
+		// Iterate children of Child
 		maxObjectDepth = child.getHierarchyConfig().getMaxDepth();
-		for(int i = 0; i < maxObjectDepth ;i++){
-			if(child.getField(PARENT_LABELS[i]).getValue() == null) {
+		LinkedHashMap<Integer, CFWObject> childFlatMap = getAllChildrenAsFlatList(child, new LinkedHashMap<>());
+		
+		for(Entry<Integer, CFWObject> entry : childFlatMap.entrySet()){
+			Integer currentID = entry.getKey();
+			if(currentID == null) {
 				break;
 			} else {
-				int currentSize = idCheckSet.size();
-				Integer currentHierarchyItemID = ((CFWField<Integer>)child.getField(PARENT_LABELS[i])).getValue();
-				idCheckSet.add(currentHierarchyItemID);
+				int tempSize = idCheckSet.size();
+				idCheckSet.add(currentID);
 				
-				//circular reference if the id was already present in the idCheckerSet
+				// circular reference if the id was already present in the idCheckerSet
 				// and size has therefore not increased
-				if(idCheckSet.size() == currentSize) {
+				if(idCheckSet.size() == tempSize) {
+					System.out.println("======== Parent ==========");
+					System.out.println(CFW.JSON.toJSONPretty(newParent));
+					System.out.println("======== Child ==========");
+					System.out.println(CFW.JSON.toJSONPretty(child));
 					new CFWLog(logger)
-						.severe("Cannot set the new parent as it would cause a circular reference.(parentID="+parentID+", childID="+childID+", circularReferenceID="+currentHierarchyItemID+")", new IllegalStateException());
+						.severe("Cannot set the new parent as it would cause a circular reference.(parentID="+parentID+", childID="+childID+", circularReferenceID="+childID+")", new IllegalStateException());
 					return true;
 				}
 			}
 		}
 		
 		return false;
+	}
+	
+	/*****************************************************************************
+	 * 
+	 *****************************************************************************/
+	@SuppressWarnings("unchecked")
+	public static LinkedHashMap<Integer, CFWObject> getAllChildrenAsFlatList(CFWObject parent, LinkedHashMap<Integer, CFWObject> resultMap) {
+		
+		for(Entry<Integer, CFWObject> entry : parent.getChildObjects().entrySet()) {
+			resultMap.put(entry.getKey(), entry.getValue());
+			
+			getAllChildrenAsFlatList(entry.getValue(), resultMap);
+		}
+		
+		return resultMap;
 	}
 	/*****************************************************************************
 	 * Returns the number of parents an object currently has in the upper hierarchy.
