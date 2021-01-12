@@ -84,6 +84,7 @@ DONE
 - Dashboard List: Added Sharing Details View
 - Role Management: Fixed Nullpointer on changing roles while API-Token Session is active.
 - CFWHierarchy: First working version of hierarchy management for CFWObjects
+- Panels: Change chevron icon when page gets expanded/collapsed
 
 
 ------- v2.0.1 -------

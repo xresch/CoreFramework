@@ -593,11 +593,17 @@ class CFWPanel{
 		//----------------------------
 		// Populate Header
 		let panelTitle = $('<span>');
+		panelTitle.append(
+			'<div class="cfw-fa-box"></i>'
+			+ '<i class="fas fa-chevron-right mr-2"></i>'
+			+ '<i class="fas fa-chevron-down mr-2"></i>'
+		+ '</div>');
 		panelTitle.append(this.settings.title);
 		panelTitle.addClass('cursor-pointer');
 		panelTitle.attr("role", "button");
 		panelTitle.attr("data-toggle", "collapse");		
 		panelTitle.attr("data-target", "#collapse"+this.counter);		
+		panelTitle.attr("aria-expanded", false);	
 		
 		let headerRight = $('<div class="position-absolute" style="top: 10px; right: 10px;">');
 		

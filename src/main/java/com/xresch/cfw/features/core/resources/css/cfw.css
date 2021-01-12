@@ -209,10 +209,12 @@
 	padding: 0.25rem 0.5rem;
 }
 
-.card-header div[aria-expanded=true] .fa-chevron-right {
+.card-header div[aria-expanded=true] .fa-chevron-right,
+.card-header span[aria-expanded=true] .fa-chevron-right  {
    display: none;
 }
-.card-header div[aria-expanded=false] .fa-chevron-down {
+.card-header div[aria-expanded=false] .fa-chevron-down,
+.card-header span[aria-expanded=false] .fa-chevron-down {
    display: none;
 }
 
@@ -509,6 +511,7 @@
     width: 18px;
     float: left;
     margin-right: 5px;
+    text-align: center;  
 }
 
 .cfw-color-box {
