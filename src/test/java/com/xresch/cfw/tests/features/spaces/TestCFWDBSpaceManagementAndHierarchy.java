@@ -312,8 +312,8 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 				)
 			);
 
-		Assertions.assertEquals(8, CFWHierarchy.getMaxDepthOfHierarchy(subspace2WithHierarchy, 0), "Max Depth is 8.");
-		Assertions.assertEquals(5, CFWHierarchy.getMaxDepthOfHierarchy(subspace5WithHierarchy, 0), "Max Depth is 5.");
+		Assertions.assertEquals(7, CFWHierarchy.getMaxDepthOfHierarchy(subspace2WithHierarchy, 0), "Max Depth is 8.");
+		Assertions.assertEquals(4, CFWHierarchy.getMaxDepthOfHierarchy(subspace5WithHierarchy, 0), "Max Depth is 5.");
 		
 		//-----------------------------------------
 		// Test Child Max Depth: Negative
@@ -323,7 +323,7 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 				.fetchAndCreateHierarchy()
 				.getSingleRootObject();
 		
-		Assertions.assertFalse(subspace5WithHierarchy.setParent(subface7WithHierarchy), "Subface 8 does not have enough free parent slots(has 2, needs 5).");
+		Assertions.assertFalse(subspace5WithHierarchy.setParent(subface7WithHierarchy), "Subface 8 does not have enough free parent slots(has 2, needs 4).");
 		
 		//-----------------------------------------
 		// Test Child Max Depth: Positive

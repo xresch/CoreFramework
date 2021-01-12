@@ -1540,7 +1540,9 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings
 				var renderer = dataviewerSettings.renderers[index];
 				var selected = (index == selectedRendererIndex) ? 'selected' : '';
 				
-				html += '<option value="'+index+'" '+selected+'>'+renderer.label+'</option>';
+				if(renderer != null){
+					html += '<option value="'+index+'" '+selected+'>'+renderer.label+'</option>';
+				}
 			}
 		
 		html += '	</select>'

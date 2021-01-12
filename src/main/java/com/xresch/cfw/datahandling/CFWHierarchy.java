@@ -457,7 +457,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	}
 	
 	/*****************************************************************************
-	 * Returns the maximum depth of the given hierarchy. The root object is included 
+	 * Returns the maximum depth of the given hierarchy. The root object is excluded 
 	 * in the resulting count.
 	 * 
 	 * @param childWithHierarchy the hierarchy to be counted
@@ -467,7 +467,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	@SuppressWarnings("unchecked")
 	public static int getMaxDepthOfHierarchy(CFWObject rootWithHierarchy, int currentMaxDepth) {
 		
-		if(currentMaxDepth == 0) { currentMaxDepth = 1; }
+		//if(currentMaxDepth == 0) { currentMaxDepth = 1; }
 		
 		int localMaxDepth = currentMaxDepth;
 		for(Entry<Integer, CFWObject> entry : rootWithHierarchy.getChildObjects().entrySet()) {

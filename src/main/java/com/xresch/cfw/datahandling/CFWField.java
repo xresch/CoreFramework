@@ -1090,7 +1090,15 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 ******************************************************************************************************/
 	private boolean setValueConvert(T value) {
 		boolean success = true;
-				
+		
+		//--------------------------------
+		// Decryption
+		if(this.encryptionSalt != null
+		&& value != null
+		&& value.toString().startsWith(ENCRYPT_PREFIX)) {
+			value = decryptValue(value);
+		}
+		
 		//-------------------------------------------------
 		// prevent Strings from being empty. Might lead to 
 		// unique constraint violation on DB when not using 
@@ -1357,7 +1365,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	/******************************************************************************************************
-	 * Map the values of request parameters to CFWFields.
+	 * Map the values of a result set to CFWFields.
+	 * The values will not be validated
 	 * @param url used for the request.
 	 * @return true if successful, false otherwise
 	 ******************************************************************************************************/
@@ -1385,26 +1394,26 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				if(fields.containsKey(colName)) {
 					CFWField current = fields.get(colName);
 					
-					if     ( String.class.isAssignableFrom(current.getValueClass()) )  { current.setValueValidated(result.getString(colName)); }
-					else if( Integer.class.isAssignableFrom(current.getValueClass()))  { current.setValueValidated(result.getObject(colName)); }
-					else if( Float.class.isAssignableFrom(current.getValueClass()))    { current.setValueValidated(result.getObject(colName)); }
-					else if( Boolean.class.isAssignableFrom(current.getValueClass()))  { current.setValueValidated(result.getBoolean(colName)); }
-					else if( Timestamp.class.isAssignableFrom(current.getValueClass()))  { current.setValueValidated(result.getTimestamp(colName)); }
-					else if( Date.class.isAssignableFrom(current.getValueClass()))  { current.setValueValidated(result.getDate(colName)); }
+					if     ( String.class.isAssignableFrom(current.getValueClass()) )  { current.setValueConvert(result.getString(colName)); }
+					else if( Integer.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getObject(colName)); }
+					else if( Float.class.isAssignableFrom(current.getValueClass()))    { current.setValueConvert(result.getObject(colName)); }
+					else if( Boolean.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getBoolean(colName)); }
+					else if( Timestamp.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getTimestamp(colName)); }
+					else if( Date.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getDate(colName)); }
 					else if( Object[].class.isAssignableFrom(current.getValueClass()))  { 
 						Array array = result.getArray(colName);
 						if(array != null) {
-							current.setValueValidated(result.getArray(colName).getArray()); 
+							current.setValueConvert(result.getArray(colName).getArray()); 
 						}else {
-							current.setValueValidated(null);
+							current.setValueConvert(null);
 						}
 						
 					}else if( LinkedHashMap.class.isAssignableFrom(current.getValueClass()))  { 
 						String json = result.getString(colName);
 						if(json != null) {
-							current.setValueValidated(CFW.JSON.fromJsonLinkedHashMap(json)); 
+							current.setValueConvert(CFW.JSON.fromJsonLinkedHashMap(json)); 
 						}else {
-							current.setValueValidated(null);
+							current.setValueConvert(null);
 						}
 					}
 					

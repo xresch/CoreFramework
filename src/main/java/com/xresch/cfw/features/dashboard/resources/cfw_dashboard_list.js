@@ -356,9 +356,48 @@ function cfw_dashboardlist_printDashboards(data, type){
 		}
 
 		
+		//-------------------------
+		// Sharing Details View
+		sharingDetailsView = null;
+		
+		if(type == 'mydashboards'
+		|| type == 'admindashboards'){
+			sharingDetailsView = 
+				{ 
+					label: 'Sharing Details',
+					name: 'table',
+					renderdef: {
+						visiblefields: ["NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_ROLES", "JSON_EDITORS", "JSON_EDITOR_ROLES"],
+						labels: {
+					 		PK_ID: "ID",
+					 		IS_SHARED: 'Shared',
+					 		JSON_SHARE_WITH_USERS: 'Shared User', 
+						 	JSON_SHARE_WITH_ROLES: 'Shared Roles', 
+						 	JSON_EDITORS: 'Editors', 
+						 	JSON_EDITOR_ROLES: 'Editor Roles'
+					 	},
+						rendererSettings: {
+							table: {filterable: false},
+						},
+					}
+				};
+		}
 
 		//-----------------------------------
 		// Render Data
+		
+		var badgeCustomizerFunction = function(record, value) { 
+ 			var badgesHTML = '<div>';
+ 			
+ 			for(id in value){
+ 				badgesHTML += '<span class="badge badge-primary m-1">'+value[id]+'</span></br>';
+ 			}
+ 			badgesHTML += '</div>';
+ 			
+ 			return badgesHTML;
+ 			 
+ 		};
+ 		
 		var rendererSettings = {
 			 	idfield: 'PK_ID',
 			 	bgstylefield: null,
@@ -377,9 +416,12 @@ function cfw_dashboardlist_printDashboards(data, type){
 								return '<span class="badge badge-success m-1">true</span>';
 						}else{
 							return '<span class="badge badge-danger m-1">false</span>';
-						}
-			 			 
-			 		}
+						} 
+			 		},
+			 		JSON_SHARE_WITH_USERS: badgeCustomizerFunction, 
+			 		JSON_SHARE_WITH_ROLES: badgeCustomizerFunction, 
+			 		JSON_EDITORS: badgeCustomizerFunction, 
+			 		JSON_EDITOR_ROLES: badgeCustomizerFunction
 			 	},
 				actions: actionButtons,
 //				bulkActions: {
@@ -400,6 +442,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 									},
 								}
 							},
+							sharingDetailsView,
 							{	label: 'Panels',
 								name: 'panels',
 								renderdef: {}
