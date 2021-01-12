@@ -285,6 +285,22 @@ public class CFWHierarchy<T extends CFWObject> {
 	 *****************************************************************************/
 	@SuppressWarnings("unchecked")
 	public static boolean saveNewParents(CFWObject childWithHierarchy, boolean isFirstCall) {
+		// Caching: Do this only once instead of doing it for every item in the hierarchy
+		String[] parentFieldnames = getParentFieldnames(childWithHierarchy);
+		return saveNewParents(childWithHierarchy, parentFieldnames, isFirstCall);
+	}
+	
+	/*****************************************************************************
+	 * Saves the new parent hierarchy set with CFWHierarchy.setParent() to the 
+	 * database. Only commits the transaction if the full hierarchy could be updated
+	 * successfully.
+	 * 
+	 * @param childWithHierarchy the hierarchy to be saved
+	 * @param isFirstCall set to true when the method is called the first time (used for DB transaction management)
+	 * @return true if successful, false otherwise.
+	 *****************************************************************************/
+	@SuppressWarnings("unchecked")
+	private static boolean saveNewParents(CFWObject childWithHierarchy, String[] parentFieldnames, boolean isFirstCall) {
 		
 		//------------------------------
 		// Start Transaction
@@ -293,10 +309,10 @@ public class CFWHierarchy<T extends CFWObject> {
 		//------------------------------
 		// Do Updates
 		boolean isSuccess = true;
-		isSuccess &= childWithHierarchy.update();
+		isSuccess &= childWithHierarchy.update((Object[])parentFieldnames);
 		 
 		for(Entry<Integer, CFWObject> entry : childWithHierarchy.childObjects.entrySet()) {
-			isSuccess &= saveNewParents(entry.getValue(), false);
+			isSuccess &= saveNewParents(entry.getValue(), parentFieldnames, false);
 		}
 		
 		//------------------------------
@@ -496,8 +512,19 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * @return true if successful, false otherwise.
 	 * 
 	 *****************************************************************************/
+	public static String[] getParentFieldnames(CFWObject object) {
+		return Arrays.copyOfRange(PARENT_LABELS, 0, object.hierarchyConfig.getMaxDepth());
+	}
+	
+	/*****************************************************************************
+	 * Set the parent object of this object and adds it to the 
+	 * The childs db entry has to be updated manually afterwards.
+	 * 
+	 * @return true if successful, false otherwise.
+	 * 
+	 *****************************************************************************/
 	public static String[] getParentAndPrimaryFieldnames(CFWObject object) {
-		String[] parentFields = Arrays.copyOfRange(PARENT_LABELS, 0, object.hierarchyConfig.getMaxDepth());
+		String[] parentFields = getParentFieldnames(object);
 		String[] withPrimaryField = CFWArrayUtils.add(parentFields, object.getPrimaryField().getName());
 		return withPrimaryField;
 	}
