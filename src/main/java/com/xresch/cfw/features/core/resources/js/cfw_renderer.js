@@ -1759,15 +1759,21 @@ var CFW_GLOBAL_HIERARCHYSORTER = {
 		oldParent: null,
 		oldPrev: null,
 		notDraggedDroptargets : null,
-		lastDragoverMillis : null, 
+		lastDragoverMillis: null, 
+		lastDragoverTarget: null,
+		dropTargetChangeMillis: null,
 		parentUpdateInProgress : false,
 }
+
 function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings, parent, currentItem){
 	
+	var id = currentItem.PK_ID;
 	//--------------------------------------
 	// Create Draggable element
-	var draggableItem = $('<div id="sortable-item-'+currentItem.PK_ID+'" data-childid="'+currentItem.PK_ID+'" class="cfw-draggable" draggable="true">');
-	var draggableHeader = $('<div id="sortable-header-'+currentItem.PK_ID+'" class="cfw-draggable-handle card-header p-2 pl-3">'
+	var draggableItem = $('<div id="sortable-item-'+id+'" data-childid="'+id+'" class="cfw-draggable" draggable="true">');
+	var draggableHeader = $('<div id="sortable-header-'+id+'" class="cfw-draggable-handle card-header p-2 pl-3">'
+			
+			+ '<i class="fas fa-chevron-right mr-2 cursor-pointer" role="button" data-toggle="collapse" data-target="#children-'+id+'" aria-expanded="true"></i>'
 			+'<i class="fa fa-arrows-alt-v mr-2"></i>'+renderDef.getTitleHTML(currentItem)
 			+'</div>');
 	
@@ -1838,7 +1844,6 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 			
 		}, { offset: Number.NEGATIVE_INFINITY }).element;
 		
-
 		//var dropTarget = dropTargetParent.find('> ul');
 //		console.log("===========================");
 //		console.log(draggable);
@@ -1849,14 +1854,29 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 		// a child of draggable
 	    if (dropTarget != null 
 	    && draggable.find('#'+dropTarget.attr('id')).length == 0) {
-	    	//draggable.detach();
-	    	dropTarget.prepend(draggable);
+	    	
+	    	//-------------------------------------
+	    	// Get Values for Panel Expansion
+	    	if(CFW_GLOBAL_HIERARCHYSORTER.previousDropTarget != dropTarget.attr('id')){
+	    		CFW_GLOBAL_HIERARCHYSORTER.dropTargetChangeMillis = Date.now();
+	    		CFW_GLOBAL_HIERARCHYSORTER.previousDropTarget = dropTarget.attr('id');
+	    	}
+	    	
+	    	//-------------------------------------
+	    	// Move Object
+	    	//Wait for number of millis of hovering over the element before expansion
+    	    if(Date.now() - CFW_GLOBAL_HIERARCHYSORTER.dropTargetChangeMillis > 500){
+	    		dropTarget.collapse('show');
+	    		dropTarget.prepend(draggable);
+    	    }
+    		
+
 	    }
 	});
 	
 	//--------------------------------------
 	// Create Children
-	var childlist = $('<div id="children-'+currentItem.PK_ID+'" data-parentid="'+currentItem.PK_ID+'" class="cfw-droptarget pl-4">')
+	var childlist = $('<div id="children-'+id+'" data-parentid="'+id+'" class="cfw-droptarget pl-4 collapse">')
 
 	for(key in currentItem.children){
 		cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings, childlist, currentItem.children[key]);
