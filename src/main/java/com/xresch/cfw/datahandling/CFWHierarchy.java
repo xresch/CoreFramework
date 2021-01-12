@@ -153,7 +153,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		CFWObject childWithHierarchy = new CFWHierarchy(childObject)
 				.fetchAndCreateHierarchy()
 				.getSingleRootObject();
-		
+						
 		if(setParent(parentWithHierarchy, childWithHierarchy)) {
 			return saveNewParents(childWithHierarchy, true);
 		}else {
@@ -180,10 +180,11 @@ public class CFWHierarchy<T extends CFWObject> {
 			return false;
 		}
 		
-		if(childWithHierarchy == null || childWithHierarchy.getPrimaryKey() == null) {
-			new CFWLog(logger).severe("Child could not be found in the database.", new IllegalArgumentException());
-			return false;
-		}
+		// will not work when creating hierarchies programmatically
+//		if(childWithHierarchy == null || childWithHierarchy.getPrimaryKey() == null) {
+//			new CFWLog(logger).severe("Child could not be found in the database.", new IllegalArgumentException());
+//			return false;
+//		}
 		
 		if(parentWithHierarchy.getClass() != childWithHierarchy.getClass()) {
 			new CFWLog(logger).severe("The class of the two provided objects is not the same.", new IllegalArgumentException());
@@ -199,8 +200,8 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		//-------------------------------
 		// MaxDepth Check
-		int maxChildDepth = getMaxDepthOfHierarchy(childWithHierarchy, 0);
 		int availableParentSlots = getAvailableParentSlotsCount(parentWithHierarchy);
+		int maxChildDepth = getMaxDepthOfHierarchy(childWithHierarchy, 0);
 
 		if(availableParentSlots < maxChildDepth) {
 			new CFWLog(logger).severe("The parent cannot be set as the max hierarchy depth would be reached.(maxChildDepth:"+maxChildDepth+", availableParentSlots:"+availableParentSlots+")", new IllegalArgumentException());
@@ -246,8 +247,17 @@ public class CFWHierarchy<T extends CFWObject> {
 		// set this object as the next parent. Only if the last
 		// parent in the hierarchy was not already set.
 		if(parentValue == null) {
+			
 			// i is at index of the last parent slot that was "null"
 			((CFWField<Integer>)childWithHierarchy.getField(PARENT_LABELS[i])).setValue(parentWithHierarchy.primaryField.getValue());
+			
+			//---------------------------------------------
+			// Set the rest to null
+			i++;
+			for(; i < maxDepthLevels; i++) {
+				parentValue = ((CFWField<Integer>)parentFields.get(PARENT_LABELS[i])).getValue();
+				((CFWField<Integer>)childWithHierarchy.getField(PARENT_LABELS[i])).setValue(null);
+			}
 		}else {
 			new CFWLog(logger)
 				.severe("Cannot set the parent as the maximum hierarchy depth is reached.", new IllegalStateException());
