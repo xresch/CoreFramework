@@ -288,7 +288,7 @@ function cfw_manual_createMenuItem(pageData){
 	var arrow = '<div class="cfw-manual-fa-box">';
 	var dataToggle = '';
 	if(pageData.children != null && pageData.children.length > 0){
-		dataToggle = ' data-toggle="collapse" data-target="#'+collapseID+'" '
+		dataToggle = ' data-toggle="collapse" data-target="#'+collapseID+'" aria-expanded=false'
 		arrow += '<i class="arrow" '+dataToggle+'></i>';
 	}
 	arrow += '</div>';

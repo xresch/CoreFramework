@@ -46,7 +46,6 @@ TODO
 - Security: Enable Decryption for ResultSet to JSON on CFWSQL
 - Security: Change login to two steps, first username, then password field 
 
-- Manual: Change chevron icon when page gets expanded/collapsed
 - Manual: Multi language pages
 
 - CFW: CFWApplicationExecutor - ForwardedRequestCustomizer make it work with reverse proxy
@@ -84,7 +83,8 @@ DONE
 - Dashboard List: Added Sharing Details View
 - Role Management: Fixed Nullpointer on changing roles while API-Token Session is active.
 - CFWHierarchy: First working version of hierarchy management for CFWObjects
-- Panels: Change chevron icon when page gets expanded/collapsed
+- Panels: Added dynamic chevron icon for expanded/collapsed
+- Manual: Change chevron icon when page gets expanded/collapsed
 
 
 ------- v2.0.1 -------

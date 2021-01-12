@@ -280,28 +280,29 @@
 */
 }
 
-/* Closed arrow  */
-.nav-side-menu ul .arrow:before {
+
+
+.nav-side-menu ul .arrow:before,
+.nav-side-menu .show > div > .arrow:before {
   font-family: 'Font Awesome 5 Free';
-  content: "\f054";
   font-weight: 900;
   display: inline-block;
   padding-left: 10px;
   padding-right: 10px;
   vertical-align: middle;
+}
+
+/* Closed Arrow */
+.nav-side-menu ul .arrow[aria-expanded=false]:before,
+.nav-side-menu .show > div > .arrow[aria-expanded=false]:before {
+  content: "\f054";
 }
 
 /* opened Arrow */
-.nav-side-menu .show > div > .arrow:before {
-  font-family: 'Font Awesome 5 Free';
+.nav-side-menu ul .arrow[aria-expanded=true]:before,
+.nav-side-menu .show > div > .arrow[aria-expanded=true]:before {
   content: "\f078";
-  font-weight: 900;
-  display: inline-block;
-  padding-left: 10px;
-  padding-right: 10px;
-  vertical-align: middle;
 }
-
 
 
 /* .nav-side-menu ul .sub-menu li:before,
