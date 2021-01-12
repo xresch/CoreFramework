@@ -1,7 +1,6 @@
 package com.xresch.cfw.datahandling;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -285,7 +284,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 *****************************************************************************/
 	@SuppressWarnings("unchecked")
 	public static boolean saveNewParents(CFWObject childWithHierarchy, boolean isFirstCall) {
-		// Caching: Do this only once instead of doing it for every item in the hierarchy
+		// Performance: Do this only once instead of doing it for every item in the hierarchy
 		String[] parentFieldnames = getParentFieldnames(childWithHierarchy);
 		return saveNewParents(childWithHierarchy, parentFieldnames, isFirstCall);
 	}
