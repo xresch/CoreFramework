@@ -1772,9 +1772,10 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 	// Create Draggable element
 	var draggableItem = $('<div id="sortable-item-'+id+'" data-childid="'+id+'" class="cfw-draggable" draggable="true">');
 	var draggableHeader = $('<div id="sortable-header-'+id+'" class="cfw-draggable-handle card-header p-2 pl-3">'
-			
-			+ '<i class="fas fa-chevron-right mr-2 cursor-pointer" role="button" data-toggle="collapse" data-target="#children-'+id+'" aria-expanded="true"></i>'
-			+'<i class="fa fa-arrows-alt-v mr-2"></i>'+renderDef.getTitleHTML(currentItem)
+			+ '<div class="cursor-pointer" role="button" data-toggle="collapse" data-target="#children-'+id+'" aria-expanded="false"></i>'
+			+ '<i class="fas fa-chevron-right mr-2"></i>'
+			+ '<i class="fas fa-chevron-down mr-2"></i>'
+			+renderDef.getTitleHTML(currentItem)
 			+'</div>');
 	
 	draggableItem.on('dragstart', function(e){

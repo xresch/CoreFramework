@@ -209,6 +209,13 @@
 	padding: 0.25rem 0.5rem;
 }
 
+.card-header div[aria-expanded=true] .fa-chevron-right {
+   display: none;
+}
+.card-header div[aria-expanded=false] .fa-chevron-down {
+   display: none;
+}
+
 /*************************************************************************
  * Bootstrap Sidemenu
  *************************************************************************/
