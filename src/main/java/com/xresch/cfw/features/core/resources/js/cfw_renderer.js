@@ -979,25 +979,15 @@ function cfw_renderer_chart(renderDef) {
 		}
 
 	}
-
 	
 	//========================================
 	// Create Options
 	
 	var chartOptions =  {
 	    	responsive: settings.responsive,
-	    	maintainAspectRatio: false,
 	    	legend: {
 	    		display: settings.showlegend,
-	    		position: 'bottom',
-	    		labels: {
-	    			boxWidth: 16,
-	    			
-	    		}
 	    	},
-	    	animation: {
-				duration: 0
-			},
 			scales: {
 				xAxes: [{
 					type: settings.xtype,
@@ -1042,16 +1032,18 @@ function cfw_renderer_chart(renderDef) {
 							//fontStyle: 'bold'
 						},
 						// Custom Tick Format
-						callback: function(value, index, values) {
-							
-							if(value > 1000000){
-								return value / 1000000 +" M";
-							}else if(value > 1000){
-									return value / 1000 +" K";
-							}else{
+						callback : function(value, index, values) {
+
+							if (value > 1000000000) {
+								return (value / 1000000000).toFixed(1) + "G";
+							} else if (value > 1000000) {
+								return (value / 1000000).toFixed(1) + "M";
+							} else if (value > 1000) {
+								return (value / 1000).toFixed(1) + "K";
+							} else {
 								return value;
 							}
-	                    }
+						}
 					},
 				}]
 			},
@@ -1064,6 +1056,7 @@ function cfw_renderer_chart(renderDef) {
 				intersect: false,
 				enabled: false,
 				mode: 'index',
+				custom: cfw_renderer_chart_customTooltip,
 //				callbacks: {
 //					label: function(tooltipItem, myData) {
 //						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
@@ -1074,86 +1067,8 @@ function cfw_renderer_chart(renderDef) {
 //						return label;
 //					}
 //				}
-				custom: function(tooltipModel) {
-	                // Tooltip Element
-	                var $tooltip = $('#chartjs-tooltip');
 
-	                // Create element on first render
-	                if ($tooltip.length === 0) {
-	                    $tooltip = $('<div id="chartjs-tooltip" class="bg-cfw-black"><table></table></div>');
-	                    $('body').append($tooltip);
-	                }
-
-	                // Hide if no tooltip
-	                if (tooltipModel.opacity === 0) {
-	                    $tooltip.css('opacity', 0);
-	                    return;
-	                }
-
-	                // Set caret Position
-	                $tooltip.removeClass('above below no-transform');
-	                if (tooltipModel.yAlign) {
-	                    $tooltip.addClass(tooltipModel.yAlign);
-	                } else {
-	                    $tooltip.addClass('no-transform');
-	                }
-
-	                function getBody(bodyItem) {
-	                    return bodyItem.lines;
-	                }
-
-	                // Set Text
-	                if (tooltipModel.body) {
-	                    var titleLines = tooltipModel.title || [];
-	                    var bodyLines = tooltipModel.body.map(getBody);
-
-	                    var innerHtml = '<thead>';
-
-	                    titleLines.forEach(function(title) {
-	                        innerHtml += '<tr><th>' + title + '</th></tr>';
-	                    });
-	                    innerHtml += '</thead><tbody>';
-
-	                    bodyLines.forEach(function(body, i) {
-	                        var colors = tooltipModel.labelColors[i];
-
-	                        var div = '<div class="cfw-color-box" '
-	                        			  +'style=" background:' + colors.backgroundColor
-	                        					+'; border-color:' + colors.borderColor
-	                        				   + '; border-width: 2px;">&nbsp;</div>';
-	                        
-	                        innerHtml += '<tr><td>' + div + body + '</td></tr>';
-	                    });
-	                    innerHtml += '</tbody>';
-
-	                    var tableRoot = $tooltip.find('table');
-	                    tableRoot.html(innerHtml);
-	                }
-
-	                // `this` will be the overall tooltip
-	                var position = this._chart.canvas.getBoundingClientRect();
-
-	                // Display, position, and set styles for font
-	                $tooltip.css('opacity', 1);
-	                $tooltip.css('position', 'absolute');
-	                $tooltip.css('left', position.left + window.pageXOffset + tooltipModel.caretX + 'px');
-	                $tooltip.css('top', position.top + window.pageYOffset + tooltipModel.caretY + 'px');
-	                $tooltip.css('fontFamily', tooltipModel._bodyFontFamily);
-	                $tooltip.css('fontSize', tooltipModel.bodyFontSize + 'px');
-	                $tooltip.css('fontStyle', tooltipModel._bodyFontStyle);
-	                $tooltip.css('padding', tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px');
-	                $tooltip.css('pointerEvents', 'none');
-	                $tooltip.css('z-index', 128);
-	            }
 			},
-			layout: {
-	            padding: {
-	                left: 10,
-	                right: 10,
-	                top: 10,
-	                bottom: 10
-	            }
-	        }
 	    };
 
 	//========================================
@@ -1181,6 +1096,107 @@ function cfw_renderer_chart(renderDef) {
 }
 
 CFW.render.registerRenderer("chart", new CFWRenderer(cfw_renderer_chart) );
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_chart_setGlobals() {
+	Chart.defaults.global.responsive = true; 
+	Chart.defaults.global.maintainAspectRatio = false;
+
+	Chart.defaults.global.legend.display = false;
+	Chart.defaults.global.legend.position =  'bottom';
+	Chart.defaults.global.legend.labels.boxWidth = 16;
+
+	Chart.defaults.global.animation.duration = 0;
+		
+	//Chart.defaults.global.datasets.line.showLine = false;
+		
+	Chart.defaults.global.layout = {
+        padding: {
+            left: 10,
+            right: 10,
+            top: 10,
+            bottom: 10
+        }
+    }
+}
+cfw_renderer_chart_setGlobals();
+/******************************************************************
+ * 
+ ******************************************************************/
+
+function cfw_renderer_chart_customTooltip(tooltipModel) {
+    // Tooltip Element
+    var $tooltip = $('#chartjs-tooltip');
+
+    // Create element on first render
+    if ($tooltip.length === 0) {
+        $tooltip = $('<div id="chartjs-tooltip" class="bg-cfw-black"><table></table></div>');
+        $('body').append($tooltip);
+    }
+
+    // Hide if no tooltip
+    if (tooltipModel.opacity === 0) {
+        $tooltip.css('opacity', 0);
+        return;
+    }
+
+    // Set caret Position
+    $tooltip.removeClass('above below no-transform');
+    if (tooltipModel.yAlign) {
+        $tooltip.addClass(tooltipModel.yAlign);
+    } else {
+        $tooltip.addClass('no-transform');
+    }
+
+    function getBody(bodyItem) {
+        return bodyItem.lines;
+    }
+
+    // Set Text
+    if (tooltipModel.body) {
+        var titleLines = tooltipModel.title || [];
+        var bodyLines = tooltipModel.body.map(getBody);
+
+        var innerHtml = '<thead>';
+
+        titleLines.forEach(function(title) {
+            innerHtml += '<tr><th>' + title + '</th></tr>';
+        });
+        innerHtml += '</thead><tbody>';
+
+        bodyLines.forEach(function(body, i) {
+            var colors = tooltipModel.labelColors[i];
+
+            var div = '<div class="cfw-color-box" '
+            			  +'style=" background:' + colors.backgroundColor
+            					+'; border-color:' + colors.borderColor
+            				   + '; border-width: 2px;">&nbsp;</div>';
+            
+            innerHtml += '<tr><td>' + div + body + '</td></tr>';
+        });
+        innerHtml += '</tbody>';
+
+        var tableRoot = $tooltip.find('table');
+        tableRoot.html(innerHtml);
+    }
+
+    // `this` will be the overall tooltip
+    var position = this._chart.canvas.getBoundingClientRect();
+
+    // Display, position, and set styles for font
+    $tooltip.css('opacity', 1);
+    $tooltip.css('position', 'absolute');
+    $tooltip.css('left', position.left + window.pageXOffset + tooltipModel.caretX + 'px');
+    $tooltip.css('top', position.top + window.pageYOffset + tooltipModel.caretY + 'px');
+    $tooltip.css('fontFamily', tooltipModel._bodyFontFamily);
+    $tooltip.css('fontSize', tooltipModel.bodyFontSize + 'px');
+    $tooltip.css('fontStyle', tooltipModel._bodyFontStyle);
+    $tooltip.css('padding', tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px');
+    $tooltip.css('pointerEvents', 'none');
+    $tooltip.css('z-index', 128);
+}
 
 /******************************************************************
  * 

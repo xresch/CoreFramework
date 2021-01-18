@@ -39,6 +39,8 @@ TODO
 - Widget: Collaboration: Chat
 - Widget: Collaboration: Logbook
 
+- Charts Renderer: Sparkline and Spark Area
+
 - cfw.js: Finish javascript CFWFormField
 - cfw.js: Add Tic Tac Toe Loader for Long running requests
 - cfw.js: Progress Bar Loader
@@ -52,6 +54,12 @@ TODO
 - CFW: Create javascript sanity check page
 - CFW: Redirect StdOut and StdErr to logfile
 - CFW: Cleanup tasks for TageSelector references 
+- CFW: Locales - Handle Global Locales separately
+- CFW: Config - Age Out Configuration
+- CFW: API - Enable Post Body Inputs
+- CFW: Improve CFWHTTP.getClientIP()
+- CFW: ContextSettings - Restrict Access
+- 
    
 - CFWField: Add initFormField(method)
 - CFWField: Form errors add to field.
@@ -85,7 +93,7 @@ DONE
 - CFWHierarchy: First working version of hierarchy management for CFWObjects
 - Panels: Added dynamic chevron icon for expanded/collapsed
 - Manual: Change chevron icon when page gets expanded/collapsed
-
+- Charts Renderer: Make default Settings Global
 
 ------- v2.0.1 -------
 - /metrics: added counter for DB calls successful/failed
