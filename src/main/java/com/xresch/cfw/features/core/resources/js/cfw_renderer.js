@@ -883,6 +883,8 @@ function cfw_renderer_chart(renderDef) {
 		stacked: false,
 		// show or hide the legend
 		showlegend: true, 
+		// show or hide the axes, useful to create sparkline like charts
+		showaxes: true,
 		// make the chart responsive
 		responsive: true,
 		// The name of the field which contains the values for the x-axis
@@ -899,6 +901,8 @@ function cfw_renderer_chart(renderDef) {
 		ytype: 'linear',
 		//the radius for the points shown on line and area charts
 		pointradius: 0,
+		// the padding in pixels of the chart
+		padding: 10,
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
@@ -982,7 +986,6 @@ function cfw_renderer_chart(renderDef) {
 	
 	//========================================
 	// Create Options
-	
 	var chartOptions =  {
 	    	responsive: settings.responsive,
 	    	legend: {
@@ -990,6 +993,7 @@ function cfw_renderer_chart(renderDef) {
 	    	},
 			scales: {
 				xAxes: [{
+					display: settings.showaxes,
 					type: settings.xtype,
 					distribution: 'linear',
 					offset: true,
@@ -1012,6 +1016,7 @@ function cfw_renderer_chart(renderDef) {
 					
 				}],
 				yAxes: [{
+					display: settings.showaxes,
 					stacked: settings.stacked,
 					type: settings.ytype,
 					gridLines: {
@@ -1047,11 +1052,22 @@ function cfw_renderer_chart(renderDef) {
 					},
 				}]
 			},
+			
 			elements: {
                 point:{
                     radius: settings.pointradius
                 }
             },
+            
+            layout: {
+                padding: {
+                    left: settings.padding,
+                    right: settings.padding,
+                    top: settings.padding,
+                    bottom: settings.padding
+                }
+            },
+                
 			tooltips: {
 				intersect: false,
 				enabled: false,

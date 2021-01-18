@@ -154,6 +154,11 @@ public class WidgetSettingsFactory {
 				.setValue(false)
 		);
 		
+		fieldsMap.put("show_axes", CFWField.newBoolean(FormFieldType.BOOLEAN, "show_axes")
+				.setLabel("{!cfw_widget_chartshowaxes!}")
+				.setDescription("{!cfw_widget_chartshowaxes_desc!}")
+				.setValue(true)
+		);
 		fieldsMap.put("pointradius", CFWField.newFloat(FormFieldType.NUMBER, "pointradius")
 				.setLabel("{!cfw_widget_chartpointradius!}")
 				.setDescription("{!cfw_widget_chartpointradius_desc!}")

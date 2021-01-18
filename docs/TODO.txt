@@ -39,7 +39,7 @@ TODO
 - Widget: Collaboration: Chat
 - Widget: Collaboration: Logbook
 
-- Charts Renderer: Sparkline and Spark Area
+- Charts Renderer: Add description to manual page "working with render".
 
 - cfw.js: Finish javascript CFWFormField
 - cfw.js: Add Tic Tac Toe Loader for Long running requests
@@ -94,6 +94,7 @@ DONE
 - Panels: Added dynamic chevron icon for expanded/collapsed
 - Manual: Change chevron icon when page gets expanded/collapsed
 - Charts Renderer: Make default Settings Global
+- Charts Renderer: Added settings "showaxes" and "padding" (can be used to create sparkline like charts)
 
 ------- v2.0.1 -------
 - /metrics: added counter for DB calls successful/failed
