@@ -73,7 +73,11 @@ public class LDAPLoginProvider implements LoginProviderInterface {
 		    ctrls.setReturningAttributes(new String[] {});
 		    ctrls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 	
-		    NamingEnumeration<javax.naming.directory.SearchResult> answers = context.search(CFWProperties.LDAP_SEARCHBASE, "("+CFWProperties.LDAP_ATTRIBUTE_USERNAME+"=" + username + ")", ctrls);
+		    String finalQuery = CFWProperties.LDAP_QUERY
+		    						.replace("{usernameAttribute}", CFWProperties.LDAP_ATTRIBUTE_USERNAME)
+		    						.replace("{username}", username);
+		   
+		    NamingEnumeration<javax.naming.directory.SearchResult> answers = context.search(CFWProperties.LDAP_SEARCHBASE, finalQuery, ctrls);
 		    if(answers.hasMore()) {
 		    	
 		    	//------------------------------

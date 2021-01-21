@@ -110,6 +110,9 @@ public class CFWProperties {
 	/** The URL used for LDAP authentication. (Property=authentication_ldap_searchbase, Default="") */
 	public static String LDAP_SEARCHBASE = "";
 	
+	/** The query for filtering the users, can be used to filter by groups. (Property=authentication_ldap_query, Default="({usernameAttribute}={username})") */
+	public static String LDAP_QUERY = "({usernameAttribute}={username})";
+	
 	/** The name of the attribute storing the username. (Property=authentication_ldap_user_attribute, Default="") */
 	public static String LDAP_ATTRIBUTE_USERNAME = "";
 	
@@ -218,6 +221,8 @@ public class CFWProperties {
 		LDAP_SSL_ENABLED 				= CFWProperties.configAsBoolean("authentication_ldap_ssl_enabled", LDAP_SSL_ENABLED);
 		LDAP_PASSWORD 					= CFWProperties.configAsString("authentication_ldap_password", LDAP_PASSWORD);
 		LDAP_SEARCHBASE 				= CFWProperties.configAsString("authentication_ldap_searchbase", LDAP_SEARCHBASE);
+		LDAP_QUERY		 				= CFWProperties.configAsString("authentication_ldap_query", LDAP_QUERY);
+		
 		LDAP_ATTRIBUTE_USERNAME 		= CFWProperties.configAsString("authentication_ldap_attribute_username", LDAP_ATTRIBUTE_USERNAME);
 		LDAP_ATTRIBUTE_EMAIL 			= CFWProperties.configAsString("authentication_ldap_attribute_mail", LDAP_ATTRIBUTE_EMAIL);
 		LDAP_ATTRIBUTE_FIRSTNAME		= CFWProperties.configAsString("authentication_ldap_attribute_firstname", LDAP_ATTRIBUTE_FIRSTNAME);

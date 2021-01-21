@@ -95,6 +95,7 @@ DONE
 - Manual: Change chevron icon when page gets expanded/collapsed
 - Charts Renderer: Make default Settings Global
 - Charts Renderer: Added settings "showaxes" and "padding" (can be used to create sparkline like charts)
+- LDAP: Added config to cfw.properties to enable custom LDAP queries
 
 ------- v2.0.1 -------
 - /metrics: added counter for DB calls successful/failed
