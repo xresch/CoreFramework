@@ -251,7 +251,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 		if(type == 'mydashboards'){
 			showFields = ['NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED'];
 		}else if (type == 'shareddashboards'){
-			showFields = ['OWNER', 'NAME', 'DESCRIPTION'];
+			showFields = ['OWNER', 'NAME', 'DESCRIPTION', 'TAGS'];
 		}else if (type == 'admindashboards'){
 			showFields = ['PK_ID', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS','IS_SHARED'];
 		}

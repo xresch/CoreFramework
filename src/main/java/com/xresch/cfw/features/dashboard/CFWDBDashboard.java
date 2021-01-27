@@ -223,7 +223,7 @@ public class CFWDBDashboard {
 		// Union with Shared Roles
 		query.union()
 			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
-			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION)
+			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION, DashboardFields.TAGS)
 			.where(DashboardFields.IS_SHARED, true)
 			.and().custom("(");
 		
@@ -242,7 +242,7 @@ public class CFWDBDashboard {
 		// Union with Editor Roles
 		query.union()
 			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
-			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION)
+			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION, DashboardFields.TAGS)
 			.where().custom("(");
 		
 		for(int i = 0 ; i < roleArray.length; i++ ) {
