@@ -90,6 +90,7 @@ DONE
 - Dashboard: Added refresh interval parameter to URL.
 - Dashboard: Added Tags Field for Dashboards
 - Dashboard List: Added Sharing Details View
+- Dashboard Widget Settings: Added Widget Name and splitted settings to tabs
 - Role Management: Fixed Nullpointer on changing roles while API-Token Session is active.
 - CFWHierarchy: First working version of hierarchy management for CFWObjects
 - Panels: Added dynamic chevron icon for expanded/collapsed
