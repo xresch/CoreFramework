@@ -466,8 +466,7 @@ function cfw_dashboard_editWidget(widgetGUID){
 	//##################################################
 	// Show Form for Default values
 	//##################################################
-	var defaultForm = 
-		'<h2>Widget Default Settings</h2><form id="form-edit-'+widgetGUID+'">';
+	var defaultForm = '<form id="form-edit-'+widgetGUID+'">';
 	
 	//------------------------------
 	// Title
@@ -561,15 +560,29 @@ function cfw_dashboard_editWidget(widgetGUID){
 	// Create and show Modal
 	//##################################################
 	var compositeDiv = $('<div id="editWidgetComposite">');
-	compositeDiv.append('<p>'+widgetDef.description+'</p>');
-	
-	if(customForm != null){
-		compositeDiv.append(customForm);
-	}
-	
-	compositeDiv.append(defaultForm);
+	compositeDiv.append('<p><strong>Widget:</strong>&nbsp;'+widgetDef.menulabel+'</p>');
+	compositeDiv.append('<p><strong>Description:</strong>&nbsp;'+widgetDef.description+'</p>');
+		
+	//----------------------------------
+	// Create Pill Navigation
+	var list = $('<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">');
 
+	list.append(
+		'<li class="nav-item"><a class="nav-link active" id="widgetSettingsTab" data-toggle="pill" href="#widgetSettings" role="tab" ><i class="fas fa-tools mr-2"></i>Widget Settings</a></li>'
+		+'<li class="nav-item"><a class="nav-link" id="defaultSettingsTab" data-toggle="pill" href="#defaultSettings" role="tab" ><i class="fas fa-cog mr-2"></i>Standard Settings</a></li>'
+	);
+		
+	compositeDiv.append(list);
+	compositeDiv.append('<div id="settingsTabContent" class="tab-content">'
+			  +'<div class="tab-pane fade show active" id="widgetSettings" role="tabpanel" aria-labelledby="widgetSettingsTab"></div>'
+			  +'<div class="tab-pane fade" id="defaultSettings" role="tabpanel" aria-labelledby="defaultSettingsTab"></div>'
+		+'</div>' );
 	
+
+	if(customForm != null){
+		compositeDiv.find('#widgetSettings').append(customForm);
+	}
+	compositeDiv.find('#defaultSettings').append(defaultForm);
 	//----------------------------------
 	// Show Modal
 	CFW.ui.showModal(CFWL('cfw_core_settings', 'Settings'), compositeDiv, "CFW.cache.clearCache();");
