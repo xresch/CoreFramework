@@ -249,11 +249,11 @@ function cfw_dashboardlist_printDashboards(data, type){
 		// Prepare Columns
 		var showFields = [];
 		if(type == 'mydashboards'){
-			showFields = ['NAME', 'DESCRIPTION', 'IS_SHARED'];
+			showFields = ['NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED'];
 		}else if (type == 'shareddashboards'){
 			showFields = ['OWNER', 'NAME', 'DESCRIPTION'];
 		}else if (type == 'admindashboards'){
-			showFields = ['PK_ID', 'OWNER', 'NAME', 'DESCRIPTION', 'IS_SHARED'];
+			showFields = ['PK_ID', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS','IS_SHARED'];
 		}
 		
 		
@@ -418,6 +418,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 							return '<span class="badge badge-danger m-1">false</span>';
 						} 
 			 		},
+			 		TAGS: badgeCustomizerFunction,
 			 		JSON_SHARE_WITH_USERS: badgeCustomizerFunction, 
 			 		JSON_SHARE_WITH_ROLES: badgeCustomizerFunction, 
 			 		JSON_EDITORS: badgeCustomizerFunction, 

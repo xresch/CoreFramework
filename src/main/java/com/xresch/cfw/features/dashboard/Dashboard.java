@@ -16,6 +16,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
+import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.usermgmt.User;
@@ -37,6 +38,7 @@ public class Dashboard extends CFWObject {
 		FK_ID_USER,
 		NAME,
 		DESCRIPTION,
+		TAGS,
 		IS_SHARED,
 		JSON_SHARE_WITH_USERS,
 		JSON_SHARE_WITH_ROLES,
@@ -78,6 +80,27 @@ public class Dashboard extends CFWObject {
 			.setColumnDefinition("CLOB")
 			.setDescription("The description of the dashboard.")
 			.addValidator(new LengthValidator(-1, 2000000));
+	
+	private CFWField<Object[]> tags = CFWField.newArray(FormFieldType.TAGS, DashboardFields.TAGS)
+			.setDescription("The tags for this dashboard.")
+			.setAutocompleteHandler( new CFWAutocompleteHandler(10) {
+
+				@Override
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+					
+					AutocompleteList list = new AutocompleteList();
+					for(String tag : CFW.DB.Dashboards.getTags()) {
+						if(tag.toLowerCase().contains(inputValue.toLowerCase())) {
+							list.addItem(tag);
+							if(list.size() >= this.getMaxResults()) {
+								break;
+							}
+						}
+					}
+					return new AutocompleteResult(list);
+				}
+				
+			} );
 	
 	private CFWField<Boolean> isShared = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.IS_SHARED)
 			.apiFieldType(FormFieldType.TEXT)
@@ -159,7 +182,7 @@ public class Dashboard extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyOwner, name, description, isShared, shareWithUsers, shareWithRoles, editors, editorRoles, isDeletable, isRenamable);
+		this.addFields(id, foreignKeyOwner, name, description, tags, isShared, shareWithUsers, shareWithRoles, editors, editorRoles, isDeletable, isRenamable);
 	}
 		
 	/**************************************************************************************
@@ -196,6 +219,7 @@ public class Dashboard extends CFWObject {
 						DashboardFields.FK_ID_USER.toString(),
 						DashboardFields.NAME.toString(),
 						DashboardFields.DESCRIPTION.toString(),
+						DashboardFields.TAGS.toString(),
 						DashboardFields.IS_SHARED.toString(),
 						DashboardFields.JSON_SHARE_WITH_USERS.toString(),
 						DashboardFields.JSON_SHARE_WITH_ROLES.toString(),
@@ -264,6 +288,15 @@ public class Dashboard extends CFWObject {
 		return this;
 	}
 
+	public Object[] tags() {
+		return tags.getValue();
+	}
+	
+	public Dashboard tags(Object[] tags) {
+		this.tags.setValue(tags);
+		return this;
+	}
+	
 	public boolean isShared() {
 		return isShared.getValue();
 	}

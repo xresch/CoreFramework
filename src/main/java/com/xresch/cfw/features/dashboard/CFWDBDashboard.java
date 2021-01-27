@@ -3,6 +3,7 @@ package com.xresch.cfw.features.dashboard;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -36,6 +37,8 @@ public class CFWDBDashboard {
 	private static final Logger logger = CFWLog.getLogger(CFWDBDashboard.class.getName());
 	
 	private static final String[] auditLogFieldnames = new String[] { DashboardFields.PK_ID.toString(), DashboardFields.NAME.toString()};
+	
+	public static TreeSet<String> cachedTags = null;
 	
 	//####################################################################################################
 	// Precheck Initialization
@@ -73,14 +76,14 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(Dashboard... items) 	{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, items); }
-	public static boolean 	create(Dashboard item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, item);}
-	public static Integer 	createGetPrimaryKey(Dashboard item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, auditLogFieldnames, item);}
+	public static boolean	create(Dashboard... items) 	{ updateTags(items); return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, items); }
+	public static boolean 	create(Dashboard item) 		{ updateTags(item); return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, item);}
+	public static Integer 	createGetPrimaryKey(Dashboard item) { updateTags(item); return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, auditLogFieldnames, item);}
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(Dashboard... items) 	{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, items); }
-	public static boolean 	update(Dashboard item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, item); }
+	public static boolean 	update(Dashboard... items) 	{ updateTags(items); return CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, items); }
+	public static boolean 	update(Dashboard item) 		{ updateTags(item); return CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, item); }
 	
 	//####################################################################################################
 	// DELETE
@@ -673,6 +676,133 @@ public class CFWDBDashboard {
 		}
 		
 		return false;
+	}
+	
+	
+	/********************************************************************************************
+	 * Creates multiple Dashboards in the DB.
+	 * @param Dashboards with the values that should be inserted. ID will be set by the Database.
+	 * @return 
+	 * @return nothing
+	 * 
+	 ********************************************************************************************/
+	public static TreeSet<String> getTags() {
+		
+		if(cachedTags == null) {
+			fetchAndCacheTags();
+		}
+		
+		return cachedTags;
+	}
+	
+	/********************************************************************************************
+	 * Creates multiple Dashboards in the DB.
+	 * @param Dashboards with the values that should be inserted. ID will be set by the Database.
+	 * @return 
+	 * @return nothing
+	 * 
+	 ********************************************************************************************/
+	public static String getTagsAsJSON() {
+				
+		return CFW.JSON.toJSON(getTags().toArray(new String[] {}));
+	}
+	
+	/********************************************************************************************
+	 * Adds the tags to the cache for the specified dashboard.
+	 * @param Dashboards with the tags.
+	 * @return nothing
+	 * 
+	 ********************************************************************************************/
+	public static void updateTags(Dashboard... dashboards) {
+		
+		for(Dashboard dashboard : dashboards) {
+			updateTags(dashboard);
+		}
+	}
+	/********************************************************************************************
+	 * Adds the tags to the cache for the specified dashboard.
+	 * @param Dashboards with the tags.
+	 * @return nothing
+	 * 
+	 ********************************************************************************************/
+	public static void updateTags(Dashboard dashboard) {
+		
+		if(cachedTags == null) {
+			fetchAndCacheTags();
+		}
+		
+		if(dashboard.tags() != null) {
+			for(Object tag : dashboard.tags()) {
+				cachedTags.add(tag.toString());
+			}
+		}
+	}
+	
+	/********************************************************************************************
+	 * Fetch cachedTags from the database and stores them into the cache.
+	 * 
+	 ********************************************************************************************/
+	public static void fetchAndCacheTags() {
+		
+		cachedTags = new TreeSet<String>();
+		
+		ResultSet resultSet = new CFWSQL(new Dashboard())
+			.queryCache()
+			.select(DashboardFields.TAGS.toString())
+			.getResultSet();
+		
+		try {
+			while(resultSet.next()) {
+				Object[] tagsArray = (Object[])resultSet.getObject(1);
+				
+				if(tagsArray != null) {
+					for(int i = 0 ; i < tagsArray.length; i++) {
+						cachedTags.add(tagsArray[i].toString());
+					}
+				}
+			}
+		} catch (SQLException e) {
+			new CFWLog(logger)
+			.severe("Tags could not be fetched because an error occured.", e);
+		} finally {
+			CFWDB.close(resultSet);
+		}
+				
+	}
+	
+	/********************************************************************************************
+	 * Fetch cachedTags from the database that are visible to the user.
+	 * 
+	 ********************************************************************************************/
+	public static String getTagsForUserAsJSON(int userID) {
+		
+		TreeSet<String> tags = new TreeSet<String>();
+		
+		ResultSet resultSet = new CFWSQL(new Dashboard())
+			.queryCache()
+			.select(DashboardFields.TAGS.toString())
+			.where(DashboardFields.FK_ID_USER.toString(), userID)
+			.or(DashboardFields.IS_SHARED.toString(), true)
+			.getResultSet();
+		
+		try {
+			while(resultSet.next()) {
+				Object[] tagsArray = (Object[])resultSet.getObject(1);
+				
+				if(tagsArray != null) {
+					for(int i = 0 ; i < tagsArray.length; i++) {
+						tags.add(tagsArray[i].toString());
+					}
+				}
+			}
+		} catch (SQLException e) {
+			new CFWLog(logger)
+			.severe("Tags could not be fetched because an error occured.", e);
+		} finally {
+			CFWDB.close(resultSet);
+		}
+		
+		return CFW.JSON.toJSON(tags.toArray(new String[] {}));
 	}
 		
 }

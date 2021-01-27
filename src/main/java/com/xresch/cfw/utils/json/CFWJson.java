@@ -203,6 +203,14 @@ public class CFWJson {
 	/*************************************************************************************
 	 * 
 	 *************************************************************************************/
+	public static Object[] jsonToObjectArray(JsonArray jsonArray) {
+		return gsonInstance.fromJson(jsonArray, Object[].class);  
+	}
+	
+	
+	/*************************************************************************************
+	 * 
+	 *************************************************************************************/
 	public static void addObject(JsonObject target, String propertyName, Object object) {
 		if(object instanceof String) 			{	target.addProperty(propertyName, (String)object); }
 		else if(object instanceof JsonElement) 	{	target.add(propertyName, (JsonElement)object); }
