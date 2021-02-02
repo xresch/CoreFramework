@@ -669,7 +669,8 @@ function cfw_dashboard_saveDefaultSettings(widgetGUID){
 				
 		);
 	cfw_dashboard_completeCommandBundle();
-		
+	
+	CFW.ui.addToastInfo('Done');
 }
 
 /************************************************************************************************
@@ -699,6 +700,8 @@ function cfw_dashboard_saveCustomSettings(formButton, widgetGUID){
 					
 			);
 		cfw_dashboard_completeCommandBundle();
+		
+		CFW.ui.addToastInfo('Done');
 	}
 }
 /************************************************************************************************

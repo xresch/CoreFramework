@@ -12,6 +12,7 @@ ALWAYS ON
 TODO
 ====
 
+- Dashboard: Share with users that are not logged in
 - Dashboard: Check Settings - Provide a bulk action to show all settings of all widgets as an overview. 
 - Dashboard: Text Alignment
 - Dashboard: Merge forms, only one button.
@@ -67,8 +68,6 @@ TODO
   - how to load key and label? 
 
 - Spaces!!!
-  - Important: Manage Hierarchy
-  - Fetch As JSON Hierarchy
   - HTML Selector
   - SpacePermissions in SessionData
   - Selected Space in SessionData
@@ -89,6 +88,7 @@ DONE
 - CFW.Messages: Created separate class to handle default messages.
 - Dashboard: Added refresh interval parameter to URL.
 - Dashboard: Added Tags Field for Dashboards
+- Dashboard: Added notification on widget setting save
 - Dashboard List: Added Sharing Details View
 - Dashboard Widget Settings: Added Widget Name and splitted settings to tabs
 - Role Management: Fixed Nullpointer on changing roles while API-Token Session is active.
