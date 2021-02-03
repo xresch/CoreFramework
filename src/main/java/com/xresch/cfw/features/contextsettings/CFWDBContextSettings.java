@@ -9,9 +9,13 @@ import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.contextsettings.ContextSettings.ContextSettingsFields;
+import com.xresch.cfw.features.dashboard.Dashboard;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -251,12 +255,43 @@ public class CFWDBContextSettings {
 	 * Returns a map with ID/Name values for select options.
 	 * @param type of the context setting
 	 ****************************************************************/
-	public static LinkedHashMap<Object, Object> getSelectOptionsForType(String type) {
+	public static LinkedHashMap<Object, Object> getSelectOptionsForTypeAndUser(String type) {
 		
-		LinkedHashMap<Object, Object> objects =  new ContextSettings()
-				.queryCache(CFWDBContextSettings.class, "getSelectOptionsForType")
-				.select()
-				.where(ContextSettingsFields.CFW_CTXSETTINGS_TYPE.toString(), type)
+		int userID = CFW.Context.Request.getUser().id();
+		String restrictedUserslikeID = "%\""+userID+"\":%";
+		
+		CFWSQL query =  new CFWSQL(new ContextSettings())
+				.loadSQLResource(FeatureContextSettings.RESOURCE_PACKAGE, "SQL_getContextSettingsForUser_PartialQuery.sql", 
+						type,
+						restrictedUserslikeID);
+		
+//		LinkedHashMap<Object, Object> objects =  new ContextSettings()
+//				.queryCache(CFWDBContextSettings.class, "getSelectOptionsForType")
+//				.select()
+//				.where(ContextSettingsFields.CFW_CTXSETTINGS_TYPE.toString(), type)
+//				.orderby(ContextSettingsFields.CFW_CTXSETTINGS_NAME)
+//				.getAsLinkedHashMap(ContextSettingsFields.PK_ID, ContextSettingsFields.CFW_CTXSETTINGS_NAME);
+//		
+		
+		//------------------------------------
+		// Add Filter by Role
+		if(CFW.Context.Request.hasPermission(FeatureContextSettings.PERMISSION_CONTEXT_SETTINGS)) {
+			//--------------------------------------
+			// If has Context Settings permissions, 
+			// always grant access
+			query.or().custom("1 = 1");
+		}else {
+			//--------------------------------------
+			// Filter by Roles
+			Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
+			for(int i = 0 ; i < roleArray.length; i++ ) {
+				int roleID = roleArray[i];
+	
+				query.or().like(ContextSettingsFields.JSON_RESTRICTED_TO_ROLES, "%\""+roleID+"\":%");
+			}
+		}
+		LinkedHashMap<Object, Object> objects =  query
+				.custom(")")
 				.orderby(ContextSettingsFields.CFW_CTXSETTINGS_NAME)
 				.getAsLinkedHashMap(ContextSettingsFields.PK_ID, ContextSettingsFields.CFW_CTXSETTINGS_NAME);
 		

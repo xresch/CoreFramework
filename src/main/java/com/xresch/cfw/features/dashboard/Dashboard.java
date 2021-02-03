@@ -119,7 +119,7 @@ public class Dashboard extends CFWObject {
 	
 	private CFWField<LinkedHashMap<String,String>> shareWithRoles = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_ROLES)
 			.setLabel("Share with Roles")
-			.setDescription("")
+			.setDescription("Share this dashboard with specific roles.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {

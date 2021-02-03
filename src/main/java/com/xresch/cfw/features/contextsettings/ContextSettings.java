@@ -3,12 +3,20 @@ package com.xresch.cfw.features.contextsettings;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
+import javax.servlet.http.HttpServletRequest;
+
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
+import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.dashboard.Dashboard;
+import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
@@ -25,6 +33,8 @@ public class ContextSettings extends CFWObject {
 		CFW_CTXSETTINGS_TYPE,
 		CFW_CTXSETTINGS_NAME,
 		CFW_CTXSETTINGS_DESCRIPTION,
+		JSON_RESTRICTED_TO_USERS,
+		JSON_RESTRICTED_TO_ROLES,
 		JSON_CTXSETTINGS
 	}
 	
@@ -49,6 +59,26 @@ public class ContextSettings extends CFWObject {
 			.setDescription("The description of the context setting.")
 			.addValidator(new LengthValidator(-1, 200000));
 	
+	private CFWField<LinkedHashMap<String,String>> restrictedToUsers = CFWField.newTagsSelector(ContextSettingsFields.JSON_RESTRICTED_TO_USERS)
+			.setLabel("Restricted to Users")
+			.setDescription("If at least one user or role is defined for access restriction, will only allow the specified users to access the setting. if none is specified, everybody has access.")
+			.setValue(null)
+			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+				}
+			});
+	
+	private CFWField<LinkedHashMap<String,String>> restrictedToRoles = CFWField.newTagsSelector(ContextSettingsFields.JSON_RESTRICTED_TO_ROLES)
+			.setLabel("Restricted to Roles")
+			.setDescription("If at least one user or role is defined for access restriction, will only allow the specified users to access the setting. if none is specified, everybody has access.")
+			.setValue(null)
+			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+					return CFW.DB.Roles.autocompleteRole(searchValue, this.getMaxResults());					
+				}
+			});
+	
 	private CFWField<String> settings = CFWField.newString(FormFieldType.NONE, ContextSettingsFields.JSON_CTXSETTINGS.toString())
 			.setDescription("The custom settings of the environment as JSON.")
 			.disableSecurity();
@@ -64,7 +94,7 @@ public class ContextSettings extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, type, name, description, settings);
+		this.addFields(id, type, name, description, restrictedToUsers, restrictedToRoles, settings);
 	}
 		
 	/**************************************************************************************
@@ -86,6 +116,8 @@ public class ContextSettings extends CFWObject {
 						ContextSettingsFields.CFW_CTXSETTINGS_TYPE.toString(),
 						ContextSettingsFields.CFW_CTXSETTINGS_NAME.toString(),
 						ContextSettingsFields.CFW_CTXSETTINGS_DESCRIPTION.toString(),	
+						ContextSettingsFields.JSON_RESTRICTED_TO_USERS.toString(),	
+						ContextSettingsFields.JSON_RESTRICTED_TO_ROLES.toString(),	
 						ContextSettingsFields.JSON_CTXSETTINGS.toString()
 				};
 
@@ -137,6 +169,24 @@ public class ContextSettings extends CFWObject {
 
 	public ContextSettings description(String description) {
 		this.description.setValue(description);
+		return this;
+	}
+	
+	public LinkedHashMap<String,String> restrictedToUsers() {
+		return restrictedToUsers.getValue();
+	}
+	
+	public ContextSettings restrictedToUsers(LinkedHashMap<String,String> value) {
+		this.restrictedToUsers.setValue(value);
+		return this;
+	}
+	
+	public LinkedHashMap<String,String> restrictedToRoles() {
+		return restrictedToRoles.getValue();
+	}
+	
+	public ContextSettings restrictedToRoles(LinkedHashMap<String,String> value) {
+		this.restrictedToRoles.setValue(value);
 		return this;
 	}
 	

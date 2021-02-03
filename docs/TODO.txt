@@ -59,8 +59,6 @@ TODO
 - CFW: Config - Age Out Configuration
 - CFW: API - Enable Post Body Inputs
 - CFW: Improve CFWHTTP.getClientIP()
-- CFW: ContextSettings - Restrict Access
-- 
    
 - CFWField: Add initFormField(method)
 - CFWField: Form errors add to field.
@@ -98,6 +96,7 @@ DONE
 - Charts Renderer: Make default Settings Global
 - Charts Renderer: Added settings "showaxes" and "padding" (can be used to create sparkline like charts)
 - LDAP: Added config to cfw.properties to enable custom LDAP queries
+- ContextSettings: Restrict Access by Users and Roles
 
 ------- v2.0.1 -------
 - /metrics: added counter for DB calls successful/failed
