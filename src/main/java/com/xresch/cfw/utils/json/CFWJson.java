@@ -10,10 +10,12 @@ import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
@@ -120,10 +122,14 @@ public class CFWJson {
 	 * 
 	 *************************************************************************************/
 	public static JsonElement fromJson(String jsonString) {
-		JsonParser parser = new JsonParser();
-		JsonElement jsonElement = parser.parse(jsonString);
 		
-		return jsonElement;
+		if(!Strings.isNullOrEmpty(jsonString)) {
+			JsonElement jsonElement = JsonParser.parseString(jsonString);
+			
+			return jsonElement;
+		}else {
+			return JsonNull.INSTANCE;
+		}
 	}
 	
 	/*************************************************************************************

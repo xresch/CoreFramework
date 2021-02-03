@@ -17,6 +17,7 @@ import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.tests.assets.servlets.FormTestServlet;
 import com.xresch.cfw.tests.assets.servlets.GeneralTestServlet;
+import com.xresch.cfw.tests.features.contextsettings.TestMockupContextSettings;
 
 @Tag("development")
 public class _MainForTesting implements CFWAppInterface {
@@ -45,9 +46,13 @@ public class _MainForTesting implements CFWAppInterface {
 	@Override
 	public void register() {
 		
+		//---------------------------------
+		// Register Package
 		CFW.Files.addAllowedPackage(WebTestMaster.RESOURCE_PACKAGE);
 		CFW.Localization.registerLocaleFile(Locale.ENGLISH, "/general", new FileDefinition(HandlingType.FILE, "./testdata", "testlang_en.properties"));
 		
+		//---------------------------------
+		// Register Menu Items
 		CFW.Registry.Components.addRegularMenuItem(
 				(MenuItem)new MenuItem("Test Pages")
 					.faicon("fas fa-flask")
@@ -56,10 +61,15 @@ public class _MainForTesting implements CFWAppInterface {
 					.addChild(new MenuItem("Form Tests").faicon("fa fa-table").href("./form"))
 				, null);
 		
+
 		CFW.Registry.Components.addRegularMenuItem(new MenuItem("Menu Test"), null);
 		CFW.Registry.Components.addRegularMenuItem(new MenuItem("A").faicon("fa fa-star"), "Menu Test");
 		CFW.Registry.Components.addRegularMenuItem(new MenuItem("B").faicon("fa fa-folder-open"), " Menu Test | A ");
 		CFW.Registry.Components.addRegularMenuItem(new MenuItem("C"), " Menu Test | A | B");
+		
+		//---------------------------------
+		// Register ContextSettings
+		CFW.Registry.ContextSettings.register(TestMockupContextSettings.SETTINGS_TYPE, TestMockupContextSettings.class);
 	}
 
 	@Override
