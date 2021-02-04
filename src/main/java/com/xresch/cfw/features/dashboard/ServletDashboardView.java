@@ -1,6 +1,9 @@
 package com.xresch.cfw.features.dashboard;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -9,18 +12,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWRandom;
-import com.xresch.cfw.utils.json.CFWJson;
 
 /**************************************************************************************************************
  * 
@@ -129,7 +133,11 @@ public class ServletDashboardView extends HttpServlet
 				switch(item.toLowerCase()) {
 					case "widgets": 			fetchWidgets(jsonResponse, dashboardID);
 	  											break;	
+	  											
 					case "widgetdata": 			getWidgetData(request, response, jsonResponse);
+												break;	
+												
+					case "availableparams": 	getAvailableParams(jsonResponse, dashboardID);
 												break;	
 												
 					case "settingsform": 		getSettingsForm(request, response, jsonResponse);
@@ -333,6 +341,51 @@ public class ServletDashboardView extends HttpServlet
 			new CFWLog(logger).warn("Widget Data was not of the correct type.", new IllegalArgumentException());
 		}
 					
+	}
+	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
+	@SuppressWarnings("rawtypes")
+	private void getAvailableParams(JSONResponse response, String dashboardID) {
+		
+
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			
+			ArrayList<CFWObject> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
+			HashSet<String> uniqueTypeChecker = new HashSet<>();
+			JsonArray parametersArray = new JsonArray();
+
+			for(CFWObject object : widgetList) {
+				
+				DashboardWidget widget = (DashboardWidget)object;
+				String widgetType = widget.type();
+				
+				if(uniqueTypeChecker.contains(widgetType)) {
+					continue;
+				}else {
+					WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widgetType);
+					for(Entry<String, CFWField> entry : definition.getSettings().getFields().entrySet()) {
+						CFWField field = entry.getValue();
+						JsonObject paramObject = new JsonObject();
+						paramObject.addProperty("widgetType", widgetType);
+						paramObject.addProperty("widgetSetting", field.getName());
+						paramObject.addProperty("paramType", "widgetsettings");
+						paramObject.addProperty("label", field.getLabel());
+						paramObject.addProperty("inputHTML", field.getHTML());
+						paramObject.addProperty("mode", "substitute");
+						paramObject.addProperty("allowModeChange", true);
+						
+						parametersArray.add(paramObject);
+						
+					}
+				}	
+			}
+			
+			response.getContent().append(parametersArray.toString());
+		}else{
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to load dashboard parameters.");
+		}
 	}
 	
 

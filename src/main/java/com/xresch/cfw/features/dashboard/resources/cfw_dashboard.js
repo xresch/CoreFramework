@@ -470,13 +470,101 @@ function cfw_dashboard_parameters_edit(){
  ************************************************************************************************/
 function cfw_dashboard_parameters_showAddParametersModal(){
 	
+	//----------------------------
+	// Create Content Div
+	let contentDiv = $('<div>');
+	
 	//--------------------------------------
 	// General
 	let defaultParams = [
-		{widgetType: null, widgetSetting: null},
-		{widgetType: null, widgetSetting: null}
+//		{
+//			widgetType: null, 
+//			widgetSetting: null, 
+//			paramType: 'default'		
+//			label: "Default Parameter",  
+//			inputHTML: 'text',
+//			mode: 'substitute',
+//		},
+		{
+			widgetType: null, 
+			widgetSetting: 'titlefontsize', 
+			label: CFWL('cfw_core_fontsize', 'Font Size') + ' ' + CFWL('cfw_core_title', 'Title'),  
+			paramType: 'defaultsettings',
+			inputHTML: '<input type="number" class="form-control" placeholder="Font Size Title" name="titlefontsize">',
+			mode: 'globaloverride',
+			allowModeChange: false,
+		},
+		{
+			widgetType: null, 
+			widgetSetting: 'contentfontsize', 
+			paramType: 'defaultsetting',
+			label: CFWL('cfw_core_fontsize', 'Font Size') + ' ' + CFWL('cfw_core_content', 'Content'),  
+			inputHTML: '<input type="number" class="form-control" placeholder="Font Size Content" name="contentfontsize">',
+			mode: 'globaloverride',
+			allowModeChange: false,
+		},	
+		{
+			widgetType: 'cfw_label', 
+			widgetSetting: 'direction', 
+			paramType: 'widgetsetting',
+			label: "Direction",  
+			inputHTML: 'select',
+			mode: 'globaloverride',
+			allowModeChange: true,
+		},	
+		
 	]
-	CFW.ui.showSmallModal('Add Parameters', 'list of params', "CFW.cache.clearCache();");
+	
+	
+	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "availableparams", dashboardid: CFW_DASHBOARDVIEW_PARAMS.id}, function(data){
+		
+		let paramsArray = data.payload;
+		
+		//-----------------------------------
+		// Table Renderer
+		var rendererSettings = {
+				data: paramsArray,
+			 	idfield: null,
+			 	bgstylefield: null,
+			 	textstylefield: null,
+			 	titlefields: ['label'],
+			 	titleformat: '{0}',
+			 	visiblefields: ['widgetType', 'label'],
+			 	labels: {
+			 		widgetType: "Widget",
+			 		label: "Setting",
+			 	},
+			 	customizers: {
+			 		widgetType: 
+			 			function(record, value) { 
+				 			if(record.widgetType == null){
+				 					return "All";
+				 			}else{
+				 				return cfw_dashboard_getWidgetDefinition(record.widgetType).menulabel;
+				 			} 
+				 		},
+			 	},
+				actions: [
+					function (record, id){
+						return '<button class="btn btn-success btn-sm" alt="Delete" title="Add Param" '+'onclick="alert(\'added\')">'
+								+ '<i class="fa fa-plus-circle"></i>'
+								+ '</button>';
+
+					},
+				],
+				
+				rendererSettings: {
+					table: {narrow: true, filterable: true}
+				},
+			};
+				
+		var renderResult = CFW.render.getRenderer('table').render(rendererSettings);	
+		
+		contentDiv.append(renderResult);
+		
+		CFW.ui.showSmallModal('Add Parameters', contentDiv, "CFW.cache.clearCache();");
+	});
+
 }
 
 /************************************************************************************************

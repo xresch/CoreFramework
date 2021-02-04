@@ -105,7 +105,7 @@ public class CFWDBDashboardWidget {
 	/***************************************************************
 	 * Return a list of all user widgets
 	 * 
-	 * @return Returns a resultSet with all widgets or null.
+	 * @return Returns an array with the widgets or an empty list.
 	 ****************************************************************/
 	public static ArrayList<CFWObject> getWidgetsForDashboard(String dashboardID) {
 		
