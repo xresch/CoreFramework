@@ -550,7 +550,7 @@ class CFWPanel{
 		//----------------------------
 		// resolve classes
 		var panelClasses = 'cfwRecordContainer card';
-		var panelHeaderClasses = 'card-header';
+		var panelHeaderClasses = 'card-header d-flex';
 		
 		if(this.settings.cardstyle != null){
 			panelClasses += ' border-'+this.settings.cardstyle;
@@ -592,7 +592,7 @@ class CFWPanel{
 	 getPanel(){
 		//----------------------------
 		// Populate Header
-		let panelTitle = $('<span>');
+		let panelTitle = $('<div class="flex-grow-1">');
 		panelTitle.append(
 			'<div class="cfw-fa-box"></i>'
 			+ '<i class="fas fa-chevron-right mr-2"></i>'
@@ -605,7 +605,7 @@ class CFWPanel{
 		panelTitle.attr("data-target", "#collapse"+this.counter);		
 		panelTitle.attr("aria-expanded", false);	
 		
-		let headerRight = $('<div class="position-absolute" style="top: 10px; right: 10px;">');
+		let headerRight = $('<div style="top: 10px; right: 10px;">');
 		
 		this.panelHeader.html(""); 
 		this.panelHeader.append(panelTitle);
@@ -686,7 +686,7 @@ class CFWCard{
 		//----------------------------
 		// resolve classes
 		var cardClasses = 'cfwRecordContainer card';
-		var cardHeaderClasses = 'card-header';
+		var cardHeaderClasses = 'card-header d-flex';
 		
 		if(this.settings.cardstyle != null){
 			cardClasses += ' border-'+this.settings.cardstyle;
@@ -728,9 +728,9 @@ class CFWCard{
 	 getCard(){
 		//----------------------------
 		// Populate Header
-		let cardTitle = $('<span>');
+		let cardTitle = $('<div class="flex-grow-1">');
 		cardTitle.append(this.settings.title);		
-		let headerRight = $('<div class="position-absolute" style="top: 10px; right: 10px;">');
+		let headerRight = $('<div style="top: 10px; right: 10px;">');
 		
 		this.cardHeader.html(""); 
 		this.cardHeader.append(cardTitle);
