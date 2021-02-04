@@ -44,12 +44,12 @@
 									//---------------------------------------
 									// Remove Placeholder
 									var placeholderWidget = $('#'+subWidgetObject.placeholderGUID);
-									cfw_dashboard_removeWidgetFromGrid(placeholderWidget);
+									cfw_dashboard_widget_removeFromGrid(placeholderWidget);
 									
 									//---------------------------------------
 									// Add Widget
 									subWidgetObject.content = widgetContent;
-									var widgetInstance = cfw_dashboard_createWidgetHTMLElement(subWidgetObject);
+									var widgetInstance = cfw_dashboard_widget_createHTMLElement(subWidgetObject);
 
 									var grid = $('.grid-stack').data('gridstack');
 
@@ -84,7 +84,7 @@
 								console.log(err);
 							}
 						    
-							cfw_dashboard_saveWidgetState(widgetObject);
+							cfw_dashboard_widget_save_state(widgetObject);
 						return;
 					}
 					

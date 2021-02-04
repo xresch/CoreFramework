@@ -87,7 +87,7 @@ function cfw_widget_checklist_checkboxChange(checkboxElement){
 		
 		widgetObject.JSON_SETTINGS.content = newContent;
 		 
-		cfw_dashboard_saveWidgetState(widgetObject, true); 
+		cfw_dashboard_widget_save_state(widgetObject, true); 
 	}else{
 		checkbox.prop("checked", !isChecked);
 		CFW.ui.addToastWarning('You don\'t have the required permissions to change this dashboard.');

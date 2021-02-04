@@ -27,6 +27,8 @@ TODO
 - Dashboard: Add format to reload time widget
 - Dashboard: Console with Logs
 - Dashboard: Fix Replica Ctrl+Z on Duplicate
+- Dashboard: Timeframe Picker - show Timeframe instead of "Custom Time"
+- Dashboard: Timeframe Picker - List of Recent
 
 - Widget: Dashboard Link
 - Widget: CSV Chart
@@ -56,6 +58,7 @@ TODO
 - CFW: Redirect StdOut and StdErr to logfile
 - CFW: Cleanup tasks for TageSelector references 
 - CFW: Locales - Handle Global Locales separately
+- CFW: Locales - Create System Analytics page showing all locale properties
 - CFW: Config - Age Out Configuration
 - CFW: API - Enable Post Body Inputs
 - CFW: Improve CFWHTTP.getClientIP()
