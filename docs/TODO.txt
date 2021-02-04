@@ -93,9 +93,10 @@ DONE
 - CFWHierarchy: First working version of hierarchy management for CFWObjects
 - Panels: Added dynamic chevron icon for expanded/collapsed
 - Manual: Change chevron icon when page gets expanded/collapsed
-- Charts Renderer: Make default Settings Global
-- Charts Renderer: Added settings "showaxes" and "padding" (can be used to create sparkline like charts)
-- Panels/Cards Renderer: Fixed display of buttons, not overlaying title
+- Renderer - Charts: Make default Settings Global
+- Renderer - Charts: Added settings "showaxes" and "padding" (can be used to create sparkline like charts)
+- Renderer - Dataviewer: highlight filter field if not empty
+- Renderer - Panels/Cards: Fixed display of buttons, not overlaying title
 
 - LDAP: Added config to cfw.properties to enable custom LDAP queries
 - ContextSettings: Restrict Access by Users and Roles

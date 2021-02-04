@@ -1438,6 +1438,16 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	}
 	
 	//=====================================================
+	// Handle Filter Highlight
+	if(CFW.utils.isNullOrEmpty(filterquery)){
+		settingsDiv.find('input[name="filterquery"]').removeClass('bg-cfw-yellow');
+	}else{
+		settingsDiv.find('input[name="filterquery"]').addClass('bg-cfw-yellow');
+	}
+
+
+	
+	//=====================================================
 	// Get Render Results
 	if(settings.datainterface.url == null){
 		
@@ -1602,9 +1612,11 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings
 	
 	//--------------------------------------
 	// Filter Query
+	let filterHighlightClass = CFW.utils.isNullOrEmpty(filterquery) ? '' : 'bg-cfw-yellow';
+
 	html += '<div class="float-right  ml-2">'
 		+'	<label for="filterquery">Filter:&nbsp;</label>'
-		+'	<input type="text" name="filterquery" class="form-control form-control-sm" value="'+filterquery+'" placeholder="Filter..."  title="Filter the Results" '+onchangeAttribute+'>'
+		+'	<input type="text" name="filterquery" class="form-control form-control-sm '+filterHighlightClass+'" value="'+filterquery+'" placeholder="Filter..."  title="Filter the Results" '+onchangeAttribute+'>'
 		+'</div>';
 	
 	html += '</div>';
