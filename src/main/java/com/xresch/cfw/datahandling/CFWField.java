@@ -95,7 +95,22 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	private boolean isDisabled = false;
 	
 	public enum FormFieldType{
-		TEXT, TEXTAREA, PASSWORD, NUMBER, EMAIL, HIDDEN, BOOLEAN, SELECT, LIST, WYSIWYG, DATEPICKER, DATETIMEPICKER, TAGS, TAGS_SELECTOR, NONE
+		TEXT, 
+		TEXTAREA, 
+		PASSWORD, 
+		NUMBER, 
+		EMAIL, 
+		HIDDEN, 
+		BOOLEAN, 
+		SELECT, 
+		LIST, 
+		WYSIWYG, 
+		DATEPICKER, 
+		DATETIMEPICKER, 
+		TAGS, 
+		TAGS_SELECTOR, 
+		UNMODIFIABLE_TEXT, 
+		NONE
 	}
 	
 	//--------------------------------
@@ -378,6 +393,11 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 									break;
 			
 			case TEXTAREA: 			createTextArea(html);
+									break;
+			
+			case UNMODIFIABLE_TEXT:  	String label = this.getAttributeValue("value");
+									html.append("<span "+this.getAttributesString()+">"+label+"</span>");
+									html.append("<input type=\"hidden\" "+this.getAttributesString()+"/>");
 									break;
 			
 			case WYSIWYG: 			createWYSIWYG(html);

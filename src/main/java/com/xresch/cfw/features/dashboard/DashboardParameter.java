@@ -58,11 +58,11 @@ public class DashboardParameter extends CFWObject {
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 	
-	private CFWField<String> widgetType = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.WIDGET_TYPE.toString())
+	private CFWField<String> widgetType = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardParameterFields.WIDGET_TYPE.toString())
 			.setDescription("The type of the widget.")
 			.isDisabled(true);
 	
-	private CFWField<String> widgetSetting = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.WIDGET_SETTING.toString())
+	private CFWField<String> widgetSetting = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardParameterFields.WIDGET_SETTING.toString())
 			.setDescription("The setting of the widget.")
 			.isDisabled(true);
 	
