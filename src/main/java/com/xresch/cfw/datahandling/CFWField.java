@@ -239,13 +239,14 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	//###########################################################################################################
 		
 	/***********************************************************************************
-	 * Create the HTML representation of this item.
-	 * @param StringBuilder to append the resulting html
-	 * @return String html for this item. 
+	 * Prepares the final form field and returns the type of the form field.
+	 * This checks if the field is used in an empty form(e.g. for API) and hence removed the 
+	 * default values. 
+	 * Also it checks if there is a different form field type defined for API forms.
+	 * 
+	 * @return FormFieldType
 	 ***********************************************************************************/
-	@SuppressWarnings("unchecked")
-	protected void createHTML(StringBuilder html) {
-
+	private FormFieldType prepareFinalFormField() {
 		//---------------------------------------------
 		// Check Type
 		//---------------------------------------------
@@ -258,7 +259,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			}
 			
 			if ( ((CFWForm)this.parent).isEmptyForm() && !this.name.contentEquals("cfw-formID") ){
-				// Set Value to num
+				// Set Value to null
 				value = null;
 				
 				if(this.valueLabelOptions != null) {
@@ -266,6 +267,21 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				}
 			}
 		}
+		return formFieldType;
+	}
+	
+	/***********************************************************************************
+	 * Create the HTML representation of this item.
+	 * @param StringBuilder to append the resulting html
+	 * @return String html for this item. 
+	 ***********************************************************************************/
+	@SuppressWarnings("unchecked")
+	protected void createHTML_LabeledFormField(StringBuilder html) {
+		//---------------------------------------------
+		// Check Type
+		//---------------------------------------------
+		FormFieldType formFieldType = prepareFinalFormField();
+		
 		//---------------------------------------------
 		// Create Form Group
 		//---------------------------------------------
@@ -277,23 +293,36 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			html.append("  <label class=\"col-sm-3 col-form-label\" for=\""+name+"\" >");
 			html.append(formLabel+":</label> ");
 			
-			//---------------------------------------
-			// Check if Autocomplete
-			if(autocompleteHandler == null) {
-				html.append("  <div class=\"col-sm-9\">");
-			}else {
-				html.append("  <div class=\"col-sm-9 cfw-autocomplete\" >");
-				this.addAttribute("id", name);
-			}
-			
-			//---------------------------------------
-			// Check if Description available
-			if(description != null && !description.isEmpty()) {
-				html.append("<span class=\"badge badge-info cfw-decorator\" data-toggle=\"tooltip\" data-placement=\"top\" data-delay=\"500\" title=\""+description+"\"><i class=\"fa fa-sm fa-info\"></i></span>");
-			}
-			
+			html.append("  <div class=\"col-sm-9 d-flex\">");
+						
 		}
 		
+		//---------------------------------------------
+		// Create Form Field
+		//---------------------------------------------
+		createHTML(html);
+		
+		//---------------------------------------------
+		// Close form-group and col-sm-9
+		//---------------------------------------------
+		if(formFieldType != FormFieldType.HIDDEN && formFieldType != FormFieldType.NONE) {
+			html.append("</div> </div>");
+		}
+	}
+	
+	/***********************************************************************************
+	 * Create the HTML representation of this item.
+	 * @param StringBuilder to append the resulting html
+	 * @return String html for this item. 
+	 ***********************************************************************************/
+	@SuppressWarnings("unchecked")
+	protected void createHTML(StringBuilder html) {
+
+		//---------------------------------------------
+		// Check Type
+		//---------------------------------------------
+		FormFieldType formFieldType = prepareFinalFormField();
+				
 		//---------------------------------------------
 		// Set Attributes
 		//---------------------------------------------
@@ -327,10 +356,20 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			
 		};
 		
-		
+		//---------------------------------------
+		// Create Field Wrapper
+		String autocompleteClass = (autocompleteHandler == null)  ? "" : "cfw-autocomplete";
+		html.append("  <div class=\"cfw-field-wrapper flex-grow-1 "+autocompleteClass+"\">");
+
+		//---------------------------------------
+		// Check if Description available
+		if(description != null && !description.isEmpty()) {
+			html.append("<span class=\"badge badge-info cfw-decorator\" data-toggle=\"tooltip\" data-placement=\"top\" data-delay=\"500\" title=\""+description+"\"><i class=\"fa fa-sm fa-info\"></i></span>");
+		}
 		//---------------------------------------------
 		// Create Field
 		//---------------------------------------------
+		this.addAttribute("id", name);
 		switch(formFieldType) {
 			case TEXT:  			html.append("<input type=\"text\" class=\"form-control\" "+this.getAttributesString()+"/>");
 									break;
@@ -390,12 +429,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			
 		}
 		//---------------------------------------------
-		// Close Field
+		// Close Field Wrapper
 		//---------------------------------------------
-		if(formFieldType != FormFieldType.HIDDEN && formFieldType != FormFieldType.NONE) {
-			html.append("</div>");
-			html.append("</div>");
-		}
+		html.append("</div>");
 	}
 
 	/***********************************************************************************

@@ -86,7 +86,11 @@ public class CFWForm extends HierarchicalHTMLItem {
 		if(this.hasChildren()) {
 				
 			for(HierarchicalHTMLItem child : children) {
-				html.append("\n\t"+child.getHTML());
+				if(child instanceof CFWField) {
+					((CFWField) child).createHTML_LabeledFormField(html);
+				}else {
+					html.append("\n\t"+child.getHTML());
+				}
 			}
 		}
 		

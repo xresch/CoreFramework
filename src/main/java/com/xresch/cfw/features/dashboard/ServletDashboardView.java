@@ -151,7 +151,10 @@ public class ServletDashboardView extends HttpServlet
 				switch(item.toLowerCase()) {
 					case "widget": 				createWidget(jsonResponse, type, dashboardID);
 	  											break;
-	  																
+	  											
+					case "param": 				createParam(request, response, jsonResponse);
+												break;
+												
 					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
 												break;
 				}
@@ -227,7 +230,7 @@ public class ServletDashboardView extends HttpServlet
 		}
 
 	}
-	
+		
 	/*****************************************************************
 	 *
 	 *****************************************************************/
@@ -372,9 +375,9 @@ public class ServletDashboardView extends HttpServlet
 						paramObject.addProperty("widgetSetting", field.getName());
 						paramObject.addProperty("paramType", "widgetsettings");
 						paramObject.addProperty("label", field.getLabel());
-						paramObject.addProperty("inputHTML", field.getHTML());
-						paramObject.addProperty("mode", "substitute");
-						paramObject.addProperty("allowModeChange", true);
+						//paramObject.addProperty("inputHTML", field.getHTML());
+						//paramObject.addProperty("mode", "substitute");
+						//paramObject.addProperty("allowModeChange", true);
 						
 						parametersArray.add(paramObject);
 						
@@ -387,6 +390,54 @@ public class ServletDashboardView extends HttpServlet
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to load dashboard parameters.");
 		}
 	}
+	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
+	private void createParam(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
+		
+		String dashboardID = request.getParameter("dashboardid");
+
+		//Prevent change when DashboardID is null 
+		if(Strings.isNullOrEmpty(dashboardID)) {
+			return;
+		}
+		
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			
+			//----------------------------
+			// Get and check Values
+			String widgetType = request.getParameter("widgetType");
+			String widgetSetting = request.getParameter("widgetSetting");
+			
+			if(widgetType != null && CFW.Registry.Widgets.getDefinition(widgetType) == null) {
+				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The selected widget type does not exist.");
+				return;
+			}
+			
+			//----------------------------
+			// Validate
+//			CFWObject settings = definition.getSettings();
+//			
+//			boolean isValid = settings.mapJsonFields(jsonElement);
+//			
+//			if(isValid) {
+//				DashboardWidget widgetToUpdate = new DashboardWidget();
+//				
+//				// check if default settings are valid
+//				if(widgetToUpdate.mapRequestParameters(request)) {
+//					//Use sanitized values
+//					widgetToUpdate.settings(settings.toJSON());
+//					CFW.DB.DashboardWidgets.update(widgetToUpdate);
+//				}
+//			}
+			
+		}else{
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+		}
+
+	}
+	
 	
 
 }

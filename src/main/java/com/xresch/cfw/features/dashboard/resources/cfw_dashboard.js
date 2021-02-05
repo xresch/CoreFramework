@@ -335,12 +335,9 @@ function cfw_dashboard_registerWidget(widgetUniqueType, widgetObject){
 			//Set to true if this widget uses the time from the global timeframe picker. Timeframe will be added to the settings with the fields timeframe_earliest/timeframe_latest.
 			usetimeframe: false,
 			// function that creates the widget content and returns them to the framework by calling the callback function
-			createWidgetInstance: function (widgetObject2, callback) {			
-						
+			createWidgetInstance: function (widgetObject2, callback) {				
 				callback(widgetObject2, "Please specify a function on your widgetDefinition.createWidgetInstance.");
-				
 			},
-			
 			// Must return a html string representing a HTML form. Or null if no settings are needed for this widget.
 			getEditForm: function (widgetObject3) {
 				return CFW.dashboard.getSettingsForm(widgetObject3);
@@ -464,6 +461,18 @@ function cfw_dashboard_parameters_edit(){
 	
 }
 
+/************************************************************************************************
+ * 
+ ************************************************************************************************/
+function cfw_dashboard_parameters_add(widgetType, widgetSetting){
+	
+	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'param', widgetType: widgetType, widgetSetting: widgetSetting, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
+		
+		CFW.ui.showSmallModal('Add Parameters', contentDiv, "CFW.cache.clearCache();");
+	});
+
+	
+}
 
 /************************************************************************************************
  * 
