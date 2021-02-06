@@ -25,8 +25,6 @@ public class CFWFormMulti extends CFWForm {
 	private static Logger logger = CFWLog.getLogger(CFWFormMulti.class.getName());
 	
 	public static final String FORM_ID = "cfw-formID";
-	private String formID = "";
-	private String submitLabel = "";
 	private String postURL;
 	private String resultCallback;
 
@@ -36,7 +34,7 @@ public class CFWFormMulti extends CFWForm {
 	@SuppressWarnings("rawtypes")
 	public LinkedHashMap<Integer, CFWObject> originsMap;
 	
-	private Class firstObjectClass;
+	private CFWObject firstObject;
 	
 	private CFWFormHandler formHandler = null;
 	
@@ -61,7 +59,7 @@ public class CFWFormMulti extends CFWForm {
 		//---------------------------------------
 		// Get Details from first object
 		CFWObject firstOrigin = origins.get(0);
-		firstObjectClass = firstOrigin.getClass();
+		firstObject = firstOrigin;
 		//super.addFields(firstOrigin.getFields().values().toArray(new CFWField[]{}));
 		
 	}
@@ -89,11 +87,14 @@ public class CFWFormMulti extends CFWForm {
 		
 		//---------------------------
 		// Create Table Header
-		html.append("<thead>");
-			for(Entry<String, CFWField> entry : this.fields.entrySet()) {
-				html.append("<th>"+entry.getValue().getLabel()+"</th>");
+		html.append("<thead><tr>");
+			for(Entry<String, CFWField> entry : firstObject.getFields().entrySet()) {
+				CFWField currentField = entry.getValue();
+				if(currentField.fieldType() != FormFieldType.NONE && currentField.fieldType() != FormFieldType.HIDDEN ) {
+					html.append("<th>"+entry.getValue().getLabel()+"</th>");
+				}
 			}
-		html.append("</thead>");
+		html.append("</tr></thead>");
 		
 		//---------------------------
 		// Create Table Body
@@ -102,16 +103,18 @@ public class CFWFormMulti extends CFWForm {
 				
 				//-----------------------------------
 				// Table Row for every object
-				Integer id = entry.getKey();
+				Integer objectID = entry.getKey();
 				CFWObject currentObject = entry.getValue();
-				if(firstObjectClass == currentObject.getClass() && id != null) {
+				if(firstObject.getClass() == currentObject.getClass() && objectID != null) {
 					
 					//-----------------------------------
 					// Table Cell for each visible field
 					html.append("<tr>");
 						for(Entry<String, CFWField> fieldEntry : currentObject.getFields().entrySet()) {
 							CFWField field = fieldEntry.getValue();
-							
+							// Make every field name unique by prepending id
+							field.setName(objectID+"-"+field.getName());
+							field.addCssClass("form-control-sm");
 
 							if(field.fieldType() != FormFieldType.NONE) {
 								if(field.fieldType() == FormFieldType.HIDDEN ) {
@@ -128,7 +131,7 @@ public class CFWFormMulti extends CFWForm {
 				}
 			}
 		html.append("</tbody>");
-		
+		html.append("</table>");
 				
 		//---------------------------
 		// Create Submit Button
@@ -165,21 +168,7 @@ public class CFWFormMulti extends CFWForm {
 	
 	/***********************************************************************************
 	 * Returns a hashmap with fields. The keys are the names of the fields.
-	 ***********************************************************************************/
-	@SuppressWarnings("rawtypes")
-	public LinkedHashMap<String, CFWField> getFields() {
-		return fields;
-	}
-	
-	public String getFormID() {
-		return formID;
-	}
-
-	public CFWFormMulti setLabel(String label) {
-		fireChange();
-		this.formID = label;
-		return this;
-	}
+	 ***********************************************************************************/	
 	
 	public CFWFormMulti setFormHandler(CFWFormHandler formHandler) {
 		fireChange();

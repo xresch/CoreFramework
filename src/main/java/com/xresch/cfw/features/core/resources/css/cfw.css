@@ -502,10 +502,17 @@
     justify-content: center;
 }
 
-.cfw-decorator {
-    position: absolute;
-    left: -15px;
+.cfw-field-wrapper {
+	display: flex;
+	flex-grow: 1;
 }
+
+.cfw-decorator-area {
+    padding-right: 5px;
+    display: flex;
+    flex-direction: column;
+}
+.cfw-decorator { }
 
 .cfw-fa-box {
     height: 18px;

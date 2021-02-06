@@ -336,7 +336,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//---------------------------------------------
 		// Check Type
 		//---------------------------------------------
-		FormFieldType formFieldType = prepareFinalFormField();
+		FormFieldType finalFieldType = prepareFinalFormField();
 				
 		//---------------------------------------------
 		// Set Attributes
@@ -347,9 +347,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		if(isDisabled) {	this.addAttribute("disabled", "disabled");};
 		
 		if(preventFormSubmitOnEnter 
-		&& this.type != FormFieldType.TEXTAREA
-		&& this.type != FormFieldType.TAGS
-		&& this.type != FormFieldType.TAGS_SELECTOR) {	
+		&& finalFieldType != FormFieldType.TEXTAREA
+		&& finalFieldType != FormFieldType.TAGS
+		&& finalFieldType != FormFieldType.TAGS_SELECTOR) {	
 			this.addAttribute("onkeydown", "return event.key != 'Enter';");
 		};
 		
@@ -378,21 +378,30 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 
 		//---------------------------------------
 		// Check if Description available
-		if(description != null && !description.isEmpty()) {
-			html.append("<span class=\"badge badge-info cfw-decorator\" data-toggle=\"tooltip\" data-placement=\"top\" data-delay=\"500\" title=\""+description+"\"><i class=\"fa fa-sm fa-info\"></i></span>");
-		}
+		html.append("<div class=\"cfw-decorator-area\">");
+			if(description != null 
+			&& !description.isEmpty() 
+			&& finalFieldType != FormFieldType.HIDDEN 
+			&& finalFieldType != FormFieldType.NONE
+			&& finalFieldType != FormFieldType.UNMODIFIABLE_TEXT
+			) {
+				html.append("<span class=\"badge badge-info cfw-decorator\" data-toggle=\"tooltip\" data-placement=\"top\" data-delay=\"500\" title=\""+description+"\"><i class=\"fa fa-sm fa-info\"></i></span>");
+			}
+		html.append("</div>");
 		//---------------------------------------------
 		// Create Field
 		//---------------------------------------------
+		String cssClasses = this.getAttributeValue("class");
+		this.removeAttribute("class");
 		this.addAttribute("id", name);
-		switch(formFieldType) {
-			case TEXT:  			html.append("<input type=\"text\" class=\"form-control\" "+this.getAttributesString()+"/>");
+		switch(finalFieldType) {
+			case TEXT:  			html.append("<input type=\"text\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 									break;
 			
-			case NUMBER:  			html.append("<input type=\"number\" class=\"form-control\" "+this.getAttributesString()+"/>");
+			case NUMBER:  			html.append("<input type=\"number\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 									break;
 			
-			case TEXTAREA: 			createTextArea(html);
+			case TEXTAREA: 			createTextArea(html, cssClasses);
 									break;
 			
 			case UNMODIFIABLE_TEXT:  	String label = this.getAttributeValue("value");
@@ -400,36 +409,36 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 									html.append("<input type=\"hidden\" "+this.getAttributesString()+"/>");
 									break;
 			
-			case WYSIWYG: 			createWYSIWYG(html);
+			case WYSIWYG: 			createWYSIWYG(html, cssClasses);
 									break;						
 									
 			case HIDDEN:  			html.append("<input type=\"hidden\" "+this.getAttributesString()+"/>");
 									break;
 			
-			case BOOLEAN:  			createBooleanRadiobuttons(html);
+			case BOOLEAN:  			createBooleanRadiobuttons(html, cssClasses);
 									break;		
 									
-			case SELECT:  			createSelect(html);
+			case SELECT:  			createSelect(html, cssClasses);
 									break;	
 									
-			case LIST:  			createList(html);
+			case LIST:  			createList(html, cssClasses);
 									break;	
-			case EMAIL:  			html.append("<input type=\"email\" class=\"form-control\" "+this.getAttributesString()+"/>");
+			case EMAIL:  			html.append("<input type=\"email\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 									break;
 								
-			case DATEPICKER:  		createDatePicker(html);
+			case DATEPICKER:  		createDatePicker(html, cssClasses);
 									break;
 			
-			case DATETIMEPICKER:  	createDateTimePicker(html);
+			case DATETIMEPICKER:  	createDateTimePicker(html, cssClasses);
 									break;
 			
-			case TAGS:			  	createTagsField(html, FormFieldType.TAGS);
+			case TAGS:			  	createTagsField(html, cssClasses, FormFieldType.TAGS);
 									break;
 									
-			case TAGS_SELECTOR:		createTagsField(html, FormFieldType.TAGS_SELECTOR);
+			case TAGS_SELECTOR:		createTagsField(html, cssClasses, FormFieldType.TAGS_SELECTOR);
 									break;						
 									
-			case PASSWORD:  		createPasswordField(html);
+			case PASSWORD:  		createPasswordField(html, cssClasses);
 									break;
 			
 			case NONE:				//do nothing
@@ -457,7 +466,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/***********************************************************************************
 	 * Create Boolean Radio Buttons
 	 ***********************************************************************************/
-	private void createBooleanRadiobuttons(StringBuilder html) {
+	private void createBooleanRadiobuttons(StringBuilder html, String cssClasses) {
 		
 		String falseChecked = "";
 		String trueChecked = "";
@@ -473,13 +482,13 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		String disabled = "";
 		if(isDisabled) {	disabled = "disabled=\"disabled\""; };
 		
-		html.append("<div class=\"form-check form-check-inline col-form-labelmt-5\">" + 
-			"  <input class=\"form-check-input\" type=\"radio\" value=\"true\" name=\""+name+"\" "+this.getAttributesString()+" "+disabled+" "+trueChecked+" />" + 
+		html.append("<div class=\"form-check form-check-inline\">" + 
+			"  <input class=\"form-check-input "+cssClasses+"\" type=\"radio\" value=\"true\" name=\""+name+"\" "+this.getAttributesString()+" "+disabled+" "+trueChecked+" />" + 
 			"  <label class=\"form-check-label\" for=\"inlineRadio1\">true</label>" + 
 			"</div>");
 		
-		html.append("<div class=\"form-check form-check-inline col-form-label\">" + 
-				"  <input class=\"form-check-input\" type=\"radio\" value=\"false\" name=\""+name+"\" "+this.getAttributesString()+" "+disabled+" "+falseChecked+"/>" + 
+		html.append("<div class=\"form-check form-check-inline\">" + 
+				"  <input class=\"form-check-input "+cssClasses+"\" type=\"radio\" value=\"false\" name=\""+name+"\" "+this.getAttributesString()+" "+disabled+" "+falseChecked+"/>" + 
 				"  <label class=\"form-check-label\" for=\"inlineRadio1\">false</label>" + 
 				"</div>");
 	}
@@ -487,13 +496,13 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/***********************************************************************************
 	 * Create Select
 	 ***********************************************************************************/
-	private void createSelect(StringBuilder html) {
+	private void createSelect(StringBuilder html, String cssClasses) {
 		
 		this.removeAttribute("value");
 		
 		String stringVal = (value == null) ? "" : value.toString();
 		
-		html.append("<select class=\"form-control\" "+this.getAttributesString()+" >");
+		html.append("<select class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+" >");
 		
 		//-----------------------------------
 		// handle options
@@ -520,9 +529,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/***********************************************************************************
 	 * Create List
 	 ***********************************************************************************/
-	private void createList(StringBuilder html) {
+	private void createList(StringBuilder html, String cssClasses) {
 		
-		html.append("<input list=\"list-"+name+"\" class=\"form-control\" "+this.getAttributesString()+"/>");
+		html.append("<input list=\"list-"+name+"\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 
 		//-----------------------------------
 		// handle options
@@ -543,7 +552,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/***********************************************************************************
 	 * Create DatePicker
 	 ***********************************************************************************/
-	private void createWYSIWYG(StringBuilder html) {
+	private void createWYSIWYG(StringBuilder html, String cssClasses) {
 		
 		//---------------------------------
 		// Set initial value
@@ -551,7 +560,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		this.addAttribute("id", name);
 		//---------------------------------
 		// Create Field
-		html.append("<textarea class=\"form-control\" "+this.getAttributesString()+"></textarea>");
+		html.append("<textarea class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"></textarea>");
 
 		
 		if(this.parent instanceof CFWForm) {
@@ -565,7 +574,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/***********************************************************************************
 	 * Create DatePicker
 	 ***********************************************************************************/
-	private void createDatePicker(StringBuilder html) {
+	private void createDatePicker(StringBuilder html, String cssClasses) {
 		
 		//---------------------------------
 		// Set initial value
@@ -575,7 +584,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//---------------------------------
 		// Create Field
 		
-		html.append("<input id=\""+name+"-datepicker\" type=\"date\" onchange=\"cfw_updateTimeField('"+name+"')\" class=\"form-control\" placeholder=\"Date\" >\r\n" + 
+		html.append("<input id=\""+name+"-datepicker\" type=\"date\" onchange=\"cfw_updateTimeField('"+name+"')\" class=\"form-control "+cssClasses+"\" placeholder=\"Date\" >\r\n" + 
 				"<input id=\""+name+"\" type=\"hidden\" class=\"form-control\" "+this.getAttributesString()+">\r\n");
 		
 		if(this.parent instanceof CFWForm) {
@@ -588,7 +597,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/***********************************************************************************
 	 * Create DatePicker
 	 ***********************************************************************************/
-	private void createDateTimePicker(StringBuilder html) {
+	private void createDateTimePicker(StringBuilder html, String cssClasses) {
 		
 		//---------------------------------
 		// Set initial value
@@ -597,7 +606,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		//---------------------------------
 		// Create Field
-		html.append("  <div class=\"custom-control-inline w-100 mr-0\">\r\n"
+		html.append("  <div class=\"custom-control-inline w-100 mr-0 "+cssClasses+"\">\r\n"
 						+ "<input id=\""+name+"-datepicker\" type=\"date\" onchange=\"cfw_updateTimeField('"+name+"')\" class=\"col-md-9 form-control\" >\r\n"
 						+ "<input id=\""+name+"-timepicker\" type=\"time\" onchange=\"cfw_updateTimeField('"+name+"')\" class=\"col-md-3 form-control\">"
 						+ "<input id=\""+name+"\" type=\"hidden\" class=\"form-control\" "+this.getAttributesString()+">\r\n" 
@@ -635,7 +644,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/***********************************************************************************
 	 * Create DatePicker
 	 ***********************************************************************************/
-	private void createTagsField(StringBuilder html, FormFieldType type) {
+	private void createTagsField(StringBuilder html, String cssClasses, FormFieldType type) {
 		
 		int maxTags = 128;
 		
@@ -644,7 +653,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		}
 		//---------------------------------
 		// Create Field
-		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"tagsinput\" class=\"form-control "+this.getAttributeValue("class")+"\" "+this.getAttributesString()+"/>");
+		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"tagsinput\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
 			if(type.equals(FormFieldType.TAGS_SELECTOR)) {
@@ -659,7 +668,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/***********************************************************************************
 	 * Create a text area
 	 ***********************************************************************************/
-	private void createTextArea(StringBuilder html) {
+	private void createTextArea(StringBuilder html, String cssClasses) {
 		
 		if(!this.attributes.containsKey("rows")) {
 			this.addAttribute("rows", "5");
@@ -669,20 +678,20 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		if(this.value != null) {
 			inputValue = this.value.toString();
 		}
-		html.append("<textarea class=\"form-control "+this.getAttributeValue("class")+"\" "+this.getAttributesString()+">"+inputValue+"</textarea>");
+		html.append("<textarea class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+">"+inputValue+"</textarea>");
 	}
 	
 	/***********************************************************************************
 	 * Create a password field.
 	 ***********************************************************************************/
-	private void createPasswordField(StringBuilder html) {
+	private void createPasswordField(StringBuilder html, String cssClasses) {
 		
 		if(this.value != null && !value.toString().isEmpty()) {
 			String placeholderName = PASSWORD_STUB_PREFIX + CFWRandom.randomStringAlphaNumSpecial(7);
 			pwCache.put(placeholderName, this.value.toString());
 			this.addAttribute("value", placeholderName);
 		}
-		html.append("<input type=\"password\" class=\"form-control\" "+this.getAttributesString()+"/>");
+		html.append("<input type=\"password\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 
 	}
 	
