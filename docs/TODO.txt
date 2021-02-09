@@ -100,7 +100,7 @@ DONE
 - Renderer - Charts: Added settings "showaxes" and "padding" (can be used to create sparkline like charts)
 - Renderer - Dataviewer: highlight filter field if not empty
 - Renderer - Panels/Cards: Fixed display of buttons, not overlaying title
-
+- cfw.js: Fixed time offset on CFW.format.millisToDuration() and CFW.format.millisToClock()
 - LDAP: Added config to cfw.properties to enable custom LDAP queries
 - ContextSettings: Restrict Access by Users and Roles
 

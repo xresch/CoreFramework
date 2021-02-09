@@ -871,7 +871,7 @@ function cfw_format_epochToTimestamp(epoch){
 function cfw_format_millisToClock(millis){
 
   if(millis != null){
-	  return moment(millis).format("HH:mm:ss");
+	  return moment.utc(millis).format("HH:mm:ss");
   }
   
   return "";
@@ -885,7 +885,7 @@ function cfw_format_millisToClock(millis){
 function cfw_format_millisToDuration(millis){
 
   if(millis != null){
-	  return moment(millis).format("HH[h] mm[m] ss[s]");
+	  return moment.utc(millis).format("HH[h] mm[m] ss[s]");
   }
   
   return "";
