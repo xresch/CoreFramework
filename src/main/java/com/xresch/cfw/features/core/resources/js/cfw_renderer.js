@@ -1215,7 +1215,7 @@ function cfw_renderer_chart_customTooltip(tooltipModel) {
 function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settings) {
 	
 	var datasets = {};
-	var hue = 120; 
+	var hue = 165; 
 
 	for(var i = 0; i < renderDef.data.length; i++){
 		var currentRecord = renderDef.data[i];
@@ -1224,7 +1224,7 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 		// Create Label & Dataset
 		var label = renderDef.getTitleString(currentRecord);
 		if(datasets[label] == undefined){
-			hue += 40;
+			hue += 30;
 			var borderColor = CFW.colors.randomHSL(hue,65,100,55,70);
 			var bgColor = borderColor.replace('1.0)', '0.65)');
 			datasets[label] = {
@@ -1268,7 +1268,7 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 	
 	var datasets = {};
-	var hue = 120; 
+	var hue = 165; 
 
 	for(var i = 0; i < renderDef.data.length; i++){
 		var currentRecord = renderDef.data[i];
@@ -1277,7 +1277,7 @@ function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 		// Create Label & Dataset
 		var label = renderDef.getTitleString(currentRecord);
 		if(datasets[label] == undefined){
-			hue += 40;
+			hue += 30;
 			var borderColor = CFW.colors.randomHSL(hue,65,100,55,70);
 			var bgColor = borderColor.replace('1.0)', '0.65)');
 			datasets[label] = {
