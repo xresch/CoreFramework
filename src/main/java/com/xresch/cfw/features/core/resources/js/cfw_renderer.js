@@ -937,16 +937,16 @@ function cfw_renderer_chart(renderDef) {
 
 	//========================================
 	// Create titleFormat
-	if(settings.titleformat == null && renderDef.data.length > 0){
-		settings.titleformat = '';
+	if(renderDef.titleformat == null && renderDef.data.length > 0){
+		renderDef.titleformat = '';
 		let firstRecord = renderDef.data[0];
 		let index = 0;
 		for(let key in firstRecord){
 			if(key == settings.xfield || key == settings.yfield) { continue; }
-			settings.titleformat += key+'="{'+index+'}" / ';
+			renderDef.titleformat += key+'="{'+index+'}" / ';
 			index++;
 		}
-		renderDef.titleformat = settings.titleformat.substr(0, settings.titleformat.length-3);
+		renderDef.titleformat = renderDef.titleformat.substr(0, renderDef.titleformat.length-3);
 		
 	}
 	
