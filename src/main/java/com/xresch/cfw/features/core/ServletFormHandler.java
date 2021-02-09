@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWForm;
+import com.xresch.cfw.datahandling.CFWMultiForm;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 
@@ -86,8 +87,13 @@ public class ServletFormHandler extends HttpServlet
 	    		.severe("The form with ID '"+formID+"' could not be found. Please refresh the page and try again.");
     		return;
     	}
-    	    	
-    	form.getFormHandler().handleForm(request, response, form, form.getOrigin());
+    	
+    	if(form instanceof CFWMultiForm) {
+    		CFWMultiForm multiForm = (CFWMultiForm)form;
+    		multiForm.getMultiFormHandler().handleForm(request, response, multiForm, multiForm.getOrigins());
+    	}else {
+    		form.getFormHandler().handleForm(request, response, form, form.getOrigin());
+    	}
     	
 	}
 }

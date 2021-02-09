@@ -70,6 +70,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 
 	//--------------------------------
 	// General
+	private CFWObject relatedCFWObject;
+	private boolean lastValidationResult = false;
 	private String name = "";
 	private Object value;
 	private String description = null;
@@ -744,7 +746,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 *************************************************************************/ 
 	public boolean validateValue(Object value){
 		
-		boolean isValid = true;
+		lastValidationResult=true;
 		if(validatorArray != null) {
 			invalidMessages = new ArrayList<String>();
 			for(IValidator validator : validatorArray){
@@ -752,12 +754,22 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				if(!validator.validate(value)){
 					invalidMessages.add(validator.getInvalidMessage());
 					
-					isValid=false;
+					lastValidationResult=false;
 				}
 			}
 		}
 		
-		return isValid;
+		return lastValidationResult;
+	}
+	
+	/*************************************************************************
+	 * Returns the result of the last validation.
+	 * Returns false if the field was not validated.
+	 * 
+	 * @return true if all validators returned true, false otherwise
+	 *************************************************************************/ 
+	public boolean lastValidationResult() {
+		return lastValidationResult;
 	}
 	
 	/*************************************************************************
@@ -808,14 +820,24 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	//###########################################################################################################
 	//###########################################################################################################
 	
+	
+	protected CFWField setRelatedCFWObject(CFWObject object) {
+		this.relatedCFWObject = object;
+		return this;
+	}
 	/******************************************************************************************************
 	 * Set the name of this field.
 	 * Will be used as the name attribute of form elements and the name of the DB column.
 	 * 
 	 * @return instance for chaining
 	 ******************************************************************************************************/
-	public CFWField<T> setName(String propertyName) {
-		this.name = propertyName;
+	public CFWField<T> setName(String name) {
+		String oldname = this.name;
+		this.name = name;
+		if(relatedCFWObject != null) {
+			relatedCFWObject.getFields().remove(oldname);
+			relatedCFWObject.getFields().put(name, this);
+		}
 		return this;
 	}
 	

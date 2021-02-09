@@ -12,21 +12,26 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
 
 
 /**************************************************************************************************************
- * Class for creating a form using CFWFields or a CFWObject as a template.
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * Class for creating a form for multiple CFWObjects.
+ * CAUTION:
+ * <ul>
+ *   <li>Adjusts the fieldnames of the CFWObjects by prepending '{ID}-'.</li>
+ *   <li>Do not save adjusted CFWObjects(e.g by calling {@link CFWObject#update()}) to the database, it will fail.</li>
+ *   <li>Fieldnames are reverted by using {@link #revertFieldNames()}.</li>
+ *   <li>In case you want to be able to save the same form multiple times, make the fieldnames unique again by using {@link #makeFieldNamesUnique()}.</li>
+ * </ul>  
+ * @author Reto Scheiwiller, (c) Copyright 2021
  * @license MIT-License
+ * 
  **************************************************************************************************************/
-public class CFWFormMulti extends CFWForm {
+public class CFWMultiForm extends CFWForm {
 	
-	private static Logger logger = CFWLog.getLogger(CFWFormMulti.class.getName());
+	private static Logger logger = CFWLog.getLogger(CFWMultiForm.class.getName());
 	
 	public static final String FORM_ID = "cfw-formID";
-	private String postURL;
-	private String resultCallback;
 
 	public StringBuilder javascript = new StringBuilder();
 	
@@ -36,9 +41,9 @@ public class CFWFormMulti extends CFWForm {
 	
 	private CFWObject firstObject;
 	
-	private CFWFormHandler formHandler = null;
+	private CFWMultiFormHandler formHandler = null;
 	
-	public CFWFormMulti(String formID, String submitLabel, ArrayList<CFWObject> origins) {
+	public CFWMultiForm(String formID, String submitLabel, ArrayList<CFWObject> origins) {
 		
 		//---------------------------------------
 		// Initialize
@@ -83,6 +88,10 @@ public class CFWFormMulti extends CFWForm {
 		// Create HTML
 		//########################################################
 		html.append("<form id=\""+formID+"\" class=\"form\" method=\"post\" "+getAttributesString()+">");
+		CFWField<String> formIDField = CFWField.newString(FormFieldType.HIDDEN, CFWForm.FORM_ID);
+		formIDField.setValueValidated(this.formID);
+		formIDField.createHTML(html);
+		
 		html.append("<table class=\"table table-sm table-striped\">");
 		
 		//---------------------------
@@ -95,6 +104,10 @@ public class CFWFormMulti extends CFWForm {
 				}
 			}
 		html.append("</tr></thead>");
+		
+		//---------------------------
+		// Make Fieldnames Unique
+		makeFieldNamesUnique();
 		
 		//---------------------------
 		// Create Table Body
@@ -110,10 +123,11 @@ public class CFWFormMulti extends CFWForm {
 					//-----------------------------------
 					// Table Cell for each visible field
 					html.append("<tr>");
-						for(Entry<String, CFWField> fieldEntry : currentObject.getFields().entrySet()) {
-							CFWField field = fieldEntry.getValue();
-							// Make every field name unique by prepending id
-							field.setName(objectID+"-"+field.getName());
+						// Prevent concurrent modification exception
+						CFWField[] fields =  currentObject.getFields().values().toArray(new CFWField[]{});
+						for(CFWField field : fields) {
+							
+							//make the fields smaller to get a compact table
 							field.addCssClass("form-control-sm");
 
 							if(field.fieldType() != FormFieldType.NONE) {
@@ -167,34 +181,108 @@ public class CFWFormMulti extends CFWForm {
 	}
 	
 	/***********************************************************************************
-	 * Returns a hashmap with fields. The keys are the names of the fields.
+	 * 
 	 ***********************************************************************************/	
-	
-	public CFWFormMulti setFormHandler(CFWFormHandler formHandler) {
+	public CFWMultiForm setMultiFormHandler(CFWMultiFormHandler formHandler) {
 		fireChange();
 		postURL = "/cfw/formhandler";
 		this.formHandler = formHandler;
 		return this;
 	}
 	
-	public CFWFormHandler getFormHandler() {
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/	
+	public CFWMultiFormHandler getMultiFormHandler() {
+		
 		return formHandler;
 	}
+	
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/	
+	public CFWMultiForm setFormHandler(CFWFormHandler formHandler) {
+		new CFWLog(logger).severe("Development Bug: This method is not supported by CFWMultiForm, please use setMultiFormHandler(). ", new IllegalAccessException());
+		return this;
+	}
+	
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/	
+	public CFWFormHandler getFormHandler() {
+		new CFWLog(logger).severe("Development Bug: This method is not supported by CFWMultiForm, please use getMultiFormHandler(). ", new IllegalAccessException());
+		return null;
+	}
 		
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/	
 	public LinkedHashMap<Integer, CFWObject> getOrigins() {
 		return originsMap;
 	}
 
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/	
 	public void setOrigins(LinkedHashMap<Integer, CFWObject> originsMap) {
 		this.originsMap = originsMap;
 	}
 	
-	
+	/***********************************************************************************
+	 * Maps all the form field to the adjusted origins CFWObjects.
+	 * Reverts the prepdended ID from the fieldnames.
+	 * @return true if all mapped successful, returns false if one or more validation
+	 * failed or an error occured.
+	 * 
+	 ***********************************************************************************/	
 	public boolean mapRequestParameters(HttpServletRequest request) {
 		// TODO for multi
-		return CFWField.mapAndValidateParamsToFields(request, fields);
+		boolean success = true;
+
+		for (CFWObject currentObject : originsMap.values()) {
+			System.out.println("mapRequestParametersBefore"+currentObject.toJSON());
+			success &= currentObject.mapRequestParameters(request);
+			System.out.println("mapRequestParametersAfter"+currentObject.toJSON());
+		}
+		return success;
 	}
 	
+	
+	
+	
+	/***********************************************************************************
+	 * Reverts the fieldnames back by removing the prepended IDs.
+	 ***********************************************************************************/	
+	public void revertFieldNames() {
+		for (CFWObject object : originsMap.values()) {
+			// Prevent concurrent modification exception
+			CFWField[] fields = object.getFields().values().toArray(new CFWField[]{});
+			for(CFWField field : fields) {
+				String nameWithID = field.getName();
+				int index = nameWithID.indexOf("-");
+				String nameWithoutID = nameWithID.substring(index+1);
+				field.setName(nameWithoutID);
+			}
+		}
+	}
+	
+	/***********************************************************************************
+	 * Make fieldnames unique by prepending them with the ID of the related object.
+	 ***********************************************************************************/	
+	public void makeFieldNamesUnique() {
+		
+		for (CFWObject object : originsMap.values()) {
+			// Prevent concurrent modification exception
+			CFWField[] fields = object.getFields().values().toArray(new CFWField[]{});
+			for(CFWField field : fields) {			
+				field.setName(object.getPrimaryKey()+"-"+field.getName());
+			}
+		}
+	}
+	
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/	
 	public void appendToPayload(JSONResponse json) {
     	JsonObject payload = new JsonObject();
     	payload.addProperty("html", this.getHTML());
@@ -202,7 +290,9 @@ public class CFWFormMulti extends CFWForm {
     	json.getContent().append(payload.toString());
 	}
 	
-	
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/	
 	public String getFieldsAsKeyValueString() {
 		// TODO for multi
 		StringBuilder builder = new StringBuilder();
@@ -222,6 +312,9 @@ public class CFWFormMulti extends CFWForm {
 		return builder.toString();
 	}
 	
+	/***********************************************************************************
+	 * 
+	 ***********************************************************************************/	
 	public String getFieldsAsKeyValueHTML() {
 		// TODO for multi
 		StringBuilder builder = new StringBuilder();

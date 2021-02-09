@@ -50,13 +50,31 @@ public class CFWObject {
 	
 	
 	/****************************************************************
-	 * 
+	 * Map the request parameters to the objects CFWFields.
+	 * Validates the values before they get stored to the CFWFields.
+	 * Creates alert messages.
+	 * @return true if all could be validated successfully, false otherwise
 	 ****************************************************************/
 	public boolean mapRequestParameters(HttpServletRequest request) {
 		
 		return CFWField.mapAndValidateParamsToFields(request, fields);
 	}
 	
+	/*************************************************************************
+	 * Returns the summarized result of the last validations of the CFWFields.
+	 * Returns false if the field was not validated.
+	 * 
+	 * @return true if all validators returned true, false otherwise.
+	 *************************************************************************/ 
+	public boolean lastValidationResult() {
+		
+		boolean success = true;
+		for(CFWField field : fields.values()) {
+			success &= field.lastValidationResult();
+		}
+		return success;
+	}
+
 	/****************************************************************
 	 * 
 	 ****************************************************************/
@@ -158,6 +176,7 @@ public class CFWObject {
 		
 		if(!fields.containsKey(field.getName())) {
 			fields.put(field.getName(), field);
+			field.setRelatedCFWObject(this);
 		}else {
 			new CFWLog(logger)
 				.severe("The field with name '"+field.getName()+"' was already added to this object. Check the naming of the field.");
@@ -165,7 +184,7 @@ public class CFWObject {
 		
 		return this;
 	}
-	
+		
 	/****************************************************************
 	 * 
 	 ****************************************************************/

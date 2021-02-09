@@ -28,7 +28,7 @@ public class CFWForm extends HierarchicalHTMLItem {
 	protected String formID = "";
 	protected String submitLabel = "";
 	protected String postURL;
-	private String resultCallback;
+	protected String resultCallback;
 	
 	private CFWObject origin;
 	protected StringBuilder javascript = new StringBuilder();
