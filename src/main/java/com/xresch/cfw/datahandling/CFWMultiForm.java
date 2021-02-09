@@ -99,8 +99,12 @@ public class CFWMultiForm extends CFWForm {
 		html.append("<thead><tr>");
 			for(Entry<String, CFWField> entry : firstObject.getFields().entrySet()) {
 				CFWField currentField = entry.getValue();
+				
 				if(currentField.fieldType() != FormFieldType.NONE && currentField.fieldType() != FormFieldType.HIDDEN ) {
-					html.append("<th>"+entry.getValue().getLabel()+"</th>");
+					html.append("<th><div class=\"d-flex\">");
+					currentField.createDecoratorArea(html, currentField.fieldType());
+					html.append("<span>"+entry.getValue().getLabel()+"<span>")
+						.append("</div></th>");
 				}
 			}
 		html.append("</tr></thead>");
@@ -127,6 +131,7 @@ public class CFWMultiForm extends CFWForm {
 						CFWField[] fields =  currentObject.getFields().values().toArray(new CFWField[]{});
 						for(CFWField field : fields) {
 							
+							field.isDecoratorDisplayed(false);
 							//make the fields smaller to get a compact table
 							field.addCssClass("form-control-sm");
 
@@ -240,15 +245,10 @@ public class CFWMultiForm extends CFWForm {
 		boolean success = true;
 
 		for (CFWObject currentObject : originsMap.values()) {
-			System.out.println("mapRequestParametersBefore"+currentObject.toJSON());
 			success &= currentObject.mapRequestParameters(request);
-			System.out.println("mapRequestParametersAfter"+currentObject.toJSON());
 		}
 		return success;
 	}
-	
-	
-	
 	
 	/***********************************************************************************
 	 * Reverts the fieldnames back by removing the prepended IDs.

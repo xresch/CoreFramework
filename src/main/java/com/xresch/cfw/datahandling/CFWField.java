@@ -75,22 +75,28 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	private String name = "";
 	private Object value;
 	private String description = null;
-	private Class<T> valueClass;
+
+	//--------------------------------
+	// Validation and Encryption
 	private ArrayList<String> invalidMessages;
 	private byte[] encryptionSalt = null;
 	private boolean allowHTML = false;
 	private boolean sanitizeStrings = true;
 	private boolean preventFormSubmitOnEnter = true;
-	
 	private ArrayList<IValidator> validatorArray;
 
+	//--------------------------------
+	// Handlers
 	@SuppressWarnings("rawtypes")
 	private CFWFieldChangeHandler changeHandler = null;
-	
 	private CFWAutocompleteHandler autocompleteHandler = null;
+	
 	//--------------------------------
-	// Form
+	// Form and Display
+	private Class<T> valueClass;
 	private FormFieldType type;
+	private FormFieldType apiFieldType;
+	private boolean isDecoratorDisplayed = true;
 	private String formLabel = "&nbsp;";
 	@SuppressWarnings("rawtypes")
 	private LinkedHashMap valueLabelOptions = null;
@@ -114,11 +120,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		UNMODIFIABLE_TEXT, 
 		NONE
 	}
-	
-	//--------------------------------
-	// API
-	private FormFieldType apiFieldType;
-	
+		
 	//--------------------------------
 	// Database
 	private String columnDefinition = null;
@@ -380,16 +382,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 
 		//---------------------------------------
 		// Check if Description available
-		html.append("<div class=\"cfw-decorator-area\">");
-			if(description != null 
-			&& !description.isEmpty() 
-			&& finalFieldType != FormFieldType.HIDDEN 
-			&& finalFieldType != FormFieldType.NONE
-			&& finalFieldType != FormFieldType.UNMODIFIABLE_TEXT
-			) {
-				html.append("<span class=\"badge badge-info cfw-decorator\" data-toggle=\"tooltip\" data-placement=\"top\" data-delay=\"500\" title=\""+description+"\"><i class=\"fa fa-sm fa-info\"></i></span>");
-			}
-		html.append("</div>");
+		createDecoratorArea(html, finalFieldType);
+
 		//---------------------------------------------
 		// Create Field
 		//---------------------------------------------
@@ -465,6 +459,29 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		html.append("</div>");
 	}
 
+	/***********************************************************************************
+	 * Creates the decorator area for the field.
+	 * This method will do nothing in case decorator was disabled using {@link #isDecoratorDisplayed()}
+	 * @param finalFieldType as returned by {@link #prepareFinalFormField()}
+	 ***********************************************************************************/
+	public void createDecoratorArea(StringBuilder html, FormFieldType finalFieldType) {
+		
+		//---------------------------------------
+		// Check if Description available
+		if(isDecoratorDisplayed) {
+			html.append("<div class=\"cfw-decorator-area\">");
+				if(description != null 
+				&& !description.isEmpty() 
+				&& finalFieldType != FormFieldType.HIDDEN 
+				&& finalFieldType != FormFieldType.NONE
+				&& finalFieldType != FormFieldType.UNMODIFIABLE_TEXT
+				) {
+					html.append("<span class=\"badge badge-info cfw-decorator\" data-toggle=\"tooltip\" data-placement=\"top\" data-delay=\"500\" title=\""+description+"\"><i class=\"fa fa-sm fa-info\"></i></span>");
+				}
+			html.append("</div>");
+		}
+	}
+	
 	/***********************************************************************************
 	 * Create Boolean Radio Buttons
 	 ***********************************************************************************/
@@ -1036,6 +1053,22 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		this.isDisabled = isDisabled;
 		return this;
 	}
+	
+	/******************************************************************************************************
+	 * Check if the decorator of the field is displayed.
+	 * 
+	 ******************************************************************************************************/
+	public boolean isDecoratorDisplayed() {return isDecoratorDisplayed;}
+
+	/******************************************************************************************************
+	 * Toggle if the decorator of the field is displayed.
+	 * 
+	 ******************************************************************************************************/
+	public CFWField<T> isDecoratorDisplayed(boolean isDecoratorDisplayed) {
+		this.isDecoratorDisplayed = isDecoratorDisplayed;
+		return this;
+	}
+	
 	
 	/******************************************************************************************************
 	 * Check if this field prevents submit on enter.
