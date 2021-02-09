@@ -502,6 +502,11 @@
     justify-content: center;
 }
 
+.cfw-chartjs-wrapper{
+	position:relative;
+	width: 100%;
+    height: 100%;
+}
 .cfw-field-wrapper {
 	display: flex;
 	flex-grow: 1;

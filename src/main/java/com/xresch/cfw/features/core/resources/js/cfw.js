@@ -1650,6 +1650,24 @@ function cfw_confirmExecution_Execute(sourceElement, action){
 	$('body').removeClass('modal-open');
 	modal.remove();
 }
+/******************************************************************
+ * Creates a hidden workspace in the DOM tree.
+ * This is needed for ChartJS, needs a DOM element to use
+ * getComputedStyle.
+ * @param 
+ * @return object
+ ******************************************************************/
+function cfw_ui_getWorkspace() {
+
+	var workspace = $('#cfw-hidden-workspace');
+	
+	if(workspace.length == 0){
+		workspace = $('<div id="cfw-hidden-workspace" style="display: none;">');
+		$('body').append(workspace);				
+	}
+	
+	return workspace;
+}
 
 /******************************************************************
  * Get a cookie by ots name
@@ -2364,7 +2382,8 @@ var CFW = {
 		confirmExecute: cfw_confirmExecution,
 		toogleLoader: cfw_toogleLoader,
 		createLoaderHTML: cfw_createLoaderHTML,
-		addAlert: cfw_addAlertMessage
+		addAlert: cfw_addAlertMessage,
+		getWorkspace: cfw_ui_getWorkspace
 	},
 	hasPermission: cfw_hasPermission,
 

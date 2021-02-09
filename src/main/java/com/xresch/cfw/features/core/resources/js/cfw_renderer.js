@@ -933,12 +933,7 @@ function cfw_renderer_chart(renderDef) {
 	// Create Workspace
 	// ChartJS needs a DOM element to use
 	// getComputedStyle.
-	var workspace = $('#cfw-chartrenderer-workspace');
-
-	if(workspace.length == 0){
-		workspace = $('<div id="cfw-chartrenderer-workspace" style="display: none;">');
-		$('body').append(workspace);				
-	}
+	var workspace = CFW.ui.getWorkspace();
 
 	//========================================
 	// Create titleFormat
@@ -1106,7 +1101,7 @@ function cfw_renderer_chart(renderDef) {
 	});
 	
 	// Wrap canvas to avoid scrollbars 
-	var wrapper = $('<div class="cfw-chartjs-wrapper" style="width: 100%; height: 100%;">');
+	var wrapper = $('<div class="cfw-chartjs-wrapper">');
 	wrapper.append(chartCanvas);
 	return wrapper;
 }
