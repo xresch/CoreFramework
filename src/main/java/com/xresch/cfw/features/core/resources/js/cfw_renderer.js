@@ -1250,10 +1250,13 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 			//datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
 			//datasets[label].cfwCount += 1;
 		}else{
-			datasets[label].data.push({
-				x: currentRecord[settings.xfield], 
-				y: value
-			});
+			
+			if(currentRecord[settings.xfield] != null){
+				datasets[label].data.push({
+					x: currentRecord[settings.xfield], 
+					y: value
+				});
+			}
 			//datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
 			//datasets[label].cfwCount += 1;
 		}
@@ -1303,11 +1306,14 @@ function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 		}else{
 			var xArray = currentRecord[settings.xfield];
 			
-			for(let i = 0; i < xArray.length; i++)
-			datasets[label].data.push({
-				x: xArray[i], 
-				y: yArray[i]
-			});
+			for(let i = 0; i < xArray.length; i++){
+				if(xArray[i] != null){
+					datasets[label].data.push({
+						x: xArray[i], 
+						y: yArray[i]
+					});
+				}
+			}
 		}
 	}
 	
