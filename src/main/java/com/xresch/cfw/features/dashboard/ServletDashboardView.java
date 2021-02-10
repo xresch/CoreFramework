@@ -516,6 +516,8 @@ public class ServletDashboardView extends HttpServlet
 				CFWObject settings = definition.getSettings();
 				newValueField = settings.getField(param.widgetSetting());
 				newValueField.setName(DashboardParameterFields.VALUE.toString());
+				newValueField.setLabel("Value");
+				newValueField.setDescription("The value of the parameter.");
 			}else {
 				//----------------------------
 				// Add Field 

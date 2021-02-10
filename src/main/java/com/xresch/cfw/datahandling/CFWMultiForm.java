@@ -33,8 +33,6 @@ public class CFWMultiForm extends CFWForm {
 	
 	public static final String FORM_ID = "cfw-formID";
 
-	public StringBuilder javascript = new StringBuilder();
-	
 	// Contains all the CFWObjects fields with primaryKey as key
 	@SuppressWarnings("rawtypes")
 	public LinkedHashMap<Integer, CFWObject> originsMap;
@@ -99,7 +97,7 @@ public class CFWMultiForm extends CFWForm {
 		html.append("<thead><tr>");
 			for(Entry<String, CFWField> entry : firstObject.getFields().entrySet()) {
 				CFWField currentField = entry.getValue();
-				
+								
 				if(currentField.fieldType() != FormFieldType.NONE && currentField.fieldType() != FormFieldType.HIDDEN ) {
 					html.append("<th><div class=\"d-flex\">");
 					currentField.createDecoratorArea(html, currentField.fieldType());
@@ -131,9 +129,12 @@ public class CFWMultiForm extends CFWForm {
 						CFWField[] fields =  currentObject.getFields().values().toArray(new CFWField[]{});
 						for(CFWField field : fields) {
 							
-							field.isDecoratorDisplayed(false);
+							//add as child so it will recognize this form as parent and add the javascript for initialization
+							super.addField(field);
+							
 							//make the fields smaller to get a compact table
 							field.addCssClass("form-control-sm");
+							field.isDecoratorDisplayed(false);
 
 							if(field.fieldType() != FormFieldType.NONE) {
 								if(field.fieldType() == FormFieldType.HIDDEN ) {

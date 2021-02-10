@@ -144,11 +144,14 @@ var CFW = {
 		addToastSuccess: function(text){cfw_addToast(text, null, "success", CFW.config.toastDelay);},
 		addToastWarning: function(text){cfw_addToast(text, null, "warning", CFW.config.toastDelay);},
 		addToastDanger: function(text){cfw_addToast(text, null, "danger", CFW.config.toastErrorDelay);},
-		showModal: cfw_showModal,
-		showSmallModal: cfw_showSmallModal,
+		showModal: cfw_showModalRegular,
+		showSmallModal: cfw_showModalSmall,
+		showLargeModal: cfw_showModalLarge,
 		confirmExecute: cfw_confirmExecution,
 		toogleLoader: cfw_toogleLoader,
-		addAlert: cfw_addAlertMessage
+		createLoaderHTML: cfw_createLoaderHTML,
+		addAlert: cfw_addAlertMessage,
+		getWorkspace: cfw_ui_getWorkspace
 	},
 	hasPermission: cfw_hasPermission,
 

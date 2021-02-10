@@ -1364,21 +1364,40 @@ function cfw_addToast(toastTitle, toastBody, style, delay){
  * @param modalTitle the title for the modal
  * @param modalBody the body of the modal
  * @param jsCode to execute on modal close
+ # @param size 'small', 'regular', 'large'
  * @return nothing
  *************************************************************************************/
-function cfw_showModal(modalTitle, modalBody, jsCode){
+function cfw_showModal(modalTitle, modalBody, jsCode, size){
 	
 	var modalID = 'cfw-default-modal';
+	var modalHeaderClass = '';
+	var modalHeaderType = 'h3';
+	var modalDialogClass = 'modal-lg';
+	var backdrop = true;
+	var style = ''
+	if(size == 'small'){
+		modalID = 'cfw-small-modal';
+		style = 'style="z-index: 1155; display: block; top: 25px;"';
+		modalHeaderClass = 'p-2';
+		modalDialogClass = '';
+		modalHeaderType = 'h4';
+		backdrop = false;
+	}else if(size == 'large'){
+		modalID = 'cfw-large-modal';
+		style = 'style="z-index: 1045; display: block; top: -10px;"';
+		modalDialogClass = 'modal-xl';
+	}
 	
-	var defaultModal = $("#"+modalID);
-	if(defaultModal.length == 0){
+	CFW.global.lastOpenedModal = modalID;
+	var modal = $("#"+modalID);
+	if(modal.length == 0){
 	
-		defaultModal = $(
-				'<div id="'+modalID+'" class="modal fade"  tabindex="-1" role="dialog">'
-				+ '  <div class="modal-dialog modal-lg" role="document">'
+		modal = $(
+				'<div id="'+modalID+'" class="modal fade" '+style+' tabindex="-1" role="dialog">'
+				+ '  <div class="modal-dialog '+modalDialogClass+'" role="document">'
 				+ '    <div class="modal-content">'
-				+ '      <div class="modal-header">'
-				+ '        <h3 class="modal-title">Title</h3>'
+				+ '      <div class="modal-header '+modalHeaderClass+'">'
+				+ '        <'+modalHeaderType+' class="modal-title">Title</'+modalHeaderType+'>'
 				+ '        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times</span></button>'
 				+ '      </div>'
 				+ '      <div class="modal-body" >'
@@ -1389,34 +1408,37 @@ function cfw_showModal(modalTitle, modalBody, jsCode){
 				+ '    </div>'
 				+ '  </div>'
 				+ '</div>');
+
+					 
 		
-		defaultModal
+		modal
 		.modal()
 		.draggable({
+			backdrop: backdrop,	   
 		    handle: ".modal-header"
 		}); 
 		
 		// remove position relative to show content in background
-		defaultModal.css('position', '');
+		modal.css('position', '');
 		
 		// Prevent other modals to close the modal
-//		defaultModal.on('hidden.bs.modal', function (e) {
+//		modal.on('hidden.bs.modal', function (e) {
 //			  if(e.target.id != modalID) { // ignore events which are raised from child modals
 //			    return false;
 //			  }
 //			  // your code
 //			});
 		
-//		defaultModal.modal({
+//		modal.modal({
 //		    backdrop: 'static',
 //		    keyboard: false
 //		});
-		$('body').prepend(defaultModal);
+		$('body').prepend(modal);
 		
 		//-------------------------------------
 		// Reset Scroll Position
-		defaultModal.on('hide.bs.modal', function () {
-			defaultModal.find('.modal-body').scrollTop(0);
+		modal.on('hide.bs.modal', function () {
+			modal.find('.modal-body').scrollTop(0);
 		});	
 
 	}
@@ -1424,7 +1446,8 @@ function cfw_showModal(modalTitle, modalBody, jsCode){
 	//---------------------------------
 	// Add Callback
 	if(jsCode != null){
-		defaultModal.on('hidden.bs.modal', function () {
+
+		modal.on('hidden.bs.modal', function () {
 			cfw_utils_executeCodeOrFunction(jsCode);
 			$("#"+modalID).off('hidden.bs.modal');
 		});	
@@ -1432,10 +1455,10 @@ function cfw_showModal(modalTitle, modalBody, jsCode){
 	
 	//---------------------------------
 	// ShowModal
-	defaultModal.find(".modal-title").html("").append(modalTitle);
-	defaultModal.find('.modal-body').html("").append(modalBody);
+	modal.find(".modal-title").html("").append(modalTitle);
+	modal.find('.modal-body').html("").append(modalBody);
 	
-	defaultModal.modal('show');
+	modal.modal('show');
 
 }
 
@@ -1446,65 +1469,31 @@ function cfw_showModal(modalTitle, modalBody, jsCode){
  * @param jsCode to execute on modal close
  * @return nothing
  *************************************************************************************/
-function cfw_showSmallModal(modalTitle, modalBody, jsCode){
-	
-	var modalID = 'cfw-small-modal';
-	
-	var smallModal = $("#"+modalID);
-	if(smallModal.length == 0){
-	
-		smallModal = $(
-				'<div id="'+modalID+'" class="modal fade" style="z-index: 1152; display: block; top: 25px;"  tabindex="-1" role="dialog">'
-				+ '  <div class="modal-dialog" role="document">'
-				+ '    <div class="modal-content">'
-				+ '      <div class="modal-header p-2">'
-				+ '        <h4 class="modal-title">Title</h4>'
-				+ '        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times</span></button>'
-				+ '      </div>'
-				+ '      <div class="modal-body">'
-				+ '      </div>'
-				+ '      <div class="modal-footer  p-2">'
-				+ '         <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>'
-				+ '      </div>'
-				+ '    </div>'
-				+ '  </div>'
-				+ '</div>');
-
-		smallModal.modal();
-		
-		smallModal.draggable({
-			backdrop: false,
-		    handle: ".modal-header"
-		}); 
-		
-		// remove position relative to show content in background
-		smallModal.css('position', '');
-		
-//		smallModal.modal({
-//		    backdrop: 'static',
-//		    keyboard: false
-//		});
-		$('body').prepend(smallModal);
-		
-	}
-
-	//---------------------------------
-	// Add Callback
-	if(jsCode != null){
-
-		smallModal.on('hidden.bs.modal', function () {
-			cfw_utils_executeCodeOrFunction(jsCode);
-			$("#"+modalID).off('hidden.bs.modal');
-		});	
-	}
-	
-	//---------------------------------
-	// Show Modal
-	smallModal.find(".modal-title").html("").append(modalTitle);
-	smallModal.find('.modal-body').html("").append(modalBody);
-	
-	smallModal.modal('show');
+function cfw_showModalRegular(modalTitle, modalBody, jsCode){
+	cfw_showModal(modalTitle, modalBody, jsCode, 'regular');
 }
+	
+/**************************************************************************************
+ * Create a model with content.
+ * @param modalTitle the title for the modal
+ * @param modalBody the body of the modal
+ * @param jsCode to execute on modal close
+ * @return nothing
+ *************************************************************************************/
+function cfw_showModalSmall(modalTitle, modalBody, jsCode){
+	cfw_showModal(modalTitle, modalBody, jsCode, 'small');
+}
+	
+/**************************************************************************************
+ * Create a model with content.
+ * @param modalTitle the title for the modal
+ * @param modalBody the body of the modal
+ * @param jsCode to execute on modal close
+ * @return nothing
+ *************************************************************************************/
+function cfw_showModalLarge(modalTitle, modalBody, jsCode){
+	cfw_showModal(modalTitle, modalBody, jsCode, 'large');
+}	
 
 /**************************************************************************************
  * Create a model with content.
@@ -1569,7 +1558,7 @@ function cfw_showSupportInfoModal(){
 	
 	//=========================================
 	// Show Modal
-	cfw_showModal("Support Info", modalContent);
+	cfw_showModalRegular("Support Info", modalContent);
 }
 
 /**************************************************************************************
@@ -2295,6 +2284,7 @@ var CFW = {
 		autocompleteFocus: -1,
 		isLocaleFetching: null,
 		lastServerAccess: moment(),
+		lastOpenedModal: null,
 	},
 	lang: {
 		get: cfw_lang,
@@ -2377,8 +2367,9 @@ var CFW = {
 		addToastSuccess: function(text){cfw_addToast(text, null, "success", CFW.config.toastDelay);},
 		addToastWarning: function(text){cfw_addToast(text, null, "warning", CFW.config.toastDelay);},
 		addToastDanger: function(text){cfw_addToast(text, null, "danger", CFW.config.toastErrorDelay);},
-		showModal: cfw_showModal,
-		showSmallModal: cfw_showSmallModal,
+		showModal: cfw_showModalRegular,
+		showSmallModal: cfw_showModalSmall,
+		showLargeModal: cfw_showModalLarge,
 		confirmExecute: cfw_confirmExecution,
 		toogleLoader: cfw_toogleLoader,
 		createLoaderHTML: cfw_createLoaderHTML,
@@ -2405,7 +2396,8 @@ CFW.utils.chainedOnload(function () {
 		//--------------------------------
 		// Ctrl+Alt+M - Reopen Modal
 		if (e.ctrlKey && event.altKey &&  e.keyCode == 77) {
-			cfw_reopenModal('cfw-default-modal');
+			if(CFW.global.lastOpenedModal != null)
+			cfw_reopenModal(CFW.global.lastOpenedModal);
 			return;
 		}
 		

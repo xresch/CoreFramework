@@ -458,7 +458,7 @@ function cfw_dashboard_parameters_edit(){
 	// Create Param List Div
 	let paramListDiv = $('<div id="param-list">');
 	contentDiv.append(paramListDiv);
-	CFW.ui.showModal('Parameters', contentDiv);
+	CFW.ui.showLargeModal('Parameters', contentDiv);
 	
 	CFW.http.createForm(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "paramform", dashboardid: CFW_DASHBOARDVIEW_PARAMS.id}, paramListDiv);
 	
