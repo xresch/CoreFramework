@@ -224,6 +224,7 @@ public class CFWObject {
 	}
 	
 	/****************************************************************
+	 * @return the field or null if not found.
 	 * 
 	 ****************************************************************/
 	@SuppressWarnings("rawtypes")

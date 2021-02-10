@@ -20,6 +20,8 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterMode;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -355,10 +357,21 @@ public class ServletDashboardView extends HttpServlet
 
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
+			JsonArray parametersArray = new JsonArray();
+			//--------------------------------------------
+			// Add Default Params
+			JsonObject textParamObject = new JsonObject();
+			textParamObject.add("widgetType", null);
+			textParamObject.add("widgetSetting", null);
+			textParamObject.addProperty("label", "Text");
+			
+			parametersArray.add(textParamObject);
+			
+			//--------------------------------------------
+			// Add Params for Widgets on Dashboard
 			ArrayList<CFWObject> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
 			HashSet<String> uniqueTypeChecker = new HashSet<>();
-			JsonArray parametersArray = new JsonArray();
-
+			
 			for(CFWObject object : widgetList) {
 				
 				DashboardWidget widget = (DashboardWidget)object;
@@ -371,13 +384,9 @@ public class ServletDashboardView extends HttpServlet
 					for(Entry<String, CFWField> entry : definition.getSettings().getFields().entrySet()) {
 						CFWField field = entry.getValue();
 						JsonObject paramObject = new JsonObject();
-						paramObject.addProperty("widgetType", widgetType);
+						paramObject.addProperty("widgetType", definition.getWidgetType());
 						paramObject.addProperty("widgetSetting", field.getName());
-						paramObject.addProperty("paramType", "widgetsettings");
 						paramObject.addProperty("label", field.getLabel());
-						//paramObject.addProperty("inputHTML", field.getHTML());
-						//paramObject.addProperty("mode", "substitute");
-						//paramObject.addProperty("allowModeChange", true);
 						
 						parametersArray.add(paramObject);
 						
@@ -409,31 +418,71 @@ public class ServletDashboardView extends HttpServlet
 			// Get and check Values
 			String widgetType = request.getParameter("widgetType");
 			String widgetSetting = request.getParameter("widgetSetting");
+			String label = request.getParameter("label");
 			
-			if(widgetType != null && CFW.Registry.Widgets.getDefinition(widgetType) == null) {
-				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The selected widget type does not exist.");
-				return;
+			//----------------------------
+			// Create Param
+			DashboardParameter param = new DashboardParameter();
+			param.foreignKeyDashboard(Integer.parseInt(dashboardID));
+			param.name("param_name_"+CFW.Random.randomStringAlphaNumerical(6));
+
+			if(Strings.isNullOrEmpty(widgetType) && Strings.isNullOrEmpty(widgetSetting)) {
+				param.widgetType(null);
+				param.widgetSetting(null);
+				
+				//----------------------------
+				// Handle Default Params
+				switch(label) {
+					case "Text": 	param.paramType(FormFieldType.TEXT);
+									param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
+									param.isModeChangeAllowed(false);
+									break;
+									
+					case "Select": 	param.paramType(FormFieldType.SELECT);
+									param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
+									param.isModeChangeAllowed(false);
+									break;	
+									
+					case "Boolean":	param.paramType(FormFieldType.BOOLEAN);
+									param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
+									param.isModeChangeAllowed(false);
+									break;	
+									
+					default: /*Unknown type*/ return;
+				}
+
+			}else {
+				//-------------------------------
+				// Check does Widget Exist
+				WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widgetType);
+				if(widgetType != null && definition == null) {
+					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The selected widget type does not exist.");
+					return;
+				}
+				//-------------------------------
+				// Handle Widget Settings Params
+				CFWField settingsField = definition.getSettings().getField(widgetSetting);
+				if(settingsField == null) {
+					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The selected field does not does not exist for this widget type.");
+					return;
+				}else {
+					param.widgetType(widgetType);
+					param.widgetSetting(widgetSetting);
+					param.paramType(settingsField.fieldType()); // used to fetch similar field types
+					param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
+					param.isModeChangeAllowed(true);
+				}
 			}
 			
 			//----------------------------
-			// Validate
-//			CFWObject settings = definition.getSettings();
-//			
-//			boolean isValid = settings.mapJsonFields(jsonElement);
-//			
-//			if(isValid) {
-//				DashboardWidget widgetToUpdate = new DashboardWidget();
-//				
-//				// check if default settings are valid
-//				if(widgetToUpdate.mapRequestParameters(request)) {
-//					//Use sanitized values
-//					widgetToUpdate.settings(settings.toJSON());
-//					CFW.DB.DashboardWidgets.update(widgetToUpdate);
-//				}
-//			}
+			// Create Parameter in DB
+			if(CFW.DB.DashboardParameters.create(param)) {
+				CFW.Messages.saved();
+			}
+			
 			
 		}else{
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+			CFW.Messages.noPermission();
 		}
 
 	}

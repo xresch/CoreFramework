@@ -787,7 +787,8 @@ public class CFWSQL {
 	}
 	
 	/****************************************************************
-	 * Adds an AND to the query.
+	 * Adds an NOT to the query.
+	 * Typical usage is ".and().not().is(...)"
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public CFWSQL not() {

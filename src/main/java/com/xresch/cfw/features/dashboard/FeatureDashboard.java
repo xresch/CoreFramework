@@ -51,6 +51,7 @@ public class FeatureDashboard extends CFWAppFeature {
     	// Register Objects
 		CFW.Registry.Objects.addCFWObject(Dashboard.class);
 		CFW.Registry.Objects.addCFWObject(DashboardWidget.class);
+		CFW.Registry.Objects.addCFWObject(DashboardParameter.class);
 		
     	//----------------------------------
     	// Register Widgets

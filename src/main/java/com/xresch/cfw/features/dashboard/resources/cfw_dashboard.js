@@ -464,11 +464,10 @@ function cfw_dashboard_parameters_edit(){
 /************************************************************************************************
  * 
  ************************************************************************************************/
-function cfw_dashboard_parameters_add(widgetType, widgetSetting){
+function cfw_dashboard_parameters_add(widgetType, widgetSetting, label){
 	
-	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'param', widgetType: widgetType, widgetSetting: widgetSetting, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
+	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'param', widgetType: widgetType, widgetSetting: widgetSetting, label: label, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
 		
-		CFW.ui.showSmallModal('Add Parameters', contentDiv, "CFW.cache.clearCache();");
 	});
 
 	
@@ -485,44 +484,6 @@ function cfw_dashboard_parameters_showAddParametersModal(){
 	
 	//--------------------------------------
 	// General
-	let defaultParams = [
-//		{
-//			widgetType: null, 
-//			widgetSetting: null, 
-//			paramType: 'default'		
-//			label: "Default Parameter",  
-//			inputHTML: 'text',
-//			mode: 'substitute',
-//		},
-		{
-			widgetType: null, 
-			widgetSetting: 'titlefontsize', 
-			label: CFWL('cfw_core_fontsize', 'Font Size') + ' ' + CFWL('cfw_core_title', 'Title'),  
-			paramType: 'defaultsettings',
-			inputHTML: '<input type="number" class="form-control" placeholder="Font Size Title" name="titlefontsize">',
-			mode: 'globaloverride',
-			allowModeChange: false,
-		},
-		{
-			widgetType: null, 
-			widgetSetting: 'contentfontsize', 
-			paramType: 'defaultsetting',
-			label: CFWL('cfw_core_fontsize', 'Font Size') + ' ' + CFWL('cfw_core_content', 'Content'),  
-			inputHTML: '<input type="number" class="form-control" placeholder="Font Size Content" name="contentfontsize">',
-			mode: 'globaloverride',
-			allowModeChange: false,
-		},	
-		{
-			widgetType: 'cfw_label', 
-			widgetSetting: 'direction', 
-			paramType: 'widgetsetting',
-			label: "Direction",  
-			inputHTML: 'select',
-			mode: 'globaloverride',
-			allowModeChange: true,
-		},	
-		
-	]
 	
 	
 	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "availableparams", dashboardid: CFW_DASHBOARDVIEW_PARAMS.id}, function(data){
@@ -555,7 +516,10 @@ function cfw_dashboard_parameters_showAddParametersModal(){
 			 	},
 				actions: [
 					function (record, id){
-						return '<button class="btn btn-success btn-sm" alt="Delete" title="Add Param" '+'onclick="alert(\'added\')">'
+						let widgetType = (record.widgetType != null) ? "'"+record.widgetType+"'" : null;
+						let widgetSetting = (record.widgetSetting != null) ? "'"+record.widgetSetting+"'" : null;
+						let label = (record.label != null) ? "'"+record.label+"'" : null;
+						return '<button class="btn btn-success btn-sm" alt="Delete" title="Add Param" '+'onclick="cfw_dashboard_parameters_add('+record.widgetType+', '+record.widgetSetting+', '+label+')">'
 								+ '<i class="fa fa-plus-circle"></i>'
 								+ '</button>';
 

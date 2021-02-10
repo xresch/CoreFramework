@@ -25,6 +25,7 @@ import com.xresch.cfw.features.core.CFWLocalization;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.core.ServletHierarchy;
 import com.xresch.cfw.features.dashboard.CFWDBDashboard;
+import com.xresch.cfw.features.dashboard.CFWDBDashboardParameter;
 import com.xresch.cfw.features.dashboard.CFWDBDashboardWidget;
 import com.xresch.cfw.features.dashboard.CFWRegistryWidgets;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
@@ -77,6 +78,7 @@ public class CFW {
 		public static class ContextSettings extends CFWDBContextSettings{};
 		public static class Dashboards extends CFWDBDashboard{};
 		public static class DashboardWidgets extends CFWDBDashboardWidget{};
+		public static class DashboardParameters extends CFWDBDashboardParameter{};
 		public static class Users extends CFWDBUser{};
 		public static class Roles extends CFWDBRole{};
 		public static class UserRoleMap extends CFWDBUserRoleMap{};

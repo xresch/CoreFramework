@@ -1,19 +1,18 @@
 package com.xresch.cfw.features.dashboard;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 /**************************************************************************************************************
  * 
@@ -24,22 +23,26 @@ public class DashboardParameter extends CFWObject {
 	
 	public static final String TABLE_NAME = "CFW_DASHBOARD_PARAMETER";
 	
-	public static final String MODE_SUBSTITUTE = "SUBSTITUTE";
-	public static final String MODE_GLOBAL_OVERRIDE = "GLOBAL_OVERRIDE";
-	
+
+	public enum DashboardParameterMode{
+		MODE_SUBSTITUTE,
+		MODE_GLOBAL_OVERRIDE,
+		
+	}
 	private static LinkedHashMap<String, String> modeOptions = new LinkedHashMap<String, String>();
 	static {
-		modeOptions.put(MODE_SUBSTITUTE, "Substitute");
-		modeOptions.put(MODE_GLOBAL_OVERRIDE, "Global Override");
+		modeOptions.put(DashboardParameterMode.MODE_SUBSTITUTE.toString(), "Substitute");
+		modeOptions.put(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString(), "Global Override");
 	}
-	
+		
 	public enum DashboardParameterFields{
 		PK_ID,
 		FK_ID_DASHBOARD,
 		WIDGET_TYPE,
 		WIDGET_SETTING,
+		PARAM_TYPE,
 		NAME,
-		JSON_VALUE,
+		VALUE,
 		MODE,
 		IS_MODE_CHANGE_ALLOWED,
 	}
@@ -58,29 +61,31 @@ public class DashboardParameter extends CFWObject {
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 	
-	private CFWField<String> widgetType = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardParameterFields.WIDGET_TYPE.toString())
-			.setDescription("The type of the widget.")
-			.isDisabled(true);
+	private CFWField<String> paramType = CFWField.newString(FormFieldType.NONE, DashboardParameterFields.PARAM_TYPE)
+			.setDescription("The type of the parameter.")
+			.setOptions(FormFieldType.values());
 	
-	private CFWField<String> widgetSetting = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardParameterFields.WIDGET_SETTING.toString())
-			.setDescription("The setting of the widget.")
-			.isDisabled(true);
+	private CFWField<String> widgetType = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardParameterFields.WIDGET_TYPE)
+			.setDescription("The type of the widget.");
 	
-	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.NAME.toString())
+	private CFWField<String> widgetSetting = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardParameterFields.WIDGET_SETTING)
+			.setDescription("The setting of the widget.");
+	
+	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.NAME)
 			.setDescription("The name of the parameter. This name will be used as a placeholder like '$name$' in the widget settings.")
-			.isDisabled(true);
+			.addValidator(new NotNullOrEmptyValidator());
 	
 	// As the type of the value will be defined by the setting it is associated with, this is stored as JSON.
-	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.JSON_VALUE.toString())
-			.setDescription("The value uf the parameter.")
-			.isDisabled(true);
+	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE)
+			.setDescription("The value of the parameter.");
 	
-	private CFWField<String> mode = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.MODE.toString())
+	private CFWField<String> mode = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.MODE)
 			.setDescription("The mode of the widget.")
 			.setOptions(modeOptions);
 	
-	private CFWField<Boolean> isModeChangeAllowed = CFWField.newBoolean(FormFieldType.NONE, DashboardParameterFields.IS_MODE_CHANGE_ALLOWED.toString())
+	private CFWField<Boolean> isModeChangeAllowed = CFWField.newBoolean(FormFieldType.NONE, DashboardParameterFields.IS_MODE_CHANGE_ALLOWED)
 			.setDescription("Define if the mode can be changed or not.")
+			.setValue(true)
 			.setChangeHandler(new CFWFieldChangeHandler<Boolean>() {
 				
 				@Override
@@ -95,26 +100,13 @@ public class DashboardParameter extends CFWObject {
 				}
 			});
 	
-
-	
 	public DashboardParameter() {
 		initializeFields();
 	}
-	
-//	public Dashboard(String name, String category) {
-//		initializeFields();
-//		this.name.setValue(name);
-//		this.category.setValue(category);
-//	}
-	
-	public DashboardParameter(ResultSet result) throws SQLException {
-		initializeFields();
-		this.mapResultSet(result);	
-	}
-	
+		
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyDashboard, widgetType, widgetSetting, name, value, mode, isModeChangeAllowed);
+		this.addFields(id, foreignKeyDashboard, widgetType, widgetSetting, paramType, name, value, mode, isModeChangeAllowed);
 	}
 
 	
@@ -128,18 +120,21 @@ public class DashboardParameter extends CFWObject {
 		
 		String[] inputFields = 
 				new String[] {
-						DashboardParameterFields.PK_ID.toString(), 
-						DashboardParameterFields.FK_ID_DASHBOARD.toString(), 
+					DashboardParameterFields.PK_ID.toString(), 
+					DashboardParameterFields.FK_ID_DASHBOARD.toString(), 
 				};
 		
 		String[] outputFields = 
 				new String[] {
-						DashboardParameterFields.PK_ID.toString(), 
-						DashboardParameterFields.FK_ID_DASHBOARD.toString(), 
-						DashboardParameterFields.WIDGET_TYPE.toString(),
-						DashboardParameterFields.WIDGET_SETTING.toString(),
-						DashboardParameterFields.MODE.toString(),
-						DashboardParameterFields.IS_MODE_CHANGE_ALLOWED.toString(),
+					DashboardParameterFields.PK_ID.toString(), 
+					DashboardParameterFields.FK_ID_DASHBOARD.toString(), 
+					DashboardParameterFields.WIDGET_TYPE.toString(),
+					DashboardParameterFields.WIDGET_SETTING.toString(),
+					DashboardParameterFields.PARAM_TYPE.toString(),
+					DashboardParameterFields.NAME.toString(),
+					DashboardParameterFields.VALUE.toString(),
+					DashboardParameterFields.MODE.toString(),
+					DashboardParameterFields.IS_MODE_CHANGE_ALLOWED.toString(),
 				};
 
 		//----------------------------------
@@ -185,6 +180,15 @@ public class DashboardParameter extends CFWObject {
 		return this;
 	}
 	
+	public String paramType() {
+		return paramType.getValue();
+	}
+	
+	public DashboardParameter paramType(FormFieldType value) {
+		this.paramType.setValue(value.toString());
+		return this;
+	}
+	
 	
 	public String widgetSetting() {
 		return widgetSetting.getValue();
@@ -195,13 +199,30 @@ public class DashboardParameter extends CFWObject {
 		return this;
 	}
 	
+	public String name() {
+		return name.getValue();
+	}
+	
+	public DashboardParameter name(String value) {
+		this.name.setValue(value);
+		return this;
+	}
+	
+	public String value() {
+		return value.getValue();
+	}
+	
+	public DashboardParameter value(String value) {
+		this.value.setValue(value);
+		return this;
+	}
 	
 	public String mode() {
 		return mode.getValue();
 	}
 	
-	public DashboardParameter mode(String value) {
-		this.mode.setValue(value);
+	public DashboardParameter mode(DashboardParameterMode value) {
+		this.mode.setValue(value.toString());
 		return this;
 	}
 	
