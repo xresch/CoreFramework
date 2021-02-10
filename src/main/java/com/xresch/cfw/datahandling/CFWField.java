@@ -1206,9 +1206,10 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
     
 	/******************************************************************************************************
 	 * Change the value by first converting it to the correct type.
+	 * Value will not be validated.
 	 * 
 	 ******************************************************************************************************/
-	private boolean setValueConvert(T value) {
+	public boolean setValueConvert(T value) {
 		boolean success = true;
 		
 		//--------------------------------

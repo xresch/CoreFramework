@@ -18,10 +18,13 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWForm;
-import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterMode;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.datahandling.CFWForm;
+import com.xresch.cfw.datahandling.CFWMultiForm;
+import com.xresch.cfw.datahandling.CFWMultiFormHandlerDefault;
+import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterFields;
+import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -145,6 +148,8 @@ public class ServletDashboardView extends HttpServlet
 					case "settingsform": 		getSettingsForm(request, response, jsonResponse);
 												break;	
 												
+					case "paramform": 			createParameterEditForm(request, response, jsonResponse);
+												break;								
 					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
 												break;
 				}
@@ -459,6 +464,7 @@ public class ServletDashboardView extends HttpServlet
 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The selected widget type does not exist.");
 					return;
 				}
+				
 				//-------------------------------
 				// Handle Widget Settings Params
 				CFWField settingsField = definition.getSettings().getField(widgetSetting);
@@ -485,6 +491,68 @@ public class ServletDashboardView extends HttpServlet
 			CFW.Messages.noPermission();
 		}
 
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void createParameterEditForm(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
+
+		String dashboardID = request.getParameter("dashboardid");
+		ArrayList<CFWObject> parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(dashboardID);
+		
+		//===========================================
+		// Replace Value Field
+		//===========================================
+		for(CFWObject object : parameterList) {
+			DashboardParameter param = (DashboardParameter)object;
+			CFWField currentValueField = param.getField(DashboardParameterFields.VALUE.toString());
+			CFWField newValueField;
+			if(param.widgetType() != null) {
+				//---------------------------------------
+				// Replace Value field with field from WidgetSettings
+				WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(param.widgetType());
+				CFWObject settings = definition.getSettings();
+				newValueField = settings.getField(param.widgetSetting());
+				newValueField.setName(DashboardParameterFields.VALUE.toString());
+			}else {
+				//----------------------------
+				// Add Field 
+				switch(param.paramType()) {
+					case TEXT: 	
+						newValueField = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE);
+									break;
+									
+					case SELECT: 	
+						newValueField = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.VALUE);
+									break;
+									
+					case BOOLEAN: 	
+						newValueField = CFWField.newString(FormFieldType.BOOLEAN, DashboardParameterFields.VALUE);
+									break;	
+									
+					default: /*Unknown type*/ return;
+				}
+			}
+			//currentValue field is always a String field
+			newValueField.setValueConvert(currentValueField.getValue());
+			param.getFields().remove(DashboardParameterFields.VALUE.toString());
+			param.addField(newValueField);
+		}
+		
+		//===========================================
+		// Replace Value Field
+		//===========================================
+		if(parameterList.size() != 0) {
+			
+			CFWMultiForm parameterEditForm = new CFWMultiForm("cfwParameterEditMultiForm"+CFW.Random.randomStringAlphaNumerical(12), "Save", parameterList);
+			
+			parameterEditForm.setMultiFormHandler(new CFWMultiFormHandlerDefault());
+			
+			parameterEditForm.appendToPayload(json);
+			json.setSuccess(true);	
+		}
 	}
 	
 	

@@ -456,8 +456,12 @@ function cfw_dashboard_parameters_edit(){
 	
 	//----------------------------
 	// Create Param List Div
-	contentDiv.append('<div id="param-list">');
-	CFW.ui.showModal('Parameters', contentDiv, "CFW.cache.clearCache();");
+	let paramListDiv = $('<div id="param-list">');
+	contentDiv.append(paramListDiv);
+	CFW.ui.showModal('Parameters', contentDiv);
+	
+	CFW.http.createForm(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "paramform", dashboardid: CFW_DASHBOARDVIEW_PARAMS.id}, paramListDiv);
+	
 	
 }
 
@@ -519,7 +523,7 @@ function cfw_dashboard_parameters_showAddParametersModal(){
 						let widgetType = (record.widgetType != null) ? "'"+record.widgetType+"'" : null;
 						let widgetSetting = (record.widgetSetting != null) ? "'"+record.widgetSetting+"'" : null;
 						let label = (record.label != null) ? "'"+record.label+"'" : null;
-						return '<button class="btn btn-success btn-sm" alt="Delete" title="Add Param" '+'onclick="cfw_dashboard_parameters_add('+record.widgetType+', '+record.widgetSetting+', '+label+')">'
+						return '<button class="btn btn-success btn-sm" alt="Delete" title="Add Param" onclick="cfw_dashboard_parameters_add('+widgetType+', '+widgetSetting+', '+label+')">'
 								+ '<i class="fa fa-plus-circle"></i>'
 								+ '</button>';
 

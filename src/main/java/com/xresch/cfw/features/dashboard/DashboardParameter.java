@@ -49,13 +49,13 @@ public class DashboardParameter extends CFWObject {
 
 	private static Logger logger = CFWLog.getLogger(DashboardParameter.class.getName());
 	
-	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, DashboardParameterFields.PK_ID.toString())
+	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.NONE, DashboardParameterFields.PK_ID.toString())
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the parameter.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 	
-	private CFWField<Integer> foreignKeyDashboard = CFWField.newInteger(FormFieldType.HIDDEN, DashboardParameterFields.FK_ID_DASHBOARD)
+	private CFWField<Integer> foreignKeyDashboard = CFWField.newInteger(FormFieldType.NONE, DashboardParameterFields.FK_ID_DASHBOARD)
 			.setForeignKeyCascade(this, Dashboard.class, DashboardFields.PK_ID)
 			.setDescription("The id of the dashboard this parameter is related to.")
 			.apiFieldType(FormFieldType.NUMBER)
@@ -180,8 +180,8 @@ public class DashboardParameter extends CFWObject {
 		return this;
 	}
 	
-	public String paramType() {
-		return paramType.getValue();
+	public FormFieldType paramType() {
+		return FormFieldType.valueOf(paramType.getValue());
 	}
 	
 	public DashboardParameter paramType(FormFieldType value) {

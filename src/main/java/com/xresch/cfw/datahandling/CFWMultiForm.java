@@ -245,7 +245,9 @@ public class CFWMultiForm extends CFWForm {
 		boolean success = true;
 
 		for (CFWObject currentObject : originsMap.values()) {
+			System.out.println("before:"+currentObject.toJSON());
 			success &= currentObject.mapRequestParameters(request);
+			System.out.println("after:"+currentObject.toJSON());
 		}
 		return success;
 	}
