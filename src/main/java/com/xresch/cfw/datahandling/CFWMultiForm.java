@@ -112,7 +112,7 @@ public class CFWMultiForm extends CFWForm {
 		makeFieldNamesUnique();
 		
 		//---------------------------
-		// Create Table Body
+		// Create Table Body	
 		html.append("<tbody>");
 			for(Entry<Integer, CFWObject> entry : originsMap.entrySet()) {
 				

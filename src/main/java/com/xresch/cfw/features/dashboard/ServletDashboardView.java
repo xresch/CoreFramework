@@ -2,7 +2,10 @@ package com.xresch.cfw.features.dashboard;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
@@ -20,15 +23,18 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWForm;
+import com.xresch.cfw.datahandling.CFWFormCustomAutocompleteHandler;
 import com.xresch.cfw.datahandling.CFWMultiForm;
 import com.xresch.cfw.datahandling.CFWMultiFormHandlerDefault;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.utils.CFWModifiableHTTPRequest;
 import com.xresch.cfw.utils.CFWRandom;
 
 /**************************************************************************************************************
@@ -551,6 +557,58 @@ public class ServletDashboardView extends HttpServlet
 			CFWMultiForm parameterEditForm = new CFWMultiForm("cfwParameterEditMultiForm"+CFW.Random.randomStringAlphaNumerical(12), "Save", parameterList);
 			
 			parameterEditForm.setMultiFormHandler(new CFWMultiFormHandlerDefault());
+			parameterEditForm.setCustomAutocompleteHandler(new CFWFormCustomAutocompleteHandler() {
+				
+				@Override
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, HttpServletResponse response,
+						CFWForm form, CFWField field, String searchValue) {
+					
+					//------------------------------------
+					// Create Request with additional Params
+					// for the same Widget Type.
+					// allows fields using other request params
+					// for autocomplete to work properly
+					CFWMultiForm multiform = (CFWMultiForm)form;
+					
+					String paramID = field.getName().split("-")[0];
+					int paramIDNumber = Integer.parseInt(paramID);
+					LinkedHashMap<Integer, CFWObject> origins = multiform.getOrigins();
+					DashboardParameter paramToAutocomplete = (DashboardParameter)origins.get(paramIDNumber);
+					String widgetType = paramToAutocomplete.widgetType();
+					
+					//------------------------------------
+					//Find all Settings from the same Widget Type
+					Map<String, String[]> extraParams = new HashMap<String, String[]>();
+					for(CFWObject object : origins.values() ) {
+						DashboardParameter currentParam = (DashboardParameter)object;
+						System.out.println("===== currentParam.widgetType(): "+currentParam.widgetType());
+						System.out.println("widgetType: "+widgetType);
+						if(currentParam.widgetType() != null && currentParam.widgetType().equals(widgetType)) {
+							String paramName = currentParam.widgetSetting();
+							String valueFieldName = currentParam.id()+"-"+DashboardParameterFields.VALUE;
+							String paramValue = request.getParameter(valueFieldName);
+							System.out.println("paramName: "+paramName);
+							System.out.println("paramValue: "+paramValue);
+					        extraParams.put(paramName, new String[] { paramValue });
+						}
+					}
+					
+					CFWModifiableHTTPRequest modifiedRequest = new CFWModifiableHTTPRequest(request, extraParams);
+					System.out.println("ModifiedParams:"+CFW.JSON.toJSON(modifiedRequest.getParameterMap()));
+					
+					//------------------------------------
+					// Get Autocomplete Results
+			    	if(field.getAutocompleteHandler() != null) {
+			    		AutocompleteResult suggestions = field.getAutocompleteHandler().getAutocompleteData(modifiedRequest, searchValue);
+			    		return suggestions;
+			    	}else {
+			    		json.setSuccess(false);
+			    		new CFWLog(logger)
+				    		.severe("The field with name '"+field.getName()+"' doesn't have an autocomplete handler.");
+			    		return null;
+			    	}
+				}
+			});
 			
 			parameterEditForm.appendToPayload(json);
 			json.setSuccess(true);	

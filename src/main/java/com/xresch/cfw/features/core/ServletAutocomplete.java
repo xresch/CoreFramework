@@ -62,19 +62,28 @@ public class ServletAutocomplete extends HttpServlet
 		//--------------------------------------------
 		// Execute Autocomplete Handler
 		//--------------------------------------------
+    	AutocompleteResult suggestions = null;
+    	if(form.getCustomAutocompleteHandler() != null) {
+    		 form.getCustomAutocompleteHandler().getAutocompleteData(request, response, form, field, searchstring);
+    	}
+    	
     	if(field.getAutocompleteHandler() != null) {
-    		AutocompleteResult suggestions = field.getAutocompleteHandler().getAutocompleteData(request, searchstring);
-    		if(suggestions != null) {
-    			json.getContent().append(suggestions.toJson());
-    		}else {
-    			json.getContent().append("null");
-    		}
+    		suggestions = field.getAutocompleteHandler().getAutocompleteData(request, searchstring);
     	}else {
     		json.setSuccess(false);
     		new CFWLog(logger)
 	    		.severe("The field with name '"+fieldname+"' doesn't have an autocomplete handler.");
     		return;
     	}
+    	
+		//--------------------------------------------
+		// Add suggestions to response
+		//--------------------------------------------
+    	if(suggestions != null) {
+			json.getContent().append(suggestions.toJson());
+		}else {
+			json.getContent().append("null");
+		}
     	
     }
 	

@@ -38,6 +38,7 @@ public class CFWForm extends HierarchicalHTMLItem {
 	public LinkedHashMap<String, CFWField> fields = new LinkedHashMap<String, CFWField>();
 	
 	private CFWFormHandler formHandler = null;
+	private CFWFormCustomAutocompleteHandler autocompleteHandler = null;
 	private boolean isAPIForm = false;
 	private boolean isEmptyForm = false;
 	
@@ -173,6 +174,15 @@ public class CFWForm extends HierarchicalHTMLItem {
 		return formHandler;
 	}
 	
+	public CFWForm setCustomAutocompleteHandler(CFWFormCustomAutocompleteHandler autocompleteHandler) {
+		this.autocompleteHandler = autocompleteHandler;
+		return this;
+	}
+	
+	public CFWFormCustomAutocompleteHandler getCustomAutocompleteHandler() {
+		return autocompleteHandler;
+	}
+
 	public CFWField<?> getField(String name) {
 		return fields.get(name);
 	}
