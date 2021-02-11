@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 public class CFWModifiableHTTPRequest extends HttpServletRequestWrapper {
     private final Map<String, String[]> modifiableParameters;
     private Map<String, String[]> allParameters = null;
-
+    
     public CFWModifiableHTTPRequest(final HttpServletRequest request, final Map<String, String[]> additionalParams) {
         super(request);
         modifiableParameters = new TreeMap<String, String[]>();

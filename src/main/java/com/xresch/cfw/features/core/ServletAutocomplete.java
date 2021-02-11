@@ -13,6 +13,7 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
+import com.xresch.cfw.utils.CFWModifiableHTTPRequest;
 
 /**************************************************************************************************************
  * This servlet is used to handle forms that have a BTFormHandler defined.
@@ -63,17 +64,19 @@ public class ServletAutocomplete extends HttpServlet
 		// Execute Autocomplete Handler
 		//--------------------------------------------
     	AutocompleteResult suggestions = null;
-    	if(form.getCustomAutocompleteHandler() != null) {
-    		 form.getCustomAutocompleteHandler().getAutocompleteData(request, response, form, field, searchstring);
-    	}
-    	
-    	if(field.getAutocompleteHandler() != null) {
-    		suggestions = field.getAutocompleteHandler().getAutocompleteData(request, searchstring);
+    	if(form.getCustomAutocompleteHandler() == null) {
+    		
+    		if(field.getAutocompleteHandler() != null) {
+        		suggestions = field.getAutocompleteHandler().getAutocompleteData(request, searchstring);
+        	}else {
+        		json.setSuccess(false);
+        		new CFWLog(logger)
+    	    		.severe("The field with name '"+fieldname+"' doesn't have an autocomplete handler.");
+        		return;
+        	}	 
+    		
     	}else {
-    		json.setSuccess(false);
-    		new CFWLog(logger)
-	    		.severe("The field with name '"+fieldname+"' doesn't have an autocomplete handler.");
-    		return;
+    		form.getCustomAutocompleteHandler().getAutocompleteData(request, response, form, field, searchstring);
     	}
     	
 		//--------------------------------------------

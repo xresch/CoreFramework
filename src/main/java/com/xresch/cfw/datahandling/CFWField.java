@@ -378,12 +378,17 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//---------------------------------------
 		// Create Field Wrapper
 		String autocompleteClass = (autocompleteHandler == null)  ? "" : "cfw-autocomplete";
-		html.append("  <div class=\"cfw-field-wrapper flex-grow-1 "+autocompleteClass+"\">");
+		html.append("<div class=\"cfw-field-wrapper flex-grow-1 "+autocompleteClass+"\">");
 
 		//---------------------------------------
 		// Check if Description available
 		createDecoratorArea(html, finalFieldType);
 
+		//---------------------------------------
+		// Autocomplete Wrapper
+		if (autocompleteHandler != null) {
+			html.append("  <div class=\"cfw-autocomplete\">");
+		}
 		//---------------------------------------------
 		// Create Field
 		//---------------------------------------------
@@ -446,7 +451,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		// Add Autocomplete Initialization
 		//---------------------------------------------
 		if(autocompleteHandler != null && this.parent instanceof CFWForm) {
-
+			html.append("</div>");
+			
 			String formID = ((CFWForm)this.parent).getFormID();
 			int maxResults = this.getAutocompleteHandler().getMaxResults();
 			int minChars = this.getAutocompleteHandler().getMinChars();
