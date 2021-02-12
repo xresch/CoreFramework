@@ -76,7 +76,7 @@ public class ServletAutocomplete extends HttpServlet
         	}	 
     		
     	}else {
-    		form.getCustomAutocompleteHandler().getAutocompleteData(request, response, form, field, searchstring);
+    		suggestions = form.getCustomAutocompleteHandler().getAutocompleteData(request, response, form, field, searchstring);
     	}
     	
 		//--------------------------------------------

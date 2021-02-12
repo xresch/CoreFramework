@@ -22,6 +22,7 @@
     --cfw-teal: #20c997;
     --cfw-cyan: #0894be;
     --cfw-white: #fff;
+    --cfw-lightgray: #dedede;
     --cfw-gray: #939393;
     --cfw-darkgray: #545455;
     --cfw-black: #000;
@@ -46,6 +47,7 @@
 .bg-cfw-teal {			background-color: var(--cfw-teal); }
 .bg-cfw-cyan {			background-color: var(--cfw-cyan); }
 .bg-cfw-white {			background-color: var(--cfw-white); }
+.bg-cfw-lightgray {			background-color: var(--cfw-lightgray); }
 .bg-cfw-gray {			background-color: var(--cfw-gray); }
 .bg-cfw-darkgray {		background-color: var(--cfw-darkgray); }
 .bg-cfw-black {			background-color: var(--cfw-black); }
@@ -67,6 +69,7 @@
 .text-cfw-teal {			color: var(--cfw-teal); }
 .text-cfw-cyan {			color: var(--cfw-cyan); }
 .text-cfw-white {			color: var(--cfw-white); }
+.text-cfw-lightgray {		color: var(--cfw-lightgray); }
 .text-cfw-gray {			color: var(--cfw-gray); }
 .text-cfw-darkgray {		color: var(--cfw-darkgray); }
 .text-cfw-black {			color: var(--cfw-black); }
@@ -88,6 +91,7 @@
 .border-cfw-teal {			border-color: var(--cfw-teal); }
 .border-cfw-cyan {			border-color: var(--cfw-cyan); }
 .border-cfw-white {			border-color: var(--cfw-white); }
+.border-cfw-lightgray {		border-color: var(--cfw-lightgray); }
 .border-cfw-gray {			border-color: var(--cfw-gray); }
 .border-cfw-darkgray {		border-color: var(--cfw-darkgray); }
 .border-cfw-black {			border-color: var(--cfw-black); }
@@ -109,6 +113,7 @@
 .table-cfw-teal, .table-cfw-teal th, .table-cfw-teal td, .table-cfw-teal thead, .table-cfw-teal tbody, .table-hover .table-cfw-teal:hover {		background-color: var(--cfw-teal); }
 .table-cfw-cyan, .table-cfw-cyan th, .table-cfw-cyan td, .table-cfw-cyan thead, .table-cfw-cyan tbody, .table-hover .table-cfw-cyan:hover {		background-color: var(--cfw-cyan); }
 .table-cfw-white, .table-cfw-white th, .table-cfw-white td, .table-cfw-white thead, .table-cfw-white tbody, .table-hover .table-cfw-white:hover {		background-color: var(--cfw-white); }
+.table-cfw-lightgray, .table-cfw-lightgray th, .table-cfw-lightgray td, .table-cfw-lightgray thead, .table-cfw-lightgray tbody, .table-hover .table-cfw-lightgray:hover {		background-color: var(--cfw-lightgray); }
 .table-cfw-gray, .table-cfw-gray th, .table-cfw-gray td, .table-cfw-gray thead, .table-cfw-gray tbody, .table-hover .table-cfw-gray:hover {		background-color: var(--cfw-gray); }
 .table-cfw-darkgray, .table-cfw-darkgray th, .table-cfw-darkgray td, .table-cfw-darkgray thead, .table-cfw-darkgray tbody, .table-hover .table-cfw-darkgray:hover {	background-color: var(--cfw-darkgray); }
 .table-cfw-black, .table-cfw-black th, .table-cfw-black td, .table-cfw-black thead, .table-cfw-black tbody, .table-hover .table-cfw-black:hover {		background-color: var(--cfw-black); }

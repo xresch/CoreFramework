@@ -2,7 +2,7 @@
 var CFW_DASHBOARDVIEW_PARAMS = CFW.http.getURLParamsDecoded();
 
 var CFW_DASHBOARD_EDIT_MODE = false;
-var CFW_DASHBOARD_EDIT_MODE_ADVANCED = false;
+var CFW_DASHBOARD_EDIT_MODE_ADVANCED = true;
 var CFW_DASHBOARD_FULLSCREEN_MODE = false;
 var CFW_DASHBOARD_REFRESH_INTERVAL_ID = null;
 var CFW_DASHBOARD_WIDGET_REGISTRY = {};
@@ -630,6 +630,7 @@ function cfw_dashboard_widget_edit(widgetGUID){
 			'cfw-teal': 	'Teal',
 			'cfw-cyan': 	'Cyan',
 			'cfw-white': 	'White',
+			'cfw-lightgray': 'Light Gray',
 			'cfw-gray': 	'Gray',
 			'cfw-darkgray': 'Dark Gray',
 			'cfw-black': 	'Black',
@@ -1055,7 +1056,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	
 	var htmlString =
 		'<div class="grid-stack-item-content card d-flex '+BGCOLORClass+' '+FGCOLORClass+'">'
-		+'	<div role="button" class="cfw-dashboard-widget-actionicons '+settingsDisplayClass+'">'
+		+'	<div role="button" class="cfw-dashboard-widget-actionicons '+settingsDisplayClass+' text-cfw-lightgray">'
 		+'		<div role="button" class="actionicon-delete '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_remove(\''+merged.guid+'\')"><i class="fas fa-times"></i></div>'
 		+'		<div role="button" class="actionicon-duplicate '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_duplicate(\''+merged.guid+'\')"><i class="fas fa-clone"></i></div>'
 		+'		<div role="button" class="actionicon-edit '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_edit(\''+merged.guid+'\')"><i class="fas fa-pen"></i></div>'
@@ -1365,12 +1366,8 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			// Ctrl+Alt+A -  Toggle Advanced Edit Mode
 			if ( e.ctrlKey && event.altKey && e.keyCode == 65) {
 				
-				if(!CFW_DASHBOARD_EDIT_MODE){
-					cfw_dashboard_toggleEditMode();
-				}
-				
 				var actionButtons = $('.actionicon-delete, .actionicon-duplicate, .actionicon-edit');
-				if(actionButtons.first().hasClass('d-none')){
+				if(!CFW_DASHBOARD_EDIT_MODE || actionButtons.first().hasClass('d-none')){
 					CFW_DASHBOARD_EDIT_MODE_ADVANCED = true;
 					actionButtons.removeClass('d-none');
 				}else{
@@ -1378,6 +1375,11 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 					actionButtons.addClass('d-none');
 				}
 				
+				if(!CFW_DASHBOARD_EDIT_MODE){
+					cfw_dashboard_toggleEditMode();
+				}
+				
+						
 				return;
 			}
 			
