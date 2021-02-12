@@ -91,7 +91,6 @@ DONE
 - Dashboard: Added Tags Field for Dashboards
 - Dashboard: Added notification on widget setting save
 - Dashboard: Made Advanced Edit Mode Standard
-
 - Dashboard List: Added Sharing Details View
 - Dashboard Widget Settings: Added Widget Name and splitted settings to tabs
 - Role Management: Fixed Nullpointer on changing roles while API-Token Session is active.

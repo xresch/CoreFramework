@@ -1367,6 +1367,7 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			if ( e.ctrlKey && event.altKey && e.keyCode == 65) {
 				
 				var actionButtons = $('.actionicon-delete, .actionicon-duplicate, .actionicon-edit');
+				
 				if(!CFW_DASHBOARD_EDIT_MODE || actionButtons.first().hasClass('d-none')){
 					CFW_DASHBOARD_EDIT_MODE_ADVANCED = true;
 					actionButtons.removeClass('d-none');
