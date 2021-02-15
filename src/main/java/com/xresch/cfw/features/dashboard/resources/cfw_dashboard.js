@@ -449,7 +449,7 @@ function cfw_dashboard_parameters_edit(){
 	//----------------------------
 	// Create Add Params Button
 	let addParametersButton = 
-		$('<button class="btn btn-sm btn-success"><i class="fas fa-plus-circle"></i>&nbsp;Add Parameters</button>')
+		$('<button class="btn btn-sm btn-success mb-3"><i class="fas fa-plus-circle"></i>&nbsp;Add Parameters</button>')
 				.click(cfw_dashboard_parameters_showAddParametersModal);
 	
 	contentDiv.append(addParametersButton);		
@@ -469,32 +469,54 @@ function cfw_dashboard_parameters_edit(){
  ************************************************************************************************/
 function cfw_dashboard_parameters_loadParameterForm(){
 	
-	let paramListDiv = $('#param-list');
-	paramListDiv.html('');
-	
-	CFW.http.createForm(CFW_DASHBOARDVIEW_URL, 
-			{action: "fetch", item: "paramform", dashboardid: CFW_DASHBOARDVIEW_PARAMS.id}, 
-			paramListDiv, 
-			function (formID){
-				
-				//----------------------------
-				// Add Header
-				paramListDiv.find('form thead tr').append('<th>&nbsp</th>');
-				
-				//----------------------------
-				// Add Delete Buttons
-				formRows = paramListDiv.find('form tbody tr');
-				
-				formRows.each(function (){
-					row = $(this);
-					
-					row.append('<td><div class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-						+ 'onclick="cfw_dashboard_parameters_removeConfirmed('+row.data('id')+');">'
-						+ '<i class="fa fa-trash"></i>'
-						+ '</div></td>')
-				})
+	var paramListDiv = $('#param-list');
+	var form = paramListDiv.find('form');
+	var formID = form.attr('id');
+	//--------------------------------
+	// Trigger Save
+	if(form.length == 0){
+		loadForm();
+	}else{
+		//paramListDiv.find('button').click();
+		cfw_internal_postForm('/cfw/formhandler', '#'+formID, function(data){
+			
+			//-------------------------------
+			// Update if save was successfull
+			if(data.success){
+				loadForm();
 			}
-		);
+		});
+	
+	}
+		
+	function loadForm(){
+		var paramListDiv = $('#param-list');
+		paramListDiv.html('');
+		
+		CFW.http.createForm(CFW_DASHBOARDVIEW_URL, 
+				{action: "fetch", item: "paramform", dashboardid: CFW_DASHBOARDVIEW_PARAMS.id}, 
+				paramListDiv, 
+				function (formID){
+					
+					//----------------------------
+					// Add Header
+					paramListDiv.find('form thead tr').append('<th>&nbsp</th>');
+					
+					//----------------------------
+					// Add Delete Buttons
+					formRows = paramListDiv.find('form tbody tr');
+					
+					formRows.each(function (){
+						row = $(this);
+						
+						row.append('<td><div class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
+							+ 'onclick="cfw_dashboard_parameters_removeConfirmed('+row.data('id')+');">'
+							+ '<i class="fa fa-trash"></i>'
+							+ '</div></td>')
+					})
+				}
+			);
+	}
 }
 
 /************************************************************************************************
@@ -503,7 +525,10 @@ function cfw_dashboard_parameters_loadParameterForm(){
 function cfw_dashboard_parameters_add(widgetType, widgetSetting, label){
 	
 	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'param', widgetType: widgetType, widgetSetting: widgetSetting, label: label, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
-		
+		if(data.success){
+			// Reload Form
+			cfw_dashboard_parameters_loadParameterForm();
+		}
 	});
 }
 
@@ -518,12 +543,13 @@ function cfw_dashboard_parameters_removeConfirmed(parameterID){
  * 
  ************************************************************************************************/
 function cfw_dashboard_parameters_remove(parameterID) {
-	
-	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'delete', item: 'param', paramid: parameterID, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
+	var formID = $('#param-list form').attr('id');
+	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'delete', item: 'param', paramid: parameterID, formid: formID, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
 
 			if(data.success){
-				// Reload Form
-				cfw_dashboard_parameters_loadParameterForm();
+				// Remove from Form 
+				$('#param-list tr[data-id="'+parameterID+'"]').remove();
+				
 			}
 		}
 	);

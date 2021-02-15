@@ -166,8 +166,7 @@ public class CFWDBDashboardParameter {
 	}
 	
 	/***************************************************************
-	 * @return Returns true if the parameter name is already in use
-	 * for this dashboard, ignores the the given parameter in the check.
+	 * @return Returns true if the parameter is of the specified dashboard
 	 ****************************************************************/
 	public static boolean checkIsParameterOfDashboard(String dashboardID, String parameterID) {
 		

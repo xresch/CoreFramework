@@ -492,7 +492,8 @@ public class ServletDashboardView extends HttpServlet
 			//----------------------------
 			// Create Parameter in DB
 			if(CFW.DB.DashboardParameters.create(param)) {
-				CFW.Messages.saved();
+				
+				CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Parameter added!");
 			}
 			
 			
@@ -512,11 +513,16 @@ public class ServletDashboardView extends HttpServlet
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
 			String paramID = request.getParameter("paramid");
-			
 			if(CFW.DB.DashboardParameters.checkIsParameterOfDashboard(dashboardID, paramID)) {
 				boolean success = CFW.DB.DashboardParameters.deleteByID(paramID);
 				json.setSuccess(success);
-				CFW.Messages.saved();
+				CFW.Messages.deleted();
+				
+				//Remove From Form to avoid errors on save
+				String formID = request.getParameter("formid");
+				CFWMultiForm form = (CFWMultiForm)CFW.Context.Session.getForm(formID);
+				
+				form.getOrigins().remove(Integer.parseInt(paramID));
 			}
 			
 			

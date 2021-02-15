@@ -12,6 +12,16 @@ public class CFWMessages {
 	public static void saved(){
 		CFWContextRequest.addAlertMessage(MessageType.SUCCESS, CFW.L("cfw_core_success_saved", "Saved!"));		
 	}
+	
+	/****************************************************************
+	 * Adds a localized "Access Denied" error message to the
+	 * Request Context.
+	 *   
+	 ****************************************************************/
+	public static void deleted(){
+		CFWContextRequest.addAlertMessage(MessageType.SUCCESS, CFW.L("cfw_core_success_deleted", "Deleted!"));		
+	}
+	
 	/****************************************************************
 	 * Adds a localized "Access Denied" error message to the
 	 * Request Context.
