@@ -617,12 +617,28 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 					widgetJsonSettings[currentSettingName] = 
 						oldSettingsValue.replaceAll('$'+currentParam.NAME+'$',paramValue);
 					console.log('A: '+widgetJsonSettings[currentSettingName]);
-				}else{
-					// objects, booleans, numbers etc...
+				}else if(typeof oldSettingsValue == "object"){
+					// objects, numbers etc...
 					widgetJsonSettings[currentSettingName] = paramValue;
-					console.log('B: '+widgetJsonSettings[currentSettingName]);
+					console.log('B2: '+widgetJsonSettings[currentSettingName]);
 				}
 			}else if(currentParam.MODE == "MODE_GLOBAL_OVERRIDE"){
+				
+				if (typeof oldSettingsValue == "boolean"){
+					// objects, booleans, numbers etc...
+					paramValue = paramValue.toLowerCase().trim();
+					switch(paramValue){
+			        	case "true": case "yes": case "1": widgetJsonSettings[currentSettingName] = true;
+			        	case "false": case "no": case "0": widgetJsonSettings[currentSettingName] = false;
+			        	default: widgetJsonSettings[currentSettingName] = Boolean(paramValue);
+					}
+				}else{
+					// objects, numbers etc...
+					widgetJsonSettings[currentSettingName] = paramValue;
+					console.log('B2: '+widgetJsonSettings[currentSettingName]);
+				}
+			    
+					console.log('B: '+widgetJsonSettings[currentSettingName]);
 				widgetJsonSettings[currentSettingName] = paramValue;
 			}
 		}else if(CFW.utils.isNullOrEmpty(currentParam.WIDGET_TYPE)
@@ -1363,7 +1379,7 @@ function cfw_dashboard_widget_createInstance(originalwidgetObject, doAutopositio
 			    subWidgetObject.Y		= widgetInstance.attr("data-gs-y");
 			    $(widgetInstance).data('widgetObject', originalwidgetObject);
 			    
-			    cfw_dashboard_widget_save_state(subWidgetObject);
+			    cfw_dashboard_widget_save_state(originalwidgetObject);
 			    
 			    if(callback != null){
 			    	callback(subWidgetObject);

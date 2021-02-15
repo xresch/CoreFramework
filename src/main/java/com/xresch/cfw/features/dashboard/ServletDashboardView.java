@@ -402,6 +402,7 @@ public class ServletDashboardView extends HttpServlet
 				if(uniqueTypeChecker.contains(widgetType)) {
 					continue;
 				}else {
+					uniqueTypeChecker.add(widgetType);
 					WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widgetType);
 					for(Entry<String, CFWField> entry : definition.getSettings().getFields().entrySet()) {
 						CFWField field = entry.getValue();
@@ -492,8 +493,16 @@ public class ServletDashboardView extends HttpServlet
 					param.widgetType(widgetType);
 					param.widgetSetting(widgetSetting);
 					param.paramType(settingsField.fieldType()); // used to fetch similar field types
-					param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
-					param.isModeChangeAllowed(true);
+					
+					param.mode(DashboardParameterMode.MODE_GLOBAL_OVERRIDE);
+					
+					if(settingsField.fieldType() == FormFieldType.BOOLEAN
+					|| settingsField.fieldType() == FormFieldType.NUMBER
+					|| settingsField.fieldType() == FormFieldType.DATEPICKER
+					|| settingsField.fieldType() == FormFieldType.DATETIMEPICKER
+					) {
+						param.isModeChangeAllowed(false);
+					}
 				}
 			}
 			
