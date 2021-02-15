@@ -458,11 +458,43 @@ function cfw_dashboard_parameters_edit(){
 	// Create Param List Div
 	let paramListDiv = $('<div id="param-list">');
 	contentDiv.append(paramListDiv);
+	
 	CFW.ui.showLargeModal('Parameters', contentDiv);
 	
-	CFW.http.createForm(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "paramform", dashboardid: CFW_DASHBOARDVIEW_PARAMS.id}, paramListDiv);
+    cfw_dashboard_parameters_loadParameterForm();
+}
+
+/************************************************************************************************
+ * 
+ ************************************************************************************************/
+function cfw_dashboard_parameters_loadParameterForm(){
 	
+	let paramListDiv = $('#param-list');
+	paramListDiv.html('');
 	
+	CFW.http.createForm(CFW_DASHBOARDVIEW_URL, 
+			{action: "fetch", item: "paramform", dashboardid: CFW_DASHBOARDVIEW_PARAMS.id}, 
+			paramListDiv, 
+			function (formID){
+				
+				//----------------------------
+				// Add Header
+				paramListDiv.find('form thead tr').append('<th>&nbsp</th>');
+				
+				//----------------------------
+				// Add Delete Buttons
+				formRows = paramListDiv.find('form tbody tr');
+				
+				formRows.each(function (){
+					row = $(this);
+					
+					row.append('<td><div class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
+						+ 'onclick="cfw_dashboard_parameters_removeConfirmed('+row.data('id')+');">'
+						+ '<i class="fa fa-trash"></i>'
+						+ '</div></td>')
+				})
+			}
+		);
 }
 
 /************************************************************************************************
@@ -473,9 +505,30 @@ function cfw_dashboard_parameters_add(widgetType, widgetSetting, label){
 	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'param', widgetType: widgetType, widgetSetting: widgetSetting, label: label, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
 		
 	});
-
-	
 }
+
+/************************************************************************************************
+ * 
+ ************************************************************************************************/
+function cfw_dashboard_parameters_removeConfirmed(parameterID){
+	CFW.ui.confirmExecute('Do you really want to delete this parameter? (Cannot be undone)', 'Remove', "cfw_dashboard_parameters_remove('"+parameterID+"')" );
+}
+
+/************************************************************************************************
+ * 
+ ************************************************************************************************/
+function cfw_dashboard_parameters_remove(parameterID) {
+	
+	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'delete', item: 'param', paramid: parameterID, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
+
+			if(data.success){
+				// Reload Form
+				cfw_dashboard_parameters_loadParameterForm();
+			}
+		}
+	);
+
+};
 
 /************************************************************************************************
  * 
@@ -488,7 +541,6 @@ function cfw_dashboard_parameters_showAddParametersModal(){
 	
 	//--------------------------------------
 	// General
-	
 	
 	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "availableparams", dashboardid: CFW_DASHBOARDVIEW_PARAMS.id}, function(data){
 		
@@ -1471,7 +1523,6 @@ function cfw_dashboard_initialDraw(){
 			cfw_dashboard_draw();
 		}
 	}
-	
 	
 	//---------------------------------
 	// Load Refresh interval from URL or Local store

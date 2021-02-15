@@ -124,7 +124,7 @@ public class CFWMultiForm extends CFWForm {
 					
 					//-----------------------------------
 					// Table Cell for each visible field
-					html.append("<tr>");
+					html.append("<tr data-id=\""+objectID+"\">");
 						// Prevent concurrent modification exception
 						CFWField[] fields =  currentObject.getFields().values().toArray(new CFWField[]{});
 						for(CFWField field : fields) {

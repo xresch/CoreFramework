@@ -187,7 +187,10 @@ public class ServletDashboardView extends HttpServlet
 				switch(item.toLowerCase()) {
 					case "widget": 				deleteWidget(request, response, jsonResponse);
 	  											break;
-	  																
+					
+					case "param": 				deleteParam(request, response, jsonResponse);
+												break;
+																	
 					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
 												break;
 				}
@@ -495,6 +498,30 @@ public class ServletDashboardView extends HttpServlet
 			
 		}else{
 			CFW.Messages.noPermission();
+		}
+
+	}
+	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
+	private void deleteParam(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
+		
+		String dashboardID = request.getParameter("dashboardid");
+		
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			
+			String paramID = request.getParameter("paramid");
+			
+			if(CFW.DB.DashboardParameters.checkIsParameterOfDashboard(dashboardID, paramID)) {
+				boolean success = CFW.DB.DashboardParameters.deleteByID(paramID);
+				json.setSuccess(success);
+				CFW.Messages.saved();
+			}
+			
+			
+		}else{
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
 		}
 
 	}

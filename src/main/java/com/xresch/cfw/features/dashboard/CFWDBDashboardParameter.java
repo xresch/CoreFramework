@@ -165,6 +165,21 @@ public class CFWDBDashboardParameter {
 		
 	}
 	
+	/***************************************************************
+	 * @return Returns true if the parameter name is already in use
+	 * for this dashboard, ignores the the given parameter in the check.
+	 ****************************************************************/
+	public static boolean checkIsParameterOfDashboard(String dashboardID, String parameterID) {
+		
+		return  1 == new CFWSQL(new DashboardParameter())
+				.queryCache()
+				.selectCount()
+				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
+				.and(DashboardParameterFields.PK_ID, parameterID)
+				.getCount();
+		
+	}
+	
 	
 	
 	/***************************************************************
