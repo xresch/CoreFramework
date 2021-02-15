@@ -1,6 +1,7 @@
 
-var CFW_DASHBOARDVIEW_PARAMS = CFW.http.getURLParamsDecoded();
-
+var CFW_DASHBOARD_URLPARAMS = CFW.http.getURLParamsDecoded();
+var CFW_DASHBOARD_PARAMS = null;
+	
 var CFW_DASHBOARD_EDIT_MODE = false;
 var CFW_DASHBOARD_EDIT_MODE_ADVANCED = true;
 var CFW_DASHBOARD_FULLSCREEN_MODE = false;
@@ -33,7 +34,7 @@ var CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
 function cfw_dashboard_timeframe_setPreset(preset){
 
 	
-	window.localStorage.setItem("dashboard-timeframe-preset-"+CFW_DASHBOARDVIEW_PARAMS.id, preset);
+	window.localStorage.setItem("dashboard-timeframe-preset-"+CFW_DASHBOARD_URLPARAMS.id, preset);
 
 	var label = $("#time-preset-"+preset).text();
 	$('#timeframeSelectorButton').text(label);
@@ -291,7 +292,7 @@ function cfw_dashboard_history_undoUpdateAction(undoData){
 function cfw_dashboard_history_redoCreateAction(redoData){
 	
 	var widgetObject = redoData;
-	cfw_dashboard_widget_add(widgetObject.type, widgetObject);
+	cfw_dashboard_widget_add(widgetObject.TYPE, widgetObject);
 	 
 }
 
@@ -463,7 +464,22 @@ function cfw_dashboard_parameters_edit(){
 	
     cfw_dashboard_parameters_loadParameterForm();
 }
-
+/************************************************************************************************
+ * 
+ ************************************************************************************************/
+function cfw_dashboard_parameters_save(){
+	var paramListDiv = $('#param-list');
+	var form = paramListDiv.find('form');
+	var formID = form.attr('id');
+	
+	//paramListDiv.find('button').click();
+	cfw_internal_postForm('/cfw/formhandler', '#'+formID, function(data){
+		if(data.success){
+			cfw_dashboard_draw();
+		}
+	});
+	
+}
 /************************************************************************************************
  * 
  ************************************************************************************************/
@@ -494,9 +510,13 @@ function cfw_dashboard_parameters_loadParameterForm(){
 		paramListDiv.html('');
 		
 		CFW.http.createForm(CFW_DASHBOARDVIEW_URL, 
-				{action: "fetch", item: "paramform", dashboardid: CFW_DASHBOARDVIEW_PARAMS.id}, 
+				{action: "fetch", item: "paramform", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, 
 				paramListDiv, 
 				function (formID){
+					
+					//----------------------------
+					// Replace Save Action
+					paramListDiv.find('form > button').attr('onclick', 'cfw_dashboard_parameters_save()');
 					
 					//----------------------------
 					// Add Header
@@ -524,7 +544,7 @@ function cfw_dashboard_parameters_loadParameterForm(){
  ************************************************************************************************/
 function cfw_dashboard_parameters_add(widgetType, widgetSetting, label){
 	
-	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'param', widgetType: widgetType, widgetSetting: widgetSetting, label: label, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
+	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'param', widgetType: widgetType, widgetSetting: widgetSetting, label: label, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
 		if(data.success){
 			// Reload Form
 			cfw_dashboard_parameters_loadParameterForm();
@@ -544,7 +564,7 @@ function cfw_dashboard_parameters_removeConfirmed(parameterID){
  ************************************************************************************************/
 function cfw_dashboard_parameters_remove(parameterID) {
 	var formID = $('#param-list form').attr('id');
-	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'delete', item: 'param', paramid: parameterID, formid: formID, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
+	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'delete', item: 'param', paramid: parameterID, formid: formID, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
 
 			if(data.success){
 				// Remove from Form 
@@ -558,6 +578,87 @@ function cfw_dashboard_parameters_remove(parameterID) {
 
 /************************************************************************************************
  * 
+ * @return cloned widgetObject
+ ************************************************************************************************/
+function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
+
+//	FK_ID_DASHBOARD: 2081
+//	IS_MODE_CHANGE_ALLOWED: true
+//	MODE: "MODE_SUBSTITUTE"
+//	NAME: "param_name_VMUkHT"
+//	PARAM_TYPE: "SELECT"
+//	PK_ID: 164
+//	VALUE: "737"
+//	WIDGET_SETTING: "environment"
+//	WIDGET_TYPE: "emp_prometheus_range_chart"
+	
+	widgetType = widgetObject.TYPE;
+	widgetJsonSettings = _.cloneDeep(widgetObject.JSON_SETTINGS);
+	
+	for(var index in CFW_DASHBOARD_PARAMS){
+		var currentParam = CFW_DASHBOARD_PARAMS[index];
+		var currentSettingName = currentParam.WIDGET_SETTING;
+		var paramValue = currentParam.VALUE;
+		
+		console.log('=========================================');
+		console.log('widgetJsonSettings[currentSettingName]: '+widgetJsonSettings[currentSettingName]);
+		console.log('currentSettingName: '+currentSettingName);
+		console.log('settingsValue: '+widgetJsonSettings[currentSettingName]);
+		console.log('paramValue: '+paramValue);
+		
+		if(currentParam.WIDGET_TYPE == widgetType
+		&& widgetJsonSettings[currentSettingName] !== undefined){
+			
+			//-------------------------------------
+			// Replace Widget Settings Parameters
+			var oldSettingsValue = widgetJsonSettings[currentSettingName];
+			if(currentParam.MODE == "MODE_SUBSTITUTE"){
+				if (typeof oldSettingsValue == "string"){
+					widgetJsonSettings[currentSettingName] = 
+						oldSettingsValue.replaceAll('$'+currentParam.NAME+'$',paramValue);
+					console.log('A: '+widgetJsonSettings[currentSettingName]);
+				}else{
+					// objects, booleans, numbers etc...
+					widgetJsonSettings[currentSettingName] = paramValue;
+					console.log('B: '+widgetJsonSettings[currentSettingName]);
+				}
+			}else if(currentParam.MODE == "MODE_GLOBAL_OVERRIDE"){
+				widgetJsonSettings[currentSettingName] = paramValue;
+			}
+		}else if(CFW.utils.isNullOrEmpty(currentParam.WIDGET_TYPE)
+			&& CFW.utils.isNullOrEmpty(currentSettingName)){
+				//-------------------------------------
+				// Replace Regular Parameters
+				for(var key in widgetJsonSettings){
+					console.log('>> settingName: '+key);
+					console.log('>> oldsettingValue: '+widgetJsonSettings[key]);
+					var oldSettingsValue = widgetJsonSettings[key];
+
+					if (typeof oldSettingsValue == "string"){
+						widgetJsonSettings[key] = 
+							oldSettingsValue.replaceAll('$'+currentParam.NAME+'$', paramValue);
+						console.log('C: '+widgetJsonSettings[key]);
+					}else if (currentParam.PARAM_TYPE == "BOOLEAN" 
+						&& typeof oldSettingsValue == "boolean"
+						&& oldSettingsValue == ('$'+currentParam.NAME+'$') ){
+						widgetJsonSettings[key] = paramValue;
+						console.log('D: '+widgetJsonSettings[key]);
+					}else{
+						console.log('>>>>>> missed settingName: '+key);
+						console.log('>>>>>> missed oldsettingValue: '+widgetJsonSettings[key]);
+					}	
+				}
+		}	
+	}
+	
+	var clone = _.cloneDeep(widgetObject);
+	clone.JSON_SETTINGS = widgetJsonSettings;
+	
+	return clone;
+}
+
+/************************************************************************************************
+ * 
  ************************************************************************************************/
 function cfw_dashboard_parameters_showAddParametersModal(){
 	
@@ -568,7 +669,7 @@ function cfw_dashboard_parameters_showAddParametersModal(){
 	//--------------------------------------
 	// General
 	
-	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "availableparams", dashboardid: CFW_DASHBOARDVIEW_PARAMS.id}, function(data){
+	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "availableparams", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
 		
 		let paramsArray = data.payload;
 		
@@ -788,7 +889,7 @@ function cfw_dashboard_widget_duplicate(widgetGUID) {
 	var widgetInstance = $('#'+widgetGUID);
 	var widgetObject = widgetInstance.data("widgetObject");
 	
-	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'widget', type: widgetObject.TYPE, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
+	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'widget', type: widgetObject.TYPE, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
 			var newWidgetObject = data.payload;
 			if(newWidgetObject != null){
 				//---------------------------------
@@ -900,7 +1001,7 @@ function cfw_dashboard_widget_remove(widgetGUID) {
 	var widget = $('#'+widgetGUID);
 	var widgetObject = widget.data('widgetObject');
 	
-	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'delete', item: 'widget', widgetid: widgetObject.PK_ID, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
+	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'delete', item: 'widget', widgetid: widgetObject.PK_ID, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
 
 			if(data.success){
 				cfw_dashboard_widget_removeFromGrid(widget);
@@ -939,7 +1040,7 @@ function cfw_dashboard_widget_removeFromGrid(widgetElement) {
  ************************************************************************************************/
 function cfw_dashboard_widget_add(type, optionalRedoWidgetObject) {
 
-	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'widget', type: type, dashboardid: CFW_DASHBOARDVIEW_PARAMS.id }, function(data){
+	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'widget', type: type, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
 			var widgetObject = data.payload;
 			if(widgetObject != null){
 				
@@ -1013,6 +1114,7 @@ function cfw_dashboard_widget_getSettingsForm(widgetObject) {
 	return formHTML;
 }
 
+
 /************************************************************************************************
  * 
  ************************************************************************************************/
@@ -1020,7 +1122,7 @@ function cfw_dashboard_widget_fetchData(widgetObject, callback) {
 	
 	var formHTML = "";
 	
-	var params = Object.assign({action: 'fetch', item: 'widgetdata'}, widgetObject); 
+	var params = Object.assign({action: 'fetch', item: 'widgetdata', dashboardid: CFW_DASHBOARD_URLPARAMS.id}, widgetObject); 
 	
 	delete params.content;
 	delete params.guid;
@@ -1206,18 +1308,22 @@ function cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposit
 /************************************************************************************************
  * 
  ************************************************************************************************/
-function cfw_dashboard_widget_createInstance(widgetObject, doAutoposition, callback) {
-	var widgetDefinition = CFW.dashboard.getWidgetDefinition(widgetObject.TYPE);	
+function cfw_dashboard_widget_createInstance(originalwidgetObject, doAutoposition, callback) {
+	
+	var widgetDefinition = CFW.dashboard.getWidgetDefinition(originalwidgetObject.TYPE);	
 	
 	if(widgetDefinition != null){
+		
+		widgetObjectClone = cfw_dashboard_parameters_applyToWidgetSettings(originalwidgetObject);
+		
 		try{
 		//---------------------------------------
 		// Add Placeholder	
-		cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposition);
+		cfw_dashboard_widget_createLoadingPlaceholder(widgetObjectClone, doAutoposition);
 		
 		//---------------------------------------
 		// Create Instance by Widget Definition
-		widgetDefinition.createWidgetInstance(widgetObject, 
+		widgetDefinition.createWidgetInstance(widgetObjectClone, 
 			function(subWidgetObject, widgetContent){
 				
 				//---------------------------------------
@@ -1255,7 +1361,7 @@ function cfw_dashboard_widget_createInstance(widgetObject, doAutoposition, callb
 			    subWidgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
 			    subWidgetObject.X		= widgetInstance.attr("data-gs-x");
 			    subWidgetObject.Y		= widgetInstance.attr("data-gs-y");
-			    $(widgetInstance).data('widgetObject', subWidgetObject);
+			    $(widgetInstance).data('widgetObject', originalwidgetObject);
 			    
 			    cfw_dashboard_widget_save_state(subWidgetObject);
 			    
@@ -1368,7 +1474,7 @@ function cfw_dashboard_setReloadInterval(selector) {
 	if(refreshInterval == null 
 	|| (refreshInterval == 'stop' && CFW_DASHBOARD_REFRESH_INTERVAL_ID != null) ){
 		clearInterval(CFW_DASHBOARD_REFRESH_INTERVAL_ID);
-		window.localStorage.setItem("dashboard-reload-interval-id"+CFW_DASHBOARDVIEW_PARAMS.id, 'stop');
+		window.localStorage.setItem("dashboard-reload-interval-id"+CFW_DASHBOARD_URLPARAMS.id, 'stop');
 		return;
 	}
 	
@@ -1393,7 +1499,7 @@ function cfw_dashboard_setReloadInterval(selector) {
 	    };
     }, refreshInterval);
 	
-	window.localStorage.setItem("dashboard-reload-interval-id"+CFW_DASHBOARDVIEW_PARAMS.id, refreshInterval);
+	window.localStorage.setItem("dashboard-reload-interval-id"+CFW_DASHBOARD_URLPARAMS.id, refreshInterval);
     	
 }
 
@@ -1525,19 +1631,19 @@ function cfw_dashboard_initialDraw(){
 		
 	cfw_dashboard_initialize('.grid-stack');
 	
-	if(	CFW_DASHBOARDVIEW_PARAMS.earliest != null && CFW_DASHBOARDVIEW_PARAMS.latest != null){
+	if(	CFW_DASHBOARD_URLPARAMS.earliest != null && CFW_DASHBOARD_URLPARAMS.latest != null){
 		//-----------------------------
 		// Get Earliest/Latest from URL
-		cfw_dashboard_timeframe_setCustom(CFW_DASHBOARDVIEW_PARAMS.earliest, CFW_DASHBOARDVIEW_PARAMS.latest);
+		cfw_dashboard_timeframe_setCustom(CFW_DASHBOARD_URLPARAMS.earliest, CFW_DASHBOARD_URLPARAMS.latest);
 		cfw_dashboard_draw();
-	}else if(CFW_DASHBOARDVIEW_PARAMS.timeframepreset != null){
+	}else if(CFW_DASHBOARD_URLPARAMS.timeframepreset != null){
 		//-----------------------------
 		// Get Preset from URL
-		cfw_dashboard_timeframe_setPreset(CFW_DASHBOARDVIEW_PARAMS.timeframepreset);
+		cfw_dashboard_timeframe_setPreset(CFW_DASHBOARD_URLPARAMS.timeframepreset);
 		// above method calls cfw_dashboard_draw()
 	}else{
 
-		var timeframePreset =window.localStorage.getItem("dashboard-timeframe-preset-"+CFW_DASHBOARDVIEW_PARAMS.id);
+		var timeframePreset =window.localStorage.getItem("dashboard-timeframe-preset-"+CFW_DASHBOARD_URLPARAMS.id);
 		if(timeframePreset != null && timeframePreset != 'null' && timeframePreset != 'custom' ){
 			//---------------------------------
 			// Get last preset from local store
@@ -1552,12 +1658,12 @@ function cfw_dashboard_initialDraw(){
 	
 	//---------------------------------
 	// Load Refresh interval from URL or Local store
-	var refreshParam = CFW_DASHBOARDVIEW_PARAMS.refreshinterval;
+	var refreshParam = CFW_DASHBOARD_URLPARAMS.refreshinterval;
 	if(refreshParam != null){
 		$("#refreshSelector").val(refreshParam);
 		cfw_dashboard_setReloadInterval("#refreshSelector");
 	}else{
-		var refreshInterval = window.localStorage.getItem("dashboard-reload-interval-id"+CFW_DASHBOARDVIEW_PARAMS.id);
+		var refreshInterval = window.localStorage.getItem("dashboard-reload-interval-id"+CFW_DASHBOARD_URLPARAMS.id);
 		if(refreshInterval != null && refreshInterval != 'null' && refreshInterval != 'stop' ){
 			$("#refreshSelector").val(refreshInterval);
 			cfw_dashboard_setReloadInterval("#refreshSelector");
@@ -1584,9 +1690,10 @@ function cfw_dashboard_draw(){
 		var grid = $('.grid-stack').data('gridstack');
 		grid.removeAll();
 		
-		CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "widgets", dashboardid: CFW_DASHBOARDVIEW_PARAMS.id}, function(data){
+		CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "widgetsandparams", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
 			
-			var widgetArray = data.payload;
+			var widgetArray = data.payload.widgets;
+			CFW_DASHBOARD_PARAMS =  data.payload.params;
 			
 			for(var i = 0;i < widgetArray.length ;i++){
 				cfw_dashboard_widget_createInstance(widgetArray[i], false);

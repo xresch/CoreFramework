@@ -142,7 +142,7 @@ public class ServletDashboardView extends HttpServlet
 		
 			case "fetch": 			
 				switch(item.toLowerCase()) {
-					case "widgets": 			fetchWidgets(jsonResponse, dashboardID);
+					case "widgetsandparams": 	fetchWidgetsAndParams(jsonResponse, dashboardID);
 	  											break;	
 	  											
 					case "widgetdata": 			getWidgetData(request, response, jsonResponse);
@@ -205,14 +205,21 @@ public class ServletDashboardView extends HttpServlet
 	/*****************************************************************
 	 *
 	 *****************************************************************/
-	private void fetchWidgets(JSONResponse response, String dashboardID) {
+	private void fetchWidgetsAndParams(JSONResponse response, String dashboardID) {
 		
 		Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
 		
+		StringBuilder jsonString = new StringBuilder();
 		if(dashboard.isShared() || CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
-			response.getContent().append(CFW.DB.DashboardWidgets.getWidgetsForDashboardAsJSON(dashboardID));
+			jsonString
+				.append("{ \"widgets\": ")
+				.append(CFW.DB.DashboardWidgets.getWidgetsForDashboardAsJSON(dashboardID))
+				.append(", \"params\": ")
+				.append(CFW.DB.DashboardParameters.getParametersForDashboardAsJSON(dashboardID))
+				.append("}");
 			
+			response.getContent().append(jsonString);
 		}else{
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to view this dashboard.");
 		}
@@ -349,18 +356,19 @@ public class ServletDashboardView extends HttpServlet
 		// Get Values
 		String widgetType = request.getParameter("TYPE");
 		String JSON_SETTINGS = request.getParameter("JSON_SETTINGS");
-		JsonElement jsonSettingsObject = CFW.JSON.fromJson(JSON_SETTINGS);
+		JsonElement jsonSettings = CFW.JSON.fromJson(JSON_SETTINGS);
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 		
 		//----------------------------
 		// Create Response
-		if(jsonSettingsObject.isJsonObject()) {
-		definition.fetchData(null, jsonResponse, jsonSettingsObject.getAsJsonObject());
+		if(jsonSettings.isJsonObject()) {
+		definition.fetchData(null, jsonResponse, jsonSettings.getAsJsonObject());
 		}else {
 			new CFWLog(logger).warn("Widget Data was not of the correct type.", new IllegalArgumentException());
 		}
 					
 	}
+	
 	
 	/*****************************************************************
 	 *
