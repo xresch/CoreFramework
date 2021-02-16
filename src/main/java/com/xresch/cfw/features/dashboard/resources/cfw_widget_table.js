@@ -1,7 +1,7 @@
 (function (){
 	CFW.dashboard.registerWidget("cfw_table",
 		{
-			category: "Static Widgets",
+			category: "Standard Widgets",
 			menuicon: "fas fa-table",
 			menulabel: CFWL('cfw_widget_csvtable', "CSV Table"),
 			description: CFWL('cfw_widget_csvtable_desc', "Takes values in CSV format and displays them as a table."),

@@ -2,7 +2,7 @@
 
 	CFW.dashboard.registerWidget("cfw_label",
 		{
-			category: "Static Widgets",
+			category: "Standard Widgets",
 			menuicon: "fas fa-tag",
 			menulabel: CFWL('cfw_widget_cfwlabel', 'Label'),
 			description: CFWL('cfw_widget_cfwlabel_desc', 'Displays a vertical label.'),

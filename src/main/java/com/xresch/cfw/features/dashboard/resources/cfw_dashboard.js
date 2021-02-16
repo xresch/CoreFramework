@@ -320,7 +320,7 @@ function cfw_dashboard_registerWidget(widgetUniqueType, widgetObject){
 	
 	var defaultObject = {
 			// The category the widget should be added to
-			category: "Static Widgets",
+			category: "Standard Widgets",
 			// The icon of the widget shown in the menu
 			menuicon: "fas fa-th-large",
 			// the label of the widget
@@ -1774,4 +1774,4 @@ function cfw_dashboard_draw(){
  * Initialize Localization
  * has to be done before widgets are registered
  ******************************************************************/
-CFW.dashboard.registerCategory("fas fa-th-large", "Static Widgets", CFWL('cfw_dashboard_category_static'));
+CFW.dashboard.registerCategory("fas fa-th-large", "Standard Widgets", CFWL('cfw_dashboard_category_static'));

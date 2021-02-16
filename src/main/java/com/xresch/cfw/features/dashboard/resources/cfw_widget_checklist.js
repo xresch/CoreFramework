@@ -2,7 +2,7 @@
 
 	CFW.dashboard.registerWidget("cfw_checklist",
 		{
-			category: "Static Widgets",
+			category: "Standard Widgets",
 			menuicon: "fas fa-tasks",
 			menulabel: CFWL('cfw_widget_cfwchecklist', 'Checklist'),
 			description: CFWL('cfw_widget_cfwchecklist_desc', 'Displays a checklist. Every line in the text will be shown as a separate item.'),

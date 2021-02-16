@@ -2,7 +2,7 @@
 
 	CFW.dashboard.registerWidget("cfw_refreshtime",
 		{
-			category: "Static Widgets",
+			category: "Standard Widgets",
 			menuicon: "fas fa-history",
 			menulabel: CFWL('cfw_widget_cfwrefreshtime', 'Refresh Time'),
 			description: CFWL('cfw_widget_cfwrefreshtime_desc', 'Displays the time the dashboard was refreshed.'),

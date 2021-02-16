@@ -189,7 +189,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		ROOT_MANUAL_PAGE.addChild(widgets );
 		
 		widgets.addChild(
-				new ManualPage("Static Widgets")
+				new ManualPage("Standard Widgets")
 					.faicon("fas fa-th-large")
 					.addPermission(PERMISSION_DASHBOARD_VIEWER)
 					.addPermission(PERMISSION_DASHBOARD_CREATOR)

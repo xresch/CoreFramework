@@ -9,7 +9,7 @@
 	 ******************************************************************/
 	CFW.dashboard.registerWidget("cfw_replica",
 		{
-			category: "Static Widgets",
+			category: "Standard Widgets",
 			menuicon: "fas fa-copy",
 			menulabel:  CFWL('cfw_widget_replica', 'Replica'),
 			description: CFWL('cfw_widget_replica_desc', 'Replicates the contents of a widget from another dashboard.'),

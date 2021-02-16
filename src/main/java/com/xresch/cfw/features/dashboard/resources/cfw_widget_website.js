@@ -4,7 +4,7 @@
 	 ******************************************************************/
 	CFW.dashboard.registerWidget("cfw_website",
 		{
-			category: "Static Widgets",
+			category: "Standard Widgets",
 			menuicon: "fas fa-globe",
 			menulabel: CFWL('cfw_widget_cfwwebsite', "Website"),
 			description: CFWL('cfw_widget_cfwwebsite_desc', "Displays a website(only works when the website that is embeded allows it)."),

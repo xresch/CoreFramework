@@ -4,7 +4,7 @@
 	 ******************************************************************/
 	CFW.dashboard.registerWidget("cfw_image",
 		{
-			category: "Static Widgets",
+			category: "Standard Widgets",
 			menuicon: "far fa-image",
 			menulabel: CFWL('cfw_widget_cfwimage', "Image"),
 			description: CFWL('cfw_widget_cfwimage_desc', "Displays an image."),

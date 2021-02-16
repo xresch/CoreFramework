@@ -2,7 +2,7 @@
 
 	CFW.dashboard.registerWidget("cfw_list",
 		{
-			category: "Static Widgets",
+			category: "Standard Widgets",
 			menuicon: "fas fa-list-ol",
 			menulabel: CFWL('cfw_widget_cfwlist', 'List'),
 			description: CFWL('cfw_widget_cfwlist_desc', 'Displays a list. Every line in the text will be shown as a separate item.'),
