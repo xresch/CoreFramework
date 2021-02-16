@@ -28,6 +28,7 @@ import com.xresch.cfw.datahandling.CFWMultiForm;
 import com.xresch.cfw.datahandling.CFWMultiFormHandlerDefault;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
@@ -335,6 +336,7 @@ public class ServletDashboardView extends HttpServlet
 			//----------------------------
 			// Create Form
 			CFWObject settings = definition.getSettings();
+			addParameterAutocompleteWrapper(settings, dashboardID, widgetType);
 			settings.mapJsonFields(jsonElement);
 			
 			CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeRemoved");
@@ -345,6 +347,20 @@ public class ServletDashboardView extends HttpServlet
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
 		}
 
+	}
+	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
+	private void addParameterAutocompleteWrapper(CFWObject settings, String dashboardID, String widgetType) {
+		
+		for(CFWField field : settings.getFields().values()) {
+			CFWAutocompleteHandler handler = field.getAutocompleteHandler();
+			if(handler != null) {
+				// Wraps handler and adds itself to the field as the new handler
+				new DashboardParameterAutocompleteWrapper(field, dashboardID, widgetType);
+			}
+		}
 	}
 	
 	/*****************************************************************

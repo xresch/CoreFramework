@@ -1260,7 +1260,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	// Merge Data
 	CFW_DASHBOARD_WIDGET_GUID++;
 	var defaultOptions = {
-			guid: 'widget-'+CFW_DASHBOARD_WIDGET_GUID,
+			guid: 'widget-'+widgetObject.PK_ID,
 			TITLE: "",
 			TITLE_FONTSIZE: 16,
 			CONTENT_FONTSIZE: 16,
@@ -1428,7 +1428,7 @@ function cfw_dashboard_widget_createInstance(originalwidgetObject, doAutopositio
 			    cfw_dashboard_widget_save_state(originalwidgetObject);
 			    
 			    if(callback != null){
-			    	callback(subWidgetObject);
+			    	callback(originalwidgetObject);
 			    }
 			}
 		);

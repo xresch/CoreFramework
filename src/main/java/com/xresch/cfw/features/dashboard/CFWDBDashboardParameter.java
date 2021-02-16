@@ -8,6 +8,7 @@ import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterFields;
+import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -180,6 +181,29 @@ public class CFWDBDashboardParameter {
 	}
 	
 	
+	/***************************************************************
+	 * Return a list of available parameters for the given field.
+	 * 
+	 * @return Returns an array with the parameters or an empty list.
+	 ****************************************************************/
+	public static ArrayList<CFWObject> autocompleteParametersForDashboard(String dashboardID, String widgetType, String widgetSetting) {
+		
+		return new CFWSQL(new DashboardParameter())
+				.queryCache()
+				.select()
+				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
+				.and(DashboardParameterFields.MODE, DashboardParameterMode.MODE_SUBSTITUTE.toString())
+				.and().custom("(")
+						.isNull(DashboardParameterFields.WIDGET_TYPE)
+						.or(DashboardParameterFields.WIDGET_TYPE, widgetType)
+					.custom(")")
+				.and().custom("(")
+					.isNull(DashboardParameterFields.WIDGET_SETTING)
+					.or(DashboardParameterFields.WIDGET_SETTING, widgetSetting)
+				.custom(")")
+				.getAsObjectList();
+		
+	}
 	
 	/***************************************************************
 	 * Return a JSON string for export.
