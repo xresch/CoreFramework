@@ -606,65 +606,111 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 		console.log('settingsValue: '+widgetJsonSettings[currentSettingName]);
 		console.log('paramValue: '+paramValue);
 		
-		if(currentParam.WIDGET_TYPE == widgetType
-		&& widgetJsonSettings[currentSettingName] !== undefined){
+		//----------------------------------------
+		// Handle General Params
+		if(CFW.utils.isNullOrEmpty(currentParam.WIDGET_TYPE)
+				&& CFW.utils.isNullOrEmpty(currentSettingName)){
+					//-------------------------------------
+					// Replace Regular Parameters
+					for(var key in widgetJsonSettings){
+						console.log('>> settingName: '+key);
+						console.log('>> oldsettingValue: '+widgetJsonSettings[key]);
+						var oldSettingsValue = widgetJsonSettings[key];
+
+						if (typeof oldSettingsValue == "string"){
+							widgetJsonSettings[key] = 
+								oldSettingsValue.replaceAll('$'+currentParam.NAME+'$', paramValue);
+							console.log('C: '+widgetJsonSettings[key]);
+						}else if (currentParam.PARAM_TYPE == "BOOLEAN" 
+							&& typeof oldSettingsValue == "boolean"
+							&& oldSettingsValue == ('$'+currentParam.NAME+'$') ){
+							widgetJsonSettings[key] = paramValue;
+							console.log('D: '+widgetJsonSettings[key]);
+						}else{
+							console.log('>>>>>> missed settingName: '+key);
+							console.log('>>>>>> missed oldsettingValue: '+widgetJsonSettings[key]);
+						}	
+					}
+		}else {
 			
 			//-------------------------------------
 			// Replace Widget Settings Parameters
 			var oldSettingsValue = widgetJsonSettings[currentSettingName];
-			if(currentParam.MODE == "MODE_SUBSTITUTE"){
-				if (typeof oldSettingsValue == "string"){
-					widgetJsonSettings[currentSettingName] = 
-						oldSettingsValue.replaceAll('$'+currentParam.NAME+'$',paramValue);
-					console.log('A: '+widgetJsonSettings[currentSettingName]);
-				}else if(typeof oldSettingsValue == "object"){
-					// objects, numbers etc...
-					widgetJsonSettings[currentSettingName] = paramValue;
-					console.log('B2: '+widgetJsonSettings[currentSettingName]);
-				}
-			}else if(currentParam.MODE == "MODE_GLOBAL_OVERRIDE"){
-				
-				if (typeof oldSettingsValue == "boolean"){
-					// objects, booleans, numbers etc...
+			var mode = currentParam.MODE;
+			switch(currentParam.PARAM_TYPE){
+				case 'BOOLEAN':  
 					paramValue = paramValue.toLowerCase().trim();
 					switch(paramValue){
-			        	case "true": case "yes": case "1": widgetJsonSettings[currentSettingName] = true;
-			        	case "false": case "no": case "0": widgetJsonSettings[currentSettingName] = false;
-			        	default: widgetJsonSettings[currentSettingName] = Boolean(paramValue);
+			        	case "true": case "yes": case "1": widgetJsonSettings[currentSettingName] = true; break;
+			        	case "false": case "no": case "0": widgetJsonSettings[currentSettingName] = false; break;
+			        	default: widgetJsonSettings[currentSettingName] = Boolean(paramValue); break;
 					}
-				}else{
+					break;
+				case 'NUMBER':
 					// objects, numbers etc...
 					widgetJsonSettings[currentSettingName] = paramValue;
-					console.log('B2: '+widgetJsonSettings[currentSettingName]);
-				}
-			    
-					console.log('B: '+widgetJsonSettings[currentSettingName]);
-				widgetJsonSettings[currentSettingName] = paramValue;
-			}
-		}else if(CFW.utils.isNullOrEmpty(currentParam.WIDGET_TYPE)
-			&& CFW.utils.isNullOrEmpty(currentSettingName)){
-				//-------------------------------------
-				// Replace Regular Parameters
-				for(var key in widgetJsonSettings){
-					console.log('>> settingName: '+key);
-					console.log('>> oldsettingValue: '+widgetJsonSettings[key]);
-					var oldSettingsValue = widgetJsonSettings[key];
-
-					if (typeof oldSettingsValue == "string"){
-						widgetJsonSettings[key] = 
-							oldSettingsValue.replaceAll('$'+currentParam.NAME+'$', paramValue);
-						console.log('C: '+widgetJsonSettings[key]);
-					}else if (currentParam.PARAM_TYPE == "BOOLEAN" 
-						&& typeof oldSettingsValue == "boolean"
-						&& oldSettingsValue == ('$'+currentParam.NAME+'$') ){
-						widgetJsonSettings[key] = paramValue;
-						console.log('D: '+widgetJsonSettings[key]);
+					console.log('NUMBER: '+widgetJsonSettings[currentSettingName]);
+				
+				// TEXT, TEXTAREA, PASSWORD, EMAIL, SELECT, LIST 
+				default:
+					if(mode == "MODE_SUBSTITUTE" && typeof oldSettingsValue == "string"){
+							widgetJsonSettings[currentSettingName] = oldSettingsValue.replaceAll('$'+currentParam.NAME+'$',paramValue);
+							console.log('DEFAULT SUB: '+widgetJsonSettings[currentSettingName]);
 					}else{
-						console.log('>>>>>> missed settingName: '+key);
-						console.log('>>>>>> missed oldsettingValue: '+widgetJsonSettings[key]);
-					}	
-				}
-		}	
+						// objects, numbers etc...
+						widgetJsonSettings[currentSettingName] = paramValue;
+						console.log('DEFAULT OTHER: '+widgetJsonSettings[currentSettingName]);
+					}
+					break;
+			}
+			
+//			TEXT, 
+//			TEXTAREA, 
+//			PASSWORD, 
+//			NUMBER, 
+//			EMAIL, 
+//			HIDDEN, 
+//			BOOLEAN, 
+//			SELECT, 
+//			LIST, 
+//			WYSIWYG, 
+//			DATEPICKER, 
+//			DATETIMEPICKER, 
+//			TAGS, 
+//			TAGS_SELECTOR, 
+//			UNMODIFIABLE_TEXT, 
+//			NONE
+			
+//			if(currentParam.MODE == "MODE_SUBSTITUTE"){
+//				if (typeof oldSettingsValue == "string"){
+//					widgetJsonSettings[currentSettingName] = 
+//						oldSettingsValue.replaceAll('$'+currentParam.NAME+'$',paramValue);
+//					console.log('A: '+widgetJsonSettings[currentSettingName]);
+//				}else if(typeof oldSettingsValue == "object"){
+//					// objects, numbers etc...
+//					widgetJsonSettings[currentSettingName] = paramValue;
+//					console.log('B2: '+widgetJsonSettings[currentSettingName]);
+//				}
+//			}else if(currentParam.MODE == "MODE_GLOBAL_OVERRIDE"){
+//				
+//				if (typeof oldSettingsValue == "boolean"){
+//					
+//					paramValue = paramValue.toLowerCase().trim();
+//					switch(paramValue){
+//			        	case "true": case "yes": case "1": widgetJsonSettings[currentSettingName] = true;
+//			        	case "false": case "no": case "0": widgetJsonSettings[currentSettingName] = false;
+//			        	default: widgetJsonSettings[currentSettingName] = Boolean(paramValue);
+//					}
+//				}else{
+//					// objects, numbers etc...
+//					widgetJsonSettings[currentSettingName] = paramValue;
+//					console.log('B2: '+widgetJsonSettings[currentSettingName]);
+//				}
+//			    
+//					console.log('B: '+widgetJsonSettings[currentSettingName]);
+//				widgetJsonSettings[currentSettingName] = paramValue;
+//			}
+		}
 	}
 	
 	var clone = _.cloneDeep(widgetObject);
