@@ -525,7 +525,7 @@ public class ServletDashboardView extends HttpServlet
 					param.widgetType(widgetType);
 					param.widgetSetting(widgetSetting);
 					param.paramType(settingsField.fieldType()); // used to fetch similar field types
-					
+					param.getField(DashboardParameterFields.VALUE.toString()).setValueConvert(settingsField.getValue());
 					param.mode(DashboardParameterMode.MODE_GLOBAL_OVERRIDE);
 					
 					if(settingsField.fieldType() == FormFieldType.BOOLEAN

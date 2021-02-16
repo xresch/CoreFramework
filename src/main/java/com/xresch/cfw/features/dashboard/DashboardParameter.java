@@ -32,7 +32,7 @@ public class DashboardParameter extends CFWObject {
 	private static LinkedHashMap<String, String> modeOptions = new LinkedHashMap<String, String>();
 	static {
 		modeOptions.put(DashboardParameterMode.MODE_SUBSTITUTE.toString(), "Substitute");
-		modeOptions.put(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString(), "Global Override");
+		modeOptions.put(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString(), "Global");
 	}
 		
 	public enum DashboardParameterFields{
