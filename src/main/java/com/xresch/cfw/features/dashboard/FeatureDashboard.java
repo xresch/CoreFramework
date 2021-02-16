@@ -60,6 +60,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Widgets.add(new WidgetList());
 		CFW.Registry.Widgets.add(new WidgetChecklist());
 		CFW.Registry.Widgets.add(new WidgetTable());
+		CFW.Registry.Widgets.add(new WidgetTags());
 		CFW.Registry.Widgets.add(new WidgetImage());
 		CFW.Registry.Widgets.add(new WidgetHTMLEditor());
 		CFW.Registry.Widgets.add(new WidgetWebsite());

@@ -974,6 +974,27 @@ function cfw_format_capitalize(string) {
 }
 
 /**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_format_arrayToBadges(stringArray, addLineBreaks) {
+	
+	if(stringArray == null) return '';
+
+	var badgesHTML = '<div>';
+	
+		for(id in stringArray){
+			badgesHTML += '<span class="badge badge-primary m-1">'+stringArray[id]+'</span>';
+			if(addLineBreaks) { badgesHTML += '</br>'; }
+		}
+		
+	badgesHTML += '</div>';
+	
+	return badgesHTML;
+}
+
+
+
+/**************************************************************************************
  * Converts the input fields of a form to an array of parameter objects.
  * Additionally to $().serializeArray(), it changes string representations of 
  * numbers and booleans to the proper types
@@ -2326,6 +2347,7 @@ var CFW = {
 		csvToObjectArray: 	cfw_format_csvToObjectArray,
 		fieldNameToLabel: 	cfw_format_fieldNameToLabel,
 		capitalize: 		cfw_format_capitalize,
+		arrayToBadges: 		cfw_format_arrayToBadges,
 		formToParams: 		cfw_format_formToParams,
 		formToArray: 		cfw_format_formToArray,
 		formToObject: 		cfw_format_formToObject

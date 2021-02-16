@@ -21,6 +21,7 @@ public abstract class WidgetDefinition {
 	
 	/************************************************************
 	 * Return a CFWObject containing fields with default values.
+	 * Always return a new instance, do not reuse a CFWObject.
 	 * @return CFWObject
 	 ************************************************************/
 	public abstract CFWObject getSettings();

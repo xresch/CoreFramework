@@ -1418,11 +1418,11 @@ function cfw_dashboard_widget_createInstance(originalwidgetObject, doAutopositio
 			    	grid.resizable('#'+subWidgetObject.guid, false);
 			    }
 			    //----------------------------
-			    // Update Data
-			    subWidgetObject.WIDTH	= widgetInstance.attr("data-gs-width");
-			    subWidgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
-			    subWidgetObject.X		= widgetInstance.attr("data-gs-x");
-			    subWidgetObject.Y		= widgetInstance.attr("data-gs-y");
+			    // Update Data of Original
+			    originalwidgetObject.WIDTH	= widgetInstance.attr("data-gs-width");
+			    originalwidgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
+			    originalwidgetObject.X		= widgetInstance.attr("data-gs-x");
+			    originalwidgetObject.Y		= widgetInstance.attr("data-gs-y");
 			    $(widgetInstance).data('widgetObject', originalwidgetObject);
 			    
 			    cfw_dashboard_widget_save_state(originalwidgetObject);
