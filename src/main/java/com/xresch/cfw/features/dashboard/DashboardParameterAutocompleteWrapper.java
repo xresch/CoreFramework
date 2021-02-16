@@ -45,7 +45,7 @@ class DashboardParameterAutocompleteWrapper extends CFWAutocompleteHandler {
 		//---------------------------
 		// Get Param Result
 		String widgetSetting = wrappedField.getName();
-		ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.autocompleteParametersForDashboard(dashboardID, widgetType, widgetSetting);
+		ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.autocompleteParametersForDashboard(dashboardID, widgetType, widgetSetting, true);
 		
 		//---------------------------
 		// Prepare params Autocomplete
@@ -59,7 +59,7 @@ class DashboardParameterAutocompleteWrapper extends CFWAutocompleteHandler {
 			
 			AutocompleteItem item = new AutocompleteItem("$"+param.name()+"$", "Parameter: $"+param.name()+"$",
 					 "<b>Type:&nbsp;</b>"+param.paramType()
-					+"<b>Value:&nbsp;</b>"+StringUtils.abbreviate(param.value(), 200) );
+					+"&nbsp;<b>Value:&nbsp;</b>"+StringUtils.abbreviate(param.value(), 200) );
 			
 			item.setMethodAppend();
 			paramList.addItem(item);

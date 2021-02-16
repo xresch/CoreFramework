@@ -336,7 +336,7 @@ public class ServletDashboardView extends HttpServlet
 			//----------------------------
 			// Create Form
 			CFWObject settings = definition.getSettings();
-			addParameterAutocompleteWrapper(settings, dashboardID, widgetType);
+			addParameterHandlingToField(settings, dashboardID, widgetType);
 			settings.mapJsonFields(jsonElement);
 			
 			CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeRemoved");
@@ -352,13 +352,29 @@ public class ServletDashboardView extends HttpServlet
 	/*****************************************************************
 	 *
 	 *****************************************************************/
-	private void addParameterAutocompleteWrapper(CFWObject settings, String dashboardID, String widgetType) {
+	private void addParameterHandlingToField(CFWObject settings, String dashboardID, String widgetType) {
 		
 		for(CFWField field : settings.getFields().values()) {
+			
+			//------------------------------------
+			// Autocomplete handler
 			CFWAutocompleteHandler handler = field.getAutocompleteHandler();
 			if(handler != null) {
 				// Wraps handler and adds itself to the field as the new handler
 				new DashboardParameterAutocompleteWrapper(field, dashboardID, widgetType);
+			}
+			
+			//------------------------------------
+			// SELECT Fields
+			String fieldname = field.getName();
+			if(field.fieldType() == FormFieldType.SELECT) {
+				ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.autocompleteParametersForDashboard(dashboardID, widgetType, fieldname, false);
+				LinkedHashMap options = field.getValueLabelOptions();
+				for(CFWObject object : availableParams) {
+					String param = "$"+((DashboardParameter)object).name()+"$";
+					options.put(param, param);
+				}
+				
 			}
 		}
 	}

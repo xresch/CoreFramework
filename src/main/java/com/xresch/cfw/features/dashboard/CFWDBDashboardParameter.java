@@ -186,21 +186,23 @@ public class CFWDBDashboardParameter {
 	 * 
 	 * @return Returns an array with the parameters or an empty list.
 	 ****************************************************************/
-	public static ArrayList<CFWObject> autocompleteParametersForDashboard(String dashboardID, String widgetType, String widgetSetting) {
+	public static ArrayList<CFWObject> autocompleteParametersForDashboard(String dashboardID, String widgetType, String widgetSetting, boolean allowGenericParams) {
 		
-		return new CFWSQL(new DashboardParameter())
-				.queryCache()
+		CFWSQL sql = new DashboardParameter()
+				.queryCache(CFWDBDashboardParameter.class, "autocompleteParametersForDashboard"+allowGenericParams)
 				.select()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
 				.and(DashboardParameterFields.MODE, DashboardParameterMode.MODE_SUBSTITUTE.toString())
 				.and().custom("(")
-						.isNull(DashboardParameterFields.WIDGET_TYPE)
-						.or(DashboardParameterFields.WIDGET_TYPE, widgetType)
-					.custom(")")
+						.is(DashboardParameterFields.WIDGET_TYPE, widgetType);
+						if(allowGenericParams) sql.or().isNull(DashboardParameterFields.WIDGET_TYPE);
+						
+			sql.custom(")")
 				.and().custom("(")
-					.isNull(DashboardParameterFields.WIDGET_SETTING)
-					.or(DashboardParameterFields.WIDGET_SETTING, widgetSetting)
-				.custom(")")
+					.is(DashboardParameterFields.WIDGET_SETTING, widgetSetting);
+					if(allowGenericParams) sql.or().isNull(DashboardParameterFields.WIDGET_SETTING);
+					
+		return sql.custom(")")
 				.getAsObjectList();
 		
 	}
