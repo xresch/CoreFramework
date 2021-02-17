@@ -1348,13 +1348,14 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
  ************************************************************************************************/
 function cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposition) {
 	
-	var placeholderWidget = { 
-			guid: 'placeholder-'+CFW.utils.randomString(24), 
-			content: CFW.ui.createLoaderHTML()
-			};
+//	var placeholderWidget = { 
+//			guid: 'placeholder-'+CFW.utils.randomString(24), 
+//			content: CFW.ui.createLoaderHTML()
+//			};
 	
-	widgetObject.placeholderGUID = placeholderWidget.guid;
-	
+	var placeholderWidget = _.cloneDeep(widgetObject);
+	placeholderWidget.content = CFW.ui.createLoaderHTML();
+
 	var widgetInstance = cfw_dashboard_widget_createHTMLElement(placeholderWidget);
 
 	var grid = $('.grid-stack').data('gridstack');
@@ -1370,65 +1371,74 @@ function cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposit
 /************************************************************************************************
  * 
  ************************************************************************************************/
-function cfw_dashboard_widget_createInstance(originalwidgetObject, doAutoposition, callback) {
+function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutoposition, callback) {
 	
-	var widgetDefinition = CFW.dashboard.getWidgetDefinition(originalwidgetObject.TYPE);	
+	originalWidgetObject.guid = 'widget-'+originalWidgetObject.PK_ID;
+	var widgetDefinition = CFW.dashboard.getWidgetDefinition(originalWidgetObject.TYPE);	
 	
 	if(widgetDefinition != null){
 		
-		widgetObjectClone = cfw_dashboard_parameters_applyToWidgetSettings(originalwidgetObject);
+		widgetCloneParameterized = cfw_dashboard_parameters_applyToWidgetSettings(originalWidgetObject);
 		
 		try{
 		//---------------------------------------
 		// Add Placeholder	
-		cfw_dashboard_widget_createLoadingPlaceholder(widgetObjectClone, doAutoposition);
+		cfw_dashboard_widget_createLoadingPlaceholder(originalWidgetObject, doAutoposition);
 		
+		console.log('========= Original ==========');
+		console.log(originalWidgetObject);
+		console.log('========= Clone ==========');
+		console.log(widgetCloneParameterized);
+
 		//---------------------------------------
 		// Create Instance by Widget Definition
-		widgetDefinition.createWidgetInstance(widgetObjectClone, 
-			function(subWidgetObject, widgetContent){
+		widgetDefinition.createWidgetInstance(widgetCloneParameterized, 
+			function(widgetAdjustedByWidgetDef, widgetContent){
 				
+			console.log('========= Adjusted ==========');
+			console.log(widgetAdjustedByWidgetDef);
+			
 				//---------------------------------------
 				// Remove Placeholder
-				var placeholderWidget = $('#'+subWidgetObject.placeholderGUID);
+				var placeholderWidget = $('#'+widgetAdjustedByWidgetDef.guid);
 				cfw_dashboard_widget_removeFromGrid(placeholderWidget);
 				
 				//---------------------------------------
 				// Add Widget
-				subWidgetObject.content = widgetContent;
-				var widgetInstance = cfw_dashboard_widget_createHTMLElement(subWidgetObject);
+				widgetAdjustedByWidgetDef.content = widgetContent;
+				var widgetInstance = cfw_dashboard_widget_createHTMLElement(widgetAdjustedByWidgetDef);
 
 				var grid = $('.grid-stack').data('gridstack');
 
 			    grid.addWidget($(widgetInstance),
-			    		subWidgetObject.X, 
-			    		subWidgetObject.Y, 
-			    		subWidgetObject.WIDTH, 
-			    		subWidgetObject.HEIGHT, 
+			    		widgetAdjustedByWidgetDef.X, 
+			    		widgetAdjustedByWidgetDef.Y, 
+			    		widgetAdjustedByWidgetDef.WIDTH, 
+			    		widgetAdjustedByWidgetDef.HEIGHT, 
 			    		doAutoposition);
 			   
 			    //----------------------------
 			    // Get Widget with applied default values
-			    subWidgetObject = $(widgetInstance).data('widgetObject');
+			    widgetAdjustedByWidgetDef = $(widgetInstance).data('widgetObject');
 			    
 			    //----------------------------
 			    // Check Edit Mode
 			    if(!CFW_DASHBOARD_EDIT_MODE){
-			    	grid.movable('#'+subWidgetObject.guid, false);
-			    	grid.resizable('#'+subWidgetObject.guid, false);
+			    	grid.movable('#'+widgetAdjustedByWidgetDef.guid, false);
+			    	grid.resizable('#'+widgetAdjustedByWidgetDef.guid, false);
 			    }
 			    //----------------------------
 			    // Update Data of Original
-			    originalwidgetObject.WIDTH	= widgetInstance.attr("data-gs-width");
-			    originalwidgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
-			    originalwidgetObject.X		= widgetInstance.attr("data-gs-x");
-			    originalwidgetObject.Y		= widgetInstance.attr("data-gs-y");
-			    $(widgetInstance).data('widgetObject', originalwidgetObject);
+			    originalWidgetObject.WIDTH	= widgetInstance.attr("data-gs-width");
+			    originalWidgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
+			    originalWidgetObject.X		= widgetInstance.attr("data-gs-x");
+			    originalWidgetObject.Y		= widgetInstance.attr("data-gs-y");
+			    $(widgetInstance).data('widgetObject', originalWidgetObject);
 			    
-			    cfw_dashboard_widget_save_state(originalwidgetObject);
+			    cfw_dashboard_widget_save_state(originalWidgetObject);
 			    
 			    if(callback != null){
-			    	callback(originalwidgetObject);
+			    	callback(originalWidgetObject);
 			    }
 			}
 		);

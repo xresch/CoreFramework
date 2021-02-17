@@ -37,13 +37,15 @@
 						
 						var replicatedDefinition = CFW.dashboard.getWidgetDefinition(replicatedWidgetObject.TYPE);
 						
+						var widgetCloneParameterized = cfw_dashboard_parameters_applyToWidgetSettings(replicatedWidgetObject);
+						
 						try{
-							replicatedDefinition.createWidgetInstance(replicatedWidgetObject, 
+							replicatedDefinition.createWidgetInstance(widgetCloneParameterized, 
 								function(subReplicatedWidgetObject, widgetContent, subWidgetObject = widgetObject){
 									
 									//---------------------------------------
 									// Remove Placeholder
-									var placeholderWidget = $('#'+subWidgetObject.placeholderGUID);
+									var placeholderWidget = $('#'+subWidgetObject.guid);
 									cfw_dashboard_widget_removeFromGrid(placeholderWidget);
 									
 									//---------------------------------------
