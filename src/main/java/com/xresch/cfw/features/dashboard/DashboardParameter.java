@@ -4,12 +4,18 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.DB;
+import com.xresch.cfw._main.CFW.DB.DashboardParameters;
+import com.xresch.cfw._main.CFW.Registry;
+import com.xresch.cfw._main.CFW.Registry.Widgets;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
+import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
@@ -233,6 +239,82 @@ public class DashboardParameter extends CFWObject {
 	public DashboardParameter isModeChangeAllowed(Boolean value) {
 		this.isModeChangeAllowed.setValue(value);
 		return this;
+	}
+
+	/*****************************************************************
+	 *
+	 *****************************************************************/
+	public static void addParameterHandlingToField(CFWObject settings, String dashboardID, String widgetType) {
+		
+		for(CFWField field : settings.getFields().values()) {
+			
+			//------------------------------------
+			// Autocomplete handler
+			CFWAutocompleteHandler handler = field.getAutocompleteHandler();
+			if(handler != null) {
+				// Wraps handler and adds itself to the field as the new handler
+				new DashboardParameterAutocompleteWrapper(field, dashboardID, widgetType);
+			}
+			
+			//------------------------------------
+			// SELECT Fields
+			String fieldname = field.getName();
+			if(field.fieldType() == FormFieldType.SELECT) {
+				ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.getAvailableParamsForDashboard(dashboardID, widgetType, fieldname, false);
+				LinkedHashMap options = field.getValueLabelOptions();
+				for(CFWObject object : availableParams) {
+					String param = "$"+((DashboardParameter)object).name()+"$";
+					options.put(param, param);
+				}
+				
+			}
+		}
+	}
+	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
+	public static void prepareParamObjectsForForm(ArrayList<CFWObject> parameterList) {
+		//===========================================
+		// Replace Value Field
+		//===========================================
+		for(CFWObject object : parameterList) {
+			DashboardParameter param = (DashboardParameter)object;
+			CFWField currentValueField = param.getField(DashboardParameterFields.VALUE.toString());
+			CFWField newValueField;
+			if(param.widgetType() != null) {
+				//---------------------------------------
+				// Replace Value field with field from WidgetSettings
+				WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(param.widgetType());
+				CFWObject settings = definition.getSettings();
+				newValueField = settings.getField(param.widgetSetting());
+				newValueField.setName(DashboardParameterFields.VALUE.toString());
+				newValueField.setLabel("Value");
+				newValueField.setDescription("The value of the parameter.");
+			}else {
+				//----------------------------
+				// Add Field 
+				switch(param.paramType()) {
+					case TEXT: 	
+						newValueField = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE);
+									break;
+									
+					case SELECT: 	
+						newValueField = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.VALUE);
+									break;
+									
+					case BOOLEAN: 	
+						newValueField = CFWField.newString(FormFieldType.BOOLEAN, DashboardParameterFields.VALUE);
+									break;	
+									
+					default: /*Unknown type*/ return;
+				}
+			}
+			//currentValue field is always a String field
+			newValueField.setValueConvert(currentValueField.getValue());
+			param.getFields().remove(DashboardParameterFields.VALUE.toString());
+			param.addField(newValueField);
+		}
 	}
 	
 }

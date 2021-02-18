@@ -724,18 +724,6 @@ public class CFWSQL {
 	 * Adds a WHERE <fieldname> IN(?) clause to the query.
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
-	public CFWSQL whereIn(Object fieldname, Object value) {
-		if(!isQueryCached()) {
-			query.append(" WHERE ").append(fieldname).append(" IN(?)");
-		}
-		values.add(value);
-		return this;
-	}
-	
-	/****************************************************************
-	 * Adds a WHERE <fieldname> IN(?) clause to the query.
-	 * @return CFWSQL for method chaining
-	 ****************************************************************/
 	public CFWSQL isNull(Object fieldname) {
 		if(!isQueryCached()) {
 			query.append(" ").append(fieldname).append(" IS NULL");
@@ -744,10 +732,43 @@ public class CFWSQL {
 	}
 
 	/****************************************************************
+	 * Adds a WHERE <fieldname> IN(?) clause to the query.
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public CFWSQL whereIn(Object fieldname, Object value) {
+		if(!isQueryCached()) {
+			query.append(" WHERE ").append(fieldname).append(" IN(?)");
+		}
+		values.add(value);
+		return this;
+	}
+
+	/****************************************************************
 	 * Adds a WHERE <fieldname> IN(?,?...) clause to the query.
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public CFWSQL whereIn(Object fieldname, Object ...values) {
+			
+		StringBuilder placeholders = new StringBuilder();
+		for(Object value : values) {
+			placeholders.append("?,");
+			this.values.add(value);
+		}
+		placeholders.deleteCharAt(placeholders.length()-1);
+		
+		if(!isQueryCached()) {
+			query.append(" WHERE ").append(fieldname).append(" IN(").append(placeholders).append(")");
+		}
+		
+		return this;
+	}
+	
+	/****************************************************************
+	 * Adds a WHERE <fieldname> IN(?,?...) clause to the query.
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	@SuppressWarnings("rawtypes")
+	public CFWSQL whereIn(Object fieldname, ArrayList values) {
 			
 		StringBuilder placeholders = new StringBuilder();
 		for(Object value : values) {

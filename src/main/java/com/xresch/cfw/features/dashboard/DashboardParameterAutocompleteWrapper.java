@@ -45,7 +45,7 @@ class DashboardParameterAutocompleteWrapper extends CFWAutocompleteHandler {
 		//---------------------------
 		// Get Param Result
 		String widgetSetting = wrappedField.getName();
-		ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.autocompleteParametersForDashboard(dashboardID, widgetType, widgetSetting, true);
+		ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.getAvailableParamsForDashboard(dashboardID, widgetType, widgetSetting, true);
 		
 		//---------------------------
 		// Prepare params Autocomplete

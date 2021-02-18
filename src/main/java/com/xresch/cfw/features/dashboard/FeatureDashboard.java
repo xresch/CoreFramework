@@ -66,6 +66,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Widgets.add(new WidgetWebsite());
 		CFW.Registry.Widgets.add(new WidgetYoutubeVideo());
 		CFW.Registry.Widgets.add(new WidgetRefreshTime());
+		CFW.Registry.Widgets.add(new WidgetParameter());
 		CFW.Registry.Widgets.add(new WidgetReplica());
 		
 		CFW.Registry.Widgets.add(new WidgetHelloWorld());

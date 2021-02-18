@@ -42,6 +42,11 @@ public class CFWForm extends HierarchicalHTMLItem {
 	private boolean isAPIForm = false;
 	private boolean isEmptyForm = false;
 	
+	/***********************************************************************************
+	 * Initialize the form
+	 * @param formUniqueName used for caching it in the users session.
+	 * @param submitLabel for the button, set to null if no button should be displayed 
+	 ***********************************************************************************/
 	public CFWForm(String formUniqueName, String submitLabel) {
 		
 		if(formUniqueName.matches(".*[^A-Za-z0-9]+.*")) {
@@ -60,6 +65,12 @@ public class CFWForm extends HierarchicalHTMLItem {
 		CFW.Context.Session.addForm(this);
 	}
 	
+	/***********************************************************************************
+	 * Initialize the form.
+	 * @param formUniqueName used for caching it in the users session.
+	 * @param submitLabel for the button, set to null if no button should be displayed 
+	 * @param CFWObject to use the fields of to create the form
+	 ***********************************************************************************/
 	public CFWForm(String formID, String submitLabel, CFWObject origin) {
 		this(formID, submitLabel);
 		this.addFields(origin.getFields().values().toArray(new CFWField[]{}));
@@ -104,8 +115,9 @@ public class CFWForm extends HierarchicalHTMLItem {
 		
 		//---------------------------
 		// Create Submit Button
-		html.append("<button id=\""+formID+"-submitButton\" type=\"button\" onclick=\""+onclick+"\" class=\"form-control btn-primary mt-2\">"+submitLabel+"</button>");
-		
+		if(submitLabel != null) {
+			html.append("<button id=\""+formID+"-submitButton\" type=\"button\" onclick=\""+onclick+"\" class=\"form-control btn-primary mt-2\">"+submitLabel+"</button>");
+		}
 		//---------------------------
 		// Add javascript
 		html.append(

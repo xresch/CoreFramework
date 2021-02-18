@@ -28,7 +28,6 @@ import com.xresch.cfw.datahandling.CFWMultiForm;
 import com.xresch.cfw.datahandling.CFWMultiFormHandlerDefault;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
@@ -336,7 +335,7 @@ public class ServletDashboardView extends HttpServlet
 			//----------------------------
 			// Create Form
 			CFWObject settings = definition.getSettings();
-			addParameterHandlingToField(settings, dashboardID, widgetType);
+			DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
 			settings.mapJsonFields(jsonElement);
 			
 			CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeRemoved");
@@ -347,36 +346,6 @@ public class ServletDashboardView extends HttpServlet
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
 		}
 
-	}
-	
-	/*****************************************************************
-	 *
-	 *****************************************************************/
-	private void addParameterHandlingToField(CFWObject settings, String dashboardID, String widgetType) {
-		
-		for(CFWField field : settings.getFields().values()) {
-			
-			//------------------------------------
-			// Autocomplete handler
-			CFWAutocompleteHandler handler = field.getAutocompleteHandler();
-			if(handler != null) {
-				// Wraps handler and adds itself to the field as the new handler
-				new DashboardParameterAutocompleteWrapper(field, dashboardID, widgetType);
-			}
-			
-			//------------------------------------
-			// SELECT Fields
-			String fieldname = field.getName();
-			if(field.fieldType() == FormFieldType.SELECT) {
-				ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.autocompleteParametersForDashboard(dashboardID, widgetType, fieldname, false);
-				LinkedHashMap options = field.getValueLabelOptions();
-				for(CFWObject object : availableParams) {
-					String param = "$"+((DashboardParameter)object).name()+"$";
-					options.put(param, param);
-				}
-				
-			}
-		}
 	}
 	
 	/*****************************************************************
@@ -408,7 +377,6 @@ public class ServletDashboardView extends HttpServlet
 	@SuppressWarnings("rawtypes")
 	private void getAvailableParams(JSONResponse response, String dashboardID) {
 		
-
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
 			JsonArray parametersArray = new JsonArray();
@@ -590,49 +558,10 @@ public class ServletDashboardView extends HttpServlet
 		String dashboardID = request.getParameter("dashboardid");
 		ArrayList<CFWObject> parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(dashboardID);
 		
-		//===========================================
-		// Replace Value Field
-		//===========================================
-		for(CFWObject object : parameterList) {
-			DashboardParameter param = (DashboardParameter)object;
-			CFWField currentValueField = param.getField(DashboardParameterFields.VALUE.toString());
-			CFWField newValueField;
-			if(param.widgetType() != null) {
-				//---------------------------------------
-				// Replace Value field with field from WidgetSettings
-				WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(param.widgetType());
-				CFWObject settings = definition.getSettings();
-				newValueField = settings.getField(param.widgetSetting());
-				newValueField.setName(DashboardParameterFields.VALUE.toString());
-				newValueField.setLabel("Value");
-				newValueField.setDescription("The value of the parameter.");
-			}else {
-				//----------------------------
-				// Add Field 
-				switch(param.paramType()) {
-					case TEXT: 	
-						newValueField = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE);
-									break;
-									
-					case SELECT: 	
-						newValueField = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.VALUE);
-									break;
-									
-					case BOOLEAN: 	
-						newValueField = CFWField.newString(FormFieldType.BOOLEAN, DashboardParameterFields.VALUE);
-									break;	
-									
-					default: /*Unknown type*/ return;
-				}
-			}
-			//currentValue field is always a String field
-			newValueField.setValueConvert(currentValueField.getValue());
-			param.getFields().remove(DashboardParameterFields.VALUE.toString());
-			param.addField(newValueField);
-		}
+		DashboardParameter.prepareParamObjectsForForm(parameterList);
 		
 		//===========================================
-		// Replace Value Field
+		// Create Form
 		//===========================================
 		if(parameterList.size() != 0) {
 			

@@ -7,6 +7,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
@@ -123,6 +124,7 @@ public class CFWDBDashboardParameter {
 		
 	}
 	
+	
 	/***************************************************************
 	 * Return the parameter as JSON string.
 	 * 
@@ -188,7 +190,7 @@ public class CFWDBDashboardParameter {
 	 * 
 	 * @return Returns an array with the parameters or an empty list.
 	 ****************************************************************/
-	public static ArrayList<CFWObject> autocompleteParametersForDashboard(String dashboardID, String widgetType, String widgetSetting, boolean allowGenericParams) {
+	public static ArrayList<CFWObject> getAvailableParamsForDashboard(String dashboardID, String widgetType, String widgetSetting, boolean allowGenericParams) {
 		
 		CFWSQL sql = new DashboardParameter()
 				.queryCache(CFWDBDashboardParameter.class, "autocompleteParametersForDashboard"+allowGenericParams)
@@ -207,6 +209,21 @@ public class CFWDBDashboardParameter {
 		return sql.custom(")")
 				.getAsObjectList();
 		
+	}
+	
+	/***************************************************************
+	 * Return a list of available parameters for the given dashboard.
+	 * 
+	 * @return Returns an array with the parameters or an empty list.
+	 ****************************************************************/
+	public static AutocompleteResult autocompleteParamsForDashboard(String dashboardID) {
+		
+		return new CFWSQL(new DashboardParameter())
+				.queryCache()
+				.select()
+				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
+				.getAsAutocompleteResult(DashboardParameterFields.PK_ID, DashboardParameterFields.NAME, DashboardParameterFields.WIDGET_TYPE);
+					
 	}
 	
 	/***************************************************************
