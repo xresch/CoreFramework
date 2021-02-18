@@ -335,7 +335,9 @@ public class ServletDashboardView extends HttpServlet
 			//----------------------------
 			// Create Form
 			CFWObject settings = definition.getSettings();
-			DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
+			if(!widgetType.equals(WidgetParameter.WIDGET_TYPE)) {
+				DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
+			}
 			settings.mapJsonFields(jsonElement);
 			
 			CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeRemoved");

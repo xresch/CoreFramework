@@ -295,7 +295,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * @return String html for this item. 
 	 ***********************************************************************************/
 	@SuppressWarnings("unchecked")
-	protected void createHTML_LabeledFormField(StringBuilder html) {
+	protected void createHTML_LabeledFormField(CFWForm form, StringBuilder html) {
 		//---------------------------------------------
 		// Check Type
 		//---------------------------------------------
@@ -306,13 +306,23 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//---------------------------------------------
 		if(formFieldType != FormFieldType.HIDDEN && formFieldType != FormFieldType.NONE) {
 			
-			//---------------------------------------
-			// Create Group and Label
-			html.append("<div class=\"form-group row ml-1\">");
-			html.append("  <label class=\"col-sm-3 col-form-label\" for=\""+name+"\" >");
-			html.append(formLabel+":</label> ");
-			
-			html.append("  <div class=\"col-sm-9 d-flex\">");
+			if(!form.isInlineForm()) {
+				//---------------------------------------
+				// Create Group and Label
+				html.append("<div class=\"form-group row ml-1\">");
+				html.append("  <label class=\"col-sm-3 col-form-label\" for=\""+name+"\" >");
+				html.append(formLabel+":</label> ");
+				
+				html.append("  <div class=\"col-sm-9 d-flex\">");
+			}else {
+				//---------------------------------------
+				// Create Inline Group and Label
+				html.append("<div class=\"d-flex flex-column align-items-start ml-2\">");
+				html.append("  <label class=\"\" for=\""+name+"\" >");
+				html.append(formLabel+":</label> ");
+				
+				//html.append("  <div class=\"col-sm-9 d-flex\">");
+			}
 						
 		}
 		
@@ -325,7 +335,10 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		// Close form-group and col-sm-9
 		//---------------------------------------------
 		if(formFieldType != FormFieldType.HIDDEN && formFieldType != FormFieldType.NONE) {
-			html.append("</div> </div>");
+			html.append("</div>");
+			if(!form.isInlineForm()) {
+				html.append("</div>");
+			}
 		}
 	}
 	
@@ -375,20 +388,25 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			
 		};
 		
-		//---------------------------------------
-		// Create Field Wrapper
-		String autocompleteClass = (autocompleteHandler == null)  ? "" : "cfw-autocomplete";
-		html.append("<div class=\"cfw-field-wrapper flex-grow-1 "+autocompleteClass+"\">");
 
-		//---------------------------------------
-		// Check if Description available
-		createDecoratorArea(html, finalFieldType);
+		if(finalFieldType != FormFieldType.HIDDEN && finalFieldType != FormFieldType.NONE) {
+			//---------------------------------------
+			// Create Field Wrapper
+			String autocompleteClass = (autocompleteHandler == null)  ? "" : "cfw-autocomplete";
+			html.append("<div class=\"cfw-field-wrapper flex-grow-1 "+autocompleteClass+"\">");
+			
+			//---------------------------------------
+			// Check if Description available
+			createDecoratorArea(html, finalFieldType);
 
-		//---------------------------------------
-		// Autocomplete Wrapper
-		if (autocompleteHandler != null) {
-			html.append("  <div class=\"cfw-autocomplete\">");
+			//---------------------------------------
+			// Autocomplete Wrapper
+			if (autocompleteHandler != null) {
+				html.append("  <div class=\"cfw-autocomplete\">");
+			}
 		}
+
+
 		//---------------------------------------------
 		// Create Field
 		//---------------------------------------------
@@ -462,7 +480,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//---------------------------------------------
 		// Close Field Wrapper
 		//---------------------------------------------
-		html.append("</div>");
+		if(finalFieldType != FormFieldType.HIDDEN && finalFieldType != FormFieldType.NONE) {
+			html.append("</div>");
+		}
 	}
 
 	/***********************************************************************************

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
@@ -62,7 +63,12 @@ public class ServletFormHandler extends HttpServlet
     		JsonObject payload = new JsonObject();
     		CFWField<?> summernoteField = form.getField(summernoteID);
     		if(summernoteField != null) {
-    			payload.addProperty("html", form.getField(summernoteID).getValue().toString());
+    			String editorContent = (String)form.getField(summernoteID).getValue();
+    			if(!Strings.isNullOrEmpty(editorContent)) {
+    				payload.addProperty("html", form.getField(summernoteID).getValue().toString());
+    			}else {
+    				payload.addProperty("html", "");
+    			}
     		}else {
     			payload.addProperty("html", "");
     		}

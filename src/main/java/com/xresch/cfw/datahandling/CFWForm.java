@@ -41,7 +41,7 @@ public class CFWForm extends HierarchicalHTMLItem {
 	private CFWFormCustomAutocompleteHandler autocompleteHandler = null;
 	private boolean isAPIForm = false;
 	private boolean isEmptyForm = false;
-	
+	private boolean isInlineForm = false;
 	/***********************************************************************************
 	 * Initialize the form
 	 * @param formUniqueName used for caching it in the users session.
@@ -93,13 +93,17 @@ public class CFWForm extends HierarchicalHTMLItem {
 		
 		//---------------------------
 		// Create HTML
-		html.append("<form id=\""+formID+"\" class=\"form\" method=\"post\" "+getAttributesString()+">");
+		String formClasses = "form";
+		if(isInlineForm) { formClasses += "-inline align-items-start"; }
+		formClasses += " "+this.getAttributeValue("class");
+		
+		html.append("<form id=\""+formID+"\" class=\""+formClasses+"\" method=\"post\" "+getAttributesString()+">");
 		
 		if(this.hasChildren()) {
 				
 			for(HierarchicalHTMLItem child : children) {
 				if(child instanceof CFWField) {
-					((CFWField) child).createHTML_LabeledFormField(html);
+					((CFWField) child).createHTML_LabeledFormField(this, html);
 				}else {
 					html.append("\n\t"+child.getHTML());
 				}
@@ -227,6 +231,14 @@ public class CFWForm extends HierarchicalHTMLItem {
 	
 	public boolean isEmptyForm() {
 		return isEmptyForm ;
+	}
+	
+	public void isInlineForm(boolean isInlineForm) {
+		this.isInlineForm = isInlineForm;
+	}
+	
+	public boolean isInlineForm() {
+		return isInlineForm ;
 	}
 
 	public boolean mapRequestParameters(HttpServletRequest request) {

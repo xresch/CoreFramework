@@ -25,8 +25,10 @@ import com.xresch.cfw.utils.TextUtils;
 
 public class WidgetParameter extends WidgetDefinition {
 
+	public static final String WIDGET_TYPE = "cfw_parameter";
+	
 	@Override
-	public String getWidgetType() {return "cfw_parameter";}
+	public String getWidgetType() {return WIDGET_TYPE;}
 
 	@Override
 	public CFWObject getSettings() {
@@ -79,7 +81,6 @@ public class WidgetParameter extends WidgetDefinition {
 		}
 		
 		ArrayList<CFWObject> paramsResultArray = new CFWSQL(new DashboardParameter())
-				.queryCache()
 				.select()
 				.whereIn(DashboardParameterFields.PK_ID, paramIDs)
 				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.WIDGET_SETTING.toString())
@@ -89,8 +90,8 @@ public class WidgetParameter extends WidgetDefinition {
 		
 		//--------------------------------------
 		// Add on change event for triggering updates
-		CFWForm paramForm = new CFWForm("cfwWidgetParameterForm-"+CFW.Random.randomStringAlphaNumerical(12), null);
-
+		CFWForm paramForm = new CFWForm("cfwWidgetParameterForm"+CFW.Random.randomStringAlphaNumerical(12), null);
+		paramForm.isInlineForm(true);
 		for(CFWObject object : paramsResultArray) {
 			DashboardParameter param = (DashboardParameter)object;
 			
@@ -100,6 +101,7 @@ public class WidgetParameter extends WidgetDefinition {
 				.addAttribute("onblur", "cfw_widget_paramater_fireParamUpdate(this);")
 				.setName(param.name())
 				.setLabel(TextUtils.fieldNameToLabel(param.name()))
+				.isDecoratorDisplayed(false)
 				.addCssClass(" form-control-sm cfw-widget-parameter-marker");
 			
 			paramForm.addField(valueField);

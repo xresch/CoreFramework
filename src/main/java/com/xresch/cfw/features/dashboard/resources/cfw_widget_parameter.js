@@ -11,6 +11,10 @@
 				
 				CFW.dashboard.fetchWidgetData(widgetObject, function(data){
 					
+					if(data.payload == null){
+						callback(widgetObject, '');
+						return;
+					}
 					var settings = widgetObject.JSON_SETTINGS;
 					var formHTML = data.payload.html;
 					
@@ -30,8 +34,8 @@
 		}
 	);
 	
-	function cfw_widget_paramater_fireParamUpdate(paramElement){
-		console.log('param updated');
-	}
-	
 })();
+
+function cfw_widget_paramater_fireParamUpdate(paramElement){
+	console.log('param updated');
+}
