@@ -1417,6 +1417,9 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 			    		widgetAdjustedByWidgetDef.HEIGHT, 
 			    		doAutoposition);
 			   
+				//---------------------------------------
+				// Make sure form javascripts are evaluated
+			    CFW.http.evaluateFormScript($('#'+widgetAdjustedByWidgetDef.guid));
 			    //----------------------------
 			    // Get Widget with applied default values
 			    widgetAdjustedByWidgetDef = $(widgetInstance).data('widgetObject');

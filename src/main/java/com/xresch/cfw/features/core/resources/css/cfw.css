@@ -579,12 +579,30 @@
 .cfw-tag{
 	display: inline-block;
 	padding: 0.25rem 0.5rem;
+	margin-right: 0.25rem !important;
 	margin-bottom: 0.25rem !important;
-    font-size: 0.82031rem;
     line-height: 1.5;
     border-radius: 0;
     background-color: #0c62c0;
     border: 1px solid #063a72;
+}
+
+.bootstrap-tagsinput-sm {
+    min-height: calc(1.5em + 0.5rem + 2px);
+    padding: 0.15rem 0.15rem;
+    font-size: 0.82031rem;
+    line-height: 1.0;
+}
+
+.bootstrap-tagsinput-inline {
+	max-width: 400px;
+}
+.bootstrap-tagsinput-sm .cfw-tag{
+    padding: 0.25rem 0.25rem;
+    margin-right: 0.15rem !important;
+    margin-bottom: 0.15rem !important;
+    font-size: x-small;
+    line-height: 1.0;
 }
 
 

@@ -337,6 +337,7 @@ function cfw_initializeTagsField(fieldID, maxTags){
 	var tagsfield = $(id);
 	
 	//$(id).tagsinput();
+
 	
 	tagsfield.tagsinput({
 		tagClass: 'cfw-tag btn-primary',
@@ -347,6 +348,17 @@ function cfw_initializeTagsField(fieldID, maxTags){
 		addOnBlur: false
 //		confirmKeys: [188, 13]
 	});
+	
+	//----------------------------------
+	// Add Classes
+	var bootstrapTagsinput = $(id+'-tagsinput').closest('.bootstrap-tagsinput');
+	if(tagsfield.hasClass('form-control-sm')){
+		bootstrapTagsinput.addClass('bootstrap-tagsinput-sm')
+	}
+	
+	if(tagsfield.closest('form').hasClass('form-inline')){
+		bootstrapTagsinput.addClass('bootstrap-tagsinput-inline');
+	}
 	
 	//----------------------------------
 	// Hack to make it work more stable
@@ -1938,11 +1950,12 @@ function cfw_http_getForm(formid, targetElement){
 		  .done(function(response) {
 			  if(response.payload != null){
 				  $(targetElement).html(response.payload.html);
-				  var form = $(targetElement).find('form')
-			      var formID = $(targetElement).find('form').attr("id");
-			      // workaround, force evaluation
-			      eval($(form).find("script").text());
-	              eval("intializeForm_"+formID+"();");
+				  CFW.http.evaluateFormScript(targetElement);
+//				  var form = $(targetElement).find('form')
+//			      var formID = $(targetElement).find('form').attr("id");
+//			      // workaround, force evaluation
+//			      eval($(form).find("script").text());
+//	              eval("intializeForm_"+formID+"();");
 			  }
 		  })
 		  .fail(function(xhr, status, errorThrown) {
@@ -1955,6 +1968,24 @@ function cfw_http_getForm(formid, targetElement){
 			  cfw_handleMessages(response);			  
 		  });
 }
+/**************************************************************************************
+ * Finds a CFWForm in the element passed as argument and executes the initialization 
+ * script.
+ * @param formid the id of the form
+ * @param targetElement the element in which the form should be placed
+ *************************************************************************************/
+function cfw_http_evaluateFormScript(elementContainingForm){
+	
+	var form = $(elementContainingForm).find('form');
+	if(form.length > 0){
+	    var formID = form.attr("id");
+	    // workaround, force evaluation
+	    eval($(form).find("script").text());
+	    eval("intializeForm_"+formID+"();");
+	}
+
+}
+
 
 /**************************************************************************************
  * Calls a rest service that creates a form and returns a standard json format,
@@ -2366,6 +2397,7 @@ var CFW = {
 		postJSON: cfw_http_postJSON,
 		getForm: cfw_http_getForm,
 		createForm: cfw_http_createForm,
+		evaluateFormScript: cfw_http_evaluateFormScript,
 		fetchAndCacheData: cfw_http_fetchAndCacheData
 	},
 	
