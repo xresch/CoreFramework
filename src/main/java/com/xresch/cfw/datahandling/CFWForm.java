@@ -120,7 +120,17 @@ public class CFWForm extends HierarchicalHTMLItem {
 		//---------------------------
 		// Create Submit Button
 		if(submitLabel != null) {
-			html.append("<button id=\""+formID+"-submitButton\" type=\"button\" onclick=\""+onclick+"\" class=\"form-control btn-primary mt-2\">"+submitLabel+"</button>");
+			if(!isInlineForm) {
+				html.append("<button id=\""+formID+"-submitButton\" type=\"button\" onclick=\""+onclick+"\" class=\"form-control btn-primary mt-2\">"+submitLabel+"</button>");
+			}else {
+				html.append(
+					"<div class=\"d-flex flex-column align-items-start ml-3\">  "
+						+"<label class=\"\" for=\"chart_type2\">&nbsp;</label> "
+						+"<div class=\"cfw-field-wrapper flex-grow-1 \">"
+							+ "<div class=\"btn btn-sm btn-primary\" onclick=\""+onclick+"\">Update</div>"
+						+ "</div>"
+					+ "</div>");
+			}
 		}
 		//---------------------------
 		// Add javascript

@@ -168,12 +168,21 @@ public abstract class HierarchicalHTMLItem {
 		return this;
 	}
 
+	
 	/***********************************************************************************
 	 * Return the attributes.
 	 * @return HashMap of attributes
 	 ***********************************************************************************/
 	public HashMap<String, String> getAttributes() {
 		return attributes;
+	}
+	
+	/***********************************************************************************
+	 * Return the attributes.
+	 * @return HashMap of attributes
+	 ***********************************************************************************/
+	public boolean hasAttribute(String name) {
+		return attributes.containsKey(name);
 	}
 	
 	/***********************************************************************************

@@ -90,15 +90,17 @@ public class WidgetParameter extends WidgetDefinition {
 		
 		//--------------------------------------
 		// Add on change event for triggering updates
-		CFWForm paramForm = new CFWForm("cfwWidgetParameterForm"+CFW.Random.randomStringAlphaNumerical(12), null);
+		CFWForm paramForm = new CFWForm("cfwWidgetParameterForm"+CFW.Random.randomStringAlphaNumerical(12), "Update");
 		paramForm.isInlineForm(true);
+		paramForm.addAttribute("onclick", "cfw_dashboard_parameters_fireParamWidgetUpdate(this, true);");
+		
 		for(CFWObject object : paramsResultArray) {
 			DashboardParameter param = (DashboardParameter)object;
 			
 			CFWField valueField = param.getField(DashboardParameterFields.VALUE.toString());
 			valueField
-				.addAttribute("onenter", "cfw_widget_paramater_fireParamUpdate(this);")
-				.addAttribute("onblur", "cfw_widget_paramater_fireParamUpdate(this);")
+				//.addAttribute("onchange", "cfw_dashboard_parameters_fireParamWidgetUpdate(this, true);")
+				//.addAttribute("onblur", "")
 				.setName(param.name())
 				.setLabel(TextUtils.fieldNameToLabel(param.name()))
 				.isDecoratorDisplayed(false)
