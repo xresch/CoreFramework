@@ -1255,7 +1255,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		// unique constraint violation on DB when not using 
 		// null values.
 		if(value == null 
-		|| ( valueClass == String.class && (((String)value).trim().equals(""))) ) {
+		|| ( valueClass == String.class && (value.toString().trim().equals(""))) ) {
 			return this.changeValue(null);
 		}
 		
