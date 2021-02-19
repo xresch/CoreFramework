@@ -18,7 +18,6 @@ public class WidgetSettingsFactory {
 		linearChartTypes.put("scatter", "Scatter");
 		linearChartTypes.put("steppedline", "Stepped Line");
 		linearChartTypes.put("steppedarea", "Stepped Area");
-		
 	}
 		
 	/************************************************************************************
@@ -135,10 +134,14 @@ public class WidgetSettingsFactory {
 		
 		LinkedHashMap<String,CFWField<?>> fieldsMap = new LinkedHashMap<String,CFWField<?>>();
 		
+		//Needed to clone because dashboard parameters might mess up the hashmap.
+		LinkedHashMap<String, String> chartOptions = new LinkedHashMap<>();
+		chartOptions.putAll(linearChartTypes);
+		
 		fieldsMap.put("chart_type", CFWField.newString(FormFieldType.SELECT, "chart_type")
 				.setLabel("{!cfw_widget_charttype!}")
 				.setDescription("{!cfw_widget_charttype_desc!}")
-				.setOptions(linearChartTypes)
+				.setOptions(chartOptions)
 				.setValue("Area")
 		);
 		

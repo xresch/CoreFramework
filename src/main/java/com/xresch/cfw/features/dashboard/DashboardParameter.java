@@ -246,27 +246,29 @@ public class DashboardParameter extends CFWObject {
 	 *****************************************************************/
 	public static void addParameterHandlingToField(CFWObject settings, String dashboardID, String widgetType) {
 		
-		for(CFWField field : settings.getFields().values()) {
-			
-			//------------------------------------
-			// Autocomplete handler
-			CFWAutocompleteHandler handler = field.getAutocompleteHandler();
-			if(handler != null) {
-				// Wraps handler and adds itself to the field as the new handler
-				new DashboardParameterAutocompleteWrapper(field, dashboardID, widgetType);
-			}
-			
-			//------------------------------------
-			// SELECT Fields
-			String fieldname = field.getName();
-			if(field.fieldType() == FormFieldType.SELECT) {
-				ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.getAvailableParamsForDashboard(dashboardID, widgetType, fieldname, false);
-				LinkedHashMap options = field.getValueLabelOptions();
-				for(CFWObject object : availableParams) {
-					String param = "$"+((DashboardParameter)object).name()+"$";
-					options.put(param, param);
+		if(!widgetType.equals(WidgetParameter.WIDGET_TYPE)) {
+			for(CFWField field : settings.getFields().values()) {
+				
+				//------------------------------------
+				// Autocomplete handler
+				CFWAutocompleteHandler handler = field.getAutocompleteHandler();
+				if(handler != null) {
+					// Wraps handler and adds itself to the field as the new handler
+					new DashboardParameterAutocompleteWrapper(field, dashboardID, widgetType);
 				}
 				
+				//------------------------------------
+				// SELECT Fields
+				String fieldname = field.getName();
+				if(field.fieldType() == FormFieldType.SELECT) {
+					ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.getAvailableParamsForDashboard(dashboardID, widgetType, fieldname, false);
+					LinkedHashMap options = field.getValueLabelOptions();
+					for(CFWObject object : availableParams) {
+						String param = "$"+((DashboardParameter)object).name()+"$";
+						options.put(param, param);
+					}
+					
+				}
 			}
 		}
 	}
@@ -287,6 +289,8 @@ public class DashboardParameter extends CFWObject {
 				// Replace Value field with field from WidgetSettings
 				WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(param.widgetType());
 				CFWObject settings = definition.getSettings();
+				
+				// widgetSetting contains fieldname
 				newValueField = settings.getField(param.widgetSetting());
 				newValueField.setName(DashboardParameterFields.VALUE.toString());
 				newValueField.setLabel("Value");
