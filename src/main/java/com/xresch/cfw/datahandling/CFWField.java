@@ -1259,7 +1259,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			return this.changeValue(null);
 		}
 		
-		
 		//-------------------------------------------------
 		// If value is a subclass of the valueClass change 
 		// the value without conversion

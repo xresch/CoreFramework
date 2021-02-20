@@ -615,11 +615,11 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 		var currentSettingName = currentParam.WIDGET_SETTING;
 		var paramValue = currentParam.VALUE;
 		
-		console.log('=========================================');
-		console.log('widgetJsonSettings[currentSettingName]: '+widgetJsonSettings[currentSettingName]);
-		console.log('currentSettingName: '+currentSettingName);
-		console.log('settingsValue: '+widgetJsonSettings[currentSettingName]);
-		console.log('paramValue: '+paramValue);
+		//console.log('=========================================');
+		//console.log('widgetJsonSettings[currentSettingName]: '+widgetJsonSettings[currentSettingName]);
+		//console.log('currentSettingName: '+currentSettingName);
+		//console.log('settingsValue: '+widgetJsonSettings[currentSettingName]);
+		//console.log('paramValue: '+paramValue);
 		
 		// ----------------------------------------
 		// Handle General Params
@@ -628,22 +628,22 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 					// -------------------------------------
 					// Replace Regular Parameters
 					for(var key in widgetJsonSettings){
-						console.log('>> settingName: '+key);
-						console.log('>> oldsettingValue: '+widgetJsonSettings[key]);
+						//console.log('>> settingName: '+key);
+						//console.log('>> oldsettingValue: '+widgetJsonSettings[key]);
 						var oldSettingsValue = widgetJsonSettings[key];
 
 						if (typeof oldSettingsValue == "string"){
 							widgetJsonSettings[key] = 
 								oldSettingsValue.replaceAll('$'+currentParam.NAME+'$', paramValue);
-							console.log('C: '+widgetJsonSettings[key]);
+							//console.log('C: '+widgetJsonSettings[key]);
 						}else if (currentParam.PARAM_TYPE == "BOOLEAN" 
 							&& typeof oldSettingsValue == "boolean"
 							&& oldSettingsValue == ('$'+currentParam.NAME+'$') ){
 							widgetJsonSettings[key] = paramValue;
-							console.log('D: '+widgetJsonSettings[key]);
+							//console.log('D: '+widgetJsonSettings[key]);
 						}else{
-							console.log('>>>>>> missed settingName: '+key);
-							console.log('>>>>>> missed oldsettingValue: '+widgetJsonSettings[key]);
+							//console.log('>>>>>> missed settingName: '+key);
+							//console.log('>>>>>> missed oldsettingValue: '+widgetJsonSettings[key]);
 						}	
 					}
 		}else {
@@ -1486,18 +1486,18 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 		// Add Placeholder
 		cfw_dashboard_widget_createLoadingPlaceholder(originalWidgetObject, doAutoposition);
 		
-		console.log('========= Original ==========');
-		console.log(originalWidgetObject);
-		console.log('========= Clone ==========');
-		console.log(widgetCloneParameterized);
+		//console.log('========= Original ==========');
+		//console.log(originalWidgetObject);
+		//console.log('========= Clone ==========');
+		//console.log(widgetCloneParameterized);
 
 		// ---------------------------------------
 		// Create Instance by Widget Definition
 		widgetDefinition.createWidgetInstance(widgetCloneParameterized, 
 			function(widgetAdjustedByWidgetDef, widgetContent){
 				
-			console.log('========= Adjusted ==========');
-			console.log(widgetAdjustedByWidgetDef);
+			//console.log('========= Adjusted ==========');
+			//console.log(widgetAdjustedByWidgetDef);
 			
 				// ---------------------------------------
 				// Remove Placeholder

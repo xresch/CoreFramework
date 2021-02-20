@@ -35,10 +35,24 @@
 					parentDiv.find('form input, form textarea, form select').each(function (){
 						var inputField = $(this);
 						var name = inputField.attr('name');
+						var type = inputField.attr('type');
 						
 						var viewerCustomValue = storedViewerParams[name];
 						if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
-							inputField.val(viewerCustomValue);
+							if(type == 'radio'){
+								//$('input[name="'+name+'"]').prop("checked", false);
+								parentDiv.find('input[name="'+name+'"]').each(function(){
+									var current = $(this);
+									
+									if(current.val() == ""+viewerCustomValue){
+										current.prop("checked", 'checked');
+									}else{
+										current.prop("checked", false);
+									}
+								});
+							}else{
+								inputField.val(viewerCustomValue);
+							}
 						}
 					});
 					
