@@ -471,6 +471,16 @@ function cfw_updateTimeField(fieldID){
 }
 
 /**************************************************************************************
+ * Will add a function that will be called before sending the autocomplete request
+ * to the server.
+ * You can add more parameters to the paramObject provided to the callback function
+ * 
+ * @param functionToEnhanceParams callback function, will get an object that can be enhanced with more parameters
+ *************************************************************************************/
+function cfw_autocomplete_addParamEnhancer(functionToEnhanceParams){
+	CFW.global.autcompleteParamEnhancerFunction = functionToEnhanceParams;
+}
+/**************************************************************************************
  * Initialize an autocomplete added to a CFWField with setAutocompleteHandler().
  * Can be used to make a static autocomplete using the second parameter.
  * 
@@ -548,7 +558,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 				}
 				
 				//----------------------------
-				// Load Autocomlete
+				// Load Autocomplete
 				setTimeout(
 					function(){
 						
@@ -559,6 +569,11 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 						var params = CFW.format.formToParams($input.closest('form'));
 						params.cfwAutocompleteFieldname = fieldName;
 						params.cfwAutocompleteSearchstring = inputField.value;
+						
+						//function to customize the autocomplete
+						if(CFW.global.autcompleteParamEnhancerFunction != null){
+							CFW.global.autcompleteParamEnhancerFunction(params);
+						}
 						
 						cfw_http_postJSON('/cfw/autocomplete', params, 
 							function(data) {
@@ -2334,6 +2349,7 @@ var CFW = {
 	global: {
 		autocompleteCounter: 0,
 		autocompleteFocus: -1,
+		autcompleteParamEnhancerFunction: null,
 		isLocaleFetching: null,
 		lastServerAccess: moment(),
 		lastOpenedModal: null,

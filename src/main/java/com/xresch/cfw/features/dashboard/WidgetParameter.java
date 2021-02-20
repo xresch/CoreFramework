@@ -47,8 +47,8 @@ public class WidgetParameter extends WidgetDefinition {
 							@Override
 							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
 								
-								String dashboardID = "2081";
-
+								String dashboardID = request.getParameter("cfw-dashboardid");
+								
 								return CFW.DB.DashboardParameters.autocompleteParamsForDashboard(dashboardID);
 							}
 						})			
