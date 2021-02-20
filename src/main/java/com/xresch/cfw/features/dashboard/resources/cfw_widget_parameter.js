@@ -33,6 +33,7 @@
 					// form fields
 					CFW.ui.getWorkspace().append(parentDiv);
 					CFW.http.evaluateFormScript(parentDiv);
+					
 					//----------------------------------
 					// Apply Custum Viewer Settings from
 					// Browser Store

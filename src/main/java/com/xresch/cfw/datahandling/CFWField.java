@@ -317,7 +317,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			}else {
 				//---------------------------------------
 				// Create Inline Group and Label
-				html.append("<div class=\"d-flex flex-column align-items-start ml-3\">");
+				html.append("<div class=\"d-flex flex-column align-items-start ml-3  mt-3\">");
 				html.append("  <label class=\"\" for=\""+name+"\" >");
 				html.append(formLabel+":</label> ");
 				

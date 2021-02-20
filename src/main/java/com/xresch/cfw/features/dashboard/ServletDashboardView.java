@@ -399,7 +399,9 @@ public class ServletDashboardView extends HttpServlet
 				DashboardWidget widget = (DashboardWidget)object;
 				String widgetType = widget.type();
 				
-				if(uniqueTypeChecker.contains(widgetType)) {
+				if(widgetType.equals(WidgetParameter.WIDGET_TYPE) 
+				|| uniqueTypeChecker.contains(widgetType)) {
+					//skip Parameters Widget and type already processed once
 					continue;
 				}else {
 					uniqueTypeChecker.add(widgetType);
@@ -447,7 +449,7 @@ public class ServletDashboardView extends HttpServlet
 			// Create Param
 			DashboardParameter param = new DashboardParameter();
 			param.foreignKeyDashboard(Integer.parseInt(dashboardID));
-			param.name("param_name_"+CFW.Random.randomStringAlphaNumerical(6));
+			param.name(widgetSetting+"_"+CFW.Random.randomStringAlphaNumerical(6));
 
 			if(Strings.isNullOrEmpty(widgetType) && Strings.isNullOrEmpty(widgetSetting)) {
 				param.widgetType(null);
@@ -500,6 +502,8 @@ public class ServletDashboardView extends HttpServlet
 					|| settingsField.fieldType() == FormFieldType.NUMBER
 					|| settingsField.fieldType() == FormFieldType.DATEPICKER
 					|| settingsField.fieldType() == FormFieldType.DATETIMEPICKER
+					|| settingsField.fieldType() == FormFieldType.TAGS
+					|| settingsField.fieldType() == FormFieldType.TAGS_SELECTOR
 					) {
 						param.isModeChangeAllowed(false);
 					}
