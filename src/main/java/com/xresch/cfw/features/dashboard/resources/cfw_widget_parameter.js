@@ -29,6 +29,11 @@
 					parentDiv.append(formHTML);
 					
 					//----------------------------------
+					// Add to workspace and initialize
+					// form fields
+					CFW.ui.getWorkspace().append(parentDiv);
+					CFW.http.evaluateFormScript(parentDiv);
+					//----------------------------------
 					// Apply Custum Viewer Settings from
 					// Browser Store
 					var storedViewerParams = cfw_dashboard_parameters_getStoredViewerParams();
@@ -53,7 +58,6 @@
 							}else if(inputField.hasClass('cfw-tags-selector')){
 								var tagsInputValues = JSON.parse(viewerCustomValue);
 								//must be initialized to add values
-								inputField.tagsinput(cfw_getTagSelectorOptions());
 								for(var key in tagsInputValues){
 									console.log( "value: "+ key+ ", label:"+ tagsInputValues[key])
 									inputField.tagsinput('add', { "value": key , "label": tagsInputValues[key] });
