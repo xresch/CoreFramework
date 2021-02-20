@@ -38,6 +38,7 @@ TODO
 - Dashboard Parameters: Custom Select Options (VALUE_LABEL FieldType)
 - Dashboard Parameters: Test With Second Dashboard if everything is working
 - Dashboard Parameters: Create Dashboard Templates
+- Dashboard Parameters: Create Manual Pages
 
 - Widget: Dashboard Link
 - Widget: CSV Chart
