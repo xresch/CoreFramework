@@ -32,6 +32,7 @@ TODO
 
 - Dashboard Parameters: Export/Import Parameters
 - Dashboard Parameters: Make Autocomplete Filter properly
+- Dashboard Parameters: Completely Override user Settings to clear old values
 - Dashboard Parameters: Allow same parameter max once per dashboard
 - Dashboard Parameters: Form initialization: filter as well by form or formID to not mess with params with same name/ID
 - Dashboard Parameters: Custom Select Options (VALUE_LABEL FieldType)
