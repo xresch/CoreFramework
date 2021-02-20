@@ -17,10 +17,22 @@
 				
 				CFW.dashboard.fetchWidgetData(widgetObject, function(data){
 					
+					var settings = widgetObject.JSON_SETTINGS;
 					var helloString = 
 						CFWL('cfw_widget_helloworld_hello', 'Hello')+' '
-						+widgetObject.JSON_SETTINGS.name+'! '
+						+settings.name+'! '
 						+ data.payload;
+					
+					var hobbies = settings.JSON_HOBBIES_SELECTOR;
+					if(hobbies != null){
+						helloString += '<div><h2>Hobbies</h2>';
+						for(var key in hobbies){
+							helloString += '<p>'+hobbies[key]+'</p>';
+							
+						}
+						helloString += '</div>';
+						
+					}
 										
 					callback(widgetObject, helloString);
 				});

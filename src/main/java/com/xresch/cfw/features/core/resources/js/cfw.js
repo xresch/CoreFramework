@@ -373,6 +373,7 @@ function cfw_initializeTagsField(fieldID, maxTags){
 	
 	
 }
+
 /**************************************************************************************
  * Initialize a TagField created with the Java object CFWField.
  * @param fieldID the name of the field
@@ -385,7 +386,7 @@ function cfw_initializeTagsSelectorField(fieldID, maxTags, values){
 	var tagsfield = $(id);
 	
 	// mark with CSS class for selecting the class afterwards
-	tagsfield.addClass("cfw-tags-selector");
+	//tagsfield.addClass("cfw-tags-selector");
 	
 	tagsfield.tagsinput({
 		tagClass: 'cfw-tag btn-primary',
@@ -401,6 +402,19 @@ function cfw_initializeTagsSelectorField(fieldID, maxTags, values){
 //		}
 	});
 	
+	//----------------------------------
+	// Add Classes
+	var bootstrapTagsinput = $(id+'-tagsinput').closest('.bootstrap-tagsinput');
+	if(tagsfield.hasClass('form-control-sm')){
+		bootstrapTagsinput.addClass('bootstrap-tagsinput-sm')
+	}
+	
+	if(tagsfield.closest('form').hasClass('form-inline')){
+		bootstrapTagsinput.addClass('bootstrap-tagsinput-inline');
+	}
+	
+	//----------------------------------
+	// Add Values
 	for(var key in values){
 		tagsfield.tagsinput('add', { "value": key , "label": values[key] });
 	}

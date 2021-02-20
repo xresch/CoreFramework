@@ -624,15 +624,14 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 		// ----------------------------------------
 		// Handle General Params
 		if(CFW.utils.isNullOrEmpty(currentParam.WIDGET_TYPE)
-				&& CFW.utils.isNullOrEmpty(currentSettingName)){
+		&& CFW.utils.isNullOrEmpty(currentSettingName)){
 					// -------------------------------------
 					// Replace Regular Parameters
 					for(var key in widgetJsonSettings){
 						//console.log('>> settingName: '+key);
 						//console.log('>> oldsettingValue: '+widgetJsonSettings[key]);
 						var oldSettingsValue = widgetJsonSettings[key];
-
-						if (typeof oldSettingsValue == "string"){
+						 if (typeof oldSettingsValue == "string"){
 							widgetJsonSettings[key] = 
 								oldSettingsValue.replaceAll('$'+currentParam.NAME+'$', paramValue);
 							//console.log('C: '+widgetJsonSettings[key]);
@@ -653,6 +652,15 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 			var oldSettingsValue = widgetJsonSettings[currentSettingName];
 			var mode = currentParam.MODE;
 			switch(currentParam.PARAM_TYPE){
+				case 'TAGS_SELECTOR':
+					console.log('888 ==========')
+					console.log(paramValue);
+					if(typeof paramValue == 'object'){
+						widgetJsonSettings[currentSettingName] = paramValue;
+					}else{
+						widgetJsonSettings[currentSettingName] = JSON.parse(paramValue);
+					}
+					break;
 				case 'BOOLEAN':  
 					paramValue = paramValue.toLowerCase().trim();
 					switch(paramValue){
@@ -664,17 +672,17 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 				case 'NUMBER':
 					// objects, numbers etc...
 					widgetJsonSettings[currentSettingName] = paramValue;
-					console.log('NUMBER: '+widgetJsonSettings[currentSettingName]);
+					//console.log('NUMBER: '+widgetJsonSettings[currentSettingName]);
 				
 				// TEXT, TEXTAREA, PASSWORD, EMAIL, SELECT, LIST
 				default:
 					if(mode == "MODE_SUBSTITUTE" && typeof oldSettingsValue == "string"){
 							widgetJsonSettings[currentSettingName] = oldSettingsValue.replaceAll('$'+currentParam.NAME+'$',paramValue);
-							console.log('DEFAULT SUB: '+widgetJsonSettings[currentSettingName]);
+							//console.log('DEFAULT SUB: '+widgetJsonSettings[currentSettingName]);
 					}else{
 						// objects, numbers etc...
 						widgetJsonSettings[currentSettingName] = paramValue;
-						console.log('DEFAULT OTHER: '+widgetJsonSettings[currentSettingName]);
+						//console.log('DEFAULT OTHER: '+widgetJsonSettings[currentSettingName]);
 					}
 					break;
 			}
@@ -794,15 +802,16 @@ function cfw_dashboard_parameters_getFinalParams(){
 	for(var index in mergedParams){
 		var currentParam = mergedParams[index];
 		var paramName = currentParam.NAME;
-		console.log('4================');
-		console.log('paramName: '+paramName);
-		console.log('storedViewerParams[paramName]: '+storedViewerParams[paramName]);
+		
 		var viewerCustomValue = storedViewerParams[paramName];
 		if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
-			console.log('hit! '+viewerCustomValue);
-			console.log('hit! stringify: '+JSON.stringify(viewerCustomValue));
+			
 			currentParam.VALUE = viewerCustomValue;
-			if(typeof viewerCustomValue == "string"){
+
+			if(currentParam.PARAM_TYPE == 'TAGS_SELECTOR'){
+				var tagsInputObject = JSON.parse(viewerCustomValue);
+				currentParam.VALUE = tagsInputObject;
+			}else if(typeof viewerCustomValue == "string"){
 				currentParam.VALUE = viewerCustomValue;
 			}else{
 				currentParam.VALUE = JSON.stringify(viewerCustomValue);

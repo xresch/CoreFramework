@@ -92,6 +92,7 @@ DONE
 - Dashboard: Added notification on widget setting save
 - Dashboard: Made Advanced Edit Mode Standard
 - Dashboard: Widgets that have errors can now be edited.
+Dashboard: added dashboardID to autocomplete requests
 - Dashboard List: Added Sharing Details View
 - Dashboard Widget Settings: Added Widget Name and splitted settings to tabs
 - Role Management: Fixed Nullpointer on changing roles while API-Token Session is active.

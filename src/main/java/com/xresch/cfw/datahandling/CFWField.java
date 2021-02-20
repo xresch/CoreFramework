@@ -454,7 +454,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			case TAGS:			  	createTagsField(html, cssClasses, FormFieldType.TAGS);
 									break;
 									
-			case TAGS_SELECTOR:		createTagsField(html, cssClasses, FormFieldType.TAGS_SELECTOR);
+			case TAGS_SELECTOR:		createTagsField(html, cssClasses+" cfw-tags-selector", FormFieldType.TAGS_SELECTOR);
 									break;						
 									
 			case PASSWORD:  		createPasswordField(html, cssClasses);
