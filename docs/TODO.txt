@@ -39,6 +39,8 @@ TODO
 - Dashboard Parameters: Test With Second Dashboard if everything is working
 - Dashboard Parameters: Create Dashboard Templates
 - Dashboard Parameters: Create Manual Pages
+- Dashboard Parameters: Make TagSelector keep the order
+- Dashboard Parameters: Display names in MultiForm properly
 
 - Widget: Dashboard Link
 - Widget: CSV Chart
