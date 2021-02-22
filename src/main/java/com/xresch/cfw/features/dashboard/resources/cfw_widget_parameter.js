@@ -20,7 +20,7 @@
 					var settings = widgetObject.JSON_SETTINGS;
 					var formHTML = data.payload.html;
 					
-					var parentDiv = $('<div class= "d-flex flex-column">');
+					var parentDiv = $('<div class= "d-flex flex-column cfw-parameter-widget-marker">');
 
 					var noflexDiv = $('<div class="d-block w-100">');
 					noflexDiv.append(settings.description);
@@ -35,7 +35,7 @@
 					CFW.http.evaluateFormScript(parentDiv);
 					
 					//----------------------------------
-					// Apply Custum Viewer Settings from
+					// Apply Custom Viewer Settings from
 					// Browser Store
 					var storedViewerParams = cfw_dashboard_parameters_getStoredViewerParams();
 					parentDiv.find('form input, form textarea, form select').each(function (){

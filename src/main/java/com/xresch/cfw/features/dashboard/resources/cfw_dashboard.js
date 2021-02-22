@@ -773,14 +773,16 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement, triggerRed
 	
 	var paramField = $(paramElement);
 	var paramValue = paramField.val();
-	var form = paramField.closest('form');
+	var paramForms = $('.cfw-parameter-widget-marker form');
 	
-	var userParamsForWidget = CFW.format.formToParams(form);
+	var mergedParams = {}; 
+	paramForms.each(function(){
+		var userParamsForWidget = CFW.format.formToParams($(this));
+		mergedParams = Object.assign({}, mergedParams, userParamsForWidget); 
+	});
 	
 	var storekey = cfw_dashboard_parameters_getViewerParamsStoreKey();
-	var storedViewerParams = cfw_dashboard_parameters_getStoredViewerParams();
-	
-	var mergedParams = Object.assign({}, storedViewerParams, userParamsForWidget); 
+
 	delete mergedParams['cfw-formID'];
 	
 	CFW.cache.storeValueForPage(storekey, JSON.stringify(mergedParams));
