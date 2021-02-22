@@ -183,6 +183,11 @@
     font-weight: 200;
 }
 
+.form-inline textarea{
+	min-width: 300px;
+	resize: both;
+}
+
 
 /*************************************************************************
  * Bootstrap Submenus and Menu Enhancements
