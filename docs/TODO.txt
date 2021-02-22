@@ -31,14 +31,13 @@ TODO
 - Dashboard: Timeframe Picker - List of Recent
 
 - Dashboard Parameters: Export/Import Parameters
-- Dashboard Parameters: Completely Override user Settings to clear old values
-- Dashboard Parameters: Form initialization: filter as well by form or formID to not mess with params with same name/ID
 - Dashboard Parameters: Custom Select Options (VALUE_LABEL FieldType)
+
 - Dashboard Parameters: Test With Second Dashboard if everything is working
 - Dashboard Parameters: Create Dashboard Templates
 - Dashboard Parameters: Create Manual Pages
 - Dashboard Parameters: Make TagSelector keep the order
-- Dashboard Parameters: Display names in MultiForm properly
+- Dashboard Parameters: Form initialization: filter as well by form or formID to not mess with params with same name/ID
 
 - Dashboard Parameters: Allow same parameter max once per dashboard
 

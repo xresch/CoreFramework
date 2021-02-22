@@ -289,12 +289,15 @@ public class DashboardParameter extends CFWObject {
 				// Replace Value field with field from WidgetSettings
 				WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(param.widgetType());
 				CFWObject settings = definition.getSettings();
-				
-				// widgetSetting contains fieldname
+
+				// param.widgetSetting() returns the actual name of the setting
 				newValueField = settings.getField(param.widgetSetting());
 				newValueField.setName(DashboardParameterFields.VALUE.toString());
-				newValueField.setLabel("Value");
 				newValueField.setDescription("The value of the parameter.");
+				
+				//adjust labels
+				param.widgetSetting(newValueField.getLabel()); //change value displayed in column "Widget Setting"
+				newValueField.setLabel("Value"); //Change name of column to "Value"
 			}else {
 				//----------------------------
 				// Add Field 

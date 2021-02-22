@@ -25,8 +25,9 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormCustomAutocompleteHandler;
 import com.xresch.cfw.datahandling.CFWMultiForm;
-import com.xresch.cfw.datahandling.CFWMultiFormHandlerDefault;
+import com.xresch.cfw.datahandling.CFWMultiFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterMode;
@@ -571,7 +572,32 @@ public class ServletDashboardView extends HttpServlet
 			
 			CFWMultiForm parameterEditForm = new CFWMultiForm("cfwParameterEditMultiForm"+CFW.Random.randomStringAlphaNumerical(12), "Save", parameterList);
 			
-			parameterEditForm.setMultiFormHandler(new CFWMultiFormHandlerDefault());
+			parameterEditForm.setMultiFormHandler(new CFWMultiFormHandler() {
+				
+				@Override
+				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWMultiForm form,
+						LinkedHashMap<Integer, CFWObject> originsMap) {
+					
+					form.mapRequestParameters(request);
+					
+					//revert uniques of the fields to be able to save to the database.
+					form.revertFieldNames();
+						for(CFWObject object : originsMap.values()) {
+							//do not update WidgetType and Setting as the values were overridden with labels.
+							boolean success = new CFWSQL(object).updateWithout(
+									DashboardParameterFields.WIDGET_TYPE.toString(),
+									DashboardParameterFields.WIDGET_SETTING.toString());
+							if(!success) {
+								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The data with the ID '"+object.getPrimaryKey()+"' could not be saved to the database.");
+							};
+						}
+						
+					//make fieldnames Unique again to be able to save again.
+					form.makeFieldNamesUnique();
+					CFW.Messages.saved();
+				}
+				
+			});
 			parameterEditForm.setCustomAutocompleteHandler(new CFWFormCustomAutocompleteHandler() {
 				
 				@Override

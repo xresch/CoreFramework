@@ -32,6 +32,5 @@ public class CFWMultiFormHandlerDefault extends CFWMultiFormHandler {
 		form.makeFieldNamesUnique();
 		CFW.Messages.saved();
 	}
-	
 
 }

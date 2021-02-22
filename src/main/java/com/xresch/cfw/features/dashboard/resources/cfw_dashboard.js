@@ -548,6 +548,23 @@ function cfw_dashboard_parameters_loadParameterForm(){
 							+ '<i class="fa fa-trash"></i>'
 							+ '</div></td>')
 					})
+					
+					// ----------------------------
+					// Replace widgetType with Label
+					formFirstColumn = paramListDiv.find('form tbody tr').find('td:first');
+					formRows.each(function (index, element){
+						let columnSpan = $(element).find('span:first');
+						
+						let widgetType = columnSpan.text();
+						console.log(widgetType);
+						let definition = cfw_dashboard_getWidgetDefinition(widgetType);
+						let label = (definition != undefined) ? definition.menulabel : undefined;
+						
+						if(label != undefined){
+							columnSpan.text(label);
+						}
+					})
+					
 				}
 			);
 	}
@@ -822,11 +839,11 @@ function cfw_dashboard_parameters_getFinalParams(){
 		}
 	}
 	
-	console.log('3======== storedViewerParams ========');
-	console.log(storedViewerParams);
-	
-	console.log('3======== mergedParams ========');
-	console.log(mergedParams);
+//	console.log('3======== storedViewerParams ========');
+//	console.log(storedViewerParams);
+//	
+//	console.log('3======== mergedParams ========');
+//	console.log(mergedParams);
 
 	return mergedParams;
 }
