@@ -3,14 +3,18 @@ package com.xresch.cfw.features.dashboard;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
-import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -70,7 +74,7 @@ public class CFWDBDashboardParameter {
 	//####################################################################################################
 	public static boolean	create(DashboardParameter... items) 	{ return CFWDBDefaultOperations.create(prechecksCreate, items); }
 	public static boolean 	create(DashboardParameter item) 		{ return CFWDBDefaultOperations.create(prechecksCreate, item);}
-	public static int 		createGetPrimaryKey(DashboardParameter item) 	{ return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, item);}
+	public static Integer	createGetPrimaryKey(DashboardParameter item) 	{ return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, item);}
 	
 	//####################################################################################################
 	// UPDATE
@@ -218,26 +222,28 @@ public class CFWDBDashboardParameter {
 	 * 
 	 * @return Returns a JsonArray or null on error.
 	 ****************************************************************/
-//	public static JsonArray getJsonArrayForExport(String dashboardID) {
-//		
-//		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)
-//		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)) {
-//			CFWSQL selectForExport = new DashboardParameter()
-//				.queryCache(CFWDBDashboardParameter.class, "getJsonArrayForExport")
-//				.select();
-//			
-//			if(!Strings.isNullOrEmpty(dashboardID)) {
-//				selectForExport.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID);
-//				return  selectForExport.getAsJSONArray();
-//			}
-//							
-//			return null;
-//		 
-//		}else {
-//			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
-//			return null;
-//		}
-//	}
+	public static JsonArray getJsonArrayForExport(String dashboardID) {
+		
+		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)
+		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)
+		|| CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			
+			CFWSQL selectForExport = new CFWSQL(new DashboardParameter())
+				.queryCache()
+				.select();
+			
+			if(!Strings.isNullOrEmpty(dashboardID)) {
+				selectForExport.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID);
+				return  selectForExport.getAsJSONArray();
+			}
+							
+			return null;
+		 
+		}else {
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			return null;
+		}
+	}
 	
 
 }

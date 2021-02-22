@@ -2,7 +2,9 @@ package com.xresch.cfw.features.dashboard;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
@@ -271,23 +273,25 @@ public class CFWDBDashboard {
 	public static String getJsonArrayForExport(String dashboardID) {
 
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)
-		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
-		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)) {			
-			JsonArray elements = null;
+		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)
+		|| CFW.DB.Dashboards.checkCanEdit(dashboardID)) {			
+			JsonArray dashboardArray = null;
 			if(Strings.isNullOrEmpty(dashboardID)) {
-				elements = new Dashboard()
+				dashboardArray = new Dashboard()
 						.queryCache(CFWDBDashboard.class, "getJsonArrayForExportAll")
 						.select()
 						.getAsJSONArray();
 			}else {
-				elements = new Dashboard()
+				dashboardArray = new Dashboard()
 						.queryCache(CFWDBDashboard.class, "getJsonArrayForExport")
 						.select()
 						.where(DashboardFields.PK_ID, dashboardID)
 						.getAsJSONArray();
 			}
-									 
-			for(JsonElement element : elements) {
+			
+			//-------------------------------
+			// For Every Dashboard
+			for(JsonElement element : dashboardArray) {
 				if(element.isJsonObject()) {
 					//-------------------------------
 					// Get Username
@@ -297,16 +301,20 @@ public class CFWDBDashboard {
 						element.getAsJsonObject().addProperty("username", username);
 					}
 					//-------------------------------
-					// Get Widgets
+					// Get Widgets & Parameters
 					JsonElement idElement = element.getAsJsonObject().get(DashboardFields.PK_ID.toString());
 					if(!idElement.isJsonNull() && idElement.isJsonPrimitive()) {
 						JsonArray widgets = CFW.DB.DashboardWidgets.getJsonArrayForExport(idElement.getAsString());
 						element.getAsJsonObject().add("widgets", widgets);
+						
+						JsonArray parameters = CFW.DB.DashboardParameters.getJsonArrayForExport(idElement.getAsString());
+						element.getAsJsonObject().add("parameters", parameters);
 					}
+					
 				}
 			}
 			
-			return CFW.JSON.toJSONPretty(elements);
+			return CFW.JSON.toJSONPretty(dashboardArray);
 		}else {
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!") );
 			return "[]";
@@ -465,6 +473,50 @@ public class CFWDBDashboard {
 				}
 
 				//-----------------------------
+				// Create Parameters
+				HashMap<Integer, Integer> oldNewParamIDs = new HashMap<>();
+				if(dashboardObject.has("parameters")) {
+					
+					//-----------------------------
+					// Check format
+					if(!dashboardObject.get("parameters").isJsonArray()) {
+						CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_wronginputformat","The provided import format seems not to be supported."));
+						continue;
+					}
+					
+					//-----------------------------
+					// Create Parameters
+					JsonArray paramsArray = dashboardObject.get("parameters").getAsJsonArray();
+					for(JsonElement paramsElement : paramsArray) {
+						
+						if(paramsElement.isJsonObject()) {
+							
+							JsonObject paramsObject = paramsElement.getAsJsonObject();
+							//-----------------------------
+							// Map values
+							DashboardParameter param = new DashboardParameter();
+							param.mapJsonFields(paramsObject);
+							
+							//-----------------------------
+							// Reset Dashboard ID
+							param.foreignKeyDashboard(newDashboardID);
+							
+							//-----------------------------
+							// Create Parameter
+							Integer oldID = param.getPrimaryKey();
+							Integer newID = CFW.DB.DashboardParameters.createGetPrimaryKey(param);
+							if(newID == null) {
+								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error creating imported parameter.");
+								continue;
+							}
+							
+							oldNewParamIDs.put(oldID, newID);
+							
+						}
+					}
+				}
+				
+				//-----------------------------
 				// Create Widgets
 				if(dashboardObject.has("widgets")) {
 					
@@ -491,6 +543,30 @@ public class CFWDBDashboard {
 							//-----------------------------
 							// Reset Dashboard ID and Owner
 							widget.foreignKeyDashboard(newDashboardID);
+							
+							//-----------------------------
+							// Reset Parameter IDs of
+							// Parameter Widgets
+							if(widget.type().equals(WidgetParameter.WIDGET_TYPE)) {
+								JsonObject settings = CFW.JSON.fromJson(widget.settings()).getAsJsonObject();
+								
+								if(!settings.isJsonNull() 
+								&& settings.has("JSON_PARAMETERS")
+								&& settings.get("JSON_PARAMETERS").isJsonObject()) {
+									JsonObject paramsForWidget = settings.get("JSON_PARAMETERS").getAsJsonObject();
+									for(Entry<Integer, Integer> entry : oldNewParamIDs.entrySet()) {
+										String oldID = entry.getKey()+"";
+										if(paramsForWidget.has(oldID)) {
+											JsonElement value = paramsForWidget.get(oldID);
+											paramsForWidget.remove(oldID);
+											
+											String newID = entry.getValue()+"";
+											paramsForWidget.add(newID, value);
+											
+										}
+									}
+								}
+							}
 							
 							//-----------------------------
 							// Create Widget

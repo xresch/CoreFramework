@@ -139,7 +139,8 @@ public class CFWDBDashboardWidget {
 	public static JsonArray getJsonArrayForExport(String dashboardID) {
 		
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)
-		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)) {
+		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)
+		|| CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			CFWSQL selectForExport = new DashboardWidget()
 				.queryCache(CFWDBDashboardWidget.class, "getJsonArrayForExport")
 				.select();

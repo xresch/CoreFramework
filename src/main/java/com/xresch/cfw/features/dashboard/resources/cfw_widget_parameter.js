@@ -38,8 +38,8 @@
 					// Apply Custom Viewer Settings from
 					// Browser Store
 					var storedViewerParams = cfw_dashboard_parameters_getStoredViewerParams();
-					parentDiv.find('form input, form textarea, form select').each(function (element){
-						var inputField = $(element);
+					parentDiv.find('form input, form textarea, form select').each(function (){
+						var inputField = $(this);
 						var name = inputField.attr('name');
 						var type = inputField.attr('type');
 						
