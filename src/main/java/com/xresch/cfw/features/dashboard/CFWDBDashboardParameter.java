@@ -211,20 +211,7 @@ public class CFWDBDashboardParameter {
 		
 	}
 	
-	/***************************************************************
-	 * Return a list of available parameters for the given dashboard.
-	 * 
-	 * @return Returns an array with the parameters or an empty list.
-	 ****************************************************************/
-	public static AutocompleteResult autocompleteParamsForDashboard(String dashboardID) {
-		
-		return new CFWSQL(new DashboardParameter())
-				.queryCache()
-				.select()
-				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-				.getAsAutocompleteResult(DashboardParameterFields.PK_ID, DashboardParameterFields.NAME, DashboardParameterFields.WIDGET_TYPE);
-					
-	}
+
 	
 	/***************************************************************
 	 * Return a JSON string for export.

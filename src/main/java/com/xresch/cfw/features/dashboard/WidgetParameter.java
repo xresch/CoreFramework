@@ -2,11 +2,14 @@ package com.xresch.cfw.features.dashboard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -20,12 +23,15 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterFields;
+import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.utils.TextUtils;
+import com.xresch.cfw.validation.CustomValidator;
 
 public class WidgetParameter extends WidgetDefinition {
 
 	public static final String WIDGET_TYPE = "cfw_parameter";
+	
 	
 	@Override
 	public String getWidgetType() {return WIDGET_TYPE;}
@@ -47,11 +53,19 @@ public class WidgetParameter extends WidgetDefinition {
 							@Override
 							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
 								
-								String dashboardID = request.getParameter("cfw-dashboardid");
-								
-								return CFW.DB.DashboardParameters.autocompleteParamsForDashboard(dashboardID);
+								String dashboardID = request.getParameter("cfw-dashboardid");								
+								HashSet<String> usedParamIDs = getParamIDsAlreadyInUse(dashboardID);
+
+								//---------------------------------------
+								// Return Params not already in use
+								return new CFWSQL(new DashboardParameter())
+										.select()
+										.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
+										.and().like(DashboardParameterFields.NAME, "%"+searchValue+"%")
+										.and().not().in(DashboardParameterFields.PK_ID, usedParamIDs.toArray(new Object[] {}))
+										.getAsAutocompleteResult(DashboardParameterFields.PK_ID, DashboardParameterFields.NAME, DashboardParameterFields.WIDGET_TYPE);
 							}
-						})			
+						})	
 					)
 			
 		;
@@ -128,6 +142,33 @@ public class WidgetParameter extends WidgetDefinition {
 	public HashMap<Locale, FileDefinition> getLocalizationFiles() {
 		HashMap<Locale, FileDefinition> map = new HashMap<Locale, FileDefinition>();
 		return map;
+	}
+	
+	
+	private HashSet<String> getParamIDsAlreadyInUse(String dashboardID){
+		//---------------------------------------
+		// Get Params already in use
+		ArrayList<CFWObject> paramWidgetsForDB = new CFWSQL(new DashboardWidget())
+				.queryCache()
+				.select()
+				.where(DashboardWidgetFields.FK_ID_DASHBOARD, dashboardID)
+				.and(DashboardWidgetFields.TYPE, WIDGET_TYPE)
+				.getAsObjectList();
+		
+		HashSet<String> usedParamIDs = new HashSet<>();
+		for(CFWObject object : paramWidgetsForDB) {
+			DashboardWidget widget = (DashboardWidget)object;
+			JsonObject settings = CFW.JSON.fromJson(widget.settings()).getAsJsonObject();
+			
+			if(!settings.isJsonNull() 
+			&& settings.has("JSON_PARAMETERS")
+			&& settings.get("JSON_PARAMETERS").isJsonObject()) {
+				usedParamIDs.addAll(settings.get("JSON_PARAMETERS").getAsJsonObject().keySet());
+			}
+		}
+		
+		return usedParamIDs;
+		
 	}
 
 }

@@ -748,19 +748,7 @@ public class CFWSQL {
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public CFWSQL whereIn(Object fieldname, Object ...values) {
-			
-		StringBuilder placeholders = new StringBuilder();
-		for(Object value : values) {
-			placeholders.append("?,");
-			this.values.add(value);
-		}
-		placeholders.deleteCharAt(placeholders.length()-1);
-		
-		if(!isQueryCached()) {
-			query.append(" WHERE ").append(fieldname).append(" IN(").append(placeholders).append(")");
-		}
-		
-		return this;
+		return this.where().in(fieldname, values);
 	}
 	
 	/****************************************************************
@@ -768,7 +756,15 @@ public class CFWSQL {
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	@SuppressWarnings("rawtypes")
-	public CFWSQL whereIn(Object fieldname, ArrayList values) {
+	public CFWSQL whereIn(Object fieldname, ArrayList values) {	
+		return this.where().in(fieldname, values);
+	}
+	
+	/****************************************************************
+	 * Adds a WHERE <fieldname> IN(?,?...) clause to the query.
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public CFWSQL in(Object fieldname, Object ...values) {
 			
 		StringBuilder placeholders = new StringBuilder();
 		for(Object value : values) {
@@ -778,7 +774,28 @@ public class CFWSQL {
 		placeholders.deleteCharAt(placeholders.length()-1);
 		
 		if(!isQueryCached()) {
-			query.append(" WHERE ").append(fieldname).append(" IN(").append(placeholders).append(")");
+			query.append(" ").append(fieldname).append(" IN(").append(placeholders).append(")");
+		}
+		
+		return this;
+	}
+	
+	/****************************************************************
+	 * Adds a "<fieldname> IN(?,?...)" clause to the query.
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	@SuppressWarnings("rawtypes")
+	public CFWSQL in(Object fieldname, ArrayList values) {
+			
+		StringBuilder placeholders = new StringBuilder();
+		for(Object value : values) {
+			placeholders.append("?,");
+			this.values.add(value);
+		}
+		placeholders.deleteCharAt(placeholders.length()-1);
+		
+		if(!isQueryCached()) {
+			query.append(" ").append(fieldname).append(" IN(").append(placeholders).append(")");
 		}
 		
 		return this;
