@@ -593,13 +593,20 @@ public class ServletDashboardView extends HttpServlet
 					//revert uniques of the fields to be able to save to the database.
 					form.revertFieldNames();
 						for(CFWObject object : originsMap.values()) {
-							//do not update WidgetType and Setting as the values were overridden with labels.
-							boolean success = new CFWSQL(object).updateWithout(
-									DashboardParameterFields.WIDGET_TYPE.toString(),
-									DashboardParameterFields.WIDGET_SETTING.toString());
-							if(!success) {
-								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The data with the ID '"+object.getPrimaryKey()+"' could not be saved to the database.");
-							};
+							DashboardParameter param = (DashboardParameter)object;
+							
+							if(!CFW.DB.DashboardParameters.checkIsParameterNameUsedOnUpdate(param)) {
+								//do not update WidgetType and Setting as the values were overridden with labels.
+								boolean success = new CFWSQL(param).updateWithout(
+										DashboardParameterFields.WIDGET_TYPE.toString(),
+										DashboardParameterFields.WIDGET_SETTING.toString());
+								
+								if(!success) {
+									CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The data with the ID '"+param.getPrimaryKey()+"' could not be saved to the database.");
+								};
+							}else {
+								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The parameter name is already in use: '"+param.name());
+							}
 						}
 						
 					//make fieldnames Unique again to be able to save again.

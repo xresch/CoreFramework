@@ -30,9 +30,7 @@ TODO
 - Dashboard: Timeframe Picker - show Timeframe instead of "Custom Time"
 - Dashboard: Timeframe Picker - List of Recent
 
-- Dashboard Parameters: Custom Select Options (VALUE_LABEL FieldType)
 
-- Dashboard Parameters: Test With Second Dashboard if everything is working
 - Dashboard Parameters: Create Dashboard Templates
 - Dashboard Parameters: Create Manual Pages
 - Dashboard Parameters: Make TagSelector keep the order
