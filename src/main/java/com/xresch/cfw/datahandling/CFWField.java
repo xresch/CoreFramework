@@ -118,6 +118,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		TAGS, 
 		TAGS_SELECTOR, 
 		UNMODIFIABLE_TEXT, 
+		VALUE_LABEL,
 		NONE
 	}
 		
@@ -249,6 +250,22 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			return null;
 		}
 		return new CFWField<LinkedHashMap<String,String>> (LinkedHashMap.class, FormFieldType.TAGS_SELECTOR, fieldName)
+				.setColumnDefinition("VARCHAR");
+	}
+	
+	//===========================================
+	// TAGS SELECTOR
+	//===========================================
+	public static CFWField<LinkedHashMap<String,String>> newValueLabel(Enum<?> fieldName){
+		return newValueLabel(fieldName.toString());
+	}
+	public static CFWField<LinkedHashMap<String,String>> newValueLabel(String fieldName){
+		if(!fieldName.startsWith("JSON_")) {
+			new CFWLog(logger)
+				.severe("Fieldname of VALUE_LABEL fields have to start with 'JSON_'.", new InstantiationException());
+			return null;
+		}
+		return new CFWField<LinkedHashMap<String,String>> (LinkedHashMap.class, FormFieldType.VALUE_LABEL, fieldName)
 				.setColumnDefinition("VARCHAR");
 	}
 	//###########################################################################################################
@@ -428,20 +445,24 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 									html.append("<input type=\"hidden\" "+this.getAttributesString()+"/>");
 									break;
 			
-			case WYSIWYG: 			createWYSIWYG(html, cssClasses);
-									break;						
-									
+			case SELECT:  			createSelect(html, cssClasses);
+			break;	
+			
 			case HIDDEN:  			html.append("<input type=\"hidden\" "+this.getAttributesString()+"/>");
 									break;
 			
 			case BOOLEAN:  			createBooleanRadiobuttons(html, cssClasses);
 									break;		
+										
+			case VALUE_LABEL:		createValueLabelField(html, cssClasses);
+									break;				
 									
-			case SELECT:  			createSelect(html, cssClasses);
-									break;	
-									
+			case WYSIWYG: 			createWYSIWYG(html, cssClasses);
+									break;						
+			
 			case LIST:  			createList(html, cssClasses);
-									break;	
+									break;
+									
 			case EMAIL:  			html.append("<input type=\"email\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 									break;
 								
@@ -710,6 +731,27 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			}else {
 				((CFWForm)this.parent).javascript.append("cfw_initializeTagsField('"+name+"', "+maxTags+");\r\n");
 			}
+		}
+				
+	}
+	
+	/***********************************************************************************
+	 * Create DatePicker
+	 ***********************************************************************************/
+	private void createValueLabelField(StringBuilder html, String cssClasses) {
+		
+//		int maxTags = 128;
+//		
+//		if(attributes.containsKey("maxTags")) {
+//			maxTags = Integer.parseInt(attributes.get("maxTags"));
+//		}
+		
+		//---------------------------------
+		// Create Field
+		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"valuelabel\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
+		
+		if(this.parent instanceof CFWForm) {
+			((CFWForm)this.parent).javascript.append("cfw_initializeValueLabelField('"+name+"', "+CFW.JSON.toJSON(value)+");\r\n");
 		}
 				
 	}

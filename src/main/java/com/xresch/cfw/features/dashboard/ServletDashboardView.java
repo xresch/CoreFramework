@@ -383,12 +383,22 @@ public class ServletDashboardView extends HttpServlet
 			JsonArray parametersArray = new JsonArray();
 			//--------------------------------------------
 			// Add Default Params
+			
+			// Regular Text
 			JsonObject textParamObject = new JsonObject();
 			textParamObject.add("widgetType", null);
 			textParamObject.add("widgetSetting", null);
 			textParamObject.addProperty("label", "Text");
 			
 			parametersArray.add(textParamObject);
+			
+			// Custom Select
+			JsonObject selectParamObject = new JsonObject();
+			selectParamObject.add("widgetType", null);
+			selectParamObject.add("widgetSetting", null);
+			selectParamObject.addProperty("label", "Select");
+			
+			parametersArray.add(selectParamObject);
 			
 			//--------------------------------------------
 			// Add Params for Widgets on Dashboard
@@ -464,7 +474,7 @@ public class ServletDashboardView extends HttpServlet
 									param.isModeChangeAllowed(false);
 									break;
 									
-					case "Select": 	param.paramType(FormFieldType.SELECT);
+					case "Select": 	param.paramType(FormFieldType.VALUE_LABEL);
 									param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
 									param.isModeChangeAllowed(false);
 									break;	
@@ -563,7 +573,7 @@ public class ServletDashboardView extends HttpServlet
 		String dashboardID = request.getParameter("dashboardid");
 		ArrayList<CFWObject> parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(dashboardID);
 		
-		DashboardParameter.prepareParamObjectsForForm(parameterList);
+		DashboardParameter.prepareParamObjectsForForm(parameterList, false);
 		
 		//===========================================
 		// Create Form

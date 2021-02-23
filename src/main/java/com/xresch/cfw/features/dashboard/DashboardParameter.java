@@ -276,13 +276,14 @@ public class DashboardParameter extends CFWObject {
 	/*****************************************************************
 	 *
 	 *****************************************************************/
-	public static void prepareParamObjectsForForm(ArrayList<CFWObject> parameterList) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static void prepareParamObjectsForForm(ArrayList<CFWObject> parameterList, boolean transformValueLabelToSelect) {
 		//===========================================
 		// Replace Value Field
 		//===========================================
 		for(CFWObject object : parameterList) {
 			DashboardParameter param = (DashboardParameter)object;
-			CFWField currentValueField = param.getField(DashboardParameterFields.VALUE.toString());
+			CFWField<String> currentValueField = (CFWField<String>)param.getField(DashboardParameterFields.VALUE.toString());
 			CFWField newValueField;
 			if(param.widgetType() != null) {
 				//---------------------------------------
@@ -298,29 +299,43 @@ public class DashboardParameter extends CFWObject {
 				//adjust labels
 				param.widgetSetting(newValueField.getLabel()); //change value displayed in column "Widget Setting"
 				newValueField.setLabel("Value"); //Change name of column to "Value"
+				
+				//currentValue field is always a String field
+				newValueField.setValueConvert(currentValueField.getValue());
+
 			}else {
 				//----------------------------
 				// Add Field 
 				switch(param.paramType()) {
 					case TEXT: 	
-						newValueField = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE);
+									newValueField = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE);
+									newValueField.setValueConvert(currentValueField.getValue());
 									break;
 									
-					case SELECT: 	
-						newValueField = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.VALUE);
+					case VALUE_LABEL: 	
+									if(transformValueLabelToSelect) {
+										newValueField = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.VALUE);
+										LinkedHashMap<String, String> options = CFW.JSON.fromJsonLinkedHashMap(currentValueField.getValue());
+										newValueField.setOptions(options);
+									}else {
+										newValueField = CFWField.newValueLabel("JSON_VALUE");
+										newValueField.setName(DashboardParameterFields.VALUE.toString());
+										newValueField.setValueConvert(currentValueField.getValue());
+									}
 									break;
 									
 					case BOOLEAN: 	
-						newValueField = CFWField.newString(FormFieldType.BOOLEAN, DashboardParameterFields.VALUE);
+									newValueField = CFWField.newString(FormFieldType.BOOLEAN, DashboardParameterFields.VALUE);
+									newValueField.setValueConvert(currentValueField.getValue());
 									break;	
 									
 					default: /*Unknown type*/ return;
 				}
 			}
-			//currentValue field is always a String field
-			newValueField.setValueConvert(currentValueField.getValue());
+			
 			param.getFields().remove(DashboardParameterFields.VALUE.toString());
 			param.addField(newValueField);
+
 		}
 	}
 	

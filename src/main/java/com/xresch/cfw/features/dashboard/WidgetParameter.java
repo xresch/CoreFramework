@@ -100,7 +100,7 @@ public class WidgetParameter extends WidgetDefinition {
 				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.WIDGET_SETTING.toString())
 				.getAsObjectList();
 		
-		DashboardParameter.prepareParamObjectsForForm(paramsResultArray);
+		DashboardParameter.prepareParamObjectsForForm(paramsResultArray, true);
 		
 		//--------------------------------------
 		// Add on change event for triggering updates

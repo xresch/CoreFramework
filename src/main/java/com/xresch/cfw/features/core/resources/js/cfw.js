@@ -422,6 +422,97 @@ function cfw_initializeTagsSelectorField(fieldID, maxTags, values){
 }
 
 /**************************************************************************************
+ * Initialize a TagField created with the Java object CFWField.
+ * @param fieldID the name of the field
+ * @return nothing
+ *************************************************************************************/
+function cfw_initializeValueLabelField(fieldID, values){
+	
+	var id = '#'+fieldID;
+
+	var valueLabelField = $(id);
+
+	
+	var wrapper = $('<div class="cfw-value-label-field-wrapper flex-grow-1">');
+	valueLabelField.before(wrapper);
+	wrapper.append(valueLabelField);
+	valueLabelField.val(JSON.stringify(values));
+	
+	//----------------------------------
+	// Add Classes
+	var classes = valueLabelField.attr('class');
+	valueLabelField.addClass('d-none');
+
+	//----------------------------------
+	// Add Values
+	for(var key in values){
+		var fields = cfw_initializeValueLabelField_createField(key, values[key]);
+		wrapper.append(fields);
+	}
+	
+	//----------------------------------
+	// Add At least one Empty Line
+	wrapper.append(cfw_initializeValueLabelField_createField('', ''));
+	
+	//----------------------------------
+	// Add Create Button
+	wrapper.append(
+			'<div class="d-flex">'
+				+'<div class="flex-grow-1">&nbsp;</div>'
+				+'<div class="btn btn-sm btn-primary" onclick="cfw_internal_addValueLabelField(this)"><i class="fas fa-plus-circle"></i></div>'
+			+'</div>'
+		);
+	
+}
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_initializeValueLabelField_createField(key, value){
+	return '<div class="cfw-value-label d-flex">'
+			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Value" onchange="cfw_internal_updateValueLabelField(this)" value="'+key+'">'
+			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Label" onchange="cfw_internal_updateValueLabelField(this)" value="'+value+'">'	
+	+'</div>';	
+}
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_internal_addValueLabelField(element){
+	
+	var button = $(element)
+	var buttonParent = button.parent();
+	
+	buttonParent.before(cfw_initializeValueLabelField_createField('', ''))
+
+}
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_internal_updateValueLabelField(element){
+	
+	var wrapper = $(element).closest('.cfw-value-label-field-wrapper');
+	
+	var originalField = wrapper.find('> input');
+	
+	var newValueLabels = {};
+	wrapper.find('.cfw-value-label').each(function(index, element){
+		let current = $(element);
+		let value = current.find('input:first').val();
+		let label = current.find('input:last').val();
+		
+		if(!CFW.utils.isNullOrEmpty(value)
+		|| !CFW.utils.isNullOrEmpty(label)){
+			newValueLabels[value] = label;
+		}
+	})
+	
+	originalField.val(JSON.stringify(newValueLabels));
+
+}
+
+
+/**************************************************************************************
  * Initialize a Date and/or Timepicker created with the Java object CFWField.
  * @param fieldID the name of the field
  * @param epochMillis the initial date in epoch time or null
