@@ -35,7 +35,6 @@ TODO
 - Dashboard Parameters: Create Manual Pages
 - Dashboard Parameters: Make TagSelector keep the order
 - Dashboard Parameters: Form initialization: filter as well by form or formID to not mess with params with same name/ID
-
 - Dashboard Parameters: Allow same parameter max once per dashboard
 
 - Widget: Dashboard Link
