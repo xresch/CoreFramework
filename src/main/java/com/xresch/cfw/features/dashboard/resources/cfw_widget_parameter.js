@@ -59,9 +59,17 @@
 							}else if(inputField.hasClass('cfw-tags-selector')){
 								var tagsInputValues = JSON.parse(viewerCustomValue);
 								//must be initialized to add values
+								inputField.tagsinput('removeAll');
 								for(var key in tagsInputValues){
-									console.log( "value: "+ key+ ", label:"+ tagsInputValues[key])
 									inputField.tagsinput('add', { "value": key , "label": tagsInputValues[key] });
+								}
+							}else if(inputField.hasClass('cfw-tags')){
+								var tagsInputValues = viewerCustomValue.split(',');
+								//must be initialized to add values
+								inputField.tagsinput('removeAll');
+								for(var index in tagsInputValues){
+									inputField.tagsinput('add', tagsInputValues[index]);
+									console.log("567 - "+ tagsInputValues[index])
 								}
 							}else{
 								inputField.val(viewerCustomValue);

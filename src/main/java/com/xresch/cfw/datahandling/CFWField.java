@@ -472,7 +472,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			case DATETIMEPICKER:  	createDateTimePicker(html, cssClasses);
 									break;
 			
-			case TAGS:			  	createTagsField(html, cssClasses, FormFieldType.TAGS);
+			case TAGS:			  	createTagsField(html, cssClasses+" cfw-tags", FormFieldType.TAGS);
 									break;
 									
 			case TAGS_SELECTOR:		createTagsField(html, cssClasses+" cfw-tags-selector", FormFieldType.TAGS_SELECTOR);

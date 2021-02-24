@@ -637,7 +637,7 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 		//console.log('currentSettingName: '+currentSettingName);
 		//console.log('settingsValue: '+widgetJsonSettings[currentSettingName]);
 		//console.log('paramValue: '+paramValue);
-		
+
 		// ----------------------------------------
 		// Handle General Params
 		if(CFW.utils.isNullOrEmpty(currentParam.WIDGET_TYPE)){
