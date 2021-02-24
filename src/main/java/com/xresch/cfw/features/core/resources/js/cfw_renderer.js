@@ -457,7 +457,8 @@ function cfw_renderer_table(renderDef) {
 			if(currentRecord[renderDef.textstylefield] != null){
 				row.addClass('text-'+currentRecord[renderDef.textstylefield]);
 			}else{
-				if(renderDef.bgstylefield != null && currentRecord[renderDef.bgstylefield] != null){
+				if(renderDef.bgstylefield != null && currentRecord[renderDef.bgstylefield] != null
+				&& currentRecord[renderDef.bgstylefield] != "cfw-none"){
 					row.addClass('text-dark');
 				}
 			}
