@@ -17,7 +17,7 @@ public class AutocompleteItem {
 	public  AutocompleteItem() {}
 	
 	public  AutocompleteItem(Object value) {
-		this.value = value;
+		this(value, value);
 	}
 	
 	public  AutocompleteItem(Object value, Object label) {

@@ -651,7 +651,7 @@
 	word-break: break-all;
 }
 	    
-.autocomplete-list div {
+.autocomplete-item {
   padding: 10px;
   cursor: pointer;
   background-color: #fff;
@@ -659,6 +659,10 @@
   border-bottom: 1px solid #d4d4d4;
   border-left: 1px solid #d4d4d4;
   
+}
+
+.autocomplete-item-sm {
+  padding: 5px;
 }
 
 .autocomplete-list div p {

@@ -866,6 +866,11 @@ function cfw_autocompleteCreateItemList(targetInputField, values){
 	itemList.attr("id", autocompleteID);
 	itemList.addClass("autocomplete-list flex-fill");
 			
+	var itemClass = "autocomplete-item";
+	if($(targetInputField).hasClass("form-control-sm")){
+		itemClass += " autocomplete-item-sm";
+	}
+	
 	//----------------------------
 	// Iterate values object
 	for (var key in values) {
@@ -877,7 +882,8 @@ function cfw_autocompleteCreateItemList(targetInputField, values){
 		var method = values[key].method;	
 		//----------------------------
 		// Create Item
-		var item = $('<div class="autocomplete-item">');
+
+		var item = $('<div class="'+itemClass+'">');
 		
 		// make the matching letters bold:
 		var index = label.toUpperCase().indexOf(searchString.toUpperCase());
