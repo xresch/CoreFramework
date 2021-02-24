@@ -620,7 +620,7 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 // PARAM_TYPE: "SELECT"
 // PK_ID: 164
 // VALUE: "737"
-// WIDGET_SETTING: "environment"
+// LABEL: "environment"
 // WIDGET_TYPE: "emp_prometheus_range_chart"
 	
 	widgetType = widgetObject.TYPE;
@@ -629,7 +629,7 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 	var finalParams =cfw_dashboard_parameters_getFinalParams();
 	for(var index in finalParams){
 		var currentParam = finalParams[index];
-		var currentSettingName = currentParam.WIDGET_SETTING;
+		var currentSettingName = currentParam.LABEL;
 		var paramValue = currentParam.VALUE;
 		
 		//console.log('=========================================');
@@ -650,15 +650,15 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 						 if (typeof oldSettingsValue == "string"){
 							widgetJsonSettings[key] = 
 								oldSettingsValue.replaceAll('$'+currentParam.NAME+'$', paramValue);
-							//console.log('C: '+widgetJsonSettings[key]);
+							console.log('applyToWidgetSettings-A-string: '+widgetJsonSettings[key]);
 						}else if (currentParam.PARAM_TYPE == "BOOLEAN" 
 							&& typeof oldSettingsValue == "boolean"
 							&& oldSettingsValue == ('$'+currentParam.NAME+'$') ){
 							widgetJsonSettings[key] = paramValue;
-							//console.log('D: '+widgetJsonSettings[key]);
+							console.log('applyToWidgetSettings-A-boolean: '+widgetJsonSettings[key]);
 						}else{
-							//console.log('>>>>>> missed settingName: '+key);
-							//console.log('>>>>>> missed oldsettingValue: '+widgetJsonSettings[key]);
+							console.log('>>>>> applyToWidgetSettings-A-missed: '+key);
+							console.log('>>>>> applyToWidgetSettings-A-missedvalue: '+widgetJsonSettings[key]);
 						}	
 					}
 		}else {

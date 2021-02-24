@@ -98,7 +98,7 @@ public class WidgetParameter extends WidgetDefinition {
 		ArrayList<CFWObject> paramsResultArray = new CFWSQL(new DashboardParameter())
 				.select()
 				.whereIn(DashboardParameterFields.PK_ID, paramIDs)
-				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.WIDGET_SETTING.toString())
+				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.LABEL.toString())
 				.getAsObjectList();
 		
 		DashboardParameter.prepareParamObjectsForForm(request, paramsResultArray, true);

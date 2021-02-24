@@ -56,7 +56,7 @@ public class DashboardParameter extends CFWObject {
 		PK_ID,
 		FK_ID_DASHBOARD,
 		WIDGET_TYPE,
-		WIDGET_SETTING,
+		LABEL,
 		PARAM_TYPE,
 		NAME,
 		VALUE,
@@ -85,8 +85,8 @@ public class DashboardParameter extends CFWObject {
 	private CFWField<String> widgetType = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardParameterFields.WIDGET_TYPE)
 			.setDescription("The type of the widget.");
 	
-	private CFWField<String> widgetSetting = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardParameterFields.WIDGET_SETTING)
-			.setDescription("The setting of the widget.");
+	private CFWField<String> paramLabel = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardParameterFields.LABEL)
+			.setDescription("The label of the parameter.");
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.NAME)
 			.setDescription("The name of the parameter. This name will be used as a placeholder like '$name$' in the widget settings.")
@@ -136,7 +136,7 @@ public class DashboardParameter extends CFWObject {
 		
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyDashboard, widgetType, widgetSetting, paramType, name, value, mode, isModeChangeAllowed);
+		this.addFields(id, foreignKeyDashboard, widgetType, paramLabel, paramType, name, value, mode, isModeChangeAllowed);
 	}
 
 	
@@ -159,7 +159,7 @@ public class DashboardParameter extends CFWObject {
 					DashboardParameterFields.PK_ID.toString(), 
 					DashboardParameterFields.FK_ID_DASHBOARD.toString(), 
 					DashboardParameterFields.WIDGET_TYPE.toString(),
-					DashboardParameterFields.WIDGET_SETTING.toString(),
+					DashboardParameterFields.LABEL.toString(),
 					DashboardParameterFields.PARAM_TYPE.toString(),
 					DashboardParameterFields.NAME.toString(),
 					DashboardParameterFields.VALUE.toString(),
@@ -220,12 +220,12 @@ public class DashboardParameter extends CFWObject {
 	}
 	
 	
-	public String widgetSetting() {
-		return widgetSetting.getValue();
+	public String paramSettingsLabel() {
+		return paramLabel.getValue();
 	}
 	
-	public DashboardParameter widgetSetting(String value) {
-		this.widgetSetting.setValue(value);
+	public DashboardParameter paramSettingsLabel(String value) {
+		this.paramLabel.setValue(value);
 		return this;
 	}
 	
@@ -321,14 +321,15 @@ public class DashboardParameter extends CFWObject {
 				WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(param.widgetType());
 				CFWObject settings = definition.getSettings();
 
-				// param.widgetSetting() returns the actual name of the setting
-				newValueField = settings.getField(param.widgetSetting());
-				newValueField.setName(DashboardParameterFields.VALUE.toString());
-				newValueField.setDescription("The value of the parameter.");
+				// param.paramSettingsLabel() returns the actual name of the setting
+				newValueField = settings.getField(param.paramSettingsLabel());
 				
 				//adjust labels
-				param.widgetSetting(newValueField.getLabel()); //change value displayed in column "Widget Setting"
+				param.paramSettingsLabel(newValueField.getName()); //change value displayed in column "Widget Setting"
 				newValueField.setLabel("Value"); //Change name of column to "Value"
+				
+				newValueField.setName(DashboardParameterFields.VALUE.toString());
+				newValueField.setDescription("The value of the parameter.");
 				
 				//currentValue field is always a String field
 				newValueField.setValueConvert(currentValueField.getValue());
@@ -336,7 +337,7 @@ public class DashboardParameter extends CFWObject {
 			}else {
 				//----------------------------
 				// Add From ParamDefinition 
-				ParameterDefinition def = CFW.Registry.Parameters.getDefinition(param.widgetSetting());
+				ParameterDefinition def = CFW.Registry.Parameters.getDefinition(param.paramSettingsLabel());
 				if(def != null) {
 					if(doForWidget) {
 						newValueField = def.getFieldForWidget(request, dashboardID, currentValueField.getValue());
@@ -346,7 +347,7 @@ public class DashboardParameter extends CFWObject {
 					newValueField.setName(DashboardParameterFields.VALUE.toString());
 					newValueField.setLabel("Value");
 				}else {
-					new CFWLog(logger).severe("Parameter definition could not be found:"+param.widgetSetting(), new IllegalArgumentException());
+					new CFWLog(logger).severe("Parameter definition could not be found:"+param.paramSettingsLabel(), new IllegalArgumentException());
 					continue;
 				}
 

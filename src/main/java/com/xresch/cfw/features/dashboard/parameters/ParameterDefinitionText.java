@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.dashboard.parameters;
 
+import java.util.HashSet;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw.datahandling.CFWField;
@@ -38,6 +40,14 @@ public class ParameterDefinitionText extends ParameterDefinition {
 	public CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object fieldValue) {
 
 		return getFieldForSettings(request, dashboardid, fieldValue);
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public boolean isAvailable(HashSet<String> widgetTypesArray) {
+		return true;
 	}
 
 }

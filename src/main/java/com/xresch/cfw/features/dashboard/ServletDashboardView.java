@@ -383,18 +383,7 @@ public class ServletDashboardView extends HttpServlet
 		
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
-			JsonArray parametersArray = new JsonArray();
-			//--------------------------------------------
-			// Add Params from Definitions
-			for(ParameterDefinition def : CFW.Registry.Parameters.getParameterDefinitions().values()) {
-				JsonObject paramObject = new JsonObject();
-				paramObject.add("widgetType", null);
-				paramObject.add("widgetSetting", null);
-				paramObject.addProperty("label", def.getParamLabel());
-				
-				parametersArray.add(paramObject);
-			}
-
+			JsonArray widgetParametersArray = new JsonArray();
 			
 			//--------------------------------------------
 			// Add Params for Widgets on Dashboard
@@ -420,13 +409,29 @@ public class ServletDashboardView extends HttpServlet
 						paramObject.addProperty("widgetSetting", field.getName());
 						paramObject.addProperty("label", field.getLabel());
 						
-						parametersArray.add(paramObject);
+						widgetParametersArray.add(paramObject);
 						
 					}
 				}	
 			}
 			
-			response.getContent().append(parametersArray.toString());
+			//--------------------------------------------
+			// Add Params from Definitions
+			JsonArray parameterDefArray = new JsonArray();
+			
+			for(ParameterDefinition def : CFW.Registry.Parameters.getParameterDefinitions().values()) {
+				if(def.isAvailable(uniqueTypeChecker)) {
+					JsonObject paramObject = new JsonObject();
+					paramObject.add("widgetType", null);
+					paramObject.add("widgetSetting", null);
+					paramObject.addProperty("label", def.getParamLabel());
+					
+					parameterDefArray.add(paramObject);
+				}
+			}
+			
+			parameterDefArray.addAll(widgetParametersArray);
+			response.getContent().append(parameterDefArray.toString());
 		}else{
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to load dashboard parameters.");
 		}
@@ -460,7 +465,7 @@ public class ServletDashboardView extends HttpServlet
 
 			if(Strings.isNullOrEmpty(widgetSetting)) {
 				param.widgetType(null);
-				param.widgetSetting(null);
+				param.paramSettingsLabel(null);
 				
 				//----------------------------
 				// Handle Default Params
@@ -469,7 +474,7 @@ public class ServletDashboardView extends HttpServlet
 				if(def != null) {
 					CFWField paramField = def.getFieldForSettings(request, dashboardID, null);
 					param.paramType(paramField.fieldType());
-					param.widgetSetting(def.getParamLabel());
+					param.paramSettingsLabel(def.getParamLabel());
 					param.name(label.toLowerCase()+"_"+CFW.Random.randomStringAlphaNumerical(6));
 					param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
 					param.isModeChangeAllowed(false);
@@ -495,7 +500,7 @@ public class ServletDashboardView extends HttpServlet
 					return;
 				}else {
 					param.widgetType(widgetType);
-					param.widgetSetting(widgetSetting);
+					param.paramSettingsLabel(widgetSetting);
 					param.name(widgetSetting+"_"+CFW.Random.randomStringAlphaNumerical(6));
 					param.paramType(settingsField.fieldType()); // used to fetch similar field types
 					param.getField(DashboardParameterFields.VALUE.toString()).setValueConvert(settingsField.getValue());
@@ -591,7 +596,7 @@ public class ServletDashboardView extends HttpServlet
 								//do not update WidgetType and Setting as the values were overridden with labels.
 								boolean success = new CFWSQL(param).updateWithout(
 										DashboardParameterFields.WIDGET_TYPE.toString(),
-										DashboardParameterFields.WIDGET_SETTING.toString());
+										DashboardParameterFields.LABEL.toString());
 								
 								if(!success) {
 									CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The data with the ID '"+param.getPrimaryKey()+"' could not be saved to the database.");
@@ -626,20 +631,45 @@ public class ServletDashboardView extends HttpServlet
 					DashboardParameter paramToAutocomplete = (DashboardParameter)origins.get(paramIDNumber);
 					String widgetType = paramToAutocomplete.widgetType();
 					
-					//------------------------------------
-					//Find all Settings from the same Widget Type
 					Map<String, String[]> extraParams = new HashMap<String, String[]>();
-					for(CFWObject object : origins.values() ) {
-						DashboardParameter currentParam = (DashboardParameter)object;
-						System.out.println("===== currentParam.widgetType(): "+currentParam.widgetType());
-						System.out.println("widgetType: "+widgetType);
-						if(currentParam.widgetType() != null && currentParam.widgetType().equals(widgetType)) {
-							String paramName = currentParam.widgetSetting();
-							String valueFieldName = currentParam.id()+"-"+DashboardParameterFields.VALUE;
-							String paramValue = request.getParameter(valueFieldName);
-							System.out.println("paramName: "+paramName);
-							System.out.println("paramValue: "+paramValue);
-					        extraParams.put(paramName, new String[] { paramValue });
+					if(widgetType != null) {
+						//------------------------------------
+						//Find all Settings from the same Widget Type
+						
+						for(CFWObject object : origins.values() ) {
+							DashboardParameter currentParam = (DashboardParameter)object;
+							if(currentParam.widgetType() != null && currentParam.widgetType().equals(widgetType)) {
+								String paramName = currentParam.paramSettingsLabel();
+								String valueFieldName = currentParam.id()+"-"+DashboardParameterFields.VALUE;
+								String paramValue = request.getParameter(valueFieldName);
+						        extraParams.put(paramName, new String[] { paramValue });
+							}
+						}
+					}else {
+						System.out.println("Hit A");
+						String label = paramToAutocomplete.paramSettingsLabel();
+						ParameterDefinition def = CFW.Registry.Parameters.getDefinition(label);
+						for(CFWObject object : origins.values() ) {
+							System.out.println(" >> Hit B");
+							DashboardParameter currentParam = (DashboardParameter)object;
+							
+							if(currentParam.widgetType() != null ) {
+								System.out.println(" >>>> Hit C "+currentParam.widgetType());
+								HashSet<String> widgetTypesArray = new HashSet<>();
+								widgetTypesArray.add(currentParam.widgetType());
+								
+								if(def.isAvailable(widgetTypesArray)) {
+									System.out.println(" >>>>>> Hit D "+currentParam.widgetType());
+									String currentName = currentParam.paramSettingsLabel();
+									String valueFieldName = currentParam.id()+"-"+DashboardParameterFields.VALUE;
+									String currentParamValue = request.getParameter(valueFieldName);
+									System.out.println(" >>>>>> Hit currentName: "+currentName);
+									System.out.println(" >>>>>> Hit valueFieldName: "+valueFieldName);
+									System.out.println(" >>>>>> Hit currentParamValue: "+currentParamValue);
+							        extraParams.put(currentName, new String[] { currentParamValue });
+								}
+								
+							}
 						}
 					}
 					

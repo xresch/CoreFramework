@@ -108,7 +108,7 @@ public class CFWDBDashboardParameter {
 				.queryCache()
 				.select()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.WIDGET_SETTING.toString())
+				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.LABEL.toString())
 				.getAsJSON();
 		
 	}
@@ -124,7 +124,7 @@ public class CFWDBDashboardParameter {
 				.queryCache()
 				.select()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.WIDGET_SETTING.toString())
+				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.LABEL.toString())
 				.getAsObjectList();
 		
 	}
@@ -208,8 +208,8 @@ public class CFWDBDashboardParameter {
 						
 			sql.custom(")")
 				.and().custom("(")
-					.is(DashboardParameterFields.WIDGET_SETTING, widgetSetting);
-					if(allowGenericParams) sql.or().isNull(DashboardParameterFields.WIDGET_SETTING);
+					.is(DashboardParameterFields.LABEL, widgetSetting);
+					if(allowGenericParams) sql.or().isNull(DashboardParameterFields.LABEL);
 					
 		return sql.custom(")")
 				.getAsObjectList();

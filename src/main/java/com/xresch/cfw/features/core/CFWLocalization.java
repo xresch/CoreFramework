@@ -278,6 +278,70 @@ public class CFWLocalization {
 		return mergedPorperties;
 	}
 	
+	/******************************************************************************************
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 ******************************************************************************************/
+	public static String localizeString(HttpServletRequest request, String toLocalize) throws IOException{
+		return localizeString(request, new StringBuilder(toLocalize));
+	}
+	/******************************************************************************************
+	 * 
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 ******************************************************************************************/
+	public static String localizeString(HttpServletRequest request, StringBuilder sb) throws IOException{
+		
+		AbstractResponse template = CFW.Context.Request.getResponse();
+		
+		Properties langMap;
+		if(template.useGlobaleLocale() == false) {
+			langMap = getLanguagePackForRequest();
+		}else {
+			langMap = getAllProperties();
+		}
+				
+		int fromIndex = 0;
+		int leftIndex = 0;
+		int rightIndex = 0;
+		int length = sb.length();
+		
+		while(fromIndex < length && leftIndex < length){
+		
+			leftIndex = sb.indexOf(CFWLocalization.LOCALE_LB, fromIndex);
+			
+			if(leftIndex != -1){
+				rightIndex = sb.indexOf(CFWLocalization.LOCALE_RB, leftIndex);
+				
+				if(rightIndex != -1 && (leftIndex+CFWLocalization.LOCALE_LB_SIZE) < rightIndex){
+
+					String propertyName = sb.substring(leftIndex+CFWLocalization.LOCALE_LB_SIZE, rightIndex);
+					if(langMap != null && langMap.containsKey(propertyName)){
+						sb.replace(leftIndex, rightIndex+CFWLocalization.LOCALE_RB_SIZE, langMap.getProperty(propertyName));
+					}
+					//start again from leftIndex
+					fromIndex = leftIndex+1;
+					
+				}else{
+					//TODO: Localize message
+					new CFWLog(logger)
+						.finest("Localization Parameter was missing the right bound");
+				
+					break;
+				}
+				
+			}else{
+				//no more stuff found to replace
+				break;
+			}
+		}
+		
+		return sb.toString();
+	}
+		
 	
 	/******************************************************************************************
 	 * 
@@ -290,51 +354,9 @@ public class CFWLocalization {
 		AbstractResponse template = CFW.Context.Request.getResponse();
 		
 		if(template != null){
-			Properties langMap;
-			if(template.useGlobaleLocale() == false) {
-				langMap = getLanguagePackForRequest();
-			}else {
-				langMap = getAllProperties();
-			}
 			
-			StringBuilder sb = template.buildResponse();
-			
-			int fromIndex = 0;
-			int leftIndex = 0;
-			int rightIndex = 0;
-			int length = sb.length();
-			
-			while(fromIndex < length && leftIndex < length){
-			
-				leftIndex = sb.indexOf(CFWLocalization.LOCALE_LB, fromIndex);
-				
-				if(leftIndex != -1){
-					rightIndex = sb.indexOf(CFWLocalization.LOCALE_RB, leftIndex);
-					
-					if(rightIndex != -1 && (leftIndex+CFWLocalization.LOCALE_LB_SIZE) < rightIndex){
-	
-						String propertyName = sb.substring(leftIndex+CFWLocalization.LOCALE_LB_SIZE, rightIndex);
-						if(langMap != null && langMap.containsKey(propertyName)){
-							sb.replace(leftIndex, rightIndex+CFWLocalization.LOCALE_RB_SIZE, langMap.getProperty(propertyName));
-						}
-						//start again from leftIndex
-						fromIndex = leftIndex+1;
-						
-					}else{
-						//TODO: Localize message
-						new CFWLog(logger)
-							.finest("Localization Parameter was missing the right bound");
-					
-						break;
-					}
-					
-				}else{
-					//no more stuff found to replace
-					break;
-				}
-			}
-			
-			response.getWriter().write(sb.toString());
+			String localized = localizeString(request, template.buildResponse());
+			response.getWriter().write(localized);
 		}
 	}
 }

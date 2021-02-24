@@ -341,7 +341,7 @@ function cfw_initializeTagsField(fieldID, maxTags){
 	
 	tagsfield.tagsinput({
 		tagClass: 'cfw-tag btn-primary',
-		maxTags: 255,
+		maxTags: maxTags,
 		maxChars: 1024,
 		trimValue: true,
 		allowDuplicates: false,

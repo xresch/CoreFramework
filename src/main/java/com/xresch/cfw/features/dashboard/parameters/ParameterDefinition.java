@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.dashboard.parameters;
 
+import java.util.HashSet;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw.datahandling.CFWField;
@@ -14,22 +16,32 @@ public abstract class ParameterDefinition {
 	public abstract String getParamLabel();
 	
 	/************************************************************
-	 * Create a json response containing the data you need for 
-	 * your widget.
-	 * @param request TODO
+	 * Creates the field for the Parameter Settings table.
+	 * @param request
+	 * @param dashboardid
+	 * @param fieldValue 
 	 * @return JSON string
 	 ************************************************************/
 	@SuppressWarnings({ "rawtypes"})
 	public abstract CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue);
 
 	/************************************************************
-	 * Create a json response containing the data you need for 
-	 * your widget.
-	 * @param request TODO
+	 * Creates the field for the Parameter Widget.
+	 * @param request
+	 * @param dashboardid
+	 * @param fieldValue 
 	 * @return JSON string
 	 ************************************************************/
 	@SuppressWarnings({ "rawtypes"})
 	public abstract CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object fieldValue);
 
 	
+	/************************************************************
+	 * Return true if the parameter is available based on the
+	 * given widget types.
+	 * @param widgetTypesArray unique list of types.
+	 * @return true if available
+	 ************************************************************/
+	public abstract boolean isAvailable(HashSet<String> widgetTypesArray);
+			
 }

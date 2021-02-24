@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.dashboard.parameters;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +50,14 @@ public class ParameterDefinitionSelect extends ParameterDefinition {
 		}			
 
 		return settingsField;
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public boolean isAvailable(HashSet<String> widgetTypesArray) {
+		return true;
 	}
 
 }

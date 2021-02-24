@@ -602,6 +602,9 @@
 .bootstrap-tagsinput-inline {
 	max-width: 400px;
 }
+.bootstrap-tagsinput-inline > input {
+	min-width: 200px;
+}
 .bootstrap-tagsinput-sm .cfw-tag{
     padding: 0.25rem 0.25rem;
     margin-right: 0.15rem !important;
