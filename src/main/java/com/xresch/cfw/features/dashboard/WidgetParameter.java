@@ -22,8 +22,9 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
+import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
+import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.utils.TextUtils;
 import com.xresch.cfw.validation.CustomValidator;
@@ -100,7 +101,7 @@ public class WidgetParameter extends WidgetDefinition {
 				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.WIDGET_SETTING.toString())
 				.getAsObjectList();
 		
-		DashboardParameter.prepareParamObjectsForForm(paramsResultArray, true);
+		DashboardParameter.prepareParamObjectsForForm(request, paramsResultArray, true);
 		
 		//--------------------------------------
 		// Add on change event for triggering updates

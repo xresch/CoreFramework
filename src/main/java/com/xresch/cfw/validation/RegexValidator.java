@@ -16,6 +16,10 @@ public class RegexValidator extends AbstractValidator {
 		this.pattern = pattern;
 	}
 	
+	public RegexValidator(String pattern){
+		this.pattern = pattern;
+	}
+	
 	@Override
 	public boolean validate(Object value) {
 		
@@ -23,7 +27,7 @@ public class RegexValidator extends AbstractValidator {
 			return true;
 		}else{
 			StringBuilder sb = new StringBuilder();
-			sb.append("The value of the argument ");
+			sb.append("The value of  ");
 			sb.append(this.getValidatable().getName());
 			sb.append(" did not match the pattern '");
 			sb.append(pattern);

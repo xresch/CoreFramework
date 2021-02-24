@@ -640,8 +640,7 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 		
 		// ----------------------------------------
 		// Handle General Params
-		if(CFW.utils.isNullOrEmpty(currentParam.WIDGET_TYPE)
-		&& CFW.utils.isNullOrEmpty(currentSettingName)){
+		if(CFW.utils.isNullOrEmpty(currentParam.WIDGET_TYPE)){
 					// -------------------------------------
 					// Replace Regular Parameters
 					for(var key in widgetJsonSettings){
@@ -703,55 +702,6 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 					}
 					break;
 			}
-			
-// TEXT,
-// TEXTAREA,
-// PASSWORD,
-// NUMBER,
-// EMAIL,
-// HIDDEN,
-// BOOLEAN,
-// SELECT,
-// LIST,
-// WYSIWYG,
-// DATEPICKER,
-// DATETIMEPICKER,
-// TAGS,
-// TAGS_SELECTOR,
-// UNMODIFIABLE_TEXT,
-// NONE
-			
-// if(currentParam.MODE == "MODE_SUBSTITUTE"){
-// if (typeof oldSettingsValue == "string"){
-// widgetJsonSettings[currentSettingName] =
-// oldSettingsValue.replaceAll('$'+currentParam.NAME+'$',paramValue);
-// console.log('A: '+widgetJsonSettings[currentSettingName]);
-// }else if(typeof oldSettingsValue == "object"){
-// // objects, numbers etc...
-// widgetJsonSettings[currentSettingName] = paramValue;
-// console.log('B2: '+widgetJsonSettings[currentSettingName]);
-// }
-// }else if(currentParam.MODE == "MODE_GLOBAL_OVERRIDE"){
-//				
-// if (typeof oldSettingsValue == "boolean"){
-//					
-// paramValue = paramValue.toLowerCase().trim();
-// switch(paramValue){
-// case "true": case "yes": case "1": widgetJsonSettings[currentSettingName] =
-// true;
-// case "false": case "no": case "0": widgetJsonSettings[currentSettingName] =
-// false;
-// default: widgetJsonSettings[currentSettingName] = Boolean(paramValue);
-// }
-// }else{
-// // objects, numbers etc...
-// widgetJsonSettings[currentSettingName] = paramValue;
-// console.log('B2: '+widgetJsonSettings[currentSettingName]);
-// }
-//			    
-// console.log('B: '+widgetJsonSettings[currentSettingName]);
-// widgetJsonSettings[currentSettingName] = paramValue;
-// }
 		}
 	}
 	

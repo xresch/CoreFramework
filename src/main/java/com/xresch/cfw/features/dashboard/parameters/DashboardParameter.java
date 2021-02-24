@@ -1,14 +1,12 @@
-package com.xresch.cfw.features.dashboard;
+package com.xresch.cfw.features.dashboard.parameters;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.DB;
-import com.xresch.cfw._main.CFW.DB.DashboardParameters;
-import com.xresch.cfw._main.CFW.Registry;
-import com.xresch.cfw._main.CFW.Registry.Widgets;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
@@ -16,13 +14,26 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
+import com.xresch.cfw.features.dashboard.WidgetDefinition;
+import com.xresch.cfw.features.dashboard.WidgetParameter;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.validation.CustomValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 /**************************************************************************************************************
- * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * CFWObject representing the dashboard parameters.
+ * The implementation of the Dashboard Parameter functionality is rather complex. If you want to enhance or change 
+ * it keep the following in mind:
+ * <ul>
+ *     <li> {@link DashboardParameter#addParameterHandlingToField()}: Adds defined parameters when editing widget settings</li>
+ *     <li> {@link DashboardParameter#prepareParamObjectsForForm()}: For the defined parameter, get the original widget settings field. New general parameters have to be added here. </li>
+ *     <li> {@link DashboardParameter#prepareParamObjectsForForm()}: For the defined parameter, get the original widget setting field. </li>
+ *     
+ * </ul>
+ * @author Reto Scheiwiller, (c) Copyright 2021
  * @license MIT-License
  **************************************************************************************************************/
 public class DashboardParameter extends CFWObject {
@@ -79,7 +90,20 @@ public class DashboardParameter extends CFWObject {
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.NAME)
 			.setDescription("The name of the parameter. This name will be used as a placeholder like '$name$' in the widget settings.")
-			.addValidator(new NotNullOrEmptyValidator());
+			.addValidator(new NotNullOrEmptyValidator())
+			.addValidator(new CustomValidator() {
+				
+				@Override
+				public boolean validate(Object value) {
+					
+					if(value.toString().matches("[\\w-_]*")) {
+						return true;
+					}else {
+						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter name can only contain 0-9, a-z, A-Z, dashes and underscores: "+value);
+						return false;
+					}
+				}
+			});
 	
 	// As the type of the value will be defined by the setting it is associated with, this is stored as JSON.
 	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE)
@@ -242,8 +266,10 @@ public class DashboardParameter extends CFWObject {
 	}
 
 	/*****************************************************************
-	 *
+	 * Add the defined parameters to autocomplete results and selects.
+	 * 
 	 *****************************************************************/
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void addParameterHandlingToField(CFWObject settings, String dashboardID, String widgetType) {
 		
 		if(!widgetType.equals(WidgetParameter.WIDGET_TYPE)) {
@@ -277,7 +303,10 @@ public class DashboardParameter extends CFWObject {
 	 *
 	 *****************************************************************/
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static void prepareParamObjectsForForm(ArrayList<CFWObject> parameterList, boolean transformValueLabelToSelect) {
+	public static void prepareParamObjectsForForm(HttpServletRequest request, ArrayList<CFWObject> parameterList, boolean doForWidget) {
+		
+		String dashboardID = request.getParameter("dashboardid");
+		
 		//===========================================
 		// Replace Value Field
 		//===========================================
@@ -285,6 +314,7 @@ public class DashboardParameter extends CFWObject {
 			DashboardParameter param = (DashboardParameter)object;
 			CFWField<String> currentValueField = (CFWField<String>)param.getField(DashboardParameterFields.VALUE.toString());
 			CFWField newValueField;
+			
 			if(param.widgetType() != null) {
 				//---------------------------------------
 				// Replace Value field with field from WidgetSettings
@@ -305,32 +335,22 @@ public class DashboardParameter extends CFWObject {
 
 			}else {
 				//----------------------------
-				// Add Field 
-				switch(param.paramType()) {
-					case TEXT: 	
-									newValueField = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE);
-									newValueField.setValueConvert(currentValueField.getValue());
-									break;
-									
-					case VALUE_LABEL: 	
-									if(transformValueLabelToSelect) {
-										newValueField = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.VALUE);
-										LinkedHashMap<String, String> options = CFW.JSON.fromJsonLinkedHashMap(currentValueField.getValue());
-										newValueField.setOptions(options);
-									}else {
-										newValueField = CFWField.newValueLabel("JSON_VALUE");
-										newValueField.setName(DashboardParameterFields.VALUE.toString());
-										newValueField.setValueConvert(currentValueField.getValue());
-									}
-									break;
-									
-					case BOOLEAN: 	
-									newValueField = CFWField.newString(FormFieldType.BOOLEAN, DashboardParameterFields.VALUE);
-									newValueField.setValueConvert(currentValueField.getValue());
-									break;	
-									
-					default: /*Unknown type*/ return;
+				// Add From ParamDefinition 
+				ParameterDefinition def = CFW.Registry.Parameters.getDefinition(param.widgetSetting());
+				if(def != null) {
+					if(doForWidget) {
+						newValueField = def.getFieldForWidget(request, dashboardID, currentValueField.getValue());
+					}else {
+						newValueField = def.getFieldForSettings(request, dashboardID, currentValueField.getValue());
+					}
+					newValueField.setName(DashboardParameterFields.VALUE.toString());
+					newValueField.setLabel("Value");
+				}else {
+					new CFWLog(logger).severe("Parameter definition could not be found:"+param.widgetSetting(), new IllegalArgumentException());
+					continue;
 				}
+
+
 			}
 			
 			param.getFields().remove(DashboardParameterFields.VALUE.toString());

@@ -29,8 +29,11 @@ import com.xresch.cfw.datahandling.CFWMultiFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterFields;
-import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterMode;
+import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
+import com.xresch.cfw.features.dashboard.parameters.ParameterDefinition;
+import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionText;
+import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterFields;
+import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -149,7 +152,7 @@ public class ServletDashboardView extends HttpServlet
 					case "widgetdata": 			getWidgetData(request, response, jsonResponse);
 												break;	
 												
-					case "availableparams": 	getAvailableParams(jsonResponse, dashboardID);
+					case "availableparams": 	getAvailableParams(request, jsonResponse, dashboardID);
 												break;	
 												
 					case "settingsform": 		getSettingsForm(request, response, jsonResponse);
@@ -364,7 +367,7 @@ public class ServletDashboardView extends HttpServlet
 		//----------------------------
 		// Create Response
 		if(jsonSettings.isJsonObject()) {
-		definition.fetchData(null, jsonResponse, jsonSettings.getAsJsonObject());
+		definition.fetchData(request, jsonResponse, jsonSettings.getAsJsonObject());
 		}else {
 			new CFWLog(logger).warn("Widget Data was not of the correct type.", new IllegalArgumentException());
 		}
@@ -376,29 +379,22 @@ public class ServletDashboardView extends HttpServlet
 	 *
 	 *****************************************************************/
 	@SuppressWarnings("rawtypes")
-	private void getAvailableParams(JSONResponse response, String dashboardID) {
+	private void getAvailableParams(HttpServletRequest request, JSONResponse response, String dashboardID) {
 		
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
 			JsonArray parametersArray = new JsonArray();
 			//--------------------------------------------
-			// Add Default Params
-			
-			// Regular Text
-			JsonObject textParamObject = new JsonObject();
-			textParamObject.add("widgetType", null);
-			textParamObject.add("widgetSetting", null);
-			textParamObject.addProperty("label", "Text");
-			
-			parametersArray.add(textParamObject);
-			
-			// Custom Select
-			JsonObject selectParamObject = new JsonObject();
-			selectParamObject.add("widgetType", null);
-			selectParamObject.add("widgetSetting", null);
-			selectParamObject.addProperty("label", "Select");
-			
-			parametersArray.add(selectParamObject);
+			// Add Params from Definitions
+			for(ParameterDefinition def : CFW.Registry.Parameters.getParameterDefinitions().values()) {
+				JsonObject paramObject = new JsonObject();
+				paramObject.add("widgetType", null);
+				paramObject.add("widgetSetting", null);
+				paramObject.addProperty("label", def.getParamLabel());
+				
+				parametersArray.add(paramObject);
+			}
+
 			
 			//--------------------------------------------
 			// Add Params for Widgets on Dashboard
@@ -439,6 +435,7 @@ public class ServletDashboardView extends HttpServlet
 	/*****************************************************************
 	 *
 	 *****************************************************************/
+	@SuppressWarnings("rawtypes")
 	private void createParam(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
 		
 		String dashboardID = request.getParameter("dashboardid");
@@ -460,32 +457,26 @@ public class ServletDashboardView extends HttpServlet
 			// Create Param
 			DashboardParameter param = new DashboardParameter();
 			param.foreignKeyDashboard(Integer.parseInt(dashboardID));
-			param.name(widgetSetting+"_"+CFW.Random.randomStringAlphaNumerical(6));
 
-			if(Strings.isNullOrEmpty(widgetType) && Strings.isNullOrEmpty(widgetSetting)) {
+			if(Strings.isNullOrEmpty(widgetSetting)) {
 				param.widgetType(null);
 				param.widgetSetting(null);
 				
 				//----------------------------
 				// Handle Default Params
-				switch(label) {
-					case "Text": 	param.paramType(FormFieldType.TEXT);
-									param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
-									param.isModeChangeAllowed(false);
-									break;
-									
-					case "Select": 	param.paramType(FormFieldType.VALUE_LABEL);
-									param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
-									param.isModeChangeAllowed(false);
-									break;	
-									
-					case "Boolean":	param.paramType(FormFieldType.BOOLEAN);
-									param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
-									param.isModeChangeAllowed(false);
-									break;	
-									
-					default: /*Unknown type*/ return;
+				
+				ParameterDefinition def = CFW.Registry.Parameters.getDefinition(label);
+				if(def != null) {
+					CFWField paramField = def.getFieldForSettings(request, dashboardID, null);
+					param.paramType(paramField.fieldType());
+					param.widgetSetting(def.getParamLabel());
+					param.name(label.toLowerCase()+"_"+CFW.Random.randomStringAlphaNumerical(6));
+					param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
+					param.isModeChangeAllowed(false);
+				}else {
+					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter definition could not be found for: "+label);
 				}
+
 
 			}else {
 				//-------------------------------
@@ -505,6 +496,7 @@ public class ServletDashboardView extends HttpServlet
 				}else {
 					param.widgetType(widgetType);
 					param.widgetSetting(widgetSetting);
+					param.name(widgetSetting+"_"+CFW.Random.randomStringAlphaNumerical(6));
 					param.paramType(settingsField.fieldType()); // used to fetch similar field types
 					param.getField(DashboardParameterFields.VALUE.toString()).setValueConvert(settingsField.getValue());
 					param.mode(DashboardParameterMode.MODE_GLOBAL_OVERRIDE);
@@ -573,7 +565,7 @@ public class ServletDashboardView extends HttpServlet
 		String dashboardID = request.getParameter("dashboardid");
 		ArrayList<CFWObject> parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(dashboardID);
 		
-		DashboardParameter.prepareParamObjectsForForm(parameterList, false);
+		DashboardParameter.prepareParamObjectsForForm(request, parameterList, false);
 		
 		//===========================================
 		// Create Form

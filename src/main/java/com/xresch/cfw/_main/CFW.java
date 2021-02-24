@@ -25,10 +25,11 @@ import com.xresch.cfw.features.core.CFWLocalization;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.core.ServletHierarchy;
 import com.xresch.cfw.features.dashboard.CFWDBDashboard;
-import com.xresch.cfw.features.dashboard.CFWDBDashboardParameter;
 import com.xresch.cfw.features.dashboard.CFWDBDashboardWidget;
 import com.xresch.cfw.features.dashboard.CFWRegistryWidgets;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.dashboard.parameters.CFWDBDashboardParameter;
+import com.xresch.cfw.features.dashboard.parameters.CFWRegistryDashboardParameters;
 import com.xresch.cfw.features.manual.CFWRegistryManual;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.spaces.CFWDBSpace;
@@ -112,6 +113,7 @@ public class CFW {
 		public static class Features extends CFWRegistryFeatures {} 
 		public static class Manual extends CFWRegistryManual {} 
 		public static class Objects extends CFWRegistryObjects {} 
+		public static class Parameters extends CFWRegistryDashboardParameters {} 
 		public static class Widgets extends CFWRegistryWidgets {} 
 	}
 	public static class Schedule extends CFWSchedule {}

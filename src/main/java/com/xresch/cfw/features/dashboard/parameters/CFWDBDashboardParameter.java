@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.dashboard;
+package com.xresch.cfw.features.dashboard.parameters;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -11,8 +11,9 @@ import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
-import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterFields;
-import com.xresch.cfw.features.dashboard.DashboardParameter.DashboardParameterMode;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterFields;
+import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
