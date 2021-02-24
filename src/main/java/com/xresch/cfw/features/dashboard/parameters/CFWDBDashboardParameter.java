@@ -209,7 +209,7 @@ public class CFWDBDashboardParameter {
 			sql.custom(")")
 				.and().custom("(")
 					.is(DashboardParameterFields.LABEL, widgetSetting);
-					if(allowGenericParams) sql.or().isNull(DashboardParameterFields.LABEL);
+					if(allowGenericParams) sql.or().isNull(DashboardParameterFields.WIDGET_TYPE);
 					
 		return sql.custom(")")
 				.getAsObjectList();
