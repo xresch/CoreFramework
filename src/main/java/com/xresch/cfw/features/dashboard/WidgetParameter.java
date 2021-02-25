@@ -59,12 +59,14 @@ public class WidgetParameter extends WidgetDefinition {
 
 								//---------------------------------------
 								// Return Params not already in use
-								return new CFWSQL(new DashboardParameter())
+								CFWSQL sql = new CFWSQL(new DashboardParameter())
 										.select()
 										.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-										.and().like(DashboardParameterFields.NAME, "%"+searchValue+"%")
-										.and().not().in(DashboardParameterFields.PK_ID, usedParamIDs.toArray(new Object[] {}))
-										.getAsAutocompleteResult(DashboardParameterFields.PK_ID, DashboardParameterFields.NAME, DashboardParameterFields.WIDGET_TYPE);
+										.and().like(DashboardParameterFields.NAME, "%"+searchValue+"%");
+										if(usedParamIDs.size() > 0) {
+											sql.and().not().in(DashboardParameterFields.PK_ID, usedParamIDs.toArray(new Object[] {}));
+										}
+								return sql.getAsAutocompleteResult(DashboardParameterFields.PK_ID, DashboardParameterFields.NAME, DashboardParameterFields.WIDGET_TYPE);
 							}
 						})	
 					)

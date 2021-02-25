@@ -475,7 +475,7 @@ public class ServletDashboardView extends HttpServlet
 					CFWField paramField = def.getFieldForSettings(request, dashboardID, null);
 					param.paramType(paramField.fieldType());
 					param.paramSettingsLabel(def.getParamLabel());
-					param.name(label.toLowerCase()+"_"+CFW.Random.randomStringAlphaNumerical(6));
+					param.name(label.toLowerCase().replace(" ", "_")+"_"+CFW.Random.randomStringAlphaNumerical(6));
 					param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
 					param.isModeChangeAllowed(false);
 				}else {
@@ -501,7 +501,7 @@ public class ServletDashboardView extends HttpServlet
 				}else {
 					param.widgetType(widgetType);
 					param.paramSettingsLabel(widgetSetting);
-					param.name(widgetSetting+"_"+CFW.Random.randomStringAlphaNumerical(6));
+					param.name(widgetSetting.replace(" ", "_")+"_"+CFW.Random.randomStringAlphaNumerical(6));
 					param.paramType(settingsField.fieldType()); // used to fetch similar field types
 					param.getField(DashboardParameterFields.VALUE.toString()).setValueConvert(settingsField.getValue());
 					param.mode(DashboardParameterMode.MODE_GLOBAL_OVERRIDE);
@@ -646,26 +646,19 @@ public class ServletDashboardView extends HttpServlet
 							}
 						}
 					}else {
-						System.out.println("Hit A");
 						String label = paramToAutocomplete.paramSettingsLabel();
 						ParameterDefinition def = CFW.Registry.Parameters.getDefinition(label);
 						for(CFWObject object : origins.values() ) {
-							System.out.println(" >> Hit B");
 							DashboardParameter currentParam = (DashboardParameter)object;
 							
 							if(currentParam.widgetType() != null ) {
-								System.out.println(" >>>> Hit C "+currentParam.widgetType());
 								HashSet<String> widgetTypesArray = new HashSet<>();
 								widgetTypesArray.add(currentParam.widgetType());
 								
 								if(def.isAvailable(widgetTypesArray)) {
-									System.out.println(" >>>>>> Hit D "+currentParam.widgetType());
 									String currentName = currentParam.paramSettingsLabel();
 									String valueFieldName = currentParam.id()+"-"+DashboardParameterFields.VALUE;
 									String currentParamValue = request.getParameter(valueFieldName);
-									System.out.println(" >>>>>> Hit currentName: "+currentName);
-									System.out.println(" >>>>>> Hit valueFieldName: "+valueFieldName);
-									System.out.println(" >>>>>> Hit currentParamValue: "+currentParamValue);
 							        extraParams.put(currentName, new String[] { currentParamValue });
 								}
 								
@@ -674,7 +667,7 @@ public class ServletDashboardView extends HttpServlet
 					}
 					
 					CFWModifiableHTTPRequest modifiedRequest = new CFWModifiableHTTPRequest(request, extraParams);
-					System.out.println("ModifiedParams:"+CFW.JSON.toJSON(modifiedRequest.getParameterMap()));
+					//System.out.println("ModifiedParams:"+CFW.JSON.toJSON(modifiedRequest.getParameterMap()));
 					
 					//------------------------------------
 					// Get Autocomplete Results

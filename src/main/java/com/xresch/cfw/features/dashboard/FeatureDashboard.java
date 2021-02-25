@@ -8,8 +8,10 @@ import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
+import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionBoolean;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionSelect;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionText;
+import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionTextarea;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -80,7 +82,9 @@ public class FeatureDashboard extends CFWAppFeature {
     	//----------------------------------
     	// Register Parameters
 		CFW.Registry.Parameters.add(new ParameterDefinitionText());
+		CFW.Registry.Parameters.add(new ParameterDefinitionTextarea());
 		CFW.Registry.Parameters.add(new ParameterDefinitionSelect());
+		CFW.Registry.Parameters.add(new ParameterDefinitionBoolean());
 		
 		//----------------------------------
     	// Register Menu

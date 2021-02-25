@@ -765,17 +765,17 @@ public class CFWSQL {
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public CFWSQL in(Object fieldname, Object ...values) {
-			
-		StringBuilder placeholders = new StringBuilder();
-		for(Object value : values) {
-			placeholders.append("?,");
-			this.values.add(value);
-		}
-		placeholders.deleteCharAt(placeholders.length()-1);
 		
-		if(!isQueryCached()) {
-			query.append(" ").append(fieldname).append(" IN(").append(placeholders).append(")");
-		}
+			StringBuilder placeholders = new StringBuilder();
+			for(Object value : values) {
+				placeholders.append("?,");
+				this.values.add(value);
+			}
+			placeholders.deleteCharAt(placeholders.length()-1);
+			
+			if(!isQueryCached()) {
+				query.append(" ").append(fieldname).append(" IN(").append(placeholders).append(")");
+			}
 		
 		return this;
 	}
