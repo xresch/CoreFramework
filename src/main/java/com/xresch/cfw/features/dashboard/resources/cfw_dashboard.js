@@ -785,7 +785,17 @@ function cfw_dashboard_parameters_getFinalParams(){
 			}else{
 				currentParam.VALUE = JSON.stringify(viewerCustomValue);
 			}
-			
+		}else{
+			 // Set first option as selected Value
+			 if( currentParam.PARAM_TYPE ="VALUE_LABEL"
+			 &&  currentParam.VALUE != null 
+			 &&  currentParam.VALUE.startsWith("{")){
+				let valueLabelOptions = JSON.parse(currentParam.VALUE);
+				let keys = Object.keys(valueLabelOptions);
+				if(keys.length > 0){
+					currentParam.VALUE = keys[0];
+				}
+			}
 		}
 	}
 	
