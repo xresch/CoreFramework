@@ -21,6 +21,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
+import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -213,7 +214,12 @@ public class ServletDashboardList extends HttpServlet
 			duplicate.editors(null);
 			
 			Integer newID = duplicate.insertGetPrimaryKey();
+			
 			if(newID != null) {
+				
+				//-----------------------------------------
+				// Duplicate Widgets
+				//-----------------------------------------
 				ArrayList<CFWObject> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
 				
 				boolean success = true;
@@ -225,6 +231,22 @@ public class ServletDashboardList extends HttpServlet
 					if(!widgetToCopy.insert()) {
 						success = false;
 						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while duplicating widget.");
+					}
+				}
+				
+				//-----------------------------------------
+				// Duplicate Parameters
+				//-----------------------------------------
+				ArrayList<CFWObject> parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(dashboardID);
+				
+				for(CFWObject object : parameterList) {
+					DashboardParameter paramToCopy = (DashboardParameter)object;
+					paramToCopy.id(null);
+					paramToCopy.foreignKeyDashboard(newID);
+					
+					if(!paramToCopy.insert()) {
+						success = false;
+						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while duplicating parameter.");
 					}
 				}
 				
