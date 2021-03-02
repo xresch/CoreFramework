@@ -43,8 +43,11 @@ public class WidgetHelloWorld extends WidgetDefinition {
 									AutocompleteList list = new AutocompleteList();
 									
 									for(int i = 0; i < 25; i++ ) {
-										String tag = inputValue+"_"+i;
-										list.addItem("key_"+tag, "hobby_"+tag);
+										String tag = inputValue;
+										if(i > 0) {
+											tag += "_"+i;
+										}
+										list.addItem(tag);
 									}
 									return new AutocompleteResult(list);
 								}
