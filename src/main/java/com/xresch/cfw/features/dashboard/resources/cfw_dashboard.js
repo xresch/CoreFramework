@@ -1599,6 +1599,7 @@ function cfw_dashboard_toggleEditMode(){
 		CFW_DASHBOARD_EDIT_MODE = false;
 		$('.cfw-dashboard-widget-actionicons').addClass('d-none');
 		$('#addWidget').addClass('d-none');
+		$('#parametersButton').addClass('d-none');
 		$('#doneButton').addClass('d-none');
 		$('#top-ruler').addClass('d-none');
 		$('#editButton').removeClass('d-none');
