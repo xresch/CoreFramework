@@ -1,0 +1,61 @@
+
+<h2>Introduction</h2>
+<p>
+Dashboard parameters allow a dashboard editor to add custom parameters to the dashboard.
+There are two types of parameters available:
+</p>
+<ul>
+	<li><strong>General Parameters:&nbsp;</strong>Are not bound to a single widget(Widget column is empty in the add parameter window). These parameters can be used to substitute placeholders(e.g &quot;$param_name$&quot;) or to change settings over multiple widget types.</li>
+	<li><strong>Widget Settings Parameters:&nbsp;</strong> For every widget setting there is a default parameter. These are useful to globally override the setting for the widget.</li>
+</ul>
+<p>
+There are two modes for the parameters. Some parameters will only allow a single mode:
+</p>
+<ul>
+	<li><strong>Global:&nbsp;</strong>Will globally override every the widget setting.</li>
+	<li><strong>Substitute:&nbsp;</strong> Will substitute placeholders(e.g &quot;$param_name$&quot;) only at the settings where the placeholders are manually selected or entered.</li>
+</ul>
+
+
+<h2>Adding Parameters to a Dashboard</h2>
+<p>
+To add a parameter to a dashboard:
+</p>
+
+<ul>
+	<li><strong>Add Parameter:&nbsp;</strong> Go to &quot;Edit Mode &gt;&gt; Parameters &gt;&gt; Add Parameter&quot; and click on one of the parameters to add it to the list of parameters.</li>
+	<li><strong>Naming:&nbsp;</strong>Name your parameter, blanks are not allowed, use underscore instead. The name will be used to create the label in the Parameters Widget. For example the name &quot;my_parameter&quot; will result in the label &quot;My Parameter&quot;(underscores replaced with blanks, words capitalized).</li>
+	<li><strong>Configure:&nbsp;</strong> Choose the mode and set the default value of the parameter and click save.</li>
+	<li><strong>Add to Widget Setting:&nbsp;</strong> If your parameter has the mode Substitute, open the settings of a widget and enter the placeholder(e.g &quot;$my_parameter$&quot;) into a text field or select it from a selection box.</li>
+	<li><strong>Provide to Dashboard User:&nbsp;</strong> To provide the parameter to the user of the dashboard, see the next section. </li>
+</ul>
+
+
+<h2>The Parameter Widget</h2>
+<p>
+Dashboard users can be enabled to change specific dashboard parameters by using the Parameters Widget found in the Standard Widgets add &quot; Standard Widgets &gt;&gt; Parameters &quot;.
+You can add multiple Parameter widgets to a single dashboard, but every parameter should only be chosen once to be displayed as a parameter, else it is not predictable which of the two parameters will actually be used.
+When a user clicks the Update button, the parameters are stored in the browser cache and added to the URLs as parameters.
+</p>
+
+
+<h2>Parameters Hierarchy</h2>
+<p>
+To properly work with parameters, you should understand how the priorities between the various sources of the parameter values are:
+</p>
+<ol>
+	<li><strong>URL Parameters:&nbsp;</strong> URL Parameters will override the parameters in the browsers cache. This enables you to create a single dashboard and create different links/bookmarks that will filter by specific data.</li>
+	<li><strong>Browser Cache Parameters:&nbsp;</strong> The Parameters from the browser cache will be merged with the default values of the parameters. If a user has set a custom value for a parameter, it will override the default value. If a parameter does not have a custom value, the default value will be used. </li>
+	<li><strong>Default Values:&nbsp;</strong> The default values are set in the parameters edit window. These will be used if the user has not set custom values.</li>
+</ol>
+
+<h2>Limitations</h2>
+<p>
+The following are the limitations you have when working with parameters:
+</p>
+<ol>
+	<li><strong>Error Prone:&nbsp;</strong> By using parameters you start entering the field of development. This means you can introduce errors. For example if you define a parameter for a select (e.g. $chart_type$) and you rename or delete the parameter afterwards, the widget will not be able to load correctly as the parameter does not exists and the placeholder doesn't get replaced.</li>
+	<li><strong>Same Settings on different Widget Types:&nbsp;</strong> Same Settings on different widget types(e.g. Example Mode) cannot be globally overridden with a parameter that is bound to a certain widget type. Some Widget implementations might provide special parameters that will span over multiple widget types for the same setting. </li>
+	<li><strong>Replica Widget:&nbsp;</strong> The Replica widget will not copy the parameters from the source dashboard. If the copied widget contains parameters, the parameters have also to be defined on the target dashboard.</li>
+</ol>
+

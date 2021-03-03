@@ -855,7 +855,7 @@ function cfw_dashboard_parameters_showAddParametersModal(){
 			 		widgetType: 
 			 			function(record, value) { 
 				 			if(record.widgetType == null){
-				 					return "All";
+				 					return "&nbsp;";
 				 			}else{
 				 				return cfw_dashboard_getWidgetDefinition(record.widgetType).menulabel;
 				 			} 
@@ -1067,6 +1067,12 @@ function cfw_dashboard_widget_duplicate(widgetGUID) {
 				var deepCopyWidgetObject = _.cloneDeep(withoutContent);
 				deepCopyWidgetObject.PK_ID = newWidgetObject.PK_ID;
 				delete deepCopyWidgetObject.guid;
+				
+				if(widgetObject.TYPE == "cfw_parameter"){
+					// do not allow the peeps(especially the theusinator) to get the same parameter twice.
+					deepCopyWidgetObject.JSON_SETTINGS = {JSON_PARAMETERS: {}};
+					CFW.ui.addToastInfo('Parameters removed to avoid duplicated parameters.');
+				}
 
 				cfw_dashboard_widget_createInstance(deepCopyWidgetObject, true, function(widgetObject2){
 					
