@@ -556,7 +556,7 @@ function cfw_dashboard_parameters_loadParameterForm(){
 						let columnSpan = $(element).find('span:first');
 						
 						let widgetType = columnSpan.text();
-						console.log(widgetType);
+						//console.log(widgetType);
 						let definition = cfw_dashboard_getWidgetDefinition(widgetType);
 						let label = (definition != undefined) ? definition.menulabel : undefined;
 						
@@ -650,15 +650,16 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 						 if (typeof oldSettingsValue == "string"){
 							widgetJsonSettings[key] = 
 								oldSettingsValue.replaceAll('$'+currentParam.NAME+'$', paramValue);
-							console.log('applyToWidgetSettings-A-string: '+widgetJsonSettings[key]);
+							//console.log('applyToWidgetSettings-A-string: '+widgetJsonSettings[key]);
 						}else if (currentParam.PARAM_TYPE == "BOOLEAN" 
 							&& typeof oldSettingsValue == "boolean"
 							&& oldSettingsValue == ('$'+currentParam.NAME+'$') ){
 							widgetJsonSettings[key] = paramValue;
-							console.log('applyToWidgetSettings-A-boolean: '+widgetJsonSettings[key]);
+							//console.log('applyToWidgetSettings-A-boolean: '+widgetJsonSettings[key]);
+							
 						}else{
-							console.log('>>>>> applyToWidgetSettings-A-missed: '+key);
-							console.log('>>>>> applyToWidgetSettings-A-missedvalue: '+widgetJsonSettings[key]);
+							//console.log('>>>>> applyToWidgetSettings-A-missed: '+key);
+							//console.log('>>>>> applyToWidgetSettings-A-missedvalue: '+widgetJsonSettings[key]);
 						}	
 					}
 		}else {

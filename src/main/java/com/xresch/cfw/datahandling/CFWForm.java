@@ -94,7 +94,7 @@ public class CFWForm extends HierarchicalHTMLItem {
 		//---------------------------
 		// Create HTML
 		String formClasses = "form";
-		if(isInlineForm) { formClasses += "-inline align-items-start"; }
+		if(isInlineForm) { formClasses += "-inline align-items-stretch"; }
 		formClasses += " "+this.getAttributeValue("class");
 		
 		html.append("<form id=\""+formID+"\" class=\""+formClasses+"\" method=\"post\" "+getAttributesString()+">");

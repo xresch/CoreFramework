@@ -335,10 +335,13 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			}else {
 				//---------------------------------------
 				// Create Inline Group and Label
-				html.append("<div class=\"d-flex flex-column align-items-start ml-3  mb-3\">");
+				html.append("<div class=\"d-flex flex-column align-items-start ml-3 mb-3 flex-grow-1\">");
 				html.append("  <label class=\"\" for=\""+name+"\" >");
 				html.append(formLabel+":</label> ");
 				
+				if(this.fieldType() != FormFieldType.BOOLEAN) {
+					this.addCssClass("w-100");
+				}
 				//html.append("  <div class=\"col-sm-9 d-flex\">");
 			}
 						
@@ -411,7 +414,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			//---------------------------------------
 			// Create Field Wrapper
 			String autocompleteClass = (autocompleteHandler == null)  ? "" : "cfw-autocomplete";
-			html.append("<div class=\"cfw-field-wrapper flex-grow-1 "+autocompleteClass+"\">");
+			html.append("<div class=\"cfw-field-wrapper "+autocompleteClass+"\">");
 			
 			//---------------------------------------
 			// Check if Description available

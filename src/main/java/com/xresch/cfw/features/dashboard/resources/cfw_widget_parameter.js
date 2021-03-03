@@ -20,14 +20,14 @@
 					var settings = widgetObject.JSON_SETTINGS;
 					var formHTML = data.payload.html;
 					
-					var parentDiv = $('<div class= "d-flex flex-column cfw-parameter-widget-marker">');
+					var parentDiv = $('<div class= "d-flex flex-column cfw-parameter-widget-marker w-100">');
 
 					var noflexDiv = $('<div class="d-block w-100">');
 					noflexDiv.append(settings.description);
 					parentDiv.append(noflexDiv);
 					
 					parentDiv.append(formHTML);
-					
+
 					//----------------------------------
 					// Add to workspace and initialize
 					// form fields
