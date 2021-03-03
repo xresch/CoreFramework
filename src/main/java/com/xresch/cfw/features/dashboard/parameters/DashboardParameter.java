@@ -95,11 +95,19 @@ public class DashboardParameter extends CFWObject {
 				
 				@Override
 				public boolean validate(Object value) {
-					
-					if(value.toString().matches("[\\w-_]*")) {
+					String stringValue = value.toString().trim();
+					if(stringValue.toString().matches("[\\w-_]*")) {
+						if(stringValue.toString().equals("id")
+						|| stringValue.toString().equals("title")
+						|| stringValue.toString().equals("timeframepreset")
+						|| stringValue.toString().equals("earliest")
+						|| stringValue.toString().equals("latest")) {
+							CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter name cannot be the following: id, title, timeframepreset, earliest, latest");
+							return false;
+						}
 						return true;
 					}else {
-						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter name can only contain 0-9, a-z, A-Z, dashes and underscores: "+value);
+						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter name can only contain 0-9, a-z, A-Z, dashes and underscores(pay attention to blanks): "+value);
 						return false;
 					}
 				}

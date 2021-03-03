@@ -116,6 +116,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		DATEPICKER, 
 		DATETIMEPICKER, 
 		TAGS, 
+		// Input Order of elements messed up by client side when containing numbers in keys (numbers will be sorted and listed first)
 		TAGS_SELECTOR, 
 		UNMODIFIABLE_TEXT, 
 		VALUE_LABEL,

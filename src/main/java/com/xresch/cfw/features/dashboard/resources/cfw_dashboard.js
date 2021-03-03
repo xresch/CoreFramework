@@ -745,6 +745,12 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement, triggerRed
 	var mergedParams = {}; 
 	paramForms.each(function(){
 		var userParamsForWidget = CFW.format.formToParams($(this));
+		// add to URL
+		for(key in userParamsForWidget){
+			if(key != "cfw-formID"){
+				CFW.http.setURLParam(key, userParamsForWidget[key]);
+			}
+		}
 		mergedParams = Object.assign({}, mergedParams, userParamsForWidget); 
 	});
 	
@@ -775,6 +781,8 @@ function cfw_dashboard_parameters_getFinalParams(){
 		var viewerCustomValue = storedViewerParams[paramName];
 		if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
 			
+			//---------------------------------------------
+			// Override with Custom Param
 			currentParam.VALUE = viewerCustomValue;
 
 			if(currentParam.PARAM_TYPE == 'TAGS_SELECTOR'){
@@ -786,10 +794,15 @@ function cfw_dashboard_parameters_getFinalParams(){
 				currentParam.VALUE = JSON.stringify(viewerCustomValue);
 			}
 		}else{
-			 // Set first option as selected Value
-			 if( currentParam.PARAM_TYPE ="VALUE_LABEL"
-			 &&  currentParam.VALUE != null 
-			 &&  currentParam.VALUE.startsWith("{")){
+			
+			//---------------------------------------------
+			// Use and prepare Default Param Values
+			if(currentParam.PARAM_TYPE == 'TAGS_SELECTOR'){
+					var tagsInputObject = JSON.parse(currentParam.VALUE);
+					currentParam.VALUE = tagsInputObject;
+			}else if( currentParam.PARAM_TYPE ="VALUE_LABEL"
+				  &&  currentParam.VALUE != null 
+				  &&  currentParam.VALUE.startsWith("{")){
 				let valueLabelOptions = JSON.parse(currentParam.VALUE);
 				let keys = Object.keys(valueLabelOptions);
 				if(keys.length > 0){
@@ -1825,6 +1838,17 @@ function cfw_dashboard_initialDraw(){
 			cfw_dashboard_draw();
 		}
 	}
+	
+	// -----------------------------------------------
+	// Merge URL Params with Custom Parameter Values
+	var storedViewerParams = cfw_dashboard_parameters_getStoredViewerParams();
+	var mergedParams = Object.assign(storedViewerParams, CFW_DASHBOARD_URLPARAMS);
+
+	delete mergedParams['title'];
+	delete mergedParams['id'];
+	
+	var storekey = cfw_dashboard_parameters_getViewerParamsStoreKey();
+	CFW.cache.storeValueForPage(storekey, JSON.stringify(mergedParams));
 	
 	// ---------------------------------
 	// Load Refresh interval from URL or Local store
