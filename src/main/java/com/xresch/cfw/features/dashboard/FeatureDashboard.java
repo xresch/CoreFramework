@@ -217,6 +217,18 @@ public class FeatureDashboard extends CFWAppFeature {
 					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_widgets_timeframe.html")
 			);
+		
+		//----------------------------------
+		//
+		ROOT_MANUAL_PAGE.addChild(
+				new ManualPage("Parameters")
+					.faicon("fas fa-sliders-h")
+					.addPermission(PERMISSION_DASHBOARD_VIEWER)
+					.addPermission(PERMISSION_DASHBOARD_CREATOR)
+					.addPermission(PERMISSION_DASHBOARD_ADMIN)
+					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_parameters.html")
+			);
+		
 		//----------------------------------
 		//
 		ROOT_MANUAL_PAGE.addChild(
@@ -227,7 +239,8 @@ public class FeatureDashboard extends CFWAppFeature {
 					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_tips_tricks.html")
 			);
-					
+		
+
 	}
 
 }
