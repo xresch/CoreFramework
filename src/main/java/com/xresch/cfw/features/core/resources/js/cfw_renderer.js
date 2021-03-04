@@ -904,6 +904,10 @@ function cfw_renderer_chart(renderDef) {
 		pointradius: 0,
 		// the padding in pixels of the chart
 		padding: 10,
+		// the color of the x-axes grid lines
+		xaxescolor: 'rgba(128,128,128, 0.2)',
+		// the color of the y-axes grid lines
+		yaxescolor: 'rgba(128,128,128, 0.8)',
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
@@ -959,7 +963,7 @@ function cfw_renderer_chart(renderDef) {
 		renderDef.titleformat = renderDef.titleformat.substr(0, renderDef.titleformat.length-3);
 		
 	}
-	
+
 	//========================================
 	// Create Datasets
 	var datasets;
@@ -989,6 +993,7 @@ function cfw_renderer_chart(renderDef) {
 
 	}
 	
+	
 	//========================================
 	// Create Options
 	var chartOptions =  {
@@ -1005,7 +1010,7 @@ function cfw_renderer_chart(renderDef) {
 					stacked: settings.stacked,
 					gridLines: {
 						drawBorder: false,
-						color: 'rgba(128,128,128, 0.2)'
+						color: settings.xaxescolor
 					},
 					ticks: {
 						major: {
@@ -1026,7 +1031,7 @@ function cfw_renderer_chart(renderDef) {
 					type: settings.ytype,
 					gridLines: {
 						drawBorder: false,
-						color: 'rgba(128,128,128, 0.8)'
+						color: settings.yaxescolor
 					},
 					scaleLabel: {
 						display: false,
