@@ -941,11 +941,20 @@ function cfw_renderer_chart(renderDef) {
 	if(renderDef.titleformat == null && renderDef.data.length > 0){
 		renderDef.titleformat = '';
 		let firstRecord = renderDef.data[0];
-		let index = 0;
-		for(let key in firstRecord){
-			if(key == settings.xfield || key == settings.yfield) { continue; }
-			renderDef.titleformat += key+'="{'+index+'}" / ';
-			index++;
+
+		if(renderDef.titlefields != null){
+			for(let index in renderDef.titlefields){
+				let label = renderDef.titlefields[index];
+				renderDef.titleformat += label+'="{'+index+'}" / ';
+				index++;
+			}
+		}else{
+			let index = 0;
+			for(let key in firstRecord){
+				if(key == settings.xfield || key == settings.yfield) { continue; }
+				renderDef.titleformat += key+'="{'+index+'}" / ';
+				index++;
+			}
 		}
 		renderDef.titleformat = renderDef.titleformat.substr(0, renderDef.titleformat.length-3);
 		
