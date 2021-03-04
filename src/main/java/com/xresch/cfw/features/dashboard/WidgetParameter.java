@@ -70,7 +70,12 @@ public class WidgetParameter extends WidgetDefinition {
 							}
 						})	
 					)
-			
+				
+			.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, "showbutton")
+					.setLabel("{!cfw_widget_parameter_showbutton!}")
+					.setDescription("{!cfw_widget_parameter_showbutton_desc!}")
+					.setValue(true)
+				)
 		;
 	}
 
@@ -105,9 +110,20 @@ public class WidgetParameter extends WidgetDefinition {
 		
 		DashboardParameter.prepareParamObjectsForForm(request, paramsResultArray, true);
 		
+		//---------------------------------
+		// Resolve Parameters
+		JsonElement showbuttonElement = settings.get("showbutton");
+		String buttonLabel = "Update";
+		if(showbuttonElement !=null && !showbuttonElement.isJsonNull()) {
+			boolean showButton = showbuttonElement.getAsBoolean();
+			if(!showButton) {
+				buttonLabel = null;
+			}
+		}
 		//--------------------------------------
 		// Add on change event for triggering updates
-		CFWForm paramForm = new CFWForm("cfwWidgetParameterForm"+CFW.Random.randomStringAlphaNumerical(12), "Update");
+		
+		CFWForm paramForm = new CFWForm("cfwWidgetParameterForm"+CFW.Random.randomStringAlphaNumerical(12), buttonLabel);
 		paramForm.isInlineForm(true);
 		paramForm.addAttribute("onclick", "cfw_dashboard_parameters_fireParamWidgetUpdate(this, true);");
 		
