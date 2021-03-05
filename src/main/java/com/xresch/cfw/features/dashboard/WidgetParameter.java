@@ -86,6 +86,10 @@ public class WidgetParameter extends WidgetDefinition {
 		// remove submit Button
 		
 		//---------------------------------
+		// Get ID
+		String dashboardID = request.getParameter("dashboardid");
+		
+		//---------------------------------
 		// Resolve Parameters
 		JsonElement paramsElement = settings.get("JSON_PARAMETERS");
 		if(paramsElement.isJsonNull()) {
@@ -97,14 +101,16 @@ public class WidgetParameter extends WidgetDefinition {
 			return;
 		}
 		
-		ArrayList<String> paramIDs = new ArrayList<>();
+		ArrayList<String> paramNames = new ArrayList<>();
 		for(Entry<String, JsonElement> entry : paramsObject.entrySet()) {
-			paramIDs.add(entry.getKey());
+			paramNames.add(entry.getValue().getAsString());
 		}
 		
+		//Filter by names instead of IDs to still get parameters if they were changed.
 		ArrayList<CFWObject> paramsResultArray = new CFWSQL(new DashboardParameter())
 				.select()
-				.whereIn(DashboardParameterFields.PK_ID, paramIDs)
+				.whereIn(DashboardParameterFields.NAME, paramNames)
+				.and(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
 				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.LABEL.toString())
 				.getAsObjectList();
 		
