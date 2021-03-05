@@ -1,0 +1,79 @@
+<h2>Overview</h2>
+<p>
+To create a dashboard widget, you need to the following:
+</p>
+<ul>
+	<li>Create a class implementing that extends ParameterDefinition.</li>
+	<li>Register your class using CFW.Registry.Parameters.add().</li>
+</ul>
+
+<p>
+Here is an example implementation of the ParameterDefinition class:
+</p>
+<pre>
+<code>/***************************************************************
+ * An example on how to add a custom parameter to the dashboard.
+ ***************************************************************/
+public class ParameterDefinitionExampleEnvironment extends ParameterDefinition {
+
+	public static final String LABEL = "Example Environment";
+	
+	/***************************************************************
+	 * Return the Unique Label for this parameter.
+	 ***************************************************************/
+	@Override
+	public String getParamLabel() { return LABEL; }
+
+	/***************************************************************
+	 * Return the field displayed in the edit parameter window.
+	 ***************************************************************/
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
+		CFWField settingsField = ExampleSettingsFactory.createExampleEnvironmentSelectorField();
+				
+		if(fieldValue != null) {
+			settingsField.setValueConvert(fieldValue);
+		}
+	
+		return settingsField;
+	}
+	
+	/***************************************************************
+	 * If another field should be displayed in the widget "Parameter"
+	 * for this type of parameter, return a different field here.
+	 * Else just return the same as for getFieldForWidget();
+	 ***************************************************************/
+	@SuppressWarnings({ "rawtypes" })
+	@Override
+	public CFWField getFieldForWidget(HttpServletRequest request, String dashboardid, Object fieldValue) {
+
+		return getFieldForSettings(request, dashboardid, fieldValue);
+	}
+	
+	/***************************************************************
+	 * Check for which widget types this widget is available.
+	 * Return true if it is available for the given widget, else 
+	 * return false. (Tip: use a unique naming convention for your widgets).
+	 * 
+	 ***************************************************************/
+	@Override
+	public boolean isAvailable(HashSet&lt;String&gt; widgetTypesArray) {
+		
+		for(String type : widgetTypesArray) {
+			if(type.startsWith("cfwexample_")) {
+				return true;
+			}
+		}
+		return false;
+	}
+}</code>
+</pre>
+
+<p>
+Now you only have to put your widget into the registry, everything else will be done by the framework.
+Here is the code:
+</p>
+<pre>
+<code>CFW.Registry.Parameters.add(new ParameterDefinitionExampleEnvironment());</code>
+</pre>

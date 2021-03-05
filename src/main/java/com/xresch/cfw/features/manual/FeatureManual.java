@@ -308,6 +308,12 @@ public class FeatureManual extends CFWAppFeature {
 				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "manual_dev_dashboard_wigdets.html")
 			);
 		
+		dashboard.addChild(new ManualPage("Creating Dashboard Parameters")
+				.faicon("fas fa-sliders-h")
+				.addPermission(PERMISSION_ADMIN_MANUAL)
+				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "manual_dev_dashboard_parameters.html")
+			);
+		
 	}
 
 }
