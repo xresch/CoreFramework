@@ -357,7 +357,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		//--------------------------------
 		if(parentID != null
 		&& childID != null
-		&& parentID == childID) {
+		&& parentID.equals(childID)) {
 			new CFWLog(logger)
 				.severe("Cannot set item to be it's own parent.", new IllegalStateException());
 			return true;
