@@ -1,6 +1,7 @@
 package com.xresch.cfw._main;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.logging.Logger;
 
@@ -17,14 +18,22 @@ public class CFWRegistryFeatures {
 	
 	private static LinkedHashSet<Class<? extends CFWAppFeature>> featureClassSet = new LinkedHashSet<>();
 	
+	//Map of Managed Features: Unique Name and Featue Class
+	private static LinkedHashMap<String, CFWAppFeature> ManagedFeatures = new LinkedHashMap<>();
+	
 	/***********************************************************************
 	 * Adds a CFWObject class to the registry.
 	 * @param objectClass
 	 ***********************************************************************/
 	public static void addFeature(Class<? extends CFWAppFeature> objectClass)  {
 		featureClassSet.add(objectClass);
+		
+		CFWAppFeature instance = getFeatureInstance(objectClass);
+		if(instance != null && instance.getNameForFeatureManagement() != null) {
+			ManagedFeatures.put(instance.getNameForFeatureManagement(), instance);
+		}
 	}
-	
+		
 	/***********************************************************************
 	 * Removes a CFWObject class to the registry.
 	 * @param objectClass
@@ -45,15 +54,28 @@ public class CFWRegistryFeatures {
 	 * Get a list of CFWObject instances.
 	 * @param objectClass
 	 ***********************************************************************/
+	private static CFWAppFeature getFeatureInstance(Class<? extends CFWAppFeature> objectClass)  {
+		CFWAppFeature instance = null;
+		try {
+			instance = objectClass.newInstance();
+			return instance;
+		} catch (Exception e) {
+			new CFWLog(logger).severe("Issue creating instance for Class '"+objectClass.getName()+"': "+e.getMessage(), e);
+		}
+		
+		return instance;
+	}
+	/***********************************************************************
+	 * Get a list of CFWObject instances.
+	 * @param objectClass
+	 ***********************************************************************/
 	public static ArrayList<CFWAppFeature> getFeatureInstances()  {
 		ArrayList<CFWAppFeature> instanceArray = new ArrayList<>();
 		
 		for(Class<? extends CFWAppFeature> clazz : featureClassSet) {
-			try {
-				CFWAppFeature instance = clazz.newInstance();
+			CFWAppFeature instance = getFeatureInstance(clazz);
+			if(instance != null) {
 				instanceArray.add(instance);
-			} catch (Exception e) {
-				new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
 			}
 		}
 		return instanceArray;

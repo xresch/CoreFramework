@@ -8,6 +8,23 @@ package com.xresch.cfw._main;
 public abstract class CFWAppFeature {
 
 	/************************************************************************************
+	 * Return the unique name of this feature for the feature management.
+	 * If this method returns null(default), the feature will not be visible in the 
+	 * Feature Management.
+	 * 
+	 ************************************************************************************/
+	public String getNameForFeatureManagement() {
+		return null;
+	};
+	
+	/************************************************************************************
+	 * Register a description for the feature management.
+	 ************************************************************************************/
+	public String getDescriptionForFeatureManagement() {
+		return null;
+	};
+	
+	/************************************************************************************
 	 * Register components and objects.
 	 ************************************************************************************/
 	public abstract void register();
