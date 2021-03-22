@@ -297,7 +297,13 @@ public class CFWDBUser {
 		
 		User user = selectByID(id);
 		
-		if(user != null && user.isDeletable() == false) {
+		if(user == null ) {
+			new CFWLog(logger)
+			.severe("The user with ID '"+id+"' cannot be deleted as it does not exist.");
+			return false;
+		}
+		
+		if(user.isDeletable() == false) {
 			new CFWLog(logger)
 			.severe("The user '"+user.username()+"' cannot be deleted as it is marked as not deletable.");
 			return false;
