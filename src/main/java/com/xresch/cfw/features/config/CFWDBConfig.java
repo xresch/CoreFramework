@@ -372,21 +372,25 @@ public class CFWDBConfig {
 	public static boolean updateValue(int id, String value) {
 		
 		// does not update cache automatically 
+		Configuration currentConfigFromDB = selectByID(id);
 		
-		Configuration oldConfig = selectByID(id);
-		String oldValue = (oldConfig != null) ? oldConfig.value() : "";
-		
-		if( (oldValue != null  && !oldValue.equals(value))
-		 || (oldValue == null  && !Strings.isNullOrEmpty(value))	) {
-			new CFWLog(logger).audit("UPDATE", Configuration.class, "Change config '"+oldConfig.name()+"' from '"+oldValue+"' to '"+value+"'");
+		if(currentConfigFromDB != null) {
+			String oldValue = currentConfigFromDB.value();
+			
+			if( (oldValue != null  && !oldValue.equals(value))
+			 || (oldValue == null  && !Strings.isNullOrEmpty(value))	) {
+				new CFWLog(logger).audit("UPDATE", Configuration.class, "Change config '"+currentConfigFromDB.name()+"' from '"+oldValue+"' to '"+value+"'");
+			}
+			
+			return new Configuration()
+				.id(id)
+				.value(value)
+				.queryCache(CFWDBConfig.class, "updateValue")
+				.update(ConfigFields.VALUE.toString());
+		}else {
+			new CFWLog(logger).severe("The configuration with id '"+id+"' does not exist.");
+			return false;
 		}
-		
-		return new Configuration()
-			.id(id)
-			.value(value)
-			.queryCache(CFWDBConfig.class, "updateValue")
-			.update(ConfigFields.VALUE.toString());
-		
 	}
 	
 
