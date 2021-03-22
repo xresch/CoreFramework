@@ -17,7 +17,7 @@ import com.xresch.cfw._main.CFW;
  **************************************************************************************************************/
 public class CFWTime {
 	
-	public static final String TIME_FORMAT = "YYYY-MM-dd'T'HH:mm:ss.SSS";
+	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 	
 	// Don't use as static as it is not thread safe
 	//public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(CFWTime.TIME_FORMAT);

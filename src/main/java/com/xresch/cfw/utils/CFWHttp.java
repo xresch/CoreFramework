@@ -376,20 +376,21 @@ public class CFWHttp {
 			//-----------------------------------
 			// Handle headers
 			HttpURLConnection connection = createProxiedURLConnection(url);
-			
-			if(headers != null ) {
-				for(Entry<String, String> header : headers.entrySet())
-				connection.setRequestProperty(header.getKey(), header.getValue());
-			}
-			
-			//-----------------------------------
-			// Connect and create response
 			if(connection != null) {
-				connection.setRequestMethod("GET");
-				connection.connect();
+				if(headers != null ) {
+					for(Entry<String, String> header : headers.entrySet())
+					connection.setRequestProperty(header.getKey(), header.getValue());
+				}
 				
-				outgoingHTTPCallsCounter.labels("GET").inc();
-				return instance.new CFWHttpResponse(connection);
+				//-----------------------------------
+				// Connect and create response
+				if(connection != null) {
+					connection.setRequestMethod("GET");
+					connection.connect();
+					
+					outgoingHTTPCallsCounter.labels("GET").inc();
+					return instance.new CFWHttpResponse(connection);
+				}
 			}
 	    
 		} catch (Exception e) {
@@ -421,22 +422,22 @@ public class CFWHttp {
 			//-----------------------------------
 			// Handle headers
 			HttpURLConnection connection = createProxiedURLConnection(url);
-			
-			if(headers != null ) {
-				for(Entry<String, String> header : headers.entrySet())
-				connection.setRequestProperty(header.getKey(), header.getValue());
-			}
-			
-			//-----------------------------------
-			// Connect and create response
 			if(connection != null) {
-				connection.setRequestMethod("POST");
-				connection.connect();
+				if(headers != null ) {
+					for(Entry<String, String> header : headers.entrySet())
+					connection.setRequestProperty(header.getKey(), header.getValue());
+				}
 				
-				outgoingHTTPCallsCounter.labels("POST").inc();
-				return instance.new CFWHttpResponse(connection);
+				//-----------------------------------
+				// Connect and create response
+				if(connection != null) {
+					connection.setRequestMethod("POST");
+					connection.connect();
+					
+					outgoingHTTPCallsCounter.labels("POST").inc();
+					return instance.new CFWHttpResponse(connection);
+				}
 			}
-	    
 		} catch (Exception e) {
 			new CFWLog(logger)
 				.severe("Exception occured: "+e.getMessage(), e);
