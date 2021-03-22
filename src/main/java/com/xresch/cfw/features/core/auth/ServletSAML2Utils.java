@@ -33,7 +33,10 @@ public class ServletSAML2Utils
 		// Create Auth and Login
 		SettingsBuilder builder = new SettingsBuilder();
 		Properties props = new Properties();
-		props.load(new FileInputStream(CFW.Properties.AUTHENTICATION_SAML2_CONFIGFILE));
+		
+		try(FileInputStream configStream = new FileInputStream(CFW.Properties.AUTHENTICATION_SAML2_CONFIGFILE)){
+			props.load(configStream);
+		}
 		
 		settings = builder.fromProperties(props).build();
 		

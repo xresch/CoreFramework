@@ -420,9 +420,11 @@ function cfw_dashboard_registerCategory(faiconClasses, categoryName, categoryLab
 		
 		// ----------------------------
 		// Category Label
-		categoryLabel = tokens[i];
-		if(i == tokens.length-1 && categoryLabel != null){
-			categoryLabel = tokens[tokens.length-1];
+		let currentLabel = tokens[i];
+		if(i == tokens.length-1){
+			if(categoryLabel != null){
+				currentLabel = categoryLabel;
+			}
 		}
 		// ----------------------------
 		// Check exists
@@ -433,7 +435,7 @@ function cfw_dashboard_registerCategory(faiconClasses, categoryName, categoryLab
 			// Create
 			var categoryHTML = 
 				'<li class="dropdown dropdown-submenu">'
-					+'<a href="#" class="dropdown-item dropdown-toggle" id="cfwMenuDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><div class="cfw-fa-box"><i class="'+faiconClasses+'"></i></div><span class="cfw-menuitem-label">'+categoryLabel+'</span><span class="caret"></span></a>'
+					+'<a href="#" class="dropdown-item dropdown-toggle" id="cfwMenuDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><div class="cfw-fa-box"><i class="'+faiconClasses+'"></i></div><span class="cfw-menuitem-label">'+currentLabel+'</span><span class="caret"></span></a>'
 					+'<ul class="dropdown-menu dropdown-submenu" aria-labelledby="cfwMenuDropdown" data-submenuof="'+currentCategoryName+'">'
 					+'</ul>'
 				+'</li>';
