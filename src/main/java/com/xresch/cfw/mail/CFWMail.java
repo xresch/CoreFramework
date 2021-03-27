@@ -68,6 +68,7 @@ public class CFWMail {
 				
 				props.put("mail.smtp.socketFactory.port", CFW.Properties.MAIL_SMTP_PORT);
 				props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); 
+				props.put("mail.smtp.ssl.checkserveridentity", "true"); 
 				props.put("mail.smtp.auth", "true"); 
 				props.put("mail.smtp.port", CFW.Properties.MAIL_SMTP_PORT); 
 				
