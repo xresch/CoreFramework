@@ -23,6 +23,7 @@ import com.xresch.cfw.datahandling.CFWObject.ForeignKeyDefinition;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
  * Class used to create SQL statements for a CFWObject.
@@ -1233,23 +1234,11 @@ public class CFWSQL {
 	 * Executes the query and returns the first result as object.
 	 * @return CFWObject the resulting object or null if not found.
 	 ****************************************************************/
-	public CFWObject getFirstObject() {
+	public CFWObject getFirstAsObject() {
 		
-		try {
-			if(this.execute() && result.next()) {
-				CFWObject instance = this.object.getClass().newInstance();
-				instance.mapResultSet(result);
-				return instance;
-				
-			}
-		}catch (SQLException | InstantiationException | IllegalAccessException e) {
-			new CFWLog(logger)
-			.severe("Error reading object from database.", e);
-			
-		}finally {
-			CFWDB.close(result);
+		if(this.execute()) {
+			return ResultSetUtils.getFirstAsObject(result, object.getClass());
 		}
-
 		
 		return null;
 	}
@@ -1259,28 +1248,10 @@ public class CFWSQL {
 	 ****************************************************************/
 	public ArrayList<CFWObject> getAsObjectList() {
 		
-		ArrayList<CFWObject> objectArray = new ArrayList<CFWObject>();
+		ArrayList<CFWObject> objectArray = new ArrayList<>();
 		
 		if(this.execute()) {
-			
-			if(result == null) {
-				return objectArray;
-			}
-			
-			try {
-				while(result.next()) {
-					CFWObject current = object.getClass().newInstance();
-					current.mapResultSet(result);
-					objectArray.add(current);
-				}
-			} catch (SQLException | InstantiationException | IllegalAccessException e) {
-				new CFWLog(logger)
-					.severe("Error reading object from database.", e);
-				
-			}finally {
-				CFWDB.close(result);
-			}
-			
+			objectArray = ResultSetUtils.toObjectList(result, object.getClass());
 		}
 		
 		return objectArray;
@@ -1296,25 +1267,7 @@ public class CFWSQL {
 		LinkedHashMap<Integer, CFWObject> objectMap = new LinkedHashMap<>();
 		
 		if(this.execute()) {
-			
-			if(result == null) {
-				return objectMap;
-			}
-			
-			try {
-				while(result.next()) {
-					CFWObject current = object.getClass().newInstance();
-					current.mapResultSet(result);
-					objectMap.put(current.getPrimaryKey(), current);
-				}
-			} catch (SQLException | InstantiationException | IllegalAccessException e) {
-				new CFWLog(logger)
-					.severe("Error reading objects from database.", e);
-				
-			}finally {
-				CFWDB.close(result);
-			}
-			
+			objectMap = ResultSetUtils.toKeyObjectMap(result, object.getClass());
 		}
 		
 		return objectMap;
@@ -1329,25 +1282,7 @@ public class CFWSQL {
 		HashMap<Object, Object> keyValueMap = new HashMap<Object, Object>();
 		
 		if(this.execute()) {
-			
-			if(result == null) {
-				return keyValueMap;
-			}
-			
-			try {
-				while(result.next()) {
-					Object key = result.getObject(keyColumnName);
-					Object value = result.getObject(valueColumnName);
-					keyValueMap.put(key, value);
-				}
-			} catch (SQLException e) {
-				new CFWLog(logger)
-				.severe("Error reading object from database.", e);
-				
-			}finally {
-				CFWDB.close(result);
-			}
-			
+			keyValueMap = ResultSetUtils.toKeyValueMap(result, keyColumnName, valueColumnName);
 		}
 		
 		return keyValueMap;
@@ -1357,8 +1292,8 @@ public class CFWSQL {
 	/***************************************************************
 	 * Execute the Query and gets the result as a string array.
 	 ***************************************************************/
-	public String[] getAsStringArray(Object columnName) {
-		return getAsStringArrayList(columnName).toArray(new String[] {});
+	public String[] toStringArray(Object columnName) {
+		return ResultSetUtils.toStringArray(result, columnName.toString());
 	}
 	
 	/***************************************************************
@@ -1369,24 +1304,7 @@ public class CFWSQL {
 		ArrayList<String> stringArray = new ArrayList<String>();
 		
 		if(this.execute()) {
-			
-			if(result == null) {
-				return stringArray;
-			}
-			
-			try {
-				while(result.next()) {
-					Object value = result.getObject(columnName.toString());
-					stringArray.add(value.toString());
-				}
-			} catch (SQLException e) {
-				new CFWLog(logger)
-				.severe("Error reading object from database.", e);
-				
-			}finally {
-				CFWDB.close(result);
-			}
-			
+			return ResultSetUtils.toStringArrayList(result, columnName.toString());
 		}
 		
 		return stringArray;
@@ -1401,25 +1319,7 @@ public class CFWSQL {
 		LinkedHashMap<Object, Object>  resultMap = new LinkedHashMap<Object, Object>();
 		
 		if(this.execute()) {
-			
-			if(result == null) {
-				return resultMap;
-			}
-			
-			try {
-				while(result.next()) {
-					Object key = result.getObject(keyColumnName.toString());
-					Object value = result.getObject(valueColumnName.toString());
-					resultMap.put(key, value);
-				}
-			} catch (SQLException e) {
-				new CFWLog(logger)
-				.severe("Error reading object from database.", e);
-				
-			}finally {
-				CFWDB.close(result);
-			}
-			
+			resultMap = ResultSetUtils.toLinkedHashMap(result, keyColumnName, valueColumnName);
 		}
 		
 		return resultMap;
@@ -1432,31 +1332,12 @@ public class CFWSQL {
 	 ***************************************************************/
 	public AutocompleteResult getAsAutocompleteResult(Object valueColumnName, Object labelColumnName) {
 		
-		AutocompleteList list = new AutocompleteList();
 		if(this.execute()) {
-			
-			if(result == null) {
-				return new AutocompleteResult();
-			}
-			
-			try {
-				while(result.next()) {
-					Object key = result.getObject(valueColumnName.toString());
-					Object value = result.getObject(labelColumnName.toString());
-					list.addItem(key, value);
-				}
-			} catch (SQLException e) {
-				new CFWLog(logger)
-				.severe("Error reading object from database.", e);
-				
-			}finally {
-				CFWDB.close(result);
-			}
-			
+			return ResultSetUtils.toAsAutocompleteResult(result, valueColumnName, labelColumnName);
+		}else {
+			return new AutocompleteResult(new AutocompleteList());
 		}
-		
-		return new AutocompleteResult(list);
-		
+
 	}
 	
 	/***************************************************************
@@ -1465,31 +1346,11 @@ public class CFWSQL {
 	 ***************************************************************/
 	public AutocompleteResult getAsAutocompleteResult(Object valueColumnName, Object labelColumnName, Object descriptionColumnName) {
 		
-		AutocompleteList list = new AutocompleteList();
 		if(this.execute()) {
-			
-			if(result == null) {
-				return new AutocompleteResult();
-			}
-			
-			try {
-				while(result.next()) {
-					Object key = result.getObject(valueColumnName.toString());
-					Object value = result.getObject(labelColumnName.toString());
-					Object description = result.getObject(descriptionColumnName.toString());
-					list.addItem(key, value, description);
-				}
-			} catch (SQLException e) {
-				new CFWLog(logger)
-				.severe("Error reading object from database.", e);
-				
-			}finally {
-				CFWDB.close(result);
-			}
-			
+			return ResultSetUtils.toAsAutocompleteResult(result, valueColumnName, labelColumnName, descriptionColumnName);
+		}else {
+			return new AutocompleteResult(new AutocompleteList());
 		}
-		
-		return new AutocompleteResult(list);
 		
 	}
 	
@@ -1500,7 +1361,7 @@ public class CFWSQL {
 	public String getAsJSON() {
 		
 		this.execute();
-		String	string = CFWDB.resultSetToJSON(result);
+		String	string = ResultSetUtils.toJSON(result);
 		CFWDB.close(result);
 		
 		return string;
@@ -1543,7 +1404,7 @@ public class CFWSQL {
 	public String getAsCSV() {
 		
 		this.execute();
-		String string = CFWDB.resultSetToCSV(result, ";");
+		String string = ResultSetUtils.toCSV(result, ";");
 		CFWDB.close(result);
 		
 		return string;
@@ -1556,7 +1417,7 @@ public class CFWSQL {
 	public String getAsXML() {
 		
 		this.execute();
-		String	string = CFWDB.resultSetToXML(result);
+		String	string = ResultSetUtils.toXML(result);
 		CFWDB.close(result);
 		
 		return string;

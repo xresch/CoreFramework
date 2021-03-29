@@ -1,7 +1,6 @@
 package com.xresch.cfw._main;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,7 +45,6 @@ import com.xresch.cfw.handler.HTTPSRedirectHandler;
 import com.xresch.cfw.handler.RedirectDefaultPageHandler;
 import com.xresch.cfw.handler.RequestHandler;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
 import com.xresch.cfw.utils.HandlerChainBuilder;
 
@@ -354,7 +352,7 @@ public class CFWApplicationExecutor {
 			httpsConf.setSecureScheme("https");
 			// Add support for X-Forwarded headers
 			httpsConf.addCustomizer( new org.eclipse.jetty.server.ForwardedRequestCustomizer());
-		
+
 			SslContextFactory sslContextFactory = new SslContextFactory();
 			sslContextFactory.setKeyStorePath(CFWProperties.HTTPS_KEYSTORE_PATH);
 			sslContextFactory.setKeyStorePassword(CFWProperties.HTTPS_KEYSTORE_PASSWORD);

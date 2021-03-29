@@ -16,6 +16,7 @@ import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.PlaintextResponse;
 import com.xresch.cfw.utils.CFWArrayUtils;
+import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
  * 
@@ -90,15 +91,15 @@ public class APIDefinitionSQL extends APIDefinition{
 					format = "JSON";
 				}
 				if(format.toUpperCase().equals(ReturnFormat.JSON.toString())) {
-					json.getContent().append(CFWDB.resultSetToJSON(result));
+					json.getContent().append(ResultSetUtils.toJSON(result));
 					
 				}else if(format.toUpperCase().equals(ReturnFormat.CSV.toString())){		
 					PlaintextResponse plaintext = new PlaintextResponse();
-					plaintext.getContent().append(CFWDB.resultSetToCSV(result, ";"));
+					plaintext.getContent().append(ResultSetUtils.toCSV(result, ";"));
 					
 				}else if(format.toUpperCase().equals(ReturnFormat.XML.toString())){		
 					PlaintextResponse plaintext = new PlaintextResponse();
-					plaintext.getContent().append(CFWDB.resultSetToXML(result));
+					plaintext.getContent().append(ResultSetUtils.toXML(result));
 				}
 				
 				CFWDB.close(result);

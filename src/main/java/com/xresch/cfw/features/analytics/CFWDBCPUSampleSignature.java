@@ -57,7 +57,7 @@ public class CFWDBCPUSampleSignature {
 				.queryCache(CFWDBCPUSampleSignature.class, "selectByName")
 				.select()
 				.where(CPUSampleSignatureFields.SIGNATURE.toString(), name)
-				.getFirstObject();
+				.getFirstAsObject();
 
 	}
 	
@@ -72,7 +72,7 @@ public class CFWDBCPUSampleSignature {
 				.queryCache(CFWDBCPUSampleSignature.class, "selectByID")
 				.select()
 				.where(CPUSampleSignatureFields.PK_ID.toString(), id)
-				.getFirstObject();
+				.getFirstAsObject();
 		
 	}
 	

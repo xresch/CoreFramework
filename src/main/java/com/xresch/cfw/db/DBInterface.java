@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -27,7 +26,7 @@ import io.prometheus.client.Counter;
  **************************************************************************************************************/
 public abstract class DBInterface {
 
-	protected static Logger logger = CFWLog.getLogger(DBInterface.class.getName());
+	private static Logger logger = CFWLog.getLogger(DBInterface.class.getName());
 	
 	protected ThreadLocal<ArrayList<Connection>> myOpenConnections = new ThreadLocal<>();
 	protected ThreadLocal<Connection> transactionConnection = new ThreadLocal<>();
@@ -573,126 +572,6 @@ public abstract class DBInterface {
 			new CFWLog(logger)
 				.severe("Exception occured while closing ResultSet. ", e);
 		}
-	}
-
-	/********************************************************************************************
-	 * Returns a jsonString with an array containing a json object for each row.
-	 * Returns an empty array in case of error.
-	 * 
-	 ********************************************************************************************/
-	public static String resultSetToJSON(ResultSet resultSet) {
-		return CFW.JSON.toJSON(resultSet);
-	}
-	
-	/********************************************************************************************
-	 * Returns a jsonString with an array containing a json object for each row.
-	 * Returns an empty array in case of error.
-	 * 
-	 ********************************************************************************************/
-	public static String resultSetToCSV(ResultSet resultSet, String delimiter) {
-		StringBuilder csv = new StringBuilder();
-		
-		try {
-			
-			if(resultSet == null) {
-				return "";
-			}
-			
-			//--------------------------------------
-			// Check has results
-			/* Excluded as MSSQL might throw errors			
-			resultSet.beforeFirst();
-			if(!resultSet.isBeforeFirst()) {
-				return "";
-			} */
-			
-			//--------------------------------------
-			// Iterate results
-			ResultSetMetaData metadata = resultSet.getMetaData();
-			int columnCount = metadata.getColumnCount();
-			
-			for(int i = 1 ; i <= columnCount; i++) {
-				csv.append("\"")
-				   .append(metadata.getColumnLabel(i))
-				   .append("\"")
-				   .append(delimiter);
-			}
-			csv.deleteCharAt(csv.length()-1); //remove last comma
-			csv.append("\r\n");
-			while(resultSet.next()) {
-				for(int i = 1 ; i <= columnCount; i++) {
-					
-					String value = resultSet.getString(i);
-					csv.append("\"")
-					   .append(CFW.JSON.escapeString(value))
-					   .append("\"")
-					   .append(delimiter);
-				}
-				csv.deleteCharAt(csv.length()-1); //remove last comma
-				csv.append("\r\n");
-			}
-			csv.deleteCharAt(csv.length()-1); //remove last comma
-
-			
-		} catch (SQLException e) {
-				new CFWLog(logger)
-					.severe("Exception occured while converting ResultSet to CSV.", e);
-				
-				return "";
-		}
-
-		return csv.toString();
-	}
-	
-	/********************************************************************************************
-	 * Returns a jsonString with an array containing a json object for each row.
-	 * Returns an empty array in case of error.
-	 * 
-	 ********************************************************************************************/
-	public static String resultSetToXML(ResultSet resultSet) {
-		StringBuilder json = new StringBuilder();
-		
-		try {
-			
-			if(resultSet == null) {
-				return "<data></data>";
-			}
-			//--------------------------------------
-			// Check has results
-			/* Excluded as MSSQL might throw errors			
-			resultSet.beforeFirst();
-			if(!resultSet.isBeforeFirst()) {
-				return "<data></data>";			
-			}*/
-			
-			//--------------------------------------
-			// Iterate results
-			ResultSetMetaData metadata = resultSet.getMetaData();
-			int columnCount = metadata.getColumnCount();
-	
-			json.append("<data>\n");
-			while(resultSet.next()) {
-				json.append("\t<record>\n");
-				for(int i = 1 ; i <= columnCount; i++) {
-					String column = metadata.getColumnLabel(i);
-					json.append("\t\t<").append(column).append(">");
-					
-					String value = resultSet.getString(i);
-					json.append(value);
-					json.append("</").append(column).append(">\n");
-				}
-				json.append("\t</record>\n");
-			}
-			json.append("</data>");
-			
-		} catch (SQLException e) {
-				new CFWLog(logger)
-					.severe("Exception occured while converting ResultSet to XML.", e);
-				
-				return "<data></data>";
-		}
-
-		return json.toString();
 	}
 
 }

@@ -387,7 +387,7 @@ public  class CFWDBDefaultOperations {
 					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.selectFirstBy"+column)
 					.select()
 					.where(column, value)
-					.getFirstObject();
+					.getFirstAsObject();
 		} catch (Exception e) {
 			new CFWLog(logger)
 				.warn("Error while instanciating object.", e);

@@ -96,7 +96,7 @@ public class CFWDBUser {
 				.select()
 				.where(UserFields.USERNAME.toString(), usernameOrMail, false)
 				.or(UserFields.EMAIL.toString(), usernameOrMail, false)
-				.getFirstObject();
+				.getFirstAsObject();
 			
 	}
 	
@@ -113,7 +113,7 @@ public class CFWDBUser {
 				.queryCache(CFWDBUser.class, "selectByID")
 				.select()
 				.where(UserFields.PK_ID.toString(), id)
-				.getFirstObject();
+				.getFirstAsObject();
 		
 	}
 	
@@ -130,7 +130,7 @@ public class CFWDBUser {
 				.queryCache(CFWDBUser.class, "selectByID")
 				.select(UserFields.USERNAME)
 				.where(UserFields.PK_ID.toString(), id)
-				.getFirstObject()
+				.getFirstAsObject()
 				;
 		
 		if(user == null) {

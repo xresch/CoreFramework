@@ -70,7 +70,7 @@ public class CFWDBSpaceGroup {
 				.queryCache(CFWDBSpaceGroup.class, "selectByName")
 				.select()
 				.where(SpaceGroupFields.NAME.toString(), name)
-				.getFirstObject();
+				.getFirstAsObject();
 
 	}
 	
@@ -85,7 +85,7 @@ public class CFWDBSpaceGroup {
 				.queryCache(CFWDBSpaceGroup.class, "selectByID")
 				.select()
 				.where(SpaceGroupFields.PK_ID.toString(), id)
-				.getFirstObject();
+				.getFirstAsObject();
 		
 	}
 	

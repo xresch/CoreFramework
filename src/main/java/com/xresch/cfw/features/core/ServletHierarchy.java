@@ -174,7 +174,7 @@ public class ServletHierarchy extends HttpServlet
 		if(rootID != null) {
 			parentObject = instance.select()
 				.where(primaryFieldName, rootID)
-				.getFirstObject();
+				.getFirstAsObject();
 		}else {
 			//---------------------------------------
 			// Fetch All elements in table by using

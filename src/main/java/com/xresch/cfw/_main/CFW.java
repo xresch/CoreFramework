@@ -30,6 +30,7 @@ import com.xresch.cfw.features.dashboard.CFWRegistryWidgets;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.parameters.CFWDBDashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.CFWRegistryDashboardParameters;
+import com.xresch.cfw.features.keyvaluepairs.CFWDBKeyValuePairs;
 import com.xresch.cfw.features.manual.CFWRegistryManual;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.spaces.CFWDBSpace;
@@ -80,6 +81,7 @@ public class CFW {
 		public static class Dashboards extends CFWDBDashboard{};
 		public static class DashboardWidgets extends CFWDBDashboardWidget{};
 		public static class DashboardParameters extends CFWDBDashboardParameter{};
+		public static class KeyValuePairs extends CFWDBKeyValuePairs{};
 		public static class Users extends CFWDBUser{};
 		public static class Roles extends CFWDBRole{};
 		public static class UserRoleMap extends CFWDBUserRoleMap{};

@@ -47,7 +47,7 @@ public class CFWDBCPUSample {
 				.queryCache(CFWDBCPUSample.class, "selectByID")
 				.select()
 				.where(StatsCPUSampleFields.PK_ID.toString(), id)
-				.getFirstObject();
+				.getFirstAsObject();
 		
 	}
 	
@@ -66,7 +66,7 @@ public class CFWDBCPUSample {
 				.custom("AND TIME <= ?", ageOutTime)
 				.orderby(StatsCPUSampleFields.TIME.toString())
 				.limit(1)
-				.getFirstObject();
+				.getFirstAsObject();
 		
 		if(first != null) {
 			return first.time();
@@ -92,7 +92,7 @@ public class CFWDBCPUSample {
 				.custom(" AND TIME <= ? ", ageOutTime)
 				.orderbyDesc(StatsCPUSampleFields.TIME.toString())
 				.limit(1)
-				.getFirstObject();
+				.getFirstAsObject();
 		
 		if(first != null) {
 			return first.time();

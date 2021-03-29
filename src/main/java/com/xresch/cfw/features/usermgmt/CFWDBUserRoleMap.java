@@ -9,6 +9,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.usermgmt.UserRoleMap.UserRoleMapFields;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
  * 
@@ -297,7 +298,7 @@ public class CFWDBUserRoleMap {
 		ResultSet result = CFWDB.preparedExecuteQuery(selectRolesForUser, 
 				"user",
 				userID);
-		String json = CFWDB.resultSetToJSON(result);
+		String json = ResultSetUtils.toJSON(result);
 		CFWDB.close(result);	
 		return json;
 

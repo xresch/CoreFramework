@@ -104,7 +104,7 @@ public class APITokenPermissionDBMethods {
 				.select()
 				.where(APITokenPermissionFields.API_NAME, apiName)
 				.and(APITokenPermissionFields.ACTION_NAME, actionName)
-				.getFirstObject();
+				.getFirstAsObject();
 	}
 		
 	

@@ -642,7 +642,7 @@ public class CFWDBDashboard {
 		Dashboard dashboard = (Dashboard)new CFWSQL(new Dashboard())
 			.select(DashboardFields.JSON_SHARE_WITH_ROLES, DashboardFields.JSON_EDITOR_ROLES)
 			.where(DashboardFields.PK_ID, dashboardID)
-			.getFirstObject();
+			.getFirstAsObject();
 		
 		//-----------------------------------
 		// Check User has Shared Role

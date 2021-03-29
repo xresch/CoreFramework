@@ -138,7 +138,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		// Resolve Parent Object
 		CFWObject parentObject = instance.select()
 				.where(primaryFieldName, parentID)
-				.getFirstObject();
+				.getFirstAsObject();
 		
 		CFWObject parentWithHierarchy = new CFWHierarchy(parentObject)
 				.fetchAndCreateHierarchy()
@@ -147,7 +147,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		// Resolve Child Object
 		CFWObject childObject = instance.select()
 				.where(primaryFieldName, childID)
-				.getFirstObject();	
+				.getFirstAsObject();	
 		
 		CFWObject childWithHierarchy = new CFWHierarchy(childObject)
 				.fetchAndCreateHierarchy()
@@ -726,7 +726,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		// of the parent element
 		CFWObject parent = root.select(parentAndPrimaryFieldnames)
 			.where(parentPrimaryFieldname, parentPrimaryValue)
-			.getFirstObject();
+			.getFirstAsObject();
 		
 		
 		//---------------------------------

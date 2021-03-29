@@ -114,7 +114,7 @@ public class CFWDBPermission {
 				.queryCache(CFWDBPermission.class, "selectByName")
 				.select()
 				.where(PermissionFields.NAME.toString(), name)
-				.getFirstObject();
+				.getFirstAsObject();
 		
 	}
 	
@@ -129,7 +129,7 @@ public class CFWDBPermission {
 				.queryCache(CFWDBPermission.class, "selectByID")
 				.select()
 				.where(PermissionFields.PK_ID.toString(), id)
-				.getFirstObject();
+				.getFirstAsObject();
 		
 	}
 	

@@ -10,6 +10,7 @@ import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.usermgmt.RolePermissionMap.RolePermissionMapFields;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
  * 
@@ -358,7 +359,7 @@ public class CFWDBRolePermissionMap {
 		ResultSet result = CFWDB.preparedExecuteQuery(sqlString, 
 				roleID);
 		
-		String json = CFWDB.resultSetToJSON(result);
+		String json = ResultSetUtils.toJSON(result);
 		CFWDB.close(result);	
 		return json;
 

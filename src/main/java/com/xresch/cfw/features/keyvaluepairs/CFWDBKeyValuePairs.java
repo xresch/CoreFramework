@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.config;
+package com.xresch.cfw.features.keyvaluepairs;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,10 +9,10 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.DB.Config;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
-import com.xresch.cfw.features.config.Configuration.ConfigFields;
+import com.xresch.cfw.db.CFWSQL;
+import com.xresch.cfw.features.keyvaluepairs.KeyValuePair.KeyValuePairFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -20,12 +20,12 @@ import com.xresch.cfw.logging.CFWLog;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWDBConfig {
+public class CFWDBKeyValuePairs {
 	
-	private static final Logger logger = CFWLog.getLogger(CFWDBConfig.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBKeyValuePairs.class.getName());
 	
-	//name/value pairs of configuration elements
-	private static LinkedHashMap<String, String> configCache = new LinkedHashMap<String, String>();
+	//key/value pairs of keyValuePair elements
+	private static LinkedHashMap<String, String> keyValCache = new LinkedHashMap<String, String>();
 	
 	private static ArrayList<ConfigChangeListener> changeListeners = new ArrayList<ConfigChangeListener>();
 	
@@ -35,11 +35,11 @@ public class CFWDBConfig {
 	 * 
 	 ********************************************************************************************/
 	public static void initializeTable() {
-		new Configuration().createTable();
+		new KeyValuePair().createTable();
 	}
 	
 	/********************************************************************************************
-	 * Add a change listener that listens to config changes.
+	 * Add a change listener that listens to keyVal changes.
 	 * 
 	 ********************************************************************************************/
 	public static void addChangeListener(ConfigChangeListener listener) {
@@ -52,8 +52,8 @@ public class CFWDBConfig {
 	 * 
 	 ********************************************************************************************/
 	public static boolean updateCache() {
-		ResultSet result = new Configuration()
-			.select(ConfigFields.NAME.toString(), ConfigFields.VALUE.toString())
+		ResultSet result = new KeyValuePair()
+			.select(KeyValuePairFields.KEY.toString(), KeyValuePairFields.VALUE.toString())
 			.getResultSet();
 		
 		if(result == null) {
@@ -64,15 +64,15 @@ public class CFWDBConfig {
 			LinkedHashMap<String, String> newCache = new LinkedHashMap<String, String>();
 			while(result.next()) {
 				newCache.put(
-					result.getString(ConfigFields.NAME.toString()),
-					result.getString(ConfigFields.VALUE.toString())
+					result.getString(KeyValuePairFields.KEY.toString()),
+					result.getString(KeyValuePairFields.VALUE.toString())
 				);
 			}
 			cacheAndTriggerChange(newCache);
 			
 		} catch (SQLException e) {
 			new CFWLog(logger)
-			.severe("Error updating configuration cache.", e);
+			.severe("Error updating keyValuePair cache.", e);
 			return false;
 		}finally {
 			CFWDB.close(result);
@@ -88,25 +88,25 @@ public class CFWDBConfig {
 	 ********************************************************************************************/
 	private static void cacheAndTriggerChange(LinkedHashMap<String, String> newCache) {
 		
-		LinkedHashMap<String, String> tempOldCache = configCache;
-		configCache = newCache;
+		LinkedHashMap<String, String> tempOldCache = keyValCache;
+		keyValCache = newCache;
 		
 		ArrayList<ConfigChangeListener> triggered = new ArrayList<ConfigChangeListener>();
 		
 		for(Entry<String, String> entry: newCache.entrySet()) {
-			String configName = entry.getKey();
+			String keyValName = entry.getKey();
 			String newValue = entry.getValue();
 			
-			String oldValue = tempOldCache.get(configName);
+			String oldValue = tempOldCache.get(keyValName);
 			
 
 			if((oldValue == null && newValue != null) 
 			|| (oldValue != null && newValue == null) 
 			|| (oldValue != null && newValue != null && !oldValue.equals(newValue) ) ) {
 				for(ConfigChangeListener listener : changeListeners) {
-					if ( (!triggered.contains(listener)) && listener.listensOnConfig(configName)) {
+					if ( (!triggered.contains(listener)) && listener.listensOnConfig(keyValName)) {
 //						System.out.println("====================");
-//						System.out.println("configName:"+configName);
+//						System.out.println("keyValName:"+keyValName);
 //						System.out.println("newValue:"+newValue);
 //						System.out.println("oldValue:"+oldValue);
 						listener.onChange();
@@ -119,73 +119,57 @@ public class CFWDBConfig {
 		
 	}
 	/********************************************************************************************
-	 * Returns a config value from cache as String
+	 * Returns a keyVal value from cache as String
 	 * 
 	 ********************************************************************************************/
-	public static String getConfigAsString(String configName) {
-		return configCache.get(configName);
+	public static String getValueAsString(String key) {
+		return keyValCache.get(key);
 	}
 	
 	/********************************************************************************************
-	 * Returns a config value from cache as boolean
+	 * Returns a keyVal value from cache as boolean
 	 * 
 	 ********************************************************************************************/
-	public static boolean getConfigAsBoolean(String configName) {
-		//System.out.println("===== Key: "+configName+", Value: "+configCache.get(configName));
-		return Boolean.parseBoolean(configCache.get(configName));
+	public static boolean getValueAsBoolean(String key) {
+		//System.out.println("===== Key: "+keyValName+", Value: "+keyValCache.get(keyValName));
+		return Boolean.parseBoolean(keyValCache.get(key));
 	}
 	
 	/********************************************************************************************
-	 * Returns a config value from cache as integer.
+	 * Returns a keyVal value from cache as integer.
 	 * 
 	 ********************************************************************************************/
-	public static int getConfigAsInt(String configName) {
-		return Integer.parseInt(configCache.get(configName));
+	public static int getValueAsInt(String key) {
+		return Integer.parseInt(keyValCache.get(key));
 	}
 	
 	/********************************************************************************************
-	 * Returns a config value from cache as long.
+	 * Returns a keyVal value from cache as long.
 	 * 
 	 ********************************************************************************************/
-	public static long getConfigAsLong(String configName) {
-		return Long.parseLong(configCache.get(configName));
+	public static long getValueAsLong(String key) {
+		return Long.parseLong(keyValCache.get(key));
 	}
-	
-	
-	
-	/********************************************************************************************
-	 * Creates multiple configs in the DB.
-	 * @param Configs with the values that should be inserted. ID will be set by the Database.
-	 * @return nothing
-	 * 
-	 ********************************************************************************************/
-	public static void create(Configuration... configs) {
 		
-		for(Configuration config : configs) {
-			create(config);
-		}
-	}
-	
 	/********************************************************************************************
-	 * Creates a new configuration in the DB if the name was not already given.
-	 * All newly created permissions are by default assigned to the Superuser Role.
+	 * Creates a new keyValuePair in the DB if the key was not already given.
 	 * 
-	 * @param configuration with the values that should be inserted. ID will be set by the Database.
+	 * @param keyValuePair with the values that should be inserted. ID will be set by the Database.
 	 * @return true if successful, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean oneTimeCreate(Configuration configuration) {
+	public static boolean oneTimeCreate(KeyValuePair keyValuePair) {
 		
-		if(configuration == null || Strings.isNullOrEmpty(configuration.name()) ) {
+		if(keyValuePair == null || Strings.isNullOrEmpty(keyValuePair.key()) ) {
 			return false;
 		}
 		
 		boolean result = true; 
-		if(!CFW.DB.Config.checkConfigExists(configuration)) {
+		if(!CFW.DB.KeyValuePairs.checkKeyExists(keyValuePair)) {
 			
-			result &= CFW.DB.Config.create(configuration);
+			result &= CFW.DB.KeyValuePairs.create(keyValuePair);
 			
-			if( CFW.DB.Config.selectByName(configuration.name()) == null ) {
+			if( CFW.DB.KeyValuePairs.selectByKey(keyValuePair.key()) == null ) {
 				result = false;
 			}
 		}
@@ -194,33 +178,33 @@ public class CFWDBConfig {
 	}
 	
 	/********************************************************************************************
-	 * Creates a new config in the DB.
+	 * Creates a new keyVal in the DB.
 	 * @param KeyValuePair with the values that should be inserted. ID will be set by the Database.
 	 * @return true if successful, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean create(Configuration config) {
+	public static boolean create(KeyValuePair keyVal) {
 		
-		if(config == null) {
+		if(keyVal == null) {
 			new CFWLog(logger)
-				.warn("The config cannot be null");
+				.warn("The keyVal cannot be null");
 			return false;
 		}
 		
-		if(config.name() == null || config.name().isEmpty()) {
+		if(keyVal.key() == null || keyVal.key().isEmpty()) {
 			new CFWLog(logger)
-				.warn("Please specify a name for the config to create.");
+				.warn("Please specify a name for the keyVal to create.");
 			return false;
 		}
 		
-		if(checkConfigExists(config)) {
+		if(checkKeyExists(keyVal)) {
 			new CFWLog(logger)
-				.warn("The config '"+config.name()+"' cannot be created as a config with this name already exists.");
+				.warn("The keyVal '"+keyVal.key()+"' cannot be created as a keyVal with this name already exists.");
 			return false;
 		}
 		
-		boolean insertResult =  config
-				.queryCache(CFWDBConfig.class, "create")
+		boolean insertResult =  new CFWSQL(keyVal)
+				.queryCache()
 				.insert();
 		
 		updateCache();
@@ -229,92 +213,92 @@ public class CFWDBConfig {
 	}
 	
 	/***************************************************************
-	 * Select a config by it's name.
-	 * @param id of the config
-	 * @return Returns a config or null if not found or in case of exception.
+	 * Select a keyVal by it's key.
+	 * @param id of the keyVal
+	 * @return Returns a keyVal or null if not found or in case of exception.
 	 ****************************************************************/
-	public static Configuration selectByName(String name) {
+	public static KeyValuePair selectByKey(String name) {
 		
-		return (Configuration)new Configuration()
-				.queryCache(CFWDBConfig.class, "selectByName")
+		return (KeyValuePair)new CFWSQL(new KeyValuePair())
+				.queryCache()
 				.select()
-				.where(ConfigFields.NAME.toString(), name)
+				.where(KeyValuePairFields.KEY.toString(), name)
 				.getFirstAsObject();
 
 	}
 	
 	/***************************************************************
-	 * Select a config by it's ID.
-	 * @param id of the config
-	 * @return Returns a config or null if not found or in case of exception.
+	 * Select a keyVal by it's ID.
+	 * @param id of the keyVal
+	 * @return Returns a keyVal or null if not found or in case of exception.
 	 ****************************************************************/
-	public static Configuration selectByID(int id ) {
+	public static KeyValuePair selectByID(int id ) {
 
-		return (Configuration)new Configuration()
-				.queryCache(CFWDBConfig.class, "selectByID")
+		return (KeyValuePair)new CFWSQL(new KeyValuePair())
+				.queryCache()
 				.select()
-				.where(ConfigFields.PK_ID.toString(), id)
+				.where(KeyValuePairFields.PK_ID.toString(), id)
 				.getFirstAsObject();
 		
 	}
 	
 	/***************************************************************
-	 * Select a config by it's ID and return it as JSON string.
-	 * @param id of the config
-	 * @return Returns a config or null if not found or in case of exception.
+	 * Select a keyVal by it's ID and return it as JSON string.
+	 * @param id of the keyVal
+	 * @return Returns a keyVal or null if not found or in case of exception.
 	 ****************************************************************/
 	public static ArrayList<String> getCategories() {
 		
-		return new Configuration()
-				.queryCache(CFWDBConfig.class, "getCategories")
+		return new CFWSQL(new KeyValuePair())
+				.queryCache()
 				.distinct()
-				.select(ConfigFields.CATEGORY)
-				.orderby(ConfigFields.CATEGORY)
-				.getAsStringArrayList(ConfigFields.CATEGORY);
+				.select(KeyValuePairFields.CATEGORY)
+				.orderby(KeyValuePairFields.CATEGORY)
+				.getAsStringArrayList(KeyValuePairFields.CATEGORY);
 		
 	}
 	
 	/***************************************************************
-	 * Select a config by it's ID and return it as JSON string.
-	 * @param id of the config
-	 * @return Returns a config or null if not found or in case of exception.
+	 * Select a keyVal by it's ID and return it as JSON string.
+	 * @param id of the keyVal
+	 * @return Returns a keyVal or null if not found or in case of exception.
 	 ****************************************************************/
-	public static String getConfigAsJSON(String id) {
+	public static String getKeyValuePairsAsJSON(String id) {
 		
-		return new Configuration()
-				.queryCache(CFWDBConfig.class, "getConfigAsJSON")
+		return new CFWSQL(new KeyValuePair())
+				.queryCache()
 				.select()
-				.where(ConfigFields.PK_ID.toString(), Integer.parseInt(id))
+				.where(KeyValuePairFields.PK_ID.toString(), Integer.parseInt(id))
 				.getAsJSON();
 		
 	}
 	
 	/***************************************************************
-	 * Return a list of all configs
+	 * Return a list of all keyVals
 	 * 
-	 * @return Returns a resultSet with all configs or null.
+	 * @return Returns a resultSet with all keyVals or null.
 	 ****************************************************************/
-	public static ResultSet getConfigList() {
+	public static ResultSet getKeyValuePairList() {
 		
-		return new Configuration()
-				.queryCache(CFWDBConfig.class, "getConfigList")
+		return new CFWSQL(new KeyValuePair())
+				.queryCache()
 				.select()
-				.orderby(ConfigFields.NAME.toString())
+				.orderby(KeyValuePairFields.KEY.toString())
 				.getResultSet();
 		
 	}
 	
 	/***************************************************************
-	 * Return a list of all configs
+	 * Return a list of all keyVals
 	 * 
-	 * @return Returns a resultSet with all configs or null.
+	 * @return Returns a resultSet with all keyVals or null.
 	 ****************************************************************/
 	public static ArrayList<CFWObject> getConfigObjectList() {
 		
-		return new Configuration()
-				.queryCache(CFWDBConfig.class, "getConfigList")
+		return new KeyValuePair()
+				.queryCache(CFWDBKeyValuePairs.class, "getConfigList")
 				.select()
-				.orderby(ConfigFields.NAME.toString())
+				.orderby(KeyValuePairFields.KEY.toString())
 				.getAsObjectList();
 		
 	}
@@ -325,35 +309,35 @@ public class CFWDBConfig {
 	 * @return Returns a result set with all users or null.
 	 ****************************************************************/
 	public static String getConfigListAsJSON() {
-		return new Configuration()
-				.queryCache(CFWDBConfig.class, "getConfigListAsJSON")
+		return new KeyValuePair()
+				.queryCache(CFWDBKeyValuePairs.class, "getConfigListAsJSON")
 				.select()
-				.orderby(ConfigFields.NAME.toString())
+				.orderby(KeyValuePairFields.KEY.toString())
 				.getAsJSON();
 	}
 	
 	/***************************************************************
 	 * Updates the object selecting by ID.
-	 * @param config
+	 * @param keyVal
 	 * @return true or false
 	 ****************************************************************/
-	public static boolean update(Configuration config) {
+	public static boolean update(KeyValuePair keyVal) {
 		
-		if(config == null) {
+		if(keyVal == null) {
 			new CFWLog(logger)
-				.warn("The config that should be updated cannot be null");
+				.warn("The keyVal that should be updated cannot be null");
 			return false;
 		}
 		
-		if(config.name() == null || config.name().isEmpty()) {
+		if(keyVal.key() == null || keyVal.key().isEmpty()) {
 			new CFWLog(logger)
-				.warn("Please specify a name for the config.");
+				.warn("Please specify a name for the keyVal.");
 			return false;
 		}
 		
-		new CFWLog(logger).audit("UPDATE", Configuration.class, "Change config '"+config.name()+"' from '"+configCache.get(config.name())+"' to '"+config.value()+"'");
-		boolean updateResult =  config
-				.queryCache(CFWDBConfig.class, "update")
+		new CFWLog(logger).audit("UPDATE", KeyValuePair.class, "Change keyVal '"+keyVal.key()+"' from '"+keyValCache.get(keyVal.key())+"' to '"+keyVal.value()+"'");
+		boolean updateResult =  keyVal
+				.queryCache(CFWDBKeyValuePairs.class, "update")
 				.update();
 		
 		updateCache();
@@ -366,53 +350,53 @@ public class CFWDBConfig {
 	 * you have to call the updateCache(method manually after using 
 	 * this method.
 	 * 
-	 * @param config
+	 * @param keyVal
 	 * @return true if the value was updated
 	 ****************************************************************/
 	public static boolean updateValue(int id, String value) {
 		
 		// does not update cache automatically 
-		Configuration currentConfigFromDB = selectByID(id);
+		KeyValuePair currentConfigFromDB = selectByID(id);
 		
 		if(currentConfigFromDB != null) {
 			String oldValue = currentConfigFromDB.value();
 			
 			if( (oldValue != null  && !oldValue.equals(value))
 			 || (oldValue == null  && !Strings.isNullOrEmpty(value))	) {
-				new CFWLog(logger).audit("UPDATE", Configuration.class, "Change config '"+currentConfigFromDB.name()+"' from '"+oldValue+"' to '"+value+"'");
+				new CFWLog(logger).audit("UPDATE", KeyValuePair.class, "Change keyVal '"+currentConfigFromDB.key()+"' from '"+oldValue+"' to '"+value+"'");
 			}
 			
-			return new Configuration()
+			return new KeyValuePair()
 				.id(id)
 				.value(value)
-				.queryCache(CFWDBConfig.class, "updateValue")
-				.update(ConfigFields.VALUE.toString());
+				.queryCache(CFWDBKeyValuePairs.class, "updateValue")
+				.update(KeyValuePairFields.VALUE.toString());
 		}else {
-			new CFWLog(logger).severe("The configuration with id '"+id+"' does not exist.");
+			new CFWLog(logger).severe("The keyValuePair with id '"+id+"' does not exist.");
 			return false;
 		}
 	}
 	
 
 	/****************************************************************
-	 * Deletes the config by id.
+	 * Deletes the keyVal by id.
 	 * @param id of the user
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
 	public static boolean deleteByID(int id) {
 		
-		Configuration config = selectByID(id);
-		if(config == null ) {
+		KeyValuePair keyVal = selectByID(id);
+		if(keyVal == null ) {
 			new CFWLog(logger)
-			.severe("The config with id '"+id+"'+could not be found.");
+			.severe("The keyVal with id '"+id+"'+could not be found.");
 			return false;
 		}
 		
-		new CFWLog(logger).audit("DELETE", Configuration.class, "Delete configuration: '"+config.name()+"'");
-		return new Configuration()
-				.queryCache(CFWDBConfig.class, "deleteByID")
+		new CFWLog(logger).audit("DELETE", KeyValuePair.class, "Delete keyValuePair: '"+keyVal.key()+"'");
+		return new KeyValuePair()
+				.queryCache(CFWDBKeyValuePairs.class, "deleteByID")
 				.delete()
-				.where(ConfigFields.PK_ID.toString(), id)
+				.where(KeyValuePairFields.PK_ID.toString(), id)
 				.executeDelete();
 					
 	}
@@ -432,65 +416,65 @@ public class CFWDBConfig {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("DELETE", Configuration.class, "Delete Multiple configurations: '"+resultIDs+"'");
+		new CFWLog(logger).audit("DELETE", KeyValuePair.class, "Delete Multiple keyValuePairs: '"+resultIDs+"'");
 		
-		return new Configuration()
-				.queryCache(CFWDBConfig.class, "deleteMultipleByID")
+		return new KeyValuePair()
+				.queryCache(CFWDBKeyValuePairs.class, "deleteMultipleByID")
 				.delete()
-				.whereIn(ConfigFields.PK_ID.toString(), resultIDs)
+				.whereIn(KeyValuePairFields.PK_ID.toString(), resultIDs)
 				.executeDelete();
 					
 	}
 	
 	/****************************************************************
-	 * Deletes the config by id.
+	 * Deletes the keyVal by id.
 	 * @param id of the user
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
 	public static boolean deleteByName(String name) {
 		
-		Configuration config = selectByName(name);
-		if(config == null ) {
+		KeyValuePair keyVal = selectByKey(name);
+		if(keyVal == null ) {
 			new CFWLog(logger)
-			.severe("The config with name '"+name+"'+could not be found.");
+			.severe("The keyVal with name '"+name+"'+could not be found.");
 			return false;
 		}
 		
-		new CFWLog(logger).audit("DELETE", Configuration.class, "Delete configuration: '"+config.name()+"'");
+		new CFWLog(logger).audit("DELETE", KeyValuePair.class, "Delete keyValuePair: '"+keyVal.key()+"'");
 		
-		return new Configuration()
-				.queryCache(CFWDBConfig.class, "deleteByName")
+		return new KeyValuePair()
+				.queryCache(CFWDBKeyValuePairs.class, "deleteByName")
 				.delete()
-				.where(ConfigFields.NAME.toString(), name)
+				.where(KeyValuePairFields.KEY.toString(), name)
 				.executeDelete();
 					
 	}
 	
 	
 	/****************************************************************
-	 * Check if the config exists by name.
+	 * Check if the keyVal exists by name.
 	 * 
-	 * @param config to check
+	 * @param keyVal to check
 	 * @return true if exists, false otherwise or in case of exception.
 	 ****************************************************************/
-	public static boolean checkConfigExists(Configuration config) {
-		if(config == null) { return false;}
+	public static boolean checkKeyExists(KeyValuePair keyVal) {
+		if(keyVal == null) { return false;}
 		
-		return checkConfigExists(config.name());
+		return checkKeyExists(keyVal.key());
 	}
 	
 	/****************************************************************
-	 * Check if the config exists by name.
+	 * Check if the keyVal exists by name.
 	 * 
-	 * @param configname to check
+	 * @param keyValname to check
 	 * @return true if exists, false otherwise or in case of exception.
 	 ****************************************************************/
-	public static boolean checkConfigExists(String configName) {
+	public static boolean checkKeyExists(String keyValName) {
 		
-		int count = new Configuration()
-				.queryCache(CFWDBConfig.class, "checkConfigExists")
+		int count = new KeyValuePair()
+				.queryCache(CFWDBKeyValuePairs.class, "checkConfigExists")
 				.selectCount()
-				.where(ConfigFields.NAME.toString(), configName)
+				.where(KeyValuePairFields.KEY.toString(), keyValName)
 				.getCount();
 		
 		return (count > 0);

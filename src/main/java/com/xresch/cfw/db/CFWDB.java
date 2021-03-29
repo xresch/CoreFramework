@@ -20,6 +20,7 @@ import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
  * 
@@ -319,34 +320,7 @@ public class CFWDB {
 	public static void close(ResultSet resultSet){
 		db.close(resultSet);
 	}
-
-	/********************************************************************************************
-	 * Returns a jsonString with an array containing a json object for each row.
-	 * Returns an empty array in case of error.
-	 * 
-	 ********************************************************************************************/
-	public static String resultSetToJSON(ResultSet resultSet) {
-		return DBInterface.resultSetToJSON(resultSet);
-	}
-	
-	/********************************************************************************************
-	 * Returns a jsonString with an array containing a json object for each row.
-	 * Returns an empty array in case of error.
-	 * 
-	 ********************************************************************************************/
-	public static String resultSetToCSV(ResultSet resultSet, String delimiter) {
-		return DBInterface.resultSetToCSV(resultSet, delimiter);
-	}
-	
-	/********************************************************************************************
-	 * Returns a jsonString with an array containing a json object for each row.
-	 * Returns an empty array in case of error.
-	 * 
-	 ********************************************************************************************/
-	public static String resultSetToXML(ResultSet resultSet) {
-		return DBInterface.resultSetToXML(resultSet);
-	}
-	
+		
 	/********************************************************************************************
 	 * 
 	 ********************************************************************************************/
