@@ -33,7 +33,7 @@ public class FeatureKeyValuePairs extends CFWAppFeature {
 
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
-		app.addAppServlet(ServletKeyValuePairs.class,  "/configuration");
+		//app.addAppServlet(ServletKeyValuePairs.class,  "/configuration");
 	}
 
 	@Override

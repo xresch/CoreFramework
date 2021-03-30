@@ -47,7 +47,7 @@ public class KeyValuePair extends CFWObject {
 									;
 	
 	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, KeyValuePairFields.VALUE.toString())
-			.setColumnDefinition("VARCHAR(32768‬)")
+			.setColumnDefinition("VARCHAR(4098)")
 			.setDescription("The current value of the field. Can be null.")
 			.addValidator(new LengthValidator(-1, 1024));
 	

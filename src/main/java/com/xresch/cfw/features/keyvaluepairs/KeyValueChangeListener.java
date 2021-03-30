@@ -2,12 +2,12 @@ package com.xresch.cfw.features.keyvaluepairs;
 
 import java.util.ArrayList;
 
-public abstract class ConfigChangeListener {
+public abstract class KeyValueChangeListener {
 
 	private ArrayList<String> configNames = new ArrayList<String>();
 	
-	public ConfigChangeListener(String ...configNames) {
-		for(String name : configNames) {
+	public KeyValueChangeListener(String ...keys) {
+		for(String name : keys) {
 			this.configNames.add(name.trim());
 		}
 	}

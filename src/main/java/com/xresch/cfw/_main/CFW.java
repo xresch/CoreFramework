@@ -31,6 +31,7 @@ import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.parameters.CFWDBDashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.CFWRegistryDashboardParameters;
 import com.xresch.cfw.features.keyvaluepairs.CFWDBKeyValuePairs;
+import com.xresch.cfw.features.keyvaluepairs.FeatureKeyValuePairs;
 import com.xresch.cfw.features.manual.CFWRegistryManual;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.spaces.CFWDBSpace;
@@ -322,6 +323,7 @@ public class CFW {
 		//---------------------------
 		// Register Features
 		CFW.Registry.Features.addFeature(FeatureConfiguration.class);
+		CFW.Registry.Features.addFeature(FeatureKeyValuePairs.class);
 		CFW.Registry.Features.addFeature(FeatureCore.class);	
 			
 		if(CFW.AppSettings.isContextSettingsEnabled()) {

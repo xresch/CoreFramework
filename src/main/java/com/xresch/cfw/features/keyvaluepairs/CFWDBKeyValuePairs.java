@@ -27,7 +27,7 @@ public class CFWDBKeyValuePairs {
 	//key/value pairs of keyValuePair elements
 	private static LinkedHashMap<String, String> keyValCache = new LinkedHashMap<String, String>();
 	
-	private static ArrayList<ConfigChangeListener> changeListeners = new ArrayList<ConfigChangeListener>();
+	private static ArrayList<KeyValueChangeListener> changeListeners = new ArrayList<KeyValueChangeListener>();
 	
 	/********************************************************************************************
 	 * Creates the table and default admin user if not already exists.
@@ -42,7 +42,7 @@ public class CFWDBKeyValuePairs {
 	 * Add a change listener that listens to keyVal changes.
 	 * 
 	 ********************************************************************************************/
-	public static void addChangeListener(ConfigChangeListener listener) {
+	public static void addChangeListener(KeyValueChangeListener listener) {
 		changeListeners.add(listener);
 	}
 	
@@ -91,7 +91,7 @@ public class CFWDBKeyValuePairs {
 		LinkedHashMap<String, String> tempOldCache = keyValCache;
 		keyValCache = newCache;
 		
-		ArrayList<ConfigChangeListener> triggered = new ArrayList<ConfigChangeListener>();
+		ArrayList<KeyValueChangeListener> triggered = new ArrayList<KeyValueChangeListener>();
 		
 		for(Entry<String, String> entry: newCache.entrySet()) {
 			String keyValName = entry.getKey();
@@ -99,11 +99,10 @@ public class CFWDBKeyValuePairs {
 			
 			String oldValue = tempOldCache.get(keyValName);
 			
-
 			if((oldValue == null && newValue != null) 
 			|| (oldValue != null && newValue == null) 
 			|| (oldValue != null && newValue != null && !oldValue.equals(newValue) ) ) {
-				for(ConfigChangeListener listener : changeListeners) {
+				for(KeyValueChangeListener listener : changeListeners) {
 					if ( (!triggered.contains(listener)) && listener.listensOnConfig(keyValName)) {
 //						System.out.println("====================");
 //						System.out.println("keyValName:"+keyValName);
@@ -193,7 +192,7 @@ public class CFWDBKeyValuePairs {
 		
 		if(keyVal.key() == null || keyVal.key().isEmpty()) {
 			new CFWLog(logger)
-				.warn("Please specify a name for the keyVal to create.");
+				.warn("Please specify a key for the keyVal to create.");
 			return false;
 		}
 		
