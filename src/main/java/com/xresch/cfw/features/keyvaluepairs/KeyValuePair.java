@@ -73,7 +73,7 @@ public class KeyValuePair extends CFWObject {
 	
 	private void initialize() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, category, description, key, value);
+		this.addFields(id, category, key, value, description);
 	}
 	
 	

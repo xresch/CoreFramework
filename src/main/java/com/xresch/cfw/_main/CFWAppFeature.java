@@ -27,7 +27,7 @@ public abstract class CFWAppFeature {
 	};
 	
 	/************************************************************************************
-	 * Return if the feature is active by default or if the admin has to enable it.
+	 * Return if the managed feature is active by default or if the admin has to enable it.
 	 ************************************************************************************/
 	public boolean activeByDefault() {
 		return true;
@@ -62,7 +62,7 @@ public abstract class CFWAppFeature {
 	/************************************************************************************
 	 * Internal method to determine if the feature is enabled.
 	 ************************************************************************************/
-	protected boolean isFeatureEnabled() {
+	public boolean isFeatureEnabled() {
 		if(getNameForFeatureManagement() == null) {
 			return true;
 		}else {

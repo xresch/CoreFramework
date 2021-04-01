@@ -130,7 +130,7 @@ public class CFWDBKeyValuePairs {
 	 * 
 	 ********************************************************************************************/
 	public static boolean getValueAsBoolean(String key) {
-		//System.out.println("===== Key: "+keyValName+", Value: "+keyValCache.get(keyValName));
+		System.out.println("===== Key: "+key+", Value: "+keyValCache.get(key));
 		return Boolean.parseBoolean(keyValCache.get(key));
 	}
 	
@@ -173,6 +173,7 @@ public class CFWDBKeyValuePairs {
 			}
 		}
 		
+		updateCache();
 		return result;
 	}
 	

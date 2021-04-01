@@ -257,6 +257,9 @@ public class CFW {
 		// Start Database 
 		CFW.DB.startDBServer(); 
 		
+		//needed here for Feature management
+		new KeyValuePair().createTable();
+		
 	    //--------------------------------
 	    // Register Components
 	    appToStart.settings();
@@ -363,6 +366,7 @@ public class CFW {
 						new KeyValuePair()
 							.key(feature.getNameForFeatureManagement())
 							.value(""+feature.activeByDefault())
+							.description(feature.getDescriptionForFeatureManagement())
 							.category(CFWAppFeature.KEY_VALUE_CATEGORY)
 						);
 				

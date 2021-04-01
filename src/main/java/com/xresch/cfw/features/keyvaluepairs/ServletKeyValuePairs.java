@@ -1,7 +1,6 @@
 package com.xresch.cfw.features.keyvaluepairs;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -11,16 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
-import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.datahandling.CFWForm;
-import com.xresch.cfw.datahandling.CFWFormHandler;
-import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
-import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************

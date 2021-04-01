@@ -54,7 +54,7 @@ public class CFWRegistryFeatures {
 	 * Get a list of CFWObject instances.
 	 * @param objectClass
 	 ***********************************************************************/
-	private static CFWAppFeature getFeatureInstance(Class<? extends CFWAppFeature> objectClass)  {
+	protected static CFWAppFeature getFeatureInstance(Class<? extends CFWAppFeature> objectClass)  {
 		CFWAppFeature instance = null;
 		try {
 			instance = objectClass.newInstance();

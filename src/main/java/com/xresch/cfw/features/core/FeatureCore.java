@@ -31,6 +31,7 @@ public class FeatureCore extends CFWAppFeature {
 
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.core.resources";
 	public static final String PERMISSION_APP_ANALYTICS = "System Analytics";
+	public static final String PERMISSION_FEATURE_MGMT = "Feature Management";
 	public static final String PERMISSION_ALLOW_HTML = "Allow HTML";
 	public static final String PERMISSION_ALLOW_JAVASCRIPT = "Allow Javascript";
 	
@@ -54,6 +55,13 @@ public class FeatureCore extends CFWAppFeature {
     	//----------------------------------
     	// Register Admin Menu
 		CFW.Registry.Components.addAdminCFWMenuItem(
+				(MenuItem)new MenuItem("Feature Management")
+					.faicon("fas fa-star")
+					.addPermission(FeatureCore.PERMISSION_FEATURE_MGMT)	
+					.href("/app/featuremanagement")
+				, null);
+		
+		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("System Analytics")
 					.faicon("fas fa-traffic-light")
 					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)	
@@ -67,6 +75,16 @@ public class FeatureCore extends CFWAppFeature {
 		//============================================================
 		// PERMISSIONS
 		//============================================================
+		
+		//-----------------------------------
+		// 
+		CFW.DB.Permissions.oneTimeCreate(
+		new Permission(PERMISSION_FEATURE_MGMT, "user")
+			.description("Allows to enable and disable certain features with application restart."),
+			true,
+			false
+		);	
+		
 		//-----------------------------------
 		// 
 		CFW.DB.Permissions.oneTimeCreate(
@@ -126,6 +144,7 @@ public class FeatureCore extends CFWAppFeature {
 		//-----------------------------------------
 		// Secured Core Servlets
 	    app.addAppServlet(ServletHierarchy.class,  "/hierarchy");
+	    app.addAppServlet(ServletFeatureManagement.class,  "/featuremanagement");
 	    
 	    //-----------------------------------------
 		// Unsecured Core Servlets
