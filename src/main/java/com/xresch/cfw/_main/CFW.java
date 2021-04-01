@@ -32,6 +32,7 @@ import com.xresch.cfw.features.dashboard.parameters.CFWDBDashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.CFWRegistryDashboardParameters;
 import com.xresch.cfw.features.keyvaluepairs.CFWDBKeyValuePairs;
 import com.xresch.cfw.features.keyvaluepairs.FeatureKeyValuePairs;
+import com.xresch.cfw.features.keyvaluepairs.KeyValuePair;
 import com.xresch.cfw.features.manual.CFWRegistryManual;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.spaces.CFWDBSpace;
@@ -352,12 +353,28 @@ public class CFW {
 		loadExtensionFeatures();
 		
 		//---------------------------
-		// Feature Register
+		// Load Features Register
 		ArrayList<CFWAppFeature> features = CFW.Registry.Features.getFeatureInstances();
 		for(CFWAppFeature feature : features) {
-			feature.register();
+			if(feature.getNameForFeatureManagement() != null) {
+				//------------------------------------
+				// Handle Managed Features
+				CFW.DB.KeyValuePairs.oneTimeCreate(
+						new KeyValuePair()
+							.key(feature.getNameForFeatureManagement())
+							.value(""+feature.activeByDefault())
+							.category(CFWAppFeature.KEY_VALUE_CATEGORY)
+						);
+				
+				if(feature.isFeatureEnabled()) {
+					feature.register();
+				}
+			}else {
+				//------------------------------------
+				// Load Managed features Features
+				feature.register();
+			}
 		}
-		
 	}
 	
 	/***********************************************************************
@@ -426,7 +443,9 @@ public class CFW {
 		//---------------------------
 		// Feature Initialize
 		for(CFWAppFeature feature : features) {
-			feature.initializeDB();
+			if(feature.isFeatureEnabled()) {
+				feature.initializeDB();
+			}
 		}
 		
 		//---------------------------
@@ -445,7 +464,9 @@ public class CFW {
 		//---------------------------
 		// Feature Initialize
 		for(CFWAppFeature feature : features) {
-			feature.startTasks();
+			if(feature.isFeatureEnabled()) {
+				feature.startTasks();
+			}
 		}
 		
 		//---------------------------
