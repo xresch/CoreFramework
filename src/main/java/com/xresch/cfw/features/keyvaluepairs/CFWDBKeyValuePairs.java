@@ -130,7 +130,6 @@ public class CFWDBKeyValuePairs {
 	 * 
 	 ********************************************************************************************/
 	public static boolean getValueAsBoolean(String key) {
-		System.out.println("===== Key: "+key+", Value: "+keyValCache.get(key));
 		return Boolean.parseBoolean(keyValCache.get(key));
 	}
 	
@@ -335,7 +334,7 @@ public class CFWDBKeyValuePairs {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("UPDATE", KeyValuePair.class, "Change keyVal '"+keyVal.key()+"' from '"+keyValCache.get(keyVal.key())+"' to '"+keyVal.value()+"'");
+		new CFWLog(logger).audit("UPDATE", KeyValuePair.class, "Change '"+keyVal.key()+"' from '"+keyValCache.get(keyVal.key())+"' to '"+keyVal.value()+"'");
 		boolean updateResult =  keyVal
 				.queryCache(CFWDBKeyValuePairs.class, "update")
 				.update();

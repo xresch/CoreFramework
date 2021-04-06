@@ -90,7 +90,8 @@ TODO
 DONE
 ====
 ------- Current -------
-
+- Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI
+- Added Key Value Pairs: CFWObject to easily store key/value pairs in the database
 ------- v3.0.0 -------
 - Roles: Reload user roles when changed, no re-login required anymore(adding Permissions to role still requires relogin)
 - Build: bumped various library versions to latest
