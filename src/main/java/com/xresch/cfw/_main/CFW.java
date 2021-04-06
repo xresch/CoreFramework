@@ -364,7 +364,7 @@ public class CFW {
 				// Handle Managed Features
 				CFW.DB.KeyValuePairs.oneTimeCreate(
 						new KeyValuePair()
-							.key(feature.getNameForFeatureManagement())
+							.key(CFWAppFeature.KEY_VALUE_PREFIX+feature.getNameForFeatureManagement())
 							.value(""+feature.activeByDefault())
 							.description(feature.getDescriptionForFeatureManagement())
 							.category(CFWAppFeature.KEY_VALUE_CATEGORY)

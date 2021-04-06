@@ -14,8 +14,9 @@ function cfw_feature_mgmt_createFeatureToggle(){
 	var parent = $("#cfw-container");
 	
 	parent.append(
-			"<h1>Feature Management</h1>"
-			+"<p>On this page you can enable and disable the features which are managable. Application restart is required for the changes to take effect.</p>"
+			'<h1>Feature Management</h1>'
+			+'<p>On this page you can enable and disable the features which are managable. Application restart is required for the changes to take effect.</p>'
+			+'<p class="bg-cfw-danger text-cfw-white p-2">IMPORTANT:</b> Disabling Features that where already used can lead to errors in the application.</p>'
 		);
 	
 	CFW.http.getJSON(CFW_FEATUREMGMT_URL, {action: "fetch", item: "featurelist"}, 

@@ -8,6 +8,8 @@ package com.xresch.cfw._main;
 public abstract class CFWAppFeature {
 	
 	public static final String KEY_VALUE_CATEGORY = "Feature";
+	public static final String KEY_VALUE_PREFIX = "FeatureEnabled:";
+	
 
 	/************************************************************************************
 	 * Return the unique name of this feature for the feature management.
@@ -66,7 +68,7 @@ public abstract class CFWAppFeature {
 		if(getNameForFeatureManagement() == null) {
 			return true;
 		}else {
-			return CFW.DB.KeyValuePairs.getValueAsBoolean(getNameForFeatureManagement());
+			return CFW.DB.KeyValuePairs.getValueAsBoolean(KEY_VALUE_PREFIX+getNameForFeatureManagement());
 		}
 	}
 }

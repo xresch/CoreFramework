@@ -123,9 +123,9 @@ public class ServletFeatureManagement extends HttpServlet
 	
 	private void toggleFeatureActive(JSONResponse jsonResponse, String managedName) {
 		
-		boolean oldStatus = CFW.DB.KeyValuePairs.getValueAsBoolean(managedName);
+		boolean oldStatus = CFW.DB.KeyValuePairs.getValueAsBoolean(CFWAppFeature.KEY_VALUE_PREFIX+managedName);
 		
-		KeyValuePair dbEntry = CFW.DB.KeyValuePairs.selectByKey(managedName);
+		KeyValuePair dbEntry = CFW.DB.KeyValuePairs.selectByKey(CFWAppFeature.KEY_VALUE_PREFIX+managedName);
 		dbEntry.value(!oldStatus+"");
 		
 		if(CFW.DB.KeyValuePairs.update(dbEntry)) {
