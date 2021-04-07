@@ -5,6 +5,33 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public class CFWMessages {
 
 	/****************************************************************
+	 * Adds a custom success message to the Request Context. 
+	 ****************************************************************/
+	public static void addSuccessMessage(String message){
+		CFWContextRequest.addAlertMessage(MessageType.SUCCESS, message);		
+	}
+	/****************************************************************
+	 * Adds a custom success message to the Request Context. 
+	 ****************************************************************/
+	public static void addInfoMessage(String message){
+		CFWContextRequest.addAlertMessage(MessageType.INFO, message);		
+	}
+	
+	/****************************************************************
+	 * Adds a custom warning message to the Request Context.
+	 ****************************************************************/
+	public static void addWarningMessage(String message){
+		CFWContextRequest.addAlertMessage(MessageType.WARNING, message);		
+	}
+	
+	/****************************************************************
+	 * Adds a custom error message to the Request Context.
+	 ****************************************************************/
+	public static void addErrorMessage(String message){
+		CFWContextRequest.addAlertMessage(MessageType.ERROR, message);		
+	}
+		
+	/****************************************************************
 	 * Adds a localized "Access Denied" error message to the
 	 * Request Context.
 	 *   

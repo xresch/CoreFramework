@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw.features.query.CFWToken;
-import com.xresch.cfw.features.query.ContextualTokenizer;
+import com.xresch.cfw.features.query.QuoteSensitiveTokenizer;
 
 public class ParserTest {
 	
@@ -18,7 +18,7 @@ public class ParserTest {
 		ArrayList<Character> delimiter = new ArrayList<Character>();
 		delimiter.add('|');
 		
-		ContextualTokenizer tokenizer = new ContextualTokenizer(" find User where text=\"this is | a piped text\" "
+		QuoteSensitiveTokenizer tokenizer = new QuoteSensitiveTokenizer(" find User where text=\"this is | a piped text\" "
 			+ "||||grep \"2\""
 			+ "| table test, bla, blub "
 			+ "| singlebackslash \" dont split this  \\\" | \\\" dont split this \" "
@@ -55,7 +55,7 @@ public class ParserTest {
 		ArrayList<Character> delimiters = new ArrayList<Character>();
 		delimiters.add('|');
 		
-		ContextualTokenizer tokenizer = new ContextualTokenizer(" find User where text='this is | a piped text' "
+		QuoteSensitiveTokenizer tokenizer = new QuoteSensitiveTokenizer(" find User where text='this is | a piped text' "
 		+ "||||grep '2'"
 		+ "| table test, bla, blub "
 		+ "| singlebackslash ' dont split this  \\' | \\' dont split this ' "
@@ -92,7 +92,7 @@ public class ParserTest {
 		ArrayList<Character> delimiters = new ArrayList<Character>();
 		delimiters.add('|');
 		
-		ContextualTokenizer tokenizer = new ContextualTokenizer("find User"
+		QuoteSensitiveTokenizer tokenizer = new QuoteSensitiveTokenizer("find User"
 		+ "|grep '2'"
 		+ "|'Check no space between delimiter and quote'"
 		);

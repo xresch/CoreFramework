@@ -30,14 +30,8 @@ TODO
 - Dashboard: Timeframe Picker - show Timeframe instead of "Custom Time"
 - Dashboard: Timeframe Picker - List of Recent
 
-
-- Dashboard Parameters: Create Dashboard Templates
-- Dashboard Parameters: Create Manual Pages
-- Dashboard Parameters: Make TagSelector keep the order
 - Dashboard Parameters: Form initialization: filter as well by form or formID to not mess with params with same name/ID
-- Dashboard Parameters: Allow same parameter max once per dashboard
 
-- Widget: Dashboard Link
 - Widget: CSV Chart
 - Widget: Cards
 - Widget: Panels
@@ -92,6 +86,7 @@ DONE
 ------- Current -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI
 - Added Key Value Pairs: CFWObject to easily store key/value pairs in the database
+
 ------- v3.0.0 -------
 - Roles: Reload user roles when changed, no re-login required anymore(adding Permissions to role still requires relogin)
 - Build: bumped various library versions to latest

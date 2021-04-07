@@ -56,13 +56,16 @@ class CFWRenderer{
 					}
 			 	},
 		 	getTitleHTML:  function(record){
-		 		var title = this.titleformat;
+		 		var title = "";
+		 		if(!CFW.utils.isNullOrEmpty(this.titleformat)){
+		 			var title = this.titleformat;
+		 		}
 		 		
 		 		for(var j = 0; j < this.titlefields.length; j++){
 					var fieldname = this.titlefields[j];
 					let value = this.getCustomizedValue(record,fieldname);
 					
-					if(this.titleformat != null){
+					if(!CFW.utils.isNullOrEmpty(this.titleformat)){
 						title = title.replace('{'+j+'}', value);
 					}else{
 						title += ' '+value;
@@ -136,12 +139,17 @@ class CFWRenderer{
 			 
 			 //--------------------------
 			 // resolve title fields
-			 if(definition.titlefields == null){ 
+			 if(definition.titlefields == null || definition.titlefields.length == 0 ){ 
 				 if(definition.visiblefields.length > 0){ 
 					 definition.titlefields = [definition.visiblefields[0]];
+				 }else{
+					 // Use first field for titles
+					 definition.titlefields = [Object.keys(firstObject)[0]];
 				 }
 			 }
 		 }
+		 
+		 
 		 
 		 //---------------------------
 		 // Create Labels

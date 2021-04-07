@@ -3,7 +3,7 @@ package com.xresch.cfw.features.query;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-public class ContextualTokenizer {
+public class QuoteSensitiveTokenizer {
 	
 	private String textToParse;
 
@@ -12,7 +12,7 @@ public class ContextualTokenizer {
 	
 	private boolean handleQuotes = true;
 	
-	public ContextualTokenizer(String textToParse) {
+	public QuoteSensitiveTokenizer(String textToParse) {
 		this.textToParse = textToParse.trim();
 		charArray = this.textToParse.toCharArray(); 
 
