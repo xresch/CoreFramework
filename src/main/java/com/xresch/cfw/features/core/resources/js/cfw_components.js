@@ -711,6 +711,7 @@ class CFWCard{
 		} 
 		
 		if(this.settings.narrow){
+			cardClasses += ' pr-0 mr-0';
 			cardHeaderClasses += ' p-1 pl-2';
 		} 
 		

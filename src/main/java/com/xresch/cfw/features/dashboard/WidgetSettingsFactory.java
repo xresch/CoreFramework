@@ -58,6 +58,28 @@ public class WidgetSettingsFactory {
 	
 	
 	/************************************************************************************
+	 * Create Display As field to Choose the Renderer.(fieldname=renderer)
+	 * 
+	 * @return
+	 ************************************************************************************/
+	public static CFWField<?> createDefaultDisplayAsField(){
+		
+		LinkedHashMap<String, String> rendererOptions = new LinkedHashMap<>();
+		rendererOptions.put("tiles", "Tiles");
+		rendererOptions.put("table", "Table");
+		rendererOptions.put("panels", "Panels");
+		rendererOptions.put("cards", "Cards");
+		rendererOptions.put("csv", "CSV");
+		rendererOptions.put("json", "JSON");
+		
+		return CFWField.newString(FormFieldType.SELECT, "renderer")
+			.setLabel("{!cfw_widget_displayas!}")
+			.setDescription("{!cfw_widget_displayas_desc!}")
+			.setOptions(rendererOptions)
+			.setValue("Tiles");
+	}
+	
+	/************************************************************************************
 	 * Create settings used for tiles: sizefactor, borderstyle, showlabels.
 	 * 
 	 * @return
@@ -68,7 +90,7 @@ public class WidgetSettingsFactory {
 		fieldsMap.put("sizefactor", CFWField.newString(FormFieldType.SELECT, "sizefactor")
 				.setLabel("{!cfw_widget_tilessizefactor!}")
 				.setDescription("{!cfw_widget_tilessizefactor_desc!}")
-				.setOptions(new String[]{"0.25", "0.5", "0.75", "1", "1.25", "1.5", "1.75", "2.0", "2.5", "3.0"})
+				.setOptions(new String[]{"0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1", "1.2", "1.4", "1.6", "1.8","2.0", "2.5", "3.0", "4.0", "5.0"})
 				.setValue("1"));
 		
 		fieldsMap.put("borderstyle", CFWField.newString(FormFieldType.SELECT, "borderstyle")

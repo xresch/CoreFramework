@@ -816,7 +816,7 @@ function cfw_renderer_cards (renderDef) {
 			wrapper.append(row);
 			row = $('<div class="row">');
 		}
-		var column = $('<div class="col-sm">');
+		var column = $('<div class="col-sm pr-0 mr-0">');
 		
 		cfwCard.appendTo(column);
 		row.append(column);
