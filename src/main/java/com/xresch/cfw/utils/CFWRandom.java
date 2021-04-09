@@ -1,7 +1,12 @@
 package com.xresch.cfw.utils;
 
+import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.xresch.cfw._main.CFW;
 
 /**************************************************************************************************************
  * 
@@ -20,17 +25,53 @@ public class CFWRandom {
 		
 	public static Random getInstance() { return random;}
 	
-	public static boolean getBoolean() { return random.nextInt(100) > 50 ? true : false; }
+	public static boolean randomBoolean() { return random.nextInt(100) > 50 ? true : false; }
 	
-	public static String getRandomFromArray(String[] array) {
+	public static String randomFromArray(String[] array) {
 	    int index = random.nextInt(array.length);
 	    return array[index];
 	}
 	
-	public static String randomFirstnameOfGod() { return getRandomFromArray(firstnameGods); }
-	public static String randomLastnameSweden() { return getRandomFromArray(lastnameSweden); }
-	public static String randomMythicalLocation() { return getRandomFromArray(mythicalLocations); }
+	public static String randomFirstnameOfGod() { return randomFromArray(firstnameGods); }
+	public static String randomLastnameSweden() { return randomFromArray(lastnameSweden); }
+	public static String randomMythicalLocation() { return randomFromArray(mythicalLocations); }
 	
+	
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfMightyPeople(int count) { 
+		JsonArray array = new JsonArray();
+				
+		for(int i = 0; i < count; i++) {
+			array.add(randomJSONObjectMightyPerson());
+		}
+		
+		return array;
+	}
+	
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonObject randomJSONObjectMightyPerson() { 
+		long currentTime = new Date().getTime();
+		
+		JsonObject object = new JsonObject();
+		
+		object.addProperty("FIRSTNAME", CFW.Random.randomFirstnameOfGod());
+		object.addProperty("LASTNAME", CFW.Random.randomLastnameSweden());
+		object.addProperty("LOCATION", CFW.Random.randomMythicalLocation());
+		object.addProperty("ID", CFW.Random.randomStringAlphaNumerical(16));
+		object.addProperty("LIKES_TIRAMISU", CFW.Random.randomBoolean());
+		object.addProperty("LAST_LOGIN", currentTime-(CFW.Random.randomIntegerInRange(100, 10000)*1000000) );
+		object.addProperty("VALUE", CFW.Random.randomIntegerInRange(1, 100));
+			
+		return object;
+	}
 	/******************************************************************************
 	 * Creates a random integer between 0(inclusive) and the given number(inclusive).
 	 * 
