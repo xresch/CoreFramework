@@ -238,20 +238,24 @@ public class ServletDashboardView extends HttpServlet
 			
 			//----------------------------
 			// Create Widget
-			DashboardWidget newWidget = new DashboardWidget();
-			newWidget.type(type);
-			newWidget.foreignKeyDashboard(Integer.parseInt(dashboardID));
-			
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(type);
-			if(definition != null) {
-				newWidget.settings(definition.getSettings().toJSON());
+			if(definition.hasPermission()) {
+				DashboardWidget newWidget = new DashboardWidget();
+	
+				newWidget.type(type);
+				newWidget.foreignKeyDashboard(Integer.parseInt(dashboardID));
+				
+				if(definition != null) {
+					newWidget.settings(definition.getSettings().toJSON());
+				}
+				
+				int id = CFW.DB.DashboardWidgets.createGetPrimaryKey(newWidget);
+				newWidget.id(id);
+				
+				response.getContent().append(CFW.JSON.toJSON(newWidget));
+			}else {
+				CFW.Messages.noPermission();
 			}
-			
-			int id = CFW.DB.DashboardWidgets.createGetPrimaryKey(newWidget);
-			newWidget.id(id);
-			
-			response.getContent().append(CFW.JSON.toJSON(newWidget));
-			
 		}else{
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
 		}
@@ -277,21 +281,25 @@ public class ServletDashboardView extends HttpServlet
 			JsonElement jsonElement = CFW.JSON.fromJson(JSON_SETTINGS);
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 			
-			//----------------------------
-			// Validate
-			CFWObject settings = definition.getSettings();
-			
-			boolean isValid = settings.mapJsonFields(jsonElement);
-			
-			if(isValid) {
-				DashboardWidget widgetToUpdate = new DashboardWidget();
+			if(definition.hasPermission()) {
+				//----------------------------
+				// Validate
+				CFWObject settings = definition.getSettings();
 				
-				// check if default settings are valid
-				if(widgetToUpdate.mapRequestParameters(request)) {
-					//Use sanitized values
-					widgetToUpdate.settings(settings.toJSON());
-					CFW.DB.DashboardWidgets.update(widgetToUpdate);
+				boolean isValid = settings.mapJsonFields(jsonElement);
+				
+				if(isValid) {
+					DashboardWidget widgetToUpdate = new DashboardWidget();
+					
+					// check if default settings are valid
+					if(widgetToUpdate.mapRequestParameters(request)) {
+						//Use sanitized values
+						widgetToUpdate.settings(settings.toJSON());
+						CFW.DB.DashboardWidgets.update(widgetToUpdate);
+					}
 				}
+			}else {
+				CFW.Messages.noPermissionToEdit();
 			}
 			
 		}else{
@@ -306,14 +314,21 @@ public class ServletDashboardView extends HttpServlet
 	private void deleteWidget(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
 		
 		String dashboardID = request.getParameter("dashboardid");
-		
+		String widgetID = request.getParameter("widgetid");
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
-			String widgetID = request.getParameter("widgetid");
+			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(Integer.parseInt(widgetID));
+			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widget.type());
 			
-			boolean success = CFW.DB.DashboardWidgets.deleteByID(widgetID);
+			if(definition.hasPermission()) {
+				
+				boolean success = CFW.DB.DashboardWidgets.deleteByID(widgetID);
+				json.setSuccess(success);
+			}else {
+				CFW.Messages.noPermissionToEdit();
+				json.setSuccess(false);
+			}
 			
-			json.setSuccess(success);
 		}else{
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
 		}
@@ -336,15 +351,20 @@ public class ServletDashboardView extends HttpServlet
 			JsonElement jsonElement = CFW.JSON.fromJson(JSON_SETTINGS);
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 			
-			//----------------------------
-			// Create Form
-			CFWObject settings = definition.getSettings();
-			DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
-			settings.mapJsonFields(jsonElement);
-			
-			CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeRemoved");
-			
-			form.appendToPayload(json);
+			if(definition.hasPermission()) {
+				//----------------------------
+				// Create Form
+				CFWObject settings = definition.getSettings();
+				DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
+				settings.mapJsonFields(jsonElement);
+				
+				CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeRemoved");
+				
+				form.appendToPayload(json);
+			}else {
+				CFW.Messages.noPermissionToEdit();
+				
+			}
 			
 		}else{
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");

@@ -66,6 +66,15 @@ public class CFWMessages {
 	public static void noPermission(){
 		CFWContextRequest.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_nopermission", "You do not have the required permission to execute this action."));		
 	}
+	
+	/****************************************************************
+	 * Adds a localized "No Permission To Edit" error message to the
+	 * Request Context.
+	 *   
+	 ****************************************************************/
+	public static void noPermissionToEdit(){
+		CFWContextRequest.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_nopermissiontoedit", "You do not have the required permission to edit this item."));		
+	}
 
 	/****************************************************************
 	 * Adds a localized "Item not Supported" error message to the

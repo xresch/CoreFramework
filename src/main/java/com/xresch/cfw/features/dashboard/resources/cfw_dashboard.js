@@ -911,6 +911,8 @@ function cfw_dashboard_widget_edit(widgetGUID){
 		var customFormButton = '<button type="button" onclick="cfw_dashboard_widget_save_widgetSettings(this, \''+widgetGUID+'\')" class="form-control btn-primary">'+CFWL('cfw_core_save', 'Save')+'</button>';
 		
 		customForm.append(customFormButton);
+	}else{
+		return;
 	}
 	// ##################################################
 	// Show Form for Default values
@@ -1267,7 +1269,7 @@ function cfw_dashboard_widget_add(type, optionalRedoWidgetObject) {
  ******************************************************************************/
 function cfw_dashboard_widget_getSettingsForm(widgetObject) {
 	
-	var formHTML = "";
+	var formHTML = null;
 	
 	var params = Object.assign({action: 'fetch', item: 'settingsform'}, widgetObject); 
 	
@@ -1279,7 +1281,9 @@ function cfw_dashboard_widget_getSettingsForm(widgetObject) {
 	
 	$.ajaxSetup({async: false});
 		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){
-				formHTML = data.payload.html;
+				if(data.payload != null){
+					formHTML = data.payload.html;
+				}
 			}
 		);
 	$.ajaxSetup({async: true});

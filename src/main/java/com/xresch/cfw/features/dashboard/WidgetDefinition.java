@@ -59,8 +59,8 @@ public abstract class WidgetDefinition {
 	}
 	
 	/************************************************************
-	 * Check if the user has the required permission to use and
-	 * view the widget. Returns true by default.
+	 * Check if the user has the required permission to create and
+	 * edit the widget. Returns true by default.
 	 * return true if has permission, false otherwise
 	 ************************************************************/
 	public boolean hasPermission() {

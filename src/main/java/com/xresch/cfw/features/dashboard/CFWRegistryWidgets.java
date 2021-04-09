@@ -20,9 +20,21 @@ import com.xresch.cfw.response.AbstractHTMLResponse;
  **************************************************************************************************************/
 public class CFWRegistryWidgets {
 	
+	private static FileAssembly javascriptAssembly = null;
+	private static FileAssembly cssAssembly = null;
+	
 	private static final Logger logger = CFWLog.getLogger(CFWRegistryWidgets.class.getName());
 	
 	private static LinkedHashMap<String, WidgetDefinition> definitionArray = new LinkedHashMap<String, WidgetDefinition>();
+	
+	
+	/***********************************************************************
+	 * Reset the assembly files.
+	 ***********************************************************************/
+	public static void  resetCachedFiles() {
+		javascriptAssembly = null;
+		cssAssembly = null;
+	}
 	
 	/***********************************************************************
 	 * Adds a WidgetDefinition class to the registry.
@@ -38,6 +50,10 @@ public class CFWRegistryWidgets {
 					CFW.Localization.registerLocaleFile(entry.getKey(), "/app/dashboard/view", entry.getValue());
 				}
 			}
+			
+			resetCachedFiles();
+			
+
 		}else {
 			new CFWLog(logger)
 				.severe("A widget definition with name'"+definition.getWidgetType()+"' was already defined. Could not add the definition to the registry.", new Throwable());
@@ -62,6 +78,7 @@ public class CFWRegistryWidgets {
 	 ***********************************************************************/
 	public static void remove(WidgetDefinition definition)  {
 		definitionArray.remove(definition.getWidgetType());
+		resetCachedFiles();
 	}
 	
 	/***********************************************************************
@@ -86,18 +103,18 @@ public class CFWRegistryWidgets {
 	 ***********************************************************************/
 	public static void addFilesToResponse(AbstractHTMLResponse response)  {
 		
-		FileAssembly javascript = new FileAssembly("js_assembly_widgets", "js");
-		FileAssembly css = new FileAssembly("css_assembly_widgets", "css");
-		
-		for(WidgetDefinition definition : definitionArray.values()) {
-			if(definition.hasPermission()) {
-				javascript.addAll(definition.getJavascriptFiles());
-				css.addAll(definition.getCSSFiles());
+		// create once and then reuse
+		if(javascriptAssembly == null) {
+			javascriptAssembly = new FileAssembly("js_assembly_widgets", "js");
+			cssAssembly = new FileAssembly("css_assembly_widgets", "css");
+			for(WidgetDefinition definition : definitionArray.values()) {
+				javascriptAssembly.addAll(definition.getJavascriptFiles());
+				cssAssembly.addAll(definition.getCSSFiles());
 			}
 		}
-		
-		response.addCSSAssembly(css);
-		response.addJSBottomAssembly(javascript);
+
+		response.addCSSAssembly(cssAssembly);
+		response.addJSBottomAssembly(javascriptAssembly);
 	}
 
 }
