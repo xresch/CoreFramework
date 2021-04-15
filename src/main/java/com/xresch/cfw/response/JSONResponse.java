@@ -45,6 +45,12 @@ public class JSONResponse extends AbstractTemplateJSON {
 		return builder;
 	}
 	
+	public void setPayLoad(String text) {
+		this.getContent()
+		.append("\"")
+		.append(CFW.JSON.escapeString(text))
+		.append("\"");
+	}
 	public void setPayLoad(JsonElement element) {
 		this.getContent().append(element.toString());
 	}
