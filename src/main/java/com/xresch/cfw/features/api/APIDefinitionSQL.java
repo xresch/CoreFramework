@@ -86,23 +86,25 @@ public class APIDefinitionSQL extends APIDefinition{
 					
 				ResultSet result = executor.execute(sqlAPIDef, object);
 				 
-				String format = request.getParameter(APIFORMAT);
-				if(format == null || format.equals("")) {
-					format = "JSON";
+				try {
+					String format = request.getParameter(APIFORMAT);
+					if(format == null || format.equals("")) {
+						format = "JSON";
+					}
+					if(format.toUpperCase().equals(ReturnFormat.JSON.toString())) {
+						json.getContent().append(ResultSetUtils.toJSON(result));
+						
+					}else if(format.toUpperCase().equals(ReturnFormat.CSV.toString())){		
+						PlaintextResponse plaintext = new PlaintextResponse();
+						plaintext.getContent().append(ResultSetUtils.toCSV(result, ";"));
+						
+					}else if(format.toUpperCase().equals(ReturnFormat.XML.toString())){		
+						PlaintextResponse plaintext = new PlaintextResponse();
+						plaintext.getContent().append(ResultSetUtils.toXML(result));
+					}
+				}finally {
+					CFWDB.close(result);
 				}
-				if(format.toUpperCase().equals(ReturnFormat.JSON.toString())) {
-					json.getContent().append(ResultSetUtils.toJSON(result));
-					
-				}else if(format.toUpperCase().equals(ReturnFormat.CSV.toString())){		
-					PlaintextResponse plaintext = new PlaintextResponse();
-					plaintext.getContent().append(ResultSetUtils.toCSV(result, ";"));
-					
-				}else if(format.toUpperCase().equals(ReturnFormat.XML.toString())){		
-					PlaintextResponse plaintext = new PlaintextResponse();
-					plaintext.getContent().append(ResultSetUtils.toXML(result));
-				}
-				
-				CFWDB.close(result);
 
 				
 				json.setSuccess(true);

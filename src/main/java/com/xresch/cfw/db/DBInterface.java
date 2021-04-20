@@ -559,6 +559,7 @@ public abstract class DBInterface {
 		try {
 			if(resultSet != null 
 			&& transactionConnection.get() == null
+			&& resultSet.getStatement() != null 
 			&& !resultSet.getStatement().isClosed()) {
 				
 				removeOpenConnection(resultSet.getStatement().getConnection());

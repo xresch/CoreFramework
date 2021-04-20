@@ -1362,7 +1362,6 @@ public class CFWSQL {
 		
 		this.execute();
 		String	string = ResultSetUtils.toJSON(result);
-		CFWDB.close(result);
 		
 		return string;
 		

@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.db.CFWDB;
 
 /**************************************************************************************************************
  * 
@@ -51,6 +52,8 @@ public class SerializerResultSet implements JsonSerializer<ResultSet> {
 		} catch (SQLException e) {
 			
 			e.printStackTrace();
+		}finally {
+			CFWDB.close(resultSet);
 		}
 		return result;
 	}

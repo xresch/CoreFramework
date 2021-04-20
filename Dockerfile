@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 openjdk:8
+FROM --platform=linux/amd64 openjdk:13
 
 WORKDIR /usr/src/cfw-server/
 COPY ./config config/
