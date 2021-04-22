@@ -80,7 +80,10 @@ public class ServletDatabaseAnalytics extends HttpServlet
 	  											
 					case "querystatistics":		jsonResponse.getContent().append(CFW.DB.selectQueryStatisticsAsJSON());
 												break;		
-	  											
+	  				
+					case "connectionpoolstats":	jsonResponse.getContent().append(CFW.Registry.Components.getConnectionPoolStatsAsJSON());
+												break;
+												
 					default: 					CFW.Messages.itemNotSupported(item);
 												break;
 				}
@@ -92,4 +95,5 @@ public class ServletDatabaseAnalytics extends HttpServlet
 		}
 	}
 		
+	
 }

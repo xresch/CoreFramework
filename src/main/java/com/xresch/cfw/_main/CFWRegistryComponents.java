@@ -1,8 +1,15 @@
 package com.xresch.cfw._main;
 
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import org.apache.commons.dbcp2.BasicDataSource;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.usermgmt.SessionData;
@@ -22,16 +29,26 @@ import com.xresch.cfw.response.bootstrap.UserMenuItem;
 public class CFWRegistryComponents {
 	private static Logger logger = CFWLog.getLogger(CFWRegistryComponents.class.getName());
 	
+	/***********************************************************************
+	 * Menus
+	 ***********************************************************************/ 
 	private static LinkedHashMap<String, MenuItem> regularMenuItems = new LinkedHashMap<>();
 	private static LinkedHashMap<String, MenuItem> userMenuItems = new LinkedHashMap<>();
-	
 	private static LinkedHashMap<String, MenuItem> adminMenuItems = new LinkedHashMap<>();
 	
 	// Admin items of the Core Framework
 	private static LinkedHashMap<String, MenuItem> adminMenuItemsCFW = new LinkedHashMap<>();
 	
+	/***********************************************************************
+	 * Footer
+	 ***********************************************************************/ 
 	private static Class<?> defaultFooterClass = null;
 
+	
+	/***********************************************************************
+	 * Connection Pools
+	 ***********************************************************************/ 
+	private static HashMap<String, BasicDataSource> managedConnectionPools = new HashMap<>();
 	
 	/***********************************************************************
 	 * Adds a menuItem to the regular menu.
@@ -245,6 +262,57 @@ public class CFWRegistryComponents {
 		return new BTFooter().setLabel("Set your custom menu class(extending BTFooter) using CFW.App.setDefaultFooter()! ");
 	}
 	
+	/********************************************************************************************
+	 * Add a connection pool as a managed connection pool.
+	 * 
+	 * @throws SQLException 
+	 ********************************************************************************************/
+	public static void registerManagedConnectionPool(String uniqueName, BasicDataSource datasource) {	
+		if(!managedConnectionPools.containsKey(uniqueName)) {
+			managedConnectionPools.put(uniqueName, datasource);	
+		}else {
+			new CFWLog(logger).warn("A connection pool with the name '"+uniqueName+"' was already registered. Please choose another name.", new Exception());
+		}
+	}
+	
+	/********************************************************************************************
+	 * Remove connection pool from the managed connection pools.
+	 * 
+	 * @throws SQLException 
+	 ********************************************************************************************/
+	public static void removeManagedConnectionPool(String uniqueName) {	
+		managedConnectionPools.remove(uniqueName);	
+	}
+	
+	/********************************************************************************************
+	 * Remove connection pool from the managed connection pools.
+	 * 
+	 * @throws SQLException 
+	 ********************************************************************************************/
+	public static JsonArray getConnectionPoolStatsAsJSON() {	
+		
+		JsonArray result = new JsonArray();
+		for(Entry<String, BasicDataSource> entry : managedConnectionPools.entrySet()) {
+			
+			JsonObject stats = new JsonObject();
+			
+			BasicDataSource source = entry.getValue();
+			
+			stats.addProperty("NAME", entry.getKey());
+			stats.addProperty("MAX_CONNECTION_LIFETIME", source.getMaxConnLifetimeMillis());
+			stats.addProperty("EVICTION_INTERVAL", source.getTimeBetweenEvictionRunsMillis());
+			stats.addProperty("MIN_IDLE_CONNECTIONS", source.getMinIdle());
+			stats.addProperty("MAX_IDLE_CONNECTIONS", source.getMaxIdle());
+			stats.addProperty("MAX_TOTAL_CONNECTIONS", source.getMaxTotal());
+			stats.addProperty("IDLE_COUNT", source.getNumIdle());
+			stats.addProperty("ACTIVE_COUNT", source.getNumActive());
+			
+			result.add(stats);
+		}
+		
+		return result;
+	}
+	
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
@@ -282,6 +350,8 @@ public class CFWRegistryComponents {
 		
 		return builder.toString();
 	}
+	
+	
 	
 
 }

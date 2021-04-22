@@ -10,9 +10,12 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.apache.commons.dbcp2.BasicDataSource;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
@@ -31,7 +34,7 @@ public abstract class DBInterface {
 	protected ThreadLocal<ArrayList<Connection>> myOpenConnections = new ThreadLocal<>();
 	protected ThreadLocal<Connection> transactionConnection = new ThreadLocal<>();
 
-	
+
 	private static final Counter dbcallCounter = Counter.build()
 	         .name("cfw_db_calls_success_count")
 	         .help("Number of database calls executed successfully through the internal CFW DBInterface.")
@@ -43,6 +46,8 @@ public abstract class DBInterface {
 	         .help("Number of database calls executed through the internal CFW DBInterface and ended with and exception.")
 	         .labelNames("db")
 	         .register();
+	
+	
 	/********************************************************************************************
 	 * Get a connection from the connection pool or returns the current connection used for the 
 	 * transaction.
@@ -50,6 +55,7 @@ public abstract class DBInterface {
 	 * @throws SQLException 
 	 ********************************************************************************************/
 	public abstract Connection getConnection() throws SQLException;
+	
 	
 	/********************************************************************************************
 	 * Add a connection that was openend to the list of open connections.
