@@ -3,7 +3,9 @@ package com.xresch.cfw._main;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.logging.Logger;
 
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.LinkedProperties;
 
 /**************************************************************************************************************
@@ -13,6 +15,7 @@ import com.xresch.cfw.utils.LinkedProperties;
  **************************************************************************************************************/
 public class CFWProperties {
 
+	public static final Logger logger = CFWLog.getLogger(CFWProperties.class.getName());
 	private static final LinkedProperties configProperties = new LinkedProperties();
 	
 	//##########################################################################################
@@ -187,7 +190,7 @@ public class CFWProperties {
 	public static void loadProperties(String configFilePath) throws IOException {
 		
 		CFWProperties.configProperties.load(new FileReader(new File(configFilePath)));
-		printConfiguration();
+		logConfiguration();
 		
 		APPLICATION_ID					= CFWProperties.configAsString("cfw_application_id", APPLICATION_ID);
 		APPLICATION_NAME				= CFWProperties.configAsString("cfw_application_name", APPLICATION_NAME);
@@ -252,16 +255,17 @@ public class CFWProperties {
 	 * @param key
 	 * @return
 	 *******************************************************************************/
-	public static void printConfiguration() {
+	public static void logConfiguration() {
 		
-		System.out.println("################################################");
-		System.out.println("##            LOADED CONFIGURATION            ##");
-		System.out.println("################################################");
+		CFWLog log = new CFWLog(logger);
+		log.config("################################################");
+		log.config("##            LOADED PROPERTIES               ##");
+		log.config("################################################");
 
 		for (Object key : configProperties.orderedKeys()) {
-			System.out.println(key+"='"+configProperties.getProperty((String)key)+"'");
+			log.config(key+"='"+configProperties.getProperty((String)key)+"'");
 		}
-		System.out.println("################################################");
+		log.config("################################################");
 	}
 
 	

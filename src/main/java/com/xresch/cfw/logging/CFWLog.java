@@ -2,6 +2,7 @@ package com.xresch.cfw.logging;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.PrintStream;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -12,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.logging.SysoutInterceptor.SysoutType;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -129,12 +131,23 @@ public class CFWLog {
 	/***********************************************************************
 	 * Initializes the logging.
 	 ***********************************************************************/
+	@SuppressWarnings("resource")
 	public static void initializeLogging() {
+		
+		//-------------------------------------------
+		// Create log Directory
 		File logFolder = new File("./log");
 		if(!logFolder.isDirectory()) {
 			logFolder.mkdir();
 		}
 		
+		//-------------------------------------------
+		// Add Interceptors
+	    new SysoutInterceptor(SysoutType.SYSOUT, System.out);
+	    new SysoutInterceptor(SysoutType.SYSERR, System.err);
+
+		//-------------------------------------------
+		// Set Properties Path
 		System.setProperty("java.util.logging.config.file", "./config/logging.properties");
 		
 		//-------------------------------------------
