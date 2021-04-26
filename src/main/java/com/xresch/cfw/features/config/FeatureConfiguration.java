@@ -164,9 +164,11 @@ public class FeatureConfiguration extends CFWAppFeature {
 			new Configuration("Performance", FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS )
 				.description("The interval in seconds between two CPU samplings. Changes to this value needs a restart to take effect.")
 				.type(FormFieldType.SELECT)
-				.options(new String[]{"1", "5", "10", "30", "60"})
+				.options(new String[]{"0.05", "0.1", "0.2","0.5", "1", "5", "10", "30", "60"})
 				.value("10")
 		);
+		
+		
 		
 		
 		//-----------------------------------------

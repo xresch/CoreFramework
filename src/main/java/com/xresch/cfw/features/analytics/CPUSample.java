@@ -63,27 +63,27 @@ public class CPUSample extends CFWObject {
 	private CFWField<Integer> count = CFWField.newInteger(FormFieldType.NONE, StatsCPUSampleFields.COUNT)
 			.setDescription("The total number of occurences of this method(estimated to occurences per minute).")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(null);
+			.setValue(0);
 	
 	private CFWField<Integer> min = CFWField.newInteger(FormFieldType.NONE, StatsCPUSampleFields.MIN)
 			.setDescription("The minimun number of occurences.")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(null);
+			.setValue(0);
 	
 	private CFWField<Integer> avg = CFWField.newInteger(FormFieldType.NONE, StatsCPUSampleFields.AVG)
 			.setDescription("The average of the occurences.")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(null);
+			.setValue(0);
 	
 	private CFWField<Integer> max = CFWField.newInteger(FormFieldType.NONE, StatsCPUSampleFields.MAX)
 			.setDescription("The maximum number of occurences.")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(null);
+			.setValue(0);
 	
 	private CFWField<Integer> granularity = CFWField.newInteger(FormFieldType.NONE, StatsCPUSampleFields.GRANULARITY)
 			.setDescription("The aggregation period in minutes represented by this statistics.")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(null);
+			.setValue(0);
 	
 	
 	public CPUSample() {
@@ -197,12 +197,17 @@ public class CPUSample extends CFWObject {
 	}
 	
 	//
-	public CPUSample prepareStatistics(int collectionIntervalSeconds) {
-		int computedCount = count.getValue() * collectionIntervalSeconds;
+	public CPUSample prepareStatistics(int collectionIntervalMillis) {
+		
+		// Normalize count to 1 second, round up to one if zero
+		int computedCount = count.getValue() * collectionIntervalMillis / 1000;
+		if(computedCount == 0) computedCount = 1;
+		
 		this.count.setValue(computedCount);
 		this.min.setValue(computedCount);
 		this.max.setValue(computedCount);
 		this.avg.setValue(computedCount);
+		
 		return this;
 	}
 	public int granularity() {

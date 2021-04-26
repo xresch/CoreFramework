@@ -1,8 +1,12 @@
 package com.xresch.cfw.features.analytics;
 
+import java.util.concurrent.ScheduledFuture;
+
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
+import com.xresch.cfw.db.TaskDatabaseBackup;
+import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -25,6 +29,8 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.analytics.resources";
 	
+	private static ScheduledFuture<?> cpuSamplingTask;
+	private static ScheduledFuture<?> cpuSamplingAgeOutTask;
 	@Override
 	public void register() {
 		//----------------------------------
@@ -141,14 +147,42 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 	    new BufferPoolsExports().register();
 	    
 	    app.addUnsecureServlet(MetricsServlet.class,  	"/metrics");
+	    
+		//-------------------------------
+		// Create Change Listener
+		ConfigChangeListener listener = new ConfigChangeListener(
+				FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS,
+				FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION
+			) {
+			
+			@Override
+			public void onChange() {
+				startTasks();
+			}
+		};
+		
+		CFW.DB.Config.addChangeListener(listener);
 	}
 
 	@Override
 	public void startTasks() {
 
-		int seconds = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS);
-		CFW.Schedule.runPeriodically(0, seconds, new TaskCPUSampling());
-		CFW.Schedule.runPeriodically(0, 600, new TaskCPUSamplingAggregation());
+		
+		//--------------------------------
+		// Setup CPU Sampling Task
+		if(cpuSamplingTask != null) {
+			cpuSamplingTask.cancel(false);
+		}
+		int millis = (int)(1000 * CFW.DB.Config.getConfigAsFloat(FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS));
+		cpuSamplingTask = CFW.Schedule.runPeriodicallyMillis(0, millis, new TaskCPUSampling());
+		
+		//--------------------------------
+		// Setup CPU Sampling AgeOut Task
+		if(cpuSamplingAgeOutTask != null) {
+			cpuSamplingAgeOutTask.cancel(false);
+		}
+		
+		cpuSamplingAgeOutTask = CFW.Schedule.runPeriodically(0, 3000, new TaskCPUSamplingAgeOut());
 	}
 
 	@Override

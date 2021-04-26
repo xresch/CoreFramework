@@ -151,7 +151,13 @@ public class CFWDBConfig {
 		return Long.parseLong(configCache.get(configName));
 	}
 	
-	
+	/********************************************************************************************
+	 * Returns a config value from cache as long.
+	 * 
+	 ********************************************************************************************/
+	public static float getConfigAsFloat(String configName) {
+		return Float.parseFloat(configCache.get(configName));
+	}
 	
 	/********************************************************************************************
 	 * Creates multiple configs in the DB.

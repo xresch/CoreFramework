@@ -23,18 +23,18 @@ public class TaskCPUSampling extends CFWScheduledTask {
 	
 	// Contains the stack element signature with ID as in the DB
 	private static HashMap<Object, Object> signatureIDMap = CFWDBCPUSampleSignature.getSignaturesAsKeyValueMap();
-	private static int samplingSeconds = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS);
+	private static int samplingMillis = (int)(1000 * CFW.DB.Config.getConfigAsFloat(FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS));
 	
 	@Override
 	public void execute() {
 		
 		long currentTime = System.currentTimeMillis();
 		// minutes to millis
-		int aggregationMillis = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION) *60000;
+		int aggregationMillis = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION) * 60000;
 		
 		//-----------------------------------
 		// Check Saving
-		if( (currentTime - lastSave) > aggregationMillis ) {
+		if( (currentTime - lastSave) > aggregationMillis ) {			
 			saveAndResetCounters();
 			lastSave = currentTime;
 		}
@@ -57,11 +57,11 @@ public class TaskCPUSampling extends CFWScheduledTask {
 		
 		CFWDB.beginTransaction();
 			for(CPUSample entry : counterMap.values()) {
-				if(entry.count() != 0 
-				&& entry.time(time)
-				    .prepareStatistics(samplingSeconds)
-				    .granularity(periodMinutes).insert() ) 
-				{	
+				if(entry.count() != 0) {
+					entry.time(time)
+					    .prepareStatistics(samplingMillis)
+					    .granularity(periodMinutes).insert();
+					
 					entry.count(0);
 				}
 			}

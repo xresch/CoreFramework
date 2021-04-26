@@ -24,14 +24,25 @@ public class CFWSchedule {
 	 
 	 /********************************************************************************
 	  * Schedules a periodical execution for a period of seconds
-	  * @param initialDelaySeconds
-	  * @param periodSeconds
+	  * @param initialDelayMillis
+	  * @param periodMillis
+	  * @param action
+	  * @return ScheduledFuture<?>
+	  ********************************************************************************/
+	 public static ScheduledFuture<?> runPeriodicallyMillis(int initialDelayMillis, int periodMillis, CFWScheduledTask action) {
+		 return runPeriodically(initialDelayMillis, periodMillis, TimeUnit.MILLISECONDS, action);
+	 }
+	 
+	 /********************************************************************************
+	  * Schedules a periodical execution for a period of the specified time unit.
+	  * @param initialDelay
+	  * @param period
 	  * @param unit
 	  * @param action
 	  * @return ScheduledFuture<?>
 	  ********************************************************************************/
-	 public static ScheduledFuture<?> runPeriodically(int initialDelaySeconds, int periodSeconds, TimeUnit unit, CFWScheduledTask action) {
-		 return scheduler.scheduleAtFixedRate(action, initialDelaySeconds, periodSeconds, unit);
+	 public static ScheduledFuture<?> runPeriodically(int initialDelay, int period, TimeUnit unit, CFWScheduledTask action) {
+		 return scheduler.scheduleAtFixedRate(action, initialDelay, period, unit);
 	 }
 	 
 	 /********************************************************************************

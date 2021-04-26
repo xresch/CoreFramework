@@ -9,9 +9,9 @@ import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.schedule.CFWScheduledTask;
 
-public class TaskCPUSamplingAggregation extends CFWScheduledTask {
+public class TaskCPUSamplingAgeOut extends CFWScheduledTask {
 	
-	private static Logger logger = CFWLog.getLogger(TaskCPUSamplingAggregation.class.getName());
+	private static Logger logger = CFWLog.getLogger(TaskCPUSamplingAgeOut.class.getName());
 
 	
 	public void execute() {
