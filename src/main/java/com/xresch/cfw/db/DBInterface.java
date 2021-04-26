@@ -12,11 +12,14 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -27,13 +30,14 @@ import io.prometheus.client.Counter;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public abstract class DBInterface {
+public class DBInterface {
 
 	private static Logger logger = CFWLog.getLogger(DBInterface.class.getName());
 	
 	protected ThreadLocal<ArrayList<Connection>> myOpenConnections = new ThreadLocal<>();
 	protected ThreadLocal<Connection> transactionConnection = new ThreadLocal<>();
 
+	private BasicDataSource pooledSource;
 
 	private static final Counter dbcallCounter = Counter.build()
 	         .name("cfw_db_calls_success_count")
@@ -47,6 +51,12 @@ public abstract class DBInterface {
 	         .labelNames("db")
 	         .register();
 	
+
+	private static HashMap<String, BasicDataSource> managedConnectionPools = new HashMap<>();
+	
+	public DBInterface(BasicDataSource pooledSource) {
+		this.pooledSource = pooledSource;
+	}
 	
 	/********************************************************************************************
 	 * Get a connection from the connection pool or returns the current connection used for the 
@@ -54,7 +64,24 @@ public abstract class DBInterface {
 	 * 
 	 * @throws SQLException 
 	 ********************************************************************************************/
-	public abstract Connection getConnection() throws SQLException;
+	public Connection getConnection() throws SQLException {
+		
+		//Improve performance
+		if(logger.isLoggable(Level.FINER)) {
+			new CFWLog(logger)
+				.finer("DB Connections Active: "+pooledSource.getNumActive());
+		}
+		
+		if(transactionConnection.get() != null) {
+			return transactionConnection.get();
+		}else {
+			synchronized (pooledSource) {
+				Connection connection = pooledSource.getConnection();
+				addOpenConnection(connection);
+				return connection;
+			}
+		}				
+	}
 	
 	
 	/********************************************************************************************
@@ -579,6 +606,200 @@ public abstract class DBInterface {
 			new CFWLog(logger)
 				.severe("Exception occured while closing ResultSet. ", e);
 		}
+	}
+	
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	public static DBInterface createDBInterfaceH2(String servername, int port, String storePath, String databaseName, String username, String password) {
+		
+		String urlPart = servername+":"+port+"/"+storePath+"/"+databaseName;
+		String uniqueName = "H2:"+urlPart;
+		String connectionURL = "jdbc:h2:tcp://"+urlPart+";IGNORECASE=TRUE";
+		String driverClass = "org.h2.Driver";
+
+		return createDBInterface(
+				uniqueName, 
+				driverClass, 
+				connectionURL, 
+				username, 
+				password);
+		
+	}
+	
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	public static DBInterface createDBInterfaceMySQL(String servername, int port, String dbName, String username, String password) {
+		
+		
+		String urlPart = servername+":"+port+"/"+dbName;
+		String uniqueName = "MySQL:"+urlPart;
+		String connectionURL = "jdbc:mysql://"+urlPart;
+		String driverClass = "com.mysql.cj.jdbc.Driver";
+		
+		return createDBInterface(
+				uniqueName, 
+				driverClass, 
+				connectionURL, 
+				username, 
+				password);
+		
+	}
+
+
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	public static DBInterface createDBInterfaceMSSQL(String servername, int port, String dbName, String username, String password) {
+		
+		String urlPart = servername+":"+port+";databaseName="+dbName;
+		String uniqueName = "MSSQL:"+urlPart;
+		String connectionURL = "jdbc:sqlserver://"+urlPart;
+		String driverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+		
+		return createDBInterface(
+				uniqueName, 
+				driverClass, 
+				connectionURL, 
+				username, 
+				password);
+		
+	}
+
+
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	public static DBInterface createDBInterfaceOracle(String servername, int port, String name, String type, String username, String password) {
+		
+		String urlPart = "";
+		if(type.trim().equals("SID")) {
+			//jdbc:oracle:thin:@myHost:myport:sid
+			urlPart = servername+":"+port+":"+name;
+		}else {
+			//jdbc:oracle:thin:@//myHost:1521/service_name
+			urlPart = servername+":"+port+"/"+name;
+		}
+
+		String uniqueName = "Oracle:"+urlPart;
+		String connectionURL = "jdbc:oracle:thin:@"+urlPart;
+		String driverClass = "oracle.jdbc.OracleDriver";
+		
+		return createDBInterface(
+				uniqueName, 
+				driverClass, 
+				connectionURL, 
+				username, 
+				password);
+		
+	}
+	
+	
+
+
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	public static DBInterface createDBInterface(String uniqepoolName, String driverName, String url, String username, String password) {
+		
+		BasicDataSource datasourceSource;
+		
+		try {
+			//Driver name com.microsoft.sqlserver.jdbc.SQLServerDriver
+			//Connection URL Example: "jdbc:sqlserver://localhost:1433;databaseName=AdventureWorks;user=MyUserName;password=*****;";  
+			datasourceSource = new BasicDataSource();
+			
+			datasourceSource.setDriverClassName(driverName);
+			datasourceSource.setUrl(url);					
+
+			datasourceSource.setUsername(username);
+			datasourceSource.setPassword(password);
+			
+			DBInterface.setDefaultConnectionPoolSettings(datasourceSource);
+			
+			//----------------------------------
+			// Test connection
+			//pooledSource.setLoginTimeout(5);
+			Connection connection = datasourceSource.getConnection();
+			connection.close();
+			
+			DBInterface.registerManagedConnectionPool(uniqepoolName, datasourceSource);
+			
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.severe("Exception occured initializing DBInterface.", e);
+			return null;
+		}
+		
+		DBInterface db = new DBInterface(datasourceSource);
+
+		new CFWLog(logger).info("Created DBInteface: "+ url);
+		return db;
+	}
+	
+	/********************************************************************************************
+	 *
+	 ********************************************************************************************/
+	public static void setDefaultConnectionPoolSettings(BasicDataSource pooledSource) {
+		pooledSource.setMaxConnLifetimeMillis(60*60*1000);
+		pooledSource.setTimeBetweenEvictionRunsMillis(5*60*1000);
+		pooledSource.setInitialSize(10);
+		pooledSource.setMinIdle(10);
+		pooledSource.setMaxIdle(70);
+		pooledSource.setMaxTotal(90);
+		pooledSource.setMaxOpenPreparedStatements(100);
+	}
+	
+	/********************************************************************************************
+	 * Add a connection pool as a managed connection pool.
+	 * 
+	 * @throws SQLException 
+	 ********************************************************************************************/
+	public static void registerManagedConnectionPool(String uniqueName, BasicDataSource datasource) {	
+		if(!managedConnectionPools.containsKey(uniqueName)) {
+			managedConnectionPools.put(uniqueName, datasource);	
+		}else {
+			new CFWLog(logger).warn("A connection pool with the name '"+uniqueName+"' was already registered. Please choose another name.", new Exception());
+		}
+	}
+	
+	/********************************************************************************************
+	 * Remove connection pool from the managed connection pools.
+	 * 
+	 * @throws SQLException 
+	 ********************************************************************************************/
+	public static void removeManagedConnectionPool(String uniqueName) {	
+		managedConnectionPools.remove(uniqueName);	
+	}
+	
+	/********************************************************************************************
+	 * Remove connection pool from the managed connection pools.
+	 * 
+	 * @throws SQLException 
+	 ********************************************************************************************/
+	public static JsonArray getConnectionPoolStatsAsJSON() {	
+		
+		JsonArray result = new JsonArray();
+		for(Entry<String, BasicDataSource> entry : managedConnectionPools.entrySet()) {
+			
+			JsonObject stats = new JsonObject();
+			
+			BasicDataSource source = entry.getValue();
+			
+			stats.addProperty("NAME", entry.getKey());
+			stats.addProperty("MAX_CONNECTION_LIFETIME", source.getMaxConnLifetimeMillis());
+			stats.addProperty("EVICTION_INTERVAL", source.getTimeBetweenEvictionRunsMillis());
+			stats.addProperty("MIN_IDLE_CONNECTIONS", source.getMinIdle());
+			stats.addProperty("MAX_IDLE_CONNECTIONS", source.getMaxIdle());
+			stats.addProperty("MAX_TOTAL_CONNECTIONS", source.getMaxTotal());
+			stats.addProperty("IDLE_COUNT", source.getNumIdle());
+			stats.addProperty("ACTIVE_COUNT", source.getNumActive());
+			
+			result.add(stats);
+		}
+		
+		return result;
 	}
 
 }

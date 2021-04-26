@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
-import com.xresch.cfw.db.CFWDBDefaultOperations;
+import com.xresch.cfw.db.DBInterface;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
@@ -81,7 +81,7 @@ public class ServletDatabaseAnalytics extends HttpServlet
 					case "querystatistics":		jsonResponse.getContent().append(CFW.DB.selectQueryStatisticsAsJSON());
 												break;		
 	  				
-					case "connectionpoolstats":	jsonResponse.getContent().append(CFW.Registry.Components.getConnectionPoolStatsAsJSON());
+					case "connectionpoolstats":	jsonResponse.getContent().append(DBInterface.getConnectionPoolStatsAsJSON());
 												break;
 												
 					default: 					CFW.Messages.itemNotSupported(item);

@@ -30,7 +30,7 @@ import com.xresch.cfw.utils.ResultSetUtils;
  **************************************************************************************************************/
 public class CFWDB {
 
-	private static BasicDataSource pooledSource;
+	//private static BasicDataSource pooledSource;
 	//private static JdbcConnectionPool connectionPool;
 	private static Server server;
 	private static boolean isInitialized = false;
@@ -79,58 +79,13 @@ public class CFWDB {
 				
 			}
     	}
-    	
-		String h2_url 		= "jdbc:h2:tcp://"+server+":"+port+"/"+storePath+"/"+databaseName+";IGNORECASE=TRUE";
-		new CFWLog(logger).info("H2 DB URL: "+ h2_url);
-		
+    			
 		try {
 			
 			CFWDB.server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "" +port).start();
 			
-//			connectionPool = JdbcConnectionPool.create(h2_url, username, password);
-//			connectionPool.setMaxConnections(90);
+			db = DBInterface.createDBInterfaceH2(server, port, storePath, databaseName, username, password);
 
-//			CFWDB.dataSource.setURL(h2_url);
-//			CFWDB.dataSource.setUser(username);
-//			CFWDB.dataSource.setPassword(password);
-			
-			pooledSource = new BasicDataSource();
-			
-			pooledSource.setDriverClassName("org.h2.Driver");
-			pooledSource.setUrl(h2_url);					
-
-			pooledSource.setUsername(username);
-			pooledSource.setPassword(password);
-			
-			setDefaultConnectionPoolSettings(pooledSource);
-			
-			db = new DBInterface() {
-
-				@Override
-				public Connection getConnection() throws SQLException {	
-					
-					if(isInitialized) {
-						new CFWLog(logger)
-							.finer("DB Connections Active: "+pooledSource.getNumActive());
-						
-						if(transactionConnection.get() != null) {
-							return transactionConnection.get();
-						}else {
-							synchronized (pooledSource) {
-								Connection connection = pooledSource.getConnection();
-								addOpenConnection(connection);
-								return connection;
-							}
-						}
-					}else {
-						throw new SQLException("DB not initialized, call CFWDB.initialize() first.");
-					}
-				}
-				
-			};
-			
-			CFW.Registry.Components.registerManagedConnectionPool("CFW H2:"+server+":"+port+"/"+storePath+"/"+databaseName, pooledSource);
-			
 			CFWDB.isInitialized = true;
 			
 			initializeFullTextSearch();
@@ -144,8 +99,7 @@ public class CFWDB {
 			e.printStackTrace();
 		}
 	}
-	
-	
+		
 	/********************************************************************************************
 	 *
 	 ********************************************************************************************/
@@ -162,19 +116,6 @@ public class CFWDB {
 		preparedExecute("CALL FTL_INIT()");
 	}
 	
-	
-	/********************************************************************************************
-	 *
-	 ********************************************************************************************/
-	public static void setDefaultConnectionPoolSettings(BasicDataSource pooledSource) {
-		pooledSource.setMaxConnLifetimeMillis(60*60*1000);
-		pooledSource.setTimeBetweenEvictionRunsMillis(5*60*1000);
-		pooledSource.setInitialSize(10);
-		pooledSource.setMinIdle(10);
-		pooledSource.setMaxIdle(70);
-		pooledSource.setMaxTotal(90);
-		pooledSource.setMaxOpenPreparedStatements(100);
-	}
 	
 	/********************************************************************************************
 	 *

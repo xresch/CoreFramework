@@ -43,12 +43,6 @@ public class CFWRegistryComponents {
 	 * Footer
 	 ***********************************************************************/ 
 	private static Class<?> defaultFooterClass = null;
-
-	
-	/***********************************************************************
-	 * Connection Pools
-	 ***********************************************************************/ 
-	private static HashMap<String, BasicDataSource> managedConnectionPools = new HashMap<>();
 	
 	/***********************************************************************
 	 * Adds a menuItem to the regular menu.
@@ -262,56 +256,6 @@ public class CFWRegistryComponents {
 		return new BTFooter().setLabel("Set your custom menu class(extending BTFooter) using CFW.App.setDefaultFooter()! ");
 	}
 	
-	/********************************************************************************************
-	 * Add a connection pool as a managed connection pool.
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public static void registerManagedConnectionPool(String uniqueName, BasicDataSource datasource) {	
-		if(!managedConnectionPools.containsKey(uniqueName)) {
-			managedConnectionPools.put(uniqueName, datasource);	
-		}else {
-			new CFWLog(logger).warn("A connection pool with the name '"+uniqueName+"' was already registered. Please choose another name.", new Exception());
-		}
-	}
-	
-	/********************************************************************************************
-	 * Remove connection pool from the managed connection pools.
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public static void removeManagedConnectionPool(String uniqueName) {	
-		managedConnectionPools.remove(uniqueName);	
-	}
-	
-	/********************************************************************************************
-	 * Remove connection pool from the managed connection pools.
-	 * 
-	 * @throws SQLException 
-	 ********************************************************************************************/
-	public static JsonArray getConnectionPoolStatsAsJSON() {	
-		
-		JsonArray result = new JsonArray();
-		for(Entry<String, BasicDataSource> entry : managedConnectionPools.entrySet()) {
-			
-			JsonObject stats = new JsonObject();
-			
-			BasicDataSource source = entry.getValue();
-			
-			stats.addProperty("NAME", entry.getKey());
-			stats.addProperty("MAX_CONNECTION_LIFETIME", source.getMaxConnLifetimeMillis());
-			stats.addProperty("EVICTION_INTERVAL", source.getTimeBetweenEvictionRunsMillis());
-			stats.addProperty("MIN_IDLE_CONNECTIONS", source.getMinIdle());
-			stats.addProperty("MAX_IDLE_CONNECTIONS", source.getMaxIdle());
-			stats.addProperty("MAX_TOTAL_CONNECTIONS", source.getMaxTotal());
-			stats.addProperty("IDLE_COUNT", source.getNumIdle());
-			stats.addProperty("ACTIVE_COUNT", source.getNumActive());
-			
-			result.add(stats);
-		}
-		
-		return result;
-	}
 	
 	/*****************************************************************************
 	 *  
