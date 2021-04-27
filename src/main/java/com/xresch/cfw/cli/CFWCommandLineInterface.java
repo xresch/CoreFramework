@@ -18,7 +18,9 @@ import com.xresch.cfw.validation.ValidationEngine;
  **************************************************************************************************************/
 public abstract class CFWCommandLineInterface {
 	
-	public static final String CONFIG_FILE = "-config.file";
+	public static final String CONFIG_FOLDER_DEFAULT = "-config.defaultfolder";
+	public static final String CONFIG_FOLDER = "-config.folder";
+	public static final String CONFIG_FILENAME = "-config.filename";
 	public static final String STOP = "-stop";
 	
 	protected static LinkedHashMap<String,String> loadedArguments = new LinkedHashMap<>();
@@ -29,16 +31,38 @@ public abstract class CFWCommandLineInterface {
 	protected static ValidationEngine valengine = new ValidationEngine();
 	
 	static {
-		//*********************************************
-		// Config File
-		ArgumentDefinition configFile = 
-				new ArgumentDefinition(	CONFIG_FILE, 
-										CONFIG_FILE+"={filepath}",
-										"./config/cfw.properties",
-										"The path to a config-file. The config-file can include all the arguments defined in this list delimited by newline. Also lines starting with �#� are considered as comments, as well blank lines are allowed.");
 		
-		valengine.addValidator(new FileCanReadValidator(configFile));
-		addSupportedArgument(configFile.getName(), configFile);
+		//*********************************************
+		// Config Folder
+		ArgumentDefinition configFolderDefault = 
+				new ArgumentDefinition(	CONFIG_FOLDER_DEFAULT, 
+						CONFIG_FOLDER_DEFAULT+"={folderpath}",
+										"./config",
+										"The path to the folder containing the default config files. from here the configuration will be copied to the location defined by -config.folder in case the files do not exist in the target.");
+		
+		valengine.addValidator(new FileCanReadValidator(configFolderDefault));
+		addSupportedArgument(configFolderDefault.getName(), configFolderDefault);
+		
+		//*********************************************
+		// Config Folder
+		ArgumentDefinition configFolder = 
+				new ArgumentDefinition(	CONFIG_FOLDER, 
+										CONFIG_FOLDER+"={folderpath}",
+										"./config",
+										"The path to the folder containing the config files like cfw.properties.");
+		
+		addSupportedArgument(configFolder.getName(), configFolder);
+		
+		//*********************************************
+		// Config Filename
+		ArgumentDefinition configFilename = 
+				new ArgumentDefinition(	CONFIG_FILENAME, 
+										CONFIG_FILENAME+"={filename}",
+										"cfw.properties",
+										"The filename of the cfw.properties file.");
+		
+		valengine.addValidator(new FileCanReadValidator(configFilename));
+		addSupportedArgument(configFilename.getName(), configFilename);
 		
 		//*********************************************
 		// Stop

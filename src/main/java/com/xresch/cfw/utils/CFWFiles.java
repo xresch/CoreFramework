@@ -8,8 +8,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -373,8 +375,9 @@ public class CFWFiles {
 	 ***********************************************************************/
 	public static boolean isFile(String path, String filename) {
 		
-		return isFile(path+"/"+filename);
+		return isFile(path+File.separator+filename);
 	}
+	
 	/***********************************************************************
 	 * Check if the files exists.
 	 * @param filename the name of the file
@@ -384,6 +387,91 @@ public class CFWFiles {
 		File file = new File(filePath);
 		
 		return file.isFile();
+	}
+	
+	/***********************************************************************
+	 * Copy files from sourceFolder to targetFolder.
+	 * Does not delete existing files in target folder.
+	 * Define if existing files with same name should be overridden using 
+	 * the parameter doOverride.
+	 * @param sourceFolderPath
+	 * @param targetFolderPath
+	 * @param doOverride
+	 * @return true or false
+	 ***********************************************************************/
+	public static void mergeFolderInto(String sourceFolderPath, String targetFolderPath, boolean doOverride) {
+		File targetFolder = new File(targetFolderPath);
+		File sourceFolder = new File(sourceFolderPath);
+		
+		mergeFolderInto(sourceFolder, targetFolder, doOverride);
+	}
+	/***********************************************************************
+	 * Copy files from sourceFolder to targetFolder.
+	 * Does not delete existing files in target folder.
+	 * Define if existing files with same name should be overridden using 
+	 * the parameter doOverride.
+	 * @param sourceFolder
+	 * @param targetFolder
+	 * @param doOverride
+	 * @return true or false
+	 ***********************************************************************/
+	public static void mergeFolderInto(File sourceFolder, File targetFolder, boolean doOverride) {
+		
+		//------------------------------------
+		// Create Target Folder
+		if(!targetFolder.isDirectory()) {
+			targetFolder.mkdirs();
+		}
+		
+		//------------------------------------
+		// Iterate Files and copy
+		for(File file : sourceFolder.listFiles()) {
+			recursiveCopy(file, targetFolder, doOverride);
+		}
+		
+	}
+	
+	/***********************************************************************
+	 * Recursively copies files into a target folder.
+	 * If file is a file, copies the file to the target.
+	 * If file is a directory, copies the whole directory.
+	 * Define with the doOverride parameter if you want to override existing
+	 * files or not.
+	 * @param fileToCopy file or folder to copy
+	 * @param targetFolder to copy the file to
+	 * @param doOverride define if existing files should be overridden.
+	 * 
+	 ***********************************************************************/
+	public static void recursiveCopy(File fileToCopy, File targetFolder, boolean doOverride) {
+		
+		String targetPath = targetFolder.getPath();
+		String filename = fileToCopy.getName();
+		String newFileName = targetPath + File.separator + filename;
+		File targetFile = new File(newFileName);
+		System.out.println("FileToCopy: "+filename);
+		
+		if(fileToCopy.isDirectory()) {
+			
+			if(!targetFile.isDirectory()) {  targetFile.mkdirs(); }
+			
+			for(File file : fileToCopy.listFiles()) {
+				recursiveCopy(file, targetFile, doOverride);
+			}
+		}else {
+			
+			if(doOverride || !targetFile.exists()) {
+				System.out.println("Copied: "+filename);
+				try {
+					Files.copy(Paths.get(fileToCopy.getPath()), 
+							Paths.get(newFileName), StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException e) {
+					new CFWLog(logger)
+						.severe("Error copying file:"+e.getMessage(), e);
+				}
+			}
+		}
+		
+		
 	}
 	
 }

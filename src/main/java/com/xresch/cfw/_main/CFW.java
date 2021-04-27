@@ -1,5 +1,6 @@
 package com.xresch.cfw._main;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Set;
@@ -153,10 +154,32 @@ public class CFW {
 		
 		//------------------------------------
 		// Load Configuration
-		CFW.Properties.loadProperties(CFW.CLI.getValue(CFW.CLI.CONFIG_FILE));
+		prepareConfigFolder();
+		String folder = CFW.CLI.getValue(CFW.CLI.CONFIG_FOLDER);
+		String filename = CFW.CLI.getValue(CFW.CLI.CONFIG_FILENAME);
+		CFW.Properties.loadProperties(folder+File.separator+filename);
 		
 
 		
+	}
+	
+	public static void prepareConfigFolder() {
+		//------------------------------------
+		// Create Target Folder
+		File targetFolder = new File(CFW.CLI.getValue(CFW.CLI.CONFIG_FOLDER));
+		if(!targetFolder.exists() 
+		|| !targetFolder.isDirectory()) {
+			targetFolder.mkdirs();
+		}
+		
+		//------------------------------------
+		// Iterate Files and copy if not exists
+		File defaultFolder = new File(CFW.CLI.getValue(CFW.CLI.CONFIG_FOLDER_DEFAULT));
+		
+		if(!defaultFolder.equals(targetFolder)) {
+			
+			CFW.Files.mergeFolderInto(defaultFolder, targetFolder, false);
+		}
 	}
 	
 	/***********************************************************************
