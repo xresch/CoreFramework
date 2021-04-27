@@ -15,6 +15,7 @@ public class ArgumentDefinition extends AbstractValidatable<String> {
 	private String syntax = "";
 	private String defaultValue = null;
 	private String description = "";
+	private boolean isVMArgument = false;
 	
 	//####################################################################################
 	// CONSTRUCTORS
@@ -25,13 +26,14 @@ public class ArgumentDefinition extends AbstractValidatable<String> {
 		
 	}
 	
-	public ArgumentDefinition(String propertyName, String syntax, String defaultValue, String description){
+	public ArgumentDefinition(String propertyName, String syntax, String defaultValue, String description, boolean isVMArgument){
 		
 		this.setName(propertyName);
 		
 		this.syntax = syntax;
 		this.defaultValue = defaultValue;
 		this.description = description;
+		this.isVMArgument = isVMArgument;
 	}
 	
 	
@@ -71,8 +73,13 @@ public class ArgumentDefinition extends AbstractValidatable<String> {
 		this.description = description;
 		return this;
 	}
+	
 	public String getDescription() {
 		return description;
+	}
+	
+	public boolean isVMArgument() {
+		return isVMArgument;
 	}
 	
 	

@@ -66,7 +66,9 @@ import com.xresch.cfw.validation.CFWValidation;
  **************************************************************************************************************/
 public class CFW {
 	
-	private static final Logger logger = CFWLog.getLogger(CFW.class.getName());
+	private static Logger logger;
+	
+	private static boolean isConfigFolderPrepared = false;
 	
 	private CFW() {
 		// hide constructor
@@ -139,7 +141,10 @@ public class CFW {
 		//------------------------------------
 		// Command Line Arguments
 		CFW.CLI.readArguments(args);
-
+		
+		//logger has to be initalized after arguments are loaded
+		logger = CFWLog.getLogger(CFW.class.getName());
+		
 		if (!CFW.CLI.validateArguments()) {
 			new CFWLog(logger)
 				.severe("Issues loading arguments: "+CFW.CLI.getInvalidMessagesAsString());
@@ -155,8 +160,8 @@ public class CFW {
 		//------------------------------------
 		// Load Configuration
 		prepareConfigFolder();
-		String folder = CFW.CLI.getValue(CFW.CLI.CONFIG_FOLDER);
-		String filename = CFW.CLI.getValue(CFW.CLI.CONFIG_FILENAME);
+		String folder = CFW.CLI.getValue(CFW.CLI.VM_CONFIG_FOLDER);
+		String filename = CFW.CLI.getValue(CFW.CLI.VM_CONFIG_FILENAME);
 		CFW.Properties.loadProperties(folder+File.separator+filename);
 		
 
@@ -164,21 +169,26 @@ public class CFW {
 	}
 	
 	public static void prepareConfigFolder() {
-		//------------------------------------
-		// Create Target Folder
-		File targetFolder = new File(CFW.CLI.getValue(CFW.CLI.CONFIG_FOLDER));
-		if(!targetFolder.exists() 
-		|| !targetFolder.isDirectory()) {
-			targetFolder.mkdirs();
-		}
 		
-		//------------------------------------
-		// Iterate Files and copy if not exists
-		File defaultFolder = new File(CFW.CLI.getValue(CFW.CLI.CONFIG_FOLDER_DEFAULT));
-		
-		if(!defaultFolder.equals(targetFolder)) {
+		if(!isConfigFolderPrepared) {
+			//------------------------------------
+			// Create Target Folder
+			File targetFolder = new File(CFW.CLI.getValue(CFW.CLI.VM_CONFIG_FOLDER));
+			if(!targetFolder.exists() 
+			|| !targetFolder.isDirectory()) {
+				targetFolder.mkdirs();
+			}
 			
-			CFW.Files.mergeFolderInto(defaultFolder, targetFolder, false);
+			//------------------------------------
+			// Iterate Files and copy if not exists
+			File defaultFolder = new File(CFW.CLI.getValue(CFW.CLI.VM_CONFIG_FOLDER_DEFAULT));
+			
+			if(!defaultFolder.equals(targetFolder)) {
+				
+				CFW.Files.mergeFolderInto(defaultFolder, targetFolder, false);
+			}
+			
+			isConfigFolderPrepared=true;
 		}
 	}
 	

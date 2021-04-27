@@ -2,7 +2,10 @@ package com.xresch.cfw.logging;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.PrintStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
@@ -11,6 +14,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.CLI;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.usermgmt.SessionData;
 import com.xresch.cfw.logging.SysoutInterceptor.SysoutType;
@@ -136,9 +140,12 @@ public class CFWLog {
 		
 		//-------------------------------------------
 		// Create log Directory
-		File logFolder = new File("./log");
+		String logfolder = CFW.CLI.getValue(CFW.CLI.VM_CONFIG_LOGFOLDER);
+
+		File logFolder = new File(logfolder);
+		
 		if(!logFolder.isDirectory()) {
-			logFolder.mkdir();
+			logFolder.mkdirs();
 		}
 		
 		//-------------------------------------------
@@ -148,19 +155,33 @@ public class CFWLog {
 
 		//-------------------------------------------
 		// Set Properties Path
-		System.setProperty("java.util.logging.config.file", "./config/logging.properties");
+	    String configPath = CFW.CLI.getValue(CFW.CLI.VM_CONFIG_FOLDER)+File.separator+"logging.properties";
+	    String defaultConfigPath = CFW.CLI.getValue(CFW.CLI.VM_CONFIG_FOLDER_DEFAULT)+File.separator+"logging.properties";
+	    
+	    if(!configPath.equals(defaultConfigPath)) {
+	    	if(!CFW.Files.isFile(configPath)) {
+	    		try {
+	    			new File(configPath).mkdirs();
+					Files.copy(Paths.get(defaultConfigPath), 
+							Paths.get(configPath), StandardCopyOption.REPLACE_EXISTING);
+				} catch (IOException e) {
+					System.err.println("Couldn't copy logging.properties");
+				}
+	    	}
+	    }
+	    
+		System.setProperty("java.util.logging.config.file", configPath);
 		
 		//-------------------------------------------
 		// Make sure the config is loaded
 		try {
-			LogManager.getLogManager().readConfiguration(new FileInputStream("./config/logging.properties"));
+			LogManager.getLogManager().readConfiguration(new FileInputStream(configPath));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		isLoggingInitialized = true;
-		
 	}
 	
 	/***********************************************************************

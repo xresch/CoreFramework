@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.validation.FileCanReadValidator;
 import com.xresch.cfw.validation.ValidationEngine;
 
@@ -18,9 +19,11 @@ import com.xresch.cfw.validation.ValidationEngine;
  **************************************************************************************************************/
 public abstract class CFWCommandLineInterface {
 	
-	public static final String CONFIG_FOLDER_DEFAULT = "-config.defaultfolder";
-	public static final String CONFIG_FOLDER = "-config.folder";
-	public static final String CONFIG_FILENAME = "-config.filename";
+	public static final String VM_CONFIG_LOGFOLDER = "cfw.log.folder";
+	
+	public static final String VM_CONFIG_FOLDER_DEFAULT = "cfw.config.defaultfolder";
+	public static final String VM_CONFIG_FOLDER = "cfw.config.folder";
+	public static final String VM_CONFIG_FILENAME = "cfw.config.filename";
 	public static final String STOP = "-stop";
 	
 	protected static LinkedHashMap<String,String> loadedArguments = new LinkedHashMap<>();
@@ -34,11 +37,23 @@ public abstract class CFWCommandLineInterface {
 		
 		//*********************************************
 		// Config Folder
+		ArgumentDefinition logpath = 
+				new ArgumentDefinition(	VM_CONFIG_LOGFOLDER, 
+										VM_CONFIG_LOGFOLDER+"={folderpath}",
+										"./log",
+										"(VM Argument)The path to the folder were the logs should be written.",
+										true);
+		
+		addSupportedArgument(logpath.getName(), logpath);
+		
+		//*********************************************
+		// Config Folder
 		ArgumentDefinition configFolderDefault = 
-				new ArgumentDefinition(	CONFIG_FOLDER_DEFAULT, 
-						CONFIG_FOLDER_DEFAULT+"={folderpath}",
+				new ArgumentDefinition(	VM_CONFIG_FOLDER_DEFAULT, 
+						VM_CONFIG_FOLDER_DEFAULT+"={folderpath}",
 										"./config",
-										"The path to the folder containing the default config files. from here the configuration will be copied to the location defined by -config.folder in case the files do not exist in the target.");
+										"(VM Argument)The path to the folder containing the default config files. from here the configuration will be copied to the location defined by -config.folder in case the files do not exist in the target.",
+										true);
 		
 		valengine.addValidator(new FileCanReadValidator(configFolderDefault));
 		addSupportedArgument(configFolderDefault.getName(), configFolderDefault);
@@ -46,20 +61,22 @@ public abstract class CFWCommandLineInterface {
 		//*********************************************
 		// Config Folder
 		ArgumentDefinition configFolder = 
-				new ArgumentDefinition(	CONFIG_FOLDER, 
-										CONFIG_FOLDER+"={folderpath}",
+				new ArgumentDefinition(	VM_CONFIG_FOLDER, 
+										VM_CONFIG_FOLDER+"={folderpath}",
 										"./config",
-										"The path to the folder containing the config files like cfw.properties.");
+										"(VM Argument)The path to the folder containing the config files like cfw.properties.",
+										true);
 		
 		addSupportedArgument(configFolder.getName(), configFolder);
 		
 		//*********************************************
 		// Config Filename
 		ArgumentDefinition configFilename = 
-				new ArgumentDefinition(	CONFIG_FILENAME, 
-										CONFIG_FILENAME+"={filename}",
+				new ArgumentDefinition(	VM_CONFIG_FILENAME, 
+										VM_CONFIG_FILENAME+"={filename}",
 										"cfw.properties",
-										"The filename of the cfw.properties file.");
+										"(VM Argument)The filename of the cfw.properties file.",
+										true);
 		
 		valengine.addValidator(new FileCanReadValidator(configFilename));
 		addSupportedArgument(configFilename.getName(), configFilename);
@@ -70,7 +87,8 @@ public abstract class CFWCommandLineInterface {
 				new ArgumentDefinition(	STOP, 
 										STOP,
 										"",
-										"Stop command for shutting down the running server.");
+										"Stop command for shutting down the running server.",
+										false);
 		
 		addSupportedArgument(stop.getName(), stop);
 	}
@@ -260,13 +278,28 @@ public abstract class CFWCommandLineInterface {
 	}
 
 	public static String getValue(String argumentKey) {
+		
+		//------------------------------------------
+		// Handle VM Argument
+		if(supportedArgumentsMap.get(argumentKey).isVMArgument()) {
+			String value = System.getProperty(argumentKey);
+			if(value == null) {
+				// return default
+				value = supportedArgumentsMap.get(argumentKey).getValue();
+			}
+			
+			return value;
+		}
+		
+		//------------------------------------------
+		// Handle Application Argument
 		if(loadedArguments.get(argumentKey) != null) {
 			return loadedArguments.get(argumentKey);
 		}else {
 			return supportedArgumentsMap.get(argumentKey).getValue();
 		}
 	}
-	
+		
 	public static void clearLoadedArguments() {
 		loadedArguments = new LinkedHashMap<>();
 	}

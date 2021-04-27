@@ -33,7 +33,6 @@ public class CFWProperties {
 	/** Reset the admin password on the next restart. (Property=cfw_reset_admin_pw, Default=false) */
 	public static boolean RESET_ADMIN_PW = false;
 	
-	
 	//##########################################################################################
 	// HTTP
 	//##########################################################################################
@@ -192,11 +191,12 @@ public class CFWProperties {
 		CFWProperties.configProperties.load(new FileReader(new File(configFilePath)));
 		logConfiguration();
 		
+		
 		APPLICATION_ID					= CFWProperties.configAsString("cfw_application_id", APPLICATION_ID);
 		APPLICATION_NAME				= CFWProperties.configAsString("cfw_application_name", APPLICATION_NAME);
 		APPLICATION_MAX_UPLOADSIZE		= CFWProperties.configAsInt("cfw_application_max_uploadsize", APPLICATION_MAX_UPLOADSIZE);
 		RESET_ADMIN_PW 					= CFWProperties.configAsBoolean("cfw_reset_admin_pw", RESET_ADMIN_PW);
-						
+			
 		HTTP_ENABLED 					= CFWProperties.configAsBoolean("cfw_http_enabled", HTTP_ENABLED);
 		HTTP_CONNECTOR_HOST				= CFWProperties.configAsString("cfw_http_connector_host", HTTP_CONNECTOR_HOST);
 		HTTP_PORT 						= CFWProperties.configAsInt("cfw_http_port", HTTP_PORT);

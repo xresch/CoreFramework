@@ -448,7 +448,6 @@ public class CFWFiles {
 		String filename = fileToCopy.getName();
 		String newFileName = targetPath + File.separator + filename;
 		File targetFile = new File(newFileName);
-		System.out.println("FileToCopy: "+filename);
 		
 		if(fileToCopy.isDirectory()) {
 			
@@ -460,8 +459,9 @@ public class CFWFiles {
 		}else {
 			
 			if(doOverride || !targetFile.exists()) {
-				System.out.println("Copied: "+filename);
+				
 				try {
+					
 					Files.copy(Paths.get(fileToCopy.getPath()), 
 							Paths.get(newFileName), StandardCopyOption.REPLACE_EXISTING);
 				} catch (IOException e) {
@@ -470,8 +470,32 @@ public class CFWFiles {
 				}
 			}
 		}
+	}
+	
+	/***********************************************************************
+	 * Recursively copies files into a target folder.
+	 * If file is a file, copies the file to the target.
+	 * If file is a directory, copies the whole directory.
+	 * Define with the doOverride parameter if you want to override existing
+	 * files or not.
+	 * @param fileToCopy file or folder to copy
+	 * @param targetFolder to copy the file to
+	 * @param doOverride define if existing files should be overridden.
+	 * 
+	 ***********************************************************************/
+	public static void copyFile(String sourceFilePath, String targetFilePath, boolean doOverride) {
 		
-		
+		if(doOverride || !(new File(targetFilePath).exists()) ) {
+			
+			try {
+				
+				Files.copy(Paths.get(sourceFilePath), 
+						Paths.get(targetFilePath), StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				new CFWLog(logger)
+					.severe("Error copying file:"+e.getMessage(), e);
+			}
+		}
 	}
 	
 }
