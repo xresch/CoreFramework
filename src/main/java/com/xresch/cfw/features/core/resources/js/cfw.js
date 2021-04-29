@@ -511,6 +511,97 @@ function cfw_internal_updateValueLabelField(element){
 
 }
 
+/**************************************************************************************
+ * Initialize a ScheduleField created with the Java object CFWField.
+ * @param fieldID the name of the field
+ * @return nothing
+ *************************************************************************************/
+function cfw_initializeScheduleField(fieldID, jsonData){
+	
+	var id = '#'+fieldID;
+
+	var scheduleField = $(id);
+
+	var wrapper = $('<div class="cfw-schedule-field-wrapper flex-grow-1">');
+	scheduleField.before(wrapper);
+	wrapper.append(scheduleField);
+	scheduleField.val(JSON.stringify(jsonData));
+	
+	//----------------------------------
+	// Add Classes
+	var classes = scheduleField.attr('class');
+	//scheduleField.addClass('d-none');
+
+	//----------------------------------
+	// Create HTML
+	
+	wrapper.append(`<div class="dropdown">
+		<button id="scheduleButton" class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			Select Schedule
+		</button>
+		<div class="dropdown-menu col-sm-12" aria-labelledby="dropdownMenuButton">
+			
+			<div class="row m-1"><strong>Timeframe</strong></div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-STARTTIME">Start Time:</label>   
+				<div class="col-sm-9">
+					<div class="custom-control-inline w-100 mr-0">
+						<input id="${fieldID}-STARTTIME-datepicker" type="date" onchange="cfw_updateTimeField('${fieldID}-STARTTIME')" class="col-md-8 form-control form-control-sm">
+						<input id="${fieldID}-STARTTIME-timepicker" type="time" onchange="cfw_updateTimeField('${fieldID}-STARTTIME')" class="col-md-4 form-control form-control-sm">	   
+						<input id="${fieldID}-STARTTIME" type="hidden" class="form-control" placeholder="Earliest" name="${fieldID}-STARTTIME" onkeydown="return event.key != 'Enter';">
+					</div>
+				</div>
+			</div>
+
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-ENDTIME">
+					<input type="radio" name="${fieldID}-RADIO-ENDAFTER" value="enddatetime" onkeydown="return event.key != 'Enter';"> End Time:
+				</label>   
+				<div class="col-sm-9">
+					<div class="custom-control-inline w-100 mr-0">
+						<input id="${fieldID}-ENDTIME-datepicker" type="date" onchange="cfw_updateTimeField('${fieldID}-ENDTIME')" class="col-md-8 form-control form-control-sm">
+						<input id="${fieldID}-ENDTIME-timepicker" type="time" onchange="cfw_updateTimeField('${fieldID}-ENDTIME')" class="col-md-4 form-control form-control-sm">	   
+						<input id="${fieldID}-ENDTIME" type="hidden" class="form-control" placeholder="Earliest" name="${fieldID}-ENDTIME" onkeydown="return event.key != 'Enter';">
+					</div>
+				</div>
+			</div>
+			
+			<div class="row m-1">  
+				<div class="col-sm-12">
+					<input type="radio" name="${fieldID}-RADIO-ENDAFTER" value="runforever" > Run Forever
+				</div>   
+			</div>
+			
+			<div class="row m-1">  
+				<div class="col-sm-12">
+					<input type="radio" name="${fieldID}-RADIO-ENDAFTER" value="executioncount" > End after <input type="number" class="form-control-inline form-control-sm" style="width: 60px;" name="${fieldID}-EXECUTIONCOUNT" value="executioncount"> <span>executions</span>
+				</div>   
+			</div>
+			
+			<div class="row m-1"><strong>Interval</strong></div>
+			<div class="row m-1">  
+				<div class="col-sm-12">
+					<input type="radio" name="${fieldID}-RADIO-INTERVAL" value="everyXdays" > Every <input type="number" class="form-control-inline form-control-sm" style="width: 60px;" name="${fieldID}-EVERYXWEEKS" value="executioncount"> <span>day(s)</span>
+				</div>   
+			</div>
+			<div class="row m-1">  
+				<div class="col-sm-12">
+					<input type="radio" name="${fieldID}-RADIO-INTERVAL" value="everyXweeks" > Every <input type="number" class="form-control-inline form-control-sm" style="width: 60px;" name="${fieldID}-EVERYXWEEKS" value="executioncount"> <span>week(s) on</span>
+				</div>   
+			</div>
+			<div class="row m-1">
+				<div class="col-sm-12">
+					<button class="btn btn-sm btn-primary" onclick="cfw_dashboard_timeframe_confirmCustom();" type="button">
+						{!cfw_core_confirm!}
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>`);
+	
+}
+
 
 /**************************************************************************************
  * Initialize a Date and/or Timepicker created with the Java object CFWField.

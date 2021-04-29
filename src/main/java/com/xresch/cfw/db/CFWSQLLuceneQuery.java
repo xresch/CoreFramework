@@ -15,17 +15,19 @@ public class CFWSQLLuceneQuery {
 	public CFWSQLLuceneQuery(CFWSQL initialSQL) {
 		this.initialSQL = initialSQL;
 	}
-	
-	
+		
 	/****************************************************************
 	 * Builds a new CFWSQL instance with a query for fetching the
 	 * fulltext result.
 	 * Total number of results will be returned in the column
 	 * TOTAL_RECORDS.
-	 * @param limit max number of results, use 0 for all results
-	 * @param offset the offset of the query.
+	 * @param pageSize max number of results, use 0 for all results
+	 * @param pageNumber the page that should be fetched.
 	 ****************************************************************/
-	public CFWSQL build(int limit, int offset) {
+	public CFWSQL build(int pageSize, int pageNumber) {
+		
+		int limit = pageSize;
+		int offset = pageSize*(pageNumber-1);
 		
 		CFWObject initialObject = initialSQL.getObject();
 		CFWSQL fulltextSQL = new CFWSQL(initialObject);

@@ -117,7 +117,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		DATETIMEPICKER, 
 		TAGS, 
 		// Input Order of elements messed up by client side when containing numbers in keys (numbers will be sorted and listed first)
-		TAGS_SELECTOR, 
+		TAGS_SELECTOR,
+		SCHEDULE, 
 		UNMODIFIABLE_TEXT, 
 		VALUE_LABEL,
 		NONE
@@ -255,7 +256,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	//===========================================
-	// TAGS SELECTOR
+	// VALUE LABEL
 	//===========================================
 	public static CFWField<LinkedHashMap<String,String>> newValueLabel(Enum<?> fieldName){
 		return newValueLabel(fieldName.toString());
@@ -269,6 +270,23 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		return new CFWField<LinkedHashMap<String,String>> (LinkedHashMap.class, FormFieldType.VALUE_LABEL, fieldName)
 				.setColumnDefinition("VARCHAR");
 	}
+	
+	//===========================================
+	// VALUE LABEL
+	//===========================================
+	public static CFWField<String> newSchedule(Enum<?> fieldName){
+		return newSchedule(fieldName.toString());
+	}
+	public static CFWField<String> newSchedule(String fieldName){
+		if(!fieldName.startsWith("JSON_")) {
+			new CFWLog(logger)
+				.severe("Fieldname of SCHEDULE fields have to start with 'JSON_'.", new InstantiationException());
+			return null;
+		}
+		return new CFWField<String> (LinkedHashMap.class, FormFieldType.SCHEDULE, fieldName)
+				.setColumnDefinition("VARCHAR");
+	}
+	
 	//###########################################################################################################
 	//###########################################################################################################
 	// HTML and Form Methods
@@ -476,6 +494,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			case DATETIMEPICKER:  	createDateTimePicker(html, cssClasses);
 									break;
 			
+			case SCHEDULE:		  	createSchedule(html, cssClasses);
+									break;
+			
 			case TAGS:			  	createTagsField(html, cssClasses+" cfw-tags", FormFieldType.TAGS);
 									break;
 									
@@ -665,8 +686,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			((CFWForm)this.parent).javascript.append("cfw_initializeTimefield('"+name+"', "+epochTime+");\r\n");
 		}
 
-		
 	}
+	
+
 	
 	/***********************************************************************************
 	 * Create DatePicker
@@ -688,6 +710,27 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		if(this.parent instanceof CFWForm) {
 			((CFWForm)this.parent).javascript.append("cfw_initializeTimefield('"+name+"', "+epochTime+");\r\n");
+		}
+				
+	}
+	
+	/***********************************************************************************
+	 * Create DatePicker
+	 ***********************************************************************************/
+	private void createSchedule(StringBuilder html, String cssClasses) {
+		
+//		int maxTags = 128;
+//		
+//		if(attributes.containsKey("maxTags")) {
+//			maxTags = Integer.parseInt(attributes.get("maxTags"));
+//		}
+		
+		//---------------------------------
+		// Create Field
+		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"schedule\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
+		
+		if(this.parent instanceof CFWForm) {
+			((CFWForm)this.parent).javascript.append("cfw_initializeScheduleField('"+name+"', "+CFW.JSON.toJSON(value)+");\r\n");
 		}
 				
 	}

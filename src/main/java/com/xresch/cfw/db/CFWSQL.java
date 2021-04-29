@@ -12,8 +12,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang3.ArrayUtils;
-
+import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
@@ -464,6 +463,37 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQLLuceneQuery fulltextSearch() {
 		return new CFWSQLLuceneQuery(this);
+	}
+	
+	/****************************************************************
+	 * initializes a new Fulltext search.
+	 * If the filterquery is null or empty, only a limit and offset
+	 * will be added  to the query.
+	 * Use the "getAs.." methods to convert the result.
+	 * 
+	 ****************************************************************/
+	public CFWSQL fulltextSearch(String luceneFilterquery, int pageSize, int pageNumber) {
+		
+		if(Strings.isNullOrEmpty(luceneFilterquery)) {
+			//-------------------------------------
+			// Unfiltered
+			return this.columnSubquery("TOTAL_RECORDS", "COUNT(*) OVER()")
+				.select()
+				.limit(pageSize)
+				.offset(pageSize*(pageNumber-1));
+
+		}else {
+			//-------------------------------------
+			// Filter with fulltext search
+			// Enabled by CFWObject.enableFulltextSearch()
+			// on the Person Object
+			return 
+					this.select()
+						.fulltextSearch()
+						.custom(luceneFilterquery)
+						.build(pageSize, pageNumber);
+		}
+		
 	}
 	
 	/****************************************************************
