@@ -1,5 +1,6 @@
 package com.xresch.cfw.datahandling;
 
+import java.lang.reflect.Array;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,13 +36,14 @@ public class CFWObject {
 	//---------------------------
 	// Database
 	protected String tableName; 
-	protected boolean isFulltextSearchEnabled = false;
+	protected ArrayList<String> fulltextSearchColumns = null;
 	protected CFWField<Integer> primaryField = null;
 	private ArrayList<ForeignKeyDefinition> foreignKeys = new ArrayList<ForeignKeyDefinition>();
 	
 
 	
 	public class ForeignKeyDefinition{
+		
 		public String fieldname;
 		public String foreignFieldname;
 		public Class<? extends CFWObject> foreignObject;
@@ -279,8 +281,8 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public CFWObject enableFulltextSearch() {
-		this.isFulltextSearchEnabled = true;
+	public CFWObject enableFulltextSearch(ArrayList<String> columnNames) {
+		fulltextSearchColumns = columnNames;
 		return this;
 	}
 			
@@ -288,7 +290,14 @@ public class CFWObject {
 	 * 
 	 ****************************************************************/
 	public boolean hasFulltextSearch() {
-		return isFulltextSearchEnabled;
+		return fulltextSearchColumns != null && fulltextSearchColumns.size() > 0;
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	public ArrayList<String> getFulltextColumns() {
+		return fulltextSearchColumns;
 	}
 	/*****************************************************************************
 	 * Override this method to register API definitions.

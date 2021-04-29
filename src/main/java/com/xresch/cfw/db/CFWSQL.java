@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
@@ -227,14 +229,31 @@ public class CFWSQL {
 		// Create Fulltext Search Index
 		if(object.hasFulltextSearch()) {
 			
+			//------------------------------------
+			// Create Columns String
+			ArrayList<String> columnNames = object.getFulltextColumns();
+			StringBuilder columnsString = new StringBuilder();
+			
+			for(String name : columnNames) {
+				columnsString.append(name).append(",");
+			}
+			columnsString.deleteCharAt(columnsString.length()-1);
+			
+			
 			// Check index exists
 			int count = new CFWSQL(null)
-			.custom("SELECT COUNT(*) FROM FTL.INDEXES WHERE \"TABLE\" = ?", tableName)
+			.custom("SELECT COUNT(*) FROM FTL.INDEXES WHERE \"TABLE\" = ? AND \"COLUMNS\" = ?", tableName, columnsString)
 			.getCount();
 			
 			if(count == 0) {
+				System.out.println("Fulltext: "+columnsString);
+				//Cleanup existing INDEXES
+				new CFWSQL(null)
+				.custom("CALL FTL_DROP_INDEX('PUBLIC', '"+tableName+"');")
+				.executeDelete();
+				
 				new CFWLog(logger).info("Creating fulltext search index for table '"+tableName+"'. this might take some time.");
-				success &= CFWDB.preparedExecute("CALL FTL_CREATE_INDEX('PUBLIC', '"+tableName+"', NULL);");
+				success &= CFWDB.preparedExecute("CALL FTL_CREATE_INDEX('PUBLIC', '"+tableName+"', '"+columnsString+"');");
 				
 			}
 		}

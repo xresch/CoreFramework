@@ -1,0 +1,1 @@
+java -cp "./lib/*:./extensions/*" -Dcfw.log.folder="/data/log" -Dcfw.config.folder="/data/config" com.xresch.cfw._main._Main -stop

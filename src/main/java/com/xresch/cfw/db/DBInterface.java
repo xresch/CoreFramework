@@ -541,6 +541,7 @@ public class DBInterface {
 				// TODO: Could be a better solution: prepared.setObject(i+1, currentValue);
 				
 				if		(currentValue instanceof String) 	{ prepared.setString(i+1, (String)currentValue); }
+				else if	(currentValue instanceof StringBuilder) 	{ prepared.setString(i+1, currentValue.toString() ); }
 				else if	(currentValue instanceof char[]) 	{ prepared.setString(i+1, new String((char[])currentValue)); }
 				else if (currentValue instanceof Integer) 	{ prepared.setInt(i+1, (Integer)currentValue); }
 				else if (currentValue instanceof Boolean) 	{ prepared.setBoolean(i+1, (Boolean)currentValue); }

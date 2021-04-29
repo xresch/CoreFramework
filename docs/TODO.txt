@@ -5,7 +5,7 @@ ALWAYS ON
 - Cleanup console.log() and System.out.println()
 - Localize
 - Check special chars like äöüÄÖÜ in localization property files
-- Add Copyrights
+- Check Copyrights
 - Test Cases
 - Test with cache enabled
 
@@ -54,9 +54,11 @@ TODO
 
 - Manual: Multi language pages
 
+- CFW: Roles: Add true/false option to make Role detectable by regular user.
 - CFW: CFWApplicationExecutor - ForwardedRequestCustomizer make it work with reverse proxy
 - CFW: Create javascript sanity check page
-- CFW: Redirect StdOut and StdErr to logfile
+- CFW: Permission Check Page
+- CFW: CPU Sampling, add Charts
 - CFW: Cleanup tasks for TageSelector references 
 - CFW: Locales - Handle Global Locales separately
 - CFW: Locales - Create System Analytics page showing all locale properties
@@ -64,6 +66,7 @@ TODO
 - CFW: API - Enable Post Body Inputs
 - CFW: Improve CFWHTTP.getClientIP()
    
+- CFWField: Language Selector
 - CFWField: Add initFormField(method)
 - CFWField: Form errors add to field.
 - CFWField: FormField.SINGLECOMPLETE
@@ -90,6 +93,8 @@ DONE
 - Logging: Added interceptor for sysout and syserr stream to not miss information in logs
 - DB Analytics: Added Connection Pool Statistics
 - Docker: Added dockerfile for containerization
+- Docker: Docker Image now keeps persistent data under "/data"
+- H2 Fulltext Search: Columns can now be defined.
 
 ------- v3.0.0 -------
 - Roles: Reload user roles when changed, no re-login required anymore(adding Permissions to role still requires relogin)

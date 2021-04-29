@@ -162,8 +162,11 @@ public class CFWLog {
 	    	if(!CFW.Files.isFile(configPath)) {
 	    		try {
 	    			new File(configPath).mkdirs();
+	    			
 					Files.copy(Paths.get(defaultConfigPath), 
-							Paths.get(configPath), StandardCopyOption.REPLACE_EXISTING);
+							Paths.get(configPath), 
+							StandardCopyOption.REPLACE_EXISTING);
+					
 				} catch (IOException e) {
 					System.err.println("Couldn't copy logging.properties");
 				}

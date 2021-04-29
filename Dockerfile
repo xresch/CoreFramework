@@ -10,7 +10,7 @@ WORKDIR ${BASEDIR}
 COPY ./config ${BASEDIR}/config/
 COPY ./resources/ ${BASEDIR}/resources/
 COPY ./scripts/docker_start.sh ./start.sh
-COPY ./scripts/stop.sh .
+COPY ./scripts/docker_stop.sh ./stop.sh
 
 COPY ./target/lib ${BASEDIR}/lib/
 COPY ./target/cfw-?.?.?.jar ${BASEDIR}/lib/
