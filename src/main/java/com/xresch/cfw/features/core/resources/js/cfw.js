@@ -544,55 +544,55 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 			<div class="row m-1"><strong>Timeframe</strong></div>
 			
 			<div class="row m-1">  
-				<label class="col-sm-3" for="${fieldID}-STARTTIME">Start Time:</label>   
+				<label class="col-sm-3" for="${fieldID}-STARTDATETIME">Start Time:</label>   
 				<div class="col-sm-9">
 					<div class="custom-control-inline w-100 mr-0">
-						<input id="${fieldID}-STARTTIME-datepicker" type="date" onchange="cfw_updateTimeField('${fieldID}-STARTTIME')" class="col-md-8 form-control form-control-sm">
-						<input id="${fieldID}-STARTTIME-timepicker" type="time" onchange="cfw_updateTimeField('${fieldID}-STARTTIME')" class="col-md-4 form-control form-control-sm">	   
-						<input id="${fieldID}-STARTTIME" type="hidden" class="form-control" placeholder="Earliest" name="${fieldID}-STARTTIME" onkeydown="return event.key != 'Enter';">
+						<input id="${fieldID}-STARTDATETIME-datepicker" type="date" onchange="cfw_updateTimeField('${fieldID}-STARTDATETIME')" class="col-md-8 form-control form-control-sm">
+						<input id="${fieldID}-STARTDATETIME-timepicker" type="time" onchange="cfw_updateTimeField('${fieldID}-STARTDATETIME')" class="col-md-4 form-control form-control-sm">	   
+						<input id="${fieldID}-STARTDATETIME" type="hidden" class="form-control" placeholder="Earliest" name="${fieldID}-STARTDATETIME" onkeydown="return event.key != 'Enter';">
 					</div>
 				</div>
 			</div>
 
 			<div class="row m-1">  
-				<label class="col-sm-3" for="${fieldID}-ENDTIME">
-					<input type="radio" name="${fieldID}-RADIO-ENDAFTER" value="enddatetime" onkeydown="return event.key != 'Enter';"> End Time:
+				<label class="col-sm-3" for="${fieldID}-ENDDATETIME">
+					<input type="radio" id="${fieldID}-RADIO-ENDAFTER" name="${fieldID}-RADIO-ENDAFTER" value="ENDDATETIME" onkeydown="return event.key != 'Enter';"> End Time:
 				</label>   
 				<div class="col-sm-9">
 					<div class="custom-control-inline w-100 mr-0">
-						<input id="${fieldID}-ENDTIME-datepicker" type="date" onchange="cfw_updateTimeField('${fieldID}-ENDTIME')" class="col-md-8 form-control form-control-sm">
-						<input id="${fieldID}-ENDTIME-timepicker" type="time" onchange="cfw_updateTimeField('${fieldID}-ENDTIME')" class="col-md-4 form-control form-control-sm">	   
-						<input id="${fieldID}-ENDTIME" type="hidden" class="form-control" placeholder="Earliest" name="${fieldID}-ENDTIME" onkeydown="return event.key != 'Enter';">
+						<input id="${fieldID}-ENDDATETIME-datepicker" type="date" onchange="cfw_updateTimeField('${fieldID}-ENDDATETIME')" class="col-md-8 form-control form-control-sm">
+						<input id="${fieldID}-ENDDATETIME-timepicker" type="time" onchange="cfw_updateTimeField('${fieldID}-ENDDATETIME')" class="col-md-4 form-control form-control-sm">	   
+						<input id="${fieldID}-ENDDATETIME" type="hidden" class="form-control" placeholder="Earliest" name="${fieldID}-ENDDATETIME" onkeydown="return event.key != 'Enter';">
 					</div>
 				</div>
 			</div>
 			
 			<div class="row m-1">  
 				<div class="col-sm-12">
-					<input type="radio" name="${fieldID}-RADIO-ENDAFTER" value="runforever" > Run Forever
+					<input type="radio" id="${fieldID}-RADIO-ENDAFTER" name="${fieldID}-RADIO-ENDAFTER" value="RUN_FOREVER" > Run Forever
 				</div>   
 			</div>
 			
 			<div class="row m-1">  
 				<div class="col-sm-12">
-					<input type="radio" name="${fieldID}-RADIO-ENDAFTER" value="executioncount" > End after <input type="number" class="form-control-inline form-control-sm" style="width: 60px;" name="${fieldID}-EXECUTIONCOUNT" value="executioncount"> <span>executions</span>
+					<input type="radio" id="${fieldID}-RADIO-ENDAFTER" name="${fieldID}-RADIO-ENDAFTER" value="EXECUTION_COUNT" > End after <input id="${fieldID}-EXECUTIONCOUNT" type="number" class="form-control-inline form-control-sm" style="width: 60px;" min="0"> <span>executions</span>
 				</div>   
 			</div>
 			
 			<div class="row m-1"><strong>Interval</strong></div>
 			<div class="row m-1">  
 				<div class="col-sm-12">
-					<input type="radio" name="${fieldID}-RADIO-INTERVAL" value="everyXdays" > Every <input type="number" class="form-control-inline form-control-sm" style="width: 60px;" name="${fieldID}-EVERYXWEEKS" value="executioncount"> <span>day(s)</span>
+					<input type="radio" id="${fieldID}-RADIO-INTERVAL" name="${fieldID}-RADIO-INTERVAL" value="EVERY_X_DAYS" > Every <input id="${fieldID}-EVERYXDAYS" type="number" class="form-control-inline form-control-sm" style="width: 60px;" min="0"> <span>day(s)</span>
 				</div>   
 			</div>
 			<div class="row m-1">  
 				<div class="col-sm-12">
-					<input type="radio" name="${fieldID}-RADIO-INTERVAL" value="everyXweeks" > Every <input type="number" class="form-control-inline form-control-sm" style="width: 60px;" name="${fieldID}-EVERYXWEEKS" value="executioncount"> <span>week(s) on</span>
+					<input type="radio" id="${fieldID}-RADIO-INTERVAL" name="${fieldID}-RADIO-INTERVAL" value="EVERY_X_WEEKS" > Every <input id="${fieldID}-EVERYXWEEKS" type="number" class="form-control-inline form-control-sm" style="width: 60px;"  min="0"> <span>week(s) on</span>
 				</div>   
 			</div>
 			<div class="row m-1">
 				<div class="col-sm-12">
-					<button class="btn btn-sm btn-primary" onclick="cfw_dashboard_timeframe_confirmCustom();" type="button">
+					<button class="btn btn-sm btn-primary" onclick="cfw_internal_confirmSchedule('${fieldID}');" type="button">
 						{!cfw_core_confirm!}
 					</button>
 				</div>
@@ -602,6 +602,72 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 	
 }
 
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_internal_confirmSchedule(elementID){
+	
+	var selector = "#"+elementID;
+	var originalField = $(selector);
+	var wrapper = originalField.closest('.cfw-schedule-field-wrapper');
+	
+	//--------------------------------------
+	// Create Data Structure
+	var scheduleData = {
+			timeframe: {},
+			interval: {}
+	};
+	
+	scheduleData.timeframe.startdatetime 	= $(selector+'-STARTDATETIME').val();
+	scheduleData.timeframe.endaftertype  	= $(selector+"-RADIO-ENDAFTER:checked").val();  //values: RUN_FOREVER, ENDDATETIME, EXECUTION_COUNT
+	scheduleData.timeframe.enddatetime  	= $(selector+"-ENDDATETIME").val();
+	scheduleData.timeframe.executioncount  	= $(selector+"-EXECUTIONCOUNT").val();
+	
+	scheduleData.interval.intervaltype  	= $(selector+"-RADIO-INTERVAL:checked").val();
+	scheduleData.interval.evreyxdays  		= $(selector+"-EVERYXDAYS").val();
+	scheduleData.interval.evreyxweeks  		= $(selector+"-EVERYXWEEKS").val();
+	
+	//--------------------------------------
+	// Validate
+	var isValid = true;
+	
+	if( CFW.utils.isNullOrEmpty(scheduleData.timeframe.startdatetime ) ){
+		CFW.ui.addToastDanger('Please specify a start time.');
+		isValid = false;
+	}
+	
+	if( CFW.utils.isNullOrEmpty(scheduleData.timeframe.endaftertype) ){
+		CFW.ui.addToastDanger('Please select/specify how long the schedule will be valid.');
+		isValid = false;
+	}
+
+	if(scheduleData.timeframe.endaftertype === "ENDDATETIME" 
+	&& ( CFW.utils.isNullOrEmpty(scheduleData.timeframe.enddatetime)
+	   || scheduleData.timeframe.enddatetime < scheduleData.timeframe.startdatetime) 
+	){
+		CFW.ui.addToastDanger('Please specify an end time that is after the start time.')
+		isValid = false;
+	}
+	
+	if(scheduleData.timeframe.endaftertype === "EXECUTION_COUNT" 
+	&& CFW.utils.isNullOrEmpty(scheduleData.timeframe.executioncount) ) {
+		CFW.ui.addToastDanger('Please specify the number of executions.')
+		isValid = false;
+	}
+
+	if( CFW.utils.isNullOrEmpty(scheduleData.timeframe.intervaltype) ){
+		CFW.ui.addToastDanger('Please select and interval.');
+		isValid = false;
+	}
+	
+	//--------------------------------------
+	// Set Schedule
+	console.log(scheduleData);
+	if(isValid){
+		originalField.val(JSON.stringify(scheduleData));
+	}
+	
+}
 
 /**************************************************************************************
  * Initialize a Date and/or Timepicker created with the Java object CFWField.
