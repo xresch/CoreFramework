@@ -53,12 +53,14 @@ CFW.render.registerRenderer("json", new CFWRenderer(cfw_renderer_json));
  * 
  ******************************************************************/
 function cfw_renderer_csv(renderDef) {
-	
+		 
 	//-----------------------------------
 	// Render Specific settings
 	var defaultSettings = {
 		// the delimiter for the csv
 		delimiter: ';',
+		// customizers used for customizing CSV values. Do only return text.
+		csvcustomizers: {}
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.csv);
@@ -75,7 +77,7 @@ function cfw_renderer_csv(renderDef) {
 	for(var key in renderDef.visiblefields){
 		var fieldname = renderDef.visiblefields[key];
 		
-		headers += renderDef.labels[fieldname] + settings.delimiter;
+		headers += '"' +renderDef.labels[fieldname] + '"' + settings.delimiter;
 	}
 	// remove last semicolon
 	headers = headers.substring(0, headers.length-1);
@@ -88,22 +90,29 @@ function cfw_renderer_csv(renderDef) {
 		let record = "";
 		for(var key in renderDef.visiblefields){
 			var fieldname = renderDef.visiblefields[key];
-			// do not use customized values as it might return html
-			var value = currentRecord[fieldname];
 			
-			if(typeof value === "object" ){
-				value = JSON.stringify(value);
+			// do not use normal customized values as it might return html
+			var value = currentRecord[fieldname];
+			if(settings.csvcustomizers[fieldname] != undefined){
+				value = settings.csvcustomizers[fieldname](currentRecord, value);
+			}
+			
+			
+			if(value == null){
+				value = "";
 			}else{
-				if(value != null){
+				if(typeof value === "object" ){
+				value = JSON.stringify(value);
+				}else{
+
 					value = (""+value).replaceAll('\n', '\\n')
 									  .replaceAll('\r', '\\r')
-									  .replaceAll('<', '&lt;');
-				}else{
-					value = "";
+									  .replaceAll('<', '&lt;')
+									  .replaceAll('"', '\"');
 				}
 			}
 			
-			record += value + settings.delimiter;
+			record += '"' + value + '"' + settings.delimiter;
 		}
 		// remove last semicolon
 		record = record.substring(0, record.length-1);
@@ -1387,6 +1396,8 @@ function cfw_renderer_dataviewer(renderDef) {
 				//sortdirectionparam: 'sort',
 				//The filter string used for filtering the results
 				filterqueryparam: 'filterquery',
+				//custom parameters which should be added to the request, e.g. {"paramname": "value", "param2": "anothervalue", ...}
+				customparams: {},
 				//The name of the field containing the total number of rows
 				totalrowsfield: 'TOTAL_RECORDS',
 			},
@@ -1486,7 +1497,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			let dataToRender = _.slice(filteredData, offset, offset+pageSize);
 			if(pageSize == -1){
 				dataToRender = filteredData;
-			}			
+			}	
 			cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
 		}
 	}else{
@@ -1499,6 +1510,10 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 		params[settings.datainterface.pageparam] = pageToRender;
 		params[settings.datainterface.filterqueryparam] = filterquery;
 		params[settings.datainterface.itemparam] = settings.datainterface.item;
+		
+		for(key in settings.datainterface.customparams){
+			params[key] = settings.datainterface.customparams[key];
+		}
 //		params[settings.datainterface.sortbyparam] = ;
 //		params[settings.datainterface.sortdirectionparam] = ;
 //		params[settings.datainterface.filterparam] = ;
@@ -1523,6 +1538,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
  ******************************************************************/
 function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender) {
 	
+	dataviewerDiv.data('visibledata', dataToRender);
 	//-------------------------------------
 	// Initialize
 	//var dataviewerDiv = $(dataviewerID);

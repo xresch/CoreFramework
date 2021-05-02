@@ -26,8 +26,9 @@ public class CFWSQLLuceneQuery {
 	 ****************************************************************/
 	public CFWSQL build(int pageSize, int pageNumber) {
 		
-		int limit = pageSize;
+		int limit = pageSize < 0 ? 0 : pageSize;
 		int offset = pageSize*(pageNumber-1);
+		
 		
 		CFWObject initialObject = initialSQL.getObject();
 		CFWSQL fulltextSQL = new CFWSQL(initialObject);
@@ -37,8 +38,7 @@ public class CFWSQLLuceneQuery {
 //		JOIN FTL_SEARCH_DATA('Vic* OR Vik* OR Dion* OR FIRSTNAME:Victoria', 0, 0) FT
 //		ON T.PK_ID=FT.KEYS[1];
 		fulltextSQL
-			.custom(initialSQL.getStatementString().replace("FROM", ", (SELECT COUNT(*) FROM FTL_SEARCH_DATA(?, 0, 0)) AS TOTAL_RECORDS FROM")
-				  , luceneQuery.toString())
+			.custom(initialSQL.getStatementString().replace("FROM", ", COUNT(*) OVER() AS TOTAL_RECORDS FROM"))
 			.custom("JOIN FTL_SEARCH_DATA(?, ?, ?) FT", luceneQuery.toString(), limit, offset)
 			.custom("ON T."+initialObject.getPrimaryField().getName()+"=FT.KEYS[1]");
 		

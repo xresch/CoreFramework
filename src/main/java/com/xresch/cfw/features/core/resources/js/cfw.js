@@ -1193,13 +1193,17 @@ function cfw_format_millisToDuration(millis){
  * @return date as string
  *************************************************************************************/
 function cfw_format_epochToDate(epoch){
-  var a = new Date(epoch);
-  var year 		= a.getFullYear();
-  var month 	= a.getMonth()+1 < 10 	? "0"+(a.getMonth()+1) : a.getMonth()+1;
-  var day 		= a.getDate() < 10 		? "0"+a.getDate() : a.getDate();
-
-  var time = year + '-' + month + '-' + day ;
-  return time;
+	if(CFW.utils.isNullOrEmpty(epoch)){
+		return "";
+	}
+	
+	var a = new Date(epoch);
+	var year 		= a.getFullYear();
+	var month 	= a.getMonth()+1 < 10 	? "0"+(a.getMonth()+1) : a.getMonth()+1;
+	var day 		= a.getDate() < 10 		? "0"+a.getDate() : a.getDate();
+	
+	var time = year + '-' + month + '-' + day ;
+	return time;
 }
 
 /**************************************************************************************
