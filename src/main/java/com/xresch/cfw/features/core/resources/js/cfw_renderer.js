@@ -67,9 +67,9 @@ function cfw_renderer_csv(renderDef) {
 	
 	//-----------------------------------
 	// Target Element
-	let pre = $('<pre class="card p-3">');
-	let code = $('<code ondblclick="CFW.selection.selectElementContent(this)">');
-	pre.append(code);
+	let pre = $('<pre class="card p-3" ondblclick="CFW.selection.selectElementContent(this)">');
+	//let pre = $('<pre>');
+	pre.append(pre);
 	
 	//-----------------------------------
 	// Headers
@@ -81,7 +81,7 @@ function cfw_renderer_csv(renderDef) {
 	}
 	// remove last semicolon
 	headers = headers.substring(0, headers.length-1);
-	code.append(headers+"\n");
+	pre.append(headers+"\r\n");
 	
 	//-----------------------------------
 	// Print Records
@@ -108,7 +108,7 @@ function cfw_renderer_csv(renderDef) {
 					value = (""+value).replaceAll('\n', '\\n')
 									  .replaceAll('\r', '\\r')
 									  .replaceAll('<', '&lt;')
-									  .replaceAll('"', '\"');
+									  .replaceAll('"', '""');
 				}
 			}
 			
@@ -116,7 +116,7 @@ function cfw_renderer_csv(renderDef) {
 		}
 		// remove last semicolon
 		record = record.substring(0, record.length-1);
-		code.append(record+"\n");
+		pre.append(record+"\r\n");
 	}
 
 	return pre;
