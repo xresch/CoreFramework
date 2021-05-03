@@ -669,8 +669,9 @@ function cfw_renderer_panels (renderDef) {
 			let fieldname = renderDef.visiblefields[key];
 			let value =renderDef.getCustomizedValue(currentRecord,fieldname);
 		
-			itemHTML += '<li><strong>' + renderDef.labels[fieldname] + ':</strong> ' + value + '</li>';
-
+			if(!CFW.utils.isNullOrEmpty(value)){
+				itemHTML += '<li><strong>' + renderDef.labels[fieldname] + ':</strong> ' + value + '</li>';
+			}
 		}
 		list.append(itemHTML);
 		
@@ -808,8 +809,9 @@ function cfw_renderer_cards (renderDef) {
 		for(let key in renderDef.visiblefields){
 			let fieldname = renderDef.visiblefields[key];
 			let value =renderDef.getCustomizedValue(currentRecord,fieldname);
-		
-			itemHTML += '<li><strong>' + renderDef.labels[fieldname] + ':</strong> ' + value + '</li>';
+			if(!CFW.utils.isNullOrEmpty(value)){
+				itemHTML += '<li><strong>' + renderDef.labels[fieldname] + ':</strong> ' + value + '</li>';
+			}
 
 		}
 		list.append(itemHTML);
