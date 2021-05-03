@@ -131,6 +131,15 @@ public class CFWLocalization {
 		return localeArray.toArray(new Locale[localeArray.size()]);
 	}
 	
+	
+	/******************************************************************************************
+	 * 
+	 ******************************************************************************************/
+	public static Locale getUsersPreferredLocale() {
+		Locale[] allLocales = CFW.Localization.getLocalesForRequest();
+		return allLocales[allLocales.length-1];
+	}
+	
 	/******************************************************************************************
 	 * 
 	 ******************************************************************************************/

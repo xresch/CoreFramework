@@ -13,8 +13,10 @@ import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
@@ -119,6 +121,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		// Input Order of elements messed up by client side when containing numbers in keys (numbers will be sorted and listed first)
 		TAGS_SELECTOR,
 		SCHEDULE, 
+		LANGUAGE,
 		UNMODIFIABLE_TEXT, 
 		VALUE_LABEL,
 		NONE
@@ -283,7 +286,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				.severe("Fieldname of SCHEDULE fields have to start with 'JSON_'.", new InstantiationException());
 			return null;
 		}
-		return new CFWField<String> (LinkedHashMap.class, FormFieldType.SCHEDULE, fieldName)
+		return new CFWField<String> (String.class, FormFieldType.SCHEDULE, fieldName)
 				.setColumnDefinition("VARCHAR");
 	}
 	
@@ -497,6 +500,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			case SCHEDULE:		  	createSchedule(html, cssClasses);
 									break;
 			
+			case LANGUAGE:  		createLanguageSelect(html, cssClasses);
+									break;	
 			case TAGS:			  	createTagsField(html, cssClasses+" cfw-tags", FormFieldType.TAGS);
 									break;
 									
@@ -617,6 +622,55 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				}
 			}
 		}
+		
+		html.append("</select>");
+	}
+	
+	/***********************************************************************************
+	 * Create Select
+	 ***********************************************************************************/
+	private void createLanguageSelect(StringBuilder html, String cssClasses) {
+		
+		this.removeAttribute("value");
+		
+		String stringVal = (value == null) ? "" : value.toString();
+		
+		html.append("<select class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+" >");
+		
+		//-----------------------------------
+		// handle options
+		String languages[] = Locale.getISOLanguages();
+		Locale userLocale = CFW.Localization.getUsersPreferredLocale();
+		
+		TreeMap<String, String> sortedByLocale = new TreeMap<>();
+		for(String optionValue : languages) {
+			
+			String currentLabel = new Locale(optionValue).getDisplayLanguage(userLocale);
+			
+			sortedByLocale.put(currentLabel, optionValue.toUpperCase());
+			
+		}
+		
+
+		//Add empty option
+		html.append("<option value=\"\">&nbsp;</option>");
+		
+		for(Entry<String, String> entry : sortedByLocale.entrySet()) {
+			
+			String currentLabel = entry.getKey();
+			String optionValue = entry.getValue();
+			
+			if(optionValue.toString().equals(stringVal)) {
+				html.append("<option value=\""+optionValue+"\" selected>")
+					.append(currentLabel)
+				.append("</option>");
+			}else {
+				html.append("<option value=\""+optionValue+"\">")
+					.append(currentLabel)
+				.append("</option>");
+			}
+		}
+		
 		
 		html.append("</select>");
 	}
@@ -1387,6 +1441,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			else if(valueClass == Object[].class)	{ return this.changeValue( sanitizeString((String)value).split(",") ); }
 			else if(valueClass == LinkedHashMap.class){ 
 				LinkedHashMap<String,String> map = CFW.JSON.fromJsonLinkedHashMap((String)value);
+				if(map == null) {
+					new CFWLog(logger).severe("Could not resolve LinkedHashMap for field: "+this.name);
+				}
 				for(Entry<String,String> entry : map.entrySet()) {
 					entry.setValue(sanitizeString((String)entry.getValue()));
 				}
