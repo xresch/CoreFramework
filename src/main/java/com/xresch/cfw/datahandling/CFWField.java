@@ -635,7 +635,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		String stringVal = (value == null) ? "" : value.toString();
 		
-		html.append("<select class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+" >");
+		html.append("<select class=\""+cssClasses+"\" "+this.getAttributesString()+" >");
 		
 		//-----------------------------------
 		// handle options
