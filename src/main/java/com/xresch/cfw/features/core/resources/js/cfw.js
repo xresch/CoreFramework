@@ -1684,16 +1684,19 @@ function cfw_addToast(toastTitle, toastBody, style, delay){
  * @param modalTitle the title for the modal
  * @param modalBody the body of the modal
  * @param jsCode to execute on modal close
- # @param size 'small', 'regular', 'large'
+ * @param size 'small', 'regular', 'large'
+ * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_showModal(modalTitle, modalBody, jsCode, size){
+function cfw_showModal(modalTitle, modalBody, jsCode, size, keepOnOutsideClick){
 	
 	var modalID = 'cfw-default-modal';
 	var modalHeaderClass = '';
 	var modalHeaderType = 'h3';
 	var modalDialogClass = 'modal-lg';
 	var backdrop = true;
+	var modalSettings = {};
+	
 	var style = ''
 	if(size == 'small'){
 		modalID = 'cfw-small-modal';
@@ -1706,6 +1709,11 @@ function cfw_showModal(modalTitle, modalBody, jsCode, size){
 		modalID = 'cfw-large-modal';
 		style = 'style="z-index: 1045; display: block; top: -10px;"';
 		modalDialogClass = 'modal-xl';
+	}
+	
+	if(keepOnOutsideClick){
+		modalSettings.backdrop = 'static';
+		modalSettings.keyboard = false;
 	}
 	
 	CFW.global.lastOpenedModal = modalID;
@@ -1732,12 +1740,11 @@ function cfw_showModal(modalTitle, modalBody, jsCode, size){
 					 
 		
 		modal
-		.modal()
+		.modal(modalSettings)
 		.draggable({
 			backdrop: backdrop,	   
-		    handle: ".modal-header"
+		    handle: ".modal-header",
 		}); 
-		
 		// remove position relative to show content in background
 		modal.css('position', '');
 		
@@ -1787,10 +1794,11 @@ function cfw_showModal(modalTitle, modalBody, jsCode, size){
  * @param modalTitle the title for the modal
  * @param modalBody the body of the modal
  * @param jsCode to execute on modal close
+ * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_showModalRegular(modalTitle, modalBody, jsCode){
-	cfw_showModal(modalTitle, modalBody, jsCode, 'regular');
+function cfw_showModalRegular(modalTitle, modalBody, jsCode, keepOnOutsideClick){
+	cfw_showModal(modalTitle, modalBody, jsCode, 'regular', keepOnOutsideClick);
 }
 	
 /**************************************************************************************
@@ -1798,10 +1806,11 @@ function cfw_showModalRegular(modalTitle, modalBody, jsCode){
  * @param modalTitle the title for the modal
  * @param modalBody the body of the modal
  * @param jsCode to execute on modal close
+ * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_showModalSmall(modalTitle, modalBody, jsCode){
-	cfw_showModal(modalTitle, modalBody, jsCode, 'small');
+function cfw_showModalSmall(modalTitle, modalBody, jsCode, keepOnOutsideClick){
+	cfw_showModal(modalTitle, modalBody, jsCode, 'small', keepOnOutsideClick);
 }
 	
 /**************************************************************************************
@@ -1809,9 +1818,10 @@ function cfw_showModalSmall(modalTitle, modalBody, jsCode){
  * @param modalTitle the title for the modal
  * @param modalBody the body of the modal
  * @param jsCode to execute on modal close
+ * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_showModalLarge(modalTitle, modalBody, jsCode){
+function cfw_showModalLarge(modalTitle, modalBody, jsCode, keepOnOutsideClick){
 	cfw_showModal(modalTitle, modalBody, jsCode, 'large');
 }	
 
