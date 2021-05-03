@@ -51,11 +51,13 @@ public class DBInterface {
 	         .labelNames("db")
 	         .register();
 	
+	private String InterfaceName = "";
 
 	private static HashMap<String, BasicDataSource> managedConnectionPools = new HashMap<>();
 	
-	public DBInterface(BasicDataSource pooledSource) {
+	public DBInterface(String interfaceName, BasicDataSource pooledSource) {
 		this.pooledSource = pooledSource;
+		this.InterfaceName = interfaceName;
 	}
 	
 	/********************************************************************************************
@@ -273,18 +275,13 @@ public class DBInterface {
 	 ********************************************************************************************/
 	private void increaseDBCallsCount(Connection conn, boolean isError) {
 		if(conn != null) {
-			String connectionURL;
-			try {
-				connectionURL = conn.getMetaData().getURL();
-				connectionURL = connectionURL.substring(connectionURL.lastIndexOf("/") + 1);
-				if(!isError) {
-					dbcallCounter.labels(connectionURL).inc();
-				}else {
-					dbcallErrorCounter.labels(connectionURL).inc();
-				}
-			} catch (SQLException e) {
-				new CFWLog(logger).severe("Error retrieving connection meta data.", e);
+			
+			if(!isError) {
+				dbcallCounter.labels(InterfaceName).inc();
+			}else {
+				dbcallErrorCounter.labels(InterfaceName).inc();
 			}
+			
 		}
 	}
 	/********************************************************************************************
@@ -733,7 +730,7 @@ public class DBInterface {
 			return null;
 		}
 		
-		DBInterface db = new DBInterface(datasourceSource);
+		DBInterface db = new DBInterface(uniqepoolName, datasourceSource);
 
 		new CFWLog(logger).info("Created DBInteface: "+ url);
 		return db;

@@ -27,257 +27,254 @@ import com.xresch.cfw.utils.LinkedProperties;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2019
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWLocalization {
-	
+
 	private static final Logger logger = CFWLog.getLogger(CFWLocalization.class.getName());
-	
-	public static final String LOCALE_LB  = "{!";
+
+	public static final String LOCALE_LB = "{!";
 	public static final String LOCALE_RB = "!}";
-	
-	public static final int LOCALE_LB_SIZE  = LOCALE_LB.length();
+
+	public static final int LOCALE_LB_SIZE = LOCALE_LB.length();
 	public static final int LOCALE_RB_SIZE = LOCALE_RB.length();
-	
+
 	private static int localeFilesID = 0;
-	
+
 	// key consists of {language}+{contextPath}+{localeFilesID}
-	private static Cache<String, Properties> languageCache = CFW.Caching.addCache("CFW Locales", 
-		CacheBuilder.newBuilder()
-			.initialCapacity(100)
-			.maximumSize(2000)
-			.expireAfterAccess(24, TimeUnit.HOURS)
-	);
-	
+	private static Cache<String, Properties> languageCache = CFW.Caching.addCache("CFW Locales",
+			CacheBuilder.newBuilder().initialCapacity(100).maximumSize(2000).expireAfterAccess(24, TimeUnit.HOURS));
+
 	private static LinkedHashMap<String, FileDefinition> localeFiles = new LinkedHashMap<String, FileDefinition>();
-		
+
 	/******************************************************************************************
 	 * Return a localized value or the default value
 	 ******************************************************************************************/
 	public static String getLocalized(String key, String defaultValue) {
-		
+
 		String value = getLanguagePack(getLocalesForRequest(), null).getProperty(key);
-		
-		if(value != null) {
+
+		if (value != null) {
 			return value;
-		}else {
+		} else {
 			return defaultValue;
 		}
 	}
-	
+
 	/******************************************************************************************
 	 * Return a localized value or the default value.
 	 ******************************************************************************************/
 	public static String getLocalized(String key, String defaultValue, Object placeholders) {
-		
+
 		String value = getLanguagePack(getLocalesForRequest(), null).getProperty(key);
-		
-		if(value != null) {
+
+		if (value != null) {
 			return MessageFormat.format(value, placeholders);
-		}else {
+		} else {
 			return MessageFormat.format(defaultValue, placeholders);
 		}
 	}
-	
+
 	/******************************************************************************************
 	 * 
 	 ******************************************************************************************/
 	public static Properties getAllProperties() {
 		return getLanguagePack(getLocalesForRequest(), null);
 	}
-	
+
 	/******************************************************************************************
 	 * 
-	 * @param locale 
-	 * @param contextPath the absolute path of the context the language pack should be loaded. 
-	 *        e.g. "/app/yourservlet"
+	 * @param locale
+	 * @param contextPath the absolute path of the context the language pack should
+	 *                    be loaded. e.g. "/app/yourservlet"
 	 * @throws IOException
 	 ******************************************************************************************/
 	public static void registerLocaleFile(Locale locale, String contextPath, FileDefinition propertiesFileDefinition) {
-		String id = locale.getLanguage()+contextPath+"-"+localeFilesID;
+		String id = locale.getLanguage() + contextPath + "-" + localeFilesID;
 		localeFiles.put(id.toLowerCase(), propertiesFileDefinition);
 		localeFilesID++;
-		
+
 	}
-	
+
 	/******************************************************************************************
 	 * 
 	 ******************************************************************************************/
 	public static Locale[] getLocalesForRequest() {
-		
+
 		ArrayList<Locale> localeArray = new ArrayList<Locale>();
-		
+
 		// fall back to english
 		localeArray.add(Locale.ENGLISH);
-		
+
 		String configLanguage = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_LANGUAGE);
-		
-		if(configLanguage != null) {
+
+		if (configLanguage != null) {
 			Locale defaultLanguage = Locale.forLanguageTag(configLanguage.toLowerCase());
-			if(defaultLanguage != null) {
+			if (defaultLanguage != null) {
 				localeArray.add(defaultLanguage);
 			}
 		}
 
 		HttpServletRequest request = CFW.Context.Request.getRequest();
-		if(request != null) {
+		if (request != null) {
 			Locale browserLanguage = request.getLocale();
-			if(browserLanguage != null) {
+			if (browserLanguage != null) {
 				localeArray.add(browserLanguage);
 			}
 		}
-		
+
 		return localeArray.toArray(new Locale[localeArray.size()]);
 	}
-	
-	
+
 	/******************************************************************************************
 	 * 
 	 ******************************************************************************************/
 	public static Locale getUsersPreferredLocale() {
 		Locale[] allLocales = CFW.Localization.getLocalesForRequest();
-		return allLocales[allLocales.length-1];
+		return allLocales[allLocales.length - 1];
 	}
-	
+
 	/******************************************************************************************
 	 * 
 	 ******************************************************************************************/
 	public static String getLocaleIdentifierForRequest() {
 		return getLocaleIdentifier(getLocalesForRequest());
 	}
+
 	/******************************************************************************************
 	 * 
 	 ******************************************************************************************/
 	public static String getLocaleIdentifier(Locale[] locales) {
 		StringBuilder builder = new StringBuilder();
-		
+
 		Locale lastlocale = null;
-		for(Locale locale : locales) {
-			
-			//----------------------------
+		for (Locale locale : locales) {
+
+			// ----------------------------
 			// Skip reoccuring language
-			if(lastlocale != null && locale.getLanguage().equals(lastlocale.getLanguage()) ) {
+			if (lastlocale != null && locale.getLanguage().equals(lastlocale.getLanguage())) {
 				lastlocale = locale;
 				continue;
-			}else {
+			} else {
 				lastlocale = locale;
 			}
-			
-			builder.append(locale.getLanguage()).append("_"); 
+
+			builder.append(locale.getLanguage()).append("_");
 		}
-		
+
 		HttpServletRequest request = CFW.Context.Request.getRequest();
-		if(request != null) {
+		if (request != null) {
 			builder.append(request.getRequestURI());
-		}else {
-			builder.deleteCharAt(builder.length()-1);
+		} else {
+			builder.deleteCharAt(builder.length() - 1);
 		}
-		
+
 		return builder.toString().toLowerCase();
 	}
-	
+
 	/******************************************************************************************
 	 * 
 	 ******************************************************************************************/
 	public static Properties getLanguagePackByIdentifier(String localeIdentifier) {
 		return languageCache.getIfPresent(localeIdentifier);
 	}
+
 	/******************************************************************************************
 	 * 
 	 * @param request
 	 * @param response
-	 * @return 
+	 * @return
 	 * @throws IOException
 	 ******************************************************************************************/
 	public static Properties getLanguagePackForRequest() {
 		String requestURI = "";
-		if(CFW.Context.Request.getRequest() != null) {
+		if (CFW.Context.Request.getRequest() != null) {
 			requestURI = CFW.Context.Request.getRequest().getRequestURI();
 		}
 		return getLanguagePack(getLocalesForRequest(), requestURI);
 	}
-	
+
 	/******************************************************************************************
 	 * 
-	 * @param locales, later will override earliers
-	 * @param requestURI of the request, provide to get everything for the selected locales
-	 * @return 
+	 * @param locales,   later will override earliers
+	 * @param requestURI of the request, provide to get everything for the selected
+	 *                   locales
+	 * @return
 	 * @throws IOException
 	 ******************************************************************************************/
 	public static Properties getLanguagePack(Locale[] locales, String requestURI) {
-		
-		//------------------------------
+
+		// ------------------------------
 		// Initialize
 		String cacheID = CFW.Localization.getLocaleIdentifier(locales);
 		Properties languagePack = new Properties();
-		//------------------------------
+		// ------------------------------
 		// Check is Cached
 		if (!CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
-			languagePack =  loadLanguagePack(locales, requestURI);
+			languagePack = loadLanguagePack(locales, requestURI);
 			languageCache.put(cacheID, languagePack);
-		}else {
-			
+		} else {
+
 			try {
 				languagePack = languageCache.get(cacheID, new Callable<Properties>() {
 					@Override
 					public Properties call() throws Exception {
 						return CFWLocalization.loadLanguagePack(locales, requestURI);
 					}
-					
+
 				});
 			} catch (ExecutionException e) {
 				new CFWLog(logger).severe("Error loading language pack from Cache.", e);
 			}
 		}
-		
+
 		return languagePack;
 	}
-	
+
 	/******************************************************************************************
 	 * 
-	 * @param locales, later will override earliers
-	 * @param requestURI of the request, provide to get everything for the selected locales
-	 * @return 
+	 * @param locales,   later will override earliers
+	 * @param requestURI of the request, provide to get everything for the selected
+	 *                   locales
+	 * @return
 	 * @throws IOException
 	 ******************************************************************************************/
 	private static Properties loadLanguagePack(Locale[] locales, String requestURI) {
-		
+
 		LinkedProperties mergedPorperties = new LinkedProperties();
-		
+
 		Locale lastlocale = null;
-		for(Locale locale : locales) {
-			
-			//----------------------------
+		for (Locale locale : locales) {
+
+			// ----------------------------
 			// Skip reoccuring language
-			if(lastlocale != null && locale.getLanguage().equals(lastlocale.getLanguage()) ) {
+			if (lastlocale != null && locale.getLanguage().equals(lastlocale.getLanguage())) {
 				lastlocale = locale;
 				continue;
-			}else {
+			} else {
 				lastlocale = locale;
 			}
-			
-			String language = locale.getLanguage().toLowerCase(); 
-			for(Entry<String, FileDefinition> entry : localeFiles.entrySet()) {
+
+			String language = locale.getLanguage().toLowerCase();
+			for (Entry<String, FileDefinition> entry : localeFiles.entrySet()) {
 				String entryID = entry.getKey();
 
-				if( (language+requestURI).startsWith(entryID.substring(0, entryID.lastIndexOf('-'))) 
-				|| (requestURI == null && entryID.startsWith(language))
-				) {
-					
+				if ((language + requestURI).startsWith(entryID.substring(0, entryID.lastIndexOf('-')))
+						|| (requestURI == null && entryID.startsWith(language))) {
+
 					FileDefinition def = entry.getValue();
 					Properties currentProps = new Properties();
 					String propertiesString = def.readContents();
-					
-					if(propertiesString != null) {
+
+					if (propertiesString != null) {
 						try (StringReader reader = new StringReader(propertiesString);) {
-							
-							currentProps.load( reader );
+
+							currentProps.load(reader);
 							mergedPorperties.putAll(currentProps);
-							
+
 						} catch (IOException e) {
-							new CFWLog(logger)
-								.severe("Error while reading language pack.", e);
+							new CFWLog(logger).severe("Error while reading language pack.", e);
 						}
 					}
 				}
@@ -286,84 +283,84 @@ public class CFWLocalization {
 
 		return mergedPorperties;
 	}
-	
+
 	/******************************************************************************************
 	 * 
 	 * @param request
 	 * @param response
 	 * @throws IOException
 	 ******************************************************************************************/
-	public static String localizeString(HttpServletRequest request, String toLocalize) throws IOException{
+	public static String localizeString(HttpServletRequest request, String toLocalize) throws IOException {
 		return localizeString(request, new StringBuilder(toLocalize));
 	}
+
 	/******************************************************************************************
 	 * 
 	 * @param request
 	 * @param response
 	 * @throws IOException
 	 ******************************************************************************************/
-	public static String localizeString(HttpServletRequest request, StringBuilder sb) throws IOException{
-		
+	public static String localizeString(HttpServletRequest request, StringBuilder sb) throws IOException {
+
 		AbstractResponse template = CFW.Context.Request.getResponse();
-		
+
 		Properties langMap;
-		if(template.useGlobaleLocale() == false) {
+		if (template.useGlobaleLocale() == false) {
 			langMap = getLanguagePackForRequest();
-		}else {
+		} else {
 			langMap = getAllProperties();
 		}
-				
+
 		int fromIndex = 0;
 		int leftIndex = 0;
 		int rightIndex = 0;
 		int length = sb.length();
-		
-		while(fromIndex < length && leftIndex < length){
-		
-			leftIndex = sb.indexOf(CFWLocalization.LOCALE_LB, fromIndex);
-			
-			if(leftIndex != -1){
-				rightIndex = sb.indexOf(CFWLocalization.LOCALE_RB, leftIndex);
-				
-				if(rightIndex != -1 && (leftIndex+CFWLocalization.LOCALE_LB_SIZE) < rightIndex){
 
-					String propertyName = sb.substring(leftIndex+CFWLocalization.LOCALE_LB_SIZE, rightIndex);
-					if(langMap != null && langMap.containsKey(propertyName)){
-						sb.replace(leftIndex, rightIndex+CFWLocalization.LOCALE_RB_SIZE, langMap.getProperty(propertyName));
+		while (fromIndex < length && leftIndex < length) {
+
+			leftIndex = sb.indexOf(CFWLocalization.LOCALE_LB, fromIndex);
+
+			if (leftIndex != -1) {
+				rightIndex = sb.indexOf(CFWLocalization.LOCALE_RB, leftIndex);
+
+				if (rightIndex != -1 && (leftIndex + CFWLocalization.LOCALE_LB_SIZE) < rightIndex) {
+
+					String propertyName = sb.substring(leftIndex + CFWLocalization.LOCALE_LB_SIZE, rightIndex);
+					if (langMap != null && langMap.containsKey(propertyName)) {
+						sb.replace(leftIndex, rightIndex + CFWLocalization.LOCALE_RB_SIZE,
+								langMap.getProperty(propertyName));
 					}
-					//start again from leftIndex
-					fromIndex = leftIndex+1;
-					
-				}else{
-					//TODO: Localize message
-					new CFWLog(logger)
-						.finest("Localization Parameter was missing the right bound");
-				
+					// start again from leftIndex
+					fromIndex = leftIndex + 1;
+
+				} else {
+					// TODO: Localize message
+					new CFWLog(logger).finest("Localization Parameter was missing the right bound");
+
 					break;
 				}
-				
-			}else{
-				//no more stuff found to replace
+
+			} else {
+				// no more stuff found to replace
 				break;
 			}
 		}
-		
+
 		return sb.toString();
 	}
-		
-	
+
 	/******************************************************************************************
 	 * 
 	 * @param request
 	 * @param response
 	 * @throws IOException
 	 ******************************************************************************************/
-	public static void writeLocalized(HttpServletRequest request, HttpServletResponse response) throws IOException{
-		
+	public static void writeLocalized(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
 		AbstractResponse template = CFW.Context.Request.getResponse();
-		
-		if(template != null){
-			
+
+		if (template != null) {
+
 			String localized = localizeString(request, template.buildResponse());
 			response.getWriter().write(localized);
 		}
