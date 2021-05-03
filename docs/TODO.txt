@@ -96,6 +96,7 @@ DONE
 - Docker: Docker Image now keeps persistent data under "/data"
 - H2 Fulltext Search: Columns can now be defined.
 - CFWField: Added FormFieldType.LANGUAGE
+- Renderer - XML: Added XML Renderer to javascript renderers
 
 ------- v3.0.0 -------
 - Roles: Reload user roles when changed, no re-login required anymore(adding Permissions to role still requires relogin)

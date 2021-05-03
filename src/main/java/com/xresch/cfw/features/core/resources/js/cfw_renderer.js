@@ -41,10 +41,29 @@ CFW.render.registerRenderer("html", new CFWRenderer(cfw_renderer_html) );
  * 
  ******************************************************************/
 function cfw_renderer_json(renderDef) {
-	var wrapperDiv = $('<div class="flex-grow-1">');
 	
+	//-----------------------------------
+	// Render Specific settings
+	var defaultSettings = {
+		// define if the JSON should be highlighted, can freeze browser on large JSON string
+		highlight: false,
+	};
+	
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.csv);
+	
+	//-----------------------------------
+	// Create JSON 
 	var randomID = CFW.utils.randomString(16);
-	return wrapperDiv.append('<pre id="json-'+randomID+'"><code>'+JSON.stringify(renderDef.data, null, 2)+'</code></pre><script>hljs.highlightBlock($("#json-'+randomID+'").get(0));</script>');
+	var wrapperDiv = $('<div class="flex-grow-1">');
+	wrapperDiv.append('<pre class="card p-3 maxvh-80 overflow-auto" id="json-'+randomID+'"><code>'+JSON.stringify(renderDef.data, null, 2)+'</code></pre>');
+	
+	//-----------------------------------
+	// highlight
+	if(settings.highlight){
+		wrapperDiv.append('<script>hljs.highlightBlock($("#json-'+randomID+'").get(0));</script>');
+	}
+	
+	return wrapperDiv;
 }
 
 CFW.render.registerRenderer("json", new CFWRenderer(cfw_renderer_json));
@@ -67,7 +86,7 @@ function cfw_renderer_csv(renderDef) {
 	
 	//-----------------------------------
 	// Target Element
-	let pre = $('<pre class="card p-3" ondblclick="CFW.selection.selectElementContent(this)">');
+	let pre = $('<pre class="card p-3 maxvh-80 overflow-auto" ondblclick="CFW.selection.selectElementContent(this)">');
 	//let pre = $('<pre>');
 	pre.append(pre);
 	
@@ -122,6 +141,73 @@ function cfw_renderer_csv(renderDef) {
 	return pre;
 }
 CFW.render.registerRenderer("csv",  new CFWRenderer(cfw_renderer_csv));
+
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_xml(renderDef) {
+		 
+	//-----------------------------------
+	// Render Specific settings
+	var defaultSettings = {
+		// customizers used for customizing XML values. Do only return text.
+		xmlcustomizers: {}
+	};
+	
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.xml);
+	
+	//-----------------------------------
+	// Target Element
+	
+	let pre = $('<pre class="card p-3 maxvh-80 overflow-auto" ondblclick="CFW.selection.selectElementContent(this)">');
+	//let pre = $('<pre>');
+	pre.append(pre);
+	
+	//-----------------------------------
+	// Start
+	
+	let html = "<data>\r\n";
+	
+	//-----------------------------------
+	// Print Records
+	for(let i = 0; i < renderDef.data.length; i++ ){
+		let currentRecord = renderDef.data[i];
+		let record = "<record>\r\n";
+		for(var key in renderDef.visiblefields){
+			var fieldname = renderDef.visiblefields[key];
+			
+			// do not use normal customized values as it might return html
+			var value = currentRecord[fieldname];
+			if(settings.xmlcustomizers[fieldname] != undefined){
+				value = settings.xmlcustomizers[fieldname](currentRecord, value);
+			}
+			
+			
+			if(value == null){
+				value = "";
+			}else{
+				if(typeof value === "object" ){
+				value = JSON.stringify(value);
+				}else{
+
+					value = (""+value).replaceAll('<', '&lt;');
+				}
+			}
+			
+			record += `\t<${fieldname}>${value}</${fieldname}>\r\n`;
+		}
+		
+		record += "</record>\r\n";
+		html += record;
+	}
+	
+	html += "</data>\r\n";
+
+	pre.text(html);
+	return pre;
+}
+CFW.render.registerRenderer("xml",  new CFWRenderer(cfw_renderer_xml));
 
 /******************************************************************
  * 
