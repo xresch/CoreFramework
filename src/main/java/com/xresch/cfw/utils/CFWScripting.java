@@ -50,7 +50,7 @@ public class CFWScripting {
 		
 		//-----------------------------------
 		// Create Engine
-		ScriptEngine engine = manager.getEngineByName("Nashorn");
+		ScriptEngine engine = manager.getEngineByName("js");
 		
 		return new CFWScriptEngine(engine);
 		
@@ -64,7 +64,7 @@ public class CFWScripting {
 	 ******************************************************************************************************/
 	public static CFWScriptEngine createJavascriptEngine(Class clazzToBind) {
 		
-		return createEngineWithAdditionalMethods("Nashorn", clazzToBind);
+		return createEngineWithAdditionalMethods("js", clazzToBind);
 		
 	}
 	/******************************************************************************************************

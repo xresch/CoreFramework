@@ -539,7 +539,7 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 		<button id="scheduleButton" class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			Select Schedule
 		</button>
-		<div class="dropdown-menu col-sm-12" aria-labelledby="dropdownMenuButton">
+		<div id="${fieldID}-DROPDOWNMENU" class="dropdown-menu col-sm-12" aria-labelledby="dropdownMenuButton" onclick="event.stopPropagation();">
 			
 			<div class="row m-1"><strong>Timeframe</strong></div>
 			
@@ -556,7 +556,7 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 
 			<div class="row m-1">  
 				<label class="col-sm-3" for="${fieldID}-ENDDATETIME">
-					<input type="radio" id="${fieldID}-RADIO-ENDAFTER" name="${fieldID}-RADIO-ENDAFTER" value="ENDDATETIME" onkeydown="return event.key != 'Enter';"> End Time:
+					<input type="radio" id="${fieldID}-RADIO-ENDTYPE" name="${fieldID}-RADIO-ENDTYPE" value="END_DATE_TIME" onkeydown="return event.key != 'Enter';"> End Time:
 				</label>   
 				<div class="col-sm-9">
 					<div class="custom-control-inline w-100 mr-0">
@@ -569,13 +569,13 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 			
 			<div class="row m-1">  
 				<div class="col-sm-12">
-					<input type="radio" id="${fieldID}-RADIO-ENDAFTER" name="${fieldID}-RADIO-ENDAFTER" value="RUN_FOREVER" > Run Forever
+					<input type="radio" id="${fieldID}-RADIO-ENDTYPE" name="${fieldID}-RADIO-ENDTYPE" value="RUN_FOREVER" > Run Forever
 				</div>   
 			</div>
 			
 			<div class="row m-1">  
 				<div class="col-sm-12">
-					<input type="radio" id="${fieldID}-RADIO-ENDAFTER" name="${fieldID}-RADIO-ENDAFTER" value="EXECUTION_COUNT" > End after <input id="${fieldID}-EXECUTIONCOUNT" type="number" class="form-control-inline form-control-sm" style="width: 60px;" min="0"> <span>executions</span>
+					<input type="radio" id="${fieldID}-RADIO-ENDTYPE" name="${fieldID}-RADIO-ENDTYPE" value="EXECUTION_COUNT" > End after <input id="${fieldID}-EXECUTIONCOUNT" type="number" class="form-control-inline form-control-sm" style="width: 60px;" min="0"> <span>execution(s)</span>
 				</div>   
 			</div>
 			
@@ -585,15 +585,27 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 					<input type="radio" id="${fieldID}-RADIO-INTERVAL" name="${fieldID}-RADIO-INTERVAL" value="EVERY_X_DAYS" > Every <input id="${fieldID}-EVERYXDAYS" type="number" class="form-control-inline form-control-sm" style="width: 60px;" min="0"> <span>day(s)</span>
 				</div>   
 			</div>
+			
 			<div class="row m-1">  
 				<div class="col-sm-12">
 					<input type="radio" id="${fieldID}-RADIO-INTERVAL" name="${fieldID}-RADIO-INTERVAL" value="EVERY_X_WEEKS" > Every <input id="${fieldID}-EVERYXWEEKS" type="number" class="form-control-inline form-control-sm" style="width: 60px;"  min="0"> <span>week(s) on</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-MON" name="${fieldID}-EVERYXWEEKS-MON" > <span>Mon</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-TUE" name="${fieldID}-EVERYXWEEKS-TUE" > <span>Tue</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-WED" name="${fieldID}-EVERYXWEEKS-WED" > <span>Wed</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-THU" name="${fieldID}-EVERYXWEEKS-THU" > <span>Thu</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-FRI" name="${fieldID}-EVERYXWEEKS-FRI" > <span>Fri</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-SAT" name="${fieldID}-EVERYXWEEKS-SAT" > <span>Sat</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-SUN" name="${fieldID}-EVERYXWEEKS-SUN" > <span>Sun</span>
 				</div>   
 			</div>
+
 			<div class="row m-1">
 				<div class="col-sm-12">
 					<button class="btn btn-sm btn-primary" onclick="cfw_internal_confirmSchedule('${fieldID}');" type="button">
 						{!cfw_core_confirm!}
+					</button>
+					<button class="btn btn-sm btn-primary" onclick="$('#${fieldID}').dropdown('toggle');" type="button">
+						{!cfw_core_close!}
 					</button>
 				</div>
 			</div>
@@ -619,14 +631,22 @@ function cfw_internal_confirmSchedule(elementID){
 	};
 	
 	scheduleData.timeframe.startdatetime 	= $(selector+'-STARTDATETIME').val();
-	scheduleData.timeframe.endaftertype  	= $(selector+"-RADIO-ENDAFTER:checked").val();  //values: RUN_FOREVER, ENDDATETIME, EXECUTION_COUNT
+	scheduleData.timeframe.endtype  	= $(selector+"-RADIO-ENDTYPE:checked").val();  //values: RUN_FOREVER, ENDDATETIME, EXECUTION_COUNT
 	scheduleData.timeframe.enddatetime  	= $(selector+"-ENDDATETIME").val();
 	scheduleData.timeframe.executioncount  	= $(selector+"-EXECUTIONCOUNT").val();
 	
 	scheduleData.interval.intervaltype  	= $(selector+"-RADIO-INTERVAL:checked").val();
-	scheduleData.interval.evreyxdays  		= $(selector+"-EVERYXDAYS").val();
-	scheduleData.interval.evreyxweeks  		= $(selector+"-EVERYXWEEKS").val();
+	scheduleData.interval.everyxdays  		= $(selector+"-EVERYXDAYS").val();
 	
+	scheduleData.interval.everyxweeks  			= {}
+	scheduleData.interval.everyxweeks.weekcount = $(selector+"-EVERYXWEEKS").val();
+	scheduleData.interval.everyxweeks.mon  		= $(selector+"-EVERYXWEEKS-MON").is(":checked");
+	scheduleData.interval.everyxweeks.tue  		= $(selector+"-EVERYXWEEKS-TUE").is(":checked");
+	scheduleData.interval.everyxweeks.wed  		= $(selector+"-EVERYXWEEKS-WED").is(":checked");
+	scheduleData.interval.everyxweeks.thu  		= $(selector+"-EVERYXWEEKS-THU").is(":checked");
+	scheduleData.interval.everyxweeks.fri  		= $(selector+"-EVERYXWEEKS-FRI").is(":checked");
+	scheduleData.interval.everyxweeks.sat  		= $(selector+"-EVERYXWEEKS-SAT").is(":checked");
+	scheduleData.interval.everyxweeks.sun  		= $(selector+"-EVERYXWEEKS-SUN").is(":checked");
 	//--------------------------------------
 	// Validate
 	var isValid = true;
@@ -636,12 +656,12 @@ function cfw_internal_confirmSchedule(elementID){
 		isValid = false;
 	}
 	
-	if( CFW.utils.isNullOrEmpty(scheduleData.timeframe.endaftertype) ){
+	if( CFW.utils.isNullOrEmpty(scheduleData.timeframe.endtype) ){
 		CFW.ui.addToastDanger('Please select/specify how long the schedule will be valid.');
 		isValid = false;
 	}
 
-	if(scheduleData.timeframe.endaftertype === "ENDDATETIME" 
+	if(scheduleData.timeframe.endtype === "ENDDATETIME" 
 	&& ( CFW.utils.isNullOrEmpty(scheduleData.timeframe.enddatetime)
 	   || scheduleData.timeframe.enddatetime < scheduleData.timeframe.startdatetime) 
 	){
@@ -649,13 +669,13 @@ function cfw_internal_confirmSchedule(elementID){
 		isValid = false;
 	}
 	
-	if(scheduleData.timeframe.endaftertype === "EXECUTION_COUNT" 
+	if(scheduleData.timeframe.endtype === "EXECUTION_COUNT" 
 	&& CFW.utils.isNullOrEmpty(scheduleData.timeframe.executioncount) ) {
 		CFW.ui.addToastDanger('Please specify the number of executions.')
 		isValid = false;
 	}
 
-	if( CFW.utils.isNullOrEmpty(scheduleData.timeframe.intervaltype) ){
+	if( CFW.utils.isNullOrEmpty(scheduleData.interval.intervaltype) ){
 		CFW.ui.addToastDanger('Please select and interval.');
 		isValid = false;
 	}
@@ -665,7 +685,9 @@ function cfw_internal_confirmSchedule(elementID){
 	console.log(scheduleData);
 	if(isValid){
 		originalField.val(JSON.stringify(scheduleData));
+		originalField.dropdown('toggle');
 	}
+	
 	
 }
 
