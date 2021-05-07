@@ -1,10 +1,9 @@
-FROM --platform=linux/amd64 openjdk:13
+FROM --platform=linux/amd64 openjdk:8
 
 ENV BASEDIR=/usr/src/cfw-server/
 ENV DATAMOUNT=/data
 
 VOLUME ${DATAMOUNT}
-
 
 WORKDIR ${BASEDIR} 
 COPY ./config ${BASEDIR}/config/
