@@ -598,7 +598,24 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-SUN" name="${fieldID}-EVERYXWEEKS-SUN" > <span>Sun</span>
 				</div>   
 			</div>
-
+			
+			<div class="row m-1">  
+				<div class="col-sm-12">
+					<input type="radio" id="${fieldID}-RADIO-INTERVAL" name="${fieldID}-RADIO-INTERVAL" value="CRON_EXPRESSION" > Cron Expression: <input id="${fieldID}-CRON_EXPRESSION" list="cron_samples" class="form-control-inline form-control-sm">
+					<datalist id="cron_samples">
+						<option value="42 * * ? * *">Every minute at the 42th second</option>
+						<option value="0 15,30,45 * ? * *">Every hour at minutes 15, 30 and 45 </option>
+						<option value="0 0 22 ? * MON-FRI">Every business day at 22 o'clock </option>
+						<option value="0 0,15,30,45 8-18 ? * MON-FRI">Every business day from 08:00 to 18:00 every 15 minutes  </option>
+						<option value="0 0 4 L-2 * ?">Every month on the second to last day of the month, at 04:00</option>
+						<option value="0 0 12 1L * ?">Every month on the last Sunday, at noon</option>
+						<option value="0 0 12 2L * ?">Every month on the last Monday, at noon</option>
+			<option value=""></option>
+			<option value=""></option>
+					</datalist>
+				</div>   
+			</div>
+			
 			<div class="row m-1">
 				<div class="col-sm-12">
 					<button class="btn btn-sm btn-primary" onclick="cfw_internal_confirmSchedule('${fieldID}');" type="button">
@@ -647,6 +664,9 @@ function cfw_internal_confirmSchedule(elementID){
 	scheduleData.interval.everyxweeks.fri  		= $(selector+"-EVERYXWEEKS-FRI").is(":checked");
 	scheduleData.interval.everyxweeks.sat  		= $(selector+"-EVERYXWEEKS-SAT").is(":checked");
 	scheduleData.interval.everyxweeks.sun  		= $(selector+"-EVERYXWEEKS-SUN").is(":checked");
+
+	scheduleData.interval.cronexpression  	= $(selector+"-CRON_EXPRESSION").val();
+	
 	//--------------------------------------
 	// Validate
 	var isValid = true;
@@ -687,8 +707,7 @@ function cfw_internal_confirmSchedule(elementID){
 		originalField.val(JSON.stringify(scheduleData));
 		originalField.dropdown('toggle');
 	}
-	
-	
+
 }
 
 /**************************************************************************************
