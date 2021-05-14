@@ -39,7 +39,7 @@ public abstract class JobTask implements Job {
 	/*************************************************************************
 	 * Implement the actions your task should execute.
 	 *************************************************************************/
-	public abstract boolean executeTask(JobExecutionContext context) throws JobExecutionException;
+	public abstract void executeTask(JobExecutionContext context) throws JobExecutionException;
 	
 	/*************************************************************************
 	 * Wrap original method to add logging.

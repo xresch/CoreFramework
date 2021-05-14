@@ -2,6 +2,7 @@ package com.xresch.cfw.features.analytics;
 
 import java.util.ArrayList;
 
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -40,8 +41,10 @@ public class JobTaskThreadDumps extends JobTask{
 	}
 
 	@Override
-	public void execute(JobExecutionContext context) throws JobExecutionException {
-		// TODO Auto-generated method stub
+	public void executeTask(JobExecutionContext context) throws JobExecutionException {
+
+		JobDataMap data = context.getMergedJobDataMap();
+		System.out.println("someProp = " + data.getString("someProp"));
 	}
 
 
