@@ -16,7 +16,7 @@ import com.xresch.cfw.validation.LengthValidator;
  * 
  * @author Reto Scheiwiller
  **************************************************************************************************************/
-public class Job extends CFWObject {
+public class CFWJob extends CFWObject {
 	
 	public static String TABLE_NAME = "CFW_JOB";
 	
@@ -75,7 +75,7 @@ public class Job extends CFWObject {
 	private CFWField<LinkedHashMap<String, String>> properties =  CFWField.newValueLabel(JobFields.JSON_PROPERTIES)
 					.setDescription("The Properties of the job.");
 	
-	public Job() {
+	public CFWJob() {
 		initializeFields();
 	}
 	
@@ -146,7 +146,7 @@ public class Job extends CFWObject {
 		return id.getValue();
 	}
 	
-	public Job id(Integer id) {
+	public CFWJob id(Integer id) {
 		this.id.setValue(id);
 		return this;
 	}
@@ -155,7 +155,7 @@ public class Job extends CFWObject {
 		return foreignKeyOwner.getValue();
 	}
 	
-	public Job foreignKeyOwner(Integer foreignKeyUser) {
+	public CFWJob foreignKeyOwner(Integer foreignKeyUser) {
 		this.foreignKeyOwner.setValue(foreignKeyUser);
 		return this;
 	}
@@ -165,16 +165,16 @@ public class Job extends CFWObject {
 		return name.getValue();
 	}
 	
-	public Job name(String value) {
+	public CFWJob name(String value) {
 		this.name.setValue(value);
 		return this;
 	}
 	
-	public String description() {
+	public String executorDescription() {
 		return description.getValue();
 	}
 
-	public Job description(String description) {
+	public CFWJob description(String description) {
 		this.description.setValue(description);
 		return this;
 	}
@@ -183,7 +183,7 @@ public class Job extends CFWObject {
 		return jobExecutorClassname.getValue();
 	}
 	
-	public Job jobExecutorClassname(Class<JobExecutor> value) {
+	public CFWJob jobExecutorClassname(Class<JobTask> value) {
 		this.jobExecutorClassname.setValue(value.getName());
 		return this;
 	}
@@ -192,7 +192,7 @@ public class Job extends CFWObject {
 		return properties.getValue();
 	}
 	
-	public Job properties(LinkedHashMap<String, String> value) {
+	public CFWJob properties(LinkedHashMap<String, String> value) {
 		this.properties.setValue(value);
 		return this;
 	}
