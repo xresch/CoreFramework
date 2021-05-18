@@ -32,8 +32,14 @@ public class CFWSecurity {
 			.allowAttributes("href").onElements("a").allowAttributes("size").onElements("font")
 			.allowAttributes("class", "style").globally().toFactory();
 
-	private static final String[][] htmlEscapes = new String[][] { { "&", "&amp;" }, { "<", "&lt;" }, { ">", "&gt;" },
-			{ "\"", "&quot;" }, { "\'", "&#x27;" }, { "/", "&#x2F;" } };
+	private static final String[][] htmlEscapes = new String[][] { 
+		{ "&", "&amp;" }, 
+		{ "<", "&lt;" }, 
+		{ ">", "&gt;" },
+		{ "\"", "&quot;" }, 
+		{ "\'", "&#x27;" }, 
+		// { "/", "&#x2F;" }, allow forward slashes for URLs
+		};
 
 	/******************************************************************************
 	 * Creates a salted SHA512 password hash and returns a string of 127 or less

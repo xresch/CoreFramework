@@ -92,11 +92,14 @@ DONE
 - Changed Widget Permissions: Instead of viewing, now create/edit will be allowed/dissallowed
 - Logging: Added interceptor for sysout and syserr stream to not miss information in logs
 - DB Analytics: Added Connection Pool Statistics
+- DB Pools Registry: Override by default if pool already exists
 - Docker: Added dockerfile for containerization
 - Docker: Docker Image now keeps persistent data under "/data"
 - H2 Fulltext Search: Columns can now be defined.
 - CFWField: Added FormFieldType.LANGUAGE
 - Renderer - XML: Added XML Renderer to javascript renderers
+- CFWSecurity: Allow Forward slashes, makes URLs work without the need to set CFWField.allowHTML(true)
+- CFWHttp: Added Request Details log (level FINER)
 
 ------- v3.0.0 -------
 - Roles: Reload user roles when changed, no re-login required anymore(adding Permissions to role still requires relogin)

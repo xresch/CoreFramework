@@ -755,11 +755,18 @@ public class DBInterface {
 	 * @throws SQLException 
 	 ********************************************************************************************/
 	public static void registerManagedConnectionPool(String uniqueName, BasicDataSource datasource) {	
+		
 		if(!managedConnectionPools.containsKey(uniqueName)) {
-			managedConnectionPools.put(uniqueName, datasource);	
+			managedConnectionPools.put(uniqueName, datasource);
 		}else {
-			new CFWLog(logger).warn("A connection pool with the name '"+uniqueName+"' was already registered. Please choose another name.", new Exception());
+			removeManagedConnectionPool(uniqueName);
+			managedConnectionPools.put(uniqueName, datasource);
+			
+			new CFWLog(logger).silent(true).info("A connection pool with the name '"+uniqueName+"' was already registered and was updated.");
 		}
+		
+			
+		
 	}
 	
 	/********************************************************************************************
@@ -768,7 +775,12 @@ public class DBInterface {
 	 * @throws SQLException 
 	 ********************************************************************************************/
 	public static void removeManagedConnectionPool(String uniqueName) {	
-		managedConnectionPools.remove(uniqueName);	
+		BasicDataSource removedPool = managedConnectionPools.remove(uniqueName);	
+		try {
+			removedPool.close();
+		} catch (SQLException e) {
+			new CFWLog(logger).silent(true).severe("Error closing connection pool: "+e.getMessage(), e);
+		}
 	}
 	
 	/********************************************************************************************

@@ -21,12 +21,14 @@ import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -347,6 +349,25 @@ public class CFWHttp {
 	}
 	
 	/******************************************************************************************************
+	 * Log details about get and post request
+	 ******************************************************************************************************/
+	private static void logFinerRequestInfo(String method, String url, HashMap<String, String> params, HashMap<String, String> headers) {
+		if(logger.isLoggable(Level.FINER)) {
+			
+			String paramsString = (params == null) ? "null" : Joiner.on(",").withKeyValueSeparator("=").join(params);
+			String headersString = (headers == null) ? "null" : Joiner.on(",").withKeyValueSeparator("=").join(headers);
+			
+			new CFWLog(logger)
+				.custom("CFWHttp-method", method)
+				.custom("CFWHttp-url", url)
+				.custom("CFWHttp-params", paramsString)
+				.custom("CFWHttp-headers", headersString)
+				.finer("CFWHTTP Request Details");;
+
+		}
+	}
+	
+	/******************************************************************************************************
 	 * Send a HTTP GET request and returns the result or null in case of error.
 	 * @param url used for the request.
 	 * @param params the parameters which should be added to the request or null
@@ -365,7 +386,9 @@ public class CFWHttp {
 	 * @return CFWHttpResponse response or null
 	 ******************************************************************************************************/
 	public static CFWHttpResponse sendGETRequest(String url, HashMap<String, String> params, HashMap<String, String> headers) {
-				
+		
+		CFWHttp.logFinerRequestInfo("GET", url, params, headers);
+		
 		try {
 			//-----------------------------------
 			// Handle params
@@ -391,6 +414,7 @@ public class CFWHttp {
 					outgoingHTTPCallsCounter.labels("GET").inc();
 					return instance.new CFWHttpResponse(connection);
 				}
+				
 			}
 	    
 		} catch (Exception e) {
@@ -411,7 +435,9 @@ public class CFWHttp {
 	 * @return String response
 	 ******************************************************************************************************/
 	public static CFWHttpResponse sendPOSTRequest(String url, HashMap<String, String> params, HashMap<String, String> headers) {
-				
+		
+		CFWHttp.logFinerRequestInfo("POST", url, params, headers);	
+		
 		try {
 			//-----------------------------------
 			// Handle params
@@ -467,6 +493,7 @@ public class CFWHttp {
 	 * @return String response
 	 ******************************************************************************************************/
 	public static CFWHttpResponse sendPOSTRequest(String url, String contentType, String body) {
+		
 		
 		try {
 			HttpURLConnection connection = createProxiedURLConnection(url);

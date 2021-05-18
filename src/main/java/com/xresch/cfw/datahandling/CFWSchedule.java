@@ -17,7 +17,7 @@ public class CFWSchedule {
 			+"'timeframe': { 'startdatetime': null, 'endtype': null, 'enddatetime': null, 'executioncount': '0' },"
 			+"'interval': { 'intervaltype': null, 'everyxdays': '0', "
 			+"   'everyxweeks': { 'weekcount': '0', 'mon': false, 'tue': false,'wed': false, 'thu': false, 'fri': false, 'sat': false, 'sun': false } },"
-			+"   'cron_expression': null"
+			+"   'cronexpression': null"
 			+"}"
 			.replace("'", "\"");
 	
