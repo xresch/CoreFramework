@@ -340,7 +340,7 @@ public class CFWHttp {
 	/******************************************************************************************************
 	 * Send a HTTP GET request and returns the result or null in case of error.
 	 * @param url used for the request.
-	 * @return String response
+	 * @return CFWHttpResponse response or null
 	 ******************************************************************************************************/
 	public static CFWHttpResponse sendGETRequest(String url) {
 		return sendGETRequest(url, null, null);
@@ -350,7 +350,7 @@ public class CFWHttp {
 	 * Send a HTTP GET request and returns the result or null in case of error.
 	 * @param url used for the request.
 	 * @param params the parameters which should be added to the request or null
-	 * @return String response
+	 * @return CFWHttpResponse response or null
 	 ******************************************************************************************************/
 	public static CFWHttpResponse sendGETRequest(String url, HashMap<String, String> params) {
 		return sendGETRequest(url, params, null);	    	
@@ -362,7 +362,7 @@ public class CFWHttp {
 	 * @param url used for the request.
 	 * @param params the parameters which should be added to the request or null
 	 * @param headers the HTTP headers for the request or null
-	 * @return String response
+	 * @return CFWHttpResponse response or null
 	 ******************************************************************************************************/
 	public static CFWHttpResponse sendGETRequest(String url, HashMap<String, String> params, HashMap<String, String> headers) {
 				
