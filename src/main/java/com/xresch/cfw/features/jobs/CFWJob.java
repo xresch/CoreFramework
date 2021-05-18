@@ -57,6 +57,11 @@ public class CFWJob extends CFWObject {
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 	
+	private CFWField<String> jobExecutorClassname = CFWField.newString(FormFieldType.NONE, JobFields.JOB_EXECUTOR_CLASS)
+			.setColumnDefinition("VARCHAR(1024)")
+			.setDescription("The class that will be executed.")
+			.addValidator(new LengthValidator(3, 1024));
+	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, JobFields.NAME)
 			.setColumnDefinition("VARCHAR(255)")
 			.setDescription("The name of the job.")
@@ -67,13 +72,13 @@ public class CFWJob extends CFWObject {
 			.setDescription("The description of the job.")
 			.addValidator(new LengthValidator(-1, 100000));
 	
-	private CFWField<String> jobExecutorClassname = CFWField.newString(FormFieldType.NONE, JobFields.JOB_EXECUTOR_CLASS)
-			.setColumnDefinition("VARCHAR(1024)")
-			.setDescription("The class that will be executed.")
-			.addValidator(new LengthValidator(3, 1024));
-	
 	private CFWField<LinkedHashMap<String, String>> properties =  CFWField.newValueLabel(JobFields.JSON_PROPERTIES)
-					.setDescription("The Properties of the job.");
+			.setDescription("The Properties of the job.");
+	
+	private CFWField<String> schedule = 
+			CFWField.newSchedule("JSON_SCHEDULE")
+			.setLabel("Schedule")
+			.setValue(null);
 	
 	public CFWJob() {
 		initializeFields();
@@ -87,9 +92,10 @@ public class CFWJob extends CFWObject {
 		
 		this.addFields(id, 
 				foreignKeyOwner,
+				jobExecutorClassname,
 				name, 
 				description,
-				jobExecutorClassname,
+				schedule,
 				properties
 				);
 	}
@@ -159,7 +165,6 @@ public class CFWJob extends CFWObject {
 		this.foreignKeyOwner.setValue(foreignKeyUser);
 		return this;
 	}
-	
 	
 	public String name() {
 		return name.getValue();
