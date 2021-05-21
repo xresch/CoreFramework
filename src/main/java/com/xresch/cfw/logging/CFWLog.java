@@ -150,8 +150,9 @@ public class CFWLog {
 		
 		//-------------------------------------------
 		// Add Interceptors
-	    new SysoutInterceptor(SysoutType.SYSOUT, System.out);
-	    new SysoutInterceptor(SysoutType.SYSERR, System.err);
+		// Causes Deadlock, to be investigated
+	    //new SysoutInterceptor(SysoutType.SYSOUT, System.out);
+	    //new SysoutInterceptor(SysoutType.SYSERR, System.err);
 
 		//-------------------------------------------
 		// Set Properties Path

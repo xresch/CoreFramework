@@ -649,10 +649,10 @@ public class DBInterface {
 	/************************************************************************
 	 * 
 	 ************************************************************************/
-	public static DBInterface createDBInterfaceMSSQL(String servername, int port, String dbName, String username, String password) {
+	public static DBInterface createDBInterfaceMSSQL(String uniqueNamePrefix, String servername, int port, String dbName, String username, String password) {
 		
 		String urlPart = servername+":"+port+";databaseName="+dbName;
-		String uniqueName = "MSSQL:"+urlPart;
+		String uniqueName = uniqueNamePrefix+":MSSQL:"+urlPart;
 		String connectionURL = "jdbc:sqlserver://"+urlPart;
 		String driverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 		
@@ -669,7 +669,7 @@ public class DBInterface {
 	/************************************************************************
 	 * 
 	 ************************************************************************/
-	public static DBInterface createDBInterfaceOracle(String servername, int port, String name, String type, String username, String password) {
+	public static DBInterface createDBInterfaceOracle(String uniqueNamePrefix, String servername, int port, String name, String type, String username, String password) {
 		
 		String urlPart = "";
 		if(type.trim().equals("SID")) {
@@ -680,7 +680,7 @@ public class DBInterface {
 			urlPart = servername+":"+port+"/"+name;
 		}
 
-		String uniqueName = "Oracle:"+urlPart;
+		String uniqueName = uniqueNamePrefix+":Oracle:"+urlPart;
 		String connectionURL = "jdbc:oracle:thin:@"+urlPart;
 		String driverClass = "oracle.jdbc.OracleDriver";
 		
@@ -699,7 +699,7 @@ public class DBInterface {
 	/************************************************************************
 	 * 
 	 ************************************************************************/
-	public static DBInterface createDBInterface(String uniqepoolName, String driverName, String url, String username, String password) {
+	public static DBInterface createDBInterface(String uniquepoolName, String driverName, String url, String username, String password) {
 		
 		BasicDataSource datasourceSource;
 		
@@ -722,7 +722,7 @@ public class DBInterface {
 			Connection connection = datasourceSource.getConnection();
 			connection.close();
 			
-			DBInterface.registerManagedConnectionPool(uniqepoolName, datasourceSource);
+			DBInterface.registerManagedConnectionPool(uniquepoolName, datasourceSource);
 			
 		} catch (Exception e) {
 			new CFWLog(logger)
@@ -730,7 +730,7 @@ public class DBInterface {
 			return null;
 		}
 		
-		DBInterface db = new DBInterface(uniqepoolName, datasourceSource);
+		DBInterface db = new DBInterface(uniquepoolName, datasourceSource);
 
 		new CFWLog(logger).info("Created DBInteface: "+ url);
 		return db;
@@ -776,11 +776,12 @@ public class DBInterface {
 	 ********************************************************************************************/
 	public static void removeManagedConnectionPool(String uniqueName) {	
 		BasicDataSource removedPool = managedConnectionPools.remove(uniqueName);	
-		try {
-			removedPool.close();
-		} catch (SQLException e) {
-			new CFWLog(logger).silent(true).severe("Error closing connection pool: "+e.getMessage(), e);
-		}
+		// issue with AWA, to be investigated.
+//		try {
+//			removedPool.close();
+//		} catch (SQLException e) {
+//			new CFWLog(logger).silent(true).severe("Error closing connection pool: "+e.getMessage(), e);
+//		}
 	}
 	
 	/********************************************************************************************

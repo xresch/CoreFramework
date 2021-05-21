@@ -87,6 +87,8 @@ TODO
 DONE
 ====
 ------- Current -------
+
+------- v3.0.1 -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI
 - Added Key Value Pairs: CFWObject to easily store key/value pairs in the database
 - Changed Widget Permissions: Instead of viewing, now create/edit will be allowed/dissallowed

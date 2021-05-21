@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.core.auth;
 
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -12,7 +13,7 @@ import javax.naming.directory.SearchControls;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.features.usermgmt.User.UserFields;
+import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * 
@@ -21,6 +22,8 @@ import com.xresch.cfw.features.usermgmt.User.UserFields;
  **************************************************************************************************************/
 public class LDAPLoginProvider implements LoginProviderInterface {
 
+	private static Logger logger = CFWLog.getLogger(LDAPLoginProvider.class.getName());
+	
 	@Override
 	public User checkCredentials(String username, String password) {
 
@@ -130,7 +133,7 @@ public class LDAPLoginProvider implements LoginProviderInterface {
 		    }
 	
 		}catch (Exception e) {
-	        e.printStackTrace();
+			new CFWLog(logger).silent(true).warn("Logging attempt failed:"+username, e);
 	        return null;
 	    }
 	    

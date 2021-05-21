@@ -35,7 +35,7 @@ public class SysoutInterceptor extends PrintStream {
 			.custom("sysout", "true")
 			.severe(s, new Exception());
     	}
-    	//propagatte to original stream
+    	//propagate to original stream
         super.print(s);
     }
 }

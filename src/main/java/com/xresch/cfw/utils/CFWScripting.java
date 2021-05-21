@@ -34,7 +34,7 @@ public class CFWScripting {
 			List<String> engNames = factory.getNames();
 			for (String name : engNames)
 			{
-			    System.out.printf("\tEngine Alias: %s\n", name);
+			   System.out.printf("\tEngine Alias: %s\n", name);
 			}
 			System.out.printf("\tLanguage: %s (%s)\n", langName, langVersion);
 	    }
