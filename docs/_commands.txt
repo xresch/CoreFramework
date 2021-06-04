@@ -5,7 +5,8 @@
 # Build image
 #-------------------------------
 mvn clean install
-docker build -t xresch/cfw-server .
+docker build -t xresch/cfw-server:latest .
+docker build -t xresch/cfw-server:latest -t xresch/cfw-server:3.0.1 .
 
 #########################################################
 # GIT 

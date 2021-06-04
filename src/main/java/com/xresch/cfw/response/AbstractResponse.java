@@ -46,6 +46,10 @@ public abstract class AbstractResponse {
 		this.useGlobaleLocale = useGlobalLocale;
 	}
 	
+	public StringBuilder append(String string) {
+		content.append(string);
+		return content;
+	}
 	
 	
 }
