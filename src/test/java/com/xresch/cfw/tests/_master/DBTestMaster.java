@@ -11,7 +11,7 @@ public class DBTestMaster extends WebTestMaster {
 	@BeforeAll
 	public static void startTransaction() throws Exception {
 		// Make sure it is started, should be done by superclass.
-		CFW.DB.startDBServer();
+		CFW.DB.initializeDB();
 		CFWDB.beginTransaction();
 	}
 	

@@ -70,6 +70,10 @@ public class CFW {
 	
 	private static boolean isConfigFolderPrepared = false;
 	
+	public static String MODE_FULL = "FULL";
+	public static String MODE_APP = "APP";
+	public static String MODE_DB = "DB";
+	
 	private CFW() {
 		// hide constructor
 	}
@@ -277,6 +281,8 @@ public class CFW {
 	    // Initialize Core
 		CFW.initializeCore(args);
 		
+		String mode = CFW.Properties.MODE;
+		
 	    //--------------------------------
 	    // Handle Shutdown request.
 	    if (CFW.CLI.isArgumentLoaded(CLI.STOP)) {
@@ -287,14 +293,16 @@ public class CFW {
 	    }
 		
 		//---------------------------
-		// Start Database 
-		CFW.DB.startDBServer(); 
+		// Initialize Database Server and/or Connection
+		CFW.DB.initializeDB(); 
 		
 		//needed here for Feature management
-		new KeyValuePair().createTable();
+		if(mode.contains(MODE_FULL) || mode.contains(MODE_DB) ) {
+			new KeyValuePair().createTable();
+		}
 		
 	    //--------------------------------
-	    // Register Components
+	    // Load Application settings
 	    appToStart.settings();
 	    
 	    //--------------------------------
@@ -302,15 +310,13 @@ public class CFW {
 	    doRegister(appToStart);
 	    
 	    ArrayList<CFWAppFeature> features = CFW.Registry.Features.getFeatureInstances();
+	    ArrayList<CFWObject> objectArray = CFW.Registry.Objects.getCFWObjectInstances();
 	    
 	    //--------------------------------
 	    // Start Database 	
-		ArrayList<CFWObject> objectArray = CFW.Registry.Objects.getCFWObjectInstances();
-    	initializeDatabase(appToStart, features, objectArray);
-		
-		//---------------------------
-		// Load API Definitions
-		loadAPIDefinitions(objectArray);
+		if(mode.contains(MODE_FULL) || mode.contains(MODE_DB) ) {
+			initializeDatabase(appToStart, features, objectArray);
+		}
 		
 		//---------------------------
 		// Load Hierarchy definitions
@@ -320,28 +326,36 @@ public class CFW {
 			}
 		}
 		
-
+		//---------------------------
+		// Load API Definitions
+		if(mode.contains(MODE_FULL) || mode.contains(MODE_APP) ) {
+			loadAPIDefinitions(objectArray);
+		}
+		
+	    //--------------------------------
+	    // Start Application
+    	if(mode.contains(MODE_FULL) || mode.contains(MODE_APP) ) {
+			CFWApplicationExecutor executor = new CFWApplicationExecutor(appToStart);
+			
+			for(CFWAppFeature feature : features) {
+				feature.addFeature(executor);
+			}
+			
+			appToStart.startApp(executor);
+			
+			
+			try {
+				executor.start();
+			} catch (Exception e) {
+				new CFWLog(logger)
+					.severe("Exception occured during application startup.", e);
+			}
+				    	
+    	}
+    	
 	    //--------------------------------
 	    // Start Scheduled Tasks
     	initializeScheduledTasks(appToStart, features);
-    	
-	    //--------------------------------
-	    // Start Application
-		CFWApplicationExecutor executor = new CFWApplicationExecutor(appToStart);
-		
-		for(CFWAppFeature feature : features) {
-			feature.addFeature(executor);
-		}
-		
-		appToStart.startApp(executor);
-		
-		
-		try {
-			executor.start();
-		} catch (Exception e) {
-			new CFWLog(logger)
-				.severe("Exception occured during application startup.", e);
-		}
 	}
 	
 	/***********************************************************************

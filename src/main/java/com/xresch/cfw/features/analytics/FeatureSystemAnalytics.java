@@ -166,23 +166,24 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 
 	@Override
 	public void startTasks() {
-
-		
-		//--------------------------------
-		// Setup CPU Sampling Task
-		if(cpuSamplingTask != null) {
-			cpuSamplingTask.cancel(false);
+		String mode = CFW.Properties.MODE;
+		if(mode.equals(CFW.MODE_FULL) || mode.equals(CFW.MODE_APP)) {
+			//--------------------------------
+			// Setup CPU Sampling Task
+			if(cpuSamplingTask != null) {
+				cpuSamplingTask.cancel(false);
+			}
+			int millis = (int)(1000 * CFW.DB.Config.getConfigAsFloat(FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS));
+			cpuSamplingTask = CFW.Schedule.runPeriodicallyMillis(0, millis, new TaskCPUSampling());
+			
+			//--------------------------------
+			// Setup CPU Sampling AgeOut Task
+			if(cpuSamplingAgeOutTask != null) {
+				cpuSamplingAgeOutTask.cancel(false);
+			}
+			
+			cpuSamplingAgeOutTask = CFW.Schedule.runPeriodically(0, 3000, new TaskCPUSamplingAgeOut());
 		}
-		int millis = (int)(1000 * CFW.DB.Config.getConfigAsFloat(FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS));
-		cpuSamplingTask = CFW.Schedule.runPeriodicallyMillis(0, millis, new TaskCPUSampling());
-		
-		//--------------------------------
-		// Setup CPU Sampling AgeOut Task
-		if(cpuSamplingAgeOutTask != null) {
-			cpuSamplingAgeOutTask.cancel(false);
-		}
-		
-		cpuSamplingAgeOutTask = CFW.Schedule.runPeriodically(0, 3000, new TaskCPUSamplingAgeOut());
 	}
 
 	@Override

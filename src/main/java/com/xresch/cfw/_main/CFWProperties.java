@@ -34,6 +34,12 @@ public class CFWProperties {
 	public static boolean RESET_ADMIN_PW = false;
 	
 	//##########################################################################################
+	// SERVER
+	//##########################################################################################
+	/** The mode in which the application should start(FULL, APP, DB). (Property=cfw_mode, "FULL") */
+	public static String MODE = "FULL";
+	
+	//##########################################################################################
 	// HTTP
 	//##########################################################################################
 	/** Enables or disables the HTTP connector. (Property=cfw_http_enabled, Default=true) */
@@ -196,7 +202,9 @@ public class CFWProperties {
 		APPLICATION_NAME				= CFWProperties.configAsString("cfw_application_name", APPLICATION_NAME);
 		APPLICATION_MAX_UPLOADSIZE		= CFWProperties.configAsInt("cfw_application_max_uploadsize", APPLICATION_MAX_UPLOADSIZE);
 		RESET_ADMIN_PW 					= CFWProperties.configAsBoolean("cfw_reset_admin_pw", RESET_ADMIN_PW);
-			
+		
+		MODE							= CFWProperties.configAsString("cfw_mode", MODE);
+		
 		HTTP_ENABLED 					= CFWProperties.configAsBoolean("cfw_http_enabled", HTTP_ENABLED);
 		HTTP_CONNECTOR_HOST				= CFWProperties.configAsString("cfw_http_connector_host", HTTP_CONNECTOR_HOST);
 		HTTP_PORT 						= CFWProperties.configAsInt("cfw_http_port", HTTP_PORT);

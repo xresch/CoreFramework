@@ -41,7 +41,7 @@ public class CFWDB {
 	/********************************************************************************************
 	 *
 	 ********************************************************************************************/
-	public static void startDBServer() {
+	public static void initializeDB() {
 		
 		if(isInitialized) {
 			new CFWLog(logger)
@@ -50,39 +50,46 @@ public class CFWDB {
 		}
     	//---------------------------------------
     	// Get variables
-		String server 		= CFWProperties.DB_SERVER;
-		String storePath 	= CFWProperties.DB_STORE_PATH;
-		String databaseName	= CFWProperties.DB_NAME;
-		int port 			= CFWProperties.DB_PORT;
-		String username		= CFWProperties.DB_USERNAME;
-		String password		= CFWProperties.DB_PASSWORD;
+		String mode 			= CFW.Properties.MODE;
+		boolean doStartDBServer = mode.contains(CFW.MODE_FULL) || mode.contains(CFW.MODE_DB);
+		String server 			= CFWProperties.DB_SERVER;
+		String storePath 		= CFWProperties.DB_STORE_PATH;
+		String databaseName		= CFWProperties.DB_NAME;
+		int port 				= CFWProperties.DB_PORT;
+		String username			= CFWProperties.DB_USERNAME;
+		String password			= CFWProperties.DB_PASSWORD;
 		
-		//---------------------------------------
-    	// Create Folder  
-		File datastoreFolder = new File(storePath);
-    	if(!datastoreFolder.isDirectory()) {
-    		datastoreFolder.mkdir();
-    	}
+		if(doStartDBServer) {
+			//---------------------------------------
+	    	// Create Folder  
+
+			File datastoreFolder = new File(storePath);
+	    	if(!datastoreFolder.isDirectory()) {
+	    		datastoreFolder.mkdir();
+	    	}
+		
     	
-    	//---------------------------------------
-    	// Create Folder 
-		File datastoreFile = new File(storePath+"/"+databaseName+".mv.db");
-    	if(!datastoreFile.isFile()) {
-    		try {
-				if(!datastoreFile.createNewFile()) {
+	    	//---------------------------------------
+	    	// Create File
+			File datastoreFile = new File(storePath+"/"+databaseName+".mv.db");
+	    	if(!datastoreFile.isFile()) {
+	    		try {
+					if(!datastoreFile.createNewFile()) {
+						new CFWLog(logger)
+							.severe("Error creating database file.");
+					}
+				} catch (IOException e) {
 					new CFWLog(logger)
-						.severe("Error creating database file.");
+					.severe("Error creating database file.", e);
+					
 				}
-			} catch (IOException e) {
-				new CFWLog(logger)
-				.severe("Error creating database file.", e);
-				
-			}
-    	}
-    			
+	    	}
+		}
+		
 		try {
-			
-			CFWDB.server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "" +port).start();
+			if(doStartDBServer) {
+				CFWDB.server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "" +port).start();
+			}
 			
 			db = DBInterface.createDBInterfaceH2(server, port, storePath, databaseName, username, password);
 
@@ -104,7 +111,9 @@ public class CFWDB {
 	 *
 	 ********************************************************************************************/
 	public static void stopDBServer() {
-		server.stop();
+		if(server != null && server.isRunning(false)) {
+			server.stop();
+		}
 	}
 	
 	

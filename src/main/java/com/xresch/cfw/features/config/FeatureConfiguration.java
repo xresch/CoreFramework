@@ -10,7 +10,7 @@ import com.xresch.cfw.response.bootstrap.MenuItem;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2021 
  * @license MIT-License
  **************************************************************************************************************/
 public class FeatureConfiguration extends CFWAppFeature {
@@ -167,10 +167,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 				.options(new String[]{"0.05", "0.1", "0.2","0.5", "1", "5", "10", "30", "60"})
 				.value("10")
 		);
-		
-		
-		
-		
+				
 		//-----------------------------------------
 		// 
 		//-----------------------------------------
@@ -222,13 +219,12 @@ public class FeatureConfiguration extends CFWAppFeature {
 				.value("./backup")
 		);
 		
-		
-		CFW.DB.Config.updateCache();
-		
 	}
 
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
+		CFW.DB.Config.updateCache();
+		
 		app.addAppServlet(ServletConfiguration.class,  "/configuration");
 	}
 
