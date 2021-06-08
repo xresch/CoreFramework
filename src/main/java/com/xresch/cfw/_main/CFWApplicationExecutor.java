@@ -76,15 +76,14 @@ public class CFWApplicationExecutor {
 	public CFWApplicationExecutor(CFWAppInterface application) throws Exception {  
 		this.application = application;
 		
-		sessionHandler = CFWApplicationExecutor.createSessionHandler("/");
-		
+
     	//---------------------------------------
     	// Create Server 
         server = CFWApplicationExecutor.createServer();
         applicationContext = new WebAppContext();
         applicationContext.setContextPath("/");
         applicationContext.setServer(server);
-        applicationContext.setSessionHandler(sessionHandler);
+        
         applicationContext.setErrorHandler(CFWApplicationExecutor.createErrorHandler());
 
     	//---------------------------------------
@@ -381,6 +380,13 @@ public class CFWApplicationExecutor {
 		if(isStarted) {
 			return;
 		}
+		
+        //###################################################################
+        // Create Session Handler
+        //###################################################################
+		sessionHandler = CFWApplicationExecutor.createSessionHandler("/");
+		applicationContext.setSessionHandler(sessionHandler);
+		
         //###################################################################
         // Create Handler chain
         //###################################################################

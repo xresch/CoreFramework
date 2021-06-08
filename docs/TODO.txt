@@ -87,6 +87,7 @@ TODO
 DONE
 ====
 ------- Current -------
+- Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB
 
 ------- v3.0.1 -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI
