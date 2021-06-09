@@ -14,7 +14,10 @@ COPY ./scripts/docker_stop.sh ./stop.sh
 COPY ./target/lib ${BASEDIR}/lib/
 COPY ./target/cfw-?.?.?.jar ${BASEDIR}/lib/
 
+#HTTP
 EXPOSE 8888
+#JDBC Database
+EXPOSE 8889
 
 # Change Config File path to /data/mount
 RUN sed -i 's/.\/config/\/data\/config/g' ${BASEDIR}/config/cfw.properties
