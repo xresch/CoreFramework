@@ -7,7 +7,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class CFWSchedule {
+public class CFWTaskScheduler {
 
 	 private  static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 	 

@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.usermgmt.User;
@@ -75,7 +76,7 @@ public class CFWJob extends CFWObject {
 	private CFWField<LinkedHashMap<String, String>> properties =  CFWField.newValueLabel(JobFields.JSON_PROPERTIES)
 			.setDescription("The Properties of the job.");
 	
-	private CFWField<String> schedule = 
+	private CFWField<CFWSchedule> schedule = 
 			CFWField.newSchedule("JSON_SCHEDULE")
 			.setLabel("Schedule")
 			.setValue(null);

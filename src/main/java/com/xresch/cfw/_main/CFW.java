@@ -49,7 +49,7 @@ import com.xresch.cfw.features.usermgmt.CFWDBUserRoleMap;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.mail.CFWMail;
-import com.xresch.cfw.schedule.CFWSchedule;
+import com.xresch.cfw.schedule.CFWTaskScheduler;
 import com.xresch.cfw.utils.CFWDump;
 import com.xresch.cfw.utils.CFWFiles;
 import com.xresch.cfw.utils.CFWHttp;
@@ -127,7 +127,7 @@ public class CFW {
 		public static class Parameters extends CFWRegistryDashboardParameters {} 
 		public static class Widgets extends CFWRegistryWidgets {} 
 	}
-	public static class Schedule extends CFWSchedule {}
+	public static class Schedule extends CFWTaskScheduler {}
 	public static class Scripting extends CFWScripting {}
 	public static class Security extends CFWSecurity {}
 	public static class Time extends CFWTime {}

@@ -277,16 +277,16 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	//===========================================
 	// VALUE LABEL
 	//===========================================
-	public static CFWField<String> newSchedule(Enum<?> fieldName){
+	public static CFWField<CFWSchedule> newSchedule(Enum<?> fieldName){
 		return newSchedule(fieldName.toString());
 	}
-	public static CFWField<String> newSchedule(String fieldName){
+	public static CFWField<CFWSchedule> newSchedule(String fieldName){
 		if(!fieldName.startsWith("JSON_")) {
 			new CFWLog(logger)
 				.severe("Fieldname of SCHEDULE fields have to start with 'JSON_'.", new InstantiationException());
 			return null;
 		}
-		return new CFWField<String> (String.class, FormFieldType.SCHEDULE, fieldName)
+		return new CFWField<CFWSchedule> (String.class, FormFieldType.SCHEDULE, fieldName)
 				.setColumnDefinition("VARCHAR");
 	}
 	
@@ -1449,6 +1449,10 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				}
 				return this.changeValue(map); 
 			}
+			else if(valueClass == CFWSchedule.class){ 
+				CFWSchedule schedule = new CFWSchedule((String)value);
+				return this.changeValue(schedule); 
+			}
 			
 			else {
 				new CFWLog(logger)
@@ -1700,6 +1704,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					else if( Boolean.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getBoolean(colName)); }
 					else if( Timestamp.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getTimestamp(colName)); }
 					else if( Date.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getDate(colName)); }
+					else if( CFWSchedule.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName)); }
 					else if( Object[].class.isAssignableFrom(current.getValueClass()))  { 
 						Array array = result.getArray(colName);
 						if(array != null) {

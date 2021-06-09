@@ -580,6 +580,13 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 			</div>
 			
 			<div class="row m-1"><strong>Interval</strong></div>
+			
+			<div class="row m-1">  
+				<div class="col-sm-12">
+					<input type="radio" id="${fieldID}-RADIO-INTERVAL" name="${fieldID}-RADIO-INTERVAL" value="EVERY_X_MINUTES" > Every <input id="${fieldID}-EVERYXMINUTES" type="number" class="form-control-inline form-control-sm" style="width: 60px;" min="0"> <span>minute(s)</span>
+				</div>   
+			</div>
+			
 			<div class="row m-1">  
 				<div class="col-sm-12">
 					<input type="radio" id="${fieldID}-RADIO-INTERVAL" name="${fieldID}-RADIO-INTERVAL" value="EVERY_X_DAYS" > Every <input id="${fieldID}-EVERYXDAYS" type="number" class="form-control-inline form-control-sm" style="width: 60px;" min="0"> <span>day(s)</span>
@@ -588,14 +595,14 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 			
 			<div class="row m-1">  
 				<div class="col-sm-12">
-					<input type="radio" id="${fieldID}-RADIO-INTERVAL" name="${fieldID}-RADIO-INTERVAL" value="EVERY_X_WEEKS" > Every <input id="${fieldID}-EVERYXWEEKS" type="number" class="form-control-inline form-control-sm" style="width: 60px;"  min="0"> <span>week(s) on</span>
-					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-MON" name="${fieldID}-EVERYXWEEKS-MON" > <span>Mon</span>
-					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-TUE" name="${fieldID}-EVERYXWEEKS-TUE" > <span>Tue</span>
-					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-WED" name="${fieldID}-EVERYXWEEKS-WED" > <span>Wed</span>
-					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-THU" name="${fieldID}-EVERYXWEEKS-THU" > <span>Thu</span>
-					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-FRI" name="${fieldID}-EVERYXWEEKS-FRI" > <span>Fri</span>
-					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-SAT" name="${fieldID}-EVERYXWEEKS-SAT" > <span>Sat</span>
-					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYXWEEKS-SUN" name="${fieldID}-EVERYXWEEKS-SUN" > <span>Sun</span>
+					<input type="radio" id="${fieldID}-RADIO-INTERVAL" name="${fieldID}-RADIO-INTERVAL" value="EVERY_WEEK" > Every week on 
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYWEEK-MON" name="${fieldID}-EVERYWEEK-MON" > <span>Mon</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYWEEK-TUE" name="${fieldID}-EVERYWEEK-TUE" > <span>Tue</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYWEEK-WED" name="${fieldID}-EVERYWEEK-WED" > <span>Wed</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYWEEK-THU" name="${fieldID}-EVERYWEEK-THU" > <span>Thu</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYWEEK-FRI" name="${fieldID}-EVERYWEEK-FRI" > <span>Fri</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYWEEK-SAT" name="${fieldID}-EVERYWEEK-SAT" > <span>Sat</span>
+					<input class="ml-2" type="checkbox" id="${fieldID}-EVERYWEEK-SUN" name="${fieldID}-EVERYWEEK-SUN" > <span>Sun</span>
 				</div>   
 			</div>
 			
@@ -653,17 +660,17 @@ function cfw_internal_confirmSchedule(elementID){
 	scheduleData.timeframe.executioncount  	= $(selector+"-EXECUTIONCOUNT").val();
 	
 	scheduleData.interval.intervaltype  	= $(selector+"-RADIO-INTERVAL:checked").val();
+	scheduleData.interval.everyxminutes		= $(selector+"-EVERYXMINUTES").val();
 	scheduleData.interval.everyxdays  		= $(selector+"-EVERYXDAYS").val();
 	
-	scheduleData.interval.everyxweeks  			= {}
-	scheduleData.interval.everyxweeks.weekcount = $(selector+"-EVERYXWEEKS").val();
-	scheduleData.interval.everyxweeks.mon  		= $(selector+"-EVERYXWEEKS-MON").is(":checked");
-	scheduleData.interval.everyxweeks.tue  		= $(selector+"-EVERYXWEEKS-TUE").is(":checked");
-	scheduleData.interval.everyxweeks.wed  		= $(selector+"-EVERYXWEEKS-WED").is(":checked");
-	scheduleData.interval.everyxweeks.thu  		= $(selector+"-EVERYXWEEKS-THU").is(":checked");
-	scheduleData.interval.everyxweeks.fri  		= $(selector+"-EVERYXWEEKS-FRI").is(":checked");
-	scheduleData.interval.everyxweeks.sat  		= $(selector+"-EVERYXWEEKS-SAT").is(":checked");
-	scheduleData.interval.everyxweeks.sun  		= $(selector+"-EVERYXWEEKS-SUN").is(":checked");
+	scheduleData.interval.everyweek  			= {}
+	scheduleData.interval.everyweek.MON  		= $(selector+"-EVERYWEEK-MON").is(":checked");
+	scheduleData.interval.everyweek.TUE  		= $(selector+"-EVERYWEEK-TUE").is(":checked");
+	scheduleData.interval.everyweek.WED  		= $(selector+"-EVERYWEEK-WED").is(":checked");
+	scheduleData.interval.everyweek.THU  		= $(selector+"-EVERYWEEK-THU").is(":checked");
+	scheduleData.interval.everyweek.FRI  		= $(selector+"-EVERYWEEK-FRI").is(":checked");
+	scheduleData.interval.everyweek.SAT  		= $(selector+"-EVERYWEEK-SAT").is(":checked");
+	scheduleData.interval.everyweek.SUN  		= $(selector+"-EVERYWEEK-SUN").is(":checked");
 
 	scheduleData.interval.cronexpression  	= $(selector+"-CRON_EXPRESSION").val();
 	
