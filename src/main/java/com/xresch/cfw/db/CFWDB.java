@@ -80,18 +80,18 @@ public class CFWDB {
 					}
 				} catch (IOException e) {
 					new CFWLog(logger)
-					.severe("Error creating database file.", e);
+						.severe("Error creating database file.", e);
 					
 				}
 	    	}
 		}
 		
-		try {
-			if(doStartDBServer) {
-				CFWDB.server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "" +port).start();
-			}
+//		try {
+//			if(doStartDBServer) {
+//				CFWDB.server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "" +port).start();
+//			}
 			
-			db = DBInterface.createDBInterfaceH2(server, port, storePath, databaseName, username, password);
+			db = DBInterface.createDBInterfaceH2AutoServer(port, storePath, databaseName, username, password);
 
 			CFWDB.isInitialized = true;
 			
@@ -99,12 +99,12 @@ public class CFWDB {
 			
 
 			
-		} catch (SQLException e) {
-			CFWDB.isInitialized = false;
-			new CFWLog(CFWDB.logger)
-				.severe("Issue initializing H2 Database.", e);
-			e.printStackTrace();
-		}
+//		} catch (SQLException e) {
+//			CFWDB.isInitialized = false;
+//			new CFWLog(CFWDB.logger)
+//				.severe("Issue initializing H2 Database.", e);
+//			e.printStackTrace();
+//		}
 	}
 		
 	/********************************************************************************************

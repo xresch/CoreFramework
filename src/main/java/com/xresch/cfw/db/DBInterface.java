@@ -628,6 +628,25 @@ public class DBInterface {
 	/************************************************************************
 	 * 
 	 ************************************************************************/
+	public static DBInterface createDBInterfaceH2AutoServer(int port, String storePath, String databaseName, String username, String password) {
+		
+		String urlPart = storePath+"/"+databaseName;
+		String uniqueName = "H2:"+urlPart;
+		String connectionURL = "jdbc:h2:"+urlPart+";IGNORECASE=TRUE;AUTO_SERVER=TRUE;AUTO_SERVER_PORT="+port;
+		String driverClass = "org.h2.Driver";
+
+		return createDBInterface(
+				uniqueName, 
+				driverClass, 
+				connectionURL, 
+				username, 
+				password);
+		
+	}
+	
+	/************************************************************************
+	 * 
+	 ************************************************************************/
 	public static DBInterface createDBInterfaceMySQL(String servername, int port, String dbName, String username, String password) {
 		
 		
