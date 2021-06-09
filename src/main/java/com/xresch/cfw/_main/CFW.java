@@ -296,8 +296,8 @@ public class CFW {
 		// Initialize Database Server and/or Connection
 		CFW.DB.initializeDB(); 
 		
-		//needed here for Feature management
-		if(mode.contains(MODE_FULL) || mode.contains(MODE_DB) ) {
+		//Needed here for Feature management
+		if(mode.contains(MODE_FULL) || mode.contains(MODE_APP) ) {
 			new KeyValuePair().createTable();
 		}
 		
@@ -313,10 +313,11 @@ public class CFW {
 	    ArrayList<CFWObject> objectArray = CFW.Registry.Objects.getCFWObjectInstances();
 	    
 	    //--------------------------------
-	    // Start Database 	
-		if(mode.contains(MODE_FULL) || mode.contains(MODE_DB) ) {
-			initializeDatabase(appToStart, features, objectArray);
-		}
+	    // Initialize Database with Data
+	    // from Features and CFWObjects
+	    if(mode.contains(MODE_FULL) || mode.contains(MODE_APP) ) {
+	    	initializeDatabase(appToStart, features, objectArray);
+	    }
 		
 		//---------------------------
 		// Load Hierarchy definitions

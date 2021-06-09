@@ -51,7 +51,7 @@ public class CFWDB {
     	//---------------------------------------
     	// Get variables
 		String mode 			= CFW.Properties.MODE;
-		boolean doStartDBServer = mode.contains(CFW.MODE_FULL) || mode.contains(CFW.MODE_DB);
+		boolean doStartAsDBServer = mode.contains(CFW.MODE_DB);
 		String server 			= CFWProperties.DB_SERVER;
 		String storePath 		= CFWProperties.DB_STORE_PATH;
 		String databaseName		= CFWProperties.DB_NAME;
@@ -59,52 +59,51 @@ public class CFWDB {
 		String username			= CFWProperties.DB_USERNAME;
 		String password			= CFWProperties.DB_PASSWORD;
 		
-		if(doStartDBServer) {
-			//---------------------------------------
-	    	// Create Folder  
 
-			File datastoreFolder = new File(storePath);
-	    	if(!datastoreFolder.isDirectory()) {
-	    		datastoreFolder.mkdir();
-	    	}
-		
-    	
-	    	//---------------------------------------
-	    	// Create File
-			File datastoreFile = new File(storePath+"/"+databaseName+".mv.db");
-	    	if(!datastoreFile.isFile()) {
-	    		try {
-					if(!datastoreFile.createNewFile()) {
-						new CFWLog(logger)
-							.severe("Error creating database file.");
-					}
-				} catch (IOException e) {
+		//---------------------------------------
+    	// Create Folder  
+
+		File datastoreFolder = new File(storePath);
+    	if(!datastoreFolder.isDirectory()) {
+    		datastoreFolder.mkdir();
+    	}
+	
+    	//---------------------------------------
+    	// Create File
+		File datastoreFile = new File(storePath+"/"+databaseName+".mv.db");
+    	if(!datastoreFile.isFile()) {
+    		try {
+				if(!datastoreFile.createNewFile()) {
 					new CFWLog(logger)
-						.severe("Error creating database file.", e);
-					
+						.severe("Error creating database file.");
 				}
-	    	}
-		}
+			} catch (IOException e) {
+				new CFWLog(logger)
+					.severe("Error creating database file.", e);
+				
+			}
+    	}
 		
-//		try {
-//			if(doStartDBServer) {
-//				CFWDB.server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "" +port).start();
-//			}
-			
+		
+		
+		if(!doStartAsDBServer) {
+			//---------------------------------------
+	    	// Start as all in one, first application
+			// instance accessing db will create a server
 			db = DBInterface.createDBInterfaceH2AutoServer(port, storePath, databaseName, username, password);
-
 			CFWDB.isInitialized = true;
-			
 			initializeFullTextSearch();
-			
+		}else {
 
-			
-//		} catch (SQLException e) {
-//			CFWDB.isInitialized = false;
-//			new CFWLog(CFWDB.logger)
-//				.severe("Issue initializing H2 Database.", e);
-//			e.printStackTrace();
-//		}
+				System.out.println("Bla");
+				//---------------------------------------
+		    	// Start as DB only instance
+				//CFWDB.server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "" +port).start();
+				db = DBInterface.createDBInterfaceH2AutoServer(port, storePath, databaseName, username, password);
+				db.preparedExecute("SELECT 1 FROM DUAL");
+				CFWDB.isInitialized = true;
+				initializeFullTextSearch();
+		}
 	}
 		
 	/********************************************************************************************
