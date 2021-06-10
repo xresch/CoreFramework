@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -73,7 +73,7 @@ public class ServletManual extends HttpServlet
 		
 			case "fetch": 			
 				switch(item.toLowerCase()) {
-					case "menuitems": 			SessionData sessionData = CFW.Context.Session.getSessionData();
+					case "menuitems": 			CFWSessionData sessionData = CFW.Context.Session.getSessionData();
 												jsonResponse.getContent().append(CFW.Registry.Manual.getManualPagesForUserAsJSON(sessionData).toString());
 	  											break;
 	  				

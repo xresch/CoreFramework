@@ -18,7 +18,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFW.Context;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.PlaintextResponse;
 
@@ -71,26 +71,40 @@ public class RequestHandler extends HandlerWrapper
     	
     	// check outside the loop first to avoid synchronizing when it is not needed
     	if(session.getAttribute(CFW.SESSION_DATA) == null) {
-    		SessionData data = new SessionData(session.getId());
+    		CFWSessionData data = new CFWSessionData(session.getId());
     		session.setAttribute(CFW.SESSION_DATA, data);
     	};
     	
-    	CFW.Context.Request.setSessionData((SessionData)session.getAttribute(CFW.SESSION_DATA));
+    	CFW.Context.Request.setSessionData((CFWSessionData)session.getAttribute(CFW.SESSION_DATA));
     	
     	//==========================================
     	// Set Session Timeout
     	//==========================================
-    	//workaround maxInactiveInterval=-1 issue
+    	// workaround maxInactiveInterval=-1 issue
+    	// Do not call getMaxInactiveInterval() if
+    	// value unchanged to not make the session
+    	// Dirty and not cause store Session to DB
+    	int currentInactiveInterval = session.getMaxInactiveInterval();
     	if(CFW.Context.Session.getSessionData().isLoggedIn()) {
-    		session.setMaxInactiveInterval(CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_USERS));
+    		int sessionTimeout = CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_USERS);
+    		if(sessionTimeout != currentInactiveInterval) {
+    			session.setMaxInactiveInterval(sessionTimeout);
+    		}
     	}else {
     		if(request.getRequestURI().equals("/metrics")) {
-    			session.setMaxInactiveInterval(CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_API));
+    			
+    			int sessionTimeout = CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_API);
+        		if(sessionTimeout != currentInactiveInterval) {
+        			session.setMaxInactiveInterval(sessionTimeout);
+        		}
     		}else {
-    			session.setMaxInactiveInterval(CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_VISITORS));
+    			int sessionTimeout = CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_VISITORS);
+        		if(sessionTimeout != currentInactiveInterval) {
+        			session.setMaxInactiveInterval(sessionTimeout);
+        		}
     		}
-    		
     	}
+    	
     	
     	//==========================================
     	// Trace Log

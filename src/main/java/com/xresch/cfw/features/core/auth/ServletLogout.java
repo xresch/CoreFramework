@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -31,7 +31,7 @@ public class ServletLogout extends HttpServlet
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
 		
-		SessionData data = CFW.Context.Request.getSessionData(); 	
+		CFWSessionData data = CFW.Context.Request.getSessionData(); 	
 		data.triggerLogout();
 		
 		CFW.HTTP.redirectToURL(response, "./login");

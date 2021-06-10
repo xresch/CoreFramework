@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.CFWLog;
 
 
@@ -105,7 +105,7 @@ public class CFWRegistryManual {
 	/***********************************************************************
 	 * Returns the manual pages the user has permissions for.
 	 ***********************************************************************/
-	public static JsonArray getManualPagesForUserAsJSON(SessionData sessionData)  {
+	public static JsonArray getManualPagesForUserAsJSON(CFWSessionData sessionData)  {
 		
 		JsonArray pages = new JsonArray();
 

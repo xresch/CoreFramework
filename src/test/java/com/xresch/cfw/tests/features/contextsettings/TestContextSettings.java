@@ -15,7 +15,7 @@ import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.tests._master.DBTestMaster;
@@ -136,7 +136,7 @@ public class TestContextSettings extends DBTestMaster {
 		
 		//----------------------------------------
 		// Create Pseudo Session
-		SessionData data = new SessionData("ricks-sessionids-roll");
+		CFWSessionData data = new CFWSessionData("ricks-sessionids-roll");
 		CFW.Context.Request.setSessionData(data);
 		data.setUser(userWithContextSettingsRole);
 		data.triggerLogin();
@@ -158,7 +158,7 @@ public class TestContextSettings extends DBTestMaster {
 		
 		//----------------------------------------
 		// Create Pseudo Session
-		SessionData data = new SessionData("ricks-sessionids-roll");
+		CFWSessionData data = new CFWSessionData("ricks-sessionids-roll");
 		CFW.Context.Request.setSessionData(data);
 		data.setUser(userAllowedAsUser);
 		data.triggerLogin();
@@ -180,7 +180,7 @@ public class TestContextSettings extends DBTestMaster {
 		
 		//----------------------------------------
 		// Create Pseudo Session
-		SessionData data = new SessionData("ricks-sessionids-roll");
+		CFWSessionData data = new CFWSessionData("ricks-sessionids-roll");
 		CFW.Context.Request.setSessionData(data);
 		data.setUser(userAllowedByGroup);
 		data.triggerLogin();
@@ -202,7 +202,7 @@ public class TestContextSettings extends DBTestMaster {
 		
 		//----------------------------------------
 		// Create Pseudo Session
-		SessionData data = new SessionData("ricks-sessionids-roll");
+		CFWSessionData data = new CFWSessionData("ricks-sessionids-roll");
 		CFW.Context.Request.setSessionData(data);
 		data.setUser(userJustARegularGuy);
 		data.triggerLogin();

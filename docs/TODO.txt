@@ -89,6 +89,7 @@ DONE
 ------- Current -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB
 - Cloudification: changed to H2 to mixed mode with auto server to make it working in cloud environments
+- Sessions: Added Session Store to persist sessions to database.
 
 ------- v3.0.1 -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI

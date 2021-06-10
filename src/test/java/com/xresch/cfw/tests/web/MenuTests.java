@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.response.bootstrap.BTMenu;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.tests._master.WebTestMaster;
@@ -66,7 +66,7 @@ public class MenuTests extends WebTestMaster{
 		
 		//---------------------------
 		// Create and Check Menu
-		SessionData stubData = new SessionData("sessionID");
+		CFWSessionData stubData = new CFWSessionData("sessionID");
 		BTMenu menu = CFW.Registry.Components.createMenuInstance(stubData, false);
 		//System.out.println(CFW.Dump.dumpObject(menu));
 		String html = menu.getHTML();

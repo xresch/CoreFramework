@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFW.CLI;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.SysoutInterceptor.SysoutType;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -383,7 +383,7 @@ public class CFWLog {
 				this.sessionID = CFW.Context.Session.getSessionID();
 				
 
-				SessionData data = CFW.Context.Request.getSessionData(); 
+				CFWSessionData data = CFW.Context.Request.getSessionData(); 
 				if(data != null && data.isLoggedIn()) {
 					this.userID = data.getUser().username();
 				}

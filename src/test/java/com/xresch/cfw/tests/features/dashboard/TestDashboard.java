@@ -12,7 +12,7 @@ import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.tests._master.DBTestMaster;
 
@@ -207,7 +207,7 @@ public class TestDashboard extends DBTestMaster {
 		
 		//----------------------------------------
 		// Assert Own Dashboards
-		SessionData data = new SessionData("ricks-sessionids-roll");
+		CFWSessionData data = new CFWSessionData("ricks-sessionids-roll");
 		CFW.Context.Request.setSessionData(data);
 		data.setUser(userViewer);
 		data.triggerLogin();
@@ -251,7 +251,7 @@ public class TestDashboard extends DBTestMaster {
 		
 		//----------------------------------------
 		// Assert Own Dashboards
-		SessionData data = new SessionData("ricks-sessionids-roll");
+		CFWSessionData data = new CFWSessionData("ricks-sessionids-roll");
 		CFW.Context.Request.setSessionData(data);
 		data.setUser(userCreator);
 		data.triggerLogin();
@@ -300,7 +300,7 @@ public class TestDashboard extends DBTestMaster {
 		
 		//----------------------------------------
 		// Assert Own Dashboards
-		SessionData data = new SessionData("ricks-sessionids-roll");
+		CFWSessionData data = new CFWSessionData("ricks-sessionids-roll");
 		CFW.Context.Request.setSessionData(data);
 		data.setUser(userAdmin);
 		data.triggerLogin();
@@ -351,7 +351,7 @@ public class TestDashboard extends DBTestMaster {
 		
 		//----------------------------------------
 		// Assert Own Dashboards
-		SessionData data = new SessionData("ricks-sessionids-roll");
+		CFWSessionData data = new CFWSessionData("ricks-sessionids-roll");
 		CFW.Context.Request.setSessionData(data);
 		data.setUser(userDirectEditor);
 		data.triggerLogin();
@@ -395,7 +395,7 @@ public class TestDashboard extends DBTestMaster {
 		
 		//----------------------------------------
 		// Assert Own Dashboards
-		SessionData data = new SessionData("ricks-sessionids-roll");
+		CFWSessionData data = new CFWSessionData("ricks-sessionids-roll");
 		CFW.Context.Request.setSessionData(data);
 		data.setUser(userEditorByRole);
 		data.triggerLogin();
@@ -438,7 +438,7 @@ public class TestDashboard extends DBTestMaster {
 		
 		//----------------------------------------
 		// Assert Own Dashboards
-		SessionData data = new SessionData("ricks-sessionids-roll");
+		CFWSessionData data = new CFWSessionData("ricks-sessionids-roll");
 		CFW.Context.Request.setSessionData(data);
 		data.setUser(userViewerByRole);
 		data.triggerLogin();

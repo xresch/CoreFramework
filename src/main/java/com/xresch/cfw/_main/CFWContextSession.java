@@ -2,8 +2,10 @@ package com.xresch.cfw._main;
 
 import java.util.Collection;
 
+import javax.servlet.http.HttpSession;
+
 import com.xresch.cfw.datahandling.CFWForm;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 
 /**************************************************************************************************************
  * 
@@ -12,7 +14,7 @@ import com.xresch.cfw.features.usermgmt.SessionData;
  **************************************************************************************************************/
 public class CFWContextSession {
 	
-	public static SessionData getSessionData(){
+	public static CFWSessionData getSessionData(){
 		return CFW.Context.Request.getSessionData();
 	}
 	
@@ -29,8 +31,15 @@ public class CFWContextSession {
 	}
 	
 	public static String getSessionID() {
-		SessionData data =  CFW.Context.Request.getSessionData();
+		CFWSessionData data =  CFW.Context.Request.getSessionData();
 		return (data == null) ? null : data.getSessionID();
+	}
+	
+	public static void makeSessionDirty(){
+		
+		HttpSession session = CFW.Context.Request.getRequest().getSession();
+		//Hack as SessionData.setDirty() is not accessible directly
+		session.setMaxInactiveInterval(session.getMaxInactiveInterval());
 	}
 
 }

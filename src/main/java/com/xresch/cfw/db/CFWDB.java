@@ -178,7 +178,15 @@ public class CFWDB {
 			};
 		}
 	}
-			
+	
+	
+	/********************************************************************************************
+	 * Return the DBInterface to the internal H2 Database.
+	 * 
+	 ********************************************************************************************/
+	public static DBInterface getDBInterface() {	
+		return db;
+	}
 	
 	/********************************************************************************************
 	 * Add a connection that was openend to the list of open connections.

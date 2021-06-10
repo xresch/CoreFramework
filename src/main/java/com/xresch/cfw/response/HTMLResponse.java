@@ -8,7 +8,7 @@ import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage;
 import com.xresch.cfw.response.bootstrap.BTFooter;
@@ -103,7 +103,7 @@ public class HTMLResponse extends AbstractHTMLResponse {
 				
 				this.appendSectionTitle(buildedPage, "Menubar");
 				buildedPage.append("");
-				SessionData sessionData = CFW.Context.Request.getSessionData();
+				CFWSessionData sessionData = CFW.Context.Request.getSessionData();
 				BTMenu menu = sessionData.getMenu();
 				if(menu != null) {
 					buildedPage.append(menu.getHTML());

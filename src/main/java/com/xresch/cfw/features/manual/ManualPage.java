@@ -11,7 +11,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -129,7 +129,7 @@ public class ManualPage {
 	 * permissions for the page
 	 * @return String html for this item. 
 	 ***********************************************************************************/
-	public JsonObject toJSONObjectForMenu(SessionData sessionData) {
+	public JsonObject toJSONObjectForMenu(CFWSessionData sessionData) {
 		
 		//----------------------------------
 		// Check Permissions

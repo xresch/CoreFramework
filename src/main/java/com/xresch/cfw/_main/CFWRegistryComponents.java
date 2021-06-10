@@ -12,7 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.manual.FeatureManual;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.BTFooter;
 import com.xresch.cfw.response.bootstrap.BTMenu;
@@ -145,7 +145,7 @@ public class CFWRegistryComponents {
 	 * Create a instance of the menu.
 	 * @return a Bootstrap Menu instance
 	 ***********************************************************************/
-	public static BTMenu createMenuInstance(SessionData sessionData, boolean withUserMenus)  {
+	public static BTMenu createMenuInstance(CFWSessionData sessionData, boolean withUserMenus)  {
 		
 		BTMenu menu = new BTMenu();
 		menu.setLabel(CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_MENU_TITLE));

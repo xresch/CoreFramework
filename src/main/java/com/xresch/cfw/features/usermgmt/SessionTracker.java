@@ -95,7 +95,7 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 				
 				if(session != null) {
 					
-					SessionData data = (SessionData)session.getAttribute(CFW.SESSION_DATA);
+					CFWSessionData data = (CFWSessionData)session.getAttribute(CFW.SESSION_DATA);
 					
 					if(data != null) {
 						User user = data.getUser();
@@ -112,7 +112,7 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 		synchronized (sessionIDs) {
 			for(String id : sessionIDs.toArray(new String[] {})) {
 				Session session = sessionHandler.getSession(id);
-				SessionData data = (SessionData)session.getAttribute(CFW.SESSION_DATA);
+				CFWSessionData data = (CFWSessionData)session.getAttribute(CFW.SESSION_DATA);
 				
 				if(data != null) {
 					System.out.println("======== Session Data ======");
@@ -141,7 +141,7 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 				Session session = sessionHandler.getSession(id);
 				
 				if(session == null) { continue ; };
-				SessionData data = (SessionData)session.getAttribute(CFW.SESSION_DATA);
+				CFWSessionData data = (CFWSessionData)session.getAttribute(CFW.SESSION_DATA);
 				
 				if(data != null) {
 					JsonObject sessionDetails = new JsonObject();

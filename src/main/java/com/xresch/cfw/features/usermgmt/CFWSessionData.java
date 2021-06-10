@@ -1,22 +1,26 @@
 package com.xresch.cfw.features.usermgmt;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
+import javax.mail.Address;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.Context;
-import com.xresch.cfw._main.CFW.DB;
-import com.xresch.cfw._main.CFW.Properties;
-import com.xresch.cfw._main.CFW.Registry;
-import com.xresch.cfw._main.CFW.Context.App;
-import com.xresch.cfw._main.CFW.DB.Users;
-import com.xresch.cfw._main.CFW.Registry.Components;
 import com.xresch.cfw.datahandling.CFWForm;
+import com.xresch.cfw.handler.RequestHandler;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.BTFooter;
 import com.xresch.cfw.response.bootstrap.BTMenu;
 
@@ -25,42 +29,44 @@ import com.xresch.cfw.response.bootstrap.BTMenu;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class SessionData implements Serializable {
+public class CFWSessionData implements Serializable {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private boolean isLoggedIn = false;
+	private static Logger logger = CFWLog.getLogger(CFWSessionData.class.getName());
+	
+	protected boolean isLoggedIn = false;
 
-	private User user = null;
-	private String clientIP = "";
-	private String sessionID = null;
-	private HashMap<Integer, Role> userRoles = new HashMap<>();
-	private HashMap<String, Permission> userPermissions = new HashMap<>();
+	protected User user = null;
+	protected String clientIP = "";
+	protected String sessionID = null;
+	protected HashMap<Integer, Role> userRoles = new HashMap<>();
+	protected HashMap<String, Permission> userPermissions = new HashMap<>();
 	
 	//formID and form
-	private Cache<String, CFWForm> formCache = CacheBuilder.newBuilder()
-			.initialCapacity(5)
-			.maximumSize(20)
-			.expireAfterAccess(CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_USERS), TimeUnit.SECONDS)
-			.build();
+	protected Cache<String, CFWForm> formCache;
 	
-	private BTMenu menu;
-	private BTFooter footer;
+	protected BTMenu menu;
+	protected BTFooter footer;
 	
-	public SessionData(String sessionID) {
+	public CFWSessionData(String sessionID) {
+		initializeFormCache();
 		this.sessionID = sessionID;
-		loadMenu(false);		
+		loadMenu(false);
 	}
 	
 	public void triggerLogin() {
+		initializeFormCache();
+		
 		isLoggedIn = true;
 		loadMenu(true);
 		if(user != null) {
 			user.lastLogin(new Timestamp(System.currentTimeMillis())).update();
 		}
+		
 	}
 	
 	public void triggerLogout() {
@@ -145,6 +151,16 @@ public class SessionData implements Serializable {
 		this.clientIP = clientIP;
 	}
 
+	private void initializeFormCache() {
+		if(formCache == null) {
+			formCache = CacheBuilder.newBuilder()
+				.initialCapacity(5)
+				.maximumSize(20)
+				.expireAfterAccess(CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_USERS), TimeUnit.SECONDS)
+				.build();
+		}
+	}
+	
 	public void removeForm(CFWForm form){
 		formCache.invalidate(form.getFormID());	
 	}
@@ -156,4 +172,52 @@ public class SessionData implements Serializable {
 	public Collection<CFWForm> getForms() {
 		return formCache.asMap().values();
 	}
+	
+	 private void writeObject(ObjectOutputStream oos) 
+      throws IOException {
+		
+		System.out.println("SERIALIZE");
+		
+		//oos.defaultWriteObject();
+		oos.writeObject(isLoggedIn);
+		oos.writeObject(sessionID);
+		oos.writeObject(clientIP);
+		
+		String username = null;
+		if(user != null) {
+			username = user.username();
+			oos.writeObject(username);
+		}else {
+			oos.writeObject(null);
+		}
+		
+		new CFWLog(logger).fine("Stored session state to DB: user="+username+", sessionID="+sessionID);
+				 
+    }
+
+    private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
+    	
+    	System.out.println("DESERIALIZE");
+    	
+    	
+    	//ois.defaultReadObject();
+       //String jsonString = (String) ois.readObject();
+       //Type type = new TypeToken<SessionData>(){}.getType();
+       //SessionData loadedSessionData = CFW.JSON.getGsonInstance().fromJson(jsonString, type); 
+       
+       this.isLoggedIn 		= (boolean) ois.readObject();
+       this.sessionID 		= (String) ois.readObject();
+       this.clientIP 		= (String) ois.readObject();
+       
+       String username		= (String) ois.readObject();
+       if(isLoggedIn && username != null) {
+    	   this.setUser(CFW.DB.Users.selectByUsernameOrMail(username));
+    	   this.triggerLogin();
+       }
+
+       initializeFormCache();
+       
+       new CFWLog(logger).fine("Loaded session state from DB: user="+username+", sessionID="+sessionID);
+
+    }
 }

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWContextRequest;
 import com.xresch.cfw.features.core.auth.LoginUtils;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.PlaintextResponse;
@@ -68,7 +68,7 @@ public class ServletAPILogin extends HttpServlet
 				if(user.status() != null && user.status().toUpperCase().equals("ACTIVE")) {
 					//--------------------------------
 					//Login success
-					SessionData data = CFW.Context.Request.getSessionData(); 
+					CFWSessionData data = CFW.Context.Request.getSessionData(); 
 					data.resetUser();
 					data.setUser(user);
 					

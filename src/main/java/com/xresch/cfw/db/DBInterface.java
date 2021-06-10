@@ -16,6 +16,8 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import com.google.gson.JsonArray;
@@ -58,6 +60,15 @@ public class DBInterface {
 	public DBInterface(String interfaceName, BasicDataSource pooledSource) {
 		this.pooledSource = pooledSource;
 		this.InterfaceName = interfaceName;
+	}
+	
+	/********************************************************************************************
+	 * Get the Datasource for this DBInterface.
+	 * 
+	 * @throws SQLException 
+	 ********************************************************************************************/
+	public DataSource getDatasource() {
+		return pooledSource;
 	}
 	
 	/********************************************************************************************

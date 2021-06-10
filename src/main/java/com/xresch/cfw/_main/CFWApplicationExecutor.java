@@ -27,10 +27,14 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.handler.ShutdownHandler;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
+import org.eclipse.jetty.server.session.DatabaseAdaptor;
 import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.DefaultSessionIdManager;
+import org.eclipse.jetty.server.session.JDBCSessionDataStore;
+import org.eclipse.jetty.server.session.JDBCSessionDataStoreFactory;
 import org.eclipse.jetty.server.session.NullSessionDataStore;
 import org.eclipse.jetty.server.session.SessionCache;
+import org.eclipse.jetty.server.session.SessionDataStore;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -79,7 +83,7 @@ public class CFWApplicationExecutor {
 
     	//---------------------------------------
     	// Create Server 
-        server = CFWApplicationExecutor.createServer();
+        server = createServer();
         applicationContext = new WebAppContext();
         applicationContext.setContextPath("/");
         applicationContext.setServer(server);
@@ -252,13 +256,52 @@ public class CFWApplicationExecutor {
 	        }
 	    }
 	}
-	   
+	  
+	/***********************************************************************
+	 * Setup and returns a SessionHandler
+	 * @param string 
+	 ***********************************************************************/
+	public SessionDataStore createJDBCSessionDataStore(SessionHandler sessionHandler) {
+		
+		// Configure a JDBCSessionDataStoreFactory.
+		JDBCSessionDataStoreFactory sessionDataStoreFactory = new JDBCSessionDataStoreFactory();
+		sessionDataStoreFactory.setGracePeriodSec(3600);
+		sessionDataStoreFactory.setSavePeriodSec(300);
+		DatabaseAdaptor dbAdaptor = new DatabaseAdaptor();
+		dbAdaptor.setDatasource(CFW.DB.getDBInterface().getDatasource());
+		
+		sessionDataStoreFactory.setDatabaseAdaptor(dbAdaptor);
+		
+		JDBCSessionDataStore.SessionTableSchema schema = new JDBCSessionDataStore.SessionTableSchema();
+		schema.setTableName("CFW_JETTY_SESSIONS");
+		schema.setIdColumn("SESSION_ID");
+		schema.setAccessTimeColumn("ACCESS_TIME");
+		schema.setContextPathColumn("CONTEXT_PATH");
+		schema.setCookieTimeColumn("COOKIE_TIME");
+		schema.setCreateTimeColumn("CREATE_TIME");
+		schema.setExpiryTimeColumn("EXPIRY_TIME");
+		schema.setLastAccessTimeColumn("LAST_ACCESS_TIME");
+		schema.setLastNodeColumn("LAST_NODE_COLUMN");
+		schema.setLastSavedTimeColumn("LAST_SAVED_TIME");
+		schema.setVirtualHostColumn("VIRTUAL_HOST");
+		schema.setMapColumn("MAP");
+		schema.setMaxIntervalColumn("MAX_INTERVAL");
+		
+		// ... more configuration here
+		sessionDataStoreFactory.setSessionTableSchema(schema);
+
+		// Add the SessionDataStoreFactory as a bean on the server.
+		server.addBean(sessionDataStoreFactory);
+		JDBCSessionDataStore sessionStore = (JDBCSessionDataStore)sessionDataStoreFactory.getSessionDataStore(sessionHandler);
+		
+		return sessionStore;
+	}
 
 	/***********************************************************************
 	 * Setup and returns a SessionHandler
 	 * @param string 
 	 ***********************************************************************/
-	public static SessionHandler createSessionHandler(String path) {
+	public SessionHandler createSessionHandler(String path) {
 	
 	    SessionHandler sessionHandler = new SessionHandler();
 	    
@@ -289,7 +332,8 @@ public class CFWApplicationExecutor {
 	    // SessionDataStoreFactory instances set as beans on 
 	    // the server.
 	    SessionCache cache = new DefaultSessionCache(sessionHandler);
-	    cache.setSessionDataStore(new NullSessionDataStore());
+	    //cache.setSessionDataStore(new NullSessionDataStore());
+	    cache.setSessionDataStore(createJDBCSessionDataStore(sessionHandler));
 	    sessionHandler.setSessionCache(cache);
 	
 	    return sessionHandler;
@@ -323,7 +367,7 @@ public class CFWApplicationExecutor {
 	 * cfw.properties.
 	 * @return Server instance
 	 ***********************************************************************/
-	private static Server createServer() {
+	private Server createServer() {
 		Server server = new Server();
 		ArrayList<Connector> connectorArray = new ArrayList<>();
 		
@@ -384,7 +428,7 @@ public class CFWApplicationExecutor {
         //###################################################################
         // Create Session Handler
         //###################################################################
-		sessionHandler = CFWApplicationExecutor.createSessionHandler("/");
+		sessionHandler = createSessionHandler("/");
 		applicationContext.setSessionHandler(sessionHandler);
 		
         //###################################################################

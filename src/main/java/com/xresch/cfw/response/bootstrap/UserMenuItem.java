@@ -1,6 +1,6 @@
 package com.xresch.cfw.response.bootstrap;
 
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 
 /**************************************************************************************************************
  * 
@@ -9,7 +9,7 @@ import com.xresch.cfw.features.usermgmt.SessionData;
  **************************************************************************************************************/
 public class UserMenuItem extends MenuItem {
 
-	public UserMenuItem(SessionData data) {
+	public UserMenuItem(CFWSessionData data) {
 		super(data.getUser().username());
 		this.alignDropdownRight(true);
 		this.faicon("fas fa-user");

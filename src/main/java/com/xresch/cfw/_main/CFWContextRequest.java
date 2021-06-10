@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
-import com.xresch.cfw.features.usermgmt.SessionData;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage;
@@ -29,7 +29,7 @@ public class CFWContextRequest {
 	private static InheritableThreadLocal<Long> requestStartNanos = new InheritableThreadLocal<>();;
 	
 	private static InheritableThreadLocal<AbstractResponse> responseContent = new InheritableThreadLocal<>();
-	private static InheritableThreadLocal<SessionData> sessionData = new InheritableThreadLocal<>();
+	private static InheritableThreadLocal<CFWSessionData> sessionData = new InheritableThreadLocal<>();
 	
 	private static InheritableThreadLocal<LinkedHashMap<String,AlertMessage>> messageArray = new InheritableThreadLocal<>();
 		
@@ -78,7 +78,7 @@ public class CFWContextRequest {
 
 
 	
-	public static SessionData getSessionData() {
+	public static CFWSessionData getSessionData() {
 		return sessionData.get();
 	}
 	
@@ -129,7 +129,7 @@ public class CFWContextRequest {
 		return false;
 	}
 
-	public static void setSessionData(SessionData sessionData) {
+	public static void setSessionData(CFWSessionData sessionData) {
 		CFWContextRequest.sessionData.set(sessionData);
 	}
 
