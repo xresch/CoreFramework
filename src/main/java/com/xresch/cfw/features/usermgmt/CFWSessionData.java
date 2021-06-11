@@ -175,9 +175,7 @@ public class CFWSessionData implements Serializable {
 	
 	 private void writeObject(ObjectOutputStream oos) 
       throws IOException {
-		
-		System.out.println("SERIALIZE");
-		
+				
 		//oos.defaultWriteObject();
 		oos.writeObject(isLoggedIn);
 		oos.writeObject(sessionID);
@@ -197,13 +195,7 @@ public class CFWSessionData implements Serializable {
 
     private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
     	
-    	System.out.println("DESERIALIZE");
-    	
-    	
     	//ois.defaultReadObject();
-       //String jsonString = (String) ois.readObject();
-       //Type type = new TypeToken<SessionData>(){}.getType();
-       //SessionData loadedSessionData = CFW.JSON.getGsonInstance().fromJson(jsonString, type); 
        
        this.isLoggedIn 		= (boolean) ois.readObject();
        this.sessionID 		= (String) ois.readObject();
