@@ -339,7 +339,9 @@ public class CFW {
 			CFWApplicationExecutor executor = new CFWApplicationExecutor(appToStart);
 			
 			for(CFWAppFeature feature : features) {
-				feature.addFeature(executor);
+				if(feature.isFeatureEnabled()) {
+					feature.addFeature(executor);
+				}
 			}
 			
 			appToStart.startApp(executor);
