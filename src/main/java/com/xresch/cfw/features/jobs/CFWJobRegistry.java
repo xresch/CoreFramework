@@ -6,17 +6,17 @@ import java.util.logging.Logger;
 
 import com.xresch.cfw.logging.CFWLog;
 
-public class RegistryJobs {
+public class CFWJobRegistry {
 
-	private static Logger logger = CFWLog.getLogger(RegistryJobs.class.getName());
+	private static Logger logger = CFWLog.getLogger(CFWJobRegistry.class.getName());
 	
 	// UniqueName and JobTask
-	private static LinkedHashMap<String, Class<? extends JobTask>> executorMap = new LinkedHashMap<>();
+	private static LinkedHashMap<String, Class<? extends CFWJobTask>> executorMap = new LinkedHashMap<>();
 
 	/*************************************************************************
 	 * 
 	 *************************************************************************/
-	public static void registerJobTask(JobTask executor) {
+	public static void registerJobTask(CFWJobTask executor) {
 		
 		if( executorMap.containsKey(executor.uniqueName()) ) {
 			new CFWLog(logger).severe("A JobTask with the name '"+executor.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
@@ -31,12 +31,12 @@ public class RegistryJobs {
 	 * Get a list of all executor instances.
 	 * 
 	 ***********************************************************************/
-	private static ArrayList<JobTask> getAllTaskInstances()  {
-		ArrayList<JobTask> instanceArray = new ArrayList<>();
+	private static ArrayList<CFWJobTask> getAllTaskInstances()  {
+		ArrayList<CFWJobTask> instanceArray = new ArrayList<>();
 		
-		for(Class<? extends JobTask> clazz : executorMap.values()) {
+		for(Class<? extends CFWJobTask> clazz : executorMap.values()) {
 			try {
-				JobTask instance = clazz.newInstance();
+				CFWJobTask instance = clazz.newInstance();
 				instanceArray.add(instance);
 			} catch (Exception e) {
 				new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
@@ -49,10 +49,10 @@ public class RegistryJobs {
 	 * Get a new instance for the specified task.
 	 * Returns null if the  is undefined.
 	 ***********************************************************************/
-	public static JobTask createTaskInstance(String uniqueName)  {
+	public static CFWJobTask createTaskInstance(String uniqueName)  {
 		
-		JobTask instance = null;
-		Class<? extends JobTask> clazz =  executorMap.get(uniqueName);
+		CFWJobTask instance = null;
+		Class<? extends CFWJobTask> clazz =  executorMap.get(uniqueName);
 		try {
 			if(clazz != null) {
 				instance = clazz.newInstance();

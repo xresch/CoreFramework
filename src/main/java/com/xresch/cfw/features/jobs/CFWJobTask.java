@@ -9,9 +9,9 @@ import org.quartz.JobExecutionException;
 
 import com.xresch.cfw.logging.CFWLog;
 
-public abstract class JobTask implements Job {
+public abstract class CFWJobTask implements Job {
 	
-	private static Logger logger = CFWLog.getLogger(JobTask.class.getName());
+	private static Logger logger = CFWLog.getLogger(CFWJobTask.class.getName());
 	
 	/*************************************************************************
 	 * Return a unique name for this executor.

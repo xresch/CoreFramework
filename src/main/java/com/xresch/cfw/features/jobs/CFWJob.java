@@ -189,7 +189,7 @@ public class CFWJob extends CFWObject {
 		return jobExecutorClassname.getValue();
 	}
 	
-	public CFWJob jobExecutorClassname(Class<JobTask> value) {
+	public CFWJob jobExecutorClassname(Class<CFWJobTask> value) {
 		this.jobExecutorClassname.setValue(value.getName());
 		return this;
 	}

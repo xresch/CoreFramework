@@ -12,11 +12,11 @@ import com.xresch.cfw.logging.CFWLog;
 /**************************************************************************************************************
  * @author Reto Scheiwiller
  **************************************************************************************************************/
-public class JobDBMethods {
+public class CFWDBJob {
 	
 	private static Class<CFWJob> cfwObjectClass = CFWJob.class;
 	
-	public static Logger logger = CFWLog.getLogger(JobDBMethods.class.getName());
+	public static Logger logger = CFWLog.getLogger(CFWDBJob.class.getName());
 		
 	//####################################################################################################
 	// Preckeck Initialization
@@ -130,7 +130,7 @@ public class JobDBMethods {
 	public static int getCount() {
 		
 		return new CFWJob()
-				.queryCache(JobDBMethods.class, "getCount")
+				.queryCache(CFWDBJob.class, "getCount")
 				.selectCount()
 				.getCount();
 		

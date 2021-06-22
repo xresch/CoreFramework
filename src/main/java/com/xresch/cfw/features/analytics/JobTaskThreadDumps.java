@@ -8,9 +8,9 @@ import org.quartz.JobExecutionException;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.features.jobs.JobTask;
+import com.xresch.cfw.features.jobs.CFWJobTask;
 
-public class JobTaskThreadDumps extends JobTask{
+public class JobTaskThreadDumps extends CFWJobTask{
 
 	@Override
 	public String uniqueName() {
@@ -45,6 +45,12 @@ public class JobTaskThreadDumps extends JobTask{
 
 		JobDataMap data = context.getMergedJobDataMap();
 		System.out.println("someProp = " + data.getString("someProp"));
+	}
+
+	@Override
+	public int minIntervalSeconds() {
+		// TODO Auto-generated method stub
+		return 1;
 	}
 
 
