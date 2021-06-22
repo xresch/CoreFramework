@@ -31,7 +31,7 @@ public class CFWJob extends CFWObject {
 //		END_DATE,
 		JSON_SCHEDULE,
 		JSON_PROPERTIES,
-		IS_AVTIVE,
+		IS_ACTIVE,
 		IS_DELETEABLE,
 	}
 	

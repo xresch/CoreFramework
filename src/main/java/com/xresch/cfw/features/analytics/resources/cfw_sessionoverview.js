@@ -31,7 +31,10 @@ function cfw_sessionoverview_fetchsessionoverviewAndDisplay(){
 				 	},
 				 	customizers: {
 				 		CREATION_TIME: timestampFormatter,
-				 		LAST_ACCESS_TIME: timestampFormatter,
+				 		LAST_ACCESS_TIME: function(record, value){ 
+				 			var now = moment.utc().valueOf();
+				 			return CFW.format.millisToDuration(now-value); 
+				 		},
 				 		EXPIRATION_TIME: timestampFormatter,
 				 		SESSION_TIMOUT: durationFormatter,
 				 		ALIVE_TIME: durationFormatter,

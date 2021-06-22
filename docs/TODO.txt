@@ -11,6 +11,14 @@ ALWAYS ON
 
 TODO
 ====
+- Features: Job Management
+- Features: Query
+- Features: Spaces
+  - HTML Selector
+  - SpacePermissions in SessionData
+  - Selected Space in SessionData
+  - CFWSQL partial query, select entries for user
+
 
 - Dashboard: Share with users that are not logged in
 - Dashboard: Check Settings - Provide a bulk action to show all settings of all widgets as an overview. 
@@ -71,12 +79,6 @@ TODO
 - CFWField: Form errors add to field.
 - CFWField: FormField.SINGLECOMPLETE
   - how to load key and label? 
-
-- Spaces!!!
-  - HTML Selector
-  - SpacePermissions in SessionData
-  - Selected Space in SessionData
-  - CFWSQL partial query, select entries for user
   
 - Image Upload for Summernote Editor
 - Truncate too long toasts.
@@ -90,6 +92,7 @@ DONE
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB
 - Cloudification: changed to H2 to mixed mode with auto server to make it working in cloud environments
 - Sessions: Added Session Store to persist sessions to database.
+- Session Overview: Adjusted last access time to show delta as hh:mm:ss instead of timestamp.
 
 ------- v3.0.1 -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI
