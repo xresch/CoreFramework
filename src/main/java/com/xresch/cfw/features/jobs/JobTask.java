@@ -32,6 +32,13 @@ public abstract class JobTask implements Job {
 	public abstract ArrayList<JobTaskProperty> jobProperties();
 	
 	/*************************************************************************
+	 * Return the minimum schedule interval required for this tasks.
+	 * Needed to prevent users to define tasks which are executed extensively.
+	 * 
+	 *************************************************************************/
+	public abstract int minIntervalSeconds();
+	
+	/*************************************************************************
 	 * Return if the user is able to select this executor for creating Jobs.
 	 *************************************************************************/
 	public abstract boolean hasPermission();
