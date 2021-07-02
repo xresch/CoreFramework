@@ -49,7 +49,6 @@ public class JobTaskThreadDumps extends CFWJobTask{
 
 	@Override
 	public int minIntervalSeconds() {
-		// TODO Auto-generated method stub
 		return 1;
 	}
 

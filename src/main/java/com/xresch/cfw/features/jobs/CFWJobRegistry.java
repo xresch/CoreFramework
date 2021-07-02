@@ -11,19 +11,19 @@ public class CFWJobRegistry {
 	private static Logger logger = CFWLog.getLogger(CFWJobRegistry.class.getName());
 	
 	// UniqueName and JobTask
-	private static LinkedHashMap<String, Class<? extends CFWJobTask>> executorMap = new LinkedHashMap<>();
+	private static LinkedHashMap<String, Class<? extends CFWJobTask>> jobtasksMap = new LinkedHashMap<>();
 
 	/*************************************************************************
 	 * 
 	 *************************************************************************/
-	public static void registerJobTask(CFWJobTask executor) {
+	public static void registerJobTask(CFWJobTask jobtasks) {
 		
-		if( executorMap.containsKey(executor.uniqueName()) ) {
-			new CFWLog(logger).severe("A JobTask with the name '"+executor.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
+		if( jobtasksMap.containsKey(jobtasks.uniqueName()) ) {
+			new CFWLog(logger).severe("A JobTask with the name '"+jobtasks.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
 			return;
 		}
 		
-		executorMap.put(executor.uniqueName(), executor.getClass());
+		jobtasksMap.put(jobtasks.uniqueName(), jobtasks.getClass());
 		
 	}
 	
@@ -34,7 +34,7 @@ public class CFWJobRegistry {
 	private static ArrayList<CFWJobTask> getAllTaskInstances()  {
 		ArrayList<CFWJobTask> instanceArray = new ArrayList<>();
 		
-		for(Class<? extends CFWJobTask> clazz : executorMap.values()) {
+		for(Class<? extends CFWJobTask> clazz : jobtasksMap.values()) {
 			try {
 				CFWJobTask instance = clazz.newInstance();
 				instanceArray.add(instance);
@@ -52,7 +52,7 @@ public class CFWJobRegistry {
 	public static CFWJobTask createTaskInstance(String uniqueName)  {
 		
 		CFWJobTask instance = null;
-		Class<? extends CFWJobTask> clazz =  executorMap.get(uniqueName);
+		Class<? extends CFWJobTask> clazz =  jobtasksMap.get(uniqueName);
 		try {
 			if(clazz != null) {
 				instance = clazz.newInstance();
