@@ -168,6 +168,9 @@ public class CFWProperties {
 	// DATABASE
 	//##########################################################################################	
 	
+	/** The name of the database server. (Property=cfw_h2_mode, Default="SERVER") */
+	public static String DB_MODE = "SERVER";
+	
 	/** The name of the database server. (Property=cfw_h2_server, Default="localhost") */
 	public static String DB_SERVER = "localhost";
 	
@@ -238,7 +241,8 @@ public class CFWProperties {
 		LDAP_ATTRIBUTE_EMAIL 			= CFWProperties.configAsString("authentication_ldap_attribute_mail", LDAP_ATTRIBUTE_EMAIL);
 		LDAP_ATTRIBUTE_FIRSTNAME		= CFWProperties.configAsString("authentication_ldap_attribute_firstname", LDAP_ATTRIBUTE_FIRSTNAME);
 		LDAP_ATTRIBUTE_LASTNAME			= CFWProperties.configAsString("authentication_ldap_attribute_lastname", LDAP_ATTRIBUTE_LASTNAME);
-		
+				
+		DB_MODE							= CFWProperties.configAsString("cfw_h2_mode", DB_MODE);
 		DB_SERVER						= CFWProperties.configAsString("cfw_h2_server", DB_SERVER);
 		DB_PORT							= CFWProperties.configAsInt("cfw_h2_port", DB_PORT);
 		DB_STORE_PATH					= CFWProperties.configAsString("cfw_h2_path", DB_STORE_PATH);

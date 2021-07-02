@@ -9,9 +9,6 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.logging.Logger;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.h2.jdbcx.JdbcConnectionPool;
-import org.h2.jdbcx.JdbcDataSource;
 import org.h2.tools.Server;
 
 import com.google.common.base.Strings;
@@ -21,7 +18,6 @@ import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
  * 
@@ -51,7 +47,7 @@ public class CFWDB {
     	//---------------------------------------
     	// Get variables
 		String mode 			= CFW.Properties.MODE;
-		boolean doStartAsDBServer = mode.contains(CFW.MODE_DB);
+		boolean doStartDBServer = (CFW.Properties.DB_MODE.toUpperCase().equals("SERVER") || mode.contains(CFW.MODE_DB));
 		String server 			= CFWProperties.DB_SERVER;
 		String storePath 		= CFWProperties.DB_STORE_PATH;
 		String databaseName		= CFWProperties.DB_NAME;
@@ -86,23 +82,26 @@ public class CFWDB {
 		
 		
 		
-		if(!doStartAsDBServer) {
+		if(doStartDBServer) {
 			//---------------------------------------
-	    	// Start as all in one, first application
+	    	// Start as DB Server
+			try {
+				CFWDB.server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "" +port).start();
+				db = DBInterface.createDBInterfaceH2(server, port, storePath, databaseName, username, password);
+				CFWDB.isInitialized = true;
+				initializeFullTextSearch();
+				
+			} catch (SQLException e) {
+				new CFWLog(logger).severe("Error starting database server: "+e.getMessage(), e);
+			}
+			
+		}else {
+			//---------------------------------------
+	    	// Start in MIXED mode, first application
 			// instance accessing db will create a server
 			db = DBInterface.createDBInterfaceH2AutoServer(port, storePath, databaseName, username, password);
 			CFWDB.isInitialized = true;
 			initializeFullTextSearch();
-		}else {
-
-				System.out.println("Bla");
-				//---------------------------------------
-		    	// Start as DB only instance
-				//CFWDB.server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "" +port).start();
-				db = DBInterface.createDBInterfaceH2AutoServer(port, storePath, databaseName, username, password);
-				db.preparedExecute("SELECT 1 FROM DUAL");
-				CFWDB.isInitialized = true;
-				initializeFullTextSearch();
 		}
 	}
 		
