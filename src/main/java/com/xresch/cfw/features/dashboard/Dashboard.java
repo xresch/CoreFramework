@@ -16,6 +16,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
+import com.xresch.cfw.features.contextsettings.ContextSettings.ContextSettingsFields;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
@@ -41,9 +42,9 @@ public class Dashboard extends CFWObject {
 		TAGS,
 		IS_SHARED,
 		JSON_SHARE_WITH_USERS,
-		JSON_SHARE_WITH_ROLES,
+		JSON_SHARE_WITH_GROUPS,
 		JSON_EDITORS,
-		JSON_EDITOR_ROLES,
+		JSON_EDITOR_GROUPS,
 		IS_DELETABLE,
 		IS_RENAMABLE,
 	}
@@ -104,7 +105,7 @@ public class Dashboard extends CFWObject {
 	
 	private CFWField<Boolean> isShared = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.IS_SHARED)
 			.apiFieldType(FormFieldType.TEXT)
-			.setDescription("Make the dashboard shared with other people or keep it private. If no users or roles are specified, the dashboard is shared with all users having access to the dashboard features.")
+			.setDescription("Make the dashboard shared with other people or keep it private. If no shared users or shared groups are specified(defined editors have no impact), the dashboard is shared with all users having access to the dashboard features.")
 			.setValue(false);
 	
 	private CFWField<LinkedHashMap<String,String>> shareWithUsers = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_USERS)
@@ -117,9 +118,9 @@ public class Dashboard extends CFWObject {
 				}
 			});
 	
-	private CFWField<LinkedHashMap<String,String>> shareWithRoles = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_ROLES)
-			.setLabel("Share with Roles")
-			.setDescription("Share this dashboard with specific roles.")
+	private CFWField<LinkedHashMap<String,String>> shareWithGroups = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_GROUPS)
+			.setLabel("Share with Groups")
+			.setDescription("Share this dashboard with specific groups.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
@@ -138,9 +139,9 @@ public class Dashboard extends CFWObject {
 				}
 			});
 	
-	private CFWField<LinkedHashMap<String,String>> editorRoles = CFWField.newTagsSelector(DashboardFields.JSON_EDITOR_ROLES)
-			.setLabel("Editor Roles")
-			.setDescription("Allow users having at least one of the specified roles to view and edit the dashboard, even when the dashboard is not shared.")
+	private CFWField<LinkedHashMap<String,String>> editorGroups = CFWField.newTagsSelector(DashboardFields.JSON_EDITOR_GROUPS)
+			.setLabel("Editor Groups")
+			.setDescription("Allow users having at least one of the specified groups to view and edit the dashboard, even when the dashboard is not shared.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				
@@ -182,9 +183,20 @@ public class Dashboard extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyOwner, name, description, tags, isShared, shareWithUsers, shareWithRoles, editors, editorRoles, isDeletable, isRenamable);
+		this.addFields(id, foreignKeyOwner, name, description, tags, isShared, shareWithUsers, shareWithGroups, editors, editorGroups, isDeletable, isRenamable);
 	}
-		
+	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@Override
+	public void migrateTable() {
+		//----------------------------------------
+		// Migration from v3.0.0 to next version
+		CFWSQL.renameColumn(TABLE_NAME, "JSON_SHARE_WITH_ROLES", DashboardFields.JSON_SHARE_WITH_GROUPS.toString());
+		CFWSQL.renameColumn(TABLE_NAME, "JSON_EDITOR_ROLES", DashboardFields.JSON_EDITOR_GROUPS.toString());
+	}
+	
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
@@ -196,6 +208,8 @@ public class Dashboard extends CFWObject {
 		new CFWSQL(this)
 			.custom("ALTER TABLE IF EXISTS CFW_DASHBOARD ALTER COLUMN IF EXISTS NAME SET DATA TYPE VARCHAR_IGNORECASE;")
 			.execute();
+		
+
 		
 	}
 	/**************************************************************************************
@@ -222,9 +236,9 @@ public class Dashboard extends CFWObject {
 						DashboardFields.TAGS.toString(),
 						DashboardFields.IS_SHARED.toString(),
 						DashboardFields.JSON_SHARE_WITH_USERS.toString(),
-						DashboardFields.JSON_SHARE_WITH_ROLES.toString(),
+						DashboardFields.JSON_SHARE_WITH_GROUPS.toString(),
 						DashboardFields.JSON_EDITORS.toString(),
-						DashboardFields.JSON_EDITOR_ROLES.toString(),
+						DashboardFields.JSON_EDITOR_GROUPS.toString(),
 						DashboardFields.IS_DELETABLE.toString(),
 						DashboardFields.IS_RENAMABLE.toString(),		
 				};
@@ -315,12 +329,12 @@ public class Dashboard extends CFWObject {
 		return this;
 	}
 	
-	public LinkedHashMap<String,String> sharedWithRoles() {
-		return shareWithRoles.getValue();
+	public LinkedHashMap<String,String> sharedWithGroups() {
+		return shareWithGroups.getValue();
 	}
 	
-	public Dashboard sharedWithRoles(LinkedHashMap<String,String> value) {
-		this.shareWithRoles.setValue(value);
+	public Dashboard sharedWithGroups(LinkedHashMap<String,String> value) {
+		this.shareWithGroups.setValue(value);
 		return this;
 	}
 	public LinkedHashMap<String,String> editors() {
@@ -332,12 +346,12 @@ public class Dashboard extends CFWObject {
 		return this;
 	}
 	
-	public LinkedHashMap<String,String> editorRoles() {
-		return editorRoles.getValue();
+	public LinkedHashMap<String,String> editorGroups() {
+		return editorGroups.getValue();
 	}
 	
-	public Dashboard editorRoles(LinkedHashMap<String,String> value) {
-		this.editorRoles.setValue(value);
+	public Dashboard editorGroups(LinkedHashMap<String,String> value) {
+		this.editorGroups.setValue(value);
 		return this;
 	}
 	

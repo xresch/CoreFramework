@@ -131,9 +131,9 @@ public class TestDashboard extends DBTestMaster {
 				.description("Test Dashboard")
 				.isShared(true)
 				.sharedWithUsers(sharedWithUser)
-				.sharedWithRoles(sharedWithRoles)
+				.sharedWithGroups(sharedWithRoles)
 				.editors(editors)
-				.editorRoles(editorRoles)
+				.editorGroups(editorRoles)
 				.isDeletable(true)
 				.isRenamable(true)
 		);
@@ -191,9 +191,9 @@ public class TestDashboard extends DBTestMaster {
 		Assertions.assertEquals(userCreator.getPrimaryKey(), boardAllSpecificAccess.foreignKeyOwner());
 		Assertions.assertTrue(boardAllSpecificAccess.isShared());
 		Assertions.assertTrue(boardAllSpecificAccess.sharedWithUsers().containsKey(userViewer.id()+""));
-		Assertions.assertTrue(boardAllSpecificAccess.sharedWithRoles().containsKey(roleGroupShared.id()+""));
+		Assertions.assertTrue(boardAllSpecificAccess.sharedWithGroups().containsKey(roleGroupShared.id()+""));
 		Assertions.assertTrue(boardAllSpecificAccess.editors().containsKey(userDirectEditor.id()+""));
-		Assertions.assertTrue(boardAllSpecificAccess.editorRoles().containsKey(roleGroupEditors.id()+""));
+		Assertions.assertTrue(boardAllSpecificAccess.editorGroups().containsKey(roleGroupEditors.id()+""));
 		Assertions.assertTrue(boardAllSpecificAccess.isDeletable());
 		Assertions.assertTrue(boardAllSpecificAccess.isRenamable());
 	}

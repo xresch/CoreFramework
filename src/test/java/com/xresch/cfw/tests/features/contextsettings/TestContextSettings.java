@@ -105,7 +105,7 @@ public class TestContextSettings extends DBTestMaster {
 				.type(TestMockupContextSettings.SETTINGS_TYPE)
 				.name("SettingsRestricted")
 				.restrictedToUsers(restrictedToUser)
-				.restrictedToRoles(restrictedToRoles)
+				.restrictedToGroups(restrictedToRoles)
 				.settings("{}")
 			);
 			
@@ -123,7 +123,7 @@ public class TestContextSettings extends DBTestMaster {
 		Assertions.assertEquals(TestMockupContextSettings.SETTINGS_TYPE, settingsRestricted.type());
 
 		Assertions.assertTrue(settingsRestricted.restrictedToUsers().containsKey(userAllowedAsUser.id()+""));
-		Assertions.assertTrue(settingsRestricted.restrictedToRoles().containsKey(roleAllowedGroup.id()+""));
+		Assertions.assertTrue(settingsRestricted.restrictedToGroups().containsKey(roleAllowedGroup.id()+""));
 		Assertions.assertEquals("{}",settingsRestricted.settings());
 	}
 	

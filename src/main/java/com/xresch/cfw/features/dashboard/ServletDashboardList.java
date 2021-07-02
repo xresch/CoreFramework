@@ -323,9 +323,9 @@ public class ServletDashboardList extends HttpServlet
 							
 							if(!dashboard.isShared()
 							&& (dashboard.sharedWithUsers().size() > 0
-							   || dashboard.sharedWithRoles().size() > 0
+							   || dashboard.sharedWithGroups().size() > 0
 							   || dashboard.editors().size() > 0
-							   || dashboard.editorRoles().size() > 0
+							   || dashboard.editorGroups().size() > 0
 								)
 							) {
 								
@@ -337,9 +337,9 @@ public class ServletDashboardList extends HttpServlet
 							
 							if(dashboard.isShared()
 							&& dashboard.sharedWithUsers().size() == 0
-							&& dashboard.sharedWithRoles().size() == 0
+							&& dashboard.sharedWithGroups().size() == 0
 							&& dashboard.editors().size() == 0
-							&& dashboard.editorRoles().size() == 0) {
+							&& dashboard.editorGroups().size() == 0) {
 										
 								CFW.Context.Request.addAlertMessage(
 										MessageType.INFO, 

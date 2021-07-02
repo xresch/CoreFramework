@@ -529,8 +529,9 @@ public class CFWObject {
 	//##############################################################################
 	
 	/****************************************************************
-	 * Executed before createTable() is executed. Can be overriden
-	 * to migrate existing tables to use CFWObjects instead.
+	 * Executed before createTable() is executed. 
+	 * Raniming columns should be done through this method (hint: CFWSQL.renameColumn()).
+	 * Can be overridden to migrate existing tables to use CFWObjects instead.
 	 * @return CFWQuery for method chaining
 	 ****************************************************************/
 	public void migrateTable() {

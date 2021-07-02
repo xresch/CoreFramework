@@ -223,7 +223,7 @@ public class CFWDBDashboard {
 			
 		
 		//-------------------------
-		// Union with Shared Roles
+		// Union with Shared Groups
 		query.union()
 			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
 			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION, DashboardFields.TAGS)
@@ -236,7 +236,7 @@ public class CFWDBDashboard {
 			if(i > 0) {
 				query.or();
 			}
-			query.like(DashboardFields.JSON_SHARE_WITH_ROLES, "%\""+roleID+"\":%");
+			query.like(DashboardFields.JSON_SHARE_WITH_GROUPS, "%\""+roleID+"\":%");
 		}
 		
 		query.custom(")");
@@ -253,7 +253,7 @@ public class CFWDBDashboard {
 			if(i > 0) {
 				query.or();
 			}
-			query.like(DashboardFields.JSON_EDITOR_ROLES, "%\""+roleID+"\":%");
+			query.like(DashboardFields.JSON_EDITOR_GROUPS, "%\""+roleID+"\":%");
 		}
 		
 		query.custom(")");
@@ -428,9 +428,9 @@ public class CFWDBDashboard {
 				
 				//-----------------------------
 				// Resolve Shared Roles
-				if(dashboard.sharedWithRoles() != null) {
+				if(dashboard.sharedWithGroups() != null) {
 					LinkedHashMap<String, String> resolvedSharedRoles = new LinkedHashMap<String, String>();
-					for(String id : dashboard.sharedWithRoles().keySet()) {
+					for(String id : dashboard.sharedWithGroups().keySet()) {
 						Role role = CFW.DB.Roles.selectByID(Integer.parseInt(id));
 						if(role != null) {
 							resolvedSharedRoles.put(""+role.id(), role.name());
@@ -438,18 +438,18 @@ public class CFWDBDashboard {
 							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
 									CFW.L("cfw_core_error_rolenotfound",
 										  "The  role '{0}' could not be found.",
-										  dashboard.sharedWithRoles().get(id))
+										  dashboard.sharedWithGroups().get(id))
 							);
 						}
 					}
-					dashboard.sharedWithRoles(resolvedSharedRoles);
+					dashboard.sharedWithGroups(resolvedSharedRoles);
 				}
 				
 				//-----------------------------
 				// Resolve Editor Roles
-				if(dashboard.editorRoles() != null) {
+				if(dashboard.editorGroups() != null) {
 					LinkedHashMap<String, String> resolvedEditorRoles = new LinkedHashMap<String, String>();
-					for(String id : dashboard.editorRoles().keySet()) {
+					for(String id : dashboard.editorGroups().keySet()) {
 						Role role = CFW.DB.Roles.selectByID(Integer.parseInt(id));
 						if(role != null) {
 							resolvedEditorRoles.put(""+role.id(), role.name());
@@ -457,11 +457,11 @@ public class CFWDBDashboard {
 							CFW.Context.Request.addAlertMessage(MessageType.WARNING, 
 									CFW.L("cfw_core_error_rolenotfound",
 										  "The  role '{0}' could not be found.",
-										  dashboard.editorRoles().get(id))
+										  dashboard.editorGroups().get(id))
 							);
 						}
 					}
-					dashboard.editorRoles(resolvedEditorRoles);
+					dashboard.editorGroups(resolvedEditorRoles);
 				}
 				
 				//-----------------------------
@@ -640,13 +640,13 @@ public class CFWDBDashboard {
 		//-----------------------------------
 		// Get Dashboard 
 		Dashboard dashboard = (Dashboard)new CFWSQL(new Dashboard())
-			.select(DashboardFields.JSON_SHARE_WITH_ROLES, DashboardFields.JSON_EDITOR_ROLES)
+			.select(DashboardFields.JSON_SHARE_WITH_GROUPS, DashboardFields.JSON_EDITOR_GROUPS)
 			.where(DashboardFields.PK_ID, dashboardID)
 			.getFirstAsObject();
 		
 		//-----------------------------------
 		// Check User has Shared Role
-		LinkedHashMap<String, String> sharedRoles = dashboard.sharedWithRoles();
+		LinkedHashMap<String, String> sharedRoles = dashboard.sharedWithGroups();
 		
 		if(sharedRoles != null && sharedRoles.size() > 0) {
 			for(String roleID : sharedRoles.keySet()) {
@@ -658,7 +658,7 @@ public class CFWDBDashboard {
 		
 		//-----------------------------------
 		// Check User has Editor Role
-		LinkedHashMap<String, String> editorRoles = dashboard.editorRoles();
+		LinkedHashMap<String, String> editorRoles = dashboard.editorGroups();
 		
 		if(editorRoles != null && editorRoles.size() > 0) {
 			for(String roleID : editorRoles.keySet()) {
@@ -744,9 +744,9 @@ public class CFWDBDashboard {
 		
 		//--------------------------------------
 		// Check User has Editor Role
-		if(dashboard.editorRoles() != null) {
+		if(dashboard.editorGroups() != null) {
 			for(int roleID : CFW.Context.Request.getUserRoles().keySet()) {
-				if (dashboard.editorRoles().containsKey(""+roleID)) {
+				if (dashboard.editorGroups().containsKey(""+roleID)) {
 					return true;
 				}
 			}

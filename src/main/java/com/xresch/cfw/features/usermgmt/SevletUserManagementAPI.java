@@ -75,8 +75,11 @@ public class SevletUserManagementAPI extends HttpServlet {
 													break;						
 					  								
 							case "userrolemap": 	content.append(CFW.DB.UserRoleMap.getUserRoleMapForUserAsJSON(ID));
-					  								break;		
-					  							
+					  								break;	
+					  								
+							case "usergroupmap": 	content.append(CFW.DB.UserRoleMap.getUserGroupMapForUserAsJSON(ID));
+													break;	
+													
 							case "roles": 			content.append(CFW.DB.Roles.getUserRoleListAsJSON());
 							  			   			break;
 
@@ -118,7 +121,9 @@ public class SevletUserManagementAPI extends HttpServlet {
 					
 					case "update": 			
 						switch(item.toLowerCase()) {
-							case "userrolemap": 		userID = request.getParameter("itemid");
+							case "userrolemap": 
+							case "usergroupmap": 
+														userID = request.getParameter("itemid");
 														roleID = request.getParameter("listitemid");
 														jsonResponse.setSuccess(CFW.DB.UserRoleMap.toogleUserInRole(userID, roleID));
 														SessionTracker.updateUserRights(Integer.parseInt(userID));

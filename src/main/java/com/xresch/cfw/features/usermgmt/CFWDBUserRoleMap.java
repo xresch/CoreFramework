@@ -273,7 +273,7 @@ public class CFWDBUserRoleMap {
 	}
 	
 	/***************************************************************
-	 * Returns a list of all roles and if the user is part of them 
+	 * Returns a list of roles without groups and if the user is part of them 
 	 * as a json array.
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
@@ -288,12 +288,48 @@ public class CFWDBUserRoleMap {
 			return "[]";
 		}
 		
-		String selectRolesForUser = "SELECT G.PK_ID, G.NAME, G.DESCRIPTION, M.FK_ID_USER AS ITEM_ID, M.IS_DELETABLE FROM "+Role.TABLE_NAME+" G "
+		String selectRolesForUser = "SELECT * FROM ("
+				+"SELECT G.PK_ID, G.NAME, G.DESCRIPTION, G.IS_GROUP AS IS_GROUP, M.FK_ID_USER AS ITEM_ID, M.IS_DELETABLE FROM "+Role.TABLE_NAME+" G "
 				+ " LEFT JOIN "+CFWDBUserRoleMap.TABLE_NAME+" M "
 				+ " ON M.FK_ID_ROLE = G.PK_ID "
 				+ " AND G.CATEGORY = ?"
 				+ " AND M.FK_ID_USER = ?"
-				+ " ORDER BY LOWER(G.NAME)";
+				+ " ORDER BY LOWER(G.NAME)"
+				+ ") WHERE IS_GROUP = FALSE OR IS_GROUP IS NULL";
+		
+		ResultSet result = CFWDB.preparedExecuteQuery(selectRolesForUser, 
+				"user",
+				userID);
+		String json = ResultSetUtils.toJSON(result);
+		CFWDB.close(result);	
+		return json;
+
+	}
+	
+	/***************************************************************
+	 * Returns a list of group and if the user is part of them 
+	 * as a json array.
+	 * @param role
+	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
+	 ****************************************************************/
+	public static String getUserGroupMapForUserAsJSON(String userID) {
+		
+		//----------------------------------
+		// Check input format
+		if(userID == null ^ !userID.matches("\\d+")) {
+			new CFWLog(logger)
+			.severe("The userID '"+userID+"' is not a number.");
+			return "[]";
+		}
+		
+		String selectRolesForUser = "SELECT * FROM ("
+				+"SELECT G.PK_ID, G.NAME, G.DESCRIPTION, G.IS_GROUP AS IS_GROUP, M.FK_ID_USER AS ITEM_ID, M.IS_DELETABLE FROM "+Role.TABLE_NAME+" G "
+				+ " LEFT JOIN "+CFWDBUserRoleMap.TABLE_NAME+" M "
+				+ " ON M.FK_ID_ROLE = G.PK_ID "
+				+ " AND G.CATEGORY = ?"
+				+ " AND M.FK_ID_USER = ?"
+				+ " ORDER BY LOWER(G.NAME)"
+				+ ") WHERE IS_GROUP = TRUE";
 		
 		ResultSet result = CFWDB.preparedExecuteQuery(selectRolesForUser, 
 				"user",

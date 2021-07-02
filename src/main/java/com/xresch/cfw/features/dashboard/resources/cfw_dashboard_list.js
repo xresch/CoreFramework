@@ -367,14 +367,14 @@ function cfw_dashboardlist_printDashboards(data, type){
 					label: 'Sharing Details',
 					name: 'table',
 					renderdef: {
-						visiblefields: ["NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_ROLES", "JSON_EDITORS", "JSON_EDITOR_ROLES"],
+						visiblefields: ["NAME", "IS_SHARED", "JSON_SHARE_WITH_USERS", "JSON_SHARE_WITH_GROUPS", "JSON_EDITORS", "JSON_EDITOR_GROUPS"],
 						labels: {
 					 		PK_ID: "ID",
 					 		IS_SHARED: 'Shared',
 					 		JSON_SHARE_WITH_USERS: 'Shared User', 
-						 	JSON_SHARE_WITH_ROLES: 'Shared Roles', 
+						 	JSON_SHARE_WITH_GROUPS: 'Shared Groups', 
 						 	JSON_EDITORS: 'Editors', 
-						 	JSON_EDITOR_ROLES: 'Editor Roles'
+						 	JSON_EDITOR_GROUPS: 'Editor Groups'
 					 	},
 						rendererSettings: {
 							table: {filterable: false},
@@ -420,9 +420,9 @@ function cfw_dashboardlist_printDashboards(data, type){
 			 		},
 			 		TAGS: badgeCustomizerFunction,
 			 		JSON_SHARE_WITH_USERS: badgeCustomizerFunction, 
-			 		JSON_SHARE_WITH_ROLES: badgeCustomizerFunction, 
+			 		JSON_SHARE_WITH_GROUPS: badgeCustomizerFunction, 
 			 		JSON_EDITORS: badgeCustomizerFunction, 
-			 		JSON_EDITOR_ROLES: badgeCustomizerFunction
+			 		JSON_EDITOR_GROUPS: badgeCustomizerFunction
 			 	},
 				actions: actionButtons,
 //				bulkActions: {

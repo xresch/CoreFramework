@@ -100,7 +100,16 @@ function cfw_usermgmt_editUser(userID){
 	roleDiv.append('<h2>'+CFWL('cfw_usermgmt_roles', "Roles")+'</h2>');
 	allDiv.append(roleDiv);
 	
-	cfw_usermgmt_createToggleTable(roleDiv, "userrolemap", userID)
+	cfw_usermgmt_createToggleTable(roleDiv, "userrolemap", userID);
+	//-----------------------------------
+	// groups
+	//-----------------------------------
+	var groupDiv = $('<div id="cfw-usermgmt-groups">');
+	groupDiv.append('<h2>'+CFWL('cfw_usermgmt_groups', "Groups")+'</h2>');
+	allDiv.append(groupDiv);
+	
+	cfw_usermgmt_createToggleTable(groupDiv, "usergroupmap", userID);
+	
 	
 	CFW.ui.showModal("Edit User", allDiv, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'users'})");
 	

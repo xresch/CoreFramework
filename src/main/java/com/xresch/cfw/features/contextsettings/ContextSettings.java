@@ -16,8 +16,6 @@ import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.dashboard.Dashboard;
-import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
@@ -186,11 +184,11 @@ public class ContextSettings extends CFWObject {
 		return this;
 	}
 	
-	public LinkedHashMap<String,String> restrictedToRoles() {
+	public LinkedHashMap<String,String> restrictedToGroups() {
 		return restrictedToGroups.getValue();
 	}
 	
-	public ContextSettings restrictedToRoles(LinkedHashMap<String,String> value) {
+	public ContextSettings restrictedToGroups(LinkedHashMap<String,String> value) {
 		this.restrictedToGroups.setValue(value);
 		return this;
 	}
