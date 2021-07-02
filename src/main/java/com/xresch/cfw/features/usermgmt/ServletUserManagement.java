@@ -117,6 +117,30 @@ public class ServletUserManagement extends HttpServlet
 				
 			}
 		});
+		
+		//--------------------------------------
+		// Create Role Form
+		CFWForm createGroupForm = new Role().toForm("cfwCreateGroupForm", "Create Group");
+		
+		createGroupForm.setFormHandler(new CFWFormHandler() {
+			
+			@Override
+			public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+								
+				if(origin != null) {
+					
+					origin.mapRequestParameters(request);
+					Role role = (Role)origin;
+					role.category("user")
+						.isGroup(true);
+					
+					if( CFW.DB.Roles.create(role) ) {
+						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Group created successfully!");
+					}
+				}
+				
+			}
+		});
 	}
 	
 	class CreateUserForm extends CFWForm{

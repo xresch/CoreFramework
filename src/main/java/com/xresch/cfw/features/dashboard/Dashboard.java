@@ -123,7 +123,7 @@ public class Dashboard extends CFWObject {
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
-					return CFW.DB.Roles.autocompleteRole(searchValue, this.getMaxResults());					
+					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
 				}
 			});
 	
@@ -145,7 +145,7 @@ public class Dashboard extends CFWObject {
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				
 				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
-					return CFW.DB.Roles.autocompleteRole(searchValue, this.getMaxResults());
+					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());
 				}
 			});
 	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, DashboardFields.IS_DELETABLE.toString())

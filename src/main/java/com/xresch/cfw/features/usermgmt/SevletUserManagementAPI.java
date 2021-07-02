@@ -79,13 +79,16 @@ public class SevletUserManagementAPI extends HttpServlet {
 					  							
 							case "roles": 			content.append(CFW.DB.Roles.getUserRoleListAsJSON());
 							  			   			break;
-							
+
 							case "role": 			content.append(CFW.DB.Roles.getUserRolesAsJSON(ID));
 													break;	
 													
 							case "rolepermissionmap": 	content.append(CFW.DB.RolePermissionMap.getPermissionMapForRoleAsJSON(ID));
 														break;	
-								
+							
+							case "groups": 			content.append(CFW.DB.Roles.getGroupListAsJSON());
+													break;	
+													
 							case "permissions":		content.append(CFW.DB.Permissions.getUserPermissionListAsJSON());
 		  			   								break;  
 		  			   							
@@ -100,6 +103,9 @@ public class SevletUserManagementAPI extends HttpServlet {
 										  		break;
 										  
 							case "roles": 		jsonResponse.setSuccess(CFW.DB.Roles.deleteMultipleByID(IDs));
+												break;  
+												
+							case "groups": 		jsonResponse.setSuccess(CFW.DB.Roles.deleteMultipleByID(IDs));
 												break;  
 												
 							case "permissions": jsonResponse.setSuccess(CFW.DB.Permissions.deleteMultipleByID(IDs));
@@ -134,7 +140,10 @@ public class SevletUserManagementAPI extends HttpServlet {
 												break;
 							
 							case "editrole": 	createEditRoleForm(jsonResponse, ID);
-							break;
+												break;
+							
+							case "editgroup": 	createEditGroupForm(jsonResponse, ID);
+												break;
 							
 							case "resetpw": 	createResetPasswordForm(jsonResponse, ID);
 							break;
@@ -193,6 +202,34 @@ public class SevletUserManagementAPI extends HttpServlet {
 		if(role != null) {
 			
 			CFWForm editRoleForm = role.toForm("cfwEditRoleForm"+ID, "Update Role");
+			
+			editRoleForm.setFormHandler(new CFWFormHandler() {
+				
+				@Override
+				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+					
+					if(origin.mapRequestParameters(request)
+					&& CFW.DB.Roles.update((Role)origin)) {
+						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");	
+					}
+					
+				}
+			});
+			
+			editRoleForm.appendToPayload(json);
+			json.setSuccess(true);
+			
+		}
+		
+	}
+	
+	private void createEditGroupForm(JSONResponse json, String ID) {
+		
+		Role role = CFW.DB.Roles.selectByID(Integer.parseInt(ID));
+		
+		if(role != null) {
+			
+			CFWForm editRoleForm = role.toForm("cfwEditGroupForm"+ID, "Update Group");
 			
 			editRoleForm.setFormHandler(new CFWFormHandler() {
 				

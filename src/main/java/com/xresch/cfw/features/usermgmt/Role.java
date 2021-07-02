@@ -32,6 +32,7 @@ public class Role extends CFWObject {
 		DESCRIPTION,
 		IS_DELETABLE,
 		IS_RENAMABLE,
+		IS_GROUP,
 	}
 
 	private static Logger logger = CFWLog.getLogger(Role.class.getName());
@@ -64,16 +65,16 @@ public class Role extends CFWObject {
 				}
 			});
 	
-	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, RoleFields.DESCRIPTION.toString())
+	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, RoleFields.DESCRIPTION)
 			.setDescription("The description of the role.")
 			.addValidator(new LengthValidator(-1, 2000000));
 	
-	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, RoleFields.IS_DELETABLE.toString())
+	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, RoleFields.IS_DELETABLE)
 			.setDescription("Flag to define if the role can be deleted or not.")
 			.setColumnDefinition("BOOLEAN")
 			.setValue(true);
 	
-	private CFWField<Boolean> isRenamable = CFWField.newBoolean(FormFieldType.NONE, RoleFields.IS_RENAMABLE.toString())
+	private CFWField<Boolean> isRenamable = CFWField.newBoolean(FormFieldType.NONE, RoleFields.IS_RENAMABLE)
 			.setColumnDefinition("BOOLEAN DEFAULT TRUE")
 			.setDescription("Flag to define if the role can be renamed or not.")
 			.setValue(true)
@@ -90,6 +91,11 @@ public class Role extends CFWObject {
 					return true;
 				}
 			});
+	
+	private CFWField<Boolean> isGroup = CFWField.newBoolean(FormFieldType.NONE, RoleFields.IS_GROUP)
+			.setDescription("Flag to define if the role is a Group.")
+			.setColumnDefinition("BOOLEAN")
+			.setValue(false);
 	
 	public Role() {
 		initializeFields();
@@ -108,7 +114,7 @@ public class Role extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, category, name, description, isDeletable, isRenamable);
+		this.addFields(id, category, name, description, isDeletable, isRenamable, isGroup);
 	}
 	
 	/**************************************************************************************
@@ -316,6 +322,15 @@ public class Role extends CFWObject {
 	
 	public Role isRenamable(boolean isRenamable) {
 		this.isRenamable.setValue(isRenamable);
+		return this;
+	}	
+	
+	public boolean isGroup() {
+		return isGroup.getValue();
+	}
+	
+	public Role isGroup(boolean value) {
+		this.isGroup.setValue(value);
 		return this;
 	}	
 	

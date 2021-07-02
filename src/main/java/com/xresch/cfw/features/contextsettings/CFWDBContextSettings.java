@@ -287,7 +287,7 @@ public class CFWDBContextSettings {
 			for(int i = 0 ; i < roleArray.length; i++ ) {
 				int roleID = roleArray[i];
 	
-				query.or().like(ContextSettingsFields.JSON_RESTRICTED_TO_ROLES, "%\""+roleID+"\":%");
+				query.or().like(ContextSettingsFields.JSON_RESTRICTED_TO_GROUPS, "%\""+roleID+"\":%");
 			}
 		}
 		LinkedHashMap<Object, Object> objects =  query

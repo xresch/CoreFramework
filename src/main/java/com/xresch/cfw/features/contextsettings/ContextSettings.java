@@ -11,6 +11,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.AutocompleteResult;
@@ -34,7 +35,7 @@ public class ContextSettings extends CFWObject {
 		CFW_CTXSETTINGS_NAME,
 		CFW_CTXSETTINGS_DESCRIPTION,
 		JSON_RESTRICTED_TO_USERS,
-		JSON_RESTRICTED_TO_ROLES,
+		JSON_RESTRICTED_TO_GROUPS,
 		JSON_CTXSETTINGS
 	}
 	
@@ -61,7 +62,7 @@ public class ContextSettings extends CFWObject {
 	
 	private CFWField<LinkedHashMap<String,String>> restrictedToUsers = CFWField.newTagsSelector(ContextSettingsFields.JSON_RESTRICTED_TO_USERS)
 			.setLabel("Restricted to Users")
-			.setDescription("If at least one user or role is defined for access restriction, will only allow the specified users to access the setting. if none is specified, everybody has access.")
+			.setDescription("If at least one user or group is defined for access restriction, will only allow the specified users to access the setting. if none is specified, everybody has access.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
@@ -69,13 +70,13 @@ public class ContextSettings extends CFWObject {
 				}
 			});
 	
-	private CFWField<LinkedHashMap<String,String>> restrictedToRoles = CFWField.newTagsSelector(ContextSettingsFields.JSON_RESTRICTED_TO_ROLES)
-			.setLabel("Restricted to Roles")
-			.setDescription("If at least one user or role is defined for access restriction, will only allow the specified users to access the setting. if none is specified, everybody has access.")
+	private CFWField<LinkedHashMap<String,String>> restrictedToGroups = CFWField.newTagsSelector(ContextSettingsFields.JSON_RESTRICTED_TO_GROUPS)
+			.setLabel("Restricted to Groups")
+			.setDescription("If at least one user or group is defined for access restriction, will only allow the specified users to access the setting. if none is specified, everybody has access.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
-					return CFW.DB.Roles.autocompleteRole(searchValue, this.getMaxResults());					
+					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
 				}
 			});
 	
@@ -94,9 +95,13 @@ public class ContextSettings extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, type, name, description, restrictedToUsers, restrictedToRoles, settings);
+		this.addFields(id, type, name, description, restrictedToUsers, restrictedToGroups, settings);
 	}
 		
+	public void migrateTable(){
+		CFWSQL.renameColumn(TABLE_NAME, "JSON_RESTRICTED_TO_ROLES", ContextSettingsFields.JSON_RESTRICTED_TO_GROUPS.toString());
+	}
+	
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
@@ -117,7 +122,7 @@ public class ContextSettings extends CFWObject {
 						ContextSettingsFields.CFW_CTXSETTINGS_NAME.toString(),
 						ContextSettingsFields.CFW_CTXSETTINGS_DESCRIPTION.toString(),	
 						ContextSettingsFields.JSON_RESTRICTED_TO_USERS.toString(),	
-						ContextSettingsFields.JSON_RESTRICTED_TO_ROLES.toString(),	
+						ContextSettingsFields.JSON_RESTRICTED_TO_GROUPS.toString(),	
 						ContextSettingsFields.JSON_CTXSETTINGS.toString()
 				};
 
@@ -182,11 +187,11 @@ public class ContextSettings extends CFWObject {
 	}
 	
 	public LinkedHashMap<String,String> restrictedToRoles() {
-		return restrictedToRoles.getValue();
+		return restrictedToGroups.getValue();
 	}
 	
 	public ContextSettings restrictedToRoles(LinkedHashMap<String,String> value) {
-		this.restrictedToRoles.setValue(value);
+		this.restrictedToGroups.setValue(value);
 		return this;
 	}
 	

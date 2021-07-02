@@ -8,10 +8,9 @@ import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.features.dashboard.Dashboard;
-import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -180,7 +179,7 @@ public class CFWDBRole {
 	 * @param maxResults
 	 * @return true if exists, false otherwise or in case of exception.
 	 ****************************************************************/
-	public static AutocompleteResult autocompleteRole(String searchValue, int maxResults) {
+	public static AutocompleteResult autocompleteGroup(String searchValue, int maxResults) {
 		
 		if(Strings.isNullOrEmpty(searchValue)) {
 			return new AutocompleteResult();
@@ -193,6 +192,7 @@ public class CFWDBRole {
 					RoleFields.NAME,
 					RoleFields.DESCRIPTION)
 			.whereLike("LOWER("+RoleFields.NAME+")", likeString)
+			.and(RoleFields.IS_GROUP, true)
 			.limit(maxResults)
 			.getAsAutocompleteResult(RoleFields.PK_ID, RoleFields.NAME, RoleFields.DESCRIPTION);
 
@@ -217,15 +217,33 @@ public class CFWDBRole {
 	}
 	
 	/***************************************************************
-	 * Return a list of all user roles as json string.
+	 * Return a list of user roles as json string.
 	 * 
 	 * @return Returns a result set with all users or null.
 	 ****************************************************************/
 	public static String getUserRoleListAsJSON() {
-		return new Role()
-				.queryCache(CFWDBRole.class, "getUserRoleListAsJSON")
+		return new CFWSQL(new Role())
 				.select()
 				.where(RoleFields.CATEGORY.toString(), "user")
+				.custom(" AND (")
+					.is(RoleFields.IS_GROUP, false)
+					.or().isNull(RoleFields.IS_GROUP)
+				.custom(")")
+				.orderby(RoleFields.NAME.toString())
+				.getAsJSON();
+	}
+	
+	/***************************************************************
+	 * Return a list of groups as json string.
+	 * 
+	 * @return Returns a result set with all users or null.
+	 ****************************************************************/
+	public static String getGroupListAsJSON() {
+		return new CFWSQL(new Role())
+				.queryCache()
+				.select()
+				.where(RoleFields.CATEGORY.toString(), "user")
+				.and(RoleFields.IS_GROUP, true)
 				.orderby(RoleFields.NAME.toString())
 				.getAsJSON();
 	}
