@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
@@ -314,25 +315,31 @@ public class CFWDBRolePermissionMap {
 	
 	
 	/***************************************************************
-	 * Retrieve the permissions for the specified user.
+	 * Retrieve the permission overview for all users.
 	 * @param role
-	 * @return Hashmap with permissions(key=role name), or null on exception
+	 * @return ResultSet
 	 ****************************************************************/
 	public static ResultSet getPermissionOverview() {
 		
 		return new CFWSQL(new Permission())
-				.queryCache(CFWDBRolePermissionMap.class, "getPermissionOverview")
-				.custom(
-					"SELECT U.USERNAME, G.NAME AS ROLENAME, P.NAME AS PERMISSION"
-					+" FROM CFW_USER U"
-					+" LEFT JOIN CFW_USER_ROLE_MAP AS UG ON UG.FK_ID_USER = U.PK_ID"
-					+" LEFT JOIN CFW_ROLE AS G ON UG.FK_ID_ROLE = G.PK_ID"
-					+" LEFT JOIN CFW_ROLE_PERMISSION_MAP AS GP ON GP.FK_ID_ROLE = G.PK_ID"
-					+" LEFT JOIN CFW_PERMISSION AS P ON GP.FK_ID_PERMISSION = P.PK_ID"
-					+" ORDER BY LOWER(U.USERNAME), LOWER(G.NAME), LOWER(P.NAME)")
+				.queryCache()
+				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, "sql_permissionOverviewAllUsers.sql")
 				.getResultSet();
 		
 	}
+	
+	/***************************************************************
+	 * Retrieve the permission overview for the specified user.
+	 ****************************************************************/
+	public static JsonArray getPermissionOverview(User user) {
+		
+		return new CFWSQL(new Permission())
+				.queryCache()
+				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, "sql_permissionOverviewForUser.sql", user.id())
+				.getAsJSONArray();
+		
+	}
+	
 	
 	/***************************************************************
 	 * Returns a list of all roles and if the user is part of them 

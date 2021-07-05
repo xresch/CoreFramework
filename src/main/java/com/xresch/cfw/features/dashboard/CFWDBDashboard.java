@@ -23,6 +23,7 @@ import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
+import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
@@ -281,13 +282,13 @@ public class CFWDBDashboard {
 				dashboardArray = new Dashboard()
 						.queryCache(CFWDBDashboard.class, "getJsonArrayForExportAll")
 						.select()
-						.getAsJSONArray();
+						.getObjectsAsJSONArray();
 			}else {
 				dashboardArray = new Dashboard()
 						.queryCache(CFWDBDashboard.class, "getJsonArrayForExport")
 						.select()
 						.where(DashboardFields.PK_ID, dashboardID)
-						.getAsJSONArray();
+						.getObjectsAsJSONArray();
 			}
 			
 			//-------------------------------
@@ -671,6 +672,37 @@ public class CFWDBDashboard {
 		
 		return false;
 	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public static JsonArray permissionAuditByUser(User user) {
+		
+		//-----------------------------------
+		// Check User is Admin
+		HashMap<String, Permission> permissions = CFW.DB.Permissions.selectPermissionsForUser(user);
+		
+		if( permissions.containsKey(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN) ) {
+			
+			JsonObject adminObject = new JsonObject();
+			adminObject.addProperty("Message", "The user is Dashboard Administrator and has access to every dashboard.");
+			JsonArray adminResult = new JsonArray(); 
+			adminResult.add(adminObject);
+			return adminResult;
+		}
+		
+		//-----------------------------------
+		// Check User is Shared/Editor
+		String likeID = "%\""+user.id()+"\":%";
+		
+		return new CFWSQL(new Dashboard())
+			.loadSQLResource(FeatureDashboard.PACKAGE_RESOURCES, "SQL_permissionAuditByUser.sql", 
+					user.id(), 
+					likeID,
+					likeID)
+			.getAsJSONArray();
+	}
+	
 	
 	/***************************************************************
 	 * 

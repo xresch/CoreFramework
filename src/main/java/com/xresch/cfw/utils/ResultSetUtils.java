@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.JSON;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
-import com.xresch.cfw.db.DBInterface;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.logging.CFWLog;
@@ -133,6 +133,44 @@ public class ResultSetUtils {
 		}
 			
 		return keyValueMap;
+	}
+	
+	/***************************************************************************
+	 * Converts a ResultSet into a list of maps with key/values.
+	 * @return list of maps holding key(column name) with values
+	 ***************************************************************************/
+	public static ArrayList<LinkedHashMap<String, Object>> toListOfKeyValueMaps(ResultSet result) {
+		
+		ArrayList<LinkedHashMap<String, Object>> resultList =  new ArrayList<>();
+		
+		if(result == null) {
+			return resultList;
+		}
+		
+		try {
+			ResultSetMetaData meta = result.getMetaData();
+			int columnCount = meta.getColumnCount();
+			
+			while(result.next()) {
+				LinkedHashMap<String, Object> keyValueMap = new LinkedHashMap<>();
+				
+				for(int i = 1; i <= columnCount; i++) {
+					String key = meta.getColumnLabel(i);
+					Object value = result.getObject(key);
+					keyValueMap.put(key, value);
+				}
+				resultList.add(keyValueMap);
+				
+			}
+		} catch (SQLException e) {
+			new CFWLog(logger)
+			.severe("Error reading object from database.", e);
+			
+		}finally {
+			CFWDB.close(result);
+		}
+		
+		return resultList;
 	}
 	
 	/***************************************************************
@@ -268,6 +306,51 @@ public class ResultSetUtils {
 	public static String toJSON(ResultSet resultSet) {
 		return CFW.JSON.toJSON(resultSet);
 	}
+	
+	/***************************************************************************
+	 * Converts a ResultSet into a JsonArray.
+	 * @return list of maps holding key(column name) with values
+	 ***************************************************************************/
+	public static JsonArray toJSONArray(ResultSet result) {
+		
+		JsonArray resultArray =  new JsonArray();
+		
+		if(result == null) {
+			return resultArray;
+		}
+		
+		try {
+			ResultSetMetaData meta = result.getMetaData();
+			int columnCount = meta.getColumnCount();
+			
+			while(result.next()) {
+				JsonObject currentObject = new JsonObject();
+				
+				for(int i = 1; i <= columnCount; i++) {
+					String key = meta.getColumnLabel(i);
+					Object value = result.getObject(key);
+					if(value instanceof String) { currentObject.addProperty(key, (String)value); }
+					else if(value instanceof Boolean) { currentObject.addProperty(key, (Boolean)value); }
+					else if(value instanceof Number) { currentObject.addProperty(key, (Number)value); }
+					else if(value instanceof Character) { currentObject.addProperty(key, (Character)value); }
+					else if(value  == null ) { currentObject.add(key, null); }
+					else 								{ currentObject.addProperty(key, value.toString()); }
+				}
+				resultArray.add(currentObject);
+				
+			}
+		} catch (SQLException e) {
+			new CFWLog(logger)
+			.severe("Error reading object from database.", e);
+			
+		}finally {
+			CFWDB.close(result);
+		}
+		
+		return resultArray;
+	}
+	
+	
 
 	/********************************************************************************************
 	 * Converts the ResultSet into a CSV string.

@@ -279,7 +279,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public static boolean renameColumn(String tablename, String oldname, String newname) {
 		
-		String renameColumn = "ALTER TABLE IF EXISTS "+tablename+" ALTER COLUMN "+oldname+" RENAME TO "+newname;
+		String renameColumn = "ALTER TABLE IF EXISTS "+tablename+" ALTER COLUMN IF EXISTS "+oldname+" RENAME TO "+newname;
 		return CFWDB.preparedExecute(renameColumn);
 	}
 	
@@ -1308,6 +1308,22 @@ public class CFWSQL {
 	}
 	
 	/***************************************************************
+	 * Execute the Query and gets the result as a list of maps holding.
+	 * the record values as key/value pairs.
+	 ****************************************************************/
+	public ArrayList<LinkedHashMap<String, Object>> getAsListOfKeyValueMaps() {
+		
+		ArrayList<LinkedHashMap<String, Object>> resultArray =  new ArrayList<>(); 
+		
+		if(this.execute()) {
+			resultArray = ResultSetUtils.toListOfKeyValueMaps(result);
+		}
+		
+		return resultArray;
+		
+	}
+	
+	/***************************************************************
 	 * Execute the Query and gets the result as a map of primary
 	 * keys and objects.
 	 ****************************************************************/
@@ -1417,9 +1433,21 @@ public class CFWSQL {
 	}
 	
 	/***************************************************************
-	 * Execute the Query and gets the result as JsonElements.
+	 * Execute the Query and gets the result as JSON string.
 	 ****************************************************************/
-	public ArrayList<JsonElement> getAsJSONElements() {
+	public JsonArray getAsJSONArray() {
+		
+		this.execute();
+		return ResultSetUtils.toJSONArray(result);
+				
+	}
+	
+	/***************************************************************
+	 * Execute the Query and gets the result as JsonElements by transforming
+	 * the CFWObjects.
+	 * 
+	 ****************************************************************/
+	public ArrayList<JsonElement> getObjectsAsJSONElements() {
 		
 		ArrayList<CFWObject> objects = this.getAsObjectList();
 		ArrayList<JsonElement> elements = new ArrayList<JsonElement>();
@@ -1434,7 +1462,7 @@ public class CFWSQL {
 	/***************************************************************
 	 * Execute the Query and gets the result as JSON string.
 	 ****************************************************************/
-	public JsonArray getAsJSONArray() {
+	public JsonArray getObjectsAsJSONArray() {
 		
 		ArrayList<CFWObject> objects = this.getAsObjectList();
 		JsonArray elements = new JsonArray();

@@ -18,7 +18,7 @@ public class CFWRegistryFeatures {
 	
 	private static LinkedHashSet<Class<? extends CFWAppFeature>> featureClassSet = new LinkedHashSet<>();
 	
-	//Map of Managed Features: Unique Name and Featue Class
+	//Map of Managed Features: Unique Name and Feature Class
 	private static LinkedHashMap<String, CFWAppFeature> ManagedFeatures = new LinkedHashMap<>();
 	
 	/***********************************************************************

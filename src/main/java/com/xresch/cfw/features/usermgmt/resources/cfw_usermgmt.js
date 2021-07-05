@@ -16,6 +16,88 @@ function cfw_usermgmt_reset(){
 }
 
 /******************************************************************
+ * Reset the view.
+ ******************************************************************/
+function cfw_usermgmt_formatAuditResults(parent, item){
+	
+//	[{"type":"HEADER","label":"User","text":"admin","children":
+//		[{"type":"HEADER","label":"Audit","text":"Permissions","children":
+//			[{"type":"ITEM","label":"Permission","text":"Allow HTML","children":
+//				[{"type":"ITEM","label":"Role","text":"Superuser"}]},{"type":"ITEM","label":"Permission","text":"Allow Javascript","children":
+//					[...]
+//	}
+	var htmlResult = "";
+	if(Array.isArray(item)){
+		console.log("A")
+		//------------------------------------
+		// Handle Arrays
+		console.log(item);
+		for(key in item){
+			console.log(">> A")
+			cfw_usermgmt_formatAuditResults(parent, item[key]);
+		}
+	}else{
+		console.log("B")
+		console.log(item);
+		//------------------------------------
+		// Handle Items
+		if(item['cfw-Type'] == "User"){
+			parent.append('<h2><b>User:</b> '+item.username+'</h2>');
+			for(key in item.children){
+				cfw_usermgmt_formatAuditResults(parent, item.children[key]);
+			}
+		}else if(item['cfw-Type'] == "Audit"){
+			parent.append('<h4><b>Audit:</b> '+item.name+'</h4>');
+			parent.append('<p>'+item.description+'</p>');
+			//-----------------------------------
+			// Render Data
+			var rendererSettings = {
+					data: item.auditResult,
+				 	idfield: 'PK_ID',
+				 	bgstylefield: null,
+				 	textstylefield: null,
+				 	titlefields: null,
+				 	titleformat: '{0}',
+				 	visiblefields: null,
+				 	labels: { PK_ID: "ID" },
+				 	customizers: {},
+					actions: [],					
+					rendererSettings: {
+						dataviewer: {
+							//storeid: 'staticpaginationexample',
+						 	defaultsize: 10,
+						 	renderers: [
+						 		{	label: 'Table',
+									name: 'table',
+									renderdef: {}
+								},
+						 		{	label: 'CSV',
+									name: 'csv',
+									renderdef: {}
+								},
+								{	label: 'JSON',
+									name: 'json',
+									renderdef: {}
+								}
+							]
+						},
+						
+					},
+				};
+			
+			var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
+			
+			parent.append(renderResult);
+			
+		}
+				
+		
+	}
+	
+	return htmlResult;
+}
+
+/******************************************************************
  * 
  ******************************************************************/
 function cfw_usermgmt_createToggleTable(parent, mapName, itemID){
@@ -117,6 +199,31 @@ function cfw_usermgmt_editUser(userID){
 	// Load Form
 	//-----------------------------------
 	CFW.http.createForm(CFW_USRMGMT_URL, {action: "getform", item: "edituser", id: userID}, detailsDiv);
+	
+}
+
+/******************************************************************
+ * Edit user
+ ******************************************************************/
+function cfw_usermgmt_auditUser(userID){
+	
+	var allDiv = $('<div id="cfw-usermgmt">');	
+
+	//-----------------------------------
+	// User Details
+	//-----------------------------------
+	var auditDiv = $('<div id="cfw-usermgmt-audit">');		
+	
+	CFW.ui.showModal("User Audit", auditDiv);
+	
+	//-----------------------------------
+	// Load Form
+	//-----------------------------------
+	CFW.http.getJSON(CFW_USRMGMT_URL, {action: "fetch", item: "useraudit", id: userID}, function(data){
+		if(data.payload != null){
+			cfw_usermgmt_formatAuditResults(auditDiv, data.payload);
+		}
+	});
 	
 }
 
@@ -353,7 +460,7 @@ function cfw_usermgmt_printUserList(data){
 		actionButtons.push(
 			function (record, id){ 
 				if(!record.IS_FOREIGN){
-					return '<button class="btn btn-warning btn-sm" alt="Reset Password" title="Reset Password" '
+					return '<button class="btn btn-warning btn-sm" title="Reset Password" '
 						+'onclick="cfw_usermgmt_resetPassword('+id+');">'
 						+ '<i class="fas fa-unlock-alt"></i>'
 						+ '</button></td>';
@@ -362,18 +469,32 @@ function cfw_usermgmt_printUserList(data){
 				}
 
 			});
-
+		
+		//-------------------------
+		// Audit Button
+		actionButtons.push(
+				function (record, id){ 
+					return 	'<button class="btn btn-warning btn-sm" title="Audit" '
+					+'onclick="cfw_usermgmt_auditUser('+id+');">'
+					+ '<i class="fa fa-stethoscope"></i>'
+					+ '</button>';
+					
+				});
+		
 		//-------------------------
 		// Edit Button
 		actionButtons.push(
 			function (record, id){ 
-				return 	'<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
+				return 	'<button class="btn btn-primary btn-sm" title="Edit" '
 					+'onclick="cfw_usermgmt_editUser('+id+');">'
 					+ '<i class="fa fa-pen"></i>'
 					+ '</button>';
 
 			});
 
+		
+
+		
 		
 		//-------------------------
 		// Delete Button

@@ -1,15 +1,8 @@
 package com.xresch.cfw._main;
 
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;

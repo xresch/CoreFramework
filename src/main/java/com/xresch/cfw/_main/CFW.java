@@ -46,6 +46,7 @@ import com.xresch.cfw.features.usermgmt.CFWDBRole;
 import com.xresch.cfw.features.usermgmt.CFWDBRolePermissionMap;
 import com.xresch.cfw.features.usermgmt.CFWDBUser;
 import com.xresch.cfw.features.usermgmt.CFWDBUserRoleMap;
+import com.xresch.cfw.features.usermgmt.CFWRegistryAudit;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.mail.CFWMail;
@@ -125,6 +126,7 @@ public class CFW {
 		public static class Manual extends CFWRegistryManual {} 
 		public static class Objects extends CFWRegistryObjects {} 
 		public static class Parameters extends CFWRegistryDashboardParameters {} 
+		public static class Audit extends CFWRegistryAudit {} 
 		public static class Widgets extends CFWRegistryWidgets {} 
 	}
 	public static class Schedule extends CFWTaskScheduler {}

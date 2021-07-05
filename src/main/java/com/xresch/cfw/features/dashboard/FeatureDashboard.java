@@ -14,6 +14,7 @@ import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionText;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionTextarea;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.features.usermgmt.UserAuditExecutorPermissions;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
 /**************************************************************************************************************
@@ -85,6 +86,10 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Parameters.add(new ParameterDefinitionTextarea());
 		CFW.Registry.Parameters.add(new ParameterDefinitionSelect());
 		CFW.Registry.Parameters.add(new ParameterDefinitionBoolean());
+		
+		//----------------------------------
+    	// Register Audit
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorDashboardUser());
 		
 		//----------------------------------
     	// Register Menu

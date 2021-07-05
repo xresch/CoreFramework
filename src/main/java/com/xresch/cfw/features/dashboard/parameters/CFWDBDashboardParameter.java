@@ -235,7 +235,7 @@ public class CFWDBDashboardParameter {
 			
 			if(!Strings.isNullOrEmpty(dashboardID)) {
 				selectForExport.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID);
-				return  selectForExport.getAsJSONArray();
+				return  selectForExport.getObjectsAsJSONArray();
 			}
 							
 			return null;

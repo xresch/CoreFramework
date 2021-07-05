@@ -147,7 +147,7 @@ public class CFWDBDashboardWidget {
 			
 			if(!Strings.isNullOrEmpty(dashboardID)) {
 				selectForExport.where(DashboardWidgetFields.FK_ID_DASHBOARD, dashboardID);
-				return  selectForExport.getAsJSONArray();
+				return  selectForExport.getObjectsAsJSONArray();
 			}
 							
 			return null;

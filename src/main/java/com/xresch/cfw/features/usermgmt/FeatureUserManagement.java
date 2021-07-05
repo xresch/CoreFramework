@@ -44,6 +44,10 @@ public class FeatureUserManagement extends CFWAppFeature {
 		CFW.Registry.Objects.addCFWObject(UserRoleMap.class);
 		CFW.Registry.Objects.addCFWObject(RolePermissionMap.class);
     	
+		//----------------------------------
+    	// Register Audit
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorPermissions());
+		
     	//----------------------------------
     	// Register Regular Menu
 		CFW.Registry.Components.addAdminCFWMenuItem(

@@ -94,7 +94,10 @@ public class SevletUserManagementAPI extends HttpServlet {
 													
 							case "permissions":		content.append(CFW.DB.Permissions.getUserPermissionListAsJSON());
 		  			   								break;  
-		  			   							
+		  			   		
+							case "useraudit":		content.append(CFWRegistryAudit.auditUser(ID));
+ 													break;  
+ 								
 							default: 				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
 													break;
 						}
