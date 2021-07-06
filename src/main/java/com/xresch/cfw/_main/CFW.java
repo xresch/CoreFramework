@@ -381,12 +381,13 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureConfiguration.class);
 		CFW.Registry.Features.addFeature(FeatureKeyValuePairs.class);
 		CFW.Registry.Features.addFeature(FeatureCore.class);	
-			
+				
+		CFW.Registry.Features.addFeature(FeatureUserManagement.class);	
+		
 		if(CFW.AppSettings.isContextSettingsEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureContextSettings.class);	
 		}
 		
-		CFW.Registry.Features.addFeature(FeatureUserManagement.class);	
 		CFW.Registry.Features.addFeature(FeatureAPI.class);	
 		CFW.Registry.Features.addFeature(FeatureSystemAnalytics.class);		
 		CFW.Registry.Features.addFeature(FeatureManual.class);	

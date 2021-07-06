@@ -2,10 +2,13 @@ package com.xresch.cfw.features.contextsettings;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -16,6 +19,8 @@ import com.xresch.cfw.features.contextsettings.ContextSettings.ContextSettingsFi
 import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
+import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -328,7 +333,29 @@ public class CFWDBContextSettings {
 				.getAsJSON();
 	}
 	
-	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public static JsonArray auditAccessToContextSettings(User user) {
+		
+		//-----------------------------------
+		// Check User is Admin
+		HashMap<String, Permission> permissions = CFW.DB.Permissions.selectPermissionsForUser(user);
+		
+		if( permissions.containsKey(FeatureContextSettings.PERMISSION_CONTEXT_SETTINGS) ) {
+			JsonObject adminObject = new JsonObject();
+			adminObject.addProperty("Message", "The user is Context Settings Administrator and has access to all settings.");
+			JsonArray adminResult = new JsonArray(); 
+			adminResult.add(adminObject);
+			return adminResult;
+		}
+				
+		return new CFWSQL(new ContextSettings())
+			.queryCache()
+			.loadSQLResource(FeatureContextSettings.RESOURCE_PACKAGE, "SQL_auditAccessToContextSettings.sql", 
+					user.id())
+			.getAsJSONArray();
+	}
 	
 	//####################################################################################################
 	// CHECKS

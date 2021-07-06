@@ -3,6 +3,7 @@ package com.xresch.cfw.features.contextsettings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
+import com.xresch.cfw.features.dashboard.UserAuditExecutorDashboardUserDirect;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
@@ -25,8 +26,9 @@ public class FeatureContextSettings extends CFWAppFeature {
 		// Register Objects
 		CFW.Registry.Objects.addCFWObject(ContextSettings.class);
 
-    	//----------------------------------
-    	// Register Menus
+		//----------------------------------
+    	// Register Audit
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorContextSettings());
 		
     	//----------------------------------
     	// Register Regular Menu
