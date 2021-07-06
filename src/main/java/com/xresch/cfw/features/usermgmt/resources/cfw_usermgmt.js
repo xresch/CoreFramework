@@ -492,10 +492,7 @@ function cfw_usermgmt_printUserList(data){
 
 			});
 
-		
-
-		
-		
+				
 		//-------------------------
 		// Delete Button
 		actionButtons.push(
@@ -789,18 +786,48 @@ function cfw_usermgmt_printPermissionList(data){
  * @param data as returned by CFW.http.getJSON()
  * @return 
  ******************************************************************/
+function cfw_usermgmt_executeFullAudit(){
+	
+	CFW.ui.confirmExecute('Depending on number of users and audits, this might impact your application performance over time. Wanna do it anyway?', 'Full speed ahead!', 
+		function(){
+			CFW.http.getJSON(CFW_USRMGMT_URL, {action: "fetch", item: "fullaudit"}, function(data){
+				if(data.payload != null){
+					var parent = $("#tab-content");
+					
+					var toc = $('<div id="toc">');
+					parent.append(toc);
+					
+					var auditResults = $('<div id="auditResults">');
+					parent.append(auditResults);
+	
+					cfw_usermgmt_formatAuditResults(auditResults, data.payload);
+					
+					cfw_table_toc(auditResults, toc);
+					
+				}
+			})
+		}
+	);
+
+}
+
+/******************************************************************
+ * Print the full audit;
+ * 
+ * @param data as returned by CFW.http.getJSON()
+ * @return 
+ ******************************************************************/
 function cfw_usermgmt_printFullAudit(data){
+	
 	var parent = $("#tab-content");
 	
-	var toc = $('<div id="toc">');
-	parent.append(toc);
+	//--------------------------------
+	// Button
+	var createButton = $('<button class="btn btn-sm btn-danger mb-2" onclick="cfw_usermgmt_executeFullAudit()">'
+							+ '<i class="fas fa-bolt"></i> '+ CFWL('cfw_core_execute')
+					   + '</button>');
 	
-	var auditResults = $('<div id="auditResults">');
-	parent.append(auditResults);
-
-	cfw_usermgmt_formatAuditResults(auditResults, data.payload);
-	
-	cfw_table_toc(auditResults, toc);
+	parent.append(createButton);
 }
 
 /******************************************************************
