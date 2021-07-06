@@ -20,19 +20,16 @@ function cfw_usermgmt_reset(){
  ******************************************************************/
 function cfw_usermgmt_formatAuditResults(parent, item){
 	
-	var htmlResult = "";
 	if(Array.isArray(item)){
-		console.log("A")
+		
 		//------------------------------------
 		// Handle Arrays
 		console.log(item);
 		for(key in item){
-			console.log(">> A")
 			cfw_usermgmt_formatAuditResults(parent, item[key]);
 		}
 	}else{
-		console.log("B")
-		console.log(item);
+
 		//------------------------------------
 		// Handle Items
 		if(item['cfw-Type'] == "User"){
@@ -43,6 +40,13 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 		}else if(item['cfw-Type'] == "Audit"){
 			parent.append('<h4><b>Audit:</b> '+item.name+'</h4>');
 			parent.append('<p>'+item.description+'</p>');
+			
+			//-----------------------------------
+			// Handle Empty Results
+			if(item.auditResult == null || item.auditResult.length == 0){
+				parent.append('<span class="badge badge-info">No results found for this audit.</span>');
+				return;
+			}
 			
 			//-----------------------------------
 			// Add customizer
@@ -62,7 +66,7 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 			for(key in item.auditResult[0]){
 				customizers[key] = booleanCustomizer;
 			}
-			console
+			
 			//-----------------------------------
 			// Render Data
 			var rendererSettings = {
@@ -90,11 +94,7 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 			parent.append(renderResult);
 			
 		}
-				
-		
 	}
-	
-	return htmlResult;
 }
 
 /******************************************************************
