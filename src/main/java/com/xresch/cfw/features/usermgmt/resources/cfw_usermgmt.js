@@ -20,12 +20,6 @@ function cfw_usermgmt_reset(){
  ******************************************************************/
 function cfw_usermgmt_formatAuditResults(parent, item){
 	
-//	[{"type":"HEADER","label":"User","text":"admin","children":
-//		[{"type":"HEADER","label":"Audit","text":"Permissions","children":
-//			[{"type":"ITEM","label":"Permission","text":"Allow HTML","children":
-//				[{"type":"ITEM","label":"Role","text":"Superuser"}]},{"type":"ITEM","label":"Permission","text":"Allow Javascript","children":
-//					[...]
-//	}
 	var htmlResult = "";
 	if(Array.isArray(item)){
 		console.log("A")
@@ -49,6 +43,26 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 		}else if(item['cfw-Type'] == "Audit"){
 			parent.append('<h4><b>Audit:</b> '+item.name+'</h4>');
 			parent.append('<p>'+item.description+'</p>');
+			
+			//-----------------------------------
+			// Add customizer
+			var booleanCustomizer = function(record, value) { 
+				if(value == null){
+					return "&nbsp;";
+				}else if(value == true){
+					return '<span class="badge badge-success">'+value+'</span>'; 
+				}else if(value == false){
+					return '<span class="badge badge-danger">'+value+'</span>'; 
+				}else{
+					return value;
+				}
+			}
+				
+			var customizers = {};
+			for(key in item.auditResult[0]){
+				customizers[key] = booleanCustomizer;
+			}
+			console
 			//-----------------------------------
 			// Render Data
 			var rendererSettings = {
@@ -60,32 +74,18 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 				 	titleformat: '{0}',
 				 	visiblefields: null,
 				 	labels: { PK_ID: "ID" },
-				 	customizers: {},
+				 	customizers: customizers,
 					actions: [],					
 					rendererSettings: {
-						dataviewer: {
-							//storeid: 'staticpaginationexample',
-						 	defaultsize: 10,
-						 	renderers: [
-						 		{	label: 'Table',
-									name: 'table',
-									renderdef: {}
-								},
-						 		{	label: 'CSV',
-									name: 'csv',
-									renderdef: {}
-								},
-								{	label: 'JSON',
-									name: 'json',
-									renderdef: {}
-								}
-							]
+						table: {
+							filterable: false,
+							narrow: true,							
 						},
 						
 					},
 				};
 			
-			var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
+			var renderResult = CFW.render.getRenderer('table').render(rendererSettings);	
 			
 			parent.append(renderResult);
 			
