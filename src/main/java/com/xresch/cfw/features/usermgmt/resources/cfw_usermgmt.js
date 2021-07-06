@@ -33,12 +33,12 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 		//------------------------------------
 		// Handle Items
 		if(item['cfw-Type'] == "User"){
-			parent.append('<h2><b>User:</b> '+item.username+'</h2>');
+			parent.append('<h1><b>User:</b> '+item.username+'</h1>');
 			for(key in item.children){
 				cfw_usermgmt_formatAuditResults(parent, item.children[key]);
 			}
 		}else if(item['cfw-Type'] == "Audit"){
-			parent.append('<h4><b>Audit:</b> '+item.name+'</h4>');
+			parent.append('<h3><b>Audit:</b> '+item.name+'</h3>');
 			parent.append('<p>'+item.description+'</p>');
 			
 			//-----------------------------------
@@ -744,6 +744,7 @@ function cfw_usermgmt_printGroupList(data){
 	}
 }
 
+
 /******************************************************************
  * Print the list of permissions;
  * 
@@ -780,6 +781,26 @@ function cfw_usermgmt_printPermissionList(data){
 	}else{
 		CFW.ui.addAlert('error', 'Something went wrong and no users can be displayed.');
 	}
+}
+
+/******************************************************************
+ * Print the full audit;
+ * 
+ * @param data as returned by CFW.http.getJSON()
+ * @return 
+ ******************************************************************/
+function cfw_usermgmt_printFullAudit(data){
+	var parent = $("#tab-content");
+	
+	var toc = $('<div id="toc">');
+	parent.append(toc);
+	
+	var auditResults = $('<div id="auditResults">');
+	parent.append(auditResults);
+
+	cfw_usermgmt_formatAuditResults(auditResults, data.payload);
+	
+	cfw_table_toc(auditResults, toc);
 }
 
 /******************************************************************
@@ -821,6 +842,9 @@ function cfw_usermgmt_draw(options){
 			case "permissions":		CFW.http.fetchAndCacheData(url, {action: "fetch", item: "permissions"}, "permissions", cfw_usermgmt_printPermissionList);
 									break;	
 									
+			case "fullaudit":		CFW.http.fetchAndCacheData(url, {action: "fetch", item: "fullaudit"}, "fullaudit", cfw_usermgmt_printFullAudit);
+			break;	
+			
 			default:				CFW.ui.addToastDanger('This tab is unknown: '+options.tab);
 		}
 		

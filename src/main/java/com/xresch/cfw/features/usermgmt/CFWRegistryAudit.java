@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
 
 
@@ -34,6 +35,20 @@ public class CFWRegistryAudit {
 				.severe("A UserAuditExecutor with the name '"+executor.name()+"' was already registered. Please choose another name"
 						, new Throwable());
 		}
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
+	protected static JsonArray auditAllUsers() {
+		ArrayList<CFWObject> userObjectList = CFW.DB.Users.getUserListMinimal();
+		
+		ArrayList<User> userList = new ArrayList<>();
+		for(CFWObject object : userObjectList) {
+			userList.add((User)object);
+		}
+		
+		return auditUsers( userList);
 	}
 	
 	/***********************************************************************

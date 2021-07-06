@@ -1,6 +1,5 @@
 package com.xresch.cfw.features.usermgmt;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
@@ -8,6 +7,7 @@ import java.util.logging.Logger;
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
@@ -159,17 +159,32 @@ public class CFWDBUser {
 	
 	/***************************************************************
 	 * Return a list of all users.
-	 * Don't forget to close the db connection using CFWDB.close().
 	 * 
 	 * @return Returns a resultSet with all roles or null.
 	 ****************************************************************/
-	public static ResultSet getUserList() {
+	public static ArrayList<CFWObject> getUserList() {
 		
-		return new User()
-				.queryCache(CFWDBUser.class, "getUserList")
+		return new CFWSQL(new User())
+				.queryCache()
 				.select()
-				.orderby(UserFields.USERNAME.toString())
-				.getResultSet();
+				.orderby(UserFields.USERNAME)
+				.getAsObjectList();
+		
+	}
+	
+	/***************************************************************
+	 * Return a list of all users, but only ID, username firstname 
+	 * and lastname.
+	 * 
+	 * @return Returns a resultSet with all roles or null.
+	 ****************************************************************/
+	public static ArrayList<CFWObject> getUserListMinimal() {
+		
+		return new CFWSQL(new User())
+				.queryCache()
+				.select(UserFields.PK_ID, UserFields.USERNAME, UserFields.FIRSTNAME, UserFields.LASTNAME)
+				.orderby(UserFields.USERNAME)
+				.getAsObjectList();
 		
 	}
 	
