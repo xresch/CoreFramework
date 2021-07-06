@@ -97,6 +97,22 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 	}
 }
 
+/*********************************************************************************
+* Creates a printView by opening a new window and returns a divElement where you 
+* can put the content inside which you want to print.
+* 
+* @param "cards or "text"
+* @return domElement a div you can write the content to print to.
+*********************************************************************************/
+function cfw_usermgmt_FullAuditPrintView(){
+
+	printview = CFW.ui.createPrintView("Full User Audit Report", "List all users and audit results.");
+	
+	printview.append($('#toc'));
+	printview.append($('#auditResults'));
+}
+
+
 /******************************************************************
  * 
  ******************************************************************/
@@ -788,11 +804,21 @@ function cfw_usermgmt_printPermissionList(data){
  ******************************************************************/
 function cfw_usermgmt_executeFullAudit(){
 	
-	CFW.ui.confirmExecute('Depending on number of users and audits, this might impact your application performance over time. Wanna do it anyway?', 'Full speed ahead!', 
+	CFW.ui.confirmExecute('Depending on number of users and audits, this might impact your application performance. Wanna do it anyway?', 'Full speed ahead!', 
 		function(){
 			CFW.http.getJSON(CFW_USRMGMT_URL, {action: "fetch", item: "fullaudit"}, function(data){
 				if(data.payload != null){
 					var parent = $("#tab-content");
+					
+					var printButton = $('#printButton');
+					
+					if(printButton.length == 0){
+						var printButton = $('<button id="printButton" class="btn btn-sm btn-primary ml-2 mb-2" onclick="cfw_usermgmt_FullAuditPrintView()">'
+								+ '<i class="fas fa-print"></i> Create Print View'
+						   + '</button>');
+						parent.append(printButton);
+					}
+					
 					
 					var toc = $('<div id="toc">');
 					parent.append(toc);
@@ -802,7 +828,7 @@ function cfw_usermgmt_executeFullAudit(){
 	
 					cfw_usermgmt_formatAuditResults(auditResults, data.payload);
 					
-					cfw_table_toc(auditResults, toc);
+					CFW.ui.toc(auditResults, toc);
 					
 				}
 			})
@@ -817,7 +843,7 @@ function cfw_usermgmt_executeFullAudit(){
  * @param data as returned by CFW.http.getJSON()
  * @return 
  ******************************************************************/
-function cfw_usermgmt_printFullAudit(data){
+function cfw_usermgmt_printFullAuditView(){
 	
 	var parent = $("#tab-content");
 	
@@ -869,7 +895,7 @@ function cfw_usermgmt_draw(options){
 			case "permissions":		CFW.http.fetchAndCacheData(url, {action: "fetch", item: "permissions"}, "permissions", cfw_usermgmt_printPermissionList);
 									break;	
 									
-			case "fullaudit":		CFW.http.fetchAndCacheData(url, {action: "fetch", item: "fullaudit"}, "fullaudit", cfw_usermgmt_printFullAudit);
+			case "fullaudit":		cfw_usermgmt_printFullAuditView();
 			break;	
 			
 			default:				CFW.ui.addToastDanger('This tab is unknown: '+options.tab);

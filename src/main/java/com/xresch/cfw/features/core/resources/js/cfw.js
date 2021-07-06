@@ -1520,7 +1520,7 @@ function cfw_table_toc(contentAreaSelector, resultSelector, headerTag){
 	//------------------------------
 	//Loop all visible headers
 	var currentLevel = 1;
-	var resultHTML = '<'+h+'>Table of Contents</'+h+'><ul>';
+	var resultHTML = '<'+h+' class="cfw-toc-header">Table of Contents</'+h+'><ul>';
 	for(var i = 0; i < headers.length ; i++){
 		var head = headers[i];
 		var headLevel = head.tagName[1];
@@ -2034,6 +2034,133 @@ function cfw_ui_getWorkspace() {
 	}
 	
 	return workspace;
+}
+
+/*********************************************************************************
+* Creates a printView by opening a new window and returns a jQueryDiv where you 
+* can put the content inside which you want to print.
+* @param title title at the top of the page(optional)
+* @param description after the title(optional)
+* @return jQueryElement a div you can write the content to print to.
+*********************************************************************************/
+function cfw_ui_createPrintView(title, description){
+	
+	//--------------------------
+	// Create Window
+	var hostURL = CFW.http.getHostURL();
+	var printView = window.open();
+	
+	var printBox = printView.document.createElement("div");
+	printBox.id = "cfw-manual-printview-box";
+	printView.document.body.appendChild(printBox);
+	
+	//--------------------------
+	// Copy Styles
+	var stylesheets = $('link[rel="stylesheet"]');
+	for(let i = 0; i < stylesheets.length; i++){
+		let href = stylesheets.eq(i).attr('href');
+		if(!CFW.utils.isNullOrEmpty(href) && href.startsWith('/cfw')){
+			let cssLink = printView.document.createElement("link");
+			cssLink.rel = "stylesheet";
+			cssLink.media = "screen, print";
+			cssLink.href = hostURL+href;
+			printView.document.head.appendChild(cssLink);
+		}
+	}	
+	
+	//--------------------------
+	// Override Bootstrap Style
+	let cssLink = printView.document.createElement("link");
+	cssLink.rel = "stylesheet";
+	cssLink.media = "screen, print";
+	cssLink.href = hostURL+"/cfw/jarresource?pkg=com.xresch.cfw.features.core.resources.css&file=bootstrap-theme-bootstrap.css";
+	printView.document.head.appendChild(cssLink);
+		
+	//--------------------------
+	// Override Code Style
+	let cssCodestyleLink = printView.document.createElement("link");
+	cssCodestyleLink.rel = "stylesheet";
+	cssCodestyleLink.media = "screen, print";
+	cssCodestyleLink.href = hostURL+"/cfw/jarresource?pkg=com.xresch.cfw.features.core.resources.css&file=highlightjs_arduino-light.css";
+	printView.document.head.appendChild(cssCodestyleLink);
+	
+	//--------------------------
+	// Copy Scripts
+	var javascripts = $('#javascripts script');
+
+	for(let i = 0; i < javascripts.length; i++){
+
+		let source = javascripts.eq(i).attr('src');
+		if(!CFW.utils.isNullOrEmpty(source) && source.startsWith('/cfw')){
+			let script = printView.document.createElement("script");
+			script.src = hostURL+source;
+			printView.document.head.appendChild(script);
+		}
+	}
+	
+	var parent = $(printBox);
+		
+	//--------------------------
+	//Create CSS
+	
+	var cssString = '<style  media="print, screen">'
+		+'html, body {'
+			+'margin: 0px;'
+			+'padding: 0px;'
+			+'font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";'
+		+'}'
+		+'table, pre, code, p { page-break-inside:auto }'
+		+'tr    { page-break-inside:avoid; page-break-after:auto }'
+		+'#paper {'
+			+'padding: 20mm;'
+			+'width: 100%;'
+			+'border-collapse: collapse;'
+		+'}'
+		+'img{'
+			+'padding-bottom: 5mm;' 
+		+'}'
+		+'h1{'
+			+'page-break-before: always;' 
+		+'}'
+		+'.page-break{'
+			+'page-break-before: always;' 
+		+'}'
+		+'.cfw-toc-header{'
+			+'page-break-before: avoid;' 
+		+'}'
+		+'h1 {font-size: 32px;}' 
+		+'h2 {font-size: 30px;}' 
+		+'h3 {font-size: 28px;}' 
+		+'h4 {font-size: 26px;}'
+		+'h5 {font-size: 24px;}'
+		+'h6 {font-size: 22px;}'
+		+'div, p, span, table {font-size: 20px;}' 
+		+'h1, h2, h3, h4, h5, h6{'
+			+'padding-top: 5mm;' 
+		+'}'
+		+'#print-toc > h1, #doc-title, h1 + div > h1,  h1 + div > .page-break, h2 + div > .page-break, h3 + div > .page-break, h4 + div > .page-break{'
+			+'page-break-before: avoid;' 
+		+'}'
+		+'</style>';
+	
+	parent.append(cssString);
+	
+	//---------------------------------
+	// Add Title
+	if(!CFW.utils.isNullOrEmpty(title)){
+		var titleElement = printView.document.createElement("title");
+		titleElement.innerHTML = title;
+		printView.document.head.appendChild(titleElement);
+		
+		parent.append('<h1 class="text-center pt-4 mt-4">'+title+'</h1>');
+	}
+	
+	//---------------------------------
+	// Add Description
+	if(!CFW.utils.isNullOrEmpty(description)){		
+		parent.append('<p class="text-center pb-4 mb-4">'+description+'</p>');
+	}
+	return parent;
 }
 
 /******************************************************************
@@ -2762,6 +2889,7 @@ var CFW = {
 	ui: {
 		createToggleButton: cfw_createToggleButton,
 		toc: cfw_table_toc,
+		createPrintView: cfw_ui_createPrintView,
 		addToast: cfw_addToast,
 		addToastInfo: function(text){cfw_addToast(text, null, "info", CFW.config.toastDelay);},
 		addToastSuccess: function(text){cfw_addToast(text, null, "success", CFW.config.toastDelay);},
