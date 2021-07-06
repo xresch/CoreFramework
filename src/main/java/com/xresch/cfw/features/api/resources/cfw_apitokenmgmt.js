@@ -63,7 +63,7 @@ function cfw_apitokenmgmt_addToken(){
 
 	CFW.http.getForm('cfwCreateTokenForm', html);
 	
-	CFW.ui.showModal(
+	CFW.ui.showModalMedium(
 			"Create Token", 
 			html, 
 			"CFW.cache.clearCache(); cfw_apitokenmgmt_draw()"
@@ -92,7 +92,7 @@ function cfw_apitokenmgmt_edit(id){
 	
 	cfw_apitokenmgmt_createToggleTable(permissionDiv, "permissionmap", id);
 	
-	CFW.ui.showModal(
+	CFW.ui.showModalMedium(
 		"Edit Token", 
 		allDiv, 
 		"CFW.cache.clearCache(); cfw_apitokenmgmt_draw()"
@@ -128,7 +128,7 @@ function cfw_usermgmt_editUser(userID){
 	
 	cfw_usermgmt_createToggleTable(roleDiv, "userrolemap", userID)
 	
-	CFW.ui.showModal("Edit User", allDiv, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'users'})");
+	CFW.ui.showModalMedium("Edit User", allDiv, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'users'})");
 	
 	//-----------------------------------
 	// Load Form
@@ -146,12 +146,12 @@ function cfw_apitokenmgmt_delete(id){
 	CFW.http.getJSON(CFW_APITOKENMGMT_URL, params, 
 		function(data) {
 			if(data.success){
-				//CFW.ui.showSmallModal('Success!', '<span>The selected '+item+' were deleted.</span>');
+				//CFW.ui.showModalSmall('Success!', '<span>The selected '+item+' were deleted.</span>');
 				//clear cache and reload data
 				CFW.cache.clearCache();
 				cfw_apitokenmgmt_draw();
 			}else{
-				CFW.ui.showSmallModal("Error!", '<span>The selected token could <b style="color: red">NOT</strong> be deleted.</span>');
+				CFW.ui.showModalSmall("Error!", '<span>The selected token could <b style="color: red">NOT</strong> be deleted.</span>');
 			}
 	});
 }

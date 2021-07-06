@@ -476,7 +476,7 @@ function cfw_dashboard_parameters_edit(){
 	let paramListDiv = $('<div id="param-list">');
 	contentDiv.append(paramListDiv);
 	
-	CFW.ui.showLargeModal('Parameters', contentDiv);
+	CFW.ui.showModalLarge('Parameters', contentDiv);
 	
     cfw_dashboard_parameters_loadParameterForm();
 }
@@ -885,7 +885,7 @@ function cfw_dashboard_parameters_showAddParametersModal(){
 		
 		contentDiv.append(renderResult);
 		
-		CFW.ui.showSmallModal('Add Parameters', contentDiv, "CFW.cache.clearCache();");
+		CFW.ui.showModalSmall('Add Parameters', contentDiv, "CFW.cache.clearCache();");
 	});
 
 }
@@ -1037,7 +1037,7 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	compositeDiv.find('#defaultSettings').append(defaultForm);
 	// ----------------------------------
 	// Show Modal
-	CFW.ui.showModal(CFWL('cfw_core_settings', 'Settings'), compositeDiv, "CFW.cache.clearCache();");
+	CFW.ui.showModalMedium(CFWL('cfw_core_settings', 'Settings'), compositeDiv, "CFW.cache.clearCache();");
 	
 	// -----------------------------------
 	// Initialize Forms

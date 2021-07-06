@@ -94,7 +94,7 @@ function cfw_apioverview_createExample(apiName, actionName){
 	//-----------------------------------
 	//Show Modal and Load Form
 	//-----------------------------------
-	CFW.ui.showModal("Example for "+apiName+": "+actionName, allDiv);
+	CFW.ui.showModalMedium("Example for "+apiName+": "+actionName, allDiv);
 	
 	CFW.http.createForm("./api", {formName: apiName, actionName: actionName, callbackMethod: "cfw_apioverview_formResult"}, formDiv);
 	

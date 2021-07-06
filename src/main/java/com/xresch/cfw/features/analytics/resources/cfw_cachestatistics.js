@@ -50,7 +50,7 @@ function cfw_cachestatistics_showCacheDetails(element){
 					+'</ul>'
 			);
 			$details.append(renderResult);
-			CFW.ui.showModal("Cache Details", $details, null);
+			CFW.ui.showModalMedium("Cache Details", $details, null);
 		}
 	});
 	

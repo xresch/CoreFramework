@@ -39,7 +39,7 @@ function cfwjobs_add(){
 
 	CFW.http.getForm('cfwCreateJobForm', html);
 	
-	CFW.ui.showModal(
+	CFW.ui.showModalMedium(
 			"Create Job", 
 			html, 
 			"CFW.cache.clearCache(); cfwjobs_draw(CFWJOBS_LAST_OPTIONS)"
@@ -56,7 +56,7 @@ function cfwjobs_edit(id){
 	//-----------------------------------
 	var detailsDiv = $('<div id="jsexamples-details">');
 	
-	CFW.ui.showModal(
+	CFW.ui.showModalMedium(
 		"Edit Job", 
 		detailsDiv, 
 		"CFW.cache.clearCache(); cfwjobs_draw(CFWJOBS_LAST_OPTIONS)"
@@ -78,12 +78,12 @@ function cfwjobs_delete(id){
 	CFW.http.getJSON(CFWJOBS_URL, params, 
 		function(data) {
 			if(data.success){
-				//CFW.ui.showSmallModal('Success!', '<span>The selected '+item+' were deleted.</span>');
+				//CFW.ui.showModalSmall('Success!', '<span>The selected '+item+' were deleted.</span>');
 				//clear cache and reload data
 				CFW.cache.clearCache();
 				cfwjobs_draw(CFWJOBS_LAST_OPTIONS);
 			}else{
-				CFW.ui.showSmallModal("Error!", '<span>The selected person could <b style="color: red">NOT</strong> be deleted.</span>');
+				CFW.ui.showModalSmall("Error!", '<span>The selected person could <b style="color: red">NOT</strong> be deleted.</span>');
 			}
 	});
 }

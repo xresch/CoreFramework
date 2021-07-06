@@ -127,7 +127,7 @@ function cfw_sessionoverview_draw(){
 				
 		parent.append('<h2>Session Overview</h2>'
 				+'<p>'
-				+'An Overview of all open sessions.'
+				+'An Overview of open sessions. Sessions loaded from the session store(database) might not show up in this list.'
 				+'</p>'
 				+'<p id="targetContainer"></p>');
 

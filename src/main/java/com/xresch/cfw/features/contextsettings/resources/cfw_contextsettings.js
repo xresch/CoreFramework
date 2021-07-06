@@ -50,7 +50,7 @@ function cfw_contextsettings_create(type){
 	var formDiv = $('<div id="formDiv">');
 	formDiv.append('<h2>'+CFWL('cfw_contextsettings_dashboard', "Context Settings")+' Details</h2>');
 	html.append(formDiv);
-	CFW.ui.showModal(
+	CFW.ui.showModalMedium(
 			CFWL("cfw_contextsettings_create","Create Context Settings"), 
 			html, 
 			"CFW.cache.clearCache(); cfw_contextsettings_draw(CFW_CTXSETTINGS_LAST_OPTIONS)"
@@ -77,7 +77,7 @@ function cfw_contextsettings_edit(id){
 	allDiv.append(detailsDiv);
 	
 
-	CFW.ui.showModal(
+	CFW.ui.showModalMedium(
 			CFWL("cfw_contextsettings_edit","Edit Context Settings"), 
 			allDiv, 
 			"CFW.cache.clearCache(); cfw_contextsettings_draw(CFW_CTXSETTINGS_LAST_OPTIONS)"
@@ -99,12 +99,12 @@ function cfw_contextsettings_delete(id){
 	CFW.http.getJSON(CFW_CTXSETTINGS_URL, params, 
 		function(data) {
 			if(data.success){
-				//CFW.ui.showSmallModal('Success!', '<span>The selected '+item+' were deleted.</span>');
+				//CFW.ui.showModalSmall('Success!', '<span>The selected '+item+' were deleted.</span>');
 				//clear cache and reload data
 				CFW.cache.clearCache();
 				cfw_contextsettings_draw(CFW_CTXSETTINGS_LAST_OPTIONS);
 			}else{
-				CFW.ui.showSmallModal("Error!", '<span>The selected '+item+' could <b style="color: red">NOT</b> be deleted.</span>');
+				CFW.ui.showModalSmall("Error!", '<span>The selected '+item+' could <b style="color: red">NOT</b> be deleted.</span>');
 			}
 	});
 }

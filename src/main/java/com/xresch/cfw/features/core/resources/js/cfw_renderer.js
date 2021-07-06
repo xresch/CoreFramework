@@ -329,7 +329,7 @@ function cfw_renderer_tiles(renderDef) {
 			//-------------------------
 			// Show Details Modal
 			var renderer = CFW.render.getRenderer('table');
-			cfw_showModal(
+			cfw_ui_showModal(
 					CFWL('cfw_core_details', 'Details'), 
 					renderer.render(definition))
 			;

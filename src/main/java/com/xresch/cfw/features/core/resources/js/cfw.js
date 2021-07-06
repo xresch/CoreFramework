@@ -321,7 +321,7 @@ function cfw_initializeSummernote(formID, editorID){
 		  CFW.ui.addToastDanger("Issue Loading Editor Content", "danger", CFW.config.toastErrorDelay);
 	  })
 	  .always(function(response) {
-		  cfw_handleMessages(response);			  
+		  cfw_internal_handleMessages(response);			  
 	  });
 }
 
@@ -1460,7 +1460,7 @@ function cfw_format_formToArray(formOrID){
  * @param convert a json object to html
  * @return html string
  *************************************************************************************/
-function cfw_objectToHTMLList(object){
+function cfw_format_objectToHTMLList(object){
 	
 	var htmlString = '<ul>';
 	
@@ -1469,7 +1469,7 @@ function cfw_objectToHTMLList(object){
 			var currentItem = object[i];
 			if(typeof currentItem == "object"){
 				htmlString += '<li><strong>Object:&nbsp;</strong>'
-					+ cfw_objectToHTMLList(currentItem)
+					+ cfw_format_objectToHTMLList(currentItem)
 				+'</li>';
 			}else{
 				htmlString += '<li>'+currentItem+'</li>';
@@ -1482,7 +1482,7 @@ function cfw_objectToHTMLList(object){
 			var currentValue = object[key];
 			if(typeof currentValue == "object"){
 				htmlString += '<li><strong>'+CFW.format.fieldNameToLabel(key)+':&nbsp;</strong>'
-					+ cfw_objectToHTMLList(currentValue)
+					+ cfw_format_objectToHTMLList(currentValue)
 				+'</li>';
 				
 			}else{
@@ -1508,7 +1508,7 @@ function cfw_objectToHTMLList(object){
  * @param headerTag the tag used for the Table Header e.g. h1, h2, h3 (default h1)
  * @return nothing
  *************************************************************************************/
-function cfw_table_toc(contentAreaSelector, resultSelector, headerTag){
+function cfw_ui_createTOC(contentAreaSelector, resultSelector, headerTag){
 	
 	var target = $(resultSelector);
 	var headers = $(contentAreaSelector).find("h1:visible, h2:visible, h3:visible, h4:visible, h5:visible, h6:visible");
@@ -1568,7 +1568,7 @@ function cfw_table_toc(contentAreaSelector, resultSelector, headerTag){
  *
  * @param isVisible true or false
  ******************************************************************************/
-function cfw_toogleLoader(isVisible){
+function cfw_ui_toogleLoader(isVisible){
 	
 	var loader = $("#cfw-loader");
 	
@@ -1600,7 +1600,7 @@ function cfw_toogleLoader(isVisible){
 /*******************************************************************************
  * Returns the html for a Loader with the class cfw-inline-loader.
  ******************************************************************************/
-function cfw_createLoaderHTML(){
+function cfw_ui_createLoaderHTML(){
 	
 	return '<div class="cfw-inline-loader">'
 			+'<div class="d-flex flex-column flex-align-center">'
@@ -1618,7 +1618,7 @@ function cfw_createLoaderHTML(){
  * @param type the type of the alert: INFO, SUCCESS, WARNING, ERROR
  * @param message
  *************************************************************************************/
-function cfw_addAlertMessage(type, message){
+function cfw_ui_addAlert(type, message){
 	
 	var clazz = "";
 	
@@ -1657,7 +1657,7 @@ function cfw_addAlertMessage(type, message){
  * @param (optional)delay in milliseconds for autohide
  * @return nothing
  *************************************************************************************/
-function cfw_addToast(toastTitle, toastBody, style, delay){
+function cfw_ui_addToast(toastTitle, toastBody, style, delay){
 	
 	var body = $("body");
 	var toastsID = 'cfw-toasts';
@@ -1736,7 +1736,7 @@ function cfw_addToast(toastTitle, toastBody, style, delay){
  * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_showModal(modalTitle, modalBody, jsCode, size, keepOnOutsideClick){
+function cfw_ui_showModal(modalTitle, modalBody, jsCode, size, keepOnOutsideClick){
 	
 	var modalID = 'cfw-default-modal';
 	var modalHeaderClass = '';
@@ -1785,8 +1785,6 @@ function cfw_showModal(modalTitle, modalBody, jsCode, size, keepOnOutsideClick){
 				+ '  </div>'
 				+ '</div>');
 
-					 
-		
 		modal
 		.modal(modalSettings)
 		.draggable({
@@ -1845,8 +1843,8 @@ function cfw_showModal(modalTitle, modalBody, jsCode, size, keepOnOutsideClick){
  * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_showModalRegular(modalTitle, modalBody, jsCode, keepOnOutsideClick){
-	cfw_showModal(modalTitle, modalBody, jsCode, 'regular', keepOnOutsideClick);
+function cfw_ui_showModalMedium(modalTitle, modalBody, jsCode, keepOnOutsideClick){
+	cfw_ui_showModal(modalTitle, modalBody, jsCode, 'regular', keepOnOutsideClick);
 }
 	
 /**************************************************************************************
@@ -1857,8 +1855,8 @@ function cfw_showModalRegular(modalTitle, modalBody, jsCode, keepOnOutsideClick)
  * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_showModalSmall(modalTitle, modalBody, jsCode, keepOnOutsideClick){
-	cfw_showModal(modalTitle, modalBody, jsCode, 'small', keepOnOutsideClick);
+function cfw_ui_showModalSmall(modalTitle, modalBody, jsCode, keepOnOutsideClick){
+	cfw_ui_showModal(modalTitle, modalBody, jsCode, 'small', keepOnOutsideClick);
 }
 	
 /**************************************************************************************
@@ -1869,8 +1867,8 @@ function cfw_showModalSmall(modalTitle, modalBody, jsCode, keepOnOutsideClick){
  * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_showModalLarge(modalTitle, modalBody, jsCode, keepOnOutsideClick){
-	cfw_showModal(modalTitle, modalBody, jsCode, 'large');
+function cfw_ui_showModalLarge(modalTitle, modalBody, jsCode, keepOnOutsideClick){
+	cfw_ui_showModal(modalTitle, modalBody, jsCode, 'large');
 }	
 
 /**************************************************************************************
@@ -1880,7 +1878,7 @@ function cfw_showModalLarge(modalTitle, modalBody, jsCode, keepOnOutsideClick){
  * @param jsCode to execute on modal close
  * @return nothing
  *************************************************************************************/
-function cfw_reopenModal(modalID){
+function cfw_ui_reopenModal(modalID){
 	
 	var modal = $("#"+modalID);
 	
@@ -1893,7 +1891,7 @@ function cfw_reopenModal(modalID){
 /**************************************************************************************
  * Show a modal with support Info
  *************************************************************************************/
-function cfw_showSupportInfoModal(){
+function cfw_ui_showSupportInfoModal(){
 		
 	var modalContent = $('<div>');
 	
@@ -1936,7 +1934,7 @@ function cfw_showSupportInfoModal(){
 	
 	//=========================================
 	// Show Modal
-	cfw_showModalRegular("Support Info", modalContent);
+	cfw_ui_showModalMedium("Support Info", modalContent);
 }
 
 /**************************************************************************************
@@ -1946,7 +1944,7 @@ function cfw_showSupportInfoModal(){
  * @param jsCode the javascript to execute when confirmed
  * @return nothing
  *************************************************************************************/
-function cfw_confirmExecution(message, confirmLabel, jsCodeOrFunction){
+function cfw_ui_confirmExecute(message, confirmLabel, jsCodeOrFunction){
 	
 	var body = $("body");
 	var modalID = 'cfw-confirm-dialog';
@@ -1978,15 +1976,15 @@ function cfw_confirmExecution(message, confirmLabel, jsCodeOrFunction){
 	body.prepend(modal);	
 	
 	var closeButton = $('<button type="button" class="close"><span aria-hidden="true">&times</span></button>');
-	closeButton.attr('onclick', 'cfw_confirmExecution_Execute(this, \'cancel\')');
+	closeButton.attr('onclick', 'cfw_ui_confirmExecute_Execute(this, \'cancel\')');
 	closeButton.data('modalID', modalID);
 	
 	var cancelButton = $('<button type="button" class="btn btn-primary">Cancel</button>');
-	cancelButton.attr('onclick', 'cfw_confirmExecution_Execute(this, \'cancel\')');
+	cancelButton.attr('onclick', 'cfw_ui_confirmExecute_Execute(this, \'cancel\')');
 	cancelButton.data('modalID', modalID);
 	
 	var confirmButton = $('<button id="cfw-confirmButton" type="button" class="btn btn-primary">'+confirmLabel+'</button>');
-	confirmButton.attr('onclick', 'cfw_confirmExecution_Execute(this, \'confirm\')');
+	confirmButton.attr('onclick', 'cfw_ui_confirmExecute_Execute(this, \'confirm\')');
 	confirmButton.data('modalID', modalID);
 	confirmButton.data('jsCode', jsCodeOrFunction);
 	
@@ -1998,7 +1996,7 @@ function cfw_confirmExecution(message, confirmLabel, jsCodeOrFunction){
 }
 
 
-function cfw_confirmExecution_Execute(sourceElement, action){
+function cfw_ui_confirmExecute_Execute(sourceElement, action){
 	
 	var $source = $(sourceElement);
 	var modalID = $source.data('modalID');
@@ -2349,11 +2347,11 @@ function cfw_http_getJSON(url, params, callbackFunc){
 		  .fail(function(xhr, status, thrownError) {
 			  CFW.ui.addToast("Request failed", "URL: "+url, "danger", CFW.config.toastErrorDelay)
 			  var response = JSON.parse(xhr.responseText);
-			  cfw_handleMessages(response);
+			  cfw_internal_handleMessages(response);
 			  //callbackFunc(response);
 		  })
 		  .always(function(response) {
-			  cfw_handleMessages(response);
+			  cfw_internal_handleMessages(response);
 		  });
 }
 
@@ -2388,11 +2386,11 @@ function cfw_http_postJSON(url, params, callbackFunc){
 		  .fail(function(xhr, status, errorThrown) {
 			  CFW.ui.addToast("Request failed", "URL: "+url, "danger", CFW.config.toastErrorDelay);
 			  var response = JSON.parse(xhr.responseText);
-			  cfw_handleMessages(response);
+			  cfw_internal_handleMessages(response);
 			  //callbackFunc(response);
 		  })
 		  .always(function(response) {
-			  cfw_handleMessages(response);
+			  cfw_internal_handleMessages(response);
 		  });
 }
 
@@ -2434,10 +2432,10 @@ function cfw_http_getForm(formid, targetElement){
 			  console.error("Request failed: "+url);
 			  CFW.ui.addToast("Request failed", "URL: "+url, "danger", CFW.config.toastErrorDelay)
 			  var response = JSON.parse(xhr.responseText);
-			  cfw_handleMessages(response);
+			  cfw_internal_handleMessages(response);
 		  })
 		  .always(function(response) {
-			  cfw_handleMessages(response);			  
+			  cfw_internal_handleMessages(response);			  
 		  });
 }
 /**************************************************************************************
@@ -2512,7 +2510,7 @@ function cfw_http_createForm(url, params, targetElement, callback){
 
 		  })
 		  .always(function(response) {
-			  cfw_handleMessages(response);			  
+			  cfw_internal_handleMessages(response);			  
 		  });
 }
 
@@ -2604,7 +2602,7 @@ function cfw_internal_postForm(url, formID, callback){
  * 
  * @param response the response with messages
  **************************************************************************************/
-function cfw_handleMessages(response){
+function cfw_internal_handleMessages(response){
 	
 	var msgArray = response.messages;
 	  
@@ -2622,7 +2620,7 @@ function cfw_handleMessages(response){
 * @param key 
 * @param value
  *************************************************************************************/
-function cfw_storeValue(key, value) {
+function cfw_cache_storeValue(key, value) {
 	window.localStorage.setItem("cfw-"+key, value);
 };
 
@@ -2631,7 +2629,7 @@ function cfw_storeValue(key, value) {
 * @param key 
 * @param value
  *************************************************************************************/
-function cfw_storeValueForPage(key, value) {
+function cfw_cache_storeValueForPage(key, value) {
 	window.localStorage.setItem("cfw-["+CFW.http.getURLPath()+"]:"+key, value);
 };
 
@@ -2641,7 +2639,7 @@ function cfw_storeValueForPage(key, value) {
 * @param defaultValue if there is nothing stored
 * @return either the value of the cookie or an empty string
  *************************************************************************************/
-function cfw_retrieveValue(key, defaultValue) {
+function cfw_cache_storeValue(key, defaultValue) {
 	
 	var item = window.localStorage.getItem("cfw-"+key);
     if(item != null){
@@ -2656,7 +2654,7 @@ function cfw_retrieveValue(key, defaultValue) {
 * @param defaultValue if there is nothing stored
 * @return either the value of the cookie or an empty string
  *************************************************************************************/
-function cfw_retrieveValueForPage(key, defaultValue) {
+function cfw_cache_storeValueForPage(key, defaultValue) {
 	
 	var item = window.localStorage.getItem("cfw-["+CFW.http.getURLPath()+"]:"+key);
     if(item != null){
@@ -2671,7 +2669,7 @@ function cfw_retrieveValueForPage(key, defaultValue) {
  * @return nothing
  *
  ******************************************************************/
-function cfw_removeFromCache(key){
+function cfw_cache_removeFromCache(key){
 	CFW.cache.data[key] = null;
 }
 
@@ -2681,7 +2679,7 @@ function cfw_removeFromCache(key){
  * @return nothing
  *
  ******************************************************************/
-function cfw_clearCache(){
+function cfw_cache_clearCache(){
 	CFW.cache.data = {};
 }
 
@@ -2827,12 +2825,12 @@ var CFW = {
 	cache: { 
 		data: {},
 		lang: null,
-		removeFromCache: cfw_removeFromCache,
-		clearCache: cfw_clearCache,
-		storeValue: cfw_storeValue,
-		storeValueForPage: cfw_storeValueForPage,
-		retrieveValue: cfw_retrieveValue,
-		retrieveValueForPage: cfw_retrieveValueForPage
+		removeFromCache: cfw_cache_removeFromCache,
+		clearCache: cfw_cache_clearCache,
+		storeValue: cfw_cache_storeValue,
+		storeValueForPage: cfw_cache_storeValueForPage,
+		retrieveValue: cfw_cache_storeValue,
+		retrieveValueForPage: cfw_cache_storeValueForPage
 	},
 	render: {
 		registry: {},
@@ -2847,7 +2845,7 @@ var CFW = {
 		epochToDate: 		cfw_format_epochToDate,
 		millisToClock: 		cfw_format_millisToClock,
 		millisToDuration: 	cfw_format_millisToDuration,
-		objectToHTMLList: 	cfw_objectToHTMLList,
+		objectToHTMLList: 	cfw_format_objectToHTMLList,
 		csvToObjectArray: 	cfw_format_csvToObjectArray,
 		fieldNameToLabel: 	cfw_format_fieldNameToLabel,
 		capitalize: 		cfw_format_capitalize,
@@ -2887,21 +2885,21 @@ var CFW = {
 		randomInt: cfw_utils_randomInt,
 	},
 	ui: {
-		createToggleButton: cfw_createToggleButton,
-		toc: cfw_table_toc,
+		createToggleButton: cfw_ui_createToggleButton,
+		toc: cfw_ui_createTOC,
 		createPrintView: cfw_ui_createPrintView,
-		addToast: cfw_addToast,
-		addToastInfo: function(text){cfw_addToast(text, null, "info", CFW.config.toastDelay);},
-		addToastSuccess: function(text){cfw_addToast(text, null, "success", CFW.config.toastDelay);},
-		addToastWarning: function(text){cfw_addToast(text, null, "warning", CFW.config.toastDelay);},
-		addToastDanger: function(text){cfw_addToast(text, null, "danger", CFW.config.toastErrorDelay);},
-		showModal: cfw_showModalRegular,
-		showSmallModal: cfw_showModalSmall,
-		showLargeModal: cfw_showModalLarge,
-		confirmExecute: cfw_confirmExecution,
-		toogleLoader: cfw_toogleLoader,
-		createLoaderHTML: cfw_createLoaderHTML,
-		addAlert: cfw_addAlertMessage,
+		addToast: cfw_ui_addToast,
+		addToastInfo: function(text){cfw_ui_addToast(text, null, "info", CFW.config.toastDelay);},
+		addToastSuccess: function(text){cfw_ui_addToast(text, null, "success", CFW.config.toastDelay);},
+		addToastWarning: function(text){cfw_ui_addToast(text, null, "warning", CFW.config.toastDelay);},
+		addToastDanger: function(text){cfw_ui_addToast(text, null, "danger", CFW.config.toastErrorDelay);},
+		showModalMedium: cfw_ui_showModalMedium,
+		showModalSmall: cfw_ui_showModalSmall,
+		showModalLarge: cfw_ui_showModalLarge,
+		confirmExecute: cfw_ui_confirmExecute,
+		toogleLoader: cfw_ui_toogleLoader,
+		createLoaderHTML: cfw_ui_createLoaderHTML,
+		addAlert: cfw_ui_addAlert,
 		getWorkspace: cfw_ui_getWorkspace
 	},
 	hasPermission: cfw_hasPermission,
@@ -2925,14 +2923,14 @@ CFW.utils.chainedOnload(function () {
 		// Ctrl+Alt+M - Reopen Modal
 		if (e.ctrlKey && event.altKey &&  e.keyCode == 77) {
 			if(CFW.global.lastOpenedModal != null)
-			cfw_reopenModal(CFW.global.lastOpenedModal);
+			cfw_ui_reopenModal(CFW.global.lastOpenedModal);
 			return;
 		}
 		
 		//--------------------------------
 		// Ctrl+Alt+I - Show Support Info
 		if (e.ctrlKey && event.altKey &&  e.keyCode == 73) {
-			cfw_showSupportInfoModal();
+			cfw_ui_showSupportInfoModal();
 			return;
 		}
 		
@@ -2952,7 +2950,7 @@ CFW.utils.chainedOnload(function () {
 			var timeoutSeconds = JSDATA.sessionTimeout;
 			
 			if( (currentSeconds - lastAccessSeconds) > timeoutSeconds ){
-				CFW.ui.showSmallModal("Session Timeout", '<p>Your session has timed out, please refresh your browser.</p>');
+				CFW.ui.showModalSmall("Session Timeout", '<p>Your session has timed out, please refresh your browser.</p>');
 				window.clearInterval(CFW.global.sessionCheckInterval);
 			}
 			

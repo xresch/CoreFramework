@@ -49,7 +49,7 @@ function cfw_dashboardlist_createDashboard(){
 
 	CFW.http.getForm('cfwCreateDashboardForm', html);
 	
-	CFW.ui.showModal(CFWL('cfw_dashboardlist_createDashboard', 
+	CFW.ui.showModalMedium(CFWL('cfw_dashboardlist_createDashboard', 
 			CFWL("cfw_dashboardlist_createDashboard", "Create Dashboard")), 
 			html, "CFW.cache.clearCache(); cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)");
 	
@@ -68,7 +68,7 @@ function cfw_dashboardlist_importDashboard(){
 		+'</div>'
 		+'<button class="form-control btn btn-primary" onclick="cfw_dashboardlist_importDashboardExecute()">'+CFWL('cfw_core_import', 'Import')+'</button>';
 	
-	CFW.ui.showModal(
+	CFW.ui.showModalMedium(
 			"Import Dashboard", 
 			uploadHTML,
 			"CFW.cache.clearCache(); cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)");
@@ -114,7 +114,7 @@ function cfw_dashboardlist_editDashboard(id){
 	detailsDiv.append('<h2>'+CFWL('cfw_dashboardlist_dashboard', "Dashboard")+' Details</h2>');
 	allDiv.append(detailsDiv);
 	
-	CFW.ui.showModal(
+	CFW.ui.showModalMedium(
 			CFWL("cfw_dashboardlist_editDashboard","Edit Dashboard"), 
 			allDiv, 
 			"CFW.cache.clearCache(); cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)"
@@ -138,7 +138,7 @@ function cfw_dashboardlist_changeDashboardOwner(id){
 	var formDiv = $('<div id="cfw-dashboard-details">');
 
 	
-	CFW.ui.showModal(
+	CFW.ui.showModalMedium(
 			CFWL("cfw_dashboardlist_editDashboard","Edit Dashboard"), 
 			formDiv, 
 			"CFW.cache.clearCache(); cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)"
@@ -160,12 +160,12 @@ function cfw_dashboardlist_delete(ids){
 	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, params, 
 		function(data) {
 			if(data.success){
-				//CFW.ui.showSmallModal('Success!', '<span>The selected '+item+' were deleted.</span>');
+				//CFW.ui.showModalSmall('Success!', '<span>The selected '+item+' were deleted.</span>');
 				//clear cache and reload data
 				CFW.cache.clearCache();
 				cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS);
 			}else{
-				CFW.ui.showSmallModal("Error!", '<span>The selected '+item+' could <b style="color: red">NOT</strong> be deleted.</span>');
+				CFW.ui.showModalSmall("Error!", '<span>The selected '+item+' could <b style="color: red">NOT</strong> be deleted.</span>');
 			}
 	});
 }

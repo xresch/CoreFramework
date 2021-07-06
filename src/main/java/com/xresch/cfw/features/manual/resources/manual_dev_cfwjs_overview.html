@@ -41,10 +41,10 @@ The following methods can be used to show modal panels.
 </p>
 <pre>
 <code class="javascript">//Show a modal panel. Last param is either a function or a string with javascript code.
-CFW.ui.showModal("Your Modal Title", modalBodyContent, "onClose();");
+CFW.ui.showModalMedium("Your Modal Title", modalBodyContent, "onClose();");
 
 //Show a modal panel. Last param is either a function or a string with javascript code.
-CFW.ui.showSmallModal("Your Modal Title", modalBodyContent, "onClose();");
+CFW.ui.showModalSmall("Your Modal Title", modalBodyContent, "onClose();");
 
 //Show a modal panel to confirm an action. Last param is either a function or a string with javascript code.
 CFW.ui.confirmExecute('Do you really want to remove the item?', 'Remove', "removeItem("+itemID+")" );
@@ -107,7 +107,7 @@ var CFW = {
 	format: {
 		epochToTimestamp: 	cfw_format_epochToTimestamp,
 		epochToDate: 		cfw_format_epochToDate,
-		objectToHTMLList: 	cfw_objectToHTMLList,
+		objectToHTMLList: 	cfw_format_objectToHTMLList,
 		csvToObjectArray: 	cfw_format_csvToObjectArray,
 		fieldNameToLabel: 	cfw_format_fieldNameToLabel,
 		capitalize: 		cfw_format_capitalize,
@@ -137,20 +137,20 @@ var CFW = {
 		randomString: cfw_utils_randomString
 	},
 	ui: {
-		createToggleButton: cfw_createToggleButton,
-		toc: cfw_table_toc,
-		addToast: cfw_addToast,
-		addToastInfo: function(text){cfw_addToast(text, null, "info", CFW.config.toastDelay);},
-		addToastSuccess: function(text){cfw_addToast(text, null, "success", CFW.config.toastDelay);},
-		addToastWarning: function(text){cfw_addToast(text, null, "warning", CFW.config.toastDelay);},
-		addToastDanger: function(text){cfw_addToast(text, null, "danger", CFW.config.toastErrorDelay);},
-		showModal: cfw_showModalRegular,
-		showSmallModal: cfw_showModalSmall,
-		showLargeModal: cfw_showModalLarge,
-		confirmExecute: cfw_confirmExecution,
-		toogleLoader: cfw_toogleLoader,
-		createLoaderHTML: cfw_createLoaderHTML,
-		addAlert: cfw_addAlertMessage,
+		createToggleButton: cfw_ui_createToggleButton,
+		toc: cfw_ui_createTOC,
+		addToast: cfw_ui_addToast,
+		addToastInfo: function(text){cfw_ui_addToast(text, null, "info", CFW.config.toastDelay);},
+		addToastSuccess: function(text){cfw_ui_addToast(text, null, "success", CFW.config.toastDelay);},
+		addToastWarning: function(text){cfw_ui_addToast(text, null, "warning", CFW.config.toastDelay);},
+		addToastDanger: function(text){cfw_ui_addToast(text, null, "danger", CFW.config.toastErrorDelay);},
+		showModal: cfw_ui_showModalMedium,
+		showSmallModal: cfw_ui_showModalSmall,
+		showLargeModal: cfw_ui_showModalLarge,
+		confirmExecute: cfw_ui_confirmExecute,
+		toogleLoader: cfw_ui_toogleLoader,
+		createLoaderHTML: cfw_ui_createLoaderHTML,
+		addAlert: cfw_ui_addAlert,
 		getWorkspace: cfw_ui_getWorkspace
 	},
 	hasPermission: cfw_hasPermission,

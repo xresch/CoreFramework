@@ -422,15 +422,19 @@ public class ServletDashboardView extends HttpServlet
 				}else {
 					uniqueTypeChecker.add(widgetType);
 					WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widgetType);
-					for(Entry<String, CFWField> entry : definition.getSettings().getFields().entrySet()) {
-						CFWField field = entry.getValue();
-						JsonObject paramObject = new JsonObject();
-						paramObject.addProperty("widgetType", definition.getWidgetType());
-						paramObject.addProperty("widgetSetting", field.getName());
-						paramObject.addProperty("label", field.getLabel());
-						
-						widgetParametersArray.add(paramObject);
-						
+					if(definition != null
+					&& definition.getSettings() != null
+					&& definition.getSettings().getFields() != null
+					&& definition.getSettings().getFields().entrySet() != null) {
+						for(Entry<String, CFWField> entry : definition.getSettings().getFields().entrySet()) {
+							CFWField field = entry.getValue();
+							JsonObject paramObject = new JsonObject();
+							paramObject.addProperty("widgetType", definition.getWidgetType());
+							paramObject.addProperty("widgetSetting", field.getName());
+							paramObject.addProperty("label", field.getLabel());
+							
+							widgetParametersArray.add(paramObject);
+						}
 					}
 				}	
 			}

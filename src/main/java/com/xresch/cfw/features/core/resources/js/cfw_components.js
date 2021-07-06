@@ -868,7 +868,7 @@ class CFWToggleButton{
 	}
 }
 
-function cfw_createToggleButton(url, params, isEnabled){
+function cfw_ui_createToggleButton(url, params, isEnabled){
 	return new CFWToggleButton(url, params, isEnabled);
 }
 

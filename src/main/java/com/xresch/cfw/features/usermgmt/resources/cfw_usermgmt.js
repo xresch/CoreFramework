@@ -173,7 +173,7 @@ function cfw_usermgmt_createUser(){
 
 	CFW.http.getForm('cfwCreateUserForm', html);
 	
-	CFW.ui.showModal(CFWL('cfw_usermgmt_createUser', "Create User"), html, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'users'})");
+	CFW.ui.showModalMedium(CFWL('cfw_usermgmt_createUser', "Create User"), html, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'users'})");
 	
 }
 
@@ -209,7 +209,7 @@ function cfw_usermgmt_editUser(userID){
 	cfw_usermgmt_createToggleTable(groupDiv, "usergroupmap", userID);
 	
 	
-	CFW.ui.showModal("Edit User", allDiv, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'users'})");
+	CFW.ui.showModalMedium("Edit User", allDiv, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'users'})");
 	
 	//-----------------------------------
 	// Load Form
@@ -230,7 +230,7 @@ function cfw_usermgmt_auditUser(userID){
 	//-----------------------------------
 	var auditDiv = $('<div id="cfw-usermgmt-audit">');		
 	
-	CFW.ui.showModal("User Audit", auditDiv);
+	CFW.ui.showModalMedium("User Audit", auditDiv);
 	
 	//-----------------------------------
 	// Load Form
@@ -257,7 +257,7 @@ function cfw_usermgmt_resetPassword(userID){
 	allDiv.append(detailsDiv);
 		
 	
-	CFW.ui.showModal("Reset Password", allDiv);
+	CFW.ui.showModalMedium("Reset Password", allDiv);
 	
 	//-----------------------------------
 	// Load Form
@@ -275,7 +275,7 @@ function cfw_usermgmt_createRole(){
 
 	CFW.http.getForm('cfwCreateRoleForm', html);
 	
-	CFW.ui.showModal(CFWL('cfw_usermgmt_createRole', "Create Role"), html, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'roles'})");
+	CFW.ui.showModalMedium(CFWL('cfw_usermgmt_createRole', "Create Role"), html, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'roles'})");
 	
 }
 /******************************************************************
@@ -308,7 +308,7 @@ function cfw_usermgmt_editRole(roleID){
 	usersInRoleDiv.append('<h2>'+CFWL('cfw_usermgmt_users_in_role', "Users in Role")+'</h2>');
 	allDiv.append(usersInRoleDiv);
 	
-	CFW.ui.showModal("Edit Role", allDiv, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'roles'})");
+	CFW.ui.showModalMedium("Edit Role", allDiv, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'roles'})");
 	
 	//-----------------------------------
 	// Load Form
@@ -351,12 +351,12 @@ function cfw_usermgmt_delete(item, ids){
 	CFW.http.getJSON(url, params, 
 		function(data) {
 			if(data.success){
-				//CFW.ui.showSmallModal('Success!', '<span>The selected '+item+' were deleted.</span>');
+				//CFW.ui.showModalSmall('Success!', '<span>The selected '+item+' were deleted.</span>');
 				//clear cache and reload data
 				CFW.cache.data[item] = null;
 				cfw_usermgmt_draw({tab: item});
 			}else{
-				CFW.ui.showSmallModal("Error!", '<span>The selected '+item+' could <b style="color: red">NOT</b> be deleted.</span>');
+				CFW.ui.showModalSmall("Error!", '<span>The selected '+item+' could <b style="color: red">NOT</b> be deleted.</span>');
 			}
 	});
 }
@@ -370,7 +370,7 @@ function cfw_usermgmt_createGroup(){
 
 	CFW.http.getForm('cfwCreateGroupForm', html);
 	
-	CFW.ui.showModal(CFWL('cfw_usermgmt_createGroup', "Create Group"), html, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'groups'})");
+	CFW.ui.showModalMedium(CFWL('cfw_usermgmt_createGroup', "Create Group"), html, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'groups'})");
 	
 }
 
@@ -404,7 +404,7 @@ function cfw_usermgmt_editGroup(roleID){
 	usersInGroupDiv.append('<h2>'+CFWL('cfw_usermgmt_users_in_group', "Users in Group")+'</h2>');
 	allDiv.append(usersInGroupDiv);
 	
-	CFW.ui.showModal("Edit Group", allDiv, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'groups'})");
+	CFW.ui.showModalMedium("Edit Group", allDiv, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'groups'})");
 	
 	//-----------------------------------
 	// Load Form
