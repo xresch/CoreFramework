@@ -2639,7 +2639,7 @@ function cfw_cache_storeValueForPage(key, value) {
 * @param defaultValue if there is nothing stored
 * @return either the value of the cookie or an empty string
  *************************************************************************************/
-function cfw_cache_storeValue(key, defaultValue) {
+function cfw_cache_retrieveValue(key, defaultValue) {
 	
 	var item = window.localStorage.getItem("cfw-"+key);
     if(item != null){
@@ -2654,7 +2654,7 @@ function cfw_cache_storeValue(key, defaultValue) {
 * @param defaultValue if there is nothing stored
 * @return either the value of the cookie or an empty string
  *************************************************************************************/
-function cfw_cache_storeValueForPage(key, defaultValue) {
+function cfw_cache_retrieveValueForPage(key, defaultValue) {
 	
 	var item = window.localStorage.getItem("cfw-["+CFW.http.getURLPath()+"]:"+key);
     if(item != null){
@@ -2829,8 +2829,8 @@ var CFW = {
 		clearCache: cfw_cache_clearCache,
 		storeValue: cfw_cache_storeValue,
 		storeValueForPage: cfw_cache_storeValueForPage,
-		retrieveValue: cfw_cache_storeValue,
-		retrieveValueForPage: cfw_cache_storeValueForPage
+		retrieveValue: cfw_cache_retrieveValue,
+		retrieveValueForPage: cfw_cache_retrieveValueForPage
 	},
 	render: {
 		registry: {},
