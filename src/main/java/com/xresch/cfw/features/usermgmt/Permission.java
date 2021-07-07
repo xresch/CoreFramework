@@ -46,7 +46,7 @@ public class Permission extends CFWObject{
 									.setColumnDefinition("VARCHAR(32)")
 									.setDescription("The catogery of the permission, either 'user' or 'space'.")
 									.apiFieldType(FormFieldType.SELECT)
-									.setOptions(new String[] {"user", "space"})
+									.setOptions(new String[] {FeatureUserManagement.CATEGORY_USER, "space"})
 									.addValidator(new LengthValidator(-1, 32));
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, PermissionFields.NAME.toString())
@@ -105,7 +105,7 @@ public class Permission extends CFWObject{
 
 		for(CFWObject permissionObject : permissionArray) {
 			Permission permission = (Permission) permissionObject;
-			permission.category("user")
+			permission.category(FeatureUserManagement.CATEGORY_USER)
 				.update();
 			
 		}
@@ -130,7 +130,7 @@ public class Permission extends CFWObject{
 		// User Management
 		//-----------------------------------------
 		if(!CFW.DB.Permissions.checkExistsByName(Permission.CFW_USER_MANAGEMENT)) {
-			CFW.DB.Permissions.create(new Permission(Permission.CFW_USER_MANAGEMENT, "user")
+			CFW.DB.Permissions.create(new Permission(Permission.CFW_USER_MANAGEMENT, FeatureUserManagement.CATEGORY_USER)
 				.description("Gives the user the ability to view, create, update and delete users.")
 			);
 			

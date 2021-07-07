@@ -19,6 +19,7 @@ import com.xresch.cfw.features.core.auth.ServletLogout;
 import com.xresch.cfw.features.core.auth.ServletSAML2AssertionConsumerService;
 import com.xresch.cfw.features.core.auth.ServletSAML2Login;
 import com.xresch.cfw.features.core.auth.ServletSAML2Metadata;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
@@ -30,6 +31,9 @@ import com.xresch.cfw.response.bootstrap.MenuItem;
 public class FeatureCore extends CFWAppFeature {
 
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.core.resources";
+	
+	public static final String MENU_TOOLS = "Tools";
+	
 	public static final String PERMISSION_APP_ANALYTICS = "System Analytics";
 	public static final String PERMISSION_FEATURE_MGMT = "Feature Management";
 	public static final String PERMISSION_ALLOW_HTML = "Allow HTML";
@@ -52,6 +56,14 @@ public class FeatureCore extends CFWAppFeature {
 		// Register Objects
 		//CFW.Registry.Objects.addCFWObject(Configuration.class);
     	
+		//----------------------------------
+    	// Register Tools Menu
+		CFW.Registry.Components.addRegularMenuItem(
+				(MenuItem)new MenuItem(MENU_TOOLS)
+					.faicon("fas fa-tools")
+					.addPermission("PSEUDO_PERMISSION_HIDE_BY_DEFAULT")
+				, null);
+		
     	//----------------------------------
     	// Register Admin Menu
 		CFW.Registry.Components.addAdminCFWMenuItem(
@@ -79,7 +91,7 @@ public class FeatureCore extends CFWAppFeature {
 		//-----------------------------------
 		// 
 		CFW.DB.Permissions.oneTimeCreate(
-		new Permission(PERMISSION_FEATURE_MGMT, "user")
+		new Permission(PERMISSION_FEATURE_MGMT, FeatureUserManagement.CATEGORY_USER)
 			.description("Allows to enable and disable certain features with application restart."),
 			true,
 			false
@@ -88,7 +100,7 @@ public class FeatureCore extends CFWAppFeature {
 		//-----------------------------------
 		// 
 		CFW.DB.Permissions.oneTimeCreate(
-		new Permission(PERMISSION_APP_ANALYTICS, "user")
+		new Permission(PERMISSION_APP_ANALYTICS, FeatureUserManagement.CATEGORY_USER)
 			.description("Analyze the application status with tools like cpu sampling."),
 			true,
 			false
@@ -97,7 +109,7 @@ public class FeatureCore extends CFWAppFeature {
 		//-----------------------------------
 		// 
 		CFW.DB.Permissions.oneTimeCreate(
-		new Permission(PERMISSION_ALLOW_HTML, "user")
+		new Permission(PERMISSION_ALLOW_HTML, FeatureUserManagement.CATEGORY_USER)
 			.description("Allow the user to enter HTML code in any of the text fields. As this is a potential security issue, handle this permission with care."),
 			false,
 			false
@@ -105,7 +117,7 @@ public class FeatureCore extends CFWAppFeature {
 		//-----------------------------------
 		// 
 		CFW.DB.Permissions.oneTimeCreate(
-		new Permission(PERMISSION_ALLOW_JAVASCRIPT, "user")
+		new Permission(PERMISSION_ALLOW_JAVASCRIPT, FeatureUserManagement.CATEGORY_USER)
 			.description("Allow the user to enter javascript code in any of the text fields. As this is a potential security issue, handle this permission with care. This permission requires 'Allow HTML' to work."),
 			false,
 			false

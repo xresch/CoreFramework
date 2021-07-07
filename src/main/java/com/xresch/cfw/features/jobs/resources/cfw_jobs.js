@@ -19,10 +19,8 @@ function cfwjobs_createTabs(){
 		var list = $('<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">');
 		
 		list.append('<li class="nav-item"><a class="nav-link" id="tab-myjobs" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'myjobs\'})"><i class="fas fa-share-alt mr-2"></i>Data Handling</a></li>');
-		list.append('<li class="nav-item"><a class="nav-link" id="tab-pagination-static" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'pagination-static\'})"><i class="fas fa-copy mr-2"></i>Pagination(Static)</a></li>');
-		list.append('<li class="nav-item"><a class="nav-link" id="tab-pagination-dynamic" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'pagination-dynamic\'})"><i class="fas fa-dna mr-2"></i>Pagination(Dynamic)</a></li>');
-		list.append('<li class="nav-item"><a class="nav-link" id="tab-full-dataviewer" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'full-dataviewer\'})"><i class="fas fa-eye mr-2"></i>Full Dataviewer</a></li>');
-		
+		list.append('<li class="nav-item"><a class="nav-link" id="tab-admin" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'admin\'})"><i class="fas fa-copy mr-2"></i>Admin</a></li>');
+
 		var parent = $("#cfw-container");
 		parent.append(list);
 		parent.append('<div id="tab-content"></div>');
@@ -33,7 +31,24 @@ function cfwjobs_createTabs(){
 /******************************************************************
  * Create Role
  ******************************************************************/
-function cfwjobs_add(){
+function cfwjobs_add_selectTask(){
+	
+	var html = $('<div>');	
+
+	CFW.http.getForm('cfwSelectJobTaskForm', html);
+	
+	CFW.ui.showModalMedium(
+			"Select Task", 
+			html, 
+			"CFW.cache.clearCache(); cfwjobs_draw(CFWJOBS_LAST_OPTIONS)"
+		);
+	
+}
+
+/******************************************************************
+ * Create Role
+ ******************************************************************/
+function cfwjobs_add_createJob(submitButton){
 	
 	var html = $('<div>');	
 
@@ -46,6 +61,7 @@ function cfwjobs_add(){
 		);
 	
 }
+
 /******************************************************************
  * Edit Role
  ******************************************************************/
@@ -114,7 +130,7 @@ function cfwjobs_printMyJobs(){
 
 	//--------------------------------
 	// Button
-	var addButton = $('<button class="btn btn-sm btn-success mb-2" onclick="cfwjobs_add()">'
+	var addButton = $('<button class="btn btn-sm btn-success mb-2" onclick="cfwjobs_add_selectTask()">'
 						+ '<i class="mr-1 fas fa-plus-circle"></i>Add Job</button>');
 
 	parent.append(addButton);
@@ -271,7 +287,7 @@ function cfwjobs_initialDraw(){
 	
 	//-----------------------------------
 	// Restore last tab
-	var tabToDisplay = CFW.cache.retrieveValueForPage("jsexamples-lasttab", "myjobs");
+	var tabToDisplay = CFW.cache.retrieveValueForPage("cfwjobs-lasttab", "myjobs");
 	
 	$('#tab-'+tabToDisplay).addClass('active');
 	

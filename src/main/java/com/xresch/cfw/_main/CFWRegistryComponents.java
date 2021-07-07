@@ -157,7 +157,7 @@ public class CFWRegistryComponents {
 			
 			//---------------------------
 			// Admin Menu
-			MenuItem adminParentMenu = new MenuItem("Admin").faicon("fas fa-tools");	
+			MenuItem adminParentMenu = new MenuItem("Admin").faicon("fas fa-cogs");	
 			menu.addChild(adminParentMenu);
 			
 			for(MenuItem item : adminMenuItems.values() ) {

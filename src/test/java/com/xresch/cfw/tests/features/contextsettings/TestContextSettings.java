@@ -6,18 +6,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.contextsettings.ContextSettings;
 import com.xresch.cfw.features.contextsettings.FeatureContextSettings;
 import com.xresch.cfw.features.dashboard.Dashboard;
-import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
-import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.tests._master.DBTestMaster;
 
 public class TestContextSettings extends DBTestMaster {
@@ -52,11 +49,11 @@ public class TestContextSettings extends DBTestMaster {
 		
 		//------------------------------
 		// Setup Roles
-		CFW.DB.Roles.create(new Role("TestContextSettingsRole", "user"));
+		CFW.DB.Roles.create(new Role("TestContextSettingsRole", FeatureUserManagement.CATEGORY_USER));
 		roleContextSettings = CFW.DB.Roles.selectFirstByName("TestContextSettingsRole");
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionContextSettings.id(), roleContextSettings.id(), true);
 
-		CFW.DB.Roles.create(new Role("TestAllowedGroup", "user"));
+		CFW.DB.Roles.create(new Role("TestAllowedGroup", FeatureUserManagement.CATEGORY_USER));
 		roleAllowedGroup = CFW.DB.Roles.selectFirstByName("TestAllowedGroup");
 		
 		//------------------------------

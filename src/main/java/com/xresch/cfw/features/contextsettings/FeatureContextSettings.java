@@ -3,7 +3,7 @@ package com.xresch.cfw.features.contextsettings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
-import com.xresch.cfw.features.dashboard.UserAuditExecutorDashboardUserDirect;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
@@ -49,7 +49,7 @@ public class FeatureContextSettings extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_CONTEXT_SETTINGS, "user")
+				new Permission(PERMISSION_CONTEXT_SETTINGS, FeatureUserManagement.CATEGORY_USER)
 					.description("This permission allows a user to manage context settings."),
 				true,
 				false);

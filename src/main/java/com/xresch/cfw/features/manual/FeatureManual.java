@@ -4,6 +4,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 
 /**************************************************************************************************************
@@ -56,14 +57,14 @@ public class FeatureManual extends CFWAppFeature {
 		//-----------------------------------
 		// 
 		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_MANUAL, "user")
+				new Permission(PERMISSION_MANUAL, FeatureUserManagement.CATEGORY_USER)
 					.description("Can access the manual pages. Adds the manual menu item to the menu bar."),
 					true,
 					true
 				);
 			
 		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_ADMIN_MANUAL, "user")
+				new Permission(PERMISSION_ADMIN_MANUAL, FeatureUserManagement.CATEGORY_USER)
 					.description("Can access the manual pages for admins and developers."),
 					true,
 					false

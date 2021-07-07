@@ -25,6 +25,8 @@ public class FeatureUserManagement extends CFWAppFeature {
 	public static final String CONFIG_SESSIONTIMEOUT_VISITORS = "Session Timout Visitors";
 	public static final String CONFIG_SESSIONTIMEOUT_API = "Session Timout API";
 	
+	public static final String CATEGORY_USER = "user";
+	
 	@Override
 	public void register() {
 		//----------------------------------

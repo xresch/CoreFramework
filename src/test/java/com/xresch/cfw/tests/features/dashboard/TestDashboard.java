@@ -10,9 +10,10 @@ import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
-import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.tests._master.DBTestMaster;
 
@@ -55,23 +56,23 @@ public class TestDashboard extends DBTestMaster {
 		
 		//------------------------------
 		// Setup Roles
-		CFW.DB.Roles.create(new Role("TestDashboardViewer", "user"));
+		CFW.DB.Roles.create(new Role("TestDashboardViewer", FeatureUserManagement.CATEGORY_USER));
 		roleViewer = CFW.DB.Roles.selectFirstByName("TestDashboardViewer");
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionViewer.id(), roleViewer.id(), true);
 		
-		CFW.DB.Roles.create(new Role("TestDashboardCreator", "user"));
+		CFW.DB.Roles.create(new Role("TestDashboardCreator", FeatureUserManagement.CATEGORY_USER));
 		roleCreator = CFW.DB.Roles.selectFirstByName("TestDashboardCreator");
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionCreator.id(), roleCreator.id(), true);
 		
-		CFW.DB.Roles.create(new Role("TestDashboardAdmin", "user"));
+		CFW.DB.Roles.create(new Role("TestDashboardAdmin", FeatureUserManagement.CATEGORY_USER));
 		roleAdmin = CFW.DB.Roles.selectFirstByName("TestDashboardAdmin");
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionAdmin.id(), roleAdmin.id(), true);
 		
-		CFW.DB.Roles.create(new Role("TestGroupEditors", "user"));
+		CFW.DB.Roles.create(new Role("TestGroupEditors", FeatureUserManagement.CATEGORY_USER));
 		roleGroupEditors = CFW.DB.Roles.selectFirstByName("TestGroupEditors");
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionViewer.id(), roleGroupEditors.id(), true);
 		
-		CFW.DB.Roles.create(new Role("TestGroupShared", "user"));
+		CFW.DB.Roles.create(new Role("TestGroupShared", FeatureUserManagement.CATEGORY_USER));
 		roleGroupShared = CFW.DB.Roles.selectFirstByName("TestGroupShared");
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionViewer.id(), roleGroupShared.id(), true);
 		

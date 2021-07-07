@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.logging.CFWLog;
@@ -56,14 +57,14 @@ public class FeatureAPI extends CFWAppFeature {
 		//-----------------------------------------
 		
 		CFW.DB.Permissions.oneTimeCreate(
-			new Permission(PERMISSION_CFW_API, "user")
+			new Permission(PERMISSION_CFW_API, FeatureUserManagement.CATEGORY_USER)
 				.description("User can access the API."),
 				true,
 				false
 		);
 			
 		CFW.DB.Permissions.oneTimeCreate(
-			new Permission(PERMISSION_CFW_APITOKEN_MGMT, "user")
+			new Permission(PERMISSION_CFW_APITOKEN_MGMT, FeatureUserManagement.CATEGORY_USER)
 				.description("User can manage API Tokens."),
 				true,
 				false

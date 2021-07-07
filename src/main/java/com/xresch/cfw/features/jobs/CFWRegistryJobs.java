@@ -2,13 +2,14 @@ package com.xresch.cfw.features.jobs;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.logging.CFWLog;
 
-public class CFWJobRegistry {
+public class CFWRegistryJobs {
 
-	private static Logger logger = CFWLog.getLogger(CFWJobRegistry.class.getName());
+	private static Logger logger = CFWLog.getLogger(CFWRegistryJobs.class.getName());
 	
 	// UniqueName and JobTask
 	private static LinkedHashMap<String, Class<? extends CFWJobTask>> jobtasksMap = new LinkedHashMap<>();
@@ -16,7 +17,7 @@ public class CFWJobRegistry {
 	/*************************************************************************
 	 * 
 	 *************************************************************************/
-	public static void registerJobTask(CFWJobTask jobtasks) {
+	public static void registerTask(CFWJobTask jobtasks) {
 		
 		if( jobtasksMap.containsKey(jobtasks.uniqueName()) ) {
 			new CFWLog(logger).severe("A JobTask with the name '"+jobtasks.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
@@ -25,6 +26,15 @@ public class CFWJobRegistry {
 		
 		jobtasksMap.put(jobtasks.uniqueName(), jobtasks.getClass());
 		
+	}
+	
+	
+	/***********************************************************************
+	 * Get a list of all executor instances.
+	 * 
+	 ***********************************************************************/
+	public static Set<String> getTaskNames()  {
+		return jobtasksMap.keySet();
 	}
 	
 	/***********************************************************************

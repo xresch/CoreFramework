@@ -7,14 +7,15 @@ import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionBoolean;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionSelect;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionText;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionTextarea;
 import com.xresch.cfw.features.manual.ManualPage;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
-import com.xresch.cfw.features.usermgmt.UserAuditExecutorPermissions;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
 /**************************************************************************************************************
@@ -93,23 +94,15 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorDashboardUserGroups());
 		
 		//----------------------------------
-    	// Register Menu
+    	// Register Menu				
 		CFW.Registry.Components.addRegularMenuItem(
 				(MenuItem)new MenuItem("Dashboards")
 					.faicon("fas fa-tachometer-alt")
 					.addPermission(PERMISSION_DASHBOARD_VIEWER)
 					.addPermission(PERMISSION_DASHBOARD_CREATOR)
 					.addPermission(PERMISSION_DASHBOARD_ADMIN)
-				, null);
-				
-		CFW.Registry.Components.addRegularMenuItem(
-				(MenuItem)new MenuItem("Dashboard List")
-					.faicon("fas fa-images")
-					.addPermission(PERMISSION_DASHBOARD_VIEWER)
-					.addPermission(PERMISSION_DASHBOARD_CREATOR)
-					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 					.href("/app/dashboard/list")
-				, "Dashboards");
+				, FeatureCore.MENU_TOOLS);
 		
 		//----------------------------------
     	// Register Manual
@@ -121,21 +114,21 @@ public class FeatureDashboard extends CFWAppFeature {
 		//-----------------------------------
 		// 
 		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_DASHBOARD_VIEWER, "user")
+				new Permission(PERMISSION_DASHBOARD_VIEWER, FeatureUserManagement.CATEGORY_USER)
 					.description("Can view dashboards that other users have shared. Cannot create dashboards, but might edit when allowed by a dashboard creator."),
 					true,
 					false
 				);	
 		
 		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_DASHBOARD_CREATOR, "user")
+				new Permission(PERMISSION_DASHBOARD_CREATOR, FeatureUserManagement.CATEGORY_USER)
 					.description("Can view and create dashboards and share them with other users."),
 					true,
 					false
 				);	
 		
 		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_DASHBOARD_ADMIN, "user")
+				new Permission(PERMISSION_DASHBOARD_ADMIN, FeatureUserManagement.CATEGORY_USER)
 					.description("View, Edit and Delete all dashboards of all users, regardless of the share settings of the dashboards."),
 					true,
 					false

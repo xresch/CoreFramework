@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
@@ -38,13 +39,13 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 
 		//------------------------------
 		// Roles
-		CFW.DB.Roles.create(new Role("TestroleA", "user"));
+		CFW.DB.Roles.create(new Role("TestroleA", FeatureUserManagement.CATEGORY_USER));
 		testroleA = CFW.DB.Roles.selectFirstByName("TestroleA");
 		
-		CFW.DB.Roles.create(new Role("TestroleB", "user"));
+		CFW.DB.Roles.create(new Role("TestroleB", FeatureUserManagement.CATEGORY_USER));
 		testroleB = CFW.DB.Roles.selectFirstByName("TestroleB");
 		
-		CFW.DB.Roles.create(new Role("TestroleC", "user"));
+		CFW.DB.Roles.create(new Role("TestroleC", FeatureUserManagement.CATEGORY_USER));
 		testroleC = CFW.DB.Roles.selectFirstByName("TestroleC");
 		
 		//------------------------------
@@ -66,29 +67,29 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		
 		//------------------------------
 		// Permissions
-		CFW.DB.Permissions.create(new Permission("PermissionA", "user"));
+		CFW.DB.Permissions.create(new Permission("PermissionA", FeatureUserManagement.CATEGORY_USER));
 		permissionA = CFW.DB.Permissions.selectByName("PermissionA");
 		System.out.println("=============== PermissionA ===================\n"+permissionA.dumpFieldsAsKeyValueString());
 		System.out.println("=============== RoleA ===================\n"+testroleA.dumpFieldsAsKeyValueString());
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionA.id(), testroleA.id(), true);
 		
-		CFW.DB.Permissions.create(new Permission("PermissionAA", "user"));
+		CFW.DB.Permissions.create(new Permission("PermissionAA", FeatureUserManagement.CATEGORY_USER));
 		permissionAA = CFW.DB.Permissions.selectByName("PermissionAA");
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionAA.id(), testroleA.id(), true);
 		
-		CFW.DB.Permissions.create(new Permission("PermissionAAA", "user"));
+		CFW.DB.Permissions.create(new Permission("PermissionAAA", FeatureUserManagement.CATEGORY_USER));
 		permissionAAA = CFW.DB.Permissions.selectByName("PermissionAAA");
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionAAA.id(), testroleA.id(), true);
 		
-		CFW.DB.Permissions.create(new Permission("PermissionB", "user"));
+		CFW.DB.Permissions.create(new Permission("PermissionB", FeatureUserManagement.CATEGORY_USER));
 		permissionB = CFW.DB.Permissions.selectByName("PermissionB");
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionB.id(), testroleB.id(), true);
 		
-		CFW.DB.Permissions.create(new Permission("PermissionBB", "user"));
+		CFW.DB.Permissions.create(new Permission("PermissionBB", FeatureUserManagement.CATEGORY_USER));
 		permissionBB = CFW.DB.Permissions.selectByName("PermissionBB");
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionBB.id(), testroleB.id(), true);
 		
-		CFW.DB.Permissions.create(new Permission("PermissionC", "user"));
+		CFW.DB.Permissions.create(new Permission("PermissionC", FeatureUserManagement.CATEGORY_USER));
 		permissionC = CFW.DB.Permissions.selectByName("PermissionC");
 		CFW.DB.RolePermissionMap.addPermissionToRole(permissionC.id(), testroleC.id(), true);
 		
@@ -297,7 +298,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		
 		//--------------------------------------
 		// CREATE
-		CFW.DB.Roles.create(new Role(rolename, "user")
+		CFW.DB.Roles.create(new Role(rolename, FeatureUserManagement.CATEGORY_USER)
 				.description("Testdescription")
 				.isDeletable(false)
 				);
@@ -412,7 +413,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		//Cleanup
 		CFW.DB.Roles.deleteByName("TestRoleToDelete");
 		
-		Role roleToDelete = new Role("TestRoleToDelete", "user");
+		Role roleToDelete = new Role("TestRoleToDelete", FeatureUserManagement.CATEGORY_USER);
 		
 		CFW.DB.Roles.create(roleToDelete);
 		roleToDelete = CFW.DB.Roles.selectFirstByName("TestRoleToDelete");
@@ -453,7 +454,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		
 		//--------------------------------------
 		// CREATE
-		CFW.DB.Permissions.create(new Permission(permissionname, "user")
+		CFW.DB.Permissions.create(new Permission(permissionname, FeatureUserManagement.CATEGORY_USER)
 				.description("Testdescription")
 				);
 		
@@ -512,7 +513,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		
 		//--------------------------------------
 		// Preparation
-		Permission newPermission = new Permission("newPermission", "user");
+		Permission newPermission = new Permission("newPermission", FeatureUserManagement.CATEGORY_USER);
 		CFW.DB.Permissions.create(newPermission);
 		newPermission = CFW.DB.Permissions.selectByName("newPermission");
 		CFW.DB.RolePermissionMap.removePermissionFromRole(newPermission.id(), testroleA.id());
@@ -575,7 +576,7 @@ public class TestCFWDBUserManagement extends DBTestMaster {
 		//Cleanup
 		CFW.DB.Roles.deleteByName("TestRoleToDelete");
 		
-		Role roleToDelete = new Role("TestRoleToDelete", "user");
+		Role roleToDelete = new Role("TestRoleToDelete", FeatureUserManagement.CATEGORY_USER);
 		
 		CFW.DB.Roles.create(roleToDelete);
 		roleToDelete = CFW.DB.Roles.selectFirstByName("TestRoleToDelete");

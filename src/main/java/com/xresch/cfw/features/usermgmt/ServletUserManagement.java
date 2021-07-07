@@ -108,7 +108,7 @@ public class ServletUserManagement extends HttpServlet
 					
 					origin.mapRequestParameters(request);
 					Role role = (Role)origin;
-					role.category("user");
+					role.category(FeatureUserManagement.CATEGORY_USER);
 					
 					if( CFW.DB.Roles.create(role) ) {
 						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Role created successfully!");
@@ -131,7 +131,7 @@ public class ServletUserManagement extends HttpServlet
 					
 					origin.mapRequestParameters(request);
 					Role role = (Role)origin;
-					role.category("user")
+					role.category(FeatureUserManagement.CATEGORY_USER)
 						.isGroup(true);
 					
 					if( CFW.DB.Roles.create(role) ) {

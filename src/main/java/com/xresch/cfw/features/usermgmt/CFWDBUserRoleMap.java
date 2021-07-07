@@ -300,7 +300,7 @@ public class CFWDBUserRoleMap {
 				+ ") WHERE IS_GROUP = FALSE OR IS_GROUP IS NULL";
 		
 		ResultSet result = CFWDB.preparedExecuteQuery(selectRolesForUser, 
-				"user",
+				FeatureUserManagement.CATEGORY_USER,
 				userID);
 		String json = ResultSetUtils.toJSON(result);
 		CFWDB.close(result);	
@@ -334,7 +334,7 @@ public class CFWDBUserRoleMap {
 				+ ") WHERE IS_GROUP = TRUE";
 		
 		ResultSet result = CFWDB.preparedExecuteQuery(selectRolesForUser, 
-				"user",
+				FeatureUserManagement.CATEGORY_USER,
 				userID);
 		String json = ResultSetUtils.toJSON(result);
 		CFWDB.close(result);	

@@ -4,6 +4,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -75,7 +76,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		//-----------------------------------------
 		if(!CFW.DB.Permissions.checkExistsByName(PERMISSION_CONFIGURATION)) {
 			
-			CFW.DB.Permissions.create(new Permission(PERMISSION_CONFIGURATION, "user")
+			CFW.DB.Permissions.create(new Permission(PERMISSION_CONFIGURATION, FeatureUserManagement.CATEGORY_USER)
 				.description("Gives the user the ability to view and update the configurations in the database.")
 			);
 			

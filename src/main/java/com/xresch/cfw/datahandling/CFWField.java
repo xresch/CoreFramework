@@ -1199,6 +1199,45 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	/******************************************************************************************************
+	 * Set values for selection fields. The string representations of the provided elements will be used. 
+	 * The values will be used as labels for the options.
+	 * This will reset any options set with setValueLabelOptions().
+	 * 
+	 * @param array with values
+	 * @return instance for chaining
+	 ******************************************************************************************************/
+	public CFWField<T> setOptions(ArrayList<String> options) {
+		LinkedHashMap<Object,Object> optionsMap = new LinkedHashMap<Object,Object>();
+		if(options != null) {
+			for(Object option : options) {
+				optionsMap.put(option, option);
+			}
+			this.valueLabelOptions = optionsMap;
+		}
+		return this;
+	}
+	
+	/******************************************************************************************************
+	 * Set values for selection fields. The string representations of the provided elements will be used. 
+	 * The values will be used as labels for the options.
+	 * This will reset any options set with setValueLabelOptions().
+	 * 
+	 * @param array with values
+	 * @return instance for chaining
+	 ******************************************************************************************************/
+	public CFWField<T> setOptions(Set<String> options) {
+		LinkedHashMap<Object,Object> optionsMap = new LinkedHashMap<Object,Object>();
+		if(options != null) {
+			for(Object option : options) {
+				optionsMap.put(option, option);
+			}
+			this.valueLabelOptions = optionsMap;
+		}
+		return this;
+	}
+	
+	
+	/******************************************************************************************************
 	 * Set values for selection fields. First element in the map will be the value of the field, the second
 	 * will be used as the label for the option.
 	 * This will reset any options set with setOptions().

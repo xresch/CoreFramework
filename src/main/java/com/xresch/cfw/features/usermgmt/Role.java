@@ -47,7 +47,7 @@ public class Role extends CFWObject {
 			.setColumnDefinition("VARCHAR(32)")
 			.setDescription("The catogery of the role, either 'user' or 'space'.")
 			.apiFieldType(FormFieldType.SELECT)
-			.setOptions(new String[] {"user", "space"})
+			.setOptions(new String[] {FeatureUserManagement.CATEGORY_USER, "space"})
 			.addValidator(new LengthValidator(-1, 32));
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, RoleFields.NAME.toString())
@@ -144,7 +144,7 @@ public class Role extends CFWObject {
 
 		for(CFWObject roleObject : roleArray) {
 			Role role = (Role) roleObject;
-			role.category("user")
+			role.category(FeatureUserManagement.CATEGORY_USER)
 				.update();
 			
 		}
@@ -166,7 +166,7 @@ public class Role extends CFWObject {
 		// Create Role Superuser
 		//-----------------------------------------
 		if(!CFW.DB.Roles.checkExistsByName(CFWDBRole.CFW_ROLE_SUPERUSER)) {
-			CFW.DB.Roles.create(new Role(CFWDBRole.CFW_ROLE_SUPERUSER, "user")
+			CFW.DB.Roles.create(new Role(CFWDBRole.CFW_ROLE_SUPERUSER, FeatureUserManagement.CATEGORY_USER)
 				.description("Superusers have all the privileges in the system. They are above administrators. ")
 				.isDeletable(false)
 				.isRenamable(false)
@@ -187,7 +187,7 @@ public class Role extends CFWObject {
 		// Create Role Admin
 		//-----------------------------------------
 		if(!CFW.DB.Roles.checkExistsByName(CFWDBRole.CFW_ROLE_ADMIN)) {
-			CFW.DB.Roles.create(new Role(CFWDBRole.CFW_ROLE_ADMIN, "user")
+			CFW.DB.Roles.create(new Role(CFWDBRole.CFW_ROLE_ADMIN, FeatureUserManagement.CATEGORY_USER)
 				.description("Administrators have the privileges to manage the application.")
 				.isDeletable(false)
 				.isRenamable(false)
@@ -209,7 +209,7 @@ public class Role extends CFWObject {
 		// Create Role User
 		//-----------------------------------------
 		if(!CFW.DB.Roles.checkExistsByName(CFWDBRole.CFW_ROLE_USER)) {
-			CFW.DB.Roles.create(new Role(CFWDBRole.CFW_ROLE_USER, "user")
+			CFW.DB.Roles.create(new Role(CFWDBRole.CFW_ROLE_USER, FeatureUserManagement.CATEGORY_USER)
 				.description("Default User role. New users will automatically be added to this role if they are not managed by a foreign source.")
 				.isDeletable(false)
 				.isRenamable(false)

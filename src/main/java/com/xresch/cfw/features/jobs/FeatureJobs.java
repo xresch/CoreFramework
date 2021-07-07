@@ -3,7 +3,10 @@ package com.xresch.cfw.features.jobs;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
+import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.response.bootstrap.MenuItem;
 
 public class FeatureJobs extends CFWAppFeature {
 	
@@ -22,15 +25,16 @@ public class FeatureJobs extends CFWAppFeature {
 		// Register Objects
 		//CFW.Registry.Objects.addCFWObject(CPUSampleSignature.class);
     	
-    	//----------------------------------
-    	// Register Admin Menu
 
-//		CFW.Registry.Components.addAdminCFWMenuItem(
-//				(MenuItem)new MenuItem("DB Analytics")
-//					.faicon("fas fa-database")
-//					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
-//					.href("/app/dbanalytics")	
-//				, null);
+		//----------------------------------
+    	// Register Menu				
+		CFW.Registry.Components.addRegularMenuItem(
+				(MenuItem)new MenuItem("Jobs")
+					.faicon("fas fa-play-circle")
+					.addPermission(PERMISSION_JOBS_USER)
+					.addPermission(PERMISSION_JOBS_ADMIN)
+					.href("/app/jobs")
+				, FeatureCore.MENU_TOOLS);
 		
 	}
 
@@ -40,14 +44,14 @@ public class FeatureJobs extends CFWAppFeature {
 		//----------------------------------
     	// Permissions
 		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_JOBS_USER, "user")
+				new Permission(PERMISSION_JOBS_USER, FeatureUserManagement.CATEGORY_USER)
 					.description("User can view and edit his own jobs."),
 					true,
 					false
 			);
 		
 		CFW.DB.Permissions.oneTimeCreate(
-				new Permission(PERMISSION_JOBS_ADMIN, "user")
+				new Permission(PERMISSION_JOBS_ADMIN, FeatureUserManagement.CATEGORY_USER)
 					.description("User can view and edit all jobs in the system."),
 					true,
 					false

@@ -143,7 +143,7 @@ public class CFWDBPermission {
 		return new Permission()
 				.queryCache(CFWDBPermission.class, "getUserPermissionList")
 				.select()
-				.where(PermissionFields.CATEGORY.toString(), "user")
+				.where(PermissionFields.CATEGORY.toString(), FeatureUserManagement.CATEGORY_USER)
 				.orderby(PermissionFields.NAME.toString())
 				.getResultSet();
 		
@@ -158,7 +158,7 @@ public class CFWDBPermission {
 		return new Permission()
 				.queryCache(CFWDBPermission.class, "getUserPermissionListAsJSON")
 				.select()
-				.where(PermissionFields.CATEGORY.toString(), "user")
+				.where(PermissionFields.CATEGORY.toString(), FeatureUserManagement.CATEGORY_USER)
 				.orderby(PermissionFields.NAME.toString())
 				.getAsJSON();
 	}

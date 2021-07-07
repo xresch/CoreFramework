@@ -151,7 +151,7 @@ public class CFWDBRole {
 				.queryCache(CFWDBRole.class, "getUserRolesAsJSON")
 				.select()
 				.where(RoleFields.PK_ID.toString(), Integer.parseInt(id))
-				.and(RoleFields.CATEGORY.toString(), "user")
+				.and(RoleFields.CATEGORY.toString(), FeatureUserManagement.CATEGORY_USER)
 				.getAsJSON();
 		
 	}
@@ -166,7 +166,7 @@ public class CFWDBRole {
 		return new Role()
 				.queryCache(CFWDBRole.class, "getUserRoleList")
 				.select()
-				.where(RoleFields.CATEGORY.toString(), "user")
+				.where(RoleFields.CATEGORY.toString(), FeatureUserManagement.CATEGORY_USER)
 				.orderby(RoleFields.NAME.toString())
 				.getResultSet();
 		
@@ -224,7 +224,7 @@ public class CFWDBRole {
 	public static String getUserRoleListAsJSON() {
 		return new CFWSQL(new Role())
 				.select()
-				.where(RoleFields.CATEGORY.toString(), "user")
+				.where(RoleFields.CATEGORY.toString(), FeatureUserManagement.CATEGORY_USER)
 				.custom(" AND (")
 					.is(RoleFields.IS_GROUP, false)
 					.or().isNull(RoleFields.IS_GROUP)
@@ -242,7 +242,7 @@ public class CFWDBRole {
 		return new CFWSQL(new Role())
 				.queryCache()
 				.select()
-				.where(RoleFields.CATEGORY.toString(), "user")
+				.where(RoleFields.CATEGORY.toString(), FeatureUserManagement.CATEGORY_USER)
 				.and(RoleFields.IS_GROUP, true)
 				.orderby(RoleFields.NAME.toString())
 				.getAsJSON();

@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -36,7 +38,7 @@ public class ServletJobManagement extends HttpServlet
 	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-		HTMLResponse html = new HTMLResponse("Javascript Examples");
+		HTMLResponse html = new HTMLResponse("Jobs");
 		
 		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)) {
 			
@@ -46,7 +48,7 @@ public class ServletJobManagement extends HttpServlet
 			
 			if(action == null) {
 
-				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureJobs.RESOURCE_PACKAGE, "jobs.js");
+				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureJobs.RESOURCE_PACKAGE, "cfw_jobs.js");
 				
 
 				html.addJavascriptCode("cfwjobs_initialDraw();");
@@ -156,7 +158,22 @@ public class ServletJobManagement extends HttpServlet
 	 *
 	 ******************************************************************/
 	private void createForms() {
-				
+		
+		//-------------------------------------
+		// Select Task Form
+		CFWForm selectJobTaskForm = 
+				new CFWObject()
+				.addField(
+					CFWField.newString(FormFieldType.SELECT, "Task")
+						.setDescription("Select the Task which should be executed by the job.")
+						.setOptions(CFWRegistryJobs.getTaskNames())
+				)
+				.toForm("cfwSelectJobTaskForm", "Select Job Task");
+		
+		selectJobTaskForm.onclick("cfwjobs_add_createJob(this);");
+	
+		//-------------------------------------
+		// Create Job Form
 		CFWForm createCFWJobForm = new CFWJob().toForm("cfwCreateCFWJobForm", "Create CFWJob");
 		
 		createCFWJobForm.setFormHandler(new CFWFormHandler() {
@@ -173,7 +190,6 @@ public class ServletJobManagement extends HttpServlet
 						}
 					}
 				}
-				
 			}
 		});
 		
