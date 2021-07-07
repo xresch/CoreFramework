@@ -47,6 +47,7 @@ public class FeatureUserManagement extends CFWAppFeature {
 		//----------------------------------
     	// Register Audit
 		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorPermissions());
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorGroups());
 		
     	//----------------------------------
     	// Register Regular Menu

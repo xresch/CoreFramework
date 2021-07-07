@@ -5,8 +5,10 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.usermgmt.UserRoleMap.UserRoleMapFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.ResultSetUtils;
@@ -338,6 +340,18 @@ public class CFWDBUserRoleMap {
 		CFWDB.close(result);	
 		return json;
 
+	}
+	
+	/***************************************************************
+	 * Retrieve the permission overview for the specified user.
+	 ****************************************************************/
+	public static JsonArray getGroupsForUser(User user) {
+		
+		return new CFWSQL(new Permission())
+				.queryCache()
+				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, "sql_getGroupsForUser.sql", user.id())
+				.getAsJSONArray();
+		
 	}
 	
 	/***************************************************************
