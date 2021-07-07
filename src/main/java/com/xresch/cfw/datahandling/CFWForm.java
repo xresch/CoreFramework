@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -27,6 +28,7 @@ public class CFWForm extends HierarchicalHTMLItem {
 	public static final String FORM_ID = "cfw-formID";
 	protected String formID = "";
 	protected String submitLabel = "";
+	protected String description;
 	protected String postURL;
 	protected String resultCallback;
 	
@@ -93,6 +95,9 @@ public class CFWForm extends HierarchicalHTMLItem {
 		
 		//---------------------------
 		// Create HTML
+		if(!isInlineForm && !Strings.isNullOrEmpty(description)) {
+			html.append("<div>"+description+"</div>");
+		}
 		String formClasses = "form";
 		if(isInlineForm) { formClasses += "-inline align-items-stretch"; }
 		formClasses += " "+this.getAttributeValue("class");
@@ -186,6 +191,13 @@ public class CFWForm extends HierarchicalHTMLItem {
 	public CFWForm setLabel(String label) {
 		fireChange();
 		this.formID = label;
+		return this;
+	}
+	
+
+	public CFWForm setDescription(String description) {
+		fireChange();
+		this.description = description;
 		return this;
 	}
 	

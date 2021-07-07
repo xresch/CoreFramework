@@ -5,10 +5,8 @@ import java.util.concurrent.ScheduledFuture;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
-import com.xresch.cfw.db.TaskDatabaseBackup;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.FeatureConfiguration;
-import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 
 import io.prometheus.client.exporter.MetricsServlet;
@@ -31,6 +29,8 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 	
 	private static ScheduledFuture<?> cpuSamplingTask;
 	private static ScheduledFuture<?> cpuSamplingAgeOutTask;
+
+	public static final String PERMISSION_SYSTEM_ANALYTICS = "System Analytics";
 	@Override
 	public void register() {
 		//----------------------------------
@@ -41,6 +41,10 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		CFW.Registry.Objects.addCFWObject(CPUSampleSignature.class);
 		CFW.Registry.Objects.addCFWObject(CPUSample.class);
     	
+		//----------------------------------
+		// Register Job Tasks
+		CFW.Registry.Jobs.registerTask(new CFWJobTaskThreadDumps());
+		
     	//----------------------------------
     	// Register Regular Menu
 		String SYSTEM_ANALYTICS = "System Analytics";
@@ -48,56 +52,56 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("DB Analytics")
 					.faicon("fas fa-database")
-					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/dbanalytics")	
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("CPU Sampling")
 					.faicon("fas fa-microchip")
-					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/cpusampling")	
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("Servlet Context Tree")
 					.faicon("fas fa-sitemap")
-					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/servletcontexttree")	
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("Session Overview")
 					.faicon("fas fa-database")
-					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/sessionoverview")	
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("System Properties")
 					.faicon("fas fa-cubes")
-					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/systemproperties")	
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("Cache Statistics")
 					.faicon("fas fa-sd-card")
-					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/cachestatistics")	
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("Log Configuration")
 					.faicon("fas fa-book-open")
-					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/logconfiguration")	
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("Metrics")
 					.faicon("fas fa-thermometer-half")
-					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)
+					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/metrics")	
 					.addAttribute("target", "_blank")
 				, SYSTEM_ANALYTICS);

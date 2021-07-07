@@ -24,9 +24,9 @@ public class CFWJob extends CFWObject {
 	public enum JobFields{
 		PK_ID, 
 		FK_ID_USER,
-		NAME, 
+		JOB_NAME, 
 		DESCRIPTION,
-		JOB_EXECUTOR_CLASS,
+		TASK_NAME,
 //		START_DATE,
 //		END_DATE,
 		JSON_SCHEDULE,
@@ -57,13 +57,8 @@ public class CFWJob extends CFWObject {
 			.setDescription("The user id of the owner of the job.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
-	
-	private CFWField<String> jobExecutorClassname = CFWField.newString(FormFieldType.NONE, JobFields.JOB_EXECUTOR_CLASS)
-			.setColumnDefinition("VARCHAR(1024)")
-			.setDescription("The class that will be executed.")
-			.addValidator(new LengthValidator(3, 1024));
-	
-	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, JobFields.NAME)
+		
+	private CFWField<String> jobname = CFWField.newString(FormFieldType.TEXT, JobFields.JOB_NAME)
 			.setColumnDefinition("VARCHAR(255)")
 			.setDescription("The name of the job.")
 			.addValidator(new LengthValidator(1, 255));
@@ -73,7 +68,12 @@ public class CFWJob extends CFWObject {
 			.setDescription("The description of the job.")
 			.addValidator(new LengthValidator(-1, 100000));
 	
-	private CFWField<LinkedHashMap<String, String>> properties =  CFWField.newValueLabel(JobFields.JSON_PROPERTIES)
+	private CFWField<String> taskName = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, JobFields.TASK_NAME)
+			.setColumnDefinition("VARCHAR(1024)")
+			.setDescription("The name of the task to be executed.")
+			.addValidator(new LengthValidator(3, 1024));
+	
+	private CFWField<LinkedHashMap<String, String>> properties = CFWField.newValueLabel(JobFields.JSON_PROPERTIES)
 			.setDescription("The Properties of the job.");
 	
 	private CFWField<CFWSchedule> schedule = 
@@ -93,9 +93,10 @@ public class CFWJob extends CFWObject {
 		
 		this.addFields(id, 
 				foreignKeyOwner,
-				jobExecutorClassname,
-				name, 
+				
+				jobname, 
 				description,
+				taskName,
 				schedule,
 				properties
 				);
@@ -118,8 +119,8 @@ public class CFWJob extends CFWObject {
 				new String[] {
 						JobFields.PK_ID.toString(), 
 						JobFields.FK_ID_USER.toString(),
-						JobFields.NAME.toString(),
-						JobFields.JOB_EXECUTOR_CLASS.toString(),
+						JobFields.JOB_NAME.toString(),
+						JobFields.TASK_NAME.toString(),
 
 				};
 		
@@ -127,9 +128,9 @@ public class CFWJob extends CFWObject {
 				new String[] {
 						JobFields.PK_ID.toString(), 
 						JobFields.FK_ID_USER.toString(),
-						JobFields.NAME.toString(),
+						JobFields.JOB_NAME.toString(),
 						JobFields.DESCRIPTION.toString(),
-						JobFields.JOB_EXECUTOR_CLASS.toString(),
+						JobFields.TASK_NAME.toString(),
 
 				};
 
@@ -167,12 +168,12 @@ public class CFWJob extends CFWObject {
 		return this;
 	}
 	
-	public String name() {
-		return name.getValue();
+	public String jobname() {
+		return jobname.getValue();
 	}
 	
-	public CFWJob name(String value) {
-		this.name.setValue(value);
+	public CFWJob jobname(String value) {
+		this.jobname.setValue(value);
 		return this;
 	}
 	
@@ -185,12 +186,12 @@ public class CFWJob extends CFWObject {
 		return this;
 	}
 	
-	public String jobExecutorClassname() {
-		return jobExecutorClassname.getValue();
+	public String taskName() {
+		return taskName.getValue();
 	}
 	
-	public CFWJob jobExecutorClassname(Class<CFWJobTask> value) {
-		this.jobExecutorClassname.setValue(value.getName());
+	public CFWJob taskName(String value) {
+		this.taskName.setValue(value);
 		return this;
 	}
 	
@@ -200,6 +201,11 @@ public class CFWJob extends CFWObject {
 	
 	public CFWJob properties(LinkedHashMap<String, String> value) {
 		this.properties.setValue(value);
+		return this;
+	}
+	
+	protected CFWJob changePropertiesDescription(String htmlDescription) {
+		properties.setDescription(htmlDescription);
 		return this;
 	}
 	

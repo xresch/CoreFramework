@@ -18,7 +18,7 @@ function cfwjobs_createTabs(){
 		
 		var list = $('<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">');
 		
-		list.append('<li class="nav-item"><a class="nav-link" id="tab-myjobs" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'myjobs\'})"><i class="fas fa-share-alt mr-2"></i>Data Handling</a></li>');
+		list.append('<li class="nav-item"><a class="nav-link" id="tab-myjobs" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'myjobs\'})"><i class="fas fa-share-alt mr-2"></i>My Jobs</a></li>');
 		list.append('<li class="nav-item"><a class="nav-link" id="tab-admin" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'admin\'})"><i class="fas fa-copy mr-2"></i>Admin</a></li>');
 
 		var parent = $("#cfw-container");
@@ -50,15 +50,21 @@ function cfwjobs_add_selectTask(){
  ******************************************************************/
 function cfwjobs_add_createJob(submitButton){
 	
-	var html = $('<div>');	
-
-	CFW.http.getForm('cfwCreateJobForm', html);
+	var form = $(submitButton).closest('form');
+	var taskname = form.find('#TASK').val();
 	
+	var createJobDiv = $('<div id="cfw-create-job">');	
+
 	CFW.ui.showModalMedium(
 			"Create Job", 
-			html, 
+			createJobDiv, 
 			"CFW.cache.clearCache(); cfwjobs_draw(CFWJOBS_LAST_OPTIONS)"
 		);
+		
+	//-----------------------------------
+	// Load Form
+	//-----------------------------------
+	CFW.http.createForm(CFWJOBS_URL, {action: "getform", item: "createjob", taskname: taskname}, createJobDiv);
 	
 }
 
@@ -210,7 +216,7 @@ function cfwjobs_printMyJobs(){
 					storeid: 'fulldataviewerexample',
 					datainterface: {
 						url: CFWJOBS_URL,
-						item: 'personlist'
+						item: 'joblist'
 					},
 					renderers: [
 						{	label: 'Table',
@@ -306,9 +312,9 @@ function cfwjobs_draw(options){
 	function(){
 		
 		switch(options.tab){
-			case "myjobs":		CFW.http.fetchAndCacheData(CFWJOBS_URL, {action: "fetch", item: "personlist"}, "personlist", cfwjobs_printDataHandling);
+			case "myjobs":		CFW.http.fetchAndCacheData(CFWJOBS_URL, {action: "fetch", item: "myjoblist"}, "myjoblist", cfwjobs_printMyJobs);
 										break;	
-			case "pagination-static":	CFW.http.fetchAndCacheData(CFWJOBS_URL, {action: "fetch", item: "personlist"}, "personlist", cfwjobs_printPaginationStatic);
+			case "admin":	CFW.http.fetchAndCacheData(CFWJOBS_URL, {action: "fetch", item: "adminjoblist"}, "adminjoblist", cfwjobs_printPaginationStatic);
 										break;	
 			case "pagination-dynamic":	cfwjobs_printPaginationDynamic();
 										break;	

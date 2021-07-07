@@ -23,7 +23,7 @@ public class FeatureJobs extends CFWAppFeature {
 		
 		//----------------------------------
 		// Register Objects
-		//CFW.Registry.Objects.addCFWObject(CPUSampleSignature.class);
+		CFW.Registry.Objects.addCFWObject(CFWJob.class);
     	
 
 		//----------------------------------
@@ -60,7 +60,7 @@ public class FeatureJobs extends CFWAppFeature {
 
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
-
+		app.addAppServlet(ServletJobs.class,  "/jobs");
 		  
 	}
 

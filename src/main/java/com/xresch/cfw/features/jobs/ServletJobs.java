@@ -1,6 +1,8 @@
 package com.xresch.cfw.features.jobs;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,23 +14,25 @@ import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.features.jobs.CFWJobTask.JobTaskProperty;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.utils.CFWRandom;
 
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2021
  **************************************************************************************************************/
-public class ServletJobManagement extends HttpServlet
+public class ServletJobs extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;
 	
-	public ServletJobManagement() {
+	public ServletJobs() {
 	
 	}
 	
@@ -81,7 +85,7 @@ public class ServletJobManagement extends HttpServlet
 		
 			case "fetch": 			
 				switch(item.toLowerCase()) {
-					case "joblist": 		jsonResponse.getContent().append("todo");
+					case "myjoblist": 		jsonResponse.setPayLoad(new CFWJob().toJSONElement());
 	  										break;
 	  										
 					default: 				CFW.Messages.itemNotSupported(item);
@@ -125,6 +129,10 @@ public class ServletJobManagement extends HttpServlet
 				
 			case "getform": 			
 				switch(item.toLowerCase()) {
+					case "createjob": 	String taskName = request.getParameter("taskname");
+										createCreateJobForm(jsonResponse, taskName);
+										break;
+										
 					case "editjob": 	createEditForm(jsonResponse, ID);
 										break;
 					
@@ -164,7 +172,7 @@ public class ServletJobManagement extends HttpServlet
 		CFWForm selectJobTaskForm = 
 				new CFWObject()
 				.addField(
-					CFWField.newString(FormFieldType.SELECT, "Task")
+					CFWField.newString(FormFieldType.SELECT, "TASK")
 						.setDescription("Select the Task which should be executed by the job.")
 						.setOptions(CFWRegistryJobs.getTaskNames())
 				)
@@ -193,6 +201,57 @@ public class ServletJobManagement extends HttpServlet
 			}
 		});
 		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void createCreateJobForm(JSONResponse json, String taskname) {
+
+		//-----------------------------------
+		// Get Task and Properties
+		CFWJobTask task = CFW.Registry.Jobs.createTaskInstance(taskname);
+		
+		ArrayList<JobTaskProperty> propsArray = task.jobProperties();
+		LinkedHashMap<String, String> propsMap = new LinkedHashMap<>();
+		StringBuilder propDescription = new StringBuilder("<p>The following properties are available for the selected task:</p> <ul> ");
+		for(JobTaskProperty property : propsArray) {
+			propsMap.put(property.getKey(), property.getValue());
+			propDescription.append("<li><b>"+property.getKey()+":&nbsp;</b>"+property.getDescription()+"</li>");
+		}
+		propDescription.append("</ul>");
+		
+		//-----------------------------------
+		// Create Job Object
+		CFWJob job = new CFWJob()
+						.taskName(taskname)
+						.properties(propsMap);
+
+		//-----------------------------------
+		// Create Form	
+		CFWForm createCFWJobForm = job.toForm("cfwCreateCFWJobForm"+CFWRandom.randomStringAlphaNumerical(8), "Create Job");
+		createCFWJobForm.setDescription(propDescription.toString());
+		
+		createCFWJobForm.setFormHandler(new CFWFormHandler() {
+			
+			@Override
+			public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+				
+				if(origin.mapRequestParameters(request)) {
+					
+					if(CFWDBJob.create((CFWJob)origin)) {
+						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Done!");
+					}
+						
+				}
+				
+			}
+		});
+		
+		createCFWJobForm.appendToPayload(json);
+		json.setSuccess(true);	
+		
+
 	}
 	
 	/******************************************************************

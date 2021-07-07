@@ -26,7 +26,7 @@ public class CFWDBJob {
 			
 			CFWJob job = (CFWJob)object;
 			
-			if(job == null || job.name().isEmpty()) {
+			if(job == null || job.jobname().isEmpty()) {
 				new CFWLog(logger)
 					.warn("Please specify a firstname for the job.", new Throwable());
 				return false;
@@ -96,7 +96,7 @@ public class CFWDBJob {
 	}
 	
 	public static CFWJob selectFirstByName(String name) { 
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, JobFields.NAME.toString(), name);
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, JobFields.JOB_NAME.toString(), name);
 	}
 	
 	

@@ -466,7 +466,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 									break;
 			
 			case UNMODIFIABLE_TEXT:  	String label = this.getAttributeValue("value");
-									html.append("<span "+this.getAttributesString()+">"+label+"</span>");
+									html.append("<span class=\"d-flex align-items-center "+cssClasses+"\" "+this.getAttributesString()+">"+label+"</span>");
 									html.append("<input type=\"hidden\" "+this.getAttributesString()+"/>");
 									break;
 			
@@ -1481,7 +1481,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			else if(valueClass == LinkedHashMap.class){ 
 				LinkedHashMap<String,String> map = CFW.JSON.fromJsonLinkedHashMap((String)value);
 				if(map == null) {
-					new CFWLog(logger).severe("Could not resolve LinkedHashMap for field: "+this.name);
+					return this.changeValue(map); 
 				}
 				for(Entry<String,String> entry : map.entrySet()) {
 					entry.setValue(sanitizeString((String)entry.getValue()));

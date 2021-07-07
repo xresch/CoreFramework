@@ -12,19 +12,18 @@ public class CFWAnalysisUtils {
 	/************************************************************
 	 * Creates a thread dump to the disk. 
 	 ************************************************************/
-	public static void threadDumpToDisk() {
-        File folder = new File("./threaddumps");
+	public static void threadDumpToDisk(String folder, String filepath) {
+		File folderFile = new File("folder");
         
-        if(!folder.exists()) {
-        	folder.mkdirs();
+        if(!folderFile.exists()) {
+        	folderFile.mkdirs();
         }
         
-        String filepath = "threaddump_"+CFW.Time.currentTimestamp()+".txt";
-        CFW.Files.writeFileContent(null, filepath, filepath);
+        CFW.Files.writeFileContent(null, folder+"/"+filepath, createThreadDump());
 	    
 	}
 	
-	public String createThreadDump() {
+	public static String createThreadDump() {
 		
         final StringBuilder dump = new StringBuilder();
         final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();

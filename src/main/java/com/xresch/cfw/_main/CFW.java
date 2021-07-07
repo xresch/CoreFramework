@@ -31,6 +31,8 @@ import com.xresch.cfw.features.dashboard.CFWRegistryWidgets;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.parameters.CFWDBDashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.CFWRegistryDashboardParameters;
+import com.xresch.cfw.features.jobs.CFWRegistryJobs;
+import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.keyvaluepairs.CFWDBKeyValuePairs;
 import com.xresch.cfw.features.keyvaluepairs.FeatureKeyValuePairs;
 import com.xresch.cfw.features.keyvaluepairs.KeyValuePair;
@@ -120,13 +122,14 @@ public class CFW {
 	public static class Random extends CFWRandom {}
 	public static class Registry {
 		public static class API extends CFWRegistryAPI {}
+		public static class Audit extends CFWRegistryAudit {} 
 		public static class Components extends CFWRegistryComponents {} 
 		public static class ContextSettings extends CFWRegistryContextSettings {} 
 		public static class Features extends CFWRegistryFeatures {} 
+		public static class Jobs extends CFWRegistryJobs {} 
 		public static class Manual extends CFWRegistryManual {} 
 		public static class Objects extends CFWRegistryObjects {} 
 		public static class Parameters extends CFWRegistryDashboardParameters {} 
-		public static class Audit extends CFWRegistryAudit {} 
 		public static class Widgets extends CFWRegistryWidgets {} 
 	}
 	public static class Schedule extends CFWTaskScheduler {}
@@ -395,6 +398,8 @@ public class CFW {
 		if(CFW.AppSettings.isDashboardingEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureDashboard.class);	
 		}
+		
+		CFW.Registry.Features.addFeature(FeatureJobs.class);
 		
 		if(CFW.AppSettings.isSpacesEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureSpaces.class);	

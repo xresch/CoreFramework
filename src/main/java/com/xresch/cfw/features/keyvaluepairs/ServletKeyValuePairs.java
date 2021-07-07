@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
-import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -38,7 +38,7 @@ public class ServletKeyValuePairs extends HttpServlet
 		
 		StringBuilder content = html.getContent();
 		
-		if(CFW.Context.Request.hasPermission(FeatureCore.PERMISSION_APP_ANALYTICS)) {
+		if(CFW.Context.Request.hasPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)) {
 			
 			//--------------------------
 			// Add Form

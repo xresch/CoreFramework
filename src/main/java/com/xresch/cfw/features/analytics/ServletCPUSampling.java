@@ -14,7 +14,6 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -41,7 +40,7 @@ public class ServletCPUSampling extends HttpServlet
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
 
-		if(CFW.Context.Request.hasPermission(FeatureCore.PERMISSION_APP_ANALYTICS)) {
+		if(CFW.Context.Request.hasPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)) {
 			
 			String action = request.getParameter("action");
 			
@@ -103,7 +102,7 @@ public class ServletCPUSampling extends HttpServlet
 	 *************************************************************************************/
 	private void getCPUSampling(JSONResponse jsonResponse, HttpServletRequest request) {
 		
-		if( CFW.Context.Request.hasPermission(FeatureCore.PERMISSION_APP_ANALYTICS) ) {
+		if( CFW.Context.Request.hasPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS) ) {
 
 			//--------------------------
 			// Get Input and Validate

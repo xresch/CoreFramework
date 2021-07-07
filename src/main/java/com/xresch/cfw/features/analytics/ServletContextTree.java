@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
-import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.response.HTMLResponse;
 
 /**************************************************************************************************************
@@ -30,7 +29,7 @@ public class ServletContextTree extends HttpServlet
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
 
-		if(CFW.Context.Request.hasPermission(FeatureCore.PERMISSION_APP_ANALYTICS)) {
+		if(CFW.Context.Request.hasPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)) {
 			
 			HTMLResponse html = new HTMLResponse("Servlet Context Tree");
 			StringBuilder content = html.getContent();

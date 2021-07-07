@@ -10,6 +10,7 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.db.TaskDatabaseBackup;
+import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfiguration;
@@ -34,7 +35,6 @@ public class FeatureCore extends CFWAppFeature {
 	
 	public static final String MENU_TOOLS = "Tools";
 	
-	public static final String PERMISSION_APP_ANALYTICS = "System Analytics";
 	public static final String PERMISSION_FEATURE_MGMT = "Feature Management";
 	public static final String PERMISSION_ALLOW_HTML = "Allow HTML";
 	public static final String PERMISSION_ALLOW_JAVASCRIPT = "Allow Javascript";
@@ -76,7 +76,7 @@ public class FeatureCore extends CFWAppFeature {
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("System Analytics")
 					.faicon("fas fa-traffic-light")
-					.addPermission(FeatureCore.PERMISSION_APP_ANALYTICS)	
+					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)	
 				, null);
 		
 	}
@@ -100,7 +100,7 @@ public class FeatureCore extends CFWAppFeature {
 		//-----------------------------------
 		// 
 		CFW.DB.Permissions.oneTimeCreate(
-		new Permission(PERMISSION_APP_ANALYTICS, FeatureUserManagement.CATEGORY_USER)
+		new Permission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS, FeatureUserManagement.CATEGORY_USER)
 			.description("Analyze the application status with tools like cpu sampling."),
 			true,
 			false
