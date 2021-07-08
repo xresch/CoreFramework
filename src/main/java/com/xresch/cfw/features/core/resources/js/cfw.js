@@ -518,9 +518,9 @@ function cfw_internal_updateValueLabelField(element){
  *************************************************************************************/
 function cfw_initializeScheduleField(fieldID, jsonData){
 	
-	var id = '#'+fieldID;
+	var selector = '#'+fieldID;
 
-	var scheduleField = $(id);
+	var scheduleField = $(selector);
 
 	var wrapper = $('<div class="cfw-schedule-field-wrapper flex-grow-1">');
 	scheduleField.before(wrapper);
@@ -636,8 +636,47 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 		</div>
 	</div>`);
 	
+	//-----------------------------------------
+	// Set Data
+	 cfw_internal_applySchedule(fieldID, wrapper, JSON.parse(jsonData));
 }
 
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_internal_applySchedule(fieldID, wrapper, scheduleData){
+	
+	var selector = "#"+fieldID; 
+	
+	if(scheduleData == null || scheduleData.timeframe == null){
+		return;
+	}
+	
+	cfw_initializeTimefield(fieldID+'-STARTDATETIME', scheduleData.timeframe.startdatetime);
+	cfw_initializeTimefield(fieldID+'-ENDDATETIME', scheduleData.timeframe.enddatetime);
+	
+	//wrapper.find(selector+'-STARTDATETIME').val(scheduleData.timeframe.startdatetime);
+	wrapper.find(selector+"-RADIO-ENDTYPE[value='" + scheduleData.timeframe.endtype + "']").attr("checked", "checked");  //values: RUN_FOREVER, ENDDATETIME, EXECUTION_COUNT
+	//wrapper.find(selector+"-ENDDATETIME").val(scheduleData.timeframe.enddatetime  );
+	wrapper.find(selector+"-EXECUTIONCOUNT").val(scheduleData.timeframe.executioncount );
+	
+	//wrapper.find(selector+"-RADIO-INTERVAL:checked").val(scheduleData.interval.intervaltype );
+	wrapper.find(selector+"-RADIO-INTERVAL[value='" + scheduleData.interval.intervaltype + "']").attr("checked", "checked"); 
+	wrapper.find(selector+"-EVERYXMINUTES").val(scheduleData.interval.everyxminutes	);
+	wrapper.find(selector+"-EVERYXDAYS").val(scheduleData.interval.everyxdays );
+	
+	if(scheduleData.interval.everyweek.MON){ wrapper.find(selector+"-EVERYWEEK-MON").attr("checked", "checked"); }
+	if(scheduleData.interval.everyweek.TUE){ wrapper.find(selector+"-EVERYWEEK-TUE").attr("checked", "checked"); }
+	if(scheduleData.interval.everyweek.WED){ wrapper.find(selector+"-EVERYWEEK-WED").attr("checked", "checked"); }
+	if(scheduleData.interval.everyweek.THU){ wrapper.find(selector+"-EVERYWEEK-THU").attr("checked", "checked"); }
+	if(scheduleData.interval.everyweek.FRI){ wrapper.find(selector+"-EVERYWEEK-FRI").attr("checked", "checked"); }
+	if(scheduleData.interval.everyweek.SAT){ wrapper.find(selector+"-EVERYWEEK-SAT").attr("checked", "checked"); }
+	if(scheduleData.interval.everyweek.SUN){ wrapper.find(selector+"-EVERYWEEK-SUN").attr("checked", "checked"); }
+
+	wrapper.find(selector+"-CRON_EXPRESSION").val(scheduleData.interval.cronexpression);
+	
+}
 /**************************************************************************************
  * 
  *************************************************************************************/
