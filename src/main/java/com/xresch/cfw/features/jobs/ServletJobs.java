@@ -266,11 +266,25 @@ public class ServletJobs extends HttpServlet
 	 ******************************************************************/
 	private void createEditForm(JSONResponse json, String ID) {
 
-		CFWJob CFWJob = CFWDBJob.selectByID(Integer.parseInt(ID));
+		CFWJob job = CFWDBJob.selectByID(Integer.parseInt(ID));
 		
-		if(CFWJob != null) {
+		//-----------------------------------
+		// Get Task and Properties
+		CFWJobTask task = CFW.Registry.Jobs.createTaskInstance(job.taskName());
+		
+		ArrayList<JobTaskProperty> propsArray = task.jobProperties();
+		LinkedHashMap<String, String> propsMap = new LinkedHashMap<>();
+		StringBuilder propDescription = new StringBuilder("<p>The following properties are available for the selected task:</p> <ul> ");
+		for(JobTaskProperty property : propsArray) {
+			propsMap.put(property.getKey(), property.getValue());
+			propDescription.append("<li><b>"+property.getKey()+":&nbsp;</b>"+property.getDescription()+"</li>");
+		}
+		propDescription.append("</ul>");
+		
+		if(job != null) {
 			
-			CFWForm editCFWJobForm = CFWJob.toForm("cfwEditCFWJobForm"+ID, "Update CFWJob");
+			CFWForm editCFWJobForm = job.toForm("cfwEditCFWJobForm"+ID, "Update CFWJob");
+			editCFWJobForm.setDescription(propDescription.toString());
 			
 			editCFWJobForm.setFormHandler(new CFWFormHandler() {
 				

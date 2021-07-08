@@ -96,7 +96,7 @@ public class CFWForm extends HierarchicalHTMLItem {
 		//---------------------------
 		// Create HTML
 		if(!isInlineForm && !Strings.isNullOrEmpty(description)) {
-			html.append("<div>"+description+"</div>");
+			html.append("<div class=\"pb-3\">"+description+"</div>");
 		}
 		String formClasses = "form";
 		if(isInlineForm) { formClasses += "-inline align-items-stretch"; }

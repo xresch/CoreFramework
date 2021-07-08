@@ -74,7 +74,8 @@ public class CFWJob extends CFWObject {
 			.addValidator(new LengthValidator(3, 1024));
 	
 	private CFWField<LinkedHashMap<String, String>> properties = CFWField.newValueLabel(JobFields.JSON_PROPERTIES)
-			.setDescription("The Properties of the job.");
+			.setLabel("Properties")
+			.setDescription("The properties of the job.");
 	
 	private CFWField<CFWSchedule> schedule = 
 			CFWField.newSchedule("JSON_SCHEDULE")
