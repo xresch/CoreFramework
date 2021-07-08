@@ -76,7 +76,7 @@ public class ServletJobs extends HttpServlet
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
 		String ID = request.getParameter("id");
-		String IDs = request.getParameter("ids");
+		
 		//int	userID = CFW.Context.Request.getUser().id();
 			
 		JSONResponse jsonResponse = new JSONResponse();		
@@ -93,12 +93,19 @@ public class ServletJobs extends HttpServlet
 				}
 				break;
 			
-			case "fetchpartial": 			
+			case "fetchpartial": 	
+				
+				String pagesize = request.getParameter("pagesize");
+				String pagenumber = request.getParameter("pagenumber");
+				String filterquery = request.getParameter("filterquery");
+				
 				switch(item.toLowerCase()) {
-					case "joblist": 		String pagesize = request.getParameter("pagesize");
-											String pagenumber = request.getParameter("pagenumber");
-											String filterquery = request.getParameter("filterquery");
+					case "myjoblist": 		
+											jsonResponse.getContent().append(CFW.DB.Jobs.getPartialJobListAsJSONForAdmin(pagesize, pagenumber, filterquery));
 	  										break;
+	  										
+					case "adminjoblist": 	jsonResponse.getContent().append(CFW.DB.Jobs.getPartialJobListAsJSONForAdmin(pagesize, pagenumber, filterquery));
+											break;
 	  										
 					default: 				CFW.Messages.itemNotSupported(item);
 											break;

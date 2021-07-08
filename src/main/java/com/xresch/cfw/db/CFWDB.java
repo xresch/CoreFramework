@@ -47,7 +47,7 @@ public class CFWDB {
     	//---------------------------------------
     	// Get variables
 		String mode 			= CFW.Properties.MODE;
-		boolean doStartDBServer = (CFW.Properties.DB_MODE.toUpperCase().equals("SERVER") || mode.contains(CFW.MODE_DB));
+		boolean doStartDBServer = (CFW.Properties.DB_MODE.toUpperCase().equals("SERVER") || mode.contains(CFW.MODE_DATABASE));
 		String server 			= CFWProperties.DB_SERVER;
 		String storePath 		= CFWProperties.DB_STORE_PATH;
 		String databaseName		= CFWProperties.DB_NAME;

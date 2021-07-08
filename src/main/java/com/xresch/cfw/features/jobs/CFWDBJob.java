@@ -110,12 +110,12 @@ public class CFWDBJob {
 		
 	}
 	
-	public static String getPartialJobListAsJSON(String pageSize, String pageNumber, String filterquery) {
-		return getPartialJobListAsJSON(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery);
+	public static String getPartialJobListAsJSONForAdmin(String pageSize, String pageNumber, String filterquery) {
+		return getPartialJobListAsJSONForAdmin(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery);
 	}
 	
 	
-	public static String getPartialJobListAsJSON(int pageSize, int pageNumber, String filterquery) {	
+	public static String getPartialJobListAsJSONForAdmin(int pageSize, int pageNumber, String filterquery) {	
 		
 		//-------------------------------------
 		// Filter with fulltext search

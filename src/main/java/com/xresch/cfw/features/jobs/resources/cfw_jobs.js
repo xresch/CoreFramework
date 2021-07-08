@@ -18,8 +18,8 @@ function cfwjobs_createTabs(){
 		
 		var list = $('<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">');
 		
-		list.append('<li class="nav-item"><a class="nav-link" id="tab-myjobs" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'myjobs\'})"><i class="fas fa-share-alt mr-2"></i>My Jobs</a></li>');
-		list.append('<li class="nav-item"><a class="nav-link" id="tab-admin" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'admin\'})"><i class="fas fa-copy mr-2"></i>Admin</a></li>');
+		list.append('<li class="nav-item"><a class="nav-link" id="tab-myjobs" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'myjoblist\'})"><i class="fas fa-share-alt mr-2"></i>My Jobs</a></li>');
+		list.append('<li class="nav-item"><a class="nav-link" id="tab-admin" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'adminjoblist\'})"><i class="fas fa-copy mr-2"></i>Admin</a></li>');
 
 		var parent = $("#cfw-container");
 		parent.append(list);
@@ -87,7 +87,7 @@ function cfwjobs_edit(id){
 	//-----------------------------------
 	// Load Form
 	//-----------------------------------
-	CFW.http.createForm(CFWJOBS_URL, {action: "getform", item: "editperson", id: id}, detailsDiv);
+	CFW.http.createForm(CFWJOBS_URL, {action: "getform", item: "editjob", id: id}, detailsDiv);
 	
 }
 
@@ -96,7 +96,7 @@ function cfwjobs_edit(id){
  ******************************************************************/
 function cfwjobs_delete(id){
 	
-	params = {action: "delete", item: "person", id: id};
+	params = {action: "delete", item: "job", id: id};
 	CFW.http.getJSON(CFWJOBS_URL, params, 
 		function(data) {
 			if(data.success){
@@ -115,7 +115,7 @@ function cfwjobs_delete(id){
  ******************************************************************/
 function cfwjobs_duplicate(id){
 	
-	params = {action: "duplicate", item: "person", id: id};
+	params = {action: "duplicate", item: "job", id: id};
 	CFW.http.getJSON(CFWJOBS_URL, params, 
 		function(data) {
 			if(data.success){
@@ -126,11 +126,25 @@ function cfwjobs_duplicate(id){
 }
 
 /******************************************************************
+ * 
+ ******************************************************************/
+function cfwjobs_printMyJobs(){
+	cfwjobs_printJobs('myjoblist');
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfwjobs_printAdminJobs(){
+	cfwjobs_printJobs('adminjoblist');
+}
+	
+/******************************************************************
  * Full example using the dataviewer renderer.
  * 
  * @param data as returned by CFW.http.getJSON()
  ******************************************************************/
-function cfwjobs_printMyJobs(){
+function cfwjobs_printJobs(itemType){
 	
 	var parent = $("#tab-content");
 
@@ -161,7 +175,7 @@ function cfwjobs_printMyJobs(){
 	actionButtons.push(
 		function (record, id){
 			return '<button class="btn btn-warning btn-sm" alt="Duplicate" title="Duplicate" '
-					+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.FIRSTNAME.replace(/\"/g,'&quot;')+'\\\'</strong>.\', \'Do it!\', \'cfwjobs_duplicate('+id+');\')">'
+					+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.JOB_NAME.replace(/\"/g,'&quot;')+'\\\'</strong>.\', \'Do it!\', \'cfwjobs_duplicate('+id+');\')">'
 					+ '<i class="fas fa-clone"></i>'
 					+ '</button>';
 	});
@@ -171,7 +185,7 @@ function cfwjobs_printMyJobs(){
 	actionButtons.push(
 		function (record, id){
 			return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete <strong>\\\''+record.FIRSTNAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Delete\', \'cfwjobs_delete('+id+');\')">'
+					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete <strong>\\\''+record.JOB_NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Delete\', \'cfwjobs_delete('+id+');\')">'
 					+ '<i class="fa fa-trash"></i>'
 					+ '</button>';
 
@@ -185,25 +199,17 @@ function cfwjobs_printMyJobs(){
 		 	idfield: 'PK_ID',
 		 	bgstylefield: null,
 		 	textstylefield: null,
-		 	titlefields: ['FIRSTNAME', 'LASTNAME'],
-		 	titleformat: '{0} {1}',
-		 	visiblefields: ['PK_ID', 'FIRSTNAME', 'LASTNAME', 'LOCATION', "EMAIL", "LIKES_TIRAMISU", "CHARACTER"],
+		 	titlefields: ['JOB_NAME'],
+		 	titleformat: '{0}',
+		 	visiblefields: ['PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'JSON_SCHEDULE', 'JSON_PROPERTIES'],
 		 	labels: {
 		 		PK_ID: "ID",
 		 	},
-		 	customizers: {
-		 		LIKES_TIRAMISU: function(record, value) { 
-		 			var likesTiramisu = value;
-		 			if(likesTiramisu){
-							return '<span class="badge badge-success m-1">true</span>';
-					}else{
-						return '<span class="badge badge-danger m-1">false</span>';
-					}
-		 		},
-		 		CHARACTER: function(record, value) { 
-			 		return CFW.format.arrayToBadges(value.split(','));			 			 
-		 		}
-		 	},
+//		 	customizers: {
+//		 		CHARACTER: function(record, value) { 
+//			 		return CFW.format.arrayToBadges(value.split(','));			 			 
+//		 		}
+//		 	},
 			actions: actionButtons,
 //				bulkActions: {
 //					"Edit": function (elements, records, values){ alert('Edit records '+values.join(',')+'!'); },
@@ -213,10 +219,10 @@ function cfwjobs_printMyJobs(){
 			
 			rendererSettings: {
 				dataviewer: {
-					storeid: 'fulldataviewerexample',
+					storeid: itemType,
 					datainterface: {
 						url: CFWJOBS_URL,
-						item: 'joblist'
+						item: itemType
 					},
 					renderers: [
 						{	label: 'Table',
@@ -227,16 +233,16 @@ function cfwjobs_printMyJobs(){
 								},
 							}
 						},
-						{	label: 'Smaller Table',
-							name: 'table',
-							renderdef: {
-								visiblefields: ['FIRSTNAME', 'LASTNAME', 'EMAIL', 'LIKES_TIRAMISU'],
-								actions: [],
-								rendererSettings: {
-									table: {filterable: false, narrow: true},
-								},
-							}
-						},
+//						{	label: 'Smaller Table',
+//							name: 'table',
+//							renderdef: {
+//								visiblefields: ['FIRSTNAME', 'LASTNAME', 'EMAIL', 'LIKES_TIRAMISU'],
+//								actions: [],
+//								rendererSettings: {
+//									table: {filterable: false, narrow: true},
+//								},
+//							}
+//						},
 						{	label: 'Panels',
 							name: 'panels',
 							renderdef: {}
@@ -248,7 +254,7 @@ function cfwjobs_printMyJobs(){
 						{	label: 'Tiles',
 							name: 'tiles',
 							renderdef: {
-								visiblefields: ['PK_ID', 'LOCATION', "EMAIL", "LIKES_TIRAMISU"],
+								visiblefields: ['PK_ID', 'TASK_NAME'],
 								rendererSettings: {
 									tiles: {
 										popover: false,
@@ -293,7 +299,7 @@ function cfwjobs_initialDraw(){
 	
 	//-----------------------------------
 	// Restore last tab
-	var tabToDisplay = CFW.cache.retrieveValueForPage("cfwjobs-lasttab", "myjobs");
+	var tabToDisplay = CFW.cache.retrieveValueForPage("cfwjobs-lasttab", "myjoblist");
 	
 	$('#tab-'+tabToDisplay).addClass('active');
 	
@@ -312,14 +318,11 @@ function cfwjobs_draw(options){
 	function(){
 		
 		switch(options.tab){
-			case "myjobs":		CFW.http.fetchAndCacheData(CFWJOBS_URL, {action: "fetch", item: "myjoblist"}, "myjoblist", cfwjobs_printMyJobs);
+			case "myjoblist":			cfwjobs_printMyJobs();
 										break;	
-			case "admin":	CFW.http.fetchAndCacheData(CFWJOBS_URL, {action: "fetch", item: "adminjoblist"}, "adminjoblist", cfwjobs_printPaginationStatic);
+			case "adminjoblist":		cfwjobs_printAdminJobs();
 										break;	
-			case "pagination-dynamic":	cfwjobs_printPaginationDynamic();
-										break;	
-			case "full-dataviewer":		cfwjobs_printFullDataviewer();
-			break;	
+	
 			default:				CFW.ui.addToastDanger('This tab is unknown: '+options.tab);
 		}
 		

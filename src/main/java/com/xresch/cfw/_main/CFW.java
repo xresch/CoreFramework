@@ -31,6 +31,7 @@ import com.xresch.cfw.features.dashboard.CFWRegistryWidgets;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.parameters.CFWDBDashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.CFWRegistryDashboardParameters;
+import com.xresch.cfw.features.jobs.CFWDBJob;
 import com.xresch.cfw.features.jobs.CFWRegistryJobs;
 import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.keyvaluepairs.CFWDBKeyValuePairs;
@@ -75,7 +76,7 @@ public class CFW {
 	
 	public static String MODE_FULL = "FULL";
 	public static String MODE_APP = "APP";
-	public static String MODE_DB = "DB";
+	public static String MODE_DATABASE = "DB";
 	
 	private CFW() {
 		// hide constructor
@@ -93,6 +94,7 @@ public class CFW {
 		public static class Dashboards extends CFWDBDashboard{};
 		public static class DashboardWidgets extends CFWDBDashboardWidget{};
 		public static class DashboardParameters extends CFWDBDashboardParameter{};
+		public static class Jobs extends CFWDBJob{};
 		public static class KeyValuePairs extends CFWDBKeyValuePairs{};
 		public static class Users extends CFWDBUser{};
 		public static class Roles extends CFWDBRole{};
