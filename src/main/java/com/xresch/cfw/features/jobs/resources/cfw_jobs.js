@@ -18,8 +18,8 @@ function cfwjobs_createTabs(){
 		
 		var list = $('<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">');
 		
-		list.append('<li class="nav-item"><a class="nav-link" id="tab-myjobs" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'myjoblist\'})"><i class="fas fa-share-alt mr-2"></i>My Jobs</a></li>');
-		list.append('<li class="nav-item"><a class="nav-link" id="tab-admin" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'adminjoblist\'})"><i class="fas fa-copy mr-2"></i>Admin</a></li>');
+		list.append('<li class="nav-item"><a class="nav-link" id="tab-myjoblist" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'myjoblist\'})"><i class="fas fa-share-alt mr-2"></i>My Jobs</a></li>');
+		list.append('<li class="nav-item"><a class="nav-link" id="tab-adminjoblist" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'adminjoblist\'})"><i class="fas fa-copy mr-2"></i>Admin</a></li>');
 
 		var parent = $("#cfw-container");
 		parent.append(list);
@@ -204,6 +204,8 @@ function cfwjobs_printJobs(itemType){
 		 	visiblefields: ['PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'JSON_SCHEDULE', 'JSON_PROPERTIES'],
 		 	labels: {
 		 		PK_ID: "ID",
+		 		JSON_SCHEDULE: "Schedule",
+		 		JSON_PROPERTIES: "Properties",
 		 	},
 //		 	customizers: {
 //		 		CHARACTER: function(record, value) { 
@@ -288,7 +290,7 @@ function cfwjobs_printJobs(itemType){
  * 
  * @param options Array with arguments:
  * 	{
- * 		tab: 'mydashboards|shareddashboards|admindashboards', 
+ * 		tab: 'myjoblist|adminjoblist', 
  *  }
  * @return 
  ******************************************************************/
@@ -309,7 +311,7 @@ function cfwjobs_initialDraw(){
 function cfwjobs_draw(options){
 	CFWJOBS_LAST_OPTIONS = options;
 	
-	CFW.cache.storeValueForPage("jsexamples-lasttab", options.tab);
+	CFW.cache.storeValueForPage("cfwjobs-lasttab", options.tab);
 	$("#tab-content").html("");
 	
 	CFW.ui.toogleLoader(true);
@@ -320,6 +322,7 @@ function cfwjobs_draw(options){
 		switch(options.tab){
 			case "myjoblist":			cfwjobs_printMyJobs();
 										break;	
+										
 			case "adminjoblist":		cfwjobs_printAdminJobs();
 										break;	
 	

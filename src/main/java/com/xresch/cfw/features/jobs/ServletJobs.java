@@ -278,11 +278,9 @@ public class ServletJobs extends HttpServlet
 				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
 					
 					if(origin.mapRequestParameters(request)) {
-						
 						if(CFWDBJob.update((CFWJob)origin)) {
 							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
-						}
-							
+						}	
 					}
 					
 				}

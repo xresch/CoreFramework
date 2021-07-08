@@ -78,6 +78,7 @@ public class CFWDBJob {
 		CFWJob job = selectByID(id);
 		if(job != null) {
 			job.id(null);
+			job.jobname( job.jobname()+"(Copy)");
 			return create(job);
 		}
 		

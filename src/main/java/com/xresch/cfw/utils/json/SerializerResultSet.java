@@ -34,11 +34,16 @@ public class SerializerResultSet implements JsonSerializer<ResultSet> {
 				JsonObject row = new JsonObject();
 				for(int i = 1 ; i <= columnCount; i++) {
 					String name = metadata.getColumnLabel(i);
+					System.out.println("===== JSON =====");
+					System.out.println("name: "+name);
+					System.out.println("Value: "+resultSet.getString(i));
 					
 					if(name.toUpperCase().startsWith("JSON")) {
+						System.out.println("A");
 						JsonElement asElement = CFW.JSON.jsonStringToJsonElement(resultSet.getString(i));
 						row.add(name, asElement);
 					}else {
+						System.out.println("B");
 						Object value = resultSet.getObject(i);
 						if(!(value instanceof Clob)) {
 							CFW.JSON.addObject(row, name, value);

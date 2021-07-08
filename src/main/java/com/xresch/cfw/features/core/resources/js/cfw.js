@@ -525,7 +525,7 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 	var wrapper = $('<div class="cfw-schedule-field-wrapper flex-grow-1">');
 	scheduleField.before(wrapper);
 	wrapper.append(scheduleField);
-	scheduleField.val(JSON.stringify(jsonData));
+	scheduleField.val(jsonData);
 	
 	//----------------------------------
 	// Add Classes
