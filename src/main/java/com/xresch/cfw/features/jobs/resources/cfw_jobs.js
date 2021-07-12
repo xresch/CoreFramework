@@ -147,7 +147,7 @@ function cfwjobs_printAdminJobs(){
 function cfwjobs_printJobs(itemType){
 	
 	var parent = $("#tab-content");
-
+	parent.html("");
 	//--------------------------------
 	// Button
 	var addButton = $('<button class="btn btn-sm btn-success mb-2" onclick="cfwjobs_add_selectTask()">'
@@ -201,17 +201,24 @@ function cfwjobs_printJobs(itemType){
 		 	textstylefield: null,
 		 	titlefields: ['JOB_NAME'],
 		 	titleformat: '{0}',
-		 	visiblefields: ['PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'JSON_SCHEDULE', 'JSON_PROPERTIES'],
+		 	visiblefields: ['PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'JSON_SCHEDULE', 'JSON_PROPERTIES'],
 		 	labels: {
 		 		PK_ID: "ID",
 		 		JSON_SCHEDULE: "Schedule",
 		 		JSON_PROPERTIES: "Properties",
 		 	},
-//		 	customizers: {
-//		 		CHARACTER: function(record, value) { 
-//			 		return CFW.format.arrayToBadges(value.split(','));			 			 
-//		 		}
-//		 	},
+		 	customizers: {
+		 		IS_ENABLED: function(record, value) { 
+		 			return '<span class="badge badge-'+((value == true)? 'success' : 'danger') +'">'+value+'</span>'; 
+		 			},
+		 		JSON_SCHEDULE: function(record, value) { 
+		 				return CFW.format.cfwSchedule(value); 
+		 			},
+		 		JSON_PROPERTIES: function(record, value) { 
+		 				return CFW.format.objectToHTMLList(value); 
+		 			},
+		 		
+		 	},
 			actions: actionButtons,
 //				bulkActions: {
 //					"Edit": function (elements, records, values){ alert('Edit records '+values.join(',')+'!'); },
@@ -312,6 +319,7 @@ function cfwjobs_draw(options){
 	CFWJOBS_LAST_OPTIONS = options;
 	
 	CFW.cache.storeValueForPage("cfwjobs-lasttab", options.tab);
+	
 	$("#tab-content").html("");
 	
 	CFW.ui.toogleLoader(true);

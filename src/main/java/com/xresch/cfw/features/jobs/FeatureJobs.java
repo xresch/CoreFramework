@@ -25,7 +25,6 @@ public class FeatureJobs extends CFWAppFeature {
 		// Register Objects
 		CFW.Registry.Objects.addCFWObject(CFWJob.class);
     	
-
 		//----------------------------------
     	// Register Menu				
 		CFW.Registry.Components.addRegularMenuItem(

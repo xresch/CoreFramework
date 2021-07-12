@@ -656,13 +656,12 @@ function cfw_internal_applySchedule(fieldID, wrapper, scheduleData){
 	cfw_initializeTimefield(fieldID+'-STARTDATETIME', scheduleData.timeframe.startdatetime);
 	cfw_initializeTimefield(fieldID+'-ENDDATETIME', scheduleData.timeframe.enddatetime);
 	
-	//wrapper.find(selector+'-STARTDATETIME').val(scheduleData.timeframe.startdatetime);
-	wrapper.find(selector+"-RADIO-ENDTYPE[value='" + scheduleData.timeframe.endtype + "']").attr("checked", "checked");  //values: RUN_FOREVER, ENDDATETIME, EXECUTION_COUNT
-	//wrapper.find(selector+"-ENDDATETIME").val(scheduleData.timeframe.enddatetime  );
+	//values: RUN_FOREVER, ENDDATETIME, EXECUTION_COUNT
+	wrapper.find(selector+"-RADIO-ENDTYPE[value='" + scheduleData.timeframe.endtype + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-EXECUTIONCOUNT").val(scheduleData.timeframe.executioncount );
 	
-	//wrapper.find(selector+"-RADIO-INTERVAL:checked").val(scheduleData.interval.intervaltype );
-	wrapper.find(selector+"-RADIO-INTERVAL[value='" + scheduleData.interval.intervaltype + "']").attr("checked", "checked"); 
+	//values: EVERY_X_MINUTES, EVERY_X_DAYS, EVERY_WEEK, CRON_EXPRESSION
+	wrapper.find(selector+"-RADIO-INTERVAL[value='" + scheduleData.interval.intervaltype + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-EVERYXMINUTES").val(scheduleData.interval.everyxminutes	);
 	wrapper.find(selector+"-EVERYXDAYS").val(scheduleData.interval.everyxdays );
 	
@@ -693,11 +692,12 @@ function cfw_internal_confirmSchedule(elementID){
 			interval: {}
 	};
 	
-	scheduleData.timeframe.startdatetime 	= $(selector+'-STARTDATETIME').val();
+	scheduleData.timeframe.startdatetime 	= isNaN($(selector+'-STARTDATETIME').val()) ? null : parseInt($(selector+'-STARTDATETIME').val());
 	scheduleData.timeframe.endtype  	= $(selector+"-RADIO-ENDTYPE:checked").val();  //values: RUN_FOREVER, ENDDATETIME, EXECUTION_COUNT
-	scheduleData.timeframe.enddatetime  	= $(selector+"-ENDDATETIME").val();
+	scheduleData.timeframe.enddatetime  	= isNaN($(selector+'-ENDDATETIME').val()) ? null : parseInt($(selector+'-ENDDATETIME').val());;
 	scheduleData.timeframe.executioncount  	= $(selector+"-EXECUTIONCOUNT").val();
 	
+	//values: EVERY_X_MINUTES, EVERY_X_DAYS, EVERY_WEEK, CRON_EXPRESSION
 	scheduleData.interval.intervaltype  	= $(selector+"-RADIO-INTERVAL:checked").val();
 	scheduleData.interval.everyxminutes		= $(selector+"-EVERYXMINUTES").val();
 	scheduleData.interval.everyxdays  		= $(selector+"-EVERYXDAYS").val();
@@ -1291,6 +1291,47 @@ function cfw_format_epochToDate(epoch){
 	
 	var time = year + '-' + month + '-' + day ;
 	return time;
+}
+
+/**************************************************************************************
+ * Create a timestamp string
+ * @param epoch unix epoch milliseconds since 01.01.1970
+ * @return timestamp as string
+ *************************************************************************************/
+function cfw_format_cfwSchedule(scheduleData){
+
+	if(scheduleData == null || scheduleData.timeframe == null){
+		return "";
+	}
+	
+	var result = "<div>";
+	
+	if( !CFW.utils.isNullOrEmpty(scheduleData.timeframe.startdatetime) ) { result += '<span><b>Start:&nbsp</b>'+CFW.format.epochToTimestamp(scheduleData.timeframe.startdatetime) +'</span><br/>'; }
+	
+	if (scheduleData.timeframe.endtype == "RUN_FOREVER"){ result += '<span><b>End:&nbsp</b> Run Forever</span><br/>'; }
+	else if (scheduleData.timeframe.endtype == "EXECUTION_COUNT"){ result += '<span><b>End:&nbsp</b>'+scheduleData.timeframe.executioncount+' execution(s)</span><br/>'; }
+	else if( !CFW.utils.isNullOrEmpty(scheduleData.timeframe.enddatetime) ) { result += '<span><b>End:&nbsp</b>'+CFW.format.epochToTimestamp(scheduleData.timeframe.enddatetime) +'</span><br/>'; }
+
+	//values: EVERY_X_MINUTES, EVERY_X_DAYS, EVERY_WEEK, CRON_EXPRESSION
+	if (scheduleData.interval.intervaltype == "EVERY_X_MINUTES"){ result += '<span><b>Interval:&nbsp</b> Every '+scheduleData.interval.everyxminutes+' minutes(s)</span><br/>'; }
+	else if (scheduleData.interval.intervaltype == "EVERY_X_DAYS"){ result += '<span><b>Interval:&nbsp</b> Every '+scheduleData.interval.everyxdays+' day(s)</span><br/>'; }
+	else if (scheduleData.interval.intervaltype == "CRON_EXPRESSION"){ result += '<span><b>Interval:&nbsp</b> Cron Expression "'+scheduleData.interval.cronexpression+'"</span><br/>'; }
+	else if (scheduleData.interval.intervaltype == "EVERY_WEEK"){ 
+		result += '<span><b>Interval:&nbsp</b> Every week on '; 
+		let days = "";
+		if(scheduleData.interval.everyweek.MON){ days += "MON/"; }
+		if(scheduleData.interval.everyweek.TUE){ days += "TUE/"; }
+		if(scheduleData.interval.everyweek.WED){ days += "WED/"; }
+		if(scheduleData.interval.everyweek.THU){ days += "THU/"; }
+		if(scheduleData.interval.everyweek.FRI){ days += "FRI/"; }
+		if(scheduleData.interval.everyweek.SAT){ days += "SAT/"; }
+		if(scheduleData.interval.everyweek.SUN){ days += "SON/"; }
+		
+		days = days.substring(0, days.length-1);
+		result += days;
+	}
+	
+  return result;
 }
 
 /**************************************************************************************
@@ -2884,6 +2925,7 @@ var CFW = {
 		epochToDate: 		cfw_format_epochToDate,
 		millisToClock: 		cfw_format_millisToClock,
 		millisToDuration: 	cfw_format_millisToDuration,
+		cfwSchedule: 		cfw_format_cfwSchedule,
 		objectToHTMLList: 	cfw_format_objectToHTMLList,
 		csvToObjectArray: 	cfw_format_csvToObjectArray,
 		fieldNameToLabel: 	cfw_format_fieldNameToLabel,

@@ -10,6 +10,7 @@ import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.validation.LengthValidator;
 
@@ -27,12 +28,10 @@ public class CFWJob extends CFWObject {
 		JOB_NAME, 
 		DESCRIPTION,
 		TASK_NAME,
-//		START_DATE,
-//		END_DATE,
 		JSON_SCHEDULE,
 		JSON_PROPERTIES,
-		IS_ACTIVE,
-		IS_DELETEABLE,
+		IS_ENABLED,
+		IS_DELETABLE,
 	}
 	
 //	private static ArrayList<String> fullTextSearchColumns = new ArrayList<>();
@@ -82,6 +81,14 @@ public class CFWJob extends CFWObject {
 			.setLabel("Schedule")
 			.setValue(null);
 	
+	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, JobFields.IS_DELETABLE)
+			.setDescription("Flag to define if the job can be deleted or not.")
+			.setValue(true);
+	
+	private CFWField<Boolean> isEnabled = CFWField.newBoolean(FormFieldType.BOOLEAN, JobFields.IS_ENABLED)
+			.setDescription("Enable or disable the job.")
+			.setValue(true);
+	
 	public CFWJob() {
 		initializeFields();
 	}
@@ -94,12 +101,13 @@ public class CFWJob extends CFWObject {
 		
 		this.addFields(id, 
 				foreignKeyOwner,
-				
 				jobname, 
 				description,
 				taskName,
 				schedule,
-				properties
+				properties,
+				isEnabled,
+				isDeletable
 				);
 	}
 	
@@ -132,7 +140,8 @@ public class CFWJob extends CFWObject {
 						JobFields.JOB_NAME.toString(),
 						JobFields.DESCRIPTION.toString(),
 						JobFields.TASK_NAME.toString(),
-
+						JobFields.JSON_PROPERTIES.toString(),
+						JobFields.JSON_SCHEDULE.toString(),
 				};
 
 		//----------------------------------
@@ -207,6 +216,24 @@ public class CFWJob extends CFWObject {
 	
 	protected CFWJob changePropertiesDescription(String htmlDescription) {
 		properties.setDescription(htmlDescription);
+		return this;
+	}
+	
+	public boolean isDeletable() {
+		return isDeletable.getValue();
+	}
+	
+	public CFWJob isDeletable(boolean value) {
+		this.isDeletable.setValue(value);
+		return this;
+	}
+	
+	public boolean isEnabled() {
+		return isEnabled.getValue();
+	}
+	
+	public CFWJob isEnabled(boolean value) {
+		this.isEnabled.setValue(value);
 		return this;
 	}
 	

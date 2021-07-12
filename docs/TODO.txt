@@ -9,8 +9,8 @@ ALWAYS ON
 - Test Cases
 - Test with cache enabled
 
-TODO
-====
+Potential TODOs
+===============
 - Features: Job Management
 - Features: Query
 - Features: Spaces
@@ -19,6 +19,11 @@ TODO
   - Selected Space in SessionData
   - CFWSQL partial query, select entries for user
 
+- Jobs: Log Job Executions to DB, plus age out
+- Jobs: Load from DB on startup
+- Jobs: Validate minimum time interval.
+- Jobs: Create Manage Jobs.
+- Jobs: Show Last Run
 
 - Dashboard: Share with users that are not logged in
 - Dashboard: Check Settings - Provide a bulk action to show all settings of all widgets as an overview. 
