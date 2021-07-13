@@ -3,6 +3,7 @@ package com.xresch.cfw.response;
 import java.util.ArrayList;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.Utils;
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
 
@@ -46,7 +47,7 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 
 		this.addJavascriptData("localeIdentifier", CFW.Localization.getLocaleIdentifierForRequest() );
 		this.addJavascriptData(CFW.REQUEST_ATTR_ID, requestID );
-		this.addJavascriptData("time", CFW.Time.currentTimestamp());
+		this.addJavascriptData("time", CFW.Utils.Time.currentTimestamp());
 				
 	}
 	

@@ -33,11 +33,11 @@ public class BooleanValidator extends AbstractValidator {
 			if(((String)value).trim().toLowerCase().matches("true|false")){
 				return true;
 			}else{
-				this.setInvalidMessage("The value of "+validateable.getName()+" is not a boolean value.(value='"+value+"')");
+				this.setInvalidMessage("The value of "+validateable.getLabel()+" is not a boolean value.(value='"+value+"')");
 				return false;
 			}
 		}
-		this.setInvalidMessage("The value of "+validateable.getName()+" is not a boolean value.(value='"+value+"')");
+		this.setInvalidMessage("The value of "+validateable.getLabel()+" is not a boolean value.(value='"+value+"')");
 		return false;
 	}
 	

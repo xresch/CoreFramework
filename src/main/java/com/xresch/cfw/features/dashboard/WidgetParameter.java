@@ -26,7 +26,7 @@ import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.utils.TextUtils;
+import com.xresch.cfw.utils.CFWUtilsText;
 import com.xresch.cfw.validation.CustomValidator;
 
 public class WidgetParameter extends WidgetDefinition {
@@ -141,7 +141,7 @@ public class WidgetParameter extends WidgetDefinition {
 				//.addAttribute("onchange", "cfw_dashboard_parameters_fireParamWidgetUpdate(this, true);")
 				//.addAttribute("onblur", "")
 				.setName(param.name())
-				.setLabel(TextUtils.fieldNameToLabel(param.name()))
+				.setLabel(CFW.Utils.Text.fieldNameToLabel(param.name()))
 				.isDecoratorDisplayed(false)
 				.addCssClass(" form-control-sm cfw-widget-parameter-marker");
 			

@@ -13,6 +13,7 @@ import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.validation.LengthValidator;
+import com.xresch.cfw.validation.ScheduleValidator;
 
 /**************************************************************************************************************
  * 
@@ -30,6 +31,7 @@ public class CFWJob extends CFWObject {
 		TASK_NAME,
 		JSON_SCHEDULE,
 		JSON_PROPERTIES,
+		LAST_RUN,
 		IS_ENABLED,
 		IS_DELETABLE,
 	}
@@ -79,6 +81,7 @@ public class CFWJob extends CFWObject {
 	private CFWField<CFWSchedule> schedule = 
 			CFWField.newSchedule("JSON_SCHEDULE")
 			.setLabel("Schedule")
+			.addValidator(new ScheduleValidator().setNullAllowed(false))
 			.setValue(null);
 	
 	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, JobFields.IS_DELETABLE)

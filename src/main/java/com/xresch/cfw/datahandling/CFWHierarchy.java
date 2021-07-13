@@ -14,7 +14,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.utils.CFWArrayUtils;
+import com.xresch.cfw.utils.CFWUtilsArray;
 
 /***************************************************************************************************************************
  * Class to fetch an map hierarchical structures of CFWObjects.
@@ -524,7 +524,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 *****************************************************************************/
 	public static String[] getParentAndPrimaryFieldnames(CFWObject object) {
 		String[] parentFields = getParentFieldnames(object);
-		String[] withPrimaryField = CFWArrayUtils.add(parentFields, object.getPrimaryField().getName());
+		String[] withPrimaryField = CFW.Utils.Array.add(parentFields, object.getPrimaryField().getName());
 		return withPrimaryField;
 	}
 	
@@ -698,7 +698,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		String parentPrimaryFieldname = root.getPrimaryField().getName();
 		Integer parentPrimaryValue = root.getPrimaryKey();
-		String[] finalResultFields = CFWArrayUtils.merge(parentAndPrimaryFieldnames, CFWArrayUtils.objectToStringArray(resultFields));
+		String[] finalResultFields = CFW.Utils.Array.merge(parentAndPrimaryFieldnames, CFWUtilsArray.objectToStringArray(resultFields));
 		
 		//Check if caching makes sense. e.g. String queryCacheID = root.getClass()+parentPrimaryFieldname+parentPrimaryValue+Arrays.deepToString(finalResultFields);
 		

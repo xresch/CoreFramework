@@ -8,8 +8,8 @@ package com.xresch.cfw.validation;
 public interface IValidatable<T> {
 	
 	public abstract boolean validate();
-	public abstract IValidatable<T> setName(String propertyName);
-	public abstract String getName();
+	public abstract IValidatable<T> setLabel(String propertyName);
+	public abstract String getLabel();
 	public abstract boolean setValueValidated(T value);
 	public abstract T getValue();
 

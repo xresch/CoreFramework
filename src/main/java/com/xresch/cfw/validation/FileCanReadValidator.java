@@ -22,7 +22,7 @@ public class FileCanReadValidator extends AbstractValidator {
 	public boolean validate(Object value) {
 				
 		Ternary result = validateNullEmptyAllowed(value);
-		if(result == Ternary.FALSE ) this.setInvalidMessage("The following proerty is mandatory: '"+getValidatable().getName()+"'");
+		if(result == Ternary.FALSE ) this.setInvalidMessage("The following proerty is mandatory: '"+getValidatable().getLabel()+"'");
 		if(result != Ternary.DONTCARE ) return result.toBoolean();
 		
 		File file = null;

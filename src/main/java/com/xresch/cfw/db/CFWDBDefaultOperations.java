@@ -3,9 +3,9 @@ package com.xresch.cfw.db;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.utils.CFWArrayUtils;
 
 /**************************************************************************************************************
  * 
@@ -340,7 +340,7 @@ public  class CFWDBDefaultOperations {
 			CFWObject instance = cfwObjectClass.newInstance();
 			String primaryFieldname = instance.getPrimaryField().getName();
 			
-			String[] fieldsArray = CFWArrayUtils.merge(new String[] {primaryFieldname}, auditLogFieldnames);
+			String[] fieldsArray = CFW.Utils.Array.merge(new String[] {primaryFieldname}, auditLogFieldnames);
 			
 			ArrayList<CFWObject> objectsToDelete = instance
 					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteMultipleByIDWhere-Select")

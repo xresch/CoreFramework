@@ -53,13 +53,13 @@ public class LengthValidator extends AbstractValidator {
 			return true;
 		}else{
 			if(minLength == -1){
-				this.setInvalidMessage("The value of "+validateable.getName()+
+				this.setInvalidMessage("The value of "+validateable.getLabel()+
 						" should be at maximum "+maxLength+" characters long.(length='"+length+"')");
 			}else if(maxLength == -1){
-				this.setInvalidMessage("The value of "+validateable.getName()+
+				this.setInvalidMessage("The value of "+validateable.getLabel()+
 						" should be at least "+minLength+" characters long.(length='"+length+"')");
 			}else {
-				this.setInvalidMessage("The value of "+validateable.getName()+
+				this.setInvalidMessage("The value of "+validateable.getLabel()+
 						" should be between "+minLength+" and "+maxLength+" characters long.(length='"+length+"')");
 			}
 			

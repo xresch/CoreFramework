@@ -138,9 +138,11 @@ public class CFWSchedule {
 	
 	
 	/***************************************************************************************
-	 * 
+	 * Can return null
 	 ***************************************************************************************/
-	public long timeframeStart() {
+	public Long timeframeStart() {
+		if(timeframe.get(STARTDATETIME).isJsonNull()) return null;
+		
 		return timeframe.get(STARTDATETIME).getAsLong();
 	}
 	
@@ -153,9 +155,11 @@ public class CFWSchedule {
 	}
 	
 	/***************************************************************************************
-	 * 
+	 * can return null
 	 ***************************************************************************************/
-	public long timeframeEndtime() {
+	public Long timeframeEndtime() {
+		if(timeframe.get(ENDDATETIME).isJsonNull()) return null;
+		
 		return timeframe.get(ENDDATETIME).getAsLong();
 	}
 	
@@ -168,9 +172,11 @@ public class CFWSchedule {
 	}
 	
 	/***************************************************************************************
-	 * 
+	 * can return null
 	 ***************************************************************************************/
-	public int timeframeExecutionCount() {
+	public Integer timeframeExecutionCount() {
+		if(timeframe.get(EXECUTIONCOUNT).isJsonNull()) return null;
+		
 		return timeframe.get(EXECUTIONCOUNT).getAsInt();
 	}
 	
@@ -186,6 +192,8 @@ public class CFWSchedule {
 	 * 
 	 ***************************************************************************************/
 	public String intervalType() {
+		if(interval.get(INTERVALTYPE).isJsonNull()) return null;
+		
 		return interval.get(INTERVALTYPE).getAsString();
 	}
 	
@@ -198,9 +206,12 @@ public class CFWSchedule {
 	}
 	
 	/***************************************************************************************
-	 * 
+	 * Can return null
 	 ***************************************************************************************/
-	public int intervalMinutes() {
+	public Integer intervalMinutes() {
+		if(interval.get(EVERYXMINUTES).isJsonNull()) return null;
+		if(Strings.isNullOrEmpty(interval.get(EVERYXMINUTES).getAsString()) ) return null;
+		
 		return interval.get(EVERYXMINUTES).getAsInt();
 	}
 	
@@ -214,9 +225,12 @@ public class CFWSchedule {
 	
 
 	/***************************************************************************************
-	 * 
+	 * Can return null
 	 ***************************************************************************************/
-	public int intervalDays() {
+	public Integer intervalDays() {
+		if(interval.get(EVERYXDAYS).isJsonNull()) return null;
+		if(Strings.isNullOrEmpty(interval.get(EVERYXDAYS).getAsString()) ) return null;
+		
 		return interval.get(EVERYXDAYS).getAsInt();
 	}
 	/***************************************************************************************
@@ -231,6 +245,8 @@ public class CFWSchedule {
 	 * 
 	 ***************************************************************************************/
 	public boolean intervalWeekday(Weekday day) {
+		if(everyweek.get(day.toString()).isJsonNull()) return false;
+		
 		return everyweek.get(day.toString()).getAsBoolean();
 	}
 	
@@ -263,6 +279,8 @@ public class CFWSchedule {
 	 * 
 	 ***************************************************************************************/
 	public String intervalCronExpression() {
+		if(interval.get(CRONEXPRESSION).isJsonNull()) return null;
+		
 		return interval.get(CRONEXPRESSION).getAsString();
 	}
 	
@@ -278,14 +296,16 @@ public class CFWSchedule {
 	 * 
 	 ***************************************************************************************/
 	public String endType() {
-		return interval.get(ENDTYPE).getAsString();
+		if(timeframe.get(ENDTYPE).isJsonNull()) return null;
+		
+		return timeframe.get(ENDTYPE).getAsString();
 	}
 	
 	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
 	public CFWSchedule endType(EndType value) {
-		interval.addProperty(ENDTYPE, value.toString());
+		timeframe.addProperty(ENDTYPE, value.toString());
 		return this;
 	}
 	
@@ -296,7 +316,6 @@ public class CFWSchedule {
 	public String toString() {
 		return CFW.JSON.toJSON(scheduleData);
 	}
-	
 	
 	/***************************************************************************************
 	 * 
@@ -366,7 +385,6 @@ public class CFWSchedule {
 
 	}
 	
-	
-	
+
 	
 }

@@ -7,7 +7,7 @@ import org.quartz.JobExecutionException;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.jobs.CFWJobTask;
-import com.xresch.cfw.utils.CFWAnalysisUtils;
+import com.xresch.cfw.utils.CFWUtilsAnalysis;
 
 public class CFWJobTaskThreadDumps extends CFWJobTask {
 	
@@ -48,8 +48,8 @@ public class CFWJobTaskThreadDumps extends CFWJobTask {
 	@Override
 	public void executeTask(JobExecutionContext context) throws JobExecutionException {
 		
-        String filepath = "threaddump_"+CFW.Time.currentTimestamp()+".txt";
-        CFWAnalysisUtils.threadDumpToDisk("./threaddumps", filepath);
+        String filepath = "threaddump_"+CFW.Utils.Time.currentTimestamp()+".txt";
+        CFWUtilsAnalysis.threadDumpToDisk("./threaddumps", filepath);
 		
 	}
 	

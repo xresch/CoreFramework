@@ -5,7 +5,7 @@ package com.xresch.cfw.utils;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class TextUtils {
+public class CFWUtilsText {
 	
 	
 	public static String capitalize(String string) {

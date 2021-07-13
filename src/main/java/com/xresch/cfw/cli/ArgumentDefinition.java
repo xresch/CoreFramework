@@ -22,13 +22,13 @@ public class ArgumentDefinition extends AbstractValidatable<String> {
 	//####################################################################################
 	public ArgumentDefinition(String propertyName){
 		
-		this.setName(propertyName);
+		this.setLabel(propertyName);
 		
 	}
 	
 	public ArgumentDefinition(String propertyName, String syntax, String defaultValue, String description, boolean isVMArgument){
 		
-		this.setName(propertyName);
+		this.setLabel(propertyName);
 		
 		this.syntax = syntax;
 		this.defaultValue = defaultValue;

@@ -41,13 +41,13 @@ public class EpochOrTimeValidator extends AbstractValidator {
 				Long.parseLong((String)value);
 				return true;
 			}catch(NumberFormatException e){
-				this.setInvalidMessage("The value of "+validateable.getName()+" is not an Integer value.(value='"+value+"')");
+				this.setInvalidMessage("The value of "+validateable.getLabel()+" is not an Integer value.(value='"+value+"')");
 				return false;
 			}
 
 		}
 		
-		this.setInvalidMessage("The value of "+validateable.getName()+" is not an Integer value.(value='"+value+"')");
+		this.setInvalidMessage("The value of "+validateable.getLabel()+" is not an Integer value.(value='"+value+"')");
 		return false;
 	}
 	

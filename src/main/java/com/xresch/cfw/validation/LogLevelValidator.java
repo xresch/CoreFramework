@@ -24,7 +24,7 @@ public class LogLevelValidator extends AbstractValidator {
 		}else if( ((String)value).toUpperCase().matches("ALL|TRACE|DEBUG|INFO|WARN|ERROR|SEVERE|OFF") ) {
 			return true;
 		}else {
-			this.setInvalidMessage("The value of the argument "+validateable.getName()+" is not a valid log4j2 log level.(value='"+value+"')");
+			this.setInvalidMessage("The value of the argument "+validateable.getLabel()+" is not a valid log4j2 log level.(value='"+value+"')");
 			return false;
 		}
 	}

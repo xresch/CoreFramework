@@ -28,7 +28,7 @@ public class RegexValidator extends AbstractValidator {
 		}else{
 			StringBuilder sb = new StringBuilder();
 			sb.append("The value of  ");
-			sb.append(this.getValidatable().getName());
+			sb.append(this.getValidatable().getLabel());
 			sb.append(" did not match the pattern '");
 			sb.append(pattern);
 			sb.append("'.(value='");

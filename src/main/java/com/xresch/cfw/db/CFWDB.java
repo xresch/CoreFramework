@@ -14,6 +14,7 @@ import org.h2.tools.Server;
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFW.Properties;
+import com.xresch.cfw._main.CFW.Utils;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.usermgmt.User;
@@ -143,7 +144,7 @@ public class CFWDB {
 		if(folder.isDirectory()
 		&& folder.canWrite()) {
 			
-			String filePath = folderPath+filename+"_"+CFW.Time.formatDate(new Date(),"YYYY-MM-dd_HH-mm")+".zip";
+			String filePath = folderPath+filename+"_"+Utils.Time.formatDate(new Date(),"YYYY-MM-dd_HH-mm")+".zip";
 			new CFWSQL(null).custom("BACKUP TO '"+filePath+"';")
 				.execute();
 			

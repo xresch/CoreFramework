@@ -36,7 +36,7 @@ import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
 import com.xresch.cfw.utils.CFWRandom;
-import com.xresch.cfw.utils.TextUtils;
+import com.xresch.cfw.utils.CFWUtilsText;
 import com.xresch.cfw.validation.BooleanValidator;
 import com.xresch.cfw.validation.EpochOrTimeValidator;
 import com.xresch.cfw.validation.FloatValidator;
@@ -139,7 +139,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		this.valueClass = clazz;
 		this.type = type;
 		this.name = fieldName;
-		this.formLabel = TextUtils.fieldNameToLabel(fieldName);
+		this.formLabel = CFW.Utils.Text.fieldNameToLabel(fieldName);
 	}
 			
 	//###################################################################################

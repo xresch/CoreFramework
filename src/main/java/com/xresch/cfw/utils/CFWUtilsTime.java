@@ -8,14 +8,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.Utils;
 
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWTime {
+public class CFWUtilsTime {
 	
 	public static final String TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 	
@@ -28,7 +28,7 @@ public class CFWTime {
 	 ********************************************************************************************/
 	public static String currentTimestamp(){
 		
-		return CFWTime.formatDate(new Date());
+		return CFWUtilsTime.formatDate(new Date());
 	}
 	
 	
@@ -36,7 +36,7 @@ public class CFWTime {
 	 * Get a string representation of the date in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
 	 ********************************************************************************************/
 	public static String formatDate(Date date){
-		return new SimpleDateFormat(CFWTime.TIME_FORMAT).format(date);
+		return new SimpleDateFormat(CFWUtilsTime.TIME_FORMAT).format(date);
 	}
 	
 	/********************************************************************************************
@@ -98,13 +98,13 @@ public class CFWTime {
 	public static Timestamp getDefaultAgeOutTime(int granularityMinutes) {
 		Timestamp ageOutOffset = null;
 		
-		if		(granularityMinutes <= 3) 		{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, 0, 0, -30); }
-		else if (granularityMinutes <= 15) 		{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, 0, -1, 0); }
-		else if (granularityMinutes <= 60) 		{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, -1, 0, 0); }
-		else if (granularityMinutes <= 240) 	{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, -7, 0, 0); }
-		else if (granularityMinutes <= 720) 	{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, -14, 0, 0); }
-		else if (granularityMinutes <= 1440) 	{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, -30, 0, 0); }
-		else  									{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, -90, 0, 0); }
+		if		(granularityMinutes <= 3) 		{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, -30); }
+		else if (granularityMinutes <= 15) 		{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, -1, 0); }
+		else if (granularityMinutes <= 60) 		{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, -1, 0, 0); }
+		else if (granularityMinutes <= 240) 	{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, -7, 0, 0); }
+		else if (granularityMinutes <= 720) 	{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, -14, 0, 0); }
+		else if (granularityMinutes <= 1440) 	{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, -30, 0, 0); }
+		else  									{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, -90, 0, 0); }
 
 		return ageOutOffset;
 	}

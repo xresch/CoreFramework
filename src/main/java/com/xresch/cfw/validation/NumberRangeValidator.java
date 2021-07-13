@@ -52,13 +52,13 @@ public class NumberRangeValidator extends AbstractValidator {
 			return true;
 		}else{
 			if(minValue == -1){
-				this.setInvalidMessage("The value of "+validateable.getName()+
+				this.setInvalidMessage("The value of "+validateable.getLabel()+
 						" can have a maximum value of "+maxValue+".");
 			}else if(maxValue == -1){
-				this.setInvalidMessage("The value of "+validateable.getName()+
+				this.setInvalidMessage("The value of "+validateable.getLabel()+
 						" should be at least "+minValue+".");
 			}else {
-				this.setInvalidMessage("The value of "+validateable.getName()+
+				this.setInvalidMessage("The value of "+validateable.getLabel()+
 						" should be between "+minValue+" and "+maxValue+".");
 			}
 			

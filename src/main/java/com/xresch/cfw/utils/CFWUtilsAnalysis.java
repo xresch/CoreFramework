@@ -7,7 +7,7 @@ import java.lang.management.ThreadMXBean;
 
 import com.xresch.cfw._main.CFW;
 
-public class CFWAnalysisUtils {
+public class CFWUtilsAnalysis {
 
 	/************************************************************
 	 * Creates a thread dump to the disk. 

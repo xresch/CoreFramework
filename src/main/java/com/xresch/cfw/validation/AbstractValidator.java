@@ -82,7 +82,7 @@ public abstract class AbstractValidator implements IValidator {
 		if(this.isNullAllowed() && CFW.Validation.isNullOrEmptyString(value)) {
 			return Ternary.TRUE;
 		}else if(CFW.Validation.isNullOrEmptyString(value)) {
-			this.setInvalidMessage("The value of "+validateable.getName()+" should not be null or empty string.");
+			this.setInvalidMessage("The value of "+validateable.getLabel()+" should not be null or empty string.");
 			return Ternary.FALSE;
 		}
 		return Ternary.DONTCARE;

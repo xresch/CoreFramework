@@ -746,6 +746,41 @@ function cfw_internal_confirmSchedule(elementID){
 		isValid = false;
 	}
 	
+	if(scheduleData.interval.intervaltype === "EVERY_X_MINUTES" 
+	&& CFW.utils.isNullOrEmpty(scheduleData.interval.everyxminutes) ) {
+		CFW.ui.addToastDanger('Please specify the number of minutes.')
+		isValid = false;
+	}
+	
+	if(scheduleData.interval.intervaltype === "EVERY_X_DAYS" 
+	&& CFW.utils.isNullOrEmpty(scheduleData.interval.everyxminutes) ) {
+		CFW.ui.addToastDanger('Please specify the number of days.')
+		isValid = false;
+	}
+	
+	if(scheduleData.interval.intervaltype === "EVERY_WEEK" ) {
+		let noDaysSelected = true;
+		
+		if(     scheduleData.interval.everyweek.MON) { noDaysSelected = false; }
+		else if(scheduleData.interval.everyweek.TUE) { noDaysSelected = false; }
+		else if(scheduleData.interval.everyweek.WED) { noDaysSelected = false; }
+		else if(scheduleData.interval.everyweek.THU) { noDaysSelected = false; }
+		else if(scheduleData.interval.everyweek.FRI) { noDaysSelected = false; }
+		else if(scheduleData.interval.everyweek.SAT) { noDaysSelected = false; }
+		else if(scheduleData.interval.everyweek.SUN) { noDaysSelected = false; }
+		
+		if(noDaysSelected){
+			CFW.ui.addToastDanger('Please select at least one week day.')
+			isValid = false;
+		}
+	}
+	
+	if(scheduleData.interval.intervaltype === "CRON_EXPRESSION" 
+		&& CFW.utils.isNullOrEmpty(scheduleData.interval.cronexpression) ) {
+			CFW.ui.addToastDanger('Please specify a cron expression.')
+			isValid = false;
+	}
+	
 	//--------------------------------------
 	// Set Schedule
 	console.log(scheduleData);

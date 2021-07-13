@@ -21,7 +21,7 @@ public class NotNullOrEmptyValidator extends AbstractValidator {
 		if(value != null && !value.equals("")){
 			return true;
 		}else{
-			this.setInvalidMessage("The field "+validateable.getName()+" cannot be empty.");
+			this.setInvalidMessage("The field "+validateable.getLabel()+" cannot be empty.");
 			return false;
 		}
 		

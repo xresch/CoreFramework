@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.Utils;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.logging.CFWLog;
@@ -26,7 +27,7 @@ public class TaskCPUSamplingAgeOut extends CFWScheduledTask {
 			//--------------------------
 			// Get Age Out Time
 			int granularity = Integer.parseInt(object.toString());
-			Timestamp ageOutTime = CFW.Time.getDefaultAgeOutTime(granularity);
+			Timestamp ageOutTime = Utils.Time.getDefaultAgeOutTime(granularity);
 			
 			//--------------------------
 			// Get timespan 
@@ -44,13 +45,13 @@ public class TaskCPUSamplingAgeOut extends CFWScheduledTask {
 			//--------------------------
 			// Iterate with offsets
 			Timestamp startTime = oldest;
-			Timestamp endTime = CFW.Time.offsetTimestamp(oldest, 0, 0, 0, granularity);
+			Timestamp endTime = Utils.Time.offsetTimestamp(oldest, 0, 0, 0, granularity);
 			
 			while(endTime.getTime() < youngest.getTime()) {
 
 				CFWDBCPUSample.aggregateStatistics(startTime, endTime, granularity);
-				startTime =  CFW.Time.offsetTimestamp(startTime, 0, 0, 0, granularity);
-				endTime = CFW.Time.offsetTimestamp(endTime, 0, 0, 0, granularity);
+				startTime =  Utils.Time.offsetTimestamp(startTime, 0, 0, 0, granularity);
+				endTime = Utils.Time.offsetTimestamp(endTime, 0, 0, 0, granularity);
 
 			}
 

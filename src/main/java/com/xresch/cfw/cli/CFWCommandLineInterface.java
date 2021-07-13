@@ -44,7 +44,7 @@ public abstract class CFWCommandLineInterface {
 										"(VM Argument)The path to the folder were the logs should be written.",
 										true);
 		
-		addSupportedArgument(logpath.getName(), logpath);
+		addSupportedArgument(logpath.getLabel(), logpath);
 		
 		//*********************************************
 		// Config Folder
@@ -56,7 +56,7 @@ public abstract class CFWCommandLineInterface {
 										true);
 		
 		valengine.addValidator(new FileCanReadValidator(configFolderDefault));
-		addSupportedArgument(configFolderDefault.getName(), configFolderDefault);
+		addSupportedArgument(configFolderDefault.getLabel(), configFolderDefault);
 		
 		//*********************************************
 		// Config Folder
@@ -67,7 +67,7 @@ public abstract class CFWCommandLineInterface {
 										"(VM Argument)The path to the folder containing the config files like cfw.properties.",
 										true);
 		
-		addSupportedArgument(configFolder.getName(), configFolder);
+		addSupportedArgument(configFolder.getLabel(), configFolder);
 		
 		//*********************************************
 		// Config Filename
@@ -79,7 +79,7 @@ public abstract class CFWCommandLineInterface {
 										true);
 		
 		valengine.addValidator(new FileCanReadValidator(configFilename));
-		addSupportedArgument(configFilename.getName(), configFilename);
+		addSupportedArgument(configFilename.getLabel(), configFilename);
 		
 		//*********************************************
 		// Stop
@@ -90,7 +90,7 @@ public abstract class CFWCommandLineInterface {
 										"Stop command for shutting down the running server.",
 										false);
 		
-		addSupportedArgument(stop.getName(), stop);
+		addSupportedArgument(stop.getLabel(), stop);
 	}
 
 	
@@ -162,7 +162,7 @@ public abstract class CFWCommandLineInterface {
 	public static void printUsage(){
 		for(ArgumentDefinition currentArgument : supportedArgumentsMap.values()){
 			System.out.println("");
-			System.out.print(currentArgument.getName());
+			System.out.print(currentArgument.getLabel());
 			System.out.println("\n\t\tSyntax: "+currentArgument.getSyntax());
 			
 			if(currentArgument.getDefaultValue() != null && !currentArgument.getDefaultValue().trim().isEmpty()){

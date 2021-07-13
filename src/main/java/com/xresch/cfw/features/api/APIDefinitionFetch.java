@@ -14,7 +14,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.PlaintextResponse;
-import com.xresch.cfw.utils.CFWArrayUtils;
+import com.xresch.cfw.utils.CFWUtilsArray;
 
 /**************************************************************************************************************
  * 

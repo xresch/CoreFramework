@@ -7,7 +7,7 @@ import java.util.Arrays;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWArrayUtils {
+public class CFWUtilsArray {
 	
 	
 	public static boolean contains(Object[] array, Object object) {

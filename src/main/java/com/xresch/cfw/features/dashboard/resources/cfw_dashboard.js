@@ -33,7 +33,6 @@ var CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
  ******************************************************************************/
 function cfw_dashboard_timeframe_setPreset(preset){
 
-	
 	window.localStorage.setItem("dashboard-timeframe-preset-"+CFW_DASHBOARD_URLPARAMS.id, preset);
 
 	var label = $("#time-preset-"+preset).text();
@@ -633,7 +632,7 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 		var currentParam = finalParams[index];
 		var currentSettingName = currentParam.LABEL;
 		var paramValue = currentParam.VALUE;
-		
+
 		//console.log('=========================================');
 		//console.log('widgetJsonSettings[currentSettingName]: '+widgetJsonSettings[currentSettingName]);
 		//console.log('currentSettingName: '+currentSettingName);
@@ -770,18 +769,25 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement, triggerRed
 
 /*******************************************************************************
  * Overrides default params with the values set by the Parameter Widgets and 
- * returns a clone of the object held by CFW_DASHBOARD_PARAMS.
+ * returns a clone of the object held by CFW_DASHBOARD_PARAMS. Also adds the
+ * parameters earliest and latest with epoch time from the time picker.
  ******************************************************************************/
 function cfw_dashboard_parameters_getFinalParams(){
 	
 	var storedViewerParams = cfw_dashboard_parameters_getStoredViewerParams();
 	var mergedParams = _.cloneDeep(CFW_DASHBOARD_PARAMS);
+	
+	//Add earliest and latest params
+	mergedParams.push({NAME: "earliest", VALUE: ""+CFW_DASHBOARD_TIME_EARLIEST_EPOCH});
+	mergedParams.push({NAME: "latest", VALUE: ""+CFW_DASHBOARD_TIME_LATEST_EPOCH});
+
 		
 	for(var index in mergedParams){
+		
 		var currentParam = mergedParams[index];
 		var paramName = currentParam.NAME;
-		
 		var viewerCustomValue = storedViewerParams[paramName];
+		
 		if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
 			
 			//---------------------------------------------

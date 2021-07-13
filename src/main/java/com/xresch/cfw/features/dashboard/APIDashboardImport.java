@@ -10,7 +10,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIRequestHandler;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.utils.CFWArrayUtils;
+import com.xresch.cfw.utils.CFWUtilsArray;
 
 /**************************************************************************************************************
  * 
