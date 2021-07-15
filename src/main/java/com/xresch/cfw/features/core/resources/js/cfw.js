@@ -525,7 +525,8 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 	var wrapper = $('<div class="cfw-schedule-field-wrapper flex-grow-1">');
 	scheduleField.before(wrapper);
 	wrapper.append(scheduleField);
-	scheduleField.val(jsonData);
+	
+	scheduleField.val(JSON.stringify(jsonData));
 	
 	//----------------------------------
 	// Add Classes
@@ -638,7 +639,7 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 	
 	//-----------------------------------------
 	// Set Data
-	 cfw_internal_applySchedule(fieldID, wrapper, JSON.parse(jsonData));
+	 cfw_internal_applySchedule(fieldID, wrapper, jsonData);
 }
 
 
@@ -752,10 +753,19 @@ function cfw_internal_confirmSchedule(elementID){
 		isValid = false;
 	}
 	
-	if(scheduleData.interval.intervaltype === "EVERY_X_DAYS" 
-	&& CFW.utils.isNullOrEmpty(scheduleData.interval.everyxminutes) ) {
-		CFW.ui.addToastDanger('Please specify the number of days.')
-		isValid = false;
+	if(scheduleData.interval.intervaltype === "EVERY_X_DAYS"){ 
+	
+		if(CFW.utils.isNullOrEmpty(scheduleData.interval.everyxminutes) ) {
+			CFW.ui.addToastDanger('Please specify the number of days.')
+			isValid = false;
+		}
+		
+		if(scheduleData.timeframe.endtype === "EXECUTION_COUNT"  ) {
+			CFW.ui.addToastDanger('Execution count is not supported for interval in days.')
+			isValid = false;
+		}
+		
+		
 	}
 	
 	if(scheduleData.interval.intervaltype === "EVERY_WEEK" ) {

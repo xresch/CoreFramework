@@ -42,12 +42,14 @@ public class CFWJson {
 		
 		gsonInstance = new GsonBuilder()
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
+				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWSchedule())
 				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
 				.serializeNulls()
 				.create();
 		
 		gsonInstancePretty = new GsonBuilder()
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
+				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWSchedule())
 				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
 				.serializeNulls()
 				.setPrettyPrinting()

@@ -286,7 +286,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				.severe("Fieldname of SCHEDULE fields have to start with 'JSON_'.", new InstantiationException());
 			return null;
 		}
-		return new CFWField<CFWSchedule> (String.class, FormFieldType.SCHEDULE, fieldName)
+		return new CFWField<CFWSchedule> (CFWSchedule.class, FormFieldType.SCHEDULE, fieldName)
 				.setColumnDefinition("VARCHAR");
 	}
 	
@@ -1445,7 +1445,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		// If value is a subclass of the valueClass change 
 		// the value without conversion
 		if(this.valueClass.isAssignableFrom(value.getClass())) {
-			
 			//---------------------------------
 			// Sanitize strings if needed 
 			if(valueClass == String.class ) {
@@ -1458,7 +1457,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//-------------------------------------------------
 		// Convert string values to the appropriate type
 		if(value.getClass() == String.class) {
-			
 			if( ((String)value).trim().equals("")) { 
 				if(valueClass == Integer.class) 	    { return this.changeValue(null); }
 				else if(valueClass == Float.class) 		{ return this.changeValue(null); }
@@ -1466,6 +1464,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				else if(valueClass == Timestamp.class)  { return this.changeValue(null);  }
 				else if(valueClass == Date.class)  		{ return this.changeValue(null); }
 				else if(valueClass == Object[].class)	{ return this.changeValue(null); }
+				else if(valueClass == LinkedHashMap.class){ return this.changeValue(null); }
+				else if(valueClass == CFWSchedule.class){  return this.changeValue(null); }
 				else {	
 					new CFWLog(logger)
 					.severe("The choosen type is not supported: "+valueClass.getName());
@@ -1478,6 +1478,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			else if(valueClass == Timestamp.class)  { return this.changeValue(new Timestamp(Long.parseLong( ((String)value).trim()) )); }
 			else if(valueClass == Date.class)  		{ return this.changeValue(new Date(Long.parseLong( ((String)value).trim()) )); }
 			else if(valueClass == Object[].class)	{ return this.changeValue( sanitizeString((String)value).split(",") ); }
+			
 			else if(valueClass == LinkedHashMap.class){ 
 				LinkedHashMap<String,String> map = CFW.JSON.fromJsonLinkedHashMap((String)value);
 				if(map == null) {
@@ -1488,6 +1489,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				}
 				return this.changeValue(map); 
 			}
+			
 			else if(valueClass == CFWSchedule.class){ 
 				CFWSchedule schedule = new CFWSchedule((String)value);
 				return this.changeValue(schedule); 

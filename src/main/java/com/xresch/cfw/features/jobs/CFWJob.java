@@ -10,7 +10,6 @@ import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.validation.LengthValidator;
 import com.xresch.cfw.validation.ScheduleValidator;
@@ -205,6 +204,15 @@ public class CFWJob extends CFWObject {
 	
 	public CFWJob taskName(String value) {
 		this.taskName.setValue(value);
+		return this;
+	}
+	
+	public CFWSchedule schedule() {
+		return this.schedule.getValue();
+	}
+	
+	public CFWJob schedule(CFWSchedule value) {
+		this.schedule.setValue(value);
 		return this;
 	}
 	

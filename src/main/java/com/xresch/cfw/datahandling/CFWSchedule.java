@@ -1,14 +1,14 @@
 package com.xresch.cfw.datahandling;
 
-import java.sql.Date;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Logger;
 
 import org.quartz.CalendarIntervalScheduleBuilder;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.DailyTimeIntervalScheduleBuilder;
-import org.quartz.ScheduleBuilder;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
@@ -17,9 +17,12 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.logging.CFWLog;
 
 public class CFWSchedule {
 
+	private static Logger logger = CFWLog.getLogger(CFWSchedule.class.getName());
+	
 	private JsonObject scheduleData;
 	
 	private JsonObject timeframe;
@@ -37,21 +40,21 @@ public class CFWSchedule {
 	private static final String CRONEXPRESSION 	= "cronexpression";
 	private static final String EVERYWEEK 		= "everyweek";
 	
-	private static String jsonTemplate = 
-			"{ "
-			+"'timeframe': { "
-				+"'"+STARTDATETIME+"': null, "
-				+"'"+ENDTYPE+"': null, "
-				+"'"+ENDDATETIME+"': null, "
-				+"'"+EXECUTIONCOUNT+"': '0'"
-			+"}, 'interval': { +"
-				+"'"+INTERVALTYPE+"': null, "
-				+"'"+EVERYXMINUTES+"': '0', "
-				+"'"+EVERYXDAYS+"': '0',"
-			+"   '"+EVERYWEEK+"': { 'weekcount': '0', 'MON': false, 'TUE': false,'WED': false, 'THU': false, 'FRI': false, 'SAT': false, 'SUN': false } },"
-			+"   '"+CRONEXPRESSION+"': null"
-			+"}"
-			.replace("'", "\"");
+//	private static String jsonTemplate = 
+//			"{ "
+//			+"'timeframe': { "
+//				+"'"+STARTDATETIME+"': null, "
+//				+"'"+ENDTYPE+"': null, "
+//				+"'"+ENDDATETIME+"': null, "
+//				+"'"+EXECUTIONCOUNT+"': '0'"
+//			+"}, 'interval': { +"
+//				+"'"+INTERVALTYPE+"': null, "
+//				+"'"+EVERYXMINUTES+"': '0', "
+//				+"'"+EVERYXDAYS+"': '0',"
+//			+"   '"+EVERYWEEK+"': { 'weekcount': '0', 'MON': false, 'TUE': false,'WED': false, 'THU': false, 'FRI': false, 'SAT': false, 'SUN': false } },"
+//			+"   '"+CRONEXPRESSION+"': null"
+//			+"}"
+//			.replace("'", "\"");
 	
 	
 	
@@ -191,10 +194,10 @@ public class CFWSchedule {
 	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
-	public String intervalType() {
+	public IntervalType intervalType() {
 		if(interval.get(INTERVALTYPE).isJsonNull()) return null;
-		
-		return interval.get(INTERVALTYPE).getAsString();
+
+		return IntervalType.valueOf(interval.get(INTERVALTYPE).getAsString());
 	}
 	
 	/***************************************************************************************
@@ -295,10 +298,10 @@ public class CFWSchedule {
 	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
-	public String endType() {
+	public EndType endType() {
 		if(timeframe.get(ENDTYPE).isJsonNull()) return null;
 		
-		return timeframe.get(ENDTYPE).getAsString();
+		return EndType.valueOf(timeframe.get(ENDTYPE).getAsString());
 	}
 	
 	/***************************************************************************************
@@ -310,7 +313,7 @@ public class CFWSchedule {
 	}
 	
 	/***************************************************************************************
-	 * 
+	 * Convert to JSON String
 	 ***************************************************************************************/
 	@Override
 	public String toString() {
@@ -320,28 +323,55 @@ public class CFWSchedule {
 	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
+	public JsonObject getAsJsonObject() {
+		return scheduleData.deepCopy();
+	}
+	
+	/***************************************************************************************
+	 * Returns the number of seconds between the two next executions of this schedule.
+	 * Returns -1 if it cannot be calculated(e.g. single execution left) or no more executions are planned.
+	 * It is recommended to validate the CFWSchedule before using this method.
+	 ***************************************************************************************/
+	public int getCalculatedIntervalSeconds() {
+		
+		Trigger trigger = createQuartzTriggerBuilder().build();
+
+	    Date nextDate = trigger.getFireTimeAfter(new Date());
+	    if(nextDate == null) return -1;
+	    
+        Date nextDate2 = trigger.getFireTimeAfter(nextDate);
+        if(nextDate2 == null) return -1;
+        
+        int seconds = (int)(nextDate2.getTime() - nextDate.getTime()) / 1000;
+        return seconds;
+
+	}
+	
+	
+	/***************************************************************************************
+	 * Returns a Quartz Trigger Builder based on this schedule.  
+	 ***************************************************************************************/
 	@SuppressWarnings("unchecked")
-	public Trigger createQuartzTrigger() {
+	public TriggerBuilder<Trigger> createQuartzTriggerBuilder() {
 		
 		TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger()
-					.withIdentity("myTrigger", "group1")
+					//.withIdentity("myTrigger", "group1")
 					.startAt(new Date(this.timeframeStart()));
 		
 		if(this.endType().equals(EndType.END_DATE_TIME.toString())) {
 			triggerBuilder.endAt(new Date(this.timeframeEndtime()));
 		}
-		
+
 		//----------------------------------------
 		// Scheduler
 
-		
-		switch(IntervalType.valueOf(this.intervalType())) {
+		switch(this.intervalType()) {
 			case EVERY_X_MINUTES: 
 				SimpleScheduleBuilder simpleBuilder = SimpleScheduleBuilder
 					.simpleSchedule()
 					.withIntervalInMinutes(this.intervalMinutes());
 				
-				switch(EndType.valueOf(this.endType())) {
+				switch(this.endType()) {
 					case RUN_FOREVER: 		simpleBuilder.repeatForever(); break;
 					case EXECUTION_COUNT: 	simpleBuilder.withRepeatCount(this.timeframeExecutionCount());	break;
 					default:				/*do nothing*/ break;
@@ -355,33 +385,40 @@ public class CFWSchedule {
 					.calendarIntervalSchedule()
 					.withIntervalInDays(this.intervalDays());
 				
-//				switch(EndType.valueOf(this.endType())) {
-//					case RUN_FOREVER: 		calendarBuilder.repeatForever(); break;
-//					case EXECUTION_COUNT: 	calendarBuilder.withRepeatCount(this.timeframeExecutionCount());	break;
-//					default:				/*do nothing*/ break;
-//				}
+				switch(this.endType()) {
+					case RUN_FOREVER: 		/*do nothing*/ break;
+					case EXECUTION_COUNT: 	new CFWLog(logger).severe("Execution count is not supported for interval in days.", new Exception());	
+											return null;
+											
+					default:				/*do nothing*/ break;
+				}
 				triggerBuilder.withSchedule(calendarBuilder);
+				
 				break;
 				
 			case EVERY_WEEK: 
-				DailyTimeIntervalScheduleBuilder dailyBuilder = DailyTimeIntervalScheduleBuilder
+
+				DailyTimeIntervalScheduleBuilder weeklyBuilder = DailyTimeIntervalScheduleBuilder
 					.dailyTimeIntervalSchedule()
+					.withIntervalInHours(24)
 					.onDaysOfTheWeek(this.getWeekdays());
-				switch(EndType.valueOf(this.endType())) {
-//					case RUN_FOREVER: 		dailyBuilder.repeatForever(); break;
-					case EXECUTION_COUNT: 	dailyBuilder.withRepeatCount(this.timeframeExecutionCount());	break;
+				switch(this.endType()) {
+					case RUN_FOREVER: 		/*do nothing*/ break;
+					case EXECUTION_COUNT: 	weeklyBuilder.withRepeatCount(this.timeframeExecutionCount());	break;
 					default:				/*do nothing*/ break;
 				}
-				triggerBuilder.withSchedule(dailyBuilder);
+				triggerBuilder.withSchedule(weeklyBuilder);
 				break;
 			
 			case CRON_EXPRESSION: 
 				CronScheduleBuilder cronBuilder = CronScheduleBuilder
 					.cronSchedule(this.intervalCronExpression());
+				
+				triggerBuilder.withSchedule(cronBuilder);
 				break;
 		}
-		
-		return triggerBuilder.build();
+
+		return triggerBuilder;
 
 	}
 	
