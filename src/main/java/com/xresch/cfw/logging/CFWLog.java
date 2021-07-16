@@ -35,6 +35,7 @@ public class CFWLog {
 	private static boolean isLoggingInitialized = false;
 	
 	protected boolean isMinimal = false;
+	protected boolean isContextless = false;
 	protected long tempStartNanos = -1;
 	protected long starttimeNanos = -1;
 	protected long endtimeNanos = -1;
@@ -127,8 +128,17 @@ public class CFWLog {
 	 * Make the next log minimal. Only the timestamp, level and the message will be
 	 * printed.
 	 ***********************************************************************/
-	public CFWLog minimal(boolean isPlain) {
-		this.isMinimal = isPlain;
+	public CFWLog minimal(boolean isMinimal) {
+		this.isMinimal = isMinimal;
+		return this;
+	}
+	
+	/***********************************************************************
+	 * ignores request based data. useful for batch jobs started by user
+	 * but then running in the background.
+	 ***********************************************************************/
+	public CFWLog contextless(boolean isContextless) {
+		this.isContextless = isContextless;
 		return this;
 	}
 
@@ -372,7 +382,9 @@ public class CFWLog {
 			//-------------------------
 			// Handle Request
 			//-------------------------
-			request = CFW.Context.Request.getRequest();
+			if(!isContextless) {
+				request = CFW.Context.Request.getRequest();
+			}
 			
 			if(request != null){
 

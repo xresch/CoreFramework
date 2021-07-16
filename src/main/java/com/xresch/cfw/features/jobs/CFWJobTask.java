@@ -54,8 +54,10 @@ public abstract class CFWJobTask implements Job {
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 
-		new CFWLog(logger)
-			.custom("jobtask", this.uniqueName())
+		CFWLog log = new CFWLog(logger)
+			.contextless(true)
+			.custom("jobid", context.getJobDetail().getKey().getName())
+			.custom("taskname", this.uniqueName())
 			.start();
 		
 		try{
@@ -63,12 +65,14 @@ public abstract class CFWJobTask implements Job {
 		}catch(JobExecutionException e) {
 			new CFWLog(logger)
 				.silent(true)
-				.custom("jobtask", this.uniqueName())
+				.contextless(true)
+				.custom("jobid", context.getJobDetail().getKey().getName())
+				.custom("taskname", this.uniqueName())
 				.severe("Exception while executing task '"+this.uniqueName()+"': "+e.getMessage(), e);
 			
 			throw e;
 		}finally {
-			new CFWLog(logger).end();
+			log.end();
 		}
 	}
 	

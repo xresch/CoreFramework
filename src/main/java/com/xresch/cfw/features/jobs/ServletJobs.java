@@ -255,10 +255,8 @@ public class ServletJobs extends HttpServlet
 					
 					if(CFWDBJob.create((CFWJob)origin)) {
 						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Done!");
-					}
-						
+					}	
 				}
-				
 			}
 		});
 		
@@ -321,6 +319,13 @@ public class ServletJobs extends HttpServlet
 	}
 	
 	protected boolean isMinimumIntervalValid(int scheduleIntervalSec, int taskIntervalSeconds) {
+		
+		if(scheduleIntervalSec == -1) {
+			CFW.Context.Request.addAlertMessage(MessageType.INFO, 
+				"The defined schedule will make the job execute once or never."
+			);
+			return true;
+		}
 		
 		if(scheduleIntervalSec < taskIntervalSeconds) {
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, 

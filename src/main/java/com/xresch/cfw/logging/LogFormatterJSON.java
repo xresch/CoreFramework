@@ -37,7 +37,7 @@ public class LogFormatterJSON extends Formatter {
 			buf.append("\"");
 			
 			//-------------------------
-			// Check is Plain
+			// Check is Minimal
 			if(log.isMinimal) {
 				buf.append(", \"message\":\"");
 				buf.append(CFW.JSON.escapeString(rec.getMessage()));
@@ -48,28 +48,36 @@ public class LogFormatterJSON extends Formatter {
 			
 			//-------------------------
 			// Delta
-			buf.append(", \"delta\":\"");
-			buf.append(log.deltaStartMillis);
-			buf.append("\"");
+			if(log.deltaStartMillis > -1) {
+				buf.append(", \"delta\":\"");
+				buf.append(log.deltaStartMillis);
+				buf.append("\"");
+			}
 			
 			//-------------------------
 			// user
-			buf.append(", \"user\":\"");
-			buf.append(log.userID);
-			buf.append("\"");
+			if( !Strings.isNullOrEmpty(log.userID) ) {
+				buf.append(", \"user\":\"");
+				buf.append(log.userID);
+				buf.append("\"");
+			}
 			
 			
 			//-------------------------
 			// URL
-			buf.append(", \"url\":\"");
-			buf.append(log.webURL);
-			buf.append("\"");
+			if( !Strings.isNullOrEmpty(log.webURL) ) {
+				buf.append(", \"url\":\"");
+				buf.append(log.webURL);
+				buf.append("\"");
+			}
 			
 			//-------------------------
 			// URL
-			buf.append(", \"query\":\"");
-			buf.append(CFW.JSON.escapeString(log.queryString));
-			buf.append("\"");
+			if( !Strings.isNullOrEmpty(log.queryString) ) {
+				buf.append(", \"query\":\"");
+				buf.append(CFW.JSON.escapeString(log.queryString));
+				buf.append("\"");
+			}
 			
 			//-------------------------
 			// Class
@@ -85,21 +93,27 @@ public class LogFormatterJSON extends Formatter {
 			
 			//-------------------------
 			// RequestID
-			buf.append(", \"requestID\":\"");
-			buf.append(log.requestID);
-			buf.append("\"");
+			if( !Strings.isNullOrEmpty(log.requestID) ) {
+				buf.append(", \"requestID\":\"");
+				buf.append(log.requestID);
+				buf.append("\"");
+			}
 			
 			//-------------------------
 			// SessionID
-			buf.append(", \"sessionID\":\"");
-			buf.append(log.sessionID);
-			buf.append("\"");
+			if( !Strings.isNullOrEmpty(log.sessionID) ) {
+				buf.append(", \"sessionID\":\"");
+				buf.append(log.sessionID);
+				buf.append("\"");
+			}
 		
 			//-------------------------
 			// Response Size Bytes
-			buf.append(", \"sizeChars\":\"");
-			buf.append(log.estimatedResponseSizeChars);
-			buf.append("\"");
+			if( log.estimatedResponseSizeChars > -1 ) {
+				buf.append(", \"sizeChars\":\"");
+				buf.append(log.estimatedResponseSizeChars);
+				buf.append("\"");
+			}
 
 			//-------------------------
 			// message

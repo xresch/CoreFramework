@@ -785,10 +785,17 @@ function cfw_internal_confirmSchedule(elementID){
 		}
 	}
 	
-	if(scheduleData.interval.intervaltype === "CRON_EXPRESSION" 
-		&& CFW.utils.isNullOrEmpty(scheduleData.interval.cronexpression) ) {
+	if(scheduleData.interval.intervaltype === "CRON_EXPRESSION"){
+		
+		if(CFW.utils.isNullOrEmpty(scheduleData.interval.cronexpression) ) {
 			CFW.ui.addToastDanger('Please specify a cron expression.')
 			isValid = false;
+		}
+		
+		if(scheduleData.timeframe.endtype === "EXECUTION_COUNT"  ) {
+			CFW.ui.addToastDanger('Execution count is not supported for CRON expressions.')
+			isValid = false;
+		}
 	}
 	
 	//--------------------------------------

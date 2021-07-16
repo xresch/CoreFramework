@@ -21,7 +21,7 @@ Potential TODOs
 
 - Jobs: Log Job Executions to DB, plus age out
 - Jobs: Load from DB on startup
-- Jobs: Create Manage Jobs.
+- Jobs: Split My Jobs and Admin Jobs Page.
 - Jobs: Show Last Run
 
 - Dashboard: Share with users that are not logged in

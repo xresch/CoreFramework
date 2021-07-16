@@ -13,11 +13,13 @@ public class CFWUtilsAnalysis {
 	 * Creates a thread dump to the disk. 
 	 ************************************************************/
 	public static void threadDumpToDisk(String folder, String filepath) {
-		File folderFile = new File("folder");
+		File folderFile = new File(folder);
         
         if(!folderFile.exists()) {
         	folderFile.mkdirs();
         }
+        
+        
         
         CFW.Files.writeFileContent(null, folder+"/"+filepath, createThreadDump());
 	    

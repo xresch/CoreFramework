@@ -2,6 +2,7 @@ package com.xresch.cfw.features.analytics;
 
 import java.util.ArrayList;
 
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -32,7 +33,7 @@ public class CFWJobTaskThreadDumps extends CFWJobTask {
 
 	@Override
 	public int minIntervalSeconds() {
-		return 120;
+		return 15;
 	}
 
 	@Override
@@ -48,8 +49,11 @@ public class CFWJobTaskThreadDumps extends CFWJobTask {
 	@Override
 	public void executeTask(JobExecutionContext context) throws JobExecutionException {
 		
-        String filepath = "threaddump_"+CFW.Utils.Time.currentTimestamp()+".txt";
-        CFWUtilsAnalysis.threadDumpToDisk("./threaddumps", filepath);
+		JobDataMap data = context.getTrigger().getJobDataMap();
+		String folderpath = data.getString("folder");
+		
+        String filepath = "threaddump_"+CFW.Utils.Time.currentTimestamp().replace(":", "")+".txt";
+        CFWUtilsAnalysis.threadDumpToDisk(folderpath, filepath);
 		
 	}
 	

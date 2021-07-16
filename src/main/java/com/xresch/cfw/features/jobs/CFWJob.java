@@ -2,7 +2,15 @@ package com.xresch.cfw.features.jobs;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
+import org.quartz.JobBuilder;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Trigger;
+import org.quartz.TriggerBuilder;
+
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -161,6 +169,51 @@ public class CFWJob extends CFWObject {
 		
 		return apis;
 	}
+	
+	
+	/**************************************************************************************
+	 * Creates a Quartz Job Key for this Job using it's primary key(id).
+	 **************************************************************************************/
+	protected JobKey createJobKey() {
+		 return new JobKey(""+this.id());
+	}
+	
+	/**************************************************************************************
+	 * Creates the Quartz Job Detail for this job.
+	 **************************************************************************************/
+	protected JobDetail createJobDetail() {
+		//-----------------------------------
+		// Create JobDetail from Task
+		String taskname = this.taskName();
+		Class<? extends CFWJobTask> taskClazz = CFW.Registry.Jobs.getTaskClass(taskname);
+		
+		return  JobBuilder
+					.newJob(taskClazz)
+					.withIdentity(this.createJobKey())
+					.build();
+
+	}
+	
+	/**************************************************************************************
+	 * Creates a Quartz Job Trigger for this Job.
+	 **************************************************************************************/
+	protected Trigger createJobTrigger() {
+
+		//-----------------------------------
+		// Create Trigger
+		TriggerBuilder<Trigger> triggerBuilder = this.schedule().createQuartzTriggerBuilder();
+						
+		for(Entry<String, String> entry : this.properties().entrySet()){
+			triggerBuilder.usingJobData(entry.getKey(), entry.getValue());
+		}
+		
+		return triggerBuilder
+				.withIdentity("trigger(jobid:"+this.id()+")")
+				.build();
+		
+	}
+
+
 	
 	public Integer id() {
 		return id.getValue();

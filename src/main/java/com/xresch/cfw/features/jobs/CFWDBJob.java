@@ -2,6 +2,7 @@ package com.xresch.cfw.features.jobs;
 
 import java.util.logging.Logger;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
@@ -54,23 +55,47 @@ public class CFWDBJob {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(CFWJob... items) 	{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, items); }
-	public static boolean 	create(CFWJob item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, item);}
-	public static Integer 	createGetPrimaryKey(CFWJob item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);}
+	//public static boolean	create(CFWJob... items) 	{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, items); }
+	public static boolean 	create(CFWJob item) { 
+		Integer id = CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);
+		if (id != null) {
+			CFWJob job = CFW.DB.Jobs.selectByID(id);
+			CFW.Registry.Jobs.startJob(job);
+			return true;
+		}
+		
+		return false;
+	}
 	
 	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(CFWJob... items) 	{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, items); }
-	public static boolean 	update(CFWJob item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, item); }
+	public static boolean 	update(CFWJob item){ 
+		
+		if( CFWDBDefaultOperations.update(prechecksCreateUpdate, item)) {
+			CFW.Registry.Jobs.updateJob(item);
+			return true;
+		}
+		
+		return false;
+	}
 	
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################
-	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, JobFields.PK_ID.toString(), id); }
-	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(prechecksDelete, cfwObjectClass, itemIDs); }
-	
+	public static boolean deleteByID(int id) { 
+		
+		CFWJob job = CFW.DB.Jobs.selectByID(id);
+		
+		if (CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, JobFields.PK_ID.toString(), id) ) {
+			CFW.Registry.Jobs.stopJob(job);
+			return true;
+		}
+		
+		return false;
+	}
+
 	//####################################################################################################
 	// DUPLICATE
 	//####################################################################################################

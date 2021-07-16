@@ -18,6 +18,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.validation.AbstractValidatable;
+import com.xresch.cfw.validation.ScheduleValidator;
 
 public class CFWSchedule {
 
@@ -327,6 +329,22 @@ public class CFWSchedule {
 		return scheduleData.deepCopy();
 	}
 	
+	
+	/***************************************************************************************
+	 * Returns true if schedule is valid, false otherview
+	 ***************************************************************************************/
+	public boolean validate() {
+		ScheduleValidator validator = new ScheduleValidator(
+				new AbstractValidatable<String>() {}.setLabel("schedule")
+			);
+		
+		if( !validator.validate(this.toString()) ){
+			new CFWLog(logger).severe(validator.getInvalidMessage(), new Exception());
+			return false;
+		}
+		
+		return true;
+	}
 	/***************************************************************************************
 	 * Returns the number of seconds between the two next executions of this schedule.
 	 * Returns -1 if it cannot be calculated(e.g. single execution left) or no more executions are planned.
@@ -358,7 +376,7 @@ public class CFWSchedule {
 					//.withIdentity("myTrigger", "group1")
 					.startAt(new Date(this.timeframeStart()));
 		
-		if(this.endType().equals(EndType.END_DATE_TIME.toString())) {
+		if(this.endType().equals(EndType.END_DATE_TIME)) {
 			triggerBuilder.endAt(new Date(this.timeframeEndtime()));
 		}
 
@@ -413,7 +431,14 @@ public class CFWSchedule {
 			case CRON_EXPRESSION: 
 				CronScheduleBuilder cronBuilder = CronScheduleBuilder
 					.cronSchedule(this.intervalCronExpression());
-				
+
+				switch(this.endType()) {
+				case RUN_FOREVER: 		/*do nothing*/ break;
+				case EXECUTION_COUNT: 	new CFWLog(logger).severe("Execution count is not supported for cron expressions.", new Exception());	
+										return null;
+										
+				default:				/*do nothing*/ break;
+			}
 				triggerBuilder.withSchedule(cronBuilder);
 				break;
 		}
