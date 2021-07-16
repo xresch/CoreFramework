@@ -21,7 +21,6 @@ Potential TODOs
 
 - Jobs: Log Job Executions to DB, plus age out
 - Jobs: Load from DB on startup
-- Jobs: Validate minimum time interval.
 - Jobs: Create Manage Jobs.
 - Jobs: Show Last Run
 

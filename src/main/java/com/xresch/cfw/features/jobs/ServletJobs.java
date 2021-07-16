@@ -246,6 +246,13 @@ public class ServletJobs extends HttpServlet
 				
 				if(origin.mapRequestParameters(request)) {
 					
+					CFWJob jobToUpdate = (CFWJob)origin;
+					int scheduleIntervalSec = jobToUpdate.schedule().getCalculatedIntervalSeconds();
+					
+					if( !isMinimumIntervalValid(scheduleIntervalSec, task.minIntervalSeconds())) {
+						return;
+					}
+					
 					if(CFWDBJob.create((CFWJob)origin)) {
 						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Done!");
 					}
@@ -293,7 +300,12 @@ public class ServletJobs extends HttpServlet
 					
 					if(origin.mapRequestParameters(request)) {
 						CFWJob jobToUpdate = (CFWJob)origin;
-						CFW.Messages.addInfoMessage("Seconds: "+jobToUpdate.schedule().getCalculatedIntervalSeconds());
+						int scheduleIntervalSec = jobToUpdate.schedule().getCalculatedIntervalSeconds();
+						
+						if( !isMinimumIntervalValid(scheduleIntervalSec, task.minIntervalSeconds())) {
+							return;
+						}
+						
 						if(CFWDBJob.update((CFWJob)origin)) {
 							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
 						}	
@@ -306,5 +318,18 @@ public class ServletJobs extends HttpServlet
 			json.setSuccess(true);	
 		}
 
+	}
+	
+	protected boolean isMinimumIntervalValid(int scheduleIntervalSec, int taskIntervalSeconds) {
+		
+		if(scheduleIntervalSec < taskIntervalSeconds) {
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, 
+					"The minimum time interval for the selected task is "+taskIntervalSeconds+" second(s). "
+					+"Your current schedule has an interval of "+scheduleIntervalSec+" second(s)"
+			);
+			return false;
+		}
+		
+		return true;
 	}
 }

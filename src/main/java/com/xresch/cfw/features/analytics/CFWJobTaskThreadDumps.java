@@ -32,7 +32,7 @@ public class CFWJobTaskThreadDumps extends CFWJobTask {
 
 	@Override
 	public int minIntervalSeconds() {
-		return 3;
+		return 120;
 	}
 
 	@Override
