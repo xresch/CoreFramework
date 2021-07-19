@@ -443,7 +443,7 @@ public class CFWSQL {
 				isNextSelectDistinct = false;
 			}
 			query.append(select);
-			query.append(" COUNT(*) FROM "+object.getTableName());
+			query.append(" COUNT(*) FROM "+object.getTableName()+" T");
 		}
 		return this;
 	}
@@ -459,9 +459,54 @@ public class CFWSQL {
 	}
 
 	/****************************************************************
-	 * initializes a new Fulltext search.
+	 * initializes a new Fulltext search searching a string in
+	 * the given columns.
+	 * If the filterquery or columnNames is null or empty,
+	 * only a limit and offset
+	 * will be added  to the query.
+	 * Use the "getAs.." methods to convert the result.
+	 * 
 	 ****************************************************************/
-	public CFWSQLLuceneQuery fulltextSearch() {
+	public CFWSQL fulltextSearchString(String searchString, int pageSize, int pageNumber, Object... columnNames) {
+		
+		if(Strings.isNullOrEmpty(searchString) 
+		|| columnNames == null 
+		|| columnNames.length == 0) {
+			//-------------------------------------
+			// Unfiltered
+			return this.columnSubquery("TOTAL_RECORDS", "COUNT(*) OVER()")
+				.select()
+				.limit(pageSize)
+				.offset(pageSize*(pageNumber-1));
+
+		}else {
+			
+			//-------------------------------------
+			// Filter with fulltext search
+			// Enabled by CFWObject.enableFulltextSearch()
+			// on the Person Object
+			this.columnSubquery("TOTAL_RECORDS", "COUNT(*) OVER()")
+					.select();
+			
+			for(int i = 0; i < columnNames.length; i++) {
+				if(i == 0) { 
+					this.where(); 
+				} else { 
+					this.or(); 
+				}
+				
+				this.like(columnNames[i], "%"+searchString+"%");
+			}
+			
+			return this.limit(pageSize)
+				.offset(pageSize*(pageNumber-1));
+		}
+		
+	}
+	/****************************************************************
+	 * initializes a new LuceneQuery fulltext search.
+	 ****************************************************************/
+	public CFWSQLLuceneQuery fulltextSearchLucene() {
 		return new CFWSQLLuceneQuery(this);
 	}
 	
@@ -472,7 +517,7 @@ public class CFWSQL {
 	 * Use the "getAs.." methods to convert the result.
 	 * 
 	 ****************************************************************/
-	public CFWSQL fulltextSearch(String luceneFilterquery, int pageSize, int pageNumber) {
+	public CFWSQL fulltextSearchLucene(String luceneFilterquery, int pageSize, int pageNumber) {
 		
 		if(Strings.isNullOrEmpty(luceneFilterquery)) {
 			//-------------------------------------
@@ -489,7 +534,7 @@ public class CFWSQL {
 			// on the Person Object
 			return 
 					this.select()
-						.fulltextSearch()
+						.fulltextSearchLucene()
 						.custom(luceneFilterquery)
 						.build(pageSize, pageNumber);
 		}
@@ -720,9 +765,9 @@ public class CFWSQL {
 				return where().isNull(fieldname);
 			}
 			if(isCaseSensitive) {
-				query.append(" WHERE ").append(fieldname).append(" = ?");	
+				query.append(" WHERE T.").append(fieldname).append(" = ?");	
 			}else {
-				query.append(" WHERE LOWER(").append(fieldname).append(") = LOWER(?)");	
+				query.append(" WHERE LOWER(T.").append(fieldname).append(") = LOWER(?)");	
 			}
 		}
 		values.add(value);

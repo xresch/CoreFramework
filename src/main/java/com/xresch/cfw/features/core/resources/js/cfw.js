@@ -755,7 +755,7 @@ function cfw_internal_confirmSchedule(elementID){
 	
 	if(scheduleData.interval.intervaltype === "EVERY_X_DAYS"){ 
 	
-		if(CFW.utils.isNullOrEmpty(scheduleData.interval.everyxminutes) ) {
+		if(CFW.utils.isNullOrEmpty(scheduleData.interval.everyxdays) ) {
 			CFW.ui.addToastDanger('Please specify the number of days.')
 			isValid = false;
 		}

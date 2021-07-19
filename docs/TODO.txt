@@ -21,8 +21,11 @@ Potential TODOs
 
 - Jobs: Log Job Executions to DB, plus age out
 - Jobs: Load from DB on startup
-- Jobs: Split My Jobs and Admin Jobs Page.
+- Jobs: Check User Rights
+- Jobs: Change Properties to use CFWField Definitions
 - Jobs: Show Last Run
+- Jobs: Handle Missfires
+- Jobs: Config Item for Number of Threads
 
 - Dashboard: Share with users that are not logged in
 - Dashboard: Check Settings - Provide a bulk action to show all settings of all widgets as an overview. 

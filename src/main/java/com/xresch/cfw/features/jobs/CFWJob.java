@@ -30,7 +30,7 @@ public class CFWJob extends CFWObject {
 	
 	public static String TABLE_NAME = "CFW_JOB";
 	
-	public enum JobFields{
+	public enum CFWJobFields{
 		PK_ID, 
 		FK_ID_USER,
 		JOB_NAME, 
@@ -45,43 +45,42 @@ public class CFWJob extends CFWObject {
 	
 //	private static ArrayList<String> fullTextSearchColumns = new ArrayList<>();
 //	static {
-//		fullTextSearchColumns.add(PersonFields.PK_ID.toString());
-//		fullTextSearchColumns.add(PersonFields.FIRSTNAME.toString());
-//		fullTextSearchColumns.add(PersonFields.LASTNAME.toString());
-//		fullTextSearchColumns.add(PersonFields.LOCATION.toString());
-//		fullTextSearchColumns.add(PersonFields.EMAIL.toString());
-//		fullTextSearchColumns.add(PersonFields.LIKES_TIRAMISU.toString());
-//		fullTextSearchColumns.add(PersonFields.CHARACTER.toString());
+//		fullTextSearchColumns.add(CFWJobFields.PK_ID.toString());
+//		fullTextSearchColumns.add(CFWJobFields.JOB_NAME.toString());
+//		fullTextSearchColumns.add(CFWJobFields.DESCRIPTION.toString());
+//		fullTextSearchColumns.add(CFWJobFields.TASK_NAME.toString());
+//		fullTextSearchColumns.add(CFWJobFields.JSON_SCHEDULE.toString());
+//		fullTextSearchColumns.add(CFWJobFields.JSON_PROPERTIES.toString());
 //	}
 	
-	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, JobFields.PK_ID)
+	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWJobFields.PK_ID)
 								   .setPrimaryKeyAutoIncrement(this)
 								   .setDescription("The job id.")
 								   .apiFieldType(FormFieldType.NUMBER)
 								   .setValue(null);
 	
-	private CFWField<Integer> foreignKeyOwner = CFWField.newInteger(FormFieldType.HIDDEN, JobFields.FK_ID_USER)
+	private CFWField<Integer> foreignKeyOwner = CFWField.newInteger(FormFieldType.HIDDEN, CFWJobFields.FK_ID_USER)
 			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
 			.setDescription("The user id of the owner of the job.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 		
-	private CFWField<String> jobname = CFWField.newString(FormFieldType.TEXT, JobFields.JOB_NAME)
+	private CFWField<String> jobname = CFWField.newString(FormFieldType.TEXT, CFWJobFields.JOB_NAME)
 			.setColumnDefinition("VARCHAR(255)")
 			.setDescription("The name of the job.")
 			.addValidator(new LengthValidator(1, 255));
 	
-	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, JobFields.DESCRIPTION)
+	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, CFWJobFields.DESCRIPTION)
 			.setColumnDefinition("CLOB")
 			.setDescription("The description of the job.")
 			.addValidator(new LengthValidator(-1, 100000));
 	
-	private CFWField<String> taskName = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, JobFields.TASK_NAME)
+	private CFWField<String> taskName = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, CFWJobFields.TASK_NAME)
 			.setColumnDefinition("VARCHAR(1024)")
 			.setDescription("The name of the task to be executed.")
 			.addValidator(new LengthValidator(3, 1024));
 	
-	private CFWField<LinkedHashMap<String, String>> properties = CFWField.newValueLabel(JobFields.JSON_PROPERTIES)
+	private CFWField<LinkedHashMap<String, String>> properties = CFWField.newValueLabel(CFWJobFields.JSON_PROPERTIES)
 			.setLabel("Properties")
 			.setDescription("The properties of the job.");
 	
@@ -91,11 +90,11 @@ public class CFWJob extends CFWObject {
 			.addValidator(new ScheduleValidator().setNullAllowed(false))
 			.setValue(null);
 	
-	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, JobFields.IS_DELETABLE)
+	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, CFWJobFields.IS_DELETABLE)
 			.setDescription("Flag to define if the job can be deleted or not.")
 			.setValue(true);
 	
-	private CFWField<Boolean> isEnabled = CFWField.newBoolean(FormFieldType.BOOLEAN, JobFields.IS_ENABLED)
+	private CFWField<Boolean> isEnabled = CFWField.newBoolean(FormFieldType.BOOLEAN, CFWJobFields.IS_ENABLED)
 			.setDescription("Enable or disable the job.")
 			.setValue(true);
 	
@@ -136,22 +135,22 @@ public class CFWJob extends CFWObject {
 		
 		String[] inputFields = 
 				new String[] {
-						JobFields.PK_ID.toString(), 
-						JobFields.FK_ID_USER.toString(),
-						JobFields.JOB_NAME.toString(),
-						JobFields.TASK_NAME.toString(),
+						CFWJobFields.PK_ID.toString(), 
+						CFWJobFields.FK_ID_USER.toString(),
+						CFWJobFields.JOB_NAME.toString(),
+						CFWJobFields.TASK_NAME.toString(),
 
 				};
 		
 		String[] outputFields = 
 				new String[] {
-						JobFields.PK_ID.toString(), 
-						JobFields.FK_ID_USER.toString(),
-						JobFields.JOB_NAME.toString(),
-						JobFields.DESCRIPTION.toString(),
-						JobFields.TASK_NAME.toString(),
-						JobFields.JSON_PROPERTIES.toString(),
-						JobFields.JSON_SCHEDULE.toString(),
+						CFWJobFields.PK_ID.toString(), 
+						CFWJobFields.FK_ID_USER.toString(),
+						CFWJobFields.JOB_NAME.toString(),
+						CFWJobFields.DESCRIPTION.toString(),
+						CFWJobFields.TASK_NAME.toString(),
+						CFWJobFields.JSON_PROPERTIES.toString(),
+						CFWJobFields.JSON_SCHEDULE.toString(),
 				};
 
 		//----------------------------------

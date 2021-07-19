@@ -44,23 +44,24 @@ public class ServletJobs extends HttpServlet
     {
 		HTMLResponse html = new HTMLResponse("Jobs");
 		
-		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)) {
+		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)
+		|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)) {
 			
 			createForms();
 			
 			String action = request.getParameter("action");
 			
-			if(action == null) {
-
+			if(action != null) {
+				
+				handleDataRequest(request, response);	
+				
+			}else {
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureJobs.RESOURCE_PACKAGE, "cfw_jobs.js");
 				
-
 				html.addJavascriptCode("cfwjobs_initialDraw();");
 				
 		        response.setContentType("text/html");
 		        response.setStatus(HttpServletResponse.SC_OK);
-			}else {
-				handleDataRequest(request, response);
 			}
 		}else {
 			CFWMessages.accessDenied();
@@ -83,15 +84,15 @@ public class ServletJobs extends HttpServlet
 
 		switch(action.toLowerCase()) {
 		
-			case "fetch": 			
-				switch(item.toLowerCase()) {
-					case "myjoblist": 		jsonResponse.setPayLoad(new CFWJob().toJSONElement());
-	  										break;
-	  										
-					default: 				CFW.Messages.itemNotSupported(item);
-											break;
-				}
-				break;
+//			case "fetch": 			
+//				switch(item.toLowerCase()) {
+//					case "myjoblist": 		jsonResponse.setPayLoad(new CFWJob().toJSONElement());
+//	  										break;
+//	  										
+//					default: 				CFW.Messages.itemNotSupported(item);
+//											break;
+//				}
+//				break;
 			
 			case "fetchpartial": 	
 				
@@ -100,11 +101,14 @@ public class ServletJobs extends HttpServlet
 				String filterquery = request.getParameter("filterquery");
 				
 				switch(item.toLowerCase()) {
-					case "myjoblist": 		
-											jsonResponse.getContent().append(CFW.DB.Jobs.getPartialJobListAsJSONForAdmin(pagesize, pagenumber, filterquery));
-	  										break;
+					case "myjoblist": 		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)) {
+												jsonResponse.getContent().append(CFW.DB.Jobs.getPartialJobListAsJSONForUser(pagesize, pagenumber, filterquery));
+											}else { CFW.Messages.noPermission(); }
+											break;
 	  										
-					case "adminjoblist": 	jsonResponse.getContent().append(CFW.DB.Jobs.getPartialJobListAsJSONForAdmin(pagesize, pagenumber, filterquery));
+					case "adminjoblist": 	if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)) {
+												jsonResponse.getContent().append(CFW.DB.Jobs.getPartialJobListAsJSONForAdmin(pagesize, pagenumber, filterquery));
+											}else { CFW.Messages.noPermission(); }
 											break;
 	  										
 					default: 				CFW.Messages.itemNotSupported(item);
@@ -230,7 +234,9 @@ public class ServletJobs extends HttpServlet
 		
 		//-----------------------------------
 		// Create Job Object
+		
 		CFWJob job = new CFWJob()
+						.foreignKeyOwner(CFW.Context.Request.getUser().id())
 						.taskName(taskname)
 						.properties(propsMap);
 

@@ -19,8 +19,11 @@ function cfwjobs_createTabs(){
 		var list = $('<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">');
 		
 		list.append('<li class="nav-item"><a class="nav-link" id="tab-myjoblist" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'myjoblist\'})"><i class="fas fa-share-alt mr-2"></i>My Jobs</a></li>');
-		list.append('<li class="nav-item"><a class="nav-link" id="tab-adminjoblist" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'adminjoblist\'})"><i class="fas fa-copy mr-2"></i>Admin</a></li>');
-
+		
+		if(CFW.hasPermission("Jobs: Admin")){
+			list.append('<li class="nav-item"><a class="nav-link" id="tab-adminjoblist" data-toggle="pill" href="#" role="tab" onclick="cfwjobs_draw({tab: \'adminjoblist\'})"><i class="fas fa-copy mr-2"></i>Admin</a></li>');
+		}
+		
 		var parent = $("#cfw-container");
 		parent.append(list);
 		parent.append('<div id="tab-content"></div>');
@@ -191,6 +194,14 @@ function cfwjobs_printJobs(itemType){
 
 		});
 	
+	//-------------------------
+	// Visible Fields
+	var visiblefields;
+	if(itemType == 'adminjoblist'){
+		visiblefields = ['PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'JSON_SCHEDULE', 'JSON_PROPERTIES'];
+	}else{
+		visiblefields = ['PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'JSON_SCHEDULE', 'JSON_PROPERTIES'];
+	}
 
 	//-----------------------------------
 	// Render Data
@@ -201,7 +212,7 @@ function cfwjobs_printJobs(itemType){
 		 	textstylefield: null,
 		 	titlefields: ['JOB_NAME'],
 		 	titleformat: '{0}',
-		 	visiblefields: ['PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'JSON_SCHEDULE', 'JSON_PROPERTIES'],
+		 	visiblefields: visiblefields,
 		 	labels: {
 		 		PK_ID: "ID",
 		 		JSON_SCHEDULE: "Schedule",
