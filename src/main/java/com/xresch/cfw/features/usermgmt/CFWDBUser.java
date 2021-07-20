@@ -22,6 +22,9 @@ public class CFWDBUser {
 
 	private static final Logger logger = CFWLog.getLogger(CFWDBUser.class.getName());
 	
+	/* Query to select the Username for the ID specified by column FK_ID_USER*/
+	public static final String USERNAME_SUBQUERY = "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER";
+	
 	/********************************************************************************************
 	 * Creates multiple users in the DB.
 	 * @param Users with the values that should be inserted. ID will be set by the Database.
@@ -445,9 +448,9 @@ public class CFWDBUser {
 					UserFields.FIRSTNAME,
 					UserFields.LASTNAME,
 					UserFields.EMAIL)
-			.whereLike("LOWER("+UserFields.USERNAME+")", likeString)
-			.or().like("LOWER("+UserFields.FIRSTNAME+")", likeString)
-			.or().like("LOWER("+UserFields.LASTNAME+")", likeString)
+			.where().like(UserFields.USERNAME, likeString, false)
+			.or().like(UserFields.FIRSTNAME, likeString, false)
+			.or().like(UserFields.LASTNAME, likeString, false)
 			.and().not().is(UserFields.PK_ID, CFW.Context.Request.getUser().id())
 			.limit(maxResults)
 			.getAsObjectList();

@@ -19,8 +19,6 @@ Potential TODOs
   - CFWSQL partial query, select entries for user
 
 - Jobs: Log Job Executions to DB, plus age out
-- Jobs: Load from DB on startup
-- Jobs: Check User Rights
 - Jobs: Change Properties to use CFWField Definitions
 - Jobs: Show Last Run
 - Jobs: Handle Missfires

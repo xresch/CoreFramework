@@ -68,9 +68,7 @@ public class FeatureJobs extends CFWAppFeature {
 	public void startTasks() {
 		//----------------------------------------
 		// Load Jobs after all features loaded
-		System.out.println("JobFeature.startTask");
 		for(CFWObject object : CFW.DB.Jobs.getEnabledJobs()) {
-			System.out.println("Load");
 			CFW.Registry.Jobs.startJob((CFWJob)object);
 		}
 	}

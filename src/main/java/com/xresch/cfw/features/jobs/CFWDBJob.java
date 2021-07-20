@@ -28,10 +28,10 @@ public class CFWDBJob {
 		public boolean doCheck(CFWObject object) {
 			
 			CFWJob job = (CFWJob)object;
-			
+						
 			if(job == null || job.jobname().isEmpty()) {
 				new CFWLog(logger)
-					.warn("Please specify a firstname for the job.", new Throwable());
+					.warn("Please specify a name for the job.", new Throwable());
 				return false;
 			}
 
@@ -41,15 +41,7 @@ public class CFWDBJob {
 	
 	
 	private static PrecheckHandler prechecksDelete =  new PrecheckHandler() {
-		public boolean doCheck(CFWObject object) {
-			CFWJob job = (CFWJob)object;
-			
-//			if(job != null && job.likesTiramisu() == true) {
-//				new CFWLog(logger)
-//				.severe("The CFWJob '"+job.firstname()+"' cannot be deleted as people that like tiramisu will prevail for all eternity!", new Throwable());
-//				return false;
-//			}
-//			
+		public boolean doCheck(CFWObject object) {	
 			return true;
 		}
 	};
@@ -181,7 +173,7 @@ public class CFWDBJob {
 			// Unfiltered
 			return new CFWSQL(new CFWJob())
 				.queryCache()
-				.columnSubquery("TOTAL_RECORDS", "COUNT(*) OVER()")
+				.columnSubqueryTotalRecords()
 				.select()
 				.where(CFWJobFields.FK_ID_USER, userID)
 				.limit(pageSize)
@@ -192,13 +184,22 @@ public class CFWDBJob {
 			// Filter with fulltext search
 			// Enabled by CFWObject.enableFulltextSearch()
 			// on the Person Object
+			String wildcardString = "%"+filterquery+"%";
+			
 			return new CFWSQL(new CFWJob())
 					.queryCache()
+					.columnSubqueryTotalRecords()
 					.select()
-					.fulltextSearchLucene()
-						.custom(filterquery)
-						.build(pageSize, pageNumber)
 					.where(CFWJobFields.FK_ID_USER, userID)
+					.and()
+						.custom("(")
+							.like(CFWJobFields.JOB_NAME, wildcardString)
+							.or().like(CFWJobFields.DESCRIPTION, wildcardString)
+							.or().like(CFWJobFields.TASK_NAME, wildcardString)
+							.or().like(CFWJobFields.JSON_PROPERTIES, wildcardString)
+						.custom(")")
+					.limit(pageSize)
+					.offset(pageSize*(pageNumber-1))
 					.getAsJSON();
 		}
 				
@@ -221,14 +222,14 @@ public class CFWDBJob {
 		// Enabled by CFWObject.enableFulltextSearch()
 		// on the CFWJob Object
 
-		
+
 		if(Strings.isNullOrEmpty(searchString)) {
 				//-------------------------------------
 				// Unfiltered
 				return new CFWSQL(new CFWJob())
 					.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForAdmin-SearchEmpty")
-					.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
-					.columnSubquery("TOTAL_RECORDS", "COUNT(*) OVER()")
+					.columnSubquery("OWNER", CFW.DB.Users.USERNAME_SUBQUERY)
+					.columnSubqueryTotalRecords()
 					.select()
 					.limit(pageSize)
 					.offset(pageSize*(pageNumber-1))
@@ -240,17 +241,18 @@ public class CFWDBJob {
 				// Filter with fulltext search
 				// Enabled by CFWObject.enableFulltextSearch()
 				// on the Person Object
-				String ownerSubquery = "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER";
+				String wildcardString = "%"+searchString+"%";
+				
 				CFWSQL customFilter = new CFWSQL(new CFWJob())
 						.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForAdmin-SearchQuery")
-						.columnSubquery("OWNER", ownerSubquery)
-						.columnSubquery("TOTAL_RECORDS", "COUNT(*) OVER()")
+						.columnSubquery("OWNER", CFW.DB.Users.USERNAME_SUBQUERY)
+						.columnSubqueryTotalRecords()
 						.select()
-						.whereLike(CFWJobFields.JOB_NAME, "%"+searchString+"%")
-						.or().like(CFWJobFields.DESCRIPTION, "%"+searchString+"%")
-						.or().like(CFWJobFields.TASK_NAME, "%"+searchString+"%")
-						.or().like(CFWJobFields.JSON_PROPERTIES, "%"+searchString+"%")
-						.or().like("("+ownerSubquery+")", "%"+searchString+"%");
+						.whereLike(CFWJobFields.JOB_NAME, wildcardString)
+						.or().like(CFWJobFields.DESCRIPTION, wildcardString)
+						.or().like(CFWJobFields.TASK_NAME, wildcardString)
+						.or().like(CFWJobFields.JSON_PROPERTIES, wildcardString)
+						.or().custom("LOWER(("+CFW.DB.Users.USERNAME_SUBQUERY+")) LIKE LOWER(?)", wildcardString);
 				
 				
 				return customFilter.limit(pageSize)
@@ -263,10 +265,24 @@ public class CFWDBJob {
 	/*******************************************************
 	 * 
 	 *******************************************************/
+	public static boolean checkIsCurrentUserOwner(String jobID) {
+		
+		return 0 < new CFWSQL(new CFWJob())
+				.queryCache()
+				.selectCount()
+				.where(CFWJobFields.FK_ID_USER, CFW.Context.Request.getUser().id())
+				.and(CFWJobFields.PK_ID, jobID.trim())
+				.getCount();
+		
+	}
+	
+	/*******************************************************
+	 * 
+	 *******************************************************/
 	public static int getCount() {
 		
-		return new CFWJob()
-				.queryCache(CFWDBJob.class, "getCount")
+		return new CFWSQL(new CFWJob())
+				.queryCache()
 				.selectCount()
 				.getCount();
 		

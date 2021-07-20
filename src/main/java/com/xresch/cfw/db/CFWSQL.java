@@ -47,6 +47,7 @@ public class CFWSQL {
 	private boolean isQueryCached = false;
 	private boolean isNextSelectDistinct = false;
 	
+	private String ALIAS = " T";
 	private CFWObject object;
 	@SuppressWarnings("rawtypes")
 	private LinkedHashMap<String, CFWField> fields;
@@ -312,6 +313,16 @@ public class CFWSQL {
 	}
 	
 	/****************************************************************
+	 * Add a column subquery which will be added to the select statement.
+	 * This methd has to be called before you call the select*() method.
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public CFWSQL columnSubqueryTotalRecords() {
+		return this.columnSubquery("TOTAL_RECORDS", "COUNT(*) OVER()");
+	}
+	
+	
+	/****************************************************************
 	 * 
 	 ****************************************************************/
 	private String getColumnSubqueriesString() {
@@ -352,9 +363,9 @@ public class CFWSQL {
 			}
 			
 			if(!this.hasColumnSubqueries()) {
-				query.append(select).append(" T.* FROM "+object.getTableName()+" T ");
+				query.append(select).append(ALIAS+".* FROM "+object.getTableName()+ALIAS+" ");
 			}else {
-				query.append(select).append(" T.* "+this.getColumnSubqueriesString()+" FROM "+object.getTableName()+" T ");
+				query.append(select).append(ALIAS+".* "+this.getColumnSubqueriesString()+" FROM "+object.getTableName()+ALIAS+" ");
 			}
 		}
 		return this;
@@ -377,7 +388,7 @@ public class CFWSQL {
 			//---------------------------------
 			// Add Fields
 			for(Object fieldname : fieldnames) {
-					query.append(" T.").append(fieldname).append(",");
+					query.append(ALIAS+".").append(fieldname).append(",");
 			}
 			query.deleteCharAt(query.length()-1);
 			
@@ -387,7 +398,7 @@ public class CFWSQL {
 				query.append(this.getColumnSubqueriesString());
 			}
 			
-			query.append(" FROM "+object.getTableName()+" T ");
+			query.append(" FROM "+object.getTableName()+ALIAS+" ");
 		}
 		return this;
 	}
@@ -414,7 +425,7 @@ public class CFWSQL {
 			for(String name : fields.keySet()) {
 				//add if name is not in fieldnames
 				if(Arrays.binarySearch(fieldnames, name) < 0) {
-					query.append(" T.").append(name).append(",");
+					query.append(ALIAS+".").append(name).append(",");
 				}
 			}
 			query.deleteCharAt(query.length()-1);
@@ -425,7 +436,7 @@ public class CFWSQL {
 				query.append(this.getColumnSubqueriesString());
 			}
 			
-			query.append(" FROM "+object.getTableName()+" T ");
+			query.append(" FROM "+object.getTableName()+ALIAS+" ");
 		}
 		return this;
 	}
@@ -443,7 +454,7 @@ public class CFWSQL {
 				isNextSelectDistinct = false;
 			}
 			query.append(select);
-			query.append(" COUNT(*) FROM "+object.getTableName()+" T");
+			query.append(" COUNT(*) FROM "+object.getTableName()+ALIAS+" ");
 		}
 		return this;
 	}
@@ -719,7 +730,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL delete() {
 		if(!isQueryCached()) {		
-			query.append("DELETE FROM "+object.getTableName());
+			query.append("DELETE FROM "+object.getTableName()+ALIAS+" ");
 		}
 		return this;
 	}
@@ -730,7 +741,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL deleteTop(int count) {
 		if(!isQueryCached()) {		
-			query.append("DELETE TOP ? FROM "+object.getTableName());
+			query.append("DELETE TOP ? FROM "+object.getTableName()+ALIAS+" ");
 		}
 		values.add(count);
 		
@@ -765,9 +776,9 @@ public class CFWSQL {
 				return where().isNull(fieldname);
 			}
 			if(isCaseSensitive) {
-				query.append(" WHERE T.").append(fieldname).append(" = ?");	
+				query.append(" WHERE "+ALIAS+".").append(fieldname).append(" = ?");	
 			}else {
-				query.append(" WHERE LOWER(T.").append(fieldname).append(") = LOWER(?)");	
+				query.append(" WHERE LOWER("+ALIAS+".").append(fieldname).append(") = LOWER(?)");	
 			}
 		}
 		values.add(value);
@@ -821,7 +832,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL isNull(Object fieldname) {
 		if(!isQueryCached()) {
-			query.append(" ").append(fieldname).append(" IS NULL");
+			query.append(" ").append(ALIAS+"."+fieldname).append(" IS NULL");
 		}
 		return this;
 	}
@@ -832,7 +843,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL whereIn(Object fieldname, Object value) {
 		if(!isQueryCached()) {
-			query.append(" WHERE ").append(fieldname).append(" IN(?)");
+			query.append(" WHERE ").append(ALIAS+"."+fieldname).append(" IN(?)");
 		}
 		values.add(value);
 		return this;
@@ -902,7 +913,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL whereArrayContains(Object fieldname, Object value) {
 		if(!isQueryCached()) {
-			query.append(" WHERE ARRAY_CONTAINS(").append(fieldname).append(", ?) ");
+			query.append(" WHERE ARRAY_CONTAINS(").append(ALIAS+"."+fieldname).append(", ?) ");
 		}
 		
 		values.add(value);
@@ -946,9 +957,9 @@ public class CFWSQL {
 	public CFWSQL and(Object fieldname, Object value, boolean isCaseSensitive) {
 		if(!isQueryCached()) {
 			if(isCaseSensitive) {
-				query.append(" AND ").append(fieldname).append(" = ?");	
+				query.append(" AND ").append(ALIAS+"."+fieldname).append(" = ?");	
 			}else {
-				query.append(" AND LOWER(").append(fieldname).append(") = LOWER(?)");	
+				query.append(" AND LOWER(").append(ALIAS+"."+fieldname).append(") = LOWER(?)");	
 			}
 		}
 		values.add(value);
@@ -981,9 +992,9 @@ public class CFWSQL {
 	public CFWSQL or(Object fieldname, Object value, boolean isCaseSensitive) {
 		if(!isQueryCached()) {
 			if(isCaseSensitive) {
-				query.append(" OR ").append(fieldname).append(" = ?");	
+				query.append(" OR ").append(ALIAS+"."+fieldname).append(" = ?");	
 			}else {
-				query.append(" OR LOWER(").append(fieldname).append(") = LOWER(?)");	
+				query.append(" OR LOWER(").append(ALIAS+"."+fieldname).append(") = LOWER(?)");	
 			}
 		}
 		values.add(value);
@@ -996,22 +1007,41 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL is(Object fieldname, Object value) {
 		if(!isQueryCached()) {
-			query.append(" ").append(fieldname).append(" = ").append(" ? ");
+			query.append(" ").append(ALIAS+"."+fieldname).append(" = ").append(" ? ");
 		}
 		
 		values.add(value);
 		return this;
 	}
+	
+
+	
 	/****************************************************************
-	 * Adds a LIKE operation to the query.
+	 * Adds a LIKE operation to the query which is case sensitive,
+	 * except the column type is of IGNORECASE.
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public CFWSQL like(Object fieldname, Object value) {
+		return like(fieldname, value, true);
+	}
+	
+	/****************************************************************
+	 * Adds a LIKE operation to the query.
+	 * If the parameter isCaseSensitive is variable, the query cannot
+	 * be cached.
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public CFWSQL like(Object fieldname, Object value, boolean isCaseSensitive) {
 		if(!isQueryCached()) {
-			query.append(" ").append(fieldname).append(" LIKE ").append(" ? ");
+			if(isCaseSensitive) {
+				query.append(" ").append(ALIAS+"."+fieldname).append(" LIKE ").append(" ? ");
+			}else {
+				query.append(" LOWER(").append(ALIAS+"."+fieldname).append(") LIKE LOWER(").append("?) ");
+			}
 		}
-		
+
 		values.add(value);
+
 		return this;
 	}
 	

@@ -22,6 +22,7 @@ import com.google.gson.reflect.TypeToken;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -41,16 +42,16 @@ public class CFWJson {
 		//Type cfwobjectListType = new TypeToken<LinkedHashMap<CFWObject>>() {}.getType();
 		
 		gsonInstance = new GsonBuilder()
-				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
-				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWSchedule())
 				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
+				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
+				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
 				.serializeNulls()
 				.create();
 		
 		gsonInstancePretty = new GsonBuilder()
-				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
-				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWSchedule())
 				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
+				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
+				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
 				.serializeNulls()
 				.setPrettyPrinting()
 				.create();

@@ -162,7 +162,24 @@ public class ServletJobs extends HttpServlet
 	 *
 	 ******************************************************************/
 	private void deleteCFWJob(JSONResponse jsonResponse, String ID) {
-		CFWDBJob.deleteByID(Integer.parseInt(ID));
+		
+		// Do the check here only, allows to create jobs
+		// programmatically using CFWDBJobs, without the user
+		// needing rights for job feature
+		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)) {
+			CFW.DB.Jobs.deleteByID(Integer.parseInt(ID));
+			return;
+		}
+		
+		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)
+		&& CFW.DB.Jobs.checkIsCurrentUserOwner(ID)) {
+			
+			CFW.DB.Jobs.deleteByID(Integer.parseInt(ID));
+			return;
+		}else {
+			CFW.Messages.noPermission();
+		}
+		
 	}
 	
 	
@@ -234,7 +251,6 @@ public class ServletJobs extends HttpServlet
 		
 		//-----------------------------------
 		// Create Job Object
-		
 		CFWJob job = new CFWJob()
 						.foreignKeyOwner(CFW.Context.Request.getUser().id())
 						.taskName(taskname)
@@ -277,10 +293,21 @@ public class ServletJobs extends HttpServlet
 	 ******************************************************************/
 	private void createEditForm(JSONResponse json, String ID) {
 
-		CFWJob job = CFWDBJob.selectByID(Integer.parseInt(ID));
+		//-------------------------------------
+		// Check Permissions
+		if(!CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)
+		&& !(
+				CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)
+		        && CFW.DB.Jobs.checkIsCurrentUserOwner(ID)
+		    )
+		) {
+			CFW.Messages.noPermission();
+		}
 		
+	
 		//-----------------------------------
-		// Get Task and Properties
+		// Get Job, Task and Properties
+		CFWJob job = CFWDBJob.selectByID(Integer.parseInt(ID));
 		CFWJobTask task = CFW.Registry.Jobs.createTaskInstance(job.taskName());
 		
 		ArrayList<JobTaskProperty> propsArray = task.jobProperties();
@@ -294,6 +321,8 @@ public class ServletJobs extends HttpServlet
 		
 		if(job != null) {
 			
+			//-----------------------------------
+			// Create Form
 			CFWForm editCFWJobForm = job.toForm("cfwEditCFWJobForm"+ID, "Update CFWJob");
 			editCFWJobForm.setDescription(propDescription.toString());
 			
