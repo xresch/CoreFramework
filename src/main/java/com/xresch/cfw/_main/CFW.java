@@ -349,7 +349,12 @@ public class CFW {
 		}
 		
 	    //--------------------------------
-	    // Start Application
+	    // Start Scheduled Tasks
+    	initializeScheduledTasks(appToStart, features);
+    	
+	    //--------------------------------
+	    // Start Application: must be last
+    	// will be kept in a thread-loop
     	if(mode.contains(MODE_FULL) || mode.contains(MODE_APP) ) {
 			CFWApplicationExecutor executor = new CFWApplicationExecutor(appToStart);
 			
@@ -370,10 +375,6 @@ public class CFW {
 			}
 				    	
     	}
-    	
-	    //--------------------------------
-	    // Start Scheduled Tasks
-    	initializeScheduledTasks(appToStart, features);
 	}
 	
 	/***********************************************************************

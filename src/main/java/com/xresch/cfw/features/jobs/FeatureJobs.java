@@ -3,6 +3,7 @@ package com.xresch.cfw.features.jobs;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
+import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
@@ -60,12 +61,18 @@ public class FeatureJobs extends CFWAppFeature {
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
 		app.addAppServlet(ServletJobs.class,  "/jobs");
-		  
+		
 	}
 
 	@Override
 	public void startTasks() {
-
+		//----------------------------------------
+		// Load Jobs after all features loaded
+		System.out.println("JobFeature.startTask");
+		for(CFWObject object : CFW.DB.Jobs.getEnabledJobs()) {
+			System.out.println("Load");
+			CFW.Registry.Jobs.startJob((CFWJob)object);
+		}
 	}
 
 	@Override

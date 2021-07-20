@@ -11,7 +11,6 @@ ALWAYS ON
 
 Potential TODOs
 ===============
-- Features: Job Management
 - Features: Query
 - Features: Spaces
   - HTML Selector
@@ -95,13 +94,16 @@ Potential TODOs
 
 DONE
 ====
+
 ------- Current -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB
 - Cloudification: changed to H2 to mixed mode with auto server to make it working in cloud environments
 - Sessions: Added Session Store to persist sessions to database.
+- Sessions: Sessions loaded from DB added to session tracking
 - Session Overview: Adjusted last access time to show delta as hh:mm:ss instead of timestamp.
 - User Management Groups: Added Groups as a special kind of Roles. In sharing option(e.g. Dashboards) users cannot choose Roles anymore but Groups only. 
 - User Audit: Added audit mechanism to list the users permissions 
+- Feature: Added Job Management for allowing users to schedule tasks.
 
 ------- v3.0.1 -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI
@@ -128,7 +130,7 @@ DONE
 - Dashboard: Added notification on widget setting save
 - Dashboard: Made Advanced Edit Mode Standard
 - Dashboard: Widgets that have errors can now be edited.
-Dashboard: added dashboardID to autocomplete requests
+- Dashboard: added dashboardID to autocomplete requests
 - Dashboard List: Added Sharing Details View
 - Dashboard Widget Settings: Added Widget Name and splitted settings to tabs
 - Role Management: Fixed Nullpointer on changing roles while API-Token Session is active.

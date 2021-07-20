@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.jobs;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -118,16 +119,36 @@ public class CFWDBJob {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWJobFields.PK_ID.toString(), id);
 	}
 	
+	/*******************************************************
+	 * 
+	 *******************************************************/
 	public static CFWJob selectByID(int id ) {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWJobFields.PK_ID.toString(), id);
 	}
 	
+	/*******************************************************
+	 * 
+	 *******************************************************/
 	public static CFWJob selectFirstByName(String name) { 
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWJobFields.JOB_NAME.toString(), name);
 	}
 	
+	/*******************************************************
+	 * 
+	 *******************************************************/
+	public static ArrayList<CFWObject> getEnabledJobs() {
+		
+		return new CFWSQL(new CFWJob())
+				.queryCache()
+				.select()
+				.where(CFWJobFields.IS_ENABLED, true)
+				.getAsObjectList();
+		
+	}
 	
-	
+	/*******************************************************
+	 * 
+	 *******************************************************/
 	public static String getJobListAsJSON() {
 		
 		return new CFWSQL(new CFWJob())
@@ -137,11 +158,16 @@ public class CFWDBJob {
 		
 	}
 	
+	/*******************************************************
+	 * 
+	 *******************************************************/
 	public static String getPartialJobListAsJSONForUser(String pageSize, String pageNumber, String filterquery) {
 		return getPartialJobListAsJSONForUser(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery);
 	}
 	
-	
+	/*******************************************************
+	 * 
+	 *******************************************************/
 	public static String getPartialJobListAsJSONForUser(int pageSize, int pageNumber, String filterquery) {	
 		
 		//-------------------------------------
@@ -178,11 +204,16 @@ public class CFWDBJob {
 				
 	}
 	
+	/*******************************************************
+	 * 
+	 *******************************************************/
 	public static String getPartialJobListAsJSONForAdmin(String pageSize, String pageNumber, String filterquery) {
 		return getPartialJobListAsJSONForAdmin(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery);
 	}
 	
-	
+	/*******************************************************
+	 * 
+	 *******************************************************/
 	public static String getPartialJobListAsJSONForAdmin(int pageSize, int pageNumber, String searchString) {	
 		
 		//-------------------------------------
@@ -229,6 +260,9 @@ public class CFWDBJob {
 				
 	}
 	
+	/*******************************************************
+	 * 
+	 *******************************************************/
 	public static int getCount() {
 		
 		return new CFWJob()
