@@ -43,6 +43,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
+import com.xresch.cfw.features.usermgmt.SessionTrackableDataStore;
 import com.xresch.cfw.features.usermgmt.SessionTracker;
 import com.xresch.cfw.handler.AuthenticationHandler;
 import com.xresch.cfw.handler.HTTPSRedirectHandler;
@@ -264,13 +265,13 @@ public class CFWApplicationExecutor {
 	public SessionDataStore createJDBCSessionDataStore(SessionHandler sessionHandler) {
 		
 		// Configure a JDBCSessionDataStoreFactory.
-		JDBCSessionDataStoreFactory sessionDataStoreFactory = new JDBCSessionDataStoreFactory();
-		sessionDataStoreFactory.setGracePeriodSec(3600);
-		sessionDataStoreFactory.setSavePeriodSec(300);
+//		JDBCSessionDataStoreFactory sessionDataStoreFactory = new JDBCSessionDataStoreFactory();
+//		sessionDataStoreFactory.setGracePeriodSec(3600);
+//		sessionDataStoreFactory.setSavePeriodSec(300);
 		DatabaseAdaptor dbAdaptor = new DatabaseAdaptor();
 		dbAdaptor.setDatasource(CFW.DB.getDBInterface().getDatasource());
 		
-		sessionDataStoreFactory.setDatabaseAdaptor(dbAdaptor);
+//		sessionDataStoreFactory.setDatabaseAdaptor(dbAdaptor);
 		
 		JDBCSessionDataStore.SessionTableSchema schema = new JDBCSessionDataStore.SessionTableSchema();
 		schema.setTableName("CFW_JETTY_SESSIONS");
@@ -288,12 +289,18 @@ public class CFWApplicationExecutor {
 		schema.setMaxIntervalColumn("MAX_INTERVAL");
 		
 		// ... more configuration here
-		sessionDataStoreFactory.setSessionTableSchema(schema);
+		//sessionDataStoreFactory.setSessionTableSchema(schema);
 
 		// Add the SessionDataStoreFactory as a bean on the server.
-		server.addBean(sessionDataStoreFactory);
-		JDBCSessionDataStore sessionStore = (JDBCSessionDataStore)sessionDataStoreFactory.getSessionDataStore(sessionHandler);
-		
+		//server.addBean(sessionDataStoreFactory);
+		//JDBCSessionDataStore sessionStore = (JDBCSessionDataStore)sessionDataStoreFactory.getSessionDataStore(sessionHandler);
+		SessionTrackableDataStore sessionStore = new SessionTrackableDataStore(
+														new SessionTracker(server, sessionHandler), 
+														schema, 
+														dbAdaptor, 
+														3600, 
+														300);
+
 		return sessionStore;
 	}
 

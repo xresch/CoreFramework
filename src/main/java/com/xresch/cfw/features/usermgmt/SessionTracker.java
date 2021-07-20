@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSessionListener;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.session.Session;
 import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.util.component.LifeCycle;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -64,26 +65,39 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 
 	@Override
 	public void sessionCreated(HttpSessionEvent se) {
-		synchronized (sessionIDs) {
-			sessionIDs.add(se.getSession().getId());
-			sessionCounter.inc();
-		}
+		addSessionToTracking(se.getSession().getId());
 	}
+	
+
 
 	@Override
 	public void sessionDestroyed(HttpSessionEvent se) {
-		synchronized (sessionIDs) {
-			sessionIDs.remove(se.getSession().getId());
-			sessionCounter.dec();
-		}
-
+		removeSessionFromTracking(se.getSession().getId());
 	}
 
 	@Override
 	public void sessionIdChanged(HttpSessionEvent event, String oldSessionId) {
+		changeIDOfTrackedSession(oldSessionId, event.getSession().getId());
+	}
+	
+	public void removeSessionFromTracking(String id) {
 		synchronized (sessionIDs) {
-			sessionIDs.remove(oldSessionId);
-			sessionIDs.add(event.getSession().getId());
+			sessionIDs.remove(id);
+			sessionCounter.dec();
+		}
+	}
+	
+	public void addSessionToTracking(String id) {
+		synchronized (sessionIDs) {
+			sessionIDs.add(id);
+			sessionCounter.inc();
+		}
+	}
+	
+	public void changeIDOfTrackedSession(String oldID, String newID) {
+		synchronized (sessionIDs) {
+			sessionIDs.remove(oldID);
+			sessionIDs.add(newID);
 		}
 	}
 	
@@ -176,4 +190,5 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 		
 		return array.toString();
 	}
+
 }
