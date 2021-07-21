@@ -109,7 +109,7 @@ public class CFWRegistryJobs {
 			
 			Properties props = new Properties();
 			props.put("org.quartz.scheduler.instanceName", "CFWScheduler");
-			props.put("org.quartz.threadPool.threadCount", "10");
+			props.put("org.quartz.threadPool.threadCount", ""+CFW.Properties.JOB_THREADS);
 			props.put("org.quartz.jobStore.class", "org.quartz.simpl.RAMJobStore");
 			
 			try {

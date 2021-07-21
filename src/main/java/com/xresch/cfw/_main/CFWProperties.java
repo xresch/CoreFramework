@@ -83,7 +83,8 @@ public class CFWProperties {
 	//##########################################################################################
 	// PERFORMANCE
 	//##########################################################################################		
-		
+	/** number of threads used to run jobs(=max jobs that can run in parallel)  (Property=cfw_job_threads, Default=10) */
+	public static int JOB_THREADS = 10;
 	
 	//##########################################################################################
 	// AUTHENTICATION
@@ -222,7 +223,8 @@ public class CFWProperties {
 		
 		PROXY_ENABLED 					= CFWProperties.configAsBoolean("cfw_proxy_enabled", PROXY_ENABLED);
 		PROXY_PAC						= CFWProperties.configAsString("cfw_proxy_pac", PROXY_PAC);
-				
+		
+		JOB_THREADS 					= CFWProperties.configAsInt("cfw_job_threads", JOB_THREADS);
 		AUTHENTICATION_METHOD 			= CFWProperties.configAsString("authentication_method", AUTHENTICATION_METHOD);
 		AUTHENTICATION_ENABLED 			= CFWProperties.configAsBoolean("cfw_authentication_enabled", AUTHENTICATION_ENABLED);
 		AUTHENTICATION_SAML2_ENABLED 	= CFWProperties.configAsBoolean("cfw_authentication_saml2_enabled", AUTHENTICATION_SAML2_ENABLED);
