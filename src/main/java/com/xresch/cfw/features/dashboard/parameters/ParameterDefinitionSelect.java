@@ -28,7 +28,7 @@ public class ParameterDefinitionSelect extends ParameterDefinition {
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
 		CFWField settingsField = CFWField.newValueLabel("JSON_VALUE");
 
-		if(fieldValue !=null) {
+		if(fieldValue != null) {
 			settingsField.setValueConvert(fieldValue);
 		}
 

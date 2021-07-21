@@ -21,6 +21,7 @@ Potential TODOs
 - Jobs: Log Job Executions to DB, plus age out
 - Jobs: Change Properties to use CFWField Definitions
 - Jobs: Show Last Run
+- Jobs: Split JSON_SCHEDULE into 3 columns
 - Jobs: Handle Missfires
 - Jobs: Config Item for Number of Threads
 
@@ -102,6 +103,7 @@ DONE
 - User Management Groups: Added Groups as a special kind of Roles. In sharing option(e.g. Dashboards) users cannot choose Roles anymore but Groups only. 
 - User Audit: Added audit mechanism to list the users permissions 
 - Feature: Added Job Management for allowing users to schedule tasks.
+- Dashboard Parameters: Fixed sanitation issues with select parameters
 
 ------- v3.0.1 -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI

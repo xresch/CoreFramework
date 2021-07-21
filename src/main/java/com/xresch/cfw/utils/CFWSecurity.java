@@ -36,7 +36,7 @@ public class CFWSecurity {
 		{ "&", "&amp;" }, 
 		{ "<", "&lt;" }, 
 		{ ">", "&gt;" },
-		{ "\"", "&quot;" }, 
+		//{ "\"", "&quot;" },  allow quotes to not mess up JSON strings
 		{ "\'", "&#x27;" }, 
 		// { "/", "&#x2F;" }, allow forward slashes for URLs
 		};
