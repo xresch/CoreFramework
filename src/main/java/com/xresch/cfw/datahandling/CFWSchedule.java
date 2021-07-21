@@ -18,6 +18,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.SysoutInterceptor;
 import com.xresch.cfw.validation.AbstractValidatable;
 import com.xresch.cfw.validation.ScheduleValidator;
 
@@ -214,6 +215,7 @@ public class CFWSchedule {
 	 * Can return null
 	 ***************************************************************************************/
 	public Integer intervalMinutes() {
+		
 		if(interval.get(EVERYXMINUTES).isJsonNull()) return null;
 		if(Strings.isNullOrEmpty(interval.get(EVERYXMINUTES).getAsString()) ) return null;
 		
@@ -355,7 +357,7 @@ public class CFWSchedule {
 		Trigger trigger = createQuartzTriggerBuilder().build();
 
 	    Date nextDate = trigger.getFireTimeAfter(new Date());
-	    if(nextDate == null) return -1;
+	   if(nextDate == null) return -1;
 	    
         Date nextDate2 = trigger.getFireTimeAfter(nextDate);
         if(nextDate2 == null) return -1;
@@ -387,7 +389,8 @@ public class CFWSchedule {
 			case EVERY_X_MINUTES: 
 				SimpleScheduleBuilder simpleBuilder = SimpleScheduleBuilder
 					.simpleSchedule()
-					.withIntervalInMinutes(this.intervalMinutes());
+					.withIntervalInMinutes(this.intervalMinutes())
+					.repeatForever(); // getCalculatedIntervalSeconds() will not properly work if not set. Will be overridden by triggerBuilder.endAt()
 				
 				switch(this.endType()) {
 					case RUN_FOREVER: 		simpleBuilder.repeatForever(); break;
