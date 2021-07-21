@@ -198,9 +198,9 @@ function cfwjobs_printJobs(itemType){
 	// Visible Fields
 	var visiblefields;
 	if(itemType == 'adminjoblist'){
-		visiblefields = ['PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'JSON_SCHEDULE', 'JSON_PROPERTIES'];
+		visiblefields = ['PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES'];
 	}else{
-		visiblefields = ['PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'JSON_SCHEDULE', 'JSON_PROPERTIES'];
+		visiblefields = ['PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES'];
 	}
 
 	//-----------------------------------
@@ -242,14 +242,15 @@ function cfwjobs_printJobs(itemType){
 					storeid: itemType,
 					datainterface: {
 						url: CFWJOBS_URL,
-						item: itemType
+						item: itemType,
+						preprocess: function(data){ CFW.format.splitCFWSchedule(data, 'JSON_SCHEDULE') }
 					},
 					renderers: [
 						{	label: 'Table',
 							name: 'table',
 							renderdef: {
 								rendererSettings: {
-									table: {filterable: false},
+									table: { filterable: false },
 								},
 							}
 						},
@@ -320,6 +321,8 @@ function cfwjobs_initialDraw(){
 	//-----------------------------------
 	// Restore last tab
 	var tabToDisplay = CFW.cache.retrieveValueForPage("cfwjobs-lasttab", "myjoblist");
+	
+	$('#cfw-container').css('max-width', '90%');
 	
 	$('#tab-'+tabToDisplay).addClass('active');
 	

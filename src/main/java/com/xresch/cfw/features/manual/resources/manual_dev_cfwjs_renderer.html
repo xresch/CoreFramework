@@ -311,6 +311,8 @@ The following are the available parameters with default values and how to use th
 		filterqueryparam: 'filterquery',
 		//The name of the field containing the total number of rows
 		totalrowsfield: 'TOTAL_RECORDS',
+		//a function to pre-process the data: function(data), data will be an array of records
+		preprocess: null
 	},
 };
 var dataviewerDiv = CFW.render.getRenderer('dataviewer').render(rendererParams);</code>

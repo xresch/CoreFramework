@@ -1365,7 +1365,7 @@ function cfw_format_cfwSchedule(scheduleData){
 	else if( !CFW.utils.isNullOrEmpty(scheduleData.timeframe.enddatetime) ) { result += '<span><b>End:&nbsp</b>'+CFW.format.epochToTimestamp(scheduleData.timeframe.enddatetime) +'</span><br/>'; }
 
 	//values: EVERY_X_MINUTES, EVERY_X_DAYS, EVERY_WEEK, CRON_EXPRESSION
-	if (scheduleData.interval.intervaltype == "EVERY_X_MINUTES"){ result += '<span><b>Interval:&nbsp</b> Every '+scheduleData.interval.everyxminutes+' minutes(s)</span><br/>'; }
+	if (scheduleData.interval.intervaltype == "EVERY_X_MINUTES"){ result += '<span><b>Interval:&nbsp</b> Every '+scheduleData.interval.everyxminutes+' minute(s)</span><br/>'; }
 	else if (scheduleData.interval.intervaltype == "EVERY_X_DAYS"){ result += '<span><b>Interval:&nbsp</b> Every '+scheduleData.interval.everyxdays+' day(s)</span><br/>'; }
 	else if (scheduleData.interval.intervaltype == "CRON_EXPRESSION"){ result += '<span><b>Interval:&nbsp</b> Cron Expression "'+scheduleData.interval.cronexpression+'"</span><br/>'; }
 	else if (scheduleData.interval.intervaltype == "EVERY_WEEK"){ 
@@ -1384,6 +1384,58 @@ function cfw_format_cfwSchedule(scheduleData){
 	}
 	
   return result;
+}
+
+/**************************************************************************************
+ * Splits up CFWSchedule data and adds the following fields to each record:
+ * SCHEDULE_START, SCHEDULE_END, SCHEDULE_INTERVAL
+ * The above fields contain a formatted string representing the value defined by the schedule.
+ * This method is useful to display schedule definitions better in tables.
+ * 
+ * @param dataArray containing the records with a schedule field
+ * @param fieldname the name of the schedule field
+ *************************************************************************************/
+function cfw_format_splitCFWSchedule(dataArray, fieldname){
+	
+	for(let index in dataArray){
+
+		let currentRecord = dataArray[index];
+		let scheduleData = currentRecord[fieldname];
+		
+		if( scheduleData != null && scheduleData.timeframe != null){ 
+
+			if( !CFW.utils.isNullOrEmpty(scheduleData.timeframe.startdatetime) ) { currentRecord.SCHEDULE_START = CFW.format.epochToTimestamp(scheduleData.timeframe.startdatetime); }
+			
+			if (scheduleData.timeframe.endtype == "RUN_FOREVER"){ currentRecord.SCHEDULE_END = "Run Forever"; }
+			else if (scheduleData.timeframe.endtype == "EXECUTION_COUNT"){ currentRecord.SCHEDULE_END = "After "+scheduleData.timeframe.executioncount+" execution(s)"; }
+			else if( !CFW.utils.isNullOrEmpty(scheduleData.timeframe.enddatetime) ) { currentRecord.SCHEDULE_END = CFW.format.epochToTimestamp(scheduleData.timeframe.enddatetime); }
+
+			//values: EVERY_X_MINUTES, EVERY_X_DAYS, EVERY_WEEK, CRON_EXPRESSION
+			if (scheduleData.interval.intervaltype == "EVERY_X_MINUTES"){ currentRecord.SCHEDULE_INTERVAL = 'Every '+scheduleData.interval.everyxminutes+' minute(s)'; }
+			else if (scheduleData.interval.intervaltype == "EVERY_X_DAYS"){ currentRecord.SCHEDULE_INTERVAL = 'Every '+scheduleData.interval.everyxdays+' day(s)'; }
+			else if (scheduleData.interval.intervaltype == "CRON_EXPRESSION"){ currentRecord.SCHEDULE_INTERVAL = 'CRON: "'+scheduleData.interval.cronexpression+'"'; }
+			else if (scheduleData.interval.intervaltype == "EVERY_WEEK"){ 
+				
+				let days = "";
+				if(scheduleData.interval.everyweek.MON){ days += "MON/"; }
+				if(scheduleData.interval.everyweek.TUE){ days += "TUE/"; }
+				if(scheduleData.interval.everyweek.WED){ days += "WED/"; }
+				if(scheduleData.interval.everyweek.THU){ days += "THU/"; }
+				if(scheduleData.interval.everyweek.FRI){ days += "FRI/"; }
+				if(scheduleData.interval.everyweek.SAT){ days += "SAT/"; }
+				if(scheduleData.interval.everyweek.SUN){ days += "SON/"; }
+				
+				days = days.substring(0, days.length-1);
+				currentRecord.SCHEDULE_INTERVAL = 'Every week on '+days;
+			}
+			
+		}else{
+			currentRecord.SCHEDULE_START = "&nbsp;";
+			currentRecord.SCHEDULE_END = "&nbsp;";
+			currentRecord.SCHEDULE_INTERVAL = "&nbsp;";
+		}
+		
+	}
 }
 
 /**************************************************************************************
@@ -2978,6 +3030,7 @@ var CFW = {
 		millisToClock: 		cfw_format_millisToClock,
 		millisToDuration: 	cfw_format_millisToDuration,
 		cfwSchedule: 		cfw_format_cfwSchedule,
+		splitCFWSchedule: 	cfw_format_splitCFWSchedule,
 		objectToHTMLList: 	cfw_format_objectToHTMLList,
 		csvToObjectArray: 	cfw_format_csvToObjectArray,
 		fieldNameToLabel: 	cfw_format_fieldNameToLabel,

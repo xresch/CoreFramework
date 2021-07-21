@@ -1488,6 +1488,8 @@ function cfw_renderer_dataviewer(renderDef) {
 				customparams: {},
 				//The name of the field containing the total number of rows
 				totalrowsfield: 'TOTAL_RECORDS',
+				//a function to pre-process the data: function(data), data will be an array of records
+				preprocess: null
 			},
 	};
 	
@@ -1613,6 +1615,11 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 				let dataToRender = data.payload;
 				let totalRecords = (dataToRender.length > 0) ? dataToRender[0][settings.datainterface.totalrowsfield] : 0;
 				
+				//----------------------------------
+				// Call preprocess function
+				if(settings.datainterface.preprocess != null){
+					settings.datainterface.preprocess(dataToRender);
+				}
 				cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
 			}
 		}
