@@ -175,7 +175,7 @@ public class FileAssembly {
 		lastEtag = etag;
 		etag = 0;
 		for(FileDefinition fileDef : fileMap.values()) {
-			etag += fileDef.getHash();
+			etag += CFW.Random.STARTUP_RANDOM_INT + fileDef.getHash();
 		}
 				
 		assemblyName = inputName + "_" + etag + "." + filetype;

@@ -18,7 +18,6 @@ Potential TODOs
   - Selected Space in SessionData
   - CFWSQL partial query, select entries for user
 
-- Jobs: 1 minute schedule not working with end time
 - Jobs: Log Job Executions to DB, plus age out
 - Jobs: Change Properties to use CFWField Definitions
 - Jobs: Show Last Run
@@ -105,6 +104,8 @@ DONE
 - Feature: Added Job Management for allowing users to schedule tasks.
 - Dashboard Parameters: Fixed sanitation issues with select parameters
 - JSRenderer - Dataviewer: Added setting to pre-process data before rendering.
+- FileAssembly: Make sure to always generate new eTag and filename after a restart
+
 ------- v3.0.1 -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI
 - Added Key Value Pairs: CFWObject to easily store key/value pairs in the database
