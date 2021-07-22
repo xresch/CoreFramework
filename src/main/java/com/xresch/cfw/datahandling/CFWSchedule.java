@@ -18,7 +18,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.logging.SysoutInterceptor;
 import com.xresch.cfw.validation.AbstractValidatable;
 import com.xresch.cfw.validation.ScheduleValidator;
 
@@ -43,23 +42,8 @@ public class CFWSchedule {
 	private static final String CRONEXPRESSION 	= "cronexpression";
 	private static final String EVERYWEEK 		= "everyweek";
 	
-//	private static String jsonTemplate = 
-//			"{ "
-//			+"'timeframe': { "
-//				+"'"+STARTDATETIME+"': null, "
-//				+"'"+ENDTYPE+"': null, "
-//				+"'"+ENDDATETIME+"': null, "
-//				+"'"+EXECUTIONCOUNT+"': '0'"
-//			+"}, 'interval': { +"
-//				+"'"+INTERVALTYPE+"': null, "
-//				+"'"+EVERYXMINUTES+"': '0', "
-//				+"'"+EVERYXDAYS+"': '0',"
-//			+"   '"+EVERYWEEK+"': { 'weekcount': '0', 'MON': false, 'TUE': false,'WED': false, 'THU': false, 'FRI': false, 'SAT': false, 'SUN': false } },"
-//			+"   '"+CRONEXPRESSION+"': null"
-//			+"}"
-//			.replace("'", "\"");
-	
-	
+
+	private TriggerBuilder<Trigger> triggerBuilder = null;
 	
 	public enum EndType{
 		RUN_FOREVER,
@@ -110,13 +94,14 @@ public class CFWSchedule {
 					everyweek = interval.get("everyweek").getAsJsonObject();
 			
 		}
+		reset();
 	}
 	
 	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
 	private void setToDefaults() {
-		
+		reset();
 		scheduleData = new JsonObject();
 			timeframe 	= new JsonObject(); scheduleData.add("timeframe", timeframe);
 				timeframe.add(STARTDATETIME, null);
@@ -157,6 +142,7 @@ public class CFWSchedule {
 	 ***************************************************************************************/
 	public CFWSchedule timeframeStart(Date date) {
 		timeframe.addProperty(STARTDATETIME, date.getTime());
+		reset();
 		return this;
 	}
 	
@@ -174,6 +160,7 @@ public class CFWSchedule {
 	 ***************************************************************************************/
 	public CFWSchedule timeframeEndtime(Date date) {
 		timeframe.addProperty(ENDDATETIME, date.getTime());
+		reset();
 		return this;
 	}
 	
@@ -191,6 +178,7 @@ public class CFWSchedule {
 	 ***************************************************************************************/
 	public CFWSchedule timeframeExecutionCount(int value) {
 		timeframe.addProperty(EXECUTIONCOUNT, value);
+		reset();
 		return this;
 	}
 	
@@ -208,6 +196,7 @@ public class CFWSchedule {
 	 ***************************************************************************************/
 	public CFWSchedule intervalType(IntervalType value) {
 		interval.addProperty(INTERVALTYPE, value.toString());
+		reset();
 		return this;
 	}
 	
@@ -227,6 +216,7 @@ public class CFWSchedule {
 	 ***************************************************************************************/
 	public CFWSchedule intervalMinutes(int value) {
 		interval.addProperty(EVERYXMINUTES, value);
+		reset();
 		return this;
 	}
 	
@@ -245,6 +235,7 @@ public class CFWSchedule {
 	 ***************************************************************************************/
 	public CFWSchedule intervalDays(int value) {
 		interval.addProperty(EVERYXDAYS, value);
+		reset();
 		return this;
 	}
 		
@@ -262,6 +253,7 @@ public class CFWSchedule {
 	 ***************************************************************************************/
 	public CFWSchedule intervalWeekday(Weekday day, boolean value) {
 		everyweek.addProperty(day.toString(), value);
+		reset();
 		return this;
 	}
 	
@@ -296,6 +288,7 @@ public class CFWSchedule {
 	 ***************************************************************************************/
 	public CFWSchedule intervalCronExpression(String value) {
 		interval.addProperty(CRONEXPRESSION, value);
+		reset();
 		return this;
 	}
 	
@@ -313,6 +306,7 @@ public class CFWSchedule {
 	 ***************************************************************************************/
 	public CFWSchedule endType(EndType value) {
 		timeframe.addProperty(ENDTYPE, value.toString());
+		reset();
 		return this;
 	}
 	
@@ -367,6 +361,13 @@ public class CFWSchedule {
 
 	}
 	
+	/***************************************************************************************
+	 * Reset triggerBuilder on changes.
+	 ***************************************************************************************/
+	private void reset() {
+		triggerBuilder = null;
+	}
+	
 	
 	/***************************************************************************************
 	 * Returns a Quartz Trigger Builder based on this schedule.  
@@ -374,9 +375,13 @@ public class CFWSchedule {
 	@SuppressWarnings("unchecked")
 	public TriggerBuilder<Trigger> createQuartzTriggerBuilder() {
 		
-		TriggerBuilder<Trigger> triggerBuilder = TriggerBuilder.newTrigger()
-					//.withIdentity("myTrigger", "group1")
-					.startAt(new Date(this.timeframeStart()));
+		if(triggerBuilder != null) {
+			return triggerBuilder;
+		}
+		
+		triggerBuilder = TriggerBuilder.newTrigger()
+				//.withIdentity("myTrigger", "group1")
+				.startAt(new Date(this.timeframeStart()));
 		
 		if(this.endType().equals(EndType.END_DATE_TIME)) {
 			triggerBuilder.endAt(new Date(this.timeframeEndtime()));
@@ -390,7 +395,8 @@ public class CFWSchedule {
 				SimpleScheduleBuilder simpleBuilder = SimpleScheduleBuilder
 					.simpleSchedule()
 					.withIntervalInMinutes(this.intervalMinutes())
-					.repeatForever(); // getCalculatedIntervalSeconds() will not properly work if not set. Will be overridden by triggerBuilder.endAt()
+					.repeatForever() // getCalculatedIntervalSeconds() will not properly work if not set. Will be overridden by triggerBuilder.endAt()
+					.withMisfireHandlingInstructionNextWithRemainingCount();
 				
 				switch(this.endType()) {
 					case RUN_FOREVER: 		simpleBuilder.repeatForever(); break;
@@ -423,6 +429,7 @@ public class CFWSchedule {
 					.dailyTimeIntervalSchedule()
 					.withIntervalInHours(24)
 					.onDaysOfTheWeek(this.getWeekdays());
+				
 				switch(this.endType()) {
 					case RUN_FOREVER: 		/*do nothing*/ break;
 					case EXECUTION_COUNT: 	weeklyBuilder.withRepeatCount(this.timeframeExecutionCount());	break;

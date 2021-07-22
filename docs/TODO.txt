@@ -21,7 +21,7 @@ Potential TODOs
 - Jobs: Log Job Executions to DB, plus age out
 - Jobs: Change Properties to use CFWField Definitions
 - Jobs: Show Last Run
-- Jobs: Handle Missfires (add options to CFWJob)
+- Jobs: Define max number of instances.
 
 - Dashboard: Share with users that are not logged in
 - Dashboard: Check Settings - Provide a bulk action to show all settings of all widgets as an overview. 
@@ -65,10 +65,8 @@ Potential TODOs
 
 - Manual: Multi language pages
 
-- CFW: Roles: Add true/false option to make Role detectable by regular user.
 - CFW: CFWApplicationExecutor - ForwardedRequestCustomizer make it work with reverse proxy
 - CFW: Create javascript sanity check page
-- CFW: Permission Check Page
 - CFW: CPU Sampling, add Charts
 - CFW: Cleanup tasks for TageSelector references 
 - CFW: Locales - Handle Global Locales separately

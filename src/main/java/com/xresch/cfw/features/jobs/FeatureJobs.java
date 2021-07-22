@@ -69,7 +69,7 @@ public class FeatureJobs extends CFWAppFeature {
 		//----------------------------------------
 		// Load Jobs after all features loaded
 		for(CFWObject object : CFW.DB.Jobs.getEnabledJobs()) {
-			CFW.Registry.Jobs.startJob((CFWJob)object);
+			CFW.Registry.Jobs.addJob((CFWJob)object);
 		}
 	}
 

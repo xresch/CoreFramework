@@ -1,19 +1,17 @@
 package com.xresch.cfw.features.jobs;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 
 import com.xresch.cfw._main.CFW;
@@ -108,10 +106,23 @@ public class CFWRegistryJobs {
 			StdSchedulerFactory factory = new StdSchedulerFactory();
 			
 			Properties props = new Properties();
+			
+			//--------------------------
+			// General Properties
 			props.put("org.quartz.scheduler.instanceName", "CFWScheduler");
 			props.put("org.quartz.threadPool.threadCount", ""+CFW.Properties.JOB_THREADS);
-			props.put("org.quartz.jobStore.class", "org.quartz.simpl.RAMJobStore");
-			
+
+			//--------------------------
+			// JDBC Store Properties
+			String datasourceName = "cfwDB";
+
+			props.put("org.quartz.jobStore.class", "org.quartz.impl.jdbcjobstore.JobStoreTX");
+			props.put("org.quartz.jobStore.driverDelegateClass", "org.quartz.impl.jdbcjobstore.StdJDBCDelegate"); // For H2
+			props.put("org.quartz.jobStore.dataSource", datasourceName);
+			props.put("org.quartz.jobStore.tablePrefix", "CFW_QUARTZ_");
+
+			props.put("org.quartz.dataSource."+datasourceName+".connectionProvider.class", "com.xresch.cfw.features.jobs.QuartzConnectionProvider");
+
 			try {
 				factory.initialize(props);
 				scheduler = factory.getScheduler();
@@ -130,8 +141,12 @@ public class CFWRegistryJobs {
 	 * Start the Job if:
 	 *   - it is enabled
 	 *   - the schedule is valid
+	 *   - the trigger has remaining executions
+	 *   
+	 * @return false if exception occurs, false otherwise.
+	 * 
 	 ***********************************************************************/
-	protected static boolean startJob(CFWJob job)  {
+	protected static boolean addJob(CFWJob job)  {
 		
 		if(job.isEnabled()) {
 			
@@ -142,13 +157,29 @@ public class CFWRegistryJobs {
 				//-----------------------------------
 				// Create JobDetail and Trigger
 				JobDetail jobDetail = job.createJobDetail();
-				Trigger trigger = job.createJobTrigger();
+				Trigger trigger = job.createJobTrigger(jobDetail);
+				
+				//-----------------------------------
+				// Ignore if no future executions 
+				if(trigger.getFireTimeAfter(new Date()) == null) {
+					return true;
+				}
 				
 				//-----------------------------------
 				// Schedule Job
 				
 				try {
-					getScheduler().scheduleJob(jobDetail, trigger);
+					//getScheduler().scheduleJob(jobDetail, trigger);
+					Scheduler scheduler = getScheduler();
+					if( !scheduler.checkExists(jobDetail.getKey())) {
+						scheduler.scheduleJob(jobDetail, trigger);
+					}else {
+						scheduler.addJob(jobDetail, true, true);
+						if(scheduler.getTrigger(trigger.getKey()) == null) {
+							scheduler.scheduleJob(trigger);
+						}
+					}
+					
 				} catch (SchedulerException e) {
 					new CFWLog(logger).severe("Error occured while scheduling Quartz Job: "+e.getMessage(), e);
 					return false;
@@ -174,7 +205,7 @@ public class CFWRegistryJobs {
 			if( !scheduler.checkExists(key) ){
 				//------------------------------
 				// Job was enabled
-				return startJob(job);
+				return addJob(job);
 				
 			}else {
 
@@ -182,13 +213,13 @@ public class CFWRegistryJobs {
 				if(job.isEnabled()) {
 					//-----------------------------------
 					// Restart Job
-					stopJob(job);
-					startJob(job);
+					removeJob(job);
+					addJob(job);
 					
 				}else {
 					//--------------------------
 					// Job was disabled, remove
-					stopJob(job);
+					removeJob(job);
 				}
 			}
 			
@@ -205,7 +236,7 @@ public class CFWRegistryJobs {
 	 *   - it is enabled
 	 *   - the schedule is valid
 	 ***********************************************************************/
-	protected static boolean stopJob(CFWJob job)  {
+	protected static boolean removeJob(CFWJob job)  {
 		
 		try {
 			Scheduler scheduler = getScheduler();

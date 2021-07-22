@@ -54,7 +54,7 @@ public class CFWDBJob {
 		Integer id = CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);
 		if (id != null) {
 			CFWJob job = CFW.DB.Jobs.selectByID(id);
-			CFW.Registry.Jobs.startJob(job);
+			CFW.Registry.Jobs.addJob(job);
 			return true;
 		}
 		
@@ -83,7 +83,7 @@ public class CFWDBJob {
 		CFWJob job = CFW.DB.Jobs.selectByID(id);
 		
 		if (CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, CFWJobFields.PK_ID.toString(), id) ) {
-			CFW.Registry.Jobs.stopJob(job);
+			CFW.Registry.Jobs.removeJob(job);
 			return true;
 		}
 		

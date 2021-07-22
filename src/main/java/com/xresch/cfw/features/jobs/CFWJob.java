@@ -189,6 +189,7 @@ public class CFWJob extends CFWObject {
 		return  JobBuilder
 					.newJob(taskClazz)
 					.withIdentity(this.createJobKey())
+					.requestRecovery(true)
 					.build();
 
 	}
@@ -196,17 +197,18 @@ public class CFWJob extends CFWObject {
 	/**************************************************************************************
 	 * Creates a Quartz Job Trigger for this Job.
 	 **************************************************************************************/
-	protected Trigger createJobTrigger() {
+	protected Trigger createJobTrigger(JobDetail jobDetail) {
 
 		//-----------------------------------
 		// Create Trigger
 		TriggerBuilder<Trigger> triggerBuilder = this.schedule().createQuartzTriggerBuilder();
-						
+		
 		for(Entry<String, String> entry : this.properties().entrySet()){
 			triggerBuilder.usingJobData(entry.getKey(), entry.getValue());
 		}
 		
 		return triggerBuilder
+				.forJob(jobDetail)
 				.withIdentity("trigger(jobid:"+this.id()+")")
 				.build();
 		
