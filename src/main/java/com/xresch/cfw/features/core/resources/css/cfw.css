@@ -205,6 +205,21 @@ h3, h4 {
  * Bootstrap Submenus and Menu Enhancements
  *************************************************************************/
 
+@media (min-width: 768px){
+	.dropdown-submenu .dropdown-menu {
+	      top: 0;
+		  left: 100%;
+	      position: relative;
+	}
+}
+
+@media (max-width: 765px){
+	.dropdown-submenu .dropdown-menu {
+	  	  top: 0;
+		  left: 5%;
+	      position: relative;
+	}
+}
 .dropdown-submenu {
   position: relative;
 }
@@ -214,12 +229,6 @@ h3, h4 {
   position: absolute;
   right: 6px;
   top: .8em;
-}
-
-.dropdown-submenu .dropdown-menu {
-  top: 0;
-  left: 100%;
-  position: absolute;
 }
 
 .dropdown-menu .cfw-menuitem-label {
