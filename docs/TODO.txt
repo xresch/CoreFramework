@@ -18,9 +18,7 @@ Potential TODOs
   - Selected Space in SessionData
   - CFWSQL partial query, select entries for user
 
-- IMPORTANT: Fix menu level 3 when collapsed
 - Jobs: Log Job Executions to DB, plus age out
-- Jobs: Change Properties to use CFWField Definitions
 - Jobs: Show Last Run
 - Jobs: Define max number of instances.
 
@@ -76,7 +74,6 @@ Potential TODOs
 - CFW: API - Enable Post Body Inputs
 - CFW: Improve CFWHTTP.getClientIP()
    
-
 - CFWField: Add initFormField(method)
 - CFWField: Form errors add to field.
 - CFWField: FormField.SINGLECOMPLETE

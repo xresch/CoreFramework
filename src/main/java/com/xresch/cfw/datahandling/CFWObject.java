@@ -174,6 +174,34 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
+	public String toJSONString(String... fieldnames) {
+		
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append("{");
+		for(String fieldname : fieldnames) {
+			
+			CFWField<?> field = fields.get(fieldname);
+			builder
+				.append("\"")
+				.append(field.getName())
+				.append("\": \"")
+				.append(field.getValue())
+				.append("\", ");
+		}
+		
+		if(builder.length() > 1) {
+			builder.deleteCharAt(builder.length()-1);
+			builder.deleteCharAt(builder.length()-1);
+		}
+		builder.append("}");
+
+		return builder.toString();
+	}
+		
+	/****************************************************************
+	 * 
+	 ****************************************************************/
 	public CFWObject addField(CFWField<?> field) {
 		
 		if(!fields.containsKey(field.getName())) {
@@ -200,13 +228,14 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public CFWObject addAllFields(LinkedHashMap<String,CFWField<?>> fields) {
+	@SuppressWarnings("rawtypes")
+	public CFWObject addAllFields(LinkedHashMap<String,CFWField> fields) {
 		for(CFWField<?> field : fields.values()) {
 			this.addField(field);
 		}
 		return this;
 	}
-	
+		
 	/****************************************************************
 	 * 
 	 ****************************************************************/
@@ -400,34 +429,7 @@ public class CFWObject {
 
 		return builder.toString();
 	}
-	
-	/****************************************************************
-	 * 
-	 ****************************************************************/
-	public String dumpFieldsAsJSON(String... fieldnames) {
 		
-		StringBuilder builder = new StringBuilder();
-		
-		builder.append("{");
-		for(String fieldname : fieldnames) {
-			CFWField<?> field = fields.get(fieldname);
-			builder
-				.append("\"")
-				.append(field.getName())
-				.append("\": \"")
-				.append(field.getValue())
-				.append("\", ");
-		}
-		
-		if(builder.length() > 1) {
-			builder.deleteCharAt(builder.length()-1);
-			builder.deleteCharAt(builder.length()-1);
-		}
-		builder.append("}");
-
-		return builder.toString();
-	}
-	
 	/****************************************************************
 	 * 
 	 ****************************************************************/

@@ -84,8 +84,9 @@ public class WidgetSettingsFactory {
 	 * 
 	 * @return
 	 ************************************************************************************/
-	public static LinkedHashMap<String,CFWField<?>> createTilesSettingsFields(){
-		LinkedHashMap<String,CFWField<?>> fieldsMap = new LinkedHashMap<String,CFWField<?>>();
+	@SuppressWarnings("rawtypes")
+	public static LinkedHashMap<String,CFWField> createTilesSettingsFields(){
+		LinkedHashMap<String,CFWField> fieldsMap = new LinkedHashMap<>();
 		
 		fieldsMap.put("sizefactor", CFWField.newString(FormFieldType.SELECT, "sizefactor")
 				.setLabel("{!cfw_widget_tilessizefactor!}")
@@ -114,8 +115,9 @@ public class WidgetSettingsFactory {
 	 * 
 	 * @return
 	 ************************************************************************************/
-	public static LinkedHashMap<String,CFWField<?>> createThresholdFields(){
-		LinkedHashMap<String,CFWField<?>> fieldsMap = new LinkedHashMap<String,CFWField<?>>();
+	@SuppressWarnings("rawtypes")
+	public static LinkedHashMap<String,CFWField> createThresholdFields(){
+		LinkedHashMap<String,CFWField> fieldsMap = new LinkedHashMap<>();
 		
 		fieldsMap.put("threshold_excellent", CFWField.newFloat(FormFieldType.NUMBER, "threshold_excellent")
 					.setLabel("{!cfw_widget_thresholdexcellent!}")
@@ -152,9 +154,10 @@ public class WidgetSettingsFactory {
 	 * 
 	 * @return
 	 ************************************************************************************/
-	public static LinkedHashMap<String,CFWField<?>> createDefaultChartFields(){
+	@SuppressWarnings("rawtypes")
+	public static LinkedHashMap<String,CFWField> createDefaultChartFields(){
 		
-		LinkedHashMap<String,CFWField<?>> fieldsMap = new LinkedHashMap<String,CFWField<?>>();
+		LinkedHashMap<String,CFWField> fieldsMap = new LinkedHashMap<>();
 		
 		//Needed to clone because dashboard parameters might mess up the hashmap.
 		LinkedHashMap<String, String> chartOptions = new LinkedHashMap<>();

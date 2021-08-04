@@ -5,9 +5,9 @@ import com.xresch.cfw.utils.Ternary;
 
 /**************************************************************************************************************
  * The StringLengthArgumentValidator will validate if the value of the ArgumentDefinition
- * has a certain lenght in a minimum and maximum range.
+ * has a certain length in a minimum and maximum range(set -1 for unlimited).
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2021 
  * @license MIT-License
  **************************************************************************************************************/
 public class LengthValidator extends AbstractValidator {

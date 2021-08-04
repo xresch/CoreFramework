@@ -86,7 +86,7 @@ public class CFWSchedule {
 			return;
 		}
 		
-		JsonElement element = CFW.JSON.jsonStringToJsonElement(jsonString);
+		JsonElement element = CFW.JSON.stringToJsonElement(jsonString);
 		if(!element.isJsonNull() && element.isJsonObject()) {
 			scheduleData = element.getAsJsonObject();
 				timeframe 	= scheduleData.get("timeframe").getAsJsonObject();

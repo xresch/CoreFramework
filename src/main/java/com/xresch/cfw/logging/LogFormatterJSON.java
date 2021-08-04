@@ -20,7 +20,13 @@ public class LogFormatterJSON extends Formatter {
 	public String format(LogRecord rec) {
 		
 		StringBuilder buf = new StringBuilder(1000);
-		LogMessage log = (LogMessage)rec.getParameters()[0];
+		LogMessage log;
+		if(rec.getParameters() != null) {
+			log = (LogMessage)rec.getParameters()[0];
+		}else {
+			log = new LogMessage(new CFWLog(null).minimal(true));
+		}
+		
 				
 		buf.append("{");
 

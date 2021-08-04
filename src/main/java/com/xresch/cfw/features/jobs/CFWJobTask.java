@@ -1,12 +1,12 @@
 package com.xresch.cfw.features.jobs;
 
-import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
 
 public abstract class CFWJobTask implements Job {
@@ -29,7 +29,7 @@ public abstract class CFWJobTask implements Job {
 	/*************************************************************************
 	 * Return a list of CFWJob Properties with default values.
 	 *************************************************************************/
-	public abstract ArrayList<JobTaskProperty> jobProperties();
+	public abstract CFWObject jobProperties();
 	
 	/*************************************************************************
 	 * Return the minimum schedule interval required for this tasks.
@@ -54,6 +54,8 @@ public abstract class CFWJobTask implements Job {
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 
+		//---------------------------------------
+		// Start Log
 		CFWLog log = new CFWLog(logger)
 			.contextless(true)
 			.custom("jobid", context.getJobDetail().getKey().getName())
@@ -61,7 +63,10 @@ public abstract class CFWJobTask implements Job {
 			.start();
 		
 		try{
+			//---------------------------------------
+			// Execute Task Implementation
 			executeTask(context);
+			
 		}catch(JobExecutionException e) {
 			new CFWLog(logger)
 				.silent(true)
@@ -72,56 +77,10 @@ public abstract class CFWJobTask implements Job {
 			
 			throw e;
 		}finally {
+			//---------------------------------------
+			// Write duration
 			log.end();
 		}
 	}
 	
-	
-	/*************************************************************************
-	 *************************************************************************
-	 * INNER CLASS
-	 *************************************************************************
-	 *************************************************************************/
-	public class JobTaskProperty{
-		
-		private String key;
-		private String value;
-		private String description;
-		
-		public JobTaskProperty(String key, String value, String description) {
-			this.key = key;
-			this.value = value;
-			this.description = description;
-		}
-
-		public String getKey() {
-			return key;
-		}
-
-		public JobTaskProperty setKey(String key) {
-			this.key = key;
-			return this;
-		}
-
-		public String getValue() {
-			return value;
-		}
-
-		public JobTaskProperty setValue(String value) {
-			this.value = value;
-			return this;
-		}
-
-		public String getDescription() {
-			return description;
-		}
-
-		public JobTaskProperty setDescription(String description) {
-			this.description = description;
-			return this;
-		}
-		
-		
-	}
-
 }

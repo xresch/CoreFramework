@@ -332,7 +332,7 @@ public class CFWDBDashboard {
 
 		//-----------------------------
 		// Resolve JSON Array
-		JsonElement element = CFW.JSON.jsonStringToJsonElement(jsonArray);
+		JsonElement element = CFW.JSON.stringToJsonElement(jsonArray);
 		JsonArray array = null;
 		
 		if(element.isJsonArray()) {

@@ -10,6 +10,8 @@ import org.quartz.JobKey;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -80,8 +82,8 @@ public class CFWJob extends CFWObject {
 			.setDescription("The name of the task to be executed.")
 			.addValidator(new LengthValidator(3, 1024));
 	
-	private CFWField<LinkedHashMap<String, String>> properties = CFWField.newValueLabel(CFWJobFields.JSON_PROPERTIES)
-			.setLabel("Properties")
+	/** Will only be used for storage. In forms will be changed to the custom fields defined by classes extending CFWJobTasks. */
+	private CFWField<String> properties = CFWField.newString(FormFieldType.NONE, CFWJobFields.JSON_PROPERTIES)
 			.setDescription("The properties of the job.");
 	
 	private CFWField<CFWSchedule> schedule = 
@@ -203,8 +205,13 @@ public class CFWJob extends CFWObject {
 		// Create Trigger
 		TriggerBuilder<Trigger> triggerBuilder = this.schedule().createQuartzTriggerBuilder();
 		
-		for(Entry<String, String> entry : this.properties().entrySet()){
-			triggerBuilder.usingJobData(entry.getKey(), entry.getValue());
+		LinkedHashMap<String, String> map = this.propertiesAsMap();
+				
+		if(map != null) {
+			for(Entry<String, String> entry : map.entrySet()){
+				triggerBuilder.usingJobData(entry.getKey(), entry.getValue());
+				triggerBuilder.usingJobData("test", "test");
+			}
 		}
 		
 		return triggerBuilder
@@ -270,12 +277,25 @@ public class CFWJob extends CFWObject {
 		return this;
 	}
 	
-	public LinkedHashMap<String, String> properties() {
+	/***********************************************
+	 * Returns a JSON String.
+	 ***********************************************/
+	public String properties() {
 		return properties.getValue();
 	}
 	
-	public CFWJob properties(LinkedHashMap<String, String> value) {
-		this.properties.setValue(value);
+	/***********************************************
+	 * Returns a JSON Object or null.
+	 ***********************************************/
+	public LinkedHashMap<String, String> propertiesAsMap() {
+		
+		JsonObject object = CFW.JSON.stringToJsonObject(this.properties());
+		return CFW.JSON.objectToMap(object);
+	}
+	
+	
+	public CFWJob properties(CFWObject propertiesObject) {
+		this.properties.setValue(propertiesObject.toJSON());
 		return this;
 	}
 	

@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -18,6 +19,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
@@ -195,7 +197,7 @@ public class CFWJson {
 	/*************************************************************************************
 	 * 
 	 *************************************************************************************/
-	public static JsonElement jsonStringToJsonElement(String jsonString) {
+	public static JsonElement stringToJsonElement(String jsonString) {
 		if(jsonString == null || jsonString.isEmpty()) {
 			jsonString = "{}";
 		}
@@ -208,6 +210,70 @@ public class CFWJson {
 		}
 		return result;
 	}
+		
+	/*************************************************************************************
+	 * 
+	 *************************************************************************************/
+	public static JsonObject stringToJsonObject(String jsonString) {
+		if(jsonString == null || jsonString.isEmpty()) {
+			jsonString = "{}";
+		}
+		JsonObject result  = new JsonObject();
+		try {
+			result = gsonInstance.fromJson(jsonString, JsonObject.class);
+		}catch(Exception e) {
+			new CFWLog(logger)
+			.severe("Error parsing jsonString: "+jsonString, e);
+		}
+		return result;
+	}
+	
+	/*************************************************************************************
+	 * Converts every member of the JsonObject into a record in the map
+	 *************************************************************************************/
+	public static LinkedHashMap<String,String> objectToMap(JsonObject object) {
+		
+		LinkedHashMap<String,String> map = new  LinkedHashMap<>();
+		
+		if(object != null) {
+			for(Entry<String, JsonElement> entry : object.entrySet()) {
+				
+				map.put(entry.getKey(), CFW.JSON.elementValueAsString(entry.getValue()));
+			}
+			
+		}
+		return map;
+	}
+	
+	/*************************************************************************************
+	 * Gets the Element as a string without these double quotes, or null.
+	 *************************************************************************************/
+	public static String elementValueAsString(JsonElement element) {
+		
+		if(element.isJsonNull()) {
+			return null;
+		}
+		
+		if(element.isJsonPrimitive()) {
+			JsonPrimitive primitive = element.getAsJsonPrimitive();
+			
+				 if(primitive.isBoolean()) {	return primitive.getAsBoolean()+""; }
+			else if(primitive.isNumber()) {		return primitive.getAsNumber()+""; }
+			else  							{	return primitive.getAsString(); }
+			
+		}
+		
+		if(element.isJsonObject()) {
+			return element.getAsJsonObject().toString();
+		}
+		
+		if(element.isJsonArray()) {
+			return element.getAsJsonArray().toString();
+		}
+		
+		return null;
+	}
+	
 	
 	/*************************************************************************************
 	 * 
@@ -249,7 +315,7 @@ public class CFWJson {
 				value = "";
 			}
 			if(value instanceof String) {
-				JsonElement asElement = CFW.JSON.jsonStringToJsonElement(value.toString());
+				JsonElement asElement = CFW.JSON.stringToJsonElement(value.toString());
 				target.add(name, asElement);
 			}else {
 				target.add(name, gsonInstance.toJsonTree(value));

@@ -1154,7 +1154,16 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	/******************************************************************************************************
-	 * Returns the type of this fields.
+	 * Changes the type of this field.
+	 * Useful to change to FormFieldType.NONE.
+	 ******************************************************************************************************/
+	public CFWField<T> fieldType(FormFieldType type) {
+		this.type = type;
+		return this;
+	}
+	
+	/******************************************************************************************************
+	 * Returns the form type of this field.
 	 ******************************************************************************************************/
 	public FormFieldType fieldType() {
 		return this.type;

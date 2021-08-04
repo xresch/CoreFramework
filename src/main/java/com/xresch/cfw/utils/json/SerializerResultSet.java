@@ -36,7 +36,7 @@ public class SerializerResultSet implements JsonSerializer<ResultSet> {
 					String name = metadata.getColumnLabel(i);
 					
 					if(name.toUpperCase().startsWith("JSON")) {
-						JsonElement asElement = CFW.JSON.jsonStringToJsonElement(resultSet.getString(i));
+						JsonElement asElement = CFW.JSON.stringToJsonElement(resultSet.getString(i));
 						row.add(name, asElement);
 					}else {
 						Object value = resultSet.getObject(i);

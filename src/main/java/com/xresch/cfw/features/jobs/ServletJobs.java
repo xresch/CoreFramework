@@ -1,8 +1,6 @@
 package com.xresch.cfw.features.jobs;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,7 +12,6 @@ import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.features.jobs.CFWJobTask.JobTaskProperty;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -240,42 +237,40 @@ public class ServletJobs extends HttpServlet
 		// Get Task and Properties
 		CFWJobTask task = CFW.Registry.Jobs.createTaskInstance(taskname);
 		
-		ArrayList<JobTaskProperty> propsArray = task.jobProperties();
-		LinkedHashMap<String, String> propsMap = new LinkedHashMap<>();
-		StringBuilder propDescription = new StringBuilder("<p>The following properties are available for the selected task:</p> <ul> ");
-		for(JobTaskProperty property : propsArray) {
-			propsMap.put(property.getKey(), property.getValue());
-			propDescription.append("<li><b>"+property.getKey()+":&nbsp;</b>"+property.getDescription()+"</li>");
-		}
-		propDescription.append("</ul>");
+		CFWObject propertyFields = task.jobProperties();
 		
 		//-----------------------------------
 		// Create Job Object
 		CFWJob job = new CFWJob()
 						.foreignKeyOwner(CFW.Context.Request.getUser().id())
-						.taskName(taskname)
-						.properties(propsMap);
+						.taskName(taskname);
 
+		job.addAllFields(propertyFields.getFields());
+		
 		//-----------------------------------
 		// Create Form	
 		CFWForm createCFWJobForm = job.toForm("cfwCreateCFWJobForm"+CFWRandom.randomStringAlphaNumerical(8), "Create Job");
-		createCFWJobForm.setDescription(propDescription.toString());
 		
 		createCFWJobForm.setFormHandler(new CFWFormHandler() {
 			
 			@Override
 			public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+				//-------------------------------------
+				// Create new CFWJob as origin contains
+				// additional fields.
+				CFWJob jobToCreate = new CFWJob();
 				
-				if(origin.mapRequestParameters(request)) {
+				if( jobToCreate.mapRequestParameters(request)
+				 && propertyFields.mapRequestParameters(request)) {
 					
-					CFWJob jobToUpdate = (CFWJob)origin;
-					int scheduleIntervalSec = jobToUpdate.schedule().getCalculatedIntervalSeconds();
+					jobToCreate.properties(propertyFields);
+					int scheduleIntervalSec = jobToCreate.schedule().getCalculatedIntervalSeconds();
 					
 					if( !isMinimumIntervalValid(scheduleIntervalSec, task.minIntervalSeconds())) {
 						return;
 					}
 					
-					if(CFWDBJob.create((CFWJob)origin)) {
+					if(CFWDBJob.create(jobToCreate)) {
 						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Done!");
 					}	
 				}
@@ -310,36 +305,38 @@ public class ServletJobs extends HttpServlet
 		CFWJob job = CFWDBJob.selectByID(Integer.parseInt(ID));
 		CFWJobTask task = CFW.Registry.Jobs.createTaskInstance(job.taskName());
 		
-		ArrayList<JobTaskProperty> propsArray = task.jobProperties();
-		LinkedHashMap<String, String> propsMap = new LinkedHashMap<>();
-		StringBuilder propDescription = new StringBuilder("<p>The following properties are available for the selected task:</p> <ul> ");
-		for(JobTaskProperty property : propsArray) {
-			propsMap.put(property.getKey(), property.getValue());
-			propDescription.append("<li><b>"+property.getKey()+":&nbsp;</b>"+property.getDescription()+"</li>");
-		}
-		propDescription.append("</ul>");
+		CFWObject propertyFields = task.jobProperties();
+		propertyFields.mapJsonFields(job.properties());
+		
+		job.addAllFields(propertyFields.getFields());
 		
 		if(job != null) {
 			
 			//-----------------------------------
 			// Create Form
 			CFWForm editCFWJobForm = job.toForm("cfwEditCFWJobForm"+ID, "Update CFWJob");
-			editCFWJobForm.setDescription(propDescription.toString());
-			
+
 			editCFWJobForm.setFormHandler(new CFWFormHandler() {
 				
 				@Override
 				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
 					
-					if(origin.mapRequestParameters(request)) {
-						CFWJob jobToUpdate = (CFWJob)origin;
-						int scheduleIntervalSec = jobToUpdate.schedule().getCalculatedIntervalSeconds();
+					//-------------------------------------
+					// Create new CFWJob as origin contains
+					// additional fields.
+					CFWJob jobToSave = new CFWJob();
+					
+					if( jobToSave.mapRequestParameters(request)
+					&& propertyFields.mapRequestParameters(request)) {
+						
+						jobToSave.properties(propertyFields);
+						int scheduleIntervalSec = jobToSave.schedule().getCalculatedIntervalSeconds();
 						
 						if( !isMinimumIntervalValid(scheduleIntervalSec, task.minIntervalSeconds())) {
 							return;
 						}
 						
-						if(CFWDBJob.update((CFWJob)origin)) {
+						if(CFWDBJob.update(jobToSave)) {
 							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
 						}	
 					}

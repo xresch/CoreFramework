@@ -1,14 +1,16 @@
 package com.xresch.cfw.features.analytics;
 
-import java.util.ArrayList;
-
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.utils.CFWUtilsAnalysis;
+import com.xresch.cfw.validation.LengthValidator;
 
 public class CFWJobTaskThreadDumps extends CFWJobTask {
 	
@@ -24,11 +26,16 @@ public class CFWJobTaskThreadDumps extends CFWJobTask {
 	}
 
 	@Override
-	public ArrayList<JobTaskProperty> jobProperties() {
-		ArrayList<JobTaskProperty> properties = new ArrayList<JobTaskProperty>(); 
-		JobTaskProperty folder = new JobTaskProperty("folder", "./threaddumps", "the path of the folder were the thread dumps should be written on the server."); 
-		properties.add(folder);
-		return properties;
+	public CFWObject jobProperties() {
+		return new CFWObject()
+			.addField(
+				CFWField.newString(FormFieldType.TEXT, "folder")
+						.setDescription("the path of the folder were the thread dumps should be written on the server.")
+						.setValue("./threaddumps")
+						.addValidator(new LengthValidator(3, 4096))
+			);
+		
+
 	}
 
 	@Override
