@@ -1,6 +1,8 @@
 package com.xresch.cfw.features.jobs;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -85,8 +87,14 @@ public class CFWDBJob {
 	 *  of the job. 
 	 *  Use this method if the job schedule has not been updated.
 	 **************************************************************/
-	public static boolean updateDBOnly(CFWJob item){ 
-		return CFWDBDefaultOperations.update(prechecksCreateUpdate, item);
+	public static boolean updateLastRun(String jobID){ 
+		
+		CFWJob jobData = new CFWJob();
+		jobData.getPrimaryField().setValue(Integer.parseInt(jobID));
+		jobData.lastRun(new Timestamp(new Date().getTime()));
+		
+		return new CFWSQL(jobData)
+				.update(CFWJobFields.LAST_RUN);
 	}
 	
 	//####################################################################################################

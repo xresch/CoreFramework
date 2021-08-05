@@ -87,10 +87,8 @@ public abstract class CFWJobTask implements Job {
 			
 			//---------------------------------------
 			// Update Last Run
-			CFWJob jobToUpdate = CFW.DB.Jobs.selectByID(jobID);
-			jobToUpdate.lastRun(new Timestamp(new Date().getTime()));
 			
-			if(!CFW.DB.Jobs.updateDBOnly(jobToUpdate)) {
+			if(!CFW.DB.Jobs.updateLastRun(jobID)) {
 				new CFWLog(logger)
 					.silent(true)
 					.contextless(true)
