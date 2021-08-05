@@ -1,7 +1,5 @@
 package com.xresch.cfw.features.jobs;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.logging.Logger;
 
 import org.quartz.Job;
@@ -96,8 +94,6 @@ public abstract class CFWJobTask implements Job {
 					.custom("taskname", this.uniqueName())
 					.severe("Error while writing last execution time to DB.");
 			}
-			
 		}
 	}
-	
 }

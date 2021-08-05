@@ -198,6 +198,7 @@ public class CFWDBJob {
 				.columnSubqueryTotalRecords()
 				.select()
 				.where(CFWJobFields.FK_ID_USER, userID)
+				.orderby(CFWJobFields.JOB_NAME)
 				.limit(pageSize)
 				.offset(pageSize*(pageNumber-1))
 				.getAsJSON();
@@ -220,6 +221,7 @@ public class CFWDBJob {
 							.or().like(CFWJobFields.TASK_NAME, wildcardString)
 							.or().like(CFWJobFields.JSON_PROPERTIES, wildcardString)
 						.custom(")")
+					.orderby(CFWJobFields.JOB_NAME)
 					.limit(pageSize)
 					.offset(pageSize*(pageNumber-1))
 					.getAsJSON();
@@ -253,6 +255,7 @@ public class CFWDBJob {
 					.columnSubquery("OWNER", CFW.DB.Users.USERNAME_SUBQUERY)
 					.columnSubqueryTotalRecords()
 					.select()
+					.orderby(CFWJobFields.JOB_NAME)
 					.limit(pageSize)
 					.offset(pageSize*(pageNumber-1))
 					.getAsJSON();
@@ -265,21 +268,20 @@ public class CFWDBJob {
 				// on the Person Object
 				String wildcardString = "%"+searchString+"%";
 				
-				CFWSQL customFilter = new CFWSQL(new CFWJob())
+				return new CFWSQL(new CFWJob())
 						.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForAdmin-SearchQuery")
 						.columnSubquery("OWNER", CFW.DB.Users.USERNAME_SUBQUERY)
 						.columnSubqueryTotalRecords()
 						.select()
 						.whereLike(CFWJobFields.JOB_NAME, wildcardString)
-						.or().like(CFWJobFields.DESCRIPTION, wildcardString)
-						.or().like(CFWJobFields.TASK_NAME, wildcardString)
-						.or().like(CFWJobFields.JSON_PROPERTIES, wildcardString)
-						.or().custom("LOWER(("+CFW.DB.Users.USERNAME_SUBQUERY+")) LIKE LOWER(?)", wildcardString);
-				
-				
-				return customFilter.limit(pageSize)
-					.offset(pageSize*(pageNumber-1))
-					.getAsJSON();
+							.or().like(CFWJobFields.DESCRIPTION, wildcardString)
+							.or().like(CFWJobFields.TASK_NAME, wildcardString)
+							.or().like(CFWJobFields.JSON_PROPERTIES, wildcardString)
+							.or().custom("LOWER(("+CFW.DB.Users.USERNAME_SUBQUERY+")) LIKE LOWER(?)", wildcardString)
+						.orderby(CFWJobFields.JOB_NAME)
+						.limit(pageSize)
+						.offset(pageSize*(pageNumber-1))
+						.getAsJSON();
 			}
 				
 	}
