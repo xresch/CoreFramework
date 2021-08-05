@@ -1,11 +1,14 @@
 package com.xresch.cfw.features.jobs;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.logging.Logger;
 
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -54,11 +57,12 @@ public abstract class CFWJobTask implements Job {
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 
+		String jobID = context.getJobDetail().getKey().getName();
 		//---------------------------------------
 		// Start Log
 		CFWLog log = new CFWLog(logger)
 			.contextless(true)
-			.custom("jobid", context.getJobDetail().getKey().getName())
+			.custom("jobid", jobID)
 			.custom("taskname", this.uniqueName())
 			.start();
 		
@@ -71,7 +75,7 @@ public abstract class CFWJobTask implements Job {
 			new CFWLog(logger)
 				.silent(true)
 				.contextless(true)
-				.custom("jobid", context.getJobDetail().getKey().getName())
+				.custom("jobid", jobID)
 				.custom("taskname", this.uniqueName())
 				.severe("Exception while executing task '"+this.uniqueName()+"': "+e.getMessage(), e);
 			
@@ -80,6 +84,21 @@ public abstract class CFWJobTask implements Job {
 			//---------------------------------------
 			// Write duration
 			log.end();
+			
+			//---------------------------------------
+			// Update Last Run
+			CFWJob jobToUpdate = CFW.DB.Jobs.selectByID(jobID);
+			jobToUpdate.lastRun(new Timestamp(new Date().getTime()));
+			
+			if(!CFW.DB.Jobs.updateDBOnly(jobToUpdate)) {
+				new CFWLog(logger)
+					.silent(true)
+					.contextless(true)
+					.custom("jobid", jobID)
+					.custom("taskname", this.uniqueName())
+					.severe("Error while writing last execution time to DB.");
+			}
+			
 		}
 	}
 	

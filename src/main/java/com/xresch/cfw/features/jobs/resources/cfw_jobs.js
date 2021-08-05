@@ -198,9 +198,9 @@ function cfwjobs_printJobs(itemType){
 	// Visible Fields
 	var visiblefields;
 	if(itemType == 'adminjoblist'){
-		visiblefields = ['PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES'];
+		visiblefields = ['PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN'];
 	}else{
-		visiblefields = ['PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES'];
+		visiblefields = ['PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN'];
 	}
 
 	//-----------------------------------
@@ -222,12 +222,15 @@ function cfwjobs_printJobs(itemType){
 		 		IS_ENABLED: function(record, value) { 
 		 			return '<span class="badge badge-'+((value == true)? 'success' : 'danger') +'">'+value+'</span>'; 
 		 			},
-		 		JSON_SCHEDULE: function(record, value) { 
-		 				return CFW.format.cfwSchedule(value); 
-		 			},
+		 		JSON_SCHEDULE: function(record, value) { return CFW.format.cfwSchedule(value); },
+		 		LAST_RUN: function(record, value) { return CFW.format.epochToTimestamp(value); },
 		 		JSON_PROPERTIES: function(record, value) { 
-		 				return CFW.format.objectToHTMLList(value); 
-		 			},
+		 			if(value.children != null
+		 			&& value.children.length == 0){
+		 				delete value.children;
+		 			}
+		 			return CFW.format.objectToHTMLList(value); 
+		 		},
 		 		
 		 	},
 			actions: actionButtons,

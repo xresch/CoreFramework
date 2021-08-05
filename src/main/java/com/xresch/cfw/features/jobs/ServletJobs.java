@@ -12,6 +12,7 @@ import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -322,9 +323,11 @@ public class ServletJobs extends HttpServlet
 				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
 					
 					//-------------------------------------
-					// Create new CFWJob as origin contains
-					// additional fields.
-					CFWJob jobToSave = new CFWJob();
+					// Load Job from DB
+					// - origin contains additional fields, would cause errors
+					// - Last run has to be read from DB
+					String jobID = request.getParameter(CFWJobFields.PK_ID.toString());
+					CFWJob jobToSave = CFW.DB.Jobs.selectByID(jobID);
 					
 					if( jobToSave.mapRequestParameters(request)
 					&& propertyFields.mapRequestParameters(request)) {

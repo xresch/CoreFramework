@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.jobs;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -10,7 +11,6 @@ import org.quartz.JobKey;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
@@ -92,6 +92,10 @@ public class CFWJob extends CFWObject {
 			.addValidator(new ScheduleValidator().setNullAllowed(false))
 			.setValue(null);
 	
+	private CFWField<Timestamp> lastRun = CFWField.newTimestamp(FormFieldType.NONE, CFWJobFields.LAST_RUN)
+			.setDescription("Time of the last run of the job.")
+			.setValue(null);
+	
 	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, CFWJobFields.IS_DELETABLE)
 			.setDescription("Flag to define if the job can be deleted or not.")
 			.setValue(true);
@@ -117,6 +121,7 @@ public class CFWJob extends CFWObject {
 				taskName,
 				schedule,
 				properties,
+				lastRun,
 				isEnabled,
 				isDeletable
 				);
@@ -141,7 +146,6 @@ public class CFWJob extends CFWObject {
 						CFWJobFields.FK_ID_USER.toString(),
 						CFWJobFields.JOB_NAME.toString(),
 						CFWJobFields.TASK_NAME.toString(),
-
 				};
 		
 		String[] outputFields = 
@@ -153,6 +157,9 @@ public class CFWJob extends CFWObject {
 						CFWJobFields.TASK_NAME.toString(),
 						CFWJobFields.JSON_PROPERTIES.toString(),
 						CFWJobFields.JSON_SCHEDULE.toString(),
+						CFWJobFields.LAST_RUN.toString(),
+						CFWJobFields.IS_ENABLED.toString(),
+						CFWJobFields.IS_DELETABLE.toString(),
 				};
 
 		//----------------------------------
@@ -247,6 +254,15 @@ public class CFWJob extends CFWObject {
 	
 	public CFWJob jobname(String value) {
 		this.jobname.setValue(value);
+		return this;
+	}
+	
+	public Timestamp lastRun() {
+		return lastRun.getValue();
+	}
+	
+	public CFWJob lastRun(Timestamp value) {
+		this.lastRun.setValue(value);
 		return this;
 	}
 	

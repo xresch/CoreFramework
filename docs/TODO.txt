@@ -19,7 +19,6 @@ Potential TODOs
   - CFWSQL partial query, select entries for user
 
 - Jobs: Log Job Executions to DB, plus age out
-- Jobs: Show Last Run
 - Jobs: Define max number of instances.
 
 - Dashboard: Share with users that are not logged in

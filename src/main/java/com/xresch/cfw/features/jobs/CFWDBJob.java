@@ -65,7 +65,11 @@ public class CFWDBJob {
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(CFWJob item){ 
+	/**************************************************************
+	 * Updates the job in the DB and in the scheduler.
+	 * Use this method if the scheduling might have changed,
+	 **************************************************************/
+	public static boolean update(CFWJob item){ 
 		
 		if( CFWDBDefaultOperations.update(prechecksCreateUpdate, item)) {
 			CFW.Registry.Jobs.updateJob(item);
@@ -73,6 +77,16 @@ public class CFWDBJob {
 		}
 		
 		return false;
+	}
+	
+	/**************************************************************
+	 *  Updates the job in the DB but does not restart the job
+	 *  in the scheduler. For example used to save the last run
+	 *  of the job. 
+	 *  Use this method if the job schedule has not been updated.
+	 **************************************************************/
+	public static boolean updateDBOnly(CFWJob item){ 
+		return CFWDBDefaultOperations.update(prechecksCreateUpdate, item);
 	}
 	
 	//####################################################################################################
