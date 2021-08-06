@@ -30,7 +30,7 @@ public class WidgetHTMLEditor extends WidgetDefinition {
 	}
 
 	@Override
-	public void fetchData(HttpServletRequest request, JSONResponse response, JsonObject settings) {
+	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings) {
 		// nothing to do
 	}
 

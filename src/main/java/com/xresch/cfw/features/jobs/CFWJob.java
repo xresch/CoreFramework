@@ -43,6 +43,8 @@ public class CFWJob extends CFWObject {
 		LAST_RUN,
 		IS_ENABLED,
 		IS_DELETABLE,
+		CUSTOM_STRING,
+		CUSTOM_INTEGER
 	}
 	
 //	private static ArrayList<String> fullTextSearchColumns = new ArrayList<>();
@@ -104,6 +106,12 @@ public class CFWJob extends CFWObject {
 			.setDescription("Enable or disable the job.")
 			.setValue(true);
 	
+	private CFWField<String> customString = CFWField.newString(FormFieldType.NONE, CFWJobFields.CUSTOM_STRING)
+			.setDescription("Custom string value(e.g. to categorize jobs).");
+	
+	private CFWField<Integer> customInteger = CFWField.newInteger(FormFieldType.NONE, CFWJobFields.CUSTOM_INTEGER)
+			.setDescription("Custom integer value(e.g. to add a forgein key).");
+	
 	public CFWJob() {
 		initializeFields();
 	}
@@ -123,7 +131,9 @@ public class CFWJob extends CFWObject {
 				properties,
 				lastRun,
 				isEnabled,
-				isDeletable
+				isDeletable,
+				customString,
+				customInteger
 				);
 	}
 	
@@ -335,6 +345,24 @@ public class CFWJob extends CFWObject {
 	
 	public CFWJob isEnabled(boolean value) {
 		this.isEnabled.setValue(value);
+		return this;
+	}
+	
+	public String customString() {
+		return customString.getValue();
+	}
+	
+	public CFWJob customString(String value) {
+		this.customString.setValue(value);
+		return this;
+	}
+	
+	public Integer customInteger() {
+		return customInteger.getValue();
+	}
+	
+	public CFWJob customInteger(Integer value) {
+		this.customInteger.setValue(value);
 		return this;
 	}
 	

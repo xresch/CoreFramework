@@ -93,6 +93,10 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorDashboardUserDirect());
 		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorDashboardUserGroups());
 		
+    	//----------------------------------
+    	// Register Job Tasks
+		CFW.Registry.Jobs.registerTask(new CFWJobTaskWidget());
+		
 		//----------------------------------
     	// Register Menu				
 		CFW.Registry.Components.addRegularMenuItem(

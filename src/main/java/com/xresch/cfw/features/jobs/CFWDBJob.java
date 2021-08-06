@@ -82,10 +82,7 @@ public class CFWDBJob {
 	}
 	
 	/**************************************************************
-	 *  Updates the job in the DB but does not restart the job
-	 *  in the scheduler. For example used to save the last run
-	 *  of the job. 
-	 *  Use this method if the job schedule has not been updated.
+	 *  Updates the last run of the job with the current time.
 	 **************************************************************/
 	public static boolean updateLastRun(String jobID){ 
 		
@@ -308,6 +305,20 @@ public class CFWDBJob {
 		return new CFWSQL(new CFWJob())
 				.queryCache()
 				.selectCount()
+				.getCount();
+		
+	}
+	
+	/*******************************************************
+	 * Counts number of jobs that have the given value 
+	 * defined in the column CUSTOM_INTEGER
+	 *******************************************************/
+	public static int getCountByCustomInteger(int customInteger) {
+		
+		return new CFWSQL(new CFWJob())
+				.queryCache()
+				.selectCount()
+				.where(CFWJobFields.CUSTOM_INTEGER, customInteger)
 				.getCount();
 		
 	}

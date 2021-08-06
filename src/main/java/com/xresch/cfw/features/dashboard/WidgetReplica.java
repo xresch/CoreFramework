@@ -56,11 +56,11 @@ public class WidgetReplica extends WidgetDefinition {
 	}
 
 	@Override
-	public void fetchData(HttpServletRequest request, JSONResponse response, JsonObject settings) { 
+	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings) { 
 
 		//--------------------------------
 		// Retrieve Widget ID
-		JsonElement widgetElement = settings.get("JSON_WIDGET");
+		JsonElement widgetElement = jsonSettings.get("JSON_WIDGET");
 		if(widgetElement.isJsonNull()) {
 			return;
 		}

@@ -383,11 +383,13 @@ public class ServletDashboardView extends HttpServlet
 		String JSON_SETTINGS = request.getParameter("JSON_SETTINGS");
 		JsonElement jsonSettings = CFW.JSON.fromJson(JSON_SETTINGS);
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
+		CFWObject settingsObject = definition.getSettings();
+		settingsObject.mapJsonFields(jsonSettings);
 		
 		//----------------------------
 		// Create Response
 		if(jsonSettings.isJsonObject()) {
-		definition.fetchData(request, jsonResponse, jsonSettings.getAsJsonObject());
+		definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject());
 		}else {
 			new CFWLog(logger).warn("Widget Data was not of the correct type.", new IllegalArgumentException());
 		}

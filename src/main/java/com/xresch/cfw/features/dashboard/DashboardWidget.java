@@ -37,7 +37,8 @@ public class DashboardWidget extends CFWObject {
 		FOOTER,
 		BGCOLOR,
 		FGCOLOR,
-		JSON_SETTINGS
+		JSON_SETTINGS,
+		JSON_TASK_PARAMETERS,
 	}
 
 	private static Logger logger = CFWLog.getLogger(DashboardWidget.class.getName());
@@ -74,32 +75,38 @@ public class DashboardWidget extends CFWObject {
 			.setDescription("The height of the widget.")
 			.setValue(12);
 	
-	private CFWField<String> title = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.TITLE.toString())
+	private CFWField<String> title = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.TITLE)
 			.setColumnDefinition("VARCHAR(32767)")
 			.setDescription("The title of the widget.");
 	
-	private CFWField<Integer> titleFontsize = CFWField.newInteger(FormFieldType.NUMBER, DashboardWidgetFields.TITLE_FONTSIZE.toString())
+	private CFWField<Integer> titleFontsize = CFWField.newInteger(FormFieldType.NUMBER, DashboardWidgetFields.TITLE_FONTSIZE)
 			.setDescription("The font size of the title.")
 			.addValidator(new NumberRangeValidator(6, 32).setNullAllowed(true));
 	
-	private CFWField<Integer> contentFontsize = CFWField.newInteger(FormFieldType.NUMBER, DashboardWidgetFields.CONTENT_FONTSIZE.toString())
+	private CFWField<Integer> contentFontsize = CFWField.newInteger(FormFieldType.NUMBER, DashboardWidgetFields.CONTENT_FONTSIZE)
 			.setDescription("The font size of the content.")
 			.addValidator(new NumberRangeValidator(6, 32).setNullAllowed(true));
 	
-	private CFWField<String> footer = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.FOOTER.toString())
+	private CFWField<String> footer = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.FOOTER)
 			.setColumnDefinition("VARCHAR(32767)")
 			.setDescription("The footer of the widget.");
 	
-	private CFWField<String> bgcolor = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.BGCOLOR.toString())
+	private CFWField<String> bgcolor = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.BGCOLOR)
 			.setColumnDefinition("VARCHAR(64)")
 			.setDescription("The background color of the widget.");
 	
-	private CFWField<String> fgcolor = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.FGCOLOR.toString())
+	private CFWField<String> fgcolor = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.FGCOLOR)
 			.setColumnDefinition("VARCHAR(64)")
 			.setDescription("The forground color of the widget, used for text and borders.");
 	
-	private CFWField<String> settings = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.JSON_SETTINGS.toString())
+	/** Settings are coming from the fields defined by {@link WidgetDefinition#getSettings()}. Security can be disabled here. */
+	private CFWField<String> settings = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.JSON_SETTINGS)
 			.setDescription("The custom settings of the widget as JSON.")
+			.disableSecurity();
+	
+	/** TaskParameters are coming from the fields defined by {@link WidgetDefinition#getTasksParameters()}. Security can be disabled here. */
+	private CFWField<String> taskParameters = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.JSON_TASK_PARAMETERS)
+			.setDescription("The task parameters for the widgets task execution.")
 			.disableSecurity();
 	
 	public DashboardWidget() {
@@ -119,7 +126,7 @@ public class DashboardWidget extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titleFontsize, contentFontsize, footer, bgcolor, fgcolor, settings);
+		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titleFontsize, contentFontsize, footer, bgcolor, fgcolor, settings, taskParameters);
 	}
 
 	
@@ -152,7 +159,8 @@ public class DashboardWidget extends CFWObject {
 						DashboardWidgetFields.FOOTER.toString(),
 						DashboardWidgetFields.BGCOLOR.toString(),
 						DashboardWidgetFields.FGCOLOR.toString(),
-						DashboardWidgetFields.JSON_SETTINGS.toString(),		
+						DashboardWidgetFields.JSON_SETTINGS.toString(),	 	
+						DashboardWidgetFields.JSON_TASK_PARAMETERS.toString(),	 	
 				};
 
 		//----------------------------------
@@ -295,6 +303,15 @@ public class DashboardWidget extends CFWObject {
 	
 	public DashboardWidget settings(String settings) {
 		this.settings.setValue(settings);
+		return this;
+	}
+	
+	public String taskParameters() {
+		return taskParameters.getValue();
+	}
+	
+	public DashboardWidget taskParameters(String value) {
+		this.taskParameters.setValue(value);
 		return this;
 	}
 }

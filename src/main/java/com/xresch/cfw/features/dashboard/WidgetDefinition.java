@@ -6,6 +6,9 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+
 import com.google.gson.JsonObject;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -30,9 +33,10 @@ public abstract class WidgetDefinition {
 	 * Create a json response containing the data you need for 
 	 * your widget.
 	 * @param request TODO
+	 * @param settings TODO
 	 * @return JSON string
 	 ************************************************************/
-	public abstract void fetchData(HttpServletRequest request, JSONResponse response, JsonObject settings);
+	public abstract void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings);
 
 	/************************************************************
 	 * Return the file definitions of the javascript part of the 
@@ -64,8 +68,36 @@ public abstract class WidgetDefinition {
 	 * return true if has permission, false otherwise
 	 ************************************************************/
 	public boolean hasPermission() {
-
 		return true;
 	}
+	
+	/************************************************************
+	 * Override this method and return true to define that this 
+	 * widget definition supports tasks.
+	 ************************************************************/
+	public boolean supportsTask() {
+		return false;
+	}
+	
+	/************************************************************
+	 * Override this method and return a CFWObject containing 
+	 * fields for the task parameters. The settings will be passed 
+	 * to the 
+	 * Always return a new instance, do not reuse a CFWObject.
+	 * @return CFWObject
+	 ************************************************************/
+	public CFWObject getTasksParameters() {
+		return new CFWObject();
+	}
+	
+	/*************************************************************************
+	 * Implement the actions your task should execute.
+	 * See {@link com.xresch.cfw.features.jobs.CFWJobTask#executeTask CFWJobTask.executeTask()} to get
+	 * more details on how to implement this method.
+	 *************************************************************************/
+	public void executeTask(JobExecutionContext context, CFWObject taskParams, DashboardWidget widget, CFWObject widgetSettings) throws JobExecutionException {
+		/* do nothing by default */
+	}
+	
 	
 }

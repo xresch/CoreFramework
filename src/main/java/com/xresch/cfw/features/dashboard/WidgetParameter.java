@@ -80,7 +80,7 @@ public class WidgetParameter extends WidgetDefinition {
 	}
 
 	@Override
-	public void fetchData(HttpServletRequest request, JSONResponse response, JsonObject settings) {
+	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings) {
 		// fetch Parameter objects
 		// Create html Form Fields
 		// remove submit Button
@@ -91,7 +91,7 @@ public class WidgetParameter extends WidgetDefinition {
 		
 		//---------------------------------
 		// Resolve Parameters
-		JsonElement paramsElement = settings.get("JSON_PARAMETERS");
+		JsonElement paramsElement = jsonSettings.get("JSON_PARAMETERS");
 		if(paramsElement.isJsonNull()) {
 			return;
 		}
@@ -118,7 +118,7 @@ public class WidgetParameter extends WidgetDefinition {
 		
 		//---------------------------------
 		// Resolve Parameters
-		JsonElement showbuttonElement = settings.get("showbutton");
+		JsonElement showbuttonElement = jsonSettings.get("showbutton");
 		String buttonLabel = "Update";
 		if(showbuttonElement !=null && !showbuttonElement.isJsonNull()) {
 			boolean showButton = showbuttonElement.getAsBoolean();

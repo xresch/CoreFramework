@@ -86,6 +86,10 @@ public class CFWDBDashboardWidget {
 	public static DashboardWidget selectByID(int id ) {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id);
 	}
+	
+	public static DashboardWidget selectByID(String id ) {
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id);
+	}
 		
 	/***************************************************************
 	 * Return a list of all user widgets

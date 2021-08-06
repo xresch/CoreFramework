@@ -26,7 +26,7 @@ public class CFWJobTaskThreadDumps extends CFWJobTask {
 	}
 
 	@Override
-	public CFWObject jobProperties() {
+	public CFWObject getParameters() {
 		return new CFWObject()
 			.addField(
 				CFWField.newString(FormFieldType.TEXT, "folder")

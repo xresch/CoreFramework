@@ -28,9 +28,13 @@ public abstract class CFWJobTask implements Job {
 	public abstract String taskDescription();
 	
 	/*************************************************************************
-	 * Return a list of CFWJob Properties with default values.
+	 * Return a CFWObject containing Fields used as parameters for the task
+	 * execution. Feel free to specify default values on the fields.
+	 * 
+	 * See {@link CFWJobTask#executeTask} for how to use the parameters
+	 * when executing the task.
 	 *************************************************************************/
-	public abstract CFWObject jobProperties();
+	public abstract CFWObject getParameters();
 	
 	/*************************************************************************
 	 * Return the minimum schedule interval required for this tasks.
@@ -46,11 +50,27 @@ public abstract class CFWJobTask implements Job {
 	
 	/*************************************************************************
 	 * Implement the actions your task should execute.
+	 * Do not store any values locally in the instance of the class implementing 
+	 * this method. If you need to store data related to the task, you might want
+	 * to put the data into a cache based on the jobID.
+	 * <br>
+	 * The jobID(the primary key from CFW_JOB table as string) can be retrieved
+	 * as follows:
+	 * <pre><code>
+	 * context.getJobDetail().getKey().getName();
+	 * </code></pre>
+	 * 
+	 * The defined task parameters can be retrieved as follows:
+	 * <pre><code>
+	 * JobDataMap data = context.getTrigger().getJobDataMap();
+	 * String myParam = data.getString("myParam");
+	 * </code></pre>
+	 * 
 	 *************************************************************************/
 	public abstract void executeTask(JobExecutionContext context) throws JobExecutionException;
 	
 	/*************************************************************************
-	 * Wrap original method to add logging.
+	 * Wraps the original method of the Job class to add logging and last run.
 	 *************************************************************************/
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
