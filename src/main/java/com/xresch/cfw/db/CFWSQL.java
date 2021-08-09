@@ -1441,13 +1441,24 @@ public class CFWSQL {
 	 ***************************************************************/
 	public ArrayList<String> getAsStringArrayList(Object columnName) {
 		
-		ArrayList<String> stringArray = new ArrayList<String>();
-		
 		if(this.execute()) {
 			return ResultSetUtils.toStringArrayList(result, columnName.toString());
+		}else {
+			return new ArrayList<String>();
 		}
 		
-		return stringArray;
+	}
+	
+	/***************************************************************
+	 * Execute the Query and gets the result as a string array list.
+	 ***************************************************************/
+	public ArrayList<Integer> getAsIntegerArrayList(Object columnName) {
+
+		if(this.execute()) {
+			return ResultSetUtils.toIntegerArrayList(result, columnName.toString());
+		}else {
+			return new ArrayList<Integer>();
+		}
 		
 	}
 	

@@ -95,7 +95,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		
     	//----------------------------------
     	// Register Job Tasks
-		CFW.Registry.Jobs.registerTask(new CFWJobTaskWidget());
+		CFW.Registry.Jobs.registerTask(new CFWJobTaskWidgetTaskExecutor());
 		
 		//----------------------------------
     	// Register Menu				

@@ -27,8 +27,11 @@ public class QuartzConnectionProvider implements ConnectionProvider {
 	
 	@Override
 	public Connection getConnection() throws SQLException {
-		
-		return CFW.DB.getDBInterface().getConnection();
+		// Use new connection from Datasource.
+		// As Quartz commits it's transactions, it would mess up ongoing transactions
+		// if CFW.DB.getDBInterface().getConnection() would be used, as this can return
+		// an existing transaction connection.
+		return CFW.DB.getDBInterface().getDatasource().getConnection();
 	}
 
 	@Override

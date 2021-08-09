@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -78,9 +79,16 @@ public class CFWObject {
 	}
 
 	/****************************************************************
-	 * 
+	 * Maps the JSON fields to this objects fields by name.
+	 * If the string is null or empty it will return true.
+	 * @return true if successful, false otherwise.
 	 ****************************************************************/
 	public boolean mapJsonFields(String json) {
+		
+		if(Strings.isNullOrEmpty(json)) {
+			return true;
+		}
+		
 		return mapJsonFields(CFW.JSON.fromJson(json));
 	}
 	

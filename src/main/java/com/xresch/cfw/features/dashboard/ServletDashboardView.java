@@ -24,22 +24,28 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormCustomAutocompleteHandler;
+import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWMultiForm;
 import com.xresch.cfw.datahandling.CFWMultiFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
-import com.xresch.cfw.features.dashboard.parameters.ParameterDefinition;
-import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionText;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterMode;
+import com.xresch.cfw.features.dashboard.parameters.ParameterDefinition;
+import com.xresch.cfw.features.jobs.CFWDBJob;
+import com.xresch.cfw.features.jobs.CFWJob;
+import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
+import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWModifiableHTTPRequest;
 import com.xresch.cfw.utils.CFWRandom;
+import com.xresch.cfw.validation.ScheduleValidator;
 
 /**************************************************************************************************************
  * 
@@ -158,12 +164,16 @@ public class ServletDashboardView extends HttpServlet
 					case "settingsform": 		getSettingsForm(request, response, jsonResponse);
 												break;	
 												
+					case "taskparamform": 		getTaskParamForm(request, response, jsonResponse);
+												break;	
+												
 					case "paramform": 			createParameterEditForm(request, response, jsonResponse);
 												break;								
 					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
 												break;
 				}
 				break;
+				
 			case "create": 			
 				switch(item.toLowerCase()) {
 					case "widget": 				createWidget(jsonResponse, type, dashboardID);
@@ -372,6 +382,156 @@ public class ServletDashboardView extends HttpServlet
 
 	}
 	
+	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
+	private void getTaskParamForm(HttpServletRequest request, HttpServletResponse response,JSONResponse json) {
+		
+		String dashboardID = request.getParameter("dashboardid");
+		
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			
+			String widgetID = request.getParameter("widgetid");
+			JsonObject payload = new JsonObject();
+			
+			//----------------------------
+			// Get Values
+			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
+			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widget.type());
+					
+			if(definition.hasPermission()) {
+				
+				//----------------------------
+				// Check supports Tasks
+				if(!definition.supportsTask()) {
+					payload.addProperty("supportsTask", false);
+					json.getContent().append(payload.toString());
+					return;
+				}else {
+					payload.addProperty("supportsTask", true);
+				}
+				
+				payload.addProperty("taskDescription", definition.getTaskDescription());
+				
+				//----------------------------
+				// Check has Active Job
+				boolean hasJob = 0 < CFW.DB.Jobs.getCountByCustomInteger(widget.id());
+				payload.addProperty("hasJob", hasJob);
+				
+				//----------------------------
+				// Create Enabled Field
+				CFWField<Boolean> isEnabled = CFWField.newBoolean(FormFieldType.BOOLEAN, CFWJobFields.IS_ENABLED)
+						.setDescription("Enable or disable the task for this widget.")
+						.setValue(true);
+				
+				//----------------------------
+				// Create Schedule Field
+				CFWField<CFWSchedule> scheduleField = CFWField.newSchedule(CFWJobFields.JSON_SCHEDULE)
+				.setLabel("Schedule")
+				.addValidator(new ScheduleValidator().setNullAllowed(false))
+				.setValue(null);
+				
+				if(hasJob) {
+					CFWJob job = CFW.DB.Jobs.selectFirstByCustomInteger(widget.id());
+					scheduleField.setValue(job.schedule());
+				}
+				
+				//----------------------------
+				// Create Form
+				CFWObject formObject = new CFWObject();
+				formObject.addField(isEnabled);
+				formObject.addField(scheduleField);
+				
+				CFWObject taskParams = definition.getTasksParameters();
+				taskParams.mapJsonFields(widget.taskParameters());
+				formObject.addAllFields(taskParams.getFields());
+				
+				CFWForm taskParamForm = formObject.toForm("cfwWidgetTaskParamForm"+widgetID, "Save");
+				
+				taskParamForm.setFormHandler(new CFWFormHandler() {
+					
+					@SuppressWarnings("unchecked")
+					@Override
+					public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+						
+						
+						//-------------------------------------
+						// Save Task Params to Widget
+						if(taskParams.mapRequestParameters(request)) {
+							widget.taskParameters(taskParams.toJSON());
+							if( !CFW.DB.DashboardWidgets.update(widget) ) {
+								return;
+							}
+						}else {
+							return;
+						}
+						
+						//-------------------------------------
+						// Get Task
+						CFWJobTask widgetTaskExecutor = CFW.Registry.Jobs.createTaskInstance(CFWJobTaskWidgetTaskExecutor.UNIQUE_NAME);
+						
+						//-------------------------------------
+						// Load Job from DB if exists, else 
+						// create a new Job
+						CFWJob jobToSave;
+						boolean jobExists = 0 < CFW.DB.Jobs.getCountByCustomInteger(widget.id()) ;
+						if(jobExists) {
+							jobToSave = CFW.DB.Jobs.selectFirstByCustomInteger(widget.id());
+						}else {
+							
+							CFWObject taskExecutorParams = widgetTaskExecutor.getParameters();
+							taskExecutorParams.getField(CFWJobTaskWidgetTaskExecutor.PARAM_DASHBOARD_ID).setValue(dashboardID);
+							taskExecutorParams.getField(CFWJobTaskWidgetTaskExecutor.PARAM_WIDGET_ID).setValue(widget.id());
+							
+							jobToSave = new CFWJob()
+									.foreignKeyOwner(CFW.Context.Request.getUser().id())
+									.jobname("WidgetID-"+widget.id())
+									.description("Auto generated job for widget task.")
+									.taskName(widgetTaskExecutor.uniqueName())
+									.customInteger(widget.id())
+									.properties(taskExecutorParams);
+						}
+						
+						//-------------------------------------
+						// Map Params(Schedule/isEnabled) and create/save Job
+						if(jobToSave.mapRequestParameters(request)) {
+
+							int scheduleIntervalSec = jobToSave.schedule().getCalculatedIntervalSeconds();
+							
+							if( !widgetTaskExecutor.isMinimumIntervalValid(scheduleIntervalSec) ) {
+								return;
+							}
+							
+							if(jobExists) {
+								if(CFWDBJob.update(jobToSave)) {
+									CFW.Messages.addSuccessMessage("Update Successful!");
+								}
+								
+							}else {
+								if(CFWDBJob.create(jobToSave)) {
+									CFW.Messages.addSuccessMessage("Task created Successfully!");
+								}
+							}
+															
+						}
+					}
+				});
+		    	
+		    	payload.addProperty("html", taskParamForm.getHTML());
+			}else {
+				CFW.Messages.noPermissionToEdit();
+			}
+			
+			json.getContent().append(payload.toString());
+			
+		}else{
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+		}
+
+	}
+	
+	
 	/*****************************************************************
 	 *
 	 *****************************************************************/
@@ -550,7 +710,6 @@ public class ServletDashboardView extends HttpServlet
 				
 				CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Parameter added!");
 			}
-			
 			
 		}else{
 			CFW.Messages.noPermission();

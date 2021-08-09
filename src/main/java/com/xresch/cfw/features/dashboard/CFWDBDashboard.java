@@ -92,16 +92,33 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################
-	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, DashboardFields.PK_ID.toString(), id); }
-	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(prechecksDelete, auditLogFieldnames, cfwObjectClass, itemIDs); }
-	
-	public static boolean 	deleteMultipleByIDForUser(int userid, String commaSeparatedIDs)	{ 
-		return CFWDBDefaultOperations.deleteMultipleByIDWhere(prechecksDelete, auditLogFieldnames, cfwObjectClass, commaSeparatedIDs, DashboardFields.FK_ID_USER, userid); 
+	public static boolean 	deleteByID(String id) {
+		
+		CFW.DB.beginTransaction();
+		
+		boolean success = true;
+		// delete widgets and related jobs first to not have jobs unrelated to widgets.
+		success &= CFW.DB.DashboardWidgets.deleteWidgetsForDashboard(id); 
+		success &= CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, DashboardFields.PK_ID.toString(), id); 
+		
+		if(success) {
+			CFW.DB.commitTransaction();
+		}else {
+			CFW.DB.rollbackTransaction();
+		}
+		return success;
+	}
+
+	public static boolean deleteByIDForCurrentUser(String id)	{ 
+		
+		if(isDashboardOfCurrentUser(id)) {
+			return deleteByID(id);
+		}else {
+			CFW.Messages.noPermission();
+			return false;
+		}
 	} 
 	
-	public static boolean 	deleteByName(String name) 		{ 
-		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, DashboardFields.NAME.toString(), name); 
-	}
 		
 	//####################################################################################################
 	// SELECT
@@ -589,11 +606,17 @@ public class CFWDBDashboard {
 		return true;
 	}
 	
-	
 	/***************************************************************
 	 * 
 	 ***************************************************************/
 	public static boolean isDashboardOfCurrentUser(String dashboardID) {
+		return isDashboardOfCurrentUser(Integer.parseInt(dashboardID));
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public static boolean isDashboardOfCurrentUser(int dashboardID) {
 		
 		int count = new CFWSQL(new Dashboard())
 			.selectCount()

@@ -12,6 +12,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -24,9 +25,10 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public class CFWDBDashboardWidget {
 	
 	private static Class<DashboardWidget> cfwObjectClass = DashboardWidget.class;
+	private static final String[] auditLogFieldnames = new String[] { DashboardWidgetFields.PK_ID.toString()};
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBDashboardWidget.class.getName());
-		
+
 	//####################################################################################################
 	// Preckeck Initialization
 	//####################################################################################################
@@ -63,23 +65,59 @@ public class CFWDBDashboardWidget {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(DashboardWidget... items) 	{ return CFWDBDefaultOperations.create(prechecksCreate, items); }
-	public static boolean 	create(DashboardWidget item) 		{ return CFWDBDefaultOperations.create(prechecksCreate, item);}
-	public static int 		createGetPrimaryKey(DashboardWidget item) 	{ return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, item);}
+	public static boolean	create(DashboardWidget... items) 	{ return CFWDBDefaultOperations.create(prechecksCreate, auditLogFieldnames, items); }
+	public static boolean 	create(DashboardWidget item) 		{ return CFWDBDefaultOperations.create(prechecksCreate, auditLogFieldnames, item);}
+	public static int 		createGetPrimaryKey(DashboardWidget item) 	{ return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, auditLogFieldnames, item);}
 	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(DashboardWidget... items) 	{ return CFWDBDefaultOperations.update(prechecksDeleteUpdate, items); }
-	public static boolean 	update(DashboardWidget item) 		{ return CFWDBDefaultOperations.update(prechecksDeleteUpdate, item); }
+	public static boolean 	update(DashboardWidget... items) 	{ return CFWDBDefaultOperations.update(prechecksDeleteUpdate, auditLogFieldnames, items); }
+	public static boolean 	update(DashboardWidget item) 		{ return CFWDBDefaultOperations.update(prechecksDeleteUpdate, auditLogFieldnames, item); }
 	
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################
-	public static boolean 	deleteByID(String id) 				{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), Integer.parseInt(id)); }
-	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id); }
-	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(prechecksDeleteUpdate, cfwObjectClass, itemIDs); }
+	public static boolean 	deleteByID(String id) { 
+		return deleteByID(Integer.parseInt(id)); 
+	}
+	public static boolean 	deleteByID(int id) { 
 		
+		if(CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, auditLogFieldnames, cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id) ) {
+			//--------------------------------------------
+			//Delete Job Tasks related to this widget
+			if( 0 < CFW.DB.Jobs.getCountByCustomInteger(id)) {
+				CFW.DB.Jobs.deleteFirstByCustomInteger(id);
+			}
+			
+			return true;
+		}
+		
+		return false;
+	}
+	
+
+	/***************************************************************
+	 * Deletes all widgets for the selected dashboard
+	 * 
+	 * @return Returns true if successful, false otherwise.
+	 ****************************************************************/
+	public static boolean deleteWidgetsForDashboard(String dashboardID) {
+		
+		 ArrayList<Integer> idsToDelete =  new CFWSQL(new DashboardWidget())
+				.queryCache()
+				.select(DashboardWidgetFields.PK_ID)
+				.where(DashboardWidgetFields.FK_ID_DASHBOARD, dashboardID)
+				.getAsIntegerArrayList(DashboardWidgetFields.PK_ID);
+		
+		 boolean success = true;
+		 for(Integer id : idsToDelete) {
+			 success &= deleteByID(id);
+		 }
+		 
+		 return success;
+	}
+
 	//####################################################################################################
 	// SELECT
 	//####################################################################################################
@@ -87,7 +125,7 @@ public class CFWDBDashboardWidget {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id);
 	}
 	
-	public static DashboardWidget selectByID(String id ) {
+	public static DashboardWidget selectByID(String id) {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id);
 	}
 		
@@ -113,8 +151,8 @@ public class CFWDBDashboardWidget {
 	 ****************************************************************/
 	public static ArrayList<CFWObject> getWidgetsForDashboard(String dashboardID) {
 		
-		return new DashboardWidget()
-				.queryCache(CFWDBDashboardWidget.class, "getWidgetsForDashboard")
+		return new CFWSQL(new DashboardWidget())
+				.queryCache()
 				.select()
 				.where(DashboardWidgetFields.FK_ID_DASHBOARD, dashboardID)
 				.getAsObjectList();

@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.dashboard;
 
+import java.util.logging.Logger;
+
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -9,16 +11,21 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.jobs.CFWJobTask;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
-public class CFWJobTaskWidget extends CFWJobTask {
+public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 	
-	private static final String WIDGET_ID = "WIDGET_ID";
-	private static final String DASHBOARD_ID = "DASHBOARD_ID";
-
+	public static final String UNIQUE_NAME = "Widget Task Executor";
+	
+	public static final String PARAM_WIDGET_ID = "WIDGET_ID";
+	public static final String PARAM_DASHBOARD_ID = "DASHBOARD_ID";
+	
+	private static final Logger logger = CFWLog.getLogger(CFWJobTaskWidgetTaskExecutor.class.getName());
+	
 	@Override
 	public String uniqueName() {
-		return "Dashboard Widget";
+		return UNIQUE_NAME;
 	}
 
 	@Override
@@ -30,12 +37,14 @@ public class CFWJobTaskWidget extends CFWJobTask {
 	public CFWObject getParameters() {
 		return new CFWObject()
 			.addField(
-				CFWField.newInteger(FormFieldType.UNMODIFIABLE_TEXT, DASHBOARD_ID)
+				CFWField.newInteger(FormFieldType.UNMODIFIABLE_TEXT, PARAM_DASHBOARD_ID)
+						.setLabel("Dashboard ID")
 						.setDescription("The ID of the dashboard containing the widget.")
 						.addValidator(new NotNullOrEmptyValidator())
 			)
 			.addField(
-				CFWField.newInteger(FormFieldType.UNMODIFIABLE_TEXT, WIDGET_ID)
+				CFWField.newInteger(FormFieldType.UNMODIFIABLE_TEXT, PARAM_WIDGET_ID)
+						.setLabel("Widget ID")
 						.setDescription("The ID of the widget whose task should be executed.")
 						.addValidator(new NotNullOrEmptyValidator())
 			)
@@ -46,7 +55,7 @@ public class CFWJobTaskWidget extends CFWJobTask {
 
 	@Override
 	public int minIntervalSeconds() {
-		return 60*5;
+		return 5;
 	}
 
 	@Override
@@ -62,6 +71,11 @@ public class CFWJobTaskWidget extends CFWJobTask {
 		String widgetID = data.getString("WIDGET_ID");
 		
 		DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
+		if(widget == null) {
+			String jobID = context.getJobDetail().getKey().getName();
+			new CFWLog(logger).warn("There is a job(ID:"+jobID+") defined for a not existing widget(ID:"+widgetID+").");
+			return;
+		}
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widget.type());
 
 		CFWObject widgetSettings = definition.getSettings();

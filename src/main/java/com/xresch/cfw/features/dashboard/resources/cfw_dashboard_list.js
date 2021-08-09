@@ -154,9 +154,9 @@ function cfw_dashboardlist_changeDashboardOwner(id){
 /******************************************************************
  * Delete
  ******************************************************************/
-function cfw_dashboardlist_delete(ids){
+function cfw_dashboardlist_delete(id){
 	
-	var params = {action: "delete", item: "dashboards", ids: ids};
+	var params = {action: "delete", item: "dashboard", id: id};
 	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, params, 
 		function(data) {
 			if(data.success){
@@ -165,7 +165,7 @@ function cfw_dashboardlist_delete(ids){
 				CFW.cache.clearCache();
 				cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS);
 			}else{
-				CFW.ui.showModalSmall("Error!", '<span>The selected '+item+' could <b style="color: red">NOT</strong> be deleted.</span>');
+				CFW.ui.showModalSmall("Error!", '<span>The selected dashboard could <b style="color: red">NOT</b> be deleted.</span>');
 			}
 	});
 }

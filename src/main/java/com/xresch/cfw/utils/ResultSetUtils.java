@@ -208,6 +208,35 @@ public class ResultSetUtils {
 		return stringArray;
 	}
 	
+	
+	/***************************************************************************
+	 * Converts a ResultSet into a map with the key/values of the selected columns.
+	 * @return list of object, empty if results set is null or an error occurs.
+	 ***************************************************************************/
+	public static ArrayList<Integer> toIntegerArrayList(ResultSet result, String columnName) {
+		
+		ArrayList<Integer> stringArray = new ArrayList<Integer>();
+		
+		if(result == null) {
+			return stringArray;
+		}
+		
+		try {
+			while(result.next()) {
+				int value = result.getInt(columnName.toString());
+				stringArray.add(value);
+			}
+		} catch (SQLException e) {
+			new CFWLog(logger)
+			.severe("Error reading object from database.", e);
+			
+		}finally {
+			CFWDB.close(result);
+		}
+			
+		return stringArray;
+	}
+	
 	/***************************************************************************
 	 * Converts a ResultSet into a map with the key/values of the selected columns.
 	 * @return list of object, empty if results set is null or an error occurs.

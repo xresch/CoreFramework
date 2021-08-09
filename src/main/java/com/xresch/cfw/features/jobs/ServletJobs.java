@@ -267,7 +267,7 @@ public class ServletJobs extends HttpServlet
 					jobToCreate.properties(propertyFields);
 					int scheduleIntervalSec = jobToCreate.schedule().getCalculatedIntervalSeconds();
 					
-					if( !isMinimumIntervalValid(scheduleIntervalSec, task.minIntervalSeconds())) {
+					if( !task.isMinimumIntervalValid(scheduleIntervalSec) ) {
 						return;
 					}
 					
@@ -335,7 +335,7 @@ public class ServletJobs extends HttpServlet
 						jobToSave.properties(propertyFields);
 						int scheduleIntervalSec = jobToSave.schedule().getCalculatedIntervalSeconds();
 						
-						if( !isMinimumIntervalValid(scheduleIntervalSec, task.minIntervalSeconds())) {
+						if( !task.isMinimumIntervalValid(scheduleIntervalSec) ) {
 							return;
 						}
 						
@@ -353,23 +353,4 @@ public class ServletJobs extends HttpServlet
 
 	}
 	
-	protected boolean isMinimumIntervalValid(int scheduleIntervalSec, int taskIntervalSeconds) {
-		
-		if(scheduleIntervalSec == -1) {
-			CFW.Context.Request.addAlertMessage(MessageType.INFO, 
-				"The defined schedule will make the job execute once or never."
-			);
-			return true;
-		}
-		
-		if(scheduleIntervalSec < taskIntervalSeconds) {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, 
-					"The minimum time interval for the selected task is "+taskIntervalSeconds+" second(s). "
-					+"Your current schedule has an interval of "+scheduleIntervalSec+" second(s)"
-			);
-			return false;
-		}
-		
-		return true;
-	}
 }

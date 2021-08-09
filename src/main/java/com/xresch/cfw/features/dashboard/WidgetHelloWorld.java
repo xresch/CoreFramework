@@ -3,8 +3,12 @@ package com.xresch.cfw.features.dashboard;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -16,12 +20,18 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.validation.LengthValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 public class WidgetHelloWorld extends WidgetDefinition {
 
+	private static final String NUMBER = "NUMBER";
+	private static final String LIKES_TIRAMISU = "LIKES_TIRAMISU";
+	private static final String MESSAGE = "MESSAGE";
+	private static final Logger logger = CFWLog.getLogger(WidgetHelloWorld.class.getName());
+	
 	@Override
 	public String getWidgetType() {return "cfw_helloworld";}
 
@@ -80,7 +90,7 @@ public class WidgetHelloWorld extends WidgetDefinition {
 
 	@Override
 	public ArrayList<FileDefinition> getCSSFiles() {
-		// TODO Auto-generated method stub
+		// no CCS files for this widget
 		return null;
 	}
 
@@ -100,6 +110,43 @@ public class WidgetHelloWorld extends WidgetDefinition {
 			return true;
 		}
 		return false;
+	}
+	
+
+	public boolean supportsTask() {
+		return true;
+	}
+	
+
+	public CFWObject getTasksParameters() {
+		return new CFWObject()
+				.addField(
+					CFWField.newString(FormFieldType.TEXT, MESSAGE)
+							.setDescription("Message to write to the log file.")
+							.addValidator(new LengthValidator(5,500))
+				)
+				.addField(
+						CFWField.newBoolean(FormFieldType.BOOLEAN, LIKES_TIRAMISU)
+								.setDescription("Affinity of tiramisu to write to the log file")
+				)
+				.addField(
+						CFWField.newInteger(FormFieldType.NUMBER, NUMBER)
+								.setDescription("Number to write to the log")
+				)
+				;
+	}
+	
+
+	public String getTaskDescription() {
+		return "The task of this widget writes a message to the log file.";
+	}
+
+	public void executeTask(JobExecutionContext context, CFWObject taskParams, DashboardWidget widget, CFWObject widgetSettings) throws JobExecutionException {
+		
+		new CFWLog(logger)
+			.custom("likesTiramisu", taskParams.getField(LIKES_TIRAMISU).getValue())
+			.custom("chosenNumber", taskParams.getField(NUMBER).getValue())
+			.info(taskParams.getField(MESSAGE).getValue().toString());
 	}
 
 }

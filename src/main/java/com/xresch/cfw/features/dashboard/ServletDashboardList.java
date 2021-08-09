@@ -147,7 +147,7 @@ public class ServletDashboardList extends HttpServlet
 			case "delete": 			
 				switch(item.toLowerCase()) {
 
-					case "dashboards": 	deleteDashboards(jsonResponse, IDs);
+					case "dashboard": 	deleteDashboard(jsonResponse, ID);
 										break;  
 										
 					default: 			CFW.Messages.itemNotSupported(item);
@@ -187,13 +187,12 @@ public class ServletDashboardList extends HttpServlet
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private void deleteDashboards(JSONResponse jsonResponse, String IDs) {
+	private void deleteDashboard(JSONResponse jsonResponse, String ID) {
 		// TODO Auto-generated method stub
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
-			jsonResponse.setSuccess(CFW.DB.Dashboards.deleteMultipleByID(IDs));
+			jsonResponse.setSuccess(CFW.DB.Dashboards.deleteByID(ID));
 		}else {
-			int userid = CFW.Context.Request.getUser().id();
-			jsonResponse.setSuccess(CFW.DB.Dashboards.deleteMultipleByIDForUser(userid, IDs));
+			jsonResponse.setSuccess(CFW.DB.Dashboards.deleteByIDForCurrentUser(ID));
 		}
 	}
 	

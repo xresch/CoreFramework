@@ -80,7 +80,7 @@ public class DBInterface {
 	 ********************************************************************************************/
 	public Connection getConnection() throws SQLException {
 		
-		//Improve performance
+		//Improve performance, reduce memory overhead
 		if(logger.isLoggable(Level.FINER)) {
 			new CFWLog(logger)
 				.finer("DB Connections Active: "+pooledSource.getNumActive());

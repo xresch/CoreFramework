@@ -102,15 +102,21 @@ public class CFWLog {
 	}
 	
 	/***********************************************************************
-	 * Add a custom field to the log.
+	 * Add a custom field to the log. The objects "value.toString()" method
+	 * will be used to get the value.
 	 ***********************************************************************/
-	public CFWLog custom(String key, String value) {
+	public CFWLog custom(String key, Object value) {
 		
 		if(customEntries == null) {
 			customEntries = new LinkedHashMap<String,String>();
 		}
 		
-		customEntries.put(key, value);
+		if(value != null) {
+			customEntries.put(key, value.toString());
+		}else {
+			customEntries.put(key, "");
+		}
+		
 		
 		return this;
 		
@@ -299,7 +305,7 @@ public class CFWLog {
 	
 	
 	/***********************************************************************
-	 * Create an audit entry with level INFO.
+	 * Create an audit entry with level OFF to always log the audit logs.
 	 * @param action the action for the audit message(e.g. CREATE, UPDATE, DELETE)
 	 * @param itemClass the class of the CFWObject
 	 * @param message the log message, for example details about the affected item 
@@ -307,10 +313,10 @@ public class CFWLog {
 	public void audit(String action, Class<? extends CFWObject> itemClass, String message){
 		this.custom("auditAction", action);
 		this.custom("auditItem", itemClass.getSimpleName());
-		this.log(Level.INFO, message, null);
+		this.log(Level.OFF, message, null);
 	}
 	/***********************************************************************
-	 * Create an audit entry with level INFO.
+	 * Create an audit entry with level OFF to always log the audit logs.
 	 * @param action the action for the audit message(e.g. CREATE, UPDATE, DELETE)
 	 * @param item the item affected by the action (e.g. User, Role, Dashboard...)
 	 * @param message the log message, for example details about the affected item 
@@ -318,13 +324,14 @@ public class CFWLog {
 	public void audit(String action, String item, String message){
 		this.custom("auditAction", action);
 		this.custom("auditItem", item);
-		this.log(Level.INFO, message, null);
+		this.log(Level.OFF, message, null);
 	}
 	
 	/********************************************************************************************
 	 * 
 	 ********************************************************************************************/
 	public void audit(String auditAction, CFWObject object, String[] auditLogFieldnames) {
+		
 		if(auditLogFieldnames != null) {
 			StringBuilder logMessage = new StringBuilder();
 			for(String fieldname : auditLogFieldnames) {

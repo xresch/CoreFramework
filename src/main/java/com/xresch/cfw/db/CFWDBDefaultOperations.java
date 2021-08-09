@@ -189,7 +189,7 @@ public  class CFWDBDefaultOperations {
 	}
 	
 	/***************************************************************
-	 * Deletes the objects selected where the �recheck returns true.
+	 * Deletes the objects selected where the precheck returns true.
 	 * @param object
 	 * @return true or false
 	 ****************************************************************/

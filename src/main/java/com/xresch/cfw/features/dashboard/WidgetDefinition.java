@@ -80,6 +80,14 @@ public abstract class WidgetDefinition {
 	}
 	
 	/************************************************************
+	 * Override this method to return a description of what the
+	 * task of this widget does.
+	 ************************************************************/
+	public String getTaskDescription() {
+		return null;
+	}
+	
+	/************************************************************
 	 * Override this method and return a CFWObject containing 
 	 * fields for the task parameters. The settings will be passed 
 	 * to the 

@@ -97,11 +97,31 @@ public class CFWDBJob {
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################
+	
+	/*******************************************************
+	 * 
+	 *******************************************************/
 	public static boolean deleteByID(int id) { 
 		
-		CFWJob job = CFW.DB.Jobs.selectByID(id);
+		CFWJob job = CFW.DB.Jobs.selectByID(id);	
+		return executeDelete(job);
+	}
+	
+	/*******************************************************
+	 * 
+	 *******************************************************/
+	public static boolean deleteFirstByCustomInteger(int customInteger) {
+		CFWJob job = CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWJobFields.CUSTOM_INTEGER.toString(), customInteger);
 		
-		if (CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, CFWJobFields.PK_ID.toString(), id) ) {
+		return executeDelete(job);
+	}
+	
+	/*******************************************************
+	 * 
+	 *******************************************************/
+	private static boolean executeDelete(CFWJob job) { 
+	
+		if (CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, CFWJobFields.PK_ID.toString(), job.id()) ) {
 			CFW.Registry.Jobs.removeJob(job);
 			return true;
 		}
@@ -140,8 +160,8 @@ public class CFWDBJob {
 	/*******************************************************
 	 * 
 	 *******************************************************/
-	public static CFWJob selectFirstByName(String name) { 
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWJobFields.JOB_NAME.toString(), name);
+	public static CFWJob selectFirstByCustomInteger(int customInteger) {
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWJobFields.CUSTOM_INTEGER.toString(), customInteger);
 	}
 	
 	/*******************************************************

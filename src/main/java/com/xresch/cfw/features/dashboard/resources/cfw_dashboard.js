@@ -1012,8 +1012,6 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	// Save Button
 	defaultForm += '<button type="button" onclick="cfw_dashboard_widget_save_defaultSettings(\''+widgetGUID+'\')" class="form-control btn-primary">'+CFWL('cfw_core_save', 'Save')+'</button>';
 	
-
-
 	// ##################################################
 	// Create and show Modal
 	// ##################################################
@@ -1028,19 +1026,21 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	list.append(
 		'<li class="nav-item"><a class="nav-link active" id="widgetSettingsTab" data-toggle="pill" href="#widgetSettings" role="tab" ><i class="fas fa-tools mr-2"></i>Widget Settings</a></li>'
 		+'<li class="nav-item"><a class="nav-link" id="defaultSettingsTab" data-toggle="pill" href="#defaultSettings" role="tab" ><i class="fas fa-cog mr-2"></i>Standard Settings</a></li>'
+		+'<li class="nav-item"><a class="nav-link" id="defaultSettingsTab" data-toggle="pill" href="#taskSettings" role="tab" onclick="cfw_dashboard_widget_editCreateTaskParamsForm('+widgetObject.PK_ID+')" ><i class="fas fa-play-circle mr-2"></i>Task Settings</a></li>'
 	);
 		
 	compositeDiv.append(list);
 	compositeDiv.append('<div id="settingsTabContent" class="tab-content">'
 			  +'<div class="tab-pane fade show active" id="widgetSettings" role="tabpanel" aria-labelledby="widgetSettingsTab"></div>'
 			  +'<div class="tab-pane fade" id="defaultSettings" role="tabpanel" aria-labelledby="defaultSettingsTab"></div>'
+			  +'<div class="tab-pane fade" id="taskSettings" role="tabpanel" aria-labelledby="taskSettingsTab"></div>'
 		+'</div>' );
 	
-
 	if(customForm != null){
 		compositeDiv.find('#widgetSettings').append(customForm);
 	}
 	compositeDiv.find('#defaultSettings').append(defaultForm);
+	
 	// ----------------------------------
 	// Show Modal
 	CFW.ui.showModalMedium(CFWL('cfw_core_settings', 'Settings'), compositeDiv, "CFW.cache.clearCache();");
@@ -1055,6 +1055,57 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	}
 	$('#editWidgetComposite [data-toggle="tooltip"]').tooltip();
 				
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboard_widget_editCreateTaskParamsForm(widgetID) {
+	
+	var formHTML = null;
+	
+	$.ajaxSetup({async: false});
+		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'fetch', item: 'taskparamform', widgetid: widgetID, dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
+				
+				if(data.payload != null){
+					
+					let taskSettingsTab = $('#taskSettings');
+					let payload = data.payload;
+					taskSettingsTab.html('');
+					
+					//------------------------------------
+					// Check supports Tasks
+					if(!payload.supportsTask){
+						taskSettingsTab.append('<p class="alert alert-info mb-2">This widget does not support tasks.</p>');
+						return;
+					}
+					
+					//------------------------------------
+					// Add Description
+					if(payload.taskDescription != null){
+						taskSettingsTab.append('<p><b>Task Description:&nbsp;</b>'+payload.taskDescription+'</p>');
+					}
+					//------------------------------------
+					// Add Disable Button
+					if(!payload.hasJob){
+						taskSettingsTab.append('<p class="alert alert-info  mb-2">This widget currently does not have a running task. Save the below form and set the task to enable to create a running task.</p>');
+					}
+					
+					taskSettingsTab.append(payload.html);
+					
+					// -----------------------------------
+					// Initialize Forms
+					var taskForm = taskSettingsTab.find('form');
+					var formID = taskForm.attr("id");
+					// workaround, force evaluation
+					eval(taskForm.find("script").text());
+					eval("intializeForm_"+formID+"();");
+					
+				}
+			}
+		);
+	$.ajaxSetup({async: true});
+	
 }
 
 /*******************************************************************************

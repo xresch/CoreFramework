@@ -9,6 +9,7 @@ import org.quartz.JobExecutionException;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public abstract class CFWJobTask implements Job {
 	
@@ -115,5 +116,31 @@ public abstract class CFWJobTask implements Job {
 					.severe("Error while writing last execution time to DB.");
 			}
 		}
+	}
+	
+	/*************************************************************************
+	 * Check if the provided schedule Interval in seconds does fulfill
+	 * the minimum Interval seconds required for this task.
+	 * This method may add alert messages to the request context.
+	 * @return true if valid, false otherwise
+	 *************************************************************************/
+	public boolean isMinimumIntervalValid(int scheduleIntervalSec) {
+		
+		if(scheduleIntervalSec == -1) {
+			CFW.Context.Request.addAlertMessage(MessageType.INFO, 
+				"The defined schedule will make the job execute once or never."
+			);
+			return true;
+		}
+		
+		if(scheduleIntervalSec < this.minIntervalSeconds()) {
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, 
+					"The minimum time interval for the selected task is "+this.minIntervalSeconds()+" second(s). "
+					+"Your current schedule has an interval of "+scheduleIntervalSec+" second(s)"
+			);
+			return false;
+		}
+		
+		return true;
 	}
 }

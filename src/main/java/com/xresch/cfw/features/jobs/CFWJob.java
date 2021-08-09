@@ -46,17 +46,7 @@ public class CFWJob extends CFWObject {
 		CUSTOM_STRING,
 		CUSTOM_INTEGER
 	}
-	
-//	private static ArrayList<String> fullTextSearchColumns = new ArrayList<>();
-//	static {
-//		fullTextSearchColumns.add(CFWJobFields.PK_ID.toString());
-//		fullTextSearchColumns.add(CFWJobFields.JOB_NAME.toString());
-//		fullTextSearchColumns.add(CFWJobFields.DESCRIPTION.toString());
-//		fullTextSearchColumns.add(CFWJobFields.TASK_NAME.toString());
-//		fullTextSearchColumns.add(CFWJobFields.JSON_SCHEDULE.toString());
-//		fullTextSearchColumns.add(CFWJobFields.JSON_PROPERTIES.toString());
-//	}
-	
+		
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWJobFields.PK_ID)
 								   .setPrimaryKeyAutoIncrement(this)
 								   .setDescription("The job id.")
@@ -89,7 +79,7 @@ public class CFWJob extends CFWObject {
 			.setDescription("The properties of the job.");
 	
 	private CFWField<CFWSchedule> schedule = 
-			CFWField.newSchedule("JSON_SCHEDULE")
+			CFWField.newSchedule(CFWJobFields.JSON_SCHEDULE)
 			.setLabel("Schedule")
 			.addValidator(new ScheduleValidator().setNullAllowed(false))
 			.setValue(null);
