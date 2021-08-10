@@ -18,6 +18,8 @@ Potential TODOs
   - Selected Space in SessionData
   - CFWSQL partial query, select entries for user
 
+- Jobs: Fix Add Widget menu Expansion.
+- Jobs: Add Permission Dashboard: Tasks
 - Jobs: Tools Menu to Right
 - Jobs: Task Selection: Make table with Task UniqueName and description 
 - Jobs: Log Job Executions to DB, plus age out
