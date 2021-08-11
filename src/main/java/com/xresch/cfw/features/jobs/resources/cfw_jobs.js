@@ -290,7 +290,7 @@ function cfwjobs_printJobs(itemType){
 		 			return '<span class="badge badge-'+((value == true)? 'success' : 'danger') +'">'+value+'</span>'; 
 		 			},
 		 		JSON_SCHEDULE: function(record, value) { return CFW.format.cfwSchedule(value); },
-		 		LAST_RUN: function(record, value) { return CFW.format.epochToTimestamp(value); },
+		 		LAST_RUN_TIME: function(record, value) { return CFW.format.epochToTimestamp(value); },
 		 		JSON_PROPERTIES: function(record, value) { 
 		 			if(value.children != null
 		 			&& value.children.length == 0){
