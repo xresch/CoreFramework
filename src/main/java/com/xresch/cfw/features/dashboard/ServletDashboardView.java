@@ -302,7 +302,8 @@ public class ServletDashboardView extends HttpServlet
 				boolean isValid = settings.mapJsonFields(jsonElement);
 				
 				if(isValid) {
-					DashboardWidget widgetToUpdate = new DashboardWidget();
+					String widgetID = request.getParameter("PK_ID");
+					DashboardWidget widgetToUpdate = CFW.DB.DashboardWidgets.selectByID(widgetID);
 					
 					// check if default settings are valid
 					if(widgetToUpdate.mapRequestParameters(request)) {
@@ -371,7 +372,7 @@ public class ServletDashboardView extends HttpServlet
 				DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
 				settings.mapJsonFields(jsonElement);
 				
-				CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeRemoved");
+				CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeReplacedByJavascript");
 				
 				form.appendToPayload(json);
 			}else {

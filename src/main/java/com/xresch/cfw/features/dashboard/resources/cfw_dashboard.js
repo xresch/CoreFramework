@@ -1389,7 +1389,7 @@ function cfw_dashboard_widget_fetchData(widgetObject, callback) {
  * 
  ******************************************************************************/
 function cfw_dashboard_widget_save_state(widgetObject, forceSave) {
-	
+
 	if(forceSave || ( JSDATA.canEdit == true && CFW_DASHBOARD_EDIT_MODE) ){
 		// ----------------------------------
 		// Update Object
