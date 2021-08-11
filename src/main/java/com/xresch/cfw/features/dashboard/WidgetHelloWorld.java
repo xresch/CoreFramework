@@ -20,6 +20,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.validation.LengthValidator;
@@ -103,10 +104,10 @@ public class WidgetHelloWorld extends WidgetDefinition {
 	}
 
 	@Override
-	public boolean hasPermission() {
-		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_VIEWER)
-		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
-		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
+	public boolean hasPermission(User user) {
+		// just an example, replace with your own permission checks
+		if(user.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
+		|| user.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 			return true;
 		}
 		return false;

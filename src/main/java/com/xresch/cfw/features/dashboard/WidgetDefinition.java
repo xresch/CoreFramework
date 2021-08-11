@@ -12,6 +12,7 @@ import org.quartz.JobExecutionException;
 import com.google.gson.JsonObject;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.JSONResponse;
 
 public abstract class WidgetDefinition {
@@ -63,11 +64,12 @@ public abstract class WidgetDefinition {
 	}
 	
 	/************************************************************
-	 * Check if the user has the required permission to create and
+	 * Check if the current user has the required permission to create and
 	 * edit the widget. Returns true by default.
 	 * return true if has permission, false otherwise
+	 * @param user TODO
 	 ************************************************************/
-	public boolean hasPermission() {
+	public boolean hasPermission(User user) {
 		return true;
 	}
 	

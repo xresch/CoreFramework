@@ -18,6 +18,7 @@ import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.api.APIDefinitionSQL;
 import com.xresch.cfw.features.api.APISQLExecutor;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.EmailValidator;
 import com.xresch.cfw.validation.LengthValidator;
@@ -154,6 +155,9 @@ public class User extends CFWObject {
 					.setValue(false);
 	
 	private boolean hasUsernameChanged = false;
+
+	//private field, do not change the map or return it as it may contain the current users permission
+	private HashMap<String, Permission> permissions;
 	
 
 	public User() {
@@ -373,6 +377,27 @@ public class User extends CFWObject {
 		return apis;
 	}
 	
+	/**************************************************************************************
+	 * Load permissions if not already loaded.
+	 **************************************************************************************/
+	public void loadPermissions() {
+		if(permissions == null) {
+			if(this.id() == CFW.Context.Request.getUser().id()) {
+				permissions = CFW.Context.Request.getUserPermissions();
+			}else {
+				permissions = CFW.DB.Users.selectPermissionsForUser(this);
+			}
+		}
+	}
+	
+	/**************************************************************************************
+	 * Check if the the user has the provided permission.
+	 **************************************************************************************/
+	public boolean hasPermission(String permission) {
+		loadPermissions();
+		return permissions.containsKey(permission);
+	}
+	
 	public Integer id() {
 		return id.getValue();
 	}
@@ -555,5 +580,7 @@ public class User extends CFWObject {
 		this.isForeign.setValue(isForeign);
 		return this;
 	}
+	
+
 	
 }

@@ -39,6 +39,7 @@ import com.xresch.cfw.features.jobs.CFWDBJob;
 import com.xresch.cfw.features.jobs.CFWJob;
 import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
 import com.xresch.cfw.features.jobs.CFWJobTask;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -249,7 +250,8 @@ public class ServletDashboardView extends HttpServlet
 			//----------------------------
 			// Create Widget
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(type);
-			if(definition.hasPermission()) {
+			User currentUser = CFW.Context.Request.getUser();
+			if(definition.hasPermission(currentUser) || CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 				DashboardWidget newWidget = new DashboardWidget();
 	
 				newWidget.type(type);
@@ -291,7 +293,8 @@ public class ServletDashboardView extends HttpServlet
 			JsonElement jsonElement = CFW.JSON.fromJson(JSON_SETTINGS);
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 			
-			if(definition.hasPermission()) {
+			User currentUser = CFW.Context.Request.getUser();	
+			if(definition.hasPermission(currentUser) || CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 				//----------------------------
 				// Validate
 				CFWObject settings = definition.getSettings();
@@ -329,8 +332,8 @@ public class ServletDashboardView extends HttpServlet
 			
 			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(Integer.parseInt(widgetID));
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widget.type());
-			
-			if(definition.hasPermission()) {
+			User currentUser = CFW.Context.Request.getUser();
+			if(definition.hasPermission(currentUser) || CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 				
 				boolean success = CFW.DB.DashboardWidgets.deleteByID(widgetID);
 				json.setSuccess(success);
@@ -360,8 +363,8 @@ public class ServletDashboardView extends HttpServlet
 			String JSON_SETTINGS = request.getParameter("JSON_SETTINGS");
 			JsonElement jsonElement = CFW.JSON.fromJson(JSON_SETTINGS);
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
-			
-			if(definition.hasPermission()) {
+			User currentUser = CFW.Context.Request.getUser();
+			if(definition.hasPermission(currentUser) || CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 				//----------------------------
 				// Create Form
 				CFWObject settings = definition.getSettings();
@@ -399,9 +402,14 @@ public class ServletDashboardView extends HttpServlet
 			// Get Values
 			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widget.type());
-					
-			if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_TASKS)
-			&& definition.hasPermission()) {
+			User currentUser = CFW.Context.Request.getUser();		
+			if( 
+				(
+					currentUser.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_TASKS)
+					|| currentUser.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)
+				)
+				&& definition.hasPermission(currentUser)
+			) {
 				
 				//----------------------------
 				// Check supports Tasks
