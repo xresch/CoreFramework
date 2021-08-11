@@ -23,6 +23,8 @@ import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
+import com.xresch.cfw.response.bootstrap.AlertMessage;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.validation.LengthValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
@@ -148,6 +150,13 @@ public class WidgetHelloWorld extends WidgetDefinition {
 			.custom("likesTiramisu", taskParams.getField(LIKES_TIRAMISU).getValue())
 			.custom("chosenNumber", taskParams.getField(NUMBER).getValue())
 			.info(taskParams.getField(MESSAGE).getValue().toString());
+		
+		//-----------------------------
+		// Random Message for Testing
+		MessageType[] types = MessageType.values();
+		int randomIndex = CFW.Random.randomFromZeroToInteger(3);
+		CFW.Messages.addMessage(types[randomIndex], "Hello World Task wrote a log message.");
+		
 	}
 
 }

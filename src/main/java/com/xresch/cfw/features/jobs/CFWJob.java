@@ -40,7 +40,8 @@ public class CFWJob extends CFWObject {
 		TASK_NAME,
 		JSON_SCHEDULE,
 		JSON_PROPERTIES,
-		LAST_RUN,
+		LAST_RUN_TIME,
+		JSON_LASTRUN_MESSAGES,
 		IS_ENABLED,
 		IS_DELETABLE,
 		CUSTOM_STRING,
@@ -84,8 +85,12 @@ public class CFWJob extends CFWObject {
 			.addValidator(new ScheduleValidator().setNullAllowed(false))
 			.setValue(null);
 	
-	private CFWField<Timestamp> lastRun = CFWField.newTimestamp(FormFieldType.NONE, CFWJobFields.LAST_RUN)
+	private CFWField<Timestamp> lastRunTime = CFWField.newTimestamp(FormFieldType.NONE, CFWJobFields.LAST_RUN_TIME)
 			.setDescription("Time of the last run of the job.")
+			.setValue(null);
+	
+	private CFWField<String> lastRunMessages = CFWField.newString(FormFieldType.NONE, CFWJobFields.JSON_LASTRUN_MESSAGES)
+			.setDescription("Messages of the last run of the job.")
 			.setValue(null);
 	
 	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, CFWJobFields.IS_DELETABLE)
@@ -106,7 +111,6 @@ public class CFWJob extends CFWObject {
 		initializeFields();
 	}
 	
-		
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
 		
@@ -119,12 +123,13 @@ public class CFWJob extends CFWObject {
 				taskName,
 				schedule,
 				properties,
-				lastRun,
+				lastRunTime,
+				lastRunMessages,
 				isEnabled,
 				isDeletable,
 				customString,
 				customInteger
-				);
+			);
 	}
 	
 	/**************************************************************************************
@@ -157,7 +162,7 @@ public class CFWJob extends CFWObject {
 						CFWJobFields.TASK_NAME.toString(),
 						CFWJobFields.JSON_PROPERTIES.toString(),
 						CFWJobFields.JSON_SCHEDULE.toString(),
-						CFWJobFields.LAST_RUN.toString(),
+						CFWJobFields.LAST_RUN_TIME.toString(),
 						CFWJobFields.IS_ENABLED.toString(),
 						CFWJobFields.IS_DELETABLE.toString(),
 				};
@@ -258,11 +263,20 @@ public class CFWJob extends CFWObject {
 	}
 	
 	public Timestamp lastRun() {
-		return lastRun.getValue();
+		return lastRunTime.getValue();
 	}
 	
 	public CFWJob lastRun(Timestamp value) {
-		this.lastRun.setValue(value);
+		this.lastRunTime.setValue(value);
+		return this;
+	}
+	
+	public String lastRunMessages() {
+		return lastRunMessages.getValue();
+	}
+	
+	public CFWJob lastRunMessages(String value) {
+		this.lastRunMessages.setValue(value);
 		return this;
 	}
 	

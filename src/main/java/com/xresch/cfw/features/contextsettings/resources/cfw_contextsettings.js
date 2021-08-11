@@ -167,7 +167,7 @@ function cfw_contextsettings_printContextSettings(data){
 		// Duplicate Button
 		actionButtons.push(
 			function (record, id){
-				var htmlString = '<button class="btn btn-warning btn-sm" alt="Duplicate" title="Duplicate" '
+				var htmlString = '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
 						+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of the selected settings.\', \'Do it!\', \'cfw_contextsettings_duplicate('+id+');\')">'
 						+ '<i class="fas fa-clone"></i>'
 						+ '</button>';

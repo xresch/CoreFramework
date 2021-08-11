@@ -5,6 +5,12 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public class CFWMessages {
 
 	/****************************************************************
+	 * Adds a custom message to the Request Context. 
+	 ****************************************************************/
+	public static void addMessage(MessageType type, String message){
+		CFWContextRequest.addAlertMessage(type, message);		
+	}
+	/****************************************************************
 	 * Adds a custom success message to the Request Context. 
 	 ****************************************************************/
 	public static void addSuccessMessage(String message){

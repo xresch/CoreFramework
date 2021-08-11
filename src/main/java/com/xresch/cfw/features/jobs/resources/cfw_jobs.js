@@ -141,7 +141,72 @@ function cfwjobs_printMyJobs(){
 function cfwjobs_printAdminJobs(){
 	cfwjobs_printJobs('adminjoblist');
 }
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfwjobs_formatMessages(record, value){
 	
+	console.log(record)
+	console.log(value.length)
+	//-------------------------
+	// Handle Null
+	if(CFW.utils.isNullOrEmpty(value)
+	|| value == "[]"
+	|| value.length == 0 
+	|| value.length == undefined){
+		return '&nbsp;';
+	}
+	
+	//-------------------------
+	// Find highest severity INFO, SUCCESS, WARNING, ERROR 
+	// Create Popup message
+	var highestSeverity = 'INFO';
+	var popupMessage = '<span>Message(s) of last execution:<ul>';
+	
+	for(let index in value){
+		
+		current = value[index];
+		popupMessage += '<li><b>'+current.type+':&nbsp;</b>'+current.message+'</li>'
+		
+		if(highestSeverity != 'ERROR'){
+			if(current.type == 'ERROR'){ highestSeverity = 'ERROR'; continue; }
+			if(highestSeverity != 'WARNING'){
+				if(current.type == 'WARNING'){ highestSeverity = 'WARNING'; continue; }
+				if(highestSeverity != 'SUCCESS'){
+					if(current.type == 'SUCCESS'){ highestSeverity = 'SUCCESS'; continue; }
+				}
+			}
+		}
+	}
+	
+	popupMessage += '</ul>';
+	
+	//-------------------------
+	// Create Icon
+	var icon;
+	switch(highestSeverity){
+		case 'INFO':  icon = $('<span class="badge badge-info"><i class="fas fa-info-circle"></span>'); break;
+		case 'SUCCESS':  icon = $('<span class="badge badge-success"><i class="fas fa-check"></span>'); break;
+		case 'WARNING':  icon = $('<span class="badge badge-warning text-white"><i class="fas fa-exclamation-circle"></span>'); break;
+		case 'ERROR':  icon = $('<span class="badge badge-danger"><i class="fas fa-exclamation-triangle"></span>'); break;
+		
+	}
+	
+	//-------------------------
+	// add Popover
+	icon.popover({
+		trigger: 'hover',
+		html: true,
+		placement: 'auto',
+		boundary: 'window',
+		// title: 'Details',
+		sanitize: false,
+		content: popupMessage
+	})
+	
+	return icon;
+}
 /******************************************************************
  * Full example using the dataviewer renderer.
  * 
@@ -177,7 +242,7 @@ function cfwjobs_printJobs(itemType){
 	// Duplicate Button
 	actionButtons.push(
 		function (record, id){
-			return '<button class="btn btn-warning btn-sm" alt="Duplicate" title="Duplicate" '
+			return '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
 					+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.JOB_NAME.replace(/\"/g,'&quot;')+'\\\'</strong>.\', \'Do it!\', \'cfwjobs_duplicate('+id+');\')">'
 					+ '<i class="fas fa-clone"></i>'
 					+ '</button>';
@@ -198,9 +263,9 @@ function cfwjobs_printJobs(itemType){
 	// Visible Fields
 	var visiblefields;
 	if(itemType == 'adminjoblist'){
-		visiblefields = ['PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN'];
+		visiblefields = ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN_TIME'];
 	}else{
-		visiblefields = ['PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN'];
+		visiblefields = ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN_TIME'];
 	}
 
 	//-----------------------------------
@@ -214,11 +279,13 @@ function cfwjobs_printJobs(itemType){
 		 	titleformat: '{0}',
 		 	visiblefields: visiblefields,
 		 	labels: {
+		 		JSON_LASTRUN_MESSAGES: "&nbsp;",
 		 		PK_ID: "ID",
 		 		JSON_SCHEDULE: "Schedule",
 		 		JSON_PROPERTIES: "Properties",
 		 	},
 		 	customizers: {
+		 		JSON_LASTRUN_MESSAGES: cfwjobs_formatMessages,
 		 		IS_ENABLED: function(record, value) { 
 		 			return '<span class="badge badge-'+((value == true)? 'success' : 'danger') +'">'+value+'</span>'; 
 		 			},

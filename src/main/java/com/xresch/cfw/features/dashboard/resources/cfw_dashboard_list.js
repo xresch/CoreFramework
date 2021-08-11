@@ -312,7 +312,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 
 			actionButtons.push(
 				function (record, id){
-					var htmlString = '<button class="btn btn-warning btn-sm" alt="Duplicate" title="Duplicate" '
+					var htmlString = '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
 							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong> and add it to your dashboards.\', \'Do it!\', \'cfw_dashboardlist_duplicate('+id+');\')">'
 							+ '<i class="fas fa-clone"></i>'
 							+ '</button>';
@@ -328,7 +328,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 
 			actionButtons.push(
 				function (record, id){
-					return '<a class="btn btn-warning btn-sm" target="_blank" alt="Export" title="Export" '
+					return '<a class="btn btn-warning btn-sm text-white" target="_blank" alt="Export" title="Export" '
 							+' href="'+CFW_DASHBOARDLIST_URL+'?action=fetch&item=export&id='+id+'" download="'+record.NAME.replaceAll(' ', '_')+'_export.json">'
 							+'<i class="fa fa-download"></i>'
 							+ '</a>';

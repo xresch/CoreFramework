@@ -476,7 +476,7 @@ function cfw_usermgmt_printUserList(data){
 		actionButtons.push(
 			function (record, id){ 
 				if(!record.IS_FOREIGN){
-					return '<button class="btn btn-warning btn-sm" title="Reset Password" '
+					return '<button class="btn btn-warning btn-sm text-white" title="Reset Password" '
 						+'onclick="cfw_usermgmt_resetPassword('+id+');">'
 						+ '<i class="fas fa-unlock-alt"></i>'
 						+ '</button></td>';
@@ -490,7 +490,7 @@ function cfw_usermgmt_printUserList(data){
 		// Audit Button
 		actionButtons.push(
 				function (record, id){ 
-					return 	'<button class="btn btn-warning btn-sm" title="Audit" '
+					return 	'<button class="btn btn-warning btn-sm text-white" title="Audit" '
 					+'onclick="cfw_usermgmt_auditUser('+id+');">'
 					+ '<i class="fa fa-stethoscope"></i>'
 					+ '</button>';

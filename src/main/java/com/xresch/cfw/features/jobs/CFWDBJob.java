@@ -2,6 +2,7 @@ package com.xresch.cfw.features.jobs;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -13,6 +14,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.bootstrap.AlertMessage;
 
 /**************************************************************************************************************
  * @author Reto Scheiwiller
@@ -82,16 +84,18 @@ public class CFWDBJob {
 	}
 	
 	/**************************************************************
-	 *  Updates the last run of the job with the current time.
+	 *  Updates the last run of the job with the current time and
+	 *  the messages.
 	 **************************************************************/
 	public static boolean updateLastRun(String jobID){ 
 		
 		CFWJob jobData = new CFWJob();
 		jobData.getPrimaryField().setValue(Integer.parseInt(jobID));
 		jobData.lastRun(new Timestamp(new Date().getTime()));
+		jobData.lastRunMessages(CFW.Context.Request.getAlertsAsJSONArray());
 		
 		return new CFWSQL(jobData)
-				.update(CFWJobFields.LAST_RUN);
+				.update(CFWJobFields.LAST_RUN_TIME, CFWJobFields.JSON_LASTRUN_MESSAGES);
 	}
 	
 	//####################################################################################################
