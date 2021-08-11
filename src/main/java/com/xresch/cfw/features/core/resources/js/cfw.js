@@ -274,6 +274,22 @@ function cfw_filterTable(searchField){
 }
 
 /**************************************************************************************
+ * Initialize a form create with the CFWForm Java Class.
+ * @param formIDOrObject the ID, element or JQueryObject of the form
+ * @param epochMillis the initial date in epoch time or null
+ * @return nothing
+ *************************************************************************************/
+function cfw_initializeForm(formIDOrObject){
+	if(formIDOrObject != null){
+		let form = $(formIDOrObject)
+		var formID = form.attr("id");
+		// workaround, force evaluation
+		eval(form.find("script").text());
+		eval("intializeForm_"+formID+"();");
+	}
+}
+
+/**************************************************************************************
  * Initialize a Date and/or Timepicker created with the Java object CFWField.
  * @param fieldID the name of the field
  * @param epochMillis the initial date in epoch time or null
@@ -2605,11 +2621,6 @@ function cfw_http_getForm(formid, targetElement){
 			  if(response.payload != null){
 				  $(targetElement).html(response.payload.html);
 				  CFW.http.evaluateFormScript(targetElement);
-//				  var form = $(targetElement).find('form')
-//			      var formID = $(targetElement).find('form').attr("id");
-//			      // workaround, force evaluation
-//			      eval($(form).find("script").text());
-//	              eval("intializeForm_"+formID+"();");
 			  }
 		  })
 		  .fail(function(xhr, status, errorThrown) {
@@ -2630,14 +2641,12 @@ function cfw_http_getForm(formid, targetElement){
  *************************************************************************************/
 function cfw_http_evaluateFormScript(elementContainingForm){
 	
-	var form = $(elementContainingForm).find('form');
-	if(form.length > 0){
-	    var formID = form.attr("id");
-	    // workaround, force evaluation
-	    eval($(form).find("script").text());
-	    eval("intializeForm_"+formID+"();");
-	}
+	var forms = $(elementContainingForm).find('form');
 
+	forms.each(function() {
+		cfw_initializeForm(this);
+	});
+	    
 }
 
 

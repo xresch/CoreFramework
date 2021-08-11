@@ -1050,12 +1050,8 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	
 	// -----------------------------------
 	// Initialize Forms
-	if(customForm != null){
-		var formID = $(customForm).attr("id");
-		// workaround, force evaluation
-		eval($(customForm).find("script").text());
-		eval("intializeForm_"+formID+"();");
-	}
+	cfw_initializeForm(customForm);
+
 	$('#editWidgetComposite [data-toggle="tooltip"]').tooltip();
 				
 }
@@ -1099,11 +1095,7 @@ function cfw_dashboard_widget_editCreateTaskParamsForm(widgetID) {
 					// -----------------------------------
 					// Initialize Forms
 					var taskForm = taskSettingsTab.find('form');
-					var formID = taskForm.attr("id");
-					// workaround, force evaluation
-					eval(taskForm.find("script").text());
-					eval("intializeForm_"+formID+"();");
-					
+					cfw_initializeForm(taskForm);					
 				}
 			}
 		);
