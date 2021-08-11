@@ -27,8 +27,9 @@ public class CFWRegistryComponents {
 	 ***********************************************************************/ 
 	private static LinkedHashMap<String, MenuItem> regularMenuItems = new LinkedHashMap<>();
 	private static LinkedHashMap<String, MenuItem> userMenuItems = new LinkedHashMap<>();
+	private static LinkedHashMap<String, MenuItem> toolsMenuItems = new LinkedHashMap<>();
 	private static LinkedHashMap<String, MenuItem> adminMenuItems = new LinkedHashMap<>();
-	
+		
 	// Admin items of the Core Framework
 	private static LinkedHashMap<String, MenuItem> adminMenuItemsCFW = new LinkedHashMap<>();
 	
@@ -63,6 +64,22 @@ public class CFWRegistryComponents {
 			.severe("Coding Issue: Admin menu items need at least 1 permission.");
 		}
 		addMenuItem(adminMenuItems, itemToAdd, menuPath);
+	}
+	
+	/***********************************************************************
+	 * Adds a menuItem to the tools menu.
+	 * Define the position of in the menu with the menuPath parameter. Use
+	 * "|" to separate multiple menu labels.
+	 * @param menuitem to add
+	 * @param menuPath were the menu should be added, or null for root
+	 * @param Class that extends from BTMenu
+	 ***********************************************************************/
+	public static void addToolsMenuItem(MenuItem itemToAdd, String menuPath)  {
+		if(itemToAdd.getPermissions().size() == 0){
+			new CFWLog(logger)
+			.severe("Coding Issue: Admin menu items need at least 1 permission.");
+		}
+		addMenuItem(toolsMenuItems, itemToAdd, menuPath);
 	}
 	
 	/***********************************************************************
@@ -156,6 +173,18 @@ public class CFWRegistryComponents {
 		if(withUserMenus) {
 			
 			//---------------------------
+			// Tools
+			MenuItem toolsParentMenu = new MenuItem("Tools")
+					.faicon("fas fa-tools")
+					.addPermission("PSEUDO_PERMISSION_HIDE_BY_DEFAULT");	
+			
+			menu.addChild(toolsParentMenu);
+			
+			for(MenuItem item : toolsMenuItems.values() ) {
+				toolsParentMenu.addChild(item.createCopy());
+			}
+			
+			//---------------------------
 			// Admin Menu
 			MenuItem adminParentMenu = new MenuItem("Admin").faicon("fas fa-cogs");	
 			menu.addChild(adminParentMenu);
@@ -176,7 +205,6 @@ public class CFWRegistryComponents {
 			
 			//---------------------------
 			// Manual
-			
 			if(CFW.Registry.Manual.getManualPagesForUserAsJSON(sessionData).size() > 0
 			&& sessionData.getUserPermissions().containsKey(FeatureManual.PERMISSION_MANUAL)) {
 				menu.addRightMenuItem(

@@ -28,13 +28,13 @@ public class FeatureJobs extends CFWAppFeature {
     	
 		//----------------------------------
     	// Register Menu				
-		CFW.Registry.Components.addRegularMenuItem(
+		CFW.Registry.Components.addToolsMenuItem(
 				(MenuItem)new MenuItem("Jobs")
 					.faicon("fas fa-play-circle")
 					.addPermission(PERMISSION_JOBS_USER)
 					.addPermission(PERMISSION_JOBS_ADMIN)
 					.href("/app/jobs")
-				, FeatureCore.MENU_TOOLS);
+				, null);
 		
 	}
 

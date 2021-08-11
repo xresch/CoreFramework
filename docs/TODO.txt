@@ -9,6 +9,11 @@ ALWAYS ON
 - Test Cases
 - Test with cache enabled
 
+
+IMPORTANT FIXES
+===============
+- Dashboard: editing widget when window is narrow causes widgets to get width 1
+
 Potential TODOs
 ===============
 - Features: Query
@@ -18,13 +23,9 @@ Potential TODOs
   - Selected Space in SessionData
   - CFWSQL partial query, select entries for user
 
-- Jobs: Fix Add Widget menu Expansion.
-- Jobs: Add Permission Dashboard: Tasks
-- Jobs: Tools Menu to Right
 - Jobs: Task Selection: Make table with Task UniqueName and description 
 - Jobs: Log Job Executions to DB, plus age out
 - Jobs: Define max number of instances.
-- Jobs: Delete when widget is deleted.
 
 - Dashboard: Share with users that are not logged in
 - Dashboard: Check Settings - Provide a bulk action to show all settings of all widgets as an overview. 
@@ -108,6 +109,8 @@ DONE
 - CFWField: New FormFieldType.LANGUAGE
 - Navbar: Fixed display of submenus for narrow screens
 - Audit Logs: set Level.OFF to always log audit logs
+- Permissions: Added permission 'Dashboard Tasks'
+- Menu: Added default Tools Menu
 
 ------- v3.0.1 -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI

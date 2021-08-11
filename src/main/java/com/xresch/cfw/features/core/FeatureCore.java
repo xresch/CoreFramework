@@ -32,9 +32,7 @@ import com.xresch.cfw.response.bootstrap.MenuItem;
 public class FeatureCore extends CFWAppFeature {
 
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.core.resources";
-	
-	public static final String MENU_TOOLS = "Tools";
-	
+		
 	public static final String PERMISSION_FEATURE_MGMT = "Feature Management";
 	public static final String PERMISSION_ALLOW_HTML = "Allow HTML";
 	public static final String PERMISSION_ALLOW_JAVASCRIPT = "Allow Javascript";
@@ -55,15 +53,7 @@ public class FeatureCore extends CFWAppFeature {
 		//----------------------------------
 		// Register Objects
 		//CFW.Registry.Objects.addCFWObject(Configuration.class);
-    	
-		//----------------------------------
-    	// Register Tools Menu
-		CFW.Registry.Components.addRegularMenuItem(
-				(MenuItem)new MenuItem(MENU_TOOLS)
-					.faicon("fas fa-tools")
-					.addPermission("PSEUDO_PERMISSION_HIDE_BY_DEFAULT")
-				, null);
-		
+    			
     	//----------------------------------
     	// Register Admin Menu
 		CFW.Registry.Components.addAdminCFWMenuItem(

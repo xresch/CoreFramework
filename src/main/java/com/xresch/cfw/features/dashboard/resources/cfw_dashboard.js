@@ -1026,8 +1026,11 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	list.append(
 		'<li class="nav-item"><a class="nav-link active" id="widgetSettingsTab" data-toggle="pill" href="#widgetSettings" role="tab" ><i class="fas fa-tools mr-2"></i>Widget Settings</a></li>'
 		+'<li class="nav-item"><a class="nav-link" id="defaultSettingsTab" data-toggle="pill" href="#defaultSettings" role="tab" ><i class="fas fa-cog mr-2"></i>Standard Settings</a></li>'
-		+'<li class="nav-item"><a class="nav-link" id="defaultSettingsTab" data-toggle="pill" href="#taskSettings" role="tab" onclick="cfw_dashboard_widget_editCreateTaskParamsForm('+widgetObject.PK_ID+')" ><i class="fas fa-play-circle mr-2"></i>Task Settings</a></li>'
 	);
+	
+	if(cfw_hasPermission('Dashboard Tasks')){
+		list.append('<li class="nav-item"><a class="nav-link" id="defaultSettingsTab" data-toggle="pill" href="#taskSettings" role="tab" onclick="cfw_dashboard_widget_editCreateTaskParamsForm('+widgetObject.PK_ID+')" ><i class="fas fa-play-circle mr-2"></i>Task Settings</a></li>');
+	}
 		
 	compositeDiv.append(list);
 	compositeDiv.append('<div id="settingsTabContent" class="tab-content">'

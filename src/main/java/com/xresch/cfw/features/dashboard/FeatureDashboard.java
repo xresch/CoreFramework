@@ -28,7 +28,7 @@ public class FeatureDashboard extends CFWAppFeature {
 	public static final String PERMISSION_DASHBOARD_VIEWER = "Dashboard Viewer";
 	public static final String PERMISSION_DASHBOARD_CREATOR = "Dashboard Creator";
 	public static final String PERMISSION_DASHBOARD_ADMIN = "Dashboard Admin";
-
+	public static final String PERMISSION_DASHBOARD_TASKS = "Dashboard Tasks";
 	
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.dashboard.resources";
 	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.dashboard.manual";
@@ -99,14 +99,14 @@ public class FeatureDashboard extends CFWAppFeature {
 		
 		//----------------------------------
     	// Register Menu				
-		CFW.Registry.Components.addRegularMenuItem(
+		CFW.Registry.Components.addToolsMenuItem(
 				(MenuItem)new MenuItem("Dashboards")
 					.faicon("fas fa-tachometer-alt")
 					.addPermission(PERMISSION_DASHBOARD_VIEWER)
 					.addPermission(PERMISSION_DASHBOARD_CREATOR)
 					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 					.href("/app/dashboard/list")
-				, FeatureCore.MENU_TOOLS);
+				, null);
 		
 		//----------------------------------
     	// Register Manual
@@ -136,6 +136,13 @@ public class FeatureDashboard extends CFWAppFeature {
 					.description("View, Edit and Delete all dashboards of all users, regardless of the share settings of the dashboards."),
 					true,
 					false
+				);	
+		
+		CFW.DB.Permissions.oneTimeCreate(
+				new Permission(PERMISSION_DASHBOARD_TASKS, FeatureUserManagement.CATEGORY_USER)
+				.description("Add and edit tasks of widgets."),
+				true,
+				false
 				);	
 	}
 

@@ -400,7 +400,8 @@ public class ServletDashboardView extends HttpServlet
 			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widget.type());
 					
-			if(definition.hasPermission()) {
+			if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_TASKS)
+			&& definition.hasPermission()) {
 				
 				//----------------------------
 				// Check supports Tasks
@@ -526,7 +527,7 @@ public class ServletDashboardView extends HttpServlet
 			json.getContent().append(payload.toString());
 			
 		}else{
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+			CFW.Messages.noPermission();
 		}
 
 	}
