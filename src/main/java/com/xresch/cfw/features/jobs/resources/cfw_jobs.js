@@ -260,7 +260,6 @@ function cfwjobs_printJobs(itemType){
 					+'onclick="cfwjobs_edit('+id+');">'
 					+ '<i class="fa fa-pen"></i>'
 					+ '</button>';
-
 		});
 
 	
@@ -307,11 +306,15 @@ function cfwjobs_printJobs(itemType){
 		 	labels: {
 		 		JSON_LASTRUN_MESSAGES: "&nbsp;",
 		 		PK_ID: "ID",
+		 		IS_ENABLED: "Enabled",
 		 		JSON_SCHEDULE: "Schedule",
 		 		JSON_PROPERTIES: "Properties",
 		 	},
 		 	customizers: {
 		 		JSON_LASTRUN_MESSAGES: cfwjobs_formatMessages,
+		 		DESCRIPTION: function(record, value) { 
+		 			return '<div class="word-break-word" style="max-width: 250px">'+value+'</div>'; 
+	 			},
 		 		IS_ENABLED: function(record, value) { 
 		 			return '<span class="badge badge-'+((value == true)? 'success' : 'danger') +'">'+value+'</span>'; 
 		 			},
@@ -322,7 +325,10 @@ function cfwjobs_printJobs(itemType){
 		 			&& value.children.length == 0){
 		 				delete value.children;
 		 			}
-		 			return CFW.format.objectToHTMLList(value); 
+		 			
+		 			let div = $('<div class="word-break-word">');
+		 			div.append(CFW.format.objectToHTMLList(value));
+		 			return div; 
 		 		},
 		 		
 		 	},
@@ -346,7 +352,7 @@ function cfwjobs_printJobs(itemType){
 							name: 'table',
 							renderdef: {
 								rendererSettings: {
-									table: { filterable: false },
+									table: { filterable: false, narrow: true},
 								},
 							}
 						},
@@ -418,7 +424,7 @@ function cfwjobs_initialDraw(){
 	// Restore last tab
 	var tabToDisplay = CFW.cache.retrieveValueForPage("cfwjobs-lasttab", "myjoblist");
 	
-	$('#cfw-container').css('max-width', '90%');
+	$('#cfw-container').css('max-width', '100%');
 	
 	$('#tab-'+tabToDisplay).addClass('active');
 	
