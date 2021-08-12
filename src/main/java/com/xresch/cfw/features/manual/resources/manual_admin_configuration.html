@@ -53,12 +53,9 @@ cfw_proxy_pac=./config/proxy.pac</code></pre>
 The performance settings can be found in the cfw.properties file, as well as in the application menu "Admin &gt;&gt; Configuration".
 Here the settings available in the properties file:
 </p>
-<pre><code>#Session Timeout in seconds
-cfw_session_timeout=3600
-
-# Time in seconds to cache resources in the browser
-cfw_browser_resource_maxage=36000</code></pre>
-
+<pre><code># number of threads used to run jobs(=max jobs that can run in parallel)
+cfw_job_threads=25
+</code></pre>
 
 
 <h2>Configure Authentication</h2>

@@ -68,6 +68,12 @@ Potential TODOs
 - Security: Change login to two steps, first username, then password field 
 
 - Manual: Multi language pages
+- Manual: Dev how to create Logs / Audit
+- Manual: UserAuditExecutor
+- Manual: Database / CFWSQL
+- Manual: Jobs
+- Manual: Widget Tasks
+- Manual: Dashboard Parameters
 
 - CFW: CFWApplicationExecutor - ForwardedRequestCustomizer make it work with reverse proxy
 - CFW: Create javascript sanity check page

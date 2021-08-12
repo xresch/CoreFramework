@@ -18,15 +18,19 @@ You have the following options to choose from:
 </ul>
 
 
-<h2>Users, Roles and Permissions</h2>
+<h2>Users, Roles, Groups and Permissions</h2>
 <p>
-The user management consists of the following three different elements:
+The user management consists of the following four different elements:
 </p>
 <ul>
 	<li><strong>Users:&nbsp;</strong> A user that can login with username and password. A user can have one or multiple Roles.</li>
 	<li><strong>Roles:&nbsp;</strong> A role defines what a user can do in the application. It is basically a group of permissions.</li>
+	<li><strong>Groups:&nbsp;</strong> A group is similar to a role, except that it can as well be chosen by the application users in certain functionality. For example users can choose for a dashboard a group to share it with, instead of having to select every single person.</li>
 	<li><strong>Permissions:&nbsp;</strong> A permission grants the rights to certain features in the application.</li>
 </ul>
+<p>
+<b>Recommendation:</b> Use roles to grant permissions based on what functionality a user needs. Use groups to group users by teams and logical units, so you can share common dashboards etc... with the whole group.
+</p>
 
 <h2>Default Elements</h2>
 <p>
@@ -50,7 +54,7 @@ Here the steps to create a user:
 	<li><strong>Open User Management:&nbsp;</strong> Sign in with a user that has the permission "User Management" and go to "Menu  Admin  Manage Users".</li>
 	<li><strong>Create User:&nbsp;</strong> Click on "Create User", provide a username and a password.</li>
 	<li><strong>Confirm and Close Dialog:&nbsp;</strong> Confirm creating the user by clicking on "Create User", you will get a popup message in the bottom right corner telling you if the user was successfully created or if there where any issues. Close the dialog when you where successful. </li>
-	<li><strong>Add Roles:&nbsp;</strong> After creating the user, open the new users settings by clicking the Edit Button with the pen icon. Here you can add the roles to the user to grant him access to the features he need.</li>
+	<li><strong>Add Roles/Groups:&nbsp;</strong> After creating the user, open the new users settings by clicking the edit button with the pen icon. Scroll down and you find two sections where you can add the user to roles and groups.</li>
 </ol>
 
 <p>
@@ -71,12 +75,39 @@ Please consider the following when managing users:
 <p>
 Here the  steps to create a role:
 </p>
-
 <ol>
-	<li><strong>Open User Management:&nbsp;</strong> Sign in with a user that has the permission "User Management" and go to "Menu  Admin  Manage Users".</li>
-	<li><strong>Create Role:&nbsp;</strong> Change to the Tab "Roles", click on "Create Role" and provide at least a name for the role.</li>
+	<li><strong>Open User Management:&nbsp;</strong> Sign in with a user that has the permission "User Management" and go to "Menu &gt;&gt;  Admin &gt;&gt; Manage Users".</li>
+	<li><strong>Create Role:&nbsp;</strong> Change to the Tab "roles", click on "Create Role" and provide at least a name for the role.</li>
 	<li><strong>Confirm and Close Dialog:&nbsp;</strong> Confirm creating the user by clicking on "Create Role", you will get a popup message in the bottom right corner telling you if the role was successfully created or if there where any issues. Close the dialog when you where successful. </li>
 	<li><strong>Add Permissions:&nbsp;</strong> After creating the role, open the new roles settings by clicking the Edit button with the pen icon. Here you can add the permissions to the role to create a group of permissions need for a specific job users will need to do.</li>
+</ol>
+
+<h2>Creating a Group</h2>
+<p>
+Same as creating a role, but in the tab "Groups".
+</p>
+
+
+<h2>Assigning User to Roles and Groups</h2>
+<p>
+To assign a user to a role or group:
+</p>
+<ol>
+	<li><strong>Open User Management:&nbsp;</strong> Sign in with a user that has the permission "User Management" and go to "Menu &gt;&gt; Admin &gt;&gt; Manage Users".</li>
+	<li><strong>Edit User:&nbsp;</strong> Find the existing user in the user list and click the edit button.</li>
+	<li><strong>Add to Role:&nbsp;</strong> In the edit window, scroll down to the section "Roles" and click on the buttons in the table to toggle membership of the role. </li>
+	<li><strong>Add to Group:&nbsp;</strong> Scroll even further down to do the same with groups. </li>
+</ol>
+
+<h2>Get List of Users in a Role / Group</h2>
+<p>
+To get a list of users assigned to a role or group:
+</p>
+<ol>
+	<li><strong>Open User Management:&nbsp;</strong> Sign in with a user that has the permission "User Management" and go to "Menu &gt;&gt; Admin &gt;&gt; Manage Users".</li>
+	<li><strong>Change Tab:&nbsp;</strong> Change to either the tab "Roles" or "Group".</li>
+	<li><strong>Click Edit:&nbsp;</strong> Click on the edit button of the role/group you want to get a list of users.</li>
+	<li><strong>Scroll down:&nbsp;</strong> Scroll down below the permissions section, you will find a list of all users which are part of the role or group. </li>
 </ol>
 
 <h2>Permission Tab</h2>
@@ -86,7 +117,36 @@ As user permissions are create and used in source code, they cannot be created t
 </p>
 
 
-<h2>Audit and Debug Permissions</h2>
+<h2>Audit and Debug</h2>
+
+<h3>Audit Single User</h3>
+<p>
+To get an overview of access rights a user has, you can use the audit functionality:
+</p>
+<ol>
+	<li><strong>Open User Management:&nbsp;</strong> Sign in with a user that has the permission "User Management" and go to "Menu &gt;&gt; Admin &gt;&gt; Manage Users".</li>
+	<li><strong>Click Audit:&nbsp;</strong> Find the user you want to audit and click on the audit button(orange, stethoscope). A window will open with the results of various audit checks.</li> 
+</ol>
+
+
+<h3>Full Audit and Create Audit Report</h3>
+<p>
+To get an extensive list of all users with all audits executed:
+</p>
+<ol>
+	<li><strong>Open User Management:&nbsp;</strong> Sign in with a user that has the permission "User Management" and go to "Menu &gt;&gt; Admin &gt;&gt; Manage Users".</li>
+	<li><strong>Change Tab:&nbsp;</strong> Change to the tab "Full Audit".</li>
+	<li><strong>Execute:&nbsp;</strong> Click the button "Execute", read the popup message and confirm the execution.</li> 
+	<li><strong>Report:&nbsp;</strong> A report is generated containing all users. Also the button "Create Print View".</li> 
+	<li><strong>Print/Save As PDF:&nbsp;</strong> 
+		Click the button "Create Print View", a new window or tab will open and the report will be shown in a printable format. 
+		Go to our browsers Menu and choose the print option. Choose the Save As PDF option to save the report to the disk.
+	</li> 
+</ol>
+
+
+
+<h3>Permission List using the API</h3>
 <p>
 To audit or debug the user permissions, you can use the API.
 Go to "Menu &gt;&gt; Admin &gt;&gt; API &gt;&gt; User &gt;&gt; getPermissionOverview &gt;&gt; Example" and fetch the data in CSV format 
