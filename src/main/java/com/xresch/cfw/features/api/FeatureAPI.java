@@ -38,7 +38,7 @@ public class FeatureAPI extends CFWAppFeature {
 		
     	//----------------------------------
     	// Register Menu Entry
-		CFW.Registry.Components.addAdminCFWMenuItem(
+		CFW.Registry.Components.addToolsMenuItem(
 				(MenuItem)new MenuItem("API")
 					.faicon("fas fa-code")
 					.addPermission(PERMISSION_CFW_API)

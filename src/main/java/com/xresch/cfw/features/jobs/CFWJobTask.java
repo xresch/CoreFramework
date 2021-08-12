@@ -8,6 +8,7 @@ import org.quartz.JobExecutionException;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -54,7 +55,16 @@ public abstract class CFWJobTask implements Job {
 	/*************************************************************************
 	 * Return if the user is able to select this executor for creating Jobs.
 	 *************************************************************************/
-	public abstract boolean hasPermission();
+	public abstract boolean hasPermission(User user);
+	
+	/*************************************************************************
+	 * Override this method if you do not want to allow users to choose the 
+	 * task from the UI.
+	 * If this method returns false, hasPermission() is ignored.
+	 *************************************************************************/
+	public boolean createableFromUI() {
+		return true;
+	}
 	
 	/*************************************************************************
 	 * Implement the actions your task should execute.

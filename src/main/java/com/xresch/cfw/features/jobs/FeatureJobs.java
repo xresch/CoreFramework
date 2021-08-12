@@ -5,6 +5,7 @@ import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.features.dashboard.UserAuditExecutorDashboardUserDirect;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -26,6 +27,10 @@ public class FeatureJobs extends CFWAppFeature {
 		// Register Objects
 		CFW.Registry.Objects.addCFWObject(CFWJob.class);
     	
+		//----------------------------------
+    	// Register Audit
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorTaskPermissions());
+		
 		//----------------------------------
     	// Register Menu				
 		CFW.Registry.Components.addToolsMenuItem(

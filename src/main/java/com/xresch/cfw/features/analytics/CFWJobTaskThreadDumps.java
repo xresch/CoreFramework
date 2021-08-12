@@ -9,6 +9,7 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.jobs.CFWJobTask;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.utils.CFWUtilsAnalysis;
 import com.xresch.cfw.validation.LengthValidator;
 
@@ -44,9 +45,9 @@ public class CFWJobTaskThreadDumps extends CFWJobTask {
 	}
 
 	@Override
-	public boolean hasPermission() {
+	public boolean hasPermission(User user) {
 		
-		if( CFW.Context.Request.hasPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS) ) {
+		if(user.hasPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS) ) {
 			return true;
 		}
 		

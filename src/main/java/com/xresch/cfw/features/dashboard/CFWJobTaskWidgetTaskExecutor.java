@@ -11,6 +11,7 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.jobs.CFWJobTask;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
@@ -59,8 +60,13 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 	}
 
 	@Override
-	public boolean hasPermission() {
-		//Do not allow people to create this task from the UI.		
+	public boolean hasPermission(User user) {	
+		return true;
+	}
+	
+	@Override
+	public boolean createableFromUI() {
+		//Do not allow people to create this task from the UI.	
 		return false;
 	}
 

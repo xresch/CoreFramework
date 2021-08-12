@@ -2,6 +2,7 @@ package com.xresch.cfw.features.jobs;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Properties;
 import java.util.Set;
@@ -28,6 +29,8 @@ public class CFWRegistryJobs {
 	// UniqueName and JobTask
 	private static LinkedHashMap<String, Class<? extends CFWJobTask>> jobtasksMap = new LinkedHashMap<>();
 
+	private static ArrayList<CFWJobTask> instanceArray;
+
 	/*************************************************************************
 	 * 
 	 *************************************************************************/
@@ -39,24 +42,40 @@ public class CFWRegistryJobs {
 		}
 		
 		jobtasksMap.put(jobtasks.uniqueName(), jobtasks.getClass());
+		instanceArray = null;
+	}
+	
+	
+	/***********************************************************************
+	 * Get a list of all task names that the current user has access to.
+	 * 
+	 ***********************************************************************/
+	public static Set<String> getTaskNamesForUI()  {
+		Set<String> taskNames = new HashSet<>();
 		
+		for(CFWJobTask task : getAllTaskInstances()) {
+			if(task.createableFromUI()
+			&& (
+					task.hasPermission(CFW.Context.Request.getUser())
+					|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)
+				)
+			) {
+				taskNames.add(task.uniqueName());
+			}
+		}
+		return taskNames;
 	}
-	
 	
 	/***********************************************************************
 	 * Get a list of all executor instances.
 	 * 
 	 ***********************************************************************/
-	public static Set<String> getTaskNames()  {
-		return jobtasksMap.keySet();
-	}
-	
-	/***********************************************************************
-	 * Get a list of all executor instances.
-	 * 
-	 ***********************************************************************/
-	private static ArrayList<CFWJobTask> getAllTaskInstances()  {
-		ArrayList<CFWJobTask> instanceArray = new ArrayList<>();
+	public static ArrayList<CFWJobTask> getAllTaskInstances()  {
+		if(instanceArray != null) {
+			return instanceArray;
+		}
+		
+		instanceArray = new ArrayList<>();
 		
 		for(Class<? extends CFWJobTask> clazz : jobtasksMap.values()) {
 			try {

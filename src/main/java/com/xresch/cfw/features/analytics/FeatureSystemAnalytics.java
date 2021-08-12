@@ -50,6 +50,12 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		String SYSTEM_ANALYTICS = "System Analytics";
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
+				(MenuItem)new MenuItem(SYSTEM_ANALYTICS)
+					.faicon("fas fa-traffic-light")
+					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)	
+				, null);
+		
+		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("DB Analytics")
 					.faicon("fas fa-database")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)

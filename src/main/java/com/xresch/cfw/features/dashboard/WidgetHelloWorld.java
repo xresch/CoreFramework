@@ -23,7 +23,6 @@ import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.validation.LengthValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;

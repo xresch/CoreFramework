@@ -62,13 +62,7 @@ public class FeatureCore extends CFWAppFeature {
 					.addPermission(FeatureCore.PERMISSION_FEATURE_MGMT)	
 					.href("/app/featuremanagement")
 				, null);
-		
-		CFW.Registry.Components.addAdminCFWMenuItem(
-				(MenuItem)new MenuItem("System Analytics")
-					.faicon("fas fa-traffic-light")
-					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)	
-				, null);
-		
+				
 	}
 
 	@Override

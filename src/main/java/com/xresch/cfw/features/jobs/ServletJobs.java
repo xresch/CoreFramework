@@ -76,22 +76,10 @@ public class ServletJobs extends HttpServlet
 		String item = request.getParameter("item");
 		String ID = request.getParameter("id");
 		
-		//int	userID = CFW.Context.Request.getUser().id();
-			
 		JSONResponse jsonResponse = new JSONResponse();		
 
 		switch(action.toLowerCase()) {
-		
-//			case "fetch": 			
-//				switch(item.toLowerCase()) {
-//					case "myjoblist": 		jsonResponse.setPayLoad(new CFWJob().toJSONElement());
-//	  										break;
-//	  										
-//					default: 				CFW.Messages.itemNotSupported(item);
-//											break;
-//				}
-//				break;
-			
+					
 			case "fetchpartial": 	
 				
 				String pagesize = request.getParameter("pagesize");
@@ -219,7 +207,7 @@ public class ServletJobs extends HttpServlet
 				.addField(
 					CFWField.newString(FormFieldType.SELECT, "TASK")
 						.setDescription("Select the Task which should be executed by the job.")
-						.setOptions(CFWRegistryJobs.getTaskNames())
+						.setOptions(CFWRegistryJobs.getTaskNamesForUI())
 				)
 				.toForm("cfwSelectJobTaskForm", "Select Job Task");
 		
