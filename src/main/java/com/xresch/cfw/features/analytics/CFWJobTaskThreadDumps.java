@@ -56,7 +56,7 @@ public class CFWJobTaskThreadDumps extends CFWJobTask {
 	@Override
 	public void executeTask(JobExecutionContext context) throws JobExecutionException {
 		
-		JobDataMap data = context.getTrigger().getJobDataMap();
+		JobDataMap data = context.getMergedJobDataMap();
 		String folderpath = data.getString("folder");
 		
         String filepath = "threaddump_"+CFW.Utils.Time.currentTimestamp().replace(":", "")+".txt";

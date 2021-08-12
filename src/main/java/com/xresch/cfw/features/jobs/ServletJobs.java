@@ -125,6 +125,17 @@ public class ServletJobs extends HttpServlet
 				}
 				break;	
 				
+			case "execute": 			
+				switch(item.toLowerCase()) {
+
+					case "job": 		executeCFWJob(jsonResponse, ID);
+										break;  
+										
+					default: 			CFW.Messages.itemNotSupported(item);
+										break;
+				}
+				break;	
+				
 			case "duplicate": 			
 				switch(item.toLowerCase()) {
 
@@ -178,6 +189,14 @@ public class ServletJobs extends HttpServlet
 			CFW.Messages.noPermission();
 		}
 		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void executeCFWJob(JSONResponse jsonResponse, String ID) {
+		
+		CFW.Registry.Jobs.executeJobManually(ID);
 	}
 	
 	

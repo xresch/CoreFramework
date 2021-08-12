@@ -40,8 +40,13 @@ public class CFWContextRequest {
 		httpRequest.set(null);
 		responseContent.set(null);
 		sessionData.set(null);
-		messageArray.set(null);
 		localeFilesID = 0;
+		
+		clearMessages();
+	}
+	
+	public static void clearMessages() {
+		messageArray.set(null);
 	}
 	
 	public static HttpServletRequest getRequest() {

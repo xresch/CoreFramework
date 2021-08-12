@@ -114,6 +114,20 @@ function cfwjobs_delete(id){
 }
 
 /******************************************************************
+ * Execute
+ ******************************************************************/
+function cfwjobs_execute(id){
+	
+	params = {action: "execute", item: "job", id: id};
+	CFW.http.getJSON(CFWJOBS_URL, params, 
+		function(data) {
+			if(data.success){
+				//do nothing
+			}
+	});
+}
+
+/******************************************************************
  * Delete
  ******************************************************************/
 function cfwjobs_duplicate(id){
@@ -226,11 +240,23 @@ function cfwjobs_printJobs(itemType){
 	//======================================
 	// Prepare actions
 	var actionButtons = [];
+	
 	//-------------------------
 	// Edit Button
 	actionButtons.push(
 		function (record, id){ 
-			return '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
+			return '<button class="btn btn-sm btn-success" alt="Execute" title="Execute" '
+					+'onclick="cfwjobs_execute('+id+');">'
+					+ '<i class="fa fa-play"></i>'
+					+ '</button>';
+
+		});
+	
+	//-------------------------
+	// Edit Button
+	actionButtons.push(
+		function (record, id){ 
+			return '<button class="btn btn-sm btn-primary" alt="Edit" title="Edit" '
 					+'onclick="cfwjobs_edit('+id+');">'
 					+ '<i class="fa fa-pen"></i>'
 					+ '</button>';
@@ -242,7 +268,7 @@ function cfwjobs_printJobs(itemType){
 	// Duplicate Button
 	actionButtons.push(
 		function (record, id){
-			return '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
+			return '<button class="btn btn-sm btn-warning text-white" alt="Duplicate" title="Duplicate" '
 					+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.JOB_NAME.replace(/\"/g,'&quot;')+'\\\'</strong>.\', \'Do it!\', \'cfwjobs_duplicate('+id+');\')">'
 					+ '<i class="fas fa-clone"></i>'
 					+ '</button>';

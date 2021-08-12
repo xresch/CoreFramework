@@ -67,7 +67,7 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 	@Override
 	public void executeTask(JobExecutionContext context) throws JobExecutionException {
 		
-		JobDataMap data = context.getTrigger().getJobDataMap();
+		JobDataMap data = context.getMergedJobDataMap();
 		String widgetID = data.getString("WIDGET_ID");
 		
 		DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);

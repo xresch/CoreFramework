@@ -23,7 +23,6 @@ Potential TODOs
   - Selected Space in SessionData
   - CFWSQL partial query, select entries for user
 
-- Jobs: Test Run Button
 - Jobs: Task Selection: Make table with Task UniqueName and description 
 - Jobs: Log Job Executions to DB, plus age out
 - Jobs: Define max number of instances.

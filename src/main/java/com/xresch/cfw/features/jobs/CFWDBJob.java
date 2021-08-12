@@ -93,6 +93,7 @@ public class CFWDBJob {
 		jobData.getPrimaryField().setValue(Integer.parseInt(jobID));
 		jobData.lastRun(new Timestamp(new Date().getTime()));
 		jobData.lastRunMessages(CFW.Context.Request.getAlertsAsJSONArray());
+		CFW.Context.Request.clearMessages();
 		
 		return new CFWSQL(jobData)
 				.update(CFWJobFields.LAST_RUN_TIME, CFWJobFields.JSON_LASTRUN_MESSAGES);

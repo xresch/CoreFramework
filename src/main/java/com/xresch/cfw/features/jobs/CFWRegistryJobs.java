@@ -7,6 +7,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -136,6 +137,46 @@ public class CFWRegistryJobs {
 		return scheduler;
 	}
 	
+	/***********************************************************************
+	 * Executes a job manually.
+	 * Will write a message to inform user that the job was triggered.
+	 ***********************************************************************/
+	protected static void executeJobManually(String ID)  {
+		
+		executeJobManually(CFW.DB.Jobs.selectByID(ID));
+	}
+	
+
+	/***********************************************************************
+	 * Executes a job manually.
+	 * Will write a message to inform user that the job was triggered.
+	 ***********************************************************************/
+	protected static void executeJobManually(CFWJob job)  {
+		
+		if(job == null) {
+			new CFWLog(logger).warn("Job cannot be executed as it was null.");
+			return;
+		}
+		
+		if(!job.isEnabled()) {
+			new CFWLog(logger).warn("Job is not enabled and cannot be executed.");
+			return;
+		}
+		
+		try {
+			JobDetail jobDetail = job.createJobDetail();
+			Trigger trigger = job.createJobTrigger(jobDetail);
+			JobDataMap data = trigger.getJobDataMap();
+			
+			scheduler.triggerJob(job.createJobKey(), data);
+
+		} catch (SchedulerException e) {
+			new CFWLog(logger).severe("Error occured while manually executing Job: "+e.getMessage(), e);
+			return;
+		}
+		
+		CFW.Messages.addInfoMessage("Job triggered!");
+	}
 
 	/***********************************************************************
 	 * Start the Job if:

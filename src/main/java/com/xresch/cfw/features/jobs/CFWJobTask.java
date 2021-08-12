@@ -11,9 +11,16 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
+import io.prometheus.client.Counter;
+
 public abstract class CFWJobTask implements Job {
 	
 	private static Logger logger = CFWLog.getLogger(CFWJobTask.class.getName());
+	
+	private static final Counter executionCounter = Counter.build()
+	         .name("cfw_job_executions_total")
+	         .help("Number of jobs executed in total.")
+	         .register();
 	
 	/*************************************************************************
 	 * Return a unique name for this executor.
@@ -61,10 +68,21 @@ public abstract class CFWJobTask implements Job {
 	 * context.getJobDetail().getKey().getName();
 	 * </code></pre>
 	 * 
-	 * The defined task parameters can be retrieved as follows:
+	 * The defined task parameters have to be retrieved as follows. There are
+	 * other methods to retrieve the JobDataMap, but if you use those you
+	 * might not always get the parameters in the map.
 	 * <pre><code>
-	 * JobDataMap data = context.getTrigger().getJobDataMap();
+	 * JobDataMap data = context.getMergedJobDataMap();
 	 * String myParam = data.getString("myParam");
+	 * </code></pre>
+	 * 
+	 * To add messages to the execution, use the method provided by CFW.Messages.
+	 * This will be displayed as an icon in the first column of the table on 
+	 * the user interface.
+	 * 
+	 * <pre><code>
+	 * CFW.Messages.addMessage(MessageType.INFO, "Example Message");
+	 * CFW.Messages.add*Message("Example Message INFO/SUCCESS/WARNING/ERROR");
 	 * </code></pre>
 	 * 
 	 *************************************************************************/
@@ -115,6 +133,8 @@ public abstract class CFWJobTask implements Job {
 					.custom("taskname", this.uniqueName())
 					.severe("Error while writing last execution time to DB.");
 			}
+			
+			executionCounter.inc();
 		}
 	}
 	
