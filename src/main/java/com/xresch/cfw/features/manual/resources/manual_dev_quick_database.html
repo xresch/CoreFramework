@@ -54,6 +54,10 @@ Create your own methods for adding SQLs that are specific for your case.
 	private static Class&lt;Dashboard&gt; cfwObjectClass = Dashboard.class;
 	
 	public static Logger logger = CFWLog.getLogger(CFWDBDashboard.class.getName());
+	
+	//Used for creating default audit logs
+	private static final String[] auditLogFieldnames = new String[] { DashboardFields.PK_ID.toString(), DashboardFields.NAME.toString()};
+	
 		
 	//####################################################################################################
 	// Preckeck Initialization
@@ -94,29 +98,45 @@ Create your own methods for adding SQLs that are specific for your case.
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(Dashboard... items) 	{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, items); }
-	public static boolean 	create(Dashboard item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, item);}
-	public static Integer 	createGetPrimaryKey(Dashboard item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);}
+	public static boolean	create(Dashboard... items) 	{ updateTags(items); return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, items); }
+	public static boolean 	create(Dashboard item) 		{ updateTags(item); return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, item);}
+	public static Integer 	createGetPrimaryKey(Dashboard item) { updateTags(item); return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, auditLogFieldnames, item);}
 	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(Dashboard... items) 	{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, items); }
-	public static boolean 	update(Dashboard item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, item); }
+	public static boolean 	update(Dashboard... items) 	{ updateTags(items); return CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, items); }
+	public static boolean 	update(Dashboard item) 		{ updateTags(item); return CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, item); }
 	
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################
-	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, DashboardFields.PK_ID.toString(), id); }
-	public static boolean 	deleteMultipleByID(String itemIDs) 	{ return CFWDBDefaultOperations.deleteMultipleByID(cfwObjectClass, itemIDs); }
-	
-	public static boolean 	deleteMultipleByIDForUser(int userid, String commaSeparatedIDs)	{ 
-		return CFWDBDefaultOperations.deleteMultipleByIDWhere(cfwObjectClass, commaSeparatedIDs, DashboardFields.FK_ID_USER, userid); 
-	} 
-	
-	public static boolean 	deleteByName(String name) 		{ 
-		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, DashboardFields.NAME.toString(), name); 
+	public static boolean 	deleteByID(String id) {
+		
+		CFW.DB.beginTransaction();
+		
+		boolean success = true;
+		// delete widgets and related jobs first to not have jobs unrelated to widgets.
+		success &= CFW.DB.DashboardWidgets.deleteWidgetsForDashboard(id); 
+		success &= CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, DashboardFields.PK_ID.toString(), id); 
+		
+		if(success) {
+			CFW.DB.commitTransaction();
+		}else {
+			CFW.DB.rollbackTransaction();
+		}
+		return success;
 	}
+
+	public static boolean deleteByIDForCurrentUser(String id)	{ 
+		
+		if(isDashboardOfCurrentUser(id)) {
+			return deleteByID(id);
+		}else {
+			CFW.Messages.noPermission();
+			return false;
+		}
+	} 
 		
 	//####################################################################################################
 	// SELECT
@@ -135,10 +155,11 @@ Create your own methods for adding SQLs that are specific for your case.
 	
 	//---------------------------------------
 	// A method with a custom SQL
+	
 	public static String getDashboardAsJSON(String id) {
 		
-		return new Dashboard()
-				.queryCache(CFWDBDashboard.class, "getDashboardAsJSON")
+		return new CFWSQL(new Dashboard())
+				.queryCache() // uses this methods signature for the key in the cache
 				.select()
 				.where(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
 				.or(DashboardFields.IS_SHARED.toString(), true)
@@ -150,153 +171,79 @@ Create your own methods for adding SQLs that are specific for your case.
 </code>
 </pre>
 
+<h2>Create Default Database Interfaces</h2>
+<p>
+CFW provides you with some default methods to create pooled database connection interfaces.
+You can use the following methods to create such a DB interface.
+IMPORTANT: Except for the H2 libraries, you have to include the other DB libraries yourself in your built.
+CFWSQL is directed against the internal H2 Database, so can partially be used to create and cache SQLs, but not for converting the results to a specific format.
+Please use the methods provided by ResultSetUtils if you want to convert your results to another format.
+</p>
+
+
+<pre>
+<code>DBInterface.createDBInterfaceH2();
+DBInterface.createDBInterfaceH2AutoServer();
+DBInterface.createDBInterfaceMySQL();
+DBInterface.createDBInterfaceMSSQL();
+DBInterface.createDBInterfaceOracle();
+</code>
+</pre>
 
 <h2>Create Custom Database Interface</h2>
 <p>
-If you want to connect to another database, you can create your own implementation of the DBInterface. 
-CFWSQL can partially be used to create and cache SQLs, but not for converting the results to a specific format.
+If you want to connect to another database type, you can use the method DBInterface.createDBInterface().
+Or you can create your own implementation of the DBInterface. 
 </p>
-
-<h3>Oracle DB Interface</h3>
 <p>
 Here is an example implementation of creating your own Oracle DB Interface: 
 </p>
 <pre>
-<code>public static DBInterface initializeDBInterface(String servername, int port, String name, String type, String username, String password) {
+<code>/************************************************************************
+ * Creates a DBInterface with a pooled datasource.
+ * Adds the connection pool to the Connection pool management.
+ * Sets default connection pool settings.
+ * 
+ * @return DBInterface
+ * 
+ ************************************************************************/
+public static DBInterface createDBInterface(String uniquepoolName, String driverName, String url, String username, String password) {
 	
-	//-----------------------------------------
-	// Create the instance
-	DBInterface db = new DBInterface() {
-		
-		PoolDataSource pooledSource;
-		
-		//-----------------------------------------
-		// static block to initialize DB pool
-		{
-			try {
-				
-				String url = "";
-				if(type.trim().equals("SID")) {
-					//jdbc:oracle:thin:@myHost:myport:sid
-					url = "jdbc:oracle:thin:@"+servername+":"+port+":"+name;
-				}else {
-					//jdbc:oracle:thin:@//myHost:1521/service_name
-					url = "jdbc:oracle:thin:@//"+servername+":"+port+"/"+name;
-				}
-				
-				pooledSource = PoolDataSourceFactory.getPoolDataSource();
-				pooledSource.setConnectionFactoryClassName("oracle.jdbc.pool.OracleDataSource");
-				pooledSource.setURL(url);
-				pooledSource.setUser(username);
-				pooledSource.setPassword(password);
-				pooledSource.setInitialPoolSize(5);
-				pooledSource.setMinPoolSize(5);
-				pooledSource.setMaxPoolSize(50);
-				pooledSource.setMaxStatements(20);
-				
-				pooledSource.setMaxConnectionReuseCount(50);
-				pooledSource.setTimeoutCheckInterval(30);
-				pooledSource.setConnectionWaitTimeout(60);
-				pooledSource.setAbandonedConnectionTimeout(20);
-				pooledSource.setMaxIdleTime(330);
-				pooledSource.setInactiveConnectionTimeout(600);
-				pooledSource.setTimeToLiveConnectionTimeout(3600);
-				
-				//----------------------------------
-				// Test connection
-				Connection connection = pooledSource.getConnection();
-				connection.close();
-				
-			} catch (SQLException e) {
-				new CFWLog(logger)
-					.method("initialize")
-					.severe("Exception initializing Database.", e);
-			}
-		}
-		
-		//-----------------------------------------
-		// Implementation of the getConnection Method
-		@Override
-		public Connection getConnection() throws SQLException {
-			
-			//-----------------------------------------
-			// Check needed for 
-			// beginTransaction()
-			// commitTransaction()
-			// and rollbackTransaction()
-			if(transactionConnection.get() != null) {
-				return transactionConnection.get();
-			}else {
-				synchronized (pooledSource) {
-					Connection connection = pooledSource.getConnection();
-					//-----------------------------------------
-					// Add connection to open connections for
-					// force closing it when the application is finished
-					// creating the response and the connection is still open.
-					addOpenConnection(connection);
-					return connection;
-				}
-			}				
-		}
-	};
-
-	return db;
-}</code>
-</pre>
-
-<h3>Microsoft SQLServer Interface</h3>
-<p>
-Here is an example implementation of creating your own SQL Server Interface: 
-</p>
-<pre>
-<code>public static DBInterface initializeDBInterface(String servername, int port, String dbName, String username, String password) {
+	BasicDataSource datasourceSource;
 	
-	@SuppressWarnings("deprecation")
-	DBInterface db = new DBInterface() {
+	try {
+		//Driver name com.microsoft.sqlserver.jdbc.SQLServerDriver
+		//Connection URL Example: "jdbc:sqlserver://localhost:1433;databaseName=AdventureWorks;user=MyUserName;password=*****;";  
+		datasourceSource = new BasicDataSource();
 		
-		SQLServerConnectionPoolDataSource pooledSource;
-		{
-			try {
+		datasourceSource.setDriverClassName(driverName);
+		datasourceSource.setUrl(url);					
 
-				pooledSource = new SQLServerConnectionPoolDataSource();
-				pooledSource.setServerName(servername);
-				pooledSource.setPortNumber(port);
-				
-				pooledSource.setDatabaseName(dbName);
-				pooledSource.setUser(username);
-				pooledSource.setPassword(password);
-				pooledSource.setMultiSubnetFailover(true);
-				
-				//----------------------------------
-				// Test connection
-				pooledSource.setLoginTimeout(5);
-				Connection connection = pooledSource.getConnection();
-				connection.close();
-				
-			} catch (Exception e) {
-				new CFWLog(logger)
-					.method("initialize")
-					.severe("Exception initializing Database.", e);
-			}
-		}
+		datasourceSource.setUsername(username);
+		datasourceSource.setPassword(password);
 		
-		@Override
-		public Connection getConnection() throws SQLException {
-			
-			if(transactionConnection.get() != null) {
-				return transactionConnection.get();
-			}else {
-				synchronized (pooledSource) {
-					Connection connection = pooledSource.getConnection();
-					addOpenConnection(connection);
-					return connection;
-				}
-			}				
-		}
-	};
+		DBInterface.setDefaultConnectionPoolSettings(datasourceSource);
+		
+		//----------------------------------
+		// Test connection
+		//pooledSource.setLoginTimeout(5);
+		Connection connection = datasourceSource.getConnection();
+		connection.close();
+		
+		DBInterface.registerManagedConnectionPool(uniquepoolName, datasourceSource);
+		
+	} catch (Exception e) {
+		new CFWLog(logger)
+			.severe("Exception occured initializing DBInterface.", e);
+		return null;
+	}
+	
+	DBInterface db = new DBInterface(uniquepoolName, datasourceSource);
 
+	new CFWLog(logger).info("Created DBInteface: "+ url);
 	return db;
-}</code>
+}
+</code>
 </pre>
 
 <h2>Using Custom Interfaces</h2>

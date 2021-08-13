@@ -97,7 +97,7 @@ public class ContextSettings extends CFWObject {
 	}
 		
 	public void migrateTable(){
-		CFWSQL.renameColumn(TABLE_NAME, "JSON_RESTRICTED_TO_ROLES", ContextSettingsFields.JSON_RESTRICTED_TO_GROUPS.toString());
+		new CFWSQL(null).renameColumn(TABLE_NAME, "JSON_RESTRICTED_TO_ROLES", ContextSettingsFields.JSON_RESTRICTED_TO_GROUPS.toString());
 	}
 	
 	/**************************************************************************************

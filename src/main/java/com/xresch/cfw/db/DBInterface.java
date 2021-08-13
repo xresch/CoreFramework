@@ -729,6 +729,11 @@ public class DBInterface {
 
 
 	/************************************************************************
+	 * Creates a DBInterface with a pooled datasource.
+	 * Adds the connection pool to the Connection pool management.
+	 * Sets default connection pool settings.
+	 * 
+	 * @return DBInterface
 	 * 
 	 ************************************************************************/
 	public static DBInterface createDBInterface(String uniquepoolName, String driverName, String url, String username, String password) {
@@ -783,8 +788,8 @@ public class DBInterface {
 	
 	/********************************************************************************************
 	 * Add a connection pool as a managed connection pool.
+	 * The connection pool will show up in the Database Analytics.
 	 * 
-	 * @throws SQLException 
 	 ********************************************************************************************/
 	public static void registerManagedConnectionPool(String uniqueName, BasicDataSource datasource) {	
 		
@@ -803,8 +808,6 @@ public class DBInterface {
 	
 	/********************************************************************************************
 	 * Remove connection pool from the managed connection pools.
-	 * 
-	 * @throws SQLException 
 	 ********************************************************************************************/
 	public static void removeManagedConnectionPool(String uniqueName) {	
 		BasicDataSource removedPool = managedConnectionPools.remove(uniqueName);	

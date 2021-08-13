@@ -74,23 +74,23 @@ public class UserRoleMap extends CFWObject {
 				
 		//---------------------------
 		// Rename Column 
-		CFWSQL.renameColumn("CFW_USER_GROUP_MAP", "FK_ID_GROUP",  UserRoleMapFields.FK_ID_ROLE.toString());
+		new CFWSQL(null).renameColumn("CFW_USER_GROUP_MAP", "FK_ID_GROUP",  UserRoleMapFields.FK_ID_ROLE.toString());
 		
 		//---------------------------
 		// Rename Foreign Key
-		CFWSQL.renameForeignKey("CFW_USER_GROUP_MAP",
+		new CFWSQL(null).renameForeignKey("CFW_USER_GROUP_MAP",
 				  "FK_ID_GROUP",
 				  this.getTableName(),
 				  UserRoleMapFields.FK_ID_ROLE.toString());
 		//---------------------------
 		// Rename Foreign Key
-		CFWSQL.renameForeignKey("CFW_USER_GROUP_MAP",
+		new CFWSQL(null).renameForeignKey("CFW_USER_GROUP_MAP",
 									  UserRoleMapFields.FK_ID_USER.toString(),
 									  this.getTableName(),
 									  UserRoleMapFields.FK_ID_USER.toString());
 		//---------------------------
 		// Rename Table
-		CFWSQL.renameTable("CFW_USER_GROUP_MAP", this.getTableName());
+		new CFWSQL(null).renameTable("CFW_USER_GROUP_MAP", this.getTableName());
 			
 	}
 	/**************************************************************************************

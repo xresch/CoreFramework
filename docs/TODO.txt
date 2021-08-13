@@ -74,6 +74,10 @@ Potential TODOs
 - Manual: Jobs
 - Manual: Widget Tasks
 - Manual: Dashboard Parameters
+- Manual: Multi Forms
+
+- DB: Add Feature to change connection pool limits for managed connection pools
+- DB: Prometheus DB Pool statistics
 
 - CFW: CFWApplicationExecutor - ForwardedRequestCustomizer make it work with reverse proxy
 - CFW: Create javascript sanity check page
@@ -87,8 +91,6 @@ Potential TODOs
    
 - CFWField: Add initFormField(method)
 - CFWField: Form errors add to field.
-- CFWField: FormField.SINGLECOMPLETE
-  - how to load key and label? 
   
 - Image Upload for Summernote Editor
 - Truncate too long toasts.
@@ -117,6 +119,7 @@ DONE
 - Audit Logs: set Level.OFF to always log audit logs
 - Permissions: Added permission 'Dashboard Tasks'
 - Menu: Added default Tools Menu
+- CFWSQL: Can now be used for custom DBInterfaces.
 
 ------- v3.0.1 -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI

@@ -43,6 +43,7 @@ public class CFWSQL {
 				.expireAfterAccess(24, TimeUnit.HOURS)
 		);
 	
+	private DBInterface dbInterface;
 	private String queryName = null;
 	private boolean isQueryCached = false;
 	private boolean isNextSelectDistinct = false;
@@ -58,7 +59,23 @@ public class CFWSQL {
 	
 	private ResultSet result = null;
 	
+	/****************************************************************
+	 * Creates a CFWSQL object with the DBInterface of the Internal H2
+	 * database
+	 ****************************************************************/
 	public CFWSQL(CFWObject object) {
+		dbInterface = CFW.DB.getDBInterface();
+		if(object != null) {
+			this.object = object;
+			this.fields = object.getFields();
+		}
+	} 
+	
+	/****************************************************************
+	 * Creates a CFWSQL object for the given DBInterface.
+	 ****************************************************************/
+	public CFWSQL(DBInterface dbInterface, CFWObject object) {
+		this.dbInterface = dbInterface;
 		if(object != null) {
 			this.object = object;
 			this.fields = object.getFields();
@@ -188,7 +205,7 @@ public class CFWSQL {
 		String tableName = object.getTableName();
 		
 		String createTableSQL = "CREATE TABLE IF NOT EXISTS "+tableName;
-		success &= CFWDB.preparedExecute(createTableSQL);
+		success &= dbInterface.preparedExecute(createTableSQL);
 		
 		//------------------------------------
 		// Create Columns
@@ -196,7 +213,7 @@ public class CFWSQL {
 			if(field.getColumnDefinition() != null) {
 				String addColumnIsRenamable = "ALTER TABLE "+tableName
 				 +" ADD COLUMN IF NOT EXISTS "+field.getName()+" "+field.getColumnDefinition();
-				success &= CFWDB.preparedExecute(addColumnIsRenamable);
+				success &= dbInterface.preparedExecute(addColumnIsRenamable);
 			}else {
 				new CFWLog(logger)
 					.severe("The field "+field.getName()+" is missing a columnDefinition. Use CFWField.setColumnDefinition(). ");
@@ -217,7 +234,7 @@ public class CFWSQL {
 				  + " FOREIGN KEY ("+fkd.fieldname
 				  + ") REFERENCES "+foreignTable+"("+fkd.foreignFieldname+") ON DELETE "+fkd.ondelete;
 			
-				success &= CFWDB.preparedExecute(createForeignKeysSQL);
+				success &= dbInterface.preparedExecute(createForeignKeysSQL);
 				
 			} catch (Exception e) {
 				new CFWLog(logger)
@@ -253,7 +270,7 @@ public class CFWSQL {
 				.executeDelete();
 				
 				new CFWLog(logger).info("Creating fulltext search index for table '"+tableName+"'. this might take some time.");
-				success &= CFWDB.preparedExecute("CALL FTL_CREATE_INDEX('PUBLIC', '"+tableName+"', '"+columnsString+"');");
+				success &= dbInterface.preparedExecute("CALL FTL_CREATE_INDEX('PUBLIC', '"+tableName+"', '"+columnsString+"');");
 				
 			}
 		}
@@ -267,10 +284,10 @@ public class CFWSQL {
 
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
-	public static boolean renameTable(String oldname, String newname) {
+	public boolean renameTable(String oldname, String newname) {
 		
 		String renameTable = "ALTER TABLE IF EXISTS "+oldname+" RENAME TO "+newname;
-		return CFWDB.preparedExecute(renameTable);
+		return dbInterface.preparedExecute(renameTable);
 	}
 	
 	/****************************************************************
@@ -278,10 +295,10 @@ public class CFWSQL {
 
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
-	public static boolean renameColumn(String tablename, String oldname, String newname) {
+	public boolean renameColumn(String tablename, String oldname, String newname) {
 		
 		String renameColumn = "ALTER TABLE IF EXISTS "+tablename+" ALTER COLUMN IF EXISTS "+oldname+" RENAME TO "+newname;
-		return CFWDB.preparedExecute(renameColumn);
+		return dbInterface.preparedExecute(renameColumn);
 	}
 	
 	/****************************************************************
@@ -289,13 +306,13 @@ public class CFWSQL {
 	 *
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
-	public static boolean renameForeignKey(String oldTablename, String oldFieldname, String newTablename, String newFieldname) {
+	public boolean renameForeignKey(String oldTablename, String oldFieldname, String newTablename, String newFieldname) {
 		
 		String renameForeignKey = "ALTER TABLE IF EXISTS "+oldTablename+
 				" RENAME CONSTRAINT FK_"+oldTablename+"_"+oldFieldname
 			  + " TO FK_"+newTablename+"_"+newFieldname;
 
-		return CFWDB.preparedExecute(renameForeignKey);
+		return dbInterface.preparedExecute(renameForeignKey);
 	}
 	
 	
@@ -1231,14 +1248,14 @@ public class CFWSQL {
 		//----------------------------
 		// Execute Statement 
 		if(statement.trim().startsWith("SELECT")) {
-			result = CFWDB.preparedExecuteQuery(statement, values.toArray());
+			result = dbInterface.preparedExecuteQuery(statement, values.toArray());
 			if(result != null) {
 				return true;
 			}else {
 				return false;
 			}
 		}else {
-			return CFWDB.preparedExecute(statement, values.toArray());
+			return dbInterface.preparedExecute(statement, values.toArray());
 		}
 	}
 	
@@ -1256,9 +1273,9 @@ public class CFWSQL {
 		
 		//----------------------------
 		// Execute Statement 
-		boolean success = CFWDB.preparedExecuteBatch(statement, values.toArray());
+		boolean success = dbInterface.preparedExecuteBatch(statement, values.toArray());
 		
-		CFWDB.close(result);
+		dbInterface.close(result);
 		
 		return success;
 
@@ -1279,7 +1296,7 @@ public class CFWSQL {
 		//----------------------------
 		// Execute Statement 
 		if(statement.trim().startsWith("INSERT")) {
-			return CFWDB.preparedInsertGetKey(statement, object.getPrimaryField().getName(), values.toArray());
+			return dbInterface.preparedInsertGetKey(statement, object.getPrimaryField().getName(), values.toArray());
 			
 		}else {
 			new CFWLog(logger)
@@ -1299,7 +1316,7 @@ public class CFWSQL {
 	public boolean executeDelete() {
 		
 		boolean success = this.execute();
-		CFWDB.close(result);
+		dbInterface.close(result);
 		
 		return success;
 	}
@@ -1335,7 +1352,7 @@ public class CFWSQL {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}finally {
-			CFWDB.close(result);
+			dbInterface.close(result);
 		}
 		return -1;
 	}
@@ -1567,7 +1584,7 @@ public class CFWSQL {
 		
 		this.execute();
 		String string = ResultSetUtils.toCSV(result, ";");
-		CFWDB.close(result);
+		dbInterface.close(result);
 		
 		return string;
 		
@@ -1580,7 +1597,7 @@ public class CFWSQL {
 		
 		this.execute();
 		String	string = ResultSetUtils.toXML(result);
-		CFWDB.close(result);
+		dbInterface.close(result);
 		
 		return string;
 		

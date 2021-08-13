@@ -125,7 +125,7 @@ public class Role extends CFWObject {
 		
 		//---------------------------
 		// Rename Table
-		CFWSQL.renameTable("CFW_GROUP", this.getTableName());
+		new CFWSQL(null).renameTable("CFW_GROUP", this.getTableName());
 		
 	}
 	

@@ -83,6 +83,7 @@ public class CFWDBDashboard {
 	public static boolean	create(Dashboard... items) 	{ updateTags(items); return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, items); }
 	public static boolean 	create(Dashboard item) 		{ updateTags(item); return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, item);}
 	public static Integer 	createGetPrimaryKey(Dashboard item) { updateTags(item); return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, auditLogFieldnames, item);}
+	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
@@ -142,8 +143,8 @@ public class CFWDBDashboard {
 	 ****************************************************************/
 	public static String getDashboardAsJSON(String id) {
 		
-		return new Dashboard()
-				.queryCache(CFWDBDashboard.class, "getDashboardAsJSON")
+		return new CFWSQL(new Dashboard())
+				.queryCache()
 				.select()
 				.where(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
 				.or(DashboardFields.IS_SHARED.toString(), true)

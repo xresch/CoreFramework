@@ -193,8 +193,8 @@ public class Dashboard extends CFWObject {
 	public void migrateTable() {
 		//----------------------------------------
 		// Migration from v3.0.0 to next version
-		CFWSQL.renameColumn(TABLE_NAME, "JSON_SHARE_WITH_ROLES", DashboardFields.JSON_SHARE_WITH_GROUPS.toString());
-		CFWSQL.renameColumn(TABLE_NAME, "JSON_EDITOR_ROLES", DashboardFields.JSON_EDITOR_GROUPS.toString());
+		new CFWSQL(null).renameColumn(TABLE_NAME, "JSON_SHARE_WITH_ROLES", DashboardFields.JSON_SHARE_WITH_GROUPS.toString());
+		new CFWSQL(null).renameColumn(TABLE_NAME, "JSON_EDITOR_ROLES", DashboardFields.JSON_EDITOR_GROUPS.toString());
 	}
 	
 	/**************************************************************************************
