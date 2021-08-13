@@ -176,8 +176,7 @@ Create your own methods for adding SQLs that are specific for your case.
 CFW provides you with some default methods to create pooled database connection interfaces.
 You can use the following methods to create such a DB interface.
 IMPORTANT: Except for the H2 libraries, you have to include the other DB libraries yourself in your built.
-CFWSQL is directed against the internal H2 Database, so can partially be used to create and cache SQLs, but not for converting the results to a specific format.
-Please use the methods provided by ResultSetUtils if you want to convert your results to another format.
+CFWSQL is by default directed against the internal H2 Database. Use the constructor new CFWSQL(DBInterface, CFWObject) to use it for your own interface.
 </p>
 
 
@@ -196,7 +195,7 @@ If you want to connect to another database type, you can use the method DBInterf
 Or you can create your own implementation of the DBInterface. 
 </p>
 <p>
-Here is an example implementation of creating your own Oracle DB Interface: 
+Here is the code of createDBInterface() as an example: 
 </p>
 <pre>
 <code>/************************************************************************
