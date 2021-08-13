@@ -257,12 +257,24 @@ public class CFWDBContextSettings {
 	}
 	
 	/***************************************************************
-	 * Returns a map with ID/Name values for select options.
+	 * Returns a map with ID/Name values for select options for
+	 * the current user
 	 * @param type of the context setting
+	 * @param options for user, empty map if user is null.
 	 ****************************************************************/
 	public static LinkedHashMap<Object, Object> getSelectOptionsForTypeAndUser(String type) {
 		
-		int userID = CFW.Context.Request.getUser().id();
+		LinkedHashMap<Object, Object> objects = new LinkedHashMap<>();
+		
+		//----------------------------------
+		// Get User
+		User user = CFW.Context.Request.getUser();
+		if (user == null) { return objects; }
+		
+		int userID = user.id();
+		
+		//----------------------------------
+		// Fetch Data
 		String restrictedUserslikeID = "%\""+userID+"\":%";
 		
 		CFWSQL query =  new CFWSQL(new ContextSettings())
@@ -295,7 +307,7 @@ public class CFWDBContextSettings {
 				query.or().like(ContextSettingsFields.JSON_RESTRICTED_TO_GROUPS, "%\""+roleID+"\":%");
 			}
 		}
-		LinkedHashMap<Object, Object> objects =  query
+		objects =  query
 				.custom(")")
 				.orderby(ContextSettingsFields.CFW_CTXSETTINGS_NAME)
 				.getAsLinkedHashMap(ContextSettingsFields.PK_ID, ContextSettingsFields.CFW_CTXSETTINGS_NAME);

@@ -1,6 +1,8 @@
 package com.xresch.cfw.features.jobs;
 
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -15,6 +17,8 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.datahandling.CFWSchedule.EndType;
+import com.xresch.cfw.datahandling.CFWSchedule.IntervalType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.features.api.APIDefinition;
@@ -83,7 +87,11 @@ public class CFWJob extends CFWObject {
 			CFWField.newSchedule(CFWJobFields.JSON_SCHEDULE)
 			.setLabel("Schedule")
 			.addValidator(new ScheduleValidator().setNullAllowed(false))
-			.setValue(null);
+			.setValue(
+				new CFWSchedule()
+					.timeframeStart(Date.from(Instant.now()))
+					.endType(EndType.RUN_FOREVER)
+			);
 	
 	private CFWField<Timestamp> lastRunTime = CFWField.newTimestamp(FormFieldType.NONE, CFWJobFields.LAST_RUN_TIME)
 			.setDescription("Time of the last run of the job.")

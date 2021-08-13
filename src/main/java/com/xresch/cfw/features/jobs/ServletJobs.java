@@ -62,7 +62,7 @@ public class ServletJobs extends HttpServlet
 		        response.setStatus(HttpServletResponse.SC_OK);
 			}
 		}else {
-			CFWMessages.accessDenied();
+			CFW.Messages.accessDenied();
 		}
         
     }

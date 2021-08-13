@@ -50,7 +50,7 @@ public class ServletManual extends HttpServlet
 			}
 		}else {
 			// Add an alert message to the request context. This will be added to the response as a message shown to the user.
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Messages.accessDenied();
 		}
         
     }
@@ -87,14 +87,14 @@ public class ServletManual extends HttpServlet
 												
 												
 					default: 					
-						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+						CFW.Messages.itemNotSupported(item);
 						break;
 				}
 				break;
 						
 			default: 
 				// Add an alert message to the request context. This will be added to the json response as a message.			
-				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The action '"+action+"' is not supported.");
+				CFW.Messages.actionNotSupported(action);
 				break;					
 		}
 	}

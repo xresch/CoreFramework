@@ -3,7 +3,7 @@
 
 <h2>Introduction</h2>
 <p>
-The CFWField is a core class of the framework. It basically is an enhanced form of a class field that holds a value of the class instance.
+The CFWField is a core class of the framework. It basically is a class providing all the functionality you need to handle field and it's data.
 Because we create a class for the fields, it is possible to add a lot of commonly needed functions to this fields.
 This makes a lot of implementations much easier, for example:</p>
 <ul>
@@ -79,9 +79,7 @@ Creates a textarea and that will be saved to a CLOB field. Limits the data amoun
 </code>
 </pre>
 
-
-
-<h3>Number with custom Label</h3>
+<h3>Number with custom Label and Validator</h3>
 <p>
 Creates a number field with a custom label.
 By default the name of the CFWField will be used as label like this:
@@ -94,7 +92,8 @@ By default the name of the CFWField will be used as label like this:
 <code>private CFWField&lt;Integer&gt; number = 
 	CFWField.newInteger(FormFieldType.NUMBER, 
 						"Number_Fieldxyz")
-			.setLabel("Enter a Number");
+			.setLabel("Enter a Number")
+			.addValidator(new NumberRangeValidator(8, 8008));
 </code>
 </pre>
 
@@ -169,6 +168,73 @@ Dates before 1582 are not supported well because of the cutoff between the Julia
 </code>
 </pre>
 
+<h3>Schedule Field</h3>
+<p>
+Following code creates a new schedule picker field with a default value and a validator.
+The values chosen by the user are mapped back to the CFWSchedule field and saved to the DB as a JSON string.
+Times will always be converted to epoch time for request parameters and saving to database.
+CFWSchedule provides methods to convert the schedule int a QuartzTriggerBuilder and calculate the interval in seconds.
+</p>
+<pre>
+<code>private CFWField&lt;CFWSchedule&gt; schedule = 
+			CFWField.newSchedule("JSON_SCHEDULE")
+			.setLabel("Schedule")
+			.addValidator(new ScheduleValidator())
+			.setValue(
+				new CFWSchedule()
+					.timeframeStart(Date.from(Instant.now()))
+					.endType(EndType.RUN_FOREVER)
+					.intervalType(IntervalType.EVERY_X_DAYS)
+					.intervalDays(1)
+			);
+</code>
+</pre>
+
+
+
+<h3>Value/Label Field</h3>
+<p>
+Value Label field lets the users enter value/label-pairs that can be used for example for custom select options.
+The values will get stored to the database as a JSON string.
+The following code creates a values label field with default values.
+</p>
+<pre>
+<code>private static LinkedHashMap&lt;String, String&gt; valueLabels = new LinkedHashMap&lt;String, String&gt;();
+static {
+	valueLabels.put("myValue", "My Value Label");
+	valueLabels.put("test_some_entry", "Test Some Entry Labels");
+}
+private CFWField&lt;LinkedHashMap&lt;String, String&gt;&gt; valueLabel = 
+			CFWField.newValueLabel("JSON_VALUE_LABEL")
+					.setLabel("Value Label")
+					.setDescription("Add Values and labels")
+					.setValue(valueLabels);
+</code>
+</pre>
+
+
+<h3>Unmodifiable Field</h3>
+<p>
+You can choose the FormFieldType.UNMODIFIABLE_TEXT to only display data in a form but not allow the user to modify it.
+Can be useful if part of the data is set in the code or should not be modified after it was set once.
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; unmodifiableText = 
+				CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, "UNMODIFIABLE_TEXT")
+						.setValue("Just display the value as a unmodifiable text.");
+</code>
+</pre>
+
+<h3>Language Field</h3>
+<p>
+The following code creates a localized language selector.
+The language code will be returned as a ISO two character code e.g.(EN for English, DE for German).
+</p>
+<pre>
+<code>private CFWField&lt;String&gt; language =  CFWField.newString(FormFieldType.LANGUAGE, "LANGUAGE");
+</code>
+</pre>
+	
 
 <h3>WYSIWYG Editor</h3>
 <p>
@@ -179,7 +245,16 @@ Please note that you need to use .allowHTML(true) so the user input will not be 
 <code>private CFWField&lt;String&gt; editor = 
 	CFWField.newString(FormFieldType.WYSIWYG, "EDITOR")
 			.allowHTML(true)
-			.setValue("&lt;strong&gt;Initial Value:&lt;/strong&gt; successfull!!!");
+			.setValue("&lt;strong&gt;Initial Value:&lt;/strong&gt; successful!!!");
 </code>
 </pre>
+
+
+<h3>Autocomplete Fields</h3>
+<p>
+Please find the documentation in the next section <a href="#" onclick="cfw_manual_loadPage('Development|Quickstart|Autocomplete Fields');">Autocomplete Fields</a>.
+</p>
+
+
+
 

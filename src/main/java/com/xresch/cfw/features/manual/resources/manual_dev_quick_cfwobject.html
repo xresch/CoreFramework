@@ -6,6 +6,7 @@
 	<li><strong>Fetch and Store Data:&nbsp;</strong>Through CFWObject, the fetching and storing of data to the database is a bit simplified.</li>
 	<li><strong>Generate Forms:&nbsp;</strong> HTML Forms can be generated based on the CFWFields added to the CFWObject.</li>
 	<li><strong>Create APIs:&nbsp;</strong> APIs can be easily created based on the CFWObjects.</li>
+	<li><strong>Define Settings:&nbsp;</strong> Other components like WidgetDefinition or CFWJobTask can return a CFWObject containing all the settings fields they need.</li>
 </ul>
 
 <h2>Example</h2>
@@ -22,7 +23,7 @@ public class Role extends CFWObject {
 	// Store the table name in a global variable for easier handling
 	public static final String TABLE_NAME = "CFW_ROLE";
 	
-	// Create an enumberation of all field names
+	// Create an enumeration of all field names
 	public enum RoleFields{ PK_ID, NAME, IS_DELETABLE }
 	
 	// Create a CFWField as primary field
@@ -96,7 +97,7 @@ public class Role extends CFWObject {
 </pre>
 
 <h2>Register CFWObjects</h2>
-<p>That database tables will be generated and APIs exposed, you will need to register your object:</p>
+<p>In orger to get database tables generated and APIs exposed, you will need to register your object:</p>
 <pre>
 <code>CFW.Registry.Objects.addCFWObject(Role.class);</code>
 </pre>

@@ -11,15 +11,21 @@ import com.xresch.emp.features.theusinator.FeatureTheusinator;
 
 public class Main implements CFWAppInterface {
 	
-	// Always use CFWLog.getLogger() to create a logger for your class. Afterwards you can create log events with using 'new CFWLog(logger)'.
+	// Always use CFWLog.getLogger() to create a logger for your class. Afterwards you can create log events using 'new CFWLog(logger)'.
 	public static Logger logger = CFWLog.getLogger(Main.class.getName());
 	
-    public static void main( String[] args ) throws Exception
-    {
-    	// Initialize and runs the application.
-    	CFW.initializeApp(new Main(), args);
-    }
+	public static void main( String[] args ) throws Exception
+	{
+		// Initialize and runs the application.
+		CFW.initializeApp(new Main(), args);
+	}
     
+	@Override
+	public void settings() {
+		CFW.AppSettings.enableDashboarding(true);
+		CFW.AppSettings.enableContextSettings(true);
+	}
+	
 	@Override
 	public void register() {
 		// Do the registering here
@@ -37,9 +43,8 @@ public class Main implements CFWAppInterface {
 			app.start();
 		} catch (Exception e) {
 
-			// That's how you create logs
+			// That's how you create logs, method is auto-detected
 			new CFWLog(logger)
-				.method("startApp")
 				.severe("Exception occured during startup.", e);
 		}
 	}

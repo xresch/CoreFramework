@@ -1,6 +1,8 @@
 package com.xresch.cfw.features.dashboard;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,6 +24,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.datahandling.CFWSchedule.EndType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormCustomAutocompleteHandler;
 import com.xresch.cfw.datahandling.CFWFormHandler;
@@ -440,7 +443,11 @@ public class ServletDashboardView extends HttpServlet
 				CFWField<CFWSchedule> scheduleField = CFWField.newSchedule(CFWJobFields.JSON_SCHEDULE)
 				.setLabel("Schedule")
 				.addValidator(new ScheduleValidator().setNullAllowed(false))
-				.setValue(null);
+				.setValue(
+					new CFWSchedule()
+						.timeframeStart(Date.from(Instant.now()))
+						.endType(EndType.RUN_FOREVER)
+				);
 				
 				if(hasJob) {
 					CFWJob job = CFW.DB.Jobs.selectFirstByCustomInteger(widget.id());
