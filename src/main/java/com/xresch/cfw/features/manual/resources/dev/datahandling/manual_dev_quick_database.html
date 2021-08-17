@@ -260,44 +260,59 @@ More about SQL Queries can be found on the page <a href="#" onclick="cfw_manual_
 //----------------------------------------------------
 // Simple Query, be 'silent' and don't show errors to the user
 //----------------------------------------------------
-ResultSet result = db.preparedExecuteQuerySilent("SELECT * FROM MY_TABLE WHERE VALUE = ?", myValue);
+ResultSet result = mydbinterface.preparedExecuteQuerySilent("SELECT * FROM MY_TABLE WHERE VALUE = ?", myValue);
 
 //----------------------------------------------------
 // SQL Query loaded from File
 //----------------------------------------------------
 ResultSet result = dbinterface.preparedExecuteQuery(
-	CFW.Files.readPackageResource(FeatureEMPWidgets.RESOURCE_PACKAGE, "emp_spm_monitor_autocomplete.sql"),
+	CFW.Files.readPackageResource(SomeFeature.RESOURCE_PACKAGE, "searchQueryWithTwoPlaceholders.sql"),
 	"%"+searchValue+"%",
 	"%"+searchValue+"%");
 
 //----------------------------------------------------
-// SQL Query created and cached with 
+// Use CFWSQL with custom dbinterface and without
+// CFWObject.
 //----------------------------------------------------
-String appleSQL = new CFWSQL(null)
-		.queryCache(Example.class, "SelectApplesSQL")
+String appleSQL = new CFWSQL(mydbinterface, null)
+		.queryCache()
+		.custom("SELECT ID, CATEGORY, TYPE, NAME, COUNT FROM FRUITS")
+		.where("CATEGORY", "Fruit") 
+		.and("TYPE", "Apple") 
+		.orderbyDesc("NAME")
+		.resultSetToJSON(result);
+	
+//----------------------------------------------------
+// Usage without DBInterface
+//----------------------------------------------------
+String fruitSQL = new CFWSQL(null)
+		.queryCache()
 		.custom("SELECT ID, CATEGORY, TYPE, NAME, COUNT FROM FRUITS ")
 		.where("CATEGORY", null) // value will be irrelevant
 		.and("TYPE", null) // value will be irrelevant
 		.orderbyDesc("NAME")
 		.getStatementCached();
 
-// Value of appleSQL
+// Value of fruitSQL
 // SELECT ID, CATEGORY, TYPE, NAME, COUNT FROM FRUITS  WHERE CATEGORY = ? AND TYPE = ? ORDER BY NAME DESC
 
-ResultSet result = dbinterface.preparedExecuteQuery(appleSQL,
-	"Fruit", // set value for CATEGORY placeholder
-	"Apple" // set value for TYPE placeholder
-	);
-	
+//-----------------------------------------
+// Your custom SQL execution
+connection = yourConnectionProvider.getConnection();
+prepared = conn.prepareStatement(fruitSQL);
+prepared.setString(1, "Fruit");	
+prepared.setString(2, "Apple");	
+			
+ResultSet result = prepared.execute()
 // Convert to JSON
-String json = dbinterface.resultSetToJSON(result);
+String json = ResultSetUtils.toJSON(result);
 
 
 //----------------------------------------------------
-// SQL Query from file
+// Get SQL Query from file
 //----------------------------------------------------
 String appleSQL = new CFWSQL(null)
-		.queryCache(Example.class, "SelectApplesSQL")
+		.queryCache()
 		.loadSQLResource(MyFeature.RESOURCE_PACKAGE, "example_file.sql", 
 		.getStatementCached();
 

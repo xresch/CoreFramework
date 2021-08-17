@@ -1,6 +1,6 @@
 <h2>Overview</h2>
 <p>
-To create a dashboard widget, you need to the following:
+To create a dashboard parameter, you need to the following:
 </p>
 <ul>
 	<li>Create a class implementing that extends ParameterDefinition.</li>
@@ -71,8 +71,7 @@ public class ParameterDefinitionExampleEnvironment extends ParameterDefinition {
 </pre>
 
 <p>
-Now you only have to put your widget into the registry, everything else will be done by the framework.
-Here is the code:
+Now you only have to put your parameter into the registry, everything else will be done by the framework.
 </p>
 <pre>
 <code>CFW.Registry.Parameters.add(new ParameterDefinitionExampleEnvironment());</code>

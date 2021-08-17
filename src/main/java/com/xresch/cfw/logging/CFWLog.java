@@ -300,8 +300,7 @@ public class CFWLog {
 	
 	public void severe(String message){this.log(Level.SEVERE, message, null);}
 	public void severe(String message, Throwable e){this.log(Level.SEVERE, message, e);}
-
-	
+	public void off(String message){this.log(Level.OFF, message, null);}
 	
 	
 	/***********************************************************************

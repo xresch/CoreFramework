@@ -2,8 +2,8 @@
 <p>You can add a configuration to the configuration page by creating a new configuration object and add it to the database. </p>
 <pre>
 	<code>CFW.DB.Config.oneTimeCreate(
-	new Configuration("Silk Performance Manager", CONFIG_SPM_PROD_URL)
-		.description("The URL of the productive SPM instance.")
+	new Configuration("Your Config Category", YourFeature.SOME_CONFIG_ITEM_NAME)
+		.description("The holy description.")
 		.type(FormFieldType.TEXT)
 );
 	</code>
@@ -37,17 +37,15 @@ If any of the configurations changes, the onChange()-method is execute once.
 	//-------------------------------
 	// Create Change Listener
 	ConfigChangeListener listener = new ConfigChangeListener(
-			FeatureExample.CONFIG_EXAMPLE_HOST,
-			FeatureExample.CONFIG_EXAMPLE_PORT, 
-			FeatureExample.CONFIG_EXAMPLE_USER, 
-			FeatureExample.CONFIG_EXAMPLE_PASSWORD
+			FeatureExample.CONFIG_ITEM_A,
+			FeatureExample.CONFIG_ITEM_B, 
 		) {
 		
 		@Override
 		public void onChange() {
 			//-------------------------------
 			// Will be executed once
-			this.createEnvironments();
+			doSomething();
 		}
 	};
 	
@@ -57,7 +55,7 @@ If any of the configurations changes, the onChange()-method is execute once.
 	
 	//-------------------------------
 	// Do your regular Initialization Stuff
-	this.createEnvironments();
+	doSomething();
 	isInitialized = true;
 }
 </code>

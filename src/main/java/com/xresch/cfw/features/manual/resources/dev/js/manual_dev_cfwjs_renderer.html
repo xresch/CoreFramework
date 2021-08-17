@@ -81,7 +81,7 @@ The following are the settings and their defaults, see comments for details:
 
 <h2>Examples Settings</h2>
 <p>
-The minimal data you have to provide to a renderer is the data attribute, all other values have defaults, or the renderer have to handle null values.
+The minimal data you have to provide to a renderer is the data attribute, all other values have defaults, or the renderer has to handle null values.
 </p>
 <pre>
 <code>var rendererParamsMinimal = {
@@ -483,7 +483,7 @@ public static String getPartialPersonListAsJSON(int pageSize, int pageNumber, St
 		// Unfiltered
 		return new CFWSQL(new Person())
 			.queryCache()
-			.columnSubquery("TOTAL_RECORDS", "COUNT(*) OVER()")
+			.columnSubqueryTotalRecords()
 			.select()
 			.limit(pageSize)
 			.offset(pageSize*(pageNumber-1))

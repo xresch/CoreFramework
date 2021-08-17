@@ -547,7 +547,7 @@ public class DBInterface {
 		if(values != null) {
 			for(int i = 0; i < values.length ; i++) {
 				Object currentValue = values[i];
-				// TODO: Could be a better solution: prepared.setObject(i+1, currentValue);
+				// TODO: Could be a better/faster solution: prepared.setObject(i+1, currentValue);
 				
 				if		(currentValue instanceof String) 	{ prepared.setString(i+1, (String)currentValue); }
 				else if	(currentValue instanceof StringBuilder) 	{ prepared.setString(i+1, currentValue.toString() ); }

@@ -55,7 +55,7 @@ public class ManualPage {
 			
 	/***********************************************************************************
 	 * Overrloaded addChild to handle sub menu items.
-	 * @return String html for this item. 
+	 * @return this page. 
 	 ***********************************************************************************/
 	public ManualPage addChild(ManualPage childItem) {
 		

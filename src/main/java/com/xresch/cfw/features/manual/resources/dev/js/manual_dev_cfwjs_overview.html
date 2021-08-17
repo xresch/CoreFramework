@@ -26,7 +26,7 @@ CFW.http.postJSON('/your/servlet', params, function(data) { /*do something*/ })<
 These two methods are useful to load html forms created with the CFWForm class from the server side.
 </p>
 <pre>
-<code class="javascript">//Get a form that was already created on server side using new BTForm() or methods like CFWObject.toForm()
+<code class="javascript">//Get a form that was already created on server side using new CFWForm() or methods like CFWObject.toForm()
 CFW.http.getForm('formName', targetElement);
 
 //Use this method when you have to create a new Form on server side. 
@@ -41,10 +41,9 @@ The following methods can be used to show modal panels.
 </p>
 <pre>
 <code class="javascript">//Show a modal panel. Last param is either a function or a string with javascript code.
-CFW.ui.showModalMedium("Your Modal Title", modalBodyContent, "onClose();");
-
-//Show a modal panel. Last param is either a function or a string with javascript code.
 CFW.ui.showModalSmall("Your Modal Title", modalBodyContent, "onClose();");
+CFW.ui.showModalMedium("Your Modal Title", modalBodyContent, "onClose();");
+CFW.ui.showModalLarge("Your Modal Title", modalBodyContent, "onClose();");
 
 //Show a modal panel to confirm an action. Last param is either a function or a string with javascript code.
 CFW.ui.confirmExecute('Do you really want to remove the item?', 'Remove', "removeItem("+itemID+")" );
@@ -95,7 +94,39 @@ You can get an overview of all available functions in the cfw.js file, where the
 </p>
 <pre>
 <code class="javascript">var CFWL = cfw_lang;
+
 var CFW = {
+	global: {
+		autocompleteCounter: 0,
+		autocompleteFocus: -1,
+		autcompleteParamEnhancerFunction: null,
+		isLocaleFetching: null,
+		lastServerAccess: moment(),
+		lastOpenedModal: null,
+	},
+	lang: {
+		get: cfw_lang,
+		loadLocalization: cfw_loadLocalization,
+	},
+	colors: {
+		randomRGB: cfw_colors_randomRGB,
+		randomHSL: cfw_colors_randomHSL,
+		getThresholdStyle: cfw_colors_getThresholdStyle,
+	},
+	config: {
+		toastDelay: 	 3000,
+		toastErrorDelay: 10000
+	},
+	cache: { 
+		data: {},
+		lang: null,
+		removeFromCache: cfw_cache_removeFromCache,
+		clearCache: cfw_cache_clearCache,
+		storeValue: cfw_cache_storeValue,
+		storeValueForPage: cfw_cache_storeValueForPage,
+		retrieveValue: cfw_cache_retrieveValue,
+		retrieveValueForPage: cfw_cache_retrieveValueForPage
+	},
 	render: {
 		registry: {},
 		registerRenderer: cfw_registerRenderer,
@@ -107,10 +138,15 @@ var CFW = {
 	format: {
 		epochToTimestamp: 	cfw_format_epochToTimestamp,
 		epochToDate: 		cfw_format_epochToDate,
+		millisToClock: 		cfw_format_millisToClock,
+		millisToDuration: 	cfw_format_millisToDuration,
+		cfwSchedule: 		cfw_format_cfwSchedule,
+		splitCFWSchedule: 	cfw_format_splitCFWSchedule,
 		objectToHTMLList: 	cfw_format_objectToHTMLList,
 		csvToObjectArray: 	cfw_format_csvToObjectArray,
 		fieldNameToLabel: 	cfw_format_fieldNameToLabel,
 		capitalize: 		cfw_format_capitalize,
+		arrayToBadges: 		cfw_format_arrayToBadges,
 		formToParams: 		cfw_format_formToParams,
 		formToArray: 		cfw_format_formToArray,
 		formToObject: 		cfw_format_formToObject
@@ -121,11 +157,15 @@ var CFW = {
 		getURLParams: cfw_http_getURLParams,
 		getURLParamsDecoded: cfw_http_getURLParamsDecoded,
 		setURLParam: cfw_http_setURLParam,
+		removeURLParam: cfw_http_removeURLParam,
+		getHostURL: cfw_http_getHostURL,
+		getURLPath: cfw_http_getURLPath,
 		secureDecodeURI: cfw_http_secureDecodeURI,
 		getJSON: cfw_http_getJSON,
 		postJSON: cfw_http_postJSON,
 		getForm: cfw_http_getForm,
 		createForm: cfw_http_createForm,
+		evaluateFormScript: cfw_http_evaluateFormScript,
 		fetchAndCacheData: cfw_http_fetchAndCacheData
 	},
 	
@@ -134,19 +174,25 @@ var CFW = {
 	},
 	utils: {
 		executeCodeOrFunction: cfw_utils_executeCodeOrFunction,
-		randomString: cfw_utils_randomString
+		randomString: cfw_utils_randomString,
+		chainedOnload: cfw_utils_chainedOnload,
+		isNullOrEmpty: cfw_utils_isNullOrEmpty,
+		nullTo: cfw_utils_nullTo,
+		replaceAll: cfw_utils_replaceAll,
+		randomInt: cfw_utils_randomInt,
 	},
 	ui: {
 		createToggleButton: cfw_ui_createToggleButton,
 		toc: cfw_ui_createTOC,
+		createPrintView: cfw_ui_createPrintView,
 		addToast: cfw_ui_addToast,
 		addToastInfo: function(text){cfw_ui_addToast(text, null, "info", CFW.config.toastDelay);},
 		addToastSuccess: function(text){cfw_ui_addToast(text, null, "success", CFW.config.toastDelay);},
 		addToastWarning: function(text){cfw_ui_addToast(text, null, "warning", CFW.config.toastDelay);},
 		addToastDanger: function(text){cfw_ui_addToast(text, null, "danger", CFW.config.toastErrorDelay);},
-		showModal: cfw_ui_showModalMedium,
-		showSmallModal: cfw_ui_showModalSmall,
-		showLargeModal: cfw_ui_showModalLarge,
+		showModalMedium: cfw_ui_showModalMedium,
+		showModalSmall: cfw_ui_showModalSmall,
+		showModalLarge: cfw_ui_showModalLarge,
 		confirmExecute: cfw_ui_confirmExecute,
 		toogleLoader: cfw_ui_toogleLoader,
 		createLoaderHTML: cfw_ui_createLoaderHTML,
@@ -155,42 +201,16 @@ var CFW = {
 	},
 	hasPermission: cfw_hasPermission,
 
-}</code>
+}
+</code>
 </pre>
 
 
 <h2>cfw_renderer.js</h2>
 <p>
 The cfw_renderer.js contains default renderers provided by the framework.<br />
-Currently the following renderers are provided:
+Please find more about renderers in the respective section of the manual.
 </p>
-<ul>
-	<li>html</li>
-	<li>json</li>
-	<li>table</li>
-	<li>tiles</li>
-</ul>
-
-<p>
-To use a renderer:
-</p>
-<pre>
-<code class="javascript">var tableRenderer = CFW.render.getRenderer('table');
-var cfwTable = tableRenderer.render(dataToRender);</code>
-</pre>
-
-<p>
-To register a new renderer do the following:
-</p>
-<pre>
-<code class="javascript">CFW.render.registerRenderer("rendererName",
-	new CFWRenderer(
-		function (renderDefinition) {
-			//Your code
-			return htmlOrDomJQueryObject;
-		});
-);</code>
-</pre>
 
 
 <h2>cfw_components.js</h2>

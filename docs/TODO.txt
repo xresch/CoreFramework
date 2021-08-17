@@ -27,6 +27,7 @@ Potential TODOs
 - Jobs: Log Job Executions to DB, plus age out
 - Jobs: Define max number of instances.
 
+- Dashboard: Security Improvement - Use data from server side instead from client side.
 - Dashboard: Share with users that are not logged in
 - Dashboard: Check Settings - Provide a bulk action to show all settings of all widgets as an overview. 
 - Dashboard: Text Alignment
@@ -67,14 +68,11 @@ Potential TODOs
 - Security: Enable Decryption for ResultSet to JSON on CFWSQL
 - Security: Change login to two steps, first username, then password field 
 
-- Manual: Multi language pages
-- Manual: Dev how to create Logs / Audit
+- Manual: Functionality - Multi language pages
 - Manual: UserAuditExecutor
-- Manual: Database / CFWSQL
 - Manual: Jobs
-- Manual: Widget Tasks
-- Manual: Dashboard Parameters
 - Manual: Multi Forms
+- Manual: Fulltext Search
 
 - DB: Add Feature to change connection pool limits for managed connection pools
 - DB: Prometheus DB Pool statistics
@@ -120,6 +118,8 @@ DONE
 - Permissions: Added permission 'Dashboard Tasks'
 - Menu: Added default Tools Menu
 - CFWSQL: Can now be used for custom DBInterfaces.
+- Manual: Updated existing manual pages
+- Manual: Added page "Write Logs"
 
 ------- v3.0.1 -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI

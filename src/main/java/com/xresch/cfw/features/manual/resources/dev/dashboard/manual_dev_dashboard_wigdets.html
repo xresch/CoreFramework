@@ -222,11 +222,13 @@ public class WidgetHelloWorld extends WidgetDefinition {
 
 	// Override hasPermission() to customize who can see the widget.
 	@Override
-	public boolean hasPermission() {
-		if(canUseWidget()) {
+	public boolean hasPermission(User user) {
+		if(user.hasPermission(FeatureExample.PERMISSION_USER)
+		|| user.hasPermission(FeatureExample.PERMISSION_ADMIN)) {
 			return true;
 		}
 		return false;
+	}
 	}
 }
 </code>
@@ -245,7 +247,7 @@ Here is the code:
 <p>
 And the result will look like this:
 </p>
-<img class="img-fluid" src="/cfw/jarresource?pkg=com.xresch.cfw.features.manual.resources&file=manual_dev_dashboard_wigdets_screenshot.jpg">
+<img class="img-fluid" src="/cfw/jarresource?pkg=com.xresch.cfw.features.manual.resources.dev.dashboard&file=manual_dev_dashboard_wigdets_screenshot.jpg">
 
 
 <h2>Hierarchical Categories</h2>
@@ -297,3 +299,59 @@ public void fetchData(JSONResponse response, JsonObject settings) {
 	[...]
 }</code>
 </pre>
+
+
+<h2>Adding a Task to a Widget</h2>
+<p>
+You can add task support to a widget. Task will be executed by a job on the chosen interval.
+A user will need the permission "Dashboard Tasks" or be a Dashboard Admin to create and edit tasks.
+Also users with the permission "Jobs: Admin" can edit the jobs partially or delete them through the jobs feature.
+Here are the code sample of the methods you have to override in your implementation of WidgetDefinition to enable task support in your widget:
+</p>
+<pre>
+<code>// Override this method and return true to enable task support for a widget
+public boolean supportsTask() {
+	return true;
+}
+
+// Return the parameters you want to use for this task
+public CFWObject getTasksParameters() {
+	return new CFWObject()
+			.addField(
+				CFWField.newString(FormFieldType.TEXT, MESSAGE)
+						.setDescription("Message to write to the log file.")
+						.addValidator(new LengthValidator(5,500))
+			)
+			.addField(
+					CFWField.newBoolean(FormFieldType.BOOLEAN, LIKES_TIRAMISU)
+							.setDescription("Affinity of tiramisu to write to the log file")
+			)
+			.addField(
+					CFWField.newInteger(FormFieldType.NUMBER, NUMBER)
+							.setDescription("Number to write to the log")
+			)
+			;
+}
+
+// Return a description what the task will do
+public String getTaskDescription() {
+	return "The task of this widget writes a message to the log file.";
+}
+
+// Execute your task
+public void executeTask(JobExecutionContext context, CFWObject taskParams, DashboardWidget widget, CFWObject widgetSettings) throws JobExecutionException {
+	
+	new CFWLog(logger)
+		.custom("likesTiramisu", taskParams.getField(LIKES_TIRAMISU).getValue())
+		.custom("chosenNumber", taskParams.getField(NUMBER).getValue())
+		.info(taskParams.getField(MESSAGE).getValue().toString());
+	
+	//-----------------------------
+	// Random Message for Testing
+	MessageType[] types = MessageType.values();
+	int randomIndex = CFW.Random.randomFromZeroToInteger(3);
+	CFW.Messages.addMessage(types[randomIndex], "Hello World Task wrote a log message.");
+	
+}</code>
+</pre>
+

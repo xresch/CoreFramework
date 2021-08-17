@@ -1,0 +1,124 @@
+
+<p>This section describes how you can use the Logging functionality provided by the Core Framework. 
+The framework is using java.util.logging to write the logfiles. It adds the following features to the logging:</p>
+<ul>
+	<li><b>Asynchronous Logs:&nbsp;</b>The logs are put into a queue and written my a background process, the users thread will not have to wait until the log is written.</li>
+	<li><b>Message Propagation:&nbsp;</b>By default, messages of level WARNING and SEVERE are automatically added to the response and shown in the browser.</li>
+	<li><b>Duration Logs:&nbsp;</b>Functionality for measuring and logging durations.</li>
+	<li><b>Audit Logs:&nbsp;</b>Common format for audit logs.</li>
+	<li><b>Method Detection:&nbsp;</b>Detection of the method creating the log.</li>
+	<li><b>Request Attributes:&nbsp;</b>Extraction of request attributes(username, url, query, requestID, sessionID).</li>
+	<li><b>Delta Time:&nbsp;</b>Delta time of the log event will be written, when the log is written during a .</li>
+</ul>
+
+
+
+<h2>Creating a Logger</h2>
+<p>To get a logger for your class, use the method CFWLog.getLogger(): </p>
+
+<pre>
+<code>private static Logger logger = CFWLog.getLogger(YourClass.class.getName());
+</code>
+</pre>
+
+
+<h2>Write a Simple Log</h2>
+<p>The following code shows some simple ways how to write a log:</p>
+
+<pre>
+<code>//---------------------------------------------
+// Level ALL to INFO
+new CFWLog(logger).all("Your Message");
+new CFWLog(logger).config("Your Message");
+new CFWLog(logger).finest("Your Message");
+new CFWLog(logger).finer("Your Message");
+new CFWLog(logger).fine("Your Message");
+new CFWLog(logger).info("Your Message");
+
+//---------------------------------------------
+// Level WARNING AND SEVERE
+new CFWLog(logger).warn("Error Message.");
+new CFWLog(logger).warn("Error Message.", exception);
+new CFWLog(logger).severe("Error Message.");
+new CFWLog(logger).severe("Error Message.", exception);
+
+//---------------------------------------------
+// Use silent to not propagate the messages
+// to the browser.
+new CFWLog(logger).silent(true).warn("Message only in logs, not in Browser.");
+new CFWLog(logger).silent(true).severe("Message only in logs, not in Browser.");
+
+//---------------------------------------------
+// Use Level OFF for logs that should be written always
+new CFWLog(logger).off("Always write me.");
+</code>
+</pre>
+
+<h2>Write a Duration Log</h2>
+<p>The following methods can be used to create duration logs.
+Calling the end()-method causes the measurement to stop, 
+and a INFO log with message="Duration[ms]" and a field "duration" containing the time in milliseconds will be written:</p>
+
+<pre>
+<code>
+new CFWLog(logger).start()
+new CFWLog(logger).start(customStartNanos)
+new CFWLog(logger).end()
+new CFWLog(logger).end(level)
+new CFWLog(logger).end(level, message)
+</code>
+</pre>
+
+<h2>Add custom Fields</h2>
+<p>To add custom data to your log, use the custom()-method before calling a method that will write the log file.</p>
+
+<pre>
+<code>new CFWLog(logger).custom("yourFieldname", yourValue).info("your message");
+</code>
+</pre>
+
+
+<h2>Write Audit Logs</h2>
+<p>The following methods can be used to create audit logs.</p>
+
+<pre>
+<code>new CFWLog(logger).audit(String action, String item, String message); 
+new CFWLog(logger).audit(String action, Class&lt;? extends CFWObject&gt; itemClass, String message);
+new CFWLog(logger).audit(String auditAction, CFWObject object, String[] auditLogFieldnames);
+</code>
+</pre>
+
+<p>
+For database create, update and delete actions, the following methods will write audit logs for you:
+</p>
+<pre>
+<code>
+CFWDBDefaultOperations.create(precheckHandler, auditLogFieldnames, cfwObject);
+CFWDBDefaultOperations.create(precheckHandler, auditLogFieldnames, cfwObjects);
+CFWDBDefaultOperations.update(precheckHandler, auditLogFieldnames, cfwObject);
+CFWDBDefaultOperations.update(precheckHandler, auditLogFieldnames, cfwObjects);
+CFWDBDefaultOperations.deleteBy(precheckHandler, auditLogFieldnames, cfwObjectClass, String column, Object value);
+CFWDBDefaultOperations.deleteFirstBy(precheckHandler, auditLogFieldnames, cfwObjectClass, String column, Object value);
+CFWDBDefaultOperations.deleteMultipleByID(precheckHandler, auditLogFieldnames, cfwObjectClass, commaSeparatedIDs);
+CFWDBDefaultOperations.deleteMultipleByIDWhere(precheckHandler, auditLogFieldnames, cfwObjectClass, commaSeparatedIDs, fieldname, valueToCheck);
+</code>
+</pre>
+
+<h2>Minimal and Contextless Logs</h2>
+<p>To reduce the data in the log, the following methods will help you:</p>
+
+<pre>
+<code>
+//------------------------------------------------------
+// Use minimal to only write time, level and a message
+new CFWLog(logger).minimal(true).info("Your Message.");
+
+//------------------------------------------------------
+// Use contextless to not write request info. Useful
+// for batch jobs started by user.
+new CFWLog(logger).contextless(true).info("Your Message.");
+</code>
+</pre>
+
+
+

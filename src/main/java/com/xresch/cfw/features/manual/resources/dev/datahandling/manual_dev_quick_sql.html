@@ -14,7 +14,21 @@ we can use the CFWObject to create our SQL. Here is an example how this can look
 </p>
 
 <pre>
-<code>return (User)new User()
+<code>//--------------------------------------------
+// Using CFWSQL wrapping CFWObject
+// recommended when only one SQL is executed in the 
+// method, queryCache() is less prone to cause copy&paste issues)
+return (User)new CFWSQL(new User())
+		.queryCache()
+		.select()
+		.where(UserFields.PK_ID, id)
+		.getFirstObject();
+
+//--------------------------------------------
+// Using CFWObject directly with custom cache 
+// identifier, use this if you cache more than
+// one SQL in a method. 
+return (User)new User()
 		.queryCache(CFWDBUser.class, "selectByID")
 		.select()
 		.where(UserFields.PK_ID, id)
@@ -26,7 +40,7 @@ we can use the CFWObject to create our SQL. Here is an example how this can look
 Some explanations for the above:
 </p>
 <ul>
-	<li><strong>queryCache():&nbsp;</strong> (Optional)This returns an instance of CFWSQL, the class used for creating SQLs. The SQL string will only be concatenated once, afterwards it will be read from a cache with the unique name defined by the two parameters. If something doesn't work as expected, make sure you use a unique name. </li>
+	<li><strong>queryCache():&nbsp;</strong> (Optional)This returns an instance of CFWSQL. The SQL string will only be concatenated once, afterwards it will be read from a cache with the unique name defined by the two parameters. If something doesn't work as expected, make sure you use a unique name. </li>
 	<li><strong>select():&nbsp;</strong> Starts a "SELECT * FROM TABLE_NAME" for the object you have given. </li>
 	<li><strong>where():&nbsp;</strong> Adds a "WHERE PK_ID = ?" and saves the value you gave in the second parameter for preparing the statement later. </li>
 	<li><strong>getFirstObject():&nbsp;</strong> Executes the SQL and retrieves the first record of the result and returns it as a CFWObject. </li>
@@ -36,7 +50,8 @@ Some explanations for the above:
 <h2>Result Conversion</h2>
 <p>
 One really nice thing about the CFWSQL class is that it provides various methods to get the records of a Result set in a specific format, what saves you a lot of time.
-Here the methods you can use to get your results, most of them will return null on error or an empty list/map:
+Below several of the methods you can use to get your results. Most of them will return null on error or an empty list/map.
+You can find most of them in the ResultSetUtils in case you want to use them without CFWSQL.
 </p>
 <pre>
 <code>.getAsJSON()			// String: Returns an JSON array string (better performance than the next two)
@@ -115,13 +130,3 @@ For more complex queries, it makes sense to store them in a file. Here how you c
 </code>
 </pre>
 
-
-
-<!-- h2></h2>
-<p>
-
-</p>
-<pre>
-<code>
-</code>
-</pre-->
