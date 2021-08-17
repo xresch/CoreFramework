@@ -69,7 +69,6 @@ Potential TODOs
 - Security: Change login to two steps, first username, then password field 
 
 - Manual: Functionality - Multi language pages
-- Manual: UserAuditExecutor
 - Manual: Jobs
 - Manual: Multi Forms
 - Manual: Fulltext Search
@@ -119,7 +118,7 @@ DONE
 - Menu: Added default Tools Menu
 - CFWSQL: Can now be used for custom DBInterfaces.
 - Manual: Updated existing manual pages
-- Manual: Added page "Write Logs"
+- Manual: Added page "Write Logs", "Add User Audit"
 
 ------- v3.0.1 -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI

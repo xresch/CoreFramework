@@ -295,6 +295,14 @@ public class FeatureManual extends CFWAppFeature {
 					.addPermission(PERMISSION_ADMIN_MANUAL)
 					.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".dev", "manual_dev_quick_api.html")
 				);
+		
+		quickstart.addChild(
+				new ManualPage("Add User Audit")
+					.faicon("fas fa-check")
+					.addPermission(PERMISSION_ADMIN_MANUAL)
+					.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".dev", "manual_dev_quick_useraudit.html")
+				);
+		
 	}
 	
 	/*****************************************************************

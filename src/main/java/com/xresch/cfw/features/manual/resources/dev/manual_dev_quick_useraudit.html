@@ -1,4 +1,8 @@
-package com.xresch.cfw.features.dashboard;
+
+<p>You can add a user permission audit by implementing the interface UserAuditExecutor. 
+Following a sample code extracted from the audit of widget permissions. </p>
+<pre>
+<code>package com.xresch.cfw.features.dashboard;
 
 import java.util.LinkedHashMap;
 
@@ -49,3 +53,12 @@ public class UserAuditExecutorWidgetPermissions implements UserAuditExecutor {
 	
 	}
 }
+
+</code>
+</pre>
+
+<p>To put above to use, you have to register it in the audit registry:</p>
+
+<pre>
+<code>CFW.Registry.Audit.addUserAudit(new UserAuditExecutorWidgetPermissions());</code>
+</pre>
