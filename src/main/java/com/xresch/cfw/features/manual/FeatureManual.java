@@ -303,6 +303,13 @@ public class FeatureManual extends CFWAppFeature {
 					.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".dev", "manual_dev_quick_useraudit.html")
 				);
 		
+		quickstart.addChild(
+				new ManualPage("Add Job Tasks")
+					.faicon("fas fa-cogs")
+					.addPermission(PERMISSION_ADMIN_MANUAL)
+					.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".dev", "manual_dev_quick_jobtasks.html")
+				);
+		
 	}
 	
 	/*****************************************************************

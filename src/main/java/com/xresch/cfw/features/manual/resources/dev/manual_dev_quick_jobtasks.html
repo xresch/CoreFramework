@@ -1,4 +1,8 @@
-package com.xresch.cfw.features.analytics;
+
+<p>You can add additional tasks that can be executed by jobs by extending the class CFWJobTask. 
+Following a sample code extracted from the thread dump task. </p>
+<pre>
+<code>package com.xresch.cfw.features.analytics;
 
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -10,12 +14,10 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.utils.CFWUtilsAnalysis;
 import com.xresch.cfw.validation.LengthValidator;
 
 public class CFWJobTaskThreadDumps extends CFWJobTask {
 	
-
 	@Override
 	public String uniqueName() {
 		return "Thread Dumps";
@@ -31,9 +33,9 @@ public class CFWJobTaskThreadDumps extends CFWJobTask {
 		return new CFWObject()
 			.addField(
 				CFWField.newString(FormFieldType.TEXT, "folder")
-						.setDescription("the path of the folder were the thread dumps should be written on the server.")
-						.setValue("./threaddumps")
-						.addValidator(new LengthValidator(3, 4096))
+					.setDescription("the path of the folder to write the dumps.")
+					.setValue("./threaddumps")
+					.addValidator(new LengthValidator(3, 4096))
 			);
 		
 
@@ -60,9 +62,17 @@ public class CFWJobTaskThreadDumps extends CFWJobTask {
 		JobDataMap data = context.getMergedJobDataMap();
 		String folderpath = data.getString("folder");
 		
-        String filepath = "threaddump_"+CFW.Utils.Time.currentTimestamp().replace(":", "")+".txt";
-        CFW.Utils.Analysis.threadDumpToDisk(folderpath, filepath);
+		String filepath = "threaddump_"+CFW.Utils.Time.currentTimestamp().replace(":", "")+".txt";
+		CFW.Utils.Analysis.threadDumpToDisk(folderpath, filepath);
 		
 	}
 	
 }
+</code>
+</pre>
+
+<p>To put above to use, you have to register it in the jobs registry:</p>
+
+<pre>
+<code>CFW.Registry.Jobs.registerTask(new CFWJobTaskThreadDumps());</code>
+</pre>

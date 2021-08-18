@@ -39,7 +39,7 @@ public class UserAuditExecutorWidgetPermissions implements UserAuditExecutor {
 		
 		//---------------------------------
 		// Fetch Data
-		LinkedHashMap<String, WidgetDefinition> definitions = CFW.Registry.Widgets.getWidgetDefinitions();
+		LinkedHashMap&lt;String, WidgetDefinition&gt; definitions = CFW.Registry.Widgets.getWidgetDefinitions();
 		
 		for(WidgetDefinition current : definitions.values()) {
 			JsonObject widgetObject = new JsonObject();
