@@ -232,6 +232,13 @@ public class FeatureManual extends CFWAppFeature {
 				);
 		
 		dataHandling.addChild(
+				new ManualPage("Working with Forms")
+					.faicon("fas fa-file-upload")
+					.addPermission(PERMISSION_ADMIN_MANUAL)
+					.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".dev.datahandling", "manual_dev_quick_forms.html")
+				);
+		
+		dataHandling.addChild(
 				new ManualPage("Accessing Databases")
 					.faicon("fas fa-database")
 					.addPermission(PERMISSION_ADMIN_MANUAL)
@@ -244,7 +251,6 @@ public class FeatureManual extends CFWAppFeature {
 					.addPermission(PERMISSION_ADMIN_MANUAL)
 					.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".dev.datahandling", "manual_dev_quick_sql.html")
 				);
-		
 		
 
 		//-----------------------------

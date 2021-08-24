@@ -69,7 +69,6 @@ Potential TODOs
 - Security: Change login to two steps, first username, then password field 
 
 - Manual: Functionality - Multi language pages
-- Manual: Jobs
 - Manual: Forms & Multi Forms
 - Manual: Fulltext Search
 

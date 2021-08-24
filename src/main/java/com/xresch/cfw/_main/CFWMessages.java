@@ -36,10 +36,9 @@ public class CFWMessages {
 	public static void addErrorMessage(String message){
 		CFWContextRequest.addAlertMessage(MessageType.ERROR, message);		
 	}
-		
+	
 	/****************************************************************
-	 * Adds a localized "Access Denied" error message to the
-	 * Request Context.
+	 * Adds a localized "Saved!" success message to the Request Context.
 	 *   
 	 ****************************************************************/
 	public static void saved(){
@@ -47,8 +46,15 @@ public class CFWMessages {
 	}
 	
 	/****************************************************************
-	 * Adds a localized "Access Denied" error message to the
-	 * Request Context.
+	 * Adds a localized "Done!" success message to the Request Context.
+	 *   
+	 ****************************************************************/
+	public static void done(){
+		CFWContextRequest.addAlertMessage(MessageType.SUCCESS, CFW.L("cfw_core_success_done", "Done!"));		
+	}
+	
+	/****************************************************************
+	 * Adds a localized "Deleted!" success message to the Request Context.
 	 *   
 	 ****************************************************************/
 	public static void deleted(){

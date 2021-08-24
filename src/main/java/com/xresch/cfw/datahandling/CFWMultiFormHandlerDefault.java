@@ -10,7 +10,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2021 
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWMultiFormHandlerDefault extends CFWMultiFormHandler {
@@ -28,9 +28,9 @@ public class CFWMultiFormHandlerDefault extends CFWMultiFormHandler {
 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The data with the ID '"+object.getPrimaryKey()+"' could not be saved to the database.");
 				};
 			}
-		//make fieldnames Unique again to be able to save again.
+		//make fieldnames Unique again to be able to edit and save again.
 		form.makeFieldNamesUnique();
-		CFW.Messages.saved();
+		CFW.Messages.done();
 	}
 
 }

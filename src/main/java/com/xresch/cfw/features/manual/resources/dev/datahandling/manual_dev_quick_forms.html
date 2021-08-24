@@ -1,0 +1,182 @@
+
+<p>Based on a CFWObject and its CFWFields, you can generate Forms and map the results back to the objects. </p>
+
+
+
+<h2>Load existing Form from Server-Side</h2>
+<p>You can pre-create a form, which will be stored in the users session, and load it afterwards via javascript.
+On server side, do the following: </p>
+
+<pre>
+<code>protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+{
+	if(CFW.Context.Request.hasPermission(ExampleExtensionApplication.PERMISSION_CFWSAMPLES)) {
+		createForms();
+		[...]
+	}
+	[...]
+}
+
+private void createForms() {
+	
+	//Person is a CFWObject
+	CFWForm createPersonForm = new Person().toForm("cfwCreatePersonForm", "Create Person");
+	
+	// form handler will be called when the form is submitted.
+	createPersonForm.setFormHandler(new CFWFormHandler() {
+		
+		@Override
+		public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+							
+			if(origin != null) {
+				// map the values from the form to the object the Form originated from.
+				// Executes validation and returns false if the user input is invalid 
+				if(origin.mapRequestParameters(request)) {
+					Person Person = (Person)origin;
+					
+					if(PersonDBMethods.create(Person) ) {
+						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Person created successfully!");
+					}
+				}
+			}
+			
+		}
+	});
+	
+}
+</code>
+</pre>
+
+<p>Afterwards you can load the existing form in javascript using the method CFW.http.getForm():</p>
+
+<pre>
+<code>function jsexamples_addPerson(){
+	
+	var html = $('&lt;div&gt;');	
+
+	CFW.http.getForm('cfwCreatePersonForm', html);
+	
+	CFW.ui.showModalMedium(
+			"Create Person", 
+			html, 
+			"CFW.cache.clearCache(); jsexamples_draw(JSEXAMPLES_LAST_OPTIONS)"
+		);
+	
+}</code>
+</pre>
+
+
+<h2>Create Form with Request</h2>
+<p>If you need a form for a specific record chosen by the user, you can request a form from JavaScript:</p>
+<pre>
+<code>function jsexamples_edit(id){
+	
+	//-----------------------------------
+	// Create Target Div for the Form
+	var targetDiv = $('&lt;div id="jsexamples-details"&gt;');
+	
+	CFW.ui.showModalMedium(
+		"Edit Person", 
+		targetDiv, 
+		"CFW.cache.clearCache(); jsexamples_draw(JSEXAMPLES_LAST_OPTIONS)"
+	);
+	
+	//-----------------------------------
+	// Load Form
+	CFW.http.createForm(JSEXAMPLES_URL, {action: "getform", item: "editperson", id: id}, targetDiv);
+	
+}</code>
+</pre>
+
+<p>On server side, create the form and append it to the payload:</p>
+
+<pre>
+<code>/******************************************************************
+ * Servlet doGet Method
+ ******************************************************************/
+protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+{
+	[...]
+	handleDataRequest(request, response);
+	[...]
+}
+
+/******************************************************************
+ * Method to handle data request
+ ******************************************************************/
+private void handleDataRequest(HttpServletRequest request, HttpServletResponse response) {
+	
+	String ID = request.getParameter("id");	
+	JSONResponse jsonResponse = new JSONResponse();		
+
+	switch(action.toLowerCase()) {			
+		case "getform": 			
+			switch(item.toLowerCase()) {
+				case "editperson": 	createEditForm(jsonResponse, ID);
+									break;
+			}
+			break;
+	}
+}
+
+/******************************************************************
+ * Method to create the edit form for a specific ID
+ ******************************************************************/
+private void createEditForm(JSONResponse json, String ID) {
+
+	// Fetch data for the given ID 
+	Person Person = PersonDBMethods.selectByID(Integer.parseInt(ID));
+	
+	if(Person != null) {
+		
+		// Create the Form with the current data
+		CFWForm editPersonForm = Person.toForm("cfwEditPersonForm"+ID, "Update Person");
+		
+		editPersonForm.setFormHandler(new CFWFormHandler() {
+			
+			@Override
+			public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+				
+				// Map the new values to the object
+				if(origin.mapRequestParameters(request)) {
+					
+					//update in DB if successful
+					if(PersonDBMethods.update((Person)origin)) {
+						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+					}
+						
+				}
+				
+			}
+		});
+		
+		//append the form to the payload of the request
+		editPersonForm.appendToPayload(json);
+	}
+}</code>
+</pre>
+
+
+<h2>Multi Forms</h2>
+<p>Multi forms will render a table containing one record per row, editable with the specified FormFieldType.
+Multi forms can be used like regular forms, create an instance of CFWMultiForm like below to do so. 
+</p>
+<pre>
+<code>private void createMultiForm(JSONResponse json) {
+
+	ArrayList&lt;CFWObject&gt; personList = new CFWSQL(new Person())
+			.select()
+			.limit(15)
+			.getAsObjectList();
+	
+	if(personList.size() != 0) {
+		
+		CFWMultiForm editPersonForm = new CFWMultiForm("cfwMultiFormExample"+CFW.Random.randomStringAlphaNumerical(12), "Save", personList);
+		
+		//A default handler, which will validate the inputs and save them to the internal h2 database.
+		editPersonForm.setMultiFormHandler(new CFWMultiFormHandlerDefault());
+		
+		editPersonForm.appendToPayload(json);
+	}
+}</code>
+</pre>
