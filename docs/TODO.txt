@@ -69,7 +69,6 @@ Potential TODOs
 - Security: Change login to two steps, first username, then password field 
 
 - Manual: Functionality - Multi language pages
-- Manual: Forms & Multi Forms
 - Manual: Fulltext Search
 
 - DB: Add Feature to change connection pool limits for managed connection pools
@@ -117,7 +116,8 @@ DONE
 - Menu: Added default Tools Menu
 - CFWSQL: Can now be used for custom DBInterfaces.
 - Manual: Updated existing manual pages
-- Manual: Added page "Write Logs", "Add User Audit", "Add Job Tasks"
+- Manual: Added page "Write Logs", "Add User Audit", "Add Job Tasks", "Working with Forms"
+- Manual: Page Links working in PDFs
 
 ------- v3.0.1 -------
 - Added Feature Management: Features can be implemented so that they can be enabled/disabled from the UI

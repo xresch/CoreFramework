@@ -14,6 +14,8 @@ var CFW_MANUAL_GUID_PAGE_MAP = {};
 
 var CFW_MANUAL_HOST_URL = CFW.http.getHostURL();
 
+var CFW_MANUAL_PRINTVIEW_PAGEPATH_ANCHOR_MAP = {};
+
 /*********************************************************************************
 * Creates a printView by opening a new window and returns a divElement where you 
 * can put the content inside which you want to print.
@@ -157,16 +159,21 @@ function cfw_manual_createPrintView(pageGUID){
 			cfw_manual_addPageToPrintView(paper, parentPages[i], 0);
 		}
 		
+		//--------------------------
+		// Post Process
 		var progressInterval = window.setInterval(function(){
 			if(CFW_MANUAL_COUNTER_PRINT_IN_PROGRESS == 0){
 				CFW.ui.toc(paper, printTOC, 'h1');
 				window.clearInterval(progressInterval);
+
+				cfw_manual_printview_postProcessPageLinks(paper);				
 			}
 
 		}, 500);
 	}
 	
 
+	
 }
 
 /******************************************************************
@@ -177,10 +184,16 @@ function cfw_manual_addPageToPrintView(parentContainer, page, headerOffset){
 	var head = headerOffset+1;
 	
 	var guid = "page-"+CFW.utils.randomString(16);
-	var pageDiv = $('<div id="'+guid+'">');
-	pageDiv.append('<h'+head+' class="page-break">'+page.title+'</h'+head+'>');
-	parentContainer.append(pageDiv);
+	CFW_MANUAL_PRINTVIEW_PAGEPATH_ANCHOR_MAP[page.path] = guid;
 	
+	var anchorForLinks = $('<a name="'+guid+'">');
+	var pageDiv = $('<div id="'+guid+'">');
+
+	pageDiv.append('<h'+head+' class="page-break">'+page.title+'</h'+head+'>');
+	pageDiv.append(anchorForLinks);
+	
+	parentContainer.append(pageDiv);
+		
 	if(page.hasContent){
 		CFW_MANUAL_COUNTER_PRINT_IN_PROGRESS++;
 		CFW.http.getJSON("./manual", {action: "fetch", item: "page", path: page.path}, function (data){
@@ -238,6 +251,31 @@ function cfw_manual_preparePageForPrint(pageContent, headerOffset){
 	
 	return pageContent;
 }
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_manual_printview_postProcessPageLinks(paper){
+	
+	console.log('test');
+	var pageLinks = paper.find('a[onclick^="cfw_manual_loadPage"]');
+	
+	pageLinks.each(function(){
+		var link = $(this);
+		var onclick = link.attr('onclick');
+		var pagePath = onclick.replace("cfw_manual_loadPage('", "")
+							  .replace("');", "");
+
+		var anchorName = CFW_MANUAL_PRINTVIEW_PAGEPATH_ANCHOR_MAP[pagePath.trim()];
+		
+		//-----------------------------
+		// Adjust Link
+		link.attr('onclick', '');
+		link.attr('href', '#'+anchorName);
+	});
+	
+}
+
 
 /******************************************************************
  * 
