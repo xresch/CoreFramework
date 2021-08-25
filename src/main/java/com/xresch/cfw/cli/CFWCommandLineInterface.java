@@ -19,11 +19,11 @@ import com.xresch.cfw.validation.ValidationEngine;
  **************************************************************************************************************/
 public abstract class CFWCommandLineInterface {
 	
-	public static final String VM_CONFIG_LOGFOLDER = "cfw.log.folder";
+	public static final String VM_CONFIG_LOGFOLDER = "-cfw.log.folder";
 	
-	public static final String VM_CONFIG_FOLDER_DEFAULT = "cfw.config.defaultfolder";
-	public static final String VM_CONFIG_FOLDER = "cfw.config.folder";
-	public static final String VM_CONFIG_FILENAME = "cfw.config.filename";
+	public static final String VM_CONFIG_FOLDER_DEFAULT = "-cfw.config.defaultfolder";
+	public static final String VM_CONFIG_FOLDER = "-cfw.config.folder";
+	public static final String VM_CONFIG_FILENAME = "-cfw.config.filename";
 	public static final String STOP = "-stop";
 	
 	protected static LinkedHashMap<String,String> loadedArguments = new LinkedHashMap<>();
@@ -78,8 +78,11 @@ public abstract class CFWCommandLineInterface {
 										"(VM Argument)The filename of the cfw.properties file.",
 										true);
 		
-		valengine.addValidator(new FileCanReadValidator(configFilename));
 		addSupportedArgument(configFilename.getLabel(), configFilename);
+		
+		// doesn't work without foldername
+//		valengine.addValidator(new FileCanReadValidator(configFilename));
+
 		
 		//*********************************************
 		// Stop
@@ -178,7 +181,7 @@ public abstract class CFWCommandLineInterface {
 	 * Returns true if all arguments were correct, false otherwise.
 	 ***********************************************************/
 	public static boolean validateArguments(){
-		
+
 		boolean isValid = true;
 		
 		invalidMessages = new ArrayList<>();

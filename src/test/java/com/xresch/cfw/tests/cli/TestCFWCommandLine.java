@@ -11,22 +11,29 @@ public class TestCFWCommandLine {
 	@Test
 	public void testLoadArguments() throws ArgumentsException {
 		
-		CFW.CLI.readArguments(new String[] {"-config.file=./config/cfw.properties"});
+		CFW.CLI.readArguments(new String[] {"-cfw.config.folder=./config"});
+		CFW.CLI.readArguments(new String[] {"-cfw.config.filename=cfw.properties"});
 		
 		CFW.CLI.printUsage();
 		CFW.CLI.printLoadedArguments();
-		Assertions.assertTrue(CFW.CLI.validateArguments());
 		
+		boolean isValid = CFW.CLI.validateArguments();
+		String messages = CFW.CLI.getInvalidMessagesAsString();
+		System.out.println(messages);
+		Assertions.assertTrue(isValid);
+
 		CFW.CLI.readArguments(new String[] {"-config.unknownargument=./config/cfw.properties",
-											"-config.file=./xxxxx/unknownpath.properties"});
+											"-cfw.config.folder=./unknownfolder",
+											"-cfw.config.filename=unknownfile."
+											}
+										);
 		
 		
 		Assertions.assertFalse(CFW.CLI.validateArguments());
 		
-		String messages = CFW.CLI.getInvalidMessagesAsString();
+		messages = CFW.CLI.getInvalidMessagesAsString();
 		System.out.println(messages);
 		
-		Assertions.assertTrue(messages.contains("File cannot be read: './xxxxx/unknownpath.properties'"));
 		Assertions.assertTrue(messages.contains("The argument '-config.unknownargument' is not supported."));
 		
 		// IMPORTANT! Keep this or it will mess up your other tests

@@ -93,6 +93,19 @@ Potential TODOs
 
 - Custom Error page CFW.App.createErrorHandler();
 
+
+- Test: Jobs & Tasks
+- Test: Dashboard Parameters
+- Test: CFWSQL
+- Test: CFWSQL Lucene Query
+- Test: Authentication
+- Test: CFWForm & Multiform
+- Test: ResultSetUtils
+- Test: Javascript?
+- Test: Mail?
+- Test: Servlets?
+
+
 DONE
 ====
 
