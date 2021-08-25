@@ -19,11 +19,11 @@ import com.xresch.cfw.validation.ValidationEngine;
  **************************************************************************************************************/
 public abstract class CFWCommandLineInterface {
 	
-	public static final String VM_CONFIG_LOGFOLDER = "-cfw.log.folder";
+	public static final String VM_CONFIG_LOGFOLDER = "-Dcfw.log.folder";
 	
-	public static final String VM_CONFIG_FOLDER_DEFAULT = "-cfw.config.defaultfolder";
-	public static final String VM_CONFIG_FOLDER = "-cfw.config.folder";
-	public static final String VM_CONFIG_FILENAME = "-cfw.config.filename";
+	public static final String VM_CONFIG_FOLDER_DEFAULT = "cfw.config.defaultfolder";
+	public static final String VM_CONFIG_FOLDER = "cfw.config.folder";
+	public static final String VM_CONFIG_FILENAME = "cfw.config.filename";
 	public static final String STOP = "-stop";
 	
 	protected static LinkedHashMap<String,String> loadedArguments = new LinkedHashMap<>();
