@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
-import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.validation.FileCanReadValidator;
 import com.xresch.cfw.validation.ValidationEngine;
 
