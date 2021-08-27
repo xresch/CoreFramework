@@ -109,7 +109,7 @@ Potential TODOs
 DONE
 ====
 
-------- Current -------
+------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB
 - Cloudification: changed to H2 to mixed mode with auto server to make it working in cloud environments
 - Sessions: Added Session Store to persist sessions to database.
