@@ -403,7 +403,7 @@ public class CFWApplicationExecutor {
 			// Add support for X-Forwarded headers
 			httpsConf.addCustomizer( new org.eclipse.jetty.server.ForwardedRequestCustomizer());
 
-			SslContextFactory sslContextFactory = new SslContextFactory();
+			SslContextFactory sslContextFactory = new SslContextFactory.Server();
 			sslContextFactory.setKeyStorePath(CFWProperties.HTTPS_KEYSTORE_PATH);
 			sslContextFactory.setKeyStorePassword(CFWProperties.HTTPS_KEYSTORE_PASSWORD);
 			sslContextFactory.setKeyManagerPassword(CFWProperties.HTTPS_KEYMANAGER_PASSWORD);

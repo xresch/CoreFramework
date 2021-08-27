@@ -18,12 +18,12 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<jettyVersion>9.4.35.v20201120</jettyVersion>
+		<jettyVersion>9.4.43.v20210629</jettyVersion>
 		<prometheusVersion>0.9.0</prometheusVersion>
 		<luceneVersion>5.5.5</luceneVersion>
 
 		<skipTests>true</skipTests>
-		<skipJavadoc>true</skipJavadoc>
+		<skipJavadoc>false</skipJavadoc>
 		<skipSigning>false</skipSigning>
 	</properties>
 
