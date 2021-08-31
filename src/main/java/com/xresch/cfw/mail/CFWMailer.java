@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -28,9 +30,144 @@ import javax.mail.util.ByteArrayDataSource;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 
-public class CFWMail {
+public class CFWMailer {
 	
-	private static Logger logger = CFWLog.getLogger(CFWMail.class.getName());
+	private static Logger logger = CFWLog.getLogger(CFWMailer.class.getName());
+	
+	private MimeMessage message;
+	
+	//main message part
+	private BodyPart messageBodyPart;
+	
+	//wrapper of all parts
+	private Multipart multipart;
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public CFWMailer(String subject) {
+
+		try {
+			message = new MimeMessage(initializeSession());
+			message.addHeader("Content-type", "text/HTML; charset=UTF-8");
+			message.addHeader("format", "flowed");
+			message.addHeader("Content-Transfer-Encoding", "8bit");
+			
+			message.setSubject(subject, "UTF-8");
+			
+	         multipart = new MimeMultipart();
+
+			 messageBodyPart = new MimeBodyPart();
+
+	         // Set text message part
+	         multipart.addBodyPart(messageBodyPart);
+
+	         // Send the complete message parts
+	         message.setContent(multipart);
+			 
+		} catch (MessagingException e) {
+			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
+		}
+
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public CFWMailer(String subject, String messageBodyHTML) {
+		this(subject);
+		try {
+	         // Set the message
+	         messageBodyPart.setContent(messageBodyHTML, "text/html");
+		} catch (MessagingException e) {
+			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
+		}
+		
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public CFWMailer fromNoReply() {
+		try {
+			message.setFrom(new InternetAddress(CFW.Properties.MAIL_SMTP_FROMMAIL_NOREPLY, CFW.Properties.MAIL_SMTP_FROMMAIL_NOREPLY));
+		} catch (MessagingException | UnsupportedEncodingException e) {
+			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
+		}
+		return this;
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public CFWMailer from(String eMail, String displayName) {
+		try {
+			message.setFrom(new InternetAddress(eMail, displayName));
+		} catch (MessagingException | UnsupportedEncodingException e) {
+			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
+		}
+		return this;
+	}
+	
+	/***************************************************************
+	 * Set the recipients of the eMail.
+	 * @param recipients map with email as key and displayName as value
+	 ***************************************************************/
+	public CFWMailer recipientsTo(LinkedHashMap<String,String> recipients) {
+		return recipients(Message.RecipientType.TO, recipients);
+	}
+	
+	/***************************************************************
+	 * Set the CC recipients of the eMail.
+	 * @param recipients map with email as key and displayName as value
+	 ***************************************************************/
+	public CFWMailer recipientsCC(LinkedHashMap<String,String> recipients) {
+		return recipients(Message.RecipientType.CC, recipients);
+	}
+	
+	/***************************************************************
+	 * Set the BCC recipients of the eMail.
+	 * @param recipients map with email as key and displayName as value
+	 ***************************************************************/
+	public CFWMailer recipientsBCC(LinkedHashMap<String,String> recipients) {
+		return recipients(Message.RecipientType.BCC, recipients);
+	}
+	
+	/***************************************************************
+	 * Set the recipients of the eMail.
+	 * @param recipients map with email as key and displayName as value
+	 ***************************************************************/
+	private CFWMailer recipients(Message.RecipientType type, LinkedHashMap<String,String> recipients) {
+		try {
+			
+			InternetAddress[] addresses = new InternetAddress[recipients.size()];
+			int index = 0;
+			for(Entry<String, String> entry : recipients.entrySet()) {
+				String eMail = entry.getKey();
+				String displayName = entry.getValue();
+				addresses[index] = new InternetAddress(eMail, displayName);
+				index++;
+			}
+			message.setRecipients(type, addresses);
+		      
+		} catch (MessagingException | UnsupportedEncodingException e) {
+			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
+		}
+		return this;
+	}
+	
+	
+	/***************************************************************
+	 * Send the eMail.
+	 ***************************************************************/
+	public CFWMailer send() {
+		try {
+	         Transport.send(message); 
+		} catch (MessagingException e) {
+			new CFWLog(logger).severe("Error sending eMail: "+e.getMessage(), e);
+		}
+		return this;
+	}
 	
 	/***************************************************************
 	 * Creates a session for sending mails.
