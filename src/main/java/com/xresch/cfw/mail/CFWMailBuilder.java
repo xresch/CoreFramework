@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
+import javax.mail.Address;
 import javax.mail.Authenticator;
 import javax.mail.BodyPart;
 import javax.mail.Message;
@@ -30,14 +31,11 @@ import javax.mail.util.ByteArrayDataSource;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 
-public class CFWMailer {
+public class CFWMailBuilder {
 	
-	private static Logger logger = CFWLog.getLogger(CFWMailer.class.getName());
+	private static Logger logger = CFWLog.getLogger(CFWMailBuilder.class.getName());
 	
 	private MimeMessage message;
-	
-	//main message part
-	private BodyPart messageBodyPart;
 	
 	//wrapper of all parts
 	private Multipart multipart;
@@ -45,7 +43,7 @@ public class CFWMailer {
 	/***************************************************************
 	 * 
 	 ***************************************************************/
-	public CFWMailer(String subject) {
+	public CFWMailBuilder(String subject) {
 
 		try {
 			message = new MimeMessage(initializeSession());
@@ -56,11 +54,6 @@ public class CFWMailer {
 			message.setSubject(subject, "UTF-8");
 			
 	         multipart = new MimeMultipart();
-
-			 messageBodyPart = new MimeBodyPart();
-
-	         // Set text message part
-	         multipart.addBodyPart(messageBodyPart);
 
 	         // Send the complete message parts
 	         message.setContent(multipart);
@@ -74,21 +67,15 @@ public class CFWMailer {
 	/***************************************************************
 	 * 
 	 ***************************************************************/
-	public CFWMailer(String subject, String messageBodyHTML) {
+	public CFWMailBuilder(String subject, String messageBodyHTML) {
 		this(subject);
-		try {
-	         // Set the message
-	         messageBodyPart.setContent(messageBodyHTML, "text/html");
-		} catch (MessagingException e) {
-			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
-		}
-		
+	    this.addMessage(messageBodyHTML);
 	}
 	
 	/***************************************************************
 	 * 
 	 ***************************************************************/
-	public CFWMailer fromNoReply() {
+	public CFWMailBuilder fromNoReply() {
 		try {
 			message.setFrom(new InternetAddress(CFW.Properties.MAIL_SMTP_FROMMAIL_NOREPLY, CFW.Properties.MAIL_SMTP_FROMMAIL_NOREPLY));
 		} catch (MessagingException | UnsupportedEncodingException e) {
@@ -100,10 +87,35 @@ public class CFWMailer {
 	/***************************************************************
 	 * 
 	 ***************************************************************/
-	public CFWMailer from(String eMail, String displayName) {
+	public CFWMailBuilder from(String eMail, String displayName) {
 		try {
 			message.setFrom(new InternetAddress(eMail, displayName));
 		} catch (MessagingException | UnsupportedEncodingException e) {
+			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
+		}
+		return this;
+	}
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public CFWMailBuilder replyTo(String eMail, String displayName) {
+		try {
+			message.setReplyTo(new Address[] {new InternetAddress(eMail, displayName)} );
+		} catch (MessagingException | UnsupportedEncodingException e) {
+			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
+		}
+		return this;
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public CFWMailBuilder addMessage(String html) {
+		try {
+			BodyPart messageBodyPart = new MimeBodyPart();
+			messageBodyPart.setContent(html, "text/html");
+			multipart.addBodyPart(messageBodyPart);
+		} catch (MessagingException e) {
 			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
 		}
 		return this;
@@ -113,7 +125,7 @@ public class CFWMailer {
 	 * Set the recipients of the eMail.
 	 * @param recipients map with email as key and displayName as value
 	 ***************************************************************/
-	public CFWMailer recipientsTo(LinkedHashMap<String,String> recipients) {
+	public CFWMailBuilder recipientsTo(LinkedHashMap<String,String> recipients) {
 		return recipients(Message.RecipientType.TO, recipients);
 	}
 	
@@ -121,7 +133,7 @@ public class CFWMailer {
 	 * Set the CC recipients of the eMail.
 	 * @param recipients map with email as key and displayName as value
 	 ***************************************************************/
-	public CFWMailer recipientsCC(LinkedHashMap<String,String> recipients) {
+	public CFWMailBuilder recipientsCC(LinkedHashMap<String,String> recipients) {
 		return recipients(Message.RecipientType.CC, recipients);
 	}
 	
@@ -129,7 +141,7 @@ public class CFWMailer {
 	 * Set the BCC recipients of the eMail.
 	 * @param recipients map with email as key and displayName as value
 	 ***************************************************************/
-	public CFWMailer recipientsBCC(LinkedHashMap<String,String> recipients) {
+	public CFWMailBuilder recipientsBCC(LinkedHashMap<String,String> recipients) {
 		return recipients(Message.RecipientType.BCC, recipients);
 	}
 	
@@ -137,7 +149,7 @@ public class CFWMailer {
 	 * Set the recipients of the eMail.
 	 * @param recipients map with email as key and displayName as value
 	 ***************************************************************/
-	private CFWMailer recipients(Message.RecipientType type, LinkedHashMap<String,String> recipients) {
+	private CFWMailBuilder recipients(Message.RecipientType type, LinkedHashMap<String,String> recipients) {
 		try {
 			
 			InternetAddress[] addresses = new InternetAddress[recipients.size()];
@@ -156,13 +168,86 @@ public class CFWMailer {
 		return this;
 	}
 	
+	/***************************************************************
+	 * Add text as an attachment with the specified attachment name.
+	 * You might want to include ".txt" in the filename.
+	 ***************************************************************/
+	public CFWMailBuilder addAttachment(String attachmentName, String textContent) {
+
+		try {
+			DataSource attachmentSource = new ByteArrayDataSource(textContent, "text/plain");
+			addAttachment(attachmentName, attachmentSource);
+		} catch (IOException e) {
+			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
+		}
+		
+		return this;
+	}
+		
+	/***************************************************************
+	 * Add text as an attachment with the specified attachment name.
+	 * You might want to include ".txt" in the filename.
+	 ***************************************************************/
+	public CFWMailBuilder addAttachment(String attachmentName, InputStream inputStream, String mimeType) {
+
+		try {
+			DataSource attachmentSource = new ByteArrayDataSource(inputStream, mimeType);
+			addAttachment(attachmentName, attachmentSource);
+		} catch (IOException e) {
+			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);
+		}
+		
+		return this;
+	}
+	
+	/***************************************************************
+	 * Add text as an attachment with the specified attachment name.
+	 * You might want to include ".txt" in the filename.
+	 ***************************************************************/
+	public CFWMailBuilder addAttachment(String attachmentName, byte[] bytes, String mimeType) {
+		
+		DataSource attachmentSource = new ByteArrayDataSource(bytes, mimeType);
+		addAttachment(attachmentName, attachmentSource);
+
+		return this;
+	}
+	
+	/***************************************************************
+	 * Add a File as an attachment.
+	 ***************************************************************/
+	public CFWMailBuilder addAttachment(File file) {
+
+		DataSource attachmentSource = new FileDataSource(file);
+		addAttachment(file.getName(), attachmentSource);
+		
+		return this;
+	}
 	
 	/***************************************************************
 	 * Send the eMail.
 	 ***************************************************************/
-	public CFWMailer send() {
+	public CFWMailBuilder addAttachment(String attachmentName, DataSource attachment) {
 		try {
-	         Transport.send(message); 
+
+			 // Second part is attachment
+	         BodyPart attachmentBodyPart = new MimeBodyPart();
+	         attachmentBodyPart.setDataHandler(new DataHandler(attachment));
+	         attachmentBodyPart.setFileName(attachmentName);
+	         multipart.addBodyPart(attachmentBodyPart);
+	         
+		} catch (MessagingException e) {
+			new CFWLog(logger).severe("Error sending eMail: "+e.getMessage(), e);
+		}
+		return this;
+	}
+	
+	/***************************************************************
+	 * Send the eMail.
+	 ***************************************************************/
+	public CFWMailBuilder send() {
+		try {
+			message.setSentDate(new Date());
+	        Transport.send(message); 
 		} catch (MessagingException e) {
 			new CFWLog(logger).severe("Error sending eMail: "+e.getMessage(), e);
 		}

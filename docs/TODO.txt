@@ -108,6 +108,8 @@ Potential TODOs
 
 DONE
 ====
+------- current -------
+- Mailing: Added Class CFWMailBuilder for creating eMails.
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB

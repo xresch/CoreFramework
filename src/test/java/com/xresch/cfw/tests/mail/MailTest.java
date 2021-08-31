@@ -1,5 +1,7 @@
 package com.xresch.cfw.tests.mail;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
@@ -7,7 +9,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.mail.CFWMailer;
+import com.xresch.cfw.mail.CFWMailBuilder;
 import com.xresch.cfw.tests._master.WebTestMaster;
 
 
@@ -19,42 +21,42 @@ public class MailTest extends WebTestMaster  {
 	public void testMail() throws IOException {
 
 		LinkedHashMap<String, String> recipientsTo = new LinkedHashMap<>();
-		recipientsTo.put("testika@pengtoolbox.io", "Testika");
-		recipientsTo.put("testonia@pengtoolbox.io", "Testonia");
+		recipientsTo.put("testika@xresch.com", "Testika");
+		recipientsTo.put("testonia@xresch.com", "Testonia");
 		
 		LinkedHashMap<String, String> recipientsCC = new LinkedHashMap<>();
-		recipientsCC.put("testikaCC@pengtoolbox.io", "Testika CC");
-		recipientsCC.put("testoniaCC@pengtoolbox.io", "Testonia CC");
+		recipientsCC.put("testikaCC@xresch.com", "Testika CC");
+		recipientsCC.put("testoniaCC@xresch.com", "Testonia CC");
 		
 		LinkedHashMap<String, String> recipientsBCC = new LinkedHashMap<>();
-		recipientsBCC.put("testikaBCC@pengtoolbox.io", "Testika BCC");
-		recipientsBCC.put("testoniaBCC@pengtoolbox.io", "Testonia BCC");
+		recipientsBCC.put("testikaBCC@xresch.com", "Testika BCC");
+		recipientsBCC.put("testoniaBCC@xresch.com", "Testonia BCC");
 		
 		String messageBody = "<!DOCTYPE HTML><html>SimpleEmail Testing Body. <strong>STRONG</strong></html>";
 		
-		new CFWMailer("Test Mail Builder", messageBody)
+		CFW.Files.addAllowedPackage(PACKAGE);
+		String attachmentContent = CFW.Files.readPackageResource(PACKAGE, "attachment_small.txt");
+		
+		FileInputStream pngInputStream = new FileInputStream("./testdata/image.png");
+		FileInputStream pdfInputStream = new FileInputStream("./testdata/document.pdf");
+		byte[] pdfBytes = CFW.Files.readBytesFromInputStream(pdfInputStream);
+		
+		new CFWMailBuilder("Test CFWMailer", messageBody)
+			.addMessage("<i>Second Message</i>")
+			.addMessage("<p>Third Message</p>")
 			.fromNoReply()
+			.replyTo("replyToMeC@xresch.com", "REPLY TO ME")
 			.recipientsTo(recipientsTo)
 			.recipientsCC(recipientsCC)
 			.recipientsBCC(recipientsBCC)
+			.addAttachment("attachment_small.txt", attachmentContent)
+			.addAttachment("custom.txt", "somefile")
+			.addAttachment(new File("./testdata/test.css"))
+			.addAttachment("image.png", pngInputStream, "image/png")
+			.addAttachment("document.pdf", pdfBytes, "application/pdf")
 			.send();
 
 	}
 	
-	@Test
-	public void testMailWithTextAttachment() throws IOException {
-
-		CFW.Files.addAllowedPackage(PACKAGE);
-		String attachmentContent = CFW.Files.readPackageResource(PACKAGE, "attachment_small.txt");
-
-	    CFW.Mail.sendFromNoReplyWithAttachement(CFW.Mail.initializeSession(), 
-	    		"test@pengtoolbox.io", 
-	    		"AttachmentTest", 
-	    		"See <strong>attachment</strong>", 
-	    		attachmentContent, 
-	    		"attachment_small.txt"
-	    	);
-	    
-	}
 
 }

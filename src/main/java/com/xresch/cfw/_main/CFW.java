@@ -52,7 +52,6 @@ import com.xresch.cfw.features.usermgmt.CFWDBUserRoleMap;
 import com.xresch.cfw.features.usermgmt.CFWRegistryAudit;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.mail.CFWMail;
 import com.xresch.cfw.schedule.CFWTaskScheduler;
 import com.xresch.cfw.utils.CFWDump;
 import com.xresch.cfw.utils.CFWFiles;
@@ -121,7 +120,6 @@ public class CFW {
 	public static class HTTP extends CFWHttp {}
 	public static class JSON extends CFWJson {}
 	public static class Localization extends CFWLocalization {}
-	public static class Mail extends CFWMail {}
 	public static class Messages extends CFWMessages {}
 	public static class Properties extends CFWProperties {}
 	public static class Random extends CFWRandom {}
