@@ -287,18 +287,10 @@ Such a widget needs to set the field "usetimeframe" to true in order for the tim
 </pre>
 
 <p>
-When a widget does above, the framework will add the two fields timeframe_earliest/timeframe_latest to the JsonObject settings 
-passed to the server-side fetchData()-Method. The fields contain unix epoch time in milliseconds and can be used to fetch the data
-for the specified time range.
+When a widget uses a timeframe, the parameters earliest and latest of the fetchData()-method will contain a unix epoch time in milliseconds, that can be used to fetch the data
+for the specified time range. The parameters will be set to -1 one if the widget does not use a timeframe.
 </p>
-<pre>
-<code>@Override
-public void fetchData(JSONResponse response, JsonObject settings) { 
-	long earliest = settings.get("timeframe_earliest").getAsLong();
-	long latest = settings.get("timeframe_latest").getAsLong();
-	[...]
-}</code>
-</pre>
+
 
 
 <h2>Adding a Task to a Widget</h2>

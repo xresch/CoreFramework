@@ -35,9 +35,11 @@ public abstract class WidgetDefinition {
 	 * your widget.
 	 * @param request TODO
 	 * @param settings TODO
+	 * @param earliest TODO
+	 * @param latest TODO
 	 * @return JSON string
 	 ************************************************************/
-	public abstract void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings);
+	public abstract void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, long earliest, long latest);
 
 	/************************************************************
 	 * Return the file definitions of the javascript part of the 

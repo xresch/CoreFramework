@@ -614,6 +614,15 @@ function cfw_dashboard_parameters_remove(parameterID) {
  ******************************************************************************/
 function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject, finalParams) {
 
+	//###############################################################################
+	//############################ IMPORTANT ########################################
+	//###############################################################################
+	// When changing this method you have to apply the same changes in the javascript 
+	// method:
+	// cfw_dashboard.js >> cfw_dashboard_parameters_applyToWidgetSettings()
+	//
+	//###############################################################################
+
 // FK_ID_DASHBOARD: 2081
 // IS_MODE_CHANGE_ALLOWED: true
 // MODE: "MODE_SUBSTITUTE"
@@ -670,8 +679,6 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject, finalParam
 			var mode = currentParam.MODE;
 			switch(currentParam.PARAM_TYPE){
 				case 'TAGS_SELECTOR':
-					console.log('888 ==========')
-					console.log(paramValue);
 					if(typeof paramValue == 'object'){
 						widgetJsonSettings[currentSettingName] = paramValue;
 					}else{
@@ -1346,15 +1353,11 @@ function cfw_dashboard_widget_getSettingsForm(widgetObject) {
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_widget_fetchData(widgetObject, params, callback) {
+function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback) {
 	
 	var formHTML = "";
 	
-	var params = Object.assign({action: 'fetch', item: 'widgetdata', dashboardid: CFW_DASHBOARD_URLPARAMS.id}, widgetObject); 
-	
-	delete params.content;
-	delete params.guid;
-	delete params.JSON_SETTINGS;
+	var urlParams = {action: 'fetch', item: 'widgetdata', dashboardid: CFW_DASHBOARD_URLPARAMS.id, widgetid: widgetObject.PK_ID, params: JSON.stringify(dashboardParams)}; 
 	
 	var definition = CFW.dashboard.getWidgetDefinition(widgetObject.TYPE);
 	
@@ -1368,15 +1371,14 @@ function cfw_dashboard_widget_fetchData(widgetObject, params, callback) {
 			CFW_DASHBOARD_TIME_ENABLED = true;
 		}
 		settings = _.cloneDeep(settings);
-		settings.timeframe_earliest = CFW_DASHBOARD_TIME_EARLIEST_EPOCH;
-		settings.timeframe_latest = CFW_DASHBOARD_TIME_LATEST_EPOCH;
+		urlParams.timeframe_earliest = CFW_DASHBOARD_TIME_EARLIEST_EPOCH;
+		urlParams.timeframe_latest = CFW_DASHBOARD_TIME_LATEST_EPOCH;
 	}
 	
 	// ----------------------------
 	// Fetch Data
-	params.JSON_SETTINGS = JSON.stringify(settings);
 	
-	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){
+	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, urlParams, function(data){
 		callback(data);
 	});
 

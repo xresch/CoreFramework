@@ -96,13 +96,13 @@ public class DashboardParameter extends CFWObject {
 				@Override
 				public boolean validate(Object value) {
 					String stringValue = value.toString().trim();
-					if(stringValue.toString().matches("[\\w-_]*")) {
-						if(stringValue.toString().equals("id")
-						|| stringValue.toString().equals("title")
-						|| stringValue.toString().equals("timeframepreset")
-						|| stringValue.toString().equals("earliest")
-						|| stringValue.toString().equals("latest")) {
-							CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter name cannot be the following: id, title, timeframepreset, earliest, latest");
+					if(stringValue.matches("[\\w-_]*")) {
+						if(stringValue.equals("id")
+						|| stringValue.equals("title")
+						|| stringValue.equals("timeframepreset")
+						|| stringValue.equals("earliest")
+						|| stringValue.equals("latest")) {
+							CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter name(yours:'"+stringValue+"') cannot be the following: id, title, timeframepreset, earliest, latest");
 							return false;
 						}
 						return true;

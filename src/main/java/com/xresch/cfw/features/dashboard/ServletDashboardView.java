@@ -24,7 +24,6 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.datahandling.CFWSchedule.EndType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormCustomAutocompleteHandler;
 import com.xresch.cfw.datahandling.CFWFormHandler;
@@ -32,6 +31,7 @@ import com.xresch.cfw.datahandling.CFWMultiForm;
 import com.xresch.cfw.datahandling.CFWMultiFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWSchedule;
+import com.xresch.cfw.datahandling.CFWSchedule.EndType;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
@@ -556,8 +556,30 @@ public class ServletDashboardView extends HttpServlet
 		
 		//----------------------------
 		// Get Values
-		String widgetType = request.getParameter("TYPE");
-		String JSON_SETTINGS = request.getParameter("JSON_SETTINGS");
+		String widgetID = request.getParameter("widgetid");
+		String dashboardParams = request.getParameter("params");
+		
+		String earliestString = request.getParameter("timeframe_earliest");
+		String latestString = request.getParameter("timeframe_latest");
+		
+		//-----------------------------------
+		// Prepare Widget Settings
+		long earliest = -1;
+		long latest = -1;
+		if(!Strings.isNullOrEmpty(earliestString)) { earliest = Long.parseLong(earliestString); }
+		if(!Strings.isNullOrEmpty(latestString)) { latest = Long.parseLong(latestString); }
+		
+		DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
+		
+		//-----------------------------------
+		// Prepare Widget Settings
+		String widgetType = widget.type();
+		String JSON_SETTINGS = widget.settings();
+		
+		//apply Parameters to JSONSettings
+		JSON_SETTINGS = replaceParamsInSettings(JSON_SETTINGS, dashboardParams);
+		
+		System.out.println("complete: "+JSON_SETTINGS);
 		JsonElement jsonSettings = CFW.JSON.fromJson(JSON_SETTINGS);
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 		CFWObject settingsObject = definition.getSettings();
@@ -566,12 +588,74 @@ public class ServletDashboardView extends HttpServlet
 		//----------------------------
 		// Create Response
 		if(jsonSettings.isJsonObject()) {
-		definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject());
+		definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), earliest, latest);
 		}else {
 			new CFWLog(logger).warn("Widget Data was not of the correct type.", new IllegalArgumentException());
 		}
 					
 	}
+	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
+	private String replaceParamsInSettings(String jsonSettings, String jsonParams) {
+		
+		//###############################################################################
+		//############################ IMPORTANT ########################################
+		//###############################################################################
+		// When changing this method you have to apply the same changes in the javascript 
+		// method:
+		// cfw_dashboard.js >> cfw_dashboard_parameters_applyToWidgetSettings()
+		//
+		//###############################################################################
+
+		
+		System.out.println("jsonSettings:"+jsonSettings);
+		System.out.println("jsonParams:"+jsonParams);
+		
+		// Parameter Sample
+		//{"PK_ID":1092,"FK_ID_DASHBOARD":2081,"WIDGET_TYPE":null,"LABEL":"Boolean","PARAM_TYPE":false,"NAME":"boolean","VALUE":"FALSE","MODE":"MODE_SUBSTITUTE","IS_MODE_CHANGE_ALLOWED":false},
+		JsonElement dashboardParams = CFW.JSON.fromJson(jsonParams);
+		
+		if(dashboardParams != null 
+		&& !dashboardParams.isJsonNull()
+		&& dashboardParams.isJsonArray()) {
+			JsonArray paramsArray = dashboardParams.getAsJsonArray();
+			
+			for(JsonElement current : paramsArray) {
+				
+				//--------------------------------------
+				// Handle Timeframe Params.
+				// Would throw validation issue if mapped
+				// to object.
+				String paramName = current.getAsJsonObject().get("NAME").getAsString();
+				if(paramName.equals("earliest") || paramName.equals("latest") ) {
+					String paramValue = current.getAsJsonObject().get("VALUE").getAsString();
+					jsonSettings = jsonSettings.replaceAll("$"+paramName+"$", paramValue);
+					continue;
+				}
+					
+					
+				//--------------------------------------
+				// Handle Other Parameters
+				DashboardParameter paramObject = new DashboardParameter();
+				
+				paramObject.mapJsonFields(current);
+
+				// Double escape because Java regex is a bitch.
+				String doubleEscaped = CFW.JSON.escapeString(
+											CFW.JSON.escapeString(paramObject.value())
+										);
+				jsonSettings = jsonSettings.replaceAll("\\$"+paramObject.name()+"\\$", doubleEscaped);
+				
+			}
+		}
+		
+		return jsonSettings;
+		
+	}
+		
+	
 	
 	
 	/*****************************************************************
