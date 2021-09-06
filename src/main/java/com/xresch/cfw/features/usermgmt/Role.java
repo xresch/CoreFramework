@@ -72,11 +72,13 @@ public class Role extends CFWObject {
 	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, RoleFields.IS_DELETABLE)
 			.setDescription("Flag to define if the role can be deleted or not.")
 			.setColumnDefinition("BOOLEAN")
+			.apiFieldType(FormFieldType.BOOLEAN)
 			.setValue(true);
 	
 	private CFWField<Boolean> isRenamable = CFWField.newBoolean(FormFieldType.NONE, RoleFields.IS_RENAMABLE)
 			.setColumnDefinition("BOOLEAN DEFAULT TRUE")
 			.setDescription("Flag to define if the role can be renamed or not.")
+			.apiFieldType(FormFieldType.BOOLEAN)
 			.setValue(true)
 			.setChangeHandler(new CFWFieldChangeHandler<Boolean>() {
 				
@@ -95,6 +97,7 @@ public class Role extends CFWObject {
 	private CFWField<Boolean> isGroup = CFWField.newBoolean(FormFieldType.NONE, RoleFields.IS_GROUP)
 			.setDescription("Flag to define if the role is a Group.")
 			.setColumnDefinition("BOOLEAN")
+			.apiFieldType(FormFieldType.BOOLEAN)
 			.setValue(false);
 	
 	public Role() {
@@ -243,6 +246,9 @@ public class Role extends CFWObject {
 						RoleFields.PK_ID.toString(), 
 						RoleFields.CATEGORY.toString(),
 						RoleFields.NAME.toString(),
+						RoleFields.IS_DELETABLE.toString(),
+						RoleFields.IS_RENAMABLE.toString(),	
+						RoleFields.IS_GROUP.toString(),	
 				};
 		
 		String[] outputFields = 
