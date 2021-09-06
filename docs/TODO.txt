@@ -24,7 +24,7 @@ Potential TODOs
   - CFWSQL partial query, select entries for user
 
 - Jobs: Task Selection: Make table with Task UniqueName and description 
-- Jobs: Log Job Executions to DB, plus age out
+- Jobs: Log Job Executions to DB, plus age out.
 - Jobs: Define max number of instances.
 
 - Dashboard: Security Improvement - Use data from server side instead from client side.
@@ -71,6 +71,7 @@ Potential TODOs
 - Manual: Functionality - Multi language pages
 - Manual: Fulltext Search
 
+- DB: Reindex Fulltext-Search
 - DB: Add Feature to change connection pool limits for managed connection pools
 - DB: Prometheus DB Pool statistics
 
@@ -92,7 +93,6 @@ Potential TODOs
 - Create Record Requests / Replay for Performance Tests
 
 - Custom Error page CFW.App.createErrorHandler();
-
 
 - Test: Jobs & Tasks
 - Test: Dashboard Parameters

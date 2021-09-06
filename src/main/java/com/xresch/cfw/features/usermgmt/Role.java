@@ -253,6 +253,7 @@ public class Role extends CFWObject {
 						RoleFields.DESCRIPTION.toString(),
 						RoleFields.IS_DELETABLE.toString(),
 						RoleFields.IS_RENAMABLE.toString(),		
+						RoleFields.IS_GROUP.toString(),		
 				};
 
 		//----------------------------------
