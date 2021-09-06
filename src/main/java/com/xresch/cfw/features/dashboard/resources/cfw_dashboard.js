@@ -1346,7 +1346,7 @@ function cfw_dashboard_widget_getSettingsForm(widgetObject) {
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_widget_fetchData(widgetObject, callback) {
+function cfw_dashboard_widget_fetchData(widgetObject, params, callback) {
 	
 	var formHTML = "";
 	

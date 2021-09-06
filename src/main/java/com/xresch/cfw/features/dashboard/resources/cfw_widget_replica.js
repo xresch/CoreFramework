@@ -15,7 +15,7 @@
 			description: CFWL('cfw_widget_replica_desc', 'Replicates the contents of a widget from another dashboard.'),
 			createWidgetInstance: function (widgetObject, params, callback) {		
 				
-				CFW.dashboard.fetchWidgetData(widgetObject, function(data){
+				CFW.dashboard.fetchWidgetData(widgetObject, params, function(data){
 					
 					if(data.payload != null && data.payload.length > 0){
 						var replicatedWidgetObject = data.payload[0];

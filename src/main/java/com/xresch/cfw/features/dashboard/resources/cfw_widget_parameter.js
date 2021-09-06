@@ -11,7 +11,7 @@
 			
 			createWidgetInstance: function (widgetObject, params, callback) {			
 				
-				CFW.dashboard.fetchWidgetData(widgetObject, function(data){
+				CFW.dashboard.fetchWidgetData(widgetObject, params, function(data){
 					
 					if(data.payload == null){
 						callback(widgetObject, '');

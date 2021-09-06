@@ -84,7 +84,7 @@ Check the comments in the code for more details.
 			createWidgetInstance: function (widgetObject, params, callback) {		
 				
 				//Use this method to fetch data from the server side for this widget. This request will be forwarded to your server side WidgetDefinition.fetchData();
-				CFW.dashboard.fetchWidgetData(widgetObject, function(data){
+				CFW.dashboard.fetchWidgetData(widgetObject, params, function(data){
 					// create your html string or JQuery element
 					var helloString = 'Hello '+widgetObject.JSON_SETTINGS.name+'! '+ data.payload;	
 					// use the callback method to give your content back to the framework that will create the widget
