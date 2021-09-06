@@ -9,7 +9,7 @@
 			menulabel: CFWL('cfw_widget_cfwwebsite', "Website"),
 			description: CFWL('cfw_widget_cfwwebsite_desc', "Displays a website(only works when the website that is embeded allows it)."),
 			
-			createWidgetInstance: function (widgetObject, callback) {
+			createWidgetInstance: function (widgetObject, params, callback) {
 				callback(widgetObject, '<iframe class="w-100 h-100" sandbox="allow-scripts allow-forms" src="'+widgetObject.JSON_SETTINGS.url+'">');
 				
 			},

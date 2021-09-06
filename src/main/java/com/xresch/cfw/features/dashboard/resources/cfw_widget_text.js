@@ -7,7 +7,7 @@
 			menulabel: CFWL('cfw_widget_cfwtext', 'Text'),
 			description: CFWL('cfw_widget_cfwtext_desc', 'Display static text. Can be used to create labels and descriptions.'),
 			
-			createWidgetInstance: function (widgetObject, callback) {			
+			createWidgetInstance: function (widgetObject, params, callback) {			
 				
 				var adjustedText = widgetObject.JSON_SETTINGS.content;
 				

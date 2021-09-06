@@ -7,7 +7,7 @@
 			menulabel: CFWL('cfw_widget_cfwlist', 'List'),
 			description: CFWL('cfw_widget_cfwlist_desc', 'Displays a list. Every line in the text will be shown as a separate item.'),
 			
-			createWidgetInstance: function (widgetObject, callback) {			
+			createWidgetInstance: function (widgetObject, params, callback) {			
 				
 				//-------------------------
 				//Create List HTML

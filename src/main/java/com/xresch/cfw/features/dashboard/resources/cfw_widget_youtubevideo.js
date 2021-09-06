@@ -9,7 +9,7 @@
 			menulabel: CFWL('cfw_widget_cfwyoutubevideo', "Youtube Video"),
 			description: CFWL('cfw_widget_cfwyoutubevideo_desc', "Adds a Youtube video to the dashboard."),
 			
-			createWidgetInstance: function (widgetObject, callback) {
+			createWidgetInstance: function (widgetObject, params, callback) {
 				
 				if(widgetObject.JSON_SETTINGS.url == null){
 					callback(widgetObject, '');

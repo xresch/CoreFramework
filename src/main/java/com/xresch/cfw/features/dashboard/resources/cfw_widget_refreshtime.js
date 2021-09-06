@@ -9,7 +9,7 @@
 			defaulttitle: "",
 			defaultwidth: 8,
 			defaultheight: 3,
-			createWidgetInstance: function (widgetObject, callback) {	
+			createWidgetInstance: function (widgetObject, params, callback) {	
 				
 				var settings = widgetObject.JSON_SETTINGS;
 

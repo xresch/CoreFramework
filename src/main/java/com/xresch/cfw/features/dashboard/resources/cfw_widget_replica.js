@@ -13,7 +13,7 @@
 			menuicon: "fas fa-copy",
 			menulabel:  CFWL('cfw_widget_replica', 'Replica'),
 			description: CFWL('cfw_widget_replica_desc', 'Replicates the contents of a widget from another dashboard.'),
-			createWidgetInstance: function (widgetObject, callback) {		
+			createWidgetInstance: function (widgetObject, params, callback) {		
 				
 				CFW.dashboard.fetchWidgetData(widgetObject, function(data){
 					
@@ -40,7 +40,7 @@
 						var widgetCloneParameterized = cfw_dashboard_parameters_applyToWidgetSettings(replicatedWidgetObject);
 						
 						try{
-							replicatedDefinition.createWidgetInstance(widgetCloneParameterized, 
+							replicatedDefinition.createWidgetInstance(widgetCloneParameterized, params,
 								function(subReplicatedWidgetObject, widgetContent, subWidgetObject = widgetObject){
 									
 									//---------------------------------------

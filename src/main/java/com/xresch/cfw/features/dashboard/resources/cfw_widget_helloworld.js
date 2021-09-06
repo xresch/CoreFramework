@@ -13,7 +13,7 @@
 			menuicon: "fas fa-font",
 			menulabel: 'Hello World',
 			description: CFWL('cfw_widget_helloworld_desc', 'Takes a name and greats a person.'),
-			createWidgetInstance: function (widgetObject, callback) {		
+			createWidgetInstance: function (widgetObject, params, callback) {		
 				
 				CFW.dashboard.fetchWidgetData(widgetObject, function(data){
 					

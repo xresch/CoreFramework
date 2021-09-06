@@ -7,7 +7,7 @@
 			menulabel: CFWL('cfw_widget_cfwhtmleditor', 'HTML Editor'),
 			description: CFWL('cfw_widget_cfwhtmleditor_desc', 'Display static text. Can be used to create labels and descriptions.'),
 			
-			createWidgetInstance: function (widgetObject, callback) {			
+			createWidgetInstance: function (widgetObject, params, callback) {			
 				
 				
 

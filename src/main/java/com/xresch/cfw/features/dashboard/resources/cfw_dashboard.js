@@ -344,8 +344,8 @@ function cfw_dashboard_registerWidget(widgetUniqueType, widgetObject){
 			usetimeframe: false,
 			// function that creates the widget content and returns them to the
 			// framework by calling the callback function
-			createWidgetInstance: function (widgetObject2, callback) {				
-				callback(widgetObject2, "Please specify a function on your widgetDefinition.createWidgetInstance.");
+			createWidgetInstance: function (widgetObject2, params, callback) {				
+				callback(widgetObject2, params, "Please specify a function on your widgetDefinition.createWidgetInstance.");
 			},
 			// Must return a html string representing a HTML form. Or null if no
 			// settings are needed for this widget.
@@ -612,7 +612,7 @@ function cfw_dashboard_parameters_remove(parameterID) {
  * 
  * @return cloned widgetObject
  ******************************************************************************/
-function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
+function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject, finalParams) {
 
 // FK_ID_DASHBOARD: 2081
 // IS_MODE_CHANGE_ALLOWED: true
@@ -627,7 +627,6 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject) {
 	widgetType = widgetObject.TYPE;
 	widgetJsonSettings = _.cloneDeep(widgetObject.JSON_SETTINGS);
 	
-	var finalParams =cfw_dashboard_parameters_getFinalParams();
 	for(var index in finalParams){
 		var currentParam = finalParams[index];
 		var currentSettingName = currentParam.LABEL;
@@ -1545,7 +1544,8 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 	
 	if(widgetDefinition != null){
 		
-		widgetCloneParameterized = cfw_dashboard_parameters_applyToWidgetSettings(originalWidgetObject);
+		var finalParams = cfw_dashboard_parameters_getFinalParams();
+		widgetCloneParameterized = cfw_dashboard_parameters_applyToWidgetSettings(originalWidgetObject, finalParams);
 		
 		try{
 		// ---------------------------------------
@@ -1559,7 +1559,7 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 
 		// ---------------------------------------
 		// Create Instance by Widget Definition
-		widgetDefinition.createWidgetInstance(widgetCloneParameterized, 
+		widgetDefinition.createWidgetInstance(widgetCloneParameterized, finalParams,
 			function(widgetAdjustedByWidgetDef, widgetContent){
 				
 			//console.log('========= Adjusted ==========');

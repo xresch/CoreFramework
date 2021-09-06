@@ -17,7 +17,7 @@
 			defaulttitle: "",
 			defaultwidth: 4,
 			defaultheight: 4,
-			createWidgetInstance: function (widgetObject, callback) {		
+			createWidgetInstance: function (widgetObject, params, callback) {		
 				var html = 
 					 '<button class="btn btn-sm text-cfw-yellow bg-cfw-black fas fa-lightbulb" onclick="cfw_widget_lightswitch_toggleLight()" style="height: 100%; width:100%;"></button>'
 					;

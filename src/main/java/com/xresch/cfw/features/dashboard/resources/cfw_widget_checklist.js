@@ -7,7 +7,7 @@
 			menulabel: CFWL('cfw_widget_cfwchecklist', 'Checklist'),
 			description: CFWL('cfw_widget_cfwchecklist_desc', 'Displays a checklist. Every line in the text will be shown as a separate item.'),
 			
-			createWidgetInstance: function (widgetObject, callback) {			
+			createWidgetInstance: function (widgetObject, params, callback) {			
 				
 				//-------------------------
 				// Prepare input

@@ -17,7 +17,7 @@
 			defaulttitle: "",
 			defaultwidth: 4,
 			defaultheight: 4,
-			createWidgetInstance: function (widgetObject, callback) {		
+			createWidgetInstance: function (widgetObject, params, callback) {		
 				var html = 
 					 '<button class="btn btn-sm text-white bg-cfw-purple fa fa-globe" onclick="cfw_widget_toggleDisco('+widgetObject.JSON_SETTINGS.discolevel+')" style="height: 100%; width:100%;"></button>'
 					;

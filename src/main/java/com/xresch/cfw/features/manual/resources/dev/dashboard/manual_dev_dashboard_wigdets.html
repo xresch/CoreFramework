@@ -47,7 +47,7 @@ The following are the fields of the widgetDefinition and the default values:
 		usetimeframe: false,
 			
 		// function that creates the widget content and returns them to the framework by calling the callback function
-		createWidgetInstance: function (widgetObject, callback) {	
+		createWidgetInstance: function (widgetObject, params, callback) {	
 			callback(widgetObject, "Please specify a function on your widgetDefinition.createWidgetInstance.");
 		},
 		
@@ -81,7 +81,7 @@ Check the comments in the code for more details.
 			menuicon: "fas fa-font",
 			menulabel: 'Hello World',
 			description: CFWL('cfw_widget_helloworld_desc', 'Takes a name and greats a person.'),
-			createWidgetInstance: function (widgetObject, callback) {		
+			createWidgetInstance: function (widgetObject, params, callback) {		
 				
 				//Use this method to fetch data from the server side for this widget. This request will be forwarded to your server side WidgetDefinition.fetchData();
 				CFW.dashboard.fetchWidgetData(widgetObject, function(data){

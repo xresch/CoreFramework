@@ -9,7 +9,7 @@
 			menulabel: CFWL('cfw_widget_parameter', 'Parameter'),
 			description: CFWL('cfw_widget_parameter_desc', 'Displays a widget with parameters that the viewer of the dashboard can adjust to customize the dashboard. User choices will be saved in the browser.'),
 			
-			createWidgetInstance: function (widgetObject, callback) {			
+			createWidgetInstance: function (widgetObject, params, callback) {			
 				
 				CFW.dashboard.fetchWidgetData(widgetObject, function(data){
 					

@@ -17,7 +17,7 @@
 			defaulttitle: "",
 			defaultwidth: 4,
 			defaultheight: 4,
-			createWidgetInstance: function (widgetObject, callback) {		
+			createWidgetInstance: function (widgetObject, params, callback) {		
 				
 				var fwTemplate = $('#fireworks-template');
 				if(fwTemplate.length == 0){

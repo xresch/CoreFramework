@@ -17,7 +17,7 @@
 			defaulttitle: "",
 			defaultwidth: 4,
 			defaultheight: 4,
-			createWidgetInstance: function (widgetObject, callback) {		
+			createWidgetInstance: function (widgetObject, params, callback) {		
 				
 				var html = 
 					 '<button class="btn btn-sm btn-primary far fa-snowflake" onclick="cfw_widget_easteregg_toggleSnow('+widgetObject.JSON_SETTINGS.discolevel+')" style="height: 100%; width:100%;"></button>'
