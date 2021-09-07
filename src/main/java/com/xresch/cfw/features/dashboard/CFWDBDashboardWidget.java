@@ -37,7 +37,7 @@ public class CFWDBDashboardWidget {
 	private static Cache<String, DashboardWidget> widgetCache = CFW.Caching.addCache("CFW Widgets", 
 			CacheBuilder.newBuilder()
 				.initialCapacity(100)
-				.maximumSize(1000)
+				.maximumSize(10000)
 				.expireAfterAccess(65, TimeUnit.MINUTES)
 			);
 	
