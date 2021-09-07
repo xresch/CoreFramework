@@ -27,7 +27,6 @@ Potential TODOs
 - Jobs: Log Job Executions to DB, plus age out.
 - Jobs: Define max number of instances.
 
-- Dashboard: Security Improvement - Use data from server side instead from client side.
 - Dashboard: Share with users that are not logged in
 - Dashboard: Check Settings - Provide a bulk action to show all settings of all widgets as an overview. 
 - Dashboard: Text Alignment
@@ -110,6 +109,7 @@ DONE
 ====
 ------- current -------
 - Mailing: Added Class CFWMailBuilder for creating eMails.
+- Dashboard: Security Improvement - Use data from server side instead from client side.
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB

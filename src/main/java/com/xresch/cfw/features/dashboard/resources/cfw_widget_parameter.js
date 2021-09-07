@@ -69,7 +69,6 @@
 								inputField.tagsinput('removeAll');
 								for(var index in tagsInputValues){
 									inputField.tagsinput('add', tagsInputValues[index]);
-									console.log("567 - "+ tagsInputValues[index])
 								}
 							}else{
 								inputField.val(viewerCustomValue);
