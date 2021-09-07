@@ -242,11 +242,12 @@ function cfwjobs_printJobs(itemType){
 	var actionButtons = [];
 	
 	//-------------------------
-	// Edit Button
+	// Execute Button
 	actionButtons.push(
 		function (record, id){ 
 			return '<button class="btn btn-sm btn-success" alt="Execute" title="Execute" '
-					+'onclick="cfwjobs_execute('+id+');">'
+					//+'onclick="cfwjobs_execute('+id+');">'
+					+'onclick="CFW.ui.confirmExecute(\'Do you really want to execute the job <strong>\\\''+record.JOB_NAME.replace(/\"/g,'&quot;')+'\\\'</strong> now?\', \'Let\\\'s Go!\', \'cfwjobs_execute('+id+');\')">'
 					+ '<i class="fa fa-play"></i>'
 					+ '</button>';
 

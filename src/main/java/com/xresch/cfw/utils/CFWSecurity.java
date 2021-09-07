@@ -40,7 +40,7 @@ public class CFWSecurity {
 		{ "\'", "&#x27;" }, 
 		// { "/", "&#x2F;" }, allow forward slashes for URLs
 		};
-
+		
 	/******************************************************************************
 	 * Creates a salted SHA512 password hash and returns a string of 127 or less
 	 * bytes. Removes the first character of the resulting hash string. This adds as
@@ -124,6 +124,43 @@ public class CFWSecurity {
 			}
 		}
 		return string;
+	}
+	
+	/*************************************************************************************
+	 * Escape SQL entities to prevent SQL injection.
+	 * Code from OWASP ESAPI under BSD License:
+	 * https://github.com/ESAPI/esapi-java-legacy/blob/develop/src/main/java/org/owasp/esapi/codecs/MySQLCodec.java
+	 * 
+	 * <pre>
+	 *   NUL (0x00) --> \0  [This is a zero, not the letter O]
+	 *   BS  (0x08) --> \b
+	 *   TAB (0x09) --> \t
+	 *   LF  (0x0a) --> \n
+	 *   CR  (0x0d) --> \r
+	 *   SUB (0x1a) --> \Z
+	 *   "   (0x22) --> \"
+	 *   %   (0x25) --> \%
+	 *   '   (0x27) --> \'
+	 *   \   (0x5c) --> \\
+	 *   _   (0x5f) --> \_ 
+	 *   <br>
+	 *   all other non-alphanumeric characters with ASCII values less than 256  --> \c
+	 *   where 'c' is the original non-alphanumeric character.
+	 *************************************************************************************/
+	public static String encodeSQLParameter( Character c ) {
+		char ch = c.charValue();
+		if ( ch == 0x00 ) return "\\0";
+		if ( ch == 0x08 ) return "\\b";
+		if ( ch == 0x09 ) return "\\t";
+		if ( ch == 0x0a ) return "\\n";
+		if ( ch == 0x0d ) return "\\r";
+		if ( ch == 0x1a ) return "\\Z";
+		if ( ch == 0x22 ) return "\\\"";
+		if ( ch == 0x25 ) return "\\%";
+		if ( ch == 0x27 ) return "\\'";
+		if ( ch == 0x5c ) return "\\\\";
+		if ( ch == 0x5f ) return "\\_";
+	    return "\\" + c;
 	}
 
 	
