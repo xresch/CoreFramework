@@ -131,7 +131,7 @@ public class CFWForm extends HierarchicalHTMLItem {
 				html.append(
 					"<div class=\"d-flex flex-column align-items-start ml-3 mb-3\">  "
 						+"<label class=\"\" for=\"chart_type2\">&nbsp;</label> "
-						+"<div class=\"cfw-field-wrapper flex-grow-1 \">"
+						+"<div class=\"cfw-field-wrapper flex-grow-0 \">"
 							+ "<div class=\"btn btn-sm btn-primary\" onclick=\""+onclick+"\">Update</div>"
 						+ "</div>"
 					+ "</div>");

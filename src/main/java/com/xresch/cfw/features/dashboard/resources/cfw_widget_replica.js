@@ -28,7 +28,11 @@
 						
 						//prevent saving of widget
 						replicatedWidgetObject.FK_ID_DASHBOARD	= null;
-						replicatedWidgetObject.PK_ID	= widgetObject.PK_ID;
+						
+						// do not override, ID needed for fetching data for replicated widget
+						//replicatedWidgetObject.PK_ID	= widgetObject.PK_ID;
+						
+						// override position, sizing and title
 						replicatedWidgetObject.X 		= widgetObject.X;
 						replicatedWidgetObject.Y 		= widgetObject.Y;
 						replicatedWidgetObject.HEIGHT 	= widgetObject.HEIGHT;
@@ -37,8 +41,9 @@
 						
 						var replicatedDefinition = CFW.dashboard.getWidgetDefinition(replicatedWidgetObject.TYPE);
 						
-						var widgetCloneParameterized = cfw_dashboard_parameters_applyToWidgetSettings(replicatedWidgetObject);
-						
+						var finalParams = cfw_dashboard_parameters_getFinalParams();
+						var widgetCloneParameterized = cfw_dashboard_parameters_applyToWidgetSettings(replicatedWidgetObject, finalParams);
+
 						try{
 							replicatedDefinition.createWidgetInstance(widgetCloneParameterized, params,
 								function(subReplicatedWidgetObject, widgetContent, subWidgetObject = widgetObject){

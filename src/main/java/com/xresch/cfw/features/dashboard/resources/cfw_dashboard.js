@@ -617,9 +617,9 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject, finalParam
 	//###############################################################################
 	//############################ IMPORTANT ########################################
 	//###############################################################################
-	// When changing this method you have to apply the same changes in the javascript 
+	// When changing this method you have to apply the same changes in the java 
 	// method:
-	// cfw_dashboard.js >> cfw_dashboard_parameters_applyToWidgetSettings()
+	// ServletDashboardView.java >> replaceParamsInSettings()
 	//
 	//###############################################################################
 
@@ -1198,11 +1198,20 @@ function cfw_dashboard_widget_save_widgetSettings(formButton, widgetGUID){
 	var undoState = _.cloneDeep(widgetObject);
 	
 	var widgetDef = CFW.dashboard.getWidgetDefinition(widgetObject.TYPE);
+	
 	// switch summernote to wysiwyg view
 	$('.btn-codeview.active').click();
+	
 	var success = widgetDef.onSave($(formButton).closest('form'), widgetObject);
-
+	
 	if(success){
+		
+		// Make sure to save state before rerender
+		$.ajaxSetup({async: false});
+			cfw_dashboard_widget_save_state(widgetObject, true);
+		$.ajaxSetup({async: true});
+
+		// TODO: A bit ugly, triggers another save
 		cfw_dashboard_widget_rerender(widgetGUID);
 		
 	    // ----------------------------------

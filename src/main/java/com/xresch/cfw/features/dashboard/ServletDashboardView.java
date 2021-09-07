@@ -577,10 +577,9 @@ public class ServletDashboardView extends HttpServlet
 		String JSON_SETTINGS = widget.settings();
 		
 		//apply Parameters to JSONSettings
-		JSON_SETTINGS = replaceParamsInSettings(JSON_SETTINGS, dashboardParams);
-		
-		System.out.println("complete: "+JSON_SETTINGS);
-		JsonElement jsonSettings = CFW.JSON.fromJson(JSON_SETTINGS);
+		JsonElement jsonSettings = replaceParamsInSettings(JSON_SETTINGS, dashboardParams, widgetType);
+		System.out.println("with params: "+jsonSettings);
+
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 		CFWObject settingsObject = definition.getSettings();
 		settingsObject.mapJsonFields(jsonSettings);
@@ -596,9 +595,9 @@ public class ServletDashboardView extends HttpServlet
 	}
 	
 	/*****************************************************************
-	 *
+	 * Returns the settings with applied parameters
 	 *****************************************************************/
-	private String replaceParamsInSettings(String jsonSettings, String jsonParams) {
+	public static JsonElement replaceParamsInSettings(String jsonSettings, String jsonParams, String widgetType) {
 		
 		//###############################################################################
 		//############################ IMPORTANT ########################################
@@ -617,9 +616,17 @@ public class ServletDashboardView extends HttpServlet
 		//{"PK_ID":1092,"FK_ID_DASHBOARD":2081,"WIDGET_TYPE":null,"LABEL":"Boolean","PARAM_TYPE":false,"NAME":"boolean","VALUE":"FALSE","MODE":"MODE_SUBSTITUTE","IS_MODE_CHANGE_ALLOWED":false},
 		JsonElement dashboardParams = CFW.JSON.fromJson(jsonParams);
 		
+		//=============================================
+		// Handle SUBSTITUTE PARAMS
+		//=============================================
+		
+		// paramSettingsLabel and paramObject
+		HashMap<String, JsonObject> globalOverrideParams = new HashMap<>();
+		
 		if(dashboardParams != null 
 		&& !dashboardParams.isJsonNull()
-		&& dashboardParams.isJsonArray()) {
+		&& dashboardParams.isJsonArray()
+		) {
 			JsonArray paramsArray = dashboardParams.getAsJsonArray();
 			
 			for(JsonElement current : paramsArray) {
@@ -634,14 +641,18 @@ public class ServletDashboardView extends HttpServlet
 					jsonSettings = jsonSettings.replaceAll("$"+paramName+"$", paramValue);
 					continue;
 				}
-					
-					
-				//--------------------------------------
-				// Handle Other Parameters
-				DashboardParameter paramObject = new DashboardParameter();
 				
+				//--------------------------------------
+				// Check is Global Override Parameter
+				DashboardParameter paramObject = new DashboardParameter();
 				paramObject.mapJsonFields(current);
-
+				
+				if(paramObject.mode().equals(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString())
+				&& paramObject.widgetType().equals(widgetType)) {
+					globalOverrideParams.put(paramObject.paramSettingsLabel(), current.getAsJsonObject());
+					continue;
+				}
+									
 				// Double escape because Java regex is a bitch.
 				String doubleEscaped = CFW.JSON.escapeString(
 											CFW.JSON.escapeString(paramObject.value())
@@ -651,7 +662,29 @@ public class ServletDashboardView extends HttpServlet
 			}
 		}
 		
-		return jsonSettings;
+		//=============================================
+		// Handle GLOBAL OVERRIDE PARAMS
+		//=============================================
+		JsonElement settingsElement = CFW.JSON.fromJson(jsonSettings);
+		
+		if(settingsElement != null 
+		&& !settingsElement.isJsonNull()
+		&& settingsElement.isJsonObject()
+		) {
+			JsonObject settingsObject = settingsElement.getAsJsonObject();
+			
+			for(String paramName : globalOverrideParams.keySet()) {
+				
+				if (settingsObject.has(paramName)) {
+					JsonElement value = globalOverrideParams.get(paramName).get("VALUE");
+					settingsObject.add(paramName, value);
+					System.out.println("do global override:"+value);
+				}
+			}
+				
+		}
+		
+		return settingsElement;
 		
 	}
 		

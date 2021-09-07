@@ -1,1 +1,1 @@
-{"environment":"929","query":"sum by(instance)(jvm_classes_loaded{instance="localhost:8888"})","labels":null,"chart_type":"bar","stacked":false,"show_legend":false,"show_axes":true,"pointradius":0.0,"ymin":0,"ymax":null,"sampledata":false,"children":[]}
+{}

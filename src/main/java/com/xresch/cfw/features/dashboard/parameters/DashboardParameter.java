@@ -86,7 +86,7 @@ public class DashboardParameter extends CFWObject {
 			.setDescription("The type of the widget.");
 	
 	private CFWField<String> paramLabel = CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, DashboardParameterFields.LABEL)
-			.setDescription("The label of the parameter.");
+			.setDescription("The label of the parameter. Either custom or the name of the widget setting.");
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.NAME)
 			.setDescription("The name of the parameter. This name will be used as a placeholder like '$name$' in the widget settings.")
