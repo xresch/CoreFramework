@@ -1,9 +1,14 @@
 package com.xresch.cfw.features.dashboard;
 
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -12,7 +17,6 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -29,6 +33,15 @@ public class CFWDBDashboardWidget {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBDashboardWidget.class.getName());
 
+	// WidgetID and DashboardWidget
+	private static Cache<String, DashboardWidget> widgetCache = CFW.Caching.addCache("CFW Widgets", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(100)
+				.maximumSize(1000)
+				.expireAfterAccess(65, TimeUnit.MINUTES)
+			);
+	
+				
 	//####################################################################################################
 	// Preckeck Initialization
 	//####################################################################################################
@@ -61,19 +74,32 @@ public class CFWDBDashboardWidget {
 			return true;
 		}
 	};
-		
+	
+	//####################################################################################################
+	// CACHING
+	//####################################################################################################
+	private static void removeFromCache(int id) { removeFromCache(id+""); }
+	private static void removeFromCache(String id) { widgetCache.invalidate(id); }
+	
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(DashboardWidget... items) 	{ return CFWDBDefaultOperations.create(prechecksCreate, auditLogFieldnames, items); }
-	public static boolean 	create(DashboardWidget item) 		{ return CFWDBDefaultOperations.create(prechecksCreate, auditLogFieldnames, item);}
-	public static int 		createGetPrimaryKey(DashboardWidget item) 	{ return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, auditLogFieldnames, item);}
+	public static boolean 	create(DashboardWidget item) 		{ 
+		
+		return CFWDBDefaultOperations.create(prechecksCreate, auditLogFieldnames, item);
+	}
+	public static int 		createGetPrimaryKey(DashboardWidget item) 	{ 
+		removeFromCache(item.id());
+		return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, auditLogFieldnames, item);
+	}
 	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(DashboardWidget... items) 	{ return CFWDBDefaultOperations.update(prechecksDeleteUpdate, auditLogFieldnames, items); }
-	public static boolean 	update(DashboardWidget item) 		{ return CFWDBDefaultOperations.update(prechecksDeleteUpdate, auditLogFieldnames, item); }
+	public static boolean 	update(DashboardWidget item) 		{ 
+		removeFromCache(item.id());
+		return CFWDBDefaultOperations.update(prechecksDeleteUpdate, auditLogFieldnames, item); 
+	}
 	
 	//####################################################################################################
 	// DELETE
@@ -84,6 +110,7 @@ public class CFWDBDashboardWidget {
 	public static boolean 	deleteByID(int id) { 
 		
 		if(CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, auditLogFieldnames, cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id) ) {
+			removeFromCache(id);
 			//--------------------------------------------
 			//Delete Job Tasks related to this widget
 			if( 0 < CFW.DB.Jobs.getCountByCustomInteger(id)) {
@@ -121,12 +148,23 @@ public class CFWDBDashboardWidget {
 	//####################################################################################################
 	// SELECT
 	//####################################################################################################
-	public static DashboardWidget selectByID(int id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id);
-	}
 	
 	public static DashboardWidget selectByID(String id) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id);
+		
+		try {
+			return widgetCache.get(id, new Callable<DashboardWidget>() {
+				@Override
+				public DashboardWidget call() throws Exception {
+					System.out.println("Load from DB");
+					return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id);
+				}
+			});
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error while loading widget from DB or Cache: "+e.getMessage(), e);
+		}
+		
+		return null;
+		
 	}
 		
 	/***************************************************************

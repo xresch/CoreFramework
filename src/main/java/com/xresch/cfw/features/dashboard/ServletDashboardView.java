@@ -334,7 +334,7 @@ public class ServletDashboardView extends HttpServlet
 		String widgetID = request.getParameter("widgetid");
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
-			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(Integer.parseInt(widgetID));
+			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widget.type());
 			User currentUser = CFW.Context.Request.getUser();
 			if(definition.hasPermission(currentUser) || CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
@@ -578,7 +578,6 @@ public class ServletDashboardView extends HttpServlet
 		
 		//apply Parameters to JSONSettings
 		JsonElement jsonSettings = replaceParamsInSettings(JSON_SETTINGS, dashboardParams, widgetType);
-		System.out.println("with params: "+jsonSettings);
 
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 		CFWObject settingsObject = definition.getSettings();
@@ -597,7 +596,7 @@ public class ServletDashboardView extends HttpServlet
 	/*****************************************************************
 	 * Returns the settings with applied parameters
 	 *****************************************************************/
-	public static JsonElement replaceParamsInSettings(String jsonSettings, String jsonParams, String widgetType) {
+	private static JsonElement replaceParamsInSettings(String jsonSettings, String jsonParams, String widgetType) {
 		
 		//###############################################################################
 		//############################ IMPORTANT ########################################
@@ -609,8 +608,8 @@ public class ServletDashboardView extends HttpServlet
 		//###############################################################################
 
 		
-		System.out.println("jsonSettings:"+jsonSettings);
-		System.out.println("jsonParams:"+jsonParams);
+		//System.out.println("jsonSettings:"+jsonSettings);
+		//System.out.println("jsonParams:"+jsonParams);
 		
 		// Parameter Sample
 		//{"PK_ID":1092,"FK_ID_DASHBOARD":2081,"WIDGET_TYPE":null,"LABEL":"Boolean","PARAM_TYPE":false,"NAME":"boolean","VALUE":"FALSE","MODE":"MODE_SUBSTITUTE","IS_MODE_CHANGE_ALLOWED":false},
@@ -678,7 +677,7 @@ public class ServletDashboardView extends HttpServlet
 				if (settingsObject.has(paramName)) {
 					JsonElement value = globalOverrideParams.get(paramName).get("VALUE");
 					settingsObject.add(paramName, value);
-					System.out.println("do global override:"+value);
+					//System.out.println("do global override:"+value);
 				}
 			}
 				
