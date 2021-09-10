@@ -637,7 +637,7 @@ public class ServletDashboardView extends HttpServlet
 				String paramName = current.getAsJsonObject().get("NAME").getAsString();
 				if(paramName.equals("earliest") || paramName.equals("latest") ) {
 					String paramValue = current.getAsJsonObject().get("VALUE").getAsString();
-					jsonSettings = jsonSettings.replaceAll("$"+paramName+"$", paramValue);
+					jsonSettings = jsonSettings.replaceAll("\\$"+paramName+"\\$", paramValue);
 					continue;
 				}
 				

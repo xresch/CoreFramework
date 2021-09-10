@@ -3,11 +3,11 @@ package com.xresch.cfw.features.analytics;
 import java.util.concurrent.ScheduledFuture;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.spi.CFWAppFeature;
 
 import io.prometheus.client.exporter.MetricsServlet;
 import io.prometheus.client.hotspot.BufferPoolsExports;

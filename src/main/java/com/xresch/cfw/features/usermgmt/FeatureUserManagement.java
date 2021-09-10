@@ -3,13 +3,13 @@ package com.xresch.cfw.features.usermgmt;
 import java.util.Locale;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
  * 

@@ -1,10 +1,10 @@
 package com.xresch.cfw.features.spaces;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
  * 

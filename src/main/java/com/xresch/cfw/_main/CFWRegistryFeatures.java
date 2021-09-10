@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
  * 

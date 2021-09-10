@@ -7,7 +7,7 @@
 	<groupId>com.xresch</groupId>
 	<artifactId>cfw</artifactId>
 	<packaging>jar</packaging>
-	<version>4.0.0</version>
+	<version>4.0.1</version>
 
 	<name>cfw</name>
 	<description>CoreFramework is a java application boilerplate providing various functionalities like user management, configurations, API and dashboarding out of the box.</description>
@@ -23,8 +23,8 @@
 		<luceneVersion>5.5.5</luceneVersion>
 
 		<skipTests>true</skipTests>
-		<skipJavadoc>false</skipJavadoc>
-		<skipSigning>false</skipSigning>
+		<skipJavadoc>true</skipJavadoc>
+		<skipSigning>true</skipSigning>
 	</properties>
 
 	<!-- ================= LICENSES ================== -->
@@ -202,13 +202,6 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>30.0-jre</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.reflections/reflections -->
-		<dependency>
-			<groupId>org.reflections</groupId>
-			<artifactId>reflections</artifactId>
-			<version>0.9.12</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer -->

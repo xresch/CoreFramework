@@ -1,10 +1,8 @@
 package com.xresch.cfw.utils;
 
-import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
-import com.xresch.cfw._main.CFWExtensionFeature;
+import com.xresch.cfw.spi.CFWAppFeature;
 
-@CFWExtensionFeature
 public class ExtentionFeatureValidation extends CFWAppFeature {
 
 	@Override

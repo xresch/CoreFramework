@@ -110,6 +110,8 @@ DONE
 ------- current -------
 - Mailing: Added Class CFWMailBuilder for creating eMails.
 - Dashboard: Security Improvement - Use data from server side instead from client side.
+- Dashboard Widgets: Added caching for widget data.
+- Reflection: Replaced with ServiceLoader as it is more stable between different Java versions
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB

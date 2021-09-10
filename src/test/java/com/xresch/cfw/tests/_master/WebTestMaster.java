@@ -8,9 +8,9 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWAppInterface;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.spi.CFWAppInterface;
 
 public class WebTestMaster {
 	

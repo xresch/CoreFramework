@@ -85,11 +85,9 @@ public class CFWDBDashboardWidget {
 	// CREATE
 	//####################################################################################################
 	public static boolean 	create(DashboardWidget item) 		{ 
-		
 		return CFWDBDefaultOperations.create(prechecksCreate, auditLogFieldnames, item);
 	}
 	public static int 		createGetPrimaryKey(DashboardWidget item) 	{ 
-		removeFromCache(item.id());
 		return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, auditLogFieldnames, item);
 	}
 	
@@ -155,7 +153,6 @@ public class CFWDBDashboardWidget {
 			return widgetCache.get(id, new Callable<DashboardWidget>() {
 				@Override
 				public DashboardWidget call() throws Exception {
-					System.out.println("Load from DB");
 					return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id);
 				}
 			});

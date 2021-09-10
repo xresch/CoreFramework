@@ -1,5 +1,7 @@
 package com.xresch.cfw._main;
 
+import com.xresch.cfw.spi.CFWAppInterface;
+
 public class _Main {
 			
     public static void main( String[] args ) throws Exception

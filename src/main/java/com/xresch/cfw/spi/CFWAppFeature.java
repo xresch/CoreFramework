@@ -1,4 +1,9 @@
-package com.xresch.cfw._main;
+package com.xresch.cfw.spi;
+
+import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWApplicationExecutor;
+import com.xresch.cfw._main.CFW.DB;
+import com.xresch.cfw._main.CFW.DB.KeyValuePairs;
 
 /**************************************************************************************************************
  * Abstract class for creating Application Features.

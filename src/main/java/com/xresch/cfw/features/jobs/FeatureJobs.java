@@ -1,7 +1,6 @@
 package com.xresch.cfw.features.jobs;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.FeatureCore;
@@ -9,6 +8,7 @@ import com.xresch.cfw.features.dashboard.UserAuditExecutorDashboardUserDirect;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.spi.CFWAppFeature;
 
 public class FeatureJobs extends CFWAppFeature {
 	

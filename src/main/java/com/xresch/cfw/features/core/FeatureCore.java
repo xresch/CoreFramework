@@ -3,7 +3,6 @@ package com.xresch.cfw.features.core;
 import java.util.Locale;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFWAppFeature;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.caching.FileDefinition;
@@ -23,6 +22,7 @@ import com.xresch.cfw.features.core.auth.ServletSAML2Metadata;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
+import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
  * 

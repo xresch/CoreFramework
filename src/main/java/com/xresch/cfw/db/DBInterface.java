@@ -725,8 +725,6 @@ public class DBInterface {
 		
 	}
 	
-	
-
 
 	/************************************************************************
 	 * Creates a DBInterface with a pooled datasource.
