@@ -9,7 +9,7 @@ public class _Main {
     	
     	//------------------------------------
     	// Load application Extension
-    	CFWAppInterface app = CFW.loadExtentionApplication();
+    	CFWAppInterface app = CFW.loadExtensionApplication();
     	    	
     	//------------------------------------
     	// Start Application

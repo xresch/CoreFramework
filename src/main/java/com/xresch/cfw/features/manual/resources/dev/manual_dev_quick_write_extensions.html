@@ -7,36 +7,28 @@ Additional extensions can be written and placed in the same folder as described 
 <p>You can find an example project in the following GitHub repository: <a target="_blank" rel="noopener noreferrer" href="https://github.com/xresch/CoreFramework_ExtensionExample">CoreFramework_ExtensionExample</a></p>
 
 <h2>How it works</h2>
-<p>The mechanism is quite simple. You can write your application as before, except that you need to add annotations to your application class and your features.
-Here is an example of the annotations: </p>
+<p>The mechanism is quite simple. You can write your application as before, except that you need to add a service definition to the META-INF directory. </p>
 
+<p>Sample service definition for application:</p>
 <pre>
-<code>/***************************************************************
- * Use @CFWExtensionApplication to mark a class implementing 
- * CFWAppInterface that should be loaded on server startup.
- * If @CFWExtensionApplication is found multiple times on the 
- * classpath, only the first one is used.
- * Do not use this if you are extending an existing application.
- **************************************************************/
-@CFWExtensionApplication
-public class ExampleExtensionApplication implements CFWAppInterface {
-	...
-}
+<code>// example path for maven projects. Filename is the fully-qualified class name of the implemented interface.
+/src/main/resources/META-INF/services/com.xresch.cfw.spi.CFWAppInterface
 
-/***************************************************************
- * Use @CFWExtensionFeature to mark a class extending 
- * CFWAppFeature that should be loaded on server startup.
- * The features marked with @CFWExtensionFeature are loaded after
- * all features registered with CFW.Registry.Features.addFeature().
- * The order is not predictable, except you create a feature that
- * registers other features with above method.
- **************************************************************/
-@CFWExtensionFeature
-public class FeatureExtensionTest extends CFWAppFeature {
-	...
-}</code>
+// File content example, fully-qualified class name of your implementation
+// you can only have one application loaded, if multiple are defined the first will be loaded, all others are ignored.
+com.xresch.cfw.example._main.ExampleExtensionApplication
+ </code>
 </pre>
 
+<p>Sample service definition for features:</p>
+<pre>
+<code>// example path for maven projects. Filename is the fully-qualified class name of the implemented interface.
+/src/main/resources/META-INF/services/com.xresch.cfw.spi.CFWAppFeature
+
+// File content example, fully-qualified class name of your implementation, one class name per line:
+com.xresch.cfw.example._main.ExampleExtentionFeature
+ </code>
+</pre>
 
 <h2>Building the Extensions</h2>
 <p>When you build your extension, include all your class files but exclude the CFW dependencies.
@@ -61,7 +53,7 @@ public class _MainForTesting {
     {
     	//------------------------------------
     	// Load application Extension
-    	CFWAppInterface app = CFW.loadExtentionApplication();
+    	CFWAppInterface app = CFW.loadExtensionApplication();
 
     	//------------------------------------
     	// Start Application

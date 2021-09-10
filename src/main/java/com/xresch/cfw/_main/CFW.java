@@ -214,7 +214,7 @@ public class CFW {
 	 * returns an instance of the first finding or an empty default application.
 	 * 
 	 ***********************************************************************/
-	public static CFWAppInterface loadExtentionApplication() {
+	public static CFWAppInterface loadExtensionApplication() {
 		
 //       Reflections reflections = new Reflections(new ConfigurationBuilder()
 //            //.filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("com.xresch.cfw.")))
