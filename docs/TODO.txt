@@ -60,6 +60,7 @@ Potential TODOs
 
 - Charts Renderer: Add description to manual page "working with render".
 
+- cfw.js: Create Value-Renderer, only show value in tile.
 - cfw.js: Finish javascript CFWFormField
 - cfw.js: Add Tic Tac Toe Loader for Long running requests
 - cfw.js: Progress Bar Loader
@@ -112,6 +113,7 @@ DONE
 - Dashboard: Security Improvement - Use data from server side instead from client side.
 - Dashboard Widgets: Added caching for widget data.
 - Reflection: Replaced with ServiceLoader as it is more stable between different Java versions
+- CFWField: Added FormFieldType.CHECKBOXES
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB

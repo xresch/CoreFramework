@@ -113,6 +113,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		HIDDEN, 
 		BOOLEAN, 
 		SELECT, 
+		CHECKBOXES,
 		LIST, 
 		WYSIWYG, 
 		DATEPICKER, 
@@ -241,21 +242,32 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		return new CFWField<Object[]>(Object[].class, type, fieldName)
 				.setColumnDefinition("ARRAY");
 	}
+	
+	//===========================================
+	// JSON_ PREFIX CHECK 
+	//===========================================
+	private static boolean fielnameStartsWithJSON(String fieldname) {
+		if(!fieldname.startsWith("JSON_")) {
+			new CFWLog(logger)
+				.severe("Development Error: Fieldname of this field type have to start with 'JSON_'.", new InstantiationException());
+			return false;
+		}
 		
+		return true;
+	}
 	//===========================================
 	// TAGS SELECTOR
 	//===========================================
 	public static CFWField<LinkedHashMap<String,String>> newTagsSelector(Enum<?> fieldName){
 		return newTagsSelector(fieldName.toString());
 	}
+	
 	public static CFWField<LinkedHashMap<String,String>> newTagsSelector(String fieldName){
-		if(!fieldName.startsWith("JSON_")) {
-			new CFWLog(logger)
-				.severe("Fieldname of TAG_SELECTOR fields have to start with 'JSON_'.", new InstantiationException());
-			return null;
-		}
-		return new CFWField<LinkedHashMap<String,String>> (LinkedHashMap.class, FormFieldType.TAGS_SELECTOR, fieldName)
+		if( fielnameStartsWithJSON(fieldName) ) {
+			return new CFWField<LinkedHashMap<String,String>> (LinkedHashMap.class, FormFieldType.TAGS_SELECTOR, fieldName)
 				.setColumnDefinition("VARCHAR");
+		}
+		return null;
 	}
 	
 	//===========================================
@@ -264,31 +276,46 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	public static CFWField<LinkedHashMap<String,String>> newValueLabel(Enum<?> fieldName){
 		return newValueLabel(fieldName.toString());
 	}
+	
 	public static CFWField<LinkedHashMap<String,String>> newValueLabel(String fieldName){
-		if(!fieldName.startsWith("JSON_")) {
-			new CFWLog(logger)
-				.severe("Fieldname of VALUE_LABEL fields have to start with 'JSON_'.", new InstantiationException());
-			return null;
-		}
-		return new CFWField<LinkedHashMap<String,String>> (LinkedHashMap.class, FormFieldType.VALUE_LABEL, fieldName)
+		if( fielnameStartsWithJSON(fieldName) ) {
+			return new CFWField<LinkedHashMap<String,String>> (LinkedHashMap.class, FormFieldType.VALUE_LABEL, fieldName)
 				.setColumnDefinition("VARCHAR");
+		}
+		return null;
 	}
 	
 	//===========================================
 	// VALUE LABEL
 	//===========================================
+	public static CFWField<LinkedHashMap<String,Boolean>> newCheckboxes(Enum<?> fieldName){
+		return newCheckboxes(fieldName.toString());
+	}
+	
+	public static CFWField<LinkedHashMap<String,Boolean>> newCheckboxes(String fieldName){
+		if( fielnameStartsWithJSON(fieldName) ) {
+			return new CFWField<LinkedHashMap<String,Boolean>> (LinkedHashMap.class, FormFieldType.CHECKBOXES, fieldName)
+				.setColumnDefinition("VARCHAR");
+		}
+		return null;
+	}
+	
+	//===========================================
+	// SCHEDULE
+	//===========================================
 	public static CFWField<CFWSchedule> newSchedule(Enum<?> fieldName){
 		return newSchedule(fieldName.toString());
 	}
 	public static CFWField<CFWSchedule> newSchedule(String fieldName){
-		if(!fieldName.startsWith("JSON_")) {
-			new CFWLog(logger)
-				.severe("Fieldname of SCHEDULE fields have to start with 'JSON_'.", new InstantiationException());
-			return null;
+		if( fielnameStartsWithJSON(fieldName) ) {
+			return new CFWField<CFWSchedule> (CFWSchedule.class, FormFieldType.SCHEDULE, fieldName)
+					.setColumnDefinition("VARCHAR");
 		}
-		return new CFWField<CFWSchedule> (CFWSchedule.class, FormFieldType.SCHEDULE, fieldName)
-				.setColumnDefinition("VARCHAR");
+		return null;
+		
 	}
+	
+	
 	
 	//###########################################################################################################
 	//###########################################################################################################
@@ -471,7 +498,10 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 									break;
 			
 			case SELECT:  			createSelect(html, cssClasses);
-			break;	
+									break;	
+			
+			case CHECKBOXES:		createCheckboxField(html, cssClasses);
+									break;	
 			
 			case HIDDEN:  			html.append("<input type=\"hidden\" "+this.getAttributesString()+"/>");
 									break;
@@ -853,6 +883,29 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		if(this.parent instanceof CFWForm) {
 			((CFWForm)this.parent).javascript.append("cfw_initializeValueLabelField('"+name+"', "+CFW.JSON.toJSON(value)+");\r\n");
+		}
+				
+	}
+	
+	/***********************************************************************************
+	 * Create DatePicker
+	 ***********************************************************************************/
+	private void createCheckboxField(StringBuilder html, String cssClasses) {
+		
+//		int maxTags = 128;
+//		
+//		if(attributes.containsKey("maxTags")) {
+//			maxTags = Integer.parseInt(attributes.get("maxTags"));
+//		}
+		
+		//---------------------------------
+		// Create Field
+		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"checkboxes\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
+		
+		if(this.parent instanceof CFWForm) {
+			String optionsJSON = CFW.JSON.toJSON(this.getValueLabelOptions());
+			String valuesJSON = CFW.JSON.toJSON(value);
+			((CFWForm)this.parent).javascript.append("cfw_initializeCheckboxesField('"+name+"',"+optionsJSON+", "+valuesJSON+");\r\n");
 		}
 				
 	}

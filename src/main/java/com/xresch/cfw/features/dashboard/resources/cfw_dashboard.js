@@ -1830,6 +1830,8 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 	// Add dashboardID to autocomplete requests
 	CFW.global.autcompleteParamEnhancerFunction = function(params){
 		params['cfw-dashboardid'] = CFW_DASHBOARD_URLPARAMS.id;
+		
+		//TODO replace custom parameter values in request params
 	};
 	
 	// -----------------------------

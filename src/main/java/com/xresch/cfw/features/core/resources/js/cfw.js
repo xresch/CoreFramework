@@ -442,6 +442,70 @@ function cfw_initializeTagsSelectorField(fieldID, maxTags, values){
  * @param fieldID the name of the field
  * @return nothing
  *************************************************************************************/
+function cfw_initializeCheckboxesField(fieldID, options, values){
+	
+	var id = '#'+fieldID;
+
+	var checkboxesField = $(id);
+
+	var wrapper = $('<div class="cfw-checkboxes-field-wrapper flex-grow-1 flex-column">');
+	checkboxesField.before(wrapper);
+	wrapper.append(checkboxesField);
+	checkboxesField.val(JSON.stringify(values));
+	
+	//----------------------------------
+	// Add Classes
+	var classes = checkboxesField.attr('class');
+	checkboxesField.addClass('d-none');
+
+	//----------------------------------
+	// Add Values
+	for(var key in options){
+		var label = options[key];
+		var checked = values[key] == true ? "checked" : "";
+		wrapper.append('<label><input type="checkbox" class="cfw-checkbox" id="'+fieldID+'-'+key+'" name="'+key+'" onchange="cfw_internal_updateCheckboxesField(this)" '+checked+' />'+label+'</label>');
+	}
+	
+	//----------------------------------
+	// Add Create Button
+	
+}
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_internal_updateCheckboxesField(element){
+	
+	var wrapper = $(element).closest('.cfw-checkboxes-field-wrapper');
+	
+	var originalField = wrapper.find('> input').first();
+
+	console.log("=================");
+	console.log(originalField);
+	
+	var newCheckboxValues = {};
+	wrapper.find('.cfw-checkbox').each(function(index, element){
+		let current = $(element);
+		let key = current.attr("name");
+		let value = current.prop('checked');
+		console.log(current);
+		
+		if(!CFW.utils.isNullOrEmpty(key)
+		|| !CFW.utils.isNullOrEmpty(value)){
+			newCheckboxValues[key] = value;
+		}
+	})
+	
+	originalField.val(JSON.stringify(newCheckboxValues));
+
+}
+
+
+/**************************************************************************************
+ * Initialize a TagField created with the Java object CFWField.
+ * @param fieldID the name of the field
+ * @return nothing
+ *************************************************************************************/
 function cfw_initializeValueLabelField(fieldID, values){
 	
 	var id = '#'+fieldID;
