@@ -11,7 +11,7 @@ import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.UserAuditExecutor;
 
-public class UserAuditExecutorTaskPermissions implements UserAuditExecutor {
+public class UserAuditExecutorJobTask implements UserAuditExecutor {
 
 	@Override
 	public String name() {

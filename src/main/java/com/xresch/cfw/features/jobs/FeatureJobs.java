@@ -3,6 +3,7 @@ package com.xresch.cfw.features.jobs;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.contextsettings.UserAuditExecutorContextSettings;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.dashboard.UserAuditExecutorDashboardUserDirect;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
@@ -29,7 +30,8 @@ public class FeatureJobs extends CFWAppFeature {
     	
 		//----------------------------------
     	// Register Audit
-		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorTaskPermissions());
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorJobTask());
+		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorAlertChannel());
 		
 		//----------------------------------
     	// Register Menu				
