@@ -14,7 +14,7 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
-public class AlertObject extends CFWObject {
+public class CFWJobsAlertObject extends CFWObject {
 
 	private Date lastAlert = null;
 	
@@ -27,6 +27,7 @@ public class AlertObject extends CFWObject {
 		CFW_ALERTCHECKER_ALERTDELAY,
 		JSON_CFW_ALERTCHECKER_USERS_TO_ALERT,
 		JSON_CFW_ALERTCHECKER_GROUPS_TO_ALERT,
+		JSON_CFW_ALERTCHECKER_ALERT_CHANNEL,
 	}
 	
 	private CFWField<Integer> occurences = 
@@ -63,8 +64,14 @@ public class AlertObject extends CFWObject {
 				}
 			});		
 	
+
+	private CFWField<LinkedHashMap<String, Boolean>> alertChannel = 
+				CFWField.newCheckboxes(AlertObjectFields.JSON_CFW_ALERTCHECKER_ALERT_CHANNEL)
+						.setDescription("Check the channels the alert should be sent through.")
+						.setOptions(CFWJobsAlerting.getChannelNamesForUI())
+						.setValue(null);
 	
-	public AlertObject() {
+	public CFWJobsAlertObject() {
 
 		this.addFields(occurences, delayMinutes, usersToAlert, groupsToAlert);
 
