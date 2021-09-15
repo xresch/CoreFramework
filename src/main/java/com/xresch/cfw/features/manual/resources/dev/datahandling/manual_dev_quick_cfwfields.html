@@ -139,6 +139,34 @@ public void initialize() {
 </code>
 </pre>
 
+<h3>Checkboxes Field</h3>
+<p>
+Creates a multi checkbox field with keys and labels. The state of the checkboxes will be stored in JSON like {"checkbox_key": true, "second_key": false, ...}.
+</p>
+<pre>
+<code>//------------------------------------------------------------------------------------------------
+// A list of checkboxes with key and label options
+private static LinkedHashMap&lt;String, String&gt; checkboxOptions = new LinkedHashMap&lt;String, String&gt;();
+checkboxOptions.put("tiramisu_key", "Tiramisu");
+checkboxOptions.put("panna_cotta_key", "Panna Cotta");
+checkboxOptions.put("ice_cream_key", "Ice Cream");
+checkboxOptions.put("chocolate_key", "Chocolate");
+
+// other values are null and therefore false
+// set all default values if you do not want to check for nulls
+private static LinkedHashMap&lt;String, Boolean&gt; checkboxDefaultValues = new LinkedHashMap&lt;String, Boolean&gt;();	
+
+checkboxDefaultValues.put("tiramisu_key", true);
+checkboxDefaultValues.put("ice_cream_key", true);
+
+private CFWField&lt;LinkedHashMap&lt;String, Boolean&gt;&gt; checkoxes = 
+			CFWField.newCheckboxes("JSON_CHECKBOXES")
+					.setDescription("Checkbox options.")
+					.setOptions(checkboxOptions)
+					.setValue(checkboxDefaultValues);
+</code>
+</pre>
+
 
 <h3>Date Field with Default</h3>
 <p>
