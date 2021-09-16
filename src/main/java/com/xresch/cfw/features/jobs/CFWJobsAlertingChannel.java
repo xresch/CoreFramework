@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.jobs;
 
+import java.util.HashMap;
+
 import com.xresch.cfw.features.usermgmt.User;
 
 public abstract class CFWJobsAlertingChannel {
@@ -21,12 +23,11 @@ public abstract class CFWJobsAlertingChannel {
 	/*************************************************************************
 	 * Send the alerts.
 	 *************************************************************************/
-	public abstract boolean sendAlerts(CFWJobsAlertObject alertObject, String Subject, String content);
+	public abstract void sendAlerts(CFWJobsAlertObject alertObject, HashMap<Integer, User> uniqueUsers, String subject, String content, String contentHTML);
 	
 	/*************************************************************************
 	 * Return if the user is able to select this channel.
 	 *************************************************************************/
 	public abstract boolean hasPermission(User user);
-	
 	
 }

@@ -79,6 +79,39 @@ public class ResultSetUtils {
 	}
 	
 	/***************************************************************************
+	 * Converts a ResultSet into an array list of CFWObjects for a specified Type.
+	 * @param <T>
+	 * @return list of object, empty if results set is null or an error occurs.
+	 ***************************************************************************/
+	public static <T extends CFWObject> ArrayList<T> toObjectListConvert(ResultSet result, Class<T> clazz) {
+		
+		ArrayList<T> objectArray = new ArrayList<>();
+		
+		if(result == null) {
+			return objectArray;
+		}
+		
+		try {
+			while(result.next()) {
+				CFWObject current = clazz.newInstance();
+				current.mapResultSet(result);
+				objectArray.add((T)current);
+			}
+		} catch (SQLException | InstantiationException | IllegalAccessException e) {
+			new CFWLog(logger)
+				.severe("Error reading object from database.", e);
+			
+		}finally {
+			CFWDB.close(result);
+		}
+		
+		
+		
+		return objectArray;
+		
+	}
+	
+	/***************************************************************************
 	 * Converts a ResultSet into a map of Primary Keys and CFWObjects.
 	 * @return list of object, empty if results set is null or an error occurs.
 	 ***************************************************************************/

@@ -30,6 +30,7 @@ import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.parameters.CFWDBDashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.CFWRegistryDashboardParameters;
 import com.xresch.cfw.features.jobs.CFWDBJob;
+import com.xresch.cfw.features.jobs.CFWJobsAlerting;
 import com.xresch.cfw.features.jobs.CFWRegistryJobs;
 import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.keyvaluepairs.CFWDBKeyValuePairs;
@@ -130,6 +131,7 @@ public class CFW {
 		public static class ContextSettings extends CFWRegistryContextSettings {} 
 		public static class Features extends CFWRegistryFeatures {} 
 		public static class Jobs extends CFWRegistryJobs {} 
+		public static class JobsAlerting extends CFWJobsAlerting {} 
 		public static class Manual extends CFWRegistryManual {} 
 		public static class Objects extends CFWRegistryObjects {} 
 		public static class Parameters extends CFWRegistryDashboardParameters {} 

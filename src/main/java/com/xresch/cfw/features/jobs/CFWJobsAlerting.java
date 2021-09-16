@@ -21,7 +21,7 @@ public class CFWJobsAlerting {
 	/*************************************************************************
 	 * 
 	 *************************************************************************/
-	public static void registerTask(CFWJobsAlertingChannel channel) {
+	public static void registerChannel(CFWJobsAlertingChannel channel) {
 		
 		if( channelMap.containsKey(channel.uniqueName()) ) {
 			new CFWLog(logger).severe("An alert channel with the name '"+channel.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
@@ -94,7 +94,7 @@ public class CFWJobsAlerting {
 	 * Return the class for the specified task.
 	 * Returns null if the task is undefined.
 	 ***********************************************************************/
-	public static Class<? extends CFWJobsAlertingChannel> getTaskClass(String uniqueName)  {
+	public static Class<? extends CFWJobsAlertingChannel> getChannelClass(String uniqueName)  {
 		
 		return channelMap.get(uniqueName);
 	}

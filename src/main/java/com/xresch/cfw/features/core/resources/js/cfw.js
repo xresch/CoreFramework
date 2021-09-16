@@ -462,7 +462,7 @@ function cfw_initializeCheckboxesField(fieldID, options, values){
 	// Add Values
 	for(var key in options){
 		var label = options[key];
-		var checked = values[key] == true ? "checked" : "";
+		var checked = (values != null && values[key] == true) ? "checked" : "";
 		wrapper.append('<label><input type="checkbox" class="cfw-checkbox" id="'+fieldID+'-'+key+'" name="'+key+'" onchange="cfw_internal_updateCheckboxesField(this)" '+checked+' />'+label+'</label>');
 	}
 	
@@ -479,11 +479,18 @@ function cfw_internal_updateCheckboxesField(element){
 	var wrapper = $(element).closest('.cfw-checkboxes-field-wrapper');
 	
 	var originalField = wrapper.find('> input').first();
-
+	
 	console.log("=================");
 	console.log(originalField);
 	
-	var newCheckboxValues = {};
+	var checkboxValues = {}
+	
+	checkboxesStateJsonString = originalField.val();
+	console.log("checkboxesStateJsonString: "+checkboxesStateJsonString);
+	if(!CFW.utils.isNullOrEmpty(checkboxesStateJsonString) && checkboxesStateJsonString != "null"){
+		checkboxValues = JSON.parse(checkboxesStateJsonString);
+	}
+	
 	wrapper.find('.cfw-checkbox').each(function(index, element){
 		let current = $(element);
 		let key = current.attr("name");
@@ -492,11 +499,11 @@ function cfw_internal_updateCheckboxesField(element){
 		
 		if(!CFW.utils.isNullOrEmpty(key)
 		|| !CFW.utils.isNullOrEmpty(value)){
-			newCheckboxValues[key] = value;
+			checkboxValues[key] = value;
 		}
 	})
 	
-	originalField.val(JSON.stringify(newCheckboxValues));
+	originalField.val(JSON.stringify(checkboxValues));
 
 }
 

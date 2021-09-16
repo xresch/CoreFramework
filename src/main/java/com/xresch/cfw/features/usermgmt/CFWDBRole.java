@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.usermgmt;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
@@ -198,6 +199,20 @@ public class CFWDBRole {
 
 	}
 	
+	/***************************************************************
+	 * Return a list of all user that have the specified role.
+	 * 
+	 ****************************************************************/
+	public static ArrayList<User> getUsersForRole(String roleID) {
+
+		return new CFWSQL(new Role())
+				.queryCache()
+				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, 
+						"sql_users_for_role.sql", 
+						Integer.parseInt(roleID))
+				.getAsObjectListConvert(User.class);
+		
+	}
 	
 	/***************************************************************
 	 * Return a list of all user that have the specified role as a

@@ -1400,6 +1400,23 @@ public class CFWSQL {
 	}
 	
 	/***************************************************************
+	 * Execute the Query and gets the result as CFWObjects of the type
+	 * specified with the parameter.
+	 * 
+	 ****************************************************************/	
+	public <T extends CFWObject> ArrayList<T> getAsObjectListConvert(Class<T> clazz) {
+		
+		ArrayList<T> objectArray = new ArrayList<>();
+		
+		if(this.execute()) {
+			objectArray = ResultSetUtils.toObjectListConvert(result, clazz);
+		}
+		
+		return objectArray;
+		
+	}
+	
+	/***************************************************************
 	 * Execute the Query and gets the result as a list of maps holding.
 	 * the record values as key/value pairs.
 	 ****************************************************************/

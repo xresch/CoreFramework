@@ -109,6 +109,16 @@ public class CFWDBUser {
 	 * @param id of the User
 	 * @return Returns a user or null if not found or in case of exception.
 	 ****************************************************************/
+	public static User selectByID(String id) {
+		return selectByID(Integer.parseInt(id));
+	}
+	
+	/***************************************************************
+	 * Select a user by it's ID.
+	 * 
+	 * @param id of the User
+	 * @return Returns a user or null if not found or in case of exception.
+	 ****************************************************************/
 	public static User selectByID(int id) {
 			
 		

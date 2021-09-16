@@ -26,6 +26,10 @@ public class FeatureJobs extends CFWAppFeature {
 		CFW.Registry.Objects.addCFWObject(CFWJob.class);
     	
 		//----------------------------------
+    	// Register Alerting Channel
+		CFW.Registry.JobsAlerting.registerChannel(new CFWJobsAlertingChannelEMail());
+		
+		//----------------------------------
     	// Register Audit
 		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorJobTask());
 		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorAlertChannel());
