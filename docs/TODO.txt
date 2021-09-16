@@ -114,6 +114,7 @@ DONE
 - Dashboard Widgets: Added caching for widget data.
 - Reflection: Replaced with ServiceLoader as it is more stable between different Java versions
 - CFWField: Added FormFieldType.CHECKBOXES
+- Menu Title: Added configuration option to prepend menu title to window title
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB

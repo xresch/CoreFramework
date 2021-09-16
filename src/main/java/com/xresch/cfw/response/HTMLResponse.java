@@ -3,6 +3,7 @@ package com.xresch.cfw.response;
 import java.util.Collection;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
@@ -30,7 +31,16 @@ public class HTMLResponse extends AbstractHTMLResponse {
 		
 		super();
 		
+		//------------------------------------------
+		// Title
 		this.pageTitle = pageTitle;
+		
+		if(CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_MENU_TITLE_IN_TAB)) {
+			String menuTitle = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_MENU_TITLE);
+			if(!Strings.isNullOrEmpty(menuTitle)) {
+				this.pageTitle = menuTitle + ": " + this.pageTitle;
+			}
+		}
 		
 		//------------------------------------------
 		// CSS

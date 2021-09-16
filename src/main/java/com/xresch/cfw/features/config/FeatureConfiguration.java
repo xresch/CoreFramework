@@ -33,6 +33,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 	public static final String CONFIG_THEME = "Theme";
 	public static final String CONFIG_CODE_THEME = "Code Theme";
 	public static final String CONFIG_MENU_TITLE = "Menu Title";
+	public static final String CONFIG_MENU_TITLE_IN_TAB = "Menu Title in Tab";
 	
 	//---------------------------------
 	// Backup
@@ -144,7 +145,15 @@ public class FeatureConfiguration extends CFWAppFeature {
 				.value("")
 		);
 		
-		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration("Look and Feel", FeatureConfiguration.CONFIG_MENU_TITLE_IN_TAB )
+				.description("Set to true if you want to prepend the menu title to the title of the tab.")
+				.type(FormFieldType.BOOLEAN)
+				.value("false")
+		);
 		
 		//-----------------------------------------
 		// 
