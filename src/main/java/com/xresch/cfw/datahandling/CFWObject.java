@@ -9,6 +9,8 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.quartz.JobExecutionContext;
+
 import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -109,6 +111,15 @@ public class CFWObject {
 	public boolean mapResultSet(ResultSet result) {
 		return CFWField.mapResultSetColumnsToFields(result, fields);
 	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	public boolean mapJobExecutionContext(JobExecutionContext context) {
+		return CFWField.mapJobExecutionContextToFields(context, fields);
+	}
+	
+	
 	
 	/****************************************************************
 	 * 

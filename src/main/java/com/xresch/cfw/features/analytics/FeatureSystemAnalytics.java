@@ -44,6 +44,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		//----------------------------------
 		// Register Job Tasks
 		CFW.Registry.Jobs.registerTask(new CFWJobTaskThreadDumps());
+		CFW.Registry.Jobs.registerTask(new CFWJobTaskTestMail());
 		
     	//----------------------------------
     	// Register Regular Menu

@@ -220,13 +220,9 @@ public class CFWJobsAlertObject extends CFWObject {
 		
 		//-------------------------------------------
 		// Fetch users to Alert
+		
 		if(usersToAlert.getValue() != null) {
-			for(String userID : usersToAlert.getValue().keySet()) {
-				User user = CFW.DB.Users.selectByID(userID);
-				if(user != null) {
-					uniqueUsers.put(user.id(), user);
-				}
-			}
+			uniqueUsers = CFW.DB.Users.convertToUserList(usersToAlert.getValue());
 		}
 		
 		//-------------------------------------------

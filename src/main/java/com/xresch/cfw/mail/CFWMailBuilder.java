@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -28,7 +29,9 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 
 public class CFWMailBuilder {
@@ -125,16 +128,55 @@ public class CFWMailBuilder {
 	 * Set the recipients of the eMail.
 	 * @param recipients map with email as key and displayName as value
 	 ***************************************************************/
+	private LinkedHashMap<String,String> convertUserListToRecipientList(HashMap<Integer, User> userlist) {
+		LinkedHashMap<String,String> emailDisplayNameMap = new LinkedHashMap<>();
+		for(User user : userlist.values()) {
+			
+			if( !Strings.isNullOrEmpty(user.email()) ) {
+				emailDisplayNameMap.put(user.email(), user.createUserLabel());
+			}
+		}
+		
+		return emailDisplayNameMap;
+	}
+	
+	/***************************************************************
+	 * Set the recipients of the eMail.
+	 * @param userlist with userID and User
+	 ***************************************************************/
+	public CFWMailBuilder recipientsTo(HashMap<Integer, User> userlist) {
+		return recipients(Message.RecipientType.TO, convertUserListToRecipientList(userlist));
+	}
+	
+	/***************************************************************
+	 * Set the recipients of the eMail.
+	 * @param recipients map with email as key and displayName as value
+	 ***************************************************************/
 	public CFWMailBuilder recipientsTo(LinkedHashMap<String,String> recipients) {
 		return recipients(Message.RecipientType.TO, recipients);
 	}
 	
+	/***************************************************************
+	 * Set the recipients of the eMail.
+	 * @param userlist with userID and User
+	 ***************************************************************/
+	public CFWMailBuilder recipientsCC(HashMap<Integer, User> userlist) {
+		return recipients(Message.RecipientType.CC, convertUserListToRecipientList(userlist));
+	}
 	/***************************************************************
 	 * Set the CC recipients of the eMail.
 	 * @param recipients map with email as key and displayName as value
 	 ***************************************************************/
 	public CFWMailBuilder recipientsCC(LinkedHashMap<String,String> recipients) {
 		return recipients(Message.RecipientType.CC, recipients);
+	}
+	
+	/***************************************************************
+	 * Set the recipients of the eMail.
+	 * @param userlist with userID and User
+	 ***************************************************************/
+	public CFWMailBuilder recipientsBCC(HashMap<Integer, User> userlist) {
+		return recipients(Message.RecipientType.BCC, convertUserListToRecipientList(userlist));
 	}
 	
 	/***************************************************************

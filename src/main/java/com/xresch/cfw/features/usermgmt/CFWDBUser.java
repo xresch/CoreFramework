@@ -2,6 +2,7 @@ package com.xresch.cfw.features.usermgmt;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -199,6 +200,28 @@ public class CFWDBUser {
 				.orderby(UserFields.USERNAME)
 				.getAsObjectList();
 		
+	}
+	
+	
+	/***************************************************************
+	 * Takes a Map<UserID, something> and fetches the users from
+	 * the DB and returns a HashMap<Integer, User>.
+	 * 
+	 * @return Returns a list, can be empty, never null
+	 ****************************************************************/
+	public static HashMap<Integer, User> convertToUserList(Map<String, String> usersToAlert) {
+		
+		HashMap<Integer, User> uniqueUsers = new HashMap<>();
+		if(usersToAlert != null) {
+			for(String userID : usersToAlert.keySet()) {
+				User user = CFW.DB.Users.selectByID(userID);
+				if(user != null) {
+					uniqueUsers.put(user.id(), user);
+				}
+			}
+		}
+		
+		return uniqueUsers;
 	}
 	
 	/***************************************************************

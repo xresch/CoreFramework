@@ -84,7 +84,8 @@ Potential TODOs
 - CFW: Config - Age Out Configuration
 - CFW: API - Enable Post Body Inputs
 - CFW: Improve CFWHTTP.getClientIP()
-   
+
+- CFWMail: Add default CSS to eMails(e.g. displaying borders for tables) 
 - CFWField: Add initFormField(method)
 - CFWField: Form errors add to field.
   
@@ -115,6 +116,7 @@ DONE
 - Reflection: Replaced with ServiceLoader as it is more stable between different Java versions
 - CFWField: Added FormFieldType.CHECKBOXES
 - Menu Title: Added configuration option to prepend menu title to window title
+- Tasks: Added Task to test eMail setup
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB

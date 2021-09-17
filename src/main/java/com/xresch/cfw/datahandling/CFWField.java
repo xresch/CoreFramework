@@ -25,6 +25,9 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonElement;
@@ -1694,7 +1697,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 
 	/******************************************************************************************************
-	 * Map the values of request parameters to CFWFields.
+	 * Maps and validates the values of request parameters to CFWFields.
 	 * @param url used for the request.
 	 * @return true if successful, false otherwise
 	 ******************************************************************************************************/
@@ -1724,6 +1727,40 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		return result;
 	}
+	
+	/******************************************************************************************************
+	 * Map and validates the values of job execution parameters to CFWFields.
+	 * @param url used for the request.
+	 * @return true if successful, false otherwise
+	 ******************************************************************************************************/
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static boolean mapJobExecutionContextToFields(JobExecutionContext context, HashMap<String,CFWField> fields) {
+		
+		JobDataMap data = context.getMergedJobDataMap();
+		boolean result = true;
+		
+		for(CFWField field : fields.values()) {
+			String fieldname = field.getName();
+			
+			if(!fieldname.equals(CFWForm.FORM_ID)) {
+				if (data.containsKey(fieldname)) {
+					String value = data.getString(fieldname);
+					
+					if(!field.setValueValidated(value) ){
+						result = false;
+					}
+				}else {
+					new CFWLog(logger)
+						.silent(true)
+						.finer("The field with name '"+fieldname+"' is unknown for this type.");
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	
 	
 	/******************************************************************************************************
 	 * Map the values of the JsonObject to CFWFields.
