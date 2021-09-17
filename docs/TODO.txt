@@ -117,6 +117,7 @@ DONE
 - CFWField: Added FormFieldType.CHECKBOXES
 - Menu Title: Added configuration option to prepend menu title to window title
 - Tasks: Added Task to test eMail setup
+- Jobs: Added Utilities to do alerting.
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB

@@ -77,7 +77,7 @@ public class CFWJobTaskTestAlerting extends CFWJobTask {
 				alertObject.doSendAlert("[TEST] Alert: A situation is occuring!", message, messageHTML);
 			}
 			
-			if(type.equals(AlertType.LIFT)) {
+			if(type.equals(AlertType.RESOLVE)) {
 				alertObject.doSendAlert("[TEST] Alert: A situation has resolved!.", message, messageHTML);
 			}
 		}

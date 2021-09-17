@@ -326,7 +326,7 @@ function cfwjobs_printJobs(itemType){
 		 				delete value.children;
 		 			}
 		 			
-		 			let div = $('<div class="word-break-word">');
+		 			let div = $('<div class="word-break-word maxvh-25 overflow-auto">');
 		 			div.append(CFW.format.objectToHTMLList(value));
 		 			return div; 
 		 		},
@@ -368,11 +368,15 @@ function cfwjobs_printJobs(itemType){
 //						},
 						{	label: 'Panels',
 							name: 'panels',
-							renderdef: {}
+							renderdef: {
+								labels: { JSON_LASTRUN_MESSAGES: "Messages Last Run" }
+							}
 						},
 						{	label: 'Cards',
 							name: 'cards',
-							renderdef: {}
+							renderdef: {
+								labels: { JSON_LASTRUN_MESSAGES: "Messages Last Run" }
+							}
 						},
 						{	label: 'Tiles',
 							name: 'tiles',
@@ -389,7 +393,9 @@ function cfwjobs_printJobs(itemType){
 						},
 						{	label: 'CSV',
 							name: 'csv',
-							renderdef: {}
+							renderdef: {
+								labels: { JSON_LASTRUN_MESSAGES: "Messages Last Run" }
+							}
 						},
 						{	label: 'JSON',
 							name: 'json',

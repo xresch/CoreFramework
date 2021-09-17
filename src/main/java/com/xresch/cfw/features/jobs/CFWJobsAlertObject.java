@@ -1,7 +1,6 @@
 package com.xresch.cfw.features.jobs;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -21,7 +20,7 @@ import com.xresch.cfw.validation.NumberRangeValidator;
 
 public class CFWJobsAlertObject extends CFWObject {
 
-	private int MAX_OCCURENCE_CHECK = 100;
+	private int MAX_OCCURENCE_CHECK = 24;
 	
 	private ArrayList<AlertState> alertStateArray;
 	
@@ -32,34 +31,42 @@ public class CFWJobsAlertObject extends CFWObject {
 	private String taskName;
 
 	public enum AlertObjectFields{
-		CFW_ALERTCHECKER_OCCURENCES, 
-		CFW_ALERTCHECKER_ALERTDELAY,
-		JSON_CFW_ALERTCHECKER_USERS_TO_ALERT,
-		JSON_CFW_ALERTCHECKER_GROUPS_TO_ALERT,
-		JSON_CFW_ALERTCHECKER_ALERT_CHANNEL,
+		CFW_ALERTING_OCCURENCES_TO_RAISE, 
+		CFW_ALERTING_OCCURENCES_TO_RESOLVE, 
+		CFW_ALERTING_ALERTDELAY,
+		JSON_CFW_ALERTING_USERS_TO_ALERT,
+		JSON_CFW_ALERTING_GROUPS_TO_ALERT,
+		JSON_CFW_ALERTING_ALERT_CHANNEL,
 	}
 	
 	public enum AlertType{
 		NONE,
 		RAISE,
-		LIFT
+		RESOLVE
 	}
 	
-	private CFWField<Integer> occurences = 
-			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.CFW_ALERTCHECKER_OCCURENCES)
-			.setLabel("Occurences")
-			.setDescription("Number of occurences(matched condition) in series needed to trigger an alert.")
+	private CFWField<Integer> occurencesToRaise = 
+			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.CFW_ALERTING_OCCURENCES_TO_RAISE)
+			.setLabel("Occurences to Raise")
+			.setDescription("Number of occurences(matched condition) in series needed to raise an alert.")
+			.setValue(2)
+			.addValidator(new NumberRangeValidator(1, MAX_OCCURENCE_CHECK));
+	
+	private CFWField<Integer> occurencesToResolve = 
+			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.CFW_ALERTING_OCCURENCES_TO_RESOLVE)
+			.setLabel("Occurences to Resolve")
+			.setDescription("Number of occurences(not matched condition) in series needed to resolve an alert.")
 			.setValue(2)
 			.addValidator(new NumberRangeValidator(1, MAX_OCCURENCE_CHECK));
 	
 	private CFWField<Integer> delayMinutes = 
-			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.CFW_ALERTCHECKER_ALERTDELAY)
+			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.CFW_ALERTING_ALERTDELAY)
 			.setLabel("Alert Delay Minutes")
 			.setDescription("The delay in minutes before another alert is triggered, in case the condition matches again.")
 			.setValue(60)
 			.addValidator(new NumberRangeValidator(1, 60*24*7));
 	
-	private CFWField<LinkedHashMap<String,String>> usersToAlert = CFWField.newTagsSelector(AlertObjectFields.JSON_CFW_ALERTCHECKER_USERS_TO_ALERT)
+	private CFWField<LinkedHashMap<String,String>> usersToAlert = CFWField.newTagsSelector(AlertObjectFields.JSON_CFW_ALERTING_USERS_TO_ALERT)
 			.setLabel("Alert Users")
 			.setDescription("Select the users that should be alerted.")
 			.setValue(null)
@@ -69,7 +76,7 @@ public class CFWJobsAlertObject extends CFWObject {
 				}
 			});
 	
-	private CFWField<LinkedHashMap<String,String>> groupsToAlert = CFWField.newTagsSelector(AlertObjectFields.JSON_CFW_ALERTCHECKER_GROUPS_TO_ALERT)
+	private CFWField<LinkedHashMap<String,String>> groupsToAlert = CFWField.newTagsSelector(AlertObjectFields.JSON_CFW_ALERTING_GROUPS_TO_ALERT)
 			.setLabel("Alert Groups")
 			.setDescription("Select the groups that should be alerted.")
 			.setValue(null)
@@ -81,7 +88,7 @@ public class CFWJobsAlertObject extends CFWObject {
 	
 
 	private CFWField<LinkedHashMap<String, String>> alertChannels = 
-				CFWField.newCheckboxes(AlertObjectFields.JSON_CFW_ALERTCHECKER_ALERT_CHANNEL)
+				CFWField.newCheckboxes(AlertObjectFields.JSON_CFW_ALERTING_ALERT_CHANNEL)
 						.setLabel("Alert Channels")
 						.setDescription("Choose the channels the alert should be sent through.")
 						.setOptions(CFWJobsAlerting.getChannelNamesForUI())
@@ -119,7 +126,7 @@ public class CFWJobsAlertObject extends CFWObject {
 	}
 	
 	private void initialize() {
-		this.addFields(occurences, delayMinutes, usersToAlert, groupsToAlert, alertChannels);
+		this.addFields(occurencesToRaise, occurencesToResolve, delayMinutes, usersToAlert, groupsToAlert, alertChannels);
 	}
 	
 	
@@ -154,6 +161,7 @@ public class CFWJobsAlertObject extends CFWObject {
 			}
 			
 			AlertState currentState = new AlertState(conditionMatched, lastAlertMillis);
+			currentState.setAlertType(lastAlertType);
 			alertStateArray.add(currentState);
 			System.out.println("currentState: "+CFW.JSON.toJSON(currentState));
 			
@@ -162,25 +170,18 @@ public class CFWJobsAlertObject extends CFWObject {
 			long currentTimeMillis = System.currentTimeMillis();
 			long alertDelayMillis = delayMinutes.getValue() * 1000 * 60;
 			
-			
-			System.out.println("lastAlertMillis:"+lastAlertMillis);
-			System.out.println("currentTimeMillis:"+currentTimeMillis);
-			System.out.println("alertDelayMillis:"+alertDelayMillis);
-			System.out.println("(currentTimeMillis - alertDelayMillis):"+(currentTimeMillis - alertDelayMillis));
-			
 			if(lastAlertType.equals(AlertType.NONE)
-			|| lastAlertType.equals(AlertType.LIFT)) {
+			|| lastAlertType.equals(AlertType.RESOLVE)) {
 				
 				//-----------------------------------------
 				// Skip if delay not reached
 				if(lastAlertMillis != -1 && (lastAlertMillis + alertDelayMillis) > currentTimeMillis ) {
-					currentState.setAlertType(lastAlertType);
 					return AlertType.NONE;
 				}
 	
 				//-----------------------------------------
 				// Do alert if all in series are true
-				int occurencesInSeries = occurences.getValue();
+				int occurencesInSeries = occurencesToRaise.getValue();
 				
 				if(alertStateArray.size() >= occurencesInSeries) {
 					boolean doAlert = true;
@@ -195,7 +196,6 @@ public class CFWJobsAlertObject extends CFWObject {
 						currentState.setLastAlertMillis(currentTimeMillis);
 						return AlertType.RAISE;
 					}else {
-						currentState.setAlertType(lastAlertType);
 						return AlertType.NONE;
 					}
 				}
@@ -203,7 +203,7 @@ public class CFWJobsAlertObject extends CFWObject {
 				
 				//-----------------------------------------
 				// Do check Lift Alert 
-				int occurencesInSeries = occurences.getValue();
+				int occurencesInSeries = occurencesToResolve.getValue();
 				
 				if(alertStateArray.size() >= occurencesInSeries) {
 					
@@ -214,16 +214,14 @@ public class CFWJobsAlertObject extends CFWObject {
 					}
 					
 					if(doLift) {
-						currentState.setAlertType(AlertType.LIFT);
-						return AlertType.LIFT;
+						currentState.setAlertType(AlertType.RESOLVE);
+						return AlertType.RESOLVE;
 					}else {
-						currentState.setAlertType(lastAlertType);
 						return AlertType.NONE;
 					}
 				}
 			}
-			
-			currentState.setAlertType(lastAlertType);		
+				
 			return AlertType.NONE;
 		}
 	}
@@ -292,6 +290,7 @@ public class CFWJobsAlertObject extends CFWObject {
 		if(groupsToAlert.getValue() != null) {
 			for(String groupID : groupsToAlert.getValue().keySet()) {
 				ArrayList<User> usersFromGroup = CFW.DB.Roles.getUsersForRole(groupID);
+				
 				if(usersFromGroup != null) {
 					for(User groupMember : usersFromGroup) {
 						uniqueUsers.put(groupMember.id(), groupMember);
@@ -308,16 +307,24 @@ public class CFWJobsAlertObject extends CFWObject {
 	// GETTERS AND SETTERS
 	//========================================================================================
 
-	public Integer getOccurences() {
-		return occurences.getValue();
+	public Integer getOccurencesToRaise() {
+		return occurencesToRaise.getValue();
 	}
 
-
-	public CFWJobsAlertObject setOccurences(Integer value) {
-		this.occurences.setValue(value);
+	public CFWJobsAlertObject setOccurencesToRaise(Integer value) {
+		this.occurencesToRaise.setValue(value);
+		return this;
+	}
+	
+	public CFWJobsAlertObject occurencesToResolve(Integer value) {
+		this.occurencesToResolve.setValue(value);
 		return this;
 	}
 
+	public Integer occurencesToResolve() {
+		return occurencesToResolve.getValue();
+	}
+	
 
 	public Integer getDelayMinutes() {
 		return delayMinutes.getValue();

@@ -462,7 +462,7 @@ function cfw_initializeCheckboxesField(fieldID, options, values){
 	// Add Values
 	for(var key in options){
 		var label = options[key];
-		var checked = (values != null && values[key] == true) ? "checked" : "";
+		var checked = (values != null && values[key] == "true") ? "checked" : "";
 		wrapper.append('<label><input type="checkbox" class="cfw-checkbox" id="'+fieldID+'-'+key+'" name="'+key+'" onchange="cfw_internal_updateCheckboxesField(this)" '+checked+' />'+label+'</label>');
 	}
 	

@@ -92,6 +92,7 @@ public class ResultSetUtils {
 		}
 		
 		try {
+
 			while(result.next()) {
 				CFWObject current = clazz.newInstance();
 				current.mapResultSet(result);

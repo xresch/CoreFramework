@@ -324,7 +324,7 @@ public class CFWDBUserRoleMap {
 			return "[]";
 		}
 		
-		String selectRolesForUser = "SELECT * FROM ("
+		String selectGroupsForUser = "SELECT * FROM ("
 				+"SELECT G.PK_ID, G.NAME, G.DESCRIPTION, G.IS_GROUP AS IS_GROUP, M.FK_ID_USER AS ITEM_ID, M.IS_DELETABLE FROM "+Role.TABLE_NAME+" G "
 				+ " LEFT JOIN "+CFWDBUserRoleMap.TABLE_NAME+" M "
 				+ " ON M.FK_ID_ROLE = G.PK_ID "
@@ -333,7 +333,7 @@ public class CFWDBUserRoleMap {
 				+ " ORDER BY LOWER(G.NAME)"
 				+ ") WHERE IS_GROUP = TRUE";
 		
-		ResultSet result = CFWDB.preparedExecuteQuery(selectRolesForUser, 
+		ResultSet result = CFWDB.preparedExecuteQuery(selectGroupsForUser, 
 				FeatureUserManagement.CATEGORY_USER,
 				userID);
 		String json = ResultSetUtils.toJSON(result);
