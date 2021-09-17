@@ -129,7 +129,7 @@ public class CFWJobsAlertObject extends CFWObject {
 		this.addFields(occurencesToRaise, occurencesToResolve, delayMinutes, usersToAlert, groupsToAlert, alertChannels);
 	}
 	
-	
+		
 	/**************************************************************************
 	 * Add the next condition result and checks if an Alert should be sent or
 	 * not.
@@ -137,93 +137,91 @@ public class CFWJobsAlertObject extends CFWObject {
 	 **************************************************************************/
 	public AlertType checkSendAlert(boolean conditionMatched) {
 		
-		synchronized (alertStateArray) {
+		//-------------------------------------
+		// Keep Limit
+		if(alertStateArray.size() > MAX_OCCURENCE_CHECK+1) {
+			// remove first half of all entries
+			for(int i = 0; i < MAX_OCCURENCE_CHECK/2; i++) {
+				alertStateArray.remove(0);
+			}
+		}
+		
+		//---------------------------------
+		// Update State
+		AlertType lastAlertType = AlertType.NONE;
+		long lastAlertMillis = -1;
+
+		if(!alertStateArray.isEmpty()) {
+			AlertState lastState = alertStateArray.get(alertStateArray.size()-1);
+			lastAlertType = lastState.getAlertType();
+			lastAlertMillis = lastState.getLastAlertMillis();
+			System.out.println("Last State: "+CFW.JSON.toJSON(lastState));
+		}
+		
+		AlertState currentState = new AlertState(conditionMatched, lastAlertMillis);
+		currentState.setAlertType(lastAlertType);
+		alertStateArray.add(currentState);
+		System.out.println("currentState: "+CFW.JSON.toJSON(currentState));
+		
+		//---------------------------------
+		// Check Condition
+		long currentTimeMillis = System.currentTimeMillis();
+		long alertDelayMillis = delayMinutes.getValue() * 1000 * 60;
+		
+		if(lastAlertType.equals(AlertType.NONE)
+		|| lastAlertType.equals(AlertType.RESOLVE)) {
 			
-			//-------------------------------------
-			// Keep Limit
-			if(alertStateArray.size() > MAX_OCCURENCE_CHECK+1) {
-				// remove first half of all entries
-				for(int i = 0; i < MAX_OCCURENCE_CHECK/2; i++) {
-					alertStateArray.remove(0);
+			//-----------------------------------------
+			// Skip if delay not reached
+			if(lastAlertMillis != -1 && (lastAlertMillis + alertDelayMillis) > currentTimeMillis ) {
+				return AlertType.NONE;
+			}
+
+			//-----------------------------------------
+			// Do alert if all in series are true
+			int occurencesInSeries = occurencesToRaise.getValue();
+			
+			if(alertStateArray.size() >= occurencesInSeries) {
+				boolean doAlert = true;
+				for(int i = 1; i <= occurencesInSeries; i++) {
+					int indexFromLast = alertStateArray.size() - i;
+					doAlert &= alertStateArray.get(indexFromLast).getConditionResult();
+					System.out.println("in loop:"+CFW.JSON.toJSON(alertStateArray.get(indexFromLast)) );
 				}
-			}
-			
-			//---------------------------------
-			// Update State
-			AlertType lastAlertType = AlertType.NONE;
-			long lastAlertMillis = -1;
-	
-			if(!alertStateArray.isEmpty()) {
-				AlertState lastState = alertStateArray.get(alertStateArray.size()-1);
-				lastAlertType = lastState.getAlertType();
-				lastAlertMillis = lastState.getLastAlertMillis();
-				System.out.println("Last State: "+CFW.JSON.toJSON(lastState));
-			}
-			
-			AlertState currentState = new AlertState(conditionMatched, lastAlertMillis);
-			currentState.setAlertType(lastAlertType);
-			alertStateArray.add(currentState);
-			System.out.println("currentState: "+CFW.JSON.toJSON(currentState));
-			
-			//---------------------------------
-			// Check Condition
-			long currentTimeMillis = System.currentTimeMillis();
-			long alertDelayMillis = delayMinutes.getValue() * 1000 * 60;
-			
-			if(lastAlertType.equals(AlertType.NONE)
-			|| lastAlertType.equals(AlertType.RESOLVE)) {
-				
-				//-----------------------------------------
-				// Skip if delay not reached
-				if(lastAlertMillis != -1 && (lastAlertMillis + alertDelayMillis) > currentTimeMillis ) {
+				System.out.println(doAlert);
+				if(doAlert) {
+					currentState.setAlertType(AlertType.RAISE);
+					currentState.setLastAlertMillis(currentTimeMillis);
+					return AlertType.RAISE;
+				}else {
 					return AlertType.NONE;
 				}
-	
-				//-----------------------------------------
-				// Do alert if all in series are true
-				int occurencesInSeries = occurencesToRaise.getValue();
+			}
+		}else {
+			
+			//-----------------------------------------
+			// Do check Lift Alert 
+			int occurencesInSeries = occurencesToResolve.getValue();
+			
+			if(alertStateArray.size() >= occurencesInSeries) {
 				
-				if(alertStateArray.size() >= occurencesInSeries) {
-					boolean doAlert = true;
-					for(int i = 1; i <= occurencesInSeries; i++) {
-						int indexFromLast = alertStateArray.size() - i;
-						doAlert &= alertStateArray.get(indexFromLast).getConditionResult();
-						System.out.println("in loop:"+CFW.JSON.toJSON(alertStateArray.get(indexFromLast)) );
-					}
-					System.out.println(doAlert);
-					if(doAlert) {
-						currentState.setAlertType(AlertType.RAISE);
-						currentState.setLastAlertMillis(currentTimeMillis);
-						return AlertType.RAISE;
-					}else {
-						return AlertType.NONE;
-					}
+				boolean doLift = true;
+				for(int i = 1; i <= occurencesInSeries; i++) {
+					int indexFromLast = alertStateArray.size() - i;
+					doLift &= !alertStateArray.get(indexFromLast).getConditionResult();
 				}
-			}else {
 				
-				//-----------------------------------------
-				// Do check Lift Alert 
-				int occurencesInSeries = occurencesToResolve.getValue();
-				
-				if(alertStateArray.size() >= occurencesInSeries) {
-					
-					boolean doLift = true;
-					for(int i = 1; i <= occurencesInSeries; i++) {
-						int indexFromLast = alertStateArray.size() - i;
-						doLift &= !alertStateArray.get(indexFromLast).getConditionResult();
-					}
-					
-					if(doLift) {
-						currentState.setAlertType(AlertType.RESOLVE);
-						return AlertType.RESOLVE;
-					}else {
-						return AlertType.NONE;
-					}
+				if(doLift) {
+					currentState.setAlertType(AlertType.RESOLVE);
+					return AlertType.RESOLVE;
+				}else {
+					return AlertType.NONE;
 				}
 			}
-				
-			return AlertType.NONE;
 		}
+			
+		return AlertType.NONE;
+		
 	}
 	
 	
@@ -307,6 +305,44 @@ public class CFWJobsAlertObject extends CFWObject {
 	// GETTERS AND SETTERS
 	//========================================================================================
 
+	/**************************************************************************
+	 * Return the ID of the job associated with this alert.
+	 **************************************************************************/
+	public String getJobID() {
+		return this.jobID;
+	}
+	
+	/**************************************************************************
+	 * Return the name of the task run by the job associated with this alert.
+	 **************************************************************************/
+	public String getTaskName() {
+		return this.taskName;
+	}
+	
+	/**************************************************************************
+	 * Return the last alert state or null if none available.
+	 **************************************************************************/
+	public AlertState getLastAlertState() {
+		if(!alertStateArray.isEmpty()) {
+			return alertStateArray.get(alertStateArray.size()-1);
+		}
+		
+		return null;
+	}
+	
+	/**************************************************************************
+	 * Return the type of the last alert.
+	 * @return 
+	 **************************************************************************/
+	public AlertType getLastAlertType() {
+		AlertState lastState = getLastAlertState();
+		if(lastState != null) {
+			return lastState.getAlertType();
+		}
+		
+		return AlertType.NONE;
+	}
+	
 	public Integer getOccurencesToRaise() {
 		return occurencesToRaise.getValue();
 	}
@@ -316,12 +352,12 @@ public class CFWJobsAlertObject extends CFWObject {
 		return this;
 	}
 	
-	public CFWJobsAlertObject occurencesToResolve(Integer value) {
+	public CFWJobsAlertObject setOccurencesToResolve(Integer value) {
 		this.occurencesToResolve.setValue(value);
 		return this;
 	}
 
-	public Integer occurencesToResolve() {
+	public Integer setOccurencesToResolve() {
 		return occurencesToResolve.getValue();
 	}
 	
