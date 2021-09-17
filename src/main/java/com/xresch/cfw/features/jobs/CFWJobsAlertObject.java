@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.quartz.JobExecutionContext;
+
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -19,13 +21,15 @@ import com.xresch.cfw.validation.NumberRangeValidator;
 
 public class CFWJobsAlertObject extends CFWObject {
 
-	private long lastAlertMillis = -1;
-	private AlertType lastAlertType = AlertType.NONE;
-	
 	private int MAX_OCCURENCE_CHECK = 100;
-	private ArrayList<ConditionResult> conditionResults = new ArrayList<>();
 	
-	private CFWJob associatedJob;
+	private ArrayList<AlertState> alertStateArray;
+	
+	// Stores Condition Results based on JobIDs
+	private static HashMap<String, ArrayList<AlertState>> alertStateStore = new HashMap<>();
+
+	private String jobID;
+	private String taskName;
 
 	public enum AlertObjectFields{
 		CFW_ALERTCHECKER_OCCURENCES, 
@@ -76,18 +80,46 @@ public class CFWJobsAlertObject extends CFWObject {
 			});		
 	
 
-	private CFWField<LinkedHashMap<String, Boolean>> alertChannels = 
+	private CFWField<LinkedHashMap<String, String>> alertChannels = 
 				CFWField.newCheckboxes(AlertObjectFields.JSON_CFW_ALERTCHECKER_ALERT_CHANNEL)
-						.setDescription("Check the channels the alert should be sent through.")
+						.setLabel("Alert Channels")
+						.setDescription("Choose the channels the alert should be sent through.")
 						.setOptions(CFWJobsAlerting.getChannelNamesForUI())
 						.setValue(null);
 	
-	public CFWJobsAlertObject(CFWJob associatedJob) {
-		
-		this.associatedJob = associatedJob;
-		
-		this.addFields(occurences, delayMinutes, usersToAlert, groupsToAlert, alertChannels);
+	
+	/**************************************************************************
+	 * Use this constructor only for getting the fields(for forms etc...)
+	 **************************************************************************/	
+	public CFWJobsAlertObject() {
+		 initialize();
+	}
+	
+	/**************************************************************************
+	 * Use this constructor to do de actual alerting.
+	 * Condition result are associated with the given Job ID.
+	 **************************************************************************/	
+	public CFWJobsAlertObject(JobExecutionContext context, CFWJobTask task) {
 
+		this.jobID = context.getJobDetail().getKey().getName();
+		this.taskName = task.uniqueName();
+		
+		//-------------------------
+		// Get Condition Results
+		System.out.println("jobID:"+jobID);
+		if(!alertStateStore.containsKey(jobID)) {
+			System.out.println("create array");
+			alertStateArray = new ArrayList<>();
+			alertStateStore.put(jobID, alertStateArray);
+		}
+		alertStateArray = alertStateStore.get(jobID);
+		
+		initialize();
+
+	}
+	
+	private void initialize() {
+		this.addFields(occurences, delayMinutes, usersToAlert, groupsToAlert, alertChannels);
 	}
 	
 	
@@ -98,72 +130,102 @@ public class CFWJobsAlertObject extends CFWObject {
 	 **************************************************************************/
 	public AlertType checkSendAlert(boolean conditionMatched) {
 		
-		//-------------------------------------
-		// Keep Limit
-		if(conditionResults.size() > MAX_OCCURENCE_CHECK+1) {
-			// remove first half of all entries
-			for(int i = 0; i < MAX_OCCURENCE_CHECK/2; i++) {
-				conditionResults.remove(0);
-			}
-		}
-		
-		//---------------------------------
-		// Check Condition
-		conditionResults.add(new ConditionResult(conditionMatched));
-		
-		long currentTimeMillis = System.currentTimeMillis();
-		long alertDelayMillis = delayMinutes.getValue() * 1000;
-		
-		if(lastAlertType.equals(AlertType.NONE)
-		|| lastAlertType.equals(AlertType.LIFT)) {
+		synchronized (alertStateArray) {
 			
-			//-----------------------------------------
-			// Skip if delay not reached
-			if(lastAlertMillis != -1 && (lastAlertMillis + alertDelayMillis) > currentTimeMillis  ) {
-				return AlertType.NONE;
-			}
-
-			//-----------------------------------------
-			// Do alert if all in series are true
-			int occurencesInSeries = occurences.getValue();
-			
-			if(conditionResults.size() >= occurencesInSeries) {
-				boolean doAlert = true;
-				for(int i = 1; i <= occurencesInSeries; i++) {
-					int indexFromLast = conditionResults.size() - i;
-					doAlert &= conditionResults.get(indexFromLast).getResult();
+			//-------------------------------------
+			// Keep Limit
+			if(alertStateArray.size() > MAX_OCCURENCE_CHECK+1) {
+				// remove first half of all entries
+				for(int i = 0; i < MAX_OCCURENCE_CHECK/2; i++) {
+					alertStateArray.remove(0);
 				}
+			}
+			
+			//---------------------------------
+			// Update State
+			AlertType lastAlertType = AlertType.NONE;
+			long lastAlertMillis = -1;
+	
+			if(!alertStateArray.isEmpty()) {
+				AlertState lastState = alertStateArray.get(alertStateArray.size()-1);
+				lastAlertType = lastState.getAlertType();
+				lastAlertMillis = lastState.getLastAlertMillis();
+				System.out.println("Last State: "+CFW.JSON.toJSON(lastState));
+			}
+			
+			AlertState currentState = new AlertState(conditionMatched, lastAlertMillis);
+			alertStateArray.add(currentState);
+			System.out.println("currentState: "+CFW.JSON.toJSON(currentState));
+			
+			//---------------------------------
+			// Check Condition
+			long currentTimeMillis = System.currentTimeMillis();
+			long alertDelayMillis = delayMinutes.getValue() * 1000 * 60;
+			
+			
+			System.out.println("lastAlertMillis:"+lastAlertMillis);
+			System.out.println("currentTimeMillis:"+currentTimeMillis);
+			System.out.println("alertDelayMillis:"+alertDelayMillis);
+			System.out.println("(currentTimeMillis - alertDelayMillis):"+(currentTimeMillis - alertDelayMillis));
+			
+			if(lastAlertType.equals(AlertType.NONE)
+			|| lastAlertType.equals(AlertType.LIFT)) {
 				
-				if(doAlert) {
-					return AlertType.RAISE;
-				}else {
+				//-----------------------------------------
+				// Skip if delay not reached
+				if(lastAlertMillis != -1 && (lastAlertMillis + alertDelayMillis) > currentTimeMillis ) {
+					currentState.setAlertType(lastAlertType);
 					return AlertType.NONE;
 				}
-			}
-		}else {
-			
-			//-----------------------------------------
-			// Do check Lift Alert 
-			int occurencesInSeries = occurences.getValue();
-			
-			if(conditionResults.size() >= occurencesInSeries) {
+	
+				//-----------------------------------------
+				// Do alert if all in series are true
+				int occurencesInSeries = occurences.getValue();
 				
-				boolean doLift = true;
-				for(int i = 1; i <= occurencesInSeries; i++) {
-					int indexFromLast = conditionResults.size() - i;
-					doLift &= !conditionResults.get(indexFromLast).getResult();
+				if(alertStateArray.size() >= occurencesInSeries) {
+					boolean doAlert = true;
+					for(int i = 1; i <= occurencesInSeries; i++) {
+						int indexFromLast = alertStateArray.size() - i;
+						doAlert &= alertStateArray.get(indexFromLast).getConditionResult();
+						System.out.println("in loop:"+CFW.JSON.toJSON(alertStateArray.get(indexFromLast)) );
+					}
+					System.out.println(doAlert);
+					if(doAlert) {
+						currentState.setAlertType(AlertType.RAISE);
+						currentState.setLastAlertMillis(currentTimeMillis);
+						return AlertType.RAISE;
+					}else {
+						currentState.setAlertType(lastAlertType);
+						return AlertType.NONE;
+					}
 				}
+			}else {
 				
-				if(doLift) {
-					return AlertType.LIFT;
-				}else {
-					return AlertType.NONE;
+				//-----------------------------------------
+				// Do check Lift Alert 
+				int occurencesInSeries = occurences.getValue();
+				
+				if(alertStateArray.size() >= occurencesInSeries) {
+					
+					boolean doLift = true;
+					for(int i = 1; i <= occurencesInSeries; i++) {
+						int indexFromLast = alertStateArray.size() - i;
+						doLift &= !alertStateArray.get(indexFromLast).getConditionResult();
+					}
+					
+					if(doLift) {
+						currentState.setAlertType(AlertType.LIFT);
+						return AlertType.LIFT;
+					}else {
+						currentState.setAlertType(lastAlertType);
+						return AlertType.NONE;
+					}
 				}
 			}
+			
+			currentState.setAlertType(lastAlertType);		
+			return AlertType.NONE;
 		}
-				
-		return AlertType.NONE;
-		
 	}
 	
 	
@@ -196,11 +258,11 @@ public class CFWJobsAlertObject extends CFWObject {
 	private ArrayList<CFWJobsAlertingChannel> doSendAlert_getListOfAlertChannels(){
 		ArrayList<CFWJobsAlertingChannel> channelsToAlert = new ArrayList<>();
 		
-		LinkedHashMap<String, Boolean> channelSelection = alertChannels.getValue();
+		LinkedHashMap<String, String> channelSelection = alertChannels.getValue();
 		
 		if(channelSelection != null && !channelSelection.isEmpty()) {
-			for(Entry<String, Boolean> entry : channelSelection.entrySet()) {
-				if(entry.getValue() == true) {
+			for(Entry<String, String> entry : channelSelection.entrySet()) {
+				if(entry.getValue().toLowerCase().equals("true")) {
 					String channelUniqueName = entry.getKey();
 					channelsToAlert.add(CFWJobsAlerting.createChannelInstance(channelUniqueName));
 				}
@@ -246,57 +308,57 @@ public class CFWJobsAlertObject extends CFWObject {
 	// GETTERS AND SETTERS
 	//========================================================================================
 
-	public CFWField<Integer> getOccurences() {
-		return occurences;
+	public Integer getOccurences() {
+		return occurences.getValue();
 	}
 
 
-	public CFWJobsAlertObject setOccurences(CFWField<Integer> occurences) {
-		this.occurences = occurences;
+	public CFWJobsAlertObject setOccurences(Integer value) {
+		this.occurences.setValue(value);
 		return this;
 	}
 
 
-	public CFWField<Integer> getDelayMinutes() {
-		return delayMinutes;
+	public Integer getDelayMinutes() {
+		return delayMinutes.getValue();
 	}
 
 
-	public CFWJobsAlertObject setDelayMinutes(CFWField<Integer> delayMinutes) {
-		this.delayMinutes = delayMinutes;
+	public CFWJobsAlertObject setDelayMinutes(Integer value) {
+		this.delayMinutes.setValue(value);
 		return this;
 	}
 
 
-	public CFWField<LinkedHashMap<String, String>> getUsersToAlert() {
-		return usersToAlert;
+	public LinkedHashMap<String, String> getUsersToAlert() {
+		return usersToAlert.getValue();
 	}
 
 
-	public CFWJobsAlertObject setUsersToAlert(CFWField<LinkedHashMap<String, String>> usersToAlert) {
-		this.usersToAlert = usersToAlert;
+	public CFWJobsAlertObject setUsersToAlert(LinkedHashMap<String, String> value) {
+		this.usersToAlert.setValue(value);
 		return this;
 	}
 
 
-	public CFWField<LinkedHashMap<String, String>> getGroupsToAlert() {
-		return groupsToAlert;
+	public LinkedHashMap<String, String> getGroupsToAlert() {
+		return groupsToAlert.getValue();
 	}
 
 
-	public CFWJobsAlertObject setGroupsToAlert(CFWField<LinkedHashMap<String, String>> groupsToAlert) {
-		this.groupsToAlert = groupsToAlert;
+	public CFWJobsAlertObject setGroupsToAlert(LinkedHashMap<String, String> value) {
+		this.groupsToAlert.setValue(value);
 		return this;
 	}
 
 
-	public CFWField<LinkedHashMap<String, Boolean>> getAlertChannels() {
-		return alertChannels;
+	public LinkedHashMap<String, String> getAlertChannels() {
+		return alertChannels.getValue();
 	}
 
 
-	public CFWJobsAlertObject setAlertChannels(CFWField<LinkedHashMap<String, Boolean>> alertChannels) {
-		this.alertChannels = alertChannels;
+	public CFWJobsAlertObject setAlertChannels(LinkedHashMap<String, String> value) {
+		this.alertChannels.setValue(value);
 		return this;
 	}
 
@@ -306,32 +368,57 @@ public class CFWJobsAlertObject extends CFWObject {
 	 * Inner class to store results in an array
 	 * 
 	 **************************************************************************/
-	public class ConditionResult {
+	public class AlertState {
 		
+		private AlertType alertType = AlertType.NONE;
 		private long timeMillis;
+		private long lastAlertMillis;
 		private boolean result;
 		
-		public ConditionResult(boolean result) {
+		public AlertState(boolean result, long lastAlertMillis) {
 			this.result = result;
+			this.lastAlertMillis = lastAlertMillis;
+			
 			this.timeMillis = System.currentTimeMillis();
 		}
+		
 		public long getTimeMillis() {
 			return timeMillis;
 		}
 		
-		public ConditionResult setTimeMillis(long timeMillis) {
+		public AlertState setTimeMillis(long timeMillis) {
 			this.timeMillis = timeMillis;
 			return this;
 		}
 		
-		public boolean getResult() {
+		public long getLastAlertMillis() {
+			return lastAlertMillis;
+		}
+		
+		public AlertState setLastAlertMillis(long lastAlertMillis) {
+			this.lastAlertMillis = lastAlertMillis;
+			return this;
+		}
+		
+		public boolean getConditionResult() {
 			return result;
 		}
 		
-		public ConditionResult setResult(boolean result) {
+		public AlertState setResult(boolean result) {
 			this.result = result;
 			return this;
 		}
+		
+		public AlertType getAlertType() {
+			return alertType;
+		}
+		
+		public AlertState setAlertType(AlertType alertType) {
+			this.alertType = alertType;
+			return this;
+		}
+		
+		
 
 	}
 	

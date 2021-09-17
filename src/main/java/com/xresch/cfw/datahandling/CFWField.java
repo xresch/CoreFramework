@@ -291,13 +291,13 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	//===========================================
 	// VALUE LABEL
 	//===========================================
-	public static CFWField<LinkedHashMap<String,Boolean>> newCheckboxes(Enum<?> fieldName){
+	public static CFWField<LinkedHashMap<String,String>> newCheckboxes(Enum<?> fieldName){
 		return newCheckboxes(fieldName.toString());
 	}
 	
-	public static CFWField<LinkedHashMap<String,Boolean>> newCheckboxes(String fieldName){
+	public static CFWField<LinkedHashMap<String,String>> newCheckboxes(String fieldName){
 		if( fielnameStartsWithJSON(fieldName) ) {
-			return new CFWField<LinkedHashMap<String,Boolean>> (LinkedHashMap.class, FormFieldType.CHECKBOXES, fieldName)
+			return new CFWField<LinkedHashMap<String,String>> (LinkedHashMap.class, FormFieldType.CHECKBOXES, fieldName)
 				.setColumnDefinition("VARCHAR");
 		}
 		return null;

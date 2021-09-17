@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 
 public class CFWJobsAlerting {
@@ -37,16 +38,22 @@ public class CFWJobsAlerting {
 	 * 
 	 ***********************************************************************/
 	public static Set<String> getChannelNamesForUI()  {
-		Set<String> taskNames = new HashSet<>();
+		Set<String> channelNames = new HashSet<>();
 		
-		for(CFWJobsAlertingChannel task : getAllChannelInstances()) {
-			if(task.hasPermission(CFW.Context.Request.getUser())
-			|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)	
-			) {
-				taskNames.add(task.uniqueName());
+		User user = CFW.Context.Request.getUser();
+		
+		//only return for UI, ignore if run by job
+		if(user != null) {
+			for(CFWJobsAlertingChannel channel : getAllChannelInstances()) {
+	
+				if(channel.hasPermission(CFW.Context.Request.getUser())
+				|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)	
+				) {
+					channelNames.add(channel.uniqueName());
+				}
 			}
 		}
-		return taskNames;
+		return channelNames;
 	}
 	
 	/***********************************************************************
