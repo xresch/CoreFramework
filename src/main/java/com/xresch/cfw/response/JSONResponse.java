@@ -52,7 +52,11 @@ public class JSONResponse extends AbstractTemplateJSON {
 		.append("\"");
 	}
 	public void setPayLoad(JsonElement element) {
-		this.getContent().append(element.toString());
+		if(element == null) {
+			this.getContent().append("null");
+		}else {
+			this.getContent().append(element.toString());
+		}
 	}
 	
 	@Override

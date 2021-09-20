@@ -5,6 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -129,6 +131,24 @@ public class DashboardWidget extends CFWObject {
 		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titleFontsize, contentFontsize, footer, bgcolor, fgcolor, settings, taskParameters);
 	}
 
+	/**************************************************************************************
+	 * Creates a short HTML string with a message stating the dashboard and widget a
+	 * message (e.g. eMail) has originated from. Contains a link to the Dashboard.
+	 * Useful for creating alert messages.
+	 * 
+	 **************************************************************************************/
+	public String createWidgetOriginMessage() {
+		Integer dashboardID = this.foreignKeyDashboard();
+		Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
+		String dashboardLink = FeatureDashboard.createURLForDashboard(dashboardID);
+
+		String linkHTML = "<p>This message was created by "
+					+ ( Strings.isNullOrEmpty(this.title()) ? "a widget on the dashboard " : " the widget '"+this.title()+"' on the dashboard ")
+					+ (dashboard != null ? "'"+dashboard.name()+"'.</p>" : " with the ID '"+dashboardID+"'. </p>")
+					+ (dashboardLink != null ? "<p>Click <a href=\""+dashboardLink+"\">here</a> to open the dashboard.</p>" : "");
+		
+		return linkHTML;
+	}
 	
 	/**************************************************************************************
 	 * 

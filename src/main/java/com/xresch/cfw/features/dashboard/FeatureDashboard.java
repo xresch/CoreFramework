@@ -2,6 +2,7 @@ package com.xresch.cfw.features.dashboard;
 
 import java.util.Locale;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
@@ -25,6 +26,8 @@ import com.xresch.cfw.spi.CFWAppFeature;
  **************************************************************************************************************/
 public class FeatureDashboard extends CFWAppFeature {
 	
+	private static final String URI_DASHBOARD_LIST = "/dashboard/list";
+	private static final String URI_DASHBOARD_VIEW = "/dashboard/view";
 	public static final String PERMISSION_DASHBOARD_VIEWER = "Dashboard Viewer";
 	public static final String PERMISSION_DASHBOARD_CREATOR = "Dashboard Creator";
 	public static final String PERMISSION_DASHBOARD_ADMIN = "Dashboard Admin";
@@ -149,8 +152,8 @@ public class FeatureDashboard extends CFWAppFeature {
 
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
-    	app.addAppServlet(ServletDashboardList.class,  "/dashboard/list");
-    	app.addAppServlet(ServletDashboardView.class,  "/dashboard/view");
+    	app.addAppServlet(ServletDashboardList.class,  URI_DASHBOARD_LIST);
+    	app.addAppServlet(ServletDashboardView.class,  URI_DASHBOARD_VIEW);
 	}
 
 	@Override
@@ -251,7 +254,29 @@ public class FeatureDashboard extends CFWAppFeature {
 					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_tips_tricks.html")
 			);
 		
-
 	}
-
+	
+	/*******************************************************************
+	 * Returns the URL for the given Dashboard ID or null if the
+	 * servername was not defined in the cfw.properties
+	 * @param dashboardID
+	 *******************************************************************/
+	public static String createURLForDashboard(int dashboardID) {
+		return createURLForDashboard(""+dashboardID);
+	}
+	
+	/*******************************************************************
+	 * Returns the URL for the given Dashboard ID or null if the
+	 * servername was not defined in the cfw.properties
+	 * @param dashboardID
+	 *******************************************************************/
+	public static String createURLForDashboard(String dashboardID) {
+		
+		if(CFW.Properties.SERVERURL == null) {
+			return null;
+		}
+		
+		return CFW.Properties.SERVERURL +"/app"+ URI_DASHBOARD_VIEW + "?id="+dashboardID;
+	}
+	
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -107,9 +108,19 @@ public class CFWJobsAlertObject extends CFWObject {
 	 * Condition result are associated with the given Job ID.
 	 **************************************************************************/	
 	public CFWJobsAlertObject(JobExecutionContext context, CFWJobTask task) {
+		this(context, task.uniqueName());
+	}
+	
+	/**************************************************************************
+	 * Use this constructor to do de actual alerting.
+	 * Condition result are associated with the given Job ID.
+	 **************************************************************************/	
+	public CFWJobsAlertObject(JobExecutionContext context, String  taskname) {
 
 		this.jobID = context.getJobDetail().getKey().getName();
-		this.taskName = task.uniqueName();
+		
+		
+		
 		
 		//-------------------------
 		// Get Condition Results
@@ -133,9 +144,10 @@ public class CFWJobsAlertObject extends CFWObject {
 	/**************************************************************************
 	 * Add the next condition result and checks if an Alert should be sent or
 	 * not.
+	 * @param customData TODO
 	 * @return true if alert triggered, false otherwise
 	 **************************************************************************/
-	public AlertType checkSendAlert(boolean conditionMatched) {
+	public AlertType checkSendAlert(boolean conditionMatched, Properties customData) {
 		
 		//-------------------------------------
 		// Keep Limit
@@ -158,7 +170,7 @@ public class CFWJobsAlertObject extends CFWObject {
 			System.out.println("Last State: "+CFW.JSON.toJSON(lastState));
 		}
 		
-		AlertState currentState = new AlertState(conditionMatched, lastAlertMillis);
+		AlertState currentState = new AlertState(conditionMatched, lastAlertMillis, customData);
 		currentState.setAlertType(lastAlertType);
 		alertStateArray.add(currentState);
 		System.out.println("currentState: "+CFW.JSON.toJSON(currentState));
@@ -331,7 +343,7 @@ public class CFWJobsAlertObject extends CFWObject {
 	}
 	
 	/**************************************************************************
-	 * Return the type of the last alert.
+	 * Return the type of the last alert state.
 	 * @return 
 	 **************************************************************************/
 	public AlertType getLastAlertType() {
@@ -341,6 +353,19 @@ public class CFWJobsAlertObject extends CFWObject {
 		}
 		
 		return AlertType.NONE;
+	}
+	
+	/**************************************************************************
+	 * Return the custom data of the last alert state.
+	 * @return last data or empty properties, not null
+	 **************************************************************************/
+	public Properties getLastData() {
+		AlertState lastState = getLastAlertState();
+		if(lastState != null) {
+			return lastState.getData();
+		}
+		
+		return new Properties();
 	}
 	
 	public Integer getOccurencesToRaise() {
@@ -414,15 +439,19 @@ public class CFWJobsAlertObject extends CFWObject {
 	public class AlertState {
 		
 		private AlertType alertType = AlertType.NONE;
+		private Properties data;
 		private long timeMillis;
 		private long lastAlertMillis;
 		private boolean result;
 		
-		public AlertState(boolean result, long lastAlertMillis) {
-			this.result = result;
-			this.lastAlertMillis = lastAlertMillis;
+		public AlertState(boolean result, long lastAlertMillis, Properties data) {
 			
 			this.timeMillis = System.currentTimeMillis();
+			
+			this.result = result;
+			this.lastAlertMillis = lastAlertMillis;
+			this.data = data;
+
 		}
 		
 		public long getTimeMillis() {
@@ -447,8 +476,17 @@ public class CFWJobsAlertObject extends CFWObject {
 			return result;
 		}
 		
-		public AlertState setResult(boolean result) {
+		public AlertState setConditionResult(boolean result) {
 			this.result = result;
+			return this;
+		}
+		
+		public Properties getData() {
+			return data;
+		}
+		
+		public AlertState setData(Properties data) {
+			this.data = data;
 			return this;
 		}
 		

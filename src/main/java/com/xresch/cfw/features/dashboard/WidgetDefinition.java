@@ -107,7 +107,7 @@ public abstract class WidgetDefinition {
 	 * See {@link com.xresch.cfw.features.jobs.CFWJobTask#executeTask CFWJobTask.executeTask()} to get
 	 * more details on how to implement this method.
 	 *************************************************************************/
-	public void executeTask(JobExecutionContext context, CFWObject taskParams, DashboardWidget widget, CFWObject widgetSettings) throws JobExecutionException {
+	public void executeTask(JobExecutionContext context, CFWObject taskParams, DashboardWidget widget, CFWObject settings) throws JobExecutionException {
 		/* do nothing by default */
 	}
 	

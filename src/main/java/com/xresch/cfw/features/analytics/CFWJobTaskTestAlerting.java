@@ -66,7 +66,7 @@ public class CFWJobTaskTestAlerting extends CFWJobTask {
 		boolean randomCondition = CFW.Random.randomBoolean();
 		CFW.Messages.addInfoMessage("Last Condition: "+randomCondition);
 		
-		AlertType type = alertObject.checkSendAlert(randomCondition);
+		AlertType type = alertObject.checkSendAlert(randomCondition, null);
 		
 		if(!type.equals(AlertType.NONE)) {
 

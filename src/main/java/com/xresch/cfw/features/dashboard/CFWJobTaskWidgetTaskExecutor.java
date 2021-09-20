@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.dashboard;
 
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.quartz.JobDataMap;
@@ -84,12 +85,24 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		}
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widget.type());
 
+		//------------------------------
+		// Widget Settings
 		CFWObject widgetSettings = definition.getSettings();
 		widgetSettings.mapJsonFields(widget.settings());
 		
+		//------------------------------
+		// Task Parameters
 		CFWObject taskParams = definition.getTasksParameters();
 		taskParams.mapJsonFields(widget.taskParameters());
 		
+		//Add to job data, needed for mapping context to CFWJobAlertObject
+		for(Entry<String, CFWField> entry : taskParams.getFields().entrySet()) {
+			Object fieldValue = entry.getValue().getValue();
+			data.put(entry.getKey(), CFW.JSON.toJSON(fieldValue));
+		}
+			
+		//------------------------------
+		// Call widget Task
 		definition.executeTask(context, taskParams, widget, widgetSettings);
 	}
 	

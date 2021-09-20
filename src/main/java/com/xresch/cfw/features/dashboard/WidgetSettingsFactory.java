@@ -8,7 +8,12 @@ import com.xresch.cfw.validation.NumberRangeValidator;
 
 public class WidgetSettingsFactory {
 
-//new String[]{"Area", "Line", "Bar", "Scatter"}
+	// !!! DO NOT CHANGE VALUES AS IT WILL WASTE SETTINGS CHOSEN BY THE USER
+	public static final String FIELDNAME_DISPLAYAS = "renderer";
+	public static final String FIELDNAME_DISABLE = "disable";
+	public static final String FIELDNAME_SAMPLEDATA = "sampledata";
+
+	//new String[]{"Area", "Line", "Bar", "Scatter"}
 	private static LinkedHashMap<String,String> linearChartTypes = new LinkedHashMap<String,String>();
 	
 	static {
@@ -25,7 +30,7 @@ public class WidgetSettingsFactory {
 	 * @return
 	 ************************************************************************************/
 	public static CFWField<?> createDisplayAsSelect(String[] rendererNames, String defaultValue ){
-		return 	CFWField.newString(FormFieldType.SELECT, "renderer")
+		return 	CFWField.newString(FormFieldType.SELECT, FIELDNAME_DISPLAYAS)
 					.setLabel("{!cfw_widget_displayas!}")
 					.setDescription("{!cfw_widget_displayas_desc!}")
 					.setOptions(rendererNames)
@@ -38,7 +43,7 @@ public class WidgetSettingsFactory {
 	 * @return
 	 ************************************************************************************/
 	public static CFWField<?> createDisableBoolean(){
-		return 	CFWField.newBoolean(FormFieldType.BOOLEAN, "disable")
+		return 	CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_DISABLE)
 					.setLabel("{!cfw_widget_disable!}")
 					.setDescription("{!cfw_widget_disable_desc!}")
 					.setValue(false);
@@ -50,7 +55,7 @@ public class WidgetSettingsFactory {
 	 * @return
 	 ************************************************************************************/
 	public static CFWField<?> createSampleDataField(){
-		return CFWField.newBoolean(FormFieldType.BOOLEAN, "sampledata")
+		return CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_SAMPLEDATA)
 		.setLabel("{!cfw_widget_sampledata!}")
 		.setDescription("{!cfw_widget_sampledata_desc!}")
 		.setValue(false);
@@ -72,7 +77,7 @@ public class WidgetSettingsFactory {
 		rendererOptions.put("csv", "CSV");
 		rendererOptions.put("json", "JSON");
 		
-		return CFWField.newString(FormFieldType.SELECT, "renderer")
+		return CFWField.newString(FormFieldType.SELECT, FIELDNAME_DISPLAYAS)
 			.setLabel("{!cfw_widget_displayas!}")
 			.setDescription("{!cfw_widget_displayas_desc!}")
 			.setOptions(rendererOptions)
