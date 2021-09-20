@@ -37,11 +37,8 @@ public class CFWProperties {
 	// SERVER
 	//##########################################################################################
 	
-	/** Fully-qualified servername without port, will be used to create links(e.g. in eMails). (Property=cfw_servername, Default=null) */
-	public static String SERVERNAME = null;
-	
-	/** built with protocol, servername, port */
-	public static String SERVERURL = null;
+	/** Application URL as used by the application user to access the application. will be used to create Links(e.g. in eMails). (Property=cfw_application_url, Default=null) */
+	public static String APPLICATION_URL = null;
 	
 	/** The mode in which the application should start(FULL, APP, DB). (Property=cfw_mode, "FULL") */
 	public static String MODE = "FULL";
@@ -214,7 +211,7 @@ public class CFWProperties {
 		APPLICATION_MAX_UPLOADSIZE		= CFWProperties.configAsInt("cfw_application_max_uploadsize", APPLICATION_MAX_UPLOADSIZE);
 		RESET_ADMIN_PW 					= CFWProperties.configAsBoolean("cfw_reset_admin_pw", RESET_ADMIN_PW);
 		
-		SERVERNAME						= CFWProperties.configAsString("cfw_servername", SERVERNAME);
+		APPLICATION_URL					= CFWProperties.configAsString("cfw_application_url", APPLICATION_URL);
 		MODE							= CFWProperties.configAsString("cfw_mode", MODE);
 		
 		HTTP_ENABLED 					= CFWProperties.configAsBoolean("cfw_http_enabled", HTTP_ENABLED);
@@ -269,12 +266,6 @@ public class CFWProperties {
 		MAIL_SMTP_FROMMAIL_REPLY		= CFWProperties.configAsString("cfw_mail_smtp_frommail_reply", MAIL_SMTP_FROMMAIL_REPLY);
 		MAIL_SMTP_FROMMAIL_NOREPLY		= CFWProperties.configAsString("cfw_mail_smtp_frommail_noreply", MAIL_SMTP_FROMMAIL_NOREPLY);
 
-		//Create Server URL
-		if(SERVERNAME != null) {
-			SERVERURL 	 = HTTPS_ENABLED ? "https://" : "http://";
-			SERVERURL 	+= SERVERNAME+":";
-			SERVERURL	+= HTTPS_ENABLED ? HTTPS_PORT : HTTP_PORT;
-		}
 	}
 	
 	

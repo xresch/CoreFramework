@@ -272,11 +272,11 @@ public class FeatureDashboard extends CFWAppFeature {
 	 *******************************************************************/
 	public static String createURLForDashboard(String dashboardID) {
 		
-		if(CFW.Properties.SERVERURL == null) {
+		if(CFW.Properties.APPLICATION_URL == null) {
 			return null;
 		}
 		
-		return CFW.Properties.SERVERURL +"/app"+ URI_DASHBOARD_VIEW + "?id="+dashboardID;
+		return CFW.Properties.APPLICATION_URL +"/app"+ URI_DASHBOARD_VIEW + "?id="+dashboardID;
 	}
 	
 }
