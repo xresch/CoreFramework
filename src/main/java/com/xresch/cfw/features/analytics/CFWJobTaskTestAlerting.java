@@ -72,7 +72,7 @@ public class CFWJobTaskTestAlerting extends CFWJobTask {
 
 			String message = "Hi There!\n\nThis is only a test, have a marvelous day!";
 			String messageHTML = "<p>Hi There!<p></p>This is only a test, have a marvelous day!</p>";
-					
+			
 			if(type.equals(AlertType.RAISE)) {
 				alertObject.doSendAlert("[TEST] Alert: A situation is occuring!", message, messageHTML);
 			}

@@ -287,6 +287,9 @@ public class CFWMailBuilder {
 	 * Send the eMail.
 	 ***************************************************************/
 	public CFWMailBuilder send() {
+		
+		if(!CFW.Properties.MAIL_ENABLED) { return this ; }
+		
 		try {
 			message.setSentDate(new Date());
 	        Transport.send(message); 

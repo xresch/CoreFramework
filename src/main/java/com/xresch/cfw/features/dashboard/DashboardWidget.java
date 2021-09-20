@@ -143,8 +143,8 @@ public class DashboardWidget extends CFWObject {
 		String dashboardLink = FeatureDashboard.createURLForDashboard(dashboardID);
 
 		String linkHTML = "<p>This message was created by "
-					+ ( Strings.isNullOrEmpty(this.title()) ? "a widget on the dashboard " : " the widget '"+this.title()+"' on the dashboard ")
-					+ (dashboard != null ? "'"+dashboard.name()+"'.</p>" : " with the ID '"+dashboardID+"'. </p>")
+					+ ( Strings.isNullOrEmpty(this.title()) ? "a widget on the dashboard " : " the widget <b>"+this.title()+"</b> on the dashboard ")
+					+ (dashboard != null ? "<b>"+dashboard.name()+"</b>.</p>" : " with the ID <b>"+dashboardID+"'</b>. </p>")
 					+ (dashboardLink != null ? "<p>Click <a href=\""+dashboardLink+"\">here</a> to open the dashboard.</p>" : "");
 		
 		return linkHTML;
