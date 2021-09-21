@@ -799,6 +799,12 @@ public class CFWDBDashboard {
 	 * Checks if the current user can edit the dashboard.
 	 *****************************************************************/
 	public static boolean checkCanEdit(String dashboardID) {
+		return checkCanEdit(Integer.parseInt(dashboardID));
+	}
+	/*****************************************************************
+	 * Checks if the current user can edit the dashboard.
+	 *****************************************************************/
+	public static boolean checkCanEdit(int dashboardID) {
 		
 		Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
 		User user = CFW.Context.Request.getUser();

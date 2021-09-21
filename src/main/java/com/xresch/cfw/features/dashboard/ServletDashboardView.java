@@ -186,17 +186,26 @@ public class ServletDashboardView extends HttpServlet
 					case "param": 				createParam(request, response, jsonResponse);
 												break;
 												
-					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 					CFW.Messages.itemNotSupported(item);
 												break;
 				}
 				break;	
-				
+			
+			case "duplicate": 			
+				switch(item.toLowerCase()) {
+					case "widget": 				duplicateWidget(jsonResponse, request.getParameter("widgetid"));
+	  											break;
+	  											
+					default: 					CFW.Messages.itemNotSupported(item);
+												break;
+				}
+				break;	
 			case "update": 			
 				switch(item.toLowerCase()) {
 					case "widget": 				updateWidget(request, response, jsonResponse);
 	  											break;
 	  																
-					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 					CFW.Messages.itemNotSupported(item);
 												break;
 				}
 				break;
@@ -209,7 +218,7 @@ public class ServletDashboardView extends HttpServlet
 					case "param": 				deleteParam(request, response, jsonResponse);
 												break;
 																	
-					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
+					default: 					CFW.Messages.itemNotSupported(item);
 												break;
 				}
 				break;	
@@ -268,6 +277,39 @@ public class ServletDashboardView extends HttpServlet
 				newWidget.id(id);
 				
 				response.getContent().append(CFW.JSON.toJSON(newWidget));
+			}else {
+				CFW.Messages.noPermission();
+			}
+		}else{
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+		}
+
+	}
+	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
+	private void duplicateWidget(JSONResponse response, String widgetID) {
+		
+		DashboardWidget duplicateThis = CFW.DB.DashboardWidgets.selectByID(widgetID);
+		duplicateThis.id(null)
+		.taskParameters(null);
+		
+		int dashboardID = duplicateThis.foreignKeyDashboard();
+		
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			
+			//----------------------------
+			// Create Widget
+			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(duplicateThis.type());
+			User currentUser = CFW.Context.Request.getUser();
+			if(definition.hasPermission(currentUser) || CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
+
+				
+				int id = CFW.DB.DashboardWidgets.createGetPrimaryKey(duplicateThis);
+				duplicateThis.id(id);
+				
+				response.getContent().append(CFW.JSON.toJSON(duplicateThis));
 			}else {
 				CFW.Messages.noPermission();
 			}

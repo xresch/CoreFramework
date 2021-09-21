@@ -1116,7 +1116,8 @@ function cfw_dashboard_widget_duplicate(widgetGUID) {
 	var widgetInstance = $('#'+widgetGUID);
 	var widgetObject = widgetInstance.data("widgetObject");
 	
-	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'widget', type: widgetObject.TYPE, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
+	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'duplicate', item: 'widget', widgetid: widgetObject.PK_ID, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, 
+		function(data){
 			var newWidgetObject = data.payload;
 			if(newWidgetObject != null){
 				// ---------------------------------
