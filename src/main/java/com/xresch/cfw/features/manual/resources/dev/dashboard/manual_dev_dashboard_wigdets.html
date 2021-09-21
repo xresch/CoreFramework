@@ -347,3 +347,65 @@ public void executeTask(JobExecutionContext context, CFWObject taskParams, Dashb
 }</code>
 </pre>
 
+<h2>Widget with Alerting</h2>
+<p>Use the CFWJobsAlertObject to do alerting for your task, here an example:
+</p>
+<pre>
+<code>public CFWObject getTasksParameters() {
+	
+	//Create Default Object for Alert Settings
+	CFWJobsAlertObject alertObject = new CFWJobsAlertObject();
+	
+	//Add additional fields
+	alertObject
+		.addField(
+			CFWField.newString(FormFieldType.TEXT, MESSAGE)
+					.setDescription("Message to write to the log file.")
+					.addValidator(new LengthValidator(5,500))
+		)
+		.addField(
+				CFWField.newBoolean(FormFieldType.BOOLEAN, LIKES_TIRAMISU)
+						.setDescription("Affinity of tiramisu to write to the log file")
+		)
+		.addField(
+				CFWField.newInteger(FormFieldType.NUMBER, NUMBER)
+						.setDescription("Number to write to the log")
+		)
+		;
+	
+	return alertObject;
+}
+
+public void executeTask(JobExecutionContext context, CFWObject taskParams, DashboardWidget widget, CFWObject widgetSettings) throws JobExecutionException {
+	
+	//-----------------------------
+	// Alerting Example
+	CFWJobsAlertObject alertObject = new CFWJobsAlertObject(context, this.getWidgetType());
+	
+	alertObject.mapJobExecutionContext(context);
+	
+	boolean randomCondition = CFW.Random.randomBoolean();
+	CFW.Messages.addInfoMessage("Last Condition: "+randomCondition);
+	
+	//Get the state of the alert
+	AlertType type = alertObject.checkSendAlert(randomCondition, null);
+	
+	if(!type.equals(AlertType.NONE)) {
+
+		String dashboardOrigin = widget.createWidgetOriginMessage();
+		
+		String message = "Hi There!\n\nThis is only a test, have a marvelous day!";
+		String messageHTML = "&lt;p>Hi There!&lt;p>&lt;/p>This is only a test, have a marvelous day!&lt/p>"
+					 +dashboardOrigin;
+		
+		if(type.equals(AlertType.RAISE)) {
+			alertObject.doSendAlert("[TEST] Alert: A situation is occuring!", message, messageHTML);
+		}
+		
+		if(type.equals(AlertType.RESOLVE)) {
+			alertObject.doSendAlert("[TEST] Alert: A situation has resolved!", message, messageHTML);
+		}
+	}
+}</code>
+</pre>
+

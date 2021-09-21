@@ -30,13 +30,11 @@ public class CFWJobsAlertingChannelAppLog extends CFWJobsAlertingChannel {
 				.custom("jobid",  alertObject.getJobID())
 				.custom("taskname",  alertObject.getTaskName())
 				.off(content);
-		
-		
+
 	}
 
 	@Override
 	public boolean hasPermission(User user) {
-		
 		return user.hasPermission(FeatureJobs.PERMISSION_JOBS_USER) || user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN);
 	}
 

@@ -76,3 +76,84 @@ public class CFWJobTaskThreadDumps extends CFWJobTask {
 <pre>
 <code>CFW.Registry.Jobs.registerTask(new CFWJobTaskThreadDumps());</code>
 </pre>
+
+<h2>Alerting with Tasks</h2>
+<p>Use the CFWJobsAlertObject to do alerting with your task, here an example:
+</p>
+<pre>
+<code>@Override
+public CFWObject getParameters() {
+	return new CFWJobsAlertObject();
+}
+
+@Override
+public void executeTask(JobExecutionContext context) throws JobExecutionException {
+	
+	//JobDataMap data = context.getMergedJobDataMap();
+	
+	CFWJobsAlertObject alertObject = new CFWJobsAlertObject(context, this);
+	
+	alertObject.mapJobExecutionContext(context);
+	
+	boolean randomCondition = CFW.Random.randomBoolean();
+	CFW.Messages.addInfoMessage("Last Condition: "+randomCondition);
+	
+	AlertType type = alertObject.checkSendAlert(randomCondition, null);
+	
+	if(!type.equals(AlertType.NONE)) {
+
+		String message = "Hi There!\n\nThis is only a test, have a marvelous day!";
+		String messageHTML = "&lt;p>Hi There!&lt;p>&lt;/p>This is only a test, have a marvelous day!&lt/p>";
+		
+		if(type.equals(AlertType.RAISE)) {
+			alertObject.doSendAlert("[TEST] Alert: A situation is occuring!", message, messageHTML);
+		}
+		
+		if(type.equals(AlertType.RESOLVE)) {
+			alertObject.doSendAlert("[TEST] Alert: A situation has resolved!.", message, messageHTML);
+		}
+	}
+			
+}</code>
+</pre>
+
+<h2>Add Alert Channel</h2>
+<p>You can add an additional alert channel to your application by extending the class CFWJobsAlertingChannel. Here an example of the eMail Channel:
+</p>
+<pre>
+<code>public class CFWJobsAlertingChannelEMail extends CFWJobsAlertingChannel {
+
+	@Override
+	public String uniqueName() {
+		return "eMail";
+	}
+
+	@Override
+	public String channelDescription() {
+		return "Sends the alerts to the users eMail addresses.";
+	}
+
+	@Override
+	public void sendAlerts(CFWJobsAlertObject alertObject, HashMap&lt;Integer, User&gt; usersToAlert, String subject, String content, String contentHTML) {
+				
+		//----------------------------------------
+		// Create Mail and Send
+		String mailContent = Strings.isNullOrEmpty(contentHTML) ? content : contentHTML;
+		
+		new CFWMailBuilder(subject)
+				.addMessage(mailContent)
+				.fromNoReply()
+				.recipientsBCC(usersToAlert)
+				.send();
+		
+	}
+
+	@Override
+	public boolean hasPermission(User user) {
+		
+		return user.hasPermission(FeatureJobs.PERMISSION_JOBS_USER) || user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN);
+	}
+
+}
+</code>
+</pre>
