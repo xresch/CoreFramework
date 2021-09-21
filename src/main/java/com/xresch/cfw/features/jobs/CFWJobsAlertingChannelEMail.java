@@ -1,7 +1,8 @@
 package com.xresch.cfw.features.jobs;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+
+import org.quartz.JobExecutionContext;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
@@ -21,8 +22,11 @@ public class CFWJobsAlertingChannelEMail extends CFWJobsAlertingChannel {
 	}
 
 	@Override
-	public void sendAlerts(CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert, String subject, String content, String contentHTML) {
+	public void sendAlerts(JobExecutionContext context, CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert, String subject, String content, String contentHTML) {
 				
+		String jobID = context.getJobDetail().getKey().getName();
+		CFWJob job = CFW.DB.Jobs.selectByID(jobID);
+		
 		//----------------------------------------
 		// Create Mail and Send
 		String mailContent = Strings.isNullOrEmpty(contentHTML) ? content : contentHTML;
@@ -31,6 +35,7 @@ public class CFWJobsAlertingChannelEMail extends CFWJobsAlertingChannel {
 				.addMessage(mailContent)
 				.fromNoReply()
 				.recipientsBCC(usersToAlert)
+				.addAttachment("jobdetails.json", CFW.JSON.toJSONPretty(job))
 				.send();
 		
 	}

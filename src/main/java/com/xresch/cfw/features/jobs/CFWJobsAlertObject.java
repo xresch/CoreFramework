@@ -241,19 +241,19 @@ public class CFWJobsAlertObject extends CFWObject {
 	/**************************************************************************
 	 * Send an alert, either for raising or lifting an alert.
 	 * You have to create the content for raising or lifting the content yourself.
-	 * 
+	 * @param context TODO
 	 * @param subject the title for your alert
 	 * @param content plain text of your alert(mandatory)
 	 * @param contentHTML html version of your alert(optional, some alert 
 	 * channels might use the HTML version if not null)
 	 **************************************************************************/
-	public void doSendAlert(String subject, String content, String contentHTML) {
+	public void doSendAlert(JobExecutionContext context, String subject, String content, String contentHTML) {
 		
 		HashMap<Integer, User> uniqueUsers = this.doSendAlert_getMergedListOfUsersToAlert();
 		ArrayList<CFWJobsAlertingChannel> channelsToAlert = this.doSendAlert_getListOfAlertChannels();
 		
 		for(CFWJobsAlertingChannel channel : channelsToAlert) {
-			channel.sendAlerts(this, uniqueUsers, subject, content, contentHTML);
+			channel.sendAlerts(context, this, uniqueUsers, subject, content, contentHTML);
 		}
 		
 	}

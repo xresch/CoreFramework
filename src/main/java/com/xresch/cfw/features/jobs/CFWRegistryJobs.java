@@ -2,10 +2,13 @@ package com.xresch.cfw.features.jobs;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.quartz.JobDataMap;
@@ -17,6 +20,7 @@ import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -39,6 +43,13 @@ public class CFWRegistryJobs {
 		if( jobtasksMap.containsKey(jobtasks.uniqueName()) ) {
 			new CFWLog(logger).severe("A JobTask with the name '"+jobtasks.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
 			return;
+		}
+		
+		HashMap<Locale, FileDefinition> localeFiles = jobtasks.getLocalizationFiles();
+		if(localeFiles != null) {
+			for(Entry<Locale, FileDefinition> entry : localeFiles.entrySet()) {
+				CFW.Localization.registerLocaleFile(entry.getKey(), FeatureJobs.getJobsURI(), entry.getValue());
+			}
 		}
 		
 		jobtasksMap.put(jobtasks.uniqueName(), jobtasks.getClass());

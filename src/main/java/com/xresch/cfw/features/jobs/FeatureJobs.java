@@ -10,6 +10,7 @@ import com.xresch.cfw.spi.CFWAppFeature;
 
 public class FeatureJobs extends CFWAppFeature {
 	
+	private static final String URI_JOBS = "/jobs";
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.jobs.resources";
 	public static final String PERMISSION_JOBS_USER = "Jobs: User";
 	public static final String PERMISSION_JOBS_ADMIN = "Jobs: Admin";
@@ -69,7 +70,7 @@ public class FeatureJobs extends CFWAppFeature {
 
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
-		app.addAppServlet(ServletJobs.class,  "/jobs");
+		app.addAppServlet(ServletJobs.class,  URI_JOBS);
 		
 	}
 
@@ -86,6 +87,10 @@ public class FeatureJobs extends CFWAppFeature {
 	public void stopFeature() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public static String getJobsURI() {
+		return "/app"+URI_JOBS;
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.jobs;
 
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 import org.quartz.Job;
@@ -7,6 +9,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
@@ -56,6 +59,13 @@ public abstract class CFWJobTask implements Job {
 	 * Return if the user is able to select this executor for creating Jobs.
 	 *************************************************************************/
 	public abstract boolean hasPermission(User user);
+	
+	/************************************************************
+	 * Return the file definitions of the client side part of the 
+	 * script.
+	 * @return file definition
+	 ************************************************************/
+	public abstract HashMap<Locale, FileDefinition> getLocalizationFiles();
 	
 	/*************************************************************************
 	 * Override this method if you do not want to allow users to choose the 

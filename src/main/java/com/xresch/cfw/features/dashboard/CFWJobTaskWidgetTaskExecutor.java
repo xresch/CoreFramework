@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.dashboard;
 
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
@@ -8,6 +10,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -58,6 +61,11 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 	@Override
 	public int minIntervalSeconds() {
 		return 5;
+	}
+	
+	@Override
+	public HashMap<Locale, FileDefinition> getLocalizationFiles() {
+		return null;
 	}
 
 	@Override
