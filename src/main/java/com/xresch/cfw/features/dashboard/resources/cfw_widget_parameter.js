@@ -20,7 +20,7 @@
 					var settings = widgetObject.JSON_SETTINGS;
 					var formHTML = data.payload.html;
 					
-					var parentDiv = $('<div class= "d-flex flex-column cfw-parameter-widget-marker w-100">');
+					var parentDiv = $('<div class= "d-flex flex-column cfw-parameter-widget-parent w-100">');
 
 					var noflexDiv = $('<div class="d-block w-100">');
 					noflexDiv.append(settings.description);
@@ -79,6 +79,14 @@
 					//----------------------------------
 					// Callback
 					callback(widgetObject, parentDiv);
+					
+					//----------------------------------
+					// Hack overflow on widget for autocomplete lists
+					window.setTimeout(function(){
+						parentDiv.closest('.cfw-dashboard-widget-body')
+								 .css('overflow-x', 'visible')
+								 .css('overflow-y', 'visible');
+					}, 1000)
 				});
 			},
 		}

@@ -139,7 +139,9 @@ public class WidgetParameter extends WidgetDefinition {
 			CFWField valueField = param.getField(DashboardParameterFields.VALUE.toString());
 			valueField
 				//.addAttribute("onchange", "cfw_dashboard_parameters_fireParamWidgetUpdate(this, true);")
-				//.addAttribute("onblur", "")
+				//.addAttribute("onblur", "cfw_dashboard_parameters_fireParamWidgetUpdate(this, true);")
+				.addAttribute("data-widgettype", param.widgetType())
+				.addAttribute("data-settingslabel", param.paramSettingsLabel())
 				.setName(param.name())
 				.setLabel(CFW.Utils.Text.fieldNameToLabel(param.name()))
 				.isDecoratorDisplayed(false)

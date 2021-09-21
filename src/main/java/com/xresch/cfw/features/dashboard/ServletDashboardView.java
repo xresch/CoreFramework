@@ -689,11 +689,13 @@ public class ServletDashboardView extends HttpServlet
 				paramObject.mapJsonFields(current);
 				
 				if(paramObject.mode().equals(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString())
-				&& paramObject.widgetType().equals(widgetType)) {
+				&& ( paramObject.widgetType() == null || paramObject.widgetType().equals(widgetType)) ) {
 					globalOverrideParams.put(paramObject.paramSettingsLabel(), current.getAsJsonObject());
 					continue;
 				}
-									
+					
+				//--------------------------------------
+				// Do Substitute
 				// Double escape because Java regex is a bitch.
 				String doubleEscaped = CFW.JSON.escapeString(
 											CFW.JSON.escapeString(paramObject.value())
@@ -839,6 +841,10 @@ public class ServletDashboardView extends HttpServlet
 					param.name(label.toLowerCase().replace(" ", "_")+"_"+CFW.Random.randomStringAlphaNumerical(6));
 					param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
 					param.isModeChangeAllowed(false);
+					
+//					if(paramField.fieldType().equals(FormFieldType.SELECT)) {
+//						param.isModeChangeAllowed(true);
+//					}
 				}else {
 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter definition could not be found for: "+label);
 				}

@@ -609,10 +609,13 @@ function cfw_dashboard_parameters_remove(parameterID) {
 };
 
 /*******************************************************************************
+ * applies the parameters to the fields of the object.
+ * This can either be a widgetObject.JSON_SETTINGS object, or an object containing
+ * parameters for a http request(e.g. for autocomplete).
  * 
- * @return cloned widgetObject
+ * @return settings object with applied parameters
  ******************************************************************************/
-function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject, finalParams) {
+function cfw_dashboard_parameters_applyToFields(object, widgetType, finalParams) {
 
 	//###############################################################################
 	//############################ IMPORTANT ########################################
@@ -633,90 +636,166 @@ function cfw_dashboard_parameters_applyToWidgetSettings(widgetObject, finalParam
 // LABEL: "environment"
 // WIDGET_TYPE: "emp_prometheus_range_chart"
 	
-	widgetType = widgetObject.TYPE;
-	widgetJsonSettings = _.cloneDeep(widgetObject.JSON_SETTINGS);
+	var settingsString = JSON.stringify(object);
 	
+	console.log("settings before substitute	: "+settingsString);
+	//=============================================
+	// Handle SUBSTITUTE PARAMS
+	//=============================================
+	var globalOverrideParams = [];
 	for(var index in finalParams){
-		var currentParam = finalParams[index];
-		var currentSettingName = currentParam.LABEL;
-		var paramValue = currentParam.VALUE;
-
-		//console.log('=========================================');
-		//console.log('widgetJsonSettings[currentSettingName]: '+widgetJsonSettings[currentSettingName]);
-		//console.log('currentSettingName: '+currentSettingName);
-		//console.log('settingsValue: '+widgetJsonSettings[currentSettingName]);
-		//console.log('paramValue: '+paramValue);
-
+		let currentParam = finalParams[index];
+		let paramMode = currentParam.MODE;
+		let currentSettingName = currentParam.LABEL;
+		
 		// ----------------------------------------
-		// Handle General Params
-		if(CFW.utils.isNullOrEmpty(currentParam.WIDGET_TYPE)){
-					// -------------------------------------
-					// Replace Regular Parameters
-					for(var key in widgetJsonSettings){
-						//console.log('>> settingName: '+key);
-						//console.log('>> oldsettingValue: '+widgetJsonSettings[key]);
-						var oldSettingsValue = widgetJsonSettings[key];
-						 if (typeof oldSettingsValue == "string"){
-							widgetJsonSettings[key] = 
-								oldSettingsValue.replaceAll('$'+currentParam.NAME+'$', paramValue);
-							//console.log('applyToWidgetSettings-A-string: '+widgetJsonSettings[key]);
-						}else if (currentParam.PARAM_TYPE == "BOOLEAN" 
-							&& typeof oldSettingsValue == "boolean"
-							&& oldSettingsValue == ('$'+currentParam.NAME+'$') ){
-							widgetJsonSettings[key] = paramValue;
-							//console.log('applyToWidgetSettings-A-boolean: '+widgetJsonSettings[key]);
-							
-						}else{
-							//console.log('>>>>> applyToWidgetSettings-A-missed: '+key);
-							//console.log('>>>>> applyToWidgetSettings-A-missedvalue: '+widgetJsonSettings[key]);
-						}	
-					}
-		}else {
+		// Handle Global Params
+		if(currentParam.MODE === "MODE_GLOBAL_OVERRIDE"
+		&& (widgetType == null || currentParam.WIDGET_TYPE === widgetType) ){
+			globalOverrideParams.push(currentParam)
+			continue;
+		}
+		
+		// ----------------------------------------
+		// Substitute Params
+		let stringifiedValue = JSON.stringify(currentParam.VALUE);
+		
+		// remove
+		if (typeof currentParam.VALUE == "string"){
+			// reomve quotes
+			stringifiedValue = stringifiedValue.substring(1, stringifiedValue.length-1)
+		}
+		
+		settingsString = settingsString.replaceAll('$'+currentParam.NAME+'$', stringifiedValue);
+		
+	}
+	
+	console.log("settings after substitute	: "+settingsString);
+	
+	//=============================================
+	// Handle GLOBAL OVERRIDE PARAMS
+	//=============================================
+	var newSettingsObject = JSON.parse(settingsString);
+	
+	for(var index in globalOverrideParams){
+		let currentParam = globalOverrideParams[index];
+		let paramValue = currentParam.VALUE;
+		let currentSettingName = currentParam.LABEL;
+		
+		switch(currentParam.PARAM_TYPE){
+			case 'TAGS_SELECTOR':
+				if(typeof paramValue == 'object'){
+					newSettingsObject[currentSettingName] = paramValue;
+				}else{
+					newSettingsObject[currentSettingName] = JSON.parse(paramValue);
+				}
+				break;
+			case 'BOOLEAN':  
+				paramValue = paramValue.toLowerCase().trim();
+				switch(paramValue){
+		        	case "true": case "yes": case "1": newSettingsObject[currentSettingName] = true; break;
+		        	case "false": case "no": case "0": newSettingsObject[currentSettingName] = false; break;
+		        	default: newSettingsObject[currentSettingName] = Boolean(paramValue); break;
+				}
+				break;
 			
-			// -------------------------------------
-			// Replace Widget Settings Parameters
-			var oldSettingsValue = widgetJsonSettings[currentSettingName];
-			var mode = currentParam.MODE;
-			switch(currentParam.PARAM_TYPE){
-				case 'TAGS_SELECTOR':
-					if(typeof paramValue == 'object'){
-						widgetJsonSettings[currentSettingName] = paramValue;
-					}else{
-						widgetJsonSettings[currentSettingName] = JSON.parse(paramValue);
-					}
-					break;
-				case 'BOOLEAN':  
-					paramValue = paramValue.toLowerCase().trim();
-					switch(paramValue){
-			        	case "true": case "yes": case "1": widgetJsonSettings[currentSettingName] = true; break;
-			        	case "false": case "no": case "0": widgetJsonSettings[currentSettingName] = false; break;
-			        	default: widgetJsonSettings[currentSettingName] = Boolean(paramValue); break;
-					}
-					break;
-				case 'NUMBER':
-					// objects, numbers etc...
-					widgetJsonSettings[currentSettingName] = paramValue;
-					//console.log('NUMBER: '+widgetJsonSettings[currentSettingName]);
-				
-				// TEXT, TEXTAREA, PASSWORD, EMAIL, SELECT, LIST
-				default:
-					if(mode == "MODE_SUBSTITUTE" && typeof oldSettingsValue == "string"){
-							widgetJsonSettings[currentSettingName] = oldSettingsValue.replaceAll('$'+currentParam.NAME+'$',paramValue);
-							//console.log('DEFAULT SUB: '+widgetJsonSettings[currentSettingName]);
-					}else{
-						// objects, numbers etc...
-						widgetJsonSettings[currentSettingName] = paramValue;
-						//console.log('DEFAULT OTHER: '+widgetJsonSettings[currentSettingName]);
-					}
-					break;
-			}
+			// TEXT, NUMBER, TEXTAREA, PASSWORD, EMAIL, SELECT, LIST
+			default:
+				// objects, numbers etc...
+				newSettingsObject[currentSettingName] = paramValue;
+				//console.log('DEFAULT OTHER: '+widgetJsonSettings[currentSettingName]);
+				break;
 		}
 	}
 	
-	var clone = _.cloneDeep(widgetObject);
-	clone.JSON_SETTINGS = widgetJsonSettings;
+	console.log("settings after global		: "+JSON.stringify(newSettingsObject));
+
+	return newSettingsObject;
 	
-	return clone;
+	//widgetType = widgetObject.TYPE;
+//	widgetJsonSettings = _.cloneDeep(widgetObject.JSON_SETTINGS);
+//	
+//	for(var index in finalParams){
+//		var currentParam = finalParams[index];
+//		var currentSettingName = currentParam.LABEL;
+//		var paramValue = currentParam.VALUE;
+//
+//		//console.log('=========================================');
+//		//console.log('widgetJsonSettings[currentSettingName]: '+widgetJsonSettings[currentSettingName]);
+//		//console.log('currentSettingName: '+currentSettingName);
+//		//console.log('settingsValue: '+widgetJsonSettings[currentSettingName]);
+//		//console.log('paramValue: '+paramValue);
+//
+//		// ----------------------------------------
+//		// Handle General Params
+//		if(CFW.utils.isNullOrEmpty(currentParam.WIDGET_TYPE)){
+//					// -------------------------------------
+//					// Replace Regular Parameters
+//					for(var key in widgetJsonSettings){
+//						//console.log('>> settingName: '+key);
+//						//console.log('>> oldsettingValue: '+widgetJsonSettings[key]);
+//						var oldSettingsValue = widgetJsonSettings[key];
+//						 if (typeof oldSettingsValue == "string"){
+//							widgetJsonSettings[key] = 
+//								oldSettingsValue.replaceAll('$'+currentParam.NAME+'$', paramValue);
+//							//console.log('applyToWidgetSettings-A-string: '+widgetJsonSettings[key]);
+//						}else if (currentParam.PARAM_TYPE == "BOOLEAN" 
+//							&& typeof oldSettingsValue == "boolean"
+//							&& oldSettingsValue == ('$'+currentParam.NAME+'$') ){
+//							widgetJsonSettings[key] = paramValue;
+//							//console.log('applyToWidgetSettings-A-boolean: '+widgetJsonSettings[key]);
+//							
+//						}else{
+//							//console.log('>>>>> applyToWidgetSettings-A-missed: '+key);
+//							//console.log('>>>>> applyToWidgetSettings-A-missedvalue: '+widgetJsonSettings[key]);
+//						}	
+//					}
+//		}else {
+//			
+//			// -------------------------------------
+//			// Replace Widget Settings Parameters
+//			var oldSettingsValue = widgetJsonSettings[currentSettingName];
+//			var mode = currentParam.MODE;
+//			switch(currentParam.PARAM_TYPE){
+//				case 'TAGS_SELECTOR':
+//					if(typeof paramValue == 'object'){
+//						widgetJsonSettings[currentSettingName] = paramValue;
+//					}else{
+//						widgetJsonSettings[currentSettingName] = JSON.parse(paramValue);
+//					}
+//					break;
+//				case 'BOOLEAN':  
+//					paramValue = paramValue.toLowerCase().trim();
+//					switch(paramValue){
+//			        	case "true": case "yes": case "1": widgetJsonSettings[currentSettingName] = true; break;
+//			        	case "false": case "no": case "0": widgetJsonSettings[currentSettingName] = false; break;
+//			        	default: widgetJsonSettings[currentSettingName] = Boolean(paramValue); break;
+//					}
+//					break;
+//				case 'NUMBER':
+//					// objects, numbers etc...
+//					widgetJsonSettings[currentSettingName] = paramValue;
+//					//console.log('NUMBER: '+widgetJsonSettings[currentSettingName]);
+//				
+//				// TEXT, TEXTAREA, PASSWORD, EMAIL, SELECT, LIST
+//				default:
+//					if(mode == "MODE_SUBSTITUTE" && typeof oldSettingsValue == "string"){
+//							widgetJsonSettings[currentSettingName] = oldSettingsValue.replaceAll('$'+currentParam.NAME+'$',paramValue);
+//							//console.log('DEFAULT SUB: '+widgetJsonSettings[currentSettingName]);
+//					}else{
+//						// objects, numbers etc...
+//						widgetJsonSettings[currentSettingName] = paramValue;
+//						//console.log('DEFAULT OTHER: '+widgetJsonSettings[currentSettingName]);
+//					}
+//					break;
+//			}
+//		}
+//	}
+//	
+//	var clone = _.cloneDeep(widgetObject);
+//	clone.JSON_SETTINGS = widgetJsonSettings;
+//	
+//	return clone;
 }
 
 /*******************************************************************************
@@ -748,7 +827,7 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement, triggerRed
 	
 	var paramField = $(paramElement);
 	var paramValue = paramField.val();
-	var paramForms = $('.cfw-parameter-widget-marker form');
+	var paramForms = $('.cfw-parameter-widget-parent form');
 	
 	var mergedParams = {}; 
 	paramForms.each(function(){
@@ -759,7 +838,7 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement, triggerRed
 				CFW.http.setURLParam(key, userParamsForWidget[key]);
 			}
 		}
-		mergedParams = Object.assign({}, mergedParams, userParamsForWidget); 
+		Object.assign(mergedParams, userParamsForWidget); 
 	});
 	
 	var storekey = cfw_dashboard_parameters_getViewerParamsStoreKey();
@@ -1024,6 +1103,9 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	var compositeDiv = $('<div id="editWidgetComposite">');
 	compositeDiv.append('<p><strong>Widget:</strong>&nbsp;'+widgetDef.menulabel+'</p>');
 	compositeDiv.append('<p><strong>Description:</strong>&nbsp;'+widgetDef.description+'</p>');
+	
+	//used for autocomplete parameter substitution
+	compositeDiv.append('<div id="edited-widget-type" class="d-none">'+widgetObject.TYPE+'</div>');
 		
 	// ----------------------------------
 	// Create Pill Navigation
@@ -1556,71 +1638,77 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 	
 	if(widgetDefinition != null){
 		
+		// ---------------------------------------
+		// Apply Parameters Placeholder
 		var finalParams = cfw_dashboard_parameters_getFinalParams();
-		widgetCloneParameterized = cfw_dashboard_parameters_applyToWidgetSettings(originalWidgetObject, finalParams);
+		let parameterizedSettings = cfw_dashboard_parameters_applyToFields(originalWidgetObject.JSON_SETTINGS, originalWidgetObject.TYPE, finalParams);
+		let widgetCloneParameterized = _.cloneDeep(originalWidgetObject);
+		widgetCloneParameterized.JSON_SETTINGS = parameterizedSettings;
 		
+		// ---------------------------------------
+		// Create Instance
 		try{
-		// ---------------------------------------
-		// Add Placeholder
-		cfw_dashboard_widget_createLoadingPlaceholder(originalWidgetObject, doAutoposition);
-		
-		//console.log('========= Original ==========');
-		//console.log(originalWidgetObject);
-		//console.log('========= Clone ==========');
-		//console.log(widgetCloneParameterized);
-
-		// ---------------------------------------
-		// Create Instance by Widget Definition
-		widgetDefinition.createWidgetInstance(widgetCloneParameterized, finalParams,
-			function(widgetAdjustedByWidgetDef, widgetContent){
-				
-			//console.log('========= Adjusted ==========');
-			//console.log(widgetAdjustedByWidgetDef);
+			// ---------------------------------------
+			// Add Placeholder
+			cfw_dashboard_widget_createLoadingPlaceholder(widgetCloneParameterized, doAutoposition);
 			
-				// ---------------------------------------
-				// Remove Placeholder
-				var placeholderWidget = $('#'+widgetAdjustedByWidgetDef.guid);
-				cfw_dashboard_widget_removeFromGrid(placeholderWidget);
+			//console.log('========= Original ==========');
+			//console.log(originalWidgetObject);
+			//console.log('========= Clone ==========');
+			//console.log(widgetCloneParameterized);
+	
+			// ---------------------------------------
+			// Create Instance by Widget Definition
+			widgetDefinition.createWidgetInstance(widgetCloneParameterized, finalParams,
+				function(widgetAdjustedByWidgetDef, widgetContent){
+					
+				//console.log('========= Adjusted ==========');
+				//console.log(widgetAdjustedByWidgetDef);
 				
-				// ---------------------------------------
-				// Add Widget
-				widgetAdjustedByWidgetDef.content = widgetContent;
-				var widgetInstance = cfw_dashboard_widget_createHTMLElement(widgetAdjustedByWidgetDef);
-
-				var grid = $('.grid-stack').data('gridstack');
-
-			    grid.addWidget($(widgetInstance),
-			    		widgetAdjustedByWidgetDef.X, 
-			    		widgetAdjustedByWidgetDef.Y, 
-			    		widgetAdjustedByWidgetDef.WIDTH, 
-			    		widgetAdjustedByWidgetDef.HEIGHT, 
-			    		doAutoposition);
-			   
-			    // ----------------------------
-			    // Get Widget with applied default values
-			    widgetAdjustedByWidgetDef = $(widgetInstance).data('widgetObject');
-			    
-			    // ----------------------------
-			    // Check Edit Mode
-			    if(!CFW_DASHBOARD_EDIT_MODE){
-			    	grid.movable('#'+widgetAdjustedByWidgetDef.guid, false);
-			    	grid.resizable('#'+widgetAdjustedByWidgetDef.guid, false);
-			    }
-			    // ----------------------------
-			    // Update Data of Original
-			    originalWidgetObject.WIDTH	= widgetInstance.attr("data-gs-width");
-			    originalWidgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
-			    originalWidgetObject.X		= widgetInstance.attr("data-gs-x");
-			    originalWidgetObject.Y		= widgetInstance.attr("data-gs-y");
-			    $(widgetInstance).data('widgetObject', originalWidgetObject);
-			    
-			    cfw_dashboard_widget_save_state(originalWidgetObject);
-			    
-			    if(callback != null){
-			    	callback(originalWidgetObject);
-			    }
-			}
-		);
+					// ---------------------------------------
+					// Remove Placeholder
+					var placeholderWidget = $('#'+widgetAdjustedByWidgetDef.guid);
+					cfw_dashboard_widget_removeFromGrid(placeholderWidget);
+					
+					// ---------------------------------------
+					// Add Widget
+					widgetAdjustedByWidgetDef.content = widgetContent;
+					var widgetInstance = cfw_dashboard_widget_createHTMLElement(widgetAdjustedByWidgetDef);
+	
+					var grid = $('.grid-stack').data('gridstack');
+	
+				    grid.addWidget($(widgetInstance),
+				    		widgetAdjustedByWidgetDef.X, 
+				    		widgetAdjustedByWidgetDef.Y, 
+				    		widgetAdjustedByWidgetDef.WIDTH, 
+				    		widgetAdjustedByWidgetDef.HEIGHT, 
+				    		doAutoposition);
+				   
+				    // ----------------------------
+				    // Get Widget with applied default values
+				    widgetAdjustedByWidgetDef = $(widgetInstance).data('widgetObject');
+				    
+				    // ----------------------------
+				    // Check Edit Mode
+				    if(!CFW_DASHBOARD_EDIT_MODE){
+				    	grid.movable('#'+widgetAdjustedByWidgetDef.guid, false);
+				    	grid.resizable('#'+widgetAdjustedByWidgetDef.guid, false);
+				    }
+				    // ----------------------------
+				    // Update Data of Original
+				    originalWidgetObject.WIDTH	= widgetInstance.attr("data-gs-width");
+				    originalWidgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
+				    originalWidgetObject.X		= widgetInstance.attr("data-gs-x");
+				    originalWidgetObject.Y		= widgetInstance.attr("data-gs-y");
+				    $(widgetInstance).data('widgetObject', originalWidgetObject);
+				    
+				    cfw_dashboard_widget_save_state(originalWidgetObject);
+				    
+				    if(callback != null){
+				    	callback(originalWidgetObject);
+				    }
+				}
+			);
 		}catch(err){
 			CFW.ui.addToastDanger('An error occured while creating a widget instance: '+err.message);
 			console.log(err);
@@ -1827,13 +1915,77 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 		})
 	}
 	
-	// -----------------------------
-	// Add dashboardID to autocomplete requests
-	CFW.global.autcompleteParamEnhancerFunction = function(params){
-		params['cfw-dashboardid'] = CFW_DASHBOARD_URLPARAMS.id;
+	//--------------------------------------------
+	// Enhance Autocomplete Requests
+	
+	cfw_autocomplete_setParamEnhancer( function(inputField, requestAttributes){
 		
-		//TODO replace custom parameter values in request params
-	};
+			console.log('START')
+			//---------------------------
+			// Add DashboardID
+			requestAttributes['cfw-dashboardid'] = CFW_DASHBOARD_URLPARAMS.id;
+			
+			//replace custom parameter values in request params
+			
+			
+			//------------------------------------------
+			// Parameterize Edit Widget Modal Request
+			if($('#editWidgetComposite').is(":visible")){
+				let widgetType = $('#edited-widget-type').val();
+				
+				let dashboardParams = cfw_dashboard_parameters_getFinalParams();
+				let parameterizedRequestAttributes = cfw_dashboard_parameters_applyToFields(requestAttributes, widgetType, dashboardParams);
+				
+				Object.assign(requestAttributes, parameterizedRequestAttributes);
+				
+				return;
+			}
+			
+			//------------------------------------------
+			// Parameterize Parameter Widget Request
+			// TODO
+			var form = inputField.closest('form');
+			
+			if(form.attr('id').startsWith('cfwWidgetParameterForm')){
+				
+				console.log("do params");
+				
+				// Applied Param values from dashboard
+				dashboardParams = cfw_dashboard_parameters_getFinalParams();
+				for(index in dashboardParams){
+					let param = dashboardParams[index];
+					
+					requestAttributes[param.LABEL] = param.VALUE;
+					
+				}
+				
+				// Current (unapplied) values from widget
+				
+				var allFields = form.find('.cfw-widget-parameter-marker');
+				var requestSaveValues = cfw_format_formToParams(form);
+				
+				allFields.each(function(){
+					var currentParamField = $(this);
+					var name = currentParamField.attr('name');
+					var value = requestSaveValues[name];
+					console.log('name:'+name);
+					console.log('value:'+value);
+					var widgettype = inputField.data("widgettype");
+					var settingslabel = inputField.data("settingslabel");
+					
+					if(!CFW.utils.isNullOrEmpty(widgettype)){
+						requestAttributes[param.LABEL] = value;
+					}
+					
+				});
+				
+				
+				
+			}
+			
+			
+		}
+	);
 	
 	// -----------------------------
 	// Setup Gridstack

@@ -963,9 +963,9 @@ function cfw_updateTimeField(fieldID){
  * to the server.
  * You can add more parameters to the paramObject provided to the callback function
  * 
- * @param functionToEnhanceParams callback function, will get an object that can be enhanced with more parameters
+ * @param functionToEnhanceParams(inputField, parmObject) callback function, will get an object that can be enhanced with more parameters
  *************************************************************************************/
-function cfw_autocomplete_addParamEnhancer(functionToEnhanceParams){
+function cfw_autocomplete_setParamEnhancer(functionToEnhanceParams){
 	CFW.global.autcompleteParamEnhancerFunction = functionToEnhanceParams;
 }
 /**************************************************************************************
@@ -1060,7 +1060,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 						
 						//function to customize the autocomplete
 						if(CFW.global.autcompleteParamEnhancerFunction != null){
-							CFW.global.autcompleteParamEnhancerFunction(params);
+							CFW.global.autcompleteParamEnhancerFunction($input, params);
 						}
 						
 						cfw_http_postJSON('/cfw/autocomplete', params, 
