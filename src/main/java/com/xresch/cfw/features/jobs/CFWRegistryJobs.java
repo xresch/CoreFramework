@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.quartz.JobDataMap;
@@ -19,6 +19,8 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWSchedule;
@@ -57,26 +59,51 @@ public class CFWRegistryJobs {
 	}
 	
 	
+//	/***********************************************************************
+//	 * Get a list of all task names that the current user has access to.
+//	 * 
+//	 ***********************************************************************/
+//	public static Set<String> getTaskNamesForUI()  {
+//		Set<String> taskNames = new HashSet<>();
+//		
+//		for(CFWJobTask task : getAllTaskInstances()) {
+//			if(task.createableFromUI()
+//			&& (
+//					task.hasPermission(CFW.Context.Request.getUser())
+//					|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)
+//				)
+//			) {
+//				taskNames.add(task.uniqueName());
+//			}
+//		}
+//		return taskNames;
+//	}
+
 	/***********************************************************************
-	 * Get a list of all task names that the current user has access to.
+	 * Get a list of all executor instances.
 	 * 
 	 ***********************************************************************/
-	public static Set<String> getTaskNamesForUI()  {
-		Set<String> taskNames = new HashSet<>();
+	public static JsonArray getTasksForUserAsJson()  {
+		JsonArray taskArray = new JsonArray();
 		
-		for(CFWJobTask task : getAllTaskInstances()) {
-			if(task.createableFromUI()
-			&& (
-					task.hasPermission(CFW.Context.Request.getUser())
-					|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)
-				)
-			) {
-				taskNames.add(task.uniqueName());
+		for(CFWJobTask current : getAllTaskInstances()) {
+			if(current.createableFromUI()
+					&& (
+							current.hasPermission(CFW.Context.Request.getUser())
+							|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)
+						)
+					) {
+				JsonObject object = new JsonObject();
+				object.addProperty("NAME", current.uniqueName());
+				object.addProperty("DESCRIPTION", current.taskDescription());
+				
+				taskArray.add(object);
 			}
 		}
-		return taskNames;
+		
+		return taskArray;
 	}
-	
+		
 	/***********************************************************************
 	 * Get a list of all executor instances.
 	 * 
@@ -98,6 +125,7 @@ public class CFWRegistryJobs {
 		}
 		return instanceArray;
 	}
+	
 	
 	/***********************************************************************
 	 * Get a new instance for the specified task.

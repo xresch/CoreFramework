@@ -102,6 +102,17 @@ public class ServletJobs extends HttpServlet
 				}
 				break;	
 			
+			case "fetch": 			
+				switch(item.toLowerCase()) {
+
+					case "tasks": 		fetchTasks(jsonResponse);
+										break;  
+										
+					default: 			CFW.Messages.itemNotSupported(item);
+										break;
+				}
+				break;	
+				
 			case "delete": 			
 				switch(item.toLowerCase()) {
 
@@ -158,6 +169,26 @@ public class ServletJobs extends HttpServlet
 	/******************************************************************
 	 *
 	 ******************************************************************/
+	private void fetchTasks(JSONResponse jsonResponse) {
+		
+		// Do the check here only, allows to create jobs
+		// programmatically using CFWDBJobs, without the user
+		// needing rights for job feature
+		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)
+		|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)) {
+			
+			jsonResponse.setPayLoad(CFW.Registry.Jobs.getTasksForUserAsJson());
+			
+			return;
+		}else {
+			CFW.Messages.noPermission();
+		}
+		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	private void deleteCFWJob(JSONResponse jsonResponse, String ID) {
 		
 		// Do the check here only, allows to create jobs
@@ -178,7 +209,7 @@ public class ServletJobs extends HttpServlet
 		}
 		
 	}
-	
+		
 	/******************************************************************
 	 *
 	 ******************************************************************/
@@ -202,16 +233,16 @@ public class ServletJobs extends HttpServlet
 		
 		//-------------------------------------
 		// Select Task Form
-		CFWForm selectJobTaskForm = 
-				new CFWObject()
-				.addField(
-					CFWField.newString(FormFieldType.SELECT, "TASK")
-						.setDescription("Select the Task which should be executed by the job.")
-						.setOptions(CFWRegistryJobs.getTaskNamesForUI())
-				)
-				.toForm("cfwSelectJobTaskForm", "Select Job Task");
-		
-		selectJobTaskForm.onclick("cfwjobs_add_createJob(this);");
+//		CFWForm selectJobTaskForm = 
+//				new CFWObject()
+//				.addField(
+//					CFWField.newString(FormFieldType.SELECT, "TASK")
+//						.setDescription("Select the Task which should be executed by the job.")
+//						.setOptions(CFWRegistryJobs.getTaskNamesForUI())
+//				)
+//				.toForm("cfwSelectJobTaskForm", "Select Job Task");
+//		
+//		selectJobTaskForm.onclick("cfwjobs_add_createJob(this);");
 	
 		//-------------------------------------
 		// Create Job Form

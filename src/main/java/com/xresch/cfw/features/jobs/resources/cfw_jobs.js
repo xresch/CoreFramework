@@ -36,25 +36,61 @@ function cfwjobs_createTabs(){
  ******************************************************************/
 function cfwjobs_add_selectTask(){
 	
-	var html = $('<div>');	
+	params = {action: "fetch", item: "tasks"};
+	CFW.http.getJSON(CFWJOBS_URL, params, 
+		function(data) {
+			if(data.success){
+				
+				//-------------------------
+				// Sort by Name
+				var sortedTasks = _.sortBy(data.payload, ['NAME']);
+				
+				//-------------------------
+				// Select Button
+				var actionButtons = [];
+				actionButtons.push(
+					function (record, id){
+						return '<button class="btn btn-success btn-sm" alt="Add" title="Add" '
+								+'onclick="cfwjobs_add_createJob(\''+record.NAME+'\');">'
+								+ '<i class="fas fa-plus-circle"></i>'
+								+ '</button>';
 
-	CFW.http.getForm('cfwSelectJobTaskForm', html);
+					});
+				
+
+				//-----------------------------------
+				// Render Data
+				var rendererSettings = {
+						data: sortedTasks,
+					 	idfield: 'NAME',
+					 	visiblefields: ['NAME', 'DESCRIPTION'],
+
+						actions: actionButtons,
+
+						rendererSettings: {
+							table: {narrow: true, filterable: true}
+						},
+					};
+						
+				var result = CFW.render.getRenderer('table').render(rendererSettings);	
+				
+				
+				CFW.ui.showModalMedium(
+						"Select Task", 
+						result, 
+						"CFW.cache.clearCache(); cfwjobs_draw(CFWJOBS_LAST_OPTIONS)"
+					);
+			}
+	});
 	
-	CFW.ui.showModalMedium(
-			"Select Task", 
-			html, 
-			"CFW.cache.clearCache(); cfwjobs_draw(CFWJOBS_LAST_OPTIONS)"
-		);
+
 	
 }
 
 /******************************************************************
  * Create Role
  ******************************************************************/
-function cfwjobs_add_createJob(submitButton){
-	
-	var form = $(submitButton).closest('form');
-	var taskname = form.find('#TASK').val();
+function cfwjobs_add_createJob(taskname){
 	
 	var createJobDiv = $('<div id="cfw-create-job">');	
 

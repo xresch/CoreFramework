@@ -23,7 +23,6 @@ Potential TODOs
   - Selected Space in SessionData
   - CFWSQL partial query, select entries for user
 
-- Jobs: Task Selection: Make table with Task UniqueName and description 
 - Jobs: Log Job Executions to DB, plus age out.
 - Jobs: Define max number of instances.
 
@@ -118,6 +117,7 @@ DONE
 - Menu Title: Added configuration option to prepend menu title to window title
 - Tasks: Added Task to test eMail setup
 - Jobs: Added Utilities to do Alerting.
+- Jobs: Task Selection shows now a table with the task description.
 - Properties: added config "cfw_application_url" to be able to add links to mails.
 
 ------- v4.0.0 -------
