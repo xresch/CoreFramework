@@ -112,6 +112,8 @@ DONE
 - Mailing: Added Class CFWMailBuilder for creating eMails.
 - Dashboard: Security Improvement - Use data from server side instead from client side.
 - Dashboard Widgets: Added caching for widget data.
+- Dashboard: Parameters working better, also applied in autocomplete of edit widget forms and parameter widget.
+- Authentication - LDAP: Load user details from LDAP if the do not exists in the database.
 - Reflection: Replaced with ServiceLoader as it is more stable between different Java versions
 - CFWField: Added FormFieldType.CHECKBOXES
 - Menu Title: Added configuration option to prepend menu title to window title

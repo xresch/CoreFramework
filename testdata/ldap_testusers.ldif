@@ -1,0 +1,116 @@
+version: 1
+
+dn: ou=services,dc=security,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: services
+
+dn: ou=users,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: users
+
+dn: uid=ldap,ou=services,dc=security,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: uidObject
+objectClass: krb5KDCEntry
+objectClass: krb5Principal
+objectClass: top
+krb5KeyVersionNumber: 1
+krb5PrincipalName: ldap/example.net@EXAMPLE.COM
+ou: TGT
+uid: ldap
+krb5Key:: MCHvv70DAgEQ77+9GgQYwqTvv70Q77+977+90KHvv70Q77+9Pe+/vTQ+77+9Khrvv7
+ 12Ye+/vU8N
+krb5Key:: MBnvv70DAgEX77+9EgQQZl/vv70DL1vvv71g77+9ZBHvv73vv70RRQ==
+krb5Key:: MBnvv70DAgER77+9EgQQ77+977+9BGHvv71J77+9SO+/vWN8Y++/vVEX77+9
+krb5Key:: MCnvv70DAgES77+9IgQg77+9Bh5vQu+/ve+/vWHvv711DWvvv73vv73vv73vv71LEO
+ +/vV7vv70M77+9Xe+/vRPvv73vv70877+9Be+/vQ==
+krb5Key:: MBHvv70DAgED77+9CgQI77+977+9aC9X77+9SUw=
+userPassword: {SHA512}vSsar3708Jvp9Szi2NWZZ02Bqp1qRCFpbcTZPdBhnWgs5WtNZKnvCX
+ dhztmeD2cmW192CF5bDufKRpayrW/isg==
+
+dn: uid=krbtgt,ou=services,dc=security,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: uidObject
+objectClass: krb5KDCEntry
+objectClass: krb5Principal
+objectClass: top
+krb5KeyVersionNumber: 0
+krb5PrincipalName: krbtgt/EXAMPLE.COM@EXAMPLE.COM
+ou: LDAP
+uid: krbtgt
+krb5Key:: MBHvv70DAgED77+9CgQI77+977+9Du+/vUPvv73vv70=
+krb5Key:: MCHvv70DAgEQ77+9GgQY77+9VO+/ve+/ve+/vXDvv71S77+9ZO+/ve+/vVdGdnw9WO
+ +/vUxoDe+/vRA=
+krb5Key:: MBnvv70DAgER77+9EgQQ77+977+977+9Ku+/vR7vv71vFSXvv73vv70Y77+9Aw==
+krb5Key:: MCnvv70DAgES77+9IgQgVu+/ve+/vStFae+/vdqMHGvvv70LDmDvv70ndu+/vVzvv7
+ 1HehlK77+916Dvv73vv71YVw==
+krb5Key:: MBnvv70DAgEX77+9EgQQ77+9xZ7JnO+/ve+/ve+/ve+/vSLvv73vv71j77+9H++/vQ
+ ==
+userPassword: {SSHA}ayk8Fa2YnpjOo0SOFR6PbH1vvfUImK+q1O1I/Q==
+
+dn: dc=security,dc=example,dc=com
+objectClass: domain
+objectClass: top
+dc: security
+
+dn: ou=users,dc=security,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: users
+
+dn: dc=example,dc=com
+objectclass: top
+objectclass: domain
+dc: example
+
+dn: cn=Test Test,ou=users,dc=example,dc=com
+objectClass: krb5Principal
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+cn: Test Test
+krb5PrincipalName: test
+sn: Test
+givenName: Test
+mail: test@blablub.com
+uid: test
+userPassword: {SHA512}7iaw3Ur350mqGo7jwQrpkj9hiYB3Lkc/iBml1JQODbJ6wYX4oOHV+E
+ +IvIh/1nsUNzLDBMxfqa2Ob1f1ACio/w==
+
+dn: cn=Testika Testonia,ou=users,dc=example,dc=com
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: top
+cn: Testika Testonia
+sn: Testonia
+givenName: Testika
+mail: t.testonia@blablub.com
+uid: testonia
+userPassword: {SHA512}w4TFCdq6l8zU25BI/+D5xMiSH9cnYqLC+UymV4a9kBUMmRI9KbebEa
+ nwHwGPwHfy+fgGoFXPC98F74xiDSwKxA==
+
+dn: uid=hnelson,ou=users,dc=security,dc=example,dc=com
+objectClass: organizationalPerson
+objectClass: person
+objectClass: inetOrgPerson
+objectClass: krb5KDCEntry
+objectClass: krb5Principal
+objectClass: top
+cn: Horatio Nelson
+krb5KeyVersionNumber: 0
+krb5PrincipalName: hnelson@EXAMPLE.COM
+sn: Nelson
+krb5Key:: MBHvv70DAgED77+9CgQI77+977+9E2Tvv71h77+9Ww==
+krb5Key:: MCHvv70DAgEQ77+9GgQYVwfvv70pUu+/vSwc77+977+9Q++/vT3vv73vv71e77+977
+ +977+9XT5KXiU=
+krb5Key:: MBnvv70DAgER77+9EgQQ77+9IUs477+977+977+9yqzvv71fNG1Be++/vQ==
+krb5Key:: MCnvv70DAgES77+9IgQgPTMx77+977+9R++/vSohUHfvv70VWO+/ve+/vTZQH++/ve
+ +/ve+/ve+/vQXvv73vv71n77+977+977+9Du+/vQ==
+krb5Key:: MBnvv70DAgEX77+9EgQQ77+977+977+9FGBs77+9KWd6RO+/vTU/77+9
+uid: hnelson
+userPassword: {SSHA}h87m4ZnAJm6PdH1kVqRl8rmRLCkvoWXX/hWk7A==
+

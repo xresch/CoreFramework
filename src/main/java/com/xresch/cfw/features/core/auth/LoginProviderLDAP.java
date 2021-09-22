@@ -10,6 +10,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.features.usermgmt.User;
@@ -20,9 +21,9 @@ import com.xresch.cfw.logging.CFWLog;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class LDAPLoginProvider implements LoginProviderInterface {
+public class LoginProviderLDAP implements LoginProviderInterface {
 
-	private static Logger logger = CFWLog.getLogger(LDAPLoginProvider.class.getName());
+	private static Logger logger = CFWLog.getLogger(LoginProviderLDAP.class.getName());
 	
 	@Override
 	public User checkCredentials(String username, String password) {
@@ -127,6 +128,33 @@ public class LDAPLoginProvider implements LoginProviderInterface {
 		    	//------------------------------
 		    	// Create User in DB if not exists
 		    	User user = LoginUtils.fetchUserCreateIfNotExists(username, emailString, firstnameString, lastnameString);
+		    	
+		    	//------------------------------
+		    	// Add user data from LDAP
+		    	boolean doUpdate = false;
+		    	
+		    	if(Strings.isNullOrEmpty(user.firstname()) 
+		    	&& !Strings.isNullOrEmpty(firstnameString) ) {
+		    		user.firstname(firstnameString);
+		    		doUpdate = true;
+		    	}
+		    	
+		    	if(Strings.isNullOrEmpty(user.lastname()) 
+		    	&& !Strings.isNullOrEmpty(lastnameString) ) {
+		    		user.lastname(lastnameString);
+		    		doUpdate = true;
+		    	}
+		    	
+		    	if(Strings.isNullOrEmpty(user.email()) 
+		    	&& !Strings.isNullOrEmpty(emailString) ) {
+		    		user.email(emailString);
+		    		doUpdate = true;
+		    	}
+		    	
+		    	if(doUpdate) {
+		    		user.update();
+		    	}
+		    	
 		    	return user;
 		    }else {
 		    	return null;

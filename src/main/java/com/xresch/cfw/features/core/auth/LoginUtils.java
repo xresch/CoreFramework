@@ -32,13 +32,13 @@ public class LoginUtils {
 		if(provider == null) {
 			switch(CFWProperties.AUTHENTICATION_METHOD.trim().toUpperCase()) {
 				
-				case "CSV": 	provider = new CSVLoginProvider();
+				case "CSV": 	provider = new LoginProviderCSV();
 					 			break;
 					 			
-				case "LDAP": 	provider = new LDAPLoginProvider();
+				case "LDAP": 	provider = new LoginProviderLDAP();
 									break;
 					
-				case "DB": 		provider = new DBLoginProvider();
+				case "DB": 		provider = new LoginProviderDatabase();
 					break;
 									
 				default:		throw new RuntimeException("Unknown authentication method'"+CFWProperties.AUTHENTICATION_METHOD+"', please review the config file.");
