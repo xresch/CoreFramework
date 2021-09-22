@@ -1710,7 +1710,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		while(parameters.hasMoreElements()) {
 			String key = parameters.nextElement();
 			
-			if(!key.equals(CFWForm.FORM_ID)) {
+			if(!key.equalsIgnoreCase(CFWForm.FORM_ID)) {
 				if (fields.containsKey(key)) {
 					CFWField field = fields.get(key);
 					

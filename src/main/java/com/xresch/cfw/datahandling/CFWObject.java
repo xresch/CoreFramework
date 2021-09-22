@@ -65,20 +65,6 @@ public class CFWObject {
 		return CFWField.mapAndValidateParamsToFields(request, fields);
 	}
 	
-	/*************************************************************************
-	 * Returns the summarized result of the last validations of the CFWFields.
-	 * Returns false if the field was not validated.
-	 * 
-	 * @return true if all validators returned true, false otherwise.
-	 *************************************************************************/ 
-	public boolean lastValidationResult() {
-		
-		boolean success = true;
-		for(CFWField field : fields.values()) {
-			success &= field.lastValidationResult();
-		}
-		return success;
-	}
 
 	/****************************************************************
 	 * Maps the JSON fields to this objects fields by name.
@@ -119,7 +105,36 @@ public class CFWObject {
 		return CFWField.mapJobExecutionContextToFields(context, fields);
 	}
 	
+	/*************************************************************************
+	 * Validates all fields and returns a summarized result of all validation.
+	 * 
+	 * @return true if all fields are valid, false otherwise.
+	 *************************************************************************/ 
+	public boolean validateAllFields() {
+		
+		boolean isValid = true;
+		for(CFWField field : this.getFields().values()) {
+			isValid &= field.validate();
+		}
+		
+		return isValid;
+	}
 	
+	/*************************************************************************
+	 * Returns the summarized result of the last validations of the CFWFields.
+	 * Returns false if a field was not validated.
+	 * 
+	 * @return true if all validators returned true, false otherwise.
+	 *************************************************************************/ 
+	public boolean lastValidationResult() {
+		
+		boolean success = true;
+		for(CFWField field : fields.values()) {
+			success &= field.lastValidationResult();
+		}
+		return success;
+	}
+
 	
 	/****************************************************************
 	 * 

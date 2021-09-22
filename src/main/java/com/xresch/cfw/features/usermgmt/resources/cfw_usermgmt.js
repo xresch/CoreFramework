@@ -739,7 +739,7 @@ function cfw_usermgmt_printGroupList(data){
 			//Delete Button
 			if(current.IS_DELETABLE){
 				htmlString += '<td><button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the group?\', \'Delete\', \'cfw_usermgmt_delete(\\\'roles\\\','+current.PK_ID+');\')">'
+					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the group?\', \'Delete\', \'cfw_usermgmt_delete(\\\'groups\\\','+current.PK_ID+');\')">'
 					+ '<i class="fa fa-trash"></i>'
 					+ '</button></td>';
 			}else{

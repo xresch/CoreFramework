@@ -12,6 +12,7 @@ import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
+import com.xresch.cfw.features.api.APIDefinitionCreate;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.LengthValidator;
@@ -47,7 +48,8 @@ public class Role extends CFWObject {
 			.setColumnDefinition("VARCHAR(32)")
 			.setDescription("The catogery of the role, either 'user' or 'space'.")
 			.apiFieldType(FormFieldType.SELECT)
-			.setOptions(new String[] {FeatureUserManagement.CATEGORY_USER, "space"})
+			.setOptions(new String[] {FeatureUserManagement.CATEGORY_USER})
+			//.setOptions(new String[] {FeatureUserManagement.CATEGORY_USER, "space"})
 			.addValidator(new LengthValidator(-1, 32));
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, RoleFields.NAME.toString())
@@ -240,17 +242,7 @@ public class Role extends CFWObject {
 	public ArrayList<APIDefinition> getAPIDefinitions() {
 		ArrayList<APIDefinition> apis = new ArrayList<APIDefinition>();
 		
-		
-		String[] inputFields = 
-				new String[] {
-						RoleFields.PK_ID.toString(), 
-						RoleFields.CATEGORY.toString(),
-						RoleFields.NAME.toString(),
-						RoleFields.IS_DELETABLE.toString(),
-						RoleFields.IS_RENAMABLE.toString(),	
-						RoleFields.IS_GROUP.toString(),	
-				};
-		
+				
 		String[] outputFields = 
 				new String[] {
 						RoleFields.PK_ID.toString(), 
@@ -263,17 +255,50 @@ public class Role extends CFWObject {
 				};
 
 		//----------------------------------
-		// fetchJSON
+		// Fetch
+		
+		String[] inputFieldsFetch = 
+				new String[] {
+						RoleFields.PK_ID.toString(), 
+						RoleFields.CATEGORY.toString(),
+						RoleFields.NAME.toString(),
+						RoleFields.IS_DELETABLE.toString(),
+						RoleFields.IS_RENAMABLE.toString(),	
+						RoleFields.IS_GROUP.toString(),	
+				};
+		
 		APIDefinitionFetch fetchDataAPI = 
 				new APIDefinitionFetch(
 						this.getClass(),
 						this.getClass().getSimpleName(),
 						"fetchData",
-						inputFields,
+						inputFieldsFetch,
 						outputFields
 				);
 		
 		apis.add(fetchDataAPI);
+		
+		//----------------------------------
+		// Create
+		
+		String[] inputFieldsCreate = 
+				new String[] {
+						RoleFields.CATEGORY.toString(),
+						RoleFields.NAME.toString(),
+						RoleFields.DESCRIPTION.toString(),
+						RoleFields.IS_GROUP.toString(),	
+				};
+		APIDefinitionCreate createAPI = 
+				new APIDefinitionCreate(
+						this.getClass(),
+						this.getClass().getSimpleName(),
+						"create",
+						inputFieldsCreate,
+						outputFields
+				);
+		
+		apis.add(createAPI);
+
 		
 		return apis;
 	}
