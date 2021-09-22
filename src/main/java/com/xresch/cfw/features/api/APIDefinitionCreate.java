@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -14,6 +15,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.PlaintextResponse;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -35,7 +37,7 @@ public class APIDefinitionCreate extends APIDefinition{
 		super(clazz, apiName, actionName, inputFieldnames, outputFieldnames);
 
 		this.setDescription("Standard API to create "+clazz.getSimpleName()+" data. The provided parameters will be used to create an insert statement."
-				+ "You will get an error message if something is missing.");
+				+ " You will get an error message if something is missing.");
 		
 		this.setRequestHandler(new APIRequestHandler() {
 			
@@ -85,13 +87,25 @@ public class APIDefinitionCreate extends APIDefinition{
 				//----------------------------------
 				// Validate
 				if(!object.validateAllFields()) {
-					json.setSuccess(false);
+					for(CFWField field : object.getFields().values()) {
+						json.setSuccess(false);
+						
+						if(!field.lastValidationResult()) {
+							ArrayList<String> messageArray = field.getInvalidationMessages();
+							if(messageArray != null) {
+								for(String message : messageArray) {
+									CFW.Context.Request.addAlertMessage(MessageType.ERROR, message);
+								}
+							}
+						}
+						
+					}
 					return;
 				}
 				
 				
 				//----------------------------------
-				// Intert into database
+				// Intsert into database
 				Integer id = object.insertGetPrimaryKey();
 				if(id == null) {
 					json.setSuccess(false);

@@ -1019,6 +1019,17 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	/*************************************************************************
+	 * Returns the messages for invalid fields of the last validation.
+	 * 
+	 * @return list of messages
+	 *************************************************************************/ 
+	public ArrayList<String> getInvalidationMessages() {
+		return invalidMessages;
+	}
+	
+	
+	
+	/*************************************************************************
 	 * 
 	 *************************************************************************/ 
 	protected void addInvalidMessage(String message) {

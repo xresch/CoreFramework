@@ -16,8 +16,15 @@ IMPORTANT FIXES
 
 Potential TODOs
 ===============
+
 - Features: Query
+
+- Features: Automator: Just Actions that can be triggered from the UI.
+  - Create Default Dashboards for xyz
+  - Send Mails
+
 - Features: Spaces
+
   - HTML Selector
   - SpacePermissions in SessionData
   - Selected Space in SessionData
@@ -121,6 +128,7 @@ DONE
 - Jobs: Added Utilities to do Alerting.
 - Jobs: Task Selection shows now a table with the task description.
 - Properties: added config "cfw_application_url" to be able to add links to mails.
+- API: Added Default Create API
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB

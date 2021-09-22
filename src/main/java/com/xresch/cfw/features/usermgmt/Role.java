@@ -46,7 +46,7 @@ public class Role extends CFWObject {
 	
 	private CFWField<String> category = CFWField.newString(FormFieldType.NONE, RoleFields.CATEGORY.toString())
 			.setColumnDefinition("VARCHAR(32)")
-			.setDescription("The catogery of the role, either 'user' or 'space'.")
+			.setDescription("The category of the role, either 'user' or 'space'.")
 			.apiFieldType(FormFieldType.SELECT)
 			.setOptions(new String[] {FeatureUserManagement.CATEGORY_USER})
 			//.setOptions(new String[] {FeatureUserManagement.CATEGORY_USER, "space"})
