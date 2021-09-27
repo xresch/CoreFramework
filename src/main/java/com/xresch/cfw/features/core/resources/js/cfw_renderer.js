@@ -106,16 +106,16 @@ function cfw_renderer_csv(renderDef) {
 	// Print Records
 	for(let i = 0; i < renderDef.data.length; i++ ){
 		let currentRecord = renderDef.data[i];
-		let record = "";
+		let recordCSV = "";
 		for(var key in renderDef.visiblefields){
 			var fieldname = renderDef.visiblefields[key];
 			
+			console.log(currentRecord);
 			// do not use normal customized values as it might return html
 			var value = currentRecord[fieldname];
 			if(settings.csvcustomizers[fieldname] != undefined){
 				value = settings.csvcustomizers[fieldname](currentRecord, value);
 			}
-			
 			
 			if(value == null){
 				value = "";
@@ -131,11 +131,24 @@ function cfw_renderer_csv(renderDef) {
 				}
 			}
 			
-			record += '"' + value + '"' + settings.delimiter;
+			recordCSV += '"' + value + '"' + settings.delimiter;
 		}
 		// remove last semicolon
-		record = record.substring(0, record.length-1);
-		pre.append(record+"\r\n");
+		recordCSV = recordCSV.substring(0, recordCSV.length-1);
+		
+		//=====================================
+		// Create Colored span
+		let span = $('<span>');
+		span.html(recordCSV+'</span>\r\n')
+		if(renderDef.bgstylefield != null){
+			span.addClass('bg-'+currentRecord[renderDef.bgstylefield]);
+		}
+		
+		if(renderDef.textstylefield != null){
+			span.addClass('text-'+currentRecord[renderDef.textstylefield]);
+		}
+		
+		pre.append(span);
 	}
 
 	return pre;
