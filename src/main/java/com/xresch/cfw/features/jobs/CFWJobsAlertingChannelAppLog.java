@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import org.quartz.JobExecutionContext;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -25,13 +26,22 @@ public class CFWJobsAlertingChannelAppLog extends CFWJobsAlertingChannel {
 	@Override
 	public void sendAlerts(JobExecutionContext context, CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert, String subject, String content, String contentHTML) {
 				
-		new CFWLog(logger)
+		CFWLog logEvent = new CFWLog(logger)
 				.silent(true)
 				.custom("alertType", alertObject.getLastAlertType())
 				.custom("alertSubject", subject)
 				.custom("jobid",  alertObject.getJobID())
-				.custom("taskname",  alertObject.getTaskName())
-				.off(content);
+				.custom("taskname",  alertObject.getTaskName());
+		
+		//------------------------
+		// Handle Custom Notes
+		if( !Strings.isNullOrEmpty(alertObject.getCustomNotes()) ) {
+			logEvent.custom("customNotes", alertObject.getCustomNotes());
+		}
+		
+		//------------------------
+		// Do Log
+		logEvent.off(content);
 
 	}
 

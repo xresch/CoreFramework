@@ -106,7 +106,12 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		//Add to job data, needed for mapping context to CFWJobAlertObject
 		for(Entry<String, CFWField> entry : taskParams.getFields().entrySet()) {
 			Object fieldValue = entry.getValue().getValue();
-			data.put(entry.getKey(), CFW.JSON.toJSON(fieldValue));
+			if(fieldValue instanceof String) { 
+				data.put(entry.getKey(), fieldValue); 
+			}
+			else {
+				data.put(entry.getKey(), CFW.JSON.toJSON(fieldValue));
+			}
 		}
 			
 		//------------------------------

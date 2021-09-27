@@ -17,6 +17,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.validation.LengthValidator;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
 public class CFWJobsAlertObject extends CFWObject {
@@ -32,12 +33,13 @@ public class CFWJobsAlertObject extends CFWObject {
 	private String taskName;
 
 	public enum AlertObjectFields{
-		CFW_ALERTING_OCCURENCES_TO_RAISE, 
-		CFW_ALERTING_OCCURENCES_TO_RESOLVE, 
-		CFW_ALERTING_ALERTDELAY,
-		JSON_CFW_ALERTING_USERS_TO_ALERT,
-		JSON_CFW_ALERTING_GROUPS_TO_ALERT,
-		JSON_CFW_ALERTING_ALERT_CHANNEL,
+		ALERTING_OCCURENCES_TO_RAISE, 
+		ALERTING_OCCURENCES_TO_RESOLVE, 
+		ALERTING_ALERTDELAY,
+		JSON_ALERTING_USERS_TO_ALERT,
+		JSON_ALERTING_GROUPS_TO_ALERT,
+		JSON_ALERTING_ALERT_CHANNEL,
+		ALERTING_CUSTOM_NOTES,
 	}
 	
 	public enum AlertType{
@@ -47,27 +49,27 @@ public class CFWJobsAlertObject extends CFWObject {
 	}
 	
 	private CFWField<Integer> occurencesToRaise = 
-			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.CFW_ALERTING_OCCURENCES_TO_RAISE)
+			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.ALERTING_OCCURENCES_TO_RAISE)
 			.setLabel("Occurences to Raise")
 			.setDescription("Number of occurences(matched condition) in series needed to raise an alert.")
 			.setValue(2)
 			.addValidator(new NumberRangeValidator(1, MAX_OCCURENCE_CHECK));
 	
 	private CFWField<Integer> occurencesToResolve = 
-			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.CFW_ALERTING_OCCURENCES_TO_RESOLVE)
+			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.ALERTING_OCCURENCES_TO_RESOLVE)
 			.setLabel("Occurences to Resolve")
 			.setDescription("Number of occurences(not matched condition) in series needed to resolve an alert.")
 			.setValue(2)
 			.addValidator(new NumberRangeValidator(1, MAX_OCCURENCE_CHECK));
 	
 	private CFWField<Integer> delayMinutes = 
-			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.CFW_ALERTING_ALERTDELAY)
+			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.ALERTING_ALERTDELAY)
 			.setLabel("Alert Delay Minutes")
 			.setDescription("The delay in minutes before another alert is triggered, in case the condition matches again.")
 			.setValue(60)
 			.addValidator(new NumberRangeValidator(1, 60*24*7));
 	
-	private CFWField<LinkedHashMap<String,String>> usersToAlert = CFWField.newTagsSelector(AlertObjectFields.JSON_CFW_ALERTING_USERS_TO_ALERT)
+	private CFWField<LinkedHashMap<String,String>> usersToAlert = CFWField.newTagsSelector(AlertObjectFields.JSON_ALERTING_USERS_TO_ALERT)
 			.setLabel("Alert Users")
 			.setDescription("Select the users that should be alerted.")
 			.setValue(null)
@@ -77,7 +79,7 @@ public class CFWJobsAlertObject extends CFWObject {
 				}
 			});
 	
-	private CFWField<LinkedHashMap<String,String>> groupsToAlert = CFWField.newTagsSelector(AlertObjectFields.JSON_CFW_ALERTING_GROUPS_TO_ALERT)
+	private CFWField<LinkedHashMap<String,String>> groupsToAlert = CFWField.newTagsSelector(AlertObjectFields.JSON_ALERTING_GROUPS_TO_ALERT)
 			.setLabel("Alert Groups")
 			.setDescription("Select the groups that should be alerted.")
 			.setValue(null)
@@ -87,14 +89,19 @@ public class CFWJobsAlertObject extends CFWObject {
 				}
 			});		
 	
-
 	private CFWField<LinkedHashMap<String, String>> alertChannels = 
-				CFWField.newCheckboxes(AlertObjectFields.JSON_CFW_ALERTING_ALERT_CHANNEL)
+				CFWField.newCheckboxes(AlertObjectFields.JSON_ALERTING_ALERT_CHANNEL)
 						.setLabel("Alert Channels")
 						.setDescription("Choose the channels the alert should be sent through.")
 						.setOptions(CFWJobsAlerting.getChannelNamesForUI())
 						.setValue(null);
 	
+	private CFWField<String> customNotes = 
+			CFWField.newString(FormFieldType.TEXTAREA, AlertObjectFields.ALERTING_CUSTOM_NOTES)
+					.setLabel("Custom Notes")
+					.setDescription("Add custom notes that can be added to the alert notification.")
+					.addValidator(new LengthValidator(-1, 100000))
+					.setValue(null);
 	
 	/**************************************************************************
 	 * Use this constructor only for getting the fields(for forms etc...)
@@ -118,10 +125,7 @@ public class CFWJobsAlertObject extends CFWObject {
 	public CFWJobsAlertObject(JobExecutionContext context, String  taskname) {
 
 		this.jobID = context.getJobDetail().getKey().getName();
-		
-		
-		
-		
+				
 		//-------------------------
 		// Get Condition Results
 		System.out.println("jobID:"+jobID);
@@ -137,10 +141,9 @@ public class CFWJobsAlertObject extends CFWObject {
 	}
 	
 	private void initialize() {
-		this.addFields(occurencesToRaise, occurencesToResolve, delayMinutes, usersToAlert, groupsToAlert, alertChannels);
+		this.addFields(occurencesToRaise, occurencesToResolve, delayMinutes, usersToAlert, groupsToAlert, alertChannels, customNotes);
 	}
 	
-		
 	/**************************************************************************
 	 * Add the next condition result and checks if an Alert should be sent or
 	 * not.
@@ -427,6 +430,16 @@ public class CFWJobsAlertObject extends CFWObject {
 
 	public CFWJobsAlertObject setAlertChannels(LinkedHashMap<String, String> value) {
 		this.alertChannels.setValue(value);
+		return this;
+	}
+	
+	public String getCustomNotes() {
+		return customNotes.getValue();
+	}
+
+
+	public CFWJobsAlertObject setCustomNotes(String value) {
+		this.customNotes.setValue(value);
 		return this;
 	}
 

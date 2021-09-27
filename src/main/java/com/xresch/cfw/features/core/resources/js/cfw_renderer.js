@@ -110,7 +110,6 @@ function cfw_renderer_csv(renderDef) {
 		for(var key in renderDef.visiblefields){
 			var fieldname = renderDef.visiblefields[key];
 			
-			console.log(currentRecord);
 			// do not use normal customized values as it might return html
 			var value = currentRecord[fieldname];
 			if(settings.csvcustomizers[fieldname] != undefined){

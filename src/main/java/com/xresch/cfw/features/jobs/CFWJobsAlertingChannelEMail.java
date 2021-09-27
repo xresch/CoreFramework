@@ -31,12 +31,21 @@ public class CFWJobsAlertingChannelEMail extends CFWJobsAlertingChannel {
 		// Create Mail and Send
 		String mailContent = Strings.isNullOrEmpty(contentHTML) ? content : contentHTML;
 		
-		new CFWMailBuilder(subject)
+		CFWMailBuilder builder = new CFWMailBuilder(subject)
 				.addMessage(mailContent)
 				.fromNoReply()
 				.recipientsBCC(usersToAlert)
-				.addAttachment("jobdetails.json", CFW.JSON.toJSONPretty(job))
-				.send();
+				.addAttachment("jobdetails.json", CFW.JSON.toJSONPretty(job));
+		
+		//------------------------
+		// Handle Custom Notes
+		if( !Strings.isNullOrEmpty(alertObject.getCustomNotes()) ) {
+			builder.addAttachment("customNotes.txt", alertObject.getCustomNotes());
+		}
+		
+		//------------------------
+		// Send Mail
+		builder.send();
 		
 	}
 
