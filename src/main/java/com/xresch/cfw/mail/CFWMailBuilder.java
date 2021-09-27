@@ -30,7 +30,6 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
 import com.google.common.base.Strings;
-import com.sun.xml.internal.ws.encoding.DataHandlerDataSource;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;

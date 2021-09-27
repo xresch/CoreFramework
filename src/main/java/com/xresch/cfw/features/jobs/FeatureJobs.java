@@ -1,8 +1,13 @@
 package com.xresch.cfw.features.jobs;
 
+import java.util.Locale;
+
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
+import com.xresch.cfw.caching.FileDefinition;
+import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -26,6 +31,13 @@ public class FeatureJobs extends CFWAppFeature {
 		// Register Objects
 		CFW.Registry.Objects.addCFWObject(CFWJob.class);
     	
+		//----------------------------------
+		// Register Languages for Dashboard
+		// Needed for default fields created 
+		// by WidgetSettingsFactory. 
+		CFW.Localization.registerLocaleFile(Locale.ENGLISH, getJobsURI(), new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "lang_en_dashboard.properties"));
+		CFW.Localization.registerLocaleFile(Locale.GERMAN, getJobsURI(), new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "lang_de_dashboard.properties"));
+		
 		//----------------------------------
     	// Register Alerting Channel
 		CFW.Registry.JobsAlerting.registerChannel(new CFWJobsAlertingChannelEMail());
