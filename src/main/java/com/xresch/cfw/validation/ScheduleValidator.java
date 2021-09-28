@@ -62,7 +62,7 @@ public class ScheduleValidator extends AbstractValidator {
 		
 		//------------------------------------
 		// End Time
-		if(schedule.endType().equals(EndType.END_DATE_TIME.toString())) {
+		if(schedule.endType().equals(EndType.END_DATE_TIME)) {
 			
 			if(schedule.timeframeEndtime() == null) {
 				this.setInvalidMessage("The end time for '"+validateable.getLabel()+"' is not valid.");
@@ -78,7 +78,7 @@ public class ScheduleValidator extends AbstractValidator {
 		
 		//------------------------------------
 		// Execution Count
-		if( schedule.endType().equals(EndType.EXECUTION_COUNT.toString()) ) {
+		if( schedule.endType().equals(EndType.EXECUTION_COUNT) ) {
 		
 			if(schedule.timeframeExecutionCount() == null) {
 				
@@ -96,7 +96,7 @@ public class ScheduleValidator extends AbstractValidator {
 		
 		//------------------------------------
 		// Interval Minutes
-		if( schedule.intervalType().equals(IntervalType.EVERY_X_MINUTES.toString()) ) {
+		if( schedule.intervalType().equals(IntervalType.EVERY_X_MINUTES) ) {
 		
 			if(schedule.intervalMinutes() == null) {
 				
@@ -107,7 +107,7 @@ public class ScheduleValidator extends AbstractValidator {
 		
 		//------------------------------------
 		// Interval Days
-		if( schedule.intervalType().equals(IntervalType.EVERY_X_DAYS.toString()) ) {
+		if( schedule.intervalType().equals(IntervalType.EVERY_X_DAYS) ) {
 		
 			if(schedule.intervalDays() == null) {
 				
@@ -118,7 +118,7 @@ public class ScheduleValidator extends AbstractValidator {
 		
 		//------------------------------------
 		// Interval Weeks
-		if( schedule.intervalType().equals(IntervalType.EVERY_WEEK.toString()) ) {
+		if( schedule.intervalType().equals(IntervalType.EVERY_WEEK) ) {
 		
 			boolean noDaysSelected = true;
 			if( schedule.intervalWeekday(Weekday.MON) ) { noDaysSelected = false; }
@@ -136,12 +136,17 @@ public class ScheduleValidator extends AbstractValidator {
 			}
 		}
 		
+		System.out.println("schedule.intervalType(): "+schedule.intervalType());
+		
 		//------------------------------------
 		// Interval Cron
-		if( schedule.intervalType().equals(IntervalType.CRON_EXPRESSION.toString()) ) {
+		if( schedule.intervalType().equals(IntervalType.CRON_EXPRESSION) ) {
 			try {
+				System.out.println("before");
 				CronExpression cron = new CronExpression(schedule.intervalCronExpression());
+				System.out.println("after");
 			} catch (ParseException e) {
+				System.out.println("catch");
 				this.setInvalidMessage("The expression '"+schedule.intervalCronExpression()+"' set for '"+validateable.getLabel()+"' is not a valid cron expresison.");
 				return false;
 			}

@@ -516,8 +516,8 @@ public class ServletDashboardView extends HttpServlet
 						
 						
 						//-------------------------------------
-						// Save Task Params to Widget
-						if(taskParams.mapRequestParameters(request)) {
+						// Validate and save Task Params to Widget
+						if(formObject.mapRequestParameters(request)) {
 							widget.taskParameters(taskParams.toJSON());
 							if( !CFW.DB.DashboardWidgets.update(widget) ) {
 								return;
