@@ -98,7 +98,7 @@ public class ScheduleValidator extends AbstractValidator {
 		// Interval Minutes
 		if( schedule.intervalType().equals(IntervalType.EVERY_X_MINUTES) ) {
 		
-			if(schedule.intervalMinutes() == null) {
+			if(schedule.intervalMinutes() == null || schedule.intervalMinutes() <= 0) {
 				
 				this.setInvalidMessage("The interval in minutes for '"+validateable.getLabel()+"' is not set.");
 				return false;
@@ -109,7 +109,7 @@ public class ScheduleValidator extends AbstractValidator {
 		// Interval Days
 		if( schedule.intervalType().equals(IntervalType.EVERY_X_DAYS) ) {
 		
-			if(schedule.intervalDays() == null) {
+			if(schedule.intervalDays() == null || schedule.intervalDays() <= 0 ) {
 				
 				this.setInvalidMessage("The interval in days for '"+validateable.getLabel()+"' is not set.");
 				return false;
@@ -136,17 +136,12 @@ public class ScheduleValidator extends AbstractValidator {
 			}
 		}
 		
-		System.out.println("schedule.intervalType(): "+schedule.intervalType());
-		
 		//------------------------------------
 		// Interval Cron
 		if( schedule.intervalType().equals(IntervalType.CRON_EXPRESSION) ) {
 			try {
-				System.out.println("before");
 				CronExpression cron = new CronExpression(schedule.intervalCronExpression());
-				System.out.println("after");
 			} catch (ParseException e) {
-				System.out.println("catch");
 				this.setInvalidMessage("The expression '"+schedule.intervalCronExpression()+"' set for '"+validateable.getLabel()+"' is not a valid cron expresison.");
 				return false;
 			}
