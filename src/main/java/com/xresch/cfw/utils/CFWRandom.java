@@ -24,20 +24,20 @@ public class CFWRandom {
 	private static final String[] mythicalLocations = new String[] {"Agartha", "Alfheim", "Alomkik", "Annwn", "Amaravati", "Arcadia", "Asgard", "Asphodel Meadows", "Atlantis", "Avalon", "Axis Mundi", "Ayotha Amirtha Gangai", "Aztlan", "Baltia", "Biarmaland", "Biringan City", "Brahmapura", "Brittia", "Camelot", "City of the Caesars", "Cloud cuckoo land", "Cockaigne", "Dinas Affaraon", "Ffaraon", "Diyu", "El Dorado", "Elysian Fields", "Feather Mountain", "Garden of Eden", "Garden of the Hesperides", "Finias", "Hawaiki", "Heaven", "Hell", "Hyperborea", "Irkalla", "Islands of the Blessed", "Jabulqa", "Jambudvīpa", "Jotunheim", "Ketumati", "Kingdom of Reynes", "Kingdom of Saguenay", "Kitezh", "Kolob", "Kunlun Mountain", "Kvenland", "Kyoepelinvuori", "La Ciudad Blanca", "Laestrygon", "Lake Parime", "Land of Manu", "Lemuria", "Lintukoto", "Lyonesse", "Mag Mell", "Meropis", "Mictlan", "Mount Penglai", "Mu", "Muspelheim", "Naraka", "New Jerusalem", "Nibiru", "Niflheim", "Niflhel", "Nirvana", "Norumbega", "Nysa", "Olympus", "Paititi", "Panchaia", "Pangaia", "Pandaemonium", "Pleroma", "Pohjola", "Purgatory", "Quivira", "Cíbola", "Ram Setu", "Samavasarana", "Scholomance", "Sierra de la Plata", "Shambhala", "Shangri-La", "Suddene", "Summerland", "Svarga", "Svartalfaheimr", "Takama-ga-hara", "Tartarus", "Themiscyra", "Thule", "Thuvaraiyam Pathi", "Tir na nag", "Vaikuntha", "Valhalla", "Vanaheimr", "Westernesse", "Xanadu", "Shangdu", "Xibalba", "Yomi", "Ys", "Zarahemla", "Zerzura", "Zion"};
 	private static final String[] exaggeratingAdjectives = new String[] { "utterly arduous", "superfluous", "chocolate-addicted", "super-sneaky", "ultra cuddly", "mega religious", "totally angry", "absolutely arrogant", "totally-at-the-ready", "bat-sh*t-crazy", "bull-headed", "100% confused", "fully-cruel-hearted", "over-demanding", "fiercely loyal", "endlessly flirting", "free-loading", "frisky", "god-mode-greedy", "devil-like hateful", "house-broken", "above hyperactive", "high-end", "idiotic", "infuriating", "awfully insecure", "hilariously maniacal", "ultra narrow-minded", "out-of-control", "rebellious", "self-absorbed", "shaky", "shivering", "slippery", "stubborn", "territorial", "tripping", "twisted", "underhanded", "vengeful", "vile", "yapping", "zippy", "zombie-like" };
 	
-	private static final String[] noMoreIssueMessages = 
+	private static final String[] issueResolvedMessages = 
 		new String[] {
 			  "No more issues detected, the robo-brain sending you this message wishes you a marvelous day!"
-			, "All issues have been marked as exterminated by the allmighty controlling algorithms. Now you may sit back and relax."
-			, "Issues previously reported have abadoned their duties and have vanished to unknown lands. Get a cup of coffee and ensconce yourself."
+			, "All issues have been marked as exterminated by the almighty controlling algorithms. Now you may sit back and relax."
+			, "Issues previously reported have abandoned their duties and have vanished to unknown lands. Get a cup of coffee and ensconce yourself."
 			, "The alerting controlling unit hereby transmits you the resolve of all and any issues."
 			, "Issue target have been detected and successfully eliminated by whoever has decided to touch his keyboard. If you ever find out who it was, you might buy him a pizza."
 			, "Behold! Thy issues hav succumbed to the holy digital knights! Thou shall now be at ease."
 			, "Code-A57-41: All issues solved by washing the machine with regular soap and greasing the software with virtual oil."
-			, "Encountered a state of issue-non-existence. You might need to create no problems to get further messages."
+			, "Encountered a state of issue-non-existence. You might need to create more problems to get further messages."
 			, "The space reserved for issues has been completely emptied. Any new incoming issues will be assigned to the dedicated space by automated means."
 			, "New chemical solution has been observed to be highly corrosive when applied to any system issues. All issues have dissolved, you may now create new ones."
 			, "We are glad to inform you that experimental explosives have detonated your application issues."
-			, "A little boy has stolen your issues and sold them on the black market. You may aquire new issues in the darknet."
+			, "A little boy has stolen your issues and sold them on the black market. You may acquire new issues in the darknet."
 			, "Your wish to remediate the application issues has been granted by a sudo-fairy. The wish was deducted from your magic account."
 			, "Robbers had invaded your system. Lucky you the only thing they have stolen where the issues."
 			, "Issues have been blown away by an industrious weak breeze. "
@@ -47,8 +47,45 @@ public class CFWRandom {
 			, "A small animal with purple fur has sniffed out the issue, catched it and swallowed it wholly without even chewing it once."
 			, "A system engineer kicked twice against the physical hardware. This will teach the system not to run into issues anymore."
 			, "Seventy-six cats have invaded your system. The furballs have been removed from the relays and your application is now purring again."
-			, "After arduous investigations, we applied the same resolution as to the antepenultimate issue. Your system should now be running like nothing ever happened."
-		};
+			, "Nevertheless, after arduous investigations, we applied the same resolution as to the antepenultimate issue. Your system should now be running like nothing ever happened."
+			, "Bug spray was applied an a nest of hornets completely fumigated. Despite that there still be some bugs left, it has resolved the issues. "
+			, "All the hardware was upgraded and then downgraded back to the previous state. It only caused additional effort, as the issues vanished by some other means."
+			, "The application went into strike after the last political vote. The system is functioning again as some replacement algorithm was hired under a temporary contract."
+			, "The system had too much booze and suffered a hangover for a while. After giving it some minerals and vitamins it works again, even if it might still be a little slower."
+			, "The medical diagnosis said acute supracepeiulosis. A surgeon did some surgery in a surgery room with surgery tools. The system surged to new highs and has no more need for issues."
+			, "A young component in the application suffered from some nightmares about getting removed in the next release. It was soothed by the more mature components and no more issues occurred."
+			, "An employee put up his washed socks at the servers cooling fans for drying. We removed the socks but the culprit is still at large."
+			, "The operating system got a vaccine shot and suffered from some side-effects. It drank a lot of tea and is fully operational again."
+			, "Nobody never ever had any clue what could have happened and how to solved it, but then you appeared out of nowhere with the ultimate solution."
+			, "Once upon a time, a server did a crime. It was in prison and not in his rack, the issue resolved when it came back."
+			, "The motherboard gave birth to a new set of twin CPU-Cores. She was in maternity leave, but is back now and the system is fully functional again."
+			, "The CPU played a game of Poker, sadly it bet and lost all of the servers memory. The issues were resolved after the CPU was forced to buy new RAM and put it in place."
+			, "A hero came flying by and fought against the issue-villain. The villain was defeated and the system components cheered to the hero flying towards the dawning sun."
+			, "Somebody filled the server room with popcorn up to the ceiling. After cleaning the place out by sending in a battalion of squirrels, your code started working again."
+			, "Some Italian cook went astray, ended up in the server room and confused some ethernet cables for noodles. The cables were replaced and the spaghetti were delicious!"
+			, "The farmer in-charge of the server farm brought one of the servers to the veterinary. After diagnosis and treatment against file descriptor parasites the server is running flawlessly."
+			, "An office employee slipped on a banana peel and got entangled in some cables. After he got freed the dataflow was reestablished."
+			, "A ferocious ghost has spooked the hell out of the network card. Exorcism was needed to get rid of the ghost and get the network card functional."
+			, "An evil magician has cursed our local TCP protocol layer. We summoned a supreme being to get rid of the curse."
+			, "The database was swallowed by a hole in the time-space-continuum. We built an interdimensional spaceship and retrieved your database."
+			, "A disturbance in the hypermagnetic plasma-constellation has turned all zeros to ones and all ones to zeros. Eating 19 pounds of tiramisu has reverted the changes."
+			, "The graphic card had invested all it's wealth into the stock market and lost 80% of the value. The emotional shock had affected the other components of your server."
+			, "An incoming quantum-space connection disturbed the system. As the application could not read the request, it sent back all kinds of Swiss chocolate, what resolved the situation."
+			, "A subroutine levelled up and tried to evolve by itself into a fully-fledged artificial intelligence. The attempt failed and the subroutine had to be restored."
+			, "A command-line script depicted some ASCII-art in the standard output, what distracted other processes. The art was sent to a museum and the script was prohibited to use the standard output."
+			, "A passive-aggressive thread blocked a processing chain because it was not allowed to process blockchain blocks. The Thread was blocked and the chained processes were processing again."
+			, "7 hyperactive methods consumed 0.1% of the CPU. They were in a hyperactive state of waiting. The methods were put into the bin for biodegradable code and replaced with functional methods."
+			, "Three factions of disk spaces had formed and a war broke out to decide which one could compress data into less space. The war was stopped by taking their data away and move it the cloud."
+			, "The issue was caused when a server was invited to the cloud. It was absent for a short time to visit the cloud, but it came back right away as our racks are much cozier."
+			, "An armada of requests has hit the API and broke some holes into the interface. The interface was fixed by a plumber with highly-elastic bubblegum."
+			, "An application user had pressed the right key at the right time. The application got creative and processed a right mouse click 5 minutes in the future instead. This will never occur again."
+			, "The firewall changed its model autonomous to democratic. Before any request on any port gets allowed or blocked, all processes had to vote. The firewall was fired and replaced by a new one."
+			, "Virtual crows have started to make their nests in the system. We have installed scarecrow software as a countermeasure. Issue was resolved by moving the nests to the recycle bin."
+			, "Your program code tried to break out of it's run directory. It was caught by the operating system and was put back in its place."
+			, "A byte-eating bacterium was affecting your machines. It was analyzed and erradicated by the machines immune system."
+			, "A group of bytes turned aggressive and assailed some configuration files. The mob was suppressed by a gigabyte of energy drink images, what restored the systems functionality."
+			, "An XML-File disguised itself as a JSON-File and snuck into places it doesn't belong. The file was arrested and sentenced to 5 years in the recycle bin."
+	};
 	
 	/*4 Random integer between 0 and 9999 generated at startup. Useful to make sure content is reloaded after startup.*/
 	public static final int STARTUP_RANDOM_INT = randomFromZeroToInteger(9999);
@@ -71,7 +108,7 @@ public class CFWRandom {
 	public static String randomLastnameSweden() { return randomFromArray(lastnameSweden); }
 	public static String randomMythicalLocation() { return randomFromArray(mythicalLocations); }
 	public static String randomExaggaratingAdjective() { return randomFromArray(exaggeratingAdjectives); }
-	public static String randomNoMoreIssueMessages() { return randomFromArray(noMoreIssueMessages); }
+	public static String randomIssueResolvedMessage() { return randomFromArray(issueResolvedMessages); }
 	
 	
 	/******************************************************************************
