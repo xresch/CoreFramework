@@ -129,7 +129,6 @@ public class ScheduleValidator extends AbstractValidator {
 			else if( schedule.intervalWeekday(Weekday.SAT) ) { noDaysSelected = false; }
 			else if( schedule.intervalWeekday(Weekday.SUN) ) { noDaysSelected = false; }
 			
-				
 			if( noDaysSelected ) {
 				this.setInvalidMessage("No week day selected for '"+validateable.getLabel()+"'.");
 				return false;

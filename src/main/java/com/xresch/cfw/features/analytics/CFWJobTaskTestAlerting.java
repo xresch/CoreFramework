@@ -85,6 +85,8 @@ public class CFWJobTaskTestAlerting extends CFWJobTask {
 			}
 			
 			if(type.equals(AlertType.RESOLVE)) {
+				message += " "+CFW.Random.randomNoMoreIssueMessages();
+				messageHTML += "<p>"+CFW.Random.randomNoMoreIssueMessages()+"</p>";
 				alertObject.doSendAlert(context, "[TEST] Alert: A situation has resolved!.", message, messageHTML);
 			}
 		}

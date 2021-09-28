@@ -217,7 +217,6 @@ public class CFWMailBuilder {
 	public CFWMailBuilder addAttachment(String attachmentName, String textContent) {
 
 		try {
-			System.out.println(textContent);
 
 			DataSource attachmentSource = new ByteArrayDataSource(textContent, "text/plain");
 			addAttachment(attachmentName, attachmentSource);
@@ -336,7 +335,7 @@ public class CFWMailBuilder {
 			//------------------------------
 			// SSL Authentication
 			if(authMethod.equals("SSL")){
-				System.out.println("SSLEmail Start");
+				//System.out.println("SSLEmail Start");
 				
 				props.put("mail.smtp.socketFactory.port", CFW.Properties.MAIL_SMTP_PORT);
 				props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory"); 

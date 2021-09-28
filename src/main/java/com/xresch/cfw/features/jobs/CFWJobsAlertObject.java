@@ -67,7 +67,7 @@ public class CFWJobsAlertObject extends CFWObject {
 			.setLabel("Alert Delay Minutes")
 			.setDescription("The delay in minutes before another alert is triggered, in case the condition matches again.")
 			.setValue(60)
-			.addValidator(new NumberRangeValidator(1, 60*24*7));
+			.addValidator(new NumberRangeValidator(0, 60*24*7));
 	
 	private CFWField<LinkedHashMap<String,String>> usersToAlert = CFWField.newTagsSelector(AlertObjectFields.JSON_ALERTING_USERS_TO_ALERT)
 			.setLabel("Alert Users")
@@ -512,8 +512,6 @@ public class CFWJobsAlertObject extends CFWObject {
 			return this;
 		}
 		
-		
-
 	}
 	
 
