@@ -1490,10 +1490,10 @@ function cfw_renderer_dataviewer(renderDef) {
 				sizeparam:  'pagesize',
 				//The param name for the page to fetch
 				pageparam: 'pagenumber',
-				//The name of the field used to sort the results
+				//The param name for the field used to sort the results
 				sortbyparam: 'sortby',
-				//The offset for fetching the results
-				//sortdirectionparam: 'sort',
+				//The param name for the sort direction (will be either 'asc' or 'desc')
+				sortdirectionparam: 'sortbydirection',
 				//The filter string used for filtering the results
 				filterqueryparam: 'filterquery',
 				//custom parameters which should be added to the request, e.g. {"paramname": "value", "param2": "anothervalue", ...}
@@ -1559,6 +1559,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	var filterquery = settingsDiv.find('input[name="filterquery"]').val();
 	var rendererIndex = settingsDiv.find('select[name="displayas"]').val();
 	var sortbyField = settingsDiv.find('select[name="sortby"]').val();
+	var sortbyDirection = settingsDiv.find('select[name="sortby"]').find('option:selected').data('direction');
 	
 	var offset = (pageSize > 0 ) ? pageSize * (pageToRender-1): 0;
 	
@@ -1567,6 +1568,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][filterquery]', filterquery);
 		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][rendererIndex]', rendererIndex);
 		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][sortbyField]', sortbyField);
+		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][sortbyDirection]', sortbyDirection);
 	}
 	
 	//=====================================================
@@ -1578,11 +1580,21 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	}
 	
 	//=====================================================
-	// Handle Filter Highlight
+	// Create sorting function
+	
+	//default to "asc" if undefined
+	let sortDirectionArray = (sortbyDirection == null) ? ['asc'] : [sortbyDirection];
+	console.log(sortDirectionArray)
 	let sortFunctionArray = [
 		record => {
-			// make lowercase to have proper string sorting
-			return (typeof record[sortbyField] === 'string') ? record[sortbyField].toLowerCase() : record[sortbyField]
+			
+			if (typeof record[sortbyField] === 'string'){
+				// make lowercase to have proper string sorting
+				return record[sortbyField].toLowerCase();
+			}
+			
+			return record[sortbyField];
+			
 		}
 	];
 
@@ -1599,7 +1611,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			// Sort
 			let sortedData = renderDef.data;
 			if(sortbyField != null){
-				sortedData = _.sortBy(sortedData, sortFunctionArray);
+				sortedData = _.orderBy(sortedData, sortFunctionArray, sortDirectionArray);
 			}
 			
 			//---------------------------------
@@ -1624,7 +1636,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			// Sort
 			let sortedData = filteredData;
 			if(sortbyField != null){
-				sortedData = _.sortBy(sortedData, sortFunctionArray);
+				sortedData = _.orderBy(sortedData, sortFunctionArray, sortDirectionArray);
 			}
 			
 			//---------------------------------
@@ -1647,13 +1659,11 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 		params[settings.datainterface.filterqueryparam] = filterquery;
 		params[settings.datainterface.itemparam] = settings.datainterface.item;
 		params[settings.datainterface.sortbyparam] = sortbyField;
-//		params[settings.datainterface.sortdirectionparam] = ;
-		
+		params[settings.datainterface.sortdirectionparam] = (sortbyDirection == null) ? 'asc' : sortbyDirection;
+
 		for(key in settings.datainterface.customparams){
 			params[key] = settings.datainterface.customparams[key];
 		}
-
-
 		
 		CFW.http.getJSON(settings.datainterface.url, params, function(data){
 			
@@ -1735,12 +1745,14 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	// Prepare Settings
 	var selectedRendererIndex = 0;
 	var selectedSortbyField = null;
+	var selectedSortbyDirection = "asc";
 	var selectedSize = dataviewerSettings.defaultsize;
 	var filterquery = '';
 	
 	if(dataviewerSettings.storeid != null){
 		selectedRendererIndex 	= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][rendererIndex]', selectedRendererIndex);
 		selectedSortbyField 	= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][sortbyField]', selectedSortbyField);
+		selectedSortbyDirection	= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][sortbyDirection]', selectedSortbyDirection);
 		selectedSize 			= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][pageSize]', selectedSize);
 		filterquery 			= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][filterquery]', filterquery);
 	}
@@ -1774,20 +1786,36 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 			+'	<label for="sortby">Sort By:&nbsp;</label>'
 			+'	<select name="sortby" class="form-control form-control-sm" title="Choose Sorting" '+onchangeAttribute+'>'
 		
+			let ascendingHTML = ""; 
+			let descendingHTML = ""; 
 			for(index in renderDef.visiblefields){
 				var fieldName = renderDef.visiblefields[index];
 				var fielLabel = renderDef.labels[fieldName];
-				var selected = 
-						(
-							(index == 0 && selectedSortbyField == null)
-						 || fieldName == selectedSortbyField 
-						) ? 'selected' : '';
 				
-				html += '<option value="'+fieldName+'" '+selected+'>'+fielLabel+'</option>';
+				
+				var selectedAsc = '';
+				var selectedDesc = '';
+				if(index == 0 && selectedSortbyField == null){
+					selectedAsc = 'selected';
+				}else{
+					
+					if(fieldName == selectedSortbyField){
+						console.log("selectedSortbyDirection: "+selectedSortbyDirection)
+						if(selectedSortbyDirection == 'desc'){
+							selectedDesc = 'selected';
+						}else{
+							//default
+							selectedAsc = 'selected';
+						}
+					}
+				}
+						
+				ascendingHTML += '<option value="'+fieldName+'" data-direction="asc" '+selectedAsc+'>&#8593; '+fielLabel+'</option>';
+				descendingHTML += '<option value="'+fieldName+'" data-direction="desc" '+selectedDesc+'>&#8595; '+fielLabel+'</option>';
 				
 			}
 		
-		html += '	</select>'
+		html += ascendingHTML + descendingHTML + '	</select>'
 				+'</div>';
 	}
 	

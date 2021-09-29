@@ -16,17 +16,30 @@ public class CFWSQLLuceneQuery {
 	public CFWSQLLuceneQuery(CFWSQL initialSQL) {
 		this.initialSQL = initialSQL;
 	}
-		
+	
+	/****************************************************************
+	 * Builds a new CFWSQL instance with a query for fetching the
+	 * fulltext result.
+	 * Total number of results will be returned in the column
+	 * TOTAL_RECORDS.
+	 * @param pageSize max number of results, use 0 for all results
+	 * @param pageNumber the page that should be fetched.
+	 ****************************************************************/
+	public CFWSQL build(int pageSize, int pageNumber) {
+		return build(null, true, pageSize, pageNumber);
+	}
+	
 	/****************************************************************
 	 * Builds a new CFWSQL instance with a query for fetching the
 	 * fulltext result.
 	 * Total number of results will be returned in the column
 	 * TOTAL_RECORDS.
 	 * @param sortbyColumn name of the column to sort, can be null or empty string
+	 * @param sortAscending true or false
 	 * @param pageSize max number of results, use 0 for all results
 	 * @param pageNumber the page that should be fetched.
 	 ****************************************************************/
-	public CFWSQL build(String sortbyColumn, int pageSize, int pageNumber) {
+	public CFWSQL build(String sortbyColumn, boolean sortAscending, int pageSize, int pageNumber) {
 		
 		int limit = pageSize < 0 ? 0 : pageSize;
 		int offset = pageSize*(pageNumber-1);
@@ -48,7 +61,12 @@ public class CFWSQLLuceneQuery {
 		//--------------------------------
 		// Order By
 		if( !Strings.isNullOrEmpty(sortbyColumn) ) {
-			fulltextSQL.orderby(sortbyColumn);
+			if(sortAscending) {
+				fulltextSQL.orderby(sortbyColumn);
+			}else {
+				fulltextSQL.orderbyDesc(sortbyColumn);
+			}
+
 		}
 		
 		return fulltextSQL;

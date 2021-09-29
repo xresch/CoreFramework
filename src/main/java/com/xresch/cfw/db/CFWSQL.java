@@ -549,7 +549,7 @@ public class CFWSQL {
 	 * @param pageNumber the page that should be fetched. 
 	 ****************************************************************/
 	public CFWSQL fulltextSearchLucene(String luceneFilterquery, int pageSize, int pageNumber) {
-		return fulltextSearchLucene(luceneFilterquery, null, pageSize, pageNumber);
+		return fulltextSearchLucene(luceneFilterquery, null, true, pageSize, pageNumber);
 	}
 	
 	/****************************************************************
@@ -563,7 +563,7 @@ public class CFWSQL {
 	 * @param pageSize max number of results, use 0 for all results
 	 * @param pageNumber the page that should be fetched.
 	 ****************************************************************/
-	public CFWSQL fulltextSearchLucene(String luceneFilterquery, String sortbyColumn, int pageSize, int pageNumber) {
+	public CFWSQL fulltextSearchLucene(String luceneFilterquery, String sortbyColumn, boolean sortAscending, int pageSize, int pageNumber) {
 		
 		if(Strings.isNullOrEmpty(luceneFilterquery)) {
 			//-------------------------------------
@@ -572,7 +572,11 @@ public class CFWSQL {
 				.select();
 			
 			if( !Strings.isNullOrEmpty(sortbyColumn) ) {
-				query.orderby(sortbyColumn);
+				if(sortAscending) {
+					query.orderby(sortbyColumn);
+				}else {
+					query.orderbyDesc(sortbyColumn);
+				}
 			}
 			
 			return query.limit(pageSize)
@@ -586,7 +590,7 @@ public class CFWSQL {
 			return this.select()
 						.fulltextSearchLucene()
 						.custom(luceneFilterquery)
-						.build(sortbyColumn, pageSize, pageNumber);
+						.build(sortbyColumn, sortAscending, pageSize, pageNumber);
 		}
 		
 	}
@@ -1127,9 +1131,11 @@ public class CFWSQL {
 		if(!isQueryCached()) {
 			if(fields != null && fields.get(fieldname.toString()).getValueClass() == String.class) {
 				query.append(" ORDER BY LOWER(T."+fieldname+")");
+				
 			}else {
 				query.append(" ORDER BY T."+fieldname);
 			}
+			
 		}
 		return this;
 	}
