@@ -199,7 +199,7 @@ public class CFWSchedule {
 		reset();
 		return this;
 	}
-	
+		
 	/***************************************************************************************
 	 * Can return null
 	 ***************************************************************************************/
@@ -309,6 +309,57 @@ public class CFWSchedule {
 		reset();
 		return this;
 	}
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/
+	public String toStringScheduleEnd() {
+		if(timeframe == null || timeframe.get(ENDTYPE).isJsonNull()) return null;
+		
+		if ( endType().equals(EndType.RUN_FOREVER) ){ return "Run Forever"; }
+		else if (endType().equals(EndType.EXECUTION_COUNT)){ return "After "+this.timeframeExecutionCount()+" execution(s)"; }
+		else if(this.timeframeEndtime() != null ) { return ""+this.timeframeEndtime(); }
+		
+		return null;
+
+	}
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/
+	public String toStringScheduleInterval() {
+		if(this.intervalType() == null) return null;
+		
+		//values: EVERY_X_MINUTES, EVERY_X_DAYS, EVERY_WEEK, CRON_EXPRESSION
+		if (this.intervalType().equals(IntervalType.EVERY_X_MINUTES)){ return "Every "+this.intervalMinutes()+" minute(s)"; }
+		else if (this.intervalType().equals(IntervalType.EVERY_X_DAYS)){ return "Every "+this.intervalDays()+" day(s)"; }
+		else if (this.intervalType().equals(IntervalType.CRON_EXPRESSION)){ return "CRON: "+this.intervalCronExpression(); }
+		else if (this.intervalType().equals(IntervalType.EVERY_WEEK)){ 
+			
+			String days = "";
+			for(Integer day : this.getWeekdays()) {
+				
+				switch(day) {
+					case Calendar.MONDAY: 		days += "MON/"; break;
+					case Calendar.TUESDAY: 		days += "TUE/"; break;
+					case Calendar.WEDNESDAY: 	days += "WED/"; break;
+					case Calendar.THURSDAY: 	days += "THU/"; break;
+					case Calendar.FRIDAY: 		days += "FRI/"; break;
+					case Calendar.SATURDAY: 	days += "SAT/"; break;
+					case Calendar.SUNDAY: 		days += "SON/"; break;
+					
+					default: break;
+				}
+			}
+			
+			days = days.substring(0, days.length()-1);
+			return "Every week on "+days;
+		}
+		
+		return null;
+
+	}
+	
 	
 	/***************************************************************************************
 	 * Convert to JSON String

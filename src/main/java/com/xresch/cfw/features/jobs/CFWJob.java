@@ -43,6 +43,9 @@ public class CFWJob extends CFWObject {
 		DESCRIPTION,
 		TASK_NAME,
 		JSON_SCHEDULE,
+		SCHEDULE_START,
+		SCHEDULE_END,
+		SCHEDULE_INTERVAL,
 		JSON_PROPERTIES,
 		LAST_RUN_TIME,
 		JSON_LASTRUN_MESSAGES,
@@ -93,6 +96,18 @@ public class CFWJob extends CFWObject {
 					.endType(EndType.RUN_FOREVER)
 			);
 	
+	private CFWField<Timestamp> scheduleStart = CFWField.newTimestamp(FormFieldType.NONE, CFWJobFields.SCHEDULE_START)
+			.setDescription("Start time of the job.")
+			.setValue(null);
+	
+	private CFWField<String> scheduleEnd = CFWField.newString(FormFieldType.NONE, CFWJobFields.SCHEDULE_END)
+			.setDescription("String representation of the schedules and, or time in milliseconds.")
+			.setValue(null);
+	
+	private CFWField<String> scheduleInterval = CFWField.newString(FormFieldType.NONE, CFWJobFields.SCHEDULE_INTERVAL)
+			.setDescription("String representation of the schedules interval.")
+			.setValue(null);
+	
 	private CFWField<Timestamp> lastRunTime = CFWField.newTimestamp(FormFieldType.NONE, CFWJobFields.LAST_RUN_TIME)
 			.setDescription("Time of the last run of the job.")
 			.setValue(null);
@@ -130,6 +145,9 @@ public class CFWJob extends CFWObject {
 				description,
 				taskName,
 				schedule,
+				scheduleStart,
+				scheduleEnd,
+				scheduleInterval,
 				properties,
 				lastRunTime,
 				lastRunMessages,
@@ -312,6 +330,22 @@ public class CFWJob extends CFWObject {
 	
 	public CFWJob schedule(CFWSchedule value) {
 		this.schedule.setValue(value);
+		return this;
+	}
+	
+
+	protected CFWJob scheduleStart(Timestamp value) {
+		this.scheduleStart.setValue(value);
+		return this;
+	}
+	
+	protected CFWJob scheduleEnd(String value) {
+		this.scheduleEnd.setValue(value);
+		return this;
+	}
+	
+	protected CFWJob scheduleInterval(String value) {
+		this.scheduleInterval.setValue(value);
 		return this;
 	}
 	

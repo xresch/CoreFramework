@@ -266,6 +266,7 @@ function cfwjobs_printJobs(itemType){
 	
 	var parent = $("#tab-content");
 	parent.html("");
+	
 	//--------------------------------
 	// Button
 	var addButton = $('<button class="btn btn-sm btn-success mb-2" onclick="cfwjobs_add_selectTask()">'
@@ -340,7 +341,7 @@ function cfwjobs_printJobs(itemType){
 		 	titleformat: '{0}',
 		 	visiblefields: visiblefields,
 		 	labels: {
-		 		JSON_LASTRUN_MESSAGES: "&nbsp;",
+		 		JSON_LASTRUN_MESSAGES: "Messages",
 		 		PK_ID: "ID",
 		 		IS_ENABLED: "Enabled",
 		 		JSON_SCHEDULE: "Schedule",
@@ -354,7 +355,17 @@ function cfwjobs_printJobs(itemType){
 		 		IS_ENABLED: function(record, value) { 
 		 			return '<span class="badge badge-'+((value == true)? 'success' : 'danger') +'">'+value+'</span>'; 
 		 			},
-		 		JSON_SCHEDULE: function(record, value) { return CFW.format.cfwSchedule(value); },
+		 		//JSON_SCHEDULE: function(record, value) { return CFW.format.cfwSchedule(value); },
+		 		SCHEDULE_START: function(record, value) { return CFW.format.epochToTimestamp(value); },
+		 		SCHEDULE_END: function(record, value) { 
+		 			if(value == null) return "&nbsp;";
+		 			if(isNaN(value)){
+		 				return value; 
+		 			}else{
+		 				return CFW.format.epochToTimestamp(parseInt(value)); 
+		 			}
+		 			
+		 		},
 		 		LAST_RUN_TIME: function(record, value) { return CFW.format.epochToTimestamp(value); },
 		 		JSON_PROPERTIES: function(record, value) { 
 		 			if(value.children != null
@@ -381,12 +392,19 @@ function cfwjobs_printJobs(itemType){
 					datainterface: {
 						url: CFWJOBS_URL,
 						item: itemType,
-						preprocess: function(data){ CFW.format.splitCFWSchedule(data, 'JSON_SCHEDULE') }
+						//preprocess: function(data){ CFW.format.splitCFWSchedule(data, 'JSON_SCHEDULE') }
 					},
 					renderers: [
 						{	label: 'Table',
 							name: 'table',
 							renderdef: {
+							 	labels: {
+							 		JSON_LASTRUN_MESSAGES: "&nbsp;",
+							 		PK_ID: "ID",
+							 		IS_ENABLED: "Enabled",
+							 		JSON_SCHEDULE: "Schedule",
+							 		JSON_PROPERTIES: "Properties",
+							 	},
 								rendererSettings: {
 									table: { filterable: false, narrow: true},
 								},

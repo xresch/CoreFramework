@@ -2,19 +2,18 @@ package com.xresch.cfw.features.jobs;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage;
 
 /**************************************************************************************************************
  * @author Reto Scheiwiller
@@ -38,7 +37,15 @@ public class CFWDBJob {
 					.warn("Please specify a name for the job.", new Throwable());
 				return false;
 			}
-
+			
+			//---------------------------------
+			// Set Schedule fields for sorting
+			CFWSchedule schedule = job.schedule();
+			Timestamp stamp = new Timestamp(schedule.timeframeStart());
+			job.scheduleStart(stamp);
+			job.scheduleEnd(schedule.toStringScheduleEnd());
+			job.scheduleInterval(schedule.toStringScheduleInterval());
+			
 			return true;
 		}
 	};
