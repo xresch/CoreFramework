@@ -447,6 +447,8 @@ function cfw_usermgmt_printUserList(data){
 	
 	var cfwTable = new CFWTable();
 	
+	var STOREID_USERLIST = 'userlist';
+
 	//--------------------------------
 	// Button
 	var createButton = $('<button class="btn btn-sm btn-success mb-2" onclick="cfw_usermgmt_createUser()">'
@@ -476,7 +478,9 @@ function cfw_usermgmt_printUserList(data){
 		actionButtons.push(
 			function (record, id){ 
 				if(!record.IS_FOREIGN){
-					return '<button class="btn btn-warning btn-sm text-white" title="Reset Password" '
+					let buttonSizeClass = (CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0) == 1) ? "btn-xs" : "btn-sm";
+
+					return '<button class="btn '+buttonSizeClass+' btn-warning text-white" title="Reset Password" '
 						+'onclick="cfw_usermgmt_resetPassword('+id+');">'
 						+ '<i class="fas fa-unlock-alt"></i>'
 						+ '</button></td>';
@@ -490,7 +494,9 @@ function cfw_usermgmt_printUserList(data){
 		// Audit Button
 		actionButtons.push(
 				function (record, id){ 
-					return 	'<button class="btn btn-warning btn-sm text-white" title="Audit" '
+					let buttonSizeClass = (CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0) == 1) ? "btn-xs" : "btn-sm";
+					
+					return 	'<button class="btn '+buttonSizeClass+' btn-warning text-white" title="Audit" '
 					+'onclick="cfw_usermgmt_auditUser('+id+');">'
 					+ '<i class="fa fa-stethoscope"></i>'
 					+ '</button>';
@@ -501,7 +507,9 @@ function cfw_usermgmt_printUserList(data){
 		// Edit Button
 		actionButtons.push(
 			function (record, id){ 
-				return 	'<button class="btn btn-primary btn-sm" title="Edit" '
+				let buttonSizeClass = (CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0) == 1) ? "btn-xs" : "btn-sm";
+				
+				return 	'<button class="btn '+buttonSizeClass+' btn-primary" title="Edit" '
 					+'onclick="cfw_usermgmt_editUser('+id+');">'
 					+ '<i class="fa fa-pen"></i>'
 					+ '</button>';
@@ -513,8 +521,11 @@ function cfw_usermgmt_printUserList(data){
 		// Delete Button
 		actionButtons.push(
 			function (record, id){
+				
 				if(record.IS_DELETABLE){
-					return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete"  '
+					let buttonSizeClass = (CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0) == 1) ? "btn-xs" : "btn-sm";
+					
+					return '<button class="btn '+buttonSizeClass+' btn-danger" alt="Delete" title="Delete"  '
 						+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the user?\', \'Delete\', \'cfw_usermgmt_delete(\\\'users\\\','+id+');\')">'
 						+ '<i class="fa fa-trash"></i>'
 						+ '</button>';
@@ -555,7 +566,7 @@ function cfw_usermgmt_printUserList(data){
 				
 				rendererSettings: {
 					dataviewer: {
-						storeid: 'userlist',
+						storeid: STOREID_USERLIST,
 						renderers: [
 							{	label: 'Table',
 								name: 'table',
@@ -568,7 +579,7 @@ function cfw_usermgmt_printUserList(data){
 							{	label: 'Smaller Table',
 								name: 'table',
 								renderdef: {
-									actions: [],
+									//actions: [],
 									rendererSettings: {
 										table: {filterable: false, narrow: true},
 									},

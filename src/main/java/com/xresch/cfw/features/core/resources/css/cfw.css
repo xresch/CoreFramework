@@ -130,8 +130,16 @@ h3, h4 {
 .table-cfw-black, .table-cfw-black th, .table-cfw-black td, .table-cfw-black thead, .table-cfw-black tbody, .table-hover .table-cfw-black:hover {		background-color: var(--cfw-black); }
 
  /*************************************************************************
- * Bootstrap overwrite
+ * Bootstrap overwrite & extensions
  *************************************************************************/
+
+
+.btn-xs {
+    padding: 0.0rem 0.3em;
+    font-size: 0.82031rem;
+    line-height: 1.5;
+    border-radius: 0;
+}
 
 .alert {
     margin-bottom: 0px;

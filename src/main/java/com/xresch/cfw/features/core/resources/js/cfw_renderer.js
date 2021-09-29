@@ -1810,8 +1810,8 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 					}
 				}
 						
-				ascendingHTML += '<option value="'+fieldName+'" data-direction="asc" '+selectedAsc+'>&#8593; '+fielLabel+'</option>';
-				descendingHTML += '<option value="'+fieldName+'" data-direction="desc" '+selectedDesc+'>&#8595; '+fielLabel+'</option>';
+				ascendingHTML += '<option value="'+fieldName+'" data-direction="asc" '+selectedAsc+'>&uarr; '+fielLabel+'</option>';
+				descendingHTML += '<option value="'+fieldName+'" data-direction="desc" '+selectedDesc+'>&darr; '+fielLabel+'</option>';
 				
 			}
 		
