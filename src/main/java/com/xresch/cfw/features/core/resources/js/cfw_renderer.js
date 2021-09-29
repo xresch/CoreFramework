@@ -1578,6 +1578,16 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	}
 	
 	//=====================================================
+	// Handle Filter Highlight
+	let sortFunctionArray = [
+		record => {
+			// make lowercase to have proper string sorting
+			return (typeof record[sortbyField] === 'string') ? record[sortbyField].toLowerCase() : record[sortbyField]
+		}
+	];
+
+	
+	//=====================================================
 	// Get Render Results
 	if(settings.datainterface.url == null){
 
@@ -1589,12 +1599,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			// Sort
 			let sortedData = renderDef.data;
 			if(sortbyField != null){
-				sortedData = _.sortBy(sortedData, 
-						[
-							record => (
-								(typeof record[sortbyField] === 'string') ? record[sortbyField].toLowerCase() : record[sortbyField]
-							)
-						]);
+				sortedData = _.sortBy(sortedData, sortFunctionArray);
 			}
 			
 			//---------------------------------
@@ -1619,7 +1624,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			// Sort
 			let sortedData = filteredData;
 			if(sortbyField != null){
-				sortedData = _.sortBy(sortedData, [sortbyField]);
+				sortedData = _.sortBy(sortedData, sortFunctionArray);
 			}
 			
 			//---------------------------------
@@ -1763,7 +1768,6 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	
 	//--------------------------------------
 	// Sort By
-	console.log(renderDef)
 	if(dataviewerSettings.sortable){
 		
 		html += '<div class="float-right ml-2">'

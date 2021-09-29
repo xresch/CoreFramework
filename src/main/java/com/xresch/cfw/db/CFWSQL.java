@@ -263,7 +263,7 @@ public class CFWSQL {
 			.getCount();
 			
 			if(count == 0) {
-				System.out.println("Fulltext: "+columnsString);
+				
 				//Cleanup existing INDEXES
 				new CFWSQL(null)
 				.custom("CALL FTL_DROP_INDEX('PUBLIC', '"+tableName+"');")
@@ -572,7 +572,6 @@ public class CFWSQL {
 				.select();
 			
 			if( !Strings.isNullOrEmpty(sortbyColumn) ) {
-				System.out.println("fulltextSearchLucene() add sortby");
 				query.orderby(sortbyColumn);
 			}
 			

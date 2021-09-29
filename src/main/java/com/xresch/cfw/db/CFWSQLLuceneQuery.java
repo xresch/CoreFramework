@@ -48,7 +48,6 @@ public class CFWSQLLuceneQuery {
 		//--------------------------------
 		// Order By
 		if( !Strings.isNullOrEmpty(sortbyColumn) ) {
-			System.out.println("build() add sortby");
 			fulltextSQL.orderby(sortbyColumn);
 		}
 		

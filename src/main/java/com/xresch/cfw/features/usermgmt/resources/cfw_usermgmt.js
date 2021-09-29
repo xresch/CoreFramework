@@ -534,7 +534,7 @@ function cfw_usermgmt_printUserList(data){
 			 	textstylefield: null,
 			 	titlefields: ['USERNAME', 'FIRSTNAME', 'LASTNAME'],
 			 	titleformat: '{0} ({1} {2})',
-			 	visiblefields: ['PK_ID', 'USERNAME', 'EMAIL', 'FIRSTNAME', 'LASTNAME', 'STATUS', "LAST_LOGIN"],
+			 	visiblefields: ['PK_ID', 'USERNAME', 'EMAIL', 'FIRSTNAME', 'LASTNAME', 'STATUS', "DATE_CREATED", "LAST_LOGIN"],
 			 	labels: {
 			 		PK_ID: "ID",
 			 	},
@@ -544,6 +544,7 @@ function cfw_usermgmt_printUserList(data){
 			 		LASTNAME: function(record, value) { return CFW.utils.nullTo(value, ''); },
 			 		STATUS: function(record, value) { return '<span class="badge badge-'+((value.toLowerCase() == "active")? 'success' : 'danger') +'">'+value+'</span>'; },
 			 		LAST_LOGIN: function(record, value) { return CFW.format.epochToTimestamp(value); },
+			 		DATE_CREATED: function(record, value) { return CFW.format.epochToTimestamp(value); },
 			 	},
 				actions: actionButtons,
 //				bulkActions: {
@@ -867,6 +868,9 @@ function cfw_usermgmt_printFullAuditView(){
  ******************************************************************/
 
 function cfw_usermgmt_initialDraw(options){
+	
+	$('#cfw-container').css('max-width', '80%');
+	
 	cfw_usermgmt_draw(options);
 }
 
