@@ -17,9 +17,9 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 	protected String pageTitle;
 	
 	protected FileAssembly headjs = new FileAssembly("js_assembly_jshead", "js");
-	protected FileAssembly bottomjsCFW = new FileAssembly("js_assembly_cfw", "js");
+
 	protected FileAssembly bottomjsCustom = new FileAssembly("js_assembly_custom", "js");
-	protected FileAssembly assemblyCSSCFW = new FileAssembly("css_assembly_cfw", "css");
+	protected FileAssembly assemblyCSSTheme = new FileAssembly("css_assembly_theme", "css");
 	protected FileAssembly assemblyCSSCustom = new FileAssembly("css_assembly_custom", "css");
 	
 	protected ArrayList<FileAssembly> bottomjsAssemblies = new ArrayList<FileAssembly>();
@@ -37,10 +37,11 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 	public AbstractHTMLResponse(){
 		super();
 		
-		bottomjsAssemblies.add(bottomjsCFW);
+		bottomjsAssemblies.add(CFW.Registry.Components.getGlobalJavascripts());
 		bottomjsAssemblies.add(bottomjsCustom);
 		
-		cssAssemblies.add(assemblyCSSCFW);
+		cssAssemblies.add(assemblyCSSTheme);
+		cssAssemblies.add(CFW.Registry.Components.getGlobalCSS());
 		cssAssemblies.add(assemblyCSSCustom);
 		
 		String requestID = (String)request.getAttribute(CFW.REQUEST_ATTR_ID);
@@ -58,10 +59,7 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 	public void addJSFileHeadAssembly(FileDefinition.HandlingType type, String path, String filename){
 		headjs.addFile(type, path, filename);
 	}
-	
-	protected void addJSFileBottomCFW(FileDefinition.HandlingType type, String path, String filename){
-		bottomjsCFW.addFile(type, path, filename);
-	}
+
 	public void addJSFileBottom(FileDefinition.HandlingType type, String path, String filename){
 		bottomjsCustom.addFile(type, path, filename);
 	}
@@ -102,9 +100,10 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 
 	}
 	
-	protected void addCSSFileCFW(FileDefinition.HandlingType type, String path, String filename){
-		assemblyCSSCFW.addFile(type, path, filename);
+	public void addCSSFileTheme(FileDefinition.HandlingType type, String path, String filename){
+		assemblyCSSTheme.addFile(type, path, filename);
 	}
+	
 	public void addCSSFile(FileDefinition.HandlingType type, String path, String filename){
 		assemblyCSSCustom.addFile(type, path, filename);
 	}

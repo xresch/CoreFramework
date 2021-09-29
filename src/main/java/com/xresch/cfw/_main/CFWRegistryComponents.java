@@ -3,6 +3,8 @@ package com.xresch.cfw._main;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import com.xresch.cfw.caching.FileAssembly;
+import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
@@ -22,9 +24,8 @@ import com.xresch.cfw.response.bootstrap.UserMenuItem;
 public class CFWRegistryComponents {
 	private static Logger logger = CFWLog.getLogger(CFWRegistryComponents.class.getName());
 	
-	/***********************************************************************
-	 * Menus
-	 ***********************************************************************/ 
+	//-------------------------------
+	// Menus
 	private static LinkedHashMap<String, MenuItem> regularMenuItems = new LinkedHashMap<>();
 	private static LinkedHashMap<String, MenuItem> userMenuItems = new LinkedHashMap<>();
 	private static LinkedHashMap<String, MenuItem> toolsMenuItems = new LinkedHashMap<>();
@@ -33,10 +34,48 @@ public class CFWRegistryComponents {
 	// Admin items of the Core Framework
 	private static LinkedHashMap<String, MenuItem> adminMenuItemsCFW = new LinkedHashMap<>();
 	
-	/***********************************************************************
-	 * Footer
-	 ***********************************************************************/ 
+	//-------------------------------
+	// Footer
 	private static Class<?> defaultFooterClass = null;
+	
+	//-------------------------------
+	// Global web resources
+	private static FileAssembly assemblyGlobalJavascript = new FileAssembly("js_assembly_global", "js");
+	private static FileAssembly assemblyGlobalCSS = new FileAssembly("css_assembly_global", "css");
+	
+	
+
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/ 
+	public static void addGlobalCSSFile(FileDefinition.HandlingType type, String path, String filename){
+		assemblyGlobalCSS.addFile(type, path, filename);
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/ 
+	public static FileAssembly getGlobalCSS(){
+		return assemblyGlobalCSS;
+	}
+	
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/ 
+	public static  void addGlobalJavascript(FileDefinition.HandlingType type, String path, String filename){
+		assemblyGlobalJavascript.addFile(type, path, filename);
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/ 
+	public static FileAssembly getGlobalJavascripts(){
+		return assemblyGlobalJavascript;
+	}
+	
+	
 	
 	/***********************************************************************
 	 * Adds a menuItem to the regular menu.

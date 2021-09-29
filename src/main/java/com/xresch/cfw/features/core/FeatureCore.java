@@ -50,6 +50,37 @@ public class FeatureCore extends CFWAppFeature {
 		// Register Languages
 		CFW.Localization.registerLocaleFile(Locale.ENGLISH, "", new FileDefinition(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".lang", "lang_en.properties"));
 		CFW.Localization.registerLocaleFile(Locale.GERMAN, "", new FileDefinition(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".lang", "lang_de.properties"));		
+		
+		//----------------------------------
+		// Register Global CSS
+		HandlingType HANDLE_JAR = FileDefinition.HandlingType.JAR_RESOURCE;
+		String CSS_PATH = FeatureCore.RESOURCE_PACKAGE + ".css";
+		CFW.Registry.Components.addGlobalCSSFile(HANDLE_JAR, CSS_PATH, "bootstrap-tagsinput.css");
+		CFW.Registry.Components.addGlobalCSSFile(HANDLE_JAR, CSS_PATH, "summernote-bs4.css");
+		CFW.Registry.Components.addGlobalCSSFile(HANDLE_JAR, CSS_PATH, "jquery-ui.min.css");
+		CFW.Registry.Components.addGlobalCSSFile(HANDLE_JAR, CSS_PATH, "font-awesome.css");
+		CFW.Registry.Components.addGlobalCSSFile(HANDLE_JAR, CSS_PATH, "chartjs.css");
+		CFW.Registry.Components.addGlobalCSSFile(HANDLE_JAR, CSS_PATH, "cfw.css");
+		CFW.Registry.Components.addGlobalCSSFile(FileDefinition.HandlingType.FILE, "./resources/css", "custom.css");
+		
+		//------------------------------------------
+		// Register Global Javascript
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "jquery-3.4.1.min.js");
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "jquery-ui-1.12.3.min.js");
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "bootstrap.bundle.min.js");
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "bootstrap-tagsinput.js");
+		
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "summernote-bs4.min.js");
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "highlight.js");
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "lodash-full-4.17.15.min.js");
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "moment-2.27.0.js"); // required by ChartJS
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "chartjs-2.93.min.js"); 
+		
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "cfw_components.js");
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "cfw.js");
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "cfw_renderer.js");
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.FILE, "./resources/js", "custom.js");
+		
 		//----------------------------------
 		// Register Objects
 		//CFW.Registry.Objects.addCFWObject(Configuration.class);
@@ -62,6 +93,8 @@ public class FeatureCore extends CFWAppFeature {
 					.addPermission(FeatureCore.PERMISSION_FEATURE_MGMT)	
 					.href("/app/featuremanagement")
 				, null);
+		
+		
 				
 	}
 
