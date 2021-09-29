@@ -349,7 +349,7 @@ function cfwjobs_printJobs(itemType){
 		 	customizers: {
 		 		JSON_LASTRUN_MESSAGES: cfwjobs_formatMessages,
 		 		DESCRIPTION: function(record, value) { 
-		 			return '<div class="word-break-word" style="max-width: 250px">'+value+'</div>'; 
+		 			return '<div class="word-break-word" style="max-width: 250px">'+CFW.utils.nullTo(value, "&nbsp;")+'</div>'; 
 	 			},
 		 		IS_ENABLED: function(record, value) { 
 		 			return '<span class="badge badge-'+((value == true)? 'success' : 'danger') +'">'+value+'</span>'; 

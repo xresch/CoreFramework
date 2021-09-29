@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
@@ -85,15 +86,18 @@ public class ServletJobs extends HttpServlet
 				String pagesize = request.getParameter("pagesize");
 				String pagenumber = request.getParameter("pagenumber");
 				String filterquery = request.getParameter("filterquery");
-				
+				String sortby = request.getParameter("sortby");
+				String sortbydirection = request.getParameter("sortbydirection");
+				boolean isAscending = (Strings.isNullOrEmpty(sortbydirection) || !sortbydirection.contentEquals("desc")) ? true : false;
+					
 				switch(item.toLowerCase()) {
 					case "myjoblist": 		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)) {
-												jsonResponse.getContent().append(CFW.DB.Jobs.getPartialJobListAsJSONForUser(pagesize, pagenumber, filterquery));
+												jsonResponse.getContent().append(CFW.DB.Jobs.getPartialJobListAsJSONForUser(pagesize, pagenumber, filterquery, sortby, isAscending));
 											}else { CFW.Messages.noPermission(); }
 											break;
 	  										
 					case "adminjoblist": 	if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)) {
-												jsonResponse.getContent().append(CFW.DB.Jobs.getPartialJobListAsJSONForAdmin(pagesize, pagenumber, filterquery));
+												jsonResponse.getContent().append(CFW.DB.Jobs.getPartialJobListAsJSONForAdmin(pagesize, pagenumber, filterquery, sortby, isAscending));
 											}else { CFW.Messages.noPermission(); }
 											break;
 	  										

@@ -197,14 +197,14 @@ public class CFWDBJob {
 	/*******************************************************
 	 * 
 	 *******************************************************/
-	public static String getPartialJobListAsJSONForUser(String pageSize, String pageNumber, String filterquery) {
-		return getPartialJobListAsJSONForUser(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery);
+	public static String getPartialJobListAsJSONForUser(String pageSize, String pageNumber, String filterquery, String sortby, boolean isAscending) {
+		return getPartialJobListAsJSONForUser(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery, sortby, isAscending);
 	}
 	
 	/*******************************************************
 	 * 
 	 *******************************************************/
-	public static String getPartialJobListAsJSONForUser(int pageSize, int pageNumber, String filterquery) {	
+	public static String getPartialJobListAsJSONForUser(int pageSize, int pageNumber, String filterquery, String sortby, boolean isAscending) {	
 		
 		//-------------------------------------
 		// Filter with fulltext search
@@ -212,18 +212,16 @@ public class CFWDBJob {
 		// on the CFWJob Object
 		int userID = CFW.Context.Request.getUser().id();
 		
+		CFWSQL query;
 		if(Strings.isNullOrEmpty(filterquery)) {
 			//-------------------------------------
 			// Unfiltered
-			return new CFWSQL(new CFWJob())
-				.queryCache()
+			query =  new CFWSQL(new CFWJob())
+				//.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForUser-FilterEmpty-sort-"+isAscending)
 				.columnSubqueryTotalRecords()
 				.select()
 				.where(CFWJobFields.FK_ID_USER, userID)
-				.orderby(CFWJobFields.JOB_NAME)
-				.limit(pageSize)
-				.offset(pageSize*(pageNumber-1))
-				.getAsJSON();
+				;
 		}else {
 			//-------------------------------------
 			// Filter with fulltext search
@@ -231,8 +229,8 @@ public class CFWDBJob {
 			// on the Person Object
 			String wildcardString = "%"+filterquery+"%";
 			
-			return new CFWSQL(new CFWJob())
-					.queryCache()
+			query =  new CFWSQL(new CFWJob())
+					//.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForUser-FilteredSearch-sort-"+isAscending)
 					.columnSubqueryTotalRecords()
 					.select()
 					.where(CFWJobFields.FK_ID_USER, userID)
@@ -243,68 +241,94 @@ public class CFWDBJob {
 							.or().like(CFWJobFields.TASK_NAME, wildcardString)
 							.or().like(CFWJobFields.JSON_PROPERTIES, wildcardString)
 						.custom(")")
-					.orderby(CFWJobFields.JOB_NAME)
-					.limit(pageSize)
-					.offset(pageSize*(pageNumber-1))
-					.getAsJSON();
+					;
 		}
+		
+		//-------------------------------------
+		// Sorting
+		if(Strings.isNullOrEmpty(sortby)) {
+			sortby = CFWJobFields.JOB_NAME.toString();
+		}
+		
+		if(isAscending) {
+			query.orderby(sortby);
+		}else {
+			query.orderbyDesc(sortby);
+		}
+		
+		
+		//-------------------------------------
+		// Limit Offset and Execute
+		return query.limit(pageSize)
+			.offset(pageSize*(pageNumber-1))
+			.getAsJSON();
 				
 	}
 	
 	/*******************************************************
 	 * 
 	 *******************************************************/
-	public static String getPartialJobListAsJSONForAdmin(String pageSize, String pageNumber, String filterquery) {
-		return getPartialJobListAsJSONForAdmin(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery);
+	public static String getPartialJobListAsJSONForAdmin(String pageSize, String pageNumber, String filterquery, String sortby, boolean isAscending) {
+		return getPartialJobListAsJSONForAdmin(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery, sortby, isAscending);
 	}
 	
 	/*******************************************************
 	 * 
 	 *******************************************************/
-	public static String getPartialJobListAsJSONForAdmin(int pageSize, int pageNumber, String searchString) {	
+	public static String getPartialJobListAsJSONForAdmin(int pageSize, int pageNumber, String searchString, String sortby, boolean isAscending) {	
 		
 		//-------------------------------------
 		// Filter with fulltext search
 		// Enabled by CFWObject.enableFulltextSearch()
 		// on the CFWJob Object
-
-
+		
+		CFWSQL query;
 		if(Strings.isNullOrEmpty(searchString)) {
-				//-------------------------------------
-				// Unfiltered
-				return new CFWSQL(new CFWJob())
-					.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForAdmin-SearchEmpty")
+			//-------------------------------------
+			// Unfiltered
+			query = new CFWSQL(new CFWJob())
+					//.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForAdmin-SearchEmpty-sort-"+isAscending)
+					.columnSubquery("OWNER", CFW.DB.Users.USERNAME_SUBQUERY)
+					.columnSubqueryTotalRecords()
+					.select();
+			
+		}else {
+			
+			//-------------------------------------
+			// Filter with fulltext search
+			// Enabled by CFWObject.enableFulltextSearch()
+			// on the Person Object
+			String wildcardString = "%"+searchString+"%";
+			
+			query = new CFWSQL(new CFWJob())
+					//.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForAdmin-SearchQuery-sort-"+isAscending)
 					.columnSubquery("OWNER", CFW.DB.Users.USERNAME_SUBQUERY)
 					.columnSubqueryTotalRecords()
 					.select()
-					.orderby(CFWJobFields.JOB_NAME)
-					.limit(pageSize)
-					.offset(pageSize*(pageNumber-1))
-					.getAsJSON();
-
-			}else {
-				
-				//-------------------------------------
-				// Filter with fulltext search
-				// Enabled by CFWObject.enableFulltextSearch()
-				// on the Person Object
-				String wildcardString = "%"+searchString+"%";
-				
-				return new CFWSQL(new CFWJob())
-						.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForAdmin-SearchQuery")
-						.columnSubquery("OWNER", CFW.DB.Users.USERNAME_SUBQUERY)
-						.columnSubqueryTotalRecords()
-						.select()
-						.whereLike(CFWJobFields.JOB_NAME, wildcardString)
-							.or().like(CFWJobFields.DESCRIPTION, wildcardString)
-							.or().like(CFWJobFields.TASK_NAME, wildcardString)
-							.or().like(CFWJobFields.JSON_PROPERTIES, wildcardString)
-							.or().custom("LOWER(("+CFW.DB.Users.USERNAME_SUBQUERY+")) LIKE LOWER(?)", wildcardString)
-						.orderby(CFWJobFields.JOB_NAME)
-						.limit(pageSize)
-						.offset(pageSize*(pageNumber-1))
-						.getAsJSON();
-			}
+					.whereLike(CFWJobFields.JOB_NAME, wildcardString)
+						.or().like(CFWJobFields.DESCRIPTION, wildcardString)
+						.or().like(CFWJobFields.TASK_NAME, wildcardString)
+						.or().like(CFWJobFields.JSON_PROPERTIES, wildcardString)
+						.or().custom("LOWER(("+CFW.DB.Users.USERNAME_SUBQUERY+")) LIKE LOWER(?)", wildcardString);
+		}
+		
+		//-------------------------------------
+		// Sorting
+		if(Strings.isNullOrEmpty(sortby)) {
+			sortby = CFWJobFields.JOB_NAME.toString();
+		}
+		
+		if(isAscending) {
+			query.orderby(sortby);
+		}else {
+			query.orderbyDesc(sortby);
+		}
+		
+		//-------------------------------------
+		// Limit Offset and Execute
+		return query.limit(pageSize)
+			.offset(pageSize*(pageNumber-1))
+			.getAsJSON();
 				
 	}
 	
