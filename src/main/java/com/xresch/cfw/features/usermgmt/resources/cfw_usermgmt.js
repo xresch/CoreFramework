@@ -478,7 +478,8 @@ function cfw_usermgmt_printUserList(data){
 		actionButtons.push(
 			function (record, id){ 
 				if(!record.IS_FOREIGN){
-					let buttonSizeClass = (CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0) == 1) ? "btn-xs" : "btn-sm";
+					let index = CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0);
+					let buttonSizeClass = (index == 1 || index == 3) ? "btn-xs" : "btn-sm";
 
 					return '<button class="btn '+buttonSizeClass+' btn-warning text-white" title="Reset Password" '
 						+'onclick="cfw_usermgmt_resetPassword('+id+');">'
@@ -494,7 +495,8 @@ function cfw_usermgmt_printUserList(data){
 		// Audit Button
 		actionButtons.push(
 				function (record, id){ 
-					let buttonSizeClass = (CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0) == 1) ? "btn-xs" : "btn-sm";
+					let index = CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0);
+					let buttonSizeClass = (index == 1 || index == 3) ? "btn-xs" : "btn-sm";
 					
 					return 	'<button class="btn '+buttonSizeClass+' btn-warning text-white" title="Audit" '
 					+'onclick="cfw_usermgmt_auditUser('+id+');">'
@@ -507,7 +509,8 @@ function cfw_usermgmt_printUserList(data){
 		// Edit Button
 		actionButtons.push(
 			function (record, id){ 
-				let buttonSizeClass = (CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0) == 1) ? "btn-xs" : "btn-sm";
+				let index = CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0);
+				let buttonSizeClass = (index == 1 || index == 3) ? "btn-xs" : "btn-sm";
 				
 				return 	'<button class="btn '+buttonSizeClass+' btn-primary" title="Edit" '
 					+'onclick="cfw_usermgmt_editUser('+id+');">'
@@ -523,7 +526,8 @@ function cfw_usermgmt_printUserList(data){
 			function (record, id){
 				
 				if(record.IS_DELETABLE){
-					let buttonSizeClass = (CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0) == 1) ? "btn-xs" : "btn-sm";
+					let index = CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0);
+					let buttonSizeClass = (index == 1 || index == 3) ? "btn-xs" : "btn-sm";
 					
 					return '<button class="btn '+buttonSizeClass+' btn-danger" alt="Delete" title="Delete"  '
 						+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the user?\', \'Delete\', \'cfw_usermgmt_delete(\\\'users\\\','+id+');\')">'
@@ -588,6 +592,14 @@ function cfw_usermgmt_printUserList(data){
 							{	label: 'Panels',
 								name: 'panels',
 								renderdef: {}
+							},
+							{	label: 'Smaller Panels',
+								name: 'panels',
+								renderdef: {
+									rendererSettings: {
+										panels: {narrow: true},
+									},
+								}
 							},
 							{	label: 'Cards',
 								name: 'cards',
