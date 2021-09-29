@@ -543,16 +543,40 @@ public class CFWSQL {
 	 * If the filterquery is null or empty, only a limit and offset
 	 * will be added  to the query.
 	 * Use the "getAs.." methods to convert the result.
-	 * 
+	 
+	 * @param filterquery a lucene filter query, can be null or empty string
+	 * @param pageSize max number of results, use 0 for all results
+	 * @param pageNumber the page that should be fetched. 
 	 ****************************************************************/
 	public CFWSQL fulltextSearchLucene(String luceneFilterquery, int pageSize, int pageNumber) {
+		return fulltextSearchLucene(luceneFilterquery, null, pageSize, pageNumber);
+	}
+	
+	/****************************************************************
+	 * initializes a new Fulltext search.
+	 * If the filterquery is null or empty, only a limit and offset
+	 * will be added  to the query.
+	 * Use the "getAs.." methods to convert the result.
+	 * 
+	 * @param filterquery a lucene filter query, can be null or empty string
+	 * @param sortbyColumn name of the column to sort, can be null or empty string
+	 * @param pageSize max number of results, use 0 for all results
+	 * @param pageNumber the page that should be fetched.
+	 ****************************************************************/
+	public CFWSQL fulltextSearchLucene(String luceneFilterquery, String sortbyColumn, int pageSize, int pageNumber) {
 		
 		if(Strings.isNullOrEmpty(luceneFilterquery)) {
 			//-------------------------------------
 			// Unfiltered
-			return this.columnSubquery("TOTAL_RECORDS", "COUNT(*) OVER()")
-				.select()
-				.limit(pageSize)
+			CFWSQL query = this.columnSubquery("TOTAL_RECORDS", "COUNT(*) OVER()")
+				.select();
+			
+			if( !Strings.isNullOrEmpty(sortbyColumn) ) {
+				System.out.println("fulltextSearchLucene() add sortby");
+				query.orderby(sortbyColumn);
+			}
+			
+			return query.limit(pageSize)
 				.offset(pageSize*(pageNumber-1));
 
 		}else {
@@ -560,11 +584,10 @@ public class CFWSQL {
 			// Filter with fulltext search
 			// Enabled by CFWObject.enableFulltextSearch()
 			// on the Person Object
-			return 
-					this.select()
+			return this.select()
 						.fulltextSearchLucene()
 						.custom(luceneFilterquery)
-						.build(pageSize, pageNumber);
+						.build(sortbyColumn, pageSize, pageNumber);
 		}
 		
 	}

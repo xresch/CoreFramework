@@ -129,7 +129,8 @@ DONE
 - Jobs: Task Selection shows now a table with the task description.
 - Properties: added config "cfw_application_url" to be able to add links to mails.
 - API: Added Default Create API
-- CFW.JS Renderer: CSV Supports foreground and background color
+- CSV Renderer: CSV Supports foreground and background color
+- Dataviewer Renderer: Added Sortby-Field
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB

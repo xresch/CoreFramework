@@ -1475,7 +1475,7 @@ function cfw_renderer_dataviewer(renderDef) {
 			// if a store ID is provided, the settings will be saved and restored when refreshing the viewer or the page.
 			storeid: null,
 			// enable sorting. 
-			//sortable: false,
+			sortable: true,
 			// the interface to fetch the data from
 			datainterface: {
 				//The url to fetch the data from. If null the data from rendererSettings.data will be used.
@@ -1491,7 +1491,7 @@ function cfw_renderer_dataviewer(renderDef) {
 				//The param name for the page to fetch
 				pageparam: 'pagenumber',
 				//The offset for fetching the results
-				//sortbyparam: 'sortby',
+				sortbyparam: 'sortby',
 				//The offset for fetching the results
 				//sortdirectionparam: 'sort',
 				//The filter string used for filtering the results
@@ -1515,7 +1515,7 @@ function cfw_renderer_dataviewer(renderDef) {
 	dataviewerDiv.data('settings', settings);
 	
 	
-	dataviewerDiv.append(cfw_renderer_dataviewer_createMenuHTML(dataviewerID, settings));
+	dataviewerDiv.append(cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, settings));
 	dataviewerDiv.append('<div class="cfw-dataviewer-content">');
 	
 	cfw_renderer_dataviewer_fireChange(dataviewerDiv, settings.initialpage);
@@ -1558,12 +1558,15 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	var pageSize = settingsDiv.find('select[name="pagesize"]').val();
 	var filterquery = settingsDiv.find('input[name="filterquery"]').val();
 	var rendererIndex = settingsDiv.find('select[name="displayas"]').val();
+	var sortbyField = settingsDiv.find('select[name="sortby"]').val();
+	
 	var offset = (pageSize > 0 ) ? pageSize * (pageToRender-1): 0;
 	
 	if(settings.storeid != null){
 		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][pageSize]', pageSize);
 		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][filterquery]', filterquery);
 		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][rendererIndex]', rendererIndex);
+		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][sortbyField]', sortbyField);
 	}
 	
 	//=====================================================
@@ -1573,32 +1576,58 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	}else{
 		settingsDiv.find('input[name="filterquery"]').addClass('bg-cfw-yellow');
 	}
-
-
 	
 	//=====================================================
 	// Get Render Results
 	if(settings.datainterface.url == null){
-		
+
 		//-------------------------------------
 		// Static 
 		if(CFW.utils.isNullOrEmpty(filterquery)){
-			let totalRecords = renderDef.data.length;
-			let dataToRender = _.slice(renderDef.data, offset, offset+pageSize);
+			
+			//---------------------------------
+			// Sort
+			let sortedData = renderDef.data;
+			if(sortbyField != null){
+				sortedData = _.sortBy(sortedData, 
+						[
+							record => (
+								(typeof record[sortbyField] === 'string') ? record[sortbyField].toLowerCase() : record[sortbyField]
+							)
+						]);
+			}
+			
+			//---------------------------------
+			// Pagination
+			let totalRecords = sortedData.length;
+			let dataToRender = _.slice(sortedData, offset, offset+pageSize);
 			if(pageSize == -1){
-				dataToRender = renderDef.data;
+				dataToRender = sortedData;
 			}
 
 			cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
 		}else{
+			
+			//---------------------------------
+			// Filter
 			filterquery = filterquery.toLowerCase();
 			let filteredData = _.filter(renderDef.data, function(o) { 
 				    return JSON.stringify(o).toLowerCase().includes(filterquery); 
 			});
-			let totalRecords = filteredData.length;
-			let dataToRender = _.slice(filteredData, offset, offset+pageSize);
+			
+			//---------------------------------
+			// Sort
+			let sortedData = filteredData;
+			if(sortbyField != null){
+				sortedData = _.sortBy(sortedData, [sortbyField]);
+			}
+			
+			//---------------------------------
+			// Pagination
+			let totalRecords = sortedData.length;
+			let dataToRender = _.slice(sortedData, offset, offset+pageSize);
 			if(pageSize == -1){
-				dataToRender = filteredData;
+				dataToRender = sortedData;
 			}	
 			cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
 		}
@@ -1612,14 +1641,14 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 		params[settings.datainterface.pageparam] = pageToRender;
 		params[settings.datainterface.filterqueryparam] = filterquery;
 		params[settings.datainterface.itemparam] = settings.datainterface.item;
+		params[settings.datainterface.sortbyparam] = sortbyField;
+//		params[settings.datainterface.sortdirectionparam] = ;
 		
 		for(key in settings.datainterface.customparams){
 			params[key] = settings.datainterface.customparams[key];
 		}
-//		params[settings.datainterface.sortbyparam] = ;
-//		params[settings.datainterface.sortdirectionparam] = ;
-//		params[settings.datainterface.filterparam] = ;
-//		params[settings.datainterface.totalrowsfield] = ;
+
+
 		
 		CFW.http.getJSON(settings.datainterface.url, params, function(data){
 			
@@ -1690,7 +1719,7 @@ function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRe
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings) {
+function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, dataviewerSettings) {
 	
 	//--------------------------------------
 	// Initialize Variables
@@ -1700,11 +1729,13 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings
 	//--------------------------------------
 	// Prepare Settings
 	var selectedRendererIndex = 0;
+	var selectedSortbyField = null;
 	var selectedSize = dataviewerSettings.defaultsize;
 	var filterquery = '';
 	
 	if(dataviewerSettings.storeid != null){
 		selectedRendererIndex 	= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][rendererIndex]', selectedRendererIndex);
+		selectedSortbyField 	= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][sortbyField]', selectedSortbyField);
 		selectedSize 			= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][pageSize]', selectedSize);
 		filterquery 			= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][filterquery]', filterquery);
 	}
@@ -1729,6 +1760,33 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, dataviewerSettings
 		html += '	</select>'
 				+'</div>';
 	}
+	
+	//--------------------------------------
+	// Sort By
+	console.log(renderDef)
+	if(dataviewerSettings.sortable){
+		
+		html += '<div class="float-right ml-2">'
+			+'	<label for="sortby">Sort By:&nbsp;</label>'
+			+'	<select name="sortby" class="form-control form-control-sm" title="Choose Sorting" '+onchangeAttribute+'>'
+		
+			for(index in renderDef.visiblefields){
+				var fieldName = renderDef.visiblefields[index];
+				var fielLabel = renderDef.labels[fieldName];
+				var selected = 
+						(
+							(index == 0 && selectedSortbyField == null)
+						 || fieldName == selectedSortbyField 
+						) ? 'selected' : '';
+				
+				html += '<option value="'+fieldName+'" '+selected+'>'+fielLabel+'</option>';
+				
+			}
+		
+		html += '	</select>'
+				+'</div>';
+	}
+	
 	//--------------------------------------
 	// Page Size
 	html += '<div class="float-right ml-2">'

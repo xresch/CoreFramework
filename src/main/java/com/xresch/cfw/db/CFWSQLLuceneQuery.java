@@ -1,5 +1,6 @@
 package com.xresch.cfw.db;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw.datahandling.CFWObject;
 
 /**************************************************************************************************************
@@ -21,10 +22,11 @@ public class CFWSQLLuceneQuery {
 	 * fulltext result.
 	 * Total number of results will be returned in the column
 	 * TOTAL_RECORDS.
+	 * @param sortbyColumn name of the column to sort, can be null or empty string
 	 * @param pageSize max number of results, use 0 for all results
 	 * @param pageNumber the page that should be fetched.
 	 ****************************************************************/
-	public CFWSQL build(int pageSize, int pageNumber) {
+	public CFWSQL build(String sortbyColumn, int pageSize, int pageNumber) {
 		
 		int limit = pageSize < 0 ? 0 : pageSize;
 		int offset = pageSize*(pageNumber-1);
@@ -42,6 +44,13 @@ public class CFWSQLLuceneQuery {
 				  , luceneQuery.toString())
 			.custom("JOIN FTL_SEARCH_DATA(?, ?, ?) FT", luceneQuery.toString(), limit, offset)
 			.custom("ON T."+initialObject.getPrimaryField().getName()+"=FT.KEYS[1]");
+		
+		//--------------------------------
+		// Order By
+		if( !Strings.isNullOrEmpty(sortbyColumn) ) {
+			System.out.println("build() add sortby");
+			fulltextSQL.orderby(sortbyColumn);
+		}
 		
 		return fulltextSQL;
 	}
