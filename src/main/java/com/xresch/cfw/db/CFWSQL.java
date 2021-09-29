@@ -1129,13 +1129,15 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL orderby(Object fieldname) {
 		if(!isQueryCached()) {
-			if(fields != null && fields.get(fieldname.toString()).getValueClass() == String.class) {
-				query.append(" ORDER BY LOWER(T."+fieldname+")");
+			if(fields == null) {
+				query.append(" ORDER BY T."+fieldname);
+			}else if(fields.get(fieldname.toString()) != null
+				  && fields.get(fieldname.toString()).getValueClass() == String.class) {
 				
+				query.append(" ORDER BY LOWER(T."+fieldname+")");
 			}else {
 				query.append(" ORDER BY T."+fieldname);
 			}
-			
 		}
 		return this;
 	}
@@ -1168,11 +1170,9 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL orderbyDesc(Object fieldname) {
 		if(!isQueryCached()) {				
-			if(fields != null && fields.get(fieldname.toString()).getValueClass() == String.class) {
-				query.append(" ORDER BY LOWER(T.").append(fieldname).append(") DESC");
-			}else {
-				query.append(" ORDER BY T.").append(fieldname).append(" DESC");
-			}
+			orderby(fieldname);
+			
+			query.append(" DESC");
 		}
 		return this;
 	}

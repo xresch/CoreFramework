@@ -294,6 +294,7 @@ public class CFWDBJob {
 			//-------------------------------------
 			// Unfiltered
 			query = new CFWSQL(new CFWJob())
+					// do not cache
 					//.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForAdmin-SearchEmpty-sort-"+isAscending)
 					.columnSubquery("OWNER", CFW.DB.Users.USERNAME_SUBQUERY)
 					.columnSubqueryTotalRecords()
@@ -308,6 +309,7 @@ public class CFWDBJob {
 			String wildcardString = "%"+searchString+"%";
 			
 			query = new CFWSQL(new CFWJob())
+					//do not cache
 					//.queryCache(CFWDBJob.class, "getPartialJobListAsJSONForAdmin-SearchQuery-sort-"+isAscending)
 					.columnSubquery("OWNER", CFW.DB.Users.USERNAME_SUBQUERY)
 					.columnSubqueryTotalRecords()
@@ -321,6 +323,7 @@ public class CFWDBJob {
 		
 		//-------------------------------------
 		// Sorting
+		System.out.println("sortby:"+sortby);
 		if(Strings.isNullOrEmpty(sortby)) {
 			sortby = CFWJobFields.JOB_NAME.toString();
 		}
