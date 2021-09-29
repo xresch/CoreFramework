@@ -293,6 +293,8 @@ The following are the available parameters with default values and how to use th
 	defaultsize: 50,
 	// if a store ID is provided, the settings will be saved and restored when refreshing the viewer or the page.
 	storeid: null,
+	// enable sorting. 
+	sortable: true,
 	// the interface to fetch the data from
 	datainterface: {
 		//The url to fetch the data from. If null the data from rendererSettings.data will be used.
@@ -307,6 +309,8 @@ The following are the available parameters with default values and how to use th
 		sizeparam:  'pagesize',
 		//The param name for the page to fetch
 		pageparam: 'pagenumber',
+		//The name of the field used to sort the results
+		sortbyparam: 'sortby',
 		//The filter string used for filtering the results
 		filterqueryparam: 'filterquery',
 		//The name of the field containing the total number of rows

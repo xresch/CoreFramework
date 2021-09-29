@@ -1490,7 +1490,7 @@ function cfw_renderer_dataviewer(renderDef) {
 				sizeparam:  'pagesize',
 				//The param name for the page to fetch
 				pageparam: 'pagenumber',
-				//The offset for fetching the results
+				//The name of the field used to sort the results
 				sortbyparam: 'sortby',
 				//The offset for fetching the results
 				//sortdirectionparam: 'sort',
