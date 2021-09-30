@@ -323,7 +323,6 @@ public class CFWDBJob {
 		
 		//-------------------------------------
 		// Sorting
-		System.out.println("sortby:"+sortby);
 		if(Strings.isNullOrEmpty(sortby)) {
 			sortby = CFWJobFields.JOB_NAME.toString();
 		}

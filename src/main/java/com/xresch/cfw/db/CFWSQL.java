@@ -1202,6 +1202,61 @@ public class CFWSQL {
 	}
 	
 	/****************************************************************
+	 * Adds ORDER BY, LIMIT and OFFSET to the query.
+	 * No ORDER BY will be done if sortby is null.
+	 * 
+	 * @param sortby the name of the column to sort by
+	 * @param isAscending do ascending sort if true, descending otherwise
+	 * @param pageSize the size of the page
+	 * @param pageNumber the number of the page
+	 * 
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public CFWSQL paginate(String sortby, boolean isAscending, int pageSize,  int pageNumber) {
+		return paginate(sortby, null, isAscending, pageSize, pageNumber);
+	}
+	
+	/****************************************************************
+	 * Adds ORDER BY, LIMIT and OFFSET to the query.
+	 * If sortbyColumn is null, defaultSortbyColumn will be used.
+	 * No ORDER BY will be done if both are null.
+	 * 
+	 * @param sortby the name of the column to sort by
+	 * @param sortbyDefault the name of the column to sort by if sortby is null
+	 * @param isAscending do ascending sort if true, descending otherwise
+	 * @param pageSize the size of the page
+	 * @param pageNumber the number of the page
+	 * 
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public CFWSQL paginate(String sortby, String defaultSortbyColumn, boolean isAscending, int pageSize,  int pageNumber) {
+		if(!isQueryCached()) {
+			//------------------
+			// Sort
+			if(sortby != null || defaultSortbyColumn != null) {
+				
+				if(sortby == null){ sortby = defaultSortbyColumn; }
+				
+				if(isAscending) {
+					this.orderby(sortby);
+				}else {
+					this.orderbyDesc(sortby);
+				}
+			}
+			
+			//------------------
+			// Execute
+			this.limit(pageSize)
+				.offset(pageSize*(pageNumber-1));
+		}
+		
+		return this;
+		
+	}
+	
+
+	
+	/****************************************************************
 	 * Adds a custom part to the query and values for the binding.
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/

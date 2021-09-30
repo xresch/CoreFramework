@@ -53,10 +53,11 @@ public class CFWSQLLuceneQuery {
 //		JOIN FTL_SEARCH_DATA('Vic* OR Vik* OR Dion* OR FIRSTNAME:Victoria', 0, 0) FT
 //		ON T.PK_ID=FT.KEYS[1];
 		fulltextSQL
-			.custom(initialSQL.getStatementString().replace("FROM", ", (SELECT COUNT(*) FROM FTL_SEARCH_DATA(?, 0, 0)) AS TOTAL_RECORDS FROM")
-				  , luceneQuery.toString())
-			.custom("JOIN FTL_SEARCH_DATA(?, ?, ?) FT", luceneQuery.toString(), limit, offset)
-			.custom("ON T."+initialObject.getPrimaryField().getName()+"=FT.KEYS[1]");
+			.custom("SELECT * FROM (")
+				.custom(initialSQL.getStatementString().replace("FROM", ", (SELECT COUNT(*) FROM FTL_SEARCH_DATA(?, 0, 0)) AS TOTAL_RECORDS FROM")
+					  , luceneQuery.toString())
+				.custom("JOIN FTL_SEARCH_DATA(?, ?, ?) FT", luceneQuery.toString(), limit, offset)
+				.custom("ON T."+initialObject.getPrimaryField().getName()+"=FT.KEYS[1]");
 		
 		//--------------------------------
 		// Order By
@@ -68,6 +69,9 @@ public class CFWSQLLuceneQuery {
 			}
 
 		}
+		
+		// Close wrapper Select
+		fulltextSQL.custom(") AS T ");
 		
 		return fulltextSQL;
 	}
