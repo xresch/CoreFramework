@@ -1476,6 +1476,8 @@ function cfw_renderer_dataviewer(renderDef) {
 			storeid: null,
 			// enable sorting. 
 			sortable: true,
+			// array of the fields available for sorting, if null or empty array, renderDefinition.visiblefields will be used
+			sortfields: null,
 			// the interface to fetch the data from
 			datainterface: {
 				//The url to fetch the data from. If null the data from rendererSettings.data will be used.
@@ -1782,14 +1784,18 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	// Sort By
 	if(dataviewerSettings.sortable){
 		
+		let sortfields = dataviewerSettings.sortfields;
+		if(sortfields == null || sortfields.length == null){
+			sortfields = renderDef.visiblefields;
+		}
 		html += '<div class="float-right ml-2">'
 			+'	<label for="sortby">Sort By:&nbsp;</label>'
 			+'	<select name="sortby" class="form-control form-control-sm" title="Choose Sorting" '+onchangeAttribute+'>'
 		
 			let ascendingHTML = ""; 
 			let descendingHTML = ""; 
-			for(index in renderDef.visiblefields){
-				var fieldName = renderDef.visiblefields[index];
+			for(index in sortfields){
+				var fieldName = sortfields[index];
 				var fielLabel = renderDef.labels[fieldName];
 				
 				
