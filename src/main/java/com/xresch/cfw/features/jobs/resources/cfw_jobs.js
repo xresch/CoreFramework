@@ -323,11 +323,14 @@ function cfwjobs_printJobs(itemType){
 	
 	//-------------------------
 	// Visible Fields
+	var fieldsWithOwner =  	 ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN_TIME']
+	var fieldsWithoutOwner = ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN_TIME']
+	
 	var visiblefields;
 	if(itemType == 'adminjoblist'){
-		visiblefields = ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'OWNER', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN_TIME'];
+		visiblefields = fieldsWithOwner;
 	}else{
-		visiblefields = ['JSON_LASTRUN_MESSAGES', 'PK_ID', 'JOB_NAME', 'TASK_NAME', 'DESCRIPTION', 'IS_ENABLED', 'SCHEDULE_START', 'SCHEDULE_END', 'SCHEDULE_INTERVAL', 'JSON_PROPERTIES', 'LAST_RUN_TIME'];
+		visiblefields = fieldsWithoutOwner;
 	}
 
 	//-----------------------------------
@@ -389,6 +392,7 @@ function cfwjobs_printJobs(itemType){
 			rendererSettings: {
 				dataviewer: {
 					storeid: itemType,
+					sortfields: fieldsWithoutOwner,
 					datainterface: {
 						url: CFWJOBS_URL,
 						item: itemType,
