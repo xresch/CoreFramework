@@ -131,6 +131,8 @@ DONE
 - API: Added Default Create API
 - CSV Renderer: CSV Supports foreground and background color
 - Dataviewer Renderer: Added Sortby-Field
+- FulltextSearch: wrapped Lucene Query in SELECT to make further  WHERE clauses more stable
+- CFWSQL: Added method for default pagination
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB

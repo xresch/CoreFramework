@@ -1493,7 +1493,7 @@ function cfw_renderer_dataviewer(renderDef) {
 				//The param name for the field used to sort the results
 				sortbyparam: 'sortby',
 				//The param name for the sort direction (will be either 'asc' or 'desc')
-				sortdirectionparam: 'sortbydirection',
+				sortascendingparam: 'isascending',
 				//The filter string used for filtering the results
 				filterqueryparam: 'filterquery',
 				//custom parameters which should be added to the request, e.g. {"paramname": "value", "param2": "anothervalue", ...}
@@ -1659,7 +1659,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 		params[settings.datainterface.filterqueryparam] = filterquery;
 		params[settings.datainterface.itemparam] = settings.datainterface.item;
 		params[settings.datainterface.sortbyparam] = sortbyField;
-		params[settings.datainterface.sortdirectionparam] = (sortbyDirection == null) ? 'asc' : sortbyDirection;
+		params[settings.datainterface.sortascendingparam] = (sortbyDirection == 'desc') ? false : true;
 
 		for(key in settings.datainterface.customparams){
 			params[key] = settings.datainterface.customparams[key];

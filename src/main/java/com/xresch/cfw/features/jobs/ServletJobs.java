@@ -87,8 +87,8 @@ public class ServletJobs extends HttpServlet
 				String pagenumber = request.getParameter("pagenumber");
 				String filterquery = request.getParameter("filterquery");
 				String sortby = request.getParameter("sortby");
-				String sortbydirection = request.getParameter("sortbydirection");
-				boolean isAscending = (Strings.isNullOrEmpty(sortbydirection) || !sortbydirection.contentEquals("desc")) ? true : false;
+				String isAscendingString = request.getParameter("isascending");
+				boolean isAscending = (isAscendingString == null || isAscendingString.equals("true")) ? true : false;
 					
 				switch(item.toLowerCase()) {
 					case "myjoblist": 		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)) {
