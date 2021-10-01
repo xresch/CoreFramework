@@ -1,1 +1,69 @@
-{}
+{
+	"success": true,
+	"messages": [],
+	"payload": [
+		{
+			"status": "success",
+			"data": {
+				"resultType": "vector",
+				"result": [
+					{
+						"metric": {
+							"instance": "localhost:9182",
+							"job": "windows_localhost",
+							"volume": "C:"
+						},
+						"value": [
+							1633079796,
+							"78.69094408591715"
+						]
+					},
+					{
+						"metric": {
+							"instance": "localhost:9182",
+							"job": "windows_localhost",
+							"volume": "F:"
+						},
+						"value": [
+							1633079796,
+							"21.68434736956141"
+						]
+					},
+					{
+						"metric": {
+							"instance": "localhost:9182",
+							"job": "windows_localhost",
+							"volume": "HarddiskVolume9"
+						},
+						"value": [
+							1633079796,
+							"57.69712140175219"
+						]
+					},
+					{
+						"metric": {
+							"instance": "localhost:9182",
+							"job": "windows_localhost",
+							"volume": "M:"
+						},
+						"value": [
+							1633079796,
+							"67.52156089893394"
+						]
+					},
+					{
+						"metric": {
+							"instance": "localhost:9182",
+							"job": "windows_localhost",
+							"volume": "Z:"
+						},
+						"value": [
+							1633079796,
+							"26.330421101403672"
+						]
+					}
+				]
+			}
+		}
+	]
+}

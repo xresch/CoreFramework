@@ -116,45 +116,6 @@ public class WidgetSettingsFactory {
 	}
 	
 	/************************************************************************************
-	 * Returns default threshold fields as a LinkedHashMap.
-	 * 
-	 * @return
-	 ************************************************************************************/
-	@SuppressWarnings("rawtypes")
-	public static LinkedHashMap<String,CFWField> createThresholdFields(){
-		LinkedHashMap<String,CFWField> fieldsMap = new LinkedHashMap<>();
-		
-		fieldsMap.put("threshold_excellent", CFWField.newFloat(FormFieldType.NUMBER, "threshold_excellent")
-					.setLabel("{!cfw_widget_thresholdexcellent!}")
-					.setDescription("{!cfw_widget_thresholdexcellent_desc!}")
-					.setValue(null)
-				);
-		
-		fieldsMap.put("threshold_good", CFWField.newFloat(FormFieldType.NUMBER, "threshold_good")
-					.setLabel("{!cfw_widget_thresholdgood!}")
-					.setDescription("{!cfw_widget_thresholdgood_desc!}")
-					.setValue(null)
-				);			
-		fieldsMap.put("threshold_warning", CFWField.newFloat(FormFieldType.NUMBER, "threshold_warning")
-					.setLabel("{!cfw_widget_thresholdwarning!}")
-					.setDescription("{!cfw_widget_thresholdwarning_desc!}")
-					.setValue(null)
-				);			
-		fieldsMap.put("threshold_emergency", CFWField.newFloat(FormFieldType.NUMBER, "threshold_emergency")
-					.setLabel("{!cfw_widget_thresholdemergency!}")
-					.setDescription("{!cfw_widget_thresholdemergency_desc!}")
-					.setValue(null)
-				);			
-		fieldsMap.put("threshold_danger", CFWField.newFloat(FormFieldType.NUMBER, "threshold_danger")
-					.setLabel("{!cfw_widget_thresholddanger!}")
-					.setDescription("{!cfw_widget_thresholddanger_desc!}")
-					.setValue(null)
-				);	
-			
-		return fieldsMap;
-	}
-	
-	/************************************************************************************
 	 * Returns default chart fields as a LinkedHashMap.
 	 * 
 	 * @return

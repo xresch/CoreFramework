@@ -54,6 +54,7 @@ import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.schedule.CFWTaskScheduler;
 import com.xresch.cfw.spi.CFWAppFeature;
 import com.xresch.cfw.spi.CFWAppInterface;
+import com.xresch.cfw.utils.CFWConditions;
 import com.xresch.cfw.utils.CFWDump;
 import com.xresch.cfw.utils.CFWFiles;
 import com.xresch.cfw.utils.CFWHttp;
@@ -108,6 +109,8 @@ public class CFW {
 		public static class SpaceGroups extends CFWDBSpaceGroup{};
 	}
 	public static class Caching extends CFWCacheManagement {}
+	
+	public static class Conditions extends CFWConditions {}
 	
 	public static class Context {
 		public static class App extends CFWContextApp{};
