@@ -82,21 +82,27 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 	
 	public void removeSessionFromTracking(String id) {
 		synchronized (sessionIDs) {
-			sessionIDs.remove(id);
-			sessionCounter.dec();
+			if(sessionIDs.contains(id)) {
+				sessionIDs.remove(id);
+				sessionCounter.dec();
+			}
 		}
 	}
 	
 	public void addSessionToTracking(String id) {
 		synchronized (sessionIDs) {
-			sessionIDs.add(id);
-			sessionCounter.inc();
+			if(!sessionIDs.contains(id)) {
+				sessionIDs.add(id);
+				sessionCounter.inc();
+			}
 		}
 	}
 	
 	public void changeIDOfTrackedSession(String oldID, String newID) {
 		synchronized (sessionIDs) {
-			sessionIDs.remove(oldID);
+			if(sessionIDs.contains(oldID)) {
+				sessionIDs.remove(oldID);
+			}
 			sessionIDs.add(newID);
 		}
 	}

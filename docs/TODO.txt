@@ -133,6 +133,7 @@ DONE
 - Dataviewer Renderer: Added Sortby-Field
 - FulltextSearch: wrapped Lucene Query in SELECT to make further  WHERE clauses more stable
 - CFWSQL: Added method for default pagination
+- /metrics: Fixed session count for API calls 
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB
