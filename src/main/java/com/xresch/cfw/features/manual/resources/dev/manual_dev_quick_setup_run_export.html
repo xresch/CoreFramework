@@ -1,18 +1,61 @@
 
 <h2>Setup Development Environment</h2>
+
 <p>You can find an example project in the following GitHub repository: <a target="_blank" rel="noopener noreferrer" href="https://github.com/xresch/CoreFramework_ExtensionExample">CoreFramework_ExtensionExample</a></p>
 
-<p>To setup a development environment create a maven project and add the following dependency:</p>
+<h3>Needed Tools</h3>
+<p>The following tools are needed to develop with the Core Framework:</p>
+<ul>
+	<li>Java OpenJDK 8 or higher</li>
+	<li>Eclipse IDE</li>
+	<li>Apache Maven </li>
+	<li>Git Client(e.g. Tortoise Git)</li>
+</ul>
+
+<p>The following tools are optional or needed depending on what you are coding:</p>
+<ul>
+	<li>Database Tool that can access the H2 database (e.g. DBeaver)</li>
+	<li>LDAP Server (e.g. Apache Studio)</li>
+	<li>Mail Testing Tool (e.g. Papercut)</li>
+</ul>
+
+
+<h3>Eclipse Setup and Running the Application</h3>
+<p>The following steps show how to setup a new Eclipse workspace with the aforementioned example project.
+You can as well add your own existing project or create a new project in the same workspace based on the sample project.
+</p>
+<ol>
+	<li>Checkout the Sample Project: <a target="_blank" rel="noopener noreferrer" href="https://github.com/xresch/CoreFramework_ExtensionExample.git">https://github.com/xresch/CoreFramework_ExtensionExample.git</a></li>
+	<li>Open Eclipse and create a new workspace.</li>
+	<li>File >> Import... >> Existing project into workspace</li>
+	<li>Select the folder of the sample project, select the checkbox in the Projects section.</li>
+	<li>Make sure the following checkbox is <b>NOT</b> selected: "Copy project into workspace"</li>
+	<li>Click Finish</li>
+	<li>Right click on the Project >> Run As >> Maven install. If this fails, you need to check your maven is setup correctly.</li>
+	<li>Navigate to the following class in the Project Explorer and choose "Right Click >> Run As >> Java Application": com.xresch.cfw.example._main._MainForTesting.</li>
+</ol>
+
+<p><b>Note:&nbsp: </b>The same procedure applies when you create a fork of the Core Framework itself.</p>
+
+<h3>Start Developing</h3>
+<p>You can now start developing based on the code you find in the sample project and the following development docs.</p>
+
+<h2>Further Information</h2>
+
+<h3>CFW Maven Dependency</h3>
+<p>To setup a development environment create a maven project and add the following dependency to your .pom-File.
+For a full example please refer to the pom-file in the sample project.</p>
 <pre><code>&lt;!-- https://mvnrepository.com/artifact/com.xresch/cfw --&gt;
 &lt;dependency&gt;
 	&lt;groupId&gt;com.xresch&lt;/groupId&gt;
 	&lt;artifactId&gt;cfw&lt;/artifactId&gt;
-	&lt;version&gt;1.0.4&lt;/version&gt;
+	&lt;version&gt;4.0.0&lt;/version&gt;
 	&lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;	
 </code></pre>
 
-<h2>Testing the Application</h2>
+
+<h3>Testing the Application</h3>
 <p>To test your application without copying it into the extension folder of the cfw server, create a main class like this:</p>
 <pre><code>public class _MainForTesting {
 			
@@ -32,7 +75,7 @@
 <p>Afterwards you can access the application under <a href="http://localhost:8888/">http://localhost:8888/</a> (port is defined in ./config/cfw.properties).</p>
 
 
-<h2>Export and Install Application</h2>
+<h3>Export and Install Application</h3>
 <p>To export your application do the following:</p>
 <ol>
 	<li><pre><code>mvn clean install</code></pre></li>
