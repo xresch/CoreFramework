@@ -618,7 +618,6 @@ function cfw_usermgmt_printUserList(data){
 							{	label: 'Smaller Table',
 								name: 'table',
 								renderdef: {
-									//actions: [],
 									rendererSettings: {
 										table: {filterable: false, narrow: true},
 									},

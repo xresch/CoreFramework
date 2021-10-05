@@ -387,10 +387,10 @@ function cfw_dashboardlist_printDashboards(data, type){
 		// Render Data
 		
 		var badgeCustomizerFunction = function(record, value) { 
- 			var badgesHTML = '<div>';
+ 			var badgesHTML = '<div class="maxvw-25">';
  			
  			for(id in value){
- 				badgesHTML += '<span class="badge badge-primary m-1">'+value[id]+'</span></br>';
+ 				badgesHTML += '<span class="badge badge-primary m-1">'+value[id]+'</span>';
  			}
  			badgesHTML += '</div>';
  			
@@ -440,6 +440,14 @@ function cfw_dashboardlist_printDashboards(data, type){
 								renderdef: {
 									rendererSettings: {
 										table: {filterable: false},
+									},
+								}
+							},
+							{	label: 'Smaller Table',
+								name: 'table',
+								renderdef: {
+									rendererSettings: {
+										table: {filterable: false, narrow: true},
 									},
 								}
 							},

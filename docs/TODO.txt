@@ -131,7 +131,7 @@ DONE
 - API: Added Default Create API
 - CSV Renderer: CSV Supports foreground and background color
 - CSV Renderer: Table makes buttons smaller when narrow is true
-- User Management: Use Dataviewer for Groups/Roles toggle table 
+- User Management: Use Dataviewer for Groups/Roles/Permissions toggle table 
 - Dataviewer Renderer: Added Sortby-Field
 - FulltextSearch: wrapped Lucene Query in SELECT to make further  WHERE clauses more stable
 - CFWSQL: Added method for default pagination
