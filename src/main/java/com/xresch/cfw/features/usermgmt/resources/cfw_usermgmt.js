@@ -16,7 +16,7 @@ function cfw_usermgmt_reset(){
 }
 
 /******************************************************************
- * Reset the view.
+ * 
  ******************************************************************/
 function cfw_usermgmt_formatAuditResults(parent, item){
 	
@@ -122,40 +122,87 @@ function cfw_usermgmt_createToggleTable(parent, mapName, itemID){
 		function(data) {
 			if(data.payload != null){
 				
-				var htmlString = "";
-				var cfwTable = new CFWTable({narrow: true});
-				
-				cfwTable.addHeaders(['&nbsp;',
-					CFWL('cfw_usermgmt_name'),
-					CFWL('cfw_usermgmt_description')]);
-				var resultCount = data.payload.length;
-				if(resultCount == 0){
-					CFW.ui.addAlert("info", "Hmm... seems there aren't any roles in the list.");
-				}
+				//-----------------------------------
+				// Render Data
+				var rendererSettings = {
+						data: data.payload,
+					 	idfield: 'PK_ID',
+					 	bgstylefield: null,
+					 	textstylefield: null,
+					 	titlefields: ['NAME'],
+					 	titleformat: '{0}',
+					 	visiblefields: ['PK_ID', 'NAME', 'DESCIPTION'],
+					 	labels: {
+					 		PK_ID: "&nbsp;",
+					 	},
+					 	customizers: {
+					 		PK_ID: function(record, value) { 
+								//Toggle Button
+								var params = {action: "update", item: mapName, itemid: itemID, listitemid: record.PK_ID};
+								var cfwToggleButton = CFW.ui.createToggleButton(CFW_USRMGMT_URL, params, (record.ITEM_ID == itemID));
+								
+								if(record.IS_DELETABLE != null && !record.IS_DELETABLE){
+									cfwToggleButton.setLocked();
+								}
+								
+								return cfwToggleButton.getButton();
+					 		},
 
-				for(var i = 0; i < resultCount; i++){
-					var current = data.payload[i];
-					var row = $('<tr>');
-					
-					//Toggle Button
-					var params = {action: "update", item: mapName, itemid: itemID, listitemid: current.PK_ID};
-					var cfwToggleButton = CFW.ui.createToggleButton(CFW_USRMGMT_URL, params, (current.ITEM_ID == itemID));
-					
-					if(current.IS_DELETABLE != null && !current.IS_DELETABLE){
-						cfwToggleButton.setLocked();
-					}
-					var buttonCell = $("<td>");
-					cfwToggleButton.appendTo(buttonCell);
-					row.append(buttonCell);
-					
-					row.append('<td>'+current.NAME+'</td>'
-							  +'<td>'+CFW.utils.nullTo(current.DESCRIPTION, '')+'</td>');
-					
-					cfwTable.addRow(row);
-				}
+					 	},
+						rendererSettings: {
+							dataviewer: {
+								storeid: 'usermgmtToggleTable'+mapName+itemID,
+								renderers: [
+									{	label: 'Table',
+										name: 'table',
+										renderdef: {
+											rendererSettings: {
+												table: {narrow: true },
+											},
+										}
+									}
+									]
+							},
+						},
+					};
 				
+				var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
+				parent.append(renderResult);
 				
-				cfwTable.appendTo(parent);
+//				var htmlString = "";
+//				var cfwTable = new CFWTable({narrow: true});
+//				
+//				cfwTable.addHeaders(['&nbsp;',
+//					CFWL('cfw_usermgmt_name'),
+//					CFWL('cfw_usermgmt_description')]);
+//				var resultCount = data.payload.length;
+//				if(resultCount == 0){
+//					CFW.ui.addAlert("info", "Hmm... seems there aren't any roles in the list.");
+//				}
+//
+//				for(var i = 0; i < resultCount; i++){
+//					var current = data.payload[i];
+//					var row = $('<tr>');
+//					
+//					//Toggle Button
+//					var params = {action: "update", item: mapName, itemid: itemID, listitemid: current.PK_ID};
+//					var cfwToggleButton = CFW.ui.createToggleButton(CFW_USRMGMT_URL, params, (current.ITEM_ID == itemID));
+//					
+//					if(current.IS_DELETABLE != null && !current.IS_DELETABLE){
+//						cfwToggleButton.setLocked();
+//					}
+//					var buttonCell = $("<td>");
+//					cfwToggleButton.appendTo(buttonCell);
+//					row.append(buttonCell);
+//					
+//					row.append('<td>'+current.NAME+'</td>'
+//							  +'<td>'+CFW.utils.nullTo(current.DESCRIPTION, '')+'</td>');
+//					
+//					cfwTable.addRow(row);
+//				}
+//				
+//				
+//				cfwTable.appendTo(parent);
 				
 			}else{
 				CFW.ui.addAlert('error', '<span>The '+mapName+' data for the id '+itemID+' could not be loaded.</span>');
@@ -478,10 +525,7 @@ function cfw_usermgmt_printUserList(data){
 		actionButtons.push(
 			function (record, id){ 
 				if(!record.IS_FOREIGN){
-					let index = CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0);
-					let buttonSizeClass = (index == 1 || index == 3) ? "btn-xs" : "btn-sm";
-
-					return '<button class="btn '+buttonSizeClass+' btn-warning text-white" title="Reset Password" '
+					return '<button class="btn btn-sm btn-warning text-white" title="Reset Password" '
 						+'onclick="cfw_usermgmt_resetPassword('+id+');">'
 						+ '<i class="fas fa-unlock-alt"></i>'
 						+ '</button></td>';
@@ -495,10 +539,7 @@ function cfw_usermgmt_printUserList(data){
 		// Audit Button
 		actionButtons.push(
 				function (record, id){ 
-					let index = CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0);
-					let buttonSizeClass = (index == 1 || index == 3) ? "btn-xs" : "btn-sm";
-					
-					return 	'<button class="btn '+buttonSizeClass+' btn-warning text-white" title="Audit" '
+					return 	'<button class="btn btn-sm btn-warning text-white" title="Audit" '
 					+'onclick="cfw_usermgmt_auditUser('+id+');">'
 					+ '<i class="fa fa-stethoscope"></i>'
 					+ '</button>';
@@ -509,10 +550,7 @@ function cfw_usermgmt_printUserList(data){
 		// Edit Button
 		actionButtons.push(
 			function (record, id){ 
-				let index = CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0);
-				let buttonSizeClass = (index == 1 || index == 3) ? "btn-xs" : "btn-sm";
-				
-				return 	'<button class="btn '+buttonSizeClass+' btn-primary" title="Edit" '
+				return 	'<button class="btn btn-sm btn-primary" title="Edit" '
 					+'onclick="cfw_usermgmt_editUser('+id+');">'
 					+ '<i class="fa fa-pen"></i>'
 					+ '</button>';
@@ -526,10 +564,7 @@ function cfw_usermgmt_printUserList(data){
 			function (record, id){
 				
 				if(record.IS_DELETABLE){
-					let index = CFW.cache.retrieveValueForPage('dataviewer['+STOREID_USERLIST+'][rendererIndex]', 0);
-					let buttonSizeClass = (index == 1 || index == 3) ? "btn-xs" : "btn-sm";
-					
-					return '<button class="btn '+buttonSizeClass+' btn-danger" alt="Delete" title="Delete"  '
+					return '<button class="btn btn-sm btn-danger" alt="Delete" title="Delete"  '
 						+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the user?\', \'Delete\', \'cfw_usermgmt_delete(\\\'users\\\','+id+');\')">'
 						+ '<i class="fa fa-trash"></i>'
 						+ '</button>';

@@ -632,14 +632,22 @@ function cfw_renderer_table(renderDef) {
 
 		cfwTable.addRow(row);
 	}
+	//----------------------------------
+	// If narrow make buttons smaller
+	var wrappedTable = cfwTable.getTable();
+	if(settings.narrow){
+		wrappedTable.find('.btn-sm')
+			.addClass('btn-xs')
+			.removeClass('btn-sm');
+		
+	}
 	
 	//----------------------------------
 	// Create multi buttons
 	if(renderDef.bulkActions == null){
-		return cfwTable.getTable();
+		return wrappedTable;
 	}else{
-		let wrapperDiv = cfwTable.getTable();
-		
+
 		let actionsDivTop  = $('<div class="m-1">');
 		let actionsDivBottom  = $('<div class="m-1">');
 		for(let buttonLabel in renderDef.bulkActions){
@@ -665,13 +673,13 @@ function cfw_renderer_table(renderDef) {
 		}
 		
 		if(renderDef.bulkActionsPos == 'both' || renderDef.bulkActionsPos == 'top' ){
-			wrapperDiv.prepend(actionsDivTop);
+			wrappedTable.prepend(actionsDivTop);
 		}
 		if(renderDef.bulkActionsPos == 'both' || renderDef.bulkActionsPos == 'bottom' ){
-			wrapperDiv.append(actionsDivBottom);
+			wrappedTable.append(actionsDivBottom);
 		}
 		
-		return wrapperDiv;
+		return wrappedTable;
 	}
 }
 CFW.render.registerRenderer("table", new CFWRenderer(cfw_renderer_table) );

@@ -861,6 +861,13 @@ class CFWToggleButton{
 	}
 	
 	/********************************************
+	 * Returns the button
+	 ********************************************/
+	getButton(){
+		return this.button;
+	}
+	
+	/********************************************
 	 * Toggle the table filter, default is true.
 	 ********************************************/
 	appendTo(parent){
