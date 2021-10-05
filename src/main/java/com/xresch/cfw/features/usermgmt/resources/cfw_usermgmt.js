@@ -131,7 +131,7 @@ function cfw_usermgmt_createToggleTable(parent, mapName, itemID){
 					 	textstylefield: null,
 					 	titlefields: ['NAME'],
 					 	titleformat: '{0}',
-					 	visiblefields: ['PK_ID', 'NAME', 'DESCIPTION'],
+					 	visiblefields: ['PK_ID', 'NAME', 'DESCRIPTION'],
 					 	labels: {
 					 		PK_ID: "&nbsp;",
 					 	},
@@ -151,6 +151,8 @@ function cfw_usermgmt_createToggleTable(parent, mapName, itemID){
 					 	},
 						rendererSettings: {
 							dataviewer: {
+								defaultsize: 25,
+								sortfields: ['NAME', 'DESCRIPTION'],
 								storeid: 'usermgmtToggleTable'+mapName+itemID,
 								renderers: [
 									{	label: 'Table',
