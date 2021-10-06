@@ -260,7 +260,9 @@ function cfw_renderer_tiles(renderDef) {
 		allTiles.addClass('flex-row ');
 	}
 	
-	if(settings.showlabels != true && settings.showlabels != "true"){
+	if(settings.showlabels == true || settings.showlabels == "true"){
+		allTiles.addClass('h-100');
+	}else{
 		allTiles.addClass('align-items-start');
 	}
 				
@@ -790,6 +792,12 @@ function cfw_renderer_panels (renderDef) {
 	}
 	
 	//----------------------------------
+	// Make buttons smaller
+	wrapper.find('.btn-sm')
+		.addClass('btn-xs')
+		.removeClass('btn-sm');
+	
+	//----------------------------------
 	// Create multi buttons
 	if(renderDef.bulkActions != null){
 		let actionsDivTop  = $('<div class="m-1">');
@@ -945,6 +953,12 @@ function cfw_renderer_cards (renderDef) {
 		}
 	}
 	
+	//----------------------------------
+	// Make buttons smaller
+	wrapper.find('.btn-sm')
+		.addClass('btn-xs')
+		.removeClass('btn-sm');
+		
 	//----------------------------------
 	// Create multi buttons
 	if(renderDef.bulkActions != null){

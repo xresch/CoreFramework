@@ -27,7 +27,7 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 		console.log(item);
 		for(key in item){
 			cfw_usermgmt_formatAuditResults(parent, item[key]);
-		}
+		} 
 	}else{
 
 		//------------------------------------
