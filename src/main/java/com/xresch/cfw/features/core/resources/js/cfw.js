@@ -1050,6 +1050,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 				setTimeout(
 					function(){
 						
+						//only execute if it is the last triggered autocomplete request
 						if(currentCount != CFW.global.autocompleteCounter){
 							return;
 						}
@@ -1069,7 +1070,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 								cfw_autocompleteShow(inputField, data.payload);
 							})
 					},
-					500);
+					1000);
 			}
 		});
 		
