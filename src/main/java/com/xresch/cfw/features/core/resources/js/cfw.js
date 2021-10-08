@@ -1198,9 +1198,12 @@ function cfw_autocompleteShow(inputField, autocompleteResults){
     	
     var multipleLists = $('<div class="autocomplete-multilist d-flex flex-row">');
     
+    // Plus 20% to give some range for flex display
+    let maxWidthPercent = (100 / autocompleteResults.lists.length)+20;
+    
     for(var key in autocompleteResults.lists){
     	var current = autocompleteResults.lists[key];
-    	 multipleLists.append(cfw_autocompleteCreateItemList(inputField, current));
+    	 multipleLists.append(cfw_autocompleteCreateItemList(inputField, current, maxWidthPercent));
     }
     
     autocompleteWrapper.append(multipleLists);
@@ -1232,7 +1235,7 @@ function cfw_autocompleteShow(inputField, autocompleteResults){
  *    {"value": "Value0", "label": "Label0", "description": "some description or null" }
  * 
  *************************************************************************************/
-function cfw_autocompleteCreateItemList(targetInputField, values){
+function cfw_autocompleteCreateItemList(targetInputField, values, maxWidthPercent){
 	//----------------------------
     // Initialize and Cleanup
 	var searchString = targetInputField.value;
@@ -1248,6 +1251,7 @@ function cfw_autocompleteCreateItemList(targetInputField, values){
 	var itemList =  $("<div>");
 	
 	itemList.attr("id", autocompleteID);
+	itemList.css("max-width", maxWidthPercent+"%");
 	itemList.addClass("autocomplete-list flex-fill");
 			
 	var itemClass = "autocomplete-item";
