@@ -1,6 +1,7 @@
 package com.xresch.cfw.utils.json;
 
 import java.lang.reflect.Type;
+import java.util.LinkedHashMap;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -31,13 +32,15 @@ public class SerializerCFWObject implements JsonSerializer<CFWObject> {
 			CFW.JSON.addFieldAsProperty(result, field, enableEncryptedValues);
 		}
 		
-		JsonArray children = new JsonArray();
-		for (CFWObject child : object.getChildObjects().values()) {
-			children.add(CFW.JSON.objectToJsonElement(child));
+		LinkedHashMap<Integer, CFWObject> childrenMap = object.getChildObjects();
+		if(!childrenMap.isEmpty()) {
+			JsonArray children = new JsonArray();
+			for (CFWObject child : object.getChildObjects().values()) {
+				children.add(CFW.JSON.objectToJsonElement(child));
+			}
+
+			result.add("children", children);
 		}
-		
-		result.add("children", children);
-		
 		return result;
 	}
 
