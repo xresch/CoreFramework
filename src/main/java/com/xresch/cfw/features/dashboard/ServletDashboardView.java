@@ -700,7 +700,13 @@ public class ServletDashboardView extends HttpServlet
 				String doubleEscaped = CFW.JSON.escapeString(
 											CFW.JSON.escapeString(paramObject.value())
 										);
+				
+				if(doubleEscaped == null) {
+					doubleEscaped = "";
+				}
+				
 				jsonSettings = jsonSettings.replaceAll("\\$"+paramObject.name()+"\\$", doubleEscaped);
+				
 				
 			}
 		}
