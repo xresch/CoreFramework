@@ -493,6 +493,7 @@ public class ServletDashboardView extends HttpServlet
 				
 				if(hasJob) {
 					CFWJob job = CFW.DB.Jobs.selectFirstByCustomInteger(widget.id());
+					isEnabled.setValue(job.isEnabled());
 					scheduleField.setValue(job.schedule());
 				}
 				
