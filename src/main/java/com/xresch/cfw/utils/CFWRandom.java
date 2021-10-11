@@ -151,15 +151,16 @@ public class CFWRandom {
 		long currentTime = new Date().getTime();
 		
 		JsonObject object = new JsonObject();
-		
+		String id = CFW.Random.randomStringAlphaNumerical(16);
 		object.addProperty("FIRSTNAME", CFW.Random.randomFirstnameOfGod());
 		object.addProperty("LASTNAME", CFW.Random.randomLastnameSweden());
 		object.addProperty("LOCATION", CFW.Random.randomMythicalLocation());
-		object.addProperty("ID", CFW.Random.randomStringAlphaNumerical(16));
+		object.addProperty("ID",  id);
 		object.addProperty("LIKES_TIRAMISU", CFW.Random.randomBoolean());
 		object.addProperty("LAST_LOGIN", currentTime-(CFW.Random.randomIntegerInRange(100, 10000)*1000000) );
+		object.addProperty("URL", "http://www.example.url/mightyperson?id="+id);
 		object.addProperty("VALUE", CFW.Random.randomIntegerInRange(1, 100));
-			
+		
 		return object;
 	}
 	/******************************************************************************
