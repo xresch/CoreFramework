@@ -36,6 +36,7 @@ public class CFWJobsAlertObject extends CFWObject {
 		ALERTING_OCCURENCES_TO_RAISE, 
 		ALERTING_OCCURENCES_TO_RESOLVE, 
 		ALERTING_ALERTDELAY,
+		ALERTING_RESENDDELAY,
 		JSON_ALERTING_USERS_TO_ALERT,
 		JSON_ALERTING_GROUPS_TO_ALERT,
 		JSON_ALERTING_ALERT_CHANNEL,
@@ -62,11 +63,18 @@ public class CFWJobsAlertObject extends CFWObject {
 			.setValue(2)
 			.addValidator(new NumberRangeValidator(1, MAX_OCCURENCE_CHECK));
 	
-	private CFWField<Integer> delayMinutes = 
+	private CFWField<Integer> alertDelayMinutes = 
 			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.ALERTING_ALERTDELAY)
 			.setLabel("Alert Delay Minutes")
-			.setDescription("The delay in minutes before another alert is triggered, in case the condition matches again.")
+			.setDescription("The delay in minutes, in case the situation has resolved, before another alert is triggered again.(Can reduce number of alerts)")
 			.setValue(60)
+			.addValidator(new NumberRangeValidator(0, 60*24*7));
+	
+	private CFWField<Integer> resendDelayMinutes = 
+			CFWField.newInteger(FormFieldType.NUMBER, AlertObjectFields.ALERTING_RESENDDELAY)
+			.setLabel("Resend Delay Minutes")
+			.setDescription("The delay in minutes, in case the situation has not resolved, before another alert is sent.")
+			.setValue(600)
 			.addValidator(new NumberRangeValidator(0, 60*24*7));
 	
 	private CFWField<LinkedHashMap<String,String>> usersToAlert = CFWField.newTagsSelector(AlertObjectFields.JSON_ALERTING_USERS_TO_ALERT)
@@ -141,7 +149,7 @@ public class CFWJobsAlertObject extends CFWObject {
 	}
 	
 	private void initialize() {
-		this.addFields(occurencesToRaise, occurencesToResolve, delayMinutes, usersToAlert, groupsToAlert, alertChannels, customNotes);
+		this.addFields(occurencesToRaise, occurencesToResolve, alertDelayMinutes, resendDelayMinutes, usersToAlert, groupsToAlert, alertChannels, customNotes);
 	}
 	
 	/**************************************************************************
@@ -181,41 +189,13 @@ public class CFWJobsAlertObject extends CFWObject {
 		//---------------------------------
 		// Check Condition
 		long currentTimeMillis = System.currentTimeMillis();
-		long alertDelayMillis = delayMinutes.getValue() * 1000 * 60;
+		long alertDelayMillis = alertDelayMinutes.getValue() * 1000 * 60;
+		long resendDelayMillis = resendDelayMinutes.getValue() * 1000 * 60;
 		
-		if(lastAlertType.equals(AlertType.NONE)
-		|| lastAlertType.equals(AlertType.RESOLVE)) {
-			
-			//-----------------------------------------
-			// Skip if delay not reached
-			if(lastAlertMillis != -1 && (lastAlertMillis + alertDelayMillis) > currentTimeMillis ) {
-				return AlertType.NONE;
-			}
+		//-----------------------------------------
+		// Do check Lift Alert 
+		if( lastAlertType.equals(AlertType.RAISE) ) {
 
-			//-----------------------------------------
-			// Do alert if all in series are true
-			int occurencesInSeries = occurencesToRaise.getValue();
-			
-			if(alertStateArray.size() >= occurencesInSeries) {
-				boolean doAlert = true;
-				for(int i = 1; i <= occurencesInSeries; i++) {
-					int indexFromLast = alertStateArray.size() - i;
-					doAlert &= alertStateArray.get(indexFromLast).getConditionResult();
-					System.out.println("in loop:"+CFW.JSON.toJSON(alertStateArray.get(indexFromLast)) );
-				}
-				System.out.println(doAlert);
-				if(doAlert) {
-					currentState.setAlertType(AlertType.RAISE);
-					currentState.setLastAlertMillis(currentTimeMillis);
-					return AlertType.RAISE;
-				}else {
-					return AlertType.NONE;
-				}
-			}
-		}else {
-			
-			//-----------------------------------------
-			// Do check Lift Alert 
 			int occurencesInSeries = occurencesToResolve.getValue();
 			
 			if(alertStateArray.size() >= occurencesInSeries) {
@@ -229,11 +209,45 @@ public class CFWJobsAlertObject extends CFWObject {
 				if(doLift) {
 					currentState.setAlertType(AlertType.RESOLVE);
 					return AlertType.RESOLVE;
-				}else {
-					return AlertType.NONE;
 				}
 			}
 		}
+					
+		//-----------------------------------------
+		// Skip if Alert Delay not reached
+		if( (lastAlertType.equals(AlertType.NONE) || lastAlertType.equals(AlertType.RESOLVE))
+		&& lastAlertMillis != -1 && (lastAlertMillis + alertDelayMillis) > currentTimeMillis ) {
+			return AlertType.NONE;
+		}
+		
+		//-----------------------------------------
+		// Skip if Resend Delay not reached
+		if( lastAlertType.equals(AlertType.RAISE)
+		&& lastAlertMillis != -1 && (lastAlertMillis + resendDelayMillis) > currentTimeMillis ) {
+			return AlertType.NONE;
+		}
+
+		//-----------------------------------------
+		// Do alert if all in series are true
+		int occurencesInSeries = occurencesToRaise.getValue();
+		
+		if(alertStateArray.size() >= occurencesInSeries) {
+			boolean doAlert = true;
+			for(int i = 1; i <= occurencesInSeries; i++) {
+				int indexFromLast = alertStateArray.size() - i;
+				doAlert &= alertStateArray.get(indexFromLast).getConditionResult();
+				System.out.println("in loop:"+CFW.JSON.toJSON(alertStateArray.get(indexFromLast)) );
+			}
+			System.out.println(doAlert);
+			if(doAlert) {
+				currentState.setAlertType(AlertType.RAISE);
+				currentState.setLastAlertMillis(currentTimeMillis);
+				return AlertType.RAISE;
+			}else {
+				return AlertType.NONE;
+			}
+		}
+		
 			
 		return AlertType.NONE;
 		
@@ -391,12 +405,12 @@ public class CFWJobsAlertObject extends CFWObject {
 	
 
 	public Integer getDelayMinutes() {
-		return delayMinutes.getValue();
+		return alertDelayMinutes.getValue();
 	}
 
 
 	public CFWJobsAlertObject setDelayMinutes(Integer value) {
-		this.delayMinutes.setValue(value);
+		this.alertDelayMinutes.setValue(value);
 		return this;
 	}
 
