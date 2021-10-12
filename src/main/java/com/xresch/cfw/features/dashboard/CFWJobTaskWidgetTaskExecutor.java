@@ -97,7 +97,7 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		// Widget Settings
 		CFWObject widgetSettings = definition.getSettings();
 		widgetSettings.mapJsonFields(widget.settings());
-		
+
 		//------------------------------
 		// Task Parameters
 		CFWObject taskParams = definition.getTasksParameters();

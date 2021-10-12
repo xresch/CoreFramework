@@ -15,7 +15,7 @@ import com.xresch.cfw.spi.CFWAppFeature;
 
 public class FeatureJobs extends CFWAppFeature {
 	
-	private static final String URI_JOBS = "/jobs";
+	private static final String URI_JOBS = "/app/jobs";
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.jobs.resources";
 	public static final String PERMISSION_JOBS_USER = "Jobs: User";
 	public static final String PERMISSION_JOBS_ADMIN = "Jobs: Admin";
@@ -102,7 +102,7 @@ public class FeatureJobs extends CFWAppFeature {
 	}
 	
 	public static String getJobsURI() {
-		return "/app"+URI_JOBS;
+		return URI_JOBS;
 	}
 
 }
