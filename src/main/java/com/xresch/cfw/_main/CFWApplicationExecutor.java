@@ -127,7 +127,10 @@ public class CFWApplicationExecutor {
 	 * @param the relative path of the context,
 	 **************************************************************************************************/
 	public ServletHolder addAppServlet(Class<? extends Servlet> clazz, String path){
-		return this.servletContext.addServlet(clazz, "/app"+path);
+		
+		if(!path.startsWith("/app")) { path = "/app"+path; }
+			
+		return this.servletContext.addServlet(clazz, path);
 	}
 	
 	/**************************************************************************************************
@@ -137,7 +140,10 @@ public class CFWApplicationExecutor {
 	 * @param the relative path of the context, CFWConfig.BASE_URL will be prepended.
 	 **************************************************************************************************/
 	public void addAppServlet(ServletHolder holder, String path){
-		this.servletContext.addServlet(holder, "/app"+path);
+		
+		if(!path.startsWith("/app")) { path = "/app"+path; }
+		
+		this.servletContext.addServlet(holder, path);
 	}
 	
 	/**************************************************************************************************

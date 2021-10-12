@@ -4,12 +4,15 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.Driver;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -619,6 +622,22 @@ public class DBInterface {
 		}
 	}
 	
+	
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	public static ArrayList<String> getListofDriverClassnames() {
+		
+		ArrayList<String> driverArray = new ArrayList<>();
+		
+		Enumeration<Driver> e = DriverManager.getDrivers();
+		while(e.hasMoreElements()) {
+			driverArray.add(e.nextElement().getClass().getName());
+		}
+		
+		return driverArray;
+	}
+	
 	/************************************************************************
 	 * 
 	 ************************************************************************/
@@ -660,11 +679,11 @@ public class DBInterface {
 	/************************************************************************
 	 * 
 	 ************************************************************************/
-	public static DBInterface createDBInterfaceMySQL(String servername, int port, String dbName, String username, String password) {
+	public static DBInterface createDBInterfaceMySQL(String uniqueNamePrefix, String servername, int port, String dbName, String username, String password) {
 		
 		
 		String urlPart = servername+":"+port+"/"+dbName;
-		String uniqueName = "MySQL:"+urlPart;
+		String uniqueName = uniqueNamePrefix+"MySQL:"+servername+":"+port;
 		String connectionURL = "jdbc:mysql://"+urlPart;
 		String driverClass = "com.mysql.cj.jdbc.Driver";
 		
@@ -684,7 +703,7 @@ public class DBInterface {
 	public static DBInterface createDBInterfaceMSSQL(String uniqueNamePrefix, String servername, int port, String dbName, String username, String password) {
 		
 		String urlPart = servername+":"+port+";databaseName="+dbName;
-		String uniqueName = uniqueNamePrefix+":MSSQL:"+urlPart;
+		String uniqueName = uniqueNamePrefix+":MSSQL:"+servername+":"+port;
 		String connectionURL = "jdbc:sqlserver://"+urlPart;
 		String driverClass = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
 		
@@ -712,7 +731,7 @@ public class DBInterface {
 			urlPart = servername+":"+port+"/"+name;
 		}
 
-		String uniqueName = uniqueNamePrefix+":Oracle:"+urlPart;
+		String uniqueName = uniqueNamePrefix+":Oracle:"+servername+":"+port;
 		String connectionURL = "jdbc:oracle:thin:@"+urlPart;
 		String driverClass = "oracle.jdbc.OracleDriver";
 		

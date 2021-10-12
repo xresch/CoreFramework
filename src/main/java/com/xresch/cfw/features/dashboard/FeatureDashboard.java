@@ -26,8 +26,9 @@ import com.xresch.cfw.spi.CFWAppFeature;
  **************************************************************************************************************/
 public class FeatureDashboard extends CFWAppFeature {
 	
-	private static final String URI_DASHBOARD_LIST = "/dashboard/list";
-	private static final String URI_DASHBOARD_VIEW = "/dashboard/view";
+	public static final String URI_DASHBOARD_LIST = "/app/dashboard/list";
+	public static final String URI_DASHBOARD_VIEW = "/app/dashboard/view";
+	
 	public static final String PERMISSION_DASHBOARD_VIEWER = "Dashboard Viewer";
 	public static final String PERMISSION_DASHBOARD_CREATOR = "Dashboard Creator";
 	public static final String PERMISSION_DASHBOARD_ADMIN = "Dashboard Admin";
@@ -276,7 +277,7 @@ public class FeatureDashboard extends CFWAppFeature {
 			return null;
 		}
 		
-		return CFW.Properties.APPLICATION_URL +"/app"+ URI_DASHBOARD_VIEW + "?id="+dashboardID;
+		return CFW.Properties.APPLICATION_URL + URI_DASHBOARD_VIEW + "?id="+dashboardID;
 	}
 	
 }
