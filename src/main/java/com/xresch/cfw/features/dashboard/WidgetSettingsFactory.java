@@ -93,10 +93,37 @@ public class WidgetSettingsFactory {
 	public static LinkedHashMap<String,CFWField> createTilesSettingsFields(){
 		LinkedHashMap<String,CFWField> fieldsMap = new LinkedHashMap<>();
 		
+		// Hack: When form gets converted, whole numbers will lose it's decimal points.
+		// To have proper display and value handling, value and label for whole numbers are different.
+		LinkedHashMap<String,String> sizefactorOptions = new LinkedHashMap<>();
+		sizefactorOptions.put("0.1","0.1");
+		sizefactorOptions.put("0.2","0.2");
+		sizefactorOptions.put("0.3","0.3");
+		sizefactorOptions.put("0.4","0.4");
+		sizefactorOptions.put("0.5","0.5");
+		sizefactorOptions.put("0.6","0.6");
+		sizefactorOptions.put("0.7","0.7");
+		sizefactorOptions.put("0.8","0.8");
+		sizefactorOptions.put("0.9","0.9");
+		sizefactorOptions.put("1"  ,"1.0");
+		sizefactorOptions.put("1.2","1.2");
+		sizefactorOptions.put("1.4","1.4");
+		sizefactorOptions.put("1.6","1.6");
+		sizefactorOptions.put("1.8","1.8");
+		sizefactorOptions.put("2"  ,"2.0");
+		sizefactorOptions.put("2.5","2.5");
+		sizefactorOptions.put("3"  ,"3.0");
+		sizefactorOptions.put("3.5","3.5");
+		sizefactorOptions.put("4"  ,"4.0");
+		sizefactorOptions.put("5"  ,"5.0");
+		sizefactorOptions.put("7"  ,"7.0");
+		sizefactorOptions.put("10" ,"10.0");
+
+
 		fieldsMap.put("sizefactor", CFWField.newString(FormFieldType.SELECT, "sizefactor")
 				.setLabel("{!cfw_widget_tilessizefactor!}")
 				.setDescription("{!cfw_widget_tilessizefactor_desc!}")
-				.setOptions(new String[]{"0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1", "1.2", "1.4", "1.6", "1.8","2.0", "2.5", "3.0", "4.0", "5.0"})
+				.setOptions(sizefactorOptions)
 				.setValue("1"));
 		
 		fieldsMap.put("borderstyle", CFWField.newString(FormFieldType.SELECT, "borderstyle")
