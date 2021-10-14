@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.cli.ArgumentsException;
 import com.xresch.cfw.utils.CFWHttpPacScriptMethods;
-import com.xresch.cfw.utils.CFWPolyglotContext;
+import com.xresch.cfw.utils.CFWScriptingContext;
 
 public class TestCFWScriptEngine {
 	
@@ -51,7 +51,7 @@ public class TestCFWScriptEngine {
 	@Test
 	public void testRunJavascript() {
 		
-		CFWPolyglotContext engine = CFW.Scripting.createJavascriptContext();
+		CFWScriptingContext engine = CFW.Scripting.createJavascriptContext();
 		engine.addScript("test.js", "function myFunc(astring, anumber){ return astring+' '+anumber}");
 		//--------------------------------
 		// With parameter List
@@ -71,7 +71,7 @@ public class TestCFWScriptEngine {
 	@Test
 	public void testRunJavascriptWithAdditionalMethods() {
 		
-		CFWPolyglotContext engine = CFW.Scripting.createPolyglotJavascript(new CFWHttpPacScriptMethods());
+		CFWScriptingContext engine = CFW.Scripting.createPolyglotJavascript(new CFWHttpPacScriptMethods());
 		
 		//--------------------------------
 		// Call CFWHttpPacScriptMethods.myIpAddress();
@@ -103,10 +103,8 @@ public class TestCFWScriptEngine {
 			e.printStackTrace();
 		} 
 		
-		CFWPolyglotContext polyglot = CFW.Scripting.createPolyglotJavascript(new CFWHttpPacScriptMethods());
+		CFWScriptingContext polyglot = CFW.Scripting.createPolyglotJavascript(new CFWHttpPacScriptMethods());
 		
-
-
 		//--------------------------------
 		// Load PAC Script
 		String proxyPAC = CFW.Files.getFileContent(CFW.Context.Request.getRequest(), CFW.Properties.PROXY_PAC);
@@ -121,7 +119,9 @@ public class TestCFWScriptEngine {
 		
 		System.out.println(result.asString());
 		Assertions.assertEquals("PROXY localhost:9999", result.asString(), "The method returned the expected value.");
+		
 	}
+	
 	
 	
 	

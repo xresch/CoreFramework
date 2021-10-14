@@ -50,7 +50,7 @@ public class CFWScripting {
 	 * @param the name of the engine to use, e.g. Nashorn. Use printAvailableEngines() for a list of 
 	 * available engines.
 	 ******************************************************************************************************/
-	public static CFWPolyglotContext createContext(String language) {
+	public static CFWScriptingContext createContext(String language) {
 		
 		//-----------------------------------
 		// Create Engine
@@ -60,7 +60,7 @@ public class CFWScripting {
 		        .allowHostAccess(HostAccess.ALL)
 		        .build();
 
-		return new CFWPolyglotContext(language, context);
+		return new CFWScriptingContext(language, context);
 		
 	}
 	/******************************************************************************************************
@@ -69,7 +69,7 @@ public class CFWScripting {
 	 * @param the name of the engine to use, e.g. Nashorn. Use printAvailableEngines() for a list of 
 	 * available engines.
 	 ******************************************************************************************************/
-	public static CFWPolyglotContext createJavascriptContext() {
+	public static CFWScriptingContext createJavascriptContext() {
 		
 		return createContext("js");
 		
@@ -81,7 +81,7 @@ public class CFWScripting {
 	 * @param the name of the engine to use, e.g. Nashorn. Use printAvailableEngines() for a list of 
 	 * available engines.
 	 ******************************************************************************************************/
-	public static CFWPolyglotContext createPolyglotJavascript(Object objectToBind) {
+	public static CFWScriptingContext createPolyglotJavascript(Object objectToBind) {
 		
 		return createPolyglotWithAdditionalBindings("js", objectToBind);
 		
@@ -92,12 +92,12 @@ public class CFWScripting {
 	 * @param the name of the engine to use, e.g. Nashorn. Use printAvailableEngines() for a list of 
 	 * available engines.
 	 ******************************************************************************************************/
-	private static CFWPolyglotContext createPolyglotWithAdditionalBindings(String language, Object objectToBind) {
+	private static CFWScriptingContext createPolyglotWithAdditionalBindings(String language, Object objectToBind) {
 		
 		//-----------------------------------
 		// Create Engine
 
-		CFWPolyglotContext polyglot = createContext(language);
+		CFWScriptingContext polyglot = createContext(language);
 
 		polyglot.getBindings().putMember(objectToBind.getClass().getSimpleName(), objectToBind);
 

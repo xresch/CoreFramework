@@ -53,7 +53,7 @@ public class CFWHttp {
 	private static Logger logger = CFWLog.getLogger(CFWHttp.class.getName());
 	
 	//Use Threadlocal to avoid polyglot multi thread exceptions
-	private static ThreadLocal<CFWPolyglotContext> javascriptEngine = new ThreadLocal<CFWPolyglotContext>();
+	private static ThreadLocal<CFWScriptingContext> javascriptEngine = new ThreadLocal<CFWScriptingContext>();
 	
 	private static String proxyPAC = null;
 	private static Cache<String, ArrayList<CFWProxy>> resolvedProxiesCache = CFW.Caching.addCache("CFW Proxies", 
@@ -136,7 +136,7 @@ public class CFWHttp {
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	private static CFWPolyglotContext getScriptContext() {
+	private static CFWScriptingContext getScriptContext() {
 		
 		if(javascriptEngine.get() == null) {
 			javascriptEngine.set( CFW.Scripting.createJavascriptContext().putMemberWithFunctions( new CFWHttpPacScriptMethods()) );
@@ -149,7 +149,7 @@ public class CFWHttp {
 				proxyPAC = CFWHttpPacScriptMethods.preparePacScript(proxyPAC);
 				System.out.println("proxyPAC:\n"+proxyPAC);
 				
-				CFWPolyglotContext polyglot = getScriptContext();
+				CFWScriptingContext polyglot = getScriptContext();
 
 			    polyglot.addScript("proxy.pac", proxyPAC);
 			    polyglot.executeScript("FindProxyForURL('localhost:9090/test', 'localhost');");

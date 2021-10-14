@@ -10,13 +10,13 @@ import org.graalvm.polyglot.Value;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
 
-public class CFWPolyglotContext {
+public class CFWScriptingContext {
 	
 	private Context polyglot = null;
 	private String language = null;
-	private static final Logger logger = CFWLog.getLogger(CFWPolyglotContext.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWScriptingContext.class.getName());
 	
-	public CFWPolyglotContext(String language, Context context) {
+	public CFWScriptingContext(String language, Context context) {
 		this.language = language;
 		this.polyglot = context;
 		
@@ -29,7 +29,7 @@ public class CFWPolyglotContext {
 	 * @param methodName the name of the method to be executed
 	 * @param parameters values to be passed to method.
 	 ******************************************************************************************************/
-	public CFWPolyglotContext addScript(String scriptname, String script) {
+	public CFWScriptingContext addScript(String scriptname, String script) {
 			synchronized (polyglot) {
 				Source source = Source.newBuilder(language, script, scriptname).buildLiteral();
 				polyglot.eval(source);
@@ -98,7 +98,7 @@ public class CFWPolyglotContext {
 		return polyglot.getBindings(language);
 	}
 	
-	public CFWPolyglotContext putMemberWithFunctions(Object objectToBind ) {
+	public CFWScriptingContext putMemberWithFunctions(Object objectToBind ) {
 		
 		String classname = objectToBind.getClass().getSimpleName();
 		polyglot.getBindings(language).putMember(classname, objectToBind);

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.utils.CFWHttpPacScriptMethods;
-import com.xresch.cfw.utils.CFWPolyglotContext;
+import com.xresch.cfw.utils.CFWScriptingContext;
 import com.xresch.cfw.utils.CFWConditions.ThresholdCondition;
 
 public class TestCFWConditions {
