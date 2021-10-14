@@ -86,6 +86,15 @@ public class FeatureUserManagement extends CFWAppFeature {
 					.type(FormFieldType.NUMBER)
 					.value("10")
 			);
+		
+		//----------------------------------
+    	// Cleanup Expired Sessions to 
+		// prevent warning logs
+		CFW.DB.getDBInterface().preparedExecute(
+			"DELETE "
+		  + "FROM CFW_JETTY_SESSIONS "
+		  + "WHERE DATEADD(SECOND, EXPIRY_TIME / 1000, DATE '1970-01-01') < CURRENT_TIMESTAMP()" 
+		);
 	}
 
 	@Override

@@ -122,6 +122,7 @@ DONE
 - Dashboard: Parameters working better, also applied in autocomplete of edit widget forms and parameter widget.
 - Authentication - LDAP: Load user details from LDAP if the do not exists in the database.
 - Reflection: Replaced with ServiceLoader as it is more stable between different Java versions
+- Scripting: Migrated Javascript Engine from Nashorn to Graal to be able to run under higher Java Versions.
 - CFWField: Added FormFieldType.CHECKBOXES
 - Menu Title: Added configuration option to prepend menu title to window title
 - Tasks: Added Task to test eMail setup
@@ -137,7 +138,7 @@ DONE
 - CFWSQL: Added method for default pagination
 - /metrics: Fixed session count for API calls 
 - Tiles: Fixed size factor set to 0.1 when loaded and whole number was selected
-- Scripting: Migrated Javascript Engine from Nashorn to Graal to be able to run under higher Java Versions.
+- Sessions: Added cleanup of stored session on app startup to avoid issues.
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB
