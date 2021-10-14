@@ -158,7 +158,16 @@ public class CFW {
 	public static final String REQUEST_ATTR_ID = "requestID";
 	public static final String SESSION_DATA = "sessionData";	
 	
-	private static void initializeCore(String[] args) throws ArgumentsException, IOException{
+	/***********************************************************************
+	 * Note: This will be called by initializeApp().
+	 * Do not use this method except for testing purposes.
+	 * 
+	 * Initializes core stuff:
+	 *   - read command line arguments and validate
+	 *   - Load cfw.properties
+	 *   
+	 ***********************************************************************/
+	public static void initializeCore(String[] args) throws ArgumentsException, IOException{
 		
 		//------------------------------------
 		// Command Line Arguments

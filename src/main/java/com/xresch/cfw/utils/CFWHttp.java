@@ -28,6 +28,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.graalvm.polyglot.Value;
+
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
@@ -50,7 +52,8 @@ public class CFWHttp {
 	
 	private static Logger logger = CFWLog.getLogger(CFWHttp.class.getName());
 	
-	private static CFWScriptEngine javascriptEngine = CFW.Scripting.createJavascriptEngine(CFWHttpPacScriptMethods.class);
+	//Use Threadlocal to avoid polyglot multi thread exceptions
+	private static ThreadLocal<CFWPolyglotContext> javascriptEngine = new ThreadLocal<CFWPolyglotContext>();
 	
 	private static String proxyPAC = null;
 	private static Cache<String, ArrayList<CFWProxy>> resolvedProxiesCache = CFW.Caching.addCache("CFW Proxies", 
@@ -133,6 +136,34 @@ public class CFWHttp {
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
+	private static CFWPolyglotContext getScriptContext() {
+		
+		if(javascriptEngine.get() == null) {
+			javascriptEngine.set( CFW.Scripting.createJavascriptContext().putMemberWithFunctions( new CFWHttpPacScriptMethods()) );
+			
+			//------------------------------
+			// Add to engine if pac loaded
+			loadPacFile();
+			if(proxyPAC != null) {
+				//Prepend method calls with CFWHttpPacScriptMethods
+				proxyPAC = CFWHttpPacScriptMethods.preparePacScript(proxyPAC);
+				System.out.println("proxyPAC:\n"+proxyPAC);
+				
+				CFWPolyglotContext polyglot = getScriptContext();
+
+			    polyglot.addScript("proxy.pac", proxyPAC);
+			    polyglot.executeScript("FindProxyForURL('localhost:9090/test', 'localhost');");
+				    
+				System.out.println("===== Test END ====");
+			}
+		}
+		
+		return javascriptEngine.get();
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
 	private static void loadPacFile() {
 		
 		if(CFW.Properties.PROXY_ENABLED && proxyPAC == null) {
@@ -178,15 +209,7 @@ public class CFWHttp {
 					proxyPAC = null;
 				}
 			}
-			
-			//------------------------------
-			// Add to engine if load successful
-			if(proxyPAC != null) {
-				javascriptEngine.addScript(proxyPAC);
-			}
 		}
-		
-		
 	}
 
 	/******************************************************************************************************
@@ -223,10 +246,9 @@ public class CFWHttp {
 						
 						ArrayList<CFWProxy> proxies = new ArrayList<CFWProxy>();
 						
-						Object result = javascriptEngine.executeJavascript("FindProxyForURL", urlToCall, hostname);
+						Value result = getScriptContext().executeScript("FindProxyForURL('"+urlToCall+"', '"+hostname+"');");
 						if(result != null) {
-							String[] proxyArray = result.toString()
-								.split(";");
+							String[] proxyArray = result.asString().split(";");
 							
 							for(String proxyDef : proxyArray) {
 								if(proxyDef.trim().isEmpty()) { continue; }
@@ -256,11 +278,7 @@ public class CFWHttp {
 									}
 									proxies.add(cfwProxy);
 								}
-							}
-//							System.out.println("==== Proxies ====");
-//							System.out.println(CFW.JSON.toJSON(proxyArray));
-//							System.out.println(CFW.JSON.toJSON(proxies));
-							
+							}							
 						}
 						return proxies;
 					}

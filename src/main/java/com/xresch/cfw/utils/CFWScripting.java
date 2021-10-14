@@ -9,6 +9,10 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.HostAccess;
+
+import com.oracle.truffle.js.scriptengine.GraalJSEngineFactory;
 import com.xresch.cfw.logging.CFWLog;
 
 public class CFWScripting {
@@ -30,7 +34,7 @@ public class CFWScripting {
 			String engVersion = factory.getEngineVersion();
 			String langName = factory.getLanguageName();
 			String langVersion = factory.getLanguageVersion();
-			System.out.printf("\tScript Engine: %s (%s)\n", engName, engVersion);
+			System.out.printf("\tScript Engine: %s (%s, %s, %s)\n", engName, engVersion, langName, langVersion);
 			List<String> engNames = factory.getNames();
 			for (String name : engNames)
 			{
@@ -46,13 +50,28 @@ public class CFWScripting {
 	 * @param the name of the engine to use, e.g. Nashorn. Use printAvailableEngines() for a list of 
 	 * available engines.
 	 ******************************************************************************************************/
-	public static CFWScriptEngine createJavascriptEngine() {
+	public static CFWPolyglotContext createContext(String language) {
 		
 		//-----------------------------------
 		// Create Engine
-		ScriptEngine engine = manager.getEngineByName("js");
+
+		Context context = Context.newBuilder(language)
+		        .allowHostClassLookup(s -> true)
+		        .allowHostAccess(HostAccess.ALL)
+		        .build();
+
+		return new CFWPolyglotContext(language, context);
 		
-		return new CFWScriptEngine(engine);
+	}
+	/******************************************************************************************************
+	 *  Create a new Javascript engine.
+	 * 
+	 * @param the name of the engine to use, e.g. Nashorn. Use printAvailableEngines() for a list of 
+	 * available engines.
+	 ******************************************************************************************************/
+	public static CFWPolyglotContext createJavascriptContext() {
+		
+		return createContext("js");
 		
 	}
 	
@@ -62,9 +81,9 @@ public class CFWScripting {
 	 * @param the name of the engine to use, e.g. Nashorn. Use printAvailableEngines() for a list of 
 	 * available engines.
 	 ******************************************************************************************************/
-	public static CFWScriptEngine createJavascriptEngine(Class clazzToBind) {
+	public static CFWPolyglotContext createPolyglotJavascript(Object objectToBind) {
 		
-		return createEngineWithAdditionalMethods("js", clazzToBind);
+		return createPolyglotWithAdditionalBindings("js", objectToBind);
 		
 	}
 	/******************************************************************************************************
@@ -73,63 +92,18 @@ public class CFWScripting {
 	 * @param the name of the engine to use, e.g. Nashorn. Use printAvailableEngines() for a list of 
 	 * available engines.
 	 ******************************************************************************************************/
-	public static CFWScriptEngine createEngineWithAdditionalMethods(String engineName, Class clazz) {
+	private static CFWPolyglotContext createPolyglotWithAdditionalBindings(String language, Object objectToBind) {
 		
 		//-----------------------------------
 		// Create Engine
-		ScriptEngine engine = manager.getEngineByName(engineName);
 
-		//-----------------------------------
-		// Add Class
-		String clazzName = clazz.getSimpleName();
-		try {
-			engine.put(clazzName, clazz.newInstance());
-		} catch (InstantiationException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (IllegalAccessException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		CFWPolyglotContext polyglot = createContext(language);
 
-		//-----------------------------------
-		// Add Methods
-		StringBuilder functionBuilder = new StringBuilder();
-		functionBuilder.append("var ").append(clazzName).append(" = Java.type('"+clazz.getName()+"');\n");
+		polyglot.getBindings().putMember(objectToBind.getClass().getSimpleName(), objectToBind);
+
+		return polyglot;
 		
-		for(Method method : clazz.getMethods()){
-			
-			String methodName = method.getName();
-			
-			int paramCount = method.getParameterTypes().length;
-						
-			StringBuilder arguments = new StringBuilder("(");
-			for(int i = 0; i < paramCount; i++) {
-				arguments.append("arg").append(i);
-				if(i < paramCount-1) {
-					arguments.append(",");
-				}
-			}
-			
-			arguments.append(")");
-			
-			functionBuilder.append(methodName).append(" = function ").append(arguments)
-					.append("{ return ").append(clazzName).append(".").append(methodName).append(arguments)
-					.append(";}\n");
-			
-		  
-		}
 		
-		//System.out.println("====== functionBuilder.toString ======()\n"+functionBuilder.toString());
-		
-		try {
-			engine.eval(functionBuilder.toString());
-		} catch (ScriptException e) {
-			new CFWLog(logger)
-			.severe("The engine could not be initialized correctly.", e);
-		}
-		
-		return new CFWScriptEngine(engine);
 	}
 	
 }

@@ -136,6 +136,8 @@ DONE
 - FulltextSearch: wrapped Lucene Query in SELECT to make further  WHERE clauses more stable
 - CFWSQL: Added method for default pagination
 - /metrics: Fixed session count for API calls 
+- Tiles: Fixed size factor set to 0.1 when loaded and whole number was selected
+- Scripting: Migrated Javascript Engine from Nashorn to Graal to be able to run under higher Java Versions.
 
 ------- v4.0.0 -------
 - Startup Mode: added property cfw_mode to cfw.properties, start application as FULL, APP or DB

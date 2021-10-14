@@ -1,6 +1,7 @@
 package com.xresch.cfw.utils;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -29,7 +30,7 @@ import com.xresch.cfw.logging.CFWLog;
  * https://github.com/MarkusBernhardt/proxy-vole/blob/master/LICENSE.md
  * 
  * Distributed under Apache License 2.0
- * @author Reto Scheiwiller, Copyright 2020
+ * @author Reto Scheiwiller, Copyright 2021
  * @author Markus Bernhardt, Copyright 2016
  * @author Bernd Rosstauscher, Copyright 2009
  ***************************************************************************
@@ -56,6 +57,25 @@ public class CFWHttpPacScriptMethods {
 	public CFWHttpPacScriptMethods() {
 		super();
 	}
+	
+	
+
+	/*************************************************************************
+	 * Prepends all function calls with the Classname.
+	 * 
+	 ************************************************************************/
+	public static String preparePacScript(String pacScript) {
+		
+		String classname = CFWHttpPacScriptMethods.class.getSimpleName();
+		
+		for(Method method : CFWHttpPacScriptMethods.class.getMethods()) {
+			String methodname = method.getName();
+			pacScript = pacScript.replaceAll(methodname, classname+"."+methodname);
+		}
+		
+		return pacScript;
+	}
+	
 
 	/*************************************************************************
 	 * isPlainHostName
@@ -63,7 +83,7 @@ public class CFWHttpPacScriptMethods {
 	 * @see com.github.markusbernhardt.proxy.selector.pac.ScriptMethods#isPlainHostName(java.lang.String)
 	 ************************************************************************/
 
-	public static boolean isPlainHostName(String host) {
+	public boolean isPlainHostName(String host) {
 		return host.indexOf(".") < 0;
 	}
 
@@ -77,7 +97,7 @@ public class CFWHttpPacScriptMethods {
 	 * @return true if the domain of host name matches.
 	 ************************************************************************/
 
-	public static boolean dnsDomainIs(String host, String domain) {
+	public boolean dnsDomainIs(String host, String domain) {
 		return host.endsWith(domain);
 	}
 
@@ -93,7 +113,7 @@ public class CFWHttpPacScriptMethods {
 	 * @return true if matches else false.
 	 ************************************************************************/
 
-	public static boolean localHostOrDomainIs(String host, String domain) {
+	public boolean localHostOrDomainIs(String host, String domain) {
 		return domain.startsWith(host);
 	}
 
@@ -105,7 +125,7 @@ public class CFWHttpPacScriptMethods {
 	 * @return true if resolvable else false.
 	 ************************************************************************/
 
-	public static boolean isResolvable(String host) {
+	public boolean isResolvable(String host) {
 		try {
 			InetAddress.getByName(host).getHostAddress();
 			return true;
@@ -136,7 +156,7 @@ public class CFWHttpPacScriptMethods {
 	 * @return true if it matches else false.
 	 ************************************************************************/
 
-	public static boolean isInNet(String host, String pattern, String mask) {
+	public boolean isInNet(String host, String pattern, String mask) {
 		host = dnsResolve(host);
 		if (host == null || host.length() == 0) {
 			return false;
@@ -155,7 +175,7 @@ public class CFWHttpPacScriptMethods {
 	 * @return the address as long.
 	 ************************************************************************/
 
-	private static long parseIpAddressToLong(String address) {
+	private long parseIpAddressToLong(String address) {
 		long result = 0;
 		String[] parts = address.split("\\.");
 		long shift = 24;
@@ -176,7 +196,7 @@ public class CFWHttpPacScriptMethods {
 	 *            the host to resolve.
 	 * @return the resolved IP, empty string if not resolvable.
 	 ************************************************************************/
-	public static String dnsResolve(String host) {
+	public String dnsResolve(String host) {
 		try {
 			InetAddress ina = InetAddress.getByName(host);
 			return ina.getHostAddress();
@@ -193,7 +213,7 @@ public class CFWHttpPacScriptMethods {
 	 * 
 	 * @return an IP as string.
 	 ************************************************************************/
-	public static String myIpAddress() {
+	public String myIpAddress() {
 		return getLocalAddressOfType(Inet4Address.class);
 	}
 
@@ -206,7 +226,7 @@ public class CFWHttpPacScriptMethods {
 	 *            the type of address we are searching for.
 	 * @return the address as string or "" if not found.
 	 ************************************************************************/
-	private static String getLocalAddressOfType(Class<? extends InetAddress> cl) {
+	private String getLocalAddressOfType(Class<? extends InetAddress> cl) {
 		try {
 			String overrideIP = System.getProperty(OVERRIDE_LOCAL_IP);
 			if (overrideIP != null && overrideIP.trim().length() > 0) {
@@ -245,7 +265,7 @@ public class CFWHttpPacScriptMethods {
 	 *            is the host name from the URL.
 	 * @return number of DNS domain levels.
 	 ************************************************************************/
-	public static int dnsDomainLevels(String host) {
+	public int dnsDomainLevels(String host) {
 		int count = 0;
 		int startPos = 0;
 		while ((startPos = host.indexOf(".", startPos + 1)) > -1) {
@@ -265,7 +285,7 @@ public class CFWHttpPacScriptMethods {
 	 *            is a shell expression to compare against.
 	 * @return true if the string matches, else false.
 	 ************************************************************************/
-	public static boolean shExpMatch(String str, String shexp) {
+	public boolean shExpMatch(String str, String shexp) {
 		StringTokenizer tokenizer = new StringTokenizer(shexp, "*");
 		int startPos = 0;
 		while (tokenizer.hasMoreTokens()) {
@@ -309,7 +329,7 @@ public class CFWHttpPacScriptMethods {
 	 *            "GMT" for gmt time format else "undefined"
 	 * @return true if current day matches the criteria.
 	 ************************************************************************/
-	public static boolean weekdayRange(String wd1, String wd2, String gmt) {
+	public boolean weekdayRange(String wd1, String wd2, String gmt) {
 		boolean useGmt = GMT.equalsIgnoreCase(wd2) || GMT.equalsIgnoreCase(gmt);
 		Calendar cal = getCurrentTime(useGmt);
 
@@ -337,7 +357,7 @@ public class CFWHttpPacScriptMethods {
 	 *            or local time.
 	 * @return a Calendar set to the current time.
 	 ************************************************************************/
-	private static Calendar getCurrentTime(boolean useGmt) {
+	private Calendar getCurrentTime(boolean useGmt) {
 		return Calendar.getInstance(useGmt ? TimeZone.getTimeZone(GMT) : TimeZone.getDefault());
 	}
 
@@ -369,7 +389,7 @@ public class CFWHttpPacScriptMethods {
 	 * @return true if the current date matches the given range.
 	 ************************************************************************/
 
-	public static boolean dateRange(Object day1, Object month1, Object year1, Object day2, Object month2, Object year2,
+	public boolean dateRange(Object day1, Object month1, Object year1, Object day2, Object month2, Object year2,
 	        Object gmt) {
 
 		// Guess the parameter meanings.
@@ -437,7 +457,7 @@ public class CFWHttpPacScriptMethods {
 	 *            to parse and specify the type for.
 	 ************************************************************************/
 
-	private static void parseDateParam(Map<String, Integer> params, Object value) {
+	private void parseDateParam(Map<String, Integer> params, Object value) {
 		if (value instanceof Number) {
 			int n = ((Number) value).intValue();
 			if (n <= 31) {
@@ -507,7 +527,7 @@ public class CFWHttpPacScriptMethods {
 	 * @return true if the current time matches the given range.
 	 ************************************************************************/
 
-	public static boolean timeRange(Object hour1, Object min1, Object sec1, Object hour2, Object min2, Object sec2,
+	public boolean timeRange(Object hour1, Object min1, Object sec1, Object hour2, Object min2, Object sec2,
 	        Object gmt) {
 		boolean useGmt = GMT.equalsIgnoreCase(String.valueOf(min1)) || GMT.equalsIgnoreCase(String.valueOf(sec1))
 		        || GMT.equalsIgnoreCase(String.valueOf(min2)) || GMT.equalsIgnoreCase(String.valueOf(gmt));
@@ -576,7 +596,7 @@ public class CFWHttpPacScriptMethods {
 	 * @see com.github.markusbernhardt.proxy.selector.pac.ScriptMethods#isResolvableEx(java.lang.String)
 	 ************************************************************************/
 
-	public static boolean isResolvableEx(String host) {
+	public boolean isResolvableEx(String host) {
 		return isResolvable(host);
 	}
 
@@ -702,5 +722,5 @@ public class CFWHttpPacScriptMethods {
 	public String getClientVersion() {
 		return "1.0";
 	}
-
+	
 }

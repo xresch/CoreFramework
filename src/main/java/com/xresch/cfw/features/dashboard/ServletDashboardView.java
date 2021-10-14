@@ -507,7 +507,7 @@ public class ServletDashboardView extends HttpServlet
 				taskParams.mapJsonFields(widget.taskParameters());
 				formObject.addAllFields(taskParams.getFields());
 				
-				CFWForm taskParamForm = formObject.toForm("cfwWidgetTaskParamForm"+widgetID, "Save");
+				CFWForm taskParamForm = formObject.toForm("cfwWidgetTaskParamForm"+CFW.Random.randomStringAlphaNumerical(16), "Save");
 				
 				taskParamForm.setFormHandler(new CFWFormHandler() {
 					
