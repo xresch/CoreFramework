@@ -233,15 +233,6 @@
 		    <version>21.2.0</version>
 		</dependency>
 		
-		<!-- https://mvnrepository.com/artifact/org.graalvm.js/js-launcher -->
-		<dependency>
-		    <groupId>org.graalvm.js</groupId>
-		    <artifactId>js-launcher</artifactId>
-		    <version>21.2.0</version>
-		</dependency>
-		
-		
-
 
 		<!-- ========================================================================== -->
 		<!-- ============================ SCOPE: TESTING ============================== -->

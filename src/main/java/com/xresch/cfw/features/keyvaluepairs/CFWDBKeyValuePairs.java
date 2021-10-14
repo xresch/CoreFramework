@@ -104,10 +104,6 @@ public class CFWDBKeyValuePairs {
 			|| (oldValue != null && newValue != null && !oldValue.equals(newValue) ) ) {
 				for(KeyValueChangeListener listener : changeListeners) {
 					if ( (!triggered.contains(listener)) && listener.listensOnConfig(keyValName)) {
-//						System.out.println("====================");
-//						System.out.println("keyValName:"+keyValName);
-//						System.out.println("newValue:"+newValue);
-//						System.out.println("oldValue:"+oldValue);
 						listener.onChange();
 						triggered.add(listener);
 					}

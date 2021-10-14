@@ -651,9 +651,6 @@ public class ServletDashboardView extends HttpServlet
 		//###############################################################################
 
 		
-		//System.out.println("jsonSettings:"+jsonSettings);
-		//System.out.println("jsonParams:"+jsonParams);
-		
 		// Parameter Sample
 		//{"PK_ID":1092,"FK_ID_DASHBOARD":2081,"WIDGET_TYPE":null,"LABEL":"Boolean","PARAM_TYPE":false,"NAME":"boolean","VALUE":"FALSE","MODE":"MODE_SUBSTITUTE","IS_MODE_CHANGE_ALLOWED":false},
 		JsonElement dashboardParams = CFW.JSON.fromJson(jsonParams);
@@ -728,7 +725,6 @@ public class ServletDashboardView extends HttpServlet
 				if (settingsObject.has(paramName)) {
 					JsonElement value = globalOverrideParams.get(paramName).get("VALUE");
 					settingsObject.add(paramName, value);
-					//System.out.println("do global override:"+value);
 				}
 			}
 				
@@ -1040,8 +1036,7 @@ public class ServletDashboardView extends HttpServlet
 					}
 					
 					CFWModifiableHTTPRequest modifiedRequest = new CFWModifiableHTTPRequest(request, extraParams);
-					//System.out.println("ModifiedParams:"+CFW.JSON.toJSON(modifiedRequest.getParameterMap()));
-					
+
 					//------------------------------------
 					// Get Autocomplete Results
 			    	if(field.getAutocompleteHandler() != null) {

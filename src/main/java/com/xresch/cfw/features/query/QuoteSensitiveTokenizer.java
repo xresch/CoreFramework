@@ -82,7 +82,6 @@ public class QuoteSensitiveTokenizer {
 						
 						result = new CFWToken(textToParse.substring(lastCutPosition, currentPos).trim());
 						
-						//System.out.println("lastCutPos: "+lastCutPosition+", pos: "+currentPos+", char:"+charArray[currentPos]+", token: '"+result.getText()+"'");
 						lastCutPosition = currentPos;
 						
 						//-------------------------

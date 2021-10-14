@@ -43,7 +43,6 @@ public class TaskCPUSampling extends CFWScheduledTask {
 		// Check Saving
 		updateCounters();
 		
-		//System.out.println(dumpCounters());
 	}
 	
 	/***********************************************************************************

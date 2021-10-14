@@ -100,8 +100,6 @@ public class CFWTaskScheduler {
      public static Timer scheduleTimed(Calendar startDateTime, int intervalSec, boolean preventImmediate, CFWScheduledTask task) {
     		 
         Timer timer = new Timer(); // Instantiate Timer Object
-
-        //System.out.println("Actual Time: "+startDateTime.getTime().toLocaleString());
         
         //----------------------------------
         // Increase time to future if immediate
@@ -113,11 +111,9 @@ public class CFWTaskScheduler {
         		long diff = now - startTime;
         		long oneExecBeforeNowDeltaMs = diff - (diff % (intervalSec*1000));
         		startDateTime.add(Calendar.SECOND, ((int)oneExecBeforeNowDeltaMs/1000));
-        		//System.out.println("Increased Time: "+startDateTime.getTime().toLocaleString());
         	}
 	        while(startDateTime.getTimeInMillis() < Calendar.getInstance().getTimeInMillis()) {
 	        	startDateTime.add(Calendar.SECOND, intervalSec);
-	        	//System.out.println("Increased Time: "+startDateTime.getTime().toLocaleString());
 	        }
         }
         

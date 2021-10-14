@@ -121,10 +121,7 @@ public class LoginProviderLDAP implements LoginProviderInterface {
 		    	if(lastname != null) {
 		    		lastnameString = lastname.get(0).toString();
 		    	}
-		    	
-		    	//System.out.println("user: "+user);
-		    	//System.out.println("MAIL: "+mail);
-		    	
+		    			    	
 		    	//------------------------------
 		    	// Create User in DB if not exists
 		    	User user = LoginUtils.fetchUserCreateIfNotExists(username, emailString, firstnameString, lastnameString);

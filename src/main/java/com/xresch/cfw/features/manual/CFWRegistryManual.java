@@ -43,12 +43,11 @@ public class CFWRegistryManual {
 	 * @param Class that extends from BTMenu
 	 ***********************************************************************/
 	private static void addManualPage(LinkedHashMap<String, ManualPage> targetPageList, ManualPage itemToAdd, String pagePath)  {
-		//System.out.println("======= Path :"+menuPath+" ======== ");
+
 		//-----------------------
 		// Check Argument
 		if(pagePath == null || pagePath.trim().length() == 0) {
 			targetPageList.put(itemToAdd.getLabel(), itemToAdd);
-			//System.out.println("Add "+item.getLabel());
 			return;
 		}
 		
@@ -73,7 +72,6 @@ public class CFWRegistryManual {
 			}
 			if(i == pathTokens.length-1) {
 				parentItem.addChild(itemToAdd);
-				//System.out.println("add "+itemToAdd.getLabel()+" to subitems of: "+currentToken);
 			}
 		}
 	}

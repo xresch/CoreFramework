@@ -136,9 +136,7 @@ public class CFWJobsAlertObject extends CFWObject {
 				
 		//-------------------------
 		// Get Condition Results
-		System.out.println("jobID:"+jobID);
 		if(!alertStateStore.containsKey(jobID)) {
-			System.out.println("create array");
 			alertStateArray = new ArrayList<>();
 			alertStateStore.put(jobID, alertStateArray);
 		}
@@ -178,13 +176,13 @@ public class CFWJobsAlertObject extends CFWObject {
 			AlertState lastState = alertStateArray.get(alertStateArray.size()-1);
 			lastAlertType = lastState.getAlertType();
 			lastAlertMillis = lastState.getLastAlertMillis();
-			System.out.println("Last State: "+CFW.JSON.toJSON(lastState));
+			//System.out.println("Last State: "+CFW.JSON.toJSON(lastState));
 		}
 		
 		AlertState currentState = new AlertState(conditionMatched, lastAlertMillis, customData);
 		currentState.setAlertType(lastAlertType);
 		alertStateArray.add(currentState);
-		System.out.println("currentState: "+CFW.JSON.toJSON(currentState));
+		//System.out.println("currentState: "+CFW.JSON.toJSON(currentState));
 		
 		//---------------------------------
 		// Check Condition
@@ -236,9 +234,8 @@ public class CFWJobsAlertObject extends CFWObject {
 			for(int i = 1; i <= occurencesInSeries; i++) {
 				int indexFromLast = alertStateArray.size() - i;
 				doAlert &= alertStateArray.get(indexFromLast).getConditionResult();
-				System.out.println("in loop:"+CFW.JSON.toJSON(alertStateArray.get(indexFromLast)) );
 			}
-			System.out.println(doAlert);
+
 			if(doAlert) {
 				currentState.setAlertType(AlertType.RAISE);
 				currentState.setLastAlertMillis(currentTimeMillis);

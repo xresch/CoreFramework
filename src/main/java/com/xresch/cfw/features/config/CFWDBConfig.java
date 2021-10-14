@@ -105,10 +105,6 @@ public class CFWDBConfig {
 			|| (oldValue != null && newValue != null && !oldValue.equals(newValue) ) ) {
 				for(ConfigChangeListener listener : changeListeners) {
 					if ( (!triggered.contains(listener)) && listener.listensOnConfig(configName)) {
-//						System.out.println("====================");
-//						System.out.println("configName:"+configName);
-//						System.out.println("newValue:"+newValue);
-//						System.out.println("oldValue:"+oldValue);
 						listener.onChange();
 						triggered.add(listener);
 					}
@@ -131,7 +127,6 @@ public class CFWDBConfig {
 	 * 
 	 ********************************************************************************************/
 	public static boolean getConfigAsBoolean(String configName) {
-		//System.out.println("===== Key: "+configName+", Value: "+configCache.get(configName));
 		return Boolean.parseBoolean(configCache.get(configName));
 	}
 	

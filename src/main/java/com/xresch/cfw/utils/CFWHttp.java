@@ -147,14 +147,12 @@ public class CFWHttp {
 			if(proxyPAC != null) {
 				//Prepend method calls with CFWHttpPacScriptMethods
 				proxyPAC = CFWHttpPacScriptMethods.preparePacScript(proxyPAC);
-				System.out.println("proxyPAC:\n"+proxyPAC);
-				
+
 				CFWScriptingContext polyglot = getScriptContext();
 
 			    polyglot.addScript("proxy.pac", proxyPAC);
 			    polyglot.executeScript("FindProxyForURL('localhost:9090/test', 'localhost');");
-				    
-				System.out.println("===== Test END ====");
+
 			}
 		}
 		
