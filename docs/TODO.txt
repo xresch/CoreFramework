@@ -116,6 +116,8 @@ Potential TODOs
 DONE
 ====
 ------- current -------
+
+------- v5.0.0 -------
 - Mailing: Added Class CFWMailBuilder for creating eMails.
 - Dashboard: Security Improvement - Use data from server side instead from client side.
 - Dashboard Widgets: Added caching for widget data.
