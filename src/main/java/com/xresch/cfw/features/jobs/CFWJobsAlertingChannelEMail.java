@@ -28,24 +28,25 @@ public class CFWJobsAlertingChannelEMail extends CFWJobsAlertingChannel {
 		CFWJob job = CFW.DB.Jobs.selectByID(jobID);
 		
 		//----------------------------------------
-		// Create Mail and Send
+		// Create Mail Content
 		String mailContent = Strings.isNullOrEmpty(contentHTML) ? content : contentHTML;
-		
-		CFWMailBuilder builder = new CFWMailBuilder(subject)
-				.addMessage(mailContent)
-				.fromNoReply()
-				.recipientsBCC(usersToAlert)
-				.addAttachment("jobdetails.json", CFW.JSON.toJSONPretty(job));
 		
 		//------------------------
 		// Handle Custom Notes
 		if( !Strings.isNullOrEmpty(alertObject.getCustomNotes()) ) {
-			builder.addAttachment("customNotes.txt", alertObject.getCustomNotes());
+			mailContent += "<p><b>Custom Notes</b><br>"+alertObject.getCustomNotes()+"</p>";
 		}
 		
-		//------------------------
-		// Send Mail
-		builder.send();
+		
+		
+		//----------------------------------------
+		// Create and Send Mail 
+		new CFWMailBuilder(subject)
+				.addMessage(mailContent, true)
+				.fromNoReply()
+				.recipientsBCC(usersToAlert)
+				.addAttachment("jobdetails.json", CFW.JSON.toJSONPretty(job))
+				.send();
 		
 	}
 

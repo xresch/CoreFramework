@@ -28,6 +28,7 @@ public class CFWJobsAlertingChannelAppLog extends CFWJobsAlertingChannel {
 				
 		CFWLog logEvent = new CFWLog(logger)
 				.silent(true)
+				.contextless(true)
 				.custom("alertType", alertObject.getLastAlertType())
 				.custom("alertSubject", subject)
 				.custom("jobid",  alertObject.getJobID())

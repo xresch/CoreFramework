@@ -108,6 +108,7 @@ public class CFWJobsAlertObject extends CFWObject {
 			CFWField.newString(FormFieldType.TEXTAREA, AlertObjectFields.ALERTING_CUSTOM_NOTES)
 					.setLabel("Custom Notes")
 					.setDescription("Add custom notes that can be added to the alert notification.")
+					.allowHTML(true)
 					.addValidator(new LengthValidator(-1, 100000))
 					.setValue(null);
 	

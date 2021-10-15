@@ -42,8 +42,8 @@ public class MailTest extends WebTestMaster  {
 		byte[] pdfBytes = CFW.Files.readBytesFromInputStream(pdfInputStream);
 		
 		new CFWMailBuilder("Test CFWMailer", messageBody)
-			.addMessage("<i>Second Message</i>")
-			.addMessage("<p>Third Message</p>")
+			.addMessage("<i>Second Message</i>", true)
+			.addMessage("<p>Third Message</p>", true)
 			.fromNoReply()
 			.replyTo("replyToMeC@xresch.com", "REPLY TO ME")
 			.recipientsTo(recipientsTo)

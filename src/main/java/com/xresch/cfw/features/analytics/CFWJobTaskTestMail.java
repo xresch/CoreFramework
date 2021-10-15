@@ -72,7 +72,7 @@ public class CFWJobTaskTestMail extends CFWJobTask {
 		new CFWMailBuilder(settings.getSubject())
 					.fromNoReply()
 					.recipientsTo(userlist)
-					.addMessage(settings.getMessage())
+					.addMessage(settings.getMessage(), true)
 					.send();
 		
 	}

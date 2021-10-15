@@ -72,7 +72,7 @@ public class CFWMailBuilder {
 	 ***************************************************************/
 	public CFWMailBuilder(String subject, String messageBodyHTML) {
 		this(subject);
-	    this.addMessage(messageBodyHTML);
+	    this.addMessage(messageBodyHTML, true);
 	}
 	
 	/***************************************************************
@@ -112,8 +112,16 @@ public class CFWMailBuilder {
 	
 	/***************************************************************
 	 * 
+	 * @param enhanceWhitespaces flag to define if newlines and tabs should be replaced with the respective html entities
 	 ***************************************************************/
-	public CFWMailBuilder addMessage(String html) {
+	public CFWMailBuilder addMessage(String html, boolean enhanceWhitespaces) {
+		
+		if(enhanceWhitespaces) {
+			html = html.replaceAll("\r\n", "<br>")
+					   .replaceAll("\n"  , "<br>")
+					   .replaceAll("\t"  , "&emsp;");
+		}
+		
 		try {
 			BodyPart messageBodyPart = new MimeBodyPart();
 			messageBodyPart.setContent(html, "text/html");
