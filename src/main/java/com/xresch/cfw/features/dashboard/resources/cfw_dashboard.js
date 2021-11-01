@@ -12,7 +12,8 @@ var CFW_DASHBOARD_WIDGET_REGISTRY = {};
 var CFW_DASHBOARD_WIDGET_DATA = {};
 var CFW_DASHBOARD_WIDGET_GUID = 0;
 
-var CFW_DASHBOARDVIEW_URL = "/app/dashboard/view";
+//works with public and user-based access
+var CFW_DASHBOARDVIEW_URL = CFW.http.getURLPath();
 
 // -------------------------------------
 // Globals needed for UNDO and REDO

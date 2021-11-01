@@ -56,7 +56,7 @@ import com.xresch.cfw.validation.ScheduleValidator;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class ServletDashboardView extends HttpServlet
+public class ServletDashboardViewPublic extends HttpServlet
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -67,7 +67,7 @@ public class ServletDashboardView extends HttpServlet
 	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-		ServletDashboardViewMethods.doGet(request, response, false);
+		ServletDashboardViewMethods.doGet(request, response, true);
     }
 	
 	/*****************************************************************
@@ -76,8 +76,7 @@ public class ServletDashboardView extends HttpServlet
 	@Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-		ServletDashboardViewMethods.doPost(request, response, false);
+		ServletDashboardViewMethods.doPost(request, response, true);
     }
-
-
+	
 }

@@ -40,11 +40,13 @@ public class Dashboard extends CFWObject {
 		NAME,
 		DESCRIPTION,
 		TAGS,
+		
 		IS_SHARED,
 		JSON_SHARE_WITH_USERS,
 		JSON_SHARE_WITH_GROUPS,
 		JSON_EDITORS,
 		JSON_EDITOR_GROUPS,
+		IS_PUBLIC,
 		IS_DELETABLE,
 		IS_RENAMABLE,
 	}
@@ -149,9 +151,15 @@ public class Dashboard extends CFWObject {
 					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());
 				}
 			});
+	
+	private CFWField<Boolean> isPublic = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.IS_PUBLIC)
+			.apiFieldType(FormFieldType.TEXT)
+			.setColumnDefinition("BOOLEAN DEFAULT FALSE")
+			.setDescription("Make the dashboard accessible through a public URL without the need for sign-in or having an account. This is unrelated to any other sharing options.")
+			.setValue(false);
+	
 	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, DashboardFields.IS_DELETABLE.toString())
 			.setDescription("Flag to define if the dashboard can be deleted or not.")
-			.setColumnDefinition("BOOLEAN")
 			.setValue(true);
 	
 	private CFWField<Boolean> isRenamable = CFWField.newBoolean(FormFieldType.NONE, DashboardFields.IS_RENAMABLE.toString())
@@ -183,7 +191,7 @@ public class Dashboard extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyOwner, name, description, tags, isShared, shareWithUsers, shareWithGroups, editors, editorGroups, isDeletable, isRenamable);
+		this.addFields(id, foreignKeyOwner, name, description, tags, isShared, shareWithUsers, shareWithGroups, editors, editorGroups, isPublic, isDeletable, isRenamable);
 	}
 	
 	/**************************************************************************************
@@ -239,6 +247,7 @@ public class Dashboard extends CFWObject {
 						DashboardFields.JSON_SHARE_WITH_GROUPS.toString(),
 						DashboardFields.JSON_EDITORS.toString(),
 						DashboardFields.JSON_EDITOR_GROUPS.toString(),
+						DashboardFields.IS_PUBLIC.toString(),
 						DashboardFields.IS_DELETABLE.toString(),
 						DashboardFields.IS_RENAMABLE.toString(),		
 				};
@@ -352,6 +361,15 @@ public class Dashboard extends CFWObject {
 	
 	public Dashboard editorGroups(LinkedHashMap<String,String> value) {
 		this.editorGroups.setValue(value);
+		return this;
+	}
+	
+	public boolean isPublic() {
+		return isPublic.getValue();
+	}
+	
+	public Dashboard isPublic(boolean value) {
+		this.isPublic.setValue(value);
 		return this;
 	}
 	

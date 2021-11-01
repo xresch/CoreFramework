@@ -28,6 +28,7 @@ public class FeatureDashboard extends CFWAppFeature {
 	
 	public static final String URI_DASHBOARD_LIST = "/app/dashboard/list";
 	public static final String URI_DASHBOARD_VIEW = "/app/dashboard/view";
+	public static final String URI_DASHBOARD_VIEW_PUBLIC = "/public/dashboard/view";
 	
 	public static final String PERMISSION_DASHBOARD_VIEWER = "Dashboard Viewer";
 	public static final String PERMISSION_DASHBOARD_CREATOR = "Dashboard Creator";
@@ -56,6 +57,9 @@ public class FeatureDashboard extends CFWAppFeature {
 		// Register Languages
 		CFW.Localization.registerLocaleFile(Locale.ENGLISH, "/app/dashboard", new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_en_dashboard.properties"));
 		CFW.Localization.registerLocaleFile(Locale.GERMAN, "/app/dashboard", new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_de_dashboard.properties"));
+		
+		CFW.Localization.registerLocaleFile(Locale.ENGLISH, URI_DASHBOARD_VIEW_PUBLIC, new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_en_dashboard.properties"));
+		CFW.Localization.registerLocaleFile(Locale.GERMAN, URI_DASHBOARD_VIEW_PUBLIC, new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_de_dashboard.properties"));
 		
     	//----------------------------------
     	// Register Objects
@@ -155,6 +159,7 @@ public class FeatureDashboard extends CFWAppFeature {
 	public void addFeature(CFWApplicationExecutor app) {	
     	app.addAppServlet(ServletDashboardList.class,  URI_DASHBOARD_LIST);
     	app.addAppServlet(ServletDashboardView.class,  URI_DASHBOARD_VIEW);
+    	app.addUnsecureServlet(ServletDashboardViewPublic.class,  URI_DASHBOARD_VIEW_PUBLIC);
 	}
 
 	@Override

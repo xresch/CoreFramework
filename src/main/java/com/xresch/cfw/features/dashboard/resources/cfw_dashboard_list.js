@@ -6,6 +6,7 @@
  **************************************************************************************************************/
 
 var CFW_DASHBOARDLIST_URL = "./list";
+var URI_DASHBOARD_VIEW_PUBLIC = "/public/dashboard/view";
 var CFW_DASHBOARDLIST_LAST_OPTIONS = null;
 
 /******************************************************************
@@ -97,6 +98,19 @@ function cfw_dashboardlist_importDashboardExecute(){
 			);
 
 		}
+}
+
+
+/******************************************************************
+ * Show Public Link
+ ******************************************************************/
+function cfw_dashboardlist_showPublicLink(id){
+	var link = CFW.http.getHostURL() + URI_DASHBOARD_VIEW_PUBLIC + "?id=" + id;
+	var linkDiv = $('<div id="cfw-dashboard-publiclink">');
+	
+	linkDiv.append('<p>Public Link: <a target="blank" href="'+link+'">'+link+'</a></p>');
+	
+	CFW.ui.showModalMedium("Public Link", linkDiv);
 }
 
 
@@ -234,7 +248,6 @@ function cfw_dashboardlist_printDashboards(data, type){
 		
 	}
 	
-	
 	//--------------------------------
 	// Table
 	
@@ -260,14 +273,36 @@ function cfw_dashboardlist_printDashboards(data, type){
 		//======================================
 		// Prepare actions
 		
+		var actionButtons = [ ];
+		//-------------------------
+		// Public Link Button
+		if(type == 'mydashboards'
+		|| type == 'admindashboards'){
+
+		actionButtons.push(
+			function (record, id){ 
+				var htmlString = '';
+				if(JSDATA.userid == record.IS_PUBLIC){
+					htmlString += '<button class="btn btn-primary btn-sm" title="Show Public Link"'
+						+'onclick="cfw_dashboardlist_showPublicLink('+id+');">'
+						+ '<i class="fa fa-link"></i>'
+						+ '</button>';
+				}else{
+					htmlString += '&nbsp;';
+				}
+				return htmlString;
+			});
+		}
+		
 		//-------------------------
 		// View Button
-		var actionButtons = [ 
+		actionButtons.push(
 			function (record, id){ 
 				return '<a class="btn btn-success btn-sm" role="button" href="/app/dashboard/view?id='+id+'&title='+encodeURIComponent(record.NAME)+'" alt="View" title="View" >'
 				+ '<i class="fa fa-eye"></i>'
 				+ '</a>';
-			}];
+			}
+		);
 
 		//-------------------------
 		// Edit Button

@@ -630,45 +630,62 @@ public class CFWDBDashboard {
 	
 	/***************************************************************
 	 * 
+	 * @param isPublicServlet set to true if request is coming true
+	 * the public servlet ServletDashboardViewPublic, else set false.
 	 ***************************************************************/
-	public static boolean hasUserAccessToDashboard(int dashboardID) {
-		return hasUserAccessToDashboard(dashboardID+"");
+	public static boolean hasUserAccessToDashboard(int dashboardID, boolean isPublicServlet) {
+		return hasUserAccessToDashboard(dashboardID+"", isPublicServlet);
 	}
+	
 	/***************************************************************
 	 * 
+	 * @param isPublicServlet set to true if request is coming true
+	 * the public servlet ServletDashboardViewPublic, else set false.
 	 ***************************************************************/
-	public static boolean hasUserAccessToDashboard(String dashboardID) {
-		
-		//-----------------------------------
-		// Check User is Admin
-		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
-			return true;
-		}
-		
-		//-----------------------------------
-		// Check User is Shared/Editor
-		int userID = CFW.Context.Request.getUser().id();
-		String likeID = "%\""+userID+"\":%";
-		
-		int count = new CFWSQL(new Dashboard())
-			.loadSQLResource(FeatureDashboard.PACKAGE_RESOURCES, "SQL_hasUserAccessToDashboard.sql", 
-					dashboardID, 
-					userID, 
-					likeID,
-					likeID)
-			.getCount();
-		
-		if( count > 0) {
-			return true;
+	public static boolean hasUserAccessToDashboard(String dashboardID, boolean isPublicServlet) {
+
+		if(!isPublicServlet) {
+			//-----------------------------------
+			// Check User is Admin
+			if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
+				return true;
+			}
+			
+			//-----------------------------------
+			// Check User is Shared/Editor
+			
+			int userID = CFW.Context.Request.getUser().id();
+			String likeID = "%\""+userID+"\":%";
+			
+			int count = new CFWSQL(new Dashboard())
+				.loadSQLResource(FeatureDashboard.PACKAGE_RESOURCES, "SQL_hasUserAccessToDashboard.sql", 
+						dashboardID, 
+						userID, 
+						likeID,
+						likeID)
+				.getCount();
+			
+			if( count > 0) {
+				return true;
+			}
 		}
 		
 		//-----------------------------------
 		// Get Dashboard 
 		Dashboard dashboard = (Dashboard)new CFWSQL(new Dashboard())
-			.select(DashboardFields.JSON_SHARE_WITH_GROUPS, DashboardFields.JSON_EDITOR_GROUPS)
+			.select(DashboardFields.JSON_SHARE_WITH_GROUPS, DashboardFields.JSON_EDITOR_GROUPS, DashboardFields.IS_PUBLIC)
 			.where(DashboardFields.PK_ID, dashboardID)
 			.getFirstAsObject();
 		
+		//-----------------------------------
+		// Handle Public Dashboards
+		if(isPublicServlet) {
+			if(dashboard.isPublic() == true) {
+				return true;
+			}else {
+				return false;
+			}
+		}
 		//-----------------------------------
 		// Check User has Shared Role
 		LinkedHashMap<String, String> sharedRoles = dashboard.sharedWithGroups();
@@ -766,7 +783,7 @@ public class CFWDBDashboard {
 		try {
 			while(resultSet != null && resultSet.next()) {
 				int id = resultSet.getInt("PK_ID");
-				if(hasUserAccessToDashboard(id)) {
+				if(hasUserAccessToDashboard(id, false)) {
 					String name = resultSet.getString("NAME");
 					String owner = resultSet.getString("OWNER");
 					list.addItem(id, name, "Owner: "+owner);
@@ -807,7 +824,18 @@ public class CFWDBDashboard {
 	public static boolean checkCanEdit(int dashboardID) {
 		
 		Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
+		return checkCanEdit(dashboard);
+	}
+	
+	/*****************************************************************
+	 * Checks if the current user can edit the dashboard.
+	 *****************************************************************/
+	public static boolean checkCanEdit(Dashboard dashboard) {
 		User user = CFW.Context.Request.getUser();
+		
+		//--------------------------------------
+		// if user is not logged in / public dashboards
+		if(user == null) { return false; }
 		
 		//--------------------------------------
 		// Check User is Dashboard owner, admin

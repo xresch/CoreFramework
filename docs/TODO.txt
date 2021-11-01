@@ -116,6 +116,7 @@ Potential TODOs
 DONE
 ====
 ------- current -------
+- Dashboards: Added option to make dashboards publicly available(üublic url, no user login needed).
 
 ------- v5.0.0 -------
 - Mailing: Added Class CFWMailBuilder for creating eMails.

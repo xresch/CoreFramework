@@ -116,7 +116,7 @@ public class DashboardParameter extends CFWObject {
 	// As the type of the value will be defined by the setting it is associated with, this is stored as JSON.
 	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE)
 			.setDescription("The value of the parameter.")
-			.allowHTML(true);
+			.disableSecurity();
 	
 	private CFWField<String> mode = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.MODE)
 			.setDescription("The mode of the widget.")
