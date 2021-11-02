@@ -24,7 +24,6 @@ Potential TODOs
   - Send Mails
 
 - Features: Spaces
-
   - HTML Selector
   - SpacePermissions in SessionData
   - Selected Space in SessionData

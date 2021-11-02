@@ -282,7 +282,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 		actionButtons.push(
 			function (record, id){ 
 				var htmlString = '';
-				if(JSDATA.userid == record.IS_PUBLIC){
+				if(record.IS_PUBLIC){
 					htmlString += '<button class="btn btn-primary btn-sm" title="Show Public Link"'
 						+'onclick="cfw_dashboardlist_showPublicLink('+id+');">'
 						+ '<i class="fa fa-link"></i>'

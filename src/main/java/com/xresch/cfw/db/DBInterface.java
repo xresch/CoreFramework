@@ -645,7 +645,7 @@ public class DBInterface {
 		
 		String urlPart = servername+":"+port+"/"+storePath+"/"+databaseName;
 		String uniqueName = "H2:"+urlPart;
-		String connectionURL = "jdbc:h2:tcp://"+urlPart+";IGNORECASE=TRUE";
+		String connectionURL = "jdbc:h2:tcp://"+urlPart+";MODE=MYSQL;IGNORECASE=TRUE";
 		String driverClass = "org.h2.Driver";
 
 		return createDBInterface(
