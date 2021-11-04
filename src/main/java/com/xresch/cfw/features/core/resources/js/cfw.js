@@ -38,6 +38,7 @@ function cfw_utils_executeCodeOrFunction(jsCodeOrFunction){
 	}else{
 		eval(jsCodeOrFunction);
 	}
+	
 }
 
 /**************************************************************************************
@@ -80,6 +81,51 @@ function cfw_utils_nullTo(value, nullToThis){
 	
 	return value;
 }
+
+/************************************************************************************************
+ * Writes a string value to the Clipboard.
+ * 
+ ************************************************************************************************/
+function cfw_utils_clipboardWrite(stringValue){
+	navigator.permissions.query({name: "clipboard-write"}).then(result => {
+	  if (result.state == "granted" || result.state == "prompt") {
+
+		  navigator.clipboard.writeText(stringValue).then(function() {
+		    /* clipboard successfully set */
+			CFW.ui.addToastInfo('Copied to clipboard.')
+		  }, function() {
+		    /* clipboard write failed */
+			CFW.ui.addToastDanger('Copy to clipboard failed.')
+		  });
+			
+	  }else{
+		  CFW.ui.addToastWarning('Access to clipboard seems to be blocked or not supported by your browser.')
+	  }
+	});
+}
+
+/************************************************************************************************
+ * Calls the callback function with the retrieved string value from the clipboard.
+ * 
+ ************************************************************************************************/
+function cfw_utils_clipboardRead(callbackFunction){
+	navigator.permissions.query({name: "clipboard-read"}).then(result => {
+	  if (result.state == "granted" || result.state == "prompt") {
+
+		  var clipboardText = "";
+		  var promise =  navigator.clipboard.readText();
+		  
+		  promise.then( 
+				function(value){callbackFunction(value)}
+			  , function(error) { clipboardText = ""; CFW.ui.addToastDanger('Reading from clipboard failed: '+error) }
+			);
+		  
+	  }else{
+		  CFW.ui.addToastWarning('Access to clipboard seems to be blocked or not supported by your browser.(result.state='+result.state +')')
+	  }
+	});
+}
+
 /************************************************************************************************
  * Returns a Random integer between min(inclusive) and max(exclusive).
  ************************************************************************************************/
@@ -617,7 +663,7 @@ function cfw_initializeScheduleField(fieldID, jsonData){
 	
 	//----------------------------------
 	// Add Classes
-	var classes = scheduleField.attr('class');
+	//var classes = scheduleField.attr('class');
 	//scheduleField.addClass('d-none');
 
 	//----------------------------------
@@ -3154,6 +3200,8 @@ var CFW = {
 		nullTo: cfw_utils_nullTo,
 		replaceAll: cfw_utils_replaceAll,
 		randomInt: cfw_utils_randomInt,
+		clipboardRead: cfw_utils_clipboardRead,
+		clipboardWrite: cfw_utils_clipboardWrite,
 	},
 	ui: {
 		createToggleButton: cfw_ui_createToggleButton,

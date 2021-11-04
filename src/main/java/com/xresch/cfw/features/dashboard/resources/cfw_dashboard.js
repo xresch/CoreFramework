@@ -1243,6 +1243,50 @@ function cfw_dashboard_widget_duplicate(widgetGUID) {
 /*******************************************************************************
  * 
  ******************************************************************************/
+function cfw_dashboard_widget_copyToClipboard(widgetGUID) {
+	var widgetInstance = $('#'+widgetGUID);
+	var widgetObject = widgetInstance.data("widgetObject");
+	
+	var duplicateData = {
+		widgetObject: widgetObject,
+		parametersArray: []
+	};
+	
+	CFW.utils.clipboardWrite(JSON.stringify(duplicateData));
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboard_widget_handlePaste() {
+	
+	CFW.utils.clipboardRead(
+		function(clipboardValue){
+			
+			if(clipboardValue == null){ return ;}
+			
+			widgetObject = null;
+			parametersArray = null;
+			if( clipboardValue.startsWith('{"widgetObject":') ){
+				var clipObject = JSON.parse(clipboardValue);
+				widgetObject = clipObject.widgetObject;
+				
+			}else if(clipboardValue.startsWith('{')
+				  && clipboardValue.includes('FK_ID_DASHBOARD')){
+				widgetObject = JSON.parse(clipboardValue);
+			}
+			
+			cfw_dashboard_widget_add(widgetObject.TYPE, widgetObject, true);
+						
+			console.log('handle Paste: '+JSON.stringify(widgetObject));
+		}
+	);
+
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 function cfw_dashboard_widget_save_defaultSettings(widgetGUID){
 	var widget = $('#'+widgetGUID);
 	var widgetObject = widget.data("widgetObject");
@@ -1363,18 +1407,28 @@ function cfw_dashboard_widget_removeFromGrid(widgetElement) {
 
 /*******************************************************************************
  * 
+ * @param type the type of the widget
+ * @param optionalWidgetObjectData data for the widgetObject, used for redo
+ *        and paste actions 
+ * @param doAutoposition define if autoposition should be done or not in case
+ *        widget data is provided
  ******************************************************************************/
-function cfw_dashboard_widget_add(type, optionalRedoWidgetObject) {
+function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition) {
 
 	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'widget', type: type, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
 			var widgetObject = data.payload;
 			if(widgetObject != null){
 				
 				// -------------------------
-				// Handle Redo
-				if(optionalRedoWidgetObject != null){
-					optionalRedoWidgetObject.PK_ID = widgetObject.PK_ID;
-					cfw_dashboard_widget_createInstance(optionalRedoWidgetObject, false);
+				// Handle Redo/Paste
+				if(optionalWidgetObjectData != null){
+					optionalWidgetObjectData.PK_ID = widgetObject.PK_ID;
+					cfw_dashboard_widget_createInstance(optionalWidgetObjectData, doAutoposition);
+					
+					//TODO: A bit ugly, triggers another save
+					//widgetGUID = 'widget-'+widgetObject.PK_ID;
+					//cfw_dashboard_widget_rerender(widgetGUID);
+					
 					return;
 				}
 				
@@ -1567,6 +1621,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 		+'		<div class="dropdown-menu">'
 		+'			<a class="dropdown-item" onclick="cfw_dashboard_widget_edit(\''+merged.guid+'\')"><i class="fas fa-pen"></i>&nbsp;'+CFWL('cfw_core_edit', 'Edit')+'</a>'
 		+'			<a class="dropdown-item" onclick="cfw_dashboard_widget_duplicate(\''+merged.guid+'\')"><i class="fas fa-clone"></i>&nbsp;'+CFWL('cfw_core_duplicate', 'Duplicate')+'</a>'
+		+'			<a class="dropdown-item" onclick="cfw_dashboard_widget_copyToClipboard(\''+merged.guid+'\')"><i class="fas fa-copy"></i>&nbsp;'+CFWL('cfw_core_copy', 'Copy')+'</a>'
 		// ' <div class="dropdown-divider"></div>'
 		+'			<a class="dropdown-item" onclick="cfw_dashboard_widget_removeConfirmed(\''+merged.guid+'\')"><i class="fas fa-trash"></i>&nbsp;'+CFWL('cfw_core_remove', 'Remove')+'</a>'
 		+'		</div>'
@@ -1695,12 +1750,14 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 				    	grid.movable('#'+widgetAdjustedByWidgetDef.guid, false);
 				    	grid.resizable('#'+widgetAdjustedByWidgetDef.guid, false);
 				    }
+
 				    // ----------------------------
-				    // Update Data of Original
+				    // Update Data of Original&Clone
 				    originalWidgetObject.WIDTH	= widgetInstance.attr("data-gs-width");
 				    originalWidgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
 				    originalWidgetObject.X		= widgetInstance.attr("data-gs-x");
 				    originalWidgetObject.Y		= widgetInstance.attr("data-gs-y");
+
 				    $(widgetInstance).data('widgetObject', originalWidgetObject);
 				    
 				    cfw_dashboard_widget_save_state(originalWidgetObject);
@@ -1866,6 +1923,13 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			// --------------------------------
 			// Abort if Modal is open
 			if($('.modal.show').length > 0){
+				return;
+			}
+			
+			// --------------------------------
+			// Ctrl+V - Trigger Paste
+			if (e.ctrlKey && e.keyCode == 86) {
+				cfw_dashboard_widget_handlePaste();
 				return;
 			}
 			
