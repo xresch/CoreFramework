@@ -17,6 +17,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.validation.LengthValidator;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
@@ -256,19 +257,24 @@ public class CFWJobsAlertObject extends CFWObject {
 	/**************************************************************************
 	 * Send an alert, either for raising or lifting an alert.
 	 * You have to create the content for raising or lifting the content yourself.
-	 * @param context TODO
+	 * @param context the Job Execution Context
+	 * @param messageType the type of the message
 	 * @param subject the title for your alert
 	 * @param content plain text of your alert(mandatory)
 	 * @param contentHTML html version of your alert(optional, some alert 
 	 * channels might use the HTML version if not null)
 	 **************************************************************************/
-	public void doSendAlert(JobExecutionContext context, String subject, String content, String contentHTML) {
+	public void doSendAlert(JobExecutionContext context
+						, MessageType messageType
+						, String subject
+						, String content
+						, String contentHTML) {
 		
 		HashMap<Integer, User> uniqueUsers = this.doSendAlert_getMergedListOfUsersToAlert();
 		ArrayList<CFWJobsAlertingChannel> channelsToAlert = this.doSendAlert_getListOfAlertChannels();
 		
 		for(CFWJobsAlertingChannel channel : channelsToAlert) {
-			channel.sendAlerts(context, this, uniqueUsers, subject, content, contentHTML);
+			channel.sendAlerts(context, messageType, this, uniqueUsers, subject, content, contentHTML);
 		}
 		
 	}

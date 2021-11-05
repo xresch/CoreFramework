@@ -6,20 +6,21 @@ import org.quartz.JobExecutionContext;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.notifications.Notification;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.mail.CFWMailBuilder;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
-public class CFWJobsAlertingChannelEMail extends CFWJobsAlertingChannel {
+public class CFWJobsAlertingChannelNotification extends CFWJobsAlertingChannel {
 
 	@Override
 	public String uniqueName() {
-		return "eMail";
+		return "Notification";
 	}
 
 	@Override
 	public String channelDescription() {
-		return "Sends the alerts to the users eMail addresses.";
+		return "Sends the alerts to the users by adding a notification to their notification list.";
 	}
 
 	@Override
@@ -34,24 +35,30 @@ public class CFWJobsAlertingChannelEMail extends CFWJobsAlertingChannel {
 		
 		//----------------------------------------
 		// Create Mail Content
-		String mailContent = Strings.isNullOrEmpty(contentHTML) ? content : contentHTML;
+		String messageContent = Strings.isNullOrEmpty(contentHTML) ? "<p>"+content+"</p>" : contentHTML;
 		
 		//------------------------
 		// Handle Custom Notes
 		if( !Strings.isNullOrEmpty(alertObject.getCustomNotes()) ) {
-			mailContent += "<p><b>Custom Notes</b><br>"+alertObject.getCustomNotes()+"</p>";
+			messageContent += "<p><b>Custom Notes</b><br>"+alertObject.getCustomNotes()+"</p>";
+		}
+				
+		//----------------------------------------
+		// Create Notifications for users 
+		Notification templateNotification = 
+				new Notification()
+						.isRead(false)
+						.messageType(messageType)
+						.title(subject)
+						.message(messageContent);
+		
+		for(Integer id : usersToAlert.keySet()) {
+			if(id != null) {
+				templateNotification.foreignKeyUser(id);
+				CFW.DB.Notifications.create(templateNotification);
+			}
 		}
 		
-		
-		
-		//----------------------------------------
-		// Create and Send Mail 
-		new CFWMailBuilder(subject)
-				.addMessage(mailContent, true)
-				.fromNoReply()
-				.recipientsBCC(usersToAlert)
-				.addAttachment("jobdetails.json", CFW.JSON.toJSONPretty(job))
-				.send();
 		
 	}
 

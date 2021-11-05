@@ -38,6 +38,8 @@ import com.xresch.cfw.features.keyvaluepairs.FeatureKeyValuePairs;
 import com.xresch.cfw.features.keyvaluepairs.KeyValuePair;
 import com.xresch.cfw.features.manual.CFWRegistryManual;
 import com.xresch.cfw.features.manual.FeatureManual;
+import com.xresch.cfw.features.notifications.CFWDBNotifications;
+import com.xresch.cfw.features.notifications.FeatureNotifications;
 import com.xresch.cfw.features.spaces.CFWDBSpace;
 import com.xresch.cfw.features.spaces.CFWDBSpaceGroup;
 import com.xresch.cfw.features.spaces.FeatureSpaces;
@@ -100,6 +102,7 @@ public class CFW {
 		public static class DashboardParameters extends CFWDBDashboardParameter{};
 		public static class Jobs extends CFWDBJob{};
 		public static class KeyValuePairs extends CFWDBKeyValuePairs{};
+		public static class Notifications extends CFWDBNotifications{};
 		public static class Users extends CFWDBUser{};
 		public static class Roles extends CFWDBRole{};
 		public static class UserRoleMap extends CFWDBUserRoleMap{};
@@ -230,29 +233,6 @@ public class CFW {
 	 ***********************************************************************/
 	public static CFWAppInterface loadExtensionApplication() {
 		
-//       Reflections reflections = new Reflections(new ConfigurationBuilder()
-//            //.filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("com.xresch.cfw.")))
-//            .filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("java.")))
-//            .setUrls(ClasspathHelper.forClassLoader())
-//            //.setScanners(new SubTypesScanner(), new TypeAnnotationsScanner())
-//       );
-		
-//       Reflections reflections = new Reflections("");
-//       Set<Class<?>> types = reflections.getTypesAnnotatedWith(CFWExtensionApplication.class);
-       
-//       for(Class<?> clazz : types) {
-//    	   if(CFWAppInterface.class.isAssignableFrom(clazz)) {
-//    		   new CFWLog(logger).info("Load CFW Extension Application:"+clazz.getName());
-//    		   
-//    		  try {
-//				CFWAppInterface instance = (CFWAppInterface)clazz.newInstance();
-//				return instance;
-//			} catch (InstantiationException | IllegalAccessException e) {
-//				new CFWLog(logger).severe("Error loading CFW Extension Application:"+clazz.getName(), e);
-//			}
-//    	   }
-//       }
-       
        ServiceLoader<CFWAppInterface> loader = ServiceLoader.load(CFWAppInterface.class);
        for(CFWAppInterface instance : loader) {
     	   new CFWLog(logger).info("Load CFW Application:"+instance.getClass().getName());
@@ -270,21 +250,6 @@ public class CFW {
 	 ***********************************************************************/
 	@SuppressWarnings("unchecked")
 	private static void loadExtensionFeatures() {
-		
-//       Reflections reflections = new Reflections(new ConfigurationBuilder()
-//            //.filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("com.xresch.cfw.")))
-//            .filterInputsBy(new FilterBuilder().exclude(FilterBuilder.prefix("java.")))
-//            .setUrls(ClasspathHelper.forClassLoader())
-//            //.setScanners(new SubTypesScanner(), new TypeAnnotationsScanner())
-//       );
-//	   Reflections reflections = new Reflections("");
-//       Set<Class<?>> types = reflections.getTypesAnnotatedWith(CFWExtensionFeature.class);
-//       for(Class<?> clazz : types) {
-//    	   if(CFWAppFeature.class.isAssignableFrom(clazz)) {
-//    		   new CFWLog(logger).info("Load CFW Extension:"+clazz.getName());
-//    		   CFW.Registry.Features.addFeature((Class<? extends CFWAppFeature>)clazz);
-//    	   }
-//       }
        
        ServiceLoader<CFWAppFeature> loader = ServiceLoader.load(CFWAppFeature.class);
        for(CFWAppFeature feature : loader) {
@@ -430,6 +395,7 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureAPI.class);	
 		CFW.Registry.Features.addFeature(FeatureSystemAnalytics.class);		
 		CFW.Registry.Features.addFeature(FeatureManual.class);	
+		CFW.Registry.Features.addFeature(FeatureNotifications.class);	
 		
 		if(CFW.AppSettings.isDashboardingEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureDashboard.class);	

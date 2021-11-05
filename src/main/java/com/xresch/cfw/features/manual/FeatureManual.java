@@ -5,6 +5,7 @@ import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -31,7 +32,6 @@ public class FeatureManual extends CFWAppFeature {
 				.addPermission(PERMISSION_ADMIN_MANUAL)
 			);
 	
-	
 	@Override
 	public void register() {
 		//----------------------------------
@@ -39,14 +39,17 @@ public class FeatureManual extends CFWAppFeature {
 		CFW.Files.addAllowedPackage(RESOURCE_PACKAGE);
 
     	//----------------------------------
-    	// Register Regular Menu
-		// Manual Menu is handled by CFW.Registry.Components.createMenuInstance()
-		
-		//---------------------------
-		// Admin Manuals
+    	// Register Button Menu
+		CFW.Registry.Components.addButtonsMenuItem(
+		(MenuItem)new MenuItem("Manual", "{!cfw_core_manual!}") 
+				.faicon("fas fa-book")
+				.addPermission(FeatureManual.PERMISSION_MANUAL)
+				.href("/app/manual")
+				, null
+		);
 
 		//---------------------------
-		// Developer Manual
+		// Register Manuals
 		registerAdminManual();
 		registerDeveloperManual();
 	}

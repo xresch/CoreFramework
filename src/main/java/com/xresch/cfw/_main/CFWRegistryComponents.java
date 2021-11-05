@@ -26,13 +26,25 @@ public class CFWRegistryComponents {
 	
 	//-------------------------------
 	// Menus
+	
+	//Top level menu items placed in the left of the navigation bar
 	private static LinkedHashMap<String, MenuItem> regularMenuItems = new LinkedHashMap<>();
-	private static LinkedHashMap<String, MenuItem> userMenuItems = new LinkedHashMap<>();
+	
+	//Items in the dropdown of the tools menu
 	private static LinkedHashMap<String, MenuItem> toolsMenuItems = new LinkedHashMap<>();
+	
+	//Items in the dropdown of the admin menu
 	private static LinkedHashMap<String, MenuItem> adminMenuItems = new LinkedHashMap<>();
-		
+	
 	// Admin items of the Core Framework
 	private static LinkedHashMap<String, MenuItem> adminMenuItemsCFW = new LinkedHashMap<>();
+	
+	//Top Level Menu Items in the button area next to the user menu
+	private static LinkedHashMap<String, MenuItem> buttonMenuItems = new LinkedHashMap<>();
+	
+	//Items in the dropdown of the user menu
+	private static LinkedHashMap<String, MenuItem> userMenuItems = new LinkedHashMap<>();
+	
 	
 	//-------------------------------
 	// Footer
@@ -135,6 +147,22 @@ public class CFWRegistryComponents {
 			.severe("Coding Issue: Admin menu items need at least 1 permission.");
 		}
 		addMenuItem(adminMenuItemsCFW, itemToAdd, menuPath);
+	}
+	
+	
+	
+	
+	/***********************************************************************
+	 * Adds a menuItem to the buttons menu.
+	 * Define the position of in the menu with the menuPath parameter. Use
+	 * "|" to separate multiple menu labels.
+	 * @param menuitem to add
+	 * @param menuPath were the menu should be added, or null for root
+	 * @param Class that extends from BTMenu
+	 ***********************************************************************/
+	public static void addButtonsMenuItem(MenuItem itemToAdd, String menuPath)  {
+		itemToAdd.addCssClass("cfw-button-menuitem");
+		addMenuItem(buttonMenuItems, itemToAdd, menuPath);
 	}
 	
 	/***********************************************************************
@@ -241,20 +269,13 @@ public class CFWRegistryComponents {
 			for(MenuItem item : adminMenuItemsCFW.values() ) {
 				adminParentMenu.addChild(item.createCopy());
 			}
-			
+						
 			//---------------------------
-			// Manual
-			if(CFW.Registry.Manual.getManualPagesForUserAsJSON(sessionData).size() > 0
-			&& sessionData.getUserPermissions().containsKey(FeatureManual.PERMISSION_MANUAL)) {
-				menu.addRightMenuItem(
-						//(MenuItem)new MenuItem("Manual", "{!cfw_core_manual!}") 
-						(MenuItem)new MenuItem("") 
-						.faicon("fas fa-book")
-						.addPermission(FeatureManual.PERMISSION_MANUAL)
-						.href("/app/manual")
-				);
-			};
-			
+			// Button Menu			
+			for(MenuItem item : buttonMenuItems.values() ) {
+				menu.addRightMenuItem(item.createCopy());
+			}
+						
 			//---------------------------
 			// User Menu
 			UserMenuItem userParentMenu = new UserMenuItem(sessionData);	

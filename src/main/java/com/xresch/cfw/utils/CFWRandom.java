@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -99,6 +100,11 @@ public class CFWRandom {
 	
 	public static boolean randomBoolean() { return random.nextInt(100) > 50 ? true : false; }
 	
+	public static <T> T randomFromArray(T[] array) {
+	    int index = random.nextInt(array.length);
+	    return array[index];
+	}
+	
 	public static String randomFromArray(String[] array) {
 	    int index = random.nextInt(array.length);
 	    return array[index];
@@ -112,6 +118,13 @@ public class CFWRandom {
 	public static String randomIssueResolvedMessage() { return randomFromArray(issueResolvedMessages); }
 	
 	
+	
+	/******************************************************************************
+	 * Creates a random Message Type.
+	 ******************************************************************************/
+	public static MessageType randomMessageType() { 
+		return randomFromArray(MessageType.values());
+	}
 	/******************************************************************************
 	 * Creates a random json array of people with various properties.
 	 * 

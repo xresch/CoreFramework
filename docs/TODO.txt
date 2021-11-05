@@ -115,7 +115,9 @@ Potential TODOs
 DONE
 ====
 ------- current -------
-- Dashboards: Added option to make dashboards publicly available(üublic url, no user login needed).
+- Dashboard: Added option to make dashboards publicly available(public url, no user login needed).
+- Dashboard: Added Copy Action to Widgets, can be Pasted to other dashboards using Ctrl-V
+- Menu: Fixed Display issue for Navbar Buttons(Manual) when menu is collapsed on narrow displays
 
 ------- v5.0.0 -------
 - Mailing: Added Class CFWMailBuilder for creating eMails.

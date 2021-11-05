@@ -8,6 +8,7 @@ import org.quartz.JobExecutionContext;
 import com.google.common.base.Strings;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWJobsAlertingChannelAppLog extends CFWJobsAlertingChannel {
 
@@ -24,7 +25,7 @@ public class CFWJobsAlertingChannelAppLog extends CFWJobsAlertingChannel {
 	}
 
 	@Override
-	public void sendAlerts(JobExecutionContext context, CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert, String subject, String content, String contentHTML) {
+	public void sendAlerts(JobExecutionContext context, MessageType messageType, CFWJobsAlertObject alertObject, HashMap<Integer, User> usersToAlert, String subject, String content, String contentHTML) {
 				
 		CFWLog logEvent = new CFWLog(logger)
 				.silent(true)

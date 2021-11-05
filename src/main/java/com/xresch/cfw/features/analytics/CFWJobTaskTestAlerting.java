@@ -1,27 +1,19 @@
 package com.xresch.cfw.features.analytics;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Locale;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
-import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
 import com.xresch.cfw.features.jobs.CFWJobsAlertObject.AlertType;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.mail.CFWMailBuilder;
-import com.xresch.cfw.validation.NotNullOrEmptyValidator;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWJobTaskTestAlerting extends CFWJobTask {
 	
@@ -80,14 +72,15 @@ public class CFWJobTaskTestAlerting extends CFWJobTask {
 			String message = "Hi There!\n\nThis is only a test, have a marvelous day!";
 			String messageHTML = "<p>Hi There!<p></p>This is only a test, have a marvelous day!</p>";
 			
+			
 			if(type.equals(AlertType.RAISE)) {
-				alertObject.doSendAlert(context, "[TEST] Alert: A situation is occuring!", message, messageHTML);
+				alertObject.doSendAlert(context, CFW.Random.randomMessageType(), "[TEST] Alert: A situation is occuring!", message, messageHTML);
 			}
 			
 			if(type.equals(AlertType.RESOLVE)) {
 				message += " "+CFW.Random.randomIssueResolvedMessage();
 				messageHTML += "<p>"+CFW.Random.randomIssueResolvedMessage()+"</p>";
-				alertObject.doSendAlert(context, "[TEST] Alert: A situation has resolved!.", message, messageHTML);
+				alertObject.doSendAlert(context, MessageType.SUCCESS, "[TEST] Alert: A situation has resolved!.", message, messageHTML);
 			}
 		}
 				

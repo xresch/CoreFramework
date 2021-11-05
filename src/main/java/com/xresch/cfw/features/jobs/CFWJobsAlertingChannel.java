@@ -5,6 +5,7 @@ import java.util.HashMap;
 import org.quartz.JobExecutionContext;
 
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public abstract class CFWJobsAlertingChannel {
 	
@@ -25,8 +26,9 @@ public abstract class CFWJobsAlertingChannel {
 	/*************************************************************************
 	 * Send the alerts.
 	 * @param context TODO
+	 * @param messageType TODO
 	 *************************************************************************/
-	public abstract void sendAlerts(JobExecutionContext context, CFWJobsAlertObject alertObject, HashMap<Integer, User> uniqueUsers, String subject, String content, String contentHTML);
+	public abstract void sendAlerts(JobExecutionContext context, MessageType messageType, CFWJobsAlertObject alertObject, HashMap<Integer, User> uniqueUsers, String subject, String content, String contentHTML);
 	
 	/*************************************************************************
 	 * Return if the user is able to select this channel.
