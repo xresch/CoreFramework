@@ -117,6 +117,10 @@ public class ServletNotification extends HttpServlet
 					case "single": 		deleteNotification(jsonResponse, ID);
 										break;  
 										
+					case "multiple": 	String IDs = request.getParameter("ids");
+										deleteNotificationMultiple(jsonResponse, IDs);
+					break;  
+					
 					default: 			CFW.Messages.itemNotSupported(item);
 										break;
 				}
@@ -142,24 +146,27 @@ public class ServletNotification extends HttpServlet
 	private void fetchUnreadForUser(JSONResponse jsonResponse) {
 		
 	}
+	
 	/******************************************************************
 	 *
 	 ******************************************************************/
 	private void deleteNotification(JSONResponse jsonResponse, String ID) {
 		
-//		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)) {
-//			CFW.DB.Jobs.deleteByID(Integer.parseInt(ID));
-//			return;
-//		}
-//		
-//		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)
-//		&& CFW.DB.Jobs.checkIsCurrentUserOwner(ID)) {
-//			
-//			CFW.DB.Jobs.deleteByID(Integer.parseInt(ID));
-//			return;
-//		}else {
-//			CFW.Messages.noPermission();
-//		}
+		if(CFW.Context.Request.hasPermission(FeatureNotifications.PERMISSION_NOTIFICATIONS_USER)) {
+			CFW.DB.Notifications.deleteByID(Integer.parseInt(ID));
+			return;
+		}
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void deleteNotificationMultiple(JSONResponse jsonResponse, String IDs) {
+		
+		if(CFW.Context.Request.hasPermission(FeatureNotifications.PERMISSION_NOTIFICATIONS_USER)) {
+			CFW.DB.Notifications.deleteMultipleByID(IDs);
+			return;
+		}
 		
 	}
 

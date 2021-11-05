@@ -72,7 +72,7 @@ function cfw_notifications_showModal(){
 }
 
 /******************************************************************
- * Delete
+ * 
  ******************************************************************/
 function cfw_notifications_delete(id){
 	
@@ -80,12 +80,25 @@ function cfw_notifications_delete(id){
 	CFW.http.getJSON(CFW_NOTIFICATIONS_URL, params, 
 		function(data) {
 			if(data.success){
-				//CFW.ui.showModalSmall('Success!', '<span>The selected '+item+' were deleted.</span>');
-				//clear cache and reload data
-				CFW.cache.clearCache();
-				cfw_notifications_draw(JSEXAMPLES_LAST_OPTIONS);
+				cfw_notifications_printList();
 			}else{
 				CFW.ui.showModalSmall("Error!", '<span>The selected notification could <b style="color: red">NOT</strong> be deleted.</span>');
+			}
+	});
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_notifications_deleteMultiple(elements, records, values){
+	
+	params = {action: "delete", item: "multiple", ids: values.join()};
+	CFW.http.getJSON(CFW_NOTIFICATIONS_URL, params, 
+		function(data) {
+			if(data.success){
+				cfw_notifications_printList();
+			}else{
+				CFW.ui.showModalSmall("Error!", '<span>The selected notification(s) could <b style="color: red">NOT</strong> be deleted.</span>');
 			}
 	});
 }
@@ -139,11 +152,18 @@ function cfw_notifications_printList(){
 		 		}
 		 	},
 			actions: actionButtons,
-//				bulkActions: {
-//					"Edit": function (elements, records, values){ alert('Edit records '+values.join(',')+'!'); },
-//					"Delete": function (elements, records, values){ $(elements).remove(); },
-//				},
-//				bulkActionsPos: "both",
+				bulkActions: {
+					"Select All Visible": function(elements, records, values){
+						$('#cfw-notifications-parent .cfw-dataviewer input[type=checkbox]').prop( "checked", true );
+					},
+					"Delete Selected": function(elements, records, values){
+						cfw_ui_confirmExecute("Are you sure you want to delete the selected notification(s)?", "Delete", function(){
+							cfw_notifications_deleteMultiple(elements, records, values);
+						});
+					}
+					
+				},
+				bulkActionsPos: "top",
 			
 			rendererSettings: {
 				dataviewer: {

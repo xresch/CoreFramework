@@ -48,9 +48,9 @@ public class CFWDBNotifications {
 	private static PrecheckHandler prechecksUpdate =  new PrecheckHandler() {
 		public boolean doCheck(CFWObject object) {
 			
-			Notification Notification = (Notification)object;
+			Notification note = (Notification)object;
 			
-			if(Notification.title() == null || Notification.title().isEmpty()) {
+			if(note.title() == null || note.title().isEmpty()) {
 				new CFWLog(logger)
 					.warn("The title of the Notification cannot be null.", new Throwable());
 				return false;
@@ -60,10 +60,16 @@ public class CFWDBNotifications {
 		}
 	};
 	
-	
 	private static PrecheckHandler prechecksDelete =  new PrecheckHandler() {
 		public boolean doCheck(CFWObject object) {
-			return true;
+			
+			Notification note = (Notification)object;
+			
+			if(note.foreignKeyUser().intValue() == CFW.Context.Request.getUser().id()) {
+				return true;
+			}
+			
+			return false;
 		}
 	};
 		
@@ -88,15 +94,15 @@ public class CFWDBNotifications {
 	}
 	
 	public static boolean 	deleteMultipleByID(String IDs) 	{ 
-		
+		System.out.println(IDs);
 		if(IDs == null ^ !IDs.matches("(\\d,?)+")) {
-			new CFWLog(logger)
-			.severe("The Notification ID's '"+IDs+"' are not a comma separated list of strings.");
+			new CFWLog(logger).severe("The Notification ID's '"+IDs+"' are not a comma separated list of strings.");
 			return false;
 		}
-		
+		System.out.println(IDs);
 		boolean success = true;
 		for(String id : IDs.split(",")) {
+			System.out.println("delete");
 			success &= deleteByID(Integer.parseInt(id));
 		}
 

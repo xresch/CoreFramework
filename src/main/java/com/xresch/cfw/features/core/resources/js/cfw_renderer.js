@@ -764,6 +764,11 @@ function cfw_renderer_panels (renderDef) {
 			let checkbox = $('<input class="form-input float-left mt-1 mr-2 '+selectorGroupClass+'" type="checkbox" value="'+value+'" >');
 			checkbox.data('idfield', renderDef.idfield);
 			checkbox.data('record', currentRecord);
+			
+			//do not toggle panel collapse when clicking checkbox 
+			checkbox.on('click', function(e){
+				    e.stopPropagation();
+				});
 			checkboxDiv.append(checkbox);
 			
 			panelSettings.title.prepend(checkboxDiv);
