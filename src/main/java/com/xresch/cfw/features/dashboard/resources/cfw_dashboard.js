@@ -1260,27 +1260,29 @@ function cfw_dashboard_widget_copyToClipboard(widgetGUID) {
  ******************************************************************************/
 function cfw_dashboard_widget_handlePaste() {
 	
-	CFW.utils.clipboardRead(
-		function(clipboardValue){
-			
-			if(clipboardValue == null){ return ;}
-			
-			widgetObject = null;
-			parametersArray = null;
-			if( clipboardValue.startsWith('{"widgetObject":') ){
-				var clipObject = JSON.parse(clipboardValue);
-				widgetObject = clipObject.widgetObject;
+	if(CFW_DASHBOARD_EDIT_MODE){
+		CFW.utils.clipboardRead(
+			function(clipboardValue){
 				
-			}else if(clipboardValue.startsWith('{')
-				  && clipboardValue.includes('FK_ID_DASHBOARD')){
-				widgetObject = JSON.parse(clipboardValue);
+				if(clipboardValue == null){ return ;}
+				
+				widgetObject = null;
+				parametersArray = null;
+				if( clipboardValue.startsWith('{"widgetObject":') ){
+					var clipObject = JSON.parse(clipboardValue);
+					widgetObject = clipObject.widgetObject;
+					
+				}else if(clipboardValue.startsWith('{')
+					  && clipboardValue.includes('FK_ID_DASHBOARD')){
+					widgetObject = JSON.parse(clipboardValue);
+				}
+				
+				cfw_dashboard_widget_add(widgetObject.TYPE, widgetObject, true);
+							
+				console.log('handle Paste: '+JSON.stringify(widgetObject));
 			}
-			
-			cfw_dashboard_widget_add(widgetObject.TYPE, widgetObject, true);
-						
-			console.log('handle Paste: '+JSON.stringify(widgetObject));
-		}
-	);
+		);
+	}
 
 }
 
@@ -1423,11 +1425,15 @@ function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition
 				// Handle Redo/Paste
 				if(optionalWidgetObjectData != null){
 					optionalWidgetObjectData.PK_ID = widgetObject.PK_ID;
-					cfw_dashboard_widget_createInstance(optionalWidgetObjectData, doAutoposition);
+					
+					// Make sure to save state before rerender
+					$.ajaxSetup({async: false});
+						cfw_dashboard_widget_createInstance(optionalWidgetObjectData, doAutoposition);
+					$.ajaxSetup({async: true});
 					
 					//TODO: A bit ugly, triggers another save
-					//widgetGUID = 'widget-'+widgetObject.PK_ID;
-					//cfw_dashboard_widget_rerender(widgetGUID);
+					widgetGUID = 'widget-'+widgetObject.PK_ID;
+					cfw_dashboard_widget_rerender(widgetGUID);
 					
 					return;
 				}
