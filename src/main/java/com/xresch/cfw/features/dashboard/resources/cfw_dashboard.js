@@ -311,6 +311,26 @@ function cfw_dashboard_history_undoCreateAction(undoData){
 /*******************************************************************************
  * 
  ******************************************************************************/
+function cfw_dashboard_history_UndoRedoBundleForCreate(undoData, redoData){
+	
+	// ----------------------------------
+	// Add Undoable Operation
+	cfw_dashboard_history_startOperationsBundle();
+	
+		cfw_dashboard_history_addUndoableOperation(
+				undoData, 
+				redoData, 
+				cfw_dashboard_history_undoCreateAction, 
+				cfw_dashboard_history_redoCreateAction
+		);
+		
+	cfw_dashboard_history_completeOperationsBundle();
+}
+
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 function cfw_dashboard_getWidgetDefinition(widgetUniqueType){
 	
 	return CFW_DASHBOARD_WIDGET_REGISTRY[widgetUniqueType];
@@ -982,6 +1002,30 @@ function cfw_dashboard_parameters_showAddParametersModal(){
 
 }
 
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboard_widget_createGUID(){
+	CFW_DASHBOARD_WIDGET_GUID++;
+	return "widget-"+CFW_DASHBOARD_WIDGET_GUID ;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboard_widget_selectByID(widgetID){
+	return $('.grid-stack-item[data-id="'+widgetID+'"]');
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboard_widget_selectByGUID(widgetGUID){
+	return $('#'+widgetGUID);
+}
+	
+	
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -1223,16 +1267,7 @@ function cfw_dashboard_widget_duplicate(widgetGUID) {
 
 				cfw_dashboard_widget_createInstance(deepCopyWidgetObject, true, function(widgetObject2){
 					
-				    // ----------------------------------
-					// Add Undoable Operation
-					cfw_dashboard_history_startOperationsBundle();
-						cfw_dashboard_history_addUndoableOperation(
-								widgetObject2, 
-								widgetObject2, 
-								cfw_dashboard_history_undoCreateAction, 
-								cfw_dashboard_history_redoCreateAction
-						);
-					cfw_dashboard_history_completeOperationsBundle();
+					cfw_dashboard_history_UndoRedoBundleForCreate(widgetObject2,widgetObject2);
 					
 				});
 			}
@@ -1264,8 +1299,12 @@ function cfw_dashboard_widget_handlePaste() {
 		CFW.utils.clipboardRead(
 			function(clipboardValue){
 				
-				if(clipboardValue == null){ return ;}
+				//-------------------------------
+				// Check not null or empty
+				if( CFW.utils.isNullOrEmpty(clipboardValue) ){ return ;}
 				
+				//-------------------------------
+				// Read Data
 				widgetObject = null;
 				parametersArray = null;
 				if( clipboardValue.startsWith('{"widgetObject":') ){
@@ -1277,8 +1316,13 @@ function cfw_dashboard_widget_handlePaste() {
 					widgetObject = JSON.parse(clipboardValue);
 				}
 				
-				cfw_dashboard_widget_add(widgetObject.TYPE, widgetObject, true);
-							
+				//-------------------------------
+				// Paste Widget
+				if(widgetObject != null){
+					widgetObject.guid = cfw_dashboard_widget_createGUID();
+					cfw_dashboard_widget_add(widgetObject.TYPE, widgetObject, true, true);
+				}
+										
 				console.log('handle Paste: '+JSON.stringify(widgetObject));
 			}
 		);
@@ -1415,7 +1459,7 @@ function cfw_dashboard_widget_removeFromGrid(widgetElement) {
  * @param doAutoposition define if autoposition should be done or not in case
  *        widget data is provided
  ******************************************************************************/
-function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition) {
+function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition, isPaste) {
 
 	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'widget', type: type, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
 			var widgetObject = data.payload;
@@ -1432,8 +1476,11 @@ function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition
 					$.ajaxSetup({async: true});
 					
 					//TODO: A bit ugly, triggers another save
-					widgetGUID = 'widget-'+widgetObject.PK_ID;
-					cfw_dashboard_widget_rerender(widgetGUID);
+					cfw_dashboard_widget_rerender(optionalWidgetObjectData.guid);
+					
+					if(isPaste){
+						cfw_dashboard_history_UndoRedoBundleForCreate(optionalWidgetObjectData,optionalWidgetObjectData);
+					}
 					
 					return;
 				}
@@ -1453,21 +1500,7 @@ function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition
 				}
 
 				cfw_dashboard_widget_createInstance(widgetObject, true, function(subWidgetObject){
-					
-				    // ----------------------------------
-					// Add Undoable Operation
-					
-					cfw_dashboard_history_startOperationsBundle();
-					
-						cfw_dashboard_history_addUndoableOperation(
-								subWidgetObject, 
-								subWidgetObject, 
-								cfw_dashboard_history_undoCreateAction, 
-								cfw_dashboard_history_redoCreateAction
-						);
-						
-					cfw_dashboard_history_completeOperationsBundle();
-					
+					cfw_dashboard_history_UndoRedoBundleForCreate(subWidgetObject,subWidgetObject);
 				});
 
 			}
@@ -1579,9 +1612,8 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	
 	// ---------------------------------------
 	// Merge Data
-	CFW_DASHBOARD_WIDGET_GUID++;
 	var defaultOptions = {
-			guid: 'widget-'+widgetObject.PK_ID,
+			guid: cfw_dashboard_widget_createGUID(),
 			TITLE: "",
 			TITLE_FONTSIZE: 16,
 			CONTENT_FONTSIZE: 16,
@@ -1654,7 +1686,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	}
 	htmlString += '</div>';
 	
-	var widgetItem = $('<div id="'+merged.guid+'" data-id="'+merged.widgetID+'"  class="grid-stack-item">');
+	var widgetItem = $('<div id="'+merged.guid+'" data-id="'+merged.PK_ID+'"  class="grid-stack-item">');
 	widgetItem.append(htmlString);
 	widgetItem.data("widgetObject", merged)
 	
@@ -1695,7 +1727,11 @@ function cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposit
  ******************************************************************************/
 function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutoposition, callback) {
 	
-	originalWidgetObject.guid = 'widget-'+originalWidgetObject.PK_ID;
+	if(originalWidgetObject.guid == null){
+		CFW_DASHBOARD_WIDGET_GUID++;
+		originalWidgetObject.guid = "widget-"+CFW_DASHBOARD_WIDGET_GUID ;
+	}
+	
 	var widgetDefinition = CFW.dashboard.getWidgetDefinition(originalWidgetObject.TYPE);	
 	
 	if(widgetDefinition != null){
