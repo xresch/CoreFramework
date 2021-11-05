@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.notifications;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -11,6 +12,7 @@ import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.jobs.CFWJob;
 import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
 import com.xresch.cfw.features.notifications.Notification.NotificationFields;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -94,18 +96,30 @@ public class CFWDBNotifications {
 	}
 	
 	public static boolean 	deleteMultipleByID(String IDs) 	{ 
-		System.out.println(IDs);
-		if(IDs == null ^ !IDs.matches("(\\d,?)+")) {
+
+		if(Strings.isNullOrEmpty(IDs)) { return true; }
+		
+		if(!IDs.matches("(\\d,?)+")) {
 			new CFWLog(logger).severe("The Notification ID's '"+IDs+"' are not a comma separated list of strings.");
 			return false;
 		}
-		System.out.println(IDs);
+
 		boolean success = true;
 		for(String id : IDs.split(",")) {
-			System.out.println("delete");
 			success &= deleteByID(Integer.parseInt(id));
 		}
 
+		return success;
+	}
+	
+	public static boolean deleteAllForCurrentUser() 	{ 
+		User user = CFW.Context.Request.getUser();
+		
+		boolean success = true;
+		for(Notification notification : selectAllByUser(user)) {
+			success &= deleteByID(notification.id());
+		}
+		
 		return success;
 	}
 	
@@ -117,6 +131,14 @@ public class CFWDBNotifications {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, NotificationFields.PK_ID.toString(), id);
 	}
 	
+	public static ArrayList<Notification> selectAllByUser(User user ) {
+		return new CFWSQL(new Notification())
+			.queryCache()
+			.select()
+			.where(NotificationFields.FK_ID_USER, user.id())
+			.orderbyDesc(NotificationFields.TIMESTAMP.toString())
+			.getAsObjectListConvert(Notification.class);
+	}
 	
 	/*******************************************************
 	 * 

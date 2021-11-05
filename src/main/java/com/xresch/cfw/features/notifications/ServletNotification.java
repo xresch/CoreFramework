@@ -119,7 +119,10 @@ public class ServletNotification extends HttpServlet
 										
 					case "multiple": 	String IDs = request.getParameter("ids");
 										deleteNotificationMultiple(jsonResponse, IDs);
-					break;  
+										break;  
+					
+					case "all": 		deleteNotificationAllForUser(jsonResponse);
+										break;  
 					
 					default: 			CFW.Messages.itemNotSupported(item);
 										break;
@@ -165,6 +168,18 @@ public class ServletNotification extends HttpServlet
 		
 		if(CFW.Context.Request.hasPermission(FeatureNotifications.PERMISSION_NOTIFICATIONS_USER)) {
 			CFW.DB.Notifications.deleteMultipleByID(IDs);
+			return;
+		}
+		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void deleteNotificationAllForUser(JSONResponse jsonResponse) {
+		
+		if(CFW.Context.Request.hasPermission(FeatureNotifications.PERMISSION_NOTIFICATIONS_USER)) {
+			CFW.DB.Notifications.deleteAllForCurrentUser();
 			return;
 		}
 		

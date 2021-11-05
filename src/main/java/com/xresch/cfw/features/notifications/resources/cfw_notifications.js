@@ -103,6 +103,22 @@ function cfw_notifications_deleteMultiple(elements, records, values){
 	});
 }
 
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_notifications_deleteAll(elements, records, values){
+	
+	params = {action: "delete", item: "all"};
+	CFW.http.getJSON(CFW_NOTIFICATIONS_URL, params, 
+		function(data) {
+			if(data.success){
+				cfw_notifications_printList();
+			}else{
+				CFW.ui.showModalSmall("Error!", '<span>An error occured when deleting the notifications.</span>');
+			}
+	});
+}
+
 
 /******************************************************************
  * Full example using the dataviewer renderer.
@@ -159,6 +175,11 @@ function cfw_notifications_printList(){
 					"Delete Selected": function(elements, records, values){
 						cfw_ui_confirmExecute("Are you sure you want to delete the selected notification(s)?", "Delete", function(){
 							cfw_notifications_deleteMultiple(elements, records, values);
+						});
+					},
+					"Delete All": function(elements, records, values){
+						cfw_ui_confirmExecute("Are you sure you want to clear the whole list and delete all notifications?", "Delete", function(){
+							cfw_notifications_deleteAll();
 						});
 					}
 					
