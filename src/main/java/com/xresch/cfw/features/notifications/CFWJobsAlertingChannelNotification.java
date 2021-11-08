@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.jobs;
+package com.xresch.cfw.features.notifications;
 
 import java.util.HashMap;
 
@@ -6,7 +6,10 @@ import org.quartz.JobExecutionContext;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.notifications.Notification;
+import com.xresch.cfw.features.jobs.CFWJob;
+import com.xresch.cfw.features.jobs.CFWJobsAlertObject;
+import com.xresch.cfw.features.jobs.CFWJobsAlertingChannel;
+import com.xresch.cfw.features.jobs.FeatureJobs;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.mail.CFWMailBuilder;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -52,14 +55,8 @@ public class CFWJobsAlertingChannelNotification extends CFWJobsAlertingChannel {
 						.title(subject)
 						.message(messageContent);
 		
-		for(Integer id : usersToAlert.keySet()) {
-			if(id != null) {
-				templateNotification.foreignKeyUser(id);
-				CFW.DB.Notifications.create(templateNotification);
-			}
-		}
-		
-		
+		CFW.DB.Notifications.createForUsers(usersToAlert.values(), templateNotification);
+
 	}
 
 	@Override

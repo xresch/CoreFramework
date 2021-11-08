@@ -40,6 +40,7 @@ import com.xresch.cfw.features.manual.CFWRegistryManual;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.notifications.CFWDBNotifications;
 import com.xresch.cfw.features.notifications.FeatureNotifications;
+import com.xresch.cfw.features.notifications.Notification;
 import com.xresch.cfw.features.spaces.CFWDBSpace;
 import com.xresch.cfw.features.spaces.CFWDBSpaceGroup;
 import com.xresch.cfw.features.spaces.FeatureSpaces;
@@ -52,7 +53,10 @@ import com.xresch.cfw.features.usermgmt.CFWDBUser;
 import com.xresch.cfw.features.usermgmt.CFWDBUserRoleMap;
 import com.xresch.cfw.features.usermgmt.CFWRegistryAudit;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.SysoutInterceptor;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.schedule.CFWTaskScheduler;
 import com.xresch.cfw.spi.CFWAppFeature;
 import com.xresch.cfw.spi.CFWAppInterface;
@@ -346,17 +350,36 @@ public class CFW {
 	    // Start Application: must be last
     	// will be kept in a thread-loop
     	if(mode.contains(MODE_FULL) || mode.contains(MODE_APP) ) {
-			CFWApplicationExecutor executor = new CFWApplicationExecutor(appToStart);
+			
+    		//----------------------------------------
+			// Add Features
+    		CFWApplicationExecutor executor = new CFWApplicationExecutor(appToStart);
 			
 			for(CFWAppFeature feature : features) {
 				if(feature.isFeatureEnabled()) {
 					feature.addFeature(executor);
+					new CFWLog(logger).info("Feature Loaded: "+feature.getClass().getName());
 				}
 			}
+						
+			//----------------------------------------
+			// Handle Startup Notifications
+			String category = "CFW_STARTUP_NOTIFICATION";
 			
+			CFW.DB.Notifications.deleteAllByCategory(category);
+			Notification templateNotification = 
+					new Notification()
+							.category(category)
+							.messageType(MessageType.INFO)
+							.title("Application Started")
+							.message("The application was started at the given time.");
+			
+			ArrayList<User> ultimateUsers = CFW.DB.Roles.getAdminsAndSuperusers();
+			CFW.DB.Notifications.createForUsers(ultimateUsers, templateNotification);
+			
+			//----------------------------------------
+			// Handle Startup Notifications
 			appToStart.startApp(executor);
-			
-			
 			try {
 				executor.start();
 			} catch (Exception e) {

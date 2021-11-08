@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.notifications;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -67,7 +68,7 @@ public class CFWDBNotifications {
 			
 			Notification note = (Notification)object;
 			
-			if(note.foreignKeyUser().intValue() == CFW.Context.Request.getUser().id()) {
+			if(CFW.Context.Request.getUser() == null || note.foreignKeyUser().intValue() == CFW.Context.Request.getUser().id()) {
 				return true;
 			}
 			
@@ -82,6 +83,19 @@ public class CFWDBNotifications {
 	public static boolean 	create(Notification item) 		{ return CFWDBDefaultOperations.create(prechecksCreate, item);}
 	public static Integer 	createGetPrimaryKey(Notification item) { return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, item);}
 	
+	
+	public static boolean createForUsers(Collection<User> users, Notification templateNotification) 		{ 
+		
+		boolean success = true;
+		for(User user : users) {
+			if(user != null && user.id() != null) {
+				templateNotification.foreignKeyUser(user.id());
+				success &= CFW.DB.Notifications.create(templateNotification);
+			}
+		}
+		
+		return success;
+	}
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
@@ -93,6 +107,10 @@ public class CFWDBNotifications {
 	//####################################################################################################
 	public static boolean 	deleteByID(int id) 	{ 
 		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, NotificationFields.PK_ID.toString(), id); 
+	}
+	
+	public static boolean 	deleteAllByCategory(String category) 	{ 
+		return CFWDBDefaultOperations.deleteBy(prechecksDelete, cfwObjectClass, NotificationFields.CATEGORY.toString(), category); 
 	}
 	
 	public static boolean 	deleteMultipleByID(String IDs) 	{ 

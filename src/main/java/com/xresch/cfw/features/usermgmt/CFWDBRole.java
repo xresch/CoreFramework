@@ -215,6 +215,22 @@ public class CFWDBRole {
 	}
 	
 	/***************************************************************
+	 * Return a list of all user that have the specified role.
+	 * 
+	 ****************************************************************/
+	public static ArrayList<User> getAdminsAndSuperusers() {
+
+		return new CFWSQL(new Role())
+				.queryCache()
+				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, 
+						"sql_getAdminsAndSuperusers.sql", 
+						CFW_ROLE_ADMIN,
+						CFW_ROLE_SUPERUSER)
+				.getAsObjectListConvert(User.class);
+		
+	}
+	
+	/***************************************************************
 	 * Return a list of all user that have the specified role as a
 	 * JSON string.
 	 * 

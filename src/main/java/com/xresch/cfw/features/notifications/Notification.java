@@ -25,6 +25,7 @@ public class Notification extends CFWObject {
 		PK_ID, 
 		FK_ID_USER,
 		TIMESTAMP,
+		CATEGORY, 
 		TITLE, 
 		MESSAGE,
 		MESSAGE_TYPE,
@@ -48,6 +49,11 @@ public class Notification extends CFWObject {
 			.setDescription("The time the notification was created.")
 			.setValue(new Timestamp(System.currentTimeMillis()));
 	
+	private CFWField<String> category = CFWField.newString(FormFieldType.TEXT, NotificationFields.CATEGORY)
+			.setColumnDefinition("VARCHAR(255)")
+			.setDescription("A custom category which can be used to filter notifications.")
+			.addValidator(new LengthValidator(1, 255));
+	
 	private CFWField<String> title = CFWField.newString(FormFieldType.TEXT, NotificationFields.TITLE)
 			.setColumnDefinition("VARCHAR(255)")
 			.setDescription("The title of the notification.")
@@ -65,7 +71,7 @@ public class Notification extends CFWObject {
 	
 	private CFWField<Boolean> isRead = CFWField.newBoolean(FormFieldType.BOOLEAN, NotificationFields.IS_READ)
 			.setDescription("Is read by the user or not.")
-			.setValue(true);
+			.setValue(false);
 	
 	public Notification() {
 		initializeFields();
@@ -77,6 +83,7 @@ public class Notification extends CFWObject {
 		this.addFields(id, 
 				foreignKeyUser,
 				timestamp,
+				category,
 				title, 
 				message,
 				messageType,
@@ -109,6 +116,7 @@ public class Notification extends CFWObject {
 						NotificationFields.PK_ID.toString(), 
 						NotificationFields.FK_ID_USER.toString(),
 						NotificationFields.TIMESTAMP.toString(),
+						NotificationFields.CATEGORY.toString(),
 						NotificationFields.TITLE.toString(),
 						NotificationFields.MESSAGE.toString(),
 						NotificationFields.MESSAGE_TYPE.toString(),
@@ -157,6 +165,15 @@ public class Notification extends CFWObject {
 	
 	public Notification timestamp(Timestamp value) {
 		this.timestamp.setValue(value);
+		return this;
+	}
+	
+	public String category() {
+		return category.getValue();
+	}
+	
+	public Notification category(String value) {
+		this.category.setValue(value);
 		return this;
 	}
 	

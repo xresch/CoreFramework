@@ -116,6 +116,7 @@ DONE
 ====
 ------- current -------
 - New Feature - Notification: Added Notification mechanism to notify user in the UI. Bell icon added to the Menu Bar 
+- Notifications: Added Startup Notifications for Admins and Superusers
 - Alerting: Added Channel for Notifications
 - Dashboard: Added option to make dashboards publicly available(public url, no user login needed).
 - Dashboard: Added Copy Action to Widgets, can be Pasted to other dashboards using Ctrl-V
