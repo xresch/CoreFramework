@@ -68,8 +68,80 @@ function cfw_notifications_showModal(){
 		CFW_NOTIFICATIONS_PARENT
 	);
 	
+	cfw_notifications_markAsRead();
+	cfw_notifications_removeBadge();
 	cfw_notifications_printList();
 }
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_notifications_removeBadge(){
+	badge = $("#cfw-notification-badge");
+	if(badge.length > 0){
+		badge.remove();
+	}
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_notifications_markAsRead(){
+	
+	params = {action: "update", item: "markasread"};
+	CFW.http.getJSON(CFW_NOTIFICATIONS_URL, params, 
+		function(data) {
+			/* do nothing, no spaming of the holy user. */
+	});
+}
+
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_notifications_updateUnreadCountAndSeverity(){
+	
+	params = {action: "fetch", item: "unreadcountseverity"};
+	CFW.http.getJSON(CFW_NOTIFICATIONS_URL, params, 
+		function(data) {
+			if(data.success){
+				
+
+				//-----------------------------------
+				// Clean Up
+				cfw_notifications_removeBadge();
+				
+				let info = data.payload[0];
+				if(info != null && info.COUNT > 0){
+					
+					let menuItem = $('.cfw-menuitem-notification > .dropdown-item') 
+					
+					let badge = $('<span id="cfw-notification-badge" class="badge ml-1">');
+					
+					if(info.COUNT < 100){
+						badge.text(info.COUNT);
+					}else{
+						badge.text("99+");
+					}
+
+					switch(info.SEVERITY){
+						case 1:		badge.addClass('bg-cfw-blue'); break;
+						case 2: 	badge.addClass('bg-cfw-excellent'); break;
+						case 3: 	badge.addClass('bg-cfw-emergency'); break;
+						case 4:		badge.addClass('bg-cfw-danger'); break;
+						default:			break;
+					}
+					
+					menuItem.append(badge);
+				}
+			}else{
+				/* do nothing, no spaming of the holy user. */
+			}
+	});
+}
+
+cfw_notifications_updateUnreadCountAndSeverity();
+CFW.global.notificationPollInterval = window.setInterval(cfw_notifications_updateUnreadCountAndSeverity, 60000);
 
 /******************************************************************
  * 
@@ -188,7 +260,7 @@ function cfw_notifications_printList(){
 			
 			rendererSettings: {
 				dataviewer: {
-					//storeid: 'cfw_notifications',
+					storeid: 'cfw_notifications',
 					sortable: false,
 					datainterface: {
 						url: CFW_NOTIFICATIONS_URL,
@@ -210,7 +282,7 @@ function cfw_notifications_printList(){
 							name: 'table',
 							renderdef: {
 								rendererSettings: {
-									table: {filterable: false},
+									table: {filterable: false, hover: false},
 								},
 							}
 						},
@@ -218,7 +290,7 @@ function cfw_notifications_printList(){
 							name: 'table',
 							renderdef: {
 								rendererSettings: {
-									table: {filterable: false, narrow: true},
+									table: {filterable: false, hover: false, narrow: true},
 								},
 							}
 						},

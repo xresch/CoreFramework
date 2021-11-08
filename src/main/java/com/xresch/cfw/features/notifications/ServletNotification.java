@@ -100,13 +100,21 @@ public class ServletNotification extends HttpServlet
 			case "fetch": 			
 				switch(item.toLowerCase()) {
 
-					case "unreadcount":		fetchUnreadCountForUser(jsonResponse);
-											break;  
-					
-					case "unread":			fetchUnreadForUser(jsonResponse);
-											break;  
-										
-					default: 			CFW.Messages.itemNotSupported(item);
+					case "unreadcountseverity":		fetchUnreadCountAndSeverityForUser(jsonResponse);
+													break;  
+															
+					default: 						CFW.Messages.itemNotSupported(item);
+													break;
+				}
+				break;	
+				
+			case "update": 			
+				switch(item.toLowerCase()) {
+				
+				case "markasread":		CFW.DB.Notifications.markAsReadForCurrentUser();
+										break;  
+				
+				default: 				CFW.Messages.itemNotSupported(item);
 										break;
 				}
 				break;	
@@ -139,16 +147,9 @@ public class ServletNotification extends HttpServlet
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private void fetchUnreadCountForUser(JSONResponse jsonResponse) {
-		
-	}
-	
-	/******************************************************************
-	 *
-	 ******************************************************************/
-	private void fetchUnreadForUser(JSONResponse jsonResponse) {
-		
-	}
+	private void fetchUnreadCountAndSeverityForUser(JSONResponse jsonResponse) {
+		jsonResponse.append(CFW.DB.Notifications.getUnreadCountAndSeverityForCurrentUser());
+	}	
 	
 	/******************************************************************
 	 *

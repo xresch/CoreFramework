@@ -197,6 +197,32 @@ public class CFWDBNotifications {
 				
 	}
 
+	/*******************************************************
+	 * 
+	 *******************************************************/
+	public static String getUnreadCountAndSeverityForCurrentUser() {
+		return getUnreadCountAndSeverityByUser(CFW.Context.Request.getUser());
+	}
+	/*******************************************************
+	 * 
+	 *******************************************************/
+	public static String getUnreadCountAndSeverityByUser(User user) {
+		return new CFWSQL(new Notification())
+			.queryCache()
+			.loadSQLResource(FeatureNotifications.PACKAGE_RESOURCE, "sql_unreadCountAndSeverity.sql", user.id())
+			.getAsJSON();
+	}
+	
+	/*******************************************************
+	 * 
+	 *******************************************************/
+	public static String markAsReadForCurrentUser() {
+		return new CFWSQL(new Notification())
+				.queryCache()
+				.loadSQLResource(FeatureNotifications.PACKAGE_RESOURCE, "sql_markAsRead.sql", CFW.Context.Request.getUser().id())
+				.getAsJSON();
+	}
+
 
 		
 }

@@ -22,6 +22,7 @@ Potential TODOs
 - Features: Automator: Just Actions that can be triggered from the UI.
   - Create Default Dashboards for xyz
   - Send Mails
+  - Cleanup Actions
 
 - Features: Spaces
   - HTML Selector
@@ -32,7 +33,6 @@ Potential TODOs
 - Jobs: Log Job Executions to DB, plus age out.
 - Jobs: Define max number of instances.
 
-- Dashboard: Share with users that are not logged in
 - Dashboard: Check Settings - Provide a bulk action to show all settings of all widgets as an overview. 
 - Dashboard: Text Alignment
 - Dashboard: Merge forms, only one button.
@@ -115,9 +115,12 @@ Potential TODOs
 DONE
 ====
 ------- current -------
+- New Feature - Notification: Added Notification mechanism to notify user in the UI. Bell icon added to the Menu Bar 
+- Alerting: Added Channel for Notifications
 - Dashboard: Added option to make dashboards publicly available(public url, no user login needed).
 - Dashboard: Added Copy Action to Widgets, can be Pasted to other dashboards using Ctrl-V
 - Menu: Fixed Display issue for Navbar Buttons(Manual) when menu is collapsed on narrow displays
+
 
 ------- v5.0.0 -------
 - Mailing: Added Class CFWMailBuilder for creating eMails.
