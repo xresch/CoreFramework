@@ -141,7 +141,7 @@ function cfw_notifications_updateUnreadCountAndSeverity(){
 }
 
 cfw_notifications_updateUnreadCountAndSeverity();
-CFW.global.notificationPollInterval = window.setInterval(cfw_notifications_updateUnreadCountAndSeverity, 60000);
+CFW.global.notificationPollInterval = window.setInterval(cfw_notifications_updateUnreadCountAndSeverity, 2*60*1000);
 
 /******************************************************************
  * 
