@@ -83,6 +83,30 @@ function cfw_utils_nullTo(value, nullToThis){
 }
 
 /************************************************************************************************
+ * Sets the precision of floating point numbers to a certain amount of decimals.
+ * Can alos 
+ * 
+ ************************************************************************************************/
+function cfw_utils_setFloatPrecision(value, numDecimals, convertIntegers, nullToThis){
+
+	if(value == null && nullToThis != undefined){
+		return nullToThis;
+	}
+	
+	if(value == null || isNaN(value)) {
+		 return value;
+	}
+	
+	if( !convertIntegers && Number.isInteger(value)){
+		return value;
+	}
+	
+	return value.toFixed(numDecimals);
+}
+
+
+
+/************************************************************************************************
  * Writes a string value to the Clipboard.
  * 
  ************************************************************************************************/
@@ -3198,6 +3222,7 @@ var CFW = {
 		chainedOnload: cfw_utils_chainedOnload,
 		isNullOrEmpty: cfw_utils_isNullOrEmpty,
 		nullTo: cfw_utils_nullTo,
+		setFloatPrecision: cfw_utils_setFloatPrecision,
 		replaceAll: cfw_utils_replaceAll,
 		randomInt: cfw_utils_randomInt,
 		clipboardRead: cfw_utils_clipboardRead,

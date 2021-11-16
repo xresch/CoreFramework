@@ -183,7 +183,7 @@ public class WidgetSettingsFactory {
 		fieldsMap.put("pointradius", CFWField.newFloat(FormFieldType.NUMBER, "pointradius")
 				.setLabel("{!cfw_widget_chartpointradius!}")
 				.setDescription("{!cfw_widget_chartpointradius_desc!}")
-				.setValue(0.0f)
+				.setValue(1.0f)
 				.addValidator(new NumberRangeValidator(0, 10))
 		);
 		fieldsMap.put("ymin", CFWField.newInteger(FormFieldType.NUMBER, "ymin")
