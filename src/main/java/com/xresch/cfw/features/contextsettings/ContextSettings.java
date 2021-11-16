@@ -80,7 +80,7 @@ public class ContextSettings extends CFWObject {
 	
 	private CFWField<String> settings = CFWField.newString(FormFieldType.NONE, ContextSettingsFields.JSON_CTXSETTINGS.toString())
 			.setDescription("The custom settings of the environment as JSON.")
-			.disableSecurity();
+			.disableSanitization();
 	
 	public ContextSettings() {
 		initializeFields();

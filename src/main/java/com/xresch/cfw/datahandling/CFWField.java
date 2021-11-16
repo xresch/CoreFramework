@@ -1168,7 +1168,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/******************************************************************************************************
 	 * Allow HTML content and do not sanitize the input values. 
 	 ******************************************************************************************************/
-	public CFWField<T> disableSecurity() {
+	public CFWField<T> disableSanitization() {
 		this.allowHTML = true;
 		this.sanitizeStrings = false;
 		return this;

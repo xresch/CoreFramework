@@ -93,6 +93,21 @@ public class CFWHttp {
 		return "&" + encode(paramName) + "=" + encode(paramValue);
 	}
 	
+	
+	/******************************************************************************************************
+	 * Creates a query string from the given parameters.
+	 ******************************************************************************************************/
+	public static String  buildQueryString(HashMap<String,String> params) {
+		
+		StringBuilder builder = new StringBuilder();
+		
+		for(Entry<String,String> param : params.entrySet()) {
+			builder.append(encode(param.getKey(), param.getValue()));
+		}
+		
+		//remove leading "&"
+		return builder.substring(1);
+	}
 	/******************************************************************************************************
 	 * Creates a url with the given parameters;
 	 ******************************************************************************************************/
@@ -446,7 +461,7 @@ public class CFWHttp {
 	/******************************************************************************************************
 	 * Send a HTTP POST request and returns the result or null in case of error.
 	 * @param url used for the request.
-	 * @param params the parameters which should be added to the request or null
+	 * @param params the parameters which should be added to the requests post body or null
 	 * @param headers the HTTP headers for the request or null
 	 * @return String response
 	 ******************************************************************************************************/
@@ -455,27 +470,45 @@ public class CFWHttp {
 		CFWHttp.logFinerRequestInfo("POST", url, params, headers);	
 		
 		try {
-			//-----------------------------------
-			// Handle params
-			if(params != null ) {
-				url = buildURL(url, params);
-			}
-			
-			//-----------------------------------
-			// Handle headers
+
+			url = buildURL(url, params);
 			HttpURLConnection connection = createProxiedURLConnection(url);
+			connection.setRequestMethod("POST");
+			connection.setInstanceFollowRedirects(true);
+			
 			if(connection != null) {
+				
+				//-----------------------------------
+				// Handle headers
 				if(headers != null ) {
 					for(Entry<String, String> header : headers.entrySet())
 					connection.setRequestProperty(header.getKey(), header.getValue());
 				}
 				
 				//-----------------------------------
+				// Add Params to Request Body
+				
+				// to be checked, not working properly
+//				if(params != null ) {
+//					
+//					String paramsQuery = buildQueryString(params);
+//					System.out.println("params: "+paramsQuery);
+//					connection.setRequestProperty( "Content-Type", "application/x-www-form-urlencoded"); 
+//					connection.setRequestProperty( "charset", "utf-8");
+//					connection.setRequestProperty( "Content-Length", Integer.toString( paramsQuery.length() ));
+//					
+//					connection.setDoOutput(true);
+//					connection.connect();
+//					try(OutputStream outStream = connection.getOutputStream()) {
+//					    byte[] input = paramsQuery.getBytes("utf-8");
+//					    outStream.write(input, 0, input.length);      
+//					    outStream.flush();
+//					}
+//				}
+				
+				//-----------------------------------
 				// Connect and create response
-				if(connection != null) {
-					connection.setRequestMethod("POST");
-					connection.connect();
-					
+				if(connection != null) {			
 					outgoingHTTPCallsCounter.labels("POST").inc();
 					return instance.new CFWHttpResponse(connection);
 				}
@@ -515,6 +548,7 @@ public class CFWHttp {
 			HttpURLConnection connection = createProxiedURLConnection(url);
 			if(connection != null) {
 				connection.setRequestMethod("POST");
+				
 				if(!Strings.isNullOrEmpty(contentType)) {
 					connection.setRequestProperty("Content-Type", contentType);
 				}
@@ -644,6 +678,7 @@ public class CFWHttp {
 		
 		return null;
 	}
+	
 	/******************************************************************************************************
 	 * Inner Class for HTTP Response
 	 ******************************************************************************************************/
@@ -697,6 +732,7 @@ public class CFWHttp {
 			}finally {
 				if(in != null) {
 					try {
+						conn.disconnect();
 						in.close();
 					} catch (IOException e) {
 						new CFWLog(responseLogger)

@@ -86,7 +86,7 @@ public class ServletConfiguration extends HttpServlet
 			field.setValue(config.value());
 			field.setDescription(config.description());
 			field.setOptions(config.options());		
-			field.disableSecurity();
+			field.disableSanitization();
 			field.addAttribute("data-category", config.category());
 			
 			configForm.addField(field);

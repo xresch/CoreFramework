@@ -104,12 +104,12 @@ public class DashboardWidget extends CFWObject {
 	/** Settings are coming from the fields defined by {@link WidgetDefinition#getSettings()}. Security can be disabled here. */
 	private CFWField<String> settings = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.JSON_SETTINGS)
 			.setDescription("The custom settings of the widget as JSON.")
-			.disableSecurity();
+			.disableSanitization();
 	
 	/** TaskParameters are coming from the fields defined by {@link WidgetDefinition#getTasksParameters()}. Security can be disabled here. */
 	private CFWField<String> taskParameters = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.JSON_TASK_PARAMETERS)
 			.setDescription("The task parameters for the widgets task execution.")
-			.disableSecurity();
+			.disableSanitization();
 	
 	public DashboardWidget() {
 		initializeFields();

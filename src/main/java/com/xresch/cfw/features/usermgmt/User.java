@@ -93,12 +93,12 @@ public class User extends CFWObject {
 	
 	private CFWField<String> passwordHash = CFWField.newString(FormFieldType.NONE, UserFields.PASSWORD_HASH)
 			.setColumnDefinition("VARCHAR(127)")
-			.disableSecurity()
+			.disableSanitization()
 			.addValidator(new LengthValidator(-1, 255));
 	
 	private CFWField<String> passwordSalt = CFWField.newString(FormFieldType.NONE, UserFields.PASSWORD_SALT)
 			.setColumnDefinition("VARCHAR(31)")
-			.disableSecurity()
+			.disableSanitization()
 			.addValidator(new LengthValidator(-1, 255));
 	
 	private CFWField<String> status = CFWField.newString(FormFieldType.SELECT, UserFields.STATUS)
