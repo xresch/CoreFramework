@@ -323,7 +323,7 @@ public class CFWDBContextSettings {
 		
 		for(CFWObject object : objects) {
 			ContextSettings current = (ContextSettings)object;
-			System.out.println(CFW.JSON.toJSON(current));
+			
 			AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(current.type());
 			
 			typeSettings.mapJsonFields(current.settings());
