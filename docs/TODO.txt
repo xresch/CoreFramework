@@ -120,8 +120,8 @@ DONE
 - Alerting: Added Channel for Notifications
 - Dashboard: Added option to make dashboards publicly available(public url, no user login needed).
 - Dashboard: Added Copy Action to Widgets, can be Pasted to other dashboards using Ctrl-V
-- Menu: Fixed Display issue for Navbar Buttons(Manual) when menu is collapsed on narrow displays
-
+- Menu: Fixed Display issue for Navbar Buttons(Manual) when menu is collapsed on narrow displays 
+- ContextSettings: Added method to fetch by user and type
 
 ------- v5.0.0 -------
 - Mailing: Added Class CFWMailBuilder for creating eMails.

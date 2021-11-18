@@ -1486,6 +1486,7 @@ public class CFWSQL {
 	 * Execute the Query and gets the result as CFWObjects of the type
 	 * specified with the parameter.
 	 * 
+	 * @return list of object, empty if results set is null or an error occurs.
 	 ****************************************************************/	
 	public <T extends CFWObject> ArrayList<T> getAsObjectListConvert(Class<T> clazz) {
 		

@@ -256,25 +256,19 @@ public class CFWDBContextSettings {
 		return settingsArray;
 	}
 	
+	
 	/***************************************************************
 	 * Returns a map with ID/Name values for select options for
 	 * the current user
 	 * @param type of the context setting
 	 * @param options for user, empty map if user is null.
 	 ****************************************************************/
-	public static LinkedHashMap<Object, Object> getSelectOptionsForTypeAndUser(String type) {
-		
-		LinkedHashMap<Object, Object> objects = new LinkedHashMap<>();
-		
-		//----------------------------------
-		// Get User
-		User user = CFW.Context.Request.getUser();
-		if (user == null) { return objects; }
-		
+	private static CFWSQL createQueryForTypeAndUser(String type, User user) {
+				
 		int userID = user.id();
 		
 		//----------------------------------
-		// Fetch Data
+		// Create Query
 		String restrictedUserslikeID = "%\""+userID+"\":%";
 		
 		CFWSQL query =  new CFWSQL(new ContextSettings())
@@ -292,7 +286,7 @@ public class CFWDBContextSettings {
 		
 		//------------------------------------
 		// Add Filter by Role
-		if(CFW.Context.Request.hasPermission(FeatureContextSettings.PERMISSION_CONTEXT_SETTINGS)) {
+		if(user.hasPermission(FeatureContextSettings.PERMISSION_CONTEXT_SETTINGS)) {
 			//--------------------------------------
 			// If has Context Settings permissions, 
 			// always grant access
@@ -307,10 +301,56 @@ public class CFWDBContextSettings {
 				query.or().like(ContextSettingsFields.JSON_RESTRICTED_TO_GROUPS, "%\""+roleID+"\":%");
 			}
 		}
-		objects =  query
-				.custom(")")
-				.orderby(ContextSettingsFields.CFW_CTXSETTINGS_NAME)
-				.getAsLinkedHashMap(ContextSettingsFields.PK_ID, ContextSettingsFields.CFW_CTXSETTINGS_NAME);
+
+		query.custom(")")
+			.orderby(ContextSettingsFields.CFW_CTXSETTINGS_NAME);
+		
+		return query;
+	}
+	
+	/***************************************************************
+	 * Select a dashboard by it's ID and return it as JSON string.
+	 * @param id of the dashboard
+	 * @return Returns a dashboard or null if not found or in case of exception.
+	 ****************************************************************/
+	public static ArrayList<AbstractContextSettings> getContextSettingsForTypeAndUser(String type, User user){
+	
+		ArrayList<AbstractContextSettings> settingsArray = new ArrayList<AbstractContextSettings>();
+		
+		if (user == null) { return settingsArray; }
+		
+		ArrayList<CFWObject> objects =  createQueryForTypeAndUser(type, user).getAsObjectList();
+		
+		for(CFWObject object : objects) {
+			ContextSettings current = (ContextSettings)object;
+			System.out.println(CFW.JSON.toJSON(current));
+			AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(current.type());
+			
+			typeSettings.mapJsonFields(current.settings());
+			typeSettings.setWrapper(current);
+			settingsArray.add(typeSettings);
+		}
+		
+		return settingsArray;
+	}
+	
+	/***************************************************************
+	 * Returns a map with ID/Name values for select options for
+	 * the current user
+	 * @param type of the context setting
+	 * @param options for user, empty map if user is null.
+	 ****************************************************************/
+	public static LinkedHashMap<Object, Object> getSelectOptionsForTypeAndUser(String type) {
+		
+		LinkedHashMap<Object, Object> objects = new LinkedHashMap<>();
+		
+		//----------------------------------
+		// Get User
+		User user = CFW.Context.Request.getUser();
+		if (user == null) { return objects; }
+		
+		objects = createQueryForTypeAndUser(type, user)
+						.getAsLinkedHashMap(ContextSettingsFields.PK_ID, ContextSettingsFields.CFW_CTXSETTINGS_NAME);
 		
 		return objects;
 	}
