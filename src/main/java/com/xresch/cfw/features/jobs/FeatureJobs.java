@@ -39,6 +39,10 @@ public class FeatureJobs extends CFWAppFeature {
 		CFW.Localization.registerLocaleFile(Locale.GERMAN, getJobsURI(), new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "lang_de_dashboard.properties"));
 		
 		//----------------------------------
+		// Register Job Tasks
+		CFW.Registry.Jobs.registerTask(new CFWJobTaskSendMail());
+
+		//----------------------------------
     	// Register Alerting Channel
 		CFW.Registry.JobsAlerting.registerChannel(new CFWJobsAlertingChannelEMail());
 		CFW.Registry.JobsAlerting.registerChannel(new CFWJobsAlertingChannelAppLog());

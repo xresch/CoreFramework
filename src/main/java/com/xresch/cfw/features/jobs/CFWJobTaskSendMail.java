@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.analytics;
+package com.xresch.cfw.features.jobs;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -15,24 +15,24 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.mail.CFWMailBuilder;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
-public class CFWJobTaskTestMail extends CFWJobTask {
+public class CFWJobTaskSendMail extends CFWJobTask {
 	
 
 	@Override
 	public String uniqueName() {
-		return "Test: eMail";
+		return "Send eMail";
 	}
 
 	@Override
 	public String taskDescription() {
-		return "Sends test messages to the selected users eMail address.";
+		return "Sends eMail messages to the selected users eMail addresses. Useful to send reminders.";
 	}
 
 	@Override
