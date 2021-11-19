@@ -1319,6 +1319,7 @@ function cfw_dashboard_widget_handlePaste() {
 				//-------------------------------
 				// Paste Widget
 				if(widgetObject != null){
+					widgetObject.FK_ID_DASHBOARD = CFW_DASHBOARD_URLPARAMS.id;
 					widgetObject.guid = cfw_dashboard_widget_createGUID();
 					cfw_dashboard_widget_add(widgetObject.TYPE, widgetObject, true, true);
 				}
