@@ -22,6 +22,8 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
+import com.xresch.cfw.features.notifications.Notification;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -398,10 +400,35 @@ public class ServletDashboardList extends HttpServlet
 								
 								new CFWLog(logger).audit("UPDATE", Dashboard.class, "Change owner ID of dashboard from "+dashboard.foreignKeyOwner()+" to "+newOwner);
 								
+								Integer oldOwner = dashboard.foreignKeyOwner();
 								dashboard.foreignKeyOwner(Integer.parseInt(newOwner));
 								
 								if(dashboard.update(DashboardFields.FK_ID_USER)) {
 									CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+									
+									User currentUser = CFW.Context.Request.getUser();
+									//----------------------------------
+									// Send Notification to New Owner
+									Notification newOwnerNotification = 
+											new Notification()
+													.foreignKeyUser(Integer.parseInt(newOwner))
+													.messageType(MessageType.INFO)
+													.title("Dashboard assigned to you: '"+dashboard.name()+"'")
+													.message("The user '"+currentUser.createUserLabel()+"' has assigned the dashboard to you. You are now the new owner of the dashboard.");
+
+									CFW.DB.Notifications.create(newOwnerNotification);
+									
+									//----------------------------------
+									// Send Notification to Old Owner
+									User user = CFW.DB.Users.selectByID(newOwner);
+									Notification oldOwnerNotification = 
+											new Notification()
+													.foreignKeyUser(oldOwner)
+													.messageType(MessageType.INFO)
+													.title("Owner of dashboard '"+dashboard.name()+"' is now "+user.createUserLabel())
+													.message("The user '"+currentUser.createUserLabel()+"' has changed the owner of your former dashboard to the user '"+user.createUserLabel()+"'. ");
+
+									CFW.DB.Notifications.create(oldOwnerNotification);
 								}
 							}
 						}
