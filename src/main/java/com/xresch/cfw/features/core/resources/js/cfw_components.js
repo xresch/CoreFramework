@@ -45,14 +45,14 @@ class CFWRenderer{
 		 	data: null,
 		 	// settings specific for the renderer, add as "rendererSettings.{rendererName}.{setting}"
 		 	rendererSettings: {},
-		 	getCustomizedValue: function(record, fieldname){
+		 	getCustomizedValue: function(record, fieldname, rendererName){
 		 		
 			 		var value = record[fieldname];
 			 		if(this.customizers[fieldname] == null){
 						return value;
 					}else{
 						var customizer = this.customizers[fieldname];
-						return customizer(record, value);
+						return customizer(record, value, rendererName);
 					}
 			 	},
 		 	getTitleHTML:  function(record){

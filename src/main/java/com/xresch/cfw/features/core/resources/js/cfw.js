@@ -3080,16 +3080,81 @@ function  cfw_getUserID(){
 /************************************************************************************************
  * 
  ************************************************************************************************/
-function cfw_registerRenderer(rendererUniqueName, rendererObject){
+function cfw_render_registerRenderer(rendererUniqueName, rendererObject){
 	CFW.render.registry[rendererUniqueName] = rendererObject;
 }
 
 /************************************************************************************************
  * 
  ************************************************************************************************/
-function cfw_getRenderer(rendererUniqueName){
+function cfw_render_getRenderer(rendererUniqueName){
 	return CFW.render.registry[rendererUniqueName];
 }
+
+/************************************************************************************************
+ * 
+ ************************************************************************************************/
+function cfw_render_createDataviewerDefaults(){
+	return [
+		{	label: 'Table',
+			name: 'table',
+			renderdef: {
+				rendererSettings: {
+					table: {filterable: false},
+				},
+			}
+		},
+		{	label: 'Smaller Table',
+			name: 'table',
+			renderdef: {
+				rendererSettings: {
+					table: {filterable: false, narrow: true},
+				},
+			}
+		},
+		{	label: 'Panels',
+			name: 'panels',
+			renderdef: {}
+		},
+		{	label: 'Smaller Panels',
+			name: 'panels',
+			renderdef: {
+				rendererSettings: {
+					panels: {narrow: true},
+				},
+			}
+		},
+		{	label: 'Cards',
+			name: 'cards',
+			renderdef: {}
+		},
+		{	label: 'Tiles',
+			name: 'tiles',
+			renderdef: {
+				rendererSettings: {
+					tiles: {
+						popover: false,
+						border: '2px solid black'
+					},
+				},
+			}
+		},
+		{	label: 'CSV',
+			name: 'csv',
+			renderdef: {}
+		},
+		{	label: 'XML',
+			name: 'xml',
+			renderdef: {}
+		},
+		{	label: 'JSON',
+			name: 'json',
+			renderdef: {}
+		}
+	];
+}
+
+
 
 /************************************************************************************************
  * 
@@ -3173,8 +3238,9 @@ var CFW = {
 	},
 	render: {
 		registry: {},
-		registerRenderer: cfw_registerRenderer,
-		getRenderer: cfw_getRenderer,
+		registerRenderer: cfw_render_registerRenderer,
+		getRenderer: cfw_render_getRenderer,
+		createDataviewerDefaults: cfw_render_createDataviewerDefaults,
 	},
 	array: {
 		sortArrayByValueOfObject: cfw_sortArrayByValueOfObject

@@ -579,6 +579,9 @@ function cfw_usermgmt_printUserList(data){
 
 		//-----------------------------------
 		// Render Data
+		
+		var dataviewerDefaults = CFW.render.createDataviewerDefaults();
+		
 		var rendererSettings = {
 				data: data.payload,
 			 	idfield: 'PK_ID',
@@ -651,11 +654,14 @@ function cfw_usermgmt_printUserList(data){
 											border: '2px solid black'
 										},
 									},
-									
 								}
 							},
 							{	label: 'CSV',
 								name: 'csv',
+								renderdef: {}
+							},
+							{	label: 'XML',
+								name: 'xml',
 								renderdef: {}
 							},
 							{	label: 'JSON',

@@ -1,3 +1,12 @@
+
+CFW_RENDER_NAME_CSV = 'csv';
+CFW_RENDER_NAME_JSON = 'json';
+CFW_RENDER_NAME_XML = 'xml';
+CFW_RENDER_NAME_TABLE = 'table';
+CFW_RENDER_NAME_TILES = 'tiles';
+CFW_RENDER_NAME_CARDS = 'cards';
+CFW_RENDER_NAME_PANELS = 'panels';
+
 /******************************************************************
  * Execute a multi action.
  * Element needs the following JQuery.data() attributes:
@@ -113,7 +122,7 @@ function cfw_renderer_csv(renderDef) {
 			// do not use normal customized values as it might return html
 			var value = currentRecord[fieldname];
 			if(settings.csvcustomizers[fieldname] != undefined){
-				value = settings.csvcustomizers[fieldname](currentRecord, value);
+				value = settings.csvcustomizers[fieldname](currentRecord, value, CFW_RENDER_NAME_CSV);
 			}
 			
 			if(value == null){
@@ -152,7 +161,7 @@ function cfw_renderer_csv(renderDef) {
 
 	return pre;
 }
-CFW.render.registerRenderer("csv",  new CFWRenderer(cfw_renderer_csv));
+CFW.render.registerRenderer(CFW_RENDER_NAME_CSV,  new CFWRenderer(cfw_renderer_csv));
 
 
 /******************************************************************
@@ -192,7 +201,7 @@ function cfw_renderer_xml(renderDef) {
 			// do not use normal customized values as it might return html
 			var value = currentRecord[fieldname];
 			if(settings.xmlcustomizers[fieldname] != undefined){
-				value = settings.xmlcustomizers[fieldname](currentRecord, value);
+				value = settings.xmlcustomizers[fieldname](currentRecord, value, CFW_RENDER_NAME_XML);
 			}
 			
 			
@@ -219,7 +228,7 @@ function cfw_renderer_xml(renderDef) {
 	pre.text(html);
 	return pre;
 }
-CFW.render.registerRenderer("xml",  new CFWRenderer(cfw_renderer_xml));
+CFW.render.registerRenderer(CFW_RENDER_NAME_XML,  new CFWRenderer(cfw_renderer_xml));
 
 /******************************************************************
  * 
@@ -385,7 +394,7 @@ function cfw_renderer_tiles(renderDef) {
 					}
 				}else{
 					var customizer = renderDef.customizers[fieldname];
-					var customizedValue = customizer(currentRecord, value);
+					var customizedValue = customizer(currentRecord, value, CFW_RENDER_NAME_TILES);
 					if(customizedValue != null){
 						var span = $('<span style="font-size: '+10*settings.sizefactor+'px;"><strong>'+renderDef.labels[fieldname]+':&nbsp;</strong></span>');
 						span.append(customizedValue);
@@ -406,7 +415,7 @@ function cfw_renderer_tiles(renderDef) {
 
 }
 
-CFW.render.registerRenderer("tiles", new CFWRenderer(cfw_renderer_tiles));
+CFW.render.registerRenderer(CFW_RENDER_NAME_TILES, new CFWRenderer(cfw_renderer_tiles));
 
 function cfw_renderer_tiles_createDetailsTable(entry, renderDef){
 	
@@ -484,11 +493,11 @@ function cfw_renderer_table(renderDef) {
 			
 			if(renderDef.customizers[fieldname] != null){
 				let customizer = renderDef.customizers[fieldname];
-				finalValue = customizer(singleRecord, finalValue);
+				finalValue = customizer(singleRecord, finalValue, CFW_RENDER_NAME_TABLE);
 			}
 			else if(renderDef.customizers['value'] != null){
 				let customizer = renderDef.customizers['value'];
-				finalValue = customizer(singleRecord, finalValue);
+				finalValue = customizer(singleRecord, finalValue, CFW_RENDER_NAME_TABLE);
 			}
 			
 			singleRecordData.push({name: label, value: finalValue});
@@ -612,7 +621,7 @@ function cfw_renderer_table(renderDef) {
 				row.append(cellHTML);
 				cellHTML = "";
 				let customizer = renderDef.customizers[fieldname];
-				let customizedValue = customizer(currentRecord, value);
+				let customizedValue = customizer(currentRecord, value, CFW_RENDER_NAME_TABLE);
 				let cell = $('<td>');
 				cell.append(customizedValue);
 				row.append(cell);
@@ -684,7 +693,7 @@ function cfw_renderer_table(renderDef) {
 		return wrappedTable;
 	}
 }
-CFW.render.registerRenderer("table", new CFWRenderer(cfw_renderer_table) );
+CFW.render.registerRenderer(CFW_RENDER_NAME_TABLE, new CFWRenderer(cfw_renderer_table) );
 
 /******************************************************************
  * 
@@ -780,7 +789,7 @@ function cfw_renderer_panels (renderDef) {
 		let itemHTML = '';
 		for(let key in renderDef.visiblefields){
 			let fieldname = renderDef.visiblefields[key];
-			let value =renderDef.getCustomizedValue(currentRecord,fieldname);
+			let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PANELS);
 		
 			if(!CFW.utils.isNullOrEmpty(value)){
 				itemHTML += '<li><strong>' + renderDef.labels[fieldname] + ':</strong> ' + value + '</li>';
@@ -859,7 +868,7 @@ function cfw_renderer_cards (renderDef) {
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.cards);
 	
 	//===================================================
-	// Create Pannels
+	// Create Cards
 	//===================================================
 	var wrapper = $("<div class='flex-grow-1'>");
 	
@@ -927,7 +936,7 @@ function cfw_renderer_cards (renderDef) {
 		let itemHTML = '';
 		for(let key in renderDef.visiblefields){
 			let fieldname = renderDef.visiblefields[key];
-			let value =renderDef.getCustomizedValue(currentRecord,fieldname);
+			let value =renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_CARDS);
 			if(!CFW.utils.isNullOrEmpty(value)){
 				itemHTML += '<li><strong>' + renderDef.labels[fieldname] + ':</strong> ' + value + '</li>';
 			}

@@ -433,6 +433,8 @@ function cfw_dashboardlist_printDashboards(data, type){
  			 
  		};
  		
+		var storeID = 'dashboards-'+type;
+		
 		var rendererSettings = {
 			 	idfield: 'PK_ID',
 			 	bgstylefield: null,
@@ -445,7 +447,15 @@ function cfw_dashboardlist_printDashboards(data, type){
 			 		IS_SHARED: 'Shared'
 			 	},
 			 	customizers: {
-			 		IS_SHARED: function(record, value) { 
+			 		NAME: function(record, value, rendererName) { 
+			 			
+			 			if(rendererName == 'table'){
+								return '<a href="/app/dashboard/view?id='+record.PK_ID+'" style="color: inherit;">'+record.NAME+'</a>';
+						}else{
+							return value;
+						} 
+			 		},
+					IS_SHARED: function(record, value) { 
 			 			var isShared = value;
 			 			if(isShared){
 								return '<span class="badge badge-success m-1">true</span>';
@@ -514,6 +524,12 @@ function cfw_dashboardlist_printDashboards(data, type){
 									visiblefields: null
 								}
 							},
+							{	label: 'XML',
+								name: 'xml',
+								renderdef: {
+									visiblefields: null
+								}
+							},
 							{	label: 'JSON',
 								name: 'json',
 								renderdef: {}
@@ -524,6 +540,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 				},
 			};
 				
+		
 		var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
 		
 		parent.append(renderResult);
