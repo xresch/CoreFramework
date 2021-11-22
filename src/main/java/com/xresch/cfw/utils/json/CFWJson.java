@@ -7,7 +7,10 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
@@ -22,6 +25,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.Context.App;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWSchedule;
@@ -187,6 +191,19 @@ public class CFWJson {
 		return jsonArray;
 	}
 	
+	
+	
+	/*************************************************************************************
+	 * 
+	 *************************************************************************************/
+	public static void arraySortBy(JsonArray jsonArray, Comparator<? super JsonElement> comparator) {
+		
+		// Create a JsonArray to a List view instance
+		final List<JsonElement> jsonElements = JsonArrayListView.of(jsonArray);
+		// Sorting the jsonElements object
+		Collections.sort(jsonElements, comparator);
+	}
+	
 	/*************************************************************************************
 	 * 
 	 *************************************************************************************/
@@ -326,5 +343,35 @@ public class CFWJson {
 		}
 		
 	}
+	
+	/*************************************************************************************
+	 * Makes a HTML table string from a JSON Object.
+	 * 
+	 * @param thisToTable the object to covnert
+	 * @param narrow add the Bootstrap table-sm class to the table if true
+	 * 
+	 *************************************************************************************/
+	public static String formatJsonObjectToHTMLTable(JsonObject thisToTable, boolean narrowTable) {
+		
+		String narrowClass = "";
+		if(narrowTable) { narrowClass = "table-sm"; }
+		
+		StringBuilder html = new StringBuilder("<table class=\"table table-striped "+narrowClass+"\">");
+		html.append("<thead> <th>Key</th>  <th>Value</th> </thead>");
+		html.append("<tbody>");
+		for(Entry<String, JsonElement> entry : thisToTable.entrySet()) {
+			html.append("<tr>")
+				.append("<td>").append( CFW.Utils.Text.fieldNameToLabel(entry.getKey()) ).append("</td>")
+				.append("<td>").append(entry.getValue().getAsString()).append("</td>")
+				.append("</tr>")
+				;
+		}
+		html.append("</tbody></table>");
+		
+		return html.toString();
+		
+	}
+	
+	
 
 }
