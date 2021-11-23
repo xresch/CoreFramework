@@ -1,0 +1,38 @@
+
+<h2>Create Simple Notification</h2>
+<p>Notifications are shown in the top navigation bar on the right side by the bell symbol. You can add Notifications using the interface CFW.DB.Notifications:</p>
+<pre>
+<code>Notification tiramisuNotification = 
+	new Notification()
+			.foreignKeyUser(userToNotify.id())
+			.messageType(MessageType.INFO)
+			.title("Tiramisu for Sale!")
+			.message("Get it as long as it is fresh!");
+
+CFW.DB.Notifications.create(tiramisuNotification);
+</code>
+</pre>
+
+
+<h2>Advanced Notification</h2>
+<p>
+You can add a category to your notification in case you want to be able to select/delete all notifications with that category.
+To create the same notification for multiple users, you can use the method createForUsers() as shown in the following example.
+</p>
+
+<pre>
+<code>String category = "MY_CATEGORY";
+CFW.DB.Notifications.deleteAllByCategory(category);
+
+Notification templateNotification = 
+		new Notification()
+				.category(category)
+				.messageType(MessageType.INFO)
+				.title("Application Started")
+				.message("The application was started at the given time.");
+
+ArrayList&lt;User&gt; ultimateUsers = CFW.DB.Roles.getAdminsAndSuperusers();
+CFW.DB.Notifications.createForUsers(ultimateUsers, templateNotification);
+</code>
+</pre>
+	

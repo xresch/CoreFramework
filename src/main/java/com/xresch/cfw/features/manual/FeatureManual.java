@@ -285,6 +285,13 @@ public class FeatureManual extends CFWAppFeature {
 				);
 		
 		quickstart.addChild(
+				new ManualPage("Notify Users")
+					.faicon("fa fa-bell")
+					.addPermission(PERMISSION_ADMIN_MANUAL)
+					.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".dev", "manual_dev_quick_notifications.html")
+				);
+		
+		quickstart.addChild(
 				new ManualPage("Create Manual Pages")
 					.faicon("fa fa-book")
 					.addPermission(PERMISSION_ADMIN_MANUAL)
