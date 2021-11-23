@@ -7,7 +7,7 @@
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-
+	
 /******************************************************************
  * Class to render HTML from JSON data.
  * 
@@ -19,14 +19,20 @@ class CFWRenderer{
 		 this.renderFunction = renderFunction;
 		 
 		 this.defaultRenderDefinition = {
+			// the data that should be rendered as an array
+		 	data: null,
 			// (Optional) name of the field that is used as the identifier of the data
 		 	idfield: null,
 		 	// (Optional) names of the fields that are used for a titles. Takes the first field from the first object if null
 		 	titlefields: null,
-		 	// (Optional) the delimiter used for multiple titles
-		 	titleformat: '{0}',
+		 	// The format of the title, use {0}, {1} ... {n} as placeholders, concatenates all title fields if null(default)
+		 	titleformat: null,
 		 	// (Optional) Names of the fields that should be rendered and in the current order. If null or undefined, will display all fields
 		 	visiblefields: null,
+			// (Optional) Names of the fields that data should be sorted by. (Note: Do not set this if you enable sorting for Dataviewer to avoid performance overhead) 
+		 	sortbyfields: null,
+			// Direction of the sorting: "asc"|"desc" 
+		 	sortbydirection: "asc",
 		 	// (Optional) Custom labels for fields, add them as "{fieldname}: {label}". If a label is not defined for a field, uses the capitalized field name
 		 	labels: {},
 		 	// field containing the bootstrap style (primary, info, danger ...) that should be used as the background
@@ -41,8 +47,6 @@ class CFWRenderer{
 		 	bulkActions: null,
 		 	// position of the multi actions, either top|bottom|both|none
 		 	bulkActionsPos: "top",
-			// the data that should be rendered as an array
-		 	data: null,
 		 	// settings specific for the renderer, add as "rendererSettings.{rendererName}.{setting}"
 		 	rendererSettings: {},
 		 	getCustomizedValue: function(record, fieldname, rendererName){
@@ -159,9 +163,40 @@ class CFWRenderer{
 				definition.labels[fieldname] = CFW.format.fieldNameToLabel(fieldname);
 			}
 		}
-		 //---------------------------
-		 // Lovercase
-		 definition.bulkActionsPos = definition.bulkActionsPos.toLowerCase();
+		
+		//---------------------------
+		// Lowercase
+		definition.bulkActionsPos = definition.bulkActionsPos.toLowerCase();
+		
+		
+		//---------------------------
+		// Sort
+		if( !CFW.utils.isNullOrEmpty(definition.sortbyfields) ){
+			
+			let sortDirection = (definition.sortbydirection == null) ? ['asc'] : [definition.sortbydirection];
+
+
+			let sortFunctionArray = [];
+			let sortDirectionArray = [];
+			for(var index in definition.sortbyfields){
+				let sortbyField = definition.sortbyfields[index];
+				
+				sortDirectionArray.push(sortDirection);
+				sortFunctionArray.push(
+					record => {
+						if (typeof record[sortbyField] === 'string'){
+							// make lowercase to have proper string sorting
+							return record[sortbyField].toLowerCase();
+						}
+						
+						return record[sortbyField];
+						
+					}
+				);
+			};
+			
+			definition.data = _.orderBy(definition.data, sortFunctionArray, sortDirectionArray);
+		}
 		 
 	 }
 	 
