@@ -201,8 +201,9 @@ function cfw_contextsettings_printContextSettings(data){
 			 	textstylefield: null,
 			 	titlefields: ['CFW_CTXSETTINGS_NAME'],
 			 	titleformat: '{0}',
-			 	visiblefields: ['CFW_CTXSETTINGS_TYPE', 'CFW_CTXSETTINGS_NAME', 'CFW_CTXSETTINGS_DESCRIPTION'],
+			 	visiblefields: ['PK_ID','CFW_CTXSETTINGS_TYPE', 'CFW_CTXSETTINGS_NAME', 'CFW_CTXSETTINGS_DESCRIPTION'],
 			 	labels: {
+			 		PK_ID: "ID",
 			 		CFW_CTXSETTINGS_TYPE: CFWL('cfw_core_type', 'Type'),
 			 		CFW_CTXSETTINGS_NAME: CFWL('cfw_core_name', 'Name'),
 			 		CFW_CTXSETTINGS_DESCRIPTION: CFWL('cfw_core_description', 'Description')
@@ -215,12 +216,65 @@ function cfw_contextsettings_printContextSettings(data){
 //				},
 //				bulkActionsPos: "both",
 				data: data.payload,
-				rendererSettings: {
-					table: {narrow: false, filterable: true}
+			rendererSettings: {
+				dataviewer: {
+					storeid: 'cfw_contextsettings',
+					renderers: [
+						{	label: 'Table',
+							name: 'table',
+							renderdef: {
+								rendererSettings: {
+									table: {filterable: false},
+								},
+							}
+						},
+						{	label: 'Smaller Table',
+							name: 'table',
+							renderdef: {
+								rendererSettings: {
+									table: {filterable: false, narrow: true},
+								},
+							}
+						},
+
+						{	label: 'Panels',
+							name: 'panels',
+							renderdef: {}
+						},
+						{	label: 'Cards',
+							name: 'cards',
+							renderdef: {}
+						},
+						{	label: 'Tiles',
+							name: 'tiles',
+							renderdef: {
+								visiblefields: ['PK_ID','CFW_CTXSETTINGS_TYPE'],
+								rendererSettings: {
+									tiles: {
+										popover: false,
+										border: '2px solid black'
+									},
+								},
+							}
+						},
+						{	label: 'CSV',
+							name: 'csv',
+							renderdef: {}
+						},
+						{	label: 'XML',
+							name: 'xml',
+							renderdef: {}
+						},
+						{	label: 'JSON',
+							name: 'json',
+							renderdef: {}
+						}
+					],
 				},
-			};
+			},
+		};
 				
-		var renderResult = CFW.render.getRenderer('table').render(rendererSettings);	
+		var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
 		
 		parent.append(renderResult);
 		

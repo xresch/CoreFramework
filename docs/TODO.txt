@@ -123,6 +123,8 @@ DONE
 - Menu: Fixed Display issue for Navbar Buttons(Manual) when menu is collapsed on narrow displays 
 - ContextSettings: Added method to fetch by user and type
 - Javascript Renderer: Added sorting mechanism.
+- Context Settings: Use Dataviewer for display
+
 
 ------- v5.0.0 -------
 - Mailing: Added Class CFWMailBuilder for creating eMails.
