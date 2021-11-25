@@ -1,0 +1,154 @@
+<p>This is a list of questions where you can check your knowledge and find out how to do things in the application.
+The questions assume you are logged in as a user with admin permissions.
+</p>
+
+
+<h2>What do you do if you get a request to add a new user to the system?</h2>
+<ol>
+	<li>Open Menu Bar &gt;&gt; Admin &gt;&gt; Manage Users.</li>
+	<li>Click Create User and fill in the details. If the user is a foreign user(e.g. Active Directory) use a random password and set Foreign to true. </li>
+	<li>Open the created user and add him to the roles/groups he needs.</li>
+</ol>
+
+
+
+<h2>What do you do to check what access a user has?</h2>
+<ul>
+	<li>Click the stethoscope button to get an audit of the user.</li>
+	<li>Go to the Full Audit Tab and create a report</li>
+</ul>
+
+
+
+<h2>What do you do to remove a users access to EMP or certain features?</h2>
+<ul>
+	<li>Set the user to inactive.</li>
+	<li>Delete the user(might not work if user is created from Active Directory)</li>
+	<li>Remove user from roles/groups to remove certain permissions</li>
+	<li></li>
+</ul>
+
+
+
+<h2>What do you do to check if a user has ever logged in?</h2>
+<p>Go to the User Management and check if the Last Login value is set.</p>
+
+
+
+<h2>What do you do to check the newest created users?</h2>
+<p>Go to the User Management and sort by Date Created.</p>
+
+
+<h2>What do you do to export a list of all users?</h2>
+<ul>
+	<li>Go to user management, set Display As to CSV, set page Size to All</li>
+	<li>Menu Bar &gt;&gt; Tools &gt;&gt; API, use the API User - fetchData.</li>
+</ul>
+
+
+
+<h2>What do you do to see all the currently logged in users ?</h2>
+<p>Menu Bar &gt;&gt; Admin  &gt;&gt; System Analytics  &gt;&gt; Session Overview.</p>
+
+
+
+<h2>What do you do to get more detailed log statement ?</h2>
+<p>Go to Menu Bar &gt;&gt; Admin  &gt;&gt; System Analytics  &gt;&gt; Log Configuration and adjust the log levels.</p>
+
+
+
+<h2>What do you do ?</h2>
+<ol>
+	<li></li>
+	<li></li>
+	<li></li>
+	<li></li>
+</ol>
+
+
+
+<h2>What do you do ?</h2>
+<ol>
+	<li></li>
+	<li></li>
+	<li></li>
+	<li></li>
+</ol>
+
+
+
+<h2>What do you do ?</h2>
+<ol>
+	<li></li>
+	<li></li>
+	<li></li>
+	<li></li>
+</ol>
+
+
+
+<h2>What do you do to connect to the database?</h2>
+<ol>
+	<li>Open the log file and copy the database connection link.</li>
+	<li>Use a Database Tool like DBeaver.</li>
+	<li>Add a connection using the h2driver and the connection details from the connection link.</li>
+</ol>
+
+
+
+<h2>What do you do to access use a backup of a database?</h2>
+<p>Replace the database file under {APP_ROOT}/datastore/h2database.mv.db with the file extracted from the backup .zip-File. </p>
+
+
+
+
+<h2>What do you do ?</h2>
+<p>
+</p>
+
+
+
+<h2>What do you do ?</h2>
+<p>
+</p>
+
+
+
+<h2>What do you do ?</h2>
+<p>
+</p>
+
+
+
+<h2>What do you do ?</h2>
+<p>
+</p>
+
+
+
+<h2>What do you do ?</h2>
+<p>
+</p>
+
+
+
+<h2>What do you do to grant another application access to the API?</h2>
+<ol>
+	<li>Open Menu Bar &gt;&gt; Tools &gt;&gt; API</li>
+	<li>Click the button "Manage Tokens".</li>
+	<li>Click on "Add Token"</li>
+	<li>Optional: Prepend a short name to the token(e.g "acme-app-") to easily identify the token in logs and session overview.</li>
+	<li>After creating the token edit the token and add the permissions to the token.</li>
+</ol>
+
+<h2>What do you do to revoke access of an API token?</h2>
+<ul>
+	<li>Edit the token an remove the permission(s) to be revoked.</li>
+	<li>Set the token to inactive</li>
+	<li>Or delete the token</li>
+	<li></li>
+</ul>
+
+
+<h2>What do you do to check how often an API token is accessing the application?</h2>
+<p>Go to the log files and search for "apitoken[" .</p>
