@@ -131,6 +131,12 @@ public class FeatureManual extends CFWAppFeature {
 				.addPermission(PERMISSION_ADMIN_MANUAL)
 				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".admin", "manual_admin_shortcuts.html")
 		);
+		
+		TOP_PAGE_ADMIN.addChild(new ManualPage("What do you do?")
+				.faicon("fas fa-question")
+				.addPermission(PERMISSION_ADMIN_MANUAL)
+				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".admin", "manual_admin_whatdoyoudo.html")
+				);
 	}
 	
 	/*****************************************************************
