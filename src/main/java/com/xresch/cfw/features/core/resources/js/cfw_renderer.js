@@ -1013,9 +1013,82 @@ function cfw_renderer_cards (renderDef) {
 
 CFW.render.registerRenderer("cards", new CFWRenderer(cfw_renderer_cards) );
 
-/******************************************************************
+/****************************************************************************************
+ * Chart Renderer
+ * ==============
+ * Renders a chart based on the given data.
+ * There are various formats the input data can have, this is controlled by settings.datamode
  * 
- ******************************************************************/
+ * datamode: 'groupbytitle'
+ * ------------------------
+ * This mode uses the data input format like on any other renderer.
+ * One object in the array causes one data point on the graph.
+ * Groups the data together int datasets by the titlefields defined in the renderer settings.
+ * Define which field of the object should be used with settings.xfield and settings.yfield.
+ *
+ * Example: 
+ * var chartData = [{ "server": "chocolateCalculator", "metric": "CPU%", "time": 1637842147, "value": 45.7}];
+ * 
+ * var dataToRender = {
+ * 		data: chartData,
+ *	    ...
+ *		titlefields: ["server", "metric"], 
+ *		rendererSettings:{
+ *			chart: {
+ *				datamode: 'groupbytitle',
+ *				xfield: 'time',
+ *				yfield: 'value',
+ *				...
+ *			}
+ *	}};
+ *
+ * datamode: 'arrays'
+ * ------------------------
+ * This mode uses the data input format like on any other renderer.
+ * One object in the array causes a full series on the graph
+ * The fields defined with xfield and yfield do contain all values for the series as arrays.
+ * The series name is defined by the title fields. 
+ * 
+ * Example: 
+ * var chartData =  [{ "server": "", "metric": "CPU%", "times": [1637842115,1637842130,1637842145,1637842160], "values": [45.7, 56.3, 37.9, 41.3] }];
+ * 
+ * var dataToRender = {
+ * 		data: chartData,
+ *	    ...
+ *		titlefields: ["server", "metric"], 
+ *		rendererSettings:{
+ *			chart: {
+ *				datamode: 'arrays',
+ *				xfield: 'times',
+ *				yfield: 'values',
+ *				...
+ *			}
+ *	}};
+ *
+ * datamode: 'datasets' (experimental)
+ * ------------------------
+ * This mode uses the datasets format of ChartJS.
+ * One object in the array causes a full series on the graph.
+ * The series name is defined by the datasets label field. 
+ * xfield and yfield settings are ignored. 
+ * 
+ * Example: 
+ * var chartDatasets =  [{ "label": "SeriesA", "data": [ {"x": 1637842115, "y": 45.7 }, {"x": 1637842130, "y": 56.3 } ]}
+ *                       { "label": "SeriesB", "data": [ {"x": 1637842145, "y": 37.9 }, {"x": 1637842160, "y": 41.3 } ]}
+ *                      ];
+ * 
+ * var dataToRender = {
+ * 		data: chartDatasets,
+ *	    ...
+ *		titlefields: [], 
+ *		rendererSettings:{
+ *			chart: {
+ *				datamode: 'datasets',
+ *				...
+ *			}
+ *	}};
+ *
+ ****************************************************************************************/
 function cfw_renderer_chart(renderDef) {
 	
 	//========================================
@@ -1116,6 +1189,8 @@ function cfw_renderer_chart(renderDef) {
 		var datasets = cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settings);
 	}else if(settings.datamode == 'arrays'){
 		var datasets = cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings);
+	}else if(settings.datamode == 'datasets'){
+		datasets = cfw_renderer_chart_prepareDatasets(renderDef, settings); 
 	}
 	
 	//========================================
@@ -1127,7 +1202,8 @@ function cfw_renderer_chart(renderDef) {
 		for(label in datasets){
 			data.datasets.push(datasets[label]);
 		}
-	}else{
+	}
+	/*else{
 		data.labels = []
 		data.datasets = [{data: []}];
 		
@@ -1136,7 +1212,7 @@ function cfw_renderer_chart(renderDef) {
 			data.datasets[0].data.push(datasets[label].cfwSum / datasets[label].cfwCount);
 		}
 
-	}
+	}*/
 	
 	
 	//========================================
@@ -1195,13 +1271,13 @@ function cfw_renderer_chart(renderDef) {
 						callback : function(value, index, values) {
 
 							if (value > 1000000000) {
-								return (value / 1000000000).toFixed(1) + "G";
+								return (value / 1000000000).toFixed(2) + "G";
 							} else if (value > 1000000) {
-								return (value / 1000000).toFixed(1) + "M";
+								return (value / 1000000).toFixed(2) + "M";
 							} else if (value > 1000) {
-								return (value / 1000).toFixed(1) + "K";
+								return (value / 1000).toFixed(2) + "K";
 							} else {
-								return value;
+								return value.toFixed(2);
 							}
 						}
 					},
@@ -1479,6 +1555,51 @@ function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 	
 	return datasets;
 }
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
+	
+	var datasets = renderDef.data;
+	var hue = 165; 
+
+	for(var i = 0; i < renderDef.data.length; i++){
+		var currentDataset = renderDef.data[i];
+		
+		//----------------------------
+		// Create Label & Dataset
+		hue += 31;
+		var borderColor = CFW.colors.randomHSL(hue,65,100,55,70);
+		var bgColor = borderColor.replace('1.0)', '0.65)');
+		
+		if( CFW.utils.isNullOrEmpty(currentDataset.label) ){			currentDataset.label = renderDef.getTitleString(currentRecord); }
+		
+		currentDataset.backgroundColor = bgColor; 
+		currentDataset.borderColor = borderColor; 
+		currentDataset.borderWidth = 1;
+		
+		currentDataset.spanGaps = false;
+		currentDataset.steppedLine = settings.isSteppedline;
+		currentDataset.lineTension = 0;
+	}
+	/*	currentDataset = {
+				label: label, 
+				data: [], 
+				backgroundColor: bgColor,
+				fill: settings.doFill,
+	            borderColor: borderColor,
+	            borderWidth: 1,
+	            spanGaps: false,
+	            steppedLine: settings.isSteppedline,
+	            lineTension: 0,
+	            cfwSum: 0,
+	            cfwCount: 0
+			};*/
+			
+	return datasets;
+}
+
 
 
 /******************************************************************
