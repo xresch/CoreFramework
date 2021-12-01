@@ -21,12 +21,15 @@ public class CFWQueryTokenizer {
 	//substring(cursor, endOfString) of base string
 	String slice = null;
 		
-	private static final Pattern regexIsDigit = Pattern.compile("\\d");
+	private static final Pattern regexStartsWithDigit = Pattern.compile("^[\\-]?\\d.*");
 	private static final Pattern regexIsNumericalChar = Pattern.compile("[\\.\\d]");
 	private static final Pattern regexIsWhitespace = Pattern.compile("\\s");
 	private static final Pattern regexIsWordChar = Pattern.compile("[a-zA-Z_0-9]");
 	
 	private Pattern regexIsSplit = null;
+	
+	private boolean keywordsCaseSensitive = true;
+	private ArrayList<String> keywordList = new ArrayList<>();
 	
 	/*******************************************************
 	 * Enumeration of Token Types
@@ -36,23 +39,38 @@ public class CFWQueryTokenizer {
 	  , LITERAL_BOOLEAN
 	  , LITERAL_STRING
 	  
-	  , TEXT_SINGLE_QUOTES
-	  , TEXT_DOUBLE_QUOTES
+	  , /** Type for single quoted text  */
+	    TEXT_SINGLE_QUOTES
+	  , /** Type for double quoted text  */
+	  	TEXT_DOUBLE_QUOTES
 	  
-	  , SIGN_COMMA
-	  , SIGN_BRACE_OPEN
-	  , SIGN_BRACE_CLOSE
+	  , /** Type for matched split expressions defined by calling method CFWQueryTokenizer.splitBy()  */
+	    SPLIT
+	  
+	  , /** The character '=' */ OPERATOR_EQUAL
+	  , /** The characters ">=" */ OPERATOR_EQUAL_OR_GREATER
+	  , /** The characters "<=" */ OPERATOR_EQUAL_OR_LOWER
+	  , /** The characters "!=" */ OPERATOR_EQUAL_NOT
+	  , /** The character '>' */ OPERATOR_GREATERTHEN
+	  , /** The character '<' */ OPERATOR_LOWERTHEN
+		  
+	  , /** The character ',' */ SIGN_COMMA
+	  , /** The character '(' */ SIGN_BRACE_OPEN
+	  , /** The character ')' */ SIGN_BRACE_CLOSE
 		
-	  , OPERATOR_EQUAL
-	  , OPERATOR_PLUS
-	  , OPERATOR_MINUS
-	  , OPERATOR_MULTIPLY
-	  , OPERATOR_DIVIDE
-	  , OPERATOR_PIPE
-	  , OPERATOR_SPLIT
-		
-	  , KEYWORD
-
+	  , /** The character '+' */ OPERATOR_PLUS
+	  , /** The character '-' */ OPERATOR_MINUS
+	  , /** The character '*' */ OPERATOR_MULTIPLY
+	  , /** The character '/' */ OPERATOR_DIVIDE
+	  , /** The character '&' */ OPERATOR_AND
+	  , /** The character '|' */ OPERATOR_OR
+	  , /** The character '!' */ OPERATOR_NOT
+	  
+	  , /** Applied to any keyword defined with the method CFWQueryTokenizer.keywords() */
+	    KEYWORD
+	  , /** Applied to any unexpected character */
+	    UNKNOWN
+	  
 	}
 	
 	/*******************************************************
@@ -61,13 +79,16 @@ public class CFWQueryTokenizer {
 	public class QueryToken{
 		private CFWQueryTokenType type = null;
 		private String value = "";
+		private int position = 0;
 		
-		public QueryToken(CFWQueryTokenType type, String value){
+		public QueryToken(CFWQueryTokenType type, String value, int position){
 			this.type = type;
 			this.value = value;
+			this.position = position;
 		}
 		
 		public CFWQueryTokenType type() { return this.type;}
+		public int position() { return this.position;}
 		public String value() { return this.value;}
 		public BigDecimal valueAsNumber() { return new BigDecimal(this.value);}
 	}
@@ -75,20 +96,42 @@ public class CFWQueryTokenizer {
 		
 	/***********************************************************************************************
 	 * El Grande Constructore
+	 * @param keywordsCaseSensitive TODO
 	 ***********************************************************************************************/
-	public CFWQueryTokenizer(String tokenizeThis) {
+	public CFWQueryTokenizer(String tokenizeThis, boolean keywordsCaseSensitive) {
 		this.base = tokenizeThis.trim();		
+		this.keywordsCaseSensitive = keywordsCaseSensitive;		
 	}
 	
 	/***********************************************************************************************
 	 * Define the regex used to split the Query.
-	 * Parts of the query matching this regex will be converted to a token of type OPERATOR_SPLIT.
+	 * Parts of the query matching this regex will be converted to a token of type SPLIT.
 	 * The regex has to be written to be applied to a single character.
 	 * 
 	 ***********************************************************************************************/
 	public CFWQueryTokenizer splitBy(String splitRegex) {
 		regexIsSplit = Pattern.compile(splitRegex);
 		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Define the words that should be considered as Keywords. (e.g. AND / OR).
+	 * 
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryTokenizer keywords(String... keywords) {
+		
+		if(keywordsCaseSensitive) {
+			for(String keyword : keywords) {
+				keywordList.add(keyword);
+			}
+		}else {
+			for(String keyword : keywords) {
+				keywordList.add(keyword.toLowerCase());
+			}
+		}
+		return this;
+		
 	}
 	
 	/***********************************************************************************************
@@ -120,7 +163,7 @@ public class CFWQueryTokenizer {
 	 ***********************************************************************************************/
 	public QueryToken getNextToken() {
 		//-----------------------------------
-		// Skip whitespaces
+		// Skip Whitespaces
 		while(this.hasMoreTokens() && this.matchesCurrentChar(regexIsWhitespace)) {
 			cursor++;
 			slice = base.substring(cursor);
@@ -136,23 +179,61 @@ public class CFWQueryTokenizer {
 		
 		//-----------------------------------
 		// LITERAL_NUMBER
-		if(this.matchesCurrentChar(regexIsDigit)) {
+		if(this.matches(regexStartsWithDigit, slice)) {
 			cursor++;
 			while( this.matchesCurrentChar(regexIsNumericalChar) ) {
 				cursor++;
 			}
-			return new QueryToken(CFWQueryTokenType.LITERAL_NUMBER, createTokenValue(startPos, cursor));
+			return createToken(CFWQueryTokenType.LITERAL_NUMBER, startPos, cursor);
 		}
 		
 		//-----------------------------------
-		// OPERATOR_SPLIT
+		// SPLIT
 		if(regexIsSplit != null && this.matchesCurrentChar(regexIsSplit)) {
 			cursor++;
 			while(this.matchesCurrentChar(regexIsSplit)) {
 				cursor++;
 			}
 			
-			return new QueryToken(CFWQueryTokenType.OPERATOR_SPLIT, createTokenValue(startPos, cursor));
+			return createToken(CFWQueryTokenType.SPLIT, startPos, cursor);
+		}
+		
+		//-----------------------------------
+		// SIGNS AND OPERATORS
+		switch(base.charAt(cursor)) {
+			case '=':	return createToken(CFWQueryTokenType.OPERATOR_EQUAL, startPos, cursor);
+			case ',':	return createToken(CFWQueryTokenType.SIGN_COMMA, startPos, cursor); 
+			case '(':	return createToken(CFWQueryTokenType.SIGN_BRACE_OPEN, startPos, cursor);
+			case ')':	return createToken(CFWQueryTokenType.SIGN_BRACE_CLOSE, startPos, cursor);
+			case '+':	return createToken(CFWQueryTokenType.OPERATOR_PLUS, startPos, cursor);
+			case '-':	return createToken(CFWQueryTokenType.OPERATOR_MINUS, startPos, cursor);
+			case '*':	return createToken(CFWQueryTokenType.OPERATOR_MULTIPLY, startPos, cursor);
+			case '/':	return createToken(CFWQueryTokenType.OPERATOR_DIVIDE, startPos, cursor);
+			case '!':	return createToken(CFWQueryTokenType.OPERATOR_NOT, startPos, cursor); 
+			case '&':	return createToken(CFWQueryTokenType.OPERATOR_AND, startPos, cursor);
+			case '|':	return createToken(CFWQueryTokenType.OPERATOR_OR, startPos, cursor);
+			case '>':	
+				System.out.println("startPos:"+startPos);
+				System.out.println("cursor:"+(cursor+1));
+				System.out.println("length:"+base.length());
+						return createToken(CFWQueryTokenType.OPERATOR_GREATERTHEN, startPos, cursor);
+			case '<':	return createToken(CFWQueryTokenType.OPERATOR_LOWERTHEN, startPos, cursor);
+			
+		}
+		
+		//-----------------------------------
+		// KEYWORD
+		if( !keywordList.isEmpty() ) {
+			
+			String keywordSlice = slice; 
+			if(!keywordsCaseSensitive) { keywordSlice = keywordSlice.toLowerCase(); }
+			
+			for(String keyword : keywordList) {
+				if(keywordSlice.startsWith(keyword)) {
+					cursor += keyword.length();
+					return createToken(CFWQueryTokenType.KEYWORD, startPos, cursor);
+				}
+			}	
 		}
 		
 		//-----------------------------------
@@ -162,8 +243,7 @@ public class CFWQueryTokenizer {
 			while(this.matchesCurrentChar(regexIsWordChar)) {
 				cursor++;
 			}
-			
-			return new QueryToken(CFWQueryTokenType.LITERAL_STRING, createTokenValue(startPos, cursor));
+			return createToken(CFWQueryTokenType.LITERAL_STRING, startPos, cursor);
 		}
 		
 		//-----------------------------------
@@ -171,7 +251,10 @@ public class CFWQueryTokenizer {
 		if( base.charAt(cursor) == '"' ) {
 			if(!isCurrentCharEscaped()) {
 				this.advancetoQuotedTextEndPosition('"');	
-				return new QueryToken(CFWQueryTokenType.TEXT_DOUBLE_QUOTES, base.substring(startPos+1, cursor-1));
+				
+				// do nut use createToken(), will not work if quoted text is at the end of the string
+				String textValue = base.substring(startPos+1, cursor-1);
+				return new QueryToken(CFWQueryTokenType.TEXT_DOUBLE_QUOTES, textValue, startPos);
 			}
 		}
 		
@@ -180,20 +263,23 @@ public class CFWQueryTokenizer {
 		if( base.charAt(cursor) == '\'' ) {
 			if(!isCurrentCharEscaped()) {
 				this.advancetoQuotedTextEndPosition('\'');	
-				return new QueryToken(CFWQueryTokenType.TEXT_SINGLE_QUOTES, base.substring(startPos+1, cursor-1));
+				
+				// do nut use createToken(), will not work if quoted text is at the end of the string
+				String textValue = base.substring(startPos+1, cursor-1);
+				return new QueryToken(CFWQueryTokenType.TEXT_SINGLE_QUOTES, textValue, startPos);
 			}
 		}
 		
 		//-----------------------------------
-		// Ignore Everything else
+		// UNKNOWN
 		cursor++;
-		return null;
+		return createToken(CFWQueryTokenType.UNKNOWN, startPos+1, cursor-1);
 		
 	}
 	
 	
 	private boolean isEOF() {
-		return cursor >= base.length()-1;
+		return cursor >= base.length();
 	}
 		
 	private String currentChar(){
@@ -209,16 +295,36 @@ public class CFWQueryTokenizer {
 	
 	
 	private boolean matchesCurrentChar(Pattern pattern){
-		return pattern.matcher(this.currentChar()).matches();
+		return matches(pattern, this.currentChar());
+	}
+	
+	private boolean matches(Pattern pattern, String string){
+		return pattern.matcher(string).matches();
 	}
 	
 
-	private String createTokenValue(int startPos, int endPos) {
-		if(endPos < base.length()-1) {
-			return base.substring(startPos, endPos);
+	/***********************************************************************************************
+	 * Creates the token for the currently parsing positions.
+	 ***********************************************************************************************/
+	private QueryToken createToken(CFWQueryTokenType type, int startPos, int endPos) {
+		
+		String tokenValue;
+		if(startPos == endPos){
+			//----------------------------------------
+			// Extract Single Char and advance Cursor
+			tokenValue = ""+base.charAt(startPos);
+			cursor++;
+		}else if(endPos < base.length()-1) {
+			//----------------------------------------
+			// Extract Multiple Chars, endPos not at EOF
+			tokenValue = base.substring(startPos, endPos);
 		}else {
-			return base.substring(startPos);
+			//----------------------------------------
+			// Extract Multiple Chars, endPos at EOF
+			tokenValue = base.substring(startPos);
 		}
+		
+		return new QueryToken(type, tokenValue, startPos);
 		
 	}
 		
@@ -251,7 +357,7 @@ public class CFWQueryTokenizer {
 	private boolean isCurrentCharEscaped() {
 		int backslashCount = 0;
 		int tempPos = cursor-1; 
-		while(base.charAt(tempPos) == '\\') {
+		while( tempPos >= 0 && base.charAt(tempPos) == '\\') {
 			backslashCount++;
 			tempPos--;
 		}
