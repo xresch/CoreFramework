@@ -200,6 +200,11 @@ public class CFWQueryTokenizer {
 		
 		//-----------------------------------
 		// SIGNS AND OPERATORS
+		
+		if(slice.startsWith("!=")) { 	  cursor+=2; return createToken(CFWQueryTokenType.OPERATOR_EQUAL_NOT, startPos, cursor); }
+		else if(slice.startsWith("<=")) { cursor+=2; return createToken(CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, startPos, cursor); } 
+		else if(slice.startsWith(">=")) { cursor+=2; return createToken(CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, startPos, cursor); } 
+		
 		switch(base.charAt(cursor)) {
 			case '=':	return createToken(CFWQueryTokenType.OPERATOR_EQUAL, startPos, cursor);
 			case ',':	return createToken(CFWQueryTokenType.SIGN_COMMA, startPos, cursor); 
@@ -222,7 +227,7 @@ public class CFWQueryTokenizer {
 		}
 		
 		//-----------------------------------
-		// KEYWORD
+		// KEYWORDS
 		if( !keywordList.isEmpty() ) {
 			
 			String keywordSlice = slice; 
@@ -235,6 +240,19 @@ public class CFWQueryTokenizer {
 				}
 			}	
 		}
+		
+		//-----------------------------------
+		// LITERAL_BOOLEAN
+		if(slice.startsWith("true")) {
+			cursor+=4;
+			return createToken(CFWQueryTokenType.LITERAL_BOOLEAN, startPos, cursor);
+		}
+		
+		if(slice.startsWith("false")) {
+			cursor+=5;
+			return createToken(CFWQueryTokenType.LITERAL_BOOLEAN, startPos, cursor);
+		}
+		
 		
 		//-----------------------------------
 		// LITERAL_STRING

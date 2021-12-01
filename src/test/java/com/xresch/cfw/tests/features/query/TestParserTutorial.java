@@ -21,28 +21,34 @@ public class TestParserTutorial {
 	public void testTokenizerBasics() throws IOException {
 		
 
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" hello \"double quotes\" 'single quotes' 423 -33.431 '42' ", true);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" hello \"double quotes\" 'single quotes' 423 -33.431 true '42' false ", true);
 		
 		ArrayList<QueryToken> results = tokenizer.getAllTokens();
 		printResults("Basic Test", results);
 		
-		Assertions.assertEquals(results.get(0).type(), CFWQueryTokenType.LITERAL_STRING);
-		Assertions.assertEquals(results.get(0).value(), "hello");
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_STRING, 		results.get(0).type());
+		Assertions.assertEquals("hello", 								results.get(0).value());
 		
-		Assertions.assertEquals(results.get(1).type(), CFWQueryTokenType.TEXT_DOUBLE_QUOTES);
-		Assertions.assertEquals(results.get(1).value(), "double quotes");
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_DOUBLE_QUOTES, 	results.get(1).type());
+		Assertions.assertEquals("double quotes", 						results.get(1).value());
 		
-		Assertions.assertEquals(results.get(2).type(), CFWQueryTokenType.TEXT_SINGLE_QUOTES);
-		Assertions.assertEquals(results.get(2).value(), "single quotes");
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_SINGLE_QUOTES, 	results.get(2).type());
+		Assertions.assertEquals("single quotes",						results.get(2).value());
 		
-		Assertions.assertEquals(results.get(3).type(), CFWQueryTokenType.LITERAL_NUMBER);
-		Assertions.assertEquals(results.get(3).value(), "423");
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(3).type());
+		Assertions.assertEquals("423", 									results.get(3).value());
 		
-		Assertions.assertEquals(results.get(4).type(), CFWQueryTokenType.LITERAL_NUMBER);
-		Assertions.assertEquals(results.get(4).value(), "-33.431");
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER,		results.get(4).type());
+		Assertions.assertEquals("-33.431", 								results.get(4).value());
 		
-		Assertions.assertEquals(results.get(5).type(), CFWQueryTokenType.TEXT_SINGLE_QUOTES);
-		Assertions.assertEquals(results.get(5).value(), "42");
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_BOOLEAN, 		results.get(5).type());
+		Assertions.assertEquals("true", 								results.get(5).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_SINGLE_QUOTES, 	results.get(6).type());
+		Assertions.assertEquals("42", 									results.get(6).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_BOOLEAN, 		results.get(7).type());
+		Assertions.assertEquals("false", 								results.get(7).value());
 		
 	}
 	
@@ -160,7 +166,7 @@ public class TestParserTutorial {
 	@Test
 	public void testTokenizerSignsAndOperators() throws IOException {
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(", () +- */ ! &| <>=", false);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(", () +- */ ! &| <> = != <= >=", false);
 		
 		ArrayList<QueryToken> results = tokenizer.getAllTokens();
 		printResults("Keywords Case Insensitive Test", results);
@@ -203,6 +209,15 @@ public class TestParserTutorial {
 		
 		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL, 		results.get(12).type());
 		Assertions.assertEquals("=", 									results.get(12).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_NOT, 	results.get(13).type());
+		Assertions.assertEquals("!=", 									results.get(13).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, results.get(14).type());
+		Assertions.assertEquals("<=", 									results.get(14).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, 	results.get(15).type());
+		Assertions.assertEquals(">=", 									results.get(15).value());
 
 	}
 	
