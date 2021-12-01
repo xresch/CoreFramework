@@ -90,7 +90,7 @@ public class TestParserTutorial {
 	@Test
 	public void testTokenizerKeywordsCaseSensitive() throws IOException {
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" \"my string\" AND 'another string' OR identifier NOT 42 and", true)
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" \"my string\" AND 'another string' OR identifier_A NOT 42 and", true)
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<QueryToken> results = tokenizer.getAllTokens();
@@ -109,7 +109,7 @@ public class TestParserTutorial {
 		Assertions.assertEquals("OR", 									results.get(3).value());
 		
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_STRING, 		results.get(4).type());
-		Assertions.assertEquals("identifier", 							results.get(4).value());
+		Assertions.assertEquals("identifier_A", 							results.get(4).value());
 		
 		Assertions.assertEquals(CFWQueryTokenType.KEYWORD, 				results.get(5).type());
 		Assertions.assertEquals("NOT", 									results.get(5).value());
