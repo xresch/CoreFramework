@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.xresch.cfw.features.query.CFWToken;
-import com.xresch.cfw.features.query.QuoteSensitiveTokenizer;
+import com.xresch.cfw.features.query.old.CFWToken;
+import com.xresch.cfw.features.query.old.QuoteSensitiveTokenizer;
 
 public class ParserTest {
 	

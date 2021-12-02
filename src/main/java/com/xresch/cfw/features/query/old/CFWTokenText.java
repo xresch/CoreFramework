@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.query;
+package com.xresch.cfw.features.query.old;
 
 public class CFWTokenText extends CFWToken {
 

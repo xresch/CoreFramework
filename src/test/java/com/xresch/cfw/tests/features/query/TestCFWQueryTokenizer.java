@@ -7,12 +7,21 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.query.tutorial.CFWQueryTokenizer;
-import com.xresch.cfw.features.query.tutorial.CFWQueryTokenizer.QueryToken;
-import com.xresch.cfw.features.query.tutorial.CFWQueryTokenizer.CFWQueryTokenType;
+import com.xresch.cfw.features.query.CFWQueryToken;
+import com.xresch.cfw.features.query.CFWQueryToken.CFWQueryTokenType;
+import com.xresch.cfw.features.query.CFWQueryTokenizer;
 
-public class TestParserTutorial {
+public class TestCFWQueryTokenizer {
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	private void printResults(String title, ArrayList<CFWQueryToken> results) {
+		System.out.println("\n======================= "+title+" =======================");
+		for(CFWQueryToken token : results) {
+			System.out.println(CFW.JSON.toJSON(token));
+		}
+	}
 	
 	/****************************************************************
 	 * 
@@ -21,9 +30,9 @@ public class TestParserTutorial {
 	public void testTokenizerBasics() throws IOException {
 		
 
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" hello \"double quotes\" 'single quotes' 423 -33.431 true '42' false ", true);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" hello \"double quotes\" 'single quotes' 423 -33.431 true '42' false null ", true);
 		
-		ArrayList<QueryToken> results = tokenizer.getAllTokens();
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("Basic Test", results);
 		
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_STRING, 		results.get(0).type());
@@ -50,6 +59,8 @@ public class TestParserTutorial {
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_BOOLEAN, 		results.get(7).type());
 		Assertions.assertEquals("false", 								results.get(7).value());
 		
+		Assertions.assertEquals(CFWQueryTokenType.NULL, 				results.get(8).type());
+		Assertions.assertEquals("null", 								results.get(8).value());
 	}
 	
 	/****************************************************************
@@ -61,7 +72,7 @@ public class TestParserTutorial {
 		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer("001 | part ABC | \"double quotes\" ", true)
 				 .splitBy("[\\|]");
 		
-		ArrayList<QueryToken> results = tokenizer.getAllTokens();
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("Split Test", results);
 		
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(0).type());
@@ -93,7 +104,7 @@ public class TestParserTutorial {
 		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" \"my string\" AND 'another string' OR identifier_A NOT 42 and", true)
 				 .keywords("AND", "OR", "NOT");
 		
-		ArrayList<QueryToken> results = tokenizer.getAllTokens();
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("Keywords Case Sensitive Test", results);
 		
 		Assertions.assertEquals(CFWQueryTokenType.TEXT_DOUBLE_QUOTES, 	results.get(0).type());
@@ -131,7 +142,7 @@ public class TestParserTutorial {
 		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" \"my string\" and 'another string' OR identifier NOT 42 and", false)
 				 .keywords("AND", "or", "NOT");
 		
-		ArrayList<QueryToken> results = tokenizer.getAllTokens();
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("Keywords Case Insensitive Test", results);
 		
 		Assertions.assertEquals(CFWQueryTokenType.TEXT_DOUBLE_QUOTES, 	results.get(0).type());
@@ -166,9 +177,9 @@ public class TestParserTutorial {
 	@Test
 	public void testTokenizerSignsAndOperators() throws IOException {
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(", () +- */ ! &| <> = != <= >=", false);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(", () +- */ ! &| <> = != <= >= .", false);
 		
-		ArrayList<QueryToken> results = tokenizer.getAllTokens();
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("Keywords Case Insensitive Test", results);
 		
 		Assertions.assertEquals(CFWQueryTokenType.SIGN_COMMA, 			results.get(0).type());
@@ -219,17 +230,9 @@ public class TestParserTutorial {
 		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, 	results.get(15).type());
 		Assertions.assertEquals(">=", 									results.get(15).value());
 
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_DOT, 		results.get(16).type());
+		Assertions.assertEquals(".", 									results.get(16).value());
 	}
 	
 	
-	/****************************************************************
-	 * 
-	 ****************************************************************/
-	private void printResults(String title, ArrayList<QueryToken> results) {
-		System.out.println("======================= "+title+" =======================");
-		for(QueryToken token : results) {
-			System.out.println(CFW.JSON.toJSON(token));
-		}
-	}
-
 }

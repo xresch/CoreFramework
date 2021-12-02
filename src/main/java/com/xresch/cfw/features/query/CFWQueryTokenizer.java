@@ -1,11 +1,7 @@
-package com.xresch.cfw.features.query.tutorial;
+package com.xresch.cfw.features.query;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
-
-import com.xresch.cfw.features.query.CFWTokenText;
 
 public class CFWQueryTokenizer {
 	
@@ -31,69 +27,6 @@ public class CFWQueryTokenizer {
 	private boolean keywordsCaseSensitive = true;
 	private ArrayList<String> keywordList = new ArrayList<>();
 	
-	/*******************************************************
-	 * Enumeration of Token Types
-	 *******************************************************/
-	public enum CFWQueryTokenType {
-		LITERAL_NUMBER
-	  , LITERAL_BOOLEAN
-	  , LITERAL_STRING
-	  
-	  , /** Type for single quoted text  */
-	    TEXT_SINGLE_QUOTES
-	  , /** Type for double quoted text  */
-	  	TEXT_DOUBLE_QUOTES
-	  
-	  , /** Type for matched split expressions defined by calling method CFWQueryTokenizer.splitBy()  */
-	    SPLIT
-	  
-	  , /** The character '=' */ OPERATOR_EQUAL
-	  , /** The characters ">=" */ OPERATOR_EQUAL_OR_GREATER
-	  , /** The characters "<=" */ OPERATOR_EQUAL_OR_LOWER
-	  , /** The characters "!=" */ OPERATOR_EQUAL_NOT
-	  , /** The character '>' */ OPERATOR_GREATERTHEN
-	  , /** The character '<' */ OPERATOR_LOWERTHEN
-		  
-	  , /** The character ',' */ SIGN_COMMA
-	  , /** The character '(' */ SIGN_BRACE_OPEN
-	  , /** The character ')' */ SIGN_BRACE_CLOSE
-		
-	  , /** The character '+' */ OPERATOR_PLUS
-	  , /** The character '-' */ OPERATOR_MINUS
-	  , /** The character '*' */ OPERATOR_MULTIPLY
-	  , /** The character '/' */ OPERATOR_DIVIDE
-	  , /** The character '&' */ OPERATOR_AND
-	  , /** The character '|' */ OPERATOR_OR
-	  , /** The character '!' */ OPERATOR_NOT
-	  
-	  , /** Applied to any keyword defined with the method CFWQueryTokenizer.keywords() */
-	    KEYWORD
-	  , /** Applied to any unexpected character */
-	    UNKNOWN
-	  
-	}
-	
-	/*******************************************************
-	 * Simple class holding token and token type.
-	 *******************************************************/
-	public class QueryToken{
-		private CFWQueryTokenType type = null;
-		private String value = "";
-		private int position = 0;
-		
-		public QueryToken(CFWQueryTokenType type, String value, int position){
-			this.type = type;
-			this.value = value;
-			this.position = position;
-		}
-		
-		public CFWQueryTokenType type() { return this.type;}
-		public int position() { return this.position;}
-		public String value() { return this.value;}
-		public BigDecimal valueAsNumber() { return new BigDecimal(this.value);}
-	}
-	
-		
 	/***********************************************************************************************
 	 * El Grande Constructore
 	 * @param keywordsCaseSensitive TODO
@@ -146,8 +79,8 @@ public class CFWQueryTokenizer {
 	 * Parse and return all the tokens as a list.
 	 * 
 	 ***********************************************************************************************/
-	public ArrayList<QueryToken> getAllTokens(){
-		ArrayList<QueryToken> tokenList = new ArrayList<>();
+	public ArrayList<CFWQueryToken> getAllTokens(){
+		ArrayList<CFWQueryToken> tokenList = new ArrayList<>();
 		
 		while(this.hasMoreTokens()) {
 			tokenList.add(getNextToken());
@@ -161,7 +94,7 @@ public class CFWQueryTokenizer {
 	 * Parse and return the next token.
 	 * 
 	 ***********************************************************************************************/
-	public QueryToken getNextToken() {
+	public CFWQueryToken getNextToken() {
 		//-----------------------------------
 		// Skip Whitespaces
 		while(this.hasMoreTokens() && this.matchesCurrentChar(regexIsWhitespace)) {
@@ -184,7 +117,7 @@ public class CFWQueryTokenizer {
 			while( this.matchesCurrentChar(regexIsNumericalChar) ) {
 				cursor++;
 			}
-			return createToken(CFWQueryTokenType.LITERAL_NUMBER, startPos, cursor);
+			return createToken(CFWQueryToken.CFWQueryTokenType.LITERAL_NUMBER, startPos, cursor);
 		}
 		
 		//-----------------------------------
@@ -195,35 +128,39 @@ public class CFWQueryTokenizer {
 				cursor++;
 			}
 			
-			return createToken(CFWQueryTokenType.SPLIT, startPos, cursor);
+			return createToken(CFWQueryToken.CFWQueryTokenType.SPLIT, startPos, cursor);
 		}
 		
 		//-----------------------------------
 		// SIGNS AND OPERATORS
 		
-		if(slice.startsWith("!=")) { 	  cursor+=2; return createToken(CFWQueryTokenType.OPERATOR_EQUAL_NOT, startPos, cursor); }
-		else if(slice.startsWith("<=")) { cursor+=2; return createToken(CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, startPos, cursor); } 
-		else if(slice.startsWith(">=")) { cursor+=2; return createToken(CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, startPos, cursor); } 
+		if(slice.startsWith("!=")) { 	  cursor+=2; return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL_NOT, startPos, cursor); }
+		else if(slice.startsWith("<=")) { cursor+=2; return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, startPos, cursor); } 
+		else if(slice.startsWith(">=")) { cursor+=2; return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, startPos, cursor); } 
 		
 		switch(base.charAt(cursor)) {
-			case '=':	return createToken(CFWQueryTokenType.OPERATOR_EQUAL, startPos, cursor);
-			case ',':	return createToken(CFWQueryTokenType.SIGN_COMMA, startPos, cursor); 
-			case '(':	return createToken(CFWQueryTokenType.SIGN_BRACE_OPEN, startPos, cursor);
-			case ')':	return createToken(CFWQueryTokenType.SIGN_BRACE_CLOSE, startPos, cursor);
-			case '+':	return createToken(CFWQueryTokenType.OPERATOR_PLUS, startPos, cursor);
-			case '-':	return createToken(CFWQueryTokenType.OPERATOR_MINUS, startPos, cursor);
-			case '*':	return createToken(CFWQueryTokenType.OPERATOR_MULTIPLY, startPos, cursor);
-			case '/':	return createToken(CFWQueryTokenType.OPERATOR_DIVIDE, startPos, cursor);
-			case '!':	return createToken(CFWQueryTokenType.OPERATOR_NOT, startPos, cursor); 
-			case '&':	return createToken(CFWQueryTokenType.OPERATOR_AND, startPos, cursor);
-			case '|':	return createToken(CFWQueryTokenType.OPERATOR_OR, startPos, cursor);
-			case '>':	
-				System.out.println("startPos:"+startPos);
-				System.out.println("cursor:"+(cursor+1));
-				System.out.println("length:"+base.length());
-						return createToken(CFWQueryTokenType.OPERATOR_GREATERTHEN, startPos, cursor);
-			case '<':	return createToken(CFWQueryTokenType.OPERATOR_LOWERTHEN, startPos, cursor);
+			case '=':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL, startPos, cursor);
+			case ',':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_COMMA, startPos, cursor); 
+			case '(':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_BRACE_OPEN, startPos, cursor);
+			case ')':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_BRACE_CLOSE, startPos, cursor);
+			case '+':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_PLUS, startPos, cursor);
+			case '-':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_MINUS, startPos, cursor);
+			case '*':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_MULTIPLY, startPos, cursor);
+			case '/':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_DIVIDE, startPos, cursor);
+			case '!':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_NOT, startPos, cursor); 
+			case '.':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_DOT, startPos, cursor); 
+			case '&':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_AND, startPos, cursor);
+			case '|':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_OR, startPos, cursor);
+			case '>':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_GREATERTHEN, startPos, cursor);
+			case '<':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_LOWERTHEN, startPos, cursor);
 			
+		}
+		
+		//-----------------------------------
+		// NULL
+		if(slice.startsWith("null")) {
+			cursor+=4;
+			return createToken(CFWQueryToken.CFWQueryTokenType.NULL, startPos, cursor);
 		}
 		
 		//-----------------------------------
@@ -236,7 +173,7 @@ public class CFWQueryTokenizer {
 			for(String keyword : keywordList) {
 				if(keywordSlice.startsWith(keyword)) {
 					cursor += keyword.length();
-					return createToken(CFWQueryTokenType.KEYWORD, startPos, cursor);
+					return createToken(CFWQueryToken.CFWQueryTokenType.KEYWORD, startPos, cursor);
 				}
 			}	
 		}
@@ -245,12 +182,12 @@ public class CFWQueryTokenizer {
 		// LITERAL_BOOLEAN
 		if(slice.startsWith("true")) {
 			cursor+=4;
-			return createToken(CFWQueryTokenType.LITERAL_BOOLEAN, startPos, cursor);
+			return createToken(CFWQueryToken.CFWQueryTokenType.LITERAL_BOOLEAN, startPos, cursor);
 		}
 		
 		if(slice.startsWith("false")) {
 			cursor+=5;
-			return createToken(CFWQueryTokenType.LITERAL_BOOLEAN, startPos, cursor);
+			return createToken(CFWQueryToken.CFWQueryTokenType.LITERAL_BOOLEAN, startPos, cursor);
 		}
 		
 		
@@ -261,7 +198,7 @@ public class CFWQueryTokenizer {
 			while(this.matchesCurrentChar(regexIsWordChar)) {
 				cursor++;
 			}
-			return createToken(CFWQueryTokenType.LITERAL_STRING, startPos, cursor);
+			return createToken(CFWQueryToken.CFWQueryTokenType.LITERAL_STRING, startPos, cursor);
 		}
 		
 		//-----------------------------------
@@ -272,7 +209,7 @@ public class CFWQueryTokenizer {
 				
 				// do nut use createToken(), will not work if quoted text is at the end of the string
 				String textValue = base.substring(startPos+1, cursor-1);
-				return new QueryToken(CFWQueryTokenType.TEXT_DOUBLE_QUOTES, textValue, startPos);
+				return new CFWQueryToken(CFWQueryToken.CFWQueryTokenType.TEXT_DOUBLE_QUOTES, textValue, startPos);
 			}
 		}
 		
@@ -284,14 +221,14 @@ public class CFWQueryTokenizer {
 				
 				// do nut use createToken(), will not work if quoted text is at the end of the string
 				String textValue = base.substring(startPos+1, cursor-1);
-				return new QueryToken(CFWQueryTokenType.TEXT_SINGLE_QUOTES, textValue, startPos);
+				return new CFWQueryToken(CFWQueryToken.CFWQueryTokenType.TEXT_SINGLE_QUOTES, textValue, startPos);
 			}
 		}
 		
 		//-----------------------------------
 		// UNKNOWN
 		cursor++;
-		return createToken(CFWQueryTokenType.UNKNOWN, startPos+1, cursor-1);
+		return createToken(CFWQueryToken.CFWQueryTokenType.UNKNOWN, startPos+1, cursor-1);
 		
 	}
 	
@@ -324,7 +261,7 @@ public class CFWQueryTokenizer {
 	/***********************************************************************************************
 	 * Creates the token for the currently parsing positions.
 	 ***********************************************************************************************/
-	private QueryToken createToken(CFWQueryTokenType type, int startPos, int endPos) {
+	private CFWQueryToken createToken(CFWQueryToken.CFWQueryTokenType type, int startPos, int endPos) {
 		
 		String tokenValue;
 		if(startPos == endPos){
@@ -342,7 +279,7 @@ public class CFWQueryTokenizer {
 			tokenValue = base.substring(startPos);
 		}
 		
-		return new QueryToken(type, tokenValue, startPos);
+		return new CFWQueryToken(type, tokenValue, startPos);
 		
 	}
 		
@@ -386,6 +323,8 @@ public class CFWQueryTokenizer {
 		
 		return true;
 	}
+	
+	
 	
 
 }
