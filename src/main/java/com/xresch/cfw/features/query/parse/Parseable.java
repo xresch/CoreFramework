@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.query;
+package com.xresch.cfw.features.query.parse;
 
 import java.text.ParseException;
 import java.util.ArrayList;

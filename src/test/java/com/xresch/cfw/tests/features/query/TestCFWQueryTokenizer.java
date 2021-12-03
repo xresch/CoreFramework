@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.query.CFWQueryToken;
-import com.xresch.cfw.features.query.CFWQueryToken.CFWQueryTokenType;
-import com.xresch.cfw.features.query.CFWQueryTokenizer;
+import com.xresch.cfw.features.query.parse.CFWQueryToken;
+import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
+import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 
 public class TestCFWQueryTokenizer {
 	

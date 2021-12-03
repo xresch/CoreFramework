@@ -1,7 +1,10 @@
-package com.xresch.cfw.features.query;
+package com.xresch.cfw.features.query.parse;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+
+import com.xresch.cfw.features.query.CFWQuery;
+import com.xresch.cfw.features.query.CFWQueryCommand;
 
 /**************************************************************************************************************
  * 
@@ -95,17 +98,59 @@ public class CFWQueryParserContext {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryRoot parse() throws ParseException {
+	public CFWQuery parse() throws ParseException {
 		
 		tokenlist = new CFWQueryTokenizer(this.query, false)
 			.keywords("AND", "OR", "NOT")
 			.getAllTokens();
 		
-		CFWQueryRoot query = new CFWQueryRoot();
-		query.parse(this);
+		CFWQuery query = new CFWQuery();
+
+		while(this.hasMoreTokens()) {
+			
+			query.addCommand(parseQueryCommand());
+
+		}
+		
 		
 		return query;
 	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryCommand parseQueryCommand() throws ParseException {
+		
+		//------------------------------------
+		// Check Has More Tokens
+		if(!this.hasMoreTokens()) {
+			this.throwParseException("Query cannot end with a pipe symbol", 0);
+		}
+		
+		//------------------------------------
+		// Expect LITERAL_STRING
+		// Command Name
+
+		if(this.lookahead().isString()) {
+			
+			//------------------------------------
+			// Get Command
+			CFWQueryToken commandNameToken = this.consumeToken();
+			
+			//------------------------------------
+			// Registry Check exists
+			CFWQueryCommand command = 
+			
+			
+		}else {
+			this.throwParseException("Expected command name.", 0);
+		}
+		
+	}
+		
+	
+	
+	
 	
 	/***********************************************************************************************
 	 * Create parse exception for a token.

@@ -9,26 +9,16 @@ import java.util.ArrayList;
  * @author Reto Scheiwiller, (c) Copyright 2021 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWQueryRoot implements Parseable{
+public class CFWQuery {
 	
-	ArrayList<QueryPartCommand> commandList = new ArrayList<>();
+	ArrayList<CFWQueryCommand> commandList = new ArrayList<>();
 
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	@Override
-	public void parse(CFWQueryParserContext context) throws ParseException {
+	public void addCommand(CFWQueryCommand command){
 		
-		//<commandName> (<LITERAL>|<KEYWORD>|<EXPRESSION>)+		
-		
-		while(context.hasMoreTokens()) {
-			CFWQueryToken token = context.consumeToken();
-			
-			QueryPartCommand command = new QueryPartCommand();
-			commandList.add(command);
-			
-			command.parse(context);
-		}
+		commandList.add(command);
 		
 	}
 
