@@ -20,7 +20,7 @@ public class QueryPartCommand implements Evaluatable, Parseable{
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public CFWQueryValue evaluate(ArrayList<LinkedHashMap<String, Object>> objectlist, Object... params) {
+	public QueryPartValue evaluate(ArrayList<LinkedHashMap<String, Object>> objectlist, Object... params) {
 
 		return null;
 		

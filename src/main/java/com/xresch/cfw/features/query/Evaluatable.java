@@ -5,6 +5,6 @@ import java.util.LinkedHashMap;
 
 public interface Evaluatable {
 	
-	public CFWQueryValue evaluate(ArrayList< LinkedHashMap<String, Object> > objectlist, Object... params);
+	public QueryPartValue evaluate(ArrayList< LinkedHashMap<String, Object> > objectlist, Object... params);
 
 }
