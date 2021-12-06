@@ -3,7 +3,7 @@ package com.xresch.cfw.features.query.parse;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
-public class QueryPartAssignment<T> extends QueryPart {
+public class QueryPartAssignment extends QueryPart {
 	
 	private String leftside;
 	private QueryPart value = null;
@@ -32,7 +32,6 @@ public class QueryPartAssignment<T> extends QueryPart {
 	 ******************************************************************************************************/
 	@Override
 	public QueryPartValue determineValue() {
-		// TODO Auto-generated method stub
 		return value.determineValue();
 	}
 	

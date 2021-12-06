@@ -21,7 +21,7 @@ import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2021
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWObject {
@@ -42,8 +42,6 @@ public class CFWObject {
 	protected ArrayList<String> fulltextSearchColumns = null;
 	protected CFWField<Integer> primaryField = null;
 	private ArrayList<ForeignKeyDefinition> foreignKeys = new ArrayList<ForeignKeyDefinition>();
-	
-
 	
 	public class ForeignKeyDefinition{
 		
@@ -68,6 +66,7 @@ public class CFWObject {
 
 	/****************************************************************
 	 * Maps the JSON fields to this objects fields by name.
+	 * Validates the fields and returns true if all are valid.
 	 * If the string is null or empty it will return true.
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
@@ -81,7 +80,10 @@ public class CFWObject {
 	}
 	
 	/****************************************************************
-	 * 
+	 * Maps the JSON fields to this objects fields by name.
+	 * Validates the fields and returns true if all are valid.
+	 * If the string is null or empty it will return true.
+	 * @return true if successful, false otherwise.
 	 ****************************************************************/
 	public boolean mapJsonFields(JsonElement element) {
 		if(!element.isJsonObject()) {

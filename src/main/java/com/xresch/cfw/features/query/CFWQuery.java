@@ -1,7 +1,9 @@
 package com.xresch.cfw.features.query;
 
-import java.text.ParseException;
 import java.util.ArrayList;
+
+import com.google.gson.JsonObject;
+import com.xresch.cfw.pipeline.Pipeline;
 /**************************************************************************************************************
  * 
  * <CFWQuery> ::= <CFWCommand>+ 
@@ -9,7 +11,7 @@ import java.util.ArrayList;
  * @author Reto Scheiwiller, (c) Copyright 2021 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWQuery {
+public class CFWQuery extends Pipeline<JsonObject, JsonObject>{
 	
 	ArrayList<CFWQueryCommand> commandList = new ArrayList<>();
 

@@ -32,7 +32,7 @@ import com.xresch.cfw.features.query.CFWQueryCommand;
  * @author Reto Scheiwiller, (c) Copyright 2021 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWQueryParserContext {
+public class CFWQueryParser {
 	
 	private String query = null;
 	
@@ -42,7 +42,7 @@ public class CFWQueryParserContext {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryParserContext(String inputQuery) {
+	public CFWQueryParser(String inputQuery) {
 		
 		this.query = inputQuery;
 		this.cursor = 0;
@@ -108,7 +108,7 @@ public class CFWQueryParserContext {
 
 		while(this.hasMoreTokens()) {
 			
-			query.addCommand(parseQueryCommand());
+			query.addCommand(parseQueryCommand(query));
 
 		}
 		
@@ -119,7 +119,7 @@ public class CFWQueryParserContext {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommand parseQueryCommand() throws ParseException {
+	public CFWQueryCommand parseQueryCommand(CFWQuery parentQuery) throws ParseException {
 		
 		//------------------------------------
 		// Check Has More Tokens
@@ -139,12 +139,14 @@ public class CFWQueryParserContext {
 			
 			//------------------------------------
 			// Registry Check exists
-			CFWQueryCommand command = 
+			
 			
 			
 		}else {
 			this.throwParseException("Expected command name.", 0);
 		}
+		
+		return null;
 		
 	}
 		
@@ -160,6 +162,15 @@ public class CFWQueryParserContext {
 	public void throwParseException(String message, int tokenOffset) throws ParseException {
 		CFWQueryToken token = this.lookat(tokenOffset);
 		throw new ParseException(message+"(token: '"+token.value()+"', position: "+token.position()+", type: "+token.type()+" )", token.position());
+	}
+	
+	/***********************************************************************************************
+	 * Create parse exception for a token.
+	 * 
+	 * @param tokenOffset 0 is the next token to consume, -1 is the last consumed token.
+	 ***********************************************************************************************/
+	public void throwParseException(String message, QueryPart part) throws ParseException {
+		throw new ParseException(message+"(position: "+part.position()+", type: "+part.getClass().getSimpleName()+" )", part.position());
 	}
 	
 

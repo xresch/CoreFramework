@@ -5,7 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 // http://www.informit.com/articles/article.aspx?p=366887&seqNum=8
 
-abstract class PipelineAction<I, O> extends Thread {
+public abstract class PipelineAction<I, O> extends Thread {
 	
 	protected Object synchLock = new Object();
 	protected Pipeline<O, ?> parent = null;
@@ -14,12 +14,15 @@ abstract class PipelineAction<I, O> extends Thread {
 	
 	protected LinkedBlockingQueue<I> inQueue = new LinkedBlockingQueue<I>();
 	protected LinkedBlockingQueue<O> outQueue;
+	
+	protected PipelineActionContext context;
+	
 	CountDownLatch latch;
 
 	protected boolean done;
 	
 	// override to specify compute step
-	abstract void execute() throws Exception;
+	public abstract void execute(PipelineActionContext context) throws Exception;
 	
 	void initializeAction() throws Exception {}
 
@@ -33,7 +36,7 @@ abstract class PipelineAction<I, O> extends Thread {
 				while (!done) {
 					//---------------------------
 					// Execute
-					this.execute();
+					this.execute(context);
 					
 					//---------------------------
 					// Wake up next action
@@ -140,6 +143,16 @@ abstract class PipelineAction<I, O> extends Thread {
 		this.parent = parent;
 		return this;
 	}
+	
+	public PipelineActionContext getContext() {
+		return context;
+	}
+
+	public PipelineAction<I, O> setContext(PipelineActionContext context) {
+		this.context = context;
+		return this;
+	}
+	
 	
 	
 	

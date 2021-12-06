@@ -1,18 +1,19 @@
 package com.xresch.cfw.features.query;
 
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonObject;
+import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
-import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.pipeline.PipelineAction;
+import com.xresch.cfw.pipeline.PipelineActionContext;
 
-public abstract class CFWQueryCommand extends PipelineAction<JsonObject, JsonObject> {
+public abstract class CFWQuerySource{
 
 	protected CFWQuery parent;
 	
-	public CFWQueryCommand(CFWQuery parent) {
+	public CFWQuerySource(CFWQuery parent) {
 		this.parent = parent;
 	}
 	
@@ -29,12 +30,10 @@ public abstract class CFWQueryCommand extends PipelineAction<JsonObject, JsonObj
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public abstract String syntax();
+	public abstract CFWObject getParameters();
 	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public abstract void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts)  throws ParseException;
+	public abstract void execute(CFWObject parameters, LinkedBlockingQueue<JsonObject> outQueue ) throws Exception;
+	
 	
 	/***********************************************************************************************
 	 * 

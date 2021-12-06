@@ -41,6 +41,8 @@ import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.notifications.CFWDBNotifications;
 import com.xresch.cfw.features.notifications.FeatureNotifications;
 import com.xresch.cfw.features.notifications.Notification;
+import com.xresch.cfw.features.query.CFWQueryRegistry;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.spaces.CFWDBSpace;
 import com.xresch.cfw.features.spaces.CFWDBSpaceGroup;
 import com.xresch.cfw.features.spaces.FeatureSpaces;
@@ -55,7 +57,6 @@ import com.xresch.cfw.features.usermgmt.CFWRegistryAudit;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.logging.SysoutInterceptor;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.schedule.CFWTaskScheduler;
 import com.xresch.cfw.spi.CFWAppFeature;
@@ -145,6 +146,7 @@ public class CFW {
 		public static class Manual extends CFWRegistryManual {} 
 		public static class Objects extends CFWRegistryObjects {} 
 		public static class Parameters extends CFWRegistryDashboardParameters {} 
+		public static class Query extends CFWQueryRegistry {} 
 		public static class Widgets extends CFWRegistryWidgets {} 
 	}
 	public static class Schedule extends CFWTaskScheduler {}
@@ -415,6 +417,7 @@ public class CFW {
 			CFW.Registry.Features.addFeature(FeatureContextSettings.class);	
 		}
 		
+		CFW.Registry.Features.addFeature(FeatureQuery.class);
 		CFW.Registry.Features.addFeature(FeatureAPI.class);	
 		CFW.Registry.Features.addFeature(FeatureSystemAnalytics.class);		
 		CFW.Registry.Features.addFeature(FeatureManual.class);	

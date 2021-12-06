@@ -17,7 +17,7 @@ public class StringProcessingPipeline extends Pipeline<String, String> {
 		
 		this.add(new PipelineAction<String, String>(){
 			@Override
-			void execute() throws Exception {
+			public void execute(PipelineActionContext context) throws Exception {
 
 				while(!inQueue.isEmpty()) {
 					String line = inQueue.poll();
@@ -40,7 +40,7 @@ public class StringProcessingPipeline extends Pipeline<String, String> {
 		
 		this.add(new PipelineAction<String, String>(){
 			@Override
-			void execute() throws Exception {
+			public void execute(PipelineActionContext context) throws Exception {
 
 				while(!inQueue.isEmpty()) {
 					String line = inQueue.poll();
@@ -70,7 +70,7 @@ public class StringProcessingPipeline extends Pipeline<String, String> {
 		this.add(new PipelineAction<String, String>(){
 			int counter = 0;
 			@Override
-			void execute() throws Exception {
+			public void execute(PipelineActionContext context) throws Exception {
 				
 				while(true) {
 					if(previousAction == null || previousAction.isDone()) {
@@ -98,7 +98,7 @@ public class StringProcessingPipeline extends Pipeline<String, String> {
 		
 		this.add(new PipelineAction<String, String>(){
 			@Override
-			void execute() throws Exception {
+			public void execute(PipelineActionContext context) throws Exception {
 
 				while(!inQueue.isEmpty()) {
 					outQueue.add(inQueue.poll().trim());

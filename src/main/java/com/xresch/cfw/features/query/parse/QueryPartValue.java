@@ -3,7 +3,7 @@ package com.xresch.cfw.features.query.parse;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
-public class QueryPartValue<T> extends QueryPart {
+public class QueryPartValue extends QueryPart {
 	
 	private QueryPartValueType type;
 	private Object value = null;
@@ -17,9 +17,7 @@ public class QueryPartValue<T> extends QueryPart {
 		, BOOLEAN
 		, JSON
 	}
-	
-	
-		
+			
 	/******************************************************************************************************
 	 * Private Constructor to enforce correct types.
 	 * 
@@ -32,36 +30,36 @@ public class QueryPartValue<T> extends QueryPart {
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue<Number> newNumber(Number value){
-		return new QueryPartValue<Number>(QueryPartValueType.NUMBER, value);
+	public static QueryPartValue newNumber(Number value){
+		return new QueryPartValue(QueryPartValueType.NUMBER, value);
 	}
 	
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue<String> newString(String value){
-		return new QueryPartValue<String>(QueryPartValueType.STRING, value);
+	public static QueryPartValue newString(String value){
+		return new QueryPartValue(QueryPartValueType.STRING, value);
 	}
 	
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue<Boolean> newBoolean(Boolean value){
-		return new QueryPartValue<Boolean>(QueryPartValueType.BOOLEAN, value);
+	public static QueryPartValue newBoolean(Boolean value){
+		return new QueryPartValue(QueryPartValueType.BOOLEAN, value);
 	}
 	
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue<JsonElement> newJSON(JsonElement value){
-		return new QueryPartValue<JsonElement>(QueryPartValueType.JSON, value);
+	public static QueryPartValue newJson(JsonElement value){
+		return new QueryPartValue(QueryPartValueType.JSON, value);
 	}
 
 	/******************************************************************************************************
 	 * From QueryPart, returns this instance if it is a value.
 	 ******************************************************************************************************/
 	@Override
-	public QueryPartValue<T> determineValue() {
+	public QueryPartValue determineValue() {
 		return this;
 	}
 	
@@ -118,8 +116,8 @@ public class QueryPartValue<T> extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	@SuppressWarnings("unchecked")
-	public T getValue() {
-		return (T)value;
+	public Object getValue() {
+		return value;
 	}
 	
 	

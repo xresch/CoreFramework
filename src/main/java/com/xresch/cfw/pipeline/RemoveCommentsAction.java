@@ -5,7 +5,7 @@ public class RemoveCommentsAction extends PipelineAction<String, String>{
 	private boolean isBlockCommentOpen = false;
 	
 	@Override
-	void execute() throws Exception {
+	public void execute(PipelineActionContext context) throws Exception {
 		boolean isBlockComment = false;
 		while(!inQueue.isEmpty()) {
 			String line = getInQueue().poll();

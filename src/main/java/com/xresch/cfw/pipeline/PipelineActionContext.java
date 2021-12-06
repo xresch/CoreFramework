@@ -1,46 +1,45 @@
-package com.xresch.cfw.features.query;
+package com.xresch.cfw.pipeline;
 
-import java.text.ParseException;
-import java.util.ArrayList;
+import java.util.Properties;
 
-import com.google.gson.JsonObject;
-import com.xresch.cfw.features.query.parse.CFWQueryParser;
-import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.pipeline.PipelineAction;
+public class PipelineActionContext {
 
-public abstract class CFWQueryCommand extends PipelineAction<JsonObject, JsonObject> {
-
-	protected CFWQuery parent;
+	Properties properties = new Properties();
 	
-	public CFWQueryCommand(CFWQuery parent) {
-		this.parent = parent;
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public PipelineActionContext(){
+		
 	}
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public abstract String uniqueName();
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public abstract String shortDescription();
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public abstract String syntax();
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public abstract void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts)  throws ParseException;
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public CFWQuery getParent() {
-		return parent;
+	public PipelineActionContext setProperties(Properties properties) {
+		this.properties = properties;
+		return this;
 	}
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public Properties getProperties() {
+		return properties;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public PipelineActionContext addProperty(Object key, Object value) {
+		this.properties.put(key, value);
+		return this;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public Object getProperty(Object key) {
+		return properties.get(key);
+	}
 }
