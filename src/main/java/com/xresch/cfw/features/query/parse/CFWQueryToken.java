@@ -47,6 +47,7 @@ public class CFWQueryToken{
 	  , /** The character '<' */ OPERATOR_LOWERTHEN
 		  
 	  , /** The character ',' */ SIGN_COMMA
+	  , /** The character ';' */ SIGN_SEMICOLON
 	  , /** The character '(' */ SIGN_BRACE_OPEN
 	  , /** The character ')' */ SIGN_BRACE_CLOSE
 		

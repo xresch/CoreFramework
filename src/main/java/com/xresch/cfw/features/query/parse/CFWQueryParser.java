@@ -3,8 +3,10 @@ package com.xresch.cfw.features.query.parse;
 import java.text.ParseException;
 import java.util.ArrayList;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryCommand;
+import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 
 /**************************************************************************************************************
  * 
@@ -98,22 +100,29 @@ public class CFWQueryParser {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQuery parse() throws ParseException {
+	public ArrayList<CFWQuery> parse() throws ParseException {
 		
 		tokenlist = new CFWQueryTokenizer(this.query, false)
 			.keywords("AND", "OR", "NOT")
 			.getAllTokens();
 		
-		CFWQuery query = new CFWQuery();
-
+		ArrayList<CFWQuery> queryList = new ArrayList<>();
+		
 		while(this.hasMoreTokens()) {
 			
-			query.addCommand(parseQueryCommand(query));
+			CFWQuery query = new CFWQuery();
+
+			while(this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
+				query.addCommand(parseQueryCommand(query));
+			}
+			
+			if(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.SIGN_SEMICOLON) {
+				this.consumeToken();
+			}
 
 		}
 		
-		
-		return query;
+		return queryList;
 	}
 	
 	/***********************************************************************************************
@@ -136,11 +145,25 @@ public class CFWQueryParser {
 			//------------------------------------
 			// Get Command
 			CFWQueryToken commandNameToken = this.consumeToken();
+			String commandName = commandNameToken.value();
 			
 			//------------------------------------
 			// Registry Check exists
+			if(CFW.Registry.Query.commandExists(commandName)) {
+				
+			}else {
+				this.throwParseException("Unknown command '"+commandName+"'.", 0);
+			}
 			
+			//------------------------------------
+			// ParsePartsUntil End of Command '|'
+			ArrayList<QueryPart> parts = parseQueryPartsUntil(CFWQueryTokenType.OPERATOR_OR);
 			
+			//------------------------------------
+			// Create Command instance
+			CFWQueryCommand command = CFW.Registry.Query.createCommandInstance(commandName);
+			
+			command.setAndValidateQueryParts(this, parts);
 			
 		}else {
 			this.throwParseException("Expected command name.", 0);
@@ -150,6 +173,16 @@ public class CFWQueryParser {
 		
 	}
 		
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public ArrayList<QueryPart> parseQueryPartsUntil(CFWQueryTokenType untilType) throws ParseException {
+		
+		ArrayList<QueryPart> parts = new ArrayList<>();
+		
+		
+		return parts;
+	}
 	
 	
 	

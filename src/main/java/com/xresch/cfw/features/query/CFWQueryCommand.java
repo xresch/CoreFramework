@@ -8,7 +8,7 @@ import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.pipeline.PipelineAction;
 
-public abstract class CFWQueryCommand extends PipelineAction<JsonObject, JsonObject> {
+public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject, EnhancedJsonObject> {
 
 	protected CFWQuery parent;
 	

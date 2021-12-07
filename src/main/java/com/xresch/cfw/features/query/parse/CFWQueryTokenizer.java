@@ -141,6 +141,7 @@ public class CFWQueryTokenizer {
 		switch(base.charAt(cursor)) {
 			case '=':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL, startPos, cursor);
 			case ',':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_COMMA, startPos, cursor); 
+			case ';':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_SEMICOLON, startPos, cursor); 
 			case '(':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_BRACE_OPEN, startPos, cursor);
 			case ')':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_BRACE_CLOSE, startPos, cursor);
 			case '+':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_PLUS, startPos, cursor);

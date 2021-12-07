@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -10,14 +11,18 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQuerySource;
+import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandSource extends CFWQueryCommand {
-
+	
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandSource.class.getName());
+	
 	CFWQuerySource source = null;
 	CFWObject paramsForSource = null;
 	
@@ -129,9 +134,6 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			
 			throw new ParseException("Unknown error for source command '"+this.uniqueName()+"'", -1);
 		}
-
-		
-		
 	}
 
 	/***********************************************************************************************
@@ -140,9 +142,51 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
-		this.source.execute(paramsForSource, outQueue);
+		// CFWQuerySource does not have own parameter definition, will be propagated from this command class
+		// context.getProperty("parameters");
+		
+		//------------------------------------------
+		// Read source asynchronously
+		new Thread(
+			new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						source.execute(paramsForSource, inQueue);
+					} catch (Exception e) {
+						new CFWLog(logger).severe("Exception occured while reading source: "+e.getMessage(), e);
+						//set completed when error occurs
+						setDone(true);
+					}
+				}
+			}).start();
+		
 
-		this.setDoneIfPreviousDone();
+		//------------------------------------------
+		// Read all from Source
+		int counter = 0;
+		while(!this.isDone() || !inQueue.isEmpty() ) {
+			
+			//------------------------------------------
+			// Read inQueue and put it to outQueue
+			while(!inQueue.isEmpty()) {
+				
+				//Sample Fieldnames, first 10 and every 101
+				if( counter % 101 == 0 || counter < 10 ) {
+					EnhancedJsonObject items = inQueue.poll();
+					parent.addFieldnames(items.keySet());
+					outQueue.add(items);
+				}else {
+					outQueue.add(inQueue.poll());
+				}
+			}
+			
+			//---------------------------
+			// Wait for more input
+			this.waitForInput(50);	
+		}
+		
 	}
 
 }
