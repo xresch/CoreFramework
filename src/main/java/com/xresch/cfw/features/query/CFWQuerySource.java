@@ -4,6 +4,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.xresch.cfw.datahandling.CFWObject;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @license MIT-License
+ **************************************************************************************************************/
 public abstract class CFWQuerySource{
 
 	protected CFWQuery parent;

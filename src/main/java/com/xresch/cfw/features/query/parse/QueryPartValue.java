@@ -2,7 +2,13 @@ package com.xresch.cfw.features.query.parse;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.xresch.cfw.features.query.CFWQueryContext;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @license MIT-License
+ **************************************************************************************************************/
 public class QueryPartValue extends QueryPart {
 	
 	private QueryPartValueType type;
@@ -22,7 +28,8 @@ public class QueryPartValue extends QueryPart {
 	 * Private Constructor to enforce correct types.
 	 * 
 	 ******************************************************************************************************/
-	private QueryPartValue(QueryPartValueType type, Object value) {
+	private QueryPartValue(CFWQueryContext context, QueryPartValueType type, Object value) {
+		super(context);
 		this.type = type;
 		this.value = value;
 	}
@@ -30,29 +37,29 @@ public class QueryPartValue extends QueryPart {
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue newNumber(Number value){
-		return new QueryPartValue(QueryPartValueType.NUMBER, value);
+	public static QueryPartValue newNumber(CFWQueryContext context, Number value){
+		return new QueryPartValue(context, QueryPartValueType.NUMBER, value);
 	}
 	
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue newString(String value){
-		return new QueryPartValue(QueryPartValueType.STRING, value);
+	public static QueryPartValue newString(CFWQueryContext context, String value){
+		return new QueryPartValue(context,QueryPartValueType.STRING, value);
 	}
 	
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue newBoolean(Boolean value){
-		return new QueryPartValue(QueryPartValueType.BOOLEAN, value);
+	public static QueryPartValue newBoolean(CFWQueryContext context, Boolean value){
+		return new QueryPartValue(context, QueryPartValueType.BOOLEAN, value);
 	}
 	
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue newJson(JsonElement value){
-		return new QueryPartValue(QueryPartValueType.JSON, value);
+	public static QueryPartValue newJson(CFWQueryContext context, JsonElement value){
+		return new QueryPartValue(context, QueryPartValueType.JSON, value);
 	}
 
 	/******************************************************************************************************

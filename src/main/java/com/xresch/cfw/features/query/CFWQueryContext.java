@@ -1,58 +1,42 @@
 package com.xresch.cfw.features.query;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import com.xresch.cfw.pipeline.Pipeline;
 
 /**************************************************************************************************************
- * 
- * <CFWQuery> ::= <CFWCommand>+ 
  * 
  * @author Reto Scheiwiller, (c) Copyright 2021 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
-	
-	private ArrayList<CFWQueryCommand> commandList = new ArrayList<>();
-	private HashSet<String> fieldnames = new HashSet<>();
-		
-	private CFWQueryContext context = new CFWQueryContext();
+public class CFWQueryContext{
+	private long earliest = 0;
+	private long latest = 0;
 	
 	/***********************************************************************************************
-	 * Add a query command to the query.
+	 * Get the earliest time for this query.
 	 ***********************************************************************************************/
-	public void addCommand(CFWQueryCommand command){
-		commandList.add(command);
-		
-		this.add(command);
-	}
-	
-	
-	/***********************************************************************************************
-	 * Get the context of this query
-	 ***********************************************************************************************/
-	public CFWQueryContext getContext() {
-		return context;
+	public long getEarliest() {
+		return earliest;
 	}
 	
 	/***********************************************************************************************
-	 * Set the context of this query
+	 * Set the earliest time for this query.
 	 ***********************************************************************************************/
-	public CFWQuery setContext(CFWQueryContext context) {
-		this.context = context;
-		return this;
-	}
-	
-	
-
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public CFWQuery addFieldnames(Set<String> names) {
-		fieldnames.addAll(names);
+	public CFWQueryContext setEarliest(long earliest) {
+		this.earliest = earliest;
 		return this;
 	}
 
+	/***********************************************************************************************
+	 * Get the latest time for this query.
+	 ***********************************************************************************************/
+	public long getLatest() {
+		return latest;
+	}
+
+	/***********************************************************************************************
+	 * Set the latest time for this query.
+	 ***********************************************************************************************/
+	public CFWQueryContext setLatest(long latest) {
+		this.latest = latest;
+		return this;
+	}
 }

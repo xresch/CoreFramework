@@ -2,9 +2,12 @@ package com.xresch.cfw.features.query.parse;
 
 import java.math.BigDecimal;
 
-/*******************************************************
- * Simple class holding token and token type.
- *******************************************************/
+/**************************************************************************************************************
+ * Simple class holding token, token type and position of the token in the string.
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @license MIT-License
+ **************************************************************************************************************/
 public class CFWQueryToken{
 	
 	private CFWQueryToken.CFWQueryTokenType type = null;

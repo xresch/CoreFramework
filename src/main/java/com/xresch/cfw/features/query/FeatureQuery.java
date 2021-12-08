@@ -7,6 +7,11 @@ import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.spi.CFWAppFeature;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @license MIT-License
+ **************************************************************************************************************/
 public class FeatureQuery extends CFWAppFeature {
 	
 	private static final String URI_QUERY = "/app/query";

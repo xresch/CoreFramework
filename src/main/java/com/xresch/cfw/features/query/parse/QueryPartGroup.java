@@ -4,10 +4,11 @@ import com.xresch.cfw.features.query.CFWQueryContext;
 
 /**************************************************************************************************************
  * 
+ * 
  * @author Reto Scheiwiller, (c) Copyright 2021 
  * @license MIT-License
  **************************************************************************************************************/
-public class QueryPartAssignment extends QueryPart {
+public class QueryPartGroup extends QueryPart {
 	
 	private QueryPart leftside;
 	private QueryPart value = null;
@@ -17,7 +18,7 @@ public class QueryPartAssignment extends QueryPart {
 	 * @param leftside The name on the left side of the assignment operation.
 	 * 
 	 ******************************************************************************************************/
-	private QueryPartAssignment(CFWQueryContext context, QueryPart leftside, QueryPart value) {
+	private QueryPartGroup(CFWQueryContext context, QueryPart leftside, QueryPart value) {
 		super(context);
 		this.leftside = leftside;
 		this.value = value;

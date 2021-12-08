@@ -12,6 +12,11 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @license MIT-License
+ **************************************************************************************************************/
 public class CFWQuerySourceRandom extends CFWQuerySource {
 
 	public CFWQuerySourceRandom(CFWQuery parent) {
@@ -44,8 +49,8 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 		
 		int records = (int)parameters.getField("records").getValue();
 
-		long earliest = this.getParent().getEarliest();
-		long latest = this.getParent().getLatest();
+		long earliest = this.getParent().getContext().getEarliest();
+		long latest = this.getParent().getContext().getLatest();
 		long diff = latest - earliest;
 		long diffStep = diff / records;
 		

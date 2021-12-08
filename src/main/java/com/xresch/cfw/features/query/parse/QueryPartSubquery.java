@@ -5,8 +5,14 @@ import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.xresch.cfw.features.query.CFWQuery;
+import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @license MIT-License
+ **************************************************************************************************************/
 public class QueryPartSubquery extends QueryPart {
 	
 	private ArrayList<CFWQuery> queryList;
@@ -16,8 +22,8 @@ public class QueryPartSubquery extends QueryPart {
 	/******************************************************************************************************
 	 * @throws ParseException
 	 ******************************************************************************************************/
-	private QueryPartSubquery(String query) throws ParseException {
-		
+	private QueryPartSubquery(CFWQueryContext parentContext, String query) throws ParseException {
+		super(parentContext);
 		CFWQueryParser parser = new CFWQueryParser(query);
 		
 		queryList = parser.parse();

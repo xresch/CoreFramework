@@ -2,7 +2,11 @@ package com.xresch.cfw.features.query.parse;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
-
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @license MIT-License
+ **************************************************************************************************************/
 public class CFWQueryTokenizer {
 	
 	/*******************************************************
