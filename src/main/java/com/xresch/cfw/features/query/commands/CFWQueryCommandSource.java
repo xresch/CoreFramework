@@ -66,7 +66,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		//------------------------------------------
 		// Get Name
 		QueryPart namePart = parts.get(0);
-		QueryPartValue nameValue = namePart.determineValue();
+		QueryPartValue nameValue = namePart.determineValue(null);
 		
 		if( nameValue.isNull() || !nameValue.isString()) {
 			parser.throwParseException("source: expected source name.", namePart);
@@ -94,9 +94,9 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			
 			if(currentPart instanceof QueryPartAssignment) {
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-				String paramName = assignment.getLeftSide();
+				QueryPart paramName = assignment.getLeftSide();
 				
-				QueryPartValue paramValue = namePart.determineValue();
+				QueryPartValue paramValue = namePart.determineValue(null);
 				
 				switch(paramValue.type()) {
 					case STRING:	parameters.addProperty(paramName, paramValue.getAsString());
@@ -172,14 +172,20 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			// Read inQueue and put it to outQueue
 			while(!inQueue.isEmpty()) {
 				
+				EnhancedJsonObject item = inQueue.poll();
+				item.addProperty("_source", this.source.uniqueName());
+				
+				//------------------------------------------
 				//Sample Fieldnames, first 10 and every 101
 				if( counter % 101 == 0 || counter < 10 ) {
-					EnhancedJsonObject items = inQueue.poll();
-					parent.addFieldnames(items.keySet());
-					outQueue.add(items);
-				}else {
-					outQueue.add(inQueue.poll());
+
+					parent.addFieldnames(item.keySet());
 				}
+				
+				//------------------------------------------
+				// Throw to next queue
+				outQueue.add(item);
+				
 			}
 			
 			//---------------------------

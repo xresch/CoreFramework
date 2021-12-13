@@ -26,7 +26,7 @@ public class QueryPartSubquery extends QueryPart {
 		super(parentContext);
 		CFWQueryParser parser = new CFWQueryParser(query);
 		
-		queryList = parser.parse();
+		queryList = parser.parseQuery();
 	}
 	
 	/******************************************************************************************************
@@ -42,9 +42,9 @@ public class QueryPartSubquery extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	@Override
-	public QueryPartValue determineValue() {
+	public QueryPartValue determineValue(EnhancedJsonObject object) {
 		//TODO return results as JSON array part.
-		return value.determineValue();
+		return value.determineValue(null);
 	}
 	
 	/******************************************************************************************************

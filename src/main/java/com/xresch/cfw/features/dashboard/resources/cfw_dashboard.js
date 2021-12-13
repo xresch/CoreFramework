@@ -29,6 +29,7 @@ var CFW_DASHBOARD_TIME_ENABLED = false;
 var CFW_DASHBOARD_TIME_PRESET = "30m";
 var CFW_DASHBOARD_TIME_EARLIEST_EPOCH = moment().utc().subtract(30, 'm').utc().valueOf();
 var CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
+
 /*******************************************************************************
  * 
  ******************************************************************************/

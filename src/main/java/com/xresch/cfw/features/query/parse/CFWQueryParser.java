@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryCommand;
+import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 
 /**************************************************************************************************************
@@ -39,6 +40,9 @@ public class CFWQueryParser {
 	private String query = null;
 	
 	private ArrayList<CFWQueryToken> tokenlist;
+	private CFWQuery currentQuery;
+	private CFWQueryContext currentContext;
+	
 	private int cursor;
 	
 	/***********************************************************************************************
@@ -100,7 +104,7 @@ public class CFWQueryParser {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public ArrayList<CFWQuery> parse() throws ParseException {
+	public ArrayList<CFWQuery> parseQuery() throws ParseException {
 		
 		tokenlist = new CFWQueryTokenizer(this.query, false)
 			.keywords("AND", "OR", "NOT")
@@ -111,7 +115,9 @@ public class CFWQueryParser {
 		while(this.hasMoreTokens()) {
 			
 			CFWQuery query = new CFWQuery();
-
+			currentQuery = query;
+			currentContext = query.getContext();
+			
 			while(this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
 				query.addCommand(parseQueryCommand(query));
 			}
@@ -119,6 +125,8 @@ public class CFWQueryParser {
 			if(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.SIGN_SEMICOLON) {
 				this.consumeToken();
 			}
+			
+			queryList.add(query);
 
 		}
 		
@@ -134,6 +142,12 @@ public class CFWQueryParser {
 		// Check Has More Tokens
 		if(!this.hasMoreTokens()) {
 			this.throwParseException("Query cannot end with a pipe symbol", 0);
+		}
+		
+		//------------------------------------
+		// Skip '|'
+		if(this.lookahead().type() == CFWQueryTokenType.OPERATOR_OR) {
+			this.consumeToken();
 		}
 		
 		//------------------------------------
@@ -179,6 +193,73 @@ public class CFWQueryParser {
 	public ArrayList<QueryPart> parseQueryPartsUntil(CFWQueryTokenType untilType) throws ParseException {
 		
 		ArrayList<QueryPart> parts = new ArrayList<>();
+		
+		while(this.lookahead().type() != untilType) {
+			
+			CFWQueryToken currentToken = this.consumeToken();
+			switch(currentToken.type()) {
+			case LITERAL_STRING:	QueryPartValue stringPart = QueryPartValue.newString(currentContext, currentToken.value());
+									//TODO check lookahead, determine if AccessMember, Assignment, Method etc...
+									break;
+				
+			case LITERAL_BOOLEAN:	parts.add(QueryPartValue.newBoolean(currentContext, currentToken.valueAsBoolean()));
+									break;
+			case LITERAL_NUMBER:	parts.add(QueryPartValue.newBoolean(currentContext, currentToken.valueAsBoolean()));
+									break;
+			case NULL:
+				break;
+			case KEYWORD:
+				break;
+				
+			case OPERATOR_AND:
+				break;
+			case OPERATOR_DIVIDE:
+				break;
+			case OPERATOR_DOT:
+				break;
+			case OPERATOR_EQUAL:
+				break;
+			case OPERATOR_EQUAL_NOT:
+				break;
+			case OPERATOR_EQUAL_OR_GREATER:
+				break;
+			case OPERATOR_EQUAL_OR_LOWER:
+				break;
+			case OPERATOR_GREATERTHEN:
+				break;
+			case OPERATOR_LOWERTHEN:
+				break;
+			case OPERATOR_MINUS:
+				break;
+			case OPERATOR_MULTIPLY:
+				break;
+			case OPERATOR_NOT:
+				break;
+			case OPERATOR_OR:
+				break;
+			case OPERATOR_PLUS:
+				break;
+			case SIGN_BRACE_CLOSE:
+				break;
+			case SIGN_BRACE_OPEN:
+				break;
+			case SIGN_COMMA:
+				break;
+			case SIGN_SEMICOLON:
+				break;
+			case SPLIT:
+				break;
+			case TEXT_DOUBLE_QUOTES:
+				break;
+			case TEXT_SINGLE_QUOTES:
+				break;
+			case UNKNOWN:
+				break;
+			default:
+				break;
+			
+			}
+		}
 		
 		
 		return parts;

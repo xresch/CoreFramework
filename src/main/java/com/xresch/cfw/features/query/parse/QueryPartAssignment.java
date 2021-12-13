@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.parse;
 
 import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.EnhancedJsonObject;
 
 /**************************************************************************************************************
  * 
@@ -10,7 +11,7 @@ import com.xresch.cfw.features.query.CFWQueryContext;
 public class QueryPartAssignment extends QueryPart {
 	
 	private QueryPart leftside;
-	private QueryPart value = null;
+	private QueryPart rightside = null;
 		
 	/******************************************************************************************************
 	 * 
@@ -20,7 +21,7 @@ public class QueryPartAssignment extends QueryPart {
 	private QueryPartAssignment(CFWQueryContext context, QueryPart leftside, QueryPart value) {
 		super(context);
 		this.leftside = leftside;
-		this.value = value;
+		this.rightside = value;
 	}
 	
 	/******************************************************************************************************
@@ -36,8 +37,27 @@ public class QueryPartAssignment extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	@Override
-	public QueryPartValue determineValue() {
-		return value.determineValue();
+	public QueryPartValue determineValue(EnhancedJsonObject object) {
+		return rightside.determineValue(null);
+	}
+	
+	/******************************************************************************************************
+	 * Determines and returns the right side of the value of the assignment.
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public void assignToJsonObject(EnhancedJsonObject object) {
+		
+		if (leftside instanceof QueryPartValue) {
+			QueryPartValue value = (QueryPartValue)leftside;
+			if(value.isString()) {
+				object.addProperty(value.getAsString(), rightside);
+			}
+		}else if(leftside instanceof QueryPartMemberAccess) {
+			
+		}
+		
+
 	}
 	
 	

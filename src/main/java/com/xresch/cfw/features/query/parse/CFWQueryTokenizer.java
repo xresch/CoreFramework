@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.parse;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
+
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2021 
@@ -138,6 +139,7 @@ public class CFWQueryTokenizer {
 		//-----------------------------------
 		// SIGNS AND OPERATORS
 		
+		if(slice.startsWith("==")) { 	  cursor+=2; return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, startPos, cursor); }
 		if(slice.startsWith("!=")) { 	  cursor+=2; return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL_NOT, startPos, cursor); }
 		else if(slice.startsWith("<=")) { cursor+=2; return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, startPos, cursor); } 
 		else if(slice.startsWith(">=")) { cursor+=2; return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, startPos, cursor); } 
@@ -203,7 +205,10 @@ public class CFWQueryTokenizer {
 			while(this.matchesCurrentChar(regexIsWordChar)) {
 				cursor++;
 			}
-			return createToken(CFWQueryToken.CFWQueryTokenType.LITERAL_STRING, startPos, cursor);
+			
+			if( !this.currentChar().equals("(") ) {
+				return createToken(CFWQueryToken.CFWQueryTokenType.FUNCTION_NAME, startPos, cursor);
+			}
 		}
 		
 		//-----------------------------------

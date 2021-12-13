@@ -41,10 +41,14 @@ public class CFWQueryToken{
 	
 	  , /** Type for matched split expressions defined by calling method CFWQueryTokenizer.splitBy()  */
 	    SPLIT
+	    
+	  , /** Type for string literals that are immediately followed by SIGN_BRACE_OPEN '('  */
+		FUNCTION_NAME
 	
 	  , /** The character '=' */ OPERATOR_EQUAL
 	  , /** The characters ">=" */ OPERATOR_EQUAL_OR_GREATER
 	  , /** The characters "<=" */ OPERATOR_EQUAL_OR_LOWER
+	  , /** The characters "==" */ OPERATOR_EQUAL_EQUAL
 	  , /** The characters "!=" */ OPERATOR_EQUAL_NOT
 	  , /** The character '>' */ OPERATOR_GREATERTHEN
 	  , /** The character '<' */ OPERATOR_LOWERTHEN
@@ -100,6 +104,13 @@ public class CFWQueryToken{
 	 ***********************************************************************************************/
 	public BigDecimal valueAsNumber() { 
 		return new BigDecimal(this.value);
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public Boolean valueAsBoolean() { 
+		return Boolean.parseBoolean(this.value);
 	}
 	
 	/***********************************************************************************************
@@ -161,8 +172,6 @@ public class CFWQueryToken{
 	public boolean isBoolean() { 
 		return type == CFWQueryToken.CFWQueryTokenType.LITERAL_BOOLEAN; 
 	};
-	
-
 	
 	/***********************************************************************************************
 	 * 

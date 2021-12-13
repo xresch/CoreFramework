@@ -7,6 +7,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.xresch.cfw.features.query.parse.QueryPart;
+import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /**************************************************************************************************************
  * Wrapper class to enhance GSON JsonObject with additional methods.
@@ -24,6 +26,58 @@ public class EnhancedJsonObject {
 	public EnhancedJsonObject(JsonObject object) {
 		this.internal = object;
 	}
+	
+	/*************************************************************************************************
+	 * Returns the wrapped GSON JsonObject.
+	 * 
+	 *************************************************************************************************/
+	public JsonObject getWrappedObject() {
+	  return internal;
+	}
+	
+	/*************************************************************************************************
+	 * Convenience method to add a value of a QueryPart
+	 *
+	 * @param property name of the member.
+	 * @param value the string value associated with the member.
+	 *************************************************************************************************/
+	public void addProperty(String property, QueryPart part) {
+		this.addProperty(property, part.determineValue(null));
+	}
+	
+	/*************************************************************************************************
+	 * Convenience method to add a value of a QueryPart
+	 *
+	 * @param property name of the member.
+	 * @param value the string value associated with the member.
+	 *************************************************************************************************/
+	public void addProperty(String property, QueryPartValue value) {
+		
+		switch(value.type()) {
+		case STRING: 	this.addProperty(property, value.getAsString());
+						break;
+						
+		case NUMBER:	this.addProperty(property, value.getAsNumber());
+						break;
+						
+		case BOOLEAN:	this.addProperty(property, value.getAsBoolean());
+						break;
+						
+		case JSON:		this.add(property, value.getAsJson());
+						break;
+
+		default:
+			break;
+	
+		}
+	}
+	
+	
+	//#####################################################################################################################
+	//#####################################################################################################################
+	// WRAPPED METHODS
+	//#####################################################################################################################
+	//#####################################################################################################################
 	
 	/*************************************************************************************************
 	 * Creates a deep copy of this element and all its children

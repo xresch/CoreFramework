@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.parse;
 
 import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.EnhancedJsonObject;
 
 /**************************************************************************************************************
  * 
@@ -37,8 +38,8 @@ public class QueryPartGroup extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	@Override
-	public QueryPartValue determineValue() {
-		return value.determineValue();
+	public QueryPartValue determineValue(EnhancedJsonObject object) {
+		return value.determineValue(null);
 	}
 	
 	

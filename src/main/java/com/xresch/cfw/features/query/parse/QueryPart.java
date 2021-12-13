@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.parse;
 
 import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.EnhancedJsonObject;
 
 /**************************************************************************************************************
  * 
@@ -22,7 +23,7 @@ public abstract class QueryPart {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public abstract QueryPartValue determineValue();
+	public abstract QueryPartValue determineValue(EnhancedJsonObject object);
 		
 
 	/***********************************************************************************************
@@ -51,6 +52,16 @@ public abstract class QueryPart {
 	 ***********************************************************************************************/
 	public void context(CFWQueryContext context) {
 		this.context = context;
+	}
+	
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String toString() {
+		return this.determineValue(null).getAsString();
+		
 	}
 	
 	

@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.parse;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.EnhancedJsonObject;
 
 /**************************************************************************************************************
  * 
@@ -13,6 +14,9 @@ public class QueryPartValue extends QueryPart {
 	
 	private QueryPartValueType type;
 	private Object value = null;
+	
+	//Store IntegerValue after isInteger()
+	private Integer integerValue;
 	
 	/******************************************************************************************************
 	 * 
@@ -51,6 +55,13 @@ public class QueryPartValue extends QueryPart {
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
+	public static QueryPartValue newNull(CFWQueryContext context){
+		return new QueryPartValue(context,QueryPartValueType.STRING, null);
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
 	public static QueryPartValue newBoolean(CFWQueryContext context, Boolean value){
 		return new QueryPartValue(context, QueryPartValueType.BOOLEAN, value);
 	}
@@ -66,7 +77,7 @@ public class QueryPartValue extends QueryPart {
 	 * From QueryPart, returns this instance if it is a value.
 	 ******************************************************************************************************/
 	@Override
-	public QueryPartValue determineValue() {
+	public QueryPartValue determineValue(EnhancedJsonObject object) {
 		return this;
 	}
 	
@@ -92,17 +103,51 @@ public class QueryPartValue extends QueryPart {
 	}
 	
 	/******************************************************************************************************
-	 * Check if the value is null
+	 * Check if the value is boolean
 	 ******************************************************************************************************/
 	public boolean isBoolean() {
 		return this.type == QueryPartValueType.BOOLEAN;
 	}
 	
 	/******************************************************************************************************
-	 * Check if the value is null
+	 * Check if the value is a number
 	 ******************************************************************************************************/
 	public boolean isNumber() {
 		return this.type == QueryPartValueType.NUMBER;
+	}
+	
+	
+	/******************************************************************************************************
+	 * Check if the value is null
+	 ******************************************************************************************************/
+	public boolean isInteger() {
+		
+		boolean isItReally = false;
+		
+		switch(type) {
+			case NUMBER:	
+				Number number = this.getAsNumber();
+				Double doubleValue = number.doubleValue();
+				
+				if(Math.floor(doubleValue) == doubleValue) {
+					
+					isItReally = true;
+				};
+				break;
+		
+			case STRING:	
+				try{
+					Integer.parseInt((String)value);
+					isItReally = true;
+				}catch(Exception e) {
+					isItReally = false;
+				}
+				break;
+				
+			default:		isItReally = false;
+
+		}
+		return isItReally;
 	}
 	
 	/******************************************************************************************************
@@ -142,6 +187,26 @@ public class QueryPartValue extends QueryPart {
 			case STRING:	return Float.parseFloat((String)value);
 			
 			case JSON:		return ((JsonElement)value).getAsBigDecimal();
+				
+			default:		throw new IllegalStateException("This code should not have been reached");
+
+		}
+
+	}
+	
+	/******************************************************************************************************
+	 * It is recommended to use isInteger() first to make sure number value is really a Integer.
+	 ******************************************************************************************************/
+	public Integer getAsInteger() {
+			
+		switch(type) {
+			case NUMBER:	return ((Number)value).intValue();
+	
+			case BOOLEAN: 	return ((Boolean)value)  ? 1 : 0; 
+			
+			case STRING:	return Integer.parseInt((String)value);
+			
+			case JSON:		return ((JsonElement)value).getAsInt();
 				
 			default:		throw new IllegalStateException("This code should not have been reached");
 

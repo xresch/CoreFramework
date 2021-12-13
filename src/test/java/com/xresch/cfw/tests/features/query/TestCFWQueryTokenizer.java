@@ -177,7 +177,7 @@ public class TestCFWQueryTokenizer {
 	@Test
 	public void testTokenizerSignsAndOperators() throws IOException {
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(", () +- */ ! &| <> = != <= >= . ; ", false);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(", () +- */ ! &| <> = != <= >= . ; == ", false);
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("Keywords Case Insensitive Test", results);
@@ -235,6 +235,9 @@ public class TestCFWQueryTokenizer {
 
 		Assertions.assertEquals(CFWQueryTokenType.SIGN_SEMICOLON, 		results.get(17).type());
 		Assertions.assertEquals(";", 									results.get(17).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, results.get(18).type());
+		Assertions.assertEquals("==", 									results.get(18).value());
 	}
 	
 	
