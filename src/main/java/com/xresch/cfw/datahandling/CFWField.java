@@ -507,7 +507,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			case TEXTAREA: 			createTextArea(html, cssClasses);
 									break;
 			
-			case UNMODIFIABLE_TEXT:  	String label = this.getAttributeValue("value");
+			case UNMODIFIABLE_TEXT: String label = this.getAttributeValue("value");
 									html.append("<span class=\"d-flex align-items-center "+cssClasses+"\" "+this.getAttributesString()+">"+label+"</span>");
 									html.append("<input type=\"hidden\" "+this.getAttributesString()+"/>");
 									break;
@@ -522,8 +522,11 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 									break;
 			
 			case BOOLEAN:  			createBooleanRadiobuttons(html, cssClasses);
-									break;		
-										
+									break;	
+									
+			case CUSTOM_LIST:		createCustomListField(html, cssClasses);
+									break;	
+									
 			case VALUE_LABEL:		createValueLabelField(html, cssClasses);
 									break;				
 									
@@ -917,8 +920,15 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		// Create Field
 		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"customList\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
+		String stringValue;
+		if(value instanceof ArrayList) {
+			stringValue = CFW.JSON.toJSON(value);
+		}else {
+			stringValue = value.toString();
+		}
+		
 		if(this.parent instanceof CFWForm) {
-			((CFWForm)this.parent).javascript.append("cfw_initializeCustomListField('"+name+"', "+CFW.JSON.toJSON(value)+");\r\n");
+			((CFWForm)this.parent).javascript.append("cfw_initializeCustomListField('"+name+"', "+stringValue+");\r\n");
 		}
 				
 	}

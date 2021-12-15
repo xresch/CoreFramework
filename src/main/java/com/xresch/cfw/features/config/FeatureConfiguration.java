@@ -194,7 +194,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database Backup", FeatureConfiguration.CONFIG_DB_BACKUP_ENABLED )
+			new Configuration("Database", FeatureConfiguration.CONFIG_DB_BACKUP_ENABLED )
 				.description("Enable or disable the dackup of the database.")
 				.type(FormFieldType.BOOLEAN)
 				.value("true")
@@ -204,7 +204,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database Backup", FeatureConfiguration.CONFIG_DB_BACKUP_TIME )
+			new Configuration("Database", FeatureConfiguration.CONFIG_DB_BACKUP_TIME )
 				.description("The start time of the backup. For example, choose a Sunday at 02:00 AM and set the interval to 7 days to create a weekly backup.")
 				.type(FormFieldType.DATETIMEPICKER)
 				.value("1286668800000")
@@ -214,7 +214,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database Backup", FeatureConfiguration.CONFIG_DB_BACKUP_INTERVAL )
+			new Configuration("Database", FeatureConfiguration.CONFIG_DB_BACKUP_INTERVAL )
 				.description("The interval in days to create the backup. For example, choose a Sunday at 02:00 AM and set the interval to 7 days to create a weekly backup.")
 				.type(FormFieldType.NUMBER)
 				.value("7")
@@ -224,10 +224,20 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database Backup", FeatureConfiguration.CONFIG_DB_BACKUP_FOLDER )
+			new Configuration("Database", FeatureConfiguration.CONFIG_DB_BACKUP_FOLDER )
 				.description("The path of the folder where the backup files should be created. (default: ./backup)")
 				.type(FormFieldType.TEXT)
 				.value("./backup")
+		);
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration("Database", FeatureConfiguration.CONFIG_DB_DRIVERS )
+				.description("Add additional, fully-qualified driver class names if they do not appear.")
+				.type(FormFieldType.CUSTOM_LIST)
 		);
 		
 	}

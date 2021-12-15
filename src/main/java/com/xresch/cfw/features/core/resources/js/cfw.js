@@ -717,7 +717,7 @@ function cfw_initializeCustomListField(fieldID, values){
  *************************************************************************************/
 function cfw_initializeCustomListField_createField(value){
 	return '<div class="cfw-custom-list-item d-flex">'
-			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Value" onchange="cfw_internal_updateCustomListField(this)" value="'+key+'">'	
+			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Value" onchange="cfw_internal_updateCustomListField(this)" value="'+value+'">'	
 	+'</div>';	
 }
 
