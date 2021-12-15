@@ -97,23 +97,23 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				QueryPart paramName = assignment.getLeftSide();
 				
 				QueryPartValue paramValue = namePart.determineValue(null);
-				
-				switch(paramValue.type()) {
-					case STRING:	parameters.addProperty(paramName, paramValue.getAsString());
-									break;
-									
-					case NUMBER:	parameters.addProperty(paramName, paramValue.getAsNumber());
-									break;
-				
-					case BOOLEAN:	parameters.addProperty(paramName, paramValue.getAsBoolean());
-									break;
-									
-					case JSON:		parameters.add(paramName, paramValue.getAsJson());
-									break;
-	
-					default:		break;
-				
-				}
+				//TODO update
+//				switch(paramValue.type()) {
+//					case STRING:	parameters.addProperty(paramName., paramValue.getAsString());
+//									break;
+//									
+//					case NUMBER:	parameters.addProperty(paramName, paramValue.getAsNumber());
+//									break;
+//				
+//					case BOOLEAN:	parameters.addProperty(paramName, paramValue.getAsBoolean());
+//									break;
+//									
+//					case JSON:		parameters.add(paramName, paramValue.getAsJson());
+//									break;
+//	
+//					default:		break;
+//				
+//				}
 				
 			}else {
 				parser.throwParseException("source: only parameters(key=value) are allowed'"+sourceName+"'", currentPart);

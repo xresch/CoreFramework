@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.analytics;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
@@ -18,15 +19,15 @@ public class TaskCPUSamplingAgeOut extends CFWScheduledTask {
 	public void execute() {
 		
 		Configuration config = CFW.DB.Config.selectByName(FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION);
-		Object[] granularities = (Object[])config.options();
+		ArrayList<String> granularities = config.options();
 		
 		//----------------------------
 		// Iterate all granularities
-		for(Object object : granularities) {
+		for(String string : granularities) {
 			
 			//--------------------------
 			// Get Age Out Time
-			int granularity = Integer.parseInt(object.toString());
+			int granularity = Integer.parseInt(string);
 			Timestamp ageOutTime = Utils.Time.getDefaultAgeOutTime(granularity);
 			
 			//--------------------------

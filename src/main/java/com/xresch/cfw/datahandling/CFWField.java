@@ -118,6 +118,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		SELECT, 
 		CHECKBOXES,
 		LIST, 
+		CUSTOM_LIST,
 		WYSIWYG, 
 		DATEPICKER, 
 		DATETIMEPICKER, 
@@ -237,12 +238,12 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	//===========================================
 	// Array
 	//===========================================
-	public static CFWField<Object[]> newArray(FormFieldType type, Enum<?> fieldName){
+	public static CFWField<ArrayList<String>> newArray(FormFieldType type, Enum<?> fieldName){
 		return newArray(type, fieldName.toString());
 	}
 	
-	public static CFWField<Object[]> newArray(FormFieldType type, String fieldName){
-		return new CFWField<Object[]>(Object[].class, type, fieldName)
+	public static CFWField<ArrayList<String>> newArray(FormFieldType type, String fieldName){
+		return new CFWField<ArrayList<String>>(ArrayList.class, type, fieldName)
 				.setColumnDefinition("ARRAY");
 	}
 	
@@ -271,6 +272,18 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				.setColumnDefinition("VARCHAR");
 		}
 		return null;
+	}
+	
+	//===========================================
+	// CustomList
+	//===========================================
+	public static CFWField<ArrayList<String>> newCustomList(Enum<?> fieldName){
+		return newCustomList(fieldName.toString());
+	}
+	
+	public static CFWField<ArrayList<String>> newCustomList(String fieldName){
+		return new CFWField<ArrayList<String>>(ArrayList.class, FormFieldType.CUSTOM_LIST, fieldName)
+				.setColumnDefinition("ARRAY");
 	}
 	
 	//===========================================
@@ -443,15 +456,15 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		if(value != null) {	
 			
-			if( !(value instanceof Object[]) ) {
+			if( !(value instanceof ArrayList) ) {
 				this.addAttribute("value", value.toString().replace("\"", "&quot;")); 
 			}else {
 				StringBuilder builder = new StringBuilder();
-				Object[] array = (Object[])value;
-				for(Object object : array) {
-					builder.append(object.toString()).append(",");
+				ArrayList<String> array = (ArrayList<String>)value;
+				for(String current : array) {
+					builder.append(current.toString()).append(",");
 				}
-				if(array.length > 0) {
+				if(array.size() > 0) {
 					builder.deleteCharAt(builder.length()-1);
 				}
 				this.addAttribute("value", builder.toString().replace("\"", "&quot;")); 
@@ -885,6 +898,27 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		if(this.parent instanceof CFWForm) {
 			((CFWForm)this.parent).javascript.append("cfw_initializeValueLabelField('"+name+"', "+CFW.JSON.toJSON(value)+");\r\n");
+		}
+				
+	}
+	
+	/***********************************************************************************
+	 * Create DatePicker
+	 ***********************************************************************************/
+	private void createCustomListField(StringBuilder html, String cssClasses) {
+		
+//		int maxTags = 128;
+//		
+//		if(attributes.containsKey("maxTags")) {
+//			maxTags = Integer.parseInt(attributes.get("maxTags"));
+//		}
+		
+		//---------------------------------
+		// Create Field
+		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"customList\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
+		
+		if(this.parent instanceof CFWForm) {
+			((CFWForm)this.parent).javascript.append("cfw_initializeCustomListField('"+name+"', "+CFW.JSON.toJSON(value)+");\r\n");
 		}
 				
 	}
@@ -1532,13 +1566,15 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//-------------------------------------------------
 		// Convert string values to the appropriate type
 		if(value.getClass() == String.class) {
-			if( ((String)value).trim().equals("")) { 
+			
+			String stringValue = (String)value;
+			if( stringValue.trim().equals("")) { 
 				if(valueClass == Integer.class) 	    { return this.changeValue(null); }
 				else if(valueClass == Float.class) 		{ return this.changeValue(null); }
 				else if(valueClass == Boolean.class) 	{ return this.changeValue(false); }
 				else if(valueClass == Timestamp.class)  { return this.changeValue(null);  }
 				else if(valueClass == Date.class)  		{ return this.changeValue(null); }
-				else if(valueClass == Object[].class)	{ return this.changeValue(null); }
+				else if(valueClass == ArrayList.class)	{ return this.changeValue(null); }
 				else if(valueClass == LinkedHashMap.class){ return this.changeValue(null); }
 				else if(valueClass == CFWSchedule.class){  return this.changeValue(null); }
 				else {	
@@ -1547,15 +1583,35 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					return false;
 				}
 			}
-			else if(valueClass == Integer.class) 	{ return this.changeValue(Integer.parseInt((String)value)); }
-			else if(valueClass == Float.class) 		{ return this.changeValue(Float.parseFloat((String)value)); }
-			else if(valueClass == Boolean.class) 	{ return this.changeValue(Boolean.parseBoolean( ((String)value).trim()) ); }
-			else if(valueClass == Timestamp.class)  { return this.changeValue(new Timestamp(Long.parseLong( ((String)value).trim()) )); }
-			else if(valueClass == Date.class)  		{ return this.changeValue(new Date(Long.parseLong( ((String)value).trim()) )); }
-			else if(valueClass == Object[].class)	{ return this.changeValue( sanitizeString((String)value).split(",") ); }
+			else if(valueClass == Integer.class) 	{ return this.changeValue(Integer.parseInt(stringValue)); }
+			else if(valueClass == Float.class) 		{ return this.changeValue(Float.parseFloat(stringValue)); }
+			else if(valueClass == Boolean.class) 	{ return this.changeValue(Boolean.parseBoolean( (stringValue).trim()) ); }
+			else if(valueClass == Timestamp.class)  { return this.changeValue(new Timestamp(Long.parseLong( (stringValue).trim()) )); }
+			else if(valueClass == Date.class)  		{ return this.changeValue(new Date(Long.parseLong( (stringValue).trim()) )); }
+			else if(valueClass == ArrayList.class)	{ 
+				
+				ArrayList<String> stringArray = new ArrayList<>();
+				
+				if(stringValue.trim().startsWith("[")) {
+					JsonElement element = CFW.JSON.fromJson(stringValue);
+					if(element.isJsonArray()) {
+						
+						for(JsonElement current : element.getAsJsonArray()) {
+							stringArray.add(sanitizeString(current.getAsString()));
+						}
+						
+					}
+				}else {
+					for(String current : stringValue.trim().split(",")) {
+						stringArray.add(sanitizeString(current));
+					}
+				}
+				
+				return  this.changeValue(stringArray);
+			}
 			
 			else if(valueClass == LinkedHashMap.class){ 
-				LinkedHashMap<String,String> map = CFW.JSON.fromJsonLinkedHashMap((String)value);
+				LinkedHashMap<String,String> map = CFW.JSON.fromJsonLinkedHashMap(stringValue);
 				if(map == null) {
 					return this.changeValue(map); 
 				}
@@ -1566,7 +1622,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			}
 			
 			else if(valueClass == CFWSchedule.class){ 
-				CFWSchedule schedule = new CFWSchedule((String)value);
+				CFWSchedule schedule = new CFWSchedule(stringValue);
 				return this.changeValue(schedule); 
 			}
 			
@@ -1575,6 +1631,17 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					.severe("The choosen type is not supported: "+valueClass.getName());
 				return false;
 			}
+		}
+		
+		//-------------------------------------------------
+		// Convert Arrays to String ArrayList
+		if(value.getClass() == Object[].class) {
+			ArrayList<String> stringArray = new ArrayList<>();
+			for(Object object : (Object[])value ){
+				stringArray.add(object.toString());
+			}
+			
+			return this.changeValue(stringArray); 
 		}
 		
 		return success;
@@ -1855,8 +1922,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					else if( Timestamp.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getTimestamp(colName)); }
 					else if( Date.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getDate(colName)); }
 					else if( CFWSchedule.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName)); }
-					else if( Object[].class.isAssignableFrom(current.getValueClass()))  { 
+					else if( ArrayList.class.isAssignableFrom(current.getValueClass()))  { 
 						Array array = result.getArray(colName);
+						
 						if(array != null) {
 							current.setValueConvert(result.getArray(colName).getArray()); 
 						}else {

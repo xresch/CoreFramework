@@ -68,7 +68,6 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 * If rightside is QueryPartJsonMemberAccess, the next level will be fetched recursively;
 	 * 
 	 ******************************************************************************************************/
-	@Override
 	public QueryPartValue getValueOfMember(JsonElement currentElement) {
 		
 		//======================================================
@@ -124,7 +123,8 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		if(rightside instanceof QueryPartJsonMemberAccess) {
 			return ((QueryPartJsonMemberAccess)rightside).getValueOfMember(nextElement);
 		}else {
-			
+			//TODO
+			return null;
 		}
 		
 			
@@ -139,10 +139,9 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 * If rightside is QueryPartJsonMemberAccess, the next level will be fetched recursively;
 	 * 
 	 ******************************************************************************************************/
-	@Override
 	public void setValueOfMember(JsonElement parent, boolean createIfNotExists) {
 
-		return rightside.determineValue(null);
+		//TODO
 	}
 	
 	

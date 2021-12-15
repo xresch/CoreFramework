@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -66,9 +67,13 @@ public class TestCFWObject extends DBTestMaster{
 		object.addField(CFWField.newInteger(FormFieldType.NUMBER, "testInteger"));
 		object.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, "testBoolean"));
 		object.addField(CFWField.newString(FormFieldType.TEXT, "testString"));
-		object.addField(CFWField.newArray(FormFieldType.TAGS, "testArray").setValue(new String[] {"foo", "bar"}));
 		object.addField(CFWField.newDate(FormFieldType.DATEPICKER, "testDate").setValue(new Date(2020, 01, 03)));
 		object.addField(CFWField.newTimestamp(FormFieldType.DATEPICKER, "testTimestamp").setValue(new Timestamp(2020, 01, 03, 4, 5, 500, 0)));
+		
+		ArrayList<String> arrayValue = new ArrayList<>();
+		arrayValue.add("foo");
+		arrayValue.add("bar");
+		object.addField(CFWField.newArray(FormFieldType.TAGS, "testArray").setValue(arrayValue));
 		
 		String json = CFW.JSON.toJSON(object);
 		System.out.println(json);

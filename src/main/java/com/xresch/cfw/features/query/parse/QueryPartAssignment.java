@@ -45,7 +45,6 @@ public class QueryPartAssignment extends QueryPart {
 	 * Determines and returns the right side of the value of the assignment.
 	 * 
 	 ******************************************************************************************************/
-	@Override
 	public void assignToJsonObject(EnhancedJsonObject object) {
 		
 		if (leftside instanceof QueryPartValue) {
@@ -53,8 +52,8 @@ public class QueryPartAssignment extends QueryPart {
 			if(value.isString()) {
 				object.addProperty(value.getAsString(), rightside);
 			}
-		}else if(leftside instanceof QueryPartMemberAccess) {
-			
+		}else if(leftside instanceof QueryPartJsonMemberAccess) {
+			//TODO
 		}
 		
 

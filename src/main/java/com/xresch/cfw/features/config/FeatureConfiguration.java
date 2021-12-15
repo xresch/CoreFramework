@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.config;
 
+import java.util.ArrayList;
+
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -37,10 +39,11 @@ public class FeatureConfiguration extends CFWAppFeature {
 	
 	//---------------------------------
 	// Backup
-	public static final String CONFIG_BACKUP_DB_ENABLED = "Database Backup Enabled";
-	public static final String CONFIG_BACKUP_DB_TIME = "Database Backup Starttime";
-	public static final String CONFIG_BACKUP_DB_INTERVAL = "Database Backup Interval";
-	public static final String CONFIG_BACKUP_DB_FOLDER = "Database Backup Folder";
+	public static final String CONFIG_DB_BACKUP_ENABLED = "Database Backup Enabled";
+	public static final String CONFIG_DB_BACKUP_TIME = "Database Backup Starttime";
+	public static final String CONFIG_DB_BACKUP_INTERVAL = "Database Backup Interval";
+	public static final String CONFIG_DB_BACKUP_FOLDER = "Database Backup Folder";
+	public static final String CONFIG_DB_DRIVERS = "Database Drivers";
 	
 	@Override
 	public void register() {
@@ -102,12 +105,10 @@ public class FeatureConfiguration extends CFWAppFeature {
 		//-----------------------------------------
 		// 
 		//-----------------------------------------
-		
 		CFW.DB.Config.oneTimeCreate(
 			new Configuration("Look and Feel", FeatureConfiguration.CONFIG_LANGUAGE)
 				.description("Set the default language of the application.")
-				.type(FormFieldType.SELECT)
-				.options(new String[]{"EN", "DE"})
+				.type(FormFieldType.LANGUAGE)
 				.value("EN")
 		);
 		
@@ -133,7 +134,6 @@ public class FeatureConfiguration extends CFWAppFeature {
 				.options(new String[]{"androidstudio", "arduino-light", "magula", "pojoaque", "sunburst", "zenburn"})
 				.value("zenburn")
 		);
-		
 		
 		//-----------------------------------------
 		// 
@@ -181,6 +181,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		//-----------------------------------------
 		// 
 		//-----------------------------------------
+		
 		CFW.DB.Config.oneTimeCreate(
 			new Configuration("Performance", FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION )
 				.description("The period in minutes used for the aggregation of the statistics and writing them to the database.")
@@ -193,7 +194,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database Backup", FeatureConfiguration.CONFIG_BACKUP_DB_ENABLED )
+			new Configuration("Database Backup", FeatureConfiguration.CONFIG_DB_BACKUP_ENABLED )
 				.description("Enable or disable the dackup of the database.")
 				.type(FormFieldType.BOOLEAN)
 				.value("true")
@@ -203,7 +204,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database Backup", FeatureConfiguration.CONFIG_BACKUP_DB_TIME )
+			new Configuration("Database Backup", FeatureConfiguration.CONFIG_DB_BACKUP_TIME )
 				.description("The start time of the backup. For example, choose a Sunday at 02:00 AM and set the interval to 7 days to create a weekly backup.")
 				.type(FormFieldType.DATETIMEPICKER)
 				.value("1286668800000")
@@ -213,7 +214,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database Backup", FeatureConfiguration.CONFIG_BACKUP_DB_INTERVAL )
+			new Configuration("Database Backup", FeatureConfiguration.CONFIG_DB_BACKUP_INTERVAL )
 				.description("The interval in days to create the backup. For example, choose a Sunday at 02:00 AM and set the interval to 7 days to create a weekly backup.")
 				.type(FormFieldType.NUMBER)
 				.value("7")
@@ -223,7 +224,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database Backup", FeatureConfiguration.CONFIG_BACKUP_DB_FOLDER )
+			new Configuration("Database Backup", FeatureConfiguration.CONFIG_DB_BACKUP_FOLDER )
 				.description("The path of the folder where the backup files should be created. (default: ./backup)")
 				.type(FormFieldType.TEXT)
 				.value("./backup")

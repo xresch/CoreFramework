@@ -21,14 +21,14 @@ public class TaskDatabaseBackup extends CFWScheduledTask {
 		
 		//---------------------------
 		// Check is Backup Enabled
-		if(!CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_BACKUP_DB_ENABLED)) {
+		if(!CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_DB_BACKUP_ENABLED)) {
 			return;
 		}
 		
 		//---------------------------
 		// Create new Task
-		long startTimeMillis = CFW.DB.Config.getConfigAsLong(FeatureConfiguration.CONFIG_BACKUP_DB_TIME);
-		int intervalDays = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_BACKUP_DB_INTERVAL);
+		long startTimeMillis = CFW.DB.Config.getConfigAsLong(FeatureConfiguration.CONFIG_DB_BACKUP_TIME);
+		int intervalDays = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_DB_BACKUP_INTERVAL);
 		if(intervalDays <= 0) { intervalDays = 7; }
 
 		Calendar startTime = Calendar.getInstance();
@@ -43,7 +43,7 @@ public class TaskDatabaseBackup extends CFWScheduledTask {
 	
 	@Override
 	public void execute() {
-		String folderPath = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_BACKUP_DB_FOLDER);
+		String folderPath = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_DB_BACKUP_FOLDER);
 		CFW.DB.backupDatabaseFile(folderPath, "h2_database_backup");
 	}
 

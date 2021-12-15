@@ -191,9 +191,9 @@ public class FeatureCore extends CFWAppFeature {
 		//-------------------------------
 		// Create Change Listener
 		ConfigChangeListener listener = new ConfigChangeListener(
-				FeatureConfiguration.CONFIG_BACKUP_DB_ENABLED,
-				FeatureConfiguration.CONFIG_BACKUP_DB_INTERVAL,
-				FeatureConfiguration.CONFIG_BACKUP_DB_TIME
+				FeatureConfiguration.CONFIG_DB_BACKUP_ENABLED,
+				FeatureConfiguration.CONFIG_DB_BACKUP_INTERVAL,
+				FeatureConfiguration.CONFIG_DB_BACKUP_TIME
 			) {
 			
 			@Override

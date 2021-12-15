@@ -64,7 +64,7 @@ public class Configuration extends CFWObject {
 			.setDescription("The current value of the field. Can be null.")
 			.addValidator(new LengthValidator(-1, 1024));
 	
-	private CFWField<Object[]> options = CFWField.newArray(FormFieldType.NONE, ConfigFields.OPTIONS.toString())
+	private CFWField<ArrayList<String>> options = CFWField.newArray(FormFieldType.NONE, ConfigFields.OPTIONS.toString())
 			.setColumnDefinition("ARRAY")
 			.setDescription("The options available for the configuration(optional field).");
 	
@@ -187,12 +187,22 @@ public class Configuration extends CFWObject {
 		return this;
 	}
 
-	public Object[] options() {
+	public ArrayList<String> options() {
 		return options.getValue();
 	}
 
-	public Configuration options(Object[] options) {
+	public Configuration options(ArrayList<String> options) {
 		this.options.setValue(options);
+		return this;
+	}
+	
+	public Configuration options(Object[] options) {
+		ArrayList<String> stringArray = new ArrayList<>();
+		
+		for(Object object : options) {
+			stringArray.add(object.toString());
+		}
+		this.options.setValue(stringArray);
 		return this;
 	}
 	

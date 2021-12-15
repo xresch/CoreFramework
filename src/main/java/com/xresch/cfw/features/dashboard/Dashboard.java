@@ -84,7 +84,7 @@ public class Dashboard extends CFWObject {
 			.setDescription("The description of the dashboard.")
 			.addValidator(new LengthValidator(-1, 2000000));
 	
-	private CFWField<Object[]> tags = CFWField.newArray(FormFieldType.TAGS, DashboardFields.TAGS)
+	private CFWField<ArrayList<String>> tags = CFWField.newArray(FormFieldType.TAGS, DashboardFields.TAGS)
 			.setDescription("The tags for this dashboard.")
 			.setAutocompleteHandler( new CFWAutocompleteHandler(10) {
 
@@ -311,11 +311,11 @@ public class Dashboard extends CFWObject {
 		return this;
 	}
 
-	public Object[] tags() {
+	public ArrayList<String> tags() {
 		return tags.getValue();
 	}
 	
-	public Dashboard tags(Object[] tags) {
+	public Dashboard tags(ArrayList<String> tags) {
 		this.tags.setValue(tags);
 		return this;
 	}

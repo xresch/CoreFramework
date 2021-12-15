@@ -563,6 +563,7 @@ public class DBInterface {
 				else if (currentValue instanceof Blob) 		{ prepared.setBlob(i+1, (Blob)currentValue); }
 				else if (currentValue instanceof Clob) 		{ prepared.setClob(i+1, (Clob)currentValue); }
 				else if (currentValue instanceof Byte) 		{ prepared.setByte(i+1, (Byte)currentValue); }
+				else if (currentValue instanceof ArrayList) 	{ prepared.setArray(i+1, prepared.getConnection().createArrayOf("VARCHAR", ((ArrayList)currentValue).toArray() )); }
 				else if (currentValue instanceof Object[]) 	{ prepared.setArray(i+1, prepared.getConnection().createArrayOf("VARCHAR", (Object[])currentValue)); }
 				else if (currentValue instanceof LinkedHashMap)	{ prepared.setString(i+1, CFW.JSON.toJSON(currentValue)); }
 				else if (currentValue instanceof CFWSchedule)	{ prepared.setString(i+1, CFW.JSON.toJSON(currentValue)); }

@@ -669,6 +669,93 @@ function cfw_internal_updateValueLabelField(element){
 }
 
 /**************************************************************************************
+ * Initialize a Custom List Field created with the Java object CFWField.
+ * @param fieldID the name of the field
+ * @return nothing
+ *************************************************************************************/
+function cfw_initializeCustomListField(fieldID, values){
+	
+	var id = '#'+fieldID;
+
+	var customListField = $(id);
+
+	
+	var wrapper = $('<div class="cfw-custom-list-field-wrapper flex-grow-1">');
+	customListField.before(wrapper);
+	wrapper.append(customListField);
+	customListField.val(JSON.stringify(values));
+	
+	//----------------------------------
+	// Add Classes
+	var classes = customListField.attr('class');
+	customListField.addClass('d-none');
+
+	//----------------------------------
+	// Add Values
+	for(var index in values){
+		var fields = cfw_initializeCustomListField_createField(values[index]);
+		wrapper.append(fields);
+	}
+	
+	//----------------------------------
+	// Add At least one Empty Line
+	wrapper.append(cfw_initializeCustomListField_createField('', ''));
+	
+	//----------------------------------
+	// Add Create Button
+	wrapper.append(
+			'<div class="d-flex">'
+				+'<div class="flex-grow-1">&nbsp;</div>'
+				+'<div class="btn btn-sm btn-primary" onclick="cfw_internal_addCustomListField(this)"><i class="fas fa-plus-circle"></i></div>'
+			+'</div>'
+		);
+	
+}
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_initializeCustomListField_createField(value){
+	return '<div class="cfw-custom-list-item d-flex">'
+			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Value" onchange="cfw_internal_updateCustomListField(this)" value="'+key+'">'	
+	+'</div>';	
+}
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_internal_addCustomListField(element){
+	
+	var button = $(element)
+	var buttonParent = button.parent();
+	
+	buttonParent.before(cfw_initializeCustomListField_createField(''))
+
+}
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_internal_updateCustomListField(element){
+	
+	var wrapper = $(element).closest('.cfw-custom-list-field-wrapper');
+	
+	var originalField = wrapper.find('> input');
+	
+	var newListValues = [];
+	wrapper.find('.cfw-custom-list-item').each(function(index, element){
+		let current = $(element);
+		let value = current.find('input').val();
+		
+		if(!CFW.utils.isNullOrEmpty(value)){
+			newListValues.push(value);
+		}
+	})
+	
+	originalField.val(JSON.stringify(newListValues));
+
+}
+
+/**************************************************************************************
  * Initialize a ScheduleField created with the Java object CFWField.
  * @param fieldID the name of the field
  * @return nothing
