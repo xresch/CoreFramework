@@ -920,10 +920,10 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		// Create Field
 		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"customList\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
-		String stringValue;
+		String stringValue = "[]";
 		if(value instanceof ArrayList) {
 			stringValue = CFW.JSON.toJSON(value);
-		}else {
+		}else if(value != null) {
 			stringValue = value.toString();
 		}
 		

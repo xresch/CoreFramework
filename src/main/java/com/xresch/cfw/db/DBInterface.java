@@ -16,6 +16,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +29,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWSchedule;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.logging.CFWLog;
 
 import io.prometheus.client.Counter;
@@ -625,18 +628,23 @@ public class DBInterface {
 	
 	
 	/************************************************************************
-	 * 
+	 * Returns the list of available JDBC drivers.
+	 * A combination of already registered drivers and the ones specified 
+	 * in the application configuration.
 	 ************************************************************************/
-	public static ArrayList<String> getListofDriverClassnames() {
+	public static Set<String> getListofDriverClassnames() {
 		
-		ArrayList<String> driverArray = new ArrayList<>();
+		TreeSet<String> driverSet = new TreeSet<>();
 		
 		Enumeration<Driver> e = DriverManager.getDrivers();
 		while(e.hasMoreElements()) {
-			driverArray.add(e.nextElement().getClass().getName());
+			driverSet.add(e.nextElement().getClass().getName());
 		}
 		
-		return driverArray;
+		driverSet.addAll(
+				CFW.DB.Config.getConfigAsArrayList(FeatureConfiguration.CONFIG_DB_DRIVERS)
+		);
+		return driverSet;
 	}
 	
 	/************************************************************************
@@ -745,6 +753,18 @@ public class DBInterface {
 		
 	}
 	
+	/************************************************************************
+	 * Creates a DBInterface with a pooled datasource with a default validation
+	 * query 'SELECT 1'.
+	 * Adds the connection pool to the Connection pool management.
+	 * Sets default connection pool settings.
+	 * 
+	 * @return DBInterface
+	 * 
+	 ************************************************************************/
+	public static DBInterface createDBInterface(String uniquepoolName, String driverName, String url, String username, String password) {
+		return createDBInterface(uniquepoolName, driverName, url, username, password, "SELECT 1");
+	}
 
 	/************************************************************************
 	 * Creates a DBInterface with a pooled datasource.
@@ -754,30 +774,31 @@ public class DBInterface {
 	 * @return DBInterface
 	 * 
 	 ************************************************************************/
-	public static DBInterface createDBInterface(String uniquepoolName, String driverName, String url, String username, String password) {
+	public static DBInterface createDBInterface(String uniquepoolName, String driverName, String url, String username, String password, String validationQuery) {
 		
-		BasicDataSource datasourceSource;
+		BasicDataSource datasource;
 		
 		try {
 			//Driver name com.microsoft.sqlserver.jdbc.SQLServerDriver
 			//Connection URL Example: "jdbc:sqlserver://localhost:1433;databaseName=AdventureWorks;user=MyUserName;password=*****;";  
-			datasourceSource = new BasicDataSource();
+			datasource = new BasicDataSource();
 			
-			datasourceSource.setDriverClassName(driverName);
-			datasourceSource.setUrl(url);					
+			datasource.setDriverClassName(driverName);
+			datasource.setUrl(url);	
+			datasource.setValidationQuery(validationQuery);
 
-			datasourceSource.setUsername(username);
-			datasourceSource.setPassword(password);
+			datasource.setUsername(username);
+			datasource.setPassword(password);
 			
-			DBInterface.setDefaultConnectionPoolSettings(datasourceSource);
+			DBInterface.setDefaultConnectionPoolSettings(datasource);
 			
 			//----------------------------------
 			// Test connection
 			//pooledSource.setLoginTimeout(5);
-			Connection connection = datasourceSource.getConnection();
+			Connection connection = datasource.getConnection();
 			connection.close();
 			
-			DBInterface.registerManagedConnectionPool(uniquepoolName, datasourceSource);
+			DBInterface.registerManagedConnectionPool(uniquepoolName, datasource);
 			
 		} catch (Exception e) {
 			new CFWLog(logger)
@@ -785,7 +806,7 @@ public class DBInterface {
 			return null;
 		}
 		
-		DBInterface db = new DBInterface(uniquepoolName, datasourceSource);
+		DBInterface db = new DBInterface(uniquepoolName, datasource);
 
 		new CFWLog(logger).info("Created DBInteface: "+ url);
 		return db;

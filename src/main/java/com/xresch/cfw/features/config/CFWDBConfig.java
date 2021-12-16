@@ -8,8 +8,10 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.DB.Config;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.config.Configuration.ConfigFields;
@@ -114,12 +116,40 @@ public class CFWDBConfig {
 		
 		
 	}
+	
 	/********************************************************************************************
 	 * Returns a config value from cache as String
 	 * 
 	 ********************************************************************************************/
 	public static String getConfigAsString(String configName) {
 		return configCache.get(configName);
+	}
+	
+	/********************************************************************************************
+	 * Returns a config value from cache as JsonArray
+	 * 
+	 ********************************************************************************************/
+	public static JsonArray getConfigAsJsonArray(String configName) {
+		JsonElement element = CFW.JSON.fromJson(configCache.get(configName));
+		if(element.isJsonNull()) {
+			return new JsonArray();
+		}
+		return element.getAsJsonArray();
+	}
+	
+	/********************************************************************************************
+	 * Returns a config value from cache as ArrayList
+	 * 
+	 ********************************************************************************************/
+	public static ArrayList<String> getConfigAsArrayList(String configName) {
+		
+		ArrayList<String> arrayList = new ArrayList<>();
+		
+		for(JsonElement element : getConfigAsJsonArray(configName)) {
+			arrayList.add(element.getAsString());
+		}
+		
+		return arrayList;
 	}
 	
 	/********************************************************************************************
