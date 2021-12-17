@@ -64,6 +64,11 @@ public class WidgetHelloWorld extends WidgetDefinition {
 								}
 							})
 				)
+				.addField(CFWField.newString(FormFieldType.TEXT, "favorite_food")
+						.setDescription("Enter your favorite food")
+						.addValidator(new LengthValidator(-1, 50))
+						.setValue("Tiramisu")
+				)
 				.addField(CFWField.newInteger(FormFieldType.NUMBER, "number")
 						.addValidator(new NotNullOrEmptyValidator())
 						.setValue(1)
@@ -79,7 +84,8 @@ public class WidgetHelloWorld extends WidgetDefinition {
 	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, long earliest, long latest) { 
 		//int number = settings.get("number").getAsInt();
 		String number = jsonSettings.get("number").getAsString();
-		response.getContent().append("\"{!cfw_widget_helloworld_serverside!} "+number+"\"");
+		String favoriteFood = jsonSettings.get("favorite_food").getAsString();
+		response.getContent().append("\"{!cfw_widget_helloworld_serverside!} "+number+". Your favorite food is: "+favoriteFood+"\"");
 	}
 
 	@Override

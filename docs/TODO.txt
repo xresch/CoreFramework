@@ -124,7 +124,7 @@ DONE
 - ContextSettings: Added method to fetch by user and type
 - Javascript Renderer: Added sorting mechanism.
 - Context Settings: Use Dataviewer for display
-
+- JDBC Drivers: Added Configuration Item to specify custom driver classes, added default validation Query to avoid AbstractMethodError for isValid()
 
 ------- v5.0.0 -------
 - Mailing: Added Class CFWMailBuilder for creating eMails.

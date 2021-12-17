@@ -413,17 +413,31 @@ public class ServletDashboardViewMethods
 			
 			//----------------------------
 			// Get Values
-			String widgetType = request.getParameter("TYPE");
-			String JSON_SETTINGS = request.getParameter("JSON_SETTINGS");
-			JsonElement jsonElement = CFW.JSON.fromJson(JSON_SETTINGS);
+//			String widgetType = request.getParameter("TYPE");
+//			String JSON_SETTINGS = request.getParameter("JSON_SETTINGS");
+//			JsonElement jsonElement = CFW.JSON.fromJson(JSON_SETTINGS);
+//			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
+//			User currentUser = CFW.Context.Request.getUser();
+//			
+//			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
+			
+			//-----------------------------------
+			// Prepare Widget Settings
+			String widgetID = request.getParameter("PK_ID");
+			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
+			String widgetType = widget.type();
+			String JSON_SETTINGS = widget.settings();
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
+
 			User currentUser = CFW.Context.Request.getUser();
+			
+						
 			if(definition.hasPermission(currentUser) || CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 				//----------------------------
 				// Create Form
 				CFWObject settings = definition.getSettings();
 				DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
-				settings.mapJsonFields(jsonElement);
+				settings.mapJsonFields(JSON_SETTINGS);
 				
 				CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeReplacedByJavascript");
 				

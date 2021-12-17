@@ -743,13 +743,15 @@ public class DBInterface {
 		String uniqueName = uniqueNamePrefix+":Oracle:"+servername+":"+port;
 		String connectionURL = "jdbc:oracle:thin:@"+urlPart;
 		String driverClass = "oracle.jdbc.OracleDriver";
+		String validationQuery = null;
 		
 		return createDBInterface(
 				uniqueName, 
 				driverClass, 
 				connectionURL, 
 				username, 
-				password);
+				password,
+				validationQuery);
 		
 	}
 	
@@ -785,7 +787,10 @@ public class DBInterface {
 			
 			datasource.setDriverClassName(driverName);
 			datasource.setUrl(url);	
-			datasource.setValidationQuery(validationQuery);
+			
+			if(validationQuery != null) {
+				datasource.setValidationQuery(validationQuery);
+			}
 
 			datasource.setUsername(username);
 			datasource.setPassword(password);

@@ -853,7 +853,7 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement, triggerRed
 	
 	var mergedParams = {}; 
 	paramForms.each(function(){
-		var userParamsForWidget = CFW.format.formToParams($(this));
+		var userParamsForWidget = CFW.format.formToParams($(this), true);
 		// add to URL
 		for(key in userParamsForWidget){
 			if(key != "cfw-formID"){

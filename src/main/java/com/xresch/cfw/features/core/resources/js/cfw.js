@@ -1785,10 +1785,15 @@ function cfw_format_arrayToBadges(stringArray, addLineBreaks) {
  * 		fieldname: "fieldvalue",
  * 		...
  * }
+ *
+ * @param formOrID either ID of form or a JQuery object
+ * @param numbersAsStrings define if number should be converted to strings. Needed to
+ *        keep leading zeros.
+ *
  *************************************************************************************/
-function cfw_format_formToParams(formOrID){
+function cfw_format_formToParams(formOrID, numbersAsStrings){
 	
-	var paramsObject = cfw_format_formToObject(formOrID);
+	var paramsObject = cfw_format_formToObject(formOrID, numbersAsStrings);
 
 	for(var name in paramsObject){
 		var value = paramsObject[name];
@@ -1811,10 +1816,15 @@ function cfw_format_formToParams(formOrID){
  * 		fieldname: "fieldvalue",
  * 		...
  * }
+ *
+ * @param formOrID either ID of form or a JQuery object
+ * @param numbersAsStrings define if number should be converted to strings. Needed to
+ *        keep leading zeros.
+ *
  *************************************************************************************/
-function cfw_format_formToObject(formOrID){
+function cfw_format_formToObject(formOrID, numbersAsStrings){
 	
-	var paramsArray = cfw_format_formToArray(formOrID);
+	var paramsArray = cfw_format_formToArray(formOrID, numbersAsStrings);
 	
 	var object = {};
 	for(var i in paramsArray){
@@ -1834,8 +1844,13 @@ function cfw_format_formToObject(formOrID){
  * {name: "fieldname", value: "fieldvalue"},
  * ...
  * ]
+ *
+ * @param formOrID either ID of form or a JQuery object
+ * @param numbersAsStrings define if number should be converted to strings. Needed to
+ *        keep leading zeros.
+ *
  *************************************************************************************/
-function cfw_format_formToArray(formOrID){
+function cfw_format_formToArray(formOrID, numbersAsStrings){
 	
 	var paramsArray = $(formOrID).serializeArray();
 	
@@ -1845,7 +1860,11 @@ function cfw_format_formToArray(formOrID){
 		let current = paramsArray[i].value;
 		if(typeof current == 'string'){
 			if(!(current === '') && !isNaN(current)){
-				paramsArray[i].value = Number(current);
+				if(numbersAsStrings){
+					paramsArray[i].value = current;
+				}else{
+					paramsArray[i].value = Number(current);
+				}
 			}else if(current.toLowerCase() === 'true'){
 				paramsArray[i].value = true;
 			}else if(current.toLowerCase() === 'false'){
@@ -3001,7 +3020,7 @@ function cfw_internal_postForm(url, formID, callback){
 	
 	window.setTimeout( 
 		function(){
-			cfw_http_postJSON(url, CFW.format.formToParams(formID), function (data,status,xhr){
+			cfw_http_postJSON(url, CFW.format.formToParams(formID, true), function (data,status,xhr){
 				$(formID+'-submitButton .loaderMarker').remove();
 				if(callback != null){
 					callback(data,status,xhr);
