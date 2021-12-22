@@ -1,5 +1,17 @@
 # Introduction
-The CoreFramework(CFW) is a web application boilerplate projects using Jetty, Bootstrap, H2 and various other cool stuff.
+The CoreFramework(CFW) is a web application boilerplate projects using Jetty, Bootstrap, H2 and various other cool stuff. 
+Following Features are provided by the framework:
+- User & Permission Management
+- Active Directory Integration
+- Dashboarding
+- Job Scheduling
+- Configuration Management
+- API
+- Integrated Manual Pages
+- User Notifications
+- Mailing
+- Integrated System Analytics
+- Prometheus /metric entpoint
 
 # Server Setup
 The following is a general setup guide for the server and applications using the Core Framework(CFW). Depending on the application there might be additional steps needed to make the system fully functional.
