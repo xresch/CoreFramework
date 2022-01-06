@@ -79,38 +79,28 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		if(currentElement.isJsonArray() && (leftside instanceof QueryPartArray) ){
 			
 			QueryPartArray arrayExpression = (QueryPartArray)leftside;
-			
-			if(arrayExpression.isIndex()) {
-				JsonArray array = currentElement.getAsJsonArray();
-				int index = arrayExpression.getIndex();
-				
-				if(index < array.size()) {
-					nextElement = array.get(index);
-				}else {
-					CFW.Messages.addErrorMessage("Array index out of bounds: "+index);
-				}
-			}else {
-				CFW.Messages.addErrorMessage("Array Expression is not an index: "+leftside);
-			}
-			
+			nextElement = arrayExpression.getElementOfJsonArray(
+				currentElement.getAsJsonArray()
+			);
+
 		}
+		
 		//--------------------------
 		// Handle JsonObject
 		else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
-			System.out.println("A");
 			JsonObject jsonObject = currentElement.getAsJsonObject();
 			String memberName = ((QueryPartValue)leftside).getAsString();
-			
+			System.out.println("1"+memberName);
 			if(jsonObject.has(memberName)) {
-				System.out.println("B");
+				System.out.println("2");
 				nextElement = jsonObject.get(memberName);
 			}else {
-				System.out.println("C");
-				CFW.Messages.addErrorMessage("Object member not found: "+leftside+"."+rightside);
+				CFW.Messages.addErrorMessage("Member not found: "+leftside+"."+rightside);
 				return QueryPartValue.newNull(this.context());
 			}
 			
 		}
+		
 		//--------------------------
 		// Mighty Error Expression
 		else {
@@ -124,22 +114,28 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		if(rightside instanceof QueryPartJsonMemberAccess) {
 			return ((QueryPartJsonMemberAccess)rightside).getValueOfMember(rootObject, nextElement);
 		}else {
-			
+			System.out.println("a"+nextElement+"/"+rightside);
 			if(nextElement == null || nextElement.isJsonNull()){
+				
 				return null;
 			}else {
 				if(nextElement.isJsonArray() && (rightside instanceof QueryPartArray) ){
-					//TODO
-					return null;
-				}else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
+					System.out.println("b");
+					JsonElement valueOfMember = ((QueryPartArray)rightside).getElementOfJsonArray(
+							nextElement.getAsJsonArray()
+						);
+					System.out.println("c");
+					return QueryPartValue.newFromJsonElement(this.context(), valueOfMember);
 					
+				}else if(nextElement.isJsonObject() && !(rightside instanceof QueryPartArray) ) {
+					System.out.println("d");
 					JsonElement valueOfMember = nextElement.getAsJsonObject().get(rightside.determineValue(rootObject).getAsString());
 					return QueryPartValue.newFromJsonElement(this.context(), valueOfMember);
 				}
 			}
 		}
 		
-		//TODO
+		//maybe change or add warning?
 		return null;
 	}
 	

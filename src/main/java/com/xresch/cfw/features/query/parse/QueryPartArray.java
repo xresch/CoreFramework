@@ -3,6 +3,9 @@ package com.xresch.cfw.features.query.parse;
 import java.util.ArrayList;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
@@ -42,7 +45,7 @@ public class QueryPartArray extends QueryPart {
 	 *  Creates an index expression
 	 ******************************************************************************************************/
 	public QueryPartArray(CFWQueryContext context, int index) {
-		super(context);
+		this(context);
 		this.add(QueryPartValue.newNumber(context, index));
 	}
 	
@@ -108,6 +111,30 @@ public class QueryPartArray extends QueryPart {
 	public Integer getIndex() {
 		return arrayIndex;
 	}
+	
+	
+	/******************************************************************************************************
+	 * Returns the element in the array represented by the index of this QueryPartArray.
+	 * Returns a JsonNull object if not resolvable.
+	 * 
+	 ******************************************************************************************************/
+	public JsonElement getElementOfJsonArray(JsonArray array) {
+		
+		if(this.isIndex()) {
+			int index = this.getIndex();
+			
+			if(index < array.size()) {
+				return array.get(index);
+			}else {
+				CFW.Messages.addWarningMessage("Array index out of bounds.");
+			}
+		}else {
+			CFW.Messages.addWarningMessage("Array Expression is not an index.");
+		}
+		
+		return JsonNull.INSTANCE;
+	}
+	
 
 	
 	

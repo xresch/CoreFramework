@@ -239,10 +239,27 @@ public class TestCFWQueryParts {
 
 		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
 		
-		Assertions.assertEquals(42, 
+		Assertions.assertEquals("B", 
 				memberAccessPart.determineValue(
 					new EnhancedJsonObject(object)
-				).getAsInteger()
+				).getAsString()
+			);
+		
+		//-------------------------------
+		// Check third level
+		//-------------------------------
+		level1 = QueryPartValue.newString(context, "objectArray");
+		level2 = new QueryPartArray(context, 1);
+		level3 = QueryPartValue.newString(context, "key");
+		
+		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
+					new QueryPartJsonMemberAccess(context, level2, level3)
+				);
+		
+		Assertions.assertEquals("valueB", 
+				memberAccessPart.determineValue(
+					new EnhancedJsonObject(object)
+				).getAsString()
 			);
 	}
 	
