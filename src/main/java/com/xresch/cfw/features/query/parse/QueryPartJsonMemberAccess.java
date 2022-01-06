@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.parse;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
@@ -40,6 +41,14 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	}
 	
 	/******************************************************************************************************
+	 * 
+	 * 
+	 ******************************************************************************************************/
+	private boolean isLeftsideArrayPart() {
+		return (leftside instanceof QueryPartArray);
+	}
+	
+	/******************************************************************************************************
 	 * If object is null, return the member expression as a string representation.
 	 * If object is not null, determines and returns the value of the member based on the member expression.
 	 * 
@@ -57,6 +66,12 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		}
 	}
 	
+	public QueryPartValue getValueOfMember(EnhancedJsonObject rootObject, JsonElement currentElement) {
+		return QueryPartValue.newFromJsonElement(this.context(), 
+				accessMemberRecursively(rootObject, currentElement)
+		);
+		
+	}
 	
 	/******************************************************************************************************
 	 * Determines and returns the member based on this member expression.
@@ -66,7 +81,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 * If rightside is QueryPartJsonMemberAccess, the next level will be fetched recursively;
 	 * 
 	 ******************************************************************************************************/
-	public QueryPartValue getValueOfMember(EnhancedJsonObject rootObject, JsonElement currentElement) {
+	public JsonElement accessMemberRecursively(EnhancedJsonObject rootObject, JsonElement currentElement) {
 		
 		//======================================================
 		// Handle Leftside, resolve json member
@@ -89,30 +104,35 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		// Handle JsonObject
 		else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
 			JsonObject jsonObject = currentElement.getAsJsonObject();
-			String memberName = ((QueryPartValue)leftside).getAsString();
+			String memberName = ((QueryPart)leftside).determineValue(rootObject).getAsString();
 			System.out.println("1"+memberName);
 			if(jsonObject.has(memberName)) {
 				System.out.println("2");
 				nextElement = jsonObject.get(memberName);
 			}else {
-				CFW.Messages.addErrorMessage("Member not found: "+leftside+"."+rightside);
-				return QueryPartValue.newNull(this.context());
+				CFW.Messages.addWarningMessage("Member not found: "+leftside+"."+rightside);
+				return JsonNull.INSTANCE;
 			}
 			
 		}
 		
 		//--------------------------
-		// Mighty Error Expression
-		else {
-			CFW.Messages.addErrorMessage("Could not access object member: "+leftside+"."+rightside);
+		// Use current if Leftside is null
+		else if(leftside == null){
+			nextElement = currentElement;
 		}
 		
+		//--------------------------
+		// Mighty Error Expression
+		else {
+			CFW.Messages.addWarningMessage("Could not access object member: "+leftside+"."+rightside);
+		}
 		
 		//======================================================
 		// Handle Rightside, resolve value or next level
 		//======================================================
 		if(rightside instanceof QueryPartJsonMemberAccess) {
-			return ((QueryPartJsonMemberAccess)rightside).getValueOfMember(rootObject, nextElement);
+			return ((QueryPartJsonMemberAccess)rightside).accessMemberRecursively(rootObject, nextElement);
 		}else {
 			System.out.println("a"+nextElement+"/"+rightside);
 			if(nextElement == null || nextElement.isJsonNull()){
@@ -124,13 +144,13 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 					JsonElement valueOfMember = ((QueryPartArray)rightside).getElementOfJsonArray(
 							nextElement.getAsJsonArray()
 						);
-					System.out.println("c");
-					return QueryPartValue.newFromJsonElement(this.context(), valueOfMember);
+
+					return valueOfMember;
 					
 				}else if(nextElement.isJsonObject() && !(rightside instanceof QueryPartArray) ) {
 					System.out.println("d");
 					JsonElement valueOfMember = nextElement.getAsJsonObject().get(rightside.determineValue(rootObject).getAsString());
-					return QueryPartValue.newFromJsonElement(this.context(), valueOfMember);
+					return valueOfMember;
 				}
 			}
 		}
@@ -141,16 +161,120 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	
 	
 	/******************************************************************************************************
-	 * Determines and returns the member based on this member expression.
+	 * Determines the member based on this member expression and sets the specified value.
 	 * 
-	 * If rightside is anything else than a QueryPartJsonMemberAccess, the value returned by 
-	 * QueryPart.determineValue() will be used.
-	 * If rightside is QueryPartJsonMemberAccess, the next level will be fetched recursively;
 	 * 
 	 ******************************************************************************************************/
-	public void setValueOfMember(JsonElement parent, boolean createIfNotExists) {
+	public boolean setValueOfMember(EnhancedJsonObject object, JsonElement valueToSet) {
+		return setValueRecursively(object, object.getWrappedObject(), valueToSet);
+	}
+	
+	/******************************************************************************************************
+	 * Determines the member based on this member expression and sets the specified value.
+	 * 
+	 * 
+	 ******************************************************************************************************/
+	public boolean setValueRecursively(EnhancedJsonObject rootObject, JsonElement currentElement, JsonElement valueToSet) {
+		
+		//======================================================
+		// Handle Leftside, resolve json member
+		//======================================================
+		
+		//--------------------------
+		// Handle JsonArray
+		JsonElement nextElement = null;
+		
+		if(currentElement.isJsonArray() && (leftside instanceof QueryPartArray) ){
+			
+			QueryPartArray arrayExpression = (QueryPartArray)leftside;
+			nextElement = arrayExpression.getElementOfJsonArray(
+				currentElement.getAsJsonArray()
+			);
+			
+			//---------------------------
+			//Create if not exists
+			if(nextElement == null || nextElement.isJsonNull()) {
+				currentElement.getAsJsonArray().add(createNextElementInHierarchy());
+			}
 
-		//TODO
+		}
+		
+		//--------------------------
+		// Handle JsonObject
+		else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
+			JsonObject jsonObject = currentElement.getAsJsonObject();
+			String memberName = ((QueryPartValue)leftside).getAsString();
+			System.out.println("1"+memberName);
+			if(jsonObject.has(memberName)) {
+				System.out.println("2");
+				nextElement = jsonObject.get(memberName);
+			}else {
+				//---------------------------
+				//Create if not exists
+				nextElement = createNextElementInHierarchy();
+				jsonObject.add(memberName, nextElement);
+
+			}
+			
+		}
+		
+		//--------------------------
+		// Use current if Leftside is null
+		else if(leftside == null){
+			nextElement = currentElement;
+		}
+		
+		//--------------------------
+		// Mighty Error Expression
+		else {
+			CFW.Messages.addWarningMessage("Could not access object member: "+leftside+"."+rightside);
+		}
+		
+		//======================================================
+		// Handle Rightside, set value or next level
+		//======================================================
+		if(rightside instanceof QueryPartJsonMemberAccess) {
+			return ((QueryPartJsonMemberAccess)rightside).setValueRecursively(rootObject, nextElement, valueToSet);
+		}else {
+			System.out.println("a"+nextElement+"/"+rightside);
+
+			if(nextElement.isJsonArray() && (rightside instanceof QueryPartArray) ){
+				System.out.println("b");
+				QueryPartArray arrayPart = (QueryPartArray)rightside;
+
+				if(arrayPart.isIndex()) {
+					nextElement.getAsJsonArray().set(arrayPart.getIndex(), valueToSet);
+					return true;
+				}else {
+					System.out.println("Unrecognized value for index: '"+arrayPart.determineValue(rootObject)+"'");
+					return false;
+				}
+				
+			}else if(nextElement.isJsonObject() && !(rightside instanceof QueryPartArray) ) {
+				String newMemberName = rightside.determineValue(rootObject).getAsString();
+				nextElement.getAsJsonObject()
+					.add(newMemberName, valueToSet);
+				return true;
+			}
+			
+		}
+		
+		return false;
+	}
+
+	private JsonElement createNextElementInHierarchy() {
+		JsonElement nextElement;
+		if( (rightside instanceof QueryPartArray)
+		|| (
+				rightside instanceof QueryPartJsonMemberAccess 
+				&& ((QueryPartJsonMemberAccess)rightside).isLeftsideArrayPart() 
+			)
+		) {
+			nextElement = new JsonArray();
+		}else{
+			nextElement = new JsonObject();
+		}
+		return nextElement;
 	}
 	
 	

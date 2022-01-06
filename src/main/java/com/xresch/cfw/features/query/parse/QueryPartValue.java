@@ -236,18 +236,25 @@ public class QueryPartValue extends QueryPart {
 	 ******************************************************************************************************/
 	public Integer getAsInteger() {
 			
-		switch(type) {
-			case NUMBER:	return ((Number)value).intValue();
-	
-			case BOOLEAN: 	return ((Boolean)value)  ? 1 : 0; 
-			
-			case STRING:	return Integer.parseInt((String)value);
-			
-			case JSON:		return ((JsonElement)value).getAsInt();
-				
-			default:		return null;
+		Number number = this.getAsNumber();
+		
+		if(number == null) return null;
+		
+		return number.intValue();
 
-		}
+	}
+	
+	
+	/******************************************************************************************************
+	 * It is recommended to use isInteger() first to make sure number value is really a Integer.
+	 ******************************************************************************************************/
+	public Float getAsFloat() {
+			
+		Number number = this.getAsNumber();
+		
+		if(number == null) return null;
+		
+		return number.floatValue();
 
 	}
 	

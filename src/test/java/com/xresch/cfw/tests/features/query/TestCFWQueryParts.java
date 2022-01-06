@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -186,7 +187,7 @@ public class TestCFWQueryParts {
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testQueryPartJsonMemberAccess() throws IOException {
+	public void testQueryPartJsonMemberAccess_getValue() throws IOException {
 		
 		CFWQueryContext context = new CFWQueryContext();
 		
@@ -246,7 +247,7 @@ public class TestCFWQueryParts {
 			);
 		
 		//-------------------------------
-		// Check third level
+		// Check Object Array, Third Level
 		//-------------------------------
 		level1 = QueryPartValue.newString(context, "objectArray");
 		level2 = new QueryPartArray(context, 1);
@@ -257,6 +258,115 @@ public class TestCFWQueryParts {
 				);
 		
 		Assertions.assertEquals("valueB", 
+				memberAccessPart.determineValue(
+					new EnhancedJsonObject(object)
+				).getAsString()
+			);
+	}
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testQueryPartJsonMemberAccess_setValue() throws IOException {
+		
+		CFWQueryContext context = new CFWQueryContext();
+		
+		JsonObject object = 
+				CFW.JSON.fromJson(
+						CFW.Files.readPackageResource("com.xresch.cfw.tests.features.query.testdata", "testQueryPartJsonMemberAccess_Object.json")
+				).getAsJsonObject();
+		
+		QueryPart level1, level2, level3;
+
+
+		//-------------------------------
+		// Check Set Value
+		//-------------------------------
+		level1 = QueryPartValue.newString(context, "memba");
+		level2 = QueryPartValue.newString(context, "submemba");
+		
+		QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
+		
+		Assertions.assertEquals("memba.submemba", memberAccessPart.determineValue(null).getAsString());
+		
+		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Itse not-e mee, itse Luigi!"));
+		
+		Assertions.assertEquals("Itse not-e mee, itse Luigi!", 
+				memberAccessPart.determineValue(
+					new EnhancedJsonObject(object)
+				).getAsString()
+			);
+				
+		//-------------------------------
+		// Set value on third level
+		//-------------------------------
+		level1 = QueryPartValue.newString(context, "memba");
+		level2 = QueryPartValue.newString(context, "anothermemba");
+		level3 = QueryPartValue.newString(context, "numba");
+		
+		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
+					new QueryPartJsonMemberAccess(context, level2, level3)
+				);
+		
+		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive(99.9f));
+		
+		Assertions.assertEquals(99.9f, 
+				memberAccessPart.determineValue(
+					new EnhancedJsonObject(object)
+				).getAsFloat()
+			);
+		
+		//-------------------------------
+		// Set Value in Array
+		//-------------------------------
+		level1 = QueryPartValue.newString(context, "array");
+		level2 = new QueryPartArray(context, 1);
+
+		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
+		
+		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Bla"));
+		
+		Assertions.assertEquals("Bla", 
+				memberAccessPart.determineValue(
+					new EnhancedJsonObject(object)
+				).getAsString()
+			);
+		
+		//-------------------------------
+		// Set value in Object Array, Third Level
+		//-------------------------------
+		level1 = QueryPartValue.newString(context, "objectArray");
+		level2 = new QueryPartArray(context, 1);
+		level3 = QueryPartValue.newString(context, "key");
+		
+		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
+					new QueryPartJsonMemberAccess(context, level2, level3)
+				);
+		
+		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Be the value"));
+		
+		Assertions.assertEquals("Be the value", 
+				memberAccessPart.determineValue(
+					new EnhancedJsonObject(object)
+				).getAsString()
+			);
+		
+		//-------------------------------
+		// Set value in Object Array, Third Level
+		//-------------------------------
+		level1 = QueryPartValue.newString(context, "objectArray");
+		level2 = new QueryPartArray(context, 1);
+		level3 = QueryPartValue.newString(context, "key");
+		
+		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
+					new QueryPartJsonMemberAccess(context, level2, level3)
+				);
+		
+		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Be the value"));
+		
+		Assertions.assertEquals("Be the value", 
 				memberAccessPart.determineValue(
 					new EnhancedJsonObject(object)
 				).getAsString()
