@@ -1,0 +1,9 @@
+{
+	"memba": {
+		"submemba": "Itse mee, Mario!",
+		"anothermemba": {
+			"numba": 42
+		},
+		"array": ["A", "B", "C"]
+	}
+}

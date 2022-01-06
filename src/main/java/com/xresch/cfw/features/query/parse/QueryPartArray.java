@@ -39,6 +39,14 @@ public class QueryPartArray extends QueryPart {
 	}
 	
 	/******************************************************************************************************
+	 *  Creates an index expression
+	 ******************************************************************************************************/
+	public QueryPartArray(CFWQueryContext context, int index) {
+		super(context);
+		this.add(QueryPartValue.newNumber(context, index));
+	}
+	
+	/******************************************************************************************************
 	 * Returns the left side of the assignment operation.
 	 * 
 	 ******************************************************************************************************/

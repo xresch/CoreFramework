@@ -101,7 +101,7 @@ public class TestCFWQueryTokenizer {
 	@Test
 	public void testTokenizerKeywordsCaseSensitive() throws IOException {
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" \"my string\" AND 'another string' OR identifier_A NOT 42 and", true)
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" \"my string\" AND 'another string' OR identifier_A NOT 42 and functionName(param)", true)
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
@@ -120,7 +120,7 @@ public class TestCFWQueryTokenizer {
 		Assertions.assertEquals("OR", 									results.get(3).value());
 		
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_STRING, 		results.get(4).type());
-		Assertions.assertEquals("identifier_A", 							results.get(4).value());
+		Assertions.assertEquals("identifier_A", 						results.get(4).value());
 		
 		Assertions.assertEquals(CFWQueryTokenType.KEYWORD, 				results.get(5).type());
 		Assertions.assertEquals("NOT", 									results.get(5).value());
@@ -131,6 +131,8 @@ public class TestCFWQueryTokenizer {
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_STRING, 		results.get(7).type());
 		Assertions.assertEquals("and", 									results.get(7).value());
 
+		Assertions.assertEquals(CFWQueryTokenType.FUNCTION_NAME, 		results.get(8).type());
+		Assertions.assertEquals("functionName", 						results.get(8).value());
 	}
 	
 	/****************************************************************
@@ -177,67 +179,75 @@ public class TestCFWQueryTokenizer {
 	@Test
 	public void testTokenizerSignsAndOperators() throws IOException {
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(", () +- */ ! &| <> = != <= >= . ; == ", false);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(", () [] +- */ ! &| <> = != <= >= . ; == ", false);
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("Keywords Case Insensitive Test", results);
 		
-		Assertions.assertEquals(CFWQueryTokenType.SIGN_COMMA, 			results.get(0).type());
-		Assertions.assertEquals(",", 									results.get(0).value());
+		int i = 0;
 		
-		Assertions.assertEquals(CFWQueryTokenType.SIGN_BRACE_OPEN, 		results.get(1).type());
-		Assertions.assertEquals("(",									results.get(1).value());
+		Assertions.assertEquals(CFWQueryTokenType.SIGN_COMMA, 			results.get(i).type());
+		Assertions.assertEquals(",", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.SIGN_BRACE_CLOSE, 	results.get(2).type());
-		Assertions.assertEquals(")", 									results.get(2).value());
+		Assertions.assertEquals(CFWQueryTokenType.SIGN_BRACE_ROUND_OPEN, 		results.get(++i).type());
+		Assertions.assertEquals("(",									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_PLUS,		results.get(3).type());
-		Assertions.assertEquals("+", 									results.get(3).value());
+		Assertions.assertEquals(CFWQueryTokenType.SIGN_BRACE_ROUND_CLOSE, 	results.get(++i).type());
+		Assertions.assertEquals(")", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_MINUS, 		results.get(4).type());
-		Assertions.assertEquals("-", 									results.get(4).value());
+		Assertions.assertEquals(CFWQueryTokenType.SIGN_BRACE_SQUARE_OPEN, 		results.get(++i).type());
+		Assertions.assertEquals("[",									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_MULTIPLY, 	results.get(5).type());
-		Assertions.assertEquals("*", 									results.get(5).value());
+		Assertions.assertEquals(CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE, 	results.get(++i).type());
+		Assertions.assertEquals("]", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_DIVIDE, 		results.get(6).type());
-		Assertions.assertEquals("/", 									results.get(6).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_PLUS,		results.get(++i).type());
+		Assertions.assertEquals("+", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_NOT, 		results.get(7).type());
-		Assertions.assertEquals("!", 									results.get(7).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_MINUS, 		results.get(++i).type());
+		Assertions.assertEquals("-", 									results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_MULTIPLY, 	results.get(++i).type());
+		Assertions.assertEquals("*", 									results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_DIVIDE, 		results.get(++i).type());
+		Assertions.assertEquals("/", 									results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_NOT, 		results.get(++i).type());
+		Assertions.assertEquals("!", 									results.get(i).value());
 
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_AND, 		results.get(8).type());
-		Assertions.assertEquals("&", 									results.get(8).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_AND, 		results.get(++i).type());
+		Assertions.assertEquals("&", 									results.get(i).value());
 
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_OR, 			results.get(9).type());
-		Assertions.assertEquals("|", 									results.get(9).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_OR, 			results.get(++i).type());
+		Assertions.assertEquals("|", 									results.get(i).value());
 
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_LOWERTHEN, 	results.get(10).type());
-		Assertions.assertEquals("<", 									results.get(10).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_LOWERTHEN, 	results.get(++i).type());
+		Assertions.assertEquals("<", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_GREATERTHEN, results.get(11).type());
-		Assertions.assertEquals(">", 									results.get(11).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_GREATERTHEN, results.get(++i).type());
+		Assertions.assertEquals(">", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL, 		results.get(12).type());
-		Assertions.assertEquals("=", 									results.get(12).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL, 		results.get(++i).type());
+		Assertions.assertEquals("=", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_NOT, 	results.get(13).type());
-		Assertions.assertEquals("!=", 									results.get(13).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_NOT, 	results.get(++i).type());
+		Assertions.assertEquals("!=", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, results.get(14).type());
-		Assertions.assertEquals("<=", 									results.get(14).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, results.get(++i).type());
+		Assertions.assertEquals("<=", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, 	results.get(15).type());
-		Assertions.assertEquals(">=", 									results.get(15).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, 	results.get(++i).type());
+		Assertions.assertEquals(">=", 									results.get(i).value());
 
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_DOT, 		results.get(16).type());
-		Assertions.assertEquals(".", 									results.get(16).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_DOT, 		results.get(++i).type());
+		Assertions.assertEquals(".", 									results.get(i).value());
 
-		Assertions.assertEquals(CFWQueryTokenType.SIGN_SEMICOLON, 		results.get(17).type());
-		Assertions.assertEquals(";", 									results.get(17).value());
+		Assertions.assertEquals(CFWQueryTokenType.SIGN_SEMICOLON, 		results.get(++i).type());
+		Assertions.assertEquals(";", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, results.get(18).type());
-		Assertions.assertEquals("==", 									results.get(18).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, results.get(++i).type());
+		Assertions.assertEquals("==", 									results.get(i).value());
 	}
 	
 	

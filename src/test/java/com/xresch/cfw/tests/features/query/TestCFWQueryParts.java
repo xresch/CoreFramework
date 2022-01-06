@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.parse.QueryPart;
@@ -17,7 +19,10 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 public class TestCFWQueryParts {
 	
-	
+	@BeforeAll
+	public static void setup() {
+		CFW.Files.addAllowedPackage("com.xresch.cfw.tests.features.query.testdata");
+	}
 	/****************************************************************
 	 * 
 	 ****************************************************************/
@@ -185,28 +190,60 @@ public class TestCFWQueryParts {
 		
 		CFWQueryContext context = new CFWQueryContext();
 		
+		JsonObject object = 
+				CFW.JSON.fromJson(
+						CFW.Files.readPackageResource("com.xresch.cfw.tests.features.query.testdata", "testQueryPartJsonMemberAccess_Object.json")
+				).getAsJsonObject();
+		
+		QueryPart level1, level2, level3;
+
+
 		//-------------------------------
 		// Check MemberAccess Values
 		//-------------------------------
-		QueryPart leftside = QueryPartValue.newString(context, "memba");
-		QueryPart rightside = QueryPartValue.newString(context, "submemba");
+		level1 = QueryPartValue.newString(context, "memba");
+		level2 = QueryPartValue.newString(context, "submemba");
 		
-		QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, leftside, rightside);
+		QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
 		
 		Assertions.assertEquals("memba.submemba", memberAccessPart.determineValue(null).getAsString());
-		
-		JsonObject memba = new JsonObject();
-		memba.addProperty("submemba", "Itse mee, Mario!");
-		
-		JsonObject object = new JsonObject();
-		object.add("memba", memba);
 		
 		Assertions.assertEquals("Itse mee, Mario!", 
 				memberAccessPart.determineValue(
 					new EnhancedJsonObject(object)
-				).getAsString());
+				).getAsString()
+			);
+				
+		//-------------------------------
+		// Check third level
+		//-------------------------------
+		level1 = QueryPartValue.newString(context, "memba");
+		level2 = QueryPartValue.newString(context, "anothermemba");
+		level3 = QueryPartValue.newString(context, "numba");
 		
+		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
+					new QueryPartJsonMemberAccess(context, level2, level3)
+				);
 		
+		Assertions.assertEquals(42, 
+				memberAccessPart.determineValue(
+					new EnhancedJsonObject(object)
+				).getAsInteger()
+			);
+		
+		//-------------------------------
+		// Check Array Access
+		//-------------------------------
+		level1 = QueryPartValue.newString(context, "array");
+		level2 = new QueryPartArray(context, 1);
+
+		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
+		
+		Assertions.assertEquals(42, 
+				memberAccessPart.determineValue(
+					new EnhancedJsonObject(object)
+				).getAsInteger()
+			);
 	}
 	
 }

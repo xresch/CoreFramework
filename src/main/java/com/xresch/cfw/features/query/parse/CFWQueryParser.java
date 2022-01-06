@@ -239,9 +239,9 @@ public class CFWQueryParser {
 				break;
 			case OPERATOR_PLUS:
 				break;
-			case SIGN_BRACE_CLOSE:
+			case SIGN_BRACE_ROUND_CLOSE:
 				break;
-			case SIGN_BRACE_OPEN:
+			case SIGN_BRACE_ROUND_OPEN:
 				break;
 			case SIGN_COMMA:
 				break;
