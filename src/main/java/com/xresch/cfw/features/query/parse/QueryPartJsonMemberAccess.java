@@ -33,7 +33,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 * @param leftside The name on the left side of the assignment operation.
 	 * 
 	 ******************************************************************************************************/
-	private QueryPartJsonMemberAccess(CFWQueryContext context, QueryPart leftside, QueryPart rightside) {
+	public QueryPartJsonMemberAccess(CFWQueryContext context, QueryPart leftside, QueryPart rightside) {
 		super(context);
 		this.leftside = leftside;
 		this.rightside = rightside;
@@ -52,11 +52,9 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	public QueryPartValue determineValue(EnhancedJsonObject object) {	
 		if(object == null) {
 			return QueryPartValue.newString(this.context(), leftside+"."+rightside.determineValue(null));
-		}else {
-							
-			
+		}else {				
+			return getValueOfMember(object, object.getWrappedObject());
 		}
-		return rightside.determineValue(null);
 	}
 	
 	
@@ -68,7 +66,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 * If rightside is QueryPartJsonMemberAccess, the next level will be fetched recursively;
 	 * 
 	 ******************************************************************************************************/
-	public QueryPartValue getValueOfMember(JsonElement currentElement) {
+	public QueryPartValue getValueOfMember(EnhancedJsonObject rootObject, JsonElement currentElement) {
 		
 		//======================================================
 		// Handle Leftside, resolve json member
@@ -98,13 +96,16 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		}
 		//--------------------------
 		// Handle JsonObject
-		else if(currentElement.isJsonObject() && leftside instanceof QueryPartValue ) {
+		else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
+			System.out.println("A");
 			JsonObject jsonObject = currentElement.getAsJsonObject();
 			String memberName = ((QueryPartValue)leftside).getAsString();
 			
 			if(jsonObject.has(memberName)) {
+				System.out.println("B");
 				nextElement = jsonObject.get(memberName);
 			}else {
+				System.out.println("C");
 				CFW.Messages.addErrorMessage("Object member not found: "+leftside+"."+rightside);
 				return QueryPartValue.newNull(this.context());
 			}
@@ -121,13 +122,25 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		// Handle Rightside, resolve value or next level
 		//======================================================
 		if(rightside instanceof QueryPartJsonMemberAccess) {
-			return ((QueryPartJsonMemberAccess)rightside).getValueOfMember(nextElement);
+			return ((QueryPartJsonMemberAccess)rightside).getValueOfMember(rootObject, nextElement);
 		}else {
-			//TODO
-			return null;
+			
+			if(nextElement == null || nextElement.isJsonNull()){
+				return null;
+			}else {
+				if(nextElement.isJsonArray() && (rightside instanceof QueryPartArray) ){
+					//TODO
+					return null;
+				}else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
+					
+					JsonElement valueOfMember = nextElement.getAsJsonObject().get(rightside.determineValue(rootObject).getAsString());
+					return QueryPartValue.newFromJsonElement(this.context(), valueOfMember);
+				}
+			}
 		}
 		
-			
+		//TODO
+		return null;
 	}
 	
 	

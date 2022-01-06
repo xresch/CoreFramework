@@ -26,14 +26,14 @@ public class QueryPartArray extends QueryPart {
 	/******************************************************************************************************
 	 *  
 	 ******************************************************************************************************/
-	private QueryPartArray(CFWQueryContext context) {
+	public QueryPartArray(CFWQueryContext context) {
 		this(context,  new ArrayList<>());
 	}
 	
 	/******************************************************************************************************
 	 *  
 	 ******************************************************************************************************/
-	private QueryPartArray(CFWQueryContext context, ArrayList<QueryPart> parts) {
+	public QueryPartArray(CFWQueryContext context, ArrayList<QueryPart> parts) {
 		super(context);
 		this.partsArray = parts;
 	}
@@ -59,6 +59,7 @@ public class QueryPartArray extends QueryPart {
 		return QueryPartValue.newJson(this.context(), array);
 	}
 	
+
 	/******************************************************************************************************
 	 * Returns the values as JsonArray.
 	 * 

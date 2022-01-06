@@ -26,6 +26,7 @@ public class QueryPartValue extends QueryPart {
 		, STRING
 		, BOOLEAN
 		, JSON
+		, NULL
 	}
 			
 	/******************************************************************************************************
@@ -56,7 +57,7 @@ public class QueryPartValue extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	public static QueryPartValue newNull(CFWQueryContext context){
-		return new QueryPartValue(context,QueryPartValueType.STRING, null);
+		return new QueryPartValue(context, QueryPartValueType.NULL, null);
 	}
 	
 	/******************************************************************************************************
@@ -71,6 +72,29 @@ public class QueryPartValue extends QueryPart {
 	 ******************************************************************************************************/
 	public static QueryPartValue newJson(CFWQueryContext context, JsonElement value){
 		return new QueryPartValue(context, QueryPartValueType.JSON, value);
+	}
+	
+	/******************************************************************************************************
+	 * Creates a new QueryPart based on the type of the JsonElement
+	 ******************************************************************************************************/
+	public static QueryPartValue newFromJsonElement(CFWQueryContext context, JsonElement value){
+		
+		if(value.isJsonNull()) {
+			return newNull(context); 
+		}
+		
+		if(value.isJsonPrimitive()) {
+			JsonPrimitive primitive = value.getAsJsonPrimitive();
+			
+			if(primitive.isBoolean()) {		return newBoolean(context, value.getAsBoolean()); }
+			if(primitive.isNumber()) {		return newNumber(context, value.getAsBigDecimal()); }
+			if(primitive.isString()) {		return newString(context, value.getAsString()); }
+		}
+		
+		return newJson(context, value);
+		
+			
+		
 	}
 
 	/******************************************************************************************************
@@ -103,10 +127,23 @@ public class QueryPartValue extends QueryPart {
 	}
 	
 	/******************************************************************************************************
-	 * Check if the value is boolean
+	 * Check if the value is of type boolean
 	 ******************************************************************************************************/
 	public boolean isBoolean() {
 		return this.type == QueryPartValueType.BOOLEAN;
+	}
+	
+	/******************************************************************************************************
+	 * Check if the value is string representation of a boolean. 
+	 ******************************************************************************************************/
+	public boolean isBooleanString() {
+		
+		if(this.type == QueryPartValueType.STRING) {
+			String value = this.getAsString().trim().toLowerCase();
+			return  value.equals("true") || value.equals("false")   ;
+		}
+		
+		return false;
 	}
 	
 	/******************************************************************************************************
@@ -188,7 +225,7 @@ public class QueryPartValue extends QueryPart {
 			
 			case JSON:		return ((JsonElement)value).getAsBigDecimal();
 				
-			default:		throw new IllegalStateException("This code should not have been reached");
+			default:		return null;
 
 		}
 
@@ -208,7 +245,7 @@ public class QueryPartValue extends QueryPart {
 			
 			case JSON:		return ((JsonElement)value).getAsInt();
 				
-			default:		throw new IllegalStateException("This code should not have been reached");
+			default:		return null;
 
 		}
 
@@ -229,7 +266,7 @@ public class QueryPartValue extends QueryPart {
 			
 			case JSON:		return ((JsonElement)value).getAsBoolean();
 				
-			default:		throw new IllegalStateException("This code should not have been reached");
+			default:		return null;
 
 		}
 
@@ -249,7 +286,7 @@ public class QueryPartValue extends QueryPart {
 			
 			case STRING:	return new JsonPrimitive((String)value);
 			
-			default:		throw new IllegalStateException("This code should not have been reached");
+			default:		return null;
 
 		}
 
@@ -259,6 +296,8 @@ public class QueryPartValue extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	public String getAsString() {
+		if(value == null) return null;
+		
 		return value.toString();
 	}
 
