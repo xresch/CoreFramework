@@ -1625,8 +1625,8 @@ function cfw_renderer_dataviewer(renderDef) {
 			],
 			// The initial page to be drawn.
 			initialpage: 1,
-			// The number of items options for the page size selector. -1 stands for "All".
-			sizes: [10, 25, 50, 100, 200, 500, 1000, -1],
+			// The number of items options for the page size selector. 
+			sizes: [10, 25, 50, 100, 200, 500, 1000, 99999],
 			// The size selected by default
 			defaultsize: 50,
 			// if a store ID is provided, the settings will be saved and restored when refreshing the viewer or the page.
@@ -1992,11 +1992,8 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 			var size = dataviewerSettings.sizes[key];
 			var selected = (size == selectedSize) ? 'selected' : '';
 			
-			if(size != -1){
-				html += '<option value="'+size+'" '+selected+'>'+size+'</option>';
-			}else{
-				html += '<option value="'+size+'" '+selected+'>All</option>';
-			}
+			html += '<option value="'+size+'" '+selected+'>'+size+'</option>';
+
 		}
 	
 	html += '	</select>'
