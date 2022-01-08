@@ -244,7 +244,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	
 	public static CFWField<ArrayList<String>> newArray(FormFieldType type, String fieldName){
 		return new CFWField<ArrayList<String>>(ArrayList.class, type, fieldName)
-				.setColumnDefinition("ARRAY");
+				.setColumnDefinition("VARCHAR ARRAY");
 	}
 	
 	//===========================================

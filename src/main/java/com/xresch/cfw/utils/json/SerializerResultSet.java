@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
+import org.h2.jdbc.JdbcArray;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -39,11 +41,15 @@ public class SerializerResultSet implements JsonSerializer<ResultSet> {
 						JsonElement asElement = CFW.JSON.stringToJsonElement(resultSet.getString(i));
 						row.add(name, asElement);
 					}else {
+						
 						Object value = resultSet.getObject(i);
-						if(!(value instanceof Clob)) {
-							CFW.JSON.addObject(row, name, value);
-						}else {
+						if(value instanceof Clob) {
 							CFW.JSON.addObject(row, name, resultSet.getString(i));
+						}else if(value instanceof JdbcArray) {
+							CFW.JSON.addObject(row, name, ((JdbcArray)value).getArray());
+						} else {
+							CFW.JSON.addObject(row, name, value);
+							
 						}
 					}
 				}

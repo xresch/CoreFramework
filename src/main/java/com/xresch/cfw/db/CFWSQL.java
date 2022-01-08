@@ -212,7 +212,7 @@ public class CFWSQL {
 		for(CFWField<?> field : fields.values()) {
 			if(field.getColumnDefinition() != null) {
 				String addColumnIsRenamable = "ALTER TABLE "+tableName
-				 +" ADD COLUMN IF NOT EXISTS "+field.getName()+" "+field.getColumnDefinition();
+				 +" ADD COLUMN IF NOT EXISTS \""+field.getName()+"\" "+field.getColumnDefinition();
 				success &= dbInterface.preparedExecute(addColumnIsRenamable);
 			}else {
 				new CFWLog(logger)
@@ -405,7 +405,7 @@ public class CFWSQL {
 			//---------------------------------
 			// Add Fields
 			for(Object fieldname : fieldnames) {
-					query.append(ALIAS+".").append(fieldname).append(",");
+					query.append(ALIAS+".\"").append(fieldname).append("\",");
 			}
 			query.deleteCharAt(query.length()-1);
 			
@@ -608,7 +608,7 @@ public class CFWSQL {
 				CFWField<?> field = fields.get(fieldname.toString());
 				if(field != object.getPrimaryField()) {
 					if(!isQueryCached()) {
-						columnNames.append(field.getName()).append(",");
+						columnNames.append("\""+field.getName()).append("\",");
 						placeholders.append("?,");
 					}
 					this.addFieldValue(field);
@@ -819,7 +819,7 @@ public class CFWSQL {
 				return where().isNull(fieldname);
 			}
 			if(isCaseSensitive) {
-				query.append(" WHERE "+ALIAS+".").append(fieldname).append(" = ?");	
+				query.append(" WHERE "+ALIAS+".\"").append(fieldname).append("\" = ?");	
 			}else {
 				query.append(" WHERE LOWER("+ALIAS+".").append(fieldname).append(") = LOWER(?)");	
 			}

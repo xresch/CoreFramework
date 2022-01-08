@@ -14,6 +14,27 @@ IMPORTANT FIXES
 ===============
 - Dashboard: editing widget when window is narrow causes widgets to get width 1
 
+
+H2 Database Migration v1.4.2 to v2.0.206
+=========================================
+Before migrating
+1. Make a copy of the database and connect to the copy.
+2. Delete CFW_CPUSAMPLE* Tables, also if not important for you CFW_NOTIFICATION
+3. Execute SQL command "SCRIPT" to create statements.
+4. Save the results as to a file.
+5. Cleanup file format, in case of DBeaver text export:
+   - Regex Replace "; *?\|\r\n\|" with "; \r\n"
+   - Replace "¶" with " "  
+   - Regex Replace "(?<=CREATE CACHED TABLE)(.*) ARRAY" with "\1VARCHAR ARRAY"
+6. Array Format: On create table statements, replace "ARRAY" with "VARCHAR ARRAY"
+7. This file is your SQL Batch File to setup the new database
+
+Migrate your Application, afterwards:
+1. Connect to the new database
+2. Delete all existing Tables.
+3. Execute your SQL Batch file, check if the errors are an issue.
+4. Restart the Application, check log file for errors
+
 Potential TODOs
 ===============
 
@@ -114,7 +135,8 @@ Potential TODOs
 
 DONE
 ====
-------- current -------
+------- current v6 -------
+- BREAKING CHANGE - H2 Migration: bumped from v1.4.200 to 2.0.206
 - New Feature - Notification: Added Notification mechanism to notify user in the UI. Bell icon added to the Menu Bar 
 - Notifications: Added Startup Notifications for Admins and Superusers
 - Alerting: Added Channel for Notifications

@@ -65,7 +65,6 @@ public class Configuration extends CFWObject {
 			.addValidator(new LengthValidator(-1, 1024));
 	
 	private CFWField<ArrayList<String>> options = CFWField.newArray(FormFieldType.NONE, ConfigFields.OPTIONS.toString())
-			.setColumnDefinition("ARRAY")
 			.setDescription("The options available for the configuration(optional field).");
 	
 	
