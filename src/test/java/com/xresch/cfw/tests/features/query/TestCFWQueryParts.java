@@ -371,6 +371,44 @@ public class TestCFWQueryParts {
 					new EnhancedJsonObject(object)
 				).getAsString()
 			);
+				
+		//-------------------------------
+		// Set value in not existing context
+		//-------------------------------
+		level1 = QueryPartValue.newString(context, "newEntry");
+		level2 = QueryPartValue.newString(context, "newSubEntry");
+		level3 = QueryPartValue.newString(context, "key");
+		
+		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
+					new QueryPartJsonMemberAccess(context, level2, level3)
+				);
+		
+		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("a new value"));
+		
+		Assertions.assertEquals("a new value", 
+				memberAccessPart.determineValue(
+					new EnhancedJsonObject(object)
+				).getAsString()
+			);
+		
+		//-------------------------------
+		// Set value in not existing array
+		//-------------------------------
+		level1 = QueryPartValue.newString(context, "newArray");
+		level2 = new QueryPartArray(context, 0);
+		level3 = QueryPartValue.newString(context, "key");
+		
+		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
+					new QueryPartJsonMemberAccess(context, level2, level3)
+				);
+		
+		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("a new value"));
+		
+		Assertions.assertEquals("a new value", 
+				memberAccessPart.determineValue(
+					new EnhancedJsonObject(object)
+				).getAsString()
+			);
 	}
 	
 }

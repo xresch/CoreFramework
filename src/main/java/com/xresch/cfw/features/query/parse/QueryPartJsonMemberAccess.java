@@ -194,7 +194,8 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			//---------------------------
 			//Create if not exists
 			if(nextElement == null || nextElement.isJsonNull()) {
-				currentElement.getAsJsonArray().add(createNextElementInHierarchy());
+				nextElement = createNextElementInHierarchy();
+				currentElement.getAsJsonArray().add(nextElement);
 			}
 
 		}
