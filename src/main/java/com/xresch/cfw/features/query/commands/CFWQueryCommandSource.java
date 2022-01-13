@@ -93,7 +93,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		for(int i = 1; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
-			System.out.println(i+" - "+currentPart.createDebugObject(null));
+			
 			if(currentPart instanceof QueryPartAssignment) {
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
 				assignment.assignToJsonObject(parameters);				
@@ -137,10 +137,10 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 					try {
 						source.execute(paramsForSource, inQueue);
 					} catch (Exception e) {
-						new CFWLog(logger).severe("Exception occured while reading source: "+e.getMessage(), e);
-						//set completed when error occurs
-						setDone(true);
+						new CFWLog(logger).severe("Exception occured while reading source: "+e.getMessage(), e);						
 					}
+					
+					setDone(true);
 				}
 			}).start();
 		
