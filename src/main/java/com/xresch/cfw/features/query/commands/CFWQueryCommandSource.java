@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonObject;
+import com.oracle.truffle.js.nodes.unary.TypeOfNode;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -81,49 +82,30 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			parser.throwParseException("source: the source does not exist: '"+sourceName+"'", namePart);
 		}
 		
-		this.source = CFW.Registry.Query.createSourceInstance(sourceName);
-		
+		this.source = CFW.Registry.Query.createSourceInstance(this.parent, sourceName);
+		System.out.println("CFWQueryCommand.setAndValidateQueryParts()-source:"+source);
 		//------------------------------------------
 		// Get Parameters
 		
-		JsonObject parameters = new JsonObject();
+
+		EnhancedJsonObject parameters = new EnhancedJsonObject();
 		
 		for(int i = 1; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
-			
+			System.out.println(i+" - "+currentPart.createDebugObject(null));
 			if(currentPart instanceof QueryPartAssignment) {
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-				QueryPart paramName = assignment.getLeftSide();
-				
-				QueryPartValue paramValue = namePart.determineValue(null);
-				//TODO update
-//				switch(paramValue.type()) {
-//					case STRING:	parameters.addProperty(paramName., paramValue.getAsString());
-//									break;
-//									
-//					case NUMBER:	parameters.addProperty(paramName, paramValue.getAsNumber());
-//									break;
-//				
-//					case BOOLEAN:	parameters.addProperty(paramName, paramValue.getAsBoolean());
-//									break;
-//									
-//					case JSON:		parameters.add(paramName, paramValue.getAsJson());
-//									break;
-//	
-//					default:		break;
-//				
-//				}
-				
+				assignment.assignToJsonObject(parameters);				
 			}else {
-				parser.throwParseException("source: only parameters(key=value) are allowed'"+sourceName+"'", currentPart);
+				parser.throwParseException("source: Only source name and parameters(key=value) are allowed)", currentPart);
 			}
 		}
 			
 		//------------------------------------------
 		// Map to Parameters Object
 		this.paramsForSource = source.getParameters();
-		if(!paramsForSource.mapJsonFields(parameters)) {
+		if(!paramsForSource.mapJsonFields(parameters.getWrappedObject())) {
 			
 			for(CFWField field : paramsForSource.getFields().values()) {
 				ArrayList<String> invalidMessages = field.getInvalidationMessages();
@@ -190,7 +172,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			
 			//---------------------------
 			// Wait for more input
-			this.waitForInput(50);	
+			this.waitForInput(100);	
 		}
 		
 	}

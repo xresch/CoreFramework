@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -135,6 +136,22 @@ public class QueryPartArray extends QueryPart {
 		return JsonNull.INSTANCE;
 	}
 	
+	
+	@Override
+	public JsonObject createDebugObject(EnhancedJsonObject object) {
+		
+		JsonObject debugObject = new JsonObject();
+		
+		debugObject.addProperty("partType", "Array");
+		
+		int i = 0;
+		for(QueryPart part : partsArray) {
+			debugObject.add("Element["+i+"]", part.createDebugObject(object));
+			i++;
+		}
+		
+		return debugObject;
+	}
 
 	
 	

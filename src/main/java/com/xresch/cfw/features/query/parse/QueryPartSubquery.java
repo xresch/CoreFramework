@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.gson.JsonObject;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -26,7 +27,7 @@ public class QueryPartSubquery extends QueryPart {
 		super(parentContext);
 		CFWQueryParser parser = new CFWQueryParser(query);
 		
-		queryList = parser.parseQuery();
+		queryList = parser.parse();
 	}
 	
 	/******************************************************************************************************
@@ -56,6 +57,22 @@ public class QueryPartSubquery extends QueryPart {
 		//TODO execute query write back to inQueue of parent query
 	}
 	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public JsonObject createDebugObject(EnhancedJsonObject object) {
+		
+		JsonObject debugObject = new JsonObject();
+
+		debugObject.addProperty("partType", "Subquery");
+		
+		//TODO
+//		debugObject.add("leftside", leftside.createDebugObject(object));
+//		debugObject.add("rightside", leftside.createDebugObject(object));
+
+		return debugObject;
+	}
 	
 
 }

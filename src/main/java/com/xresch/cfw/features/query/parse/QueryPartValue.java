@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.parse;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -306,6 +307,21 @@ public class QueryPartValue extends QueryPart {
 		if(value == null) return null;
 		
 		return value.toString();
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public JsonObject createDebugObject(EnhancedJsonObject object) {
+		
+		JsonObject debugObject = new JsonObject();
+
+		debugObject.addProperty("partType", "Value");
+		
+		debugObject.add("value", this.getAsJson());
+
+		return debugObject;
 	}
 
 }

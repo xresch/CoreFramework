@@ -40,7 +40,7 @@ public class CFWQueryParser {
 	private String query = null;
 	
 	private ArrayList<CFWQueryToken> tokenlist;
-	private CFWQuery currentQuery;
+	CFWQuery currentQuery;
 	private CFWQueryContext currentContext;
 	
 	private int cursor;
@@ -102,9 +102,11 @@ public class CFWQueryParser {
 	}
 	
 	/***********************************************************************************************
+	 * Entry method parsing the whole query String and returns an ArrayList of queries.
+	 * Multiple Queries are separated by semicolon.
 	 * 
 	 ***********************************************************************************************/
-	public ArrayList<CFWQuery> parseQuery() throws ParseException {
+	public ArrayList<CFWQuery> parse() throws ParseException {
 		
 		tokenlist = new CFWQueryTokenizer(this.query, false)
 			.keywords("AND", "OR", "NOT")
@@ -113,20 +115,8 @@ public class CFWQueryParser {
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
 		
 		while(this.hasMoreTokens()) {
-			
-			CFWQuery query = new CFWQuery();
-			currentQuery = query;
-			currentContext = query.getContext();
-			
-			while(this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
-				query.addCommand(parseQueryCommand(query));
-			}
-			
-			if(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.SIGN_SEMICOLON) {
-				this.consumeToken();
-			}
-			
-			queryList.add(query);
+						
+			queryList.add(parseQuery());
 
 		}
 		
@@ -136,7 +126,28 @@ public class CFWQueryParser {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommand parseQueryCommand(CFWQuery parentQuery) throws ParseException {
+	private CFWQuery parseQuery() throws ParseException {
+		currentQuery = new CFWQuery();
+		currentContext = currentQuery.getContext();
+		
+		while(this.hasMoreTokens() && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
+			CFWQueryCommand command = parseQueryCommand(currentQuery);
+			if(command != null) {
+				currentQuery.addCommand(command);
+			}
+		}
+		
+		if(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.SIGN_SEMICOLON) {
+			this.consumeToken();
+		}
+		
+		return currentQuery;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	private CFWQueryCommand parseQueryCommand(CFWQuery parentQuery) throws ParseException {
 		
 		//------------------------------------
 		// Check Has More Tokens
@@ -163,22 +174,21 @@ public class CFWQueryParser {
 			
 			//------------------------------------
 			// Registry Check exists
-			if(CFW.Registry.Query.commandExists(commandName)) {
-				
-			}else {
+			if(!CFW.Registry.Query.commandExists(commandName)) {
 				this.throwParseException("Unknown command '"+commandName+"'.", 0);
 			}
 			
 			//------------------------------------
-			// ParsePartsUntil End of Command '|'
-			ArrayList<QueryPart> parts = parseQueryPartsUntil(CFWQueryTokenType.OPERATOR_OR);
+			// ParseParts Until End of Command '|'
+			ArrayList<QueryPart> parts = parseQueryParts();
 			
 			//------------------------------------
 			// Create Command instance
-			CFWQueryCommand command = CFW.Registry.Query.createCommandInstance(commandName);
+			CFWQueryCommand command = CFW.Registry.Query.createCommandInstance(parentQuery, commandName);
 			
 			command.setAndValidateQueryParts(this, parts);
 			
+			return command;
 		}else {
 			this.throwParseException("Expected command name.", 0);
 		}
@@ -190,83 +200,150 @@ public class CFWQueryParser {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public ArrayList<QueryPart> parseQueryPartsUntil(CFWQueryTokenType untilType) throws ParseException {
+	private ArrayList<QueryPart> parseQueryParts() throws ParseException {
 		
 		ArrayList<QueryPart> parts = new ArrayList<>();
 		
-		while(this.lookahead().type() != untilType) {
+		while(this.hasMoreTokens() && this.lookahead().type() != CFWQueryTokenType.OPERATOR_OR) {
 			
-			CFWQueryToken currentToken = this.consumeToken();
-			switch(currentToken.type()) {
-			case LITERAL_STRING:	QueryPartValue stringPart = QueryPartValue.newString(currentContext, currentToken.value());
-									//TODO check lookahead, determine if AccessMember, Assignment, Method etc...
-									break;
-				
-			case LITERAL_BOOLEAN:	parts.add(QueryPartValue.newBoolean(currentContext, currentToken.valueAsBoolean()));
-									break;
-			case LITERAL_NUMBER:	parts.add(QueryPartValue.newBoolean(currentContext, currentToken.valueAsBoolean()));
-									break;
-			case NULL:
-				break;
-			case KEYWORD:
-				break;
-				
-			case OPERATOR_AND:
-				break;
-			case OPERATOR_DIVIDE:
-				break;
-			case OPERATOR_DOT:
-				break;
-			case OPERATOR_EQUAL:
-				break;
-			case OPERATOR_EQUAL_NOT:
-				break;
-			case OPERATOR_EQUAL_OR_GREATER:
-				break;
-			case OPERATOR_EQUAL_OR_LOWER:
-				break;
-			case OPERATOR_GREATERTHEN:
-				break;
-			case OPERATOR_LOWERTHEN:
-				break;
-			case OPERATOR_MINUS:
-				break;
-			case OPERATOR_MULTIPLY:
-				break;
-			case OPERATOR_NOT:
-				break;
-			case OPERATOR_OR:
-				break;
-			case OPERATOR_PLUS:
-				break;
-			case SIGN_BRACE_ROUND_CLOSE:
-				break;
-			case SIGN_BRACE_ROUND_OPEN:
-				break;
-			case SIGN_COMMA:
-				break;
-			case SIGN_SEMICOLON:
-				break;
-			case SPLIT:
-				break;
-			case TEXT_DOUBLE_QUOTES:
-				break;
-			case TEXT_SINGLE_QUOTES:
-				break;
-			case UNKNOWN:
-				break;
-			default:
-				break;
-			
-			}
+			parts.add(parseQueryPart());
 		}
 		
 		
 		return parts;
 	}
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	private QueryPart parseQueryPart() throws ParseException {
+		
+		
+		//------------------------------------------
+		// FIRST TOKEN EXPECT: 
+		//   LITERAL, 
+		//   QUOTED_TEXT,
+		//   NULL,
+		//   KEYWORD,
+		//   OPERATOR_NOT,
+		//   SIGN_BRACE_ROUND_OPEN,
+		//   FUNCTION_NAME
+		CFWQueryToken firstToken = this.consumeToken();
+		QueryPart firstPart = null;
+		
+		switch(firstToken.type()) {
+			case TEXT_SINGLE_QUOTES:
+			case TEXT_DOUBLE_QUOTES:	
+			case LITERAL_STRING:		firstPart = QueryPartValue.newString(currentContext, firstToken.value());
+										//TODO check lookahead, determine if AccessMember, Assignment, Method etc...
+										break;
+				
+			case LITERAL_BOOLEAN:		firstPart = QueryPartValue.newBoolean(currentContext, firstToken.valueAsBoolean());
+										break;
+									
+			case LITERAL_NUMBER:		firstPart = QueryPartValue.newNumber(currentContext, firstToken.valueAsNumber());
+										break;
+								
+			case NULL: 					firstPart = QueryPartValue.newNull(currentContext);
+										break;
+
+//			case KEYWORD:				firstPart = QueryPartValue.newNull(currentContext);
+//										break;
+//									
+//			case OPERATOR_NOT:
+//				break;
+//
+//			case FUNCTION_NAME:
+//				break;
+			default:					this.throwParseException("Unexpected token.", firstToken.position());
+										break;
+
+		}
+		
+		
+		
+		//------------------------------------------
+		// NEXT TOKEN can basically be anything
+		QueryPart resultPart = firstPart;
+		
+		if(!this.hasMoreTokens()) { return resultPart; }
+		
+		switch(this.lookahead().type()) {
+		case OPERATOR_OR:		
+		case LITERAL_BOOLEAN:
+		case LITERAL_NUMBER:
+		case LITERAL_STRING:
+		case NULL:
+		case SIGN_BRACE_ROUND_CLOSE:
+
+								//End of Query Part
+								return resultPart;
+								
+		case OPERATOR_EQUAL:	this.consumeToken();
+								QueryPart rightside = this.parseQueryPart();
+								resultPart = new QueryPartAssignment(currentContext, firstPart, rightside);
+								break;
+		case FUNCTION_NAME:
+			break;
+		case KEYWORD:
+			break;
+
+		case OPERATOR_AND:
+			break;
+		case OPERATOR_DIVIDE:
+			break;
+		case OPERATOR_DOT:
+			break;
+
+		case OPERATOR_EQUAL_EQUAL:
+			break;
+		case OPERATOR_EQUAL_NOT:
+			break;
+		case OPERATOR_EQUAL_OR_GREATER:
+			break;
+		case OPERATOR_EQUAL_OR_LOWER:
+			break;
+		case OPERATOR_GREATERTHEN:
+			break;
+		case OPERATOR_LOWERTHEN:
+			break;
+		case OPERATOR_MINUS:
+			break;
+		case OPERATOR_MULTIPLY:
+			break;
+		case OPERATOR_NOT:
+			break;
+
+		case OPERATOR_PLUS:
+			break;
+
+		case SIGN_BRACE_ROUND_OPEN:
+			break;
+		case SIGN_BRACE_SQUARE_CLOSE:
+			break;
+		case SIGN_BRACE_SQUARE_OPEN:
+			break;
+		case SIGN_COMMA:
+			break;
+		case SIGN_SEMICOLON:
+			break;
+		case SPLIT:
+			break;
+		case TEXT_DOUBLE_QUOTES:
+			break;
+		case TEXT_SINGLE_QUOTES:
+			break;
+		case UNKNOWN:
+			break;
+		default:
+			break;
+		
+		}
+		
+		return resultPart;
+	}
 	
-	
+
 	
 	/***********************************************************************************************
 	 * Create parse exception for a token.

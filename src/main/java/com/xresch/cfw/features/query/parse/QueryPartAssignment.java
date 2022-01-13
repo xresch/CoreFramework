@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query.parse;
 
+import com.google.gson.JsonObject;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
@@ -37,7 +38,7 @@ public class QueryPartAssignment extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	public QueryPart getRightSide() {
-		return leftside;
+		return rightside;
 	}
 
 	/******************************************************************************************************
@@ -64,6 +65,18 @@ public class QueryPartAssignment extends QueryPart {
 			
 		}
 	
+	}
+
+	@Override
+	public JsonObject createDebugObject(EnhancedJsonObject object) {
+		
+		JsonObject debugObject = new JsonObject();
+		
+		debugObject.addProperty("partType", "Assignment");
+		debugObject.add("leftside", leftside.createDebugObject(object));
+		debugObject.add("rightside", rightside.createDebugObject(object));
+		
+		return debugObject;
 	}
 	
 	

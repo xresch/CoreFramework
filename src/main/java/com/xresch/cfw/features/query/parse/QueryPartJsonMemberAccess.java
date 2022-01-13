@@ -263,6 +263,10 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		return false;
 	}
 
+	/******************************************************************************************************
+	 * Internal method for creating structure for setValueRecursively.
+	 * 
+	 ******************************************************************************************************/
 	private JsonElement createNextElementInHierarchy() {
 		JsonElement nextElement;
 		if( (rightside instanceof QueryPartArray)
@@ -278,7 +282,21 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		return nextElement;
 	}
 	
-	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public JsonObject createDebugObject(EnhancedJsonObject object) {
+		
+		JsonObject debugObject = new JsonObject();
+		
+		debugObject.addProperty("partType", "JsonMemberAccess");
+		debugObject.add("leftside", leftside.createDebugObject(object));
+		debugObject.add("rightside", leftside.createDebugObject(object));
+		debugObject.add("leftEvaluated", leftside.determineValue(object).getAsJson());
+		debugObject.add("rightEvaluated", leftside.determineValue(object).getAsJson());
+		return debugObject;
+	}
 	
 
 }

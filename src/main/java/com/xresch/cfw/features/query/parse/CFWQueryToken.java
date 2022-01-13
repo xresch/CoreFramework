@@ -188,4 +188,14 @@ public class CFWQueryToken{
 	public boolean isOperatorBinary() { 
 		return type == CFWQueryToken.CFWQueryTokenType.KEYWORD; 
 	};
+	
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String toString() { 
+		return this.value; 
+	};
+	
 }

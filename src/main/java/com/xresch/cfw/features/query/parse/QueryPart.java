@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query.parse;
 
+import com.google.gson.JsonObject;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
@@ -24,6 +25,13 @@ public abstract class QueryPart {
 	 * 
 	 ***********************************************************************************************/
 	public abstract QueryPartValue determineValue(EnhancedJsonObject object);
+		
+
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public abstract JsonObject createDebugObject(EnhancedJsonObject object);
 		
 
 	/***********************************************************************************************

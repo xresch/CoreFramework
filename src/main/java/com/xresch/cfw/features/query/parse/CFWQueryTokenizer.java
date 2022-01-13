@@ -290,7 +290,9 @@ public class CFWQueryTokenizer {
 		}else {
 			//----------------------------------------
 			// Extract Multiple Chars, endPos at EOF
+			// move cursor to EOF
 			tokenValue = base.substring(startPos);
+			cursor = base.length()+2;
 		}
 		
 		return new CFWQueryToken(type, tokenValue, startPos);

@@ -31,7 +31,7 @@ public class CFWQueryRegistry {
 		
 		String lowercaseName = command.uniqueName().trim().toLowerCase();
 		if( queryCommandMap.containsKey(lowercaseName) ) {
-			new CFWLog(logger).severe("A JobTask with the name '"+command.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
+			new CFWLog(logger).severe("A Command with the name '"+command.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
 			return;
 		}
 		
@@ -76,13 +76,13 @@ public class CFWQueryRegistry {
 	 * Get a new instance for the specified QueryCommand.
 	 * Returns null if the  is undefined.
 	 ***********************************************************************/
-	public static CFWQueryCommand createCommandInstance(String commandName)  {
+	public static CFWQueryCommand createCommandInstance(CFWQuery parent, String commandName)  {
 		
 		CFWQueryCommand instance = null;
 		Class<? extends CFWQueryCommand> clazz =  queryCommandMap.get(commandName.trim().toLowerCase());
 		try {
 			if(clazz != null) {
-				instance = clazz.newInstance();
+				instance = clazz.getConstructor(CFWQuery.class).newInstance(parent);
 			}
 		} catch (Exception e) {
 			new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
@@ -164,13 +164,13 @@ public class CFWQueryRegistry {
 	 * Get a new instance for the specified QuerySource.
 	 * Returns null if the  is undefined.
 	 ***********************************************************************/
-	public static CFWQuerySource createSourceInstance(String sourceName)  {
+	public static CFWQuerySource createSourceInstance(CFWQuery parent, String sourceName)  {
 		
 		CFWQuerySource instance = null;
 		Class<? extends CFWQuerySource> clazz =  querySourceMap.get(sourceName.trim().toLowerCase());
 		try {
 			if(clazz != null) {
-				instance = clazz.newInstance();
+				instance = clazz.getConstructor(CFWQuery.class).newInstance(parent);
 			}
 		} catch (Exception e) {
 			new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
