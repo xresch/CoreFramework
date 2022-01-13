@@ -427,7 +427,7 @@ public class TestCFWQueryParts {
 				).getAsJsonObject();
 		
 		QueryPart level1, level2, level3;
-
+		QueryPartAssignment assignment;
 
 		//-------------------------------
 		// Check Set Value to MemberName(String)
@@ -435,7 +435,7 @@ public class TestCFWQueryParts {
 		level1 = QueryPartValue.newString(context, "newMemba");
 		
 
-		QueryPartAssignment assignment = new QueryPartAssignment(context
+		assignment = new QueryPartAssignment(context
 				, level1
 				, QueryPartValue.newString(context, "Itse not-e mee, itse Luigi!")
 			);
@@ -444,6 +444,43 @@ public class TestCFWQueryParts {
 		
 		Assertions.assertEquals("Itse not-e mee, itse Luigi!", 
 				object.get(level1.toString()).getAsString()
+			);
+		
+		//-------------------------------
+		// Check Set Value to MemberName(Integer)
+		//-------------------------------
+		level1 = QueryPartValue.newNumber(context, 10);
+		
+
+		assignment = new QueryPartAssignment(context
+				, level1
+				, QueryPartValue.newBoolean(context, false)
+			);
+		
+		assignment.assignToJsonObject(new EnhancedJsonObject(object));
+		
+		System.out.println(CFW.JSON.toJSON(object));
+		Assertions.assertEquals(false, 
+				object.get(level1.toString()).getAsBoolean()
+			);
+		
+		
+		//-------------------------------
+		// Check Set Value to MemberName(Boolean)
+		//-------------------------------
+		level1 = QueryPartValue.newBoolean(context, true);
+		
+
+		assignment = new QueryPartAssignment(context
+				, level1
+				, QueryPartValue.newNumber(context, 123)
+			);
+		
+		assignment.assignToJsonObject(new EnhancedJsonObject(object));
+		
+		System.out.println(CFW.JSON.toJSON(object));
+		Assertions.assertEquals(123, 
+				object.get(level1.toString()).getAsInt()
 			);
 		
 		//-------------------------------
