@@ -18,12 +18,12 @@ public class QueryPartAssignment extends QueryPart {
 	 * @param leftside The name on the left side of the assignment operation.
 	 * 
 	 ******************************************************************************************************/
-	private QueryPartAssignment(CFWQueryContext context, QueryPart leftside, QueryPart value) {
+	public QueryPartAssignment(CFWQueryContext context, QueryPart leftside, QueryPart rightside) {
 		super(context);
 		this.leftside = leftside;
-		this.rightside = value;
+		this.rightside = rightside;
 	}
-	
+		
 	/******************************************************************************************************
 	 * Returns the left side of the assignment operation.
 	 * 
@@ -31,9 +31,17 @@ public class QueryPartAssignment extends QueryPart {
 	public QueryPart getLeftSide() {
 		return leftside;
 	}
+	
+	/******************************************************************************************************
+	 * Returns the right side of the assignment operation.
+	 * 
+	 ******************************************************************************************************/
+	public QueryPart getRightSide() {
+		return leftside;
+	}
 
 	/******************************************************************************************************
-	 * Determines and returns the right side of the value of the assignment.
+	 * Determines and returns the value of the assignment.
 	 * 
 	 ******************************************************************************************************/
 	@Override
@@ -42,21 +50,21 @@ public class QueryPartAssignment extends QueryPart {
 	}
 	
 	/******************************************************************************************************
-	 * Determines and returns the right side of the value of the assignment.
+	 * Determines the value and assigns it to the JsonObject.
 	 * 
 	 ******************************************************************************************************/
 	public void assignToJsonObject(EnhancedJsonObject object) {
 		
-		if (leftside instanceof QueryPartValue) {
+		if (leftside instanceof QueryPartJsonMemberAccess) {
+			QueryPartJsonMemberAccess memberAccess = (QueryPartJsonMemberAccess)leftside;
+			memberAccess.setValueOfMember(object, rightside.determineValue(object).getAsJson());
+		}else {
 			QueryPartValue value = (QueryPartValue)leftside;
 			if(value.isString()) {
-				object.addProperty(value.getAsString(), rightside);
+				object.addProperty(value.getAsString(), rightside.determineValue(object));
 			}
-		}else if(leftside instanceof QueryPartJsonMemberAccess) {
-			//TODO
 		}
-		
-
+	
 	}
 	
 	

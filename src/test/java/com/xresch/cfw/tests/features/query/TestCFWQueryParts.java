@@ -15,6 +15,7 @@ import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
+import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartJsonMemberAccess;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
@@ -405,6 +406,61 @@ public class TestCFWQueryParts {
 		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("a new value"));
 		
 		Assertions.assertEquals("a new value", 
+				memberAccessPart.determineValue(
+					new EnhancedJsonObject(object)
+				).getAsString()
+			);
+	}
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testQueryPartAssignment() throws IOException {
+		
+		CFWQueryContext context = new CFWQueryContext();
+		
+		JsonObject object = 
+				CFW.JSON.fromJson(
+						CFW.Files.readPackageResource("com.xresch.cfw.tests.features.query.testdata", "testQueryPartJsonMemberAccess_Object.json")
+				).getAsJsonObject();
+		
+		QueryPart level1, level2, level3;
+
+
+		//-------------------------------
+		// Check Set Value to MemberName(String)
+		//-------------------------------
+		level1 = QueryPartValue.newString(context, "newMemba");
+		
+
+		QueryPartAssignment assignment = new QueryPartAssignment(context
+				, level1
+				, QueryPartValue.newString(context, "Itse not-e mee, itse Luigi!")
+			);
+		
+		assignment.assignToJsonObject(new EnhancedJsonObject(object));
+		
+		Assertions.assertEquals("Itse not-e mee, itse Luigi!", 
+				object.get(level1.toString()).getAsString()
+			);
+		
+		//-------------------------------
+		// Check Set Value to JsonMemberAccess
+		//-------------------------------
+		level1 = QueryPartValue.newString(context, "memba");
+		level2 = QueryPartValue.newString(context, "submemba");
+		
+		QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
+		
+		Assertions.assertEquals("memba.submemba", memberAccessPart.determineValue(null).getAsString());
+		
+		assignment = new QueryPartAssignment(context, memberAccessPart, QueryPartValue.newString(context, "Itse not-e mee, itse Luigi!"));
+		
+		assignment.assignToJsonObject(new EnhancedJsonObject(object));
+		
+		Assertions.assertEquals("Itse not-e mee, itse Luigi!", 
 				memberAccessPart.determineValue(
 					new EnhancedJsonObject(object)
 				).getAsString()
