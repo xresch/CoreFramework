@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandDistinct;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceRandom;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
@@ -34,6 +35,7 @@ public class FeatureQuery extends CFWAppFeature {
 		//----------------------------------
 		// Register Commands
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandSource(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandDistinct(null));
 		
 		
 		//----------------------------------

@@ -45,7 +45,12 @@ public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 		return this;
 	}
 	
-	
+	/***********************************************************************************************
+	 * Get the commands of this query
+	 ***********************************************************************************************/
+	public ArrayList<CFWQueryCommand> getCommandList() {
+		return commandList;
+	}
 
 	/***********************************************************************************************
 	 * 

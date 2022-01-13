@@ -22,7 +22,8 @@ public abstract class QueryPart {
 	}
 	
 	/***********************************************************************************************
-	 * 
+	 * Evaluates and determines the value of this QueryPart.
+	 * The method has to be implemented to be able to handle null as parameter value.
 	 ***********************************************************************************************/
 	public abstract QueryPartValue determineValue(EnhancedJsonObject object);
 		

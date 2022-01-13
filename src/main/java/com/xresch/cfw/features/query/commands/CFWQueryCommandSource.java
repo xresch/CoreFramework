@@ -38,8 +38,8 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public String uniqueName() {
-		return "source";
+	public String[] uniqueNameAndAliases() {
+		return new String[] {"source", "src"};
 	}
 
 	/***********************************************************************************************
@@ -114,7 +114,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				}
 			}
 			
-			throw new ParseException("Unknown error for source command '"+this.uniqueName()+"'", -1);
+			throw new ParseException("Unknown error for source command '"+this.uniqueNameAndAliases()+"'", -1);
 		}
 	}
 

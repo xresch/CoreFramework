@@ -29,13 +29,18 @@ public class CFWQueryRegistry {
 	 ***********************************************************************/
 	public static void registerCommand(CFWQueryCommand command)  {
 		
-		String lowercaseName = command.uniqueName().trim().toLowerCase();
-		if( queryCommandMap.containsKey(lowercaseName) ) {
-			new CFWLog(logger).severe("A Command with the name '"+command.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
-			return;
+		for(String name : command.uniqueNameAndAliases()) {
+			String lowercaseName = name.trim().toLowerCase();
+			
+			if( queryCommandMap.containsKey(lowercaseName) ) {
+				new CFWLog(logger).severe("A Command with the name '"+command.uniqueNameAndAliases()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
+				return;
+			}
+			
+			queryCommandMap.put(lowercaseName, command.getClass());
 		}
 		
-		queryCommandMap.put(lowercaseName, command.getClass());
+		
 	}
 	
 	/***********************************************************************

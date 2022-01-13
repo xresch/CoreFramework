@@ -148,6 +148,14 @@ public class QueryPartValue extends QueryPart {
 	}
 	
 	/******************************************************************************************************
+	 * Check if the value is string representation of a boolean. 
+	 ******************************************************************************************************/
+	public boolean isBoolOrBoolString() {
+				
+		return this.isBoolean() || this.isBooleanString();
+	}
+	
+	/******************************************************************************************************
 	 * Check if the value is a number
 	 ******************************************************************************************************/
 	public boolean isNumber() {

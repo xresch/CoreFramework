@@ -73,6 +73,32 @@ public class EnhancedJsonObject {
 	}
 	
 	
+	/*************************************************************************************************
+	 * Returns the value of the specified member converted to a string.
+	 *
+	 * @param memberName name of the member that is being requested.
+	 * @return a string or empty string, never null
+	 *************************************************************************************************/
+	public String convertToString(String memberName) {
+		
+		JsonElement member = internal.get(memberName);
+		
+		if(member == null || member.isJsonNull()) return "";
+		
+		if(member.isJsonPrimitive()) {
+			JsonPrimitive primitive = member.getAsJsonPrimitive();
+			
+			if(primitive.isString()) 	return primitive.getAsString();
+			if(primitive.isBoolean()) 	return ""+primitive.getAsBoolean();
+			if(primitive.isNumber()) 	return ""+primitive.getAsBigDecimal();
+			
+		}
+
+		return member.toString();
+	}
+	
+	
+	
 	//#####################################################################################################################
 	//#####################################################################################################################
 	// WRAPPED METHODS
@@ -232,6 +258,7 @@ public class EnhancedJsonObject {
 		return this.internal.getAsJsonObject(memberName);
 	}
 	
+
 	/*************************************************************************************************
 	 * 
 	 *************************************************************************************************/

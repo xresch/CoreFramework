@@ -204,7 +204,10 @@ public class CFWQueryParser {
 		
 		ArrayList<QueryPart> parts = new ArrayList<>();
 		
-		while(this.hasMoreTokens() && this.lookahead().type() != CFWQueryTokenType.OPERATOR_OR) {
+		
+		while(this.hasMoreTokens() 
+		   && this.lookahead().type() != CFWQueryTokenType.OPERATOR_OR
+		   && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
 			
 			parts.add(parseQueryPart());
 		}

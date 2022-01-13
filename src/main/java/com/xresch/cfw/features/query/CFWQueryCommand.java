@@ -23,9 +23,9 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	}
 	
 	/***********************************************************************************************
-	 * 
+	 * Return the unique name and aliases of the command.
 	 ***********************************************************************************************/
-	public abstract String uniqueName();
+	public abstract String[] uniqueNameAndAliases();
 	
 	/***********************************************************************************************
 	 * 
