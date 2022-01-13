@@ -190,7 +190,7 @@ public class TestCFWQueryParsing {
 	@Test
 	public void testParsingQueryPartArray() throws ParseException {
 		
-		String queryString = "source random records=4 | distinct FIRSTNAME, LASTNAME, LIKES_TIRAMISU, TIME";
+		String queryString = "source random records=4 | dedup FIRSTNAME, LASTNAME, LIKES_TIRAMISU, TIME";
 		
 		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true)
 				 .keywords("AND", "OR", "NOT");
