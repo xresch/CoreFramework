@@ -83,6 +83,9 @@ public class TestCFWQueryParsing {
 		
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
 	@Test
 	public void testParsingPipedCommands() throws ParseException {
 		
@@ -127,6 +130,9 @@ public class TestCFWQueryParsing {
 		
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
 	@Test
 	public void testParsingMultipleQueries() throws ParseException {
 		
@@ -137,7 +143,7 @@ public class TestCFWQueryParsing {
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
-		printResults("testParsingPipedCommands", results);
+		printResults("testParsingMultipleQueries", results);
 		
 		CFWQueryParser parser = new CFWQueryParser(queryString);
 		
@@ -177,5 +183,53 @@ public class TestCFWQueryParsing {
 		
 	}	
 
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testParsingQueryPartArray() throws ParseException {
+		
+		String queryString = "source random records=4 | distinct FIRSTNAME, LASTNAME, LIKES_TIRAMISU, TIME";
+		
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true)
+				 .keywords("AND", "OR", "NOT");
+		
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
+		printResults("testParsingQueryPartArray", results);
+		
+		CFWQueryParser parser = new CFWQueryParser(queryString);
+		
+		ArrayList<CFWQuery> queryList = parser.parse();
+		
+		Assertions.assertEquals(1, queryList.size());
+
+		//------------------------
+		// Execute Query
+		
+		CFWQuery query = queryList.get(0);
+		ArrayList<CFWQueryCommand> commandList = query.getCommandList();
+		
+		Assertions.assertEquals(2, commandList.size());
+		
+		query.execute(false);
+		
+		LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
+		while(!query.isComplete()) {
+			
+			while(!queue.isEmpty()) {
+				System.out.println(
+					CFW.JSON.toJSON(
+						queue.poll().getWrappedObject()
+					)
+				); 
+			}
+			
+		}
+		
+		System.out.println();
+
+		
+	}	
 	
 }

@@ -27,6 +27,15 @@ public class QueryPartArray extends QueryPart {
 	//holds index if this array is a index access expression(e.g. [1])
 	private Integer arrayIndex = null;
 	
+	
+	/******************************************************************************************************
+	 *  
+	 ******************************************************************************************************/
+	public QueryPartArray(CFWQueryContext context, ArrayList<QueryPart> parts) {
+		super(context);
+		this.partsArray = parts;
+	}
+	
 	/******************************************************************************************************
 	 *  
 	 ******************************************************************************************************/
@@ -37,9 +46,11 @@ public class QueryPartArray extends QueryPart {
 	/******************************************************************************************************
 	 *  
 	 ******************************************************************************************************/
-	public QueryPartArray(CFWQueryContext context, ArrayList<QueryPart> parts) {
-		super(context);
-		this.partsArray = parts;
+	public QueryPartArray(CFWQueryContext context, QueryPart... parts) {
+		this(context,  new ArrayList<>());
+		for(QueryPart part : parts) {
+			this.add(part);
+		}
 	}
 	
 	/******************************************************************************************************
@@ -51,11 +62,17 @@ public class QueryPartArray extends QueryPart {
 	}
 	
 	/******************************************************************************************************
-	 * Returns the left side of the assignment operation.
+	 * Adds a query part. If the query part is a QueryPartArray, the parts in that array are merged into
+	 * this array.
 	 * 
 	 ******************************************************************************************************/
 	public QueryPartArray add(QueryPart part) {
-		partsArray.add(part);
+		if( !(part instanceof QueryPartArray)) {
+			partsArray.add(part);
+		}else {
+			//unwrap arrays
+			partsArray.addAll( ((QueryPartArray)part).getQueryPartsArray());
+		}
 		return this;
 	}
 
@@ -86,6 +103,13 @@ public class QueryPartArray extends QueryPart {
 			}
 		}
 		return jsonArray;
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	protected ArrayList<QueryPart> getQueryPartsArray() {
+		return partsArray;
 	}
 	
 	/******************************************************************************************************

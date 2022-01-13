@@ -221,7 +221,6 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	private QueryPart parseQueryPart() throws ParseException {
 		
-		
 		//------------------------------------------
 		// FIRST TOKEN EXPECT: 
 		//   LITERAL, 
@@ -278,14 +277,24 @@ public class CFWQueryParser {
 		case LITERAL_STRING:
 		case NULL:
 		case SIGN_BRACE_ROUND_CLOSE:
-
+								//------------------------------
 								//End of Query Part
 								return resultPart;
 								
-		case OPERATOR_EQUAL:	this.consumeToken();
+		
+		case OPERATOR_EQUAL:	//------------------------------
+								// QueryPartAssignment
+								this.consumeToken();
 								QueryPart rightside = this.parseQueryPart();
 								resultPart = new QueryPartAssignment(currentContext, firstPart, rightside);
 								break;
+		
+		case SIGN_COMMA:		//------------------------------
+								// QueryPartArray
+								this.consumeToken();
+								QueryPart nextPart = this.parseQueryPart();
+								resultPart = new QueryPartArray(currentContext, firstPart, nextPart);
+								break;			
 		case FUNCTION_NAME:
 			break;
 		case KEYWORD:
@@ -325,8 +334,6 @@ public class CFWQueryParser {
 		case SIGN_BRACE_SQUARE_CLOSE:
 			break;
 		case SIGN_BRACE_SQUARE_OPEN:
-			break;
-		case SIGN_COMMA:
 			break;
 		case SIGN_SEMICOLON:
 			break;
