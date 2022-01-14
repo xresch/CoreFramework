@@ -27,6 +27,7 @@ public class TestCFWQueryParsing {
 	private static CFWQueryContext context = new CFWQueryContext();
 	
 	private static String jsonTestData;
+	private static String sourceString ;
 	private static final String PACKAGE = "com.xresch.cfw.tests.features.query.testdata";
 	
 	@BeforeAll
@@ -38,7 +39,7 @@ public class TestCFWQueryParsing {
 		CFW.Files.addAllowedPackage(PACKAGE);
 		jsonTestData =	CFW.Files.readPackageResource(PACKAGE, "SourceJsonTestdata.json");
 		jsonTestData = jsonTestData.replace("'", "\'");
-		
+		sourceString = "source json data='"+jsonTestData+"'";
 
 		context.setEarliest(new Instant().minus(1000*60*30).getMillis());
 		context.setLatest(new Instant().getMillis());
@@ -61,16 +62,14 @@ public class TestCFWQueryParsing {
 	public void testParsingSimpleSourceQuery() throws ParseException {
 		
 		//String queryString = "source random records=100";
-		String queryString = "source json data='"+jsonTestData+"'";
-		System.out.println(queryString);
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true)
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(sourceString, true)
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testParsingSimpleSourceQuery", results);
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString);
+		CFWQueryParser parser = new CFWQueryParser(sourceString);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
 		
@@ -86,7 +85,7 @@ public class TestCFWQueryParsing {
 		
 		LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
 		int count = 0;
-		while(!query.isComplete() || !queue.isEmpty()) {
+		while(!query.isFullyDrained()) {
 			
 			while(!queue.isEmpty()) {
 				count++;
@@ -96,7 +95,6 @@ public class TestCFWQueryParsing {
 					)
 				); 
 			}
-			
 		}
 		
 		Assertions.assertEquals(100, count);
@@ -111,7 +109,7 @@ public class TestCFWQueryParsing {
 	@Test
 	public void testParsingPipedCommands() throws ParseException {
 		
-		String queryString = "source random records=20 | distinct FIRSTNAME LIKES_TIRAMISuuU trim=true";
+		String queryString = sourceString+" | distinct FIRSTNAME LIKES_TIRAMISU trim=true";
 		
 		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true)
 				 .keywords("AND", "OR", "NOT");
@@ -138,17 +136,20 @@ public class TestCFWQueryParsing {
 		query.execute(false);
 		
 		LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
-		while(!query.isComplete()) {
+		int count = 0;
+		while(!query.isFullyDrained()) {
 			
 			while(!queue.isEmpty()) {
+				count++;
 				System.out.println(
 					CFW.JSON.toJSON(
 						queue.poll().getWrappedObject()
 					)
 				); 
 			}
-			
 		}
+		
+		Assertions.assertEquals(69, count);
 		
 		System.out.println();
 		
@@ -160,8 +161,8 @@ public class TestCFWQueryParsing {
 	@Test
 	public void testParsingMultipleQueries() throws ParseException {
 		
-		String queryString = "source random records=4 | distinct FIRSTNAME ;"
-							+" source random records=7 | distinct LASTNAME";
+		String queryString = sourceString+" | distinct FIRSTNAME ;"
+							+sourceString+" | distinct LIKES_TIRAMISU ";
 		
 		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true)
 				 .keywords("AND", "OR", "NOT");
@@ -191,16 +192,22 @@ public class TestCFWQueryParsing {
 			query.execute(false);
 			
 			LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
-			while(!query.isComplete()) {
+			int count = 0;
+			while(!query.isFullyDrained()) {
 				
 				while(!queue.isEmpty()) {
+					count++;
 					System.out.println(
 						CFW.JSON.toJSON(
 							queue.poll().getWrappedObject()
 						)
 					); 
 				}
-				
+			}
+			if(index == 1) {	
+				Assertions.assertEquals(44, count);
+			}else {
+				Assertions.assertEquals(2, count);
 			}
 			
 			index++;
@@ -216,7 +223,7 @@ public class TestCFWQueryParsing {
 	@Test
 	public void testParsingQueryPartArray() throws ParseException {
 		
-		String queryString = "source random records=4 | dedup FIRSTNAME, LASTNAME, LIKES_TIRAMISU, TIME";
+		String queryString = sourceString+" | dedup FIRSTNAME, LASTNAME, LIKES_TIRAMISU, TIME";
 		
 		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true)
 				 .keywords("AND", "OR", "NOT");
@@ -242,17 +249,20 @@ public class TestCFWQueryParsing {
 		query.execute(false);
 		
 		LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
-		while(!query.isComplete()) {
+		int count = 0;
+		while(!query.isFullyDrained()) {
 			
 			while(!queue.isEmpty()) {
+				count++;
 				System.out.println(
 					CFW.JSON.toJSON(
 						queue.poll().getWrappedObject()
 					)
 				); 
 			}
-			
 		}
+		
+		Assertions.assertEquals(100, count);
 		
 		System.out.println();
 

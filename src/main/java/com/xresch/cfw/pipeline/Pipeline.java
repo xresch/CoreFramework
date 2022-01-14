@@ -90,6 +90,16 @@ public class Pipeline<I, O> {
 	}
 	
 	/*************************************************************************************
+	 * Returns true if all actions have completed and the last queue is empty.
+	 * Useful to poll everything from the last queue manually.
+	 * 
+	 *************************************************************************************/
+	public boolean isFullyDrained() {
+		
+		return this.isComplete() && lastQueue.isEmpty();
+	}
+	
+	/*************************************************************************************
 	 * Start all the actions as separate threads.
 	 * @param args
 	 * @return
