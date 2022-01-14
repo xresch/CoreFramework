@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.joda.time.Instant;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryCommand;
+import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
@@ -22,11 +24,24 @@ public class TestCFWQueryParsing {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
+	private static CFWQueryContext context = new CFWQueryContext();
+	
+	private static String jsonTestData;
+	private static final String PACKAGE = "com.xresch.cfw.tests.features.query.testdata";
+	
 	@BeforeAll
 	public static void setup() {
-		CFW.Files.addAllowedPackage("com.xresch.cfw.tests.features.query.testdata");
+		
 		FeatureQuery feature = new FeatureQuery();
 		feature.register();
+		
+		CFW.Files.addAllowedPackage(PACKAGE);
+		jsonTestData =	CFW.Files.readPackageResource(PACKAGE, "SourceJsonTestdata.json");
+		jsonTestData = jsonTestData.replace("'", "\'");
+		
+
+		context.setEarliest(new Instant().minus(1000*60*30).getMillis());
+		context.setLatest(new Instant().getMillis());
 	}
 	
 	/****************************************************************
@@ -45,13 +60,15 @@ public class TestCFWQueryParsing {
 	@Test
 	public void testParsingSimpleSourceQuery() throws ParseException {
 		
-		String queryString = "source random records=10";
+		//String queryString = "source random records=100";
+		String queryString = "source json data='"+jsonTestData+"'";
+		System.out.println(queryString);
 		
 		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true)
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
-		printResults("testQueryPartArray", results);
+		printResults("testParsingSimpleSourceQuery", results);
 		
 		CFWQueryParser parser = new CFWQueryParser(queryString);
 		
@@ -63,13 +80,16 @@ public class TestCFWQueryParsing {
 		// Execute Query
 		
 		CFWQuery query = queryList.get(0);
+		query.setContext(context);
 		
 		query.execute(false);
 		
 		LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
-		while(!query.isComplete()) {
+		int count = 0;
+		while(!query.isComplete() || !queue.isEmpty()) {
 			
 			while(!queue.isEmpty()) {
+				count++;
 				System.out.println(
 					CFW.JSON.toJSON(
 						queue.poll().getWrappedObject()
@@ -78,6 +98,8 @@ public class TestCFWQueryParsing {
 			}
 			
 		}
+		
+		Assertions.assertEquals(100, count);
 		
 		System.out.println();
 		
@@ -107,6 +129,8 @@ public class TestCFWQueryParsing {
 		// Execute Query
 		
 		CFWQuery query = queryList.get(0);
+		query.setContext(context);
+		
 		ArrayList<CFWQueryCommand> commandList = query.getCommandList();
 		
 		Assertions.assertEquals(2, commandList.size());
@@ -156,7 +180,9 @@ public class TestCFWQueryParsing {
 		
 		int index = 1;
 		for(CFWQuery query : queryList) {
-
+			
+			query.setContext(context);
+			
 			System.out.println("-------- Query "+index+" ----------");
 			ArrayList<CFWQueryCommand> commandList = query.getCommandList();
 			
@@ -208,6 +234,7 @@ public class TestCFWQueryParsing {
 		// Execute Query
 		
 		CFWQuery query = queryList.get(0);
+		query.setContext(context);
 		ArrayList<CFWQueryCommand> commandList = query.getCommandList();
 		
 		Assertions.assertEquals(2, commandList.size());

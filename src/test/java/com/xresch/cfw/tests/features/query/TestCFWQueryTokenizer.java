@@ -3,15 +3,43 @@ package com.xresch.cfw.tests.features.query;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.joda.time.Instant;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
 import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 
 public class TestCFWQueryTokenizer {
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	private static CFWQueryContext context = new CFWQueryContext();
+	
+	private static String jsonTestData;
+	private static final String PACKAGE = "com.xresch.cfw.tests.features.query.testdata";
+	
+	@BeforeAll
+	public static void setup() {
+		
+		FeatureQuery feature = new FeatureQuery();
+		feature.register();
+		
+		CFW.Files.addAllowedPackage(PACKAGE);
+		jsonTestData =	CFW.Files.readPackageResource(PACKAGE, "SourceJsonTestdata.json");
+		jsonTestData = jsonTestData.replace("'", "\'");
+		
+
+		context.setEarliest(new Instant().minus(1000*60*30).getMillis());
+		context.setLatest(new Instant().getMillis());
+	}
 	
 	/****************************************************************
 	 * 
@@ -248,6 +276,42 @@ public class TestCFWQueryTokenizer {
 		
 		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, results.get(++i).type());
 		Assertions.assertEquals("==", 									results.get(i).value());
+	}
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testSourceSyntax() throws IOException {
+		
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer("source json data=\'"+jsonTestData+"\' ", false);
+		System.out.println("source json data=\""+jsonTestData+"\"");
+		
+//		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer("source json data='[\r\n"
+//		        + "  {\"FIRSTNAME\":\"Mars\",\"LASTNAME\":\"Lundgren\",\"LOCATION\":\"Vaikuntha\",\"ID\":\"hayoCpHhhlJXjryl\",\"LIKES_TIRAMISU\":true,\"LAST_LOGIN\":1642783356902,\"URL\":\"http://www.example.url/mightyperson?id\\u003dhayoCpHhhlJXjryl\",\"VALUE\":7,\"TIME\":1642151589524}\r\n"
+//				+ ", {\"FIRSTNAME\":\"Apollo\",\"LASTNAME\":\"Lindgren\",\"LOCATION\":\"Ayotha Amirtha Gangai\",\"ID\":\"gzKSwqQsalQKKXIL\",\"LIKES_TIRAMISU\":false,\"LAST_LOGIN\":1641126356902,\"URL\":\"http://www.example.url/mightyperson?id\\u003dgzKSwqQsalQKKXIL\",\"VALUE\":15,\"TIME\":1642151607524} \r\n"
+//				+ "\r\n]'", false);
+		
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
+		printResults("testSourceSyntax", results);
+		
+		int i = 0;
+		
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_STRING, 		results.get(i).type());
+		Assertions.assertEquals("source", 								results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_STRING, 		results.get(++i).type());
+		Assertions.assertEquals("json", 								results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_STRING, 		results.get(++i).type());
+		Assertions.assertEquals("data", 								results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_EQUAL, 		results.get(++i).type());
+		Assertions.assertEquals("=", 								results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_SINGLE_QUOTES, 		results.get(++i).type());
+		//Assertions.assertEquals("[1,2,3]", 								results.get(i).value());
 	}
 	
 	

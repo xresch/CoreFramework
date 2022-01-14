@@ -81,7 +81,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 				
 			}else if(part instanceof QueryPartArray) {
 				QueryPartArray array = (QueryPartArray)part;
-				System.out.println("######## TEST");
+
 				for(JsonElement element : array.getAsJsonArray(null)) {
 					
 					if(!element.isJsonNull() && element.isJsonPrimitive()) {
@@ -114,7 +114,6 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 				String value = record.convertToString(field);
 				identifier += "-"+ (dotrimValues ? value.trim() : value);
 			}
-			System.out.println("identifier: "+identifier);
 			
 			if(!encounters.contains(identifier)) {
 				encounters.add(identifier);

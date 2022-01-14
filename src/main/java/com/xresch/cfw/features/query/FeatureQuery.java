@@ -4,6 +4,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandDistinct;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
+import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceRandom;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
@@ -40,6 +41,7 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		//----------------------------------
 		// Register Sources
+		CFW.Registry.Query.registerSource(new CFWQuerySourceJson(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceRandom(null));
 		
 		//----------------------------------
