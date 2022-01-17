@@ -1116,6 +1116,239 @@ function cfw_updateTimeField(fieldID){
 }
 
 /**************************************************************************************
+ * Takes the ID of a text field which will be the target to store the timeframe picker
+ * value. 
+ * The original field gets hidden and will be replaced by the timeframe picker itself. 
+ * 
+ * @param fieldID the id of the target field(without '#')
+ * @param jsonValue the json object containing the initial value of the field as epoch time:
+ *        {
+ *				earliest: 123455678989,
+ *              latest: 1234567890
+ *        }
+ * @param onchangeCallbackFunction function taking parameters func(fieldID, updateType, earliest, latest);
+ *           updateType would be one of: 'custom' | 'shift-earlier' | 'shift-later' | a preset
+ *************************************************************************************/
+function cfw_initialize_timeframePicker(fieldID, initalValue, onchangeCallbackFunction){
+	
+	var selector = '#'+fieldID;
+
+	var timeframeStoreField = $(selector);
+
+	var wrapper = $('<div class="cfw-timeframepicker-wrapper flex-grow-1" data-id="'+fieldID+'">');
+	timeframeStoreField.before(wrapper);
+	wrapper.append(timeframeStoreField);
+	
+	//----------------------------------
+	// StoreCallback
+	if( onchangeCallbackFunction != null){
+		CFW.global.timeframePickerOnchangeHandlers[fieldID] = onchangeCallbackFunction;
+	}
+	
+	//----------------------------------
+	// Set Intial Value
+	timeframeStoreField.val(JSON.stringify(initalValue));
+	
+	//----------------------------------
+	// Add Classes
+	//var classes = scheduleField.attr('class');
+	//scheduleField.addClass('d-none');
+
+	//----------------------------------
+	// Create HTML
+	wrapper.append( `<div id="${fieldID}" class="btn-group d-none">
+			<button class="btn btn-sm btn-primary btn-inline" onclick="cfw_timeframePicker_shift(this, 'earlier');" type="button">
+				<i class="fas fa-chevron-left"></i>
+			</button>
+			
+			<div class="dropdown">
+				<button id="${fieldID}-timeframeSelectorButton" class="btn btn-sm btn-primary dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					{!cfw_core_last!} 30 {!cfw_core_minutes!}
+				</button>
+				<div class="dropdown-menu" style="width: 350px;" aria-labelledby="dropdownMenuButton">
+					<div class="row ml-0 mr-0">
+						<div class="col-6">
+							<a id="time-preset-5-m" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '5-m');">{!cfw_core_last!} 5 {!cfw_core_minutes!}</a>
+							<a id="time-preset-15-m" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '15-m');">{!cfw_core_last!} 15 {!cfw_core_minutes!}</a>
+							<a id="time-preset-30-m" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '30-m');">{!cfw_core_last!} 30 {!cfw_core_minutes!}</a>
+							<a id="time-preset-1-h" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '1-h');">{!cfw_core_last!} 1 {!cfw_core_hour!}</a>
+							<a id="time-preset-2-h" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '2-h');">{!cfw_core_last!} 2 {!cfw_core_hours!}</a>
+							<a id="time-preset-4-h" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '4-h');">{!cfw_core_last!} 4 {!cfw_core_hours!}</a>
+							<a id="time-preset-6-h" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '6-h');">{!cfw_core_last!} 6 {!cfw_core_hours!}</a>
+							<a id="time-preset-12-h" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '12-h');">{!cfw_core_last!} 12 {!cfw_core_hours!}</a>
+							<a id="time-preset-24-h" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '24-h');">{!cfw_core_last!} 24 {!cfw_core_hours!}</a>
+						</div>
+						<div class="col-6">
+							<a id="time-preset-2-d" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '2-d');">{!cfw_core_last!} 2 {!cfw_core_days!}</a>
+							<a id="time-preset-7-d" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '7-d');">{!cfw_core_last!} 7 {!cfw_core_days!}</a>
+							<a id="time-preset-14-d" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '14-d');">{!cfw_core_last!} 14 {!cfw_core_days!}</a>
+							<a id="time-preset-1-M" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '1-M');">{!cfw_core_last!} 1 {!cfw_core_month!}</a>
+							<a id="time-preset-2-M" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '2-M');">{!cfw_core_last!} 2 {!cfw_core_months!}</a>
+							<a id="time-preset-3-M" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '3-M');">{!cfw_core_last!} 3 {!cfw_core_months!}</a>
+							<a id="time-preset-6-M" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '6-M');">{!cfw_core_last!} 6 {!cfw_core_months!}</a>
+							<a id="time-preset-12-M" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '12-M');">{!cfw_core_last!} 12 {!cfw_core_months!}</a>
+							<a id="time-preset-24-M" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '24-M');">{!cfw_core_last!} 24 {!cfw_core_months!}</a>
+						</div>
+					</div>
+					<div class="row m-1">
+						<div class="col-sm-12"><strong>{!cfw_dashboard_customtime!}:</strong></div>
+					</div>
+					<div class="row m-1">  
+						<label class="col-sm-2 col-form-label col-form-label-sm" for="${fieldID}-CUSTOM_EARLIEST">{!cfw_core_earliest!}:</label>   
+						<div class="col-sm-10">
+							<div class="custom-control-inline w-100 mr-0">
+		    					<input id="${fieldID}-CUSTOM_EARLIEST-datepicker" type="date" onchange="cfw_updateTimeField('${fieldID}-CUSTOM_EARLIEST')" class="col-md-7 form-control form-control-sm">
+		    					<input id="${fieldID}-CUSTOM_EARLIEST-timepicker" type="time" onchange="cfw_updateTimeField('${fieldID}-CUSTOM_EARLIEST')" class="col-md-5 form-control form-control-sm">	   
+		    					<input id="${fieldID}-CUSTOM_EARLIEST" type="hidden" class="form-control" placeholder="Earliest" name="${fieldID}-CUSTOM_EARLIEST" onkeydown="return event.key != 'Enter';">
+							</div>
+						</div>
+					</div>
+					<div class="row m-1">  
+						<label class="col-sm-2 col-form-label col-form-label-sm" for="${fieldID}-CUSTOM_LATEST">{!cfw_core_latest!}:</label>   
+						<div class="col-sm-10">  
+							<div class="custom-control-inline w-100 mr-0">
+		    					<input id="${fieldID}-CUSTOM_LATEST-datepicker" type="date" onchange="cfw_updateTimeField('${fieldID}-CUSTOM_LATEST')" class="col-md-7 form-control form-control-sm">
+		    					<input id="${fieldID}-CUSTOM_LATEST-timepicker" type="time" onchange="cfw_updateTimeField('${fieldID}-CUSTOM_LATEST')" class="col-md-5 form-control form-control-sm">	   
+		    					<input id="${fieldID}-CUSTOM_LATEST" type="hidden" class="form-control" placeholder="Latest" name="${fieldID}-CUSTOM_LATEST" onkeydown="return event.key != 'Enter';">
+							</div>
+						</div>
+					</div>
+					<div class="row m-1">
+						<div class="col-sm-12">
+							<button class="btn btn-sm btn-primary" onclick="cfw_timeframePicker_confirmCustom();" type="button">
+								{!cfw_core_confirm!}
+							</button>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+			<button class="btn btn-sm btn-primary btn-inline" onclick="cfw_timeframePicker_shift(this, 'later');" type="button">
+				<i class="fas fa-chevron-right"></i>
+			</button>
+		</div>
+	
+	`);
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_timeframePicker_storeValue(fieldID, updateType, earliest, latest){
+	
+	var selector = '#'+fieldID;
+	// -----------------------------------------
+	// Update FieldData
+
+	var pickerData = {
+		earliest: earliest,
+		latest: latest
+	}
+
+	$(selector).val(JSON.stringify(pickerData));
+	
+	// -----------------------------------------
+	// Update Custom Time Selector
+	cfw_initializeTimefield(selector+'-CUSTOM_EARLIEST', earliest);
+	cfw_initializeTimefield(selector+'-CUSTOM_LATEST', latest);
+	
+	var callback = CFW.global.timeframePickerOnchangeHandlers[fieldID];
+	
+	if(callback != null){
+		callback(fieldID, updateType, earliest, latest);
+	}
+	
+}
+	
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_timeframePicker_setPreset(origin, preset){
+	
+	var wrapper = origin.closest('.cfw-timeframepicker-wrapper');
+	var fieldID = wrapper.data('id');
+	var selector = '#'+fieldID;
+	
+	var label = wrapper.find("#time-preset-"+preset).text();
+	$(selector+'-timeframeSelectorButton').text(label);
+
+	var split = preset.split('-');
+	
+	var earliestMillis = moment().utc().subtract(split[0], split[1]).utc().valueOf();
+	var latestMillis = moment().utc().valueOf();
+
+	// -----------------------------------------
+	// Update Original Field
+	cfw_timeframePicker_storeValue(fieldID, preset, earliestMillis, latestMillis);
+	
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_timeframePicker_setCustom(earliestMillis, latestMillis){
+		
+	$('#timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
+		
+	// -----------------------------------------
+	// Update Original Field
+	cfw_timeframePicker_storeValue(fieldID, "custom", earliestMillis, latestMillis);
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_timeframePicker_confirmCustom(){
+
+	var earliestMillis = $('#CUSTOM_EARLIEST').val();
+	var latestMillis = $('#CUSTOM_LATEST').val()
+
+	if(earliestMillis > latestMillis){
+		CFW.ui.addToastWarning("Earliest time has to be before latest time.");
+		return;
+	}
+	cfw_timeframePicker_setCustom(earliestMillis, latestMillis);
+	
+}
+
+/*******************************************************************************
+ * 
+ * @param direction
+ *            'earlier' or 'later'
+ ******************************************************************************/
+function cfw_timeframePicker_shift(origin, direction){
+	
+	var wrapper = origin.closest('.cfw-timeframepicker-wrapper');
+	var fieldID = wrapper.data('id');
+	var selector = '#'+fieldID;
+	
+	var storeField = $(selector);
+	var dataString = storeField.val();
+	
+	var data = JSON.parse(dataString);
+	//var label = wrapper.find("#time-preset-"+preset).text();
+	
+	wrapper.find(selector+'-timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
+	
+	var offsetMillis = data.latest - data.earliest;
+	
+	var offsetEarliest;
+	var offsetLatest;
+	if(direction == 'earlier'){
+		offsetLatest = data.earliest;
+		offsetEarliest = data.earliest - offsetMillis;
+	}else{
+		offsetEarliest = data.latest;
+		offsetLatest = data.latest + offsetMillis;
+	}
+	
+	// -----------------------------------------
+	// Update Value
+	cfw_timeframePicker_storeValue(fieldID, 'shift-'+direction, offsetEarliest, offsetLatest);
+	
+}
+
+/**************************************************************************************
  * Will add a function that will be called before sending the autocomplete request
  * to the server.
  * You can add more parameters to the paramObject provided to the callback function
@@ -1125,6 +1358,7 @@ function cfw_updateTimeField(fieldID){
 function cfw_autocomplete_setParamEnhancer(functionToEnhanceParams){
 	CFW.global.autcompleteParamEnhancerFunction = functionToEnhanceParams;
 }
+
 /**************************************************************************************
  * Initialize an autocomplete added to a CFWField with setAutocompleteHandler().
  * Can be used to make a static autocomplete using the second parameter.
@@ -3315,6 +3549,7 @@ var CFW = {
 		autocompleteCounter: 0,
 		autocompleteFocus: -1,
 		autcompleteParamEnhancerFunction: null,
+		timeframePickerOnchangeHandlers: {},
 		isLocaleFetching: null,
 		lastServerAccess: moment(),
 		lastOpenedModal: null,
