@@ -1215,7 +1215,7 @@ function cfw_initializeTimeframePicker(fieldID, initalValue, onchangeCallbackFun
 					</div>
 					<div class="row m-1">
 						<div class="col-sm-12">
-							<button class="btn btn-sm btn-primary" onclick="cfw_timeframePicker_confirmCustom();" type="button">
+							<button class="btn btn-sm btn-primary" onclick="cfw_timeframePicker_confirmCustom(this);" type="button">
 								{!cfw_core_confirm!}
 							</button>
 						</div>
@@ -1242,8 +1242,8 @@ function cfw_timeframePicker_storeValue(fieldID, updateType, earliest, latest){
 
 	var pickerData = {
 		preset: 	null,
-		earliest:	earliest,
-		latest: 	latest
+		earliest:	parseFloat(earliest),
+		latest: 	parseFloat(latest)
 	}
 
 	if(updateType != null
@@ -1262,13 +1262,15 @@ function cfw_timeframePicker_storeValue(fieldID, updateType, earliest, latest){
 	var callback = CFW.global.timeframePickerOnchangeHandlers[fieldID];
 	
 	if(callback != null){
-		callback(fieldID, updateType, earliest, latest);
+		callback(fieldID, pickerData);
 	}
 	
 }
 	
 /*******************************************************************************
  * 
+ * @param origin either JQueryObject or id with leading #
+ * @param preset the preset to set.
  ******************************************************************************/
 function cfw_timeframePicker_setPreset(origin, preset){
 	
@@ -1294,28 +1296,31 @@ function cfw_timeframePicker_setPreset(origin, preset){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_timeframePicker_setCustom(earliestMillis, latestMillis){
+function cfw_timeframePicker_setCustom(fieldID, earliestMillis, latestMillis){
 		
-	$('#timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
+	$('#'+fieldID+'-timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
 		
 	// -----------------------------------------
 	// Update Original Field
-	cfw_timeframePicker_storeValue(fieldID, "custom", earliestMillis, latestMillis);
+	cfw_timeframePicker_storeValue(fieldID, "custom", parseFloat(earliestMillis), parseFloat(latestMillis) );
 }
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_timeframePicker_confirmCustom(){
+function cfw_timeframePicker_confirmCustom(origin){
 
-	var earliestMillis = $('#CUSTOM_EARLIEST').val();
-	var latestMillis = $('#CUSTOM_LATEST').val()
+	var wrapper = $(origin).closest('.cfw-timeframepicker-wrapper');
+	var fieldID = wrapper.data('id');
+		
+	var earliestMillis = $('#'+fieldID+'-CUSTOM_EARLIEST').val();
+	var latestMillis = $('#'+fieldID+'-CUSTOM_LATEST').val()
 
-	if(earliestMillis > latestMillis){
+	if(parseFloat(earliestMillis) > parseFloat(latestMillis)){
 		CFW.ui.addToastWarning("Earliest time has to be before latest time.");
 		return;
 	}
-	cfw_timeframePicker_setCustom(earliestMillis, latestMillis);
+	cfw_timeframePicker_setCustom(fieldID, earliestMillis, latestMillis);
 	
 }
 
