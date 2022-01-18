@@ -26,18 +26,45 @@ var CFW_DASHBOARD_HISTORY_POSITION = 0;
 var CFW_DASHBOARD_COMMAND_BUNDLE = null;
 
 var CFW_DASHBOARD_TIME_ENABLED = false;
+var CFW_DASHBOARD_TIME_FIELD_ID = "timeframePicker";
 var CFW_DASHBOARD_TIME_PRESET = "30m";
 var CFW_DASHBOARD_TIME_EARLIEST_EPOCH = moment().utc().subtract(30, 'm').utc().valueOf();
 var CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
 
+
+/*******************************************************************************
+ * Receives a call from the timeframe picker when selection is updated.
+ ******************************************************************************/
+function cfw_dashboard_timeframeChangeCallback(fieldID, pickerData){
+	
+	// -----------------------------------------
+	// Update FieldData
+	
+	CFW_DASHBOARD_TIME_EARLIEST_EPOCH = pickerData.earliest;
+	CFW_DASHBOARD_TIME_LATEST_EPOCH = pickerData.latest;
+	
+	if(pickerData.preset != null){
+		window.localStorage.setItem("dashboard-timeframe-preset-"+CFW_DASHBOARD_URLPARAMS.id, pickerData.preset);
+		CFW.http.removeURLParam('earliest');
+		CFW.http.removeURLParam('latest');
+		CFW.http.setURLParam('timeframepreset', pickerData.preset);
+	}else{
+		CFW.http.setURLParam('earliest', pickerData.earliest);
+		CFW.http.setURLParam('latest', pickerData.latest);
+		CFW.http.removeURLParam('timeframepreset');
+	}
+
+	cfw_dashboard_draw();
+	
+}
 /*******************************************************************************
  * 
  ******************************************************************************/
 function cfw_dashboard_timeframe_setPreset(preset){
 
-	window.localStorage.setItem("dashboard-timeframe-preset-"+CFW_DASHBOARD_URLPARAMS.id, preset);
-
-	var label = $("#time-preset-"+preset).text();
+	cfw_timeframePicker_setPreset("#"+CFW_DASHBOARD_TIME_FIELD_ID, preset);
+	
+	/*var label = $("#time-preset-"+preset).text();
 	$('#timeframeSelectorButton').text(label);
 
 	var split = preset.split('-');
@@ -52,17 +79,19 @@ function cfw_dashboard_timeframe_setPreset(preset){
 	CFW.http.removeURLParam('earliest');
 	CFW.http.removeURLParam('latest');
 	CFW.http.setURLParam('timeframepreset', preset);
-	cfw_dashboard_draw();
+	cfw_dashboard_draw();*/
 }
 
 /*******************************************************************************
  * 
  ******************************************************************************/
 function cfw_dashboard_timeframe_setCustom(earliestMillis, latestMillis){
-		
+	
+	cfw_timeframePicker_setCustom(CFW_DASHBOARD_TIME_FIELD_ID, earliestMillis, latestMillis)	
+
 	$('#timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
 	
-	CFW_DASHBOARD_TIME_EARLIEST_EPOCH = earliestMillis;
+/*	CFW_DASHBOARD_TIME_EARLIEST_EPOCH = earliestMillis;
 	CFW_DASHBOARD_TIME_LATEST_EPOCH = latestMillis;
 	
 	cfw_initializeTimefield('CUSTOM_EARLIEST', earliestMillis);
@@ -70,13 +99,13 @@ function cfw_dashboard_timeframe_setCustom(earliestMillis, latestMillis){
 
 	CFW.http.setURLParam('earliest', earliestMillis);
 	CFW.http.setURLParam('latest', latestMillis);
-	CFW.http.removeURLParam('timeframepreset');
+	CFW.http.removeURLParam('timeframepreset');*/
 }
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_timeframe_confirmCustom(){
+/*function cfw_dashboard_timeframe_confirmCustom(){
 
 	var earliestMillis = $('#CUSTOM_EARLIEST').val();
 	var latestMillis = $('#CUSTOM_LATEST').val()
@@ -96,15 +125,17 @@ function cfw_dashboard_timeframe_confirmCustom(){
 	}
 	
 	cfw_dashboard_draw();
-}
+}*/
 
 /*******************************************************************************
  * 
  * @param direction
  *            'earlier' or 'later'
  ******************************************************************************/
-function cfw_dashboard_timeframe_shift(direction){
+/*function cfw_dashboard_timeframe_shift(direction){
 	
+	cfw_timeframePicker_setCustom("#"+CFW_DASHBOARD_TIME_FIELD_ID, earliestMillis, latestMillis)	
+
 	$('#timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
 	
 	var offsetMillis = CFW_DASHBOARD_TIME_LATEST_EPOCH - CFW_DASHBOARD_TIME_EARLIEST_EPOCH;
@@ -134,7 +165,9 @@ function cfw_dashboard_timeframe_shift(direction){
 	}
 	
 	cfw_dashboard_draw();
-}
+}*/
+
+
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -2154,19 +2187,20 @@ function cfw_dashboard_initialDraw(){
 		
 	cfw_dashboard_initialize('.grid-stack');
 	
+	cfw_initializeTimeframePicker(CFW_DASHBOARD_TIME_FIELD_ID, null, cfw_dashboard_timeframeChangeCallback)
+	
 	if(	CFW_DASHBOARD_URLPARAMS.earliest != null && CFW_DASHBOARD_URLPARAMS.latest != null){
 		// -----------------------------
 		// Get Earliest/Latest from URL
 		cfw_dashboard_timeframe_setCustom(CFW_DASHBOARD_URLPARAMS.earliest, CFW_DASHBOARD_URLPARAMS.latest);
-		cfw_dashboard_draw();
 	}else if(CFW_DASHBOARD_URLPARAMS.timeframepreset != null){
 		// -----------------------------
-		// Get Preset from URL
+		// Get Preset from URL		
 		cfw_dashboard_timeframe_setPreset(CFW_DASHBOARD_URLPARAMS.timeframepreset);
 		// above method calls cfw_dashboard_draw()
 	}else{
 
-		var timeframePreset =window.localStorage.getItem("dashboard-timeframe-preset-"+CFW_DASHBOARD_URLPARAMS.id);
+		var timeframePreset=window.localStorage.getItem("dashboard-timeframe-preset-"+CFW_DASHBOARD_URLPARAMS.id);
 		if(timeframePreset != null && timeframePreset != 'null' && timeframePreset != 'custom' ){
 			// ---------------------------------
 			// Get last preset from local store

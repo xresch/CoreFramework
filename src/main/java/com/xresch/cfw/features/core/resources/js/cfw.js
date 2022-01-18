@@ -1191,7 +1191,7 @@ function cfw_initializeTimeframePicker(fieldID, initalValue, onchangeCallbackFun
 						</div>
 					</div>
 					<div class="row m-1">
-						<div class="col-sm-12"><strong>{!cfw_dashboard_customtime!}:</strong></div>
+						<div class="col-sm-12"><strong>{!cfw_core_customtime!}:</strong></div>
 					</div>
 					<div class="row m-1">  
 						<label class="col-sm-2 col-form-label col-form-label-sm" for="${fieldID}-CUSTOM_EARLIEST">{!cfw_core_earliest!}:</label>   
@@ -1298,7 +1298,7 @@ function cfw_timeframePicker_setPreset(origin, preset){
  ******************************************************************************/
 function cfw_timeframePicker_setCustom(fieldID, earliestMillis, latestMillis){
 		
-	$('#'+fieldID+'-timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
+	$('#'+fieldID+'-timeframeSelectorButton').text(CFWL('cfw_core_customtime', "Custom Time"));
 		
 	// -----------------------------------------
 	// Update Original Field
@@ -1341,7 +1341,7 @@ function cfw_timeframePicker_shift(origin, direction){
 	var data = JSON.parse(dataString);
 	//var label = wrapper.find("#time-preset-"+preset).text();
 	
-	wrapper.find(selector+'-timeframeSelectorButton').text(CFWL('cfw_dashboard_customtime', "Custom Time"));
+	wrapper.find(selector+'-timeframeSelectorButton').text(CFWL('cfw_core_customtime', "Custom Time"));
 	
 	var offsetMillis = data.latest - data.earliest;
 	
