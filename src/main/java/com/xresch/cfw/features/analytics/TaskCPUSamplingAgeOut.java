@@ -46,13 +46,13 @@ public class TaskCPUSamplingAgeOut extends CFWScheduledTask {
 			//--------------------------
 			// Iterate with offsets
 			Timestamp startTime = oldest;
-			Timestamp endTime = Utils.Time.offsetTimestamp(oldest, 0, 0, 0, granularity);
+			Timestamp endTime = Utils.Time.offsetTimestamp(oldest, 0, 0, 0, 0, granularity);
 			
 			while(endTime.getTime() < youngest.getTime()) {
 
 				CFWDBCPUSample.aggregateStatistics(startTime, endTime, granularity);
-				startTime =  Utils.Time.offsetTimestamp(startTime, 0, 0, 0, granularity);
-				endTime = Utils.Time.offsetTimestamp(endTime, 0, 0, 0, granularity);
+				startTime =  Utils.Time.offsetTimestamp(startTime, 0, 0, 0, 0, granularity);
+				endTime = Utils.Time.offsetTimestamp(endTime, 0, 0, 0, 0, granularity);
 
 			}
 

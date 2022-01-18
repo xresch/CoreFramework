@@ -66,24 +66,25 @@ public class CFWUtilsTime {
 	
 	/********************************************************************************************
 	 * Return a new instance of Timestamp with the given offset from the current time.
-	 * Use positive values to go back to the future, use negative values to go to the past.
+	 * Use positive values to go to the future, use negative values to go to the past.
 	 * @return timestamp
 	 ********************************************************************************************/
-	public static Timestamp getCurrentTimestampWithOffset(int years, int days, int hours, int minutes) {
-		return offsetTimestamp(new Timestamp(System.currentTimeMillis()), years, days, hours, minutes);
+	public static Timestamp getCurrentTimestampWithOffset(int years, int months, int days, int hours, int minutes) {
+		return offsetTimestamp(new Timestamp(System.currentTimeMillis()), years, 0, days, hours, minutes);
 	}
 	
 	/********************************************************************************************
 	 * Return a new instance of Timestamp with an offset starting from the given timestamp.
-	 * Use positive values to go back to the future, use negative values to go to the past.
+	 * Use positive values to go to the future, use negative values to go to the past.
 	 * @return timestamp
 	 ********************************************************************************************/
-	public static Timestamp offsetTimestamp(Timestamp timestamp, int years, int days, int hours, int minutes) {
+	public static Timestamp offsetTimestamp(Timestamp timestamp, int years, int months, int days, int hours, int minutes) {
 		
 		Calendar calendar = Calendar.getInstance();
 		
 		calendar.setTimeInMillis(timestamp.getTime());
 		calendar.add(Calendar.YEAR, years);
+		calendar.add(Calendar.MONTH, months);
 		calendar.add(Calendar.DAY_OF_YEAR, days);
 		calendar.add(Calendar.HOUR_OF_DAY, hours);
 		calendar.add(Calendar.MINUTE, minutes);
@@ -98,13 +99,13 @@ public class CFWUtilsTime {
 	public static Timestamp getDefaultAgeOutTime(int granularityMinutes) {
 		Timestamp ageOutOffset = null;
 		
-		if		(granularityMinutes <= 3) 		{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, -30); }
-		else if (granularityMinutes <= 15) 		{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, -1, 0); }
-		else if (granularityMinutes <= 60) 		{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, -1, 0, 0); }
-		else if (granularityMinutes <= 240) 	{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, -7, 0, 0); }
-		else if (granularityMinutes <= 720) 	{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, -14, 0, 0); }
-		else if (granularityMinutes <= 1440) 	{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, -30, 0, 0); }
-		else  									{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, -90, 0, 0); }
+		if		(granularityMinutes <= 3) 		{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, -30); }
+		else if (granularityMinutes <= 15) 		{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, -1, 0); }
+		else if (granularityMinutes <= 60) 		{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, -1, 0, 0); }
+		else if (granularityMinutes <= 240) 	{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, -7, 0, 0); }
+		else if (granularityMinutes <= 720) 	{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, -14, 0, 0); }
+		else if (granularityMinutes <= 1440) 	{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, -30, 0, 0); }
+		else  									{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, -90, 0, 0); }
 
 		return ageOutOffset;
 	}

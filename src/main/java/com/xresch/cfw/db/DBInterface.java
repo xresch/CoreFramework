@@ -29,6 +29,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWSchedule;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -570,6 +571,7 @@ public class DBInterface {
 				else if (currentValue instanceof Object[]) 	{ prepared.setArray(i+1, prepared.getConnection().createArrayOf("VARCHAR", (Object[])currentValue)); }
 				else if (currentValue instanceof LinkedHashMap)	{ prepared.setString(i+1, CFW.JSON.toJSON(currentValue)); }
 				else if (currentValue instanceof CFWSchedule)	{ prepared.setString(i+1, CFW.JSON.toJSON(currentValue)); }
+				else if (currentValue instanceof CFWTimeframe)	{ prepared.setString(i+1, CFW.JSON.toJSON(currentValue)); }
 				else if (currentValue == null) 				{ prepared.setNull(i+1, Types.NULL); }
 				else { throw new RuntimeException("Unsupported database field type: "+ currentValue.getClass().getName());}
 			}

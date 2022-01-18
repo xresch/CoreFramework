@@ -122,6 +122,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		WYSIWYG, 
 		DATEPICKER, 
 		DATETIMEPICKER, 
+		TIMEFRAMEPICKER,
 		TAGS, 
 		// Input Order of elements messed up by client side when containing numbers in keys (numbers will be sorted and listed first)
 		TAGS_SELECTOR,
@@ -250,7 +251,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	//===========================================
 	// JSON_ PREFIX CHECK 
 	//===========================================
-	private static boolean fielnameStartsWithJSON(String fieldname) {
+	private static boolean fieldnameStartsWithJSON(String fieldname) {
 		if(!fieldname.startsWith("JSON_")) {
 			new CFWLog(logger)
 				.severe("Development Error: Fieldname of this field type have to start with 'JSON_'.", new InstantiationException());
@@ -267,7 +268,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	public static CFWField<LinkedHashMap<String,String>> newTagsSelector(String fieldName){
-		if( fielnameStartsWithJSON(fieldName) ) {
+		if( fieldnameStartsWithJSON(fieldName) ) {
 			return new CFWField<LinkedHashMap<String,String>> (LinkedHashMap.class, FormFieldType.TAGS_SELECTOR, fieldName)
 				.setColumnDefinition("VARCHAR");
 		}
@@ -294,7 +295,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	public static CFWField<LinkedHashMap<String,String>> newValueLabel(String fieldName){
-		if( fielnameStartsWithJSON(fieldName) ) {
+		if( fieldnameStartsWithJSON(fieldName) ) {
 			return new CFWField<LinkedHashMap<String,String>> (LinkedHashMap.class, FormFieldType.VALUE_LABEL, fieldName)
 				.setColumnDefinition("VARCHAR");
 		}
@@ -309,7 +310,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	public static CFWField<LinkedHashMap<String,String>> newCheckboxes(String fieldName){
-		if( fielnameStartsWithJSON(fieldName) ) {
+		if( fieldnameStartsWithJSON(fieldName) ) {
 			return new CFWField<LinkedHashMap<String,String>> (LinkedHashMap.class, FormFieldType.CHECKBOXES, fieldName)
 				.setColumnDefinition("VARCHAR");
 		}
@@ -323,8 +324,23 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		return newSchedule(fieldName.toString());
 	}
 	public static CFWField<CFWSchedule> newSchedule(String fieldName){
-		if( fielnameStartsWithJSON(fieldName) ) {
+		if( fieldnameStartsWithJSON(fieldName) ) {
 			return new CFWField<CFWSchedule> (CFWSchedule.class, FormFieldType.SCHEDULE, fieldName)
+					.setColumnDefinition("VARCHAR");
+		}
+		return null;
+		
+	}
+	
+	//===========================================
+	// SCHEDULE
+	//===========================================
+	public static CFWField<CFWTimeframe> newTimeframe(Enum<?> fieldName){
+		return newTimeframe(fieldName.toString());
+	}
+	public static CFWField<CFWTimeframe> newTimeframe(String fieldName){
+		if( fieldnameStartsWithJSON(fieldName) ) {
+			return new CFWField<CFWTimeframe> (CFWTimeframe.class, FormFieldType.TIMEFRAMEPICKER, fieldName)
 					.setColumnDefinition("VARCHAR");
 		}
 		return null;
@@ -544,7 +560,10 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			
 			case DATETIMEPICKER:  	createDateTimePicker(html, cssClasses);
 									break;
-			
+									
+			case TIMEFRAMEPICKER:	createTimeframePicker(html, cssClasses);
+									break;
+
 			case SCHEDULE:		  	createSchedule(html, cssClasses);
 									break;
 			
@@ -833,6 +852,27 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		if(this.parent instanceof CFWForm) {
 			((CFWForm)this.parent).javascript.append("cfw_initializeScheduleField('"+name+"', "+CFW.JSON.toJSON(value)+");\r\n");
+		}
+				
+	}
+	
+	/***********************************************************************************
+	 * Create TimeframePicker
+	 ***********************************************************************************/
+	private void createTimeframePicker(StringBuilder html, String cssClasses) {
+		
+//		int maxTags = 128;
+//		
+//		if(attributes.containsKey("maxTags")) {
+//			maxTags = Integer.parseInt(attributes.get("maxTags"));
+//		}
+		
+		//---------------------------------
+		// Create Field
+		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"timeframepicker\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
+		
+		if(this.parent instanceof CFWForm) {
+			((CFWForm)this.parent).javascript.append("cfw_initializeTimeframePicker('"+name+"', "+CFW.JSON.toJSON(value)+", null);\r\n");
 		}
 				
 	}
@@ -1587,6 +1627,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				else if(valueClass == ArrayList.class)	{ return this.changeValue(null); }
 				else if(valueClass == LinkedHashMap.class){ return this.changeValue(null); }
 				else if(valueClass == CFWSchedule.class){  return this.changeValue(null); }
+				else if(valueClass == CFWTimeframe.class){  return this.changeValue(null); }
 				else {	
 					new CFWLog(logger)
 					.severe("The choosen type is not supported: "+valueClass.getName());
@@ -1633,6 +1674,11 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			
 			else if(valueClass == CFWSchedule.class){ 
 				CFWSchedule schedule = new CFWSchedule(stringValue);
+				return this.changeValue(schedule); 
+			}
+
+			else if(valueClass == CFWTimeframe.class){ 
+				CFWTimeframe schedule = new CFWTimeframe(stringValue);
 				return this.changeValue(schedule); 
 			}
 			
@@ -1932,6 +1978,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					else if( Timestamp.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getTimestamp(colName)); }
 					else if( Date.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getDate(colName)); }
 					else if( CFWSchedule.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName)); }
+					else if( CFWTimeframe.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName)); }
 					else if( ArrayList.class.isAssignableFrom(current.getValueClass()))  { 
 						Array array = result.getArray(colName);
 						

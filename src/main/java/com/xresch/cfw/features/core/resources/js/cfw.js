@@ -1077,7 +1077,7 @@ function cfw_initializeTimefield(fieldID, epochMillis){
 		datepicker.first().val(date.format("YYYY-MM-DD"));
 
 		if(timepicker.length > 0 != null){
-			timepicker.first().val(date.format("hh:mm"));
+			timepicker.first().val(date.format("HH:mm"));
 		}
 	}
 		
@@ -1129,7 +1129,7 @@ function cfw_updateTimeField(fieldID){
  * @param onchangeCallbackFunction function taking parameters func(fieldID, updateType, earliest, latest);
  *           updateType would be one of: 'custom' | 'shift-earlier' | 'shift-later' | a preset
  *************************************************************************************/
-function cfw_initialize_timeframePicker(fieldID, initalValue, onchangeCallbackFunction){
+function cfw_initializeTimeframePicker(fieldID, initalValue, onchangeCallbackFunction){
 	
 	var selector = '#'+fieldID;
 
@@ -1156,7 +1156,7 @@ function cfw_initialize_timeframePicker(fieldID, initalValue, onchangeCallbackFu
 
 	//----------------------------------
 	// Create HTML
-	wrapper.append( `<div id="${fieldID}" class="btn-group d-none">
+	wrapper.append( `<div id="${fieldID}-picker" class="btn-group">
 			<button class="btn btn-sm btn-primary btn-inline" onclick="cfw_timeframePicker_shift(this, 'earlier');" type="button">
 				<i class="fas fa-chevron-left"></i>
 			</button>
@@ -1241,16 +1241,23 @@ function cfw_timeframePicker_storeValue(fieldID, updateType, earliest, latest){
 	// Update FieldData
 
 	var pickerData = {
-		earliest: earliest,
-		latest: latest
+		preset: 	null,
+		earliest:	earliest,
+		latest: 	latest
+	}
+
+	if(updateType != null
+	&& updateType != "custom"
+	&& !updateType.startsWith("shift")){
+		pickerData.preset = updateType;
 	}
 
 	$(selector).val(JSON.stringify(pickerData));
 	
 	// -----------------------------------------
 	// Update Custom Time Selector
-	cfw_initializeTimefield(selector+'-CUSTOM_EARLIEST', earliest);
-	cfw_initializeTimefield(selector+'-CUSTOM_LATEST', latest);
+	cfw_initializeTimefield(fieldID+'-CUSTOM_EARLIEST', earliest);
+	cfw_initializeTimefield(fieldID+'-CUSTOM_LATEST', latest);
 	
 	var callback = CFW.global.timeframePickerOnchangeHandlers[fieldID];
 	
@@ -1265,7 +1272,8 @@ function cfw_timeframePicker_storeValue(fieldID, updateType, earliest, latest){
  ******************************************************************************/
 function cfw_timeframePicker_setPreset(origin, preset){
 	
-	var wrapper = origin.closest('.cfw-timeframepicker-wrapper');
+	var wrapper = $(origin).closest('.cfw-timeframepicker-wrapper');
+	
 	var fieldID = wrapper.data('id');
 	var selector = '#'+fieldID;
 	
@@ -1318,7 +1326,7 @@ function cfw_timeframePicker_confirmCustom(){
  ******************************************************************************/
 function cfw_timeframePicker_shift(origin, direction){
 	
-	var wrapper = origin.closest('.cfw-timeframepicker-wrapper');
+	var wrapper = $(origin).closest('.cfw-timeframepicker-wrapper');
 	var fieldID = wrapper.data('id');
 	var selector = '#'+fieldID;
 	
