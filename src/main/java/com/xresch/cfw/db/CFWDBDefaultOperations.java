@@ -244,8 +244,9 @@ public  class CFWDBDefaultOperations {
 			
 			return object
 				.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteFirstBy"+column)
-				.deleteTop(1)
+				.delete()
 				.where(column, value)
+				.custom("FETCH FIRST ROW ONLY")
 				.executeDelete();
 		}
 		

@@ -27,7 +27,6 @@ var CFW_DASHBOARD_COMMAND_BUNDLE = null;
 
 var CFW_DASHBOARD_TIME_ENABLED = false;
 var CFW_DASHBOARD_TIME_FIELD_ID = "timeframePicker";
-var CFW_DASHBOARD_TIME_PRESET = "30m";
 var CFW_DASHBOARD_TIME_EARLIEST_EPOCH = moment().utc().subtract(30, 'm').utc().valueOf();
 var CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
 
@@ -1588,7 +1587,7 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 	// Check has Timeframe
 	if(definition.usetimeframe){
 		if(!CFW_DASHBOARD_TIME_ENABLED){
-			$('#timeframePicker').removeClass('d-none');
+			$('#timeframePickerHidder').removeClass('d-none');
 			CFW_DASHBOARD_TIME_ENABLED = true;
 		}
 		settings = _.cloneDeep(settings);
