@@ -1168,26 +1168,26 @@ function cfw_initializeTimeframePicker(fieldID, initalValue, onchangeCallbackFun
 				<div class="dropdown-menu" style="width: 350px;" aria-labelledby="dropdownMenuButton">
 					<div class="row ml-0 mr-0">
 						<div class="col-6">
-							<a id="time-preset-5-m" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '5-m');">{!cfw_core_last!} 5 {!cfw_core_minutes!}</a>
-							<a id="time-preset-15-m" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '15-m');">{!cfw_core_last!} 15 {!cfw_core_minutes!}</a>
-							<a id="time-preset-30-m" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '30-m');">{!cfw_core_last!} 30 {!cfw_core_minutes!}</a>
-							<a id="time-preset-1-h" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '1-h');">{!cfw_core_last!} 1 {!cfw_core_hour!}</a>
-							<a id="time-preset-2-h" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '2-h');">{!cfw_core_last!} 2 {!cfw_core_hours!}</a>
-							<a id="time-preset-4-h" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '4-h');">{!cfw_core_last!} 4 {!cfw_core_hours!}</a>
-							<a id="time-preset-6-h" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '6-h');">{!cfw_core_last!} 6 {!cfw_core_hours!}</a>
-							<a id="time-preset-12-h" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '12-h');">{!cfw_core_last!} 12 {!cfw_core_hours!}</a>
-							<a id="time-preset-24-h" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '24-h');">{!cfw_core_last!} 24 {!cfw_core_hours!}</a>
+							<a id="time-preset-5-m" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '5-m');">{!cfw_core_last!} 5 {!cfw_core_minutes!}</a>
+							<a id="time-preset-15-m" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '15-m');">{!cfw_core_last!} 15 {!cfw_core_minutes!}</a>
+							<a id="time-preset-30-m" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '30-m');">{!cfw_core_last!} 30 {!cfw_core_minutes!}</a>
+							<a id="time-preset-1-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '1-h');">{!cfw_core_last!} 1 {!cfw_core_hour!}</a>
+							<a id="time-preset-2-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '2-h');">{!cfw_core_last!} 2 {!cfw_core_hours!}</a>
+							<a id="time-preset-4-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '4-h');">{!cfw_core_last!} 4 {!cfw_core_hours!}</a>
+							<a id="time-preset-6-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '6-h');">{!cfw_core_last!} 6 {!cfw_core_hours!}</a>
+							<a id="time-preset-12-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '12-h');">{!cfw_core_last!} 12 {!cfw_core_hours!}</a>
+							<a id="time-preset-24-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '24-h');">{!cfw_core_last!} 24 {!cfw_core_hours!}</a>
 						</div>
 						<div class="col-6">
-							<a id="time-preset-2-d" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '2-d');">{!cfw_core_last!} 2 {!cfw_core_days!}</a>
-							<a id="time-preset-7-d" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '7-d');">{!cfw_core_last!} 7 {!cfw_core_days!}</a>
-							<a id="time-preset-14-d" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '14-d');">{!cfw_core_last!} 14 {!cfw_core_days!}</a>
-							<a id="time-preset-1-M" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '1-M');">{!cfw_core_last!} 1 {!cfw_core_month!}</a>
-							<a id="time-preset-2-M" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '2-M');">{!cfw_core_last!} 2 {!cfw_core_months!}</a>
-							<a id="time-preset-3-M" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '3-M');">{!cfw_core_last!} 3 {!cfw_core_months!}</a>
-							<a id="time-preset-6-M" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '6-M');">{!cfw_core_last!} 6 {!cfw_core_months!}</a>
-							<a id="time-preset-12-M" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '12-M');">{!cfw_core_last!} 12 {!cfw_core_months!}</a>
-							<a id="time-preset-24-M" class="dropdown-item" onclick="cfw_timeframePicker_setPreset(this, '24-M');">{!cfw_core_last!} 24 {!cfw_core_months!}</a>
+							<a id="time-preset-2-d" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '2-d');">{!cfw_core_last!} 2 {!cfw_core_days!}</a>
+							<a id="time-preset-7-d" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '7-d');">{!cfw_core_last!} 7 {!cfw_core_days!}</a>
+							<a id="time-preset-14-d" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '14-d');">{!cfw_core_last!} 14 {!cfw_core_days!}</a>
+							<a id="time-preset-1-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '1-M');">{!cfw_core_last!} 1 {!cfw_core_month!}</a>
+							<a id="time-preset-2-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '2-M');">{!cfw_core_last!} 2 {!cfw_core_months!}</a>
+							<a id="time-preset-3-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '3-M');">{!cfw_core_last!} 3 {!cfw_core_months!}</a>
+							<a id="time-preset-6-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '6-M');">{!cfw_core_last!} 6 {!cfw_core_months!}</a>
+							<a id="time-preset-12-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '12-M');">{!cfw_core_last!} 12 {!cfw_core_months!}</a>
+							<a id="time-preset-24-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '24-M');">{!cfw_core_last!} 24 {!cfw_core_months!}</a>
 						</div>
 					</div>
 					<div class="row m-1">
@@ -1234,22 +1234,16 @@ function cfw_initializeTimeframePicker(fieldID, initalValue, onchangeCallbackFun
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_timeframePicker_storeValue(fieldID, updateType, earliest, latest){
+function cfw_timeframePicker_storeValue(fieldID, offset, earliest, latest){
 	
 	var selector = '#'+fieldID;
+	
 	// -----------------------------------------
 	// Update FieldData
-
 	var pickerData = {
-		preset: 	null,
+		offset: 	offset,
 		earliest:	parseFloat(earliest),
 		latest: 	parseFloat(latest)
-	}
-
-	if(updateType != null
-	&& updateType != "custom"
-	&& !updateType.startsWith("shift")){
-		pickerData.preset = updateType;
 	}
 
 	$(selector).val(JSON.stringify(pickerData));
@@ -1270,26 +1264,26 @@ function cfw_timeframePicker_storeValue(fieldID, updateType, earliest, latest){
 /*******************************************************************************
  * 
  * @param origin either JQueryObject or id with leading #
- * @param preset the preset to set.
+ * @param offset the offset to set.
  ******************************************************************************/
-function cfw_timeframePicker_setPreset(origin, preset){
+function cfw_timeframePicker_setOffset(origin, offset){
 	
 	var wrapper = $(origin).closest('.cfw-timeframepicker-wrapper');
 	
 	var fieldID = wrapper.data('id');
 	var selector = '#'+fieldID;
 	
-	var label = wrapper.find("#time-preset-"+preset).text();
+	var label = wrapper.find("#time-preset-"+offset).text();
 	$(selector+'-timeframeSelectorButton').text(label);
 
-	var split = preset.split('-');
+	var split = offset.split('-');
 	
 	var earliestMillis = moment().utc().subtract(split[0], split[1]).utc().valueOf();
 	var latestMillis = moment().utc().valueOf();
 
 	// -----------------------------------------
 	// Update Original Field
-	cfw_timeframePicker_storeValue(fieldID, preset, earliestMillis, latestMillis);
+	cfw_timeframePicker_storeValue(fieldID, offset, earliestMillis, latestMillis);
 	
 }
 
@@ -1302,7 +1296,7 @@ function cfw_timeframePicker_setCustom(fieldID, earliestMillis, latestMillis){
 		
 	// -----------------------------------------
 	// Update Original Field
-	cfw_timeframePicker_storeValue(fieldID, "custom", parseFloat(earliestMillis), parseFloat(latestMillis) );
+	cfw_timeframePicker_storeValue(fieldID, null, parseFloat(earliestMillis), parseFloat(latestMillis) );
 }
 
 /*******************************************************************************
@@ -1357,7 +1351,7 @@ function cfw_timeframePicker_shift(origin, direction){
 	
 	// -----------------------------------------
 	// Update Value
-	cfw_timeframePicker_storeValue(fieldID, 'shift-'+direction, offsetEarliest, offsetLatest);
+	cfw_timeframePicker_storeValue(fieldID, null, offsetEarliest, offsetLatest);
 	
 }
 

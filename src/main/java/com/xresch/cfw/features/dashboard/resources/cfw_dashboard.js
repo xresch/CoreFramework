@@ -59,9 +59,9 @@ function cfw_dashboard_timeframeChangeCallback(fieldID, pickerData){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_timeframe_setPreset(preset){
+function cfw_dashboard_timeframe_setOffset(preset){
 
-	cfw_timeframePicker_setPreset("#"+CFW_DASHBOARD_TIME_FIELD_ID, preset);
+	cfw_timeframePicker_setOffset("#"+CFW_DASHBOARD_TIME_FIELD_ID, preset);
 	
 }
 
@@ -2108,7 +2108,7 @@ function cfw_dashboard_initialDraw(){
 	}else if(CFW_DASHBOARD_URLPARAMS.timeframepreset != null){
 		// -----------------------------
 		// Get Preset from URL		
-		cfw_dashboard_timeframe_setPreset(CFW_DASHBOARD_URLPARAMS.timeframepreset);
+		cfw_dashboard_timeframe_setOffset(CFW_DASHBOARD_URLPARAMS.timeframepreset);
 		// above method calls cfw_dashboard_draw()
 	}else{
 
@@ -2116,7 +2116,7 @@ function cfw_dashboard_initialDraw(){
 		if(timeframePreset != null && timeframePreset != 'null' && timeframePreset != 'custom' ){
 			// ---------------------------------
 			// Get last preset from local store
-			cfw_dashboard_timeframe_setPreset(timeframePreset);
+			cfw_dashboard_timeframe_setOffset(timeframePreset);
 			// above method calls cfw_dashboard_draw()
 		}else{
 			// ---------------------------------

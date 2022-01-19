@@ -27,7 +27,7 @@ public class CFWTimeframe {
 
 	private static final String MEMBER_LATEST = "latest";
 	private static final String MEMBER_EARLIEST = "earliest";
-	private static final String MEMBER_PRESET = "preset";
+	private static final String MEMBER_OFFSET = "offset";
 
 
 	private JsonObject timeframeData;
@@ -61,7 +61,7 @@ public class CFWTimeframe {
 	 ***************************************************************************************/
 	private void setToDefaults() {
 		timeframeData = new JsonObject();
-		timeframeData.addProperty(MEMBER_PRESET, "30-m");
+		timeframeData.addProperty(MEMBER_OFFSET, "30-m");
 		timeframeData.add(MEMBER_EARLIEST, JsonNull.INSTANCE);
 		timeframeData.add(MEMBER_LATEST, JsonNull.INSTANCE);
 				
@@ -71,7 +71,7 @@ public class CFWTimeframe {
 	 * Set the earliest time of the timeframe as epoch millis.
 	 ***************************************************************************************/
 	public CFWTimeframe setEarliest(long earliestMillis) {
-		timeframeData.add(MEMBER_PRESET, JsonNull.INSTANCE);
+		timeframeData.add(MEMBER_OFFSET, JsonNull.INSTANCE);
 		timeframeData.addProperty(MEMBER_EARLIEST, earliestMillis);
 		return this;
 	}
@@ -89,37 +89,37 @@ public class CFWTimeframe {
 	 ***************************************************************************************/
 	public long getEarliest() {
 		
-		JsonElement preset = timeframeData.get(MEMBER_PRESET);
-		if( preset != null && !preset.isJsonNull() && preset.isJsonPrimitive() ) {
-			String[] splitted = preset.getAsString().trim().split("-");
+		JsonElement offsetString = timeframeData.get(MEMBER_OFFSET);
+		if( offsetString != null && !offsetString.isJsonNull() && offsetString.isJsonPrimitive() ) {
+			String[] splitted = offsetString.getAsString().trim().split("-");
 			
 			int offsetCount = -1 * Integer.parseInt(splitted[0]);
 			String unit = splitted[1];
 			
-			Timestamp offset;
+			Timestamp offsetTimestamp;
 			switch(unit) {
 				// Minutes
-				case "m":  	offset = CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, offsetCount);
+				case "m":  	offsetTimestamp = CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, offsetCount);
 							break;
 				// Hours
-				case "h":  	offset = CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, offsetCount, 0);
+				case "h":  	offsetTimestamp = CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, offsetCount, 0);
 							break;
 							
 				//Days
-				case "d":  	offset = CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, offsetCount, 0, 0);
+				case "d":  	offsetTimestamp = CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, offsetCount, 0, 0);
 							break;
 							
 				//Months
-				case "M":  	offset = CFW.Utils.Time.getCurrentTimestampWithOffset(0, offsetCount, 0, 0, 0);
+				case "M":  	offsetTimestamp = CFW.Utils.Time.getCurrentTimestampWithOffset(0, offsetCount, 0, 0, 0);
 							break;
 				
 				//Unknown, fallback to 30 minutes and warn
-				default:    offset = CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, -30);
-							CFW.Messages.addWarningMessage("Unrecognized timeframe preset '"+preset.getAsString()+"', use last 30 minutes.");
+				default:    offsetTimestamp = CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, -30);
+							CFW.Messages.addWarningMessage("Unrecognized timeframe preset '"+offsetString.getAsString()+"', use last 30 minutes.");
 							break;
 			}
 			
-			return offset.getTime();
+			return offsetTimestamp.getTime();
 			
 		}else if( timeframeData.get(MEMBER_EARLIEST) != null) {
 			return timeframeData.get(MEMBER_EARLIEST).getAsLong();
@@ -134,7 +134,7 @@ public class CFWTimeframe {
 	 * Set the earliest time of the timeframe as epoch millis.
 	 ***************************************************************************************/
 	public CFWTimeframe setLatest(long latestMillis) {
-		timeframeData.add(MEMBER_PRESET, JsonNull.INSTANCE);
+		timeframeData.add(MEMBER_OFFSET, JsonNull.INSTANCE);
 		timeframeData.addProperty(MEMBER_LATEST, latestMillis);
 		return this;
 	}
@@ -152,7 +152,7 @@ public class CFWTimeframe {
 	 ***************************************************************************************/
 	public long getLatest() {
 		
-		JsonElement preset = timeframeData.get(MEMBER_PRESET);
+		JsonElement preset = timeframeData.get(MEMBER_OFFSET);
 		if( preset != null && !preset.isJsonNull() && preset.isJsonPrimitive() ) {
 				
 			
