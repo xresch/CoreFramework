@@ -27,10 +27,12 @@ function cfw_query_execute(){
 			if(data.success){
 							
 				//-----------------------------------
-				// Render Data
-				for(index in data.payload){
+				// Iterate all Query results
+				for(var i = 0; i < data.payload.length; i++){
+					var currentResults = data.payload[i];
+					targetDiv.append('<h2>Query '+(i+1)+'</h2>')
 					var rendererSettings = {
-							data: data.payload[index].results,
+							data: currentResults.results,
 						 	//idfield: 'PK_ID',
 						 	bgstylefield: null,
 						 	textstylefield: null,

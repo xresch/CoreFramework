@@ -24,9 +24,7 @@ public class CFWQueryExecutor {
 		CFWQueryParser parser = new CFWQueryParser(queryString);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
-		
-		Assertions.assertEquals(1, queryList.size());
-		
+				
 		//------------------------
 		// Iterate All Queries
 		
