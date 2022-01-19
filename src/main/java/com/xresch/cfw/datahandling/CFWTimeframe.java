@@ -172,7 +172,7 @@ public class CFWTimeframe {
 	 ***************************************************************************************/
 	@Override
 	public String toString() {
-		return CFW.JSON.toJSON(timeframeData);
+		return timeframeData.toString();
 	}
 	
 	/***************************************************************************************

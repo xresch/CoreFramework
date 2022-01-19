@@ -1121,7 +1121,7 @@ function cfw_updateTimeField(fieldID){
  * The original field gets hidden and will be replaced by the timeframe picker itself. 
  * 
  * @param fieldID the id of the target field(without '#')
- * @param jsonValue the json object containing the initial value of the field as epoch time:
+ * @param initalData the json object containing the initial value of the field as epoch time:
  *        {
  *				earliest: 123455678989,
  *              latest: 1234567890
@@ -1129,7 +1129,7 @@ function cfw_updateTimeField(fieldID){
  * @param onchangeCallbackFunction function taking parameters func(fieldID, updateType, earliest, latest);
  *           updateType would be one of: 'custom' | 'shift-earlier' | 'shift-later' | a preset
  *************************************************************************************/
-function cfw_initializeTimeframePicker(fieldID, initalValue, onchangeCallbackFunction){
+function cfw_initializeTimeframePicker(fieldID, initalData, onchangeCallbackFunction){
 	
 	var selector = '#'+fieldID;
 
@@ -1138,16 +1138,13 @@ function cfw_initializeTimeframePicker(fieldID, initalValue, onchangeCallbackFun
 	var wrapper = $('<div class="cfw-timeframepicker-wrapper flex-grow-1" data-id="'+fieldID+'">');
 	timeframeStoreField.before(wrapper);
 	wrapper.append(timeframeStoreField);
-	
-	//----------------------------------
-	// StoreCallback
-	if( onchangeCallbackFunction != null){
-		CFW.global.timeframePickerOnchangeHandlers[fieldID] = onchangeCallbackFunction;
-	}
-	
+		
 	//----------------------------------
 	// Set Intial Value
-	timeframeStoreField.val(JSON.stringify(initalValue));
+	var pickerDataString = JSON.stringify(initalData);
+	console.log('===== pickerData =====')
+	console.log(initalData)
+	timeframeStoreField.val(pickerDataString);
 	
 	//----------------------------------
 	// Add Classes
@@ -1229,6 +1226,24 @@ function cfw_initializeTimeframePicker(fieldID, initalValue, onchangeCallbackFun
 		</div>
 	
 	`);
+	
+	//----------------------------------
+	// Initialize Value, do not trigger
+	// callback
+	if(initalData != null){
+		if(initalData.offset == null){
+			cfw_timeframePicker_setCustom(fieldID, initalData.earliest, initalData.latest);
+		}else{
+			cfw_timeframePicker_setOffset("#"+fieldID, initalData.offset);
+		}
+	}
+	
+	
+	//----------------------------------
+	// StoreCallback
+	if( onchangeCallbackFunction != null){
+		CFW.global.timeframePickerOnchangeHandlers[fieldID] = onchangeCallbackFunction;
+	}
 }
 
 /*******************************************************************************
@@ -2944,10 +2959,12 @@ function cfw_http_setURLParam(name, value){
 
 	//------------------------------
 	// Set or replace param value
-	var params = cfw_http_getURLParams();
-    params[name] = encodeURIComponent(value);
-    
-    cfw_http_changeURLQuery(params);
+	if(!CFW.utils.isNullOrEmpty(name)){
+		var params = cfw_http_getURLParams();
+	    params[name] = encodeURIComponent(value);
+	    
+	    cfw_http_changeURLQuery(params);
+	}
 }
 
 /******************************************************************

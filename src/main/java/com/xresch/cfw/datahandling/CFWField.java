@@ -836,6 +836,27 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	/***********************************************************************************
+	 * Create TimeframePicker
+	 ***********************************************************************************/
+	private void createTimeframePicker(StringBuilder html, String cssClasses) {
+		
+//		int maxTags = 128;
+//		
+//		if(attributes.containsKey("maxTags")) {
+//			maxTags = Integer.parseInt(attributes.get("maxTags"));
+//		}
+		
+		//---------------------------------
+		// Create Field
+		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"timeframepicker\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
+		
+		if(this.parent instanceof CFWForm) {
+			((CFWForm)this.parent).javascript.append("cfw_initializeTimeframePicker('"+name+"', "+CFW.JSON.toJSON(value)+", null);\r\n");
+		}
+				
+	}
+	
+	/***********************************************************************************
 	 * Create DatePicker
 	 ***********************************************************************************/
 	private void createSchedule(StringBuilder html, String cssClasses) {
@@ -856,26 +877,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				
 	}
 	
-	/***********************************************************************************
-	 * Create TimeframePicker
-	 ***********************************************************************************/
-	private void createTimeframePicker(StringBuilder html, String cssClasses) {
-		
-//		int maxTags = 128;
-//		
-//		if(attributes.containsKey("maxTags")) {
-//			maxTags = Integer.parseInt(attributes.get("maxTags"));
-//		}
-		
-		//---------------------------------
-		// Create Field
-		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"timeframepicker\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
-		
-		if(this.parent instanceof CFWForm) {
-			((CFWForm)this.parent).javascript.append("cfw_initializeTimeframePicker('"+name+"', "+CFW.JSON.toJSON(value)+", null);\r\n");
-		}
-				
-	}
 	
 	/********************************************************************************************
 	 * Used to get the epoch time as a string to create a time field.

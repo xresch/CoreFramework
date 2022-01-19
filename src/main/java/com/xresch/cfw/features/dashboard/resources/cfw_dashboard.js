@@ -42,11 +42,11 @@ function cfw_dashboard_timeframeChangeCallback(fieldID, pickerData){
 	CFW_DASHBOARD_TIME_EARLIEST_EPOCH = pickerData.earliest;
 	CFW_DASHBOARD_TIME_LATEST_EPOCH = pickerData.latest;
 	
-	if(pickerData.preset != null){
-		window.localStorage.setItem("dashboard-timeframe-preset-"+CFW_DASHBOARD_URLPARAMS.id, pickerData.preset);
+	if(pickerData.offset != null){
+		window.localStorage.setItem("dashboard-timeframe-preset-"+CFW_DASHBOARD_URLPARAMS.id, pickerData.offset);
 		CFW.http.removeURLParam('earliest');
 		CFW.http.removeURLParam('latest');
-		CFW.http.setURLParam('timeframepreset', pickerData.preset);
+		CFW.http.setURLParam('timeframepreset', pickerData.offset);
 	}else{
 		CFW.http.setURLParam('earliest', pickerData.earliest);
 		CFW.http.setURLParam('latest', pickerData.latest);
@@ -2120,8 +2120,9 @@ function cfw_dashboard_initialDraw(){
 			// above method calls cfw_dashboard_draw()
 		}else{
 			// ---------------------------------
-			// Just draw with default
-			cfw_dashboard_draw();
+			// draw with default
+			cfw_dashboard_timeframe_setOffset("30-m");
+			
 		}
 	}
 	

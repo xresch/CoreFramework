@@ -25,10 +25,10 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.Context.App;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWSchedule;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -51,6 +51,7 @@ public class CFWJson {
 				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
 				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
+				.registerTypeHierarchyAdapter(CFWTimeframe.class, new SerializerCFWTimeframe())
 				.serializeNulls()
 				.create();
 		
@@ -58,6 +59,7 @@ public class CFWJson {
 				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
 				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
+				.registerTypeHierarchyAdapter(CFWTimeframe.class, new SerializerCFWTimeframe())
 				.serializeNulls()
 				.setPrettyPrinting()
 				.create();
