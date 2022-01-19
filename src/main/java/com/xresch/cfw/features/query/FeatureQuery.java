@@ -54,7 +54,7 @@ public class FeatureQuery extends CFWAppFeature {
     	// Register Menu				
 		CFW.Registry.Components.addToolsMenuItem(
 				(MenuItem)new MenuItem("Query")
-					.faicon("fas fa-code")
+					.faicon("fas fa-terminal")
 					.addPermission(PERMISSION_QUERY_USER)
 					.addPermission(PERMISSION_QUERY_ADMIN)
 					.href("/app/query")

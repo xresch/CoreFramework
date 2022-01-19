@@ -1,12 +1,15 @@
 package com.xresch.cfw.features.query;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
@@ -16,6 +19,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 
@@ -28,6 +32,9 @@ public class ServletQuery extends HttpServlet
 
 	private static final String AUTOCOMPLETE_FORMID = "cfwQueryAutocompleteForm";
 	private static final long serialVersionUID = 1L;
+	
+	private static Logger logger = CFWLog.getLogger(ServletQuery.class.getName());
+	
 	
 	public ServletQuery() {
 	
@@ -78,7 +85,7 @@ public class ServletQuery extends HttpServlet
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
 		String ID = request.getParameter("id");
-		String IDs = request.getParameter("ids");
+		
 		//int	userID = CFW.Context.Request.getUser().id();
 			
 		JSONResponse jsonResponse = new JSONResponse();		
@@ -115,7 +122,7 @@ public class ServletQuery extends HttpServlet
 			case "delete": 			
 				switch(item.toLowerCase()) {
 
-					case "person": 		deletePerson(jsonResponse, ID);
+					case "person": 		//deletePerson(jsonResponse, ID);
 										break;  
 										
 					default: 			CFW.Messages.itemNotSupported(item);
@@ -123,10 +130,10 @@ public class ServletQuery extends HttpServlet
 				}
 				break;	
 				
-			case "duplicate": 			
+			case "execute": 			
 				switch(item.toLowerCase()) {
 
-					case "person": 	 	duplicatePerson(jsonResponse, ID);
+					case "query": 	 	executeQuery(request, jsonResponse);
 										break;  
 										
 					default: 			CFW.Messages.itemNotSupported(item);
@@ -153,7 +160,27 @@ public class ServletQuery extends HttpServlet
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private void deletePerson(JSONResponse jsonResponse, String ID) {
+	private void executeQuery(HttpServletRequest request, JSONResponse jsonResponse) {
+		String query = request.getParameter("query");
+		String earliest = request.getParameter("earliest");
+		String latest = request.getParameter("latest");
+		
+
+		try {
+			JsonArray array = CFWQueryExecutor.parseAndExecuteAll(query, Long.parseLong(earliest), Long.parseLong(latest));
+			jsonResponse.setPayLoad(array);
+			jsonResponse.setSuccess(true);
+		} catch (NumberFormatException e) {
+			jsonResponse.setSuccess(false);
+			new CFWLog(logger).severe("Timeframe could not be parsed correctly:"+e.getMessage(), e);
+		} catch (ParseException e) {
+			jsonResponse.setSuccess(false);
+			CFW.Messages.addErrorMessage(e.getMessage());
+		} catch (InterruptedException e) {
+			jsonResponse.setSuccess(false);
+			new CFWLog(logger).warn(e.getMessage(), e);
+		}
+
 		//PersonDBMethods.deleteByID(Integer.parseInt(ID));
 	}
 	
@@ -185,7 +212,11 @@ public class ServletQuery extends HttpServlet
 									String tag = "Tag_"+searchValue+"_"+i;
 									list.addItem(tag);
 								}
-								return new AutocompleteResult(list);
+								
+								AutocompleteResult result = new AutocompleteResult(list);
+								result.setHTMLDescription("<span><b>Syntax:</b> source json data='{yourdata}' [limit=10000]</span>");
+								
+								return result;
 							}
 						})
 				);

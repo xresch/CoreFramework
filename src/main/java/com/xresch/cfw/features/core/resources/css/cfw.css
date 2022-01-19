@@ -676,6 +676,7 @@ h3, h4 {
   background-color: #fff;
   color: #333;
   padding: 10px;
+  border-bottom: 2px solid #c3c3c3;
 }
 
 .autocomplete-list  {

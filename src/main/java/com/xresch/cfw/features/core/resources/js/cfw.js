@@ -1607,20 +1607,8 @@ function cfw_autocompleteShow(inputField, autocompleteResults){
     //----------------------------
     // Create Multiple Item Lists
     var autocompleteWrapper = $('<div id="'+autocompleteID+'" class="autocomplete-wrapper">');
-    	
-    var multipleLists = $('<div class="autocomplete-multilist d-flex flex-row">');
     
-    // Plus 20% to give some range for flex display
-    let maxWidthPercent = (100 / autocompleteResults.lists.length)+20;
-    
-    for(var key in autocompleteResults.lists){
-    	var current = autocompleteResults.lists[key];
-    	 multipleLists.append(cfw_autocompleteCreateItemList(inputField, current, maxWidthPercent));
-    }
-    
-    autocompleteWrapper.append(multipleLists);
-	
-    //----------------------------
+  	//----------------------------
     // Add Description
 	if(autocompleteResults.description != null){
 		var description = $('<div class="autocomplete-description">');
@@ -1633,7 +1621,23 @@ function cfw_autocompleteShow(inputField, autocompleteResults){
 		
 		$(inputField).parent().append(description);
 	}
-	 autocompleteWrapper.append(description);
+	autocompleteWrapper.append(description);
+
+  	//----------------------------
+    // Add Lists
+    var multipleLists = $('<div class="autocomplete-multilist d-flex flex-row">');
+    
+    // Plus 20% to give some range for flex display
+    let maxWidthPercent = (100 / autocompleteResults.lists.length)+20;
+    
+    for(var key in autocompleteResults.lists){
+    	var current = autocompleteResults.lists[key];
+    	 multipleLists.append(cfw_autocompleteCreateItemList(inputField, current, maxWidthPercent));
+    }
+    
+    autocompleteWrapper.append(multipleLists);
+	
+  
 	 
 	 
 	$(inputField).parent().append(autocompleteWrapper);
