@@ -1626,7 +1626,7 @@ function cfw_renderer_dataviewer(renderDef) {
 			// The initial page to be drawn.
 			initialpage: 1,
 			// The number of items options for the page size selector. 
-			sizes: [10, 25, 50, 100, 200, 500, 1000, 99999],
+			sizes: [10, 25, 50, 100, 200, 500, 1000, 10000],
 			// The size selected by default
 			defaultsize: 50,
 			// if a store ID is provided, the settings will be saved and restored when refreshing the viewer or the page.

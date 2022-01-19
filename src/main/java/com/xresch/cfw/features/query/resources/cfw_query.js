@@ -45,6 +45,57 @@ function cfw_query_execute(){
 							rendererSettings: {
 								dataviewer: {
 									storeid: 'cfw-query',
+									renderers: [
+										{	label: 'Table',
+											name: 'table',
+											renderdef: {
+												rendererSettings: {
+													table: {filterable: false},
+												},
+											}
+										},
+										{	label: 'Smaller Table',
+											name: 'table',
+											renderdef: {
+												rendererSettings: {
+													table: {filterable: false, narrow: true},
+												},
+											}
+										},
+										{	label: 'Panels',
+											name: 'panels',
+											renderdef: {}
+										},
+										{	label: 'Cards',
+											name: 'cards',
+											renderdef: {}
+										},
+										{	label: 'Tiles',
+											name: 'tiles',
+											renderdef: {
+												visiblefields: ['PK_ID', 'LOCATION', "EMAIL", "LIKES_TIRAMISU"],
+												rendererSettings: {
+													tiles: {
+														popover: false,
+														border: '2px solid black'
+													},
+												},
+												
+											}
+										},
+										{	label: 'CSV',
+											name: 'csv',
+											renderdef: {}
+										},
+										{	label: 'XML',
+											name: 'xml',
+											renderdef: {}
+										},
+										{	label: 'JSON',
+											name: 'json',
+											renderdef: {}
+										}
+									],
 								},
 							},
 						};
