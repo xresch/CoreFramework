@@ -215,11 +215,13 @@ public class CFWApplicationExecutor {
 	 * @param isAppServlet prepends "/app" if true
 	 **************************************************************************************************/
 	public void setDefaultURL(String defaultURL, boolean isAppServlet) {
-		if(isAppServlet) {
-			this.defaultURL = "/app"+defaultURL;
-		}else {
-			this.defaultURL = defaultURL;
+		
+		if(isAppServlet && !defaultURL.startsWith("/app") ) {
+			defaultURL = "/app"+defaultURL;
 		}
+		
+		this.defaultURL = defaultURL;
+		
 	}
 	
 	/**************************************************************************************************

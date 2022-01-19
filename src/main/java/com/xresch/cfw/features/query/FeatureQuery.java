@@ -8,6 +8,7 @@ import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceRandom;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -51,13 +52,13 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		//----------------------------------
     	// Register Menu				
-//		CFW.Registry.Components.addToolsMenuItem(
-//				(MenuItem)new MenuItem("Query")
-//					.faicon("fas fa-play-circle")
-//					.addPermission(PERMISSION_QUERY_USER)
-//					.addPermission(PERMISSION_QUERY_ADMIN)
-//					.href("/app/jobs")
-//				, null);
+		CFW.Registry.Components.addToolsMenuItem(
+				(MenuItem)new MenuItem("Query")
+					.faicon("fas fa-code")
+					.addPermission(PERMISSION_QUERY_USER)
+					.addPermission(PERMISSION_QUERY_ADMIN)
+					.href("/app/query")
+				, null);
 		
 	}
 
@@ -84,7 +85,7 @@ public class FeatureQuery extends CFWAppFeature {
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
 		
-		//app.addAppServlet(ServletJobs.class,  URI_QUERY);
+		app.addAppServlet(ServletQuery.class,  URI_QUERY);
 		
 	}
 

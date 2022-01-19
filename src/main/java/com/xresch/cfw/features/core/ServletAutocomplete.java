@@ -90,21 +90,4 @@ public class ServletAutocomplete extends HttpServlet
     	
     }
 	
-	
-//    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
-//	{
-//    	String formID = request.getParameter(CFWForm.FORM_ID);
-//    	CFWForm form = CFW.Context.Session.getForm(formID);
-//    	
-//    	JSONResponse json = new JSONResponse();
-//    	if(form == null) {
-//    		json.setSuccess(false);
-//    		new CFWLog(logger)
-//	    		.method("doGet")
-//	    		.severe("The form with ID '"+formID+"' could not be found.");
-//    		return;
-//    	}
-//    	    	
-//    	form.getFormHandler().handleForm(request, response, form, form.getOrigin());
-//	}
 }

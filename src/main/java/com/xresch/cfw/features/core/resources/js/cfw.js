@@ -1134,16 +1134,15 @@ function cfw_initializeTimeframePicker(fieldID, initalData, onchangeCallbackFunc
 	var selector = '#'+fieldID;
 
 	var timeframeStoreField = $(selector);
-
-	var wrapper = $('<div class="cfw-timeframepicker-wrapper flex-grow-1" data-id="'+fieldID+'">');
+	timeframeStoreField.addClass('d-none');
+	
+	var wrapper = $('<div class="cfw-timeframepicker-wrapper" data-id="'+fieldID+'">');
 	timeframeStoreField.before(wrapper);
 	wrapper.append(timeframeStoreField);
 		
 	//----------------------------------
 	// Set Intial Value
 	var pickerDataString = JSON.stringify(initalData);
-	console.log('===== pickerData =====')
-	console.log(initalData)
 	timeframeStoreField.val(pickerDataString);
 	
 	//----------------------------------
