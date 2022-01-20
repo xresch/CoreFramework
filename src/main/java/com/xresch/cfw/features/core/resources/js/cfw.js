@@ -1389,9 +1389,10 @@ function cfw_autocomplete_setParamEnhancer(functionToEnhanceParams){
  * @param minChars the minimum amount of chars for triggering the autocomplete
  * @param maxResults the max number of results listed for the autocomplete
  * @param array (optional) an array of strings used for the autocomplete
+ * @param triggerWithCtrlSpace set to true to only trigger autocomplete with Ctrl+Space
  * @return nothing
  *************************************************************************************/
-function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, array){
+function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, array, triggerWithCtrlSpace){
 		
 	CFW.global.autocompleteFocus = -1;
 	var $input = $("#"+fieldName);
@@ -1440,8 +1441,15 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 	// DYNAMIC SERVER SIDE AUTOCOMPLETE
 	//--------------------------------------------------------------
 	if(array == null){
-		$input.on('input', function(e) {
+		$input.on('keyup', function(e) {
 			
+			// --------------------------------
+			// Ctrl+Space - Trigger Paste
+			if (triggerWithCtrlSpace && !(e.ctrlKey && e.keyCode == 32)) {
+				console.log("NOT SPACE!!!")
+				return;
+			}
+				
 			// Only do autocomplete if at least N characters are typed			
 			if($input.val().length >= minChars){
 				// use a count and set timeout to wait for the user 

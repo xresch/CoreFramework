@@ -154,7 +154,7 @@ function cfw_query_initialDraw(){
 				<div class="col-12">
 					<form id="${formID}">
 						<input id="cfw-formID" name="cfw-formID" type="hidden" value="${formID}">
-						<textarea id="query" name="query" class="form-control" rows="3" placeholder="Start typing your query..."></textarea>
+						<textarea id="query" name="query" class="form-control" rows="3" placeholder="Write your query, use Ctrl+Space for content assist..."></textarea>
 					</form>
 				</div>
 			</div>
@@ -165,9 +165,9 @@ function cfw_query_initialDraw(){
 		</div>
 	`);
 	
-	//-----------------------------------
-	// Initialize Autocomplete
-	cfw_autocompleteInitialize(formID,'query',1,10);
+	//-------------------------------------------------
+	// Initialize Autocomplete, trigger with Ctrl+Space
+	cfw_autocompleteInitialize(formID,'query',0,10, null, true);
 	
 	//-----------------------------------
 	// Load Timeframe from URL or set default
