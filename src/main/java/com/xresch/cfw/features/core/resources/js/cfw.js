@@ -2997,7 +2997,9 @@ function cfw_http_changeURLQuery(params){
     var queryString = "";
     for(var key in params)
     {
-    	queryString = queryString + key +"="+params[key]+"&";
+		if(!CFW.utils.isNullOrEmpty(key)){
+    		queryString = queryString + key +"="+params[key]+"&";
+		}
     }
     //Remove last '&'
     queryString = queryString.substring(0, queryString.length-1);

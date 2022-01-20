@@ -1,5 +1,6 @@
 
-CFW_QUERY_URL="/app/query";
+var CFW_QUERY_URLPARAMS = CFW.http.getURLParamsDecoded();
+var CFW_QUERY_URL="/app/query";
 
 /*******************************************************************************
  * Main method for building the view.
@@ -25,7 +26,22 @@ function cfw_query_execute(){
 			targetDiv.html("");
 			
 			if(data.success){
-							
+				
+				//-----------------------------------
+				// Add Params to URL
+				CFW.http.removeURLParam('query');
+				
+				if(timeframe.offset != null){
+					CFW.http.removeURLParam('earliest');
+					CFW.http.removeURLParam('latest');
+					CFW.http.setURLParam('offset', timeframe.offset);
+				}else{
+					CFW.http.setURLParam('earliest', timeframe.earliest);
+					CFW.http.setURLParam('latest', timeframe.latest);
+					CFW.http.removeURLParam('offset');
+				}
+				CFW.http.setURLParam('query', query);
+						
 				//-----------------------------------
 				// Iterate all Query results
 				for(var i = 0; i < data.payload.length; i++){
@@ -138,7 +154,7 @@ function cfw_query_initialDraw(){
 				<div class="col-12">
 					<form id="${formID}">
 						<input id="cfw-formID" name="cfw-formID" type="hidden" value="${formID}">
-						<textarea id="query" name="query" class="form-control" placeholder="Start typing your query..."></textarea>
+						<textarea id="query" name="query" class="form-control" rows="3" placeholder="Start typing your query..."></textarea>
 					</form>
 				</div>
 			</div>
@@ -150,8 +166,30 @@ function cfw_query_initialDraw(){
 	`);
 	
 	//-----------------------------------
-	// Initialize Fields
-	cfw_autocompleteInitialize('cfwQueryAutocompleteForm','query',1,10);
-	cfw_initializeTimeframePicker('timeframePicker', {"offset":"1-h"}, null);
+	// Initialize Autocomplete
+	cfw_autocompleteInitialize(formID,'query',1,10);
 	
+	//-----------------------------------
+	// Load Timeframe from URL or set default
+	if(!CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.offset)){
+		cfw_initializeTimeframePicker('timeframePicker', {offset: CFW_QUERY_URLPARAMS.offset}, null);
+	}else{
+		if(!CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.earliest)
+		&& !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.latest) ){
+			cfw_initializeTimeframePicker('timeframePicker', {earliest: CFW_QUERY_URLPARAMS.earliest, latest: CFW_QUERY_URLPARAMS.latest}, null);
+		}else{
+			cfw_initializeTimeframePicker('timeframePicker', {offset: '1-h'}, null);
+		}
+	}
+	
+	//-----------------------------------
+	// Load Query from URL
+	if( !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.query) ){
+		var queryLines = CFW_QUERY_URLPARAMS.query.split(/\r\n|\n/);
+		$('#query').attr('rows', queryLines.length);
+		$('#query').val(CFW_QUERY_URLPARAMS.query);
+		cfw_query_execute();
+	}
+	
+		
 }
