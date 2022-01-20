@@ -380,7 +380,7 @@ public class ServletDashboardList extends HttpServlet
 						.setDescription("Select the new owner of the Dashboard.")
 						.addValidator(new NotNullOrEmptyValidator())
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 								return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
 							}
 						})

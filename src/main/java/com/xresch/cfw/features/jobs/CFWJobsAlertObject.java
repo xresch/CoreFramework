@@ -83,7 +83,7 @@ public class CFWJobsAlertObject extends CFWObject {
 			.setDescription("Select the users that should be alerted.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
 				}
 			});
@@ -93,7 +93,7 @@ public class CFWJobsAlertObject extends CFWObject {
 			.setDescription("Select the groups that should be alerted.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
 				}
 			});		

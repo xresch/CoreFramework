@@ -33,13 +33,13 @@ class DashboardParameterAutocompleteWrapper extends CFWAutocompleteHandler {
 		wrappedField.setAutocompleteHandler(this);
 	}
 	@Override
-	public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+	public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 		
 		//---------------------------
 		// Get Regular Result
 		AutocompleteResult wrappedResult = null;
 		if(wrappedHandler != null) {
-			wrappedResult = wrappedHandler.getAutocompleteData(request, searchValue);
+			wrappedResult = wrappedHandler.getAutocompleteData(request, searchValue, cursorPosition);
 		};
 		
 		//---------------------------

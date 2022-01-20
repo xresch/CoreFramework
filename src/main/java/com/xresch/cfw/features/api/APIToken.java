@@ -70,7 +70,7 @@ public class APIToken extends CFWObject {
 			.setLabel("Responsible Users")
 			.setDescription("Specify the users responsible for this token.")
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
 				}
 			});

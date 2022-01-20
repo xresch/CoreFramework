@@ -52,7 +52,7 @@ public class WidgetParameter extends WidgetDefinition {
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 							
 							@Override
-							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 								
 								String dashboardID = request.getParameter("cfw-dashboardid");								
 								HashSet<String> usedParamIDs = getParamIDsAlreadyInUse(dashboardID);

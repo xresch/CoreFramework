@@ -29,7 +29,7 @@ public class CFWAutocompleteHandlerDefault extends CFWAutocompleteHandler {
 		this.clazz = clazz;
 	}
 	@Override
-	public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue)  {
+	public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue, int cursorPosition)  {
 		
 		CFWField parent = this.getParent();
 		String fieldname = parent.getName();

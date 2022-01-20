@@ -30,9 +30,10 @@ public abstract class CFWAutocompleteHandler {
 	/*******************************************************************************
 	 * Return a hashmap with value / label combinations
 	 * @param request 
+	 * @param cursorPosition TODO
 	 * @return JSON string
 	 *******************************************************************************/
-	public abstract AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue);
+	public abstract AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition);
 
 	public int getMaxResults() {
 		return maxResults;

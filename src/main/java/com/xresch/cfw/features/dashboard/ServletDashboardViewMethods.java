@@ -1007,7 +1007,7 @@ public class ServletDashboardViewMethods
 				
 				@Override
 				public AutocompleteResult getAutocompleteData(HttpServletRequest request, HttpServletResponse response,
-						CFWForm form, CFWField field, String searchValue) {
+						CFWForm form, CFWField field, String searchValue, int cursorPosition) {
 					
 					//------------------------------------
 					// Create Request with additional Params
@@ -1062,7 +1062,7 @@ public class ServletDashboardViewMethods
 					//------------------------------------
 					// Get Autocomplete Results
 			    	if(field.getAutocompleteHandler() != null) {
-			    		AutocompleteResult suggestions = field.getAutocompleteHandler().getAutocompleteData(modifiedRequest, searchValue);
+			    		AutocompleteResult suggestions = field.getAutocompleteHandler().getAutocompleteData(modifiedRequest, searchValue, cursorPosition);
 			    		return suggestions;
 			    	}else {
 			    		json.setSuccess(false);

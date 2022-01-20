@@ -89,7 +89,7 @@ public class Dashboard extends CFWObject {
 			.setAutocompleteHandler( new CFWAutocompleteHandler(10) {
 
 				@Override
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue, int cursorPosition) {
 					
 					AutocompleteList list = new AutocompleteList();
 					for(String tag : CFW.DB.Dashboards.getTags()) {
@@ -115,7 +115,7 @@ public class Dashboard extends CFWObject {
 			.setDescription("Share this dashboard with specific users.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
 				}
 			});
@@ -125,7 +125,7 @@ public class Dashboard extends CFWObject {
 			.setDescription("Share this dashboard with specific groups.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
 				}
 			});
@@ -136,7 +136,7 @@ public class Dashboard extends CFWObject {
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());
 				}
 			});
@@ -147,7 +147,7 @@ public class Dashboard extends CFWObject {
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
 				
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());
 				}
 			});

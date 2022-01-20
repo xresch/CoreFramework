@@ -50,7 +50,7 @@ public class WidgetHelloWorld extends WidgetDefinition {
 							.setLabel("Hobbies")
 							.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
 								
-								public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+								public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue, int cursorPosition) {
 									AutocompleteList list = new AutocompleteList();
 									
 									for(int i = 0; i < 25; i++ ) {

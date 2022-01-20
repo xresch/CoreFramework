@@ -63,7 +63,7 @@ public class ContextSettings extends CFWObject {
 			.setDescription("If at least one user or group is defined for access restriction, will only allow the specified users to access the setting. if none is specified, everybody has access.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
 				}
 			});
@@ -73,7 +73,7 @@ public class ContextSettings extends CFWObject {
 			.setDescription("If at least one user or group is defined for access restriction, will only allow the specified users to access the setting. if none is specified, everybody has access.")
 			.setValue(null)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
 				}
 			});

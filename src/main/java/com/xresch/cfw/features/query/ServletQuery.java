@@ -204,7 +204,7 @@ public class ServletQuery extends HttpServlet
 						.setAutocompleteHandler(new CFWAutocompleteHandler() {
 							
 							@Override
-							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 								
 								AutocompleteList list = new AutocompleteList();
 								

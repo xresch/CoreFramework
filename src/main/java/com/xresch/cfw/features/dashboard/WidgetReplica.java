@@ -31,7 +31,7 @@ public class WidgetReplica extends WidgetDefinition {
 						.setDescription("{!cfw_widget_replica_dashboard_desc!}")
 						.addAttribute("maxTags", "1")
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 								return CFW.DB.Dashboards.autocompleteDashboard(searchValue, this.getMaxResults());					
 							}
 						})
@@ -41,7 +41,7 @@ public class WidgetReplica extends WidgetDefinition {
 						.setDescription("{!cfw_widget_replica_widget_desc!}")
 						.addAttribute("maxTags", "1")
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue) {
+							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 								String JSON_DASHBOARD = request.getParameter("JSON_DASHBOARD");
 								LinkedHashMap<String, String> selectedDashboard = CFW.JSON.fromJsonLinkedHashMap(JSON_DASHBOARD);
 								String dashboardID = null;

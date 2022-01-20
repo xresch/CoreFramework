@@ -16,6 +16,7 @@ public abstract class CFWFormCustomAutocompleteHandler {
 	/*******************************************************************************
 	 * Return a hashmap with value / label combinations
 	 * @param request 
+	 * @param cursorPosition TODO
 	 * @return JSON string
 	 *******************************************************************************/
 	public abstract AutocompleteResult getAutocompleteData(
@@ -23,7 +24,8 @@ public abstract class CFWFormCustomAutocompleteHandler {
 					HttpServletResponse response, 
 					CFWForm form, 
 					CFWField field, 
-					String searchValue
+					String searchValue, 
+					int cursorPosition
 				);
 
 

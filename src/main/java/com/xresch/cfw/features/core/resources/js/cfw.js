@@ -1444,9 +1444,8 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 		$input.on('keyup', function(e) {
 			
 			// --------------------------------
-			// Ctrl+Space - Trigger Paste
+			// Verify Use Ctrl+Space
 			if (triggerWithCtrlSpace && !(e.ctrlKey && e.keyCode == 32)) {
-				console.log("NOT SPACE!!!")
 				return;
 			}
 				
@@ -1478,7 +1477,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 						var params = CFW.format.formToParams($input.closest('form'));
 						params.cfwAutocompleteFieldname = fieldName;
 						params.cfwAutocompleteSearchstring = inputField.value;
-						
+						params.cfwAutocompleteCursorPosition = inputField.selectionStart;
 						//function to customize the autocomplete
 						if(CFW.global.autcompleteParamEnhancerFunction != null){
 							CFW.global.autcompleteParamEnhancerFunction($input, params);

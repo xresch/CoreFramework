@@ -34,6 +34,8 @@ public class ServletAutocomplete extends HttpServlet
 		String formid = request.getParameter("cfw-formID");
 		String fieldname = request.getParameter("cfwAutocompleteFieldname");
 		String searchstring = request.getParameter("cfwAutocompleteSearchstring");
+		int cursorPosition = Integer.parseInt(request.getParameter("cfwAutocompleteCursorPosition"));
+
 		JSONResponse json = new JSONResponse();
 		
 		//--------------------------------------------
@@ -67,7 +69,7 @@ public class ServletAutocomplete extends HttpServlet
     	if(form.getCustomAutocompleteHandler() == null) {
     		
     		if(field.getAutocompleteHandler() != null) {
-        		suggestions = field.getAutocompleteHandler().getAutocompleteData(request, searchstring);
+        		suggestions = field.getAutocompleteHandler().getAutocompleteData(request, searchstring, cursorPosition);
         	}else {
         		json.setSuccess(false);
         		new CFWLog(logger)
@@ -76,7 +78,7 @@ public class ServletAutocomplete extends HttpServlet
         	}	 
     		
     	}else {
-    		suggestions = form.getCustomAutocompleteHandler().getAutocompleteData(request, response, form, field, searchstring);
+    		suggestions = form.getCustomAutocompleteHandler().getAutocompleteData(request, response, form, field, searchstring, cursorPosition);
     	}
     	
 		//--------------------------------------------

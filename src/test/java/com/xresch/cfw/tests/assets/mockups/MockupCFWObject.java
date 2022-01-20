@@ -105,7 +105,7 @@ public class MockupCFWObject extends CFWObject{
 					.setDescription("Type at least 3 characters to get suggestions.")
 					.setAutocompleteHandler(new CFWAutocompleteHandler(5) {
 						
-						public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+						public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue, int cursorPosition) {
 							AutocompleteList list = new AutocompleteList();
 							
 							for(int i = 0; i < this.getMaxResults(); i++ ) {
@@ -124,7 +124,7 @@ public class MockupCFWObject extends CFWObject{
 					.setDescription("Start typing to get suggestions.")
 					.setAutocompleteHandler(new CFWAutocompleteHandler(10,1) {
 						
-						public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+						public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue, int cursorPosition) {
 							AutocompleteList list = new AutocompleteList();
 							for(int i = 0; i < this.getMaxResults(); i++ ) {
 								String tag = inputValue+"_"+i;
@@ -140,7 +140,7 @@ public class MockupCFWObject extends CFWObject{
 	private CFWField<String> autocomplete = CFWField.newString(FormFieldType.TEXT, "AUTOCOMPLETE")
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10,1) {
 				
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue, int cursorPosition) {
 					AutocompleteList list = new AutocompleteList();
 					for(int i = 0; i < 7; i++ ) {
 						String tag = "Test_"+inputValue+"_"+i;
@@ -165,7 +165,7 @@ public class MockupCFWObject extends CFWObject{
 	private CFWField<String> autocompleteMethods = CFWField.newString(FormFieldType.TEXT, "AUTOCOMPLETE_METHODS")
 		.setAutocompleteHandler(new CFWAutocompleteHandler(5,1) {
 			
-			public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue) {
+			public AutocompleteResult getAutocompleteData(HttpServletRequest request, String inputValue, int cursorPosition) {
 				
 				if (Strings.isNullOrEmpty(inputValue)) return null;
 				
