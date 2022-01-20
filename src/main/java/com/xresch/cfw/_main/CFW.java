@@ -417,7 +417,7 @@ public class CFW {
 			CFW.Registry.Features.addFeature(FeatureContextSettings.class);	
 		}
 		
-		CFW.Registry.Features.addFeature(FeatureQuery.class);
+		
 		CFW.Registry.Features.addFeature(FeatureAPI.class);	
 		CFW.Registry.Features.addFeature(FeatureSystemAnalytics.class);		
 		CFW.Registry.Features.addFeature(FeatureManual.class);	
@@ -426,6 +426,8 @@ public class CFW {
 		if(CFW.AppSettings.isDashboardingEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureDashboard.class);	
 		}
+		
+		CFW.Registry.Features.addFeature(FeatureQuery.class);
 		
 		CFW.Registry.Features.addFeature(FeatureJobs.class);
 		

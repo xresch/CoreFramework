@@ -46,7 +46,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public String shortDescription() {
+	public String descriptionShort() {
 		return "Choose the source to read the data from.";
 	}
 
@@ -54,8 +54,25 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public String syntax() {
-		return "source <sourcename> [param1=xxx param2=xyz ...]";
+	public String descriptionSyntax() {
+		return "source <sourcename> [param1=abc param2=xyz ...]";
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String descriptionSyntaxDetailsHTML() {
+		return "<p>Just a test how this will look like</p>";
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String descriptionHTML() {
+		
+		return "<p>This still has to be documented, any volunteers?</p>";
 	}
 
 	/***********************************************************************************************

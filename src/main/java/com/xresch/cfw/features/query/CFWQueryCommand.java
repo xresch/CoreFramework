@@ -28,15 +28,31 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	public abstract String[] uniqueNameAndAliases();
 	
 	/***********************************************************************************************
-	 * 
+	 * Return a short description that can be shown in content assist and will be used as intro text
+	 * in the manual. Do not use newlines in this description.
 	 ***********************************************************************************************/
-	public abstract String shortDescription();
+	public abstract String descriptionShort();
+	
 	
 	/***********************************************************************************************
-	 * 
+	 * Return the syntax as a single line. This will be shown in the manual and in content assist.
+	 * Will be added in the manual under the header " <h2>Syntax</h2>" as a "<pre><code>" element. 
 	 ***********************************************************************************************/
-	public abstract String syntax();
+	public abstract String descriptionSyntax();
 	
+	/***********************************************************************************************
+	 * If you want to add further details to the syntax section.
+	 * If you add headers to your description it is recommended to use <h3> or lower headers.
+	 ***********************************************************************************************/
+	public abstract String descriptionSyntaxDetailsHTML();
+	
+	/***********************************************************************************************
+	 * Return the description for the manual page.
+	 * This description will be shown on the manual under the header " <h2>Usage</h2>".
+	 * If you add headers to your description it is recommended to use <h3> or lower headers.
+	 ***********************************************************************************************/
+	public abstract String descriptionHTML();
+
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

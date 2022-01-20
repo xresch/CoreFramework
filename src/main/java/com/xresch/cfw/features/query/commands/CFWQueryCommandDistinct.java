@@ -35,7 +35,9 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	}
 
 	/***********************************************************************************************
-	 * 
+	 * Return the command name and aliases.
+	 * The first entry in the array will be used as the main name, under which the documentation can
+	 * be found in the manual. All other will be used as aliases.
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
@@ -46,16 +48,33 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public String shortDescription() {
-		return "Deduplicates the results by the specified fields";
+	public String descriptionShort() {
+		return "Deduplicates the results by the specified fields.";
 	}
 
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public String syntax() {
-		return "distinct fieldname [fieldname]";
+	public String descriptionSyntax() {
+		return "distinct <fieldname> [, <fieldname>, <fieldname>]";
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String descriptionSyntaxDetailsHTML() {
+		return "<p>Just a test how this will look like</p>";
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String descriptionHTML() {
+		
+		return "<p>This still has to be documented, any volunteers?</p>";
 	}
 
 	/***********************************************************************************************

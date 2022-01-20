@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.logging.CFWLog;
@@ -16,11 +17,11 @@ public class CFWQueryRegistry {
 	private static final Logger logger = CFWLog.getLogger(CFWQueryRegistry.class.getName());
 	
 	// command name and command class
-	private static LinkedHashMap<String, Class<? extends CFWQueryCommand>> queryCommandMap = new LinkedHashMap<>();
+	private static TreeMap<String, Class<? extends CFWQueryCommand>> queryCommandMap = new TreeMap<>();
 	
 	
 	// command name and command class
-	private static LinkedHashMap<String, Class<? extends CFWQuerySource>> querySourceMap = new LinkedHashMap<>();
+	private static TreeMap<String, Class<? extends CFWQuerySource>> querySourceMap = new TreeMap<>();
 	
 	
 	/***********************************************************************
@@ -55,7 +56,7 @@ public class CFWQueryRegistry {
 	 * Removes a CFWObject class to the registry.
 	 * @param objectClass
 	 ***********************************************************************/
-	public static LinkedHashMap<String, Class<? extends CFWQueryCommand>> getCommandList()  {
+	public static TreeMap<String, Class<? extends CFWQueryCommand>> getCommandList()  {
 		return queryCommandMap;
 	}
 	
@@ -143,7 +144,7 @@ public class CFWQueryRegistry {
 	 * Removes a CFWObject class to the registry.
 	 * @param objectClass
 	 ***********************************************************************/
-	public static LinkedHashMap<String, Class<? extends CFWQuerySource>> getSourceList()  {
+	public static TreeMap<String, Class<? extends CFWQuerySource>> getSourceList()  {
 		return querySourceMap;
 	}
 	
