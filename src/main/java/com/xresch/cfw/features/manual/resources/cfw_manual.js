@@ -221,35 +221,48 @@ function cfw_manual_addPageToPrintView(parentContainer, page, headerOffset){
  ******************************************************************/
 function cfw_manual_preparePageForPrint(pageContent, headerOffset){
 
-	//------------------------------
-	// Replace relative paths
-	pageContent = CFW.utils.replaceAll(pageContent, '"/cfw', '"'+CFW_MANUAL_HOST_URL+'/cfw');
-	pageContent = CFW.utils.replaceAll(pageContent, '"/app', '"'+CFW_MANUAL_HOST_URL+'/app');
-	
-	//------------------------------
-	// Find first Header Level
-	var level = 0;
-	for(level = 1; level <= 7; level++){
 
-		if(level == 7){ level = -1; break;}
-		if(pageContent.indexOf('<h'+level) > -1){
-			break;
-		}
-	}
+	
+
+	if( CFW.utils.isNullOrEmpty(pageContent) ){
+		return "";
+	}else{
 		
-	//------------------------------
-	// Replace Headers
-	if(level != -1){
-
-		var offset = headerOffset - level + 1;
-		for(var i = 5; i > 0; i-- ){
-
-			var newLevel = (i+offset <= 6) ? i+offset : 6;
-			pageContent = CFW.utils.replaceAll(pageContent, 'h'+i+'>', 'h'+newLevel+'>');
-		}
-	}
+		//------------------------------
+		// Replace relative paths
+		pageContent = CFW.utils.replaceAll(pageContent, '"/cfw', '"'+CFW_MANUAL_HOST_URL+'/cfw');
+		pageContent = CFW.utils.replaceAll(pageContent, '"/app', '"'+CFW_MANUAL_HOST_URL+'/app');
+		
+		//------------------------------
+		// Find first Header Level
+		var level = 0;
+		for(level = 1; level <= 7; level++){
 	
-	return pageContent;
+			if(level == 7){ level = -1; break;}
+			if(pageContent.indexOf('<h'+level) > -1){
+				break;
+			}
+		}
+		
+		//------------------------------
+		// Replace Headers
+		if(level != -1){
+	
+			var offset = headerOffset - level + 1;
+			for(var i = 5; i > 0; i-- ){
+	
+				var newLevel = (i+offset <= 6) ? i+offset : 6;
+				pageContent = CFW.utils.replaceAll(pageContent, 'h'+i+'>', 'h'+newLevel+'>');
+			}
+		}
+		
+		return pageContent;
+	}
+
+		
+
+	
+	
 }
 
 /******************************************************************

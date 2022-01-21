@@ -24,7 +24,7 @@ public class FeatureQuery extends CFWAppFeature {
 	
 	private static final String URI_QUERY = "/app/query";
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.query.resources";
-	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.query.manual";
+	public static final String PACKAGE_MANUAL =    "com.xresch.cfw.features.query.manual";
 	public static final String PERMISSION_QUERY_USER = "Query: User";
 	public static final String PERMISSION_QUERY_ADMIN = "Query: Admin";
 	
@@ -33,13 +33,15 @@ public class FeatureQuery extends CFWAppFeature {
 				.faicon("fas fa-terminal")
 				.addPermission(PERMISSION_QUERY_USER)
 				.addPermission(PERMISSION_QUERY_ADMIN)
-		);
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "000_query.html"))
+				;
 	
 	@Override
 	public void register() {
 		//----------------------------------
 		// Register Package
 		CFW.Files.addAllowedPackage(PACKAGE_RESOURCES);
+		CFW.Files.addAllowedPackage(PACKAGE_MANUAL);
 		
 		//----------------------------------
 		// Register Objects
@@ -130,7 +132,7 @@ public class FeatureQuery extends CFWAppFeature {
 		//----------------------------------
 		// Source Main Page
 		ManualPage sourcePage = new ManualPage("Sources")
-				.faicon("fas fa-star")
+				.faicon("fas fa-star-of-life")
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_01_sources.html");
 		
 		ROOT_MANUAL_PAGE.addChild(sourcePage);
@@ -153,7 +155,7 @@ public class FeatureQuery extends CFWAppFeature {
 		//----------------------------------
 		// Commands Main Page
 		ManualPage commandsPage = new ManualPage("Commands")
-				.faicon("fas fa-star")
+				.faicon("fas fa-cogs")
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_02_commands.html");
 		
 		ROOT_MANUAL_PAGE.addChild(commandsPage);

@@ -2220,6 +2220,9 @@ function cfw_format_objectToHTMLList(object){
 
 /**************************************************************************************
  * Create a table of contents for the h-elements on the page.
+ * If you do not want a section and it's subsection to appear in the table of contents,
+ * add the class 'toc-hidden' to your header element.
+ *
  * @param contentAreaSelector the jQuery selector for the element containing all 
  * the headers to show in the table of contents
  * @param targetSelector the jQuery selector for the resulting element
@@ -2255,7 +2258,13 @@ function cfw_ui_createTOC(contentAreaSelector, resultSelector, headerTag){
 			resultHTML += "</ul>";
 			currentLevel--;
 		}
-		resultHTML += '<li><a href="#toc_anchor_'+i+'">'+head.innerHTML+'</li>';
+		
+		//------------------------------
+		//Add List Item
+		var classes = "";
+		if($(head).hasClass('toc-hidden')){ classes="d-none"; }
+		
+		resultHTML += '<li class="'+classes+'"><a href="#toc_anchor_'+i+'">'+head.innerHTML+'</li>';
 		$(head).before('<a name="toc_anchor_'+i+'"></a>');
 	}
 	

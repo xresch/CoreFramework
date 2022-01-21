@@ -23,7 +23,7 @@ public class CFWQueryManualPageCommand extends ManualPage {
 
 			builder.append("<p>"+command.descriptionShort()+"</p>");
 			
-			builder.append("<h2>Syntax</h2>");
+			builder.append("<h2 class=\"toc-hidden\">Syntax</h2>");
 			builder.append("<pre><code>"
 						+ CFW.Security.escapeHTMLEntities(command.descriptionSyntax())
 						+"</code></pre>");
@@ -34,7 +34,7 @@ public class CFWQueryManualPageCommand extends ManualPage {
 				
 			}
 			
-			builder.append("<h2>Usage</h2>");
+			builder.append("<h2 class=\"toc-hidden\">Usage</h2>");
 			builder.append("<div>"+command.descriptionHTML()+"</div>");
 			
 			

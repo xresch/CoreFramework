@@ -19,10 +19,9 @@ public class CFWQueryManualPageSource extends ManualPage {
 		// Short Description Section
 		builder.append("<p>"+source.descriptionShort()+"</p>");
 		
-		
 		//--------------------------------
 		// Parameters Section
-		builder.append("<h2>Parameters</h2>");
+		builder.append("<h2 class=\"toc-hidden\" >Parameters</h2>");
 		CFWObject object = source.getParameters();
 		
 		builder.append("<ul>");
@@ -37,7 +36,7 @@ public class CFWQueryManualPageSource extends ManualPage {
 		
 		//--------------------------------
 		// Usage Section
-		builder.append("<h2>Usage</h2>");
+		builder.append("<h2 class=\"toc-hidden\">Usage</h2>");
 		builder.append("<div>"+source.descriptionHTML()+"</div>");
 			
 		
