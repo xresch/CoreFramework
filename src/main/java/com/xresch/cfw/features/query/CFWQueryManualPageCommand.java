@@ -1,15 +1,16 @@
-package com.xresch.cfw.features.query.manual;
+package com.xresch.cfw.features.query;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.manual.ManualPage;
-import com.xresch.cfw.features.query.CFWQueryCommand;
 
 public class CFWQueryManualPageCommand extends ManualPage {
 
-	public CFWQueryManualPageCommand(String commandName, CFWQueryCommand command) {
+	public CFWQueryManualPageCommand(ManualPage parent, String commandName, CFWQueryCommand command) {
 		//Set title to command name
 		super(commandName);
+		
+		parent.addChild(this);
 		
 		String mainName = command.uniqueNameAndAliases()[0];
 		
@@ -40,7 +41,10 @@ public class CFWQueryManualPageCommand extends ManualPage {
 		}else {
 			//--------------------------------
 			// Add docs under main name
-			builder.append("<p>This command is an alias for "+mainName+".</p>");
+			builder.append("<p>This is an alias for the command "
+							+"<a href=\"#\" onclick=\"cfw_manual_loadPage('"+parent.resolvePath(null)+"|"+mainName+"');\">"
+								+mainName+
+						"</a>.</p>");
 			
 		}
 		

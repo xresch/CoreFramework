@@ -11,6 +11,7 @@ import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.utils.CFWRandom;
+import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 	
 /**************************************************************************************************************
  * 
@@ -19,30 +20,54 @@ import com.xresch.cfw.utils.CFWRandom;
  **************************************************************************************************************/
 public class CFWQuerySourceJson extends CFWQuerySource {
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	public CFWQuerySourceJson(CFWQuery parent) {
 		super(parent);
 	}
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public String uniqueName() {
 		return "json";
 	}
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
-	public String shortDescription() {
+	public String descriptionShort() {
 		return "Takes a json string as an input.";
 	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return "<p>To be done</p>";
+	}
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public CFWObject getParameters() {
 		return new CFWObject()
 				.addField(
 					CFWField.newString(FormFieldType.TEXTAREA, "data")
-						.setValue("")
+						.setDescription("The JSON string that should be parsed. Either an array of JSON Objects or a JSON Object.")
+						.addValidator(new NotNullOrEmptyValidator())
 				)
 			;
 	}
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue) throws Exception {
 		

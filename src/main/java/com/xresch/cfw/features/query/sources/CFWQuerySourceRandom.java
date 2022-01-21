@@ -19,31 +19,55 @@ import com.xresch.cfw.validation.NumberRangeValidator;
  **************************************************************************************************************/
 public class CFWQuerySourceRandom extends CFWQuerySource {
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	public CFWQuerySourceRandom(CFWQuery parent) {
 		super(parent);
 	}
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public String uniqueName() {
 		return "random";
 	}
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
-	public String shortDescription() {
+	public String descriptionShort() {
 		return "Returns random person data for testing.";
 	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return "<p>To be done</p>";
+	}
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public CFWObject getParameters() {
 		return new CFWObject()
 				.addField(
 					CFWField.newInteger(FormFieldType.NUMBER, "records")
+						.setDescription("Creates random person data useful for training, demostration and testing.")
 						.addValidator(new NumberRangeValidator(0, 100000))
 						.setValue(1000)
 				)
 			;
 	}
 
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue) throws Exception {
 		
