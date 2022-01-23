@@ -9,7 +9,9 @@ import com.oracle.truffle.js.nodes.unary.TypeOfNode;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
+import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -133,6 +135,15 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			
 			throw new ParseException("Unknown error for source command '"+this.uniqueNameAndAliases()+"'", -1);
 		}
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper assist) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/***********************************************************************************************

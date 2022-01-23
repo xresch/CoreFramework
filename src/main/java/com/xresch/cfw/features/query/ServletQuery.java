@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
@@ -16,16 +17,13 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.features.core.AutocompleteList;
-import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2020
+ * @author Reto Scheiwiller, (c) Copyright 2022
  **************************************************************************************************************/
 public class ServletQuery extends HttpServlet
 {
@@ -35,9 +33,8 @@ public class ServletQuery extends HttpServlet
 	
 	private static Logger logger = CFWLog.getLogger(ServletQuery.class.getName());
 	
-	
 	public ServletQuery() {
-	
+		
 	}
 	
 	/******************************************************************
@@ -201,24 +198,7 @@ public class ServletQuery extends HttpServlet
 		CFWObject queryObject = new CFWObject()
 				.addField(
 					CFWField.newString(FormFieldType.TEXTAREA, "query")
-						.setAutocompleteHandler(new CFWAutocompleteHandler() {
-							
-							@Override
-							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-								
-								AutocompleteList list = new AutocompleteList();
-								
-								for(int i = 0; i < this.getMaxResults(); i++ ) {
-									String tag = "Tag_"+searchValue+"_"+i;
-									list.addItem(tag);
-								}
-								
-								AutocompleteResult result = new AutocompleteResult(list);
-								result.setHTMLDescription("<span><b>Syntax:</b> source json data='{yourdata}' [limit=10000]</span>");
-								
-								return result;
-							}
-						})
+						.setAutocompleteHandler(new CFWQueryAutocompleteHandler())
 				);
 				
 		return queryObject;

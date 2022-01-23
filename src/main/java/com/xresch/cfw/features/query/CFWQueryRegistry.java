@@ -64,12 +64,12 @@ public class CFWQueryRegistry {
 	 * Get a list of Environment instances.
 	 * 
 	 ***********************************************************************/
-	public static ArrayList<CFWQueryCommand> createCommandInstances()  {
+	public static ArrayList<CFWQueryCommand> createCommandInstances(CFWQuery parent)  {
 		ArrayList<CFWQueryCommand> instanceArray = new ArrayList<CFWQueryCommand>();
 		
 		for(Class<? extends CFWQueryCommand> clazz : queryCommandMap.values()) {
 			try {
-				CFWQueryCommand instance = clazz.newInstance();
+				CFWQueryCommand instance = clazz.getConstructor(CFWQuery.class).newInstance(parent);
 				instanceArray.add(instance);
 			} catch (Exception e) {
 				new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
@@ -152,12 +152,12 @@ public class CFWQueryRegistry {
 	 * Get a list of Environment instances.
 	 * 
 	 ***********************************************************************/
-	public static ArrayList<CFWQuerySource> createSourceInstances()  {
+	public static ArrayList<CFWQuerySource> createSourceInstances(CFWQuery parent)  {
 		ArrayList<CFWQuerySource> instanceArray = new ArrayList<CFWQuerySource>();
 		
 		for(Class<? extends CFWQuerySource> clazz : querySourceMap.values()) {
 			try {
-				CFWQuerySource instance = clazz.newInstance();
+				CFWQuerySource instance = clazz.getConstructor(CFWQuery.class).newInstance(parent);
 				instanceArray.add(instance);
 			} catch (Exception e) {
 				new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);

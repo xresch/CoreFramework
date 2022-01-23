@@ -57,7 +57,6 @@ public class CFWQueryExecutor {
 				
 				//TODO
 				//Thread.currentThread().wait(100);
-				System.out.println("doing!");
 				
 			}
 			queryResults.addProperty("resultCount", resultCount);

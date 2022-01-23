@@ -6,7 +6,9 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonElement;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
+import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -115,6 +117,15 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 			}
 		}
 			
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper assist) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/***********************************************************************************************
