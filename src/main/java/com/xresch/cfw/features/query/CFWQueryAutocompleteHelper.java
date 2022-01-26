@@ -28,14 +28,16 @@ public class CFWQueryAutocompleteHelper {
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	public CFWQueryAutocompleteHelper(HttpServletRequest request, String searchValue, int cursorPosition) {
+	public CFWQueryAutocompleteHelper(HttpServletRequest request, String fullQueryString, int cursorPosition) {
 		this.request        = request;
-		this.searchValue    = Strings.nullToEmpty(searchValue);
+		this.searchValue    = Strings.nullToEmpty(fullQueryString);
 		this.cursorPosition = cursorPosition;
+		
+		System.out.println("fullQueryString: '"+fullQueryString+"'");
 		
 		//------------------------------------------
 		//Extract Current Query from Full Query String
-		currentQuery = Strings.nullToEmpty(extractCurrentQueryPart(searchValue, cursorPosition));
+		currentQuery = Strings.nullToEmpty(extractCurrentQueryPart(fullQueryString, cursorPosition));
 		System.out.println("Query Part: '"+currentQuery+"'");
 		
 		//------------------------------------------
@@ -47,7 +49,7 @@ public class CFWQueryAutocompleteHelper {
 			return ;
 		}
 		if(cursorPosition > 0) {
-			signBeforeCursor = searchValue.substring(cursorPosition-1, cursorPosition);
+			signBeforeCursor = fullQueryString.substring(cursorPosition-1, cursorPosition);
 		}
 		
 		commandTokens = new CFWQueryTokenizer(commandPart, false)
@@ -61,7 +63,7 @@ public class CFWQueryAutocompleteHelper {
 	 ******************************************************************/
 	private String extractCurrentQueryPart(String searchValue, int cursorPosition) {
 		
-		if(Strings.isNullOrEmpty(searchValue) ) {
+		if(Strings.isNullOrEmpty(searchValue.trim()) ) {
 			return "";
 		}
 		
@@ -69,6 +71,9 @@ public class CFWQueryAutocompleteHelper {
 		int queryEnd = searchValue.indexOf(";", cursorPosition);
 				
 		if(queryEnd == -1) { queryEnd = searchValue.length();};
+		
+		// Return empty if query is empty
+		if(queryStart == queryEnd) { return ""; }
 		
 		return searchValue.substring(queryStart+1, queryEnd);
 	}
@@ -87,6 +92,9 @@ public class CFWQueryAutocompleteHelper {
 				
 		if(commandEnd == -1) { commandEnd = currentQuery.length();};
 		
+		// Return empty if query is empty
+		if(commandStart == commandEnd) { return ""; }
+				
 		return currentQuery.substring(commandStart+1, commandEnd);
 	}
 	

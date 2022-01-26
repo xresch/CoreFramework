@@ -1767,7 +1767,7 @@ function cfw_autocompleteCreateItemList(targetInputField, cursorPosition, values
 				}else if(method.startsWith('replacebeforecursor:')){
 					var stringToReplace = method.substring('replacebeforecursor:'.length);
 					var originalValue = targetInputField.value;
-					var beforeCursor = originalValue.substring(0, cursorPosition+1);
+					var beforeCursor = originalValue.substring(0, cursorPosition);
 					var afterCursor = originalValue.substring(cursorPosition);
 					var beforeCursorWithourReplaceString = beforeCursor.substring(0, originalValue.lastIndexOf(stringToReplace));
 					targetInputField.value = beforeCursorWithourReplaceString + itemValue + afterCursor;
