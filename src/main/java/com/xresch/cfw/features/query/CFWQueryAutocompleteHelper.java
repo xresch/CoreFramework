@@ -23,7 +23,7 @@ public class CFWQueryAutocompleteHelper {
 	private String commandPart = "";
 	private String signBeforeCursor = "";
 	
-	ArrayList<CFWQueryToken> commandTokens;
+	private ArrayList<CFWQueryToken> commandTokens;
 	
 	/******************************************************************
 	 *
@@ -33,8 +33,6 @@ public class CFWQueryAutocompleteHelper {
 		this.searchValue    = Strings.nullToEmpty(fullQueryString);
 		this.cursorPosition = cursorPosition;
 		
-		System.out.println("fullQueryString: '"+fullQueryString+"'");
-		
 		//------------------------------------------
 		//Extract Current Query from Full Query String
 		currentQuery = Strings.nullToEmpty(extractCurrentQueryPart(fullQueryString, cursorPosition));
@@ -42,19 +40,23 @@ public class CFWQueryAutocompleteHelper {
 		
 		//------------------------------------------
 		//Extract Current Command
-		String commandPart = Strings.nullToEmpty(extractCommandPart(currentQuery, cursorPosition));
+		commandPart = Strings.nullToEmpty(extractCommandPart(currentQuery, cursorPosition));
 		System.out.println("Command Part: '"+commandPart+"'");
 		
 		if(Strings.isNullOrEmpty(commandPart)) {
 			return ;
 		}
+		
 		if(cursorPosition > 0) {
 			signBeforeCursor = fullQueryString.substring(cursorPosition-1, cursorPosition);
 		}
 		
+		
 		commandTokens = new CFWQueryTokenizer(commandPart, false)
 				.keywords("AND", "OR", "NOT")
 				.getAllTokens();
+		
+		
 		
 	}
 
@@ -67,10 +69,10 @@ public class CFWQueryAutocompleteHelper {
 			return "";
 		}
 		
-		int queryStart = searchValue.lastIndexOf(";", cursorPosition);
+		int queryStart = searchValue.lastIndexOf(";", cursorPosition-1);
 		int queryEnd = searchValue.indexOf(";", cursorPosition);
 				
-		if(queryEnd == -1) { queryEnd = searchValue.length();};
+		if(queryEnd <= -1) { queryEnd = searchValue.length();};
 		
 		// Return empty if query is empty
 		if(queryStart == queryEnd) { return ""; }
@@ -87,7 +89,7 @@ public class CFWQueryAutocompleteHelper {
 			return "";
 		}
 		
-		int commandStart = currentQuery.lastIndexOf("|", cursorPosition);
+		int commandStart = currentQuery.lastIndexOf("|", cursorPosition-1);
 		int commandEnd = currentQuery.indexOf("|", cursorPosition);
 				
 		if(commandEnd == -1) { commandEnd = currentQuery.length();};
@@ -97,7 +99,7 @@ public class CFWQueryAutocompleteHelper {
 				
 		return currentQuery.substring(commandStart+1, commandEnd);
 	}
-	
+		
 
 	
 	/******************************************************************
@@ -111,8 +113,24 @@ public class CFWQueryAutocompleteHelper {
 	 *
 	 ******************************************************************/
 	public boolean isEmptyCommand() {
+		System.out.println("isEmptyCommand: "+commandPart.trim());
 		return commandPart.trim().isEmpty();
 	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public int getTokenCount() {
+		return commandTokens.size();
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public CFWQueryToken getToken(int index) {
+		return commandTokens.get(index);
+	}
+	
 	
 	/******************************************************************
 	 * Inserts the given string at the cursor position and returns the

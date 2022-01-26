@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,6 +9,8 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.query.parse.CFWQueryToken;
+import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 
 
 /**************************************************************************************************************
@@ -18,7 +21,7 @@ import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 	
 	// Cached for Autocomplete
-	static ArrayList<CFWQueryCommand> commandList = CFW.Registry.Query.createCommandInstances(new CFWQuery());
+	static TreeMap<String, CFWQueryCommand> commandMap = CFW.Registry.Query.createCommandInstances(new CFWQuery());
 	static CFWQueryCommand sourceCommand = CFW.Registry.Query.createCommandInstance(new CFWQuery(), "source");
 
 	@Override
@@ -47,14 +50,13 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 		}
 		
 		
-		
 		//----------------------------------------
 		// Handle empty command
-		if(helper.isEmptyCommand()) {
+		if( helper.isEmptyCommand() ) {
 			AutocompleteList list = new AutocompleteList();
 
 			int i = 0;
-			for(CFWQueryCommand command : commandList) {
+			for(CFWQueryCommand command : commandMap.values()) {
 				list.addItem(
 						helper.createAutocompleteItem(
 								""
@@ -70,6 +72,61 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 			
 			result.addList(list);
 			return result;
+			
+		}
+		
+		//----------------------------------------
+		// Handle Command Autocomplete
+		if( helper.getTokenCount() == 1 ) {
+			CFWQueryToken commandNameToken = helper.getToken(0);
+			
+			System.out.println("Type:"+commandNameToken.type());
+			if(commandNameToken.type() == CFWQueryTokenType.LITERAL_STRING) {
+				String partialOrFullCommandName = commandNameToken.value();
+				
+				if(commandMap.containsKey(partialOrFullCommandName)) {
+					//--------------------------------
+					// Full Command Name already entered
+					CFWQueryCommand command = commandMap.get(partialOrFullCommandName);
+					result.setHTMLDescription(
+							"<b>Description:&nbsp</b>"+command.descriptionShort()
+							+"<br><b>Syntax:&nbsp</b>"+CFW.Security.escapeHTMLEntities(command.descriptionSyntax())
+					);
+					
+					return result;
+				}else {
+					//--------------------------------
+					// Partial Command name Entered
+					AutocompleteList list = new AutocompleteList();
+					int i = 0;
+					for (String currentName : commandMap.keySet() ) {
+						
+						if(currentName.contains(partialOrFullCommandName)) {
+							
+							CFWQueryCommand command = commandMap.get(currentName);
+							
+							list.addItem(
+								helper.createAutocompleteItem(
+									partialOrFullCommandName
+								  , currentName
+								  , currentName
+								  , command.descriptionShort()
+								)
+							);
+							
+							i++;
+							if(i == 10) { break; }
+						}
+					}
+					
+					result.addList(list);
+					return result;
+				}	
+				
+			}else {
+				result.setHTMLDescription("command has to start with a literal string:"+commandNameToken.value());
+				return result;
+			}
 			
 		}
 		

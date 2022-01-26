@@ -1449,7 +1449,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 		//--------------------------------
 		// Do Ctrl+Space separately, as keyup
 		// would also trigger on Arrow Keys etc...
-		$input.on('keyup', function(e) {
+		$input.on('keydown', function(e) {
 			
 			if (triggerWithCtrlSpace && (e.ctrlKey && e.keyCode == 32)) {
 				cfw_autocompleteEventHandler(e, $input, minChars, maxResults, triggerWithCtrlSpace);

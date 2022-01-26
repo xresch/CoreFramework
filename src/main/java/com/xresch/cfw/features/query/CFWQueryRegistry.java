@@ -1,7 +1,7 @@
 package com.xresch.cfw.features.query;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
@@ -64,18 +64,20 @@ public class CFWQueryRegistry {
 	 * Get a list of Environment instances.
 	 * 
 	 ***********************************************************************/
-	public static ArrayList<CFWQueryCommand> createCommandInstances(CFWQuery parent)  {
-		ArrayList<CFWQueryCommand> instanceArray = new ArrayList<CFWQueryCommand>();
+	public static TreeMap<String, CFWQueryCommand> createCommandInstances(CFWQuery parent)  {
+		TreeMap<String, CFWQueryCommand> instanceMap = new TreeMap<>();
 		
-		for(Class<? extends CFWQueryCommand> clazz : queryCommandMap.values()) {
+		for(Entry<String, Class<? extends CFWQueryCommand>> entry : queryCommandMap.entrySet()) {
 			try {
+				String commandName = entry.getKey();
+				Class<? extends CFWQueryCommand> clazz = entry.getValue();
 				CFWQueryCommand instance = clazz.getConstructor(CFWQuery.class).newInstance(parent);
-				instanceArray.add(instance);
+				instanceMap.put(commandName, instance);
 			} catch (Exception e) {
-				new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
+				new CFWLog(logger).severe("Issue creating instance for Command: "+e.getMessage(), e);
 			}
 		}
-		return instanceArray;
+		return instanceMap;
 	}
 	
 	/***********************************************************************

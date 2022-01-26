@@ -51,6 +51,24 @@ public class TestCFWQueryTokenizer {
 		}
 	}
 	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testTokenizerSingleCharacter() throws IOException {
+		
+
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" c ", true);
+		
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
+		printResults("testTokenizerSingleCharacter", results);
+		
+		int i = 0;
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_STRING, 		results.get(i).type());
+		Assertions.assertEquals("c", 									results.get(i).value());
+	}
+		
 	/****************************************************************
 	 * 
 	 ****************************************************************/
@@ -58,37 +76,41 @@ public class TestCFWQueryTokenizer {
 	public void testTokenizerBasics() throws IOException {
 		
 
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" hello \"double quotes\" 'single quotes' 423 -33.431 true '42' false null ", true);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" c hello \"double quotes\" 'single quotes' 423 -33.431 true '42' false null ", true);
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("Basic Test", results);
 		
-		Assertions.assertEquals(CFWQueryTokenType.LITERAL_STRING, 		results.get(0).type());
-		Assertions.assertEquals("hello", 								results.get(0).value());
+		int i = 0;
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_STRING, 		results.get(i).type());
+		Assertions.assertEquals("c", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.TEXT_DOUBLE_QUOTES, 	results.get(1).type());
-		Assertions.assertEquals("double quotes", 						results.get(1).value());
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_STRING, 		results.get(++i).type());
+		Assertions.assertEquals("hello", 								results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.TEXT_SINGLE_QUOTES, 	results.get(2).type());
-		Assertions.assertEquals("single quotes",						results.get(2).value());
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_DOUBLE_QUOTES, 	results.get(++i).type());
+		Assertions.assertEquals("double quotes", 						results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(3).type());
-		Assertions.assertEquals("423", 									results.get(3).value());
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_SINGLE_QUOTES, 	results.get(++i).type());
+		Assertions.assertEquals("single quotes",						results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER,		results.get(4).type());
-		Assertions.assertEquals("-33.431", 								results.get(4).value());
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(++i).type());
+		Assertions.assertEquals("423", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.LITERAL_BOOLEAN, 		results.get(5).type());
-		Assertions.assertEquals("true", 								results.get(5).value());
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER,		results.get(++i).type());
+		Assertions.assertEquals("-33.431", 								results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.TEXT_SINGLE_QUOTES, 	results.get(6).type());
-		Assertions.assertEquals("42", 									results.get(6).value());
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_BOOLEAN, 		results.get(++i).type());
+		Assertions.assertEquals("true", 								results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.LITERAL_BOOLEAN, 		results.get(7).type());
-		Assertions.assertEquals("false", 								results.get(7).value());
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_SINGLE_QUOTES, 	results.get(++i).type());
+		Assertions.assertEquals("42", 									results.get(i).value());
 		
-		Assertions.assertEquals(CFWQueryTokenType.NULL, 				results.get(8).type());
-		Assertions.assertEquals("null", 								results.get(8).value());
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_BOOLEAN, 		results.get(++i).type());
+		Assertions.assertEquals("false", 								results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.NULL, 				results.get(++i).type());
+		Assertions.assertEquals("null", 								results.get(i).value());
 	}
 	
 	/****************************************************************
@@ -207,7 +229,7 @@ public class TestCFWQueryTokenizer {
 	@Test
 	public void testTokenizerSignsAndOperators() throws IOException {
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(", () [] +- */ ! &| <> = != <= >= . ; == ", false);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" , () [] +- */ ! &| <> = != <= >= . ; == ", false);
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("Keywords Case Insensitive Test", results);

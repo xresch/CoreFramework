@@ -100,12 +100,14 @@ public class CFWQueryTokenizer {
 	 * 
 	 ***********************************************************************************************/
 	public CFWQueryToken getNextToken() {
+
 		//-----------------------------------
 		// Skip Whitespaces
 		while(this.hasMoreTokens() && this.matchesCurrentChar(regexIsWhitespace)) {
 			cursor++;
 			slice = base.substring(cursor);
 		}
+
 		//-----------------------------------
 		// Check has more tokens
 		if( ! this.hasMoreTokens()) { return null; }
@@ -199,7 +201,7 @@ public class CFWQueryTokenizer {
 			return createToken(CFWQueryToken.CFWQueryTokenType.LITERAL_BOOLEAN, startPos, cursor);
 		}
 		
-		
+		System.out.println("C: '"+this.currentChar()+"'");
 		//-----------------------------------
 		// LITERAL_STRING
 		if(this.matchesCurrentChar(regexIsWordChar)) {
@@ -256,8 +258,11 @@ public class CFWQueryTokenizer {
 	}
 	
 	private String charAt(int position){
+		
 		int endIndex = position;
 		if( endIndex < base.length()-1) { endIndex++; } 
+
+		if(endIndex == position && ! isEOF()) {  return ""+base.charAt(endIndex); };
 		
 		return base.substring(position, endIndex);
 	}
