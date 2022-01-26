@@ -4,8 +4,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.junit.jupiter.api.Assertions;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;

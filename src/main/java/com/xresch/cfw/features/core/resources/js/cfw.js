@@ -1443,7 +1443,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 	if(array == null){
 		
 		$input.on('input', function(e) {
-			cfw_autocompleteEventHandler(e, $input, minChars, maxResults, triggerWithCtrlSpace);
+			cfw_autocompleteEventHandler(e, fieldName, $input, minChars, maxResults, triggerWithCtrlSpace);
 		});
 		
 		//--------------------------------
@@ -1452,7 +1452,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 		$input.on('keydown', function(e) {
 			
 			if (triggerWithCtrlSpace && (e.ctrlKey && e.keyCode == 32)) {
-				cfw_autocompleteEventHandler(e, $input, minChars, maxResults, triggerWithCtrlSpace);
+				cfw_autocompleteEventHandler(e, fieldName, $input, minChars, maxResults, triggerWithCtrlSpace);
 			}
 			
 		});
@@ -1534,10 +1534,9 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
  * Listen on field input or Ctrl+Space and fetch data for autocomplete.
 
  *************************************************************************************/
-function cfw_autocompleteEventHandler(e, $input, minChars, maxResults, triggerWithCtrlSpace) {
+function cfw_autocompleteEventHandler(e, fieldName, $input, minChars, maxResults, triggerWithCtrlSpace) {
 	var inputField =$input.get(0);
-	var fieldName = $input.attr('name');
-	
+
 	// --------------------------------
 	// Verify only do on  Ctrl+Space
 	if (triggerWithCtrlSpace && !(e.ctrlKey && e.keyCode == 32)) {
@@ -1570,6 +1569,7 @@ function cfw_autocompleteEventHandler(e, $input, minChars, maxResults, triggerWi
 				}
 				
 				var params = CFW.format.formToParams($input.closest('form'));
+				console.log("fieldName:"+fieldName)
 				params.cfwAutocompleteFieldname = fieldName;
 				params.cfwAutocompleteSearchstring = inputField.value;
 				params.cfwAutocompleteCursorPosition = inputField.selectionStart;

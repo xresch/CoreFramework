@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.dashboard;
 
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -934,11 +935,13 @@ public class CFWDBDashboard {
 		
 		try {
 			while(resultSet.next()) {
-				Object[] tagsArray = (Object[])resultSet.getObject(1);
 				
+				Array tagsArray = resultSet.getArray(1);
+
 				if(tagsArray != null) {
-					for(int i = 0 ; i < tagsArray.length; i++) {
-						cachedTags.add(tagsArray[i].toString());
+					Object[] objectArray = (Object[])tagsArray.getArray();
+					for(int i = 0 ; i < objectArray.length; i++) {
+						cachedTags.add(objectArray[i].toString());
 					}
 				}
 			}
