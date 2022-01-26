@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.base.Strings;
+import com.xresch.cfw.features.core.AutocompleteItem;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
 import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
 
@@ -105,16 +106,25 @@ public class CFWQueryAutocompleteHelper {
 		return commandPart.trim().isEmpty();
 	}
 	
+	/******************************************************************
+	 * Inserts the given string at the cursor position and returns the
+	 * complete string for autocomplete replace.
+	 ******************************************************************/
+	public AutocompleteItem createAutocompleteItem(Object replaceThis, Object replacement, Object label) {
+		
+		return this.createAutocompleteItem(replaceThis, replacement, label, null);
+	}
 	
 	/******************************************************************
 	 * Inserts the given string at the cursor position and returns the
 	 * complete string for autocomplete replace.
 	 ******************************************************************/
-	public String toStringInsert(String insert) {
-		if(searchValue.trim().isEmpty()) return insert;
+	public AutocompleteItem createAutocompleteItem( Object replaceThis, Object replacement, Object label, Object description) {
 		
-		return searchValue.substring(0, cursorPosition) + insert + searchValue.substring(cursorPosition);
+		return new AutocompleteItem(replacement, label, description)
+						.setMethodReplaceBeforeCursor(replaceThis.toString());
 	}
+	
 
 	/******************************************************************
 	 *

@@ -182,7 +182,7 @@ public class MockupCFWObject extends CFWObject{
 							lastWord.toUpperCase()+i, 
 							"Replace with "+lastWord.toUpperCase()+i, 
 							"Replace last word with uppercase.")
-								.setMethodReplace(lastWord)
+								.setMethodReplaceLast(lastWord)
 					);
 				}
 				

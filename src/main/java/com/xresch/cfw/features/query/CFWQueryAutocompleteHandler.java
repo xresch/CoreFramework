@@ -34,9 +34,12 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 			AutocompleteList list = new AutocompleteList();
 			
 			list.addItem(
-					helper.toStringInsert(sourceCommand.getUniqueName())
-				  , sourceCommand.getUniqueName()
-				  , sourceCommand.descriptionShort()
+					helper.createAutocompleteItem(
+						""
+					  , sourceCommand.getUniqueName()
+					  , sourceCommand.getUniqueName()
+					  , sourceCommand.descriptionShort()
+					)
 			 );
 			
 			result.addList(list);
@@ -53,10 +56,14 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 			int i = 0;
 			for(CFWQueryCommand command : commandList) {
 				list.addItem(
-						helper.toStringInsert(command.getUniqueName())
-						, command.getUniqueName()
-						, command.descriptionShort()
+						helper.createAutocompleteItem(
+								""
+							  , command.getUniqueName()
+							  , command.getUniqueName()
+							  , command.descriptionShort()
+							)
 					);
+					
 				i++;
 				if(i == 10) { break; }
 			}

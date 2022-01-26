@@ -1441,58 +1441,21 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 	// DYNAMIC SERVER SIDE AUTOCOMPLETE
 	//--------------------------------------------------------------
 	if(array == null){
-		$input.on('keyup', function(e) {
-			
-			// --------------------------------
-			// Verify Use Ctrl+Space
-			if (triggerWithCtrlSpace && !(e.ctrlKey && e.keyCode == 32)) {
-				return;
-			}
-				
-			// Only do autocomplete if at least N characters are typed			
-			if($input.val().length >= minChars){
-				// use a count and set timeout to wait for the user 
-				// finishing his input before sending a request to the
-				// server. Reduces overhead.
-				var currentCount = ++CFW.global.autocompleteCounter;
-				
-				//----------------------------
-				// Show Loader
-				var loader = $input.parent().find('#autocomplete-loader');
-				if(loader.length == 0){
-					loader = $('<div id="autocomplete-loader"><small><i class="fa fa-cog fa-spin fa-1x"></i><span>&nbsp;Loading...</span></small></div>');
-					$input.after(loader);
-				}
-				
-				//----------------------------
-				// Load Autocomplete
-				setTimeout(
-					function(){
-						
-						//only execute if it is the last triggered autocomplete request
-						if(currentCount != CFW.global.autocompleteCounter){
-							return;
-						}
-						
-						var params = CFW.format.formToParams($input.closest('form'));
-						params.cfwAutocompleteFieldname = fieldName;
-						params.cfwAutocompleteSearchstring = inputField.value;
-						params.cfwAutocompleteCursorPosition = inputField.selectionStart;
-						//function to customize the autocomplete
-						if(CFW.global.autcompleteParamEnhancerFunction != null){
-							CFW.global.autcompleteParamEnhancerFunction($input, params);
-						}
-						
-						cfw_http_postJSON('/cfw/autocomplete', params, 
-							function(data) {
-								loader.remove();
-								cfw_autocompleteShow(inputField, data.payload);
-							})
-					},
-					1000);
-			}
+		
+		$input.on('input', function(e) {
+			cfw_autocompleteEventHandler(e, $input, minChars, maxResults, triggerWithCtrlSpace);
 		});
 		
+		//--------------------------------
+		// Do Ctrl+Space separately, as keyup
+		// would also trigger on Arrow Keys etc...
+		$input.on('keyup', function(e) {
+			
+			if (triggerWithCtrlSpace && (e.ctrlKey && e.keyCode == 32)) {
+				cfw_autocompleteEventHandler(e, $input, minChars, maxResults, triggerWithCtrlSpace);
+			}
+			
+		});
 	}
 	
 	//--------------------------------------------------------------
@@ -1568,6 +1531,64 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 }
 
 /**************************************************************************************
+ * Listen on field input or Ctrl+Space and fetch data for autocomplete.
+
+ *************************************************************************************/
+function cfw_autocompleteEventHandler(e, $input, minChars, maxResults, triggerWithCtrlSpace) {
+	var inputField =$input.get(0);
+	var fieldName = $input.attr('name');
+	
+	// --------------------------------
+	// Verify only do on  Ctrl+Space
+	if (triggerWithCtrlSpace && !(e.ctrlKey && e.keyCode == 32)) {
+		return;
+	}
+
+	// Only do autocomplete if at least N characters are typed			
+	if($input.val().length >= minChars){
+		// use a count and set timeout to wait for the user 
+		// finishing his input before sending a request to the
+		// server. Reduces overhead.
+		var currentCount = ++CFW.global.autocompleteCounter;
+		
+		//----------------------------
+		// Show Loader
+		var loader = $input.parent().find('#autocomplete-loader');
+		if(loader.length == 0){
+			loader = $('<div id="autocomplete-loader"><small><i class="fa fa-cog fa-spin fa-1x"></i><span>&nbsp;Loading...</span></small></div>');
+			$input.after(loader);
+		}
+		
+		//----------------------------
+		// Load Autocomplete
+		setTimeout(
+			function(){
+				
+				//only execute if it is the last triggered autocomplete request
+				if(currentCount != CFW.global.autocompleteCounter){
+					return;
+				}
+				
+				var params = CFW.format.formToParams($input.closest('form'));
+				params.cfwAutocompleteFieldname = fieldName;
+				params.cfwAutocompleteSearchstring = inputField.value;
+				params.cfwAutocompleteCursorPosition = inputField.selectionStart;
+				//function to customize the autocomplete
+				if(CFW.global.autcompleteParamEnhancerFunction != null){
+					CFW.global.autcompleteParamEnhancerFunction($input, params);
+				}
+				
+				cfw_http_postJSON('/cfw/autocomplete', params, 
+					function(data) {
+						loader.remove();
+						cfw_autocompleteShow(inputField, inputField.selectionStart, data.payload);
+					})
+			},
+			1000);
+	}
+}	
+	
+/**************************************************************************************
  * close all autocomplete lists in the document.
  *************************************************************************************/
 function cfw_autocompleteCloseAll() {	
@@ -1601,7 +1622,7 @@ document.addEventListener("click", function (e) {
 	"description": "<p>This is your HTML Description. Feel free to add some stuff like a list:<p <ol><li>Do this</li><li>Do that</li><li>Do even more...</li></ol>"
 }
  *************************************************************************************/
-function cfw_autocompleteShow(inputField, autocompleteResults){
+function cfw_autocompleteShow(inputField, cursorPosition, autocompleteResults){
 	//----------------------------
     // Initialize and Cleanup
 	var searchString = inputField.value;
@@ -1639,7 +1660,7 @@ function cfw_autocompleteShow(inputField, autocompleteResults){
     
     for(var key in autocompleteResults.lists){
     	var current = autocompleteResults.lists[key];
-    	 multipleLists.append(cfw_autocompleteCreateItemList(inputField, current, maxWidthPercent));
+    	 multipleLists.append(cfw_autocompleteCreateItemList(inputField, cursorPosition, current, maxWidthPercent));
     }
     
     autocompleteWrapper.append(multipleLists);
@@ -1658,7 +1679,7 @@ function cfw_autocompleteShow(inputField, autocompleteResults){
  *    {"value": "Value0", "label": "Label0", "description": "some description or null" }
  * 
  *************************************************************************************/
-function cfw_autocompleteCreateItemList(targetInputField, values, maxWidthPercent){
+function cfw_autocompleteCreateItemList(targetInputField, cursorPosition, values, maxWidthPercent){
 	//----------------------------
     // Initialize and Cleanup
 	var searchString = targetInputField.value;
@@ -1738,11 +1759,24 @@ function cfw_autocompleteCreateItemList(targetInputField, values, maxWidthPercen
 				}else if(method == 'append'){
 					targetInputField.value = targetInputField.value + itemValue;
 					
-				}else if(method.startsWith('replace:')){
-					var stringToReplace = method.substring('replace:'.length);
+				}else if(method.startsWith('replacelast:')){
+					var stringToReplace = method.substring('replacelast:'.length);
 					var tempValue = targetInputField.value;
 					tempValue = tempValue.substring(0, tempValue.lastIndexOf(stringToReplace));
 					targetInputField.value = tempValue + itemValue;
+				}else if(method.startsWith('replacebeforecursor:')){
+					var stringToReplace = method.substring('replacebeforecursor:'.length);
+					var originalValue = targetInputField.value;
+					var beforeCursor = originalValue.substring(0, cursorPosition+1);
+					var afterCursor = originalValue.substring(cursorPosition);
+					var beforeCursorWithourReplaceString = beforeCursor.substring(0, originalValue.lastIndexOf(stringToReplace));
+					targetInputField.value = beforeCursorWithourReplaceString + itemValue + afterCursor;
+					
+					var newCursorPos =  (beforeCursorWithourReplaceString + itemValue).length;
+					targetInputField.focus();
+
+					targetInputField.selectionStart = newCursorPos;
+					targetInputField.setSelectionRange(newCursorPos, newCursorPos);
 				}
 				cfw_autocompleteCloseAll();
 			}else{

@@ -3,6 +3,11 @@ package com.xresch.cfw.features.core;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 
+/**************************************************************************************************************
+ * Class Representing items in AutocompleteLists.
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2022
+ **************************************************************************************************************/
 public class AutocompleteItem {
 
 	private Object value;
@@ -11,7 +16,9 @@ public class AutocompleteItem {
 	
 	//Methods: 
 	//exchange - fully replaces the current value of the input element (default)
-	//replace - replaces the last occurence of the search string with the value of the item
+	//append - append the value to the end of the search string	
+	//replacelast:<stringToReplace> - replaces the last occurrence of the search string with the value of the item
+	//replacebeforecursor:<stringToReplace> - replaces the last occurrence of the search string before the cursor with the value of the item
 	private String method = "exchange";
 	
 	public  AutocompleteItem() {}
@@ -58,14 +65,21 @@ public class AutocompleteItem {
 		return this;
 	}
 	
-	public AutocompleteItem setMethodReplace(String replaceThis) {
-		this.method = "replace:"+replaceThis;
+	public AutocompleteItem setMethodReplaceLast(String replaceThis) {
+		this.method = "replacelast:"+replaceThis;
 		return this;
 	}
+	
+	public AutocompleteItem setMethodReplaceBeforeCursor(String replaceThis) {
+		this.method = "replacebeforecursor:"+replaceThis;
+		return this;
+	}
+	
 	public AutocompleteItem setMethodAppend() {
 		this.method = "append";
 		return this;
 	}
+	
 	/*************************************************************************
 	 * Convert to JSON
 	 *************************************************************************/
