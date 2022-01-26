@@ -3,12 +3,13 @@ package com.xresch.cfw.features.core;
 import java.util.ArrayList;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 public class AutocompleteList {
 	
 	// value / label pairs
 	private ArrayList<AutocompleteItem> items = new  ArrayList<AutocompleteItem>();
-
+	private String title;
 	
 	
 	/*************************************************************************
@@ -19,6 +20,14 @@ public class AutocompleteList {
 	 *************************************************************************/
 	public AutocompleteList addItem(Object value) {
 		items.add(new AutocompleteItem(value,value));
+		return this;
+	}
+	
+	/*************************************************************************
+	 * Add a title to this list, useful when working with multiple lists.
+	 *************************************************************************/
+	public AutocompleteList title(String title) {
+		this.title = title;
 		return this;
 	}
 	
@@ -61,14 +70,18 @@ public class AutocompleteList {
 	/*************************************************************************
 	 * Convert to JSON
 	 *************************************************************************/
-	public JsonArray toJson() {
-		JsonArray array = new JsonArray();
+	public JsonObject toJson() {
 		
+		JsonObject object = new JsonObject();
+		object.addProperty("title", title);
+		
+		JsonArray array = new JsonArray();
+		object.add("items", array);
 		for(AutocompleteItem item : items) {
 			array.add(item.toJson());
 		}
 		
-		return array;
+		return object;
 	}
 	
 	public  ArrayList<AutocompleteItem> getItems(){

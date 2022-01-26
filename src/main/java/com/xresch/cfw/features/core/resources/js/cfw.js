@@ -1675,11 +1675,16 @@ function cfw_autocompleteShow(inputField, cursorPosition, autocompleteResults){
 /**************************************************************************************
  * Creates a list for the autocomplete multilist.
  * @param inputField domElement to show the autocomplete for.
- * @param values an array containing elements like:
- *    {"value": "Value0", "label": "Label0", "description": "some description or null" }
+ * @param values a list JSON object containing elements like:
+ *    {
+ *		"title": "List title or null",
+ *		"items": [
+ *    		{"value": "Value0", "label": "Label0", "description": "some description or null" }
+ *		]
+ *	  }
  * 
  *************************************************************************************/
-function cfw_autocompleteCreateItemList(targetInputField, cursorPosition, values, maxWidthPercent){
+function cfw_autocompleteCreateItemList(targetInputField, cursorPosition, listObject, maxWidthPercent){
 	//----------------------------
     // Initialize and Cleanup
 	var searchString = targetInputField.value;
@@ -1703,18 +1708,31 @@ function cfw_autocompleteCreateItemList(targetInputField, cursorPosition, values
 		itemClass += " autocomplete-item-sm";
 	}
 	
+	
+	//----------------------------
+	// Add List Title
+	if( !CFW.utils.isNullOrEmpty(listObject.title)){
+		var listTitleElement = $('<div class="autocomplete-list-title"><b>'+listObject.title+'</b><div>');
+		//Do not close autocomplete when clicking on title.
+		listTitleElement.on("click", function(e) { e.stopPropagation(); });
+		
+		itemList.append(listTitleElement)
+	}
+	
+	
 	//----------------------------
 	// Iterate values object
-	for (var key in values) {
+	listItems = listObject.items;
+	for (var key in listItems) {
 		
-	   	var currentValue = values[key].value;
-	   	var label = ""+values[key].label;
-		var description = values[key].description;	
-		// Methods: exchange | replace
-		var method = values[key].method;	
+	   	var currentValue = listItems[key].value;
+	   	var label = ""+listItems[key].label;
+		var description = listItems[key].description;	
+		// Methods: exchange | append | replacelast | replacebeforecursor
+		var method = listItems[key].method;	
+		
 		//----------------------------
 		// Create Item
-
 		var item = $('<div class="'+itemClass+'">');
 		
 		// make the matching letters bold:
@@ -1769,10 +1787,10 @@ function cfw_autocompleteCreateItemList(targetInputField, cursorPosition, values
 					var originalValue = targetInputField.value;
 					var beforeCursor = originalValue.substring(0, cursorPosition);
 					var afterCursor = originalValue.substring(cursorPosition);
-					var beforeCursorWithourReplaceString = beforeCursor.substring(0, originalValue.lastIndexOf(stringToReplace));
-					targetInputField.value = beforeCursorWithourReplaceString + itemValue + afterCursor;
+					var beforeCursorWithoutReplaceString = beforeCursor.substring(0, beforeCursor.lastIndexOf(stringToReplace));
+					targetInputField.value = beforeCursorWithoutReplaceString + itemValue + afterCursor;
 					
-					var newCursorPos =  (beforeCursorWithourReplaceString + itemValue).length;
+					var newCursorPos =  (beforeCursorWithoutReplaceString + itemValue).length;
 					targetInputField.focus();
 
 					targetInputField.selectionStart = newCursorPos;
