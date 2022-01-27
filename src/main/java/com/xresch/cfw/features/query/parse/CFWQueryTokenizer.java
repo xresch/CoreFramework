@@ -201,7 +201,7 @@ public class CFWQueryTokenizer {
 			return createToken(CFWQueryToken.CFWQueryTokenType.LITERAL_BOOLEAN, startPos, cursor);
 		}
 		
-		System.out.println("C: '"+this.currentChar()+"'");
+		
 		//-----------------------------------
 		// LITERAL_STRING
 		if(this.matchesCurrentChar(regexIsWordChar)) {

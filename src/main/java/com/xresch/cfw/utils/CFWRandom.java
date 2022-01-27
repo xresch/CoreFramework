@@ -98,11 +98,41 @@ public class CFWRandom {
 	
 	public static Random getInstance() { return random;}
 	
-	public static boolean randomBoolean() { return random.nextInt(100) > 50 ? true : false; }
+	public static Boolean randomBoolean() { return randomBoolean(0);}
+	
+	public static Boolean randomBoolean(int nullRatioPercent) { 
+
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		return random.nextInt(100) > 50 ? true : false; 
+	}
 	
 	public static <T> T randomFromArray(T[] array) {
-	    int index = random.nextInt(array.length);
-	    return array[index];
+	    return randomFromArray(0, array);
+	}
+	
+	
+	private static boolean checkReturnNull(int nullRatioPercent) {
+		
+		if(nullRatioPercent >= randomIntegerInRange(1, 100) ) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/******************************************************************************
+	 * Returns a random item from an array.
+	 * 
+	 * @param nullRatioPercent number from 0 to 100 to determine if a null value
+	 * should be returned.
+	 * 
+	 ******************************************************************************/
+	public static <T> T randomFromArray(int nullRatioPercent, T[] array) {
+		
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		
+		int index = random.nextInt(array.length);
+		return array[index];
 	}
 	
 	public static String randomFromArray(String[] array) {
@@ -111,12 +141,18 @@ public class CFWRandom {
 	}
 	
 	
-	public static String randomFirstnameOfGod() { return randomFromArray(firstnameGods); }
-	public static String randomLastnameSweden() { return randomFromArray(lastnameSweden); }
-	public static String randomMythicalLocation() { return randomFromArray(mythicalLocations); }
-	public static String randomExaggaratingAdjective() { return randomFromArray(exaggeratingAdjectives); }
-	public static String randomIssueResolvedMessage() { return randomFromArray(issueResolvedMessages); }
+	public static String randomFirstnameOfGod() { return randomFirstnameOfGod(0); }
+	public static String randomLastnameSweden() { return randomLastnameSweden(0); }
+	public static String randomMythicalLocation() { return randomMythicalLocation(0); }
+	public static String randomExaggaratingAdjective() { return randomExaggaratingAdjective(0); }
+	public static String randomIssueResolvedMessage() { return randomIssueResolvedMessage(0); }
 	
+	
+	public static String randomFirstnameOfGod(int nullRatioPercent) { return randomFromArray(nullRatioPercent, firstnameGods); }
+	public static String randomLastnameSweden(int nullRatioPercent) { return randomFromArray(nullRatioPercent, lastnameSweden); }
+	public static String randomMythicalLocation(int nullRatioPercent) { return randomFromArray(nullRatioPercent, mythicalLocations); }
+	public static String randomExaggaratingAdjective(int nullRatioPercent) { return randomFromArray(nullRatioPercent, exaggeratingAdjectives); }
+	public static String randomIssueResolvedMessage(int nullRatioPercent) { return randomFromArray(nullRatioPercent, issueResolvedMessages); }
 	
 	
 	/******************************************************************************
@@ -161,15 +197,26 @@ public class CFWRandom {
 	 * @param count
 	 ******************************************************************************/
 	public static JsonObject randomJSONObjectMightyPerson() { 
+		
+		return randomJSONObjectMightyPerson(0, false);
+		
+	}
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonObject randomJSONObjectMightyPerson(int nullRatioPercent, boolean addChartData) { 
 		long currentTime = new Date().getTime();
 		
 		JsonObject object = new JsonObject();
 		String id = CFW.Random.randomStringAlphaNumerical(16);
-		object.addProperty("FIRSTNAME", CFW.Random.randomFirstnameOfGod());
-		object.addProperty("LASTNAME", CFW.Random.randomLastnameSweden());
-		object.addProperty("LOCATION", CFW.Random.randomMythicalLocation());
 		object.addProperty("ID",  id);
-		object.addProperty("LIKES_TIRAMISU", CFW.Random.randomBoolean());
+		object.addProperty("FIRSTNAME", CFW.Random.randomFirstnameOfGod());
+		object.addProperty("LASTNAME", CFW.Random.randomLastnameSweden(nullRatioPercent));
+		object.addProperty("LOCATION", CFW.Random.randomMythicalLocation(nullRatioPercent));
+
+		object.addProperty("LIKES_TIRAMISU", CFW.Random.randomBoolean(nullRatioPercent));
 		object.addProperty("LAST_LOGIN", currentTime-(CFW.Random.randomIntegerInRange(100, 10000)*1000000) );
 		object.addProperty("URL", "http://www.example.url/mightyperson?id="+id);
 		object.addProperty("VALUE", CFW.Random.randomIntegerInRange(1, 100));

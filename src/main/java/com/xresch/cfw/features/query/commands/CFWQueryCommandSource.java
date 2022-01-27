@@ -214,11 +214,11 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 						new CFWLog(logger).severe("Exception occured while reading source: "+e.getMessage(), e);						
 					}
 					
-					setDone(true);
+					setDoneIfPreviousDone();
 				}
 			}).start();
 		
-
+		
 		//------------------------------------------
 		// Read all from Source
 		int counter = 0;
@@ -229,7 +229,9 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			while(!inQueue.isEmpty()) {
 				
 				EnhancedJsonObject item = inQueue.poll();
-				item.addProperty("_source", this.source.uniqueName());
+				if(!item.has("_source")) {
+					item.addProperty("_source", this.source.uniqueName());
+				}
 				
 				//------------------------------------------
 				//Sample Fieldnames, first 10 and every 101
