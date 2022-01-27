@@ -21,9 +21,21 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 	
 	// Cached for Autocomplete
-	static TreeMap<String, CFWQueryCommand> commandMap = CFW.Registry.Query.createCommandInstances(new CFWQuery());
-	static CFWQueryCommand sourceCommand = CFW.Registry.Query.createCommandInstance(new CFWQuery(), "source");
+	private static TreeMap<String, CFWQueryCommand> commandMapCached;
 
+	/********************************************************
+	 * 
+	 ********************************************************/
+	private static TreeMap<String, CFWQueryCommand> getCachedCommands() {
+		if(commandMapCached == null) {
+			commandMapCached = CFW.Registry.Query.createCommandInstances(new CFWQuery());
+		}
+		return commandMapCached;
+	}
+	
+	/********************************************************
+	 * 
+	 ********************************************************/
 	@Override
 	public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
 		
@@ -31,10 +43,13 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 		
 		CFWQueryAutocompleteHelper helper = new CFWQueryAutocompleteHelper(request, searchValue, cursorPosition);
 		
+		TreeMap<String, CFWQueryCommand> commandMap = getCachedCommands();
 		//----------------------------------------
 		// Handle empty search
 		if(helper.isEmptyQuery()) {
 			AutocompleteList list = new AutocompleteList();
+			
+			CFWQueryCommand sourceCommand = getCachedCommands().get("source");
 			
 			list.addItem(
 					helper.createAutocompleteItem(
@@ -76,7 +91,7 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 		}
 		
 		//----------------------------------------
-		// Handle Command Autocomplete
+		// Handle Command Only
 		if( helper.getTokenCount() == 1 ) {
 			CFWQueryToken commandNameToken = helper.getToken(0);
 			
@@ -92,6 +107,8 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 							"<b>Description:&nbsp</b>"+command.descriptionShort()
 							+"<br><b>Syntax:&nbsp</b>"+CFW.Security.escapeHTMLEntities(command.descriptionSyntax())
 					);
+					
+					command.autocomplete(result, helper);
 					
 					return result;
 				}else {
@@ -133,4 +150,5 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 		
 		return result;
 	}
+	
 }

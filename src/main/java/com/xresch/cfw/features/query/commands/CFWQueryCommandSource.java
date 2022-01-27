@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonObject;
@@ -9,6 +10,7 @@ import com.oracle.truffle.js.nodes.unary.TypeOfNode;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
@@ -26,6 +28,18 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandSource.class.getName());
 	
+	// Cache Source instances
+	private static TreeMap<String, CFWQuerySource> sourceMapCached;
+
+	/********************************************************
+	 * 
+	 ********************************************************/
+	private static TreeMap<String, CFWQuerySource> getCachedSources() {
+		if(sourceMapCached == null) {
+			sourceMapCached = CFW.Registry.Query.createSourceInstances(new CFWQuery());
+		}
+		return sourceMapCached;
+	}
 	CFWQuerySource source = null;
 	CFWObject paramsForSource = null;
 	
@@ -141,9 +155,41 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public String autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper assist) {
-		// TODO Auto-generated method stub
-		return null;
+	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+		
+		TreeMap<String, CFWQuerySource> sourceMap = getCachedSources();
+		
+		//-------------------------------
+		// List up to 50 sources if only 
+		// command name is given.
+		if( helper.getTokenCount() == 1 ) {
+			
+			System.out.println("test");
+			AutocompleteList list = new AutocompleteList();
+			result.addList(list);
+			int i = 0;
+			for (String currentName : sourceMap.keySet() ) {
+				System.out.println("test:"+currentName);
+				CFWQuerySource source = sourceMap.get(currentName);
+				
+				list.addItem(
+					helper.createAutocompleteItem(
+						""
+					  , currentName
+					  , currentName
+					  , source.descriptionShort()
+					)
+				);
+				
+				i++;
+				
+				if((i % 10) == 0) {
+					list = new AutocompleteList();
+					result.addList(list);
+				}
+				if(i == 50) { break; }
+			}
+		}
 	}
 
 	/***********************************************************************************************

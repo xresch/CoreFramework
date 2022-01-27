@@ -154,18 +154,22 @@ public class CFWQueryRegistry {
 	 * Get a list of Environment instances.
 	 * 
 	 ***********************************************************************/
-	public static ArrayList<CFWQuerySource> createSourceInstances(CFWQuery parent)  {
-		ArrayList<CFWQuerySource> instanceArray = new ArrayList<CFWQuerySource>();
+	public static TreeMap<String, CFWQuerySource> createSourceInstances(CFWQuery parent)  {
 		
-		for(Class<? extends CFWQuerySource> clazz : querySourceMap.values()) {
+		TreeMap<String, CFWQuerySource> instanceMap = new TreeMap<>();
+		
+		for(Entry<String, Class<? extends CFWQuerySource>> entry : querySourceMap.entrySet()) {
 			try {
+				String sourceName = entry.getKey();
+				Class<? extends CFWQuerySource> clazz = entry.getValue();
 				CFWQuerySource instance = clazz.getConstructor(CFWQuery.class).newInstance(parent);
-				instanceArray.add(instance);
+				instanceMap.put(sourceName, instance);
 			} catch (Exception e) {
-				new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
+				new CFWLog(logger).severe("Issue creating instance for Command: "+e.getMessage(), e);
 			}
 		}
-		return instanceArray;
+		return instanceMap;
+		
 	}
 	
 	/***********************************************************************

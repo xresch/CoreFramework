@@ -1475,14 +1475,14 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 		// Down Arrow
 		if (e.keyCode == 40) {
 			  CFW.global.autocompleteFocus++;
-			  markActiveItem(items);
+			  markActiveItem(e, items);
 			  return;
 		}
 		//---------------------------
 		// Up Arrow
 		if (e.keyCode == 38) { 
 			  CFW.global.autocompleteFocus--;
-			  markActiveItem(items);
+			  markActiveItem(e, items);
 			  return;
 		}
 		
@@ -1496,7 +1496,10 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 			}
 			if (CFW.global.autocompleteFocus > -1) {
 				/* and simulate a click on the "active" item. */
-				if (itemList != null && items != null) items.eq(CFW.global.autocompleteFocus).click();
+				if (itemList != null && items != null){
+					items.eq(CFW.global.autocompleteFocus).click();
+					e.preventDefault();
+				}
 			}else{
 				// Close if nothing selected
 				cfw_autocompleteCloseAll();
@@ -1509,7 +1512,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 	//--------------------------------------------------------------
 	// a function to classify an item as "active"
 	//--------------------------------------------------------------
-	function markActiveItem(items) {
+	function markActiveItem(e, items) {
 		if (!items) return false;
 		/* start by removing the "active" class on all items: */
 		removeActiveClass(items);
@@ -1517,6 +1520,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 		if (CFW.global.autocompleteFocus < 0) CFW.global.autocompleteFocus = (items.length - 1);
 		/* add class "autocomplete-active": */
 		items.eq(CFW.global.autocompleteFocus).addClass("autocomplete-active");
+		e.preventDefault();
 	}
 	
 	//--------------------------------------------------------------

@@ -123,9 +123,9 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public String autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper assist) {
+	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
 		// TODO Auto-generated method stub
-		return null;
+
 	}
 
 	/***********************************************************************************************

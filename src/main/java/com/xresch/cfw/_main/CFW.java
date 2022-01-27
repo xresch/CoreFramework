@@ -427,7 +427,7 @@ public class CFW {
 			CFW.Registry.Features.addFeature(FeatureDashboard.class);	
 		}
 		
-		//CFW.Registry.Features.addFeature(FeatureQuery.class);
+		CFW.Registry.Features.addFeature(FeatureQuery.class);
 		
 		CFW.Registry.Features.addFeature(FeatureJobs.class);
 		

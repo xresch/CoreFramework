@@ -72,7 +72,7 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	 * This description will be shown on the manual under the header " <h2>Usage</h2>".
 	 * If you add headers to your description it is recommended to use <h3> or lower headers.
 	 ***********************************************************************************************/
-	public abstract String autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper assist);
+	public abstract void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper);
 	
 	/***********************************************************************************************
 	 * 
