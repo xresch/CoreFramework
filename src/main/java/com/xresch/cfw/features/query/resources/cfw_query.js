@@ -130,6 +130,19 @@ function cfw_query_execute(){
  * Main method for building the view.
  * 
  ******************************************************************************/
+function cfw_query_resizeTextareaToFitQuery(){
+
+		var queryLines = $('#query').val().split(/\r\n|\n/);
+		var oldLineCount = $('#query').attr('rows');
+		if(oldLineCount < queryLines){
+		$('#query').attr('rows', queryLines.length);
+		}
+}
+		
+/*******************************************************************************
+ * Main method for building the view.
+ * 
+ ******************************************************************************/
 function cfw_query_initialDraw(){
 	
 	//-----------------------------------
@@ -185,11 +198,16 @@ function cfw_query_initialDraw(){
 	//-----------------------------------
 	// Load Query from URL
 	if( !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.query) ){
-		var queryLines = CFW_QUERY_URLPARAMS.query.split(/\r\n|\n/);
-		$('#query').attr('rows', queryLines.length);
+
 		$('#query').val(CFW_QUERY_URLPARAMS.query);
+		cfw_query_resizeTextareaToFitQuery();
 		cfw_query_execute();
 	}
+	
+	$('#query').on("input", function(e){
+		cfw_query_resizeTextareaToFitQuery();
+	});
+	
 	
 		
 }
