@@ -116,7 +116,8 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		}
 		
 		this.source = CFW.Registry.Query.createSourceInstance(this.parent, sourceName);
-		System.out.println("CFWQueryCommand.setAndValidateQueryParts()-source:"+source);
+		//System.out.println("CFWQueryCommand.setAndValidateQueryParts()-source:"+source);
+		
 		//------------------------------------------
 		// Get Parameters
 		

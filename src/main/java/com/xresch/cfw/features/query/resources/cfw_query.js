@@ -131,11 +131,12 @@ function cfw_query_execute(){
  * 
  ******************************************************************************/
 function cfw_query_resizeTextareaToFitQuery(){
-
-		var queryLines = $('#query').val().split(/\r\n|\n/);
+		
 		var oldLineCount = $('#query').attr('rows');
-		if(oldLineCount < queryLines){
-		$('#query').attr('rows', queryLines.length);
+		var currentLineCount = $('#query').val().split(/\r\n|\n/);
+		
+		if(oldLineCount < (currentLineCount.length+1)) {
+		$('#query').attr('rows', currentLineCount.length+1);
 		}
 }
 		
@@ -204,8 +205,15 @@ function cfw_query_initialDraw(){
 		cfw_query_execute();
 	}
 	
-	$('#query').on("input", function(e){
-		cfw_query_resizeTextareaToFitQuery();
+	//-----------------------------------
+	// Query Field Event Handler
+	$('#query').on("keydown", function(e){
+		
+		//---------------------------
+		// Enter
+		if (e.keyCode == 13) {
+			cfw_query_resizeTextareaToFitQuery();
+		}
 	});
 	
 	
