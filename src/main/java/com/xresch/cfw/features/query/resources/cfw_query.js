@@ -132,11 +132,15 @@ function cfw_query_execute(){
  ******************************************************************************/
 function cfw_query_resizeTextareaToFitQuery(){
 		
-		var oldLineCount = $('#query').attr('rows');
-		var currentLineCount = $('#query').val().split(/\r\n|\n/);
+		var queryString = $('#query').val();
 		
-		if(oldLineCount < (currentLineCount.length+1)) {
-		$('#query').attr('rows', currentLineCount.length+1);
+		if( !CFW.utils.isNullOrEmpty(queryString) ){
+			var oldLineCount = $('#query').attr('rows');
+			var currentLineCount = queryString.split(/\r\n|\n/).length + 1;
+			
+			if(currentLineCount <= 23 && oldLineCount < currentLineCount) {
+				$('#query').attr('rows', currentLineCount);
+			}
 		}
 }
 		
