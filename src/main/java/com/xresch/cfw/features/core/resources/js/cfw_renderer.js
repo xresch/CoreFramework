@@ -1720,6 +1720,9 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	var sortbyField = settingsDiv.find('select[name="sortby"]').val();
 	var sortbyDirection = settingsDiv.find('select[name="sortby"]').find('option:selected').data('direction');
 	
+	if(pageSize != null){
+		pageSize = parseInt(pageSize);
+	}
 	var offset = (pageSize > 0 ) ? pageSize * (pageToRender-1): 0;
 	
 	if(settings.storeid != null){
@@ -1743,7 +1746,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	
 	//default to "asc" if undefined
 	let sortDirectionArray = (sortbyDirection == null) ? ['asc'] : [sortbyDirection];
-	console.log(sortDirectionArray)
+
 	let sortFunctionArray = [
 		record => {
 			
@@ -1778,6 +1781,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			let totalRecords = sortedData.length;
 			let dataToRender = _.slice(sortedData, offset, offset+pageSize);
 			if(pageSize == -1){
+				console.log("ding: "+ pageSize);
 				dataToRender = sortedData;
 			}
 
@@ -1963,7 +1967,6 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 				}else{
 					
 					if(fieldName == selectedSortbyField){
-						console.log("selectedSortbyDirection: "+selectedSortbyDirection)
 						if(selectedSortbyDirection == 'desc'){
 							selectedDesc = 'selected';
 						}else{
@@ -2278,12 +2281,7 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 			}
 			
 		}, { offset: Number.NEGATIVE_INFINITY }).element;
-		
-		//var dropTarget = dropTargetParent.find('> ul');
-//		console.log("===========================");
-//		console.log(draggable);
-//		console.log(dropTarget);
-		
+				
 		//--------------------------------------
 		// Append: make sure droptarget is not 
 		// a child of draggable
