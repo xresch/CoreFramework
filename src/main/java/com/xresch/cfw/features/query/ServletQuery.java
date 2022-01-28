@@ -164,7 +164,7 @@ public class ServletQuery extends HttpServlet
 		
 
 		try {
-			JsonArray array = CFWQueryExecutor.parseAndExecuteAll(query, Long.parseLong(earliest), Long.parseLong(latest));
+			JsonArray array = new CFWQueryExecutor().parseAndExecuteAll(query, Long.parseLong(earliest), Long.parseLong(latest));
 			jsonResponse.setPayLoad(array);
 			jsonResponse.setSuccess(true);
 		} catch (NumberFormatException e) {

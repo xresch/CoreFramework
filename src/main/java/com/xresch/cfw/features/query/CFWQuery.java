@@ -29,7 +29,6 @@ public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 		this.add(command);
 	}
 	
-	
 	/***********************************************************************************************
 	 * Get the context of this query
 	 ***********************************************************************************************/

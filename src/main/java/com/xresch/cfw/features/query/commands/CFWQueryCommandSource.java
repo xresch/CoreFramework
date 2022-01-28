@@ -325,9 +325,8 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				//------------------------------------------
 				// Check Fetch Limit Reached
 				if(recordCounter >= fetchLimit) {
-					System.out.println("A");
 					setSourceFetchingDone();
-					this.parent.getContext().addMessage(MessageType.INFO, "Source '"+source.uniqueName()+"' reached fetch limit of "+fetchLimit);
+					this.parent.getContext().addMessage(MessageType.INFO, "One or more sources have reached their fetch limit.");
 					break outerloop;
 				}
 				

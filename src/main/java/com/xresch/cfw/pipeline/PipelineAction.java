@@ -99,7 +99,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 
 	public boolean isPreviousDone() {
 		
-		if(previousAction == null || previousAction.isDone()) {
+		if(previousAction == null || ( previousAction.isDone())) {
 			return true; 
 		}
 		
@@ -127,9 +127,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 
 	public void setDoneIfPreviousDone() {
 		
-		if(previousAction == null) {
-			this.setDone(true);
-		}else if(previousAction.isDone()) {
+		if(isPreviousDone()) {
 			this.setDone(true);
 		}
 	}
