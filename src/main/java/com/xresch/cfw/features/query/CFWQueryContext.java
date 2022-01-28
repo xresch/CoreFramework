@@ -1,5 +1,11 @@
 package com.xresch.cfw.features.query;
 
+import java.util.LinkedHashMap;
+
+import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.response.bootstrap.AlertMessage;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2021 
@@ -10,6 +16,8 @@ public class CFWQueryContext{
 	private long earliest = 0;
 	private long latest = 0;
 	
+	private LinkedHashMap<String, AlertMessage> alertMap = CFW.Context.Request.getAlertMap();
+		
 	
 	/***********************************************************************************************
 	 * Get the earliest time for this query.
@@ -38,6 +46,17 @@ public class CFWQueryContext{
 	 ***********************************************************************************************/
 	public CFWQueryContext setLatest(long latest) {
 		this.latest = latest;
+		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Set the latest time for this query.
+	 ***********************************************************************************************/
+	public CFWQueryContext addMessage(MessageType type, String message) {
+
+		if(alertMap != null) {
+			alertMap.put(message, new AlertMessage(type, message));
+		}
 		return this;
 	}
 }

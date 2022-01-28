@@ -148,6 +148,7 @@ DONE
 - Context Settings: Use Dataviewer for display
 - JDBC Drivers: Added Configuration Item to specify custom driver classes, added default validation Query to avoid AbstractMethodError for isValid()
 - Autocomplete: Added support to trigger with Control+Space, option to define title for item lists
+- Dataviewer: Fixed issue with quotes in filter
 
 ------- v5.0.0 -------
 - Mailing: Added Class CFWMailBuilder for creating eMails.

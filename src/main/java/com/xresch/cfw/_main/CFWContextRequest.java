@@ -41,7 +41,7 @@ public class CFWContextRequest {
 		responseContent.set(null);
 		sessionData.set(null);
 		localeFilesID = 0;
-		
+				
 		clearMessages();
 	}
 	
@@ -162,6 +162,9 @@ public class CFWContextRequest {
 	 *   
 	 ****************************************************************/
 	public static LinkedHashMap<String,AlertMessage> getAlertMap() {
+		if(messageArray.get() == null) {
+			messageArray.set(new LinkedHashMap<>());
+		}
 		return messageArray.get();
 	}
 	/****************************************************************

@@ -23,9 +23,10 @@ function cfw_query_execute(){
 	CFW.http.getJSON(CFW_QUERY_URL, params, 
 		function(data) {
 			
-			targetDiv.html("");
+			
 			
 			if(data.success){
+				targetDiv.html("");
 				
 				//-----------------------------------
 				// Add Params to URL

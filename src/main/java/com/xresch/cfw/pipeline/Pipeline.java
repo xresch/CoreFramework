@@ -6,6 +6,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.analytics.TaskCPUSampling;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -32,7 +33,7 @@ public class Pipeline<I, O> {
 	 * @return
 	 *************************************************************************************/
 	public Pipeline<I, O> execute(boolean doWait) {
-
+		
 		//-----------------------------------
 		// Check has Actions
 		if(actionArray.size() == 0) {

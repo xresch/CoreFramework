@@ -25,6 +25,7 @@ import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWQueryCommandSource extends CFWQueryCommand {
 	
@@ -78,7 +79,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "source <sourcename> [param1=abc param2=xyz ...]";
+		return "source <sourcename> [fetchlimit=<integer>] [param1=abc param2=xyz ...]";
 	}
 	
 	/***********************************************************************************************
@@ -86,7 +87,11 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p>Just a test how this will look like</p>";
+		return 	"<ul>"
+					+"<li><b>source:&nbsp;</b> The query source to fetch the data from</li>"
+					+"<li><b>fetchlimit:&nbsp;</b> The max number of records to fetch from the source. The default and max limit is configured by your administrator.</li>"
+					+"<li><b>param1, param2 ...:&nbsp;</b> The parameters that are specific to the source you choose.</li>"
+				+"</ul>";
 	}
 
 	/***********************************************************************************************
@@ -150,6 +155,27 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			
 			if(currentPart instanceof QueryPartAssignment) {
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
+				
+				String paramName = assignment.getLeftSideAsString(null);
+				
+				//------------------------------------
+				// Handle parameters for this command
+				if(paramName != null && paramName.equals("fetchlimit")) {
+					QueryPartValue limitValue = assignment.getRightSide().determineValue(null);
+					if(limitValue.isInteger()) {
+						int newLimit = limitValue.getAsInteger();
+						int maxLimit = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_FETCH_LIMIT_MAX);
+						if(newLimit <= maxLimit) {
+							this.fetchLimit = newLimit;
+						}else {
+							throw new ParseException("The value chosen for fetchlimit exceeds the maximum of "+maxLimit+".", assignment.position());
+						}
+					}
+					continue;
+				}
+				
+				//------------------------------------
+				// Other params for the chosen source
 				assignment.assignToJsonObject(parameters);				
 			}else {
 				parser.throwParseException("source: Only source name and parameters(key=value) are allowed)", currentPart);
@@ -280,7 +306,6 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 
 			while(!localQueue.isEmpty()) {
 				recordCounter++;
-				System.out.println(recordCounter);
 				EnhancedJsonObject item = localQueue.poll();
 				if(!item.has("_source")) {
 					item.addProperty("_source", this.source.uniqueName());
@@ -302,7 +327,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				if(recordCounter >= fetchLimit) {
 					System.out.println("A");
 					setSourceFetchingDone();
-					CFW.Messages.addInfoMessage("Source '"+source.uniqueName()+"' reached fetch limit of "+fetchLimit);
+					this.parent.getContext().addMessage(MessageType.INFO, "Source '"+source.uniqueName()+"' reached fetch limit of "+fetchLimit);
 					break outerloop;
 				}
 				

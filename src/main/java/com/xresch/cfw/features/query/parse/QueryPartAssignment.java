@@ -34,6 +34,14 @@ public class QueryPartAssignment extends QueryPart {
 	}
 	
 	/******************************************************************************************************
+	 * Returns the left side of the assignment operation as a string.
+	 * @return a string or null
+	 ******************************************************************************************************/
+	public String getLeftSideAsString(EnhancedJsonObject object) {
+		return leftside.determineValue(object).getAsString();
+	}
+	
+	/******************************************************************************************************
 	 * Returns the right side of the assignment operation.
 	 * 
 	 ******************************************************************************************************/
@@ -60,7 +68,7 @@ public class QueryPartAssignment extends QueryPart {
 			QueryPartJsonMemberAccess memberAccess = (QueryPartJsonMemberAccess)leftside;
 			memberAccess.setValueOfMember(object, rightside.determineValue(object).getAsJson());
 		}else {
-			String memberName = leftside.determineValue(object).getAsString();
+			String memberName = this.getLeftSideAsString(object);
 			object.addProperty(memberName, rightside.determineValue(object));
 			
 		}

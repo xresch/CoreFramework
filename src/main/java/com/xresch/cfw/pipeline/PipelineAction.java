@@ -3,6 +3,8 @@ package com.xresch.cfw.pipeline;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.xresch.cfw._main.CFW;
+
 // http://www.informit.com/articles/article.aspx?p=366887&seqNum=8
 
 public abstract class PipelineAction<I, O> extends Thread {
@@ -34,6 +36,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 			this.initializeAction();
 
 				while (!done) {
+					
 					//---------------------------
 					// Execute
 					this.execute(context);

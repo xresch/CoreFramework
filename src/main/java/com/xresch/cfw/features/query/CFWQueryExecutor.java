@@ -6,6 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 
 public class CFWQueryExecutor {
@@ -22,6 +23,7 @@ public class CFWQueryExecutor {
 		CFWQueryParser parser = new CFWQueryParser(queryString);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
+		
 		
 		//------------------------
 		// Iterate All Queries
