@@ -2008,7 +2008,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 
 	html += '<div class="float-right  ml-2">'
 		+'	<label for="filterquery">Filter:&nbsp;</label>'
-		+'	<input type="text" name="filterquery" class="form-control form-control-sm '+filterHighlightClass+'" value="'+filterquery+'" placeholder="Filter..."  title="Filter the Results" '+onchangeAttribute+'>'
+		+'	<input type="text" name="filterquery" class="form-control form-control-sm '+filterHighlightClass+'" value="'+filterquery.replaceAll('"','&quot;')+'" placeholder="Filter..."  title="Filter the Results" '+onchangeAttribute+'>'
 		+'</div>';
 	
 	html += '</div>';
