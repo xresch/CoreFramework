@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.commands;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.TreeMap;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonObject;
@@ -17,6 +18,7 @@ import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
@@ -27,6 +29,11 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 public class CFWQueryCommandSource extends CFWQueryCommand {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandSource.class.getName());
+	
+	private int fetchLimit = 0;
+	private int recordCounter = 0;
+	
+	boolean isSourceFetchingDone = false;
 	
 	// Cache Source instances
 	private static TreeMap<String, CFWQuerySource> sourceMapCached;
@@ -90,12 +97,25 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		
 		return "<p>This still has to be documented, any volunteers?</p>";
 	}
+	
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	private void setSourceFetchingDone() {
+		
+		isSourceFetchingDone = true;
+	}
 
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
+		
+		//------------------------------------------
+		// Default Values
+		fetchLimit = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_FETCH_LIMIT_DEFAULT);
 		
 		//------------------------------------------
 		// Get Name
@@ -204,27 +224,27 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Read source asynchronously
+		
+		LinkedBlockingQueue<EnhancedJsonObject> localQueue = new LinkedBlockingQueue<>();
 		new Thread(
 			new Runnable() {
 				
 				@Override
 				public void run() {
 					try {
-						source.execute(paramsForSource, inQueue);
+						source.execute(paramsForSource, localQueue, fetchLimit);
 					} catch (Exception e) {
-						new CFWLog(logger).severe("Exception occured while reading source: "+e.getMessage(), e);						
+						new CFWLog(logger).severe("Error while reading from source '"+source.uniqueName()+"': "+e.getMessage(), e);						
 					}
-					
-					setDoneIfPreviousDone();
+					setSourceFetchingDone();
 				}
 			}).start();
 		
 		
-		//------------------------------------------
-		// Read all from Source
-		int counter = 0;
-		while(!this.isDone() || !inQueue.isEmpty() ) {
-			
+		//==================================================
+		// Read all Records from Previous Commands
+		//==================================================
+		while( !( this.isPreviousDone() && inQueue.isEmpty() ) ) {
 			//------------------------------------------
 			// Read inQueue and put it to outQueue
 			while(!inQueue.isEmpty()) {
@@ -235,22 +255,68 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				}
 				
 				//------------------------------------------
-				//Sample Fieldnames, first 10 and every 101
-				if( counter % 101 == 0 || counter < 10 ) {
+				// Throw to next queue
+				outQueue.add(item);
+				
+			}
+						
+			//---------------------------
+			// Wait for more input
+			this.waitForInput(100);	
+			
+		}
+		
+		System.out.println(fetchLimit);
+		//==================================================
+		// Read all records for this Source
+		//==================================================
+		
+		outerloop:
+		while( !(isSourceFetchingDone && localQueue.isEmpty()) ) {
+			
+			//------------------------------------------
+			// Read inQueue and put it to outQueue
+			
+
+			while(!localQueue.isEmpty()) {
+				recordCounter++;
+				System.out.println(recordCounter);
+				EnhancedJsonObject item = localQueue.poll();
+				if(!item.has("_source")) {
+					item.addProperty("_source", this.source.uniqueName());
+				}
+				
+				//------------------------------------------
+				//Sample Fieldnames, first 10 and every 512
+				if( recordCounter % 512 == 0 || recordCounter <= 10 ) {
 
 					parent.addFieldnames(item.keySet());
 				}
 				
 				//------------------------------------------
-				// Throw to next queue
+				// Throw to queue of next Command
 				outQueue.add(item);
 				
+				//------------------------------------------
+				// Check Fetch Limit Reached
+				if(recordCounter >= fetchLimit) {
+					System.out.println("A");
+					setSourceFetchingDone();
+					CFW.Messages.addInfoMessage("Source '"+source.uniqueName()+"' reached fetch limit of "+fetchLimit);
+					break outerloop;
+				}
+				
 			}
-			
+
 			//---------------------------
 			// Wait for more input
 			this.waitForInput(100);	
 		}
+		
+		
+		this.setDone(true);
+
+		
 		
 	}
 

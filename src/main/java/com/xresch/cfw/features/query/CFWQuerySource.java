@@ -46,7 +46,7 @@ public abstract class CFWQuerySource{
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public abstract void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue ) throws Exception;
+	public abstract void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, int limit ) throws Exception;
 	
 	
 	/***********************************************************************************************

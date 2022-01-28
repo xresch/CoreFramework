@@ -1,14 +1,15 @@
 package com.xresch.cfw.features.query;
 
-
 /**************************************************************************************************************
  * 
  * @author Reto Scheiwiller, (c) Copyright 2021 
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWQueryContext{
+	
 	private long earliest = 0;
 	private long latest = 0;
+	
 	
 	/***********************************************************************************************
 	 * Get the earliest time for this query.

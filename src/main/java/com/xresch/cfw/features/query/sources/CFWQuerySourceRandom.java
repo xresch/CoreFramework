@@ -69,7 +69,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 	 *
 	 ******************************************************************/
 	@Override
-	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue) throws Exception {
+	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, int limit) throws Exception {
 		
 		int records = (int)parameters.getField("records").getValue();
 

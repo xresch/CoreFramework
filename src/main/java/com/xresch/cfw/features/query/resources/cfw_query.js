@@ -68,18 +68,19 @@ function cfw_query_execute(){
 											name: 'table',
 											renderdef: {
 												rendererSettings: {
-													table: {filterable: false},
-												},
-											}
-										},
-										{	label: 'Smaller Table',
-											name: 'table',
-											renderdef: {
-												rendererSettings: {
 													table: {filterable: false, narrow: true},
 												},
 											}
 										},
+										{	label: 'Bigger Table',
+											name: 'table',
+											renderdef: {
+												rendererSettings: {
+													table: {filterable: false},
+												},
+											}
+										},
+										
 										{	label: 'Panels',
 											name: 'panels',
 											renderdef: {}

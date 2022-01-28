@@ -5,6 +5,9 @@ import java.util.TreeMap;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandDistinct;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
@@ -27,6 +30,9 @@ public class FeatureQuery extends CFWAppFeature {
 	public static final String PACKAGE_MANUAL =    "com.xresch.cfw.features.query.manual";
 	public static final String PERMISSION_QUERY_USER = "Query: User";
 	public static final String PERMISSION_QUERY_ADMIN = "Query: Admin";
+	
+	public static final String CONFIG_FETCH_LIMIT_DEFAULT = "Fetch Limit Default";
+	public static final String CONFIG_FETCH_LIMIT_MAX = "Fetch Limit Max";
 	
 	public static final ManualPage ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
 			new ManualPage("Query")
@@ -93,6 +99,30 @@ public class FeatureQuery extends CFWAppFeature {
 					true,
 					false
 			);
+		
+		//============================================================
+		// CONFIGURATION
+		//============================================================
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration("Query", CONFIG_FETCH_LIMIT_DEFAULT)
+				.description("The default fetch limit for number of records that are allowed per source.")
+				.type(FormFieldType.NUMBER)
+				.value("10000")
+		);
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration("Query", CONFIG_FETCH_LIMIT_MAX)
+				.description("The maximum fetch limit for number of records that are allowed per source.")
+				.type(FormFieldType.NUMBER)
+				.value("250000")
+		);
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class CFWQueryExecutor {
 		CFWQueryParser parser = new CFWQueryParser(queryString);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
-				
+		
 		//------------------------
 		// Iterate All Queries
 		
