@@ -280,10 +280,10 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		//==================================================
 		// Read all Records from Previous Commands
 		//==================================================
-		while( !( this.isPreviousDone() && keepPolling() ) ) {
+		while( !this.isPreviousDone() || !inQueue.isEmpty() ) {
 			//------------------------------------------
 			// Read inQueue and put it to outQueue
-			while(keepPolling()) {
+			while(!inQueue.isEmpty()) {
 				
 				EnhancedJsonObject item = inQueue.poll();
 				if(!item.has("_source")) {
