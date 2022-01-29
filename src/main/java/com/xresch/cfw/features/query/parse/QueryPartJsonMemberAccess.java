@@ -6,6 +6,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.CFWQueryMemoryException;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
 /**************************************************************************************************************
@@ -55,10 +56,11 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 * If rightside is anything else than a QueryPartJsonMemberAccess, the value returned by 
 	 * QueryPart.determineValue() will be used.
 	 * If rightside is QueryPartJsonMemberAccess, the next level will be fetched recursively;
+	 * @throws CFWQueryMemoryException 
 	 * 
 	 ******************************************************************************************************/
 	@Override
-	public QueryPartValue determineValue(EnhancedJsonObject object) {	
+	public QueryPartValue determineValue(EnhancedJsonObject object) throws CFWQueryMemoryException {	
 		if(object == null) {
 			return QueryPartValue.newString(this.context(), leftside+"."+rightside.determineValue(null));
 		}else {				

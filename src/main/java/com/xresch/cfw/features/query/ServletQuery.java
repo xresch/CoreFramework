@@ -176,6 +176,9 @@ public class ServletQuery extends HttpServlet
 		} catch (InterruptedException e) {
 			jsonResponse.setSuccess(false);
 			new CFWLog(logger).warn(e.getMessage(), e);
+		} catch (OutOfMemoryError e) {
+			jsonResponse.setSuccess(false);
+			new CFWLog(logger).severe("Not enough memory to complete query. Reduce amount of records processed.", e);
 		}
 
 		//PersonDBMethods.deleteByID(Integer.parseInt(ID));

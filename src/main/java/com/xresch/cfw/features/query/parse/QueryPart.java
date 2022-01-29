@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.parse;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.CFWQueryMemoryException;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
 /**************************************************************************************************************
@@ -24,6 +25,7 @@ public abstract class QueryPart {
 	/***********************************************************************************************
 	 * Evaluates and determines the value of this QueryPart.
 	 * The method has to be implemented to be able to handle null as parameter value.
+	 * @throws CFWQueryMemoryException 
 	 ***********************************************************************************************/
 	public abstract QueryPartValue determineValue(EnhancedJsonObject object);
 		

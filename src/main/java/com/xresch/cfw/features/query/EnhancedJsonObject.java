@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query;
 
+import java.lang.ref.SoftReference;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,27 +13,31 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 /**************************************************************************************************************
  * Wrapper class to enhance GSON JsonObject with additional methods.
+ * also uses SoftReference to avoid Memory Leaks caused by too big queries.
  * 
  * @author Reto Scheiwiller, (c) Copyright 2021
  **************************************************************************************************************/
 public class EnhancedJsonObject {
 
-	private JsonObject internal;
+	private SoftReference<JsonObject> internal;
 	
 	public EnhancedJsonObject() {
-		this.internal = new JsonObject();
+		this.internal = new SoftReference<>(new JsonObject());
 	}
 	
 	public EnhancedJsonObject(JsonObject object) {
-		this.internal = object;
+		this.internal = new SoftReference<>(object);
 	}
 	
 	/*************************************************************************************************
 	 * Returns the wrapped GSON JsonObject.
+	 * @throws CFWQueryMemoryException 
 	 * 
 	 *************************************************************************************************/
 	public JsonObject getWrappedObject() {
-	  return internal;
+		JsonObject object = internal.get();
+		if(object == null) { throw new CFWQueryMemoryException(); } 
+		return object;
 	}
 	
 	/*************************************************************************************************
@@ -81,7 +86,7 @@ public class EnhancedJsonObject {
 	 *************************************************************************************************/
 	public String convertToString(String memberName) {
 		
-		JsonElement member = internal.get(memberName);
+		JsonElement member = getWrappedObject().get(memberName);
 		
 		if(member == null || member.isJsonNull()) return "";
 		
@@ -109,7 +114,7 @@ public class EnhancedJsonObject {
 	 * Creates a deep copy of this element and all its children
 	 *************************************************************************************************/
 	public JsonObject deepCopy() {
-		return this.internal.deepCopy();
+		return getWrappedObject().deepCopy();
 	}
 	
 	/*************************************************************************************************
@@ -120,8 +125,8 @@ public class EnhancedJsonObject {
 	 * @param property name of the member.
 	 * @param value the member object.
 	 *************************************************************************************************/
-	public void add(String property, JsonElement value) {
-		this.internal.add(property, value);
+	public void add(String property, JsonElement value){
+		getWrappedObject().add(property, value);
 	}
 	
 	/*************************************************************************************************
@@ -132,7 +137,7 @@ public class EnhancedJsonObject {
 	 * @since 1.3
 	 *************************************************************************************************/
 	public JsonElement remove(String property) {
-	  return this.internal.remove(property);
+	  return getWrappedObject().remove(property);
 	}
 	
 	/*************************************************************************************************
@@ -143,7 +148,7 @@ public class EnhancedJsonObject {
 	 * @param value the string value associated with the member.
 	 *************************************************************************************************/
 	public void addProperty(String property, String value) {
-		this.internal.addProperty(property, value);
+		getWrappedObject().addProperty(property, value);
 	}
 	
 	/*************************************************************************************************
@@ -154,7 +159,7 @@ public class EnhancedJsonObject {
 	 * @param value the number value associated with the member.
 	 *************************************************************************************************/
 	public void addProperty(String property, Number value) {
-		this.internal.addProperty(property, value);
+		getWrappedObject().addProperty(property, value);
 	}
 	
 	/*************************************************************************************************
@@ -165,7 +170,7 @@ public class EnhancedJsonObject {
 	 * @param value the number value associated with the member.
 	 *************************************************************************************************/
 	public void addProperty(String property, Boolean value) {
-		this.internal.addProperty(property, value);
+		getWrappedObject().addProperty(property, value);
 	}
 	
 	/*************************************************************************************************
@@ -176,7 +181,7 @@ public class EnhancedJsonObject {
 	 * @param value the number value associated with the member.
 	 *************************************************************************************************/
 	public void addProperty(String property, Character value) {
-		this.internal.addProperty(property, value);
+		getWrappedObject().addProperty(property, value);
 	}
 	
 	/*************************************************************************************************
@@ -186,7 +191,7 @@ public class EnhancedJsonObject {
 	 * @return a set of members of this object.
 	 *************************************************************************************************/
 	public Set<Map.Entry<String, JsonElement>> entrySet() {
-	  return this.internal.entrySet();
+	  return getWrappedObject().entrySet();
 	}
 	
 	/*************************************************************************************************
@@ -196,7 +201,7 @@ public class EnhancedJsonObject {
 	 * @since 2.8.1
 	 *************************************************************************************************/
 	public Set<String> keySet() {
-	  return this.internal.keySet();
+	  return getWrappedObject().keySet();
 	}
 	
 	/*************************************************************************************************
@@ -205,7 +210,7 @@ public class EnhancedJsonObject {
 	 * @return the number of key/value pairs in the object.
 	 *************************************************************************************************/
 	public int size() {
-	  return this.internal.size();
+	  return getWrappedObject().size();
 	}
 	
 	/*************************************************************************************************
@@ -215,7 +220,7 @@ public class EnhancedJsonObject {
 	 * @return true if there is a member with the specified name, false otherwise.
 	 *************************************************************************************************/
 	public boolean has(String memberName) {
-	  return this.internal.has(memberName);
+	  return getWrappedObject().has(memberName);
 	}
 	
 	/*************************************************************************************************
@@ -225,7 +230,7 @@ public class EnhancedJsonObject {
 	 * @return the member matching the name. Null if no such member exists.
 	 *************************************************************************************************/
 	public JsonElement get(String memberName) {
-	  return this.internal.get(memberName);
+	  return getWrappedObject().get(memberName);
 	}
 	
 	/*************************************************************************************************
@@ -235,7 +240,7 @@ public class EnhancedJsonObject {
 	 * @return the JsonPrimitive corresponding to the specified member.
 	 *************************************************************************************************/
 	public JsonPrimitive getAsJsonPrimitive(String memberName) {
-	  return this.internal.getAsJsonPrimitive(memberName);
+	  return getWrappedObject().getAsJsonPrimitive(memberName);
 	}
 	
 	/*************************************************************************************************
@@ -245,7 +250,7 @@ public class EnhancedJsonObject {
 	 * @return the JsonArray corresponding to the specified member.
 	 *************************************************************************************************/
 	public JsonArray getAsJsonArray(String memberName) {
-	  return this.internal.getAsJsonArray(memberName);
+	  return getWrappedObject().getAsJsonArray(memberName);
 	}
 	
 	/*************************************************************************************************
@@ -255,7 +260,7 @@ public class EnhancedJsonObject {
 	 * @return the JsonObject corresponding to the specified member.
 	 *************************************************************************************************/
 	public JsonObject getAsJsonObject(String memberName) {
-		return this.internal.getAsJsonObject(memberName);
+		return getWrappedObject().getAsJsonObject(memberName);
 	}
 	
 
@@ -264,7 +269,7 @@ public class EnhancedJsonObject {
 	 *************************************************************************************************/
 	@Override
 	public boolean equals(Object o) {
-	  return this.internal.equals(o);
+	  return getWrappedObject().equals(o);
 	}
 	
 	/*************************************************************************************************
@@ -272,6 +277,6 @@ public class EnhancedJsonObject {
 	 *************************************************************************************************/
 	@Override
 	public int hashCode() {
-	  return this.internal.hashCode();
+	  return getWrappedObject().hashCode();
 	}
 }

@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.parse;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.CFWQueryMemoryException;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
 /**************************************************************************************************************
@@ -60,9 +61,10 @@ public class QueryPartAssignment extends QueryPart {
 	
 	/******************************************************************************************************
 	 * Determines the value and assigns it to the JsonObject.
+	 * @throws CFWQueryMemoryException 
 	 * 
 	 ******************************************************************************************************/
-	public void assignToJsonObject(EnhancedJsonObject object) {
+	public void assignToJsonObject(EnhancedJsonObject object) throws CFWQueryMemoryException {
 		
 		if (leftside instanceof QueryPartJsonMemberAccess) {
 			QueryPartJsonMemberAccess memberAccess = (QueryPartJsonMemberAccess)leftside;

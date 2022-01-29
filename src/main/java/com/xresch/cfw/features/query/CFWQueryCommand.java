@@ -7,6 +7,7 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.pipeline.PipelineAction;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 
 /**************************************************************************************************************
@@ -80,5 +81,20 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	public CFWQuery getParent() {
 		return parent;
 	}
-		
+	
+	
+	/****************************************************************************
+	 * Override Run method to add handling for Memory issues
+	 ****************************************************************************/
+	@Override
+	public void run() {
+		try {
+			super.run();
+			
+		} catch (CFWQueryMemoryException e) { 
+			
+			this.parent.getContext().addMessage(MessageType.ERROR, "Query did not complete. Seems the memory limit was reached.");
+			System.out.println("CFWQueryCommand.run() - CFWQueryMemoryException");
+		} 
+	}
 }
