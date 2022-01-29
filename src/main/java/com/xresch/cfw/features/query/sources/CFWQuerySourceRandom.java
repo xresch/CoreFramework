@@ -9,6 +9,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
@@ -49,7 +50,23 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 	public String descriptionHTML() {
 		return "<p>To be done</p>";
 	}
-
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public String descriptionRequiredPermission() {
+		return "None";
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public boolean hasPermission(User user) {
+		return true;
+	}
+	
 	/******************************************************************
 	 *
 	 ******************************************************************/
@@ -64,6 +81,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				)
 			;
 	}
+	
 
 	/******************************************************************
 	 *

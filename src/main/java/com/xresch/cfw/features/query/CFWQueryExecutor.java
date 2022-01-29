@@ -15,6 +15,16 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public class CFWQueryExecutor {
 	
 	private int resultCount = 0;
+	private boolean checkSourcePermissions = true;
+	
+	/****************************************************************
+	 * Enable or disable if the users permission for a source should be
+	 * verified or not.
+	 ****************************************************************/
+	public CFWQueryExecutor checkSourcePermissions(boolean checkSourcePermissions) {
+		this.checkSourcePermissions = checkSourcePermissions;
+		return this;
+	}
 	
 	/****************************************************************
 	 * Parses the query string and executes all queries.
@@ -25,7 +35,7 @@ public class CFWQueryExecutor {
 		
 		//String queryString = "source random records=100";
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString);
+		CFWQueryParser parser = new CFWQueryParser(queryString, checkSourcePermissions);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
 		
@@ -55,21 +65,17 @@ public class CFWQueryExecutor {
 				public void execute(PipelineActionContext context) throws Exception {
 					LinkedBlockingQueue<EnhancedJsonObject> inQueue = getInQueue();
 					
-					System.out.println("while inner");
-
 					while(!inQueue.isEmpty()) {
-						System.out.println("w");
 						resultCount++;
 
 						JsonObject object = inQueue.poll().getWrappedObject();
 						if(object != null) {
-							System.out.println(resultCount);
+							
 							results.add(object);
 						}else {
-							queryContext.addMessage(MessageType.WARNING, "Data might be incomplete due to reached memory limits.");
+							queryContext.addMessage(MessageType.WARNING, "Data might be incomplete due to reached limits.");
 						}
 					}
-						
 						
 					this.setDoneIfPreviousDone();
 					

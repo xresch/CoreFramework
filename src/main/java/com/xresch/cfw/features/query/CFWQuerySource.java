@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.usermgmt.User;
 
 /**************************************************************************************************************
  * 
@@ -42,6 +43,16 @@ public abstract class CFWQuerySource{
 	 * If you add headers to your description it is recommended to use <h3> or lower headers.
 	 ***********************************************************************************************/
 	public abstract String descriptionHTML();
+	
+	/*************************************************************************
+	 * Return the required permissions as a String.
+	 *************************************************************************/
+	public abstract String descriptionRequiredPermission();
+	
+	/*************************************************************************
+	 * Return if the user is able to fetch from this source.
+	 *************************************************************************/
+	public abstract boolean hasPermission(User user);
 	
 	/***********************************************************************************************
 	 * 

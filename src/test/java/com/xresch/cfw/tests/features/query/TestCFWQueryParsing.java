@@ -69,7 +69,7 @@ public class TestCFWQueryParsing {
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testParsingSimpleSourceQuery", results);
 		
-		CFWQueryParser parser = new CFWQueryParser(sourceString);
+		CFWQueryParser parser = new CFWQueryParser(sourceString, true);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
 		
@@ -117,7 +117,7 @@ public class TestCFWQueryParsing {
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testParsingPipedCommands", results);
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
 		
@@ -170,7 +170,7 @@ public class TestCFWQueryParsing {
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testParsingMultipleQueries", results);
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
 		
@@ -231,7 +231,7 @@ public class TestCFWQueryParsing {
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testParsingQueryPartArray", results);
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
 		

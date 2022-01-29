@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -22,6 +23,11 @@ public class CFWQueryRegistry {
 	
 	// command name and command class
 	private static TreeMap<String, Class<? extends CFWQuerySource>> querySourceMap = new TreeMap<>();
+	
+	
+	// Cache source instances for internal checks
+	private static TreeMap<String, CFWQuerySource> sourceInstanceCache = new TreeMap<>();
+	
 	
 	
 	/***********************************************************************
@@ -134,12 +140,30 @@ public class CFWQueryRegistry {
 		querySourceMap.put(lowercaseName, source.getClass());
 	}
 	
+	
 	/***********************************************************************
 	 * Removes a CFWObject class to the registry.
 	 * @param objectClass
 	 ***********************************************************************/
 	public static void removeSource(String sourceName)  {
 		querySourceMap.remove(sourceName.trim().toLowerCase());
+	}
+	
+	/***********************************************************************
+	 * Return true if the user can use the selected source
+	 * 
+	 ***********************************************************************/
+	public static boolean checkSourcePermission(String sourceName, User user)  {
+		
+		if(!sourceExists(sourceName)) { return false; }
+		
+		if(!sourceInstanceCache.containsKey(sourceName)) {
+			sourceInstanceCache.put(sourceName, createSourceInstance(new CFWQuery(), sourceName));
+		}
+		
+		CFWQuerySource sourceToCheck = sourceInstanceCache.get(sourceName);
+		
+		return sourceToCheck.hasPermission(user);
 	}
 	
 	/***********************************************************************

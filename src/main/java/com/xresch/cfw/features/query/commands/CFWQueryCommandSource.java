@@ -141,8 +141,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		}
 		
 		this.source = CFW.Registry.Query.createSourceInstance(this.parent, sourceName);
-		//System.out.println("CFWQueryCommand.setAndValidateQueryParts()-source:"+source);
-		
+
 		//------------------------------------------
 		// Get Parameters
 		
@@ -211,12 +210,11 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		// command name is given.
 		if( helper.getTokenCount() == 1 ) {
 			
-			System.out.println("test");
 			AutocompleteList list = new AutocompleteList();
 			result.addList(list);
 			int i = 0;
 			for (String currentName : sourceMap.keySet() ) {
-				System.out.println("test:"+currentName);
+
 				CFWQuerySource source = sourceMap.get(currentName);
 				
 				list.addItem(
@@ -292,7 +290,6 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			
 		}
 		
-		System.out.println(fetchLimit);
 		//==================================================
 		// Read all records for this Source
 		//==================================================

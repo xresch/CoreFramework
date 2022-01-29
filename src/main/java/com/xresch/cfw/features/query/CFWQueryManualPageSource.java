@@ -20,6 +20,11 @@ public class CFWQueryManualPageSource extends ManualPage {
 		builder.append("<p>"+source.descriptionShort()+"</p>");
 		
 		//--------------------------------
+		// Permissions Section
+		builder.append("<h2 class=\"toc-hidden\" >Required Permissions</h2>");
+		builder.append("<p>"+CFW.Security.escapeHTMLEntities(source.descriptionRequiredPermission())+"</p>" );
+		
+		//--------------------------------
 		// Parameters Section
 		builder.append("<h2 class=\"toc-hidden\" >Parameters</h2>");
 		CFWObject object = source.getParameters();

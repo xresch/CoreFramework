@@ -7,6 +7,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 
 /**************************************************************************************************************
@@ -38,19 +39,25 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 public class CFWQueryParser {
 	
 	private String query = null;
+	private boolean checkSourcePermissions = true;
 	
 	private ArrayList<CFWQueryToken> tokenlist;
 	CFWQuery currentQuery;
 	private CFWQueryContext currentContext;
+	
+	// cached instance
+	private static CFWQueryCommandSource sourceCommand = new CFWQueryCommandSource(new CFWQuery());
+	private static String[] sourceCommandNames = sourceCommand.uniqueNameAndAliases();
 	
 	private int cursor;
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryParser(String inputQuery) {
+	public CFWQueryParser(String inputQuery, boolean checkSourcePermissions) {
 		
 		this.query = inputQuery;
+		this.checkSourcePermissions = checkSourcePermissions;
 		this.cursor = 0;
 		
 	}
@@ -83,7 +90,7 @@ public class CFWQueryParser {
 	 * Returns the token with a specific offset to the token that will be consumed next by consumeToken().
 	 * Returns null if index is out of bounds.
 	 * 
-	 * @param offset positive or negative value to specify offset.
+	 * @param offset positive or negative value to specify offset. 0 is next, 1 is the one one after etc...
 	 ***********************************************************************************************/
 	public CFWQueryToken lookat(int offset) {
 		int pos = cursor+offset;
@@ -177,6 +184,35 @@ public class CFWQueryParser {
 			if(!CFW.Registry.Query.commandExists(commandName)) {
 				this.throwParseException("Unknown command '"+commandName+"'.", 0);
 			}
+			
+			//------------------------------------
+			// Check if user has permission for
+			// the source
+			System.out.println("commandName: "+commandName);
+			System.out.println("sourceCommandNames: "+String.join(",", sourceCommandNames));
+			System.out.println("checkSourcePermissions: "+checkSourcePermissions);
+			
+			if (CFW.Utils.Array.contains(sourceCommandNames, commandName) 
+			&& checkSourcePermissions) {
+				
+				CFWQueryToken token = this.lookahead();	
+				
+				if(token != null){
+					System.out.println("source name: "+token.value());
+					boolean hasPermission = CFW.Registry.Query.checkSourcePermission(
+							token.value(), 
+							CFW.Context.Request.getUser()
+						);
+					
+					if(!hasPermission) {
+						throw new ParseException("User does not have permission to use the source: "+token.value(), token.position());
+					}
+				}else {
+					throw new ParseException("Could not verify permissions for source: "+token.value(), token.position());
+				}
+				
+			}
+							
 			
 			//------------------------------------
 			// ParseParts Until End of Command '|'

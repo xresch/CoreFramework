@@ -25,7 +25,7 @@ public class QueryPartSubquery extends QueryPart {
 	 ******************************************************************************************************/
 	private QueryPartSubquery(CFWQueryContext parentContext, String query) throws ParseException {
 		super(parentContext);
-		CFWQueryParser parser = new CFWQueryParser(query);
+		CFWQueryParser parser = new CFWQueryParser(query, true);
 		
 		queryList = parser.parse();
 	}
