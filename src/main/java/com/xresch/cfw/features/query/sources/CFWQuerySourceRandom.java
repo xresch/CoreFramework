@@ -99,6 +99,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 		for(int i = 0; i < records; i++) {
 			
 			EnhancedJsonObject person = new EnhancedJsonObject( CFWRandom.randomJSONObjectMightyPerson(4, true) );
+			person.addProperty("INDEX", i );
 			person.addProperty("TIME", earliest +(i * diffStep));
 			outQueue.add(person);
 		}

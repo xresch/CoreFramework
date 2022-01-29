@@ -4,43 +4,46 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import com.google.common.collect.EvictingQueue;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQuerySource;
+import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
-public class CFWQueryCommandTop extends CFWQueryCommand {
+public class CFWQueryCommandTail extends CFWQueryCommand {
 	
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandTop.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandTail.class.getName());
 	
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
 	
 	int numberOfRecords = 100;
 	
+	EvictingQueue<EnhancedJsonObject> sizedQueue;
+
+	
 	int recordCounter = 0;
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandTop(CFWQuery parent) {
+	public CFWQueryCommandTail(CFWQuery parent) {
 		super(parent);
 	}
 
 	/***********************************************************************************************
-	 * Return the command name and aliases.
-	 * The first entry in the array will be used as the main name, under which the documentation can
-	 * be found in the manual. All other will be used as aliases.
+	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"top", "first"};
+		return new String[] {"tail", "last"};
 	}
 
 	/***********************************************************************************************
@@ -48,7 +51,7 @@ public class CFWQueryCommandTop extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Takes the first N records and ignores the rest.";
+		return "Takes the last N records and ignores the rest.";
 	}
 
 	/***********************************************************************************************
@@ -56,7 +59,7 @@ public class CFWQueryCommandTop extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "top [<number>]";
+		return "tail [<number>]";
 	}
 	
 	/***********************************************************************************************
@@ -98,8 +101,9 @@ public class CFWQueryCommandTop extends CFWQueryCommand {
 				}
 				
 			}else {
-				throw new ParseException("top: parameter must be an integer value.", part.position());
+				throw new ParseException("tail: parameter must be an integer value.", part.position());
 			}
+			
 				
 		}
 			
@@ -120,25 +124,31 @@ public class CFWQueryCommandTop extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
-
+		if(sizedQueue == null) {
+			sizedQueue = EvictingQueue.create(numberOfRecords);
+		}
+		
+		
 		while(keepPolling()) {
 			
 			recordCounter++;
 			
-			outQueue.add(inQueue.poll());
+			sizedQueue.add(inQueue.poll());
 			
-			if(recordCounter >= numberOfRecords) {
-				this.setDone(true);
-				this.interruptAllPrevious();
-				break;
-			}
 		}
 		
-
-		this.setDoneIfPreviousDone();
 		
 		
-		
+		if(isPreviousDone() && inQueue.isEmpty()) {
+			
+			while(!sizedQueue.isEmpty()) {
+				
+				outQueue.add(sizedQueue.poll());
+			}
+			
+			this.setDone(true);
+		}
+				
 	}
 
 }
