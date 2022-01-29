@@ -19,7 +19,9 @@ function cfw_query_execute(){
 			, earliest: timeframe.earliest
 			, latest: timeframe.latest
 			};
-			
+	
+	cfw_ui_toogleLoader(true);	
+	
 	CFW.http.getJSON(CFW_QUERY_URL, params, 
 		function(data) {
 			
@@ -123,8 +125,12 @@ function cfw_query_execute(){
 					var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
 					
 					targetDiv.append(renderResult);
+					
 				}
+				
 			}
+			
+		cfw_ui_toogleLoader(false);	
 	});
 }
 
