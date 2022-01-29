@@ -37,6 +37,7 @@ public class CFWQueryTokenizer {
 	 * @param keywordsCaseSensitive TODO
 	 ***********************************************************************************************/
 	public CFWQueryTokenizer(String tokenizeThis, boolean keywordsCaseSensitive) {
+		
 		this.base = tokenizeThis.trim();		
 		this.keywordsCaseSensitive = keywordsCaseSensitive;		
 	}
@@ -121,9 +122,12 @@ public class CFWQueryTokenizer {
 		// LITERAL_NUMBER
 		if(this.matches(regexStartsWithDigit, slice)) {
 			cursor++;
-			while( this.matchesCurrentChar(regexIsNumericalChar) ) {
+			
+			while( this.matchesCurrentChar(regexIsNumericalChar) ){
+				System.out.println("matched:"+this.currentChar());
 				cursor++;
 			}
+			
 			return createToken(CFWQueryToken.CFWQueryTokenType.LITERAL_NUMBER, startPos, cursor);
 		}
 		
@@ -288,7 +292,7 @@ public class CFWQueryTokenizer {
 			// Extract Single Char and advance Cursor
 			tokenValue = ""+base.charAt(startPos);
 			cursor++;
-		}else if(endPos < base.length()-1) {
+		}else if(endPos <= base.length()-1) {
 			//----------------------------------------
 			// Extract Multiple Chars, endPos not at EOF
 			tokenValue = base.substring(startPos, endPos);

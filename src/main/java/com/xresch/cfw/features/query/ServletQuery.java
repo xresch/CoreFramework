@@ -167,18 +167,22 @@ public class ServletQuery extends HttpServlet
 			JsonArray array = new CFWQueryExecutor().parseAndExecuteAll(query, Long.parseLong(earliest), Long.parseLong(latest));
 			jsonResponse.setPayLoad(array);
 			jsonResponse.setSuccess(true);
+			
 		} catch (NumberFormatException e) {
 			jsonResponse.setSuccess(false);
-			new CFWLog(logger).severe("Timeframe could not be parsed correctly:"+e.getMessage(), e);
+			new CFWLog(logger).severe("Error Parsing a number:"+e.getMessage(), e);
+			
 		} catch (ParseException e) {
 			jsonResponse.setSuccess(false);
 			CFW.Messages.addErrorMessage(e.getMessage());
+			
 		} catch (InterruptedException e) {
 			jsonResponse.setSuccess(false);
 			new CFWLog(logger).warn(e.getMessage(), e);
+			
 		} catch (OutOfMemoryError e) {
 			jsonResponse.setSuccess(false);
-			new CFWLog(logger).severe("Not enough memory to complete query. Reduce amount of records processed.", e);
+			new CFWLog(logger).severe("Not enough memory to complete query. Try reducing the amount of data processed.", e);
 		}
 
 		//PersonDBMethods.deleteByID(Integer.parseInt(ID));

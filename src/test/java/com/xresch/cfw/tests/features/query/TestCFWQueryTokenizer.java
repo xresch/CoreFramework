@@ -117,6 +117,38 @@ public class TestCFWQueryTokenizer {
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testTokenizerNumbers() throws IOException {
+		
+
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" -1 1234 \"5678\" 42.90 -71.55555551 321;", true);
+		
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
+		printResults("Basic Test", results);
+		
+		int i = 0;
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(i).type());
+		Assertions.assertEquals("-1", 									results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(++i).type());
+		Assertions.assertEquals("1234", 								results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_DOUBLE_QUOTES, 	results.get(++i).type());
+		Assertions.assertEquals("5678", 								results.get(i).value());
+				
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(++i).type());
+		Assertions.assertEquals("42.90", 								results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(++i).type());
+		Assertions.assertEquals("-71.55555551", 						results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(++i).type());
+		Assertions.assertEquals("321", 									results.get(i).value());
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testTokenizerSplit() throws IOException {
 		
 		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer("001 | part ABC | \"double quotes\" ", true)

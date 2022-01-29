@@ -120,10 +120,22 @@ public class CFWQueryParser {
 			.getAllTokens();
 		
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
+		//-----------------------------------
+		// Skip preceding semicolons
+		if(this.lookahead().type() == CFWQueryTokenType.SIGN_SEMICOLON) {
+			this.consumeToken();
+		}
 		
+		//-----------------------------------
+		// Parse all queries separated by 
+		// SEMICOLON
 		while(this.hasMoreTokens()) {
-						
-			queryList.add(parseQuery());
+			
+			CFWQuery query = parseQuery();
+			
+			if( query != null && query.getCommandList().size() > 0) {
+				queryList.add(query);
+			}
 
 		}
 		
@@ -144,10 +156,11 @@ public class CFWQueryParser {
 			}
 		}
 		
-		if(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.SIGN_SEMICOLON) {
+		//Skip successive Semicolons
+		while(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.SIGN_SEMICOLON) {
 			this.consumeToken();
 		}
-		
+				
 		return currentQuery;
 	}
 	
@@ -163,8 +176,8 @@ public class CFWQueryParser {
 		}
 		
 		//------------------------------------
-		// Skip '|'
-		if(this.lookahead().type() == CFWQueryTokenType.OPERATOR_OR) {
+		// Skip preceding command separators '|'
+		while(this.lookahead().type() == CFWQueryTokenType.OPERATOR_OR) {
 			this.consumeToken();
 		}
 		
@@ -211,7 +224,7 @@ public class CFWQueryParser {
 							
 			
 			//------------------------------------
-			// ParseParts Until End of Command '|'
+			// Parse Parts Until End of Command ('|') or query (';')
 			ArrayList<QueryPart> parts = parseQueryParts();
 			
 			//------------------------------------
@@ -230,7 +243,7 @@ public class CFWQueryParser {
 	}
 		
 	/***********************************************************************************************
-	 * 
+	 * Parse Parts Until End of Command ('|') or query (';')
 	 ***********************************************************************************************/
 	private ArrayList<QueryPart> parseQueryParts() throws ParseException {
 		
