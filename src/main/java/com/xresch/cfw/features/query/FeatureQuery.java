@@ -7,10 +7,10 @@ import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
-import com.xresch.cfw.features.config.FeatureConfiguration;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandDistinct;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandTop;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceRandom;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
@@ -57,6 +57,7 @@ public class FeatureQuery extends CFWAppFeature {
 		// Register Commands
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandSource(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDistinct(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandTop(null));
 		
 		
 		//----------------------------------

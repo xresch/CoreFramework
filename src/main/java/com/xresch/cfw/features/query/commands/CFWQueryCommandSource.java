@@ -111,6 +111,18 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		
 		isSourceFetchingDone = true;
 	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	private boolean isSourceCommandInterrupted() throws InterruptedException {
+		
+		if(this.isInterrupted()) {
+			throw new InterruptedException();
+		}
+		
+		return false;
+	}
 
 	/***********************************************************************************************
 	 * 
@@ -268,10 +280,10 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		//==================================================
 		// Read all Records from Previous Commands
 		//==================================================
-		while( !( this.isPreviousDone() && inQueue.isEmpty() ) ) {
+		while( !( this.isPreviousDone() && keepPolling() ) ) {
 			//------------------------------------------
 			// Read inQueue and put it to outQueue
-			while(!inQueue.isEmpty()) {
+			while(keepPolling()) {
 				
 				EnhancedJsonObject item = inQueue.poll();
 				if(!item.has("_source")) {
@@ -301,8 +313,19 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			// Read inQueue and put it to outQueue
 			
 
-			while(!localQueue.isEmpty()) {
+			while(!localQueue.isEmpty() && !isSourceCommandInterrupted()) {
 				recordCounter++;
+				
+				//------------------------------------------
+				// Check Fetch Limit Reached
+				if(recordCounter > fetchLimit) {
+					setSourceFetchingDone();
+					this.parent.getContext().addMessage(MessageType.INFO, "One or more sources have reached their fetch limit.");
+					break outerloop;
+				}
+				
+				//------------------------------------------
+				// Add Source Field
 				EnhancedJsonObject item = localQueue.poll();
 				if(!item.has("_source")) {
 					item.addProperty("_source", this.source.uniqueName());
@@ -318,15 +341,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				//------------------------------------------
 				// Throw to queue of next Command
 				outQueue.add(item);
-				
-				//------------------------------------------
-				// Check Fetch Limit Reached
-				if(recordCounter >= fetchLimit) {
-					setSourceFetchingDone();
-					this.parent.getContext().addMessage(MessageType.INFO, "One or more sources have reached their fetch limit.");
-					break outerloop;
-				}
-				
+
 			}
 
 			//---------------------------

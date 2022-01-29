@@ -188,9 +188,6 @@ public class CFWQueryParser {
 			//------------------------------------
 			// Check if user has permission for
 			// the source
-			System.out.println("commandName: "+commandName);
-			System.out.println("sourceCommandNames: "+String.join(",", sourceCommandNames));
-			System.out.println("checkSourcePermissions: "+checkSourcePermissions);
 			
 			if (CFW.Utils.Array.contains(sourceCommandNames, commandName) 
 			&& checkSourcePermissions) {
@@ -198,7 +195,6 @@ public class CFWQueryParser {
 				CFWQueryToken token = this.lookahead();	
 				
 				if(token != null){
-					System.out.println("source name: "+token.value());
 					boolean hasPermission = CFW.Registry.Query.checkSourcePermission(
 							token.value(), 
 							CFW.Context.Request.getUser()

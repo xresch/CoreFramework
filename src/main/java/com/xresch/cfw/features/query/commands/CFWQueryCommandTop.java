@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.query.commands;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,19 +22,21 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
-public class CFWQueryCommandDistinct extends CFWQueryCommand {
+public class CFWQueryCommandTop extends CFWQueryCommand {
 	
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandDistinct.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandTop.class.getName());
 	
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
 	
-	private boolean dotrimValues = true;
+	int numberOfRecords = 100;
+	
+	int recordCounter = 0;
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandDistinct(CFWQuery parent) {
+	public CFWQueryCommandTop(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -43,7 +47,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"distinct", "uniq", "dedup"};
+		return new String[] {"top", "first"};
 	}
 
 	/***********************************************************************************************
@@ -51,7 +55,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Deduplicates the results by the specified fields.";
+		return "Takes the first N records and ignores the rest.";
 	}
 
 	/***********************************************************************************************
@@ -59,7 +63,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "distinct <fieldname> [, <fieldname>, <fieldname>]";
+		return "top [<number>]";
 	}
 	
 	/***********************************************************************************************
@@ -67,7 +71,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p>Just a test how this will look like</p>";
+		return "<p><b>number:&nbsp;</b>The number of records to pass to the next command.(Optional, default is 100) </p>";
 	}
 
 	/***********************************************************************************************
@@ -89,32 +93,21 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 		// Get Fieldnames
 		for(QueryPart part : parts) {
 			
-			if(part instanceof QueryPartAssignment) {
+			if(part instanceof QueryPartValue) {
 				
-				QueryPartAssignment parameter = (QueryPartAssignment)part;
-				String paramName = parameter.getLeftSide().determineValue(null).getAsString();
-				if(paramName != null && paramName.equals("trim")) {
-					QueryPartValue paramValue = parameter.getRightSide().determineValue(null);
-					if(paramValue.isBoolOrBoolString()) {
-						this.dotrimValues = paramValue.getAsBoolean();
-					}
-				}
-				
-			}else if(part instanceof QueryPartArray) {
-				QueryPartArray array = (QueryPartArray)part;
+				QueryPartValue parameter = (QueryPartValue)part;
 
-				for(JsonElement element : array.getAsJsonArray(null)) {
+				if(parameter.isInteger()) {
+					numberOfRecords = parameter.getAsInteger();
 					
-					if(!element.isJsonNull() && element.isJsonPrimitive()) {
-						fieldnames.add(element.getAsString());
-					}
+					// ignore the rest
+					break;
 				}
+				
 			}else {
-				QueryPartValue value = part.determineValue(null);
-				if(!value.isNull()) {
-					fieldnames.add(value.getAsString());
-				}
+				throw new ParseException("top: parameter must be an integer value.", part.position());
 			}
+				
 		}
 			
 	}
@@ -134,23 +127,24 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
-		HashSet<String> encounters = new HashSet<>();
-		
+
 		while(keepPolling()) {
-			EnhancedJsonObject record = inQueue.poll();
 			
-			String identifier = "";
-			for(String field : fieldnames) {
-				String value = record.convertToString(field);
-				identifier += "-"+ (dotrimValues ? value.trim() : value);
-			}
+			recordCounter++;
 			
-			if(!encounters.contains(identifier)) {
-				encounters.add(identifier);
-				outQueue.add(record);
+			outQueue.add(inQueue.poll());
+			
+			if(recordCounter >= numberOfRecords) {
+				this.setDone(true);
+				this.interruptAllPrevious();
+				break;
 			}
 		}
+		
+
 		this.setDoneIfPreviousDone();
+		
+		
 		
 	}
 
