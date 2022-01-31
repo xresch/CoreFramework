@@ -29,6 +29,8 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	
 	private boolean dotrimValues = true;
 	
+	HashSet<String> encounters = new HashSet<>();
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -134,8 +136,6 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
-		HashSet<String> encounters = new HashSet<>();
-		
 		while(keepPolling()) {
 			EnhancedJsonObject record = inQueue.poll();
 			
@@ -144,6 +144,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 				String value = record.convertToString(field);
 				identifier += "-"+ (dotrimValues ? value.trim() : value);
 			}
+			
 			
 			if(!encounters.contains(identifier)) {
 				encounters.add(identifier);
