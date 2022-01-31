@@ -1,0 +1,98 @@
+
+<p>
+	This cheat sheet gives you a quick introduction to the concepts of the query language and how to use it.
+</p>
+
+<h2>Basic Concepts</h2>
+
+
+<!-- =========================== FIRST ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Queries</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Queries are a combination of one or multiple commands chained together with the pipe "|" symbol.
+			Multiple queries can be combined together by using semicolon ";" to terminate one query and start a new one. 
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Commands</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Commands are used to fetch and process data.
+			The most important command is 'source', as it is the one bringing data into your query.
+			Commands can have aliases, for example instead of 'source', you can as well use 'src'.
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Sources</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Sources are data provider from which the queries are getting their data.
+			The 'source' command is used to choose one of these sources. For example 
+			you can choose the source 'random' which will give you randomized test data:
+			<pre><code>source random records=100</code></pre>
+		</div>
+	</div>
+	
+</div>
+
+
+<!-- =========================== SECOND ROW ================================= -->
+
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>In-Memory Processing</div>
+		</div>
+		<div class="card-body maxvw-40">
+			All the data fetched by the query is processed in the memory and is returned to the client once all data is processed.
+			Therefore queries can be memory intensive. Therefore there are limits on how many data can be processed.
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Limits</div>
+		</div>
+		<div class="card-body maxvw-40">
+			The limits are set by the system administrator. 
+			There is a default and maximum fetch limit on the number of records processed per source.
+			You can change the default limit on the source command using the parameter 'fetchlimit':
+			<pre><code>source random records=50000 fetchlimit=100000</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>CPU Intensive</div>
+		</div>
+		<div class="card-body maxvw-40">
+			As commands are chained together and executed in parallel, as more commands a query has the more threads are started and as higher it's CPU usage.
+		</div>
+	</div>
+	
+</div>
+
+
+
+
+<!-- 
+
+	<div class="card flex-grow-1">
+		<div class="card-header  pt-1 pb-1">
+			<div>title</div>
+		</div>
+		<div class="card-body">
+			body
+		</div>
+	</div>
+-->

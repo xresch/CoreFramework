@@ -124,7 +124,6 @@ public class CFWQueryTokenizer {
 			cursor++;
 			
 			while( this.matchesCurrentChar(regexIsNumericalChar) ){
-				System.out.println("matched:"+this.currentChar());
 				cursor++;
 			}
 			

@@ -160,6 +160,14 @@ public class FeatureQuery extends CFWAppFeature {
 	 ******************************************************************/
 	public void registerManual() {
 			
+		
+		//----------------------------------
+		// Source Main Page
+		ROOT_MANUAL_PAGE.addChild(new ManualPage("Cheat Sheet")
+				.faicon("fas fa-star")
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "010_query_cheatsheet.html")
+			);
+		
 		CFWQuery pseudoQuery = new CFWQuery();
 		
 		//----------------------------------
