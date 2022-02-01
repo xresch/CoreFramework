@@ -7,7 +7,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**************************************************************************************************************
- * 
+ * Auxiliary class that is used to check if one or more JsonObjects are in a specified time range.
+ *  
  * @author Reto Scheiwiller, (c) Copyright 2022
  * @license MIT-License
  **************************************************************************************************************/
@@ -17,6 +18,8 @@ public class JsonTimerangeChecker {
 	private String timeformat;
 	private long   earliestMillis;
 	private long   latestMillis;
+	
+	private String epochFieldName;
 	
 	private static SimpleDateFormat simpleDateFormat;
 	
@@ -41,11 +44,19 @@ public class JsonTimerangeChecker {
 	}
 	
 	/************************************************************
+	 * Set a fieldname that should be added to the object and 
+	 * will contain the epoch time that was extracted from a 
+	 * date string.
+	 ************************************************************/
+	public JsonTimerangeChecker epochAsNewField(String newFieldname) {
+		epochFieldName = newFieldname;
+		return this;
+	}
+	/************************************************************
 	 * Check if the specified JsonObject is in the timerange.
 	 * Returns false on parsing error.
 	 * @param object to check if it is in the time range
-	 * @param returnTrueOnNull if null values should be considered in range
-	 *        
+	 * @param returnTrueOnNull if null values should be considered in range  
 	 * @return
 	 ************************************************************/
 	public boolean isInTimerange(JsonObject object, boolean returnTrueOnNull) throws ParseException {
@@ -62,7 +73,9 @@ public class JsonTimerangeChecker {
 		}else {
 			String timeString = element.getAsString();
 			time = simpleDateFormat.parse(timeString).getTime();
-			
+			if(epochFieldName != null) {
+				object.addProperty(epochFieldName, time);
+			}
 		}
 
 		return (time >= earliestMillis && time <= latestMillis ) ? true : false;

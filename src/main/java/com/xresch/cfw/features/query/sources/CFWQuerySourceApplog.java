@@ -83,7 +83,6 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 			;
 	}
 	
-
 	
 	/******************************************************************
 	 *
@@ -93,7 +92,9 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 		
 		//String data = (String)parameters.getField("data").getValue();
 
-		JsonTimerangeChecker timerangeChecker = new JsonTimerangeChecker("time", CFW.Utils.Time.TIMESTAMP_FORMAT, earliestMillis, latestMillis);
+		JsonTimerangeChecker timerangeChecker = 
+				new JsonTimerangeChecker("time", CFW.Utils.Time.TIMESTAMP_FORMAT, earliestMillis, latestMillis)
+					.epochAsNewField("_epoch");
 		
 		try (BufferedReader reader = new BufferedReader (new InputStreamReader (new FileBackwardsInputReader("./log/applog_0_0.log"))) ){
 		
@@ -109,6 +110,7 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 
 				if(element != null && element.isJsonObject()) {
 					if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
+						
 						outQueue.add( new EnhancedJsonObject(element.getAsJsonObject()) );
 					}
 				}

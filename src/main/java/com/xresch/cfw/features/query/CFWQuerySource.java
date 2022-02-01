@@ -59,9 +59,12 @@ public abstract class CFWQuerySource{
 	 * Implement the fetching of the data from your source.
 	 * Create EnhancedJsonObjects containing your data and add them to the outQueue.
 	 * This method is responsible for filter by the given time range if the processed data
-	 * is time based.
+	 * is time based. (see also {@link com.xresch.cfw.utils.json.JsonTimerangeChecker#isInTimeRange() JsonTimerangeChecker} )
+	 * If applicable, it is recommended to add a field "_epoch" that contains the
+	 * time in milliseconds in case it was parsed from a date string.
 	 * For performance reasons it is recommended to interrupt the processing of data when the limit
 	 * of records is reached. However, this limit is also enforced by the source command itself.
+	 * 
 	 ***********************************************************************************************/
 	public abstract void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit ) throws Exception;
 	
