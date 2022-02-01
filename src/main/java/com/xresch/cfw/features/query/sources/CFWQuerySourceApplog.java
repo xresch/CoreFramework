@@ -11,7 +11,9 @@ import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.utils.FileBackwardsInputReader;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
 	
@@ -50,8 +52,16 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 	 *
 	 ******************************************************************/
 	@Override
+	public String descriptionTime() {
+		return "Time is automatically applied by this source.";
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
 	public String descriptionHTML() {
-		return "<p>To be done</p>";
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".sources", "source_applog.html");
 	}
 	/******************************************************************
 	 *
@@ -98,6 +108,7 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 		
 		try (BufferedReader reader = new BufferedReader (new InputStreamReader (new FileBackwardsInputReader("./log/applog_0_0.log"))) ){
 		
+			int recordCounter = 0;
 			while(true) {
 				
 				String currentLine = reader.readLine();
@@ -106,11 +117,16 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 					break;
 				}
 				
+				if(recordCounter > limit) {
+					this.parent.getContext().addMessage(MessageType.INFO, "One or more sources have reached their fetch limit.");
+					break;
+				}
+				
 				JsonElement element = CFW.JSON.fromJson(currentLine);
 
 				if(element != null && element.isJsonObject()) {
 					if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
-						
+						recordCounter++;
 						outQueue.add( new EnhancedJsonObject(element.getAsJsonObject()) );
 					}
 				}

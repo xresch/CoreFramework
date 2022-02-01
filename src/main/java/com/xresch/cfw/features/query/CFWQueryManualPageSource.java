@@ -37,7 +37,12 @@ public class CFWQueryManualPageSource extends ManualPage {
 					   ;
 			}
 		builder.append("</ul>");
-						
+				
+		
+		//--------------------------------
+		// Time Handling Section
+		builder.append("<h2 class=\"toc-hidden\" >Time Handling</h2>");
+		builder.append("<p>"+source.descriptionTime()+"</p>");
 		
 		//--------------------------------
 		// Usage Section

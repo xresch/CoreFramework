@@ -20,13 +20,12 @@ function cfw_query_execute(){
 			, latest: timeframe.latest
 			};
 	
+	cfw_query_highlightExecuteButton(false);
 	cfw_ui_toogleLoader(true);	
 	
 	CFW.http.getJSON(CFW_QUERY_URL, params, 
 		function(data) {
-			
-			
-			
+						
 			if(data.success){
 				targetDiv.html("");
 				
@@ -158,6 +157,21 @@ function cfw_query_resizeTextareaToFitQuery(){
 			}
 		}
 }
+	
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_highlightExecuteButton(enableHighlighting){
+	
+	if(enableHighlighting){
+		$("#executeButton").addClass('btn-warning')
+		$("#executeButton").removeClass('btn-btn-primary')
+	}else{
+		$("#executeButton").removeClass('btn-warning')
+		$("#executeButton").addClass('btn-btn-primary')
+	}
+	
+}
 		
 /*******************************************************************************
  * Main method for building the view.
@@ -179,7 +193,7 @@ function cfw_query_initialDraw(){
 					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></button>
 					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></button>
 					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></button>
-					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute();"><b>Execute</b></button>
+					<button id="executeButton" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute();"><b>Execute</b></button>
 				</div>
 				
 			</div>
@@ -205,7 +219,9 @@ function cfw_query_initialDraw(){
 	//-----------------------------------
 	// Load Timeframe from URL or set default
 	if(!CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.offset)){
-		cfw_initializeTimeframePicker('timeframePicker', {offset: CFW_QUERY_URLPARAMS.offset}, null);
+		cfw_initializeTimeframePicker('timeframePicker'
+						, {offset: CFW_QUERY_URLPARAMS.offset}
+						, function(){ cfw_query_highlightExecuteButton(true); } );
 	}else{
 		if(!CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.earliest)
 		&& !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.latest) ){
@@ -228,11 +244,13 @@ function cfw_query_initialDraw(){
 	// Query Field Event Handler
 	$('#query').on("keydown", function(e){
 		
+		cfw_query_highlightExecuteButton(true);
 		//---------------------------
 		// Enter
 		if (e.keyCode == 13) {
 			cfw_query_resizeTextareaToFitQuery();
 		}
+		
 	});
 	
 	

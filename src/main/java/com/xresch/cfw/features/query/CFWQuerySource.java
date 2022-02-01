@@ -31,6 +31,12 @@ public abstract class CFWQuerySource{
 	public abstract String descriptionShort();
 	
 	/***********************************************************************************************
+	 * Return a short description How time is applied for this source. This will be shown in content
+	 * assist and will be used as text in the manual. Do not use newlines in this description.
+	 ***********************************************************************************************/
+	public abstract String descriptionTime();
+	
+	/***********************************************************************************************
 	 * Return a CFWObject with the parameters you will support.
 	 * The source command will map the parameters to the object and execute the validation. If
 	 * all parameter values are valid, it will be passed to the execute() method.
