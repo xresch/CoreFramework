@@ -254,10 +254,9 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
-		
-		// CFWQuerySource does not have own parameter definition, will be propagated from this command class
-		// context.getProperty("parameters");
-		
+
+		long earliestMillis = parent.getContext().getEarliestMillis();
+		long latestMillis = parent.getContext().getLatestMillis();
 		//------------------------------------------
 		// Read source asynchronously
 		
@@ -268,7 +267,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				@Override
 				public void run() {
 					try {
-						source.execute(paramsForSource, localQueue, fetchLimit);
+						source.execute(paramsForSource, localQueue, earliestMillis, latestMillis, fetchLimit);
 					} catch (Exception e) {
 						new CFWLog(logger).severe("Error while reading from source '"+source.uniqueName()+"': "+e.getMessage(), e);						
 					}
@@ -332,8 +331,8 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				}
 				
 				//------------------------------------------
-				//Sample Fieldnames, first 10 and every 512
-				if( recordCounter % 512 == 0 || recordCounter <= 10 ) {
+				//Sample Fieldnames, first 512 and every 256th
+				if( recordCounter % 256 == 0 || recordCounter <= 256 ) {
 
 					parent.addFieldnames(item.keySet());
 				}

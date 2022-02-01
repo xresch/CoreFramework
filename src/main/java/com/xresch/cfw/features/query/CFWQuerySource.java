@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.gson.JsonObject;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.usermgmt.User;
 
@@ -55,9 +56,14 @@ public abstract class CFWQuerySource{
 	public abstract boolean hasPermission(User user);
 	
 	/***********************************************************************************************
-	 * 
+	 * Implement the fetching of the data from your source.
+	 * Create EnhancedJsonObjects containing your data and add them to the outQueue.
+	 * This method is responsible for filter by the given time range if the processed data
+	 * is time based.
+	 * For performance reasons it is recommended to interrupt the processing of data when the limit
+	 * of records is reached. However, this limit is also enforced by the source command itself.
 	 ***********************************************************************************************/
-	public abstract void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, int limit ) throws Exception;
+	public abstract void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit ) throws Exception;
 	
 	
 	/***********************************************************************************************

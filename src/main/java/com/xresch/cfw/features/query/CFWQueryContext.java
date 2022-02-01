@@ -22,7 +22,7 @@ public class CFWQueryContext{
 	/***********************************************************************************************
 	 * Get the earliest time for this query.
 	 ***********************************************************************************************/
-	public long getEarliest() {
+	public long getEarliestMillis() {
 		return earliest;
 	}
 	
@@ -37,7 +37,7 @@ public class CFWQueryContext{
 	/***********************************************************************************************
 	 * Get the latest time for this query.
 	 ***********************************************************************************************/
-	public long getLatest() {
+	public long getLatestMillis() {
 		return latest;
 	}
 

@@ -49,7 +49,14 @@ function cfw_query_execute(){
 				// Iterate all Query results
 				for(var i = 0; i < data.payload.length; i++){
 					var currentResults = data.payload[i];
+										
 					targetDiv.append('<h2>Query '+(i+1)+'</h2>')
+					
+					if(currentResults.results.length == 0 ){
+						targetDiv.append('<p>The result is empty.</p>')
+						continue;
+					}
+					
 					var rendererSettings = {
 							data: currentResults.results,
 						 	//idfield: 'PK_ID',
@@ -59,7 +66,7 @@ function cfw_query_execute(){
 						 	titleformat: '{0}',
 						 	visiblefields: null,
 						 	labels: {
-						 		PK_ID: "ID",
+						 		// todo, set labels manually
 						 	},
 						 	customizers: {},
 		

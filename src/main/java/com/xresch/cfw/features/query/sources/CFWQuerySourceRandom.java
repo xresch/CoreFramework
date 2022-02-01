@@ -87,12 +87,12 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 	 *
 	 ******************************************************************/
 	@Override
-	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, int limit) throws Exception {
+	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 		
 		int records = (int)parameters.getField("records").getValue();
 
-		long earliest = this.getParent().getContext().getEarliest();
-		long latest = this.getParent().getContext().getLatest();
+		long earliest = this.getParent().getContext().getEarliestMillis();
+		long latest = this.getParent().getContext().getLatestMillis();
 		long diff = latest - earliest;
 		long diffStep = diff / records;
 		

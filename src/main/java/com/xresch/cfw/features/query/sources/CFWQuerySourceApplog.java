@@ -13,6 +13,7 @@ import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.utils.FileBackwardsInputReader;
+import com.xresch.cfw.utils.json.JsonTimerangeChecker;
 	
 /**************************************************************************************************************
  * 
@@ -88,10 +89,12 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 	 *
 	 ******************************************************************/
 	@Override
-	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, int limit) throws Exception {
+	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 		
 		//String data = (String)parameters.getField("data").getValue();
 
+		JsonTimerangeChecker timerangeChecker = new JsonTimerangeChecker("time", CFW.Utils.Time.TIMESTAMP_FORMAT, earliestMillis, latestMillis);
+		
 		try (BufferedReader reader = new BufferedReader (new InputStreamReader (new FileBackwardsInputReader("./log/applog_0_0.log"))) ){
 		
 			while(true) {
@@ -103,9 +106,11 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 				}
 				
 				JsonElement element = CFW.JSON.fromJson(currentLine);
-				
-				if(element.isJsonObject()) {
-					outQueue.add( new EnhancedJsonObject(element.getAsJsonObject()) );
+
+				if(element != null && element.isJsonObject()) {
+					if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
+						outQueue.add( new EnhancedJsonObject(element.getAsJsonObject()) );
+					}
 				}
 				
 			}

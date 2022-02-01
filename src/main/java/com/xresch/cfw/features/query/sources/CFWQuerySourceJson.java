@@ -88,7 +88,7 @@ public class CFWQuerySourceJson extends CFWQuerySource {
 	 *
 	 ******************************************************************/
 	@Override
-	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, int limit) throws Exception {
+	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 		
 		String data = (String)parameters.getField("data").getValue();
 
