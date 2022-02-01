@@ -4,7 +4,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -70,6 +72,9 @@ public abstract class CFWQuerySource{
 	 * time in milliseconds in case it was parsed from a date string.
 	 * For performance reasons it is recommended to interrupt the processing of data when the limit
 	 * of records is reached. However, this limit is also enforced by the source command itself.
+	 * Use the isLimitReached()-method of this class, this will also add an info message in case 
+	 * the limit was reached, example code: 
+	 * <pre><code>if( this.isLimitReached(recordCounter, limit)) { break; }</code></pre>
 	 * 
 	 ***********************************************************************************************/
 	public abstract void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit ) throws Exception;
@@ -80,6 +85,19 @@ public abstract class CFWQuerySource{
 	 ***********************************************************************************************/
 	public CFWQuery getParent() {
 		return parent;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public boolean isLimitReached(int limit, int recordCount) {
+		
+		if(recordCount > limit) {
+			this.parent.getContext().addMessage(MessageType.INFO, CFWQueryCommandSource.MESSAGE_FETCHLIMIT_REACHED);
+			return true;
+		}
+		
+		return false;
 	}
 	
 }

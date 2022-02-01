@@ -117,10 +117,7 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 					break;
 				}
 				
-				if(recordCounter > limit) {
-					this.parent.getContext().addMessage(MessageType.INFO, "One or more sources have reached their fetch limit.");
-					break;
-				}
+				if( isLimitReached(recordCounter, limit)) { break; }
 				
 				JsonElement element = CFW.JSON.fromJson(currentLine);
 

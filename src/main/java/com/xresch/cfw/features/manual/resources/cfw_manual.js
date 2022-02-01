@@ -151,7 +151,7 @@ function cfw_manual_createPrintView(pageGUID){
 		var paper = $('<div id="paper">');
 		var printTOC = $('<div id="print-toc">');
 		
-		paper.append('<h1 id="doc-title">'+titleString+'</h1>');
+		paper.append('<h1 id="doc-title" class="toc-hidden">'+titleString+'</h1>');
 		paper.append(printTOC);
 		parent.append(paper);
 		
@@ -252,7 +252,8 @@ function cfw_manual_preparePageForPrint(pageContent, headerOffset){
 			for(var i = 5; i > 0; i-- ){
 	
 				var newLevel = (i+offset <= 6) ? i+offset : 6;
-				pageContent = CFW.utils.replaceAll(pageContent, 'h'+i+'>', 'h'+newLevel+'>');
+				pageContent = pageContent.replaceAll('</h'+i, '</h'+newLevel)
+										.replaceAll('<h'+i, '<h'+newLevel);
 			}
 		}
 		

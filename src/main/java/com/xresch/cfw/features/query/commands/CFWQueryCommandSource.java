@@ -29,6 +29,8 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWQueryCommandSource extends CFWQueryCommand {
 	
+	public static final String MESSAGE_FETCHLIMIT_REACHED = "One or more sources have reached their fetch limit.";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandSource.class.getName());
 	
 	private int fetchLimit = 0;
@@ -319,7 +321,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				// Check Fetch Limit Reached
 				if(recordCounter > fetchLimit) {
 					setSourceFetchingDone();
-					this.parent.getContext().addMessage(MessageType.INFO, "One or more sources have reached their fetch limit.");
+					this.parent.getContext().addMessage(MessageType.INFO, MESSAGE_FETCHLIMIT_REACHED);
 					break outerloop;
 				}
 				

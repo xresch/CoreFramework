@@ -138,13 +138,18 @@ public class CFWQuerySourceJson extends CFWQuerySource {
 		}
 		
 		if(element.isJsonArray()) {
+			int recordCounter = 0;
 			for(JsonElement current : element.getAsJsonArray() ) {
 				if(current.isJsonObject()) {
+					
+					if( this.isLimitReached(recordCounter, limit)) { break; }
 					
 					if(timefield != null && !timerangeChecker.isInTimerange(current.getAsJsonObject(), false)) {
 						continue; 
 					}
+					
 					outQueue.add( new EnhancedJsonObject(current.getAsJsonObject()) );
+					recordCounter++;
 				}
 				
 			}
