@@ -107,9 +107,6 @@ function cfw_manual_createPrintView(pageGUID){
 		+'h1{'
 			+'page-break-before: always;' 
 		+'}'
-		+'.page-break{'
-			+'page-break-before: always;' 
-		+'}'
 		+'h1 {font-size: 32px;}' 
 		+'h2 {font-size: 30px;}' 
 		+'h3 {font-size: 28px;}' 
@@ -189,7 +186,7 @@ function cfw_manual_addPageToPrintView(parentContainer, page, headerOffset){
 	var anchorForLinks = $('<a name="'+guid+'">');
 	var pageDiv = $('<div id="'+guid+'">');
 
-	pageDiv.append('<h'+head+' class="page-break">'+page.title+'</h'+head+'>');
+	pageDiv.append('<h'+head+'>'+page.title+'</h'+head+'>');
 	pageDiv.append(anchorForLinks);
 	
 	parentContainer.append(pageDiv);
