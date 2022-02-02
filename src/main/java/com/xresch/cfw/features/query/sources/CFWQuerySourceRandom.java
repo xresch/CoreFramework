@@ -112,7 +112,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 			person.addProperty("TIME", earliest +(i * diffStep));
 			outQueue.add(person);
 			
-			if( isLimitReached(i, limit)) { break; }
+			if( isLimitReached(limit, i)) { break; }
 		}
 		
 
