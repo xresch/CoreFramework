@@ -142,7 +142,7 @@ public class CFWQuerySourceJson extends CFWQuerySource {
 			for(JsonElement current : element.getAsJsonArray() ) {
 				if(current.isJsonObject()) {
 					
-					if( this.isLimitReached(recordCounter, limit)) { break; }
+					if( this.isLimitReached(limit, recordCounter)) { break; }
 					
 					if(timefield != null && !timerangeChecker.isInTimerange(current.getAsJsonObject(), false)) {
 						continue; 

@@ -117,7 +117,7 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 					break;
 				}
 				
-				if( isLimitReached(recordCounter, limit)) { break; }
+				if( isLimitReached(limit, recordCounter)) { break; }
 				
 				JsonElement element = CFW.JSON.fromJson(currentLine);
 

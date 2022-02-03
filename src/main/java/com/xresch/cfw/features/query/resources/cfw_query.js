@@ -72,6 +72,7 @@ function cfw_query_execute(){
 							rendererSettings: {
 								dataviewer: {
 									storeid: 'cfw-query'+i,
+									sortable: false,
 									renderers: [
 										{	label: 'Table',
 											name: 'table',

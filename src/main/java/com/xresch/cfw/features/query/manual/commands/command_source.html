@@ -1,0 +1,56 @@
+
+<p>Source is the main command of this query language, as it is the one that will bring the data into your query.
+It lets you choose one of the registered sources and that will be used to fetch data.</p>
+
+<p>The first parameter of the source command is the source name. 
+You can hit Ctrl+Space after typing source to get a list of available sources.
+Here a small example of using the command with the source 'random':</p>
+
+<pre><code>source random</code></pre>
+
+
+<h3>Source Parameters</h3>
+<p>A source can have additional parameters, which are given to the command as key=value pairs. 
+The 'random' source provides the optional parameter 'records' to specify how many random records should be generated.
+</p>
+<pre><code>source random records=800</code></pre>
+
+
+
+<h3>Fetch Limit</h3>
+<p>The source command itself also has its own parameter called 'limit'. This parameter defined the maximum records that are fetched from the source.
+The default and maximum values for this parameter are set by your system administrator to reduce the performance impact of the queries.
+</p>
+<p>For example, if you want to generate 100'000 records, but the default fetch limit is 10'000, you can specify the limit
+</p>
+
+<pre><code>source random records=100000 limit=100000</code></pre>
+
+
+<h3>Chain Multiple Sources</h3>
+
+<p>To combine data from multiple sources, you can use this command multiple times in the same query.
+The sources are read in order. First all data from the first source is read, then all data from the second and so forth. </p>
+
+<p>The following example combines multiple sources in the same query. </p>
+
+<pre><code>| source random records=100
+| top 4
+| source random records=2
+| source json data='
+[{"ID": "test", "FIRSTNAME": "Serena", "LASTNAME": "Aloha"},
+ ,{"ID": "test", "FIRSTNAME": "Alena", "LASTNAME": "Konnichiwa"},
+ ,{"ID": "test", "FIRSTNAME": "Kassandra", "LASTNAME": "Ciaobella"}
+]' 
+| source random records=42</code></pre>
+
+
+<p>Be aware that other commands still work the same. They will process the recors in the order they are passed through the whole command chain. 
+The following top command will take all 10 records from the first source, and the first 2 from the second source:</p>
+
+<pre><code>| source random records=10
+| source random records=20
+| top 12
+</code></pre>
+
+

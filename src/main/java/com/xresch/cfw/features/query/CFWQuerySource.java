@@ -93,7 +93,7 @@ public abstract class CFWQuerySource{
 	public boolean isLimitReached(int limit, int recordCount) {
 		
 		if(recordCount > limit) {
-			this.parent.getContext().addMessage(MessageType.INFO, CFWQueryCommandSource.MESSAGE_FETCHLIMIT_REACHED);
+			this.parent.getContext().addMessage(MessageType.INFO, CFWQueryCommandSource.MESSAGE_LIMIT_REACHED);
 			return true;
 		}
 		

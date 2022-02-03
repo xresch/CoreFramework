@@ -1,0 +1,15 @@
+
+<p>Distinct will filter the records by the values of the chosen fields. 
+It will only keep the first record that has a certain value. 
+Every following record with the same value will be removed. </p>
+
+<p>Following code will create 5000 random records and deduplicates them by FIRSTNAME:</p>
+
+<pre><code>source random records=5000
+| distinct FIRSTNAME</code></pre>
+
+
+
+<p>Will remove duplicates based on a combination of LASTNAME and LIKES_TIRAMISU:</p>
+<pre><code>source random records=5000
+| distinct LASTNAME, LIKES_TIRAMISU</code></pre>

@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.google.common.collect.EvictingQueue;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
@@ -76,7 +78,7 @@ public class CFWQueryCommandTail extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return "<p>This still has to be documented, any volunteers?</p>";
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_tail.html");
 	}
 
 	/***********************************************************************************************
