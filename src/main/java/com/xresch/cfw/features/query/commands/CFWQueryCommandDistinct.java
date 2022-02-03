@@ -63,7 +63,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "distinct <fieldname> [, <fieldname>, <fieldname> ...]";
+		return "distinct <fieldname> [, <fieldname> ...] [trim=<boolean>]";
 	}
 	
 	/***********************************************************************************************
@@ -71,7 +71,8 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>fieldname:&nbsp;</b> Names of the fields that should be used for deduplication.</p>";
+		return "<p><b>fieldname:&nbsp;</b> Names of the fields that should be used for deduplication.</p>"
+		 	  +"<p><b>trim:&nbsp;</b> Toogle if the values should be trimmed.(Default: true)</p>";
 	}
 
 	/***********************************************************************************************

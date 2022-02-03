@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -29,9 +28,7 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 	
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
-	
-	private boolean dotrimValues = true;
-	
+		
 	HashSet<String> encounters = new HashSet<>();
 	
 	/***********************************************************************************************
@@ -101,12 +98,6 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 				
 				QueryPartAssignment parameter = (QueryPartAssignment)part;
 				String paramName = parameter.getLeftSide().determineValue(null).getAsString();
-				if(paramName != null && paramName.equals("trim")) {
-					QueryPartValue paramValue = parameter.getRightSide().determineValue(null);
-					if(paramValue.isBoolOrBoolString()) {
-						this.dotrimValues = paramValue.getAsBoolean();
-					}
-				}
 				
 			}else if(part instanceof QueryPartArray) {
 				QueryPartArray array = (QueryPartArray)part;
