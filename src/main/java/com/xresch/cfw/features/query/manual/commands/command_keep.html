@@ -1,0 +1,9 @@
+
+<p>Keep is used to only keep the fields you want to display in the results. 
+It is helpful to reduce execution time and resource usage. It is also used to change the order of the fields.</p>
+
+<p>Following code will create 1000 random records, and only keep the five specified fields:</p>
+
+<pre><code>| source random
+| keep INDEX, TIME, FIRSTNAME, LASTNAME, VALUE</code></pre>
+

@@ -8,6 +8,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
@@ -38,6 +39,28 @@ public class EnhancedJsonObject {
 		JsonObject object = internal.get();
 		if(object == null) { throw new CFWQueryMemoryException(); } 
 		return object;
+	}
+	
+	/*************************************************************************************************
+	 * Change the object wrapped by this Enhanced object.
+	 * Will do nothing if input is null
+	 * 
+	 *************************************************************************************************/
+	public void setWrappedObject(JsonObject newObject) {
+		if(newObject == null) { return; } 
+		internal = new SoftReference<>(newObject);
+	}
+	
+	
+	/*************************************************************************************************
+	 * 
+	 *************************************************************************************************/
+	public void removeMultiple(String... fieldnames) {
+		JsonObject object = getWrappedObject();
+		
+		for(String fieldname : fieldnames) {
+			object.remove(fieldname);
+		}
 	}
 	
 	/*************************************************************************************************

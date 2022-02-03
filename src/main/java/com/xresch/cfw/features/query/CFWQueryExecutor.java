@@ -70,7 +70,6 @@ public class CFWQueryExecutor {
 
 						JsonObject object = inQueue.poll().getWrappedObject();
 						if(object != null) {
-							
 							results.add(object);
 						}else {
 							queryContext.addMessage(MessageType.WARNING, "Data might be incomplete due to reached limits.");

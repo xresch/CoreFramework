@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -22,9 +23,9 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
-public class CFWQueryCommandDistinct extends CFWQueryCommand {
+public class CFWQueryCommandKeep extends CFWQueryCommand {
 	
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandDistinct.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandKeep.class.getName());
 	
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
@@ -36,7 +37,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandDistinct(CFWQuery parent) {
+	public CFWQueryCommandKeep(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -47,7 +48,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"distinct", "uniq", "dedup"};
+		return new String[] {"keep", "reorder"};
 	}
 
 	/***********************************************************************************************
@@ -55,7 +56,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Deduplicates the results by the specified fields.";
+		return "Keeps the specified fields and removes all other.";
 	}
 
 	/***********************************************************************************************
@@ -63,7 +64,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "distinct <fieldname> [, <fieldname>, <fieldname> ...]";
+		return "keep <fieldname> [, <fieldname>, <fieldname>...]";
 	}
 	
 	/***********************************************************************************************
@@ -71,7 +72,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>fieldname:&nbsp;</b> Names of the fields that should be used for deduplication.</p>";
+		return "<p><b>fieldname:&nbsp;</b> Names of the fields that should be kept.</p>";
 	}
 
 	/***********************************************************************************************
@@ -79,7 +80,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_distinct.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_keep.html");
 	}
 
 	/***********************************************************************************************
@@ -90,6 +91,10 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Get Fieldnames
+		
+		if(parts.size() == 0) {
+			throw new ParseException("keep: please specify at least one fieldname.", -1);
+		}
 		for(QueryPart part : parts) {
 			
 			if(part instanceof QueryPartAssignment) {
@@ -139,18 +144,18 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 		
 		while(keepPolling()) {
 			EnhancedJsonObject record = inQueue.poll();
-			
-			String identifier = "";
-			for(String field : fieldnames) {
-				String value = record.convertToString(field);
-				identifier += "-"+ (dotrimValues ? value.trim() : value);
+				
+			JsonObject newRecord = new JsonObject(); 
+			for(String fieldname : fieldnames) {
+				if(record.has(fieldname)) {
+					newRecord.add(fieldname, record.get(fieldname));
+				}
 			}
 			
+			record.setWrappedObject(newRecord);
 			
-			if(!encounters.contains(identifier)) {
-				encounters.add(identifier);
-				outQueue.add(record);
-			}
+			outQueue.add(record);
+			
 		}
 		this.setDoneIfPreviousDone();
 		
