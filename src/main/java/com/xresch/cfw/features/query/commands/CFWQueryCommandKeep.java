@@ -132,7 +132,10 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		// TODO Auto-generated method stub
+		result.setHTMLDescription(
+				"<b>Hint:&nbsp;</b>Specify the fields that should be kept.<br>"
+				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
+			);
 
 	}
 
