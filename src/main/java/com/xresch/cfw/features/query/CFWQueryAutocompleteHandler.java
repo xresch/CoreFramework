@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query;
 
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,12 +72,15 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 			AutocompleteList list = new AutocompleteList();
 
 			int i = 0;
-			for(CFWQueryCommand command : commandMap.values()) {
+			for(Entry<String, CFWQueryCommand> entry : commandMap.entrySet()) {
+				
+				String commandName = entry.getKey();
+				CFWQueryCommand command = entry.getValue();
 				list.addItem(
 						helper.createAutocompleteItem(
 								""
-							  , command.getUniqueName()
-							  , command.getUniqueName()
+							  , commandName
+							  , commandName
 							  , command.descriptionShort()
 							)
 					);
