@@ -65,14 +65,13 @@ public abstract class PipelineAction<I, O> extends Thread {
 					
 					//---------------------------
 					// Wait for more input
-					this.waitForInput(50);
+					this.waitForInput(100);
 				}
 				
 			this.terminateAction();
 			
 		} catch (InterruptedException e) { 
 			// do nothing, expected exception caused by commands like top
-			System.out.println("PipelineAction.run() - interrupted");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}  finally {

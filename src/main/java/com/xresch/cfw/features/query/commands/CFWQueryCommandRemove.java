@@ -23,9 +23,9 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
-public class CFWQueryCommandKeep extends CFWQueryCommand {
+public class CFWQueryCommandRemove extends CFWQueryCommand {
 	
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandKeep.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandRemove.class.getName());
 	
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
@@ -37,7 +37,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandKeep(CFWQuery parent) {
+	public CFWQueryCommandRemove(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -48,7 +48,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"keep", "reorder"};
+		return new String[] {"remove"};
 	}
 
 	/***********************************************************************************************
@@ -56,7 +56,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Keeps the specified fields and removes all other.";
+		return "Removes the specified fields from the records.";
 	}
 
 	/***********************************************************************************************
@@ -64,7 +64,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "keep <fieldname> [, <fieldname>, <fieldname>...]";
+		return "remove <fieldname> [, <fieldname>, <fieldname>...]";
 	}
 	
 	/***********************************************************************************************
@@ -72,7 +72,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>fieldname:&nbsp;</b> Names of the fields that should be kept.</p>";
+		return "<p><b>fieldname:&nbsp;</b> Names of the fields that should be removed.</p>";
 	}
 
 	/***********************************************************************************************
@@ -80,7 +80,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_keep.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_remove.html");
 	}
 
 	/***********************************************************************************************
@@ -93,7 +93,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 		// Get Fieldnames
 		
 		if(parts.size() == 0) {
-			throw new ParseException("keep: please specify at least one fieldname.", -1);
+			throw new ParseException("remove: please specify at least one fieldname.", -1);
 		}
 		for(QueryPart part : parts) {
 			
@@ -145,14 +145,9 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 		while(keepPolling()) {
 			EnhancedJsonObject record = inQueue.poll();
 				
-			JsonObject newRecord = new JsonObject(); 
 			for(String fieldname : fieldnames) {
-				if(record.has(fieldname)) {
-					newRecord.add(fieldname, record.get(fieldname));
-				}
+				record.remove(fieldname);
 			}
-			
-			record.setWrappedObject(newRecord);
 			
 			outQueue.add(record);
 			

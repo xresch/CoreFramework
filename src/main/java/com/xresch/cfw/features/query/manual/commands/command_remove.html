@@ -1,0 +1,9 @@
+
+<p>This command removes the fields from the records. The removed fields will not show up in the results. 
+It is helpful to reduce execution time and resource usage.</p>
+
+<p>Following code will create 1'234 random records, and remove the five specified fields:</p>
+
+<pre><code>| source random records=1234
+| remove INDEX TIME, FIRSTNAME, LASTNAME, VALUE</code></pre>
+
