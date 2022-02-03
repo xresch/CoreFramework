@@ -84,13 +84,18 @@ public class CFWQueryExecutor {
 			
 			//--------------------------------
 			// Execute query and Wait for Complete
+			long startMillis;
+			long execMillis = -1;
 			try {
-				query.execute(true);
+				startMillis = System.currentTimeMillis();
+					query.execute(true);
+				execMillis = System.currentTimeMillis() - startMillis;
 			}catch(NullPointerException e) {
 				System.out.println("caught null");
 			}
 			
 			queryResults.addProperty("resultCount", resultCount);
+			queryResults.addProperty("execTimeMillis", execMillis);
 			queryResults.add("results", results);
 			
 			returnValue.add(queryResults);

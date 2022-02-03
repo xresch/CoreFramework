@@ -49,7 +49,11 @@ function cfw_query_execute(){
 				for(var i = 0; i < data.payload.length; i++){
 					var currentResults = data.payload[i];
 										
-					targetDiv.append('<h2>Query '+(i+1)+'</h2>')
+					var execSeconds = '';
+					if(currentResults.execTimeMillis != -1){
+						execSeconds = " ("+(currentResults.execTimeMillis / 1000).toFixed(3)+"s)";
+					}
+					targetDiv.append('<h2>Query '+(i+1)+execSeconds+'</h2>')
 					
 					if(currentResults.results.length == 0 ){
 						targetDiv.append('<p>The result is empty.</p>')
