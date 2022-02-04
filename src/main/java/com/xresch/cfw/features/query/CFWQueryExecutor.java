@@ -91,11 +91,12 @@ public class CFWQueryExecutor {
 					query.execute(true);
 				execMillis = System.currentTimeMillis() - startMillis;
 			}catch(NullPointerException e) {
-				System.out.println("caught null");
+				queryContext.addMessage(MessageType.ERROR, "Query run into an issue: NullpointerException.");
 			}
 			
 			queryResults.addProperty("resultCount", resultCount);
 			queryResults.addProperty("execTimeMillis", execMillis);
+			queryResults.add("metadata", query.getContext().getMetadata());
 			queryResults.add("results", results);
 			
 			returnValue.add(queryResults);

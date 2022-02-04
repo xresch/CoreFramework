@@ -64,6 +64,16 @@ public class QueryPartAssignment extends QueryPart {
 	 * @throws CFWQueryMemoryException 
 	 * 
 	 ******************************************************************************************************/
+	public void assignToJsonObject(JsonObject object) throws CFWQueryMemoryException {
+		
+		this.assignToJsonObject(new EnhancedJsonObject(object));
+	
+	}
+	/******************************************************************************************************
+	 * Determines the value and assigns it to the JsonObject.
+	 * @throws CFWQueryMemoryException 
+	 * 
+	 ******************************************************************************************************/
 	public void assignToJsonObject(EnhancedJsonObject object) throws CFWQueryMemoryException {
 		
 		if (leftside instanceof QueryPartJsonMemberAccess) {
@@ -76,7 +86,10 @@ public class QueryPartAssignment extends QueryPart {
 		}
 	
 	}
-
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
 	@Override
 	public JsonObject createDebugObject(EnhancedJsonObject object) {
 		
@@ -88,8 +101,5 @@ public class QueryPartAssignment extends QueryPart {
 		
 		return debugObject;
 	}
-	
-	
-	
 
 }

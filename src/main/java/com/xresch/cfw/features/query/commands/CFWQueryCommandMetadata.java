@@ -1,0 +1,135 @@
+package com.xresch.cfw.features.query.commands;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
+import com.google.gson.JsonObject;
+import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.query.CFWQuery;
+import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
+import com.xresch.cfw.features.query.CFWQueryCommand;
+import com.xresch.cfw.features.query.CFWQuerySource;
+import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query.parse.CFWQueryParser;
+import com.xresch.cfw.features.query.parse.QueryPart;
+import com.xresch.cfw.features.query.parse.QueryPartAssignment;
+import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.pipeline.PipelineActionContext;
+
+public class CFWQueryCommandMetadata extends CFWQueryCommand {
+	
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandMetadata.class.getName());
+	
+	CFWQuerySource source = null;
+	ArrayList<String> fieldnames = new ArrayList<>();
+		
+	int recordCounter = 0;
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryCommandMetadata(CFWQuery parent) {
+		super(parent);
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String[] uniqueNameAndAliases() {
+		return new String[] {"metadata", "meta"};
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String descriptionShort() {
+		return "Sets metadata of the query.";
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String descriptionSyntax() {
+		return "metadata <key>=<value> [, <key>=<value> ...]";
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String descriptionSyntaxDetailsHTML() {
+		return "<p><b>key:&nbsp;</b>The key of the metadata.</p>"
+			  +"<p><b>value:&nbsp;</b>The value of the metadata.</p>"
+				;
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public String descriptionHTML() {
+		
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_metadata.html");
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
+		
+		//------------------------------------------
+		// Get Parameters
+		
+		JsonObject metaObject = this.getParent().getContext().getMetadata();
+		
+		for(int i = 0; i < parts.size(); i++) {
+			
+			QueryPart currentPart = parts.get(i);
+			
+			if(currentPart instanceof QueryPartAssignment) {
+				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
+				
+				//------------------------------------
+				// Other params for the chosen source
+				assignment.assignToJsonObject(metaObject);				
+			}else {
+				parser.throwParseException("source: Only source name and parameters(key=value) are allowed)", currentPart);
+			}
+		}
+			
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+		result.setHTMLDescription(
+				"<b>Hint:&nbsp;</b>Specify the metadata you want to add to the query.<br>"
+				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
+			);
+
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void execute(PipelineActionContext context) throws Exception {
+		
+		while(keepPolling()) {
+			outQueue.add(inQueue.poll());
+		}
+
+		this.setDoneIfPreviousDone();
+	
+	}
+
+}

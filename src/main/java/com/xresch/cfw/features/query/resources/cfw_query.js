@@ -48,12 +48,19 @@ function cfw_query_execute(){
 				// Iterate all Query results
 				for(var i = 0; i < data.payload.length; i++){
 					var currentResults = data.payload[i];
-										
+						
+					//-----------------------------------
+					// Create Title				
 					var execSeconds = '';
 					if(currentResults.execTimeMillis != -1){
 						execSeconds = " ("+(currentResults.execTimeMillis / 1000).toFixed(3)+"s)";
 					}
-					targetDiv.append('<h2>Query '+(i+1)+execSeconds+'</h2>')
+					
+					var title = 'Query '+(i+1);
+					if(currentResults.metadata.name != null){
+						title = currentResults.metadata.name;
+					}
+					targetDiv.append('<h2>'+title+execSeconds+'</h2>')
 					
 					if(currentResults.results.length == 0 ){
 						targetDiv.append('<p>The result is empty.</p>')
@@ -206,7 +213,7 @@ function cfw_query_initialDraw(){
 				<div class="col-12">
 					<form id="${formID}">
 						<input id="cfw-formID" name="cfw-formID" type="hidden" value="${formID}">
-						<textarea id="query" name="query" class="form-control" rows="3" placeholder="Write your query, use Ctrl+Space for content assist..."></textarea>
+						<textarea id="query" name="query" class="form-control" rows="3" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
 					</form>
 				</div>
 			</div>
@@ -250,6 +257,13 @@ function cfw_query_initialDraw(){
 	$('#query').on("keydown", function(e){
 		
 		cfw_query_highlightExecuteButton(true);
+		
+		//---------------------------
+		// Ctrl + Enter
+		if (e.ctrlKey && e.keyCode == 13) {
+			cfw_query_execute();
+		}
+		
 		//---------------------------
 		// Enter
 		if (e.keyCode == 13) {

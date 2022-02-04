@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query;
 
 import java.util.LinkedHashMap;
 
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.AlertMessage;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -17,7 +18,9 @@ public class CFWQueryContext{
 	private long latest = 0;
 	
 	private LinkedHashMap<String, AlertMessage> alertMap = CFW.Context.Request.getAlertMap();
-		
+	
+	private JsonObject metadata = new JsonObject();
+	
 	
 	/***********************************************************************************************
 	 * Get the earliest time for this query.
@@ -59,4 +62,20 @@ public class CFWQueryContext{
 		}
 		return this;
 	}
+
+	/***********************************************************************************************
+	 * Returns the object containing the metadata of the query.
+	 ***********************************************************************************************/
+	public JsonObject getMetadata() {
+		return metadata;
+	}
+	
+	/***********************************************************************************************
+	 * Returns the object containing the metadata of the query.
+	 ***********************************************************************************************/
+	public void addMetadata(String propertyName, String value) {
+		metadata.addProperty(propertyName, value);
+	}
+	
+	
 }

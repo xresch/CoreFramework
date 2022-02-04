@@ -150,8 +150,11 @@ public abstract class PipelineAction<I, O> extends Thread {
 		}
 		
 		
-		if( previousAction == null 
-		|| !inQueue.isEmpty()
+		if(previousAction == null){
+			return false; 
+		}
+		
+		if(inQueue.isEmpty()
 		) {
 			return true; 
 		}
