@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
@@ -10,11 +11,12 @@ import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQuerySource;
+import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandComment extends CFWQueryCommand {
@@ -86,6 +88,8 @@ public class CFWQueryCommandComment extends CFWQueryCommand {
 			
 	}
 	
+	
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -98,16 +102,29 @@ public class CFWQueryCommandComment extends CFWQueryCommand {
 
 	}
 
+	
+	/****************************************************************************
+	 * Override to make the inQueue the outQueue
+	 ****************************************************************************/
+	@Override
+	public PipelineAction<EnhancedJsonObject, EnhancedJsonObject> setOutQueue(LinkedBlockingQueue<EnhancedJsonObject> out) {
+
+		this.inQueue = out;
+		
+		if(previousAction != null) {
+			previousAction.setOutQueue(out);
+		}
+		
+		return this;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
-		while(keepPolling()) {
-			outQueue.add(inQueue.poll());
-		}
-
+		// Do nothing, inQueue is the same as outQueue
 		this.setDoneIfPreviousDone();
 	
 	}
