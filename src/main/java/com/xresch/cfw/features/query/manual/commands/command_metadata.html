@@ -1,7 +1,10 @@
 
 <p>The metadata command is used to add custom properties to a query.</p>
 
-<p>Following query adds the property name to the query. The name property will also be used in the user interface for the title of the query. </p>
+<p>Following code has two queries and adds the property name to each query. The name property will also be used in the user interface for the title of the query. </p>
 
-<pre><code>| meta name="Random Records"
+<pre><code>| metadata name="Random Records" custom="whatever you wanna say."
+| source random
+;
+| metadata name="More Randomness"
 | source random</code></pre>

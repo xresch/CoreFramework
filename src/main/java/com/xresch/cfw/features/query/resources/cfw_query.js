@@ -56,17 +56,24 @@ function cfw_query_execute(){
 						execSeconds = " ("+(currentResults.execTimeMillis / 1000).toFixed(3)+"s)";
 					}
 					
-					var title = 'Query '+(i+1);
-					if(currentResults.metadata.name != null){
-						title = currentResults.metadata.name;
+					var title = $('<h2>');
+					if(currentResults.metadata.name == null){
+						title.text('Query '+ (i+1) + execSeconds);
+					}else{
+						title.text(currentResults.metadata.name + execSeconds);
 					}
-					targetDiv.append('<h2>'+title+execSeconds+'</h2>')
+					targetDiv.append(title);
 					
+					
+					//-----------------------------------
+					// Check is result empty
 					if(currentResults.results.length == 0 ){
 						targetDiv.append('<p>The result is empty.</p>')
 						continue;
 					}
 					
+					//-----------------------------------
+					// Render Results
 					var rendererSettings = {
 							data: currentResults.results,
 						 	//idfield: 'PK_ID',
