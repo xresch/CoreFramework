@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
@@ -163,27 +162,15 @@ public class ServletQuery extends HttpServlet
 		String latest = request.getParameter("latest");
 		
 
-		try {
-			JsonArray array = new CFWQueryExecutor().parseAndExecuteAll(query, Long.parseLong(earliest), Long.parseLong(latest));
+		JsonArray array = new CFWQueryExecutor().parseAndExecuteAll(query, Long.parseLong(earliest), Long.parseLong(latest));
+		
+		if(array != null) {
 			jsonResponse.setPayLoad(array);
 			jsonResponse.setSuccess(true);
-			
-		} catch (NumberFormatException e) {
+		}else {
 			jsonResponse.setSuccess(false);
-			new CFWLog(logger).severe("Error Parsing a number:"+e.getMessage(), e);
-			
-		} catch (ParseException e) {
-			jsonResponse.setSuccess(false);
-			CFW.Messages.addErrorMessage(e.getMessage());
-			
-		} catch (InterruptedException e) {
-			jsonResponse.setSuccess(false);
-			new CFWLog(logger).warn(e.getMessage(), e);
-			
-		} catch (OutOfMemoryError e) {
-			jsonResponse.setSuccess(false);
-			new CFWLog(logger).severe("Not enough memory to complete query. Try reducing the amount of data processed.", e);
 		}
+
 
 		//PersonDBMethods.deleteByID(Integer.parseInt(ID));
 	}

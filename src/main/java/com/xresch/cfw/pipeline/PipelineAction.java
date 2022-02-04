@@ -2,12 +2,16 @@ package com.xresch.cfw.pipeline;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Logger;
 
-import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.logging.CFWLog;
 
 // http://www.informit.com/articles/article.aspx?p=366887&seqNum=8
 
 public abstract class PipelineAction<I, O> extends Thread {
+	
+	private static final Logger logger = CFWLog.getLogger(PipelineAction.class.getName());
+	
 	
 	protected Object synchLock = new Object();
 	protected Pipeline<O, ?> parent = null;
@@ -73,6 +77,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 		} catch (InterruptedException e) { 
 			// do nothing, expected exception caused by commands like top
 		} catch (Exception e) {
+			new CFWLog(logger).severe("Unexpected exception occured.", e);
 			e.printStackTrace();
 		}  finally {
 			latch.countDown();
@@ -154,7 +159,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 			return false; 
 		}
 		
-		if(inQueue.isEmpty()
+		if(!inQueue.isEmpty()
 		) {
 			return true; 
 		}

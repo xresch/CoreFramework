@@ -75,6 +75,7 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	public CFWQueryToken consumeToken() {
 		cursor++;
+		
 		return tokenlist.get(cursor-1);
 		
 	}
@@ -266,6 +267,9 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	private QueryPart parseQueryPart() throws ParseException {
 		
+		if(!this.hasMoreTokens()) {
+			throw new ParseException("Unexpected end of query.", cursor);
+		}
 		//------------------------------------------
 		// FIRST TOKEN EXPECT: 
 		//   LITERAL, 

@@ -2,10 +2,13 @@ package com.xresch.cfw.features.query;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandMetadata;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -17,6 +20,8 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject, EnhancedJsonObject> {
 
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommand.class.getName());
+	
 	protected CFWQuery parent;
 	
 	public CFWQueryCommand(CFWQuery parent) {
@@ -92,9 +97,15 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 			super.run();
 			
 		} catch (CFWQueryMemoryException e) { 
-			
 			this.parent.getContext().addMessage(MessageType.ERROR, "Query did not complete. Seems the memory limit was reached.");
-			System.out.println("CFWQueryCommand.run() - CFWQueryMemoryException");
+			new CFWLog(logger).silent(true).severe("Query ran into a memory exception.");
+		} catch (NullPointerException e) { 
+			this.parent.getContext().addMessage(MessageType.ERROR, "A Null pointer exception occured..");
+			new CFWLog(logger).silent(true).severe("Query ran into a null pointer exception.");
+		} catch (Exception e) { 
+			this.parent.getContext().addMessage(MessageType.ERROR, "An unexpected error occured: "+e.getMessage());
+			new CFWLog(logger).silent(true).severe("Query ran into an unexpected error.", e);
 		} 
+		
 	}
 }

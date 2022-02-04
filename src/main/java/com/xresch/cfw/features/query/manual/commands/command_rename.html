@@ -1,0 +1,19 @@
+
+<p>Renames the chosen fields. This command will change the order of the fields. Renamed fields will be put at the end of the list of fields.</p>
+
+<p>Following code will rename three fields. </p>
+
+<pre><code>| source random 
+| rename URL=Link LASTNAME=Name</code></pre>
+
+<p>If a name contains blanks, put the name into single or double quotes. </p>
+<pre><code>| source random 
+| rename ID="Personal Identity"
+| rename 'Personal Identity'="Personal ID"</code></pre>
+
+
+<p>If you give a field a name that already is taken by another field, the existing field is removed.
+Following will remove the field LIKES_TIRAMISU and LAST_LOGIN will be given the new name LIKES_TIRAMISU. </p>
+
+<pre><code>| source random 
+| rename LAST_LOGIN=LIKES_TIRAMISU</code></pre>
