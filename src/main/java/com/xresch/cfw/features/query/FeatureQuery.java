@@ -39,6 +39,7 @@ public class FeatureQuery extends CFWAppFeature {
 	
 	public static final String CONFIG_FETCH_LIMIT_DEFAULT = "Fetch Limit Default";
 	public static final String CONFIG_FETCH_LIMIT_MAX = "Fetch Limit Max";
+	public static final String CONFIG_QUERY_RECORD_LIMIT = "Query Record Limit";
 	
 	public static final ManualPage ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
 			new ManualPage("Query")
@@ -125,7 +126,7 @@ public class FeatureQuery extends CFWAppFeature {
 			new Configuration("Query", CONFIG_FETCH_LIMIT_DEFAULT)
 				.description("The default fetch limit for number of records that are allowed per source.")
 				.type(FormFieldType.NUMBER)
-				.value("10000")
+				.value("50000")
 		);
 		
 		//-----------------------------------------
@@ -133,9 +134,19 @@ public class FeatureQuery extends CFWAppFeature {
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
 			new Configuration("Query", CONFIG_FETCH_LIMIT_MAX)
-				.description("The maximum fetch limit for number of records that are allowed per source.")
+				.description("The maximum fetch limit for number of records that are allowed per source. Helps to limit load on your sources.")
 				.type(FormFieldType.NUMBER)
 				.value("250000")
+		);
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration("Query", CONFIG_QUERY_RECORD_LIMIT)
+				.description("The maximum number of records that are allowed per query(sum of all source limits). Helps to reduce performance impact on this application.")
+				.type(FormFieldType.NUMBER)
+				.value("500000")
 		);
 	}
 

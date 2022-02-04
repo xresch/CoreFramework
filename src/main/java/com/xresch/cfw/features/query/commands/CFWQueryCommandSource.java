@@ -105,6 +105,12 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_source.html");
 	}
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public int getLimit() {
+		return fetchLimit;
+	}
 
 	/***********************************************************************************************
 	 * 

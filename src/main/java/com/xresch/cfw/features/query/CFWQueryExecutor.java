@@ -44,8 +44,13 @@ public class CFWQueryExecutor {
 		// Iterate All Queries
 		
 		JsonArray returnValue = new JsonArray();
+		
 		int index = 0;
 		for(CFWQuery query : queryList) {
+			
+			//--------------------------------
+			// Check Limit
+			if(query.isQueryLimitReached()) { continue; }
 			
 			//--------------------------------
 			// Prepare Context

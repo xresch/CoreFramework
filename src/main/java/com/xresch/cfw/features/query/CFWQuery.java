@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.pipeline.Pipeline;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -27,6 +30,29 @@ public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 		commandList.add(command);
 		
 		this.add(command);
+	}
+	
+	/***********************************************************************************************
+	 * Checks if the query has reached the configured record limit by summarizing all source limits.
+	 ***********************************************************************************************/
+	public boolean isQueryLimitReached() {
+		
+		int sumOfSourceLimits = 0;
+		
+		for(CFWQueryCommand command : commandList) {
+			if(command instanceof CFWQueryCommandSource) {
+				sumOfSourceLimits +=   ((CFWQueryCommandSource)command).getLimit();
+			}
+		}
+		
+		
+		int maxRecords = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_QUERY_RECORD_LIMIT);
+		if(sumOfSourceLimits > maxRecords) {
+			context.addMessage(MessageType.ERROR, "Sum of all source limits cannot exceed "+maxRecords+" per query.");
+			return true;
+		}
+		
+		return false;
 	}
 	
 	/***********************************************************************************************
@@ -58,5 +84,5 @@ public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 		fieldnames.addAll(names);
 		return this;
 	}
-
+	
 }
