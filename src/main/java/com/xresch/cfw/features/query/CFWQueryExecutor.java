@@ -49,8 +49,9 @@ public class CFWQueryExecutor {
 		for(CFWQuery query : queryList) {
 			
 			//--------------------------------
-			// Check Limit
-			if(query.isQueryLimitReached()) { continue; }
+			// Check Limits
+			if(query.isSourceLimitReached()) { continue; }
+			if(query.isCommandLimitReached()) { continue; }
 			
 			//--------------------------------
 			// Prepare Context
