@@ -128,47 +128,12 @@ class CFWRenderer{
 				var $element = $(element);
 				//--------------------------------------
 				// Handle BG and Border
-				if(this.bgstylefield != null){
-					
+				if(this.bgstylefield != null && type != "text"){
 					let color = record[this.bgstylefield];
-					if(CFW.utils.isNullOrEmpty(color)){ return; }
-					
-					if(type == 'bg'){
-						if(color.startsWith("cfw-")){
-							$element.addClass("bg-"+color);
-						}else{
-							$element.css("background-color", color);
-						}
-						return;
-					}else if (type == 'border'){
-						if(color.startsWith("cfw-")){
-							 $element.addClass("border-"+color);
-						}else{
-							let size = (borderSize == null) ? "1px" : borderSize; 
-							$element.css("border:", borderSize+" solid "+color);
-						}
-						
-						return;
-					}
-					
-					
-				}
-				
-				//--------------------------------------
-				// Handle Text
-				console.log("text A")
-				if(this.textstylefield != null && type == "text"){
-					console.log("text B: "+ record[this.textstylefield])
+					CFW.colors.colorizeElement(element, color, type, borderSize);
+				}else if(this.textstylefield != null && type == "text"){
 					let color = record[this.textstylefield];
-					if(CFW.utils.isNullOrEmpty(color)){ return; }
-					
-					if(color.startsWith("cfw-")){
-						$element.css("color", "purple"); 
-						//$element.addClass("text-"+color);
-					}else{
-						$element.css("color", color);
-					}
-					
+					CFW.colors.colorizeElement(element, color, type, borderSize);
 				}
 		 		
 		 	},

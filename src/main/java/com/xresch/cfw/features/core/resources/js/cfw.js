@@ -157,6 +157,56 @@ function cfw_utils_randomInt(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
 }
 
+/*************************************************************
+ * Adds coloring to the element based on the records value and
+ * the value added in the fields bgstylefield and textstylefield.
+ * @param element the DOM or JQuery element to colorize
+ * @param color either one of:
+ *      - a CSS color name
+ *      - an RGB color code starting with '#'
+ *      - CFW color class starting with 'cfw-'
+ * @param type either 'bg' | 'text' | 'border' 
+ * @param borderSize Optional size definition for the border.
+ *************************************************************/
+function cfw_colors_colorizeElement(element, color, type, borderSize){
+	
+	var $element = $(element);
+	if(CFW.utils.isNullOrEmpty(color)){ return; }
+
+	if(type == 'bg'){
+		
+		if(color.startsWith("cfw-")){
+			$element.addClass("bg-"+color);
+		}else{
+			$element.css("background-color", color);
+		}
+		return;
+		
+		
+	} else if( type == "text" ){
+		
+		if(color.startsWith("cfw-")){
+			$element.addClass("text-"+color);
+		}else{
+			$element.css("color", color);
+		}
+		
+		
+	} else if (type == 'border'){
+		
+		if(color.startsWith("cfw-")){
+			 $element.addClass("border-"+color);
+		}else{
+			let size = (borderSize == null) ? "1px" : borderSize; 
+			$element.css("border", size+" solid "+color);
+		}
+		return;
+	}
+			 		
+}
+		
+		
+	
 /************************************************************************************************
  * Creates a random RGB string like "rgba(112, 54, 210, 1.0)" 
  ************************************************************************************************/
@@ -3660,6 +3710,7 @@ var CFW = {
 		loadLocalization: cfw_loadLocalization,
 	},
 	colors: {
+		colorizeElement: cfw_colors_colorizeElement,
 		randomRGB: cfw_colors_randomRGB,
 		randomHSL: cfw_colors_randomHSL,
 		getThresholdStyle: cfw_colors_getThresholdStyle,

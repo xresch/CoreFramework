@@ -392,29 +392,15 @@ class CFWPanel{
 		var panelClasses = 'cfwRecordContainer card';
 		var panelHeaderClasses = 'card-header d-flex';
 		
-		if(this.settings.cardstyle != null){
-			panelClasses += ' border-'+this.settings.cardstyle;
-			panelHeaderClasses += ' bg-'+this.settings.cardstyle;
-			
-		}
-		
-		if(this.settings.textstyle != null){
-			panelClasses += ' text-'+this.settings.textstyle;
-		} 
-		
-		if(this.settings.textstyleheader != null){
-			panelHeaderClasses += ' text-'+this.settings.textstyleheader;
-		} 
-		
 		if(this.settings.narrow){
 			panelHeaderClasses += ' p-1 pl-2';
 		} 
-		
 		
 		//----------------------------
 	     // Create Panel
 		 this.panel = $(document.createElement("div"));
 		 this.panel.addClass(panelClasses);
+	
 		 
 		 this.counter = CFW_GLOBAL_PANEL_COUNTER++;
 		
@@ -423,6 +409,22 @@ class CFWPanel{
 		this.panelHeader = $(document.createElement("div"));
 		this.panelHeader.addClass(panelHeaderClasses);
 		this.panelHeader.attr("id", "panelHead"+this.counter);	
+		
+		//----------------------------
+		// Add Styles
+		if(this.settings.cardstyle != null){
+			CFW.colors.colorizeElement(this.panel, this.settings.cardstyle, "border");
+			CFW.colors.colorizeElement(this.panelHeader, this.settings.cardstyle, "bg");			
+		}
+		
+		if(this.settings.textstyle != null){
+			CFW.colors.colorizeElement(this.panel, this.settings.textstyle, "text");
+		} 
+		
+		if(this.settings.textstyleheader != null){
+			CFW.colors.colorizeElement(this.panelHeader, this.settings.textstyleheader, "text");
+		} 
+				
 	 }
 		 
 	 /********************************************
@@ -527,21 +529,7 @@ class CFWCard{
 		// resolve classes
 		var cardClasses = 'cfwRecordContainer card';
 		var cardHeaderClasses = 'card-header d-flex';
-		
-		if(this.settings.cardstyle != null){
-			cardClasses += ' border-'+this.settings.cardstyle;
-			cardHeaderClasses += ' bg-'+this.settings.cardstyle;
-			
-		}
-		
-		if(this.settings.textstyle != null){
-			cardClasses += ' text-'+this.settings.textstyle;
-		} 
-		
-		if(this.settings.textstyleheader != null){
-			cardHeaderClasses += ' text-'+this.settings.textstyleheader;
-		} 
-		
+				
 		if(this.settings.narrow){
 			cardClasses += ' pr-0 mr-0';
 			cardHeaderClasses += ' p-1 pl-2';
@@ -560,6 +548,21 @@ class CFWCard{
 		this.cardHeader = $(document.createElement("div"));
 		this.cardHeader.addClass(cardHeaderClasses);
 		this.cardHeader.attr("id", "cardHead"+this.counter);	
+		
+		//----------------------------
+		// Add Styles
+		if(this.settings.cardstyle != null){
+			CFW.colors.colorizeElement(this.card, this.settings.cardstyle, "border");
+			CFW.colors.colorizeElement(this.cardHeader, this.settings.cardstyle, "bg");			
+		}
+		
+		if(this.settings.textstyle != null){
+			CFW.colors.colorizeElement(this.card, this.settings.textstyle, "text");
+		} 
+		
+		if(this.settings.textstyleheader != null){
+			CFW.colors.colorizeElement(this.cardHeader, this.settings.textstyleheader, "text");
+		} 
 	 }
 		 
 	 /********************************************
