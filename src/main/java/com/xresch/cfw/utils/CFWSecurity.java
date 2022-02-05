@@ -127,6 +127,19 @@ public class CFWSecurity {
 	}
 	
 	/*************************************************************************************
+	 * return true if the string contains any of the characters or strings
+	 *************************************************************************************/
+	public static boolean containsSequence(String string, String... sequences) {
+
+		if (string != null) {
+			for (String containsThis : sequences) {
+				if (string.contains(containsThis) ) return true;
+			}
+		}
+		return false;
+	}
+	
+	/*************************************************************************************
 	 * Escape SQL entities to prevent SQL injection.
 	 * Code from OWASP ESAPI under BSD License:
 	 * https://github.com/ESAPI/esapi-java-legacy/blob/develop/src/main/java/org/owasp/esapi/codecs/MySQLCodec.java

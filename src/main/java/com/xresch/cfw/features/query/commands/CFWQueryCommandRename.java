@@ -2,8 +2,6 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonObject;
@@ -18,8 +16,8 @@ import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
+import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandRename extends CFWQueryCommand {
@@ -99,9 +97,16 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 			if(currentPart instanceof QueryPartAssignment) {
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
 				
-				//------------------------------------
-				// Other params for the chosen source
-				assignment.assignToJsonObject(fieldnameMap);				
+				String oldName = assignment.getLeftSideAsString(null);
+				QueryPartValue newNamePart = assignment.getRightSide().determineValue(null);
+				if(newNamePart.isString()) {
+					String newName = newNamePart.getAsString();
+					if(CFW.Security.containsSequence(newName, "<", ">", "\"", "&")) {
+						throw new ParseException("rename: New name cannot contain the following characters: < > \" &", assignment.position());
+					}
+					fieldnameMap.addProperty(oldName, newName);
+				}
+								
 			}else {
 				parser.throwParseException("rename: Only key value pairs are allowed.", currentPart);
 			}
