@@ -16,7 +16,7 @@ function cfw_config_changeToPanels(){
 		var category = categoriesArray[key];
 		
 		 var panelSettings = {
-					cardstyle: 'success',
+					cardstyle: null,
 					textstyle: null,
 					textstyleheader: 'white',
 					title: category,
