@@ -64,6 +64,12 @@ function cfw_query_execute(){
 					}
 					targetDiv.append(title);
 					
+					//-----------------------------------
+					// Handle Description
+					if(currentResults.metadata.description != null){
+						targetDiv.append('<span>'+currentResults.metadata.description+'</span>');
+					}
+					
 					
 					//-----------------------------------
 					// Check is result empty

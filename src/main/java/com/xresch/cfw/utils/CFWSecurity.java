@@ -178,7 +178,7 @@ public class CFWSecurity {
 
 	
 	/******************************************************************************
-	 * Sanitizes HTML with OWASP HTML sanitizer:
+	 * Sanitizes HTML with OWASP HTML sanitizer. Removes Javascript.
 	 * 
 	 * @param byteCount number of bytes to create
 	 * @return

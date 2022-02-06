@@ -17,6 +17,7 @@ import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
+import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
@@ -95,14 +96,20 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 			
 			QueryPart currentPart = parts.get(i);
 			
+			
 			if(currentPart instanceof QueryPartAssignment) {
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
 				
-				//------------------------------------
-				// Other params for the chosen source
-				assignment.assignToJsonObject(metaObject);				
+				String propertyName = assignment.getLeftSideAsString(null);
+				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
+				if(valuePart.isString()) {
+					String value = valuePart.getAsString();
+					value = CFW.Security.sanitizeHTML(value);
+					metaObject.addProperty(propertyName, value);
+				}
+			
 			}else {
-				parser.throwParseException("source: Only source name and parameters(key=value) are allowed)", currentPart);
+				parser.throwParseException("metadata: Only parameters(key=value) are allowed.", currentPart);
 			}
 		}
 			
