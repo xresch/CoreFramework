@@ -1,6 +1,9 @@
 package com.xresch.cfw.features.query;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -21,6 +24,7 @@ public class CFWQueryContext{
 	
 	private JsonObject metadata = new JsonObject();
 	
+	protected CFWQueryFieldnameManager contextFieldnameManager = new CFWQueryFieldnameManager();
 	
 	/***********************************************************************************************
 	 * Get the earliest time for this query.
@@ -75,6 +79,13 @@ public class CFWQueryContext{
 	 ***********************************************************************************************/
 	public void addMetadata(String propertyName, String value) {
 		metadata.addProperty(propertyName, value);
+	}
+	
+	/***********************************************************************************************
+	 * Returns the object containing the metadata of the query.
+	 ***********************************************************************************************/
+	public void addFieldnames(CFWQueryFieldnameManager fieldnameManager) {
+		fieldnameManager.addTo(this.contextFieldnameManager);
 	}
 	
 	

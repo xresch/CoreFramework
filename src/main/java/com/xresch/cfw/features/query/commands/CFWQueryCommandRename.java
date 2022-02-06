@@ -2,8 +2,10 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
@@ -101,6 +103,10 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 				QueryPartValue newNamePart = assignment.getRightSide().determineValue(null);
 				if(newNamePart.isString()) {
 					String newName = newNamePart.getAsString();
+					
+					if(newName == null) {
+						throw new ParseException("rename: New name cannot be null.", assignment.position());
+					}
 					if(CFW.Security.containsSequence(newName, "<", ">", "\"", "&")) {
 						throw new ParseException("rename: New name cannot contain the following characters: < > \" &", assignment.position());
 					}
@@ -123,7 +129,17 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 				"<b>Hint:&nbsp;</b>Specify the fields and the new names.<br>"
 				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
 			);
-
+	}
+	
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() {
+		for(Entry<String, JsonElement> entry : fieldnameMap.entrySet()) {
+			this.fieldnameRename(entry.getKey(), entry.getValue().getAsString());
+		}
 	}
 	
 	/***********************************************************************************************

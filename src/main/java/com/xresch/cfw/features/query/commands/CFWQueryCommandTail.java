@@ -151,7 +151,7 @@ public class CFWQueryCommandTail extends CFWQueryCommand {
 				outQueue.add(sizedQueue.poll());
 			}
 			
-			this.setDone(true);
+			this.setDone();
 		}
 				
 	}

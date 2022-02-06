@@ -1,5 +1,6 @@
 package com.xresch.cfw.pipeline;
 
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
@@ -12,6 +13,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 	
 	private static final Logger logger = CFWLog.getLogger(PipelineAction.class.getName());
 	
+	protected boolean isInitialized = false;
 	
 	protected Object synchLock = new Object();
 	protected Pipeline<O, ?> parent = null;
@@ -22,6 +24,8 @@ public abstract class PipelineAction<I, O> extends Thread {
 	protected LinkedBlockingQueue<O> outQueue;
 	
 	protected PipelineActionContext context;
+	
+	protected ArrayList<PipelineActionListener> listenerArray = new ArrayList<>();
 	
 	CountDownLatch latch;
 
@@ -36,14 +40,16 @@ public abstract class PipelineAction<I, O> extends Thread {
 	public abstract void execute(PipelineActionContext context) throws Exception, InterruptedException;
 
 	/****************************************************************************
-	 * 
+	 * Override to initialize the action. 
+	 * This method is guaranteed to execute before any following action is 
+	 * started.
 	 ****************************************************************************/
-	void initializeAction() throws Exception {}
+	public void initializeAction() throws Exception {}
 
 	/****************************************************************************
 	 * 
 	 ****************************************************************************/
-	void terminateAction() throws Exception { }
+	public void terminateAction() throws Exception { }
 
 	/****************************************************************************
 	 * 
@@ -52,7 +58,8 @@ public abstract class PipelineAction<I, O> extends Thread {
 	public void run() {
 		try {
 			this.initializeAction();
-
+			this.isInitialized = true;
+			
 				while (!done) {
 					
 					//---------------------------
@@ -186,10 +193,14 @@ public abstract class PipelineAction<I, O> extends Thread {
 	}
 	
 	/****************************************************************************
-	 * 
+	 * Set this action to done
 	 ****************************************************************************/
-	protected PipelineAction<I, O> setDone(boolean done) {
-		this.done = done;
+	protected PipelineAction<I, O> setDone() {
+		this.done = true;
+		
+		for(PipelineActionListener listener : listenerArray) {
+			listener.onDone();
+		}
 		return this;
 	}
 	
@@ -214,7 +225,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 	public void setDoneIfPreviousDone() {
 		
 		if(isPreviousDone()) {
-			this.setDone(true);
+			this.setDone();
 		}
 	}
 	
@@ -226,7 +237,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 		if(previousAction != null) {
 			previousAction.interrupt();
 			
-			previousAction.setDone(true);
+			previousAction.setDone();
 
 			previousAction.interruptAllPrevious();
 			
@@ -245,6 +256,20 @@ public abstract class PipelineAction<I, O> extends Thread {
 				this.synchLock.wait(millis);
 			}
 		}
+	}
+	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
+	public void addListener(PipelineActionListener listener) {
+		this.listenerArray.add(listener);
+	}
+	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
+	public void removeListener(PipelineActionListener listener) {
+		this.listenerArray.remove(listener);
 	}
 
 	/****************************************************************************

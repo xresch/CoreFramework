@@ -54,6 +54,18 @@ public class Pipeline<I, O> {
 		for (PipelineAction action : actionArray) {
 			action.setLatch(latch);
 			action.start();
+			
+			//------------------------------
+			// Wait until initialized
+			while (!action.isInitialized) {
+				try {
+					Thread.sleep(10);
+				}catch (InterruptedException e) {
+					new CFWLog(logger).warn("Pipeline execution was interupted.", e);
+					Thread.currentThread().interrupt();
+					return null;
+				}	
+			}
 		}
 		
 		if(doWait) {
@@ -73,8 +85,7 @@ public class Pipeline<I, O> {
 		try {
 			latch.await();
 		} catch (InterruptedException e) {
-			new CFWLog(logger)
-				.warn("Pipeline execution was interupted.", e);
+			new CFWLog(logger).warn("Pipeline execution was interupted.", e);
 			Thread.currentThread().interrupt();
 			return null;
 		}	

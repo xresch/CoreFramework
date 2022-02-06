@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.features.core.AutocompleteResult;
-import com.xresch.cfw.features.query.commands.CFWQueryCommandMetadata;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.logging.CFWLog;
@@ -15,12 +15,15 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @author Reto Scheiwiller, (c) Copyright 2022
  * @license MIT-License
  **************************************************************************************************************/
 public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject, EnhancedJsonObject> {
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommand.class.getName());
+	
+	private CFWQueryCommandSource previousSource = null;
+	private boolean isPreviousSourceInitialized = false;
 	
 	protected CFWQuery parent;
 	
@@ -45,7 +48,6 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	 * in the manual. Do not use newlines in this description.
 	 ***********************************************************************************************/
 	public abstract String descriptionShort();
-	
 	
 	/***********************************************************************************************
 	 * Return the syntax as a single line. This will be shown in the manual and in content assist.
@@ -86,6 +88,181 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	public CFWQuery getParent() {
 		return parent;
 	}
+	
+	/***********************************************************************************************
+	 * Returns the first Source command found that is preceeding this command. Can be null
+	 ***********************************************************************************************/
+	@SuppressWarnings("rawtypes")
+	public CFWQueryCommandSource getPreviousSourceCommand() {
+		
+		PipelineAction previousAction = this.getPreviousAction();
+		if(previousSource == null && !isPreviousSourceInitialized) {
+			
+			while(previousSource == null && previousAction != null) {
+				if(previousAction instanceof CFWQueryCommandSource) {
+					previousSource = (CFWQueryCommandSource)previousAction;
+					break;
+				}else {
+					previousAction = previousAction.getPreviousAction();
+				}	
+			}
+			
+			isPreviousSourceInitialized = true;
+			
+		}
+		
+		return previousSource;
+	}
+	
+	/***********************************************************************************************
+	 * Returns the next Source command found that is following this command. Can be null
+	 ***********************************************************************************************/
+	@SuppressWarnings("rawtypes")
+	public CFWQueryCommandSource getNextSourceCommand() {
+		
+		PipelineAction nextAction = this.getNextAction();
+		CFWQueryCommandSource source = null;
+		while(source == null && nextAction != null) {
+			if(nextAction instanceof CFWQueryCommandSource) {
+				source = (CFWQueryCommandSource)nextAction;
+				break;
+			}else {
+				nextAction = nextAction.getNextAction();
+			}
+				
+		}
+		return source;
+	}
+	
+	/***********************************************************************************************
+	 * Returns the last action in the pipeline of type CFWQueryCommand. 
+	 * Can return null if the executing command is the last action.
+	 ***********************************************************************************************/
+	@SuppressWarnings("rawtypes")
+	public CFWQueryCommand getLastCommand() {
+		
+		CFWQueryCommand lastCommand = null;
+		
+		PipelineAction nextCommand = this.getNextAction();
+		while(nextCommand != null) {
+			
+			if(nextCommand instanceof CFWQueryCommand) {
+				lastCommand = (CFWQueryCommand)nextCommand;
+				break;
+			}
+			
+			nextCommand = nextCommand.getNextAction();
+				
+		}
+		return lastCommand;
+	}
+	
+	/***********************************************************************************************
+	 * Internal use to manage changes to fieldnames.
+	 ***********************************************************************************************/
+	private CFWQueryFieldnameManager getSourceFieldmanager() {
+		
+		CFWQueryCommandSource localPreviousSource = this.getPreviousSourceCommand();
+
+		if(localPreviousSource == null) { return null;} 
+		
+		return localPreviousSource.getFieldManager();
+	}
+	
+	/***********************************************************************************************
+	 * Internal use to manage changes to fieldnames.
+	 ***********************************************************************************************/
+	private CFWQueryFieldnameManager getContextFieldmanager() {
+				
+		return getParent().getContext().contextFieldnameManager;
+	}
+	
+	/***********************************************************************************************
+	 * Add a fieldname
+	 ***********************************************************************************************/
+	protected void fieldnameAdd(String fieldname) {
+		
+		//-----------------------------------
+		// Add Change to source fieldmanager
+		CFWQueryFieldnameManager sourceFieldmanager = this.getSourceFieldmanager();
+			
+		if(sourceFieldmanager != null) {
+			sourceFieldmanager.add(fieldname);
+		}
+		
+		//-----------------------------------
+		// Add Change to context fieldmanager
+		// not needed, will be propagated by sourceFieldmanager
+	}
+	
+	/***********************************************************************************************
+	 * Remove a Fieldname
+	 ***********************************************************************************************/
+	protected void fieldnameRename(String fieldname, String newName) {
+		
+		//-----------------------------------
+		// Add Change to source
+		CFWQueryFieldnameManager sourceFieldmanager = this.getSourceFieldmanager();
+			
+		if(sourceFieldmanager != null) {
+			sourceFieldmanager.rename(fieldname, newName);
+		}
+		
+		//-----------------------------------
+		// Add Change to context 
+		CFWQueryFieldnameManager contextFieldmanager = this.getContextFieldmanager();
+		
+		if(contextFieldmanager != null) {
+			contextFieldmanager.rename(fieldname, newName);
+		}
+	}
+	
+	/***********************************************************************************************
+	 * Remove a Fieldname
+	 ***********************************************************************************************/
+	protected void fieldnameRemove(String fieldname) {
+		
+		//-----------------------------------
+		// Add Change to source
+		CFWQueryFieldnameManager sourceFieldmanager = this.getSourceFieldmanager();
+			
+		if(sourceFieldmanager != null) {
+			sourceFieldmanager.remove(fieldname);
+		}
+		
+		//-----------------------------------
+		// Add Change to context 
+		CFWQueryFieldnameManager contextFieldmanager = this.getContextFieldmanager();
+		
+		if(contextFieldmanager != null) {
+			contextFieldmanager.remove(fieldname);
+		}
+	}
+	
+	/***********************************************************************************************
+	 * Remove a Fieldname
+	 ***********************************************************************************************/
+	protected void fieldnameKeep(String... fieldnames) {
+		
+		//-----------------------------------
+		// Add Change to source
+		CFWQueryFieldnameManager sourceFieldmanager = this.getSourceFieldmanager();
+			
+		if(sourceFieldmanager != null) {
+			sourceFieldmanager.keep(fieldnames);
+		}
+		
+		//-----------------------------------
+		// Add Change to context 
+		CFWQueryFieldnameManager contextFieldmanager = this.getContextFieldmanager();
+		
+		if(contextFieldmanager != null) {
+			contextFieldmanager.keep(fieldnames);
+		}
+	}
+	
+	
+	
 	
 	
 	/****************************************************************************

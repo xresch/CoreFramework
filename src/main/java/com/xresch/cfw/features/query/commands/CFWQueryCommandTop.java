@@ -133,7 +133,7 @@ public class CFWQueryCommandTop extends CFWQueryCommand {
 			outQueue.add(inQueue.poll());
 			
 			if(recordCounter >= numberOfRecords) {
-				this.setDone(true);
+				this.setDone();
 				this.interruptAllPrevious();
 				break;
 			}

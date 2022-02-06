@@ -125,9 +125,11 @@ public class CFWQueryExecutor {
 			}
 			
 			//--------------------------------
-			// Execute query and Wait for Complete
+			// Create Response
 			queryResults.addProperty("resultCount", resultCount);
 			queryResults.addProperty("execTimeMillis", execMillis);
+			
+			queryResults.add("detectedFields", queryContext.contextFieldnameManager.getFinalFieldListAsJsonArray() );
 			queryResults.add("metadata", query.getContext().getMetadata());
 			queryResults.add("results", results);
 			

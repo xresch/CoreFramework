@@ -2,6 +2,9 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
@@ -16,6 +19,8 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
+import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.CFWQueryFieldnameManager;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
@@ -25,6 +30,7 @@ import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
+import com.xresch.cfw.pipeline.PipelineActionListener;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWQueryCommandSource extends CFWQueryCommand {
@@ -33,26 +39,37 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandSource.class.getName());
 	
+	private CFWQueryFieldnameManager fieldnameManager = new CFWQueryFieldnameManager();
+	
 	private int fetchLimit = 0;
 	private int recordCounter = 0;
 	
 	boolean isSourceFetchingDone = false;
 	
-	// Cache Source instances
+	// Cache Source instances 
 	private static TreeMap<String, CFWQuerySource> sourceMapCached;
 
-	/********************************************************
-	 * 
-	 ********************************************************/
-	private static TreeMap<String, CFWQuerySource> getCachedSources() {
-		if(sourceMapCached == null) {
-			sourceMapCached = CFW.Registry.Query.createSourceInstances(new CFWQuery());
-		}
-		return sourceMapCached;
-	}
 	CFWQuerySource source = null;
 	CFWObject paramsForSource = null;
 	
+	
+	/********************************************************************************************************
+	 * The fieldnames detected during the query. How fieldnames are detected and managed:
+	 * <br><br>
+	 * 1. CFWQueryCommandSource creates a local list of fieldnames. <br>
+	 * 2. Commands modifying fields(rename, keep, remove ...) are modifying the local list of the query.
+	 *    These changes will also be propagated by CFWQueryCommandSource to this class. <br>
+	 * 3. CFWQueryCommandSource will wait until the next source or last command is finished and pushes the
+	 *    local fields to this class. <br>
+	 * 
+	 ********************************************************************************************************/
+	private HashSet<String> fieldnames = new HashSet<>();
+	
+	// oldFieldname and newFieldname
+	private HashMap<String,String> renameMap = new HashMap<>();
+	
+
+
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -217,6 +234,16 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		}
 	}
 	
+	/********************************************************
+	 * 
+	 ********************************************************/
+	private static TreeMap<String, CFWQuerySource> getCachedSources() {
+		if(sourceMapCached == null) {
+			sourceMapCached = CFW.Registry.Query.createSourceInstances(new CFWQuery());
+		}
+		return sourceMapCached;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -255,6 +282,45 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				if(i == 50) { break; }
 			}
 		}
+	}
+	
+	
+	/***********************************************************************************************
+	 * FOR INTERNAL USE ONLY! Used by the abstract class CFWQueryCommand.
+	 * If you want to modify the fieldnames, use the fieldname*()-methods provided by CFWQueryCommand.
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryFieldnameManager getFieldManager(){
+		return fieldnameManager;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception {
+		
+		//-------------------------------------------------
+		// Add listener either to the next Source, the 
+		// last command or to self.
+		// Push fieldnames to context when done
+		CFWQueryCommand commandToListen = this.getNextSourceCommand();
+		
+		if(commandToListen == null) {
+			commandToListen = this.getLastCommand();
+			
+			if(commandToListen == null) {
+				commandToListen = this;
+			}
+		}
+		
+		commandToListen.addListener(new PipelineActionListener() {
+			
+			@Override
+			public void onDone() {
+				getParent().getContext().addFieldnames(fieldnameManager);
+			}
+		});		
 	}
 
 	/***********************************************************************************************
@@ -308,7 +374,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			this.waitForInput(100);	
 			
 		}
-		
+				
 		//==================================================
 		// Read all records for this Source
 		//==================================================
@@ -342,7 +408,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				//Sample Fieldnames, first 512 and every 256th
 				if( recordCounter % 256 == 0 || recordCounter <= 256 ) {
 
-					parent.addFieldnames(item.keySet());
+					fieldnameManager.addSourceFieldnames(item.keySet());
 				}
 				
 				//------------------------------------------
@@ -357,10 +423,19 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		}
 		
 		
-		this.setDone(true);
-
-		
+		this.setDone();
 		
 	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void terminateAction() throws Exception {
+		
+		//CFWQueryCommandSource nextSource = this.getNextSourceCommand();
+		
+	}
+	
 
 }

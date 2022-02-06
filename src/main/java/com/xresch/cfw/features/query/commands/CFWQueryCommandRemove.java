@@ -129,7 +129,17 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
 			);
 	}
-
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() {
+		for(String fieldname : fieldnames) {
+			this.fieldnameRemove(fieldname);
+		}
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,8 +22,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 	
 	private ArrayList<CFWQueryCommand> commandList = new ArrayList<>();
-	private HashSet<String> fieldnames = new HashSet<>();
-		
+
 	private CFWQueryContext context = new CFWQueryContext();
 	
 	/***********************************************************************************************
@@ -103,12 +103,6 @@ public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 		return commandList;
 	}
 
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public CFWQuery addFieldnames(Set<String> names) {
-		fieldnames.addAll(names);
-		return this;
-	}
+
 	
 }

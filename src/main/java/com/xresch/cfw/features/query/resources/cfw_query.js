@@ -65,6 +65,12 @@ function cfw_query_execute(){
 					targetDiv.append(title);
 					
 					//-----------------------------------
+					// Detected Fields 
+					if(currentResults.detectedFields != null){
+						targetDiv.append('<p>'+JSON.stringify(currentResults.detectedFields)+'</p>');
+					}
+					
+					//-----------------------------------
 					// Handle Description
 					if(currentResults.metadata.description != null){
 						targetDiv.append('<span>'+currentResults.metadata.description+'</span>');
