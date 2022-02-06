@@ -1,8 +1,10 @@
 package com.xresch.cfw.features.query;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+
+import org.junit.jupiter.params.shadow.com.univocity.parsers.common.fields.FieldNameSelector;
 
 import com.google.gson.JsonArray;
 /**************************************************************************************************************
@@ -22,19 +24,18 @@ import com.google.gson.JsonArray;
 public class CFWQueryFieldnameManager {
 	
 	// fieldnames as detected by the query
-	protected HashSet<String> sourceFieldnames = new HashSet<>();
+	protected LinkedHashSet<String> sourceFieldnames = new LinkedHashSet<>();
 	
 	ArrayList<FieldModification> modifications = new ArrayList<>();
 	
 	protected enum ModificationType { ADD, RENAME, REMOVE, CLEAR};
 	
-	
 	/***********************************************************************************************
 	 * Apply all modifications and return resulting list
 	 ***********************************************************************************************/
-	public HashSet<String> getFinalFieldList() {
+	public LinkedHashSet<String> getFinalFieldList() {
 		
-		HashSet<String> finalNames = new HashSet<>();
+		LinkedHashSet<String> finalNames = new LinkedHashSet<>();
 		
 		finalNames.addAll(sourceFieldnames);
 		

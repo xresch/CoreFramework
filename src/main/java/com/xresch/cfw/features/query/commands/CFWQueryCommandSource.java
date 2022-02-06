@@ -2,15 +2,11 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
-import com.google.gson.JsonObject;
-import com.oracle.truffle.js.nodes.unary.TypeOfNode;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -19,7 +15,6 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
-import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFieldnameManager;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -29,6 +24,7 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 import com.xresch.cfw.pipeline.PipelineActionListener;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -51,23 +47,6 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 
 	CFWQuerySource source = null;
 	CFWObject paramsForSource = null;
-	
-	
-	/********************************************************************************************************
-	 * The fieldnames detected during the query. How fieldnames are detected and managed:
-	 * <br><br>
-	 * 1. CFWQueryCommandSource creates a local list of fieldnames. <br>
-	 * 2. Commands modifying fields(rename, keep, remove ...) are modifying the local list of the query.
-	 *    These changes will also be propagated by CFWQueryCommandSource to this class. <br>
-	 * 3. CFWQueryCommandSource will wait until the next source or last command is finished and pushes the
-	 *    local fields to this class. <br>
-	 * 
-	 ********************************************************************************************************/
-	private HashSet<String> fieldnames = new HashSet<>();
-	
-	// oldFieldname and newFieldname
-	private HashMap<String,String> renameMap = new HashMap<>();
-	
 
 
 	/***********************************************************************************************
@@ -172,7 +151,6 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Get Source
-		
 		if(!CFW.Registry.Query.sourceExists(sourceName)) {
 			parser.throwParseException("source: the source does not exist: '"+sourceName+"'", namePart);
 		}
@@ -297,6 +275,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void initializeAction() throws Exception {
 		
@@ -304,10 +283,10 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		// Add listener either to the next Source, the 
 		// last command or to self.
 		// Push fieldnames to context when done
-		CFWQueryCommand commandToListen = this.getNextSourceCommand();
+		PipelineAction commandToListen = this.getNextSourceCommand();
 		
 		if(commandToListen == null) {
-			commandToListen = this.getLastCommand();
+			commandToListen = this.getLastAction();
 			
 			if(commandToListen == null) {
 				commandToListen = this;

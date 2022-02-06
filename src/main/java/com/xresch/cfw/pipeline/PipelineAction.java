@@ -112,6 +112,14 @@ public abstract class PipelineAction<I, O> extends Thread {
 	public PipelineAction<O, ?> getNextAction() {
 		return nextAction;
 	}
+	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
+	@SuppressWarnings("rawtypes")
+	public PipelineAction getLastAction() {
+		return this.getParent().getLastAction();
+	}
 
 	/****************************************************************************
 	 * 
@@ -303,6 +311,8 @@ public abstract class PipelineAction<I, O> extends Thread {
 		this.context = context;
 		return this;
 	}
+	
+
 	
 	
 	

@@ -13,6 +13,7 @@ import com.xresch.cfw.logging.CFWLog;
 public class Pipeline<I, O> {
 	private static Logger logger = CFWLog.getLogger(TaskCPUSampling.class.getName());
 	
+	@SuppressWarnings("rawtypes")
 	protected ArrayList<PipelineAction> actionArray = new ArrayList<PipelineAction>();
 	protected ArrayList<LinkedBlockingQueue<?>> queues = new ArrayList<LinkedBlockingQueue<?>>();
 	protected CountDownLatch latch;
@@ -170,6 +171,19 @@ public class Pipeline<I, O> {
 	public LinkedBlockingQueue<O> getLastQueue() {
 		
 		return lastQueue;
+
+	}
+	
+	/*************************************************************************************
+	 * Returns the last action of the pipeline
+	 * returns null if the action array is empty
+	 *************************************************************************************/
+	@SuppressWarnings("rawtypes")
+	public PipelineAction getLastAction() {
+		
+		if(actionArray.isEmpty()) return null;
+		
+		return actionArray.get(actionArray.size()-1);
 
 	}
 	

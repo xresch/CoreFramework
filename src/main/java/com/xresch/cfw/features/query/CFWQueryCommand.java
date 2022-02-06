@@ -216,7 +216,7 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	}
 	
 	/***********************************************************************************************
-	 * Remove a Fieldname
+	 * Keep the listed Fieldnames
 	 ***********************************************************************************************/
 	protected void fieldnameKeep(String... fieldnames) {
 		

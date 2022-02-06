@@ -129,7 +129,7 @@ public class CFWQueryExecutor {
 			queryResults.addProperty("resultCount", resultCount);
 			queryResults.addProperty("execTimeMillis", execMillis);
 			
-			queryResults.add("detectedFields", queryContext.contextFieldnameManager.getFinalFieldListAsJsonArray() );
+			queryResults.add("detectedFields", queryContext.getFieldnamesAsJsonArray() );
 			queryResults.add("metadata", query.getContext().getMetadata());
 			queryResults.add("results", results);
 			
