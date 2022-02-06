@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.AlertMessage;
@@ -82,10 +83,24 @@ public class CFWQueryContext{
 	}
 	
 	/***********************************************************************************************
-	 * Returns the object containing the metadata of the query.
+	 * Returns the detected Fieldnames
 	 ***********************************************************************************************/
-	public void addFieldnames(CFWQueryFieldnameManager fieldnameManager) {
-		fieldnameManager.addTo(this.contextFieldnameManager);
+	public HashSet<String> getFinalFieldnames() {
+		return contextFieldnameManager.getFinalFieldList();
+	}
+	
+	/***********************************************************************************************
+	 * Returns the detected Fieldnames
+	 ***********************************************************************************************/
+	public JsonArray getFieldnamesAsJsonArray() {
+		return contextFieldnameManager.getFinalFieldListAsJsonArray();
+	}
+	
+	/***********************************************************************************************
+	 * Override the current fieldnames.
+	 ***********************************************************************************************/
+	public void setFieldnames(CFWQueryFieldnameManager fieldnameManager) {
+		contextFieldnameManager = fieldnameManager;
 	}
 	
 	

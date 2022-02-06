@@ -169,13 +169,6 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		return localPreviousSource.getFieldManager();
 	}
 	
-	/***********************************************************************************************
-	 * Internal use to manage changes to fieldnames.
-	 ***********************************************************************************************/
-	private CFWQueryFieldnameManager getContextFieldmanager() {
-				
-		return getParent().getContext().contextFieldnameManager;
-	}
 	
 	/***********************************************************************************************
 	 * Add a fieldname
@@ -190,9 +183,6 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 			sourceFieldmanager.add(fieldname);
 		}
 		
-		//-----------------------------------
-		// Add Change to context fieldmanager
-		// not needed, will be propagated by sourceFieldmanager
 	}
 	
 	/***********************************************************************************************
@@ -203,18 +193,11 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		//-----------------------------------
 		// Add Change to source
 		CFWQueryFieldnameManager sourceFieldmanager = this.getSourceFieldmanager();
-			
+		
 		if(sourceFieldmanager != null) {
 			sourceFieldmanager.rename(fieldname, newName);
 		}
 		
-		//-----------------------------------
-		// Add Change to context 
-		CFWQueryFieldnameManager contextFieldmanager = this.getContextFieldmanager();
-		
-		if(contextFieldmanager != null) {
-			contextFieldmanager.rename(fieldname, newName);
-		}
 	}
 	
 	/***********************************************************************************************
@@ -230,13 +213,6 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 			sourceFieldmanager.remove(fieldname);
 		}
 		
-		//-----------------------------------
-		// Add Change to context 
-		CFWQueryFieldnameManager contextFieldmanager = this.getContextFieldmanager();
-		
-		if(contextFieldmanager != null) {
-			contextFieldmanager.remove(fieldname);
-		}
 	}
 	
 	/***********************************************************************************************
@@ -252,13 +228,6 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 			sourceFieldmanager.keep(fieldnames);
 		}
 		
-		//-----------------------------------
-		// Add Change to context 
-		CFWQueryFieldnameManager contextFieldmanager = this.getContextFieldmanager();
-		
-		if(contextFieldmanager != null) {
-			contextFieldmanager.keep(fieldnames);
-		}
 	}
 	
 	

@@ -318,7 +318,17 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			
 			@Override
 			public void onDone() {
-				getParent().getContext().addFieldnames(fieldnameManager);
+				
+				// Apply all field modifications of previous source and
+				// add the resulting fields to this fieldmanager.
+				// Then use this fieldmanager as the one of the context.
+				Set<String> namesFromContext = parent.getContext().getFinalFieldnames();
+
+				fieldnameManager.addSourceFieldnames(namesFromContext);
+
+				parent.getContext().setFieldnames(fieldnameManager);
+				
+				
 			}
 		});		
 	}

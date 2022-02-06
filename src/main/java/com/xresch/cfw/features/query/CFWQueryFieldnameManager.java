@@ -82,7 +82,9 @@ public class CFWQueryFieldnameManager {
 	 * 
 	 ***********************************************************************************************/
 	public CFWQueryFieldnameManager addSourceFieldnames(Set<String> names) {
-		sourceFieldnames.addAll(names);
+		for(String name : names) {
+			sourceFieldnames.add(name);
+		}
 		return this;
 	}
 	
@@ -133,15 +135,6 @@ public class CFWQueryFieldnameManager {
 	public CFWQueryFieldnameManager clear() {
 		
 		modifications.add( new FieldModification(ModificationType.CLEAR, null, null) );
-		return this;
-	}
-	
-	/***********************************************************************************************
-	 * Remove all fieldnames
-	 ***********************************************************************************************/
-	public CFWQueryFieldnameManager addTo(CFWQueryFieldnameManager targetManager) {
-		
-		targetManager.sourceFieldnames.addAll(this.getFinalFieldList());
 		return this;
 	}
 	

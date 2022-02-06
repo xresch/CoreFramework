@@ -196,11 +196,13 @@ public abstract class PipelineAction<I, O> extends Thread {
 	 * Set this action to done
 	 ****************************************************************************/
 	protected PipelineAction<I, O> setDone() {
-		this.done = true;
 		
 		for(PipelineActionListener listener : listenerArray) {
 			listener.onDone();
 		}
+		
+		this.done = true;
+	
 		return this;
 	}
 	

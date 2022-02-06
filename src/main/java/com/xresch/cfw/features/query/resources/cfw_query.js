@@ -93,7 +93,7 @@ function cfw_query_execute(){
 						 	textstylefield: null,
 						 	titlefields: null,
 						 	titleformat: '{0}',
-						 	visiblefields: null,
+						 	visiblefields: currentResults.detectedFields,
 						 	labels: {
 						 		// todo, set labels manually
 						 	},
