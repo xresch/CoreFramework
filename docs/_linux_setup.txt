@@ -33,13 +33,21 @@ sudo adduser testuser
 sudo passwd testuser
 
 #########################################################
-# Setup FTP (CentOS)
+# Setup FTP
 #########################################################
-###### Setup FTP (CentOS) ##########
+
+###### Install (Raspberry Pi) ##########
+https://pimylifeup.com/raspberry-pi-ftp/
+sudo apt install vsftpd
+
+###### Install (CentOS) ##########
 https://phoenixnap.com/kb/how-to-setup-ftp-server-install-vsftpd-centos-7
 
 sudo yum update
 sudo yum install vsftpd
+
+
+###### Start and Configure ##########
 sudo systemctl start vsftpd
 sudo systemctl enable vsftpd
 
