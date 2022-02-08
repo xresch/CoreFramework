@@ -131,6 +131,7 @@ public class CFWQueryExecutor {
 			
 			queryResults.add("detectedFields", queryContext.getFieldnamesAsJsonArray() );
 			queryResults.add("metadata", query.getContext().getMetadata());
+			queryResults.add("displaySettings", query.getContext().getDisplaySettings());
 			queryResults.add("results", results);
 			
 			returnValue.add(queryResults);

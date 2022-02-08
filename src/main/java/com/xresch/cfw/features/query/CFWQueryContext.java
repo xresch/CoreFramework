@@ -24,6 +24,7 @@ public class CFWQueryContext{
 	private LinkedHashMap<String, AlertMessage> alertMap = CFW.Context.Request.getAlertMap();
 	
 	private JsonObject metadata = new JsonObject();
+	private JsonObject displaySettings = new JsonObject();
 	
 	protected CFWQueryFieldnameManager contextFieldnameManager = new CFWQueryFieldnameManager();
 	
@@ -80,6 +81,20 @@ public class CFWQueryContext{
 	 ***********************************************************************************************/
 	public void addMetadata(String propertyName, String value) {
 		metadata.addProperty(propertyName, value);
+	}
+	
+	/***********************************************************************************************
+	 * Returns the object containing the metadata of the query.
+	 ***********************************************************************************************/
+	public JsonObject getDisplaySettings() {
+		return displaySettings;
+	}
+	
+	/***********************************************************************************************
+	 * Returns the object containing the metadata of the query.
+	 ***********************************************************************************************/
+	public void addDisplaySetting(String propertyName, String value) {
+		displaySettings.addProperty(propertyName, value);
 	}
 	
 	/***********************************************************************************************

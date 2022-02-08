@@ -1853,6 +1853,8 @@ function cfw_renderer_dataviewer(renderDef) {
 					}
 				}
 			],
+			// The index of the initial renderer. Default is -1, takes first one in the list or last selected by user if storeid is specified. 
+			rendererIndex: -1,
 			// The initial page to be drawn.
 			initialpage: 1,
 			// The number of items options for the page size selector. 
@@ -1904,10 +1906,11 @@ function cfw_renderer_dataviewer(renderDef) {
 	dataviewerDiv.data('settings', settings);
 	
 	
-	dataviewerDiv.append(cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, settings));
+	dataviewerDiv.append(cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, settings, settings.rendererIndex) );
+	
 	dataviewerDiv.append('<div class="cfw-dataviewer-content">');
 	
-	cfw_renderer_dataviewer_fireChange(dataviewerDiv, settings.initialpage);
+	cfw_renderer_dataviewer_fireChange(dataviewerDiv, settings.initialpage, );
 		
 	return dataviewerDiv;
 	
@@ -1921,6 +1924,7 @@ CFW.render.registerRenderer("dataviewer", new CFWRenderer(cfw_renderer_dataviewe
  * @param pageToRender page number
  ******************************************************************/
 function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) {
+	
 	
 	//=====================================================
 	// Initialize
@@ -1954,7 +1958,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 		pageSize = parseInt(pageSize);
 	}
 	var offset = (pageSize > 0 ) ? pageSize * (pageToRender-1): 0;
-	
+		
 	if(settings.storeid != null){
 		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][pageSize]', pageSize);
 		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][filterquery]', filterquery);
@@ -2127,7 +2131,7 @@ function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRe
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, dataviewerSettings) {
+function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, dataviewerSettings, initialRendererIndex) {
 	
 	//--------------------------------------
 	// Initialize Variables
@@ -2148,6 +2152,10 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 		selectedSortbyDirection	= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][sortbyDirection]', selectedSortbyDirection);
 		selectedSize 			= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][pageSize]', selectedSize);
 		filterquery 			= CFW.cache.retrieveValueForPage('dataviewer['+dataviewerSettings.storeid+'][filterquery]', filterquery);
+	}
+	
+	if(initialRendererIndex != null && initialRendererIndex > -1){
+		selectedRendererIndex = initialRendererIndex;
 	}
 	
 	//--------------------------------------
