@@ -7,11 +7,13 @@ import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -375,5 +377,75 @@ public class CFWJson {
 	}
 	
 	
+	/*************************************************************************************
+	 * Makes a CSV string from a JsonArray containing JsonObjects.
+	 * 
+	 * Takes the fieldnames of the first object as headers and to select values from
+	 * every consecutive object.
+	 * 
+	 * @param thisToTable the object to covnert
+	 * @param narrow add the Bootstrap table-sm class to the table if true
+	 * 
+	 * @return empty string if array is empty
+	 *************************************************************************************/
+	public static String formatJsonArrayToCSV(JsonArray convertThis, String delimiter) {
+		
+		String narrowClass = "";
+		if(convertThis == null || convertThis.isEmpty() ) { return ""; }
+		
+		
+		//------------------------------------------
+		// Create Header 
+		StringBuilder csv = new StringBuilder();
+		ArrayList<String> memberNames = new ArrayList<>(); 
+		
+		for(Entry<String, JsonElement> entry : convertThis.get(0).getAsJsonObject().entrySet()) {
+			memberNames.add(entry.getKey());
+			csv.append("\"")
+			   .append(CFW.JSON.escapeString(entry.getKey()))
+			   .append("\"")
+			   .append(delimiter);
+		}
+		csv.deleteCharAt(csv.length()-1); //remove last comma
+		csv.append("\r\n");
+		
+		//------------------------------------------
+		// Create Rows
+		
+		convertThis.forEach(new Consumer<JsonElement>() {
+
+			@Override
+			public void accept(JsonElement element) {
+				
+				if(element != null && element.isJsonObject()) {
+					JsonObject object = element.getAsJsonObject();
+					for(String name : memberNames) {
+						
+						JsonElement currentValue = object.get(name);
+						
+						String stringValue = "";
+						if(currentValue.isJsonPrimitive()) 
+							{ stringValue = currentValue.getAsString(); }
+						else if(currentValue.isJsonArray()
+								|| currentValue.isJsonObject()) {
+							stringValue = CFW.JSON.toJSON(currentValue);
+						}
+							
+							
+						csv.append("\"")
+						   .append(CFW.JSON.escapeString(stringValue))
+						   .append("\"")
+						   .append(delimiter);
+					}
+					csv.deleteCharAt(csv.length()-1); //remove last comma
+					csv.append("\r\n");
+				}
+			}
+		});
+		
+
+		return csv.toString();
+		
+	}
 
 }

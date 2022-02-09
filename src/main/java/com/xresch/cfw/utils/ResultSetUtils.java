@@ -17,6 +17,11 @@ import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.logging.CFWLog;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2022
+ * @license MIT-License
+ **************************************************************************************************************/
 public class ResultSetUtils {
 	
 	private static Logger logger = CFWLog.getLogger(ResultSetUtils.class.getName());
