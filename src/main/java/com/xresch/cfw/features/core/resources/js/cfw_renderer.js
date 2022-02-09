@@ -1910,7 +1910,7 @@ function cfw_renderer_dataviewer(renderDef) {
 	
 	dataviewerDiv.append('<div class="cfw-dataviewer-content">');
 	
-	cfw_renderer_dataviewer_fireChange(dataviewerDiv, settings.initialpage, );
+	cfw_renderer_dataviewer_fireChange(dataviewerDiv, settings.initialpage);
 		
 	return dataviewerDiv;
 	
