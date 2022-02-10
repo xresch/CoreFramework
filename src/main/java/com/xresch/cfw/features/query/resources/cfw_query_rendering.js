@@ -3,9 +3,46 @@
  * 
  ******************************************************************************/
 
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_getRendererIndex(queryResult){
+	
+	rendererIndex = 0;		
+	if(queryResult.displaySettings.as != null){
+		switch(queryResult.displaySettings.as.trim().toLowerCase()){
+			case 'table':			rendererIndex = 0; break;		
+			case 'biggertable':		rendererIndex = 1; break;	
+			case 'panels':			rendererIndex = 2; break;	
+			case 'cards':			rendererIndex = 3; break;	
+			case 'tiles':			rendererIndex = 4; break;	
+			case 'csv':				rendererIndex = 5; break;	
+			case 'xml':				rendererIndex = 6; break;	
+			case 'json':			rendererIndex = 7; break;	
+		}
+	}
+	
+	return rendererIndex;
+}
 
 /*******************************************************************************
- * Main method for building the view.
+ * 
+ ******************************************************************************/
+function cfw_query_createLables(queryResult){
+	
+	var fields = queryResult.detectedFields;
+	var labels = {};
+	
+	for(var i in fields){
+		
+		labels[fields[i]] = fields[i];
+	}
+	
+	return labels;
+}
+	
+/*******************************************************************************
+ * Renders the result of a single query and appends it to the target Element.
  * 
  * @param resultTarget the DOM or JQuery Element to which the results are
  *                     appended.
@@ -46,20 +83,9 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	}
 	
 	//-----------------------------------
-	// Create Title	
-	rendererIndex = 0;		
-	if(queryResult.displaySettings.as != null){
-		switch(queryResult.displaySettings.as.trim().toLowerCase()){
-			case 'table':			rendererIndex = 0; break;		
-			case 'biggertable':		rendererIndex = 1; break;	
-			case 'panels':			rendererIndex = 2; break;	
-			case 'cards':			rendererIndex = 3; break;	
-			case 'tiles':			rendererIndex = 4; break;	
-			case 'csv':				rendererIndex = 5; break;	
-			case 'xml':				rendererIndex = 6; break;	
-			case 'json':			rendererIndex = 7; break;	
-		}
-	}
+	// Get Renderer Settings
+	rendererIndex = cfw_query_getRendererIndex(queryResult);		
+	labels = cfw_query_createLables(queryResult);	
 	
 	//-----------------------------------
 	// Render Results
@@ -71,9 +97,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 		 	titlefields: null,
 		 	titleformat: '{0}',
 		 	visiblefields: queryResult.detectedFields,
-		 	labels: {
-		 		// todo, set labels manually
-		 	},
+		 	labels: labels,
 		 	customizers: {},
 
 			rendererSettings: {
