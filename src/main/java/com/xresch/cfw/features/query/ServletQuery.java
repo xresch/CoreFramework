@@ -58,6 +58,7 @@ public class ServletQuery extends HttpServlet
 			
 			if(action == null) {
 
+				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "cfw_query_rendering.js");
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "cfw_query.js");
 				
 				html.addJavascriptCode("cfw_query_initialDraw();");
