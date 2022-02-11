@@ -1,14 +1,24 @@
 
-<p>This command lets you change how the data is displayed.</p>
+<p>This command lets you change how the data is rendered. With the 'as' parameter you can choose the renderer that will be used to display the data.</p>
 
 <p>The following query creates 42 random records and displays them as panels. </p>
 
 <pre><code>source random records = 42
 | display as=panels</code></pre>
 
-
-<p>Further you can set the fields that should be visible by providing an array of fieldnames. This might not work for all display options, for example the JSON display will always show all fields. </p>
+<p>Further you can set the fields that should be visible by providing an array of fieldnames. This might not work for all renderers, for example the JSON display will always show all fields. </p>
 <pre><code>| source random
 | rename URL = url
 | rename LAST_LOGIN = "Last Login"
-| display as=biggertable  visible=[FIRSTNAME, LASTNAME, "Last Login", url]</code></pre>
+| display as=biggertable  visiblefields=[FIRSTNAME, LASTNAME, "Last Login", url]</code></pre>
+
+
+<p>For renderers like panels, cards and tiles, you can set the fields used for the title by setting the parameters titlefields and titleformat.
+If titleformat is not set, the field values are joined with a blank as a separator: </p>
+<pre><code>| source random
+| rename URL = url
+| rename LAST_LOGIN = "Last Login"
+| display as=panels  
+    visiblefields=[FIRSTNAME, LASTNAME, "Last Login", url] 
+    titlefields=[INDEX, FIRSTNAME, LASTNAME, LOCATION]
+    titleformat="{0}: {2} {1} (Location: {3})"</code></pre>

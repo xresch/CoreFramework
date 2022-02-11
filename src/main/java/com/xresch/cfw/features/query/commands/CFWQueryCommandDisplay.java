@@ -59,7 +59,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "display as=<asOption> visible=<arrayOfFieldnames>";
+		return "display as=<asOption> [visiblefields=<arrayOfFieldnames>] [titlefields=<arrayOfFieldnames>] [titleformat=<titleformat>]";
 	}
 	
 	/***********************************************************************************************
@@ -78,7 +78,8 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 					+"<li>xml</li>"
 					+"<li>json</li>"
 					+"</ul>"
-				+"<p><b>arrayOfFieldnames:&nbsp;</b>(Optional)Array of the fieldnames that should be displayed. Might be ignored depending on the chosen display.</p>"	
+				+"<p><b>arrayOfFieldnames:&nbsp;</b>(Optional) Array of the fieldnames.</p>"	
+				+"<p><b>titleformat:&nbsp;</b>(Optional) Format of the title. Use '{0}', '{1}'... as placeholders for field values.</p>"	
 				;
 	}
 
@@ -106,13 +107,12 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 			
 			QueryPart currentPart = parts.get(i);
 			
-			
 			if(currentPart instanceof QueryPartAssignment) {
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
 				
 				String propertyName = assignment.getLeftSideAsString(null);
 
-				System.out.println("propertyName: "+propertyName);
+				
 				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
 				if(valuePart.isString()) {
 					String value = valuePart.getAsString();

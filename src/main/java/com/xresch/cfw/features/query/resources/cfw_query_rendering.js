@@ -87,7 +87,9 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	rendererIndex = cfw_query_getRendererIndex(queryResult);		
 	labels = cfw_query_createLables(queryResult);	
 	
-	visibleFields = ((queryResult.displaySettings.visible != null)) ? queryResult.displaySettings.visible : queryResult.detectedFields;
+	visibleFields = ((queryResult.displaySettings.visiblefields != null)) ? queryResult.displaySettings.visiblefields : queryResult.detectedFields;
+	titleFields = ((queryResult.displaySettings.titlefields != null)) ? queryResult.displaySettings.titlefields : null;
+	titleFormat = ((queryResult.displaySettings.titleformat != null)) ? queryResult.displaySettings.titleformat : null;
 	
 	//-----------------------------------
 	// Render Results
@@ -96,8 +98,8 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 		 	//idfield: 'PK_ID',
 		 	bgstylefield: null,
 		 	textstylefield: null,
-		 	titlefields: null,
-		 	titleformat: '{0}',
+		 	titlefields: titleFields,
+		 	titleformat: titleFormat,
 		 	visiblefields: visibleFields,
 		 	labels: labels,
 		 	customizers: {},
@@ -136,7 +138,6 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 						{	label: 'Tiles',
 							name: 'tiles',
 							renderdef: {
-								visiblefields: ['PK_ID', 'LOCATION', "EMAIL", "LIKES_TIRAMISU"],
 								rendererSettings: {
 									tiles: {
 										popover: false,
