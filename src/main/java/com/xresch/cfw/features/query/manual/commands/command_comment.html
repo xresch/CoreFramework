@@ -4,6 +4,6 @@
 <p>Following code will create 879 random records, adds a comment and turns of the 'distinct' command. 
 The keep command will still be executed.</p>
 
-<pre><code>| source random records=879
+<pre><code class="language-bash">| source random records=879
 | comment "A guy named Rick was rolling here"
 | comment distinct FIRSTNAME | keep FIRSTNAME, LASTNAME VALUE INDEX</code></pre>

@@ -42,15 +42,26 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	static {
 		CFWQueryCommandFormatField instance = new CFWQueryCommandFormatField(null);
+		
 		formatterArray.put("boolean",
 			instance.new FormatterDefinition(
 				"boolean", 
 				"Formats the value as a badge and adds two different colors for true/false.",
 				new Object[][] {
-					 new Object[] {"trueColor", "green", "The color used for values that are true."}
-					,new Object[] {"falseColor", "red", "The color used for values that are false."}
+					 new Object[] {"trueColor", "green", "The background color used for values that are true."}
+					,new Object[] {"falseColor", "red", "The background color used for values that are false."}
+					,new Object[] {"trueTextColor", "white", "The text color used for values that are true."}
+					 ,new Object[] {"falseTextColor", "white", "The text color used for values that are false."}
 				}
+			).example(
+				 "#Use default colors green and red."
+				+"\r\n| source random | formatfield LIKES_TIRAMISU=boolean"
+				+"\r\n# Use custom CSS colors for background."
+				+"\r\n| source random | formatfield LIKES_TIRAMISU=[\"boolean\", \"steelblue\", \"orange\"]"
+				+"\r\n# Use custom CSS colors for background and text."
+				+"\r\n| source random | formatfield LIKES_TIRAMISU=[\"boolean\", \"yellow\", \"purple\", \"black\", \"#fff\"]"
 			)
+			
 		);
 	}
 	/***********************************************************************************************
@@ -65,7 +76,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"formatfield", "formatfield"};
+		return new String[] {"formatfield", "fieldformat"};
 	}
 
 	/***********************************************************************************************
@@ -160,7 +171,11 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 					}
 					
 					FormatterDefinition definition = formatterArray.get(array.get(0).getAsString());
-					definition.manifestTheMightyFormatterArray(fieldFormats, fieldname, array);
+					if(definition != null) {
+						definition.manifestTheMightyFormatterArray(fieldFormats, fieldname, array);
+					}else {
+						parser.throwParseException("formatfield: Unknown formatter '"+array.get(0).getAsString()+"'.", currentPart);
+					}
 					
 				}
 			
@@ -218,6 +233,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		
 		private String formatName;
 		private String description;
+		private String example;
 		
 		// Array of formatter parameters, each param definition must have 3 entries in the array
 		// [
@@ -229,6 +245,11 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			this.formatName = formatName;
 			this.description = description;
 			this.formatterParameters = formatterParameters;
+		}
+		
+		public FormatterDefinition example(String example) {
+			this.example = example;
+			return this;
 		}
 		
 		public String getHTMLDocumentation() {
@@ -259,6 +280,11 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			}
 			
 			builder.append("</ul>");
+			
+			if(this.example != null) {
+				builder.append("<p><b>Example:&nbsp;</b></p>");
+				builder.append("<pre><code class=\"language-bash\">"+CFW.Security.escapeHTMLEntities(example)+"</code></pre>");
+			}
 			
 			return builder.toString();
 		}

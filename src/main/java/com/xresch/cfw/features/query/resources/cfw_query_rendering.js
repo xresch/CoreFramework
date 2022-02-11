@@ -48,13 +48,24 @@ function cfw_query_createLables(queryResult){
  ******************************************************************************/
 function cfw_query_createCustomizers(queryResult, fields){
 	
+	var fieldFormats = queryResult.displaySettings.fieldFormats;
 	var customizers = {};
 	
+	var defaultCustomizer = cfw_query_customizerCreateDefault();
 	for(var i in fields){
+		var fieldname = fields[i];
 		
-		customizers[fields[i]] = cfw_query_customizerCreateDefault(queryResult.earliest, queryResult.latest);
+		if(fieldFormats == null || fieldFormats[fieldname] == null){
+			customizers[fieldname] = defaultCustomizer;
+		}else{
+			formatterArray = fieldFormats[fieldname];
+			customizers[fieldname] = cfw_query_customizerCreateCustom(formatterArray);
+			
+		}
+		
+		
 	}
-	
+
 	return customizers;
 }
 
@@ -62,12 +73,7 @@ function cfw_query_createCustomizers(queryResult, fields){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_query_customizerCreateDefault(earliest, latest){
-
-	//Expand the timeframe of the earliest and latest to have more hits
-	//var deltaX10 = (latest - earliest)*10;
-	//var expandedEarliest = earliest - deltaX10;
-	//var expandedLatest = latest + deltaX10;
+function cfw_query_customizerCreateDefault(){
 		
 	return function (record, value, rendererName, fieldname){
 	
@@ -91,11 +97,6 @@ function cfw_query_customizerCreateDefault(earliest, latest){
 				return CFW.format.epochToTimestamp(value);
 			}
 			
-			// too spooky, would mess with actual numbers that are in the trillions
-/*			if(value >= expandedEarliest && value <= expandedLatest ){
-				return CFW.format.epochToTimestamp(value);
-			}*/
-			
 			return value;
 		}
 		
@@ -115,6 +116,61 @@ function cfw_query_customizerCreateDefault(earliest, latest){
 		return value;
 	
 	}
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_customizerCreateCustom(formatterArray){
+		
+	return function (record, value, rendererName, fieldname){
+	
+		var resultSpan = $('<span class="">'+value+"</span>");
+		
+		for(var i in formatterArray){
+			var current = formatterArray[i];
+			
+			var formatterName = current[0].toLowerCase();
+			
+			switch(formatterName){
+				case 'boolean': 	return cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]);
+			}	
+		}
+
+		return resultSpan;
+	
+	}
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTextColor, falseTextColor){
+	
+	span.addClass('badge');
+	
+	if(typeof value === "boolean"){
+		let color = value ? trueBGColor : falseBGColor;
+		let textColor = value ? trueTextColor : falseTextColor;
+		cfw_colors_colorizeElement(span, color, "bg");
+		cfw_colors_colorizeElement(span, textColor, "text");
+		
+		return span;
+
+	}else if(_.isString(value)){
+		var lower = value.trim().toLowerCase();
+		
+		if(lower == "true" || lower == "false"){
+			let color = lower == "true" ? trueColor : falseColor;
+			let textColor = lower == "true" ? trueTextColor : falseTextColor;
+			cfw_colors_colorizeElement(span, color, "bg");
+			cfw_colors_colorizeElement(span, textColor, "bg");
+			return span;
+		}
+		
+	}
+	
+	return span;
 }
 	
 /*******************************************************************************

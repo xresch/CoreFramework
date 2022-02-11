@@ -74,6 +74,17 @@ function cfw_query_resizeTextareaToFitQuery(){
 			}
 		}
 }
+
+/*******************************************************************************
+ * Main method for building the view.
+ * 
+ * @param direction 'up' or 'down' 
+ ******************************************************************************/
+function cfw_query_copyCurrentLine(direction){
+	
+	var queryString = $('#query').val();
+	var selectionStart = $('#query').get(0)
+}
 	
 /*******************************************************************************
  * 
@@ -162,6 +173,18 @@ function cfw_query_initialDraw(){
 	$('#query').on("keydown", function(e){
 		
 		cfw_query_highlightExecuteButton(true);
+		
+		//---------------------------
+		// Ctrl + Alt + Up
+		if (e.ctrlKey && e.altKey && e.keyCode == 38) {
+			cfw_query_copyCurrentLine('up');
+		}
+		
+		//---------------------------
+		// Ctrl + Alt + Up
+		if (e.ctrlKey && e.altKey && e.keyCode == 38) {
+			cfw_query_copyCurrentLine('down');
+		}
 		
 		//---------------------------
 		// Ctrl + Enter
