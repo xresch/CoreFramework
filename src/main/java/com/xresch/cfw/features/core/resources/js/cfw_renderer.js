@@ -38,7 +38,7 @@ class CFWRenderer{
 		 	bgstylefield: null,
 		    // field containing the bootstrap style (primary, info, danger ...) that should be used as for texts
 		 	textstylefield: null,
-		 	// functions that return a customized htmlString to display a customized format, add as "<fieldname>: function(record, value)".  Cannot return a JQuery object.
+		 	// functions that return a customized htmlString to display a customized format, add as "<fieldname>: function(record, value, rendererName, fieldname)".  Cannot return a JQuery object.
 		 	customizers: {},
 		 	// array of functions that return html for buttons, add as "<fieldname>: function(record, id)". Cannot return a JQuery object.
 		 	actions: [ ],
@@ -59,7 +59,7 @@ class CFWRenderer{
 						return value;
 					}else{
 						var customizer = this.customizers[fieldname];
-						return customizer(record, value, rendererName);
+						return customizer(record, value, rendererName, fieldname);
 					}
 			 	},
 			
@@ -627,7 +627,7 @@ function cfw_renderer_tiles(renderDef) {
 					}
 				}else{
 					var customizer = renderDef.customizers[fieldname];
-					var customizedValue = customizer(currentRecord, value, CFW_RENDER_NAME_TILES);
+					var customizedValue = customizer(currentRecord, value, CFW_RENDER_NAME_TILES, fieldname);
 					if(customizedValue != null){
 						var span = $('<span style="font-size: '+10*settings.sizefactor+'px;"><strong>'+renderDef.labels[fieldname]+':&nbsp;</strong></span>');
 						span.append(customizedValue);
@@ -726,11 +726,11 @@ function cfw_renderer_table(renderDef) {
 			
 			if(renderDef.customizers[fieldname] != null){
 				let customizer = renderDef.customizers[fieldname];
-				finalValue = customizer(singleRecord, finalValue, CFW_RENDER_NAME_TABLE);
+				finalValue = customizer(singleRecord, finalValue, CFW_RENDER_NAME_TABLE, fieldname);
 			}
 			else if(renderDef.customizers['value'] != null){
 				let customizer = renderDef.customizers['value'];
-				finalValue = customizer(singleRecord, finalValue, CFW_RENDER_NAME_TABLE);
+				finalValue = customizer(singleRecord, finalValue, CFW_RENDER_NAME_TABLE, fieldname);
 			}
 			
 			singleRecordData.push({name: label, value: finalValue});
@@ -851,7 +851,7 @@ function cfw_renderer_table(renderDef) {
 				row.append(cellHTML);
 				cellHTML = "";
 				let customizer = renderDef.customizers[fieldname];
-				let customizedValue = customizer(currentRecord, value, CFW_RENDER_NAME_TABLE);
+				let customizedValue = customizer(currentRecord, value, CFW_RENDER_NAME_TABLE, fieldname);
 				let cell = $('<td>');
 				cell.append(customizedValue);
 				row.append(cell);

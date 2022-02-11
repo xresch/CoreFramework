@@ -40,6 +40,69 @@ function cfw_query_createLables(queryResult){
 	
 	return labels;
 }
+
+
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_createCustomizers(fields){
+	
+	var customizers = {};
+	
+	for(var i in fields){
+		
+		customizers[fields[i]] = cfw_query_customizerDefault;
+	}
+	
+	return customizers;
+}
+
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_customizerDefault(record, value, rendererName, fieldname){
+	
+	//----------------------------------------------
+	// Strings and Numbers
+	if (_.isString(value)){
+		
+		let trimmed = value.trim();
+		if(trimmed == ""){	return "&nbsp;"; }
+		if(trimmed.startsWith('http')){	return '<a href="'+value+'" target="blank">'+value+'</a>'; }
+		
+		return value;
+		
+	}else if(_.isNumber(value)){
+		
+		let lower = fieldname.trim().toLowerCase();
+		
+		if(lower == "time" 
+		|| lower == "timestamp"
+		|| lower == "_epoch"){
+			return CFW.format.epochToTimestamp(value);
+		}
+		return value;
+	}
+	
+	//----------------------------------------------
+	// Booleans
+		if(typeof value === "boolean"){
+		let booleanClass = value ? 'badge-success' : 'badge-danger';
+		return '<span class="badge '+booleanClass+' m-1">'+value+'</span>';
+	}
+
+	//----------------------------------------------
+	// Nulls
+	if(value === null || value === undefined){
+		return '<span class="badge badge-primary m-1">NULL</span>';
+	}
+		
+
+	return value;
+
+}
 	
 /*******************************************************************************
  * Renders the result of a single query and appends it to the target Element.
@@ -91,6 +154,8 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	titleFields = ((queryResult.displaySettings.titlefields != null)) ? queryResult.displaySettings.titlefields : null;
 	titleFormat = ((queryResult.displaySettings.titleformat != null)) ? queryResult.displaySettings.titleformat : null;
 	
+	customizers = cfw_query_createCustomizers(visibleFields);
+	
 	//-----------------------------------
 	// Render Results
 	var rendererSettings = {
@@ -102,7 +167,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 		 	titleformat: titleFormat,
 		 	visiblefields: visibleFields,
 		 	labels: labels,
-		 	customizers: {},
+		 	customizers: customizers,
 
 			rendererSettings: {
 				dataviewer: {
