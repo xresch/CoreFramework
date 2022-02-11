@@ -110,11 +110,15 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
 				
 				String propertyName = assignment.getLeftSideAsString(null);
+
+				System.out.println("propertyName: "+propertyName);
 				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
 				if(valuePart.isString()) {
 					String value = valuePart.getAsString();
 					value = CFW.Security.sanitizeHTML(value);
-					displaySettings.addProperty("as", value);
+					displaySettings.addProperty(propertyName, value);
+				}if(valuePart.isJsonArray()) {
+					displaySettings.add(propertyName, valuePart.getAsJsonArray());
 				}
 			
 			}else {

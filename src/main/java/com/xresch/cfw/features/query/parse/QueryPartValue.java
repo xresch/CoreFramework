@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query.parse;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -211,6 +212,13 @@ public class QueryPartValue extends QueryPart {
 	}
 	
 	/******************************************************************************************************
+	 * Check if the value is null
+	 ******************************************************************************************************/
+	public boolean isJsonArray() {
+		return this.type == QueryPartValueType.JSON && ((JsonElement)this.value).isJsonArray();
+	}
+	
+	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
 	@SuppressWarnings("unchecked")
@@ -303,6 +311,33 @@ public class QueryPartValue extends QueryPart {
 			case STRING:	return new JsonPrimitive((String)value);
 			
 			default:		return null;
+
+		}
+
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	public JsonElement getAsJsonArray() {
+		JsonArray array;
+		
+		switch(type) {
+			case JSON:		return ((JsonElement)value).getAsJsonArray();
+			
+			case NUMBER:	array = new JsonArray();
+			 				array.add((Number)value);
+							return array;
+
+			case BOOLEAN: 	array = new JsonArray();
+							array.add((Boolean)value);
+							return array;
+			
+			case STRING:	array = new JsonArray();
+							array.add((String)value);
+							return array;
+
+			default:		return new JsonArray();
 
 		}
 

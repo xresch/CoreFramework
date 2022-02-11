@@ -267,6 +267,8 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	private QueryPart parseQueryPart() throws ParseException {
 		
+		QueryPart tempPart = null;
+
 		if(!this.hasMoreTokens()) {
 			throw new ParseException("Unexpected end of query.", cursor);
 		}
@@ -282,7 +284,10 @@ public class CFWQueryParser {
 		CFWQueryToken firstToken = this.consumeToken();
 		QueryPart firstPart = null;
 		
-		switch(firstToken.type()) {
+		//System.out.println("firstToken:"+firstToken.value()+" "+firstToken.type());
+		
+		switch(firstToken.type()) {								
+		
 			case TEXT_SINGLE_QUOTES:
 			case TEXT_DOUBLE_QUOTES:	
 			case LITERAL_STRING:		firstPart = QueryPartValue.newString(currentContext, firstToken.value());
@@ -297,7 +302,18 @@ public class CFWQueryParser {
 								
 			case NULL: 					firstPart = QueryPartValue.newNull(currentContext);
 										break;
-
+	
+			case SIGN_BRACE_SQUARE_OPEN: 
+										//------------------------------
+										// QueryPartArray
+										System.out.println("SIGN_BRACE_SQUARE_OPEN");
+										tempPart = this.parseQueryPart();
+										System.out.println("tempPart: "+CFW.JSON.toJSON(tempPart.determineValue(null)));
+						
+										firstPart = new QueryPartArray(currentContext).add(tempPart);
+										System.out.println("resultPart: "+CFW.JSON.toJSON(firstPart.determineValue(null)));
+										break;	
+										
 //			case KEYWORD:				firstPart = QueryPartValue.newNull(currentContext);
 //										break;
 //									
@@ -306,7 +322,7 @@ public class CFWQueryParser {
 //
 //			case FUNCTION_NAME:
 //				break;
-			default:					this.throwParseException("Unexpected token.", firstToken.position());
+			default:					//this.throwParseException("Unexpected token.", firstToken.position());
 										break;
 
 		}
@@ -316,6 +332,7 @@ public class CFWQueryParser {
 		//------------------------------------------
 		// NEXT TOKEN can basically be anything
 		QueryPart resultPart = firstPart;
+
 		
 		if(!this.hasMoreTokens()) { return resultPart; }
 		
@@ -325,11 +342,14 @@ public class CFWQueryParser {
 		case LITERAL_NUMBER:
 		case LITERAL_STRING:
 		case NULL:
+								return resultPart;
+								
+		case SIGN_BRACE_SQUARE_CLOSE:
 		case SIGN_BRACE_ROUND_CLOSE:
 								//------------------------------
 								//End of Query Part
+								this.consumeToken();
 								return resultPart;
-								
 		
 		case OPERATOR_EQUAL:	//------------------------------
 								// QueryPartAssignment
@@ -341,9 +361,11 @@ public class CFWQueryParser {
 		case SIGN_COMMA:		//------------------------------
 								// QueryPartArray
 								this.consumeToken();
-								QueryPart nextPart = this.parseQueryPart();
-								resultPart = new QueryPartArray(currentContext, firstPart, nextPart);
+								tempPart = this.parseQueryPart();
+								resultPart = new QueryPartArray(currentContext, firstPart, tempPart);
 								break;			
+		
+			
 		case FUNCTION_NAME:
 			break;
 		case KEYWORD:
@@ -380,10 +402,7 @@ public class CFWQueryParser {
 
 		case SIGN_BRACE_ROUND_OPEN:
 			break;
-		case SIGN_BRACE_SQUARE_CLOSE:
-			break;
-		case SIGN_BRACE_SQUARE_OPEN:
-			break;
+
 		case SIGN_SEMICOLON:
 			break;
 		case SPLIT:
@@ -410,7 +429,10 @@ public class CFWQueryParser {
 	 * @param tokenOffset 0 is the next token to consume, -1 is the last consumed token.
 	 ***********************************************************************************************/
 	public void throwParseException(String message, int tokenOffset) throws ParseException {
+		
 		CFWQueryToken token = this.lookat(tokenOffset);
+		if(token == null) { throw new ParseException(message, -1); }
+		
 		throw new ParseException(message+"(token: '"+token.value()+"', position: "+token.position()+", type: "+token.type()+" )", token.position());
 	}
 	
@@ -420,6 +442,9 @@ public class CFWQueryParser {
 	 * @param tokenOffset 0 is the next token to consume, -1 is the last consumed token.
 	 ***********************************************************************************************/
 	public void throwParseException(String message, QueryPart part) throws ParseException {
+		
+		if(part == null) { throw new ParseException(message, -1); }
+		
 		throw new ParseException(message+"(position: "+part.position()+", type: "+part.getClass().getSimpleName()+" )", part.position());
 	}
 	

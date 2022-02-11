@@ -268,6 +268,58 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		System.out.println();
 
 		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testParsingQueryPartArraySquareBraces() throws ParseException {
+		
+		String queryString = sourceString+" | display as=table titlefields=[FIRSTNAME, LASTNAME, LIKES_TIRAMISU, TIME]";
+		
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true)
+				 .keywords("AND", "OR", "NOT");
+		
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
+		printResults("testParsingQueryPartArray", results);
+		
+		CFWQueryParser parser = new CFWQueryParser(queryString, true);
+		
+		ArrayList<CFWQuery> queryList = parser.parse();
+		
+		Assertions.assertEquals(1, queryList.size());
+
+		//------------------------
+		// Execute Query
+		
+		CFWQuery query = queryList.get(0);
+		query.setContext(context);
+		ArrayList<CFWQueryCommand> commandList = query.getCommandList();
+		
+		Assertions.assertEquals(2, commandList.size());
+		
+		query.execute(false);
+		
+		LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
+		int count = 0;
+		while(!query.isFullyDrained()) {
+			
+			while(!queue.isEmpty()) {
+				count++;
+				System.out.println(
+					CFW.JSON.toJSON(
+						queue.poll().getWrappedObject()
+					)
+				); 
+			}
+		}
+		
+		Assertions.assertEquals(100, count);
+		
+		System.out.println();
+
+		
 	}	
 	
 }
