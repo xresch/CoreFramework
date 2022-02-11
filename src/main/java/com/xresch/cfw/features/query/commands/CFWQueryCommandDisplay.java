@@ -59,7 +59,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "display as=<asOption>";
+		return "display as=<asOption> visible=<arrayOfFieldnames>";
 	}
 	
 	/***********************************************************************************************
@@ -68,16 +68,17 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return "<p><b>asOption:&nbsp;</b>One of the following options:</p>"
-				+"<ul>"
-				+"<li>table</li>"
-				+"<li>biggertable</li>"
-				+"<li>panels</li>"
-				+"<li>cards</li>"
-				+"<li>tiles</li>"
-				+"<li>csv</li>"
-				+"<li>xml</li>"
-				+"<li>json</li>"
-				+"</ul>"
+					+"<ul>"
+					+"<li>table</li>"
+					+"<li>biggertable</li>"
+					+"<li>panels</li>"
+					+"<li>cards</li>"
+					+"<li>tiles</li>"
+					+"<li>csv</li>"
+					+"<li>xml</li>"
+					+"<li>json</li>"
+					+"</ul>"
+				+"<p><b>arrayOfFieldnames:&nbsp;</b>(Optional)Array of the fieldnames that should be displayed. Might be ignored depending on the chosen display.</p>"	
 				;
 	}
 

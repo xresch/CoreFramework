@@ -1,7 +1,14 @@
 
-<p>This command lets you change how the data is rendered.</p>
+<p>This command lets you change how the data is displayed.</p>
 
 <p>The following query creates 42 random records and displays them as panels. </p>
 
 <pre><code>source random records = 42
 | display as=panels</code></pre>
+
+
+<p>Further you can set the fields that should be visible by providing an array of fieldnames. This might not work for all display options, for example the JSON display will always show all fields. </p>
+<pre><code>| source random
+| rename URL = url
+| rename LAST_LOGIN = "Last Login"
+| display as=biggertable  visible=[FIRSTNAME, LASTNAME, "Last Login", url]</code></pre>

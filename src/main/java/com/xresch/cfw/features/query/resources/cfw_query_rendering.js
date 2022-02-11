@@ -87,6 +87,8 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	rendererIndex = cfw_query_getRendererIndex(queryResult);		
 	labels = cfw_query_createLables(queryResult);	
 	
+	visibleFields = ((queryResult.displaySettings.visible != null)) ? queryResult.displaySettings.visible : queryResult.detectedFields;
+	
 	//-----------------------------------
 	// Render Results
 	var rendererSettings = {
@@ -96,7 +98,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 		 	textstylefield: null,
 		 	titlefields: null,
 		 	titleformat: '{0}',
-		 	visiblefields: queryResult.detectedFields,
+		 	visiblefields: visibleFields,
 		 	labels: labels,
 		 	customizers: {},
 
