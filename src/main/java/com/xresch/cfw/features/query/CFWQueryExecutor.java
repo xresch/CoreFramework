@@ -128,6 +128,8 @@ public class CFWQueryExecutor {
 			// Create Response
 			queryResults.addProperty("resultCount", resultCount);
 			queryResults.addProperty("execTimeMillis", execMillis);
+			queryResults.addProperty("earliest", earliest);
+			queryResults.addProperty("latest", latest);
 			
 			queryResults.add("detectedFields", queryContext.getFieldnamesAsJsonArray() );
 			queryResults.add("metadata", query.getContext().getMetadata());

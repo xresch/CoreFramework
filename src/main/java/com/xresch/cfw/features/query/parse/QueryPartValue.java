@@ -319,7 +319,7 @@ public class QueryPartValue extends QueryPart {
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public JsonElement getAsJsonArray() {
+	public JsonArray getAsJsonArray() {
 		JsonArray array;
 		
 		switch(type) {

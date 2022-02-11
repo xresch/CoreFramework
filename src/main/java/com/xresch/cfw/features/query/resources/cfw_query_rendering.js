@@ -46,13 +46,13 @@ function cfw_query_createLables(queryResult){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_query_createCustomizers(fields){
+function cfw_query_createCustomizers(queryResult, fields){
 	
 	var customizers = {};
 	
 	for(var i in fields){
 		
-		customizers[fields[i]] = cfw_query_customizerDefault;
+		customizers[fields[i]] = cfw_query_customizerCreateDefault(queryResult.earliest, queryResult.latest);
 	}
 	
 	return customizers;
@@ -62,46 +62,59 @@ function cfw_query_createCustomizers(fields){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_query_customizerDefault(record, value, rendererName, fieldname){
+function cfw_query_customizerCreateDefault(earliest, latest){
+
+	//Expand the timeframe of the earliest and latest to have more hits
+	//var deltaX10 = (latest - earliest)*10;
+	//var expandedEarliest = earliest - deltaX10;
+	//var expandedLatest = latest + deltaX10;
+		
+	return function (record, value, rendererName, fieldname){
 	
-	//----------------------------------------------
-	// Strings and Numbers
-	if (_.isString(value)){
-		
-		let trimmed = value.trim();
-		if(trimmed == ""){	return "&nbsp;"; }
-		if(trimmed.startsWith('http')){	return '<a href="'+value+'" target="blank">'+value+'</a>'; }
-		
-		return value;
-		
-	}else if(_.isNumber(value)){
-		
-		let lower = fieldname.trim().toLowerCase();
-		
-		if(lower == "time" 
-		|| lower == "timestamp"
-		|| lower == "_epoch"){
-			return CFW.format.epochToTimestamp(value);
+		//----------------------------------------------
+		// Strings and Numbers
+		if (_.isString(value)){
+			
+			let trimmed = value.trim();
+			if(trimmed == ""){	return "&nbsp;"; }
+			if(trimmed.startsWith('http')){	return '<a href="'+value+'" target="blank">'+value+'</a>'; }
+			
+			return value;
+			
+		}else if(_.isNumber(value)){
+			
+			let lower = fieldname.trim().toLowerCase();
+			
+			if(lower == "time" 
+			|| lower == "timestamp"
+			|| lower == "_epoch"){
+				return CFW.format.epochToTimestamp(value);
+			}
+			
+			// too spooky, would mess with actual numbers that are in the trillions
+/*			if(value >= expandedEarliest && value <= expandedLatest ){
+				return CFW.format.epochToTimestamp(value);
+			}*/
+			
+			return value;
 		}
-		return value;
-	}
-	
-	//----------------------------------------------
-	// Booleans
-		if(typeof value === "boolean"){
-		let booleanClass = value ? 'badge-success' : 'badge-danger';
-		return '<span class="badge '+booleanClass+' m-1">'+value+'</span>';
-	}
-
-	//----------------------------------------------
-	// Nulls
-	if(value === null || value === undefined){
-		return '<span class="badge badge-primary m-1">NULL</span>';
-	}
 		
-
-	return value;
-
+		//----------------------------------------------
+		// Booleans
+			if(typeof value === "boolean"){
+			let booleanClass = value ? 'badge-success' : 'badge-danger';
+			return '<span class="badge '+booleanClass+' m-1">'+value+'</span>';
+		}
+	
+		//----------------------------------------------
+		// Nulls
+		if(value === null || value === undefined){
+			return '<span class="badge badge-primary m-1">NULL</span>';
+		}
+			
+		return value;
+	
+	}
 }
 	
 /*******************************************************************************
@@ -154,7 +167,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	titleFields = ((queryResult.displaySettings.titlefields != null)) ? queryResult.displaySettings.titlefields : null;
 	titleFormat = ((queryResult.displaySettings.titleformat != null)) ? queryResult.displaySettings.titleformat : null;
 	
-	customizers = cfw_query_createCustomizers(visibleFields);
+	customizers = cfw_query_createCustomizers(queryResult, visibleFields);
 	
 	//-----------------------------------
 	// Render Results
