@@ -139,6 +139,7 @@ function cfw_query_customizerCreateCustom(formatterArray){
 				case 'prefix': 		cfw_query_formatPrefix(resultSpan, value, current[1]); break;
 				case 'postfix': 	cfw_query_formatPostfix(resultSpan, value, current[1]); break;
 				case 'threshold': 	cfw_query_formatThreshold(resultSpan, value, current[1], current[2], current[3], current[4], current[5], current[6]); break;
+				case 'timestamp': 	cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
 			}	
 		}
 
@@ -172,7 +173,7 @@ function cfw_query_formatAlign(span, value, alignment){
  ******************************************************************************/
 function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTextColor, falseTextColor){
 	
-	span.addClass('text-center');
+	span.addClass('format-base text-center');
 	
 	if(typeof value === "boolean"){
 		let color = value ? trueBGColor : falseBGColor;
@@ -237,6 +238,24 @@ function cfw_query_formatThreshold(span, value, excellent, good, warning, emerge
 
 	return span;
 }
+
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatTimestamp(span, value, format){
+	
+	span.addClass('format-base');
+	
+	console.log("test")
+	if(value != null){
+		console.log("bla")
+		span.text(new  moment(value).format(format));
+	}
+
+	return span;
+}
+
 	
 /*******************************************************************************
  * Renders the result of a single query and appends it to the target Element.

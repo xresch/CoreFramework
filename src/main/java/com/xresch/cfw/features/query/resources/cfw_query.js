@@ -129,14 +129,14 @@ function cfw_query_initialDraw(){
 				<div class="col-12">
 					<form id="${formID}">
 						<input id="cfw-formID" name="cfw-formID" type="hidden" value="${formID}">
-						<textarea id="query" name="query" class="form-control" rows="3" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
+						<textarea id="query" name="query" class="form-control monospace" rows="3" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
 					</form>
 				</div>
 			</div>
 			
 		</div>
 		
-		<div id="cfw-query-results">
+		<div id="cfw-query-results" class="monospace">
 		</div>
 	`);
 	

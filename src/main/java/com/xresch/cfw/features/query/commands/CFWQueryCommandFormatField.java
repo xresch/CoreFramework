@@ -109,7 +109,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 					 new Object[] {"postfix", "", "The postfix that should be added to the value."}
 				}
 			).example(
-				 "#Add a Swiss Francs(CHF) to the value."
+				 "#Add Swiss Francs(CHF) to the value."
 				+"\r\n| source random | formatfield VALUE=[postfix,\" CHF\"]"
 			)
 		);
@@ -129,7 +129,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield VALUE=[prefix,\"$ \"]"
 			)
 		);
-		
+				
 		//------------------------------------------------
 		// Threshhold 
 		//------------------------------------------------
@@ -154,6 +154,22 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield VALUE=threshold,80,60,40,20,0,border"
 				+"\r\n#Use null to skip a color"
 				+"\r\n| source random | formatfield VALUE=threshold,80,null,40,null,0"
+			)
+		);
+		
+		//------------------------------------------------
+		// Timestamp
+		//------------------------------------------------
+		formatterArray.put("timestamp",
+			instance.new FormatterDefinition(
+				"timestamp", 
+				"Formats epoch milliseconds as a timestamp.",
+				new Object[][] {
+					 new Object[] {"format", "YYYY-MM-DD HH:mm:ss", "The format of the timestamp, google moment.js for details."}
+				}
+			).example(
+				 "#Formats the LAST_LOGIN epoch milliseconds as a timestamp."
+				+"\r\n| source random | formatfield LAST_LOGIN=timestamp"
 			)
 		);
 		
