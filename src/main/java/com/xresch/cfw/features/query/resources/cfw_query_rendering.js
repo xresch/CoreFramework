@@ -63,7 +63,6 @@ function cfw_query_createCustomizers(queryResult, fields){
 			
 		}
 		
-		
 	}
 
 	return customizers;
@@ -103,8 +102,8 @@ function cfw_query_customizerCreateDefault(){
 		//----------------------------------------------
 		// Booleans
 			if(typeof value === "boolean"){
-			let booleanClass = value ? 'badge-success' : 'badge-danger';
-			return '<span class="badge '+booleanClass+' m-1">'+value+'</span>';
+			let booleanClass = value ? 'bg-success' : 'bg-danger';
+			return '<span class="format-base text-white text-center '+booleanClass+' m-1">'+value+'</span>';
 		}
 	
 		//----------------------------------------------
@@ -125,7 +124,8 @@ function cfw_query_customizerCreateCustom(formatterArray){
 		
 	return function (record, value, rendererName, fieldname){
 	
-		var resultSpan = $('<span class="">'+value+"</span>");
+		var resultSpan = $('<span class="">');
+		resultSpan.text(value);
 		
 		for(var i in formatterArray){
 			var current = formatterArray[i];
@@ -133,7 +133,11 @@ function cfw_query_customizerCreateCustom(formatterArray){
 			var formatterName = current[0].toLowerCase();
 			
 			switch(formatterName){
-				case 'boolean': 	return cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]);
+				case 'none': 		return $('<span class="">').text(value); break;
+				case 'boolean': 	cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]); break;
+				case 'prefix': 		cfw_query_formatPrefix(resultSpan, value, current[1]); break;
+				case 'postfix': 	cfw_query_formatPostfix(resultSpan, value, current[1]); break;
+				case 'threshold': 	cfw_query_formatThreshold(resultSpan, value, current[1], current[2], current[3], current[4], current[5], current[6]); break;
 			}	
 		}
 
@@ -142,18 +146,19 @@ function cfw_query_customizerCreateCustom(formatterArray){
 	}
 }
 
+
 /*******************************************************************************
  * 
  ******************************************************************************/
 function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTextColor, falseTextColor){
 	
-	span.addClass('badge');
+	span.addClass('format-base text-center');
 	
 	if(typeof value === "boolean"){
 		let color = value ? trueBGColor : falseBGColor;
 		let textColor = value ? trueTextColor : falseTextColor;
-		cfw_colors_colorizeElement(span, color, "bg");
-		cfw_colors_colorizeElement(span, textColor, "text");
+		CFW.colors.colorizeElement(span, color, "bg");
+		CFW.colors.colorizeElement(span, textColor, "text");
 		
 		return span;
 
@@ -163,13 +168,53 @@ function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTex
 		if(lower == "true" || lower == "false"){
 			let color = lower == "true" ? trueColor : falseColor;
 			let textColor = lower == "true" ? trueTextColor : falseTextColor;
-			cfw_colors_colorizeElement(span, color, "bg");
-			cfw_colors_colorizeElement(span, textColor, "bg");
+			CFW.colors.colorizeElement(span, color, "bg");
+			CFW.colors.colorizeElement(span, textColor, "bg");
 			return span;
 		}
 		
 	}
 	
+	return span;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatPrefix(span, value, prefix){
+	
+	value = span.text();
+	span.text(prefix+value);
+	
+	return span;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatPostfix(span, value, postfix){
+	
+	value = span.text();
+	span.text(value+postfix);
+	
+	return span;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatThreshold(span, value, excellent, good, warning, emergency, danger, type){
+	
+	span.addClass('format-base text-right');
+	
+	var style = CFW.colors.getThresholdStyle(value, excellent, good, warning, emergency, danger, false);
+	
+	if(type == 'bg'){
+		CFW.colors.colorizeElement(span, "white", "text");
+	}
+	
+	CFW.colors.colorizeElement(span, style, type, "2px");
+
 	return span;
 }
 	

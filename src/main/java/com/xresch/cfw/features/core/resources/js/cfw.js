@@ -194,10 +194,14 @@ function cfw_colors_colorizeElement(element, color, type, borderSize){
 		
 	} else if (type == 'border'){
 		
+		let size = (borderSize == null) ? "1px" : borderSize; 
+		
 		if(color.startsWith("cfw-")){
 			 $element.addClass("border-"+color);
+			 $element.css("border-width", size);
+			 $element.css("border-style", "solid");
 		}else{
-			let size = (borderSize == null) ? "1px" : borderSize; 
+			
 			$element.css("border", size+" solid "+color);
 		}
 		return;

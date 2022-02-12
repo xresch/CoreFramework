@@ -813,6 +813,23 @@ h3, h4 {
   background: var(--gray-dark);
 }
 
+/*************************************************************************
+ * Class for adding other formats like background color.
+ *************************************************************************/
+.format-base {
+    display: inline-block;
+    padding: 0.25em 0.4em;
+    font-size: 90%;
+    font-weight: 700;
+    line-height: 1;
+    width: 100%;
+    height: 100%;
+    /*text-align: center;*/
+    white-space: nowrap;
+    vertical-align: baseline;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+     
 
 /*************************************************************************
  * viewport width

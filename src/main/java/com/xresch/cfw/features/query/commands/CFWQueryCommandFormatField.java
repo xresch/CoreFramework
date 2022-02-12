@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
@@ -43,13 +44,16 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	static {
 		CFWQueryCommandFormatField instance = new CFWQueryCommandFormatField(null);
 		
+		//------------------------------------------------
+		// Boolean 
+		//------------------------------------------------
 		formatterArray.put("boolean",
 			instance.new FormatterDefinition(
 				"boolean", 
 				"Formats the value as a badge and adds two different colors for true/false.",
 				new Object[][] {
-					 new Object[] {"trueColor", "green", "The background color used for values that are true."}
-					,new Object[] {"falseColor", "red", "The background color used for values that are false."}
+					 new Object[] {"trueColor", "cfw-excellent", "The background color used for values that are true."}
+					,new Object[] {"falseColor", "cfw-danger", "The background color used for values that are false."}
 					,new Object[] {"trueTextColor", "white", "The text color used for values that are true."}
 					 ,new Object[] {"falseTextColor", "white", "The text color used for values that are false."}
 				}
@@ -61,9 +65,85 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n# Use custom CSS colors for background and text."
 				+"\r\n| source random | formatfield LIKES_TIRAMISU=[\"boolean\", \"yellow\", \"purple\", \"black\", \"#fff\"]"
 			)
-			
 		);
+		
+		//------------------------------------------------
+		// None 
+		//------------------------------------------------
+		formatterArray.put("none",
+			instance.new FormatterDefinition(
+				"none", 
+				"Disables any formatting and displays the plain value.",
+				new Object[][] {
+				}
+			).example(
+				 "#Disable the default boolean formatter."
+				+"\r\n| source random | formatfield LIKES_TIRAMISU=none"
+			)
+		);
+				
+		//------------------------------------------------
+		// Postfix 
+		//------------------------------------------------
+		formatterArray.put("postfix",
+			instance.new FormatterDefinition(
+				"postfix", 
+				"Appends a postfix to the value.",
+				new Object[][] {
+					 new Object[] {"postfix", "", "The postfix that should be added to the value."}
+				}
+			).example(
+				 "#Add a Swiss Francs(CHF) to the value."
+				+"\r\n| source random | formatfield VALUE=[postfix,\" CHF\"]"
+			)
+		);
+		
+		//------------------------------------------------
+		// Prefix 
+		//------------------------------------------------
+		formatterArray.put("prefix",
+			instance.new FormatterDefinition(
+				"prefix", 
+				"Prepends a prefix to the value.",
+				new Object[][] {
+					 new Object[] {"prefix", "", "The prefix that should be added to the value."}
+				}
+			).example(
+				 "#Add a dollar sign to the value."
+				+"\r\n| source random | formatfield VALUE=[prefix,\"$ \"]"
+			)
+		);
+		
+		//------------------------------------------------
+		// Threshhold 
+		//------------------------------------------------
+		formatterArray.put("threshold",
+			instance.new FormatterDefinition(
+				"threshold", 
+				"Colors the value based on a threshold.",
+				new Object[][] {
+					 new Object[] {"excellent", 0, "The threshold for status excellent."}
+					 ,new Object[] {"good", 20, "The threshold for status good."}
+					 ,new Object[] {"warning", 40, "The threshold for status warning."}
+					 ,new Object[] {"emergency", 60, "The threshold for status emergency."}
+					 ,new Object[] {"danger", 80, "The threshold for status emergency."}
+					 ,new Object[] {"type", "bg", "Either 'bg' or 'text'."}
+				}
+			).example(
+				 "#Add default threshold(0,20,40,60,80) to the VALUE field."
+				+"\r\n| source random | formatfield VALUE=threshold"
+				+"#Custom threshold and colorize text instead of adding a background"
+				+"\r\n| source random | formatfield VALUE=threshold,0,10,20,30,40,text"
+				+"#Reverse threshold and use border"
+				+"\r\n| source random | formatfield VALUE=threshold,80,60,40,20,0,border"
+				+"#Use null to skip a color"
+				+"\r\n| source random | formatfield VALUE=threshold,80,null,40,null,0"
+			)
+		);
+		
+
 	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -252,6 +332,16 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			return this;
 		}
 		
+		public String getSyntax() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("['"+formatName+"'");
+			for(Object[] paramDefinition : formatterParameters) {
+				builder.append(", "+paramDefinition[0]);
+			}
+			builder.append("]");
+			
+			return builder.toString();		}
+		
 		public String getHTMLDocumentation() {
 			
 			StringBuilder builder = new StringBuilder();
@@ -260,11 +350,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			
 			//---------------------------
 			// Add Syntax
-			builder.append("<p><b>Syntax:&nbsp;</b>['"+formatName+"'");
-			for(Object[] paramDefinition : formatterParameters) {
-				builder.append(", "+paramDefinition[0]);
-			}
-			builder.append("]");
+			builder.append("<p><b>Syntax:&nbsp;</b>"+getSyntax() );
 			
 			//---------------------------
 			// Add Description
@@ -327,7 +413,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			for(int i = array.size(); i <= formatterParameters.length;i++) {
 				Object defaultValue = formatterParameters[i-1][1];
 				
-				if(defaultValue instanceof String) {
+				if(defaultValue == null) {
+					array.add(JsonNull.INSTANCE);
+				}else if(defaultValue instanceof String) {
 					array.add((String)defaultValue);
 				}else if(defaultValue instanceof Number) {
 					array.add((Number)defaultValue);
