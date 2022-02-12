@@ -47,7 +47,6 @@ public class CFWQueryRegistry {
 			queryCommandMap.put(lowercaseName, command.getClass());
 		}
 		
-		
 	}
 	
 	/***********************************************************************

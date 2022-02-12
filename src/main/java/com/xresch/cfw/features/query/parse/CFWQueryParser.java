@@ -306,12 +306,9 @@ public class CFWQueryParser {
 			case SIGN_BRACE_SQUARE_OPEN: 
 										//------------------------------
 										// QueryPartArray
-										System.out.println("SIGN_BRACE_SQUARE_OPEN");
 										tempPart = this.parseQueryPart();
-										System.out.println("tempPart: "+CFW.JSON.toJSON(tempPart.determineValue(null)));
-						
 										firstPart = new QueryPartArray(currentContext).add(tempPart);
-										System.out.println("resultPart: "+CFW.JSON.toJSON(firstPart.determineValue(null)));
+
 										break;	
 										
 //			case KEYWORD:				firstPart = QueryPartValue.newNull(currentContext);

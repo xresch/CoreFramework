@@ -1016,16 +1016,19 @@ function cfw_renderer_panels (renderDef) {
 		//-------------------------
 		// Add field Values as Unordered List
 		let list = $("<ul>");
-		let itemHTML = '';
 		for(let key in renderDef.visiblefields){
 			let fieldname = renderDef.visiblefields[key];
 			let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PANELS);
-		
+			
+			// remove width 100% etc... to not mess up the list 
+			$(value).css("width", "auto");
 			if(!CFW.utils.isNullOrEmpty(value)){
-				itemHTML += '<li><strong>' + renderDef.labels[fieldname] + ':</strong> ' + value + '</li>';
+				item = $('<li><strong>' + renderDef.labels[fieldname] + ':&nbsp;</strong></li>');
+				item.append(value);
+				list.append(item);
 			}
 		}
-		list.append(itemHTML);
+		
 		
 		panelSettings.body = list;
 				
@@ -1163,16 +1166,18 @@ function cfw_renderer_cards (renderDef) {
 		//-------------------------
 		// Add field Values as Unordered List
 		let list = $("<ul>");
-		let itemHTML = '';
 		for(let key in renderDef.visiblefields){
 			let fieldname = renderDef.visiblefields[key];
-			let value =renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_CARDS);
+			let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PANELS);
+			
+			// remove width 100% etc... to not mess up the list 
+			$(value).css("width", "auto");
 			if(!CFW.utils.isNullOrEmpty(value)){
-				itemHTML += '<li><strong>' + renderDef.labels[fieldname] + ':</strong> ' + value + '</li>';
+				item = $('<li><strong>' + renderDef.labels[fieldname] + ':&nbsp;</strong></li>');
+				item.append(value);
+				list.append(item);
 			}
-
 		}
-		list.append(itemHTML);
 		
 		cardSettings.body = list;
 				

@@ -45,6 +45,22 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		CFWQueryCommandFormatField instance = new CFWQueryCommandFormatField(null);
 		
 		//------------------------------------------------
+		// Postfix 
+		//------------------------------------------------
+		formatterArray.put("align",
+			instance.new FormatterDefinition(
+				"align", 
+				"Places the  a postfix to the value.",
+				new Object[][] {
+					 new Object[] {"postfix", "", "The postfix that should be added to the value."}
+				}
+			).example(
+				 "#Add a Swiss Francs(CHF) to the value."
+				+"\r\n| source random | formatfield VALUE=[postfix,\" CHF\"]"
+			)
+		);
+		
+		//------------------------------------------------
 		// Boolean 
 		//------------------------------------------------
 		formatterArray.put("boolean",

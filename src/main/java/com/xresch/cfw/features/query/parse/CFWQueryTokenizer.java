@@ -172,7 +172,7 @@ public class CFWQueryTokenizer {
 		
 		//-----------------------------------
 		// NULL
-		if(slice.startsWith("null")) {
+		if(slice.toLowerCase().startsWith("null")) {
 			cursor+=4;
 			return createToken(CFWQueryToken.CFWQueryTokenType.NULL, startPos, cursor);
 		}
