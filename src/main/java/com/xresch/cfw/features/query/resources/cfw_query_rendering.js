@@ -134,6 +134,7 @@ function cfw_query_customizerCreateCustom(formatterArray){
 			
 			switch(formatterName){
 				case 'none': 		return $('<span class="">').text(value); break;
+				case 'align': 		cfw_query_formatAlign(resultSpan, value, current[1]); break;
 				case 'boolean': 	cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'prefix': 		cfw_query_formatPrefix(resultSpan, value, current[1]); break;
 				case 'postfix': 	cfw_query_formatPostfix(resultSpan, value, current[1]); break;
@@ -150,9 +151,28 @@ function cfw_query_customizerCreateCustom(formatterArray){
 /*******************************************************************************
  * 
  ******************************************************************************/
+function cfw_query_formatAlign(span, value, alignment){
+	
+	lower = alignment.toLowerCase();
+	span.addClass('format-base text-'+lower);
+	
+	if(lower == "center"){
+		span.removeClass('text-left text-right');
+	}else if(lower == "left"){
+		span.removeClass('text-center text-right');
+	}else {
+		span.removeClass('text-left text-center');
+	}
+	
+	return span;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTextColor, falseTextColor){
 	
-	span.addClass('format-base text-center');
+	span.addClass('text-center');
 	
 	if(typeof value === "boolean"){
 		let color = value ? trueBGColor : falseBGColor;

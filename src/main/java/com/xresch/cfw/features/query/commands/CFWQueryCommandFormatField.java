@@ -50,13 +50,13 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		formatterArray.put("align",
 			instance.new FormatterDefinition(
 				"align", 
-				"Places the  a postfix to the value.",
+				"Choose how the text is aligned.",
 				new Object[][] {
-					 new Object[] {"postfix", "", "The postfix that should be added to the value."}
+					 new Object[] {"position", "center", "The alighment of the text, either left, right or center."}
 				}
 			).example(
-				 "#Add a Swiss Francs(CHF) to the value."
-				+"\r\n| source random | formatfield VALUE=[postfix,\" CHF\"]"
+				 "#Aligns the INDEX values to the right."
+				+"\r\n| source random | formatfield INDEX=[align,right]"
 			)
 		);
 		
@@ -148,11 +148,11 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			).example(
 				 "#Add default threshold(0,20,40,60,80) to the VALUE field."
 				+"\r\n| source random | formatfield VALUE=threshold"
-				+"#Custom threshold and colorize text instead of adding a background"
+				+"\r\n#Custom threshold and colorize text instead of adding a background"
 				+"\r\n| source random | formatfield VALUE=threshold,0,10,20,30,40,text"
-				+"#Reverse threshold and use border"
+				+"\r\n#Reverse threshold and use border"
 				+"\r\n| source random | formatfield VALUE=threshold,80,60,40,20,0,border"
-				+"#Use null to skip a color"
+				+"\r\n#Use null to skip a color"
 				+"\r\n| source random | formatfield VALUE=threshold,80,null,40,null,0"
 			)
 		);
