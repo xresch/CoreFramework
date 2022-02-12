@@ -189,7 +189,7 @@ function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTex
 			let color = lower == "true" ? trueColor : falseColor;
 			let textColor = lower == "true" ? trueTextColor : falseTextColor;
 			CFW.colors.colorizeElement(span, color, "bg");
-			CFW.colors.colorizeElement(span, textColor, "bg");
+			CFW.colors.colorizeElement(span, textColor, "text");
 			return span;
 		}
 		
