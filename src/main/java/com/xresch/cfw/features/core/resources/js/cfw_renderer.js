@@ -620,7 +620,7 @@ function cfw_renderer_tiles(renderDef) {
 			for(var key in renderDef.visiblefields){
 				var fieldname = renderDef.visiblefields[key];
 				var value = currentRecord[fieldname];
-				
+
 				if(renderDef.customizers[fieldname] == null){
 					if(value != null){
 						currentTile.append('<span style="font-size: '+10*settings.sizefactor+'px;"><strong>'+renderDef.labels[fieldname]+':&nbsp;</strong>'+value+'</span>');
@@ -629,6 +629,9 @@ function cfw_renderer_tiles(renderDef) {
 					var customizer = renderDef.customizers[fieldname];
 					var customizedValue = customizer(currentRecord, value, CFW_RENDER_NAME_TILES, fieldname);
 					if(customizedValue != null){
+						// remove width 100% etc... to not mess up the list 
+						$(customizedValue).css("width", "auto");
+				
 						var span = $('<span style="font-size: '+10*settings.sizefactor+'px;"><strong>'+renderDef.labels[fieldname]+':&nbsp;</strong></span>');
 						span.append(customizedValue);
 						currentTile.append(span);
