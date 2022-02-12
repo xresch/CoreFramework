@@ -213,7 +213,6 @@ function cfw_query_formatEasterEggs(span, value, prefix){
 				;
 				
 	span.html(value).find("i").each(function(){
-		console.log("color: "+CFW.colors.randomHSL(65,100,55,70))
 		$(this).css('color', CFW.colors.randomHSL(65,100,55,70));
 	})
 	

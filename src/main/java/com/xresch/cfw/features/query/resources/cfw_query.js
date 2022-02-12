@@ -80,10 +80,46 @@ function cfw_query_resizeTextareaToFitQuery(){
  * 
  * @param direction 'up' or 'down' 
  ******************************************************************************/
-function cfw_query_copyCurrentLine(direction){
+function cfw_query_copyCurrentLine(direction, domElement){
 	
-	var queryString = $('#query').val();
-	var selectionStart = $('#query').get(0)
+	console.log("cfw_query_copyCurrentLine");
+	
+	var selectionStart = domElement.selectionStart;
+	var selectionEnd = domElement.selectionEnd;
+	var value = domElement.value;
+	
+	//--------------------------------------------
+	// Find Line Start
+	var indexLineStart = selectionStart;
+	for(; indexLineStart > 0 ;indexLineStart-- ){
+		if(value.charAt(indexLineStart) == "\n"){ break; }
+	}
+	
+	//--------------------------------------------
+	// Find Line End
+	var indexLineEnd = selectionStart;
+	for(; indexLineEnd < value.length-1 ;indexLineEnd++ ){
+		if(value.charAt(indexLineEnd) == "\n"){ break; }
+	}
+	
+	console.log("indexLineStart:"+indexLineStart);
+	console.log("indexLineEnd:"+indexLineEnd);
+	
+	var line = value.substring(indexLineStart, indexLineEnd);	
+	
+	// set textarea value to: text before caret + tab + text after caret
+	value = value.substring(0, indexLineStart) 
+					+line
+					+line
+	    		+ value.substring(indexLineEnd);
+	
+	domElement.value = value;
+	
+	let newCursorPos = (direction == "down") ? selectionStart + line.length : selectionStart;
+	
+	domElement.selectionStart = newCursorPos;
+	domElement.selectionEnd = newCursorPos;
+
 }
 	
 /*******************************************************************************
@@ -177,14 +213,30 @@ function cfw_query_initialDraw(){
 		//---------------------------
 		// Ctrl + Alt + Up
 		if (e.ctrlKey && e.altKey && e.keyCode == 38) {
-			cfw_query_copyCurrentLine('up');
+			cfw_query_copyCurrentLine('up', this);
 		}
 		
 		//---------------------------
-		// Ctrl + Alt + Up
-		if (e.ctrlKey && e.altKey && e.keyCode == 38) {
-			cfw_query_copyCurrentLine('down');
+		// Ctrl + Alt + Down
+		if (e.ctrlKey && e.altKey && e.keyCode == 40) {
+			cfw_query_copyCurrentLine('down', this);
 		}
+		
+		//---------------------------
+		// Allow Tab for Indentation
+		if (e.key == 'Tab') {
+		    e.preventDefault();
+		    var start = this.selectionStart;
+		    var end = this.selectionEnd;
+		
+		    // set textarea value to: text before caret + tab + text after caret
+		    this.value = this.value.substring(0, start) +
+		      "\t" + this.value.substring(end);
+		
+		    // put caret at right position again
+		    this.selectionStart =
+		      this.selectionEnd = start + 1;
+		  }
 		
 		//---------------------------
 		// Ctrl + Enter
