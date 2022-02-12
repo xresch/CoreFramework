@@ -1699,7 +1699,7 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 		var label = renderDef.getTitleString(currentRecord);
 		if(datasets[label] == undefined){
 			hue += 30;
-			var borderColor = CFW.colors.randomHSL(hue,65,100,55,70);
+			var borderColor = CFW.colors.randomSL(hue,65,100,55,70);
 			var bgColor = borderColor.replace('1.0)', '0.65)');
 			datasets[label] = {
 					label: label, 
@@ -1755,7 +1755,7 @@ function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 		var label = renderDef.getTitleString(currentRecord);
 		if(datasets[label] == undefined){
 			hue += 30;
-			var borderColor = CFW.colors.randomHSL(hue,65,100,55,70);
+			var borderColor = CFW.colors.randomSL(hue,65,100,55,70);
 			var bgColor = borderColor.replace('1.0)', '0.65)');
 			datasets[label] = {
 					label: label, 
@@ -1808,7 +1808,7 @@ function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
 		//----------------------------
 		// Create Label & Dataset
 		hue += 31;
-		var borderColor = CFW.colors.randomHSL(hue,65,100,55,70);
+		var borderColor = CFW.colors.randomSL(hue,65,100,55,70);
 		var bgColor = borderColor.replace('1.0)', '0.65)');
 		
 		if( CFW.utils.isNullOrEmpty(currentDataset.label) ){			currentDataset.label = renderDef.getTitleString(currentRecord); }

@@ -247,7 +247,7 @@ function cfw_colors_randomHSL(minS, maxS, minL, maxL) {
  * @param minL The minimum Lightness in percent
  * @param maxL The maximum Lightness in percent
  ************************************************************************************************/
-function cfw_colors_randomHSL(hue, minS, maxS, minL, maxL) {
+function cfw_colors_randomSL(hue, minS, maxS, minL, maxL) {
 	
 	var s = CFW.utils.randomInt(minS, maxS);
 	var l = CFW.utils.randomInt(minL, maxL);
@@ -3717,6 +3717,7 @@ var CFW = {
 		colorizeElement: cfw_colors_colorizeElement,
 		randomRGB: cfw_colors_randomRGB,
 		randomHSL: cfw_colors_randomHSL,
+		randomSL: cfw_colors_randomSL,
 		getThresholdStyle: cfw_colors_getThresholdStyle,
 	},
 	config: {

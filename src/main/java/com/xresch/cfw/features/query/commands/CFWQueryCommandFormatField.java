@@ -45,7 +45,22 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		CFWQueryCommandFormatField instance = new CFWQueryCommandFormatField(null);
 		
 		//------------------------------------------------
-		// Postfix 
+		// Easter Eggs
+		//------------------------------------------------
+		formatterArray.put("eastereggs",
+			instance.new FormatterDefinition(
+				"eastereggs", 
+				"Adds easter eggs to the values.",
+				new Object[][] {
+				}
+			).example(
+				 "#Use default colors green and red."
+				+"\r\n| source random | formatfield FIRSTNAME=eastereggs"
+			)
+		);
+		
+		//------------------------------------------------
+		// Align 
 		//------------------------------------------------
 		formatterArray.put("align",
 			instance.new FormatterDefinition(
@@ -82,7 +97,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield LIKES_TIRAMISU=[\"boolean\", \"yellow\", \"purple\", \"black\", \"#fff\"]"
 			)
 		);
-		
+				
 		//------------------------------------------------
 		// None 
 		//------------------------------------------------
@@ -227,8 +242,11 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		builder.append(CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_display.html"));
 		builder.append("<h2>Available Formatters</h3>");
 		
-		for(FormatterDefinition formatterDefinition : formatterArray.values()) {
-			builder.append(formatterDefinition.getHTMLDocumentation());
+		for(FormatterDefinition definition : formatterArray.values()) {
+			
+			if(!definition.formatName.equals("eastereggs")) {
+				builder.append(definition.getHTMLDocumentation());
+			}
 		}
 		return builder.toString();
 	}

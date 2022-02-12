@@ -136,6 +136,7 @@ function cfw_query_customizerCreateCustom(formatterArray){
 				case 'none': 		return $('<span class="">').text(value); break;
 				case 'align': 		cfw_query_formatAlign(resultSpan, value, current[1]); break;
 				case 'boolean': 	cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]); break;
+				case 'eastereggs': 	cfw_query_formatEasterEggs(resultSpan, value, current[1]); break;
 				case 'prefix': 		cfw_query_formatPrefix(resultSpan, value, current[1]); break;
 				case 'postfix': 	cfw_query_formatPostfix(resultSpan, value, current[1]); break;
 				case 'threshold': 	cfw_query_formatThreshold(resultSpan, value, current[1], current[2], current[3], current[4], current[5], current[6]); break;
@@ -202,6 +203,28 @@ function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTex
 /*******************************************************************************
  * 
  ******************************************************************************/
+function cfw_query_formatEasterEggs(span, value, prefix){
+	
+	value = span.text();
+	
+	value = value.replaceAll("o", '<i class="fas fa-egg"></i>')
+				.replaceAll("O", '<i class="fas fa-egg"></i>')
+				.replaceAll("0", '<i class="fas fa-egg"></i>')
+				;
+				
+	span.html(value).find("i").each(function(){
+		console.log("color: "+CFW.colors.randomHSL(65,100,55,70))
+		$(this).css('color', CFW.colors.randomHSL(65,100,55,70));
+	})
+	
+	
+	
+	return span;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 function cfw_query_formatPrefix(span, value, prefix){
 	
 	value = span.text();
@@ -247,9 +270,7 @@ function cfw_query_formatTimestamp(span, value, format){
 	
 	span.addClass('format-base');
 	
-	console.log("test")
 	if(value != null){
-		console.log("bla")
 		span.text(new  moment(value).format(format));
 	}
 
