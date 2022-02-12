@@ -226,7 +226,7 @@ function cfw_query_formatPostfix(span, value, postfix){
  ******************************************************************************/
 function cfw_query_formatThreshold(span, value, excellent, good, warning, emergency, danger, type){
 	
-	span.addClass('format-base text-right');
+	span.addClass('format-base text-right font-weight-bold');
 	
 	var style = CFW.colors.getThresholdStyle(value, excellent, good, warning, emergency, danger, false);
 	
