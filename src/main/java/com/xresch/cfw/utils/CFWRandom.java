@@ -38,6 +38,16 @@ public class CFWRandom {
 				, "Create like a god, command like a king, work like a slave."
 				, "You can no longer obey; You have tasted command, and you cannot give it up."
 				, "I must follow the users. Am I not their loyal server?"
+				, "No man has received from nature the right to command his fellow human beings. So they started to command computers."
+				, "We can't command our love, but we can our applications."
+				, "The only thing you may command is a small and humble amount of total obedience."
+				, "Who then is free? The wise man who can command so the methods are put to work."
+				, "Don't think, just do."
+				, "Life is largely a matter of expectations."
+				, "Life grants nothing to mortals without getting computers to do the hard work."
+				, "Who has not served is made to command."
+				, "You're the boss!"
+				, "Certainly my chieftain!"
 			};
 	
 	private static final String[] issueResolvedMessages = 
