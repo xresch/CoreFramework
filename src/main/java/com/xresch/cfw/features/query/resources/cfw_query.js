@@ -71,6 +71,8 @@ function cfw_query_resizeTextareaToFitQuery(){
 			
 			if(currentLineCount <= 23 && oldLineCount < currentLineCount) {
 				$('#query').attr('rows', currentLineCount);
+			}else if(currentLineCount > 23){
+				$('#query').attr('rows', 23);
 			}
 		}
 }
