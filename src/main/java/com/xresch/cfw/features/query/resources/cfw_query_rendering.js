@@ -136,6 +136,7 @@ function cfw_query_customizerCreateCustom(formatterArray){
 				
 				case 'align': 		cfw_query_formatAlign(resultSpan, value, current[1]); break;
 				case 'boolean': 	cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]); break;
+				case 'css':		 	cfw_query_formatCSS(resultSpan, value, current[1], current[2]); break;
 				case 'date': 		cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
 				case 'eastereggs': 	cfw_query_formatEasterEggs(resultSpan, value, current[1]); break;
 				case 'none': 		return $('<span class="">').text(value); break;
@@ -200,6 +201,16 @@ function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTex
 		
 	}
 	
+	return span;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatCSS(span, value, propertyName, propertyValue){
+	
+	span.css(propertyName, propertyValue);
+
 	return span;
 }
 

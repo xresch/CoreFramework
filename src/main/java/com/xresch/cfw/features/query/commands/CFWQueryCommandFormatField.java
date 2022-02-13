@@ -99,6 +99,23 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		);
 		
 		//------------------------------------------------
+		// css 
+		//------------------------------------------------
+		formatterArray.put("css",
+			instance.new FormatterDefinition(
+				"css", 
+				"Adds a custom CSS property to the formatting of the value. Adds font-weight bold by default.",
+				new Object[][] {
+					 new Object[] {"propertyName", "font-weight", "The name of the css property."}
+					,new Object[] {"propertyValue", "bold", "The value of the css property."}
+				}
+			).example(
+				 "#Use default colors green and red."
+				+"\r\n| source random | formatfield LIKES_TIRAMISU=boolean"
+			)
+		);
+		
+		//------------------------------------------------
 		// Date
 		//------------------------------------------------
 		formatterArray.put("date",
@@ -109,8 +126,8 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 					 new Object[] {"format", "YYYY-MM-DD", "The format of the date, google moment.js for details."}
 				}
 			).example(
-				 "#Formats the LAST_LOGIN epoch milliseconds as a timestamp."
-				+"\r\n| source random | formatfield LAST_LOGIN=timestamp"
+				 "#Formats the LAST_LOGIN epoch milliseconds as a date."
+				+"\r\n| source random | formatfield LAST_LOGIN=date"
 			)
 		);
 				
