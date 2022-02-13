@@ -110,8 +110,11 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 					,new Object[] {"propertyValue", "bold", "The value of the css property."}
 				}
 			).example(
-				 "#Use default colors green and red."
-				+"\r\n| source random | formatfield LIKES_TIRAMISU=boolean"
+				 "#Adds three css properties to LASTNAME"
+				+"\r\n| source random | formatfield"
+				+ "\r\n    LASTNAME=[css,\"border\",\"3px dashed white\"]"
+				+ "\r\n    LASTNAME=[css,\"width\",\"100%\"]"
+				+ "\r\n    LASTNAME=[css,\"display\",\"block\"]"
 			)
 		);
 		
@@ -128,6 +131,25 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			).example(
 				 "#Formats the LAST_LOGIN epoch milliseconds as a date."
 				+"\r\n| source random | formatfield LAST_LOGIN=date"
+			)
+		);
+		
+		//------------------------------------------------
+		// Link 
+		//------------------------------------------------
+		formatterArray.put("link",
+			instance.new FormatterDefinition(
+				"link", 
+				"Used to format URLs as links, either as text or as button.",
+				new Object[][] {
+					 new Object[] {"linkText", "Open Link", "The text for displaying the link."}
+					,new Object[] {"displayAs", "button", "Either 'link' or 'button'."}
+					,new Object[] {"icon", "fa-external-link-square-alt", "A fontawesome icon to prepend to the link text."}
+					 ,new Object[] {"target", "blank", "How to open the link."}
+				}
+			).example(
+				 "#Displays the link with the text 'Open' and as a button."
+				+"\r\n| source random | formatfield URL=link,\"Open\",button"
 			)
 		);
 				
@@ -147,7 +169,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		);
 		
 		//------------------------------------------------
-		// nulls 
+		// Shownulls 
 		//------------------------------------------------
 		formatterArray.put("shownulls",
 			instance.new FormatterDefinition(
@@ -239,7 +261,6 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			)
 		);
 		
-
 	}
 	
 	/***********************************************************************************************
@@ -270,7 +291,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "display <fieldname>=<stringOrArray> [<fieldname>=<stringOrArray> ...]";
+		return "formatfield <fieldname>=<stringOrArray> [<fieldname>=<stringOrArray> ...]";
 	}
 	
 	/***********************************************************************************************
@@ -290,8 +311,8 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	public String descriptionHTML() {
 		
 		StringBuilder builder = new StringBuilder();
-		builder.append(CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_display.html"));
-		builder.append("<h2>Available Formatters</h3>");
+		builder.append(CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_formatfield.html"));
+		builder.append("<h2 class=\"toc-hidden\">Available Formatters</h3>");
 		
 		for(FormatterDefinition definition : formatterArray.values()) {
 			
@@ -447,7 +468,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			
 			StringBuilder builder = new StringBuilder();
 			
-			builder.append("<h3>"+formatName+"</h3>");
+			builder.append("<h3 class=\"toc-hidden\">"+formatName+"</h3>");
 			
 			//---------------------------
 			// Add Syntax

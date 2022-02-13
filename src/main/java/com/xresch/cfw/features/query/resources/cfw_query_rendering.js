@@ -139,6 +139,7 @@ function cfw_query_customizerCreateCustom(formatterArray){
 				case 'css':		 	cfw_query_formatCSS(resultSpan, value, current[1], current[2]); break;
 				case 'date': 		cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
 				case 'eastereggs': 	cfw_query_formatEasterEggs(resultSpan, value, current[1]); break;
+				case 'link': 		cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'none': 		return $('<span class="">').text(value); break;
 				case 'shownulls':	cfw_query_formatShowNulls(resultSpan, value, current[1]); break;
 				case 'prefix': 		cfw_query_formatPrefix(resultSpan, value, current[1]); break;
@@ -152,7 +153,6 @@ function cfw_query_customizerCreateCustom(formatterArray){
 	
 	}
 }
-
 
 /*******************************************************************************
  * 
@@ -234,6 +234,32 @@ function cfw_query_formatEasterEggs(span, value, prefix){
 	
 	return span;
 }
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatLink(span, value, linkText, displayAs, icon, target){
+	
+	var linkElement = $('<a>'+linkText+'</a>');
+	linkElement.attr('href', value)
+			   .attr('target', value);
+	
+	if(displayAs == 'button'){
+		linkElement.attr('role', 'button')
+				   .addClass('btn btn-sm btn-primary');
+	}	
+	
+	if(icon != null){
+		linkElement.prepend('<i class="fas '+icon+'"></i>&nbsp;');
+	}
+	
+	span.html('');
+	span.append(linkElement);
+	
+	return span;
+}
+
+
 
 /*******************************************************************************
  * 
