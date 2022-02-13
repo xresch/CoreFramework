@@ -202,7 +202,7 @@ public class CFWQueryParser {
 				||(commandName.toLowerCase().equals("gimme"))) {
 				
 				if(!this.hasMoreTokens()) {
-					this.throwParseException("Query cannot end with the super ultimate GIB command.", 0);
+					this.throwParseException("Query cannot end with the super ultimate GIB as this would also end the universe.", 0);
 				}else {
 					CFW.Messages.addSuccessMessage(obedienceMessage);
 					commandNameToken = this.consumeToken();
@@ -210,7 +210,7 @@ public class CFWQueryParser {
 					
 					while(commandName.equals("!")) {
 						if(!this.hasMoreTokens()) {
-							this.throwParseException("Query cannot end with the super ultimate GIB command.", 0);
+							this.throwParseException("Query cannot end with the super ultimate GIB as this would also end the universe.", 0);
 						}else {
 							commandNameToken = this.consumeToken();
 							commandName = commandNameToken.value();

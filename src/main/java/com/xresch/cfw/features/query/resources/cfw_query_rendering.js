@@ -136,6 +136,7 @@ function cfw_query_customizerCreateCustom(formatterArray){
 				
 				case 'align': 		cfw_query_formatAlign(resultSpan, value, current[1]); break;
 				case 'boolean': 	cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]); break;
+				case 'date': 		cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
 				case 'eastereggs': 	cfw_query_formatEasterEggs(resultSpan, value, current[1]); break;
 				case 'none': 		return $('<span class="">').text(value); break;
 				case 'shownulls':	cfw_query_formatShowNulls(resultSpan, value, current[1]); break;
@@ -276,6 +277,21 @@ function cfw_query_formatThreshold(span, value, excellent, good, warning, emerge
 	}
 	
 	CFW.colors.colorizeElement(span, style, type, "2px");
+
+	return span;
+}
+
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatDate(span, value, format){
+	
+	span.addClass('format-base');
+	
+	if(value != null){
+		span.text(new  moment(value).format(format));
+	}
 
 	return span;
 }

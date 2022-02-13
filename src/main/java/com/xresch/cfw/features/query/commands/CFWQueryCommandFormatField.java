@@ -97,6 +97,22 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield LIKES_TIRAMISU=[\"boolean\", \"yellow\", \"purple\", \"black\", \"#fff\"]"
 			)
 		);
+		
+		//------------------------------------------------
+		// Date
+		//------------------------------------------------
+		formatterArray.put("date",
+			instance.new FormatterDefinition(
+				"date", 
+				"Formats epoch milliseconds as date.",
+				new Object[][] {
+					 new Object[] {"format", "YYYY-MM-DD", "The format of the date, google moment.js for details."}
+				}
+			).example(
+				 "#Formats the LAST_LOGIN epoch milliseconds as a timestamp."
+				+"\r\n| source random | formatfield LAST_LOGIN=timestamp"
+			)
+		);
 				
 		//------------------------------------------------
 		// None 
