@@ -2,6 +2,7 @@ package com.xresch.cfw.utils;
 
 import java.util.Date;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.google.gson.JsonArray;
@@ -237,7 +238,7 @@ public class CFWRandom {
 		long currentTime = new Date().getTime();
 		
 		JsonObject object = new JsonObject();
-		String id = CFW.Random.randomStringAlphaNumerical(16);
+		String id = UUID.randomUUID().toString().substring(0, 22);
 		object.addProperty("ID",  id);
 		object.addProperty("FIRSTNAME", CFW.Random.randomFirstnameOfGod());
 		object.addProperty("LASTNAME", CFW.Random.randomLastnameSweden(nullRatioPercent));
@@ -245,8 +246,9 @@ public class CFWRandom {
 
 		object.addProperty("LIKES_TIRAMISU", CFW.Random.randomBoolean(nullRatioPercent));
 		object.addProperty("LAST_LOGIN", currentTime-(CFW.Random.randomIntegerInRange(100, 10000)*1000000) );
-		object.addProperty("URL", "http://www.example.url/mightyperson?id="+id);
+		object.addProperty("URL", "http://www.example.url/mightyperson?id="+random);
 		object.addProperty("VALUE", CFW.Random.randomIntegerInRange(1, 100));
+
 		
 		return object;
 	}
