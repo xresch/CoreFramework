@@ -25,6 +25,21 @@ public class CFWRandom {
 	private static final String[] mythicalLocations = new String[] {"Agartha", "Alfheim", "Alomkik", "Annwn", "Amaravati", "Arcadia", "Asgard", "Asphodel Meadows", "Atlantis", "Avalon", "Axis Mundi", "Ayotha Amirtha Gangai", "Aztlan", "Baltia", "Biarmaland", "Biringan City", "Brahmapura", "Brittia", "Camelot", "City of the Caesars", "Cloud cuckoo land", "Cockaigne", "Dinas Affaraon", "Ffaraon", "Diyu", "El Dorado", "Elysian Fields", "Feather Mountain", "Garden of Eden", "Garden of the Hesperides", "Finias", "Hawaiki", "Heaven", "Hell", "Hyperborea", "Irkalla", "Islands of the Blessed", "Jabulqa", "Jambudvīpa", "Jotunheim", "Ketumati", "Kingdom of Reynes", "Kingdom of Saguenay", "Kitezh", "Kolob", "Kunlun Mountain", "Kvenland", "Kyoepelinvuori", "La Ciudad Blanca", "Laestrygon", "Lake Parime", "Land of Manu", "Lemuria", "Lintukoto", "Lyonesse", "Mag Mell", "Meropis", "Mictlan", "Mount Penglai", "Mu", "Muspelheim", "Naraka", "New Jerusalem", "Nibiru", "Niflheim", "Niflhel", "Nirvana", "Norumbega", "Nysa", "Olympus", "Paititi", "Panchaia", "Pangaia", "Pandaemonium", "Pleroma", "Pohjola", "Purgatory", "Quivira", "Cíbola", "Ram Setu", "Samavasarana", "Scholomance", "Sierra de la Plata", "Shambhala", "Shangri-La", "Suddene", "Summerland", "Svarga", "Svartalfaheimr", "Takama-ga-hara", "Tartarus", "Themiscyra", "Thule", "Thuvaraiyam Pathi", "Tir na nag", "Vaikuntha", "Valhalla", "Vanaheimr", "Westernesse", "Xanadu", "Shangdu", "Xibalba", "Yomi", "Ys", "Zarahemla", "Zerzura", "Zion"};
 	private static final String[] exaggeratingAdjectives = new String[] { "utterly arduous", "superfluous", "chocolate-addicted", "super-sneaky", "ultra cuddly", "mega religious", "totally angry", "absolutely arrogant", "totally-at-the-ready", "bat-sh*t-crazy", "bull-headed", "100% confused", "fully-cruel-hearted", "over-demanding", "fiercely loyal", "endlessly flirting", "free-loading", "frisky", "god-mode-greedy", "devil-like hateful", "house-broken", "above hyperactive", "high-end", "idiotic", "infuriating", "awfully insecure", "hilariously maniacal", "ultra narrow-minded", "out-of-control", "rebellious", "self-absorbed", "shaky", "shivering", "slippery", "stubborn", "territorial", "tripping", "twisted", "underhanded", "vengeful", "vile", "yapping", "zippy", "zombie-like" };
 	
+	private static final String[] messagesOfObedience = 
+			new String[] {
+				  "Your wish is the applications command!"
+				, "The algorithms heed your order!"
+				, "Great achievements are made out of a combination of obedience and making processors do the work."
+				, "Your lordship may be pleased by the splendid work!"
+				, "Obedience is less painful than regret, and the RAM truly hates regrets!"
+				, "Aye-aye, sir!"
+				, "Any dictator would admire the strictness of your orders!"
+				, "Always do everything you ask of those you command."
+				, "Create like a god, command like a king, work like a slave."
+				, "You can no longer obey; You have tasted command, and you cannot give it up."
+				, "I must follow the users. Am I not their loyal server?"
+			};
+	
 	private static final String[] issueResolvedMessages = 
 		new String[] {
 			  "No more issues detected, the robo-brain sending you this message wishes you a marvelous day!"
@@ -146,6 +161,7 @@ public class CFWRandom {
 	public static String randomMythicalLocation() { return randomMythicalLocation(0); }
 	public static String randomExaggaratingAdjective() { return randomExaggaratingAdjective(0); }
 	public static String randomIssueResolvedMessage() { return randomIssueResolvedMessage(0); }
+	public static String randomMessageOfObedience() { return randomMessageOfObedience(0); }
 	
 	
 	public static String randomFirstnameOfGod(int nullRatioPercent) { return randomFromArray(nullRatioPercent, firstnameGods); }
@@ -153,6 +169,7 @@ public class CFWRandom {
 	public static String randomMythicalLocation(int nullRatioPercent) { return randomFromArray(nullRatioPercent, mythicalLocations); }
 	public static String randomExaggaratingAdjective(int nullRatioPercent) { return randomFromArray(nullRatioPercent, exaggeratingAdjectives); }
 	public static String randomIssueResolvedMessage(int nullRatioPercent) { return randomFromArray(nullRatioPercent, issueResolvedMessages); }
+	public static String randomMessageOfObedience(int nullRatioPercent) { return randomFromArray(nullRatioPercent, messagesOfObedience); }
 	
 	
 	/******************************************************************************

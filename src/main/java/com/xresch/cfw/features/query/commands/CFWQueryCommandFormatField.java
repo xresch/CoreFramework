@@ -112,6 +112,24 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield LIKES_TIRAMISU=none"
 			)
 		);
+		
+		//------------------------------------------------
+		// nulls 
+		//------------------------------------------------
+		formatterArray.put("shownulls",
+			instance.new FormatterDefinition(
+				"shownulls", 
+				"Show or hide null values.",
+				new Object[][] {
+					 new Object[] {"isVisible", true, "If true, shows nulls, if false make them blank."}
+				}
+			).example(
+				 "#Adds formatting for null values after default null handling got overridden"
+				+"\r\n| source random | formatfield LIKES_TIRAMISU=boolean LIKES_TIRAMISU=['shownulls']"
+				+"\r\n#Adds formatting for null values after default null handling got overridden"
+				+"\r\n| source random | formatfield LIKES_TIRAMISU=['shownulls', false]"
+			)
+		);
 				
 		//------------------------------------------------
 		// Postfix 

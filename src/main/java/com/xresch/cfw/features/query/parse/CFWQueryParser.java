@@ -51,6 +51,9 @@ public class CFWQueryParser {
 	
 	private int cursor;
 	
+	//Used for GIB-Easteregg
+	String obedienceMessage = CFW.Random.randomMessageOfObedience();
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -192,6 +195,29 @@ public class CFWQueryParser {
 			// Get Command
 			CFWQueryToken commandNameToken = this.consumeToken();
 			String commandName = commandNameToken.value();
+			
+			//------------------------------------
+			// GIB-Easteregg for Vincent Theus
+			while(commandName.toLowerCase().equals("gib")
+				||(commandName.toLowerCase().equals("gimme"))) {
+				
+				if(!this.hasMoreTokens()) {
+					this.throwParseException("Query cannot end with the super ultimate GIB command.", 0);
+				}else {
+					CFW.Messages.addSuccessMessage(obedienceMessage);
+					commandNameToken = this.consumeToken();
+					commandName = commandNameToken.value();
+					
+					while(commandName.equals("!")) {
+						if(!this.hasMoreTokens()) {
+							this.throwParseException("Query cannot end with the super ultimate GIB command.", 0);
+						}else {
+							commandNameToken = this.consumeToken();
+							commandName = commandNameToken.value();
+						}
+					}
+				}
+			}
 			
 			//------------------------------------
 			// Registry Check exists

@@ -124,7 +124,7 @@ function cfw_query_customizerCreateCustom(formatterArray){
 		
 	return function (record, value, rendererName, fieldname){
 	
-		var resultSpan = $('<span class="">');
+		var resultSpan = $('<span>');
 		resultSpan.text(value);
 		
 		for(var i in formatterArray){
@@ -133,10 +133,12 @@ function cfw_query_customizerCreateCustom(formatterArray){
 			var formatterName = current[0].toLowerCase();
 			
 			switch(formatterName){
-				case 'none': 		return $('<span class="">').text(value); break;
+				
 				case 'align': 		cfw_query_formatAlign(resultSpan, value, current[1]); break;
 				case 'boolean': 	cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'eastereggs': 	cfw_query_formatEasterEggs(resultSpan, value, current[1]); break;
+				case 'none': 		return $('<span class="">').text(value); break;
+				case 'shownulls':	cfw_query_formatShowNulls(resultSpan, value, current[1]); break;
 				case 'prefix': 		cfw_query_formatPrefix(resultSpan, value, current[1]); break;
 				case 'postfix': 	cfw_query_formatPostfix(resultSpan, value, current[1]); break;
 				case 'threshold': 	cfw_query_formatThreshold(resultSpan, value, current[1], current[2], current[3], current[4], current[5], current[6]); break;
@@ -217,6 +219,23 @@ function cfw_query_formatEasterEggs(span, value, prefix){
 	})
 	
 	
+	
+	return span;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatShowNulls(span, value, isVisible){
+	
+	if(value === null || value === undefined){
+		if(isVisible){
+			span.text("NULL");
+			span.addClass('format-base bg-primary text-white');
+		}else{
+			span.html("&nbsp;");
+		}
+	}
 	
 	return span;
 }
