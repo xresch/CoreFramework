@@ -144,6 +144,7 @@ function cfw_query_customizerCreateCustom(formatterArray){
 				case 'boolean': 	cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'css':		 	cfw_query_formatCSS(resultSpan, value, current[1], current[2]); break;
 				case 'date': 		cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
+				case 'decimals': 	cfw_query_formatDecimals(resultSpan, value, current[1]); break;
 				case 'duration': 	cfw_query_formatDuration(resultSpan, value, current[1]); break;
 				case 'eastereggs': 	cfw_query_formatEasterEggs(resultSpan, value, current[1]); break;
 				case 'link': 		cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
@@ -226,6 +227,40 @@ function cfw_query_formatCSS(span, value, propertyName, propertyValue){
 /*******************************************************************************
  * 
  ******************************************************************************/
+function cfw_query_formatDate(span, value, format){
+	
+	span.addClass('format-base');
+	
+	if(value != null){
+		span.text(new  moment(value).format(format));
+	}
+
+	return span;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatDecimals(span, value, precision){
+		
+	var valueToProcess = value;
+	
+	var stringValue = span.text();
+	if(stringValue != null && !isNaN(stringValue)){
+		valueToProcess = parseFloat(stringValue);
+	}
+	
+
+	if(valueToProcess != null){
+		span.text(valueToProcess.toFixed(precision));
+	}
+
+	return span;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 function cfw_query_formatEasterEggs(span, value, prefix){
 	
 	value = span.text();
@@ -300,8 +335,16 @@ function cfw_query_formatSeparators(span, value, separator, eachDigit ){
 	
 	span.addClass('format-base text-right');
 	
-	if(value != null){
-		span.text(CFW.format.numberSeparators(value, separator, eachDigit));
+		var valueToProcess = value;
+	
+	var stringValue = span.text();
+	if(stringValue != null && !isNaN(stringValue)){
+		valueToProcess = parseFloat(stringValue);
+	}
+	
+
+	if(valueToProcess != null){
+		span.text(CFW.format.numberSeparators(valueToProcess, separator, eachDigit));
 	}
 
 	return span;
@@ -359,19 +402,6 @@ function cfw_query_formatThreshold(span, value, excellent, good, warning, emerge
 }
 
 
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_query_formatDate(span, value, format){
-	
-	span.addClass('format-base');
-	
-	if(value != null){
-		span.text(new  moment(value).format(format));
-	}
-
-	return span;
-}
 
 /*******************************************************************************
  * 

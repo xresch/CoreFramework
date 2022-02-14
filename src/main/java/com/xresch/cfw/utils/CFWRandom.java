@@ -10,6 +10,7 @@ import org.h2.util.json.JSONNull;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.ibm.icu.math.BigDecimal;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -212,8 +213,6 @@ public class CFWRandom {
 	/******************************************************************************
 	 * Creates a random integer between 0(inclusive) and the given number(inclusive).
 	 * 
-	 * @param byteCount number of bytes to create
-	 * @return
 	 ******************************************************************************/
 	public static Integer randomFromZeroToInteger(int upperInclusive) {
 		
@@ -223,8 +222,6 @@ public class CFWRandom {
 	/******************************************************************************
 	 * Creates a random integer between 0 and the given number(inclusive).
 	 * 
-	 * @param byteCount number of bytes to create
-	 * @return
 	 ******************************************************************************/
 	public static Integer randomIntegerInRange(int lowerInclusive, int upperInclusive) {
 		
@@ -232,14 +229,31 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
-	 * Creates a random integer between 0 and the given number(inclusive).
+	 * Creates a random long between 0 and the given number(inclusive).
 	 * 
-	 * @param byteCount number of bytes to create
-	 * @return
 	 ******************************************************************************/
-	public static Double randomDoubleInRange(int lowerInclusive, int upperInclusive) {
+	public static Long randomLongInRange(long lowerInclusive, long upperInclusive) {
+		
+		return ThreadLocalRandom.current().nextLong(lowerInclusive, upperInclusive+1);
+	}
+	
+	/******************************************************************************
+	 * Creates a random double between 0 and the given number(inclusive).
+	 * 
+	 ******************************************************************************/
+	public static Double randomDoubleInRange(double lowerInclusive, double upperInclusive) {
 		
 		return ThreadLocalRandom.current().nextDouble(lowerInclusive, upperInclusive+1);
+	}
+	
+	/******************************************************************************
+	 * Creates a random float between 0 and the given number(inclusive).
+	 * 
+	 ******************************************************************************/
+	public static Float randomFloatInRange(int lowerInclusive, int upperInclusive) {
+		
+		float randomFloat = ThreadLocalRandom.current().nextFloat();
+		return (randomFloat * upperInclusive) + lowerInclusive;
 	}
 	
 	/******************************************************************************
@@ -248,10 +262,14 @@ public class CFWRandom {
 	 * @param byteCount number of bytes to create
 	 * @return
 	 ******************************************************************************/
-	public static Float randomFloatInRange(int lowerInclusive, int upperInclusive) {
+	public static BigDecimal randomBigDecimalsInRange(int lowerInclusive, int upperInclusive) {
 		
-		float randomFloat = ThreadLocalRandom.current().nextFloat();
-		return (randomFloat * upperInclusive) + lowerInclusive;
+		long integer = CFW.Random.randomLongInRange(lowerInclusive, upperInclusive);
+		long decimals = CFW.Random.randomLongInRange(100, 100000000000000l);
+		
+		BigDecimal decimal = new BigDecimal(integer+"."+decimals);
+		
+		return decimal ;
 	}
 	
 	/******************************************************************************
@@ -422,8 +440,10 @@ public class CFWRandom {
 		JsonObject object = new JsonObject();
 		
 		object.addProperty("UUID", UUID.randomUUID().toString());
-		object.addProperty("FLOAT",   CFW.Random.randomFloatInRange(1, 100000));
 		object.addProperty("THOUSANDS",   thousands);
+		object.addProperty("FLOAT",   CFW.Random.randomFloatInRange(1, 10000000));
+		object.addProperty("BIG_DECIMAL",   CFW.Random.randomBigDecimalsInRange(1, 1000000));
+		
 
 		return object;
 	}

@@ -138,6 +138,22 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		);
 		
 		//------------------------------------------------
+		// Decimals
+		//------------------------------------------------
+		formatterArray.put("decimals",
+			instance.new FormatterDefinition(
+				"decimals", 
+				"Sets the decimal precision to a fixed number",
+				new Object[][] {
+					 new Object[] {"precision", 2, "The number of decimal places."}
+				}
+			).example(
+				 "#Reduces decimal precision to 2 and adds separators, order matters."
+				+"\r\n| source random type=numbers | formatfield BIG_DECIMAL=['decimals', 2] BIG_DECIMAL=['separators'] "
+			)
+		);
+		
+		//------------------------------------------------
 		// Duration
 		//------------------------------------------------
 		formatterArray.put("duration",
