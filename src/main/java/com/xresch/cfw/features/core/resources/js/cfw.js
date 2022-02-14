@@ -1943,10 +1943,42 @@ function cfw_format_millisToClock(millis){
  *************************************************************************************/
 function cfw_format_millisToDuration(millis){
 
-  if(millis != null){
-	  return moment.utc(millis).format("HH[h] mm[m] ss[s]");
-  }
-  
+	if(millis != null){
+		var milliseconds = parseInt((millis % 1000) / 100);
+		var seconds = Math.floor((millis / 1000) % 60);
+		var minutes = Math.floor((millis / (1000 * 60)) % 60);
+		var hours = Math.floor((millis / (1000 * 60 * 60)) % 24);
+		var days = Math.floor( millis / (1000 * 60 * 60 * 24) );
+		
+
+		
+		hours = (hours < 10) ? "0" + hours : hours;
+		minutes = (minutes < 10) ? "0" + minutes : minutes;
+		seconds = (seconds < 10) ? "0" + seconds : seconds;
+		
+		var clockString = seconds + "." + milliseconds + "s";
+		
+		if(minutes != "00"){
+			clockString = minutes + "m "+clockString;
+		}
+		
+		if(hours != "00"){
+			
+			if(minutes == "00"){
+				clockString = minutes + "m "+clockString;
+			}
+			
+			clockString = hours + "h " +clockString;
+			
+		}
+		
+		if(days != 0){
+			clockString = days + "d " +clockString;
+		}
+		
+		return clockString;
+	}
+	    
   return "";
 }
 

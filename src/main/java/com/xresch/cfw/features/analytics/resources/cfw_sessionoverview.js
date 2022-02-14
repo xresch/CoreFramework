@@ -15,16 +15,16 @@ function cfw_sessionoverview_fetchsessionoverviewAndDisplay(){
 		if(data.payload != null){
 			//-----------------------------------
 			// Render Data			
-			var timestampFormatter = function(record, value){ return CFW.format.epochToTimestamp(value); };
-			var durationFormatter = function(record, value){ return CFW.format.millisToDuration(value); };
+			var timestampFormatter = function(record, value){ return '<span class="d-block w-100 text-right">'+CFW.format.epochToTimestamp(value)+'</span>'; };
+			var durationFormatter = function(record, value){ return '<span class="d-block w-100 text-right">'+CFW.format.millisToDuration(value)+'</span>'; };
 			
 			var rendererSettings = {
 				 	idfield: 'PK_ID',
 				 	bgstylefield: null,
 				 	textstylefield: null,
 				 	titlefields: ['USERNAME', 'SESSION_ID'],
-				 	visiblefields: ['USERNAME', 'FIRSTNAME', 'LASTNAME', 'SESSION_ID', 'CREATION_TIME',  
-				 					'LAST_ACCESS_TIME','ALIVE_TIME','SESSION_TIMOUT', 'EXPIRATION_TIME', 'CLIENT_IP'],
+				 	visiblefields: ['USERNAME', 'FIRSTNAME', 'LASTNAME', 'SESSION_ID', 'CLIENT_IP', 'CREATION_TIME',  
+				 					'LAST_ACCESS_TIME','ALIVE_TIME','SESSION_TIMOUT', 'EXPIRATION_TIME'],
 				 	titleformat: '{0}',
 				 	labels: {
 				 		CLIENT_IP: 'Client IP',
@@ -33,7 +33,7 @@ function cfw_sessionoverview_fetchsessionoverviewAndDisplay(){
 				 		CREATION_TIME: timestampFormatter,
 				 		LAST_ACCESS_TIME: function(record, value){ 
 				 			var now = moment.utc().valueOf();
-				 			return CFW.format.millisToDuration(now-value); 
+				 			return '<span class="d-block w-100 text-right">'+CFW.format.millisToDuration(now-value)+'</span>'; 
 				 		},
 				 		EXPIRATION_TIME: timestampFormatter,
 				 		SESSION_TIMOUT: durationFormatter,

@@ -138,6 +138,7 @@ function cfw_query_customizerCreateCustom(formatterArray){
 				case 'boolean': 	cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'css':		 	cfw_query_formatCSS(resultSpan, value, current[1], current[2]); break;
 				case 'date': 		cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
+				case 'duration': 	cfw_query_formatDuration(resultSpan, value, current[1]); break;
 				case 'eastereggs': 	cfw_query_formatEasterEggs(resultSpan, value, current[1]); break;
 				case 'link': 		cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'none': 		return $('<span class="">').text(value); break;
@@ -328,6 +329,35 @@ function cfw_query_formatDate(span, value, format){
 	
 	if(value != null){
 		span.text(new  moment(value).format(format));
+	}
+
+	return span;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatDuration(span, value, durationUnit){
+	
+	var millisValue = value;
+	
+	if(durationUnit == 's'){
+		millisValue = value * 1000;
+	}else if(durationUnit == 'm'){
+		millisValue = value * 1000 * 60;
+	}else if(durationUnit == 'h'){
+		millisValue = value * 1000 * 60 * 60;
+	}
+	
+	
+	span.addClass('format-base text-right');
+	
+	if(value != null){
+		if(!isNaN(value)){
+			span.text(CFW.format.millisToDuration(millisValue));
+		}else{
+			span.text(value);
+		}
 	}
 
 	return span;

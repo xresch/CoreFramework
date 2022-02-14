@@ -135,6 +135,22 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		);
 		
 		//------------------------------------------------
+		// Date
+		//------------------------------------------------
+		formatterArray.put("duration",
+			instance.new FormatterDefinition(
+				"duration", 
+				"Formats a duration as seconds, minutes, hours and days.",
+				new Object[][] {
+					 new Object[] {"durationUnit", "ms", "The unit of the duration, either of 'ms', 's', 'm', 'h'."}
+				}
+			).example(
+				 "#Formats the LAST_LOGIN epoch milliseconds as a date."
+				+"\r\n| source random | formatfield LAST_LOGIN=date"
+			)
+		);
+		
+		//------------------------------------------------
 		// Link 
 		//------------------------------------------------
 		formatterArray.put("link",
