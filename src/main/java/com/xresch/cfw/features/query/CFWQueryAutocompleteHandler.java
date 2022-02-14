@@ -99,7 +99,6 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 		if( helper.getTokenCount() == 1 ) {
 			CFWQueryToken commandNameToken = helper.getToken(0);
 			
-			System.out.println("Type:"+commandNameToken.type());
 			if(commandNameToken.type() == CFWQueryTokenType.LITERAL_STRING) {
 				String partialOrFullCommandName = commandNameToken.value();
 				
@@ -151,6 +150,25 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 			
 		}
 		
+		//----------------------------------------
+		// Handle Command Only
+		if( helper.getTokenCount() > 1 ) {
+			CFWQueryToken commandNameToken = helper.getToken(0);
+			
+			if(commandNameToken.type() == CFWQueryTokenType.LITERAL_STRING) {
+				String partialOrFullCommandName = commandNameToken.value();
+				
+				if(commandMap.containsKey(partialOrFullCommandName)) {
+					//--------------------------------
+					// Full Command Name already entered
+					CFWQueryCommand command = commandMap.get(partialOrFullCommandName);
+					
+					command.autocomplete(result, helper);
+					
+					return result;
+				}
+			}
+		}
 		
 		return result;
 	}

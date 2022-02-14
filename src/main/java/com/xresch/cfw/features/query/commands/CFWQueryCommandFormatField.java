@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
@@ -28,6 +29,8 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	
+	private static final String FORMATTER_NAME_EASTEREGGS = "eastereggs";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandFormatField.class.getName());
 	
 	CFWQuerySource source = null;
@@ -47,9 +50,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Easter Eggs
 		//------------------------------------------------
-		formatterArray.put("eastereggs",
+		formatterArray.put(FORMATTER_NAME_EASTEREGGS,
 			instance.new FormatterDefinition(
-				"eastereggs", 
+				FORMATTER_NAME_EASTEREGGS, 
 				"Adds easter eggs to the values.",
 				new Object[][] {
 				}
@@ -372,7 +375,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		
 		for(FormatterDefinition definition : formatterArray.values()) {
 			
-			if(!definition.formatName.equals("eastereggs")) {
+			if(!definition.formatName.equals(FORMATTER_NAME_EASTEREGGS)) {
 				builder.append(definition.getHTMLDocumentation());
 			}
 		}
@@ -453,6 +456,35 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				"<b>Hint:&nbsp;</b>Specify how a field should be formatted.<br>"
 				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
 			);
+		
+		AutocompleteList list = new AutocompleteList();
+		result.addList(list);
+		int i = 0;
+		for (String currentName : formatterArray.keySet() ) {
+
+			if(currentName.equals(FORMATTER_NAME_EASTEREGGS)) { continue; };
+			
+			FormatterDefinition formatter = formatterArray.get(currentName);
+			
+			list.addItem(
+				helper.createAutocompleteItem(
+					""
+				  , formatter.getAutocompleteDefaultValues()
+				  , currentName
+				  , formatter.description+"<br><n>Syntax:&nbsp;</b>"+formatter.getSyntax()
+				)
+			);
+			
+			i++;
+			
+			if((i % 5) == 0) {
+				list = new AutocompleteList();
+				result.addList(list);
+			}
+			if(i == 25) { break; }
+		}
+		
+		
 
 	}
 
@@ -518,7 +550,24 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			}
 			builder.append("]");
 			
-			return builder.toString();		}
+			return builder.toString();		
+		}
+		
+		public String getAutocompleteDefaultValues() {
+			StringBuilder builder = new StringBuilder();
+			builder.append("['"+formatName+"'");
+			for(Object[] paramDefinition : formatterParameters) {
+				Object defaultValue = paramDefinition[1];
+				if(defaultValue instanceof Boolean || defaultValue instanceof Number ) {
+					builder.append(", "+paramDefinition[1]);
+				}else {
+					builder.append(", \""+paramDefinition[1]+"\"");
+				}
+			}
+			builder.append("]");
+			
+			return builder.toString();		
+		}
 		
 		public String getHTMLDocumentation() {
 			
