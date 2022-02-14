@@ -155,7 +155,7 @@ function cfw_apioverview_printLoginPanel(parent){
 	// Create Panel
 	
 	 var panelSettings = {
-			cardstyle: 'cfw-blue',
+			cardstyle: null,
 			textstyle: null,
 			textstyleheader: 'white',
 			title: "Login and Usage",
@@ -228,7 +228,7 @@ function cfw_apioverview_printOverview(data){
 			 var current = panels[name];
 			
 			 var panelSettings = {
-						cardstyle: 'cfw-blue',
+						cardstyle: null,
 						textstyle: null,
 						textstyleheader: 'white',
 						title: name,
@@ -303,7 +303,7 @@ function cfw_apioverview_printOverview(data){
 				// Create Panel
 				//----------------------------------------
 				 var subpanelSettings = {
-							cardstyle: 'cfw-green',
+							cardstyle: null,
 							textstyle: null,
 							textstyleheader: null,
 							title: action,
