@@ -126,11 +126,14 @@ function cfw_query_customizerCreateDefault(){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_query_customizerCreateCustom(formatterArray){
+function cfw_query_customizerCreateCustom(formatterArray, span){
 		
 	return function (record, value, rendererName, fieldname){
 	
-		var resultSpan = $('<span>');
+		var resultSpan = span;
+		if(resultSpan == null){
+			resultSpan = $('<span class="format-base">');
+		}
 		resultSpan.text(value);
 		
 		for(var i in formatterArray){
@@ -142,6 +145,7 @@ function cfw_query_customizerCreateCustom(formatterArray){
 				
 				case 'align': 		cfw_query_formatAlign(resultSpan, value, current[1]); break;
 				case 'boolean': 	cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]); break;
+				case 'case':		cfw_query_formatCase(resultSpan, record, value, rendererName, fieldname, current); break;
 				case 'css':		 	cfw_query_formatCSS(resultSpan, value, current[1], current[2]); break;
 				case 'date': 		cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
 				case 'decimals': 	cfw_query_formatDecimals(resultSpan, value, current[1]); break;
@@ -170,7 +174,7 @@ function cfw_query_customizerCreateCustom(formatterArray){
 function cfw_query_formatAlign(span, value, alignment){
 	
 	lower = alignment.toLowerCase();
-	span.addClass('format-base text-'+lower);
+	span.addClass('text-'+lower);
 	
 	if(lower == "center"){
 		span.removeClass('text-left text-right');
@@ -179,8 +183,7 @@ function cfw_query_formatAlign(span, value, alignment){
 	}else {
 		span.removeClass('text-left text-center');
 	}
-	
-	return span;
+
 }
 
 /*******************************************************************************
@@ -188,7 +191,7 @@ function cfw_query_formatAlign(span, value, alignment){
  ******************************************************************************/
 function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTextColor, falseTextColor){
 	
-	span.addClass('format-base text-center');
+	span.addClass('text-center');
 	
 	if(typeof value === "boolean"){
 		let color = value ? trueBGColor : falseBGColor;
@@ -211,7 +214,125 @@ function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTex
 		
 	}
 	
-	return span;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatCase(span, record, value, rendererName, fieldname, caseParams){
+		
+	/**
+		example input
+		['case'
+			, "<10"
+				, "green"
+			, [">=30", "<40"]	
+				, ['css', 'border', '1px solid black']	
+			, ["<=60", "OR", ">90"]
+				, [
+					['css', 'border', '3px solid white']	
+					,['css', 'background-color', 'red']	
+				]
+		]
+	
+	 */
+
+	if(caseParams == null || caseParams.size == 2){
+		return;
+	}
+
+	//---------------------------------
+	// Loop all Conditions and Formatters
+	for(let i = 1; i <= caseParams.length-2; i+=2 ){
+		
+		let tempCondition = caseParams[i];
+
+		//---------------------------
+		// Prepare Condition Array
+		let conditionArray = tempCondition;
+		if(typeof conditionArray == 'string'){
+			conditionArray = [tempCondition];
+		}
+		
+		//---------------------------
+		// Iterate Conditions
+		let hasMatched = null; 
+		let andOperation = true;
+		for(let index in conditionArray){
+			let condition = conditionArray[index];
+			console.log("condition:"+condition);
+			// default to equals
+			if(condition == null){
+				return hasMatched &= (value == null);
+			}
+			
+			if(condition.toLowerCase() == "or"){
+				andOperation = false;
+				continue;
+			}else if(condition.toLowerCase() == "and"){
+				andOperation = true;
+				continue;
+			}
+
+			let conditionResult;
+			if(condition.startsWith("=="))			{ conditionResult = (value == condition.substring(2)); }
+			else if(condition.startsWith("!="))		{ conditionResult = (value != condition.substring(2)); }
+			else if(condition.startsWith("<="))		{ conditionResult = (value <= condition.substring(2)); }
+			else if(condition.startsWith(">="))		{ conditionResult = (value >= condition.substring(2)); }
+			else if(condition.startsWith("<"))		{ conditionResult = (value < condition.substring(1)); }
+			else if(condition.startsWith(">"))		{ conditionResult = (value > condition.substring(1)); }
+			else 									{ conditionResult = (value == condition); }
+			
+			//-------------------------------
+			// Combine results
+			if(hasMatched == null){	
+				hasMatched = conditionResult;
+				continue;
+			}
+			if(andOperation){
+				console.log("andOperation:"+andOperation);
+				hasMatched &= conditionResult;
+			}else{
+				console.log("andOperation:"+andOperation);
+				hasMatched |= conditionResult;
+			}
+			
+		}
+		
+		//---------------------------
+		// Apply format
+		if(hasMatched){
+			let formatting = caseParams[i+1];
+			//console.log("condition:"+caseParams[i]);
+			//console.log("value:"+value);
+			// treat string as color
+			if(typeof formatting == 'string'){
+				CFW.colors.colorizeElement(span, formatting, "bg");
+				CFW.colors.colorizeElement(span, "white", "text");
+				
+			}else if(Array.isArray(formatting)){
+				
+				if(formatting.length > 0){
+					
+					// convert single formatter into array of formatter
+					if( !Array.isArray(formatting[0]) ){
+						formatting = [formatting]
+					}
+					
+					//-----------------------------------
+					// Create Formatting Function and Execute
+					let formatFunction = cfw_query_customizerCreateCustom(formatting, span);
+					formatFunction(record, value, rendererName, fieldname);
+				 }
+				
+			}else{
+				// unsupported, ignore
+			}
+			
+			break;
+		}
+	}
+
 }
 
 /*******************************************************************************
@@ -220,22 +341,16 @@ function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTex
 function cfw_query_formatCSS(span, value, propertyName, propertyValue){
 	
 	span.css(propertyName, propertyValue);
-
-	return span;
 }
 
 /*******************************************************************************
  * 
  ******************************************************************************/
 function cfw_query_formatDate(span, value, format){
-	
-	span.addClass('format-base');
-	
+		
 	if(value != null){
 		span.text(new  moment(value).format(format));
 	}
-
-	return span;
 }
 
 /*******************************************************************************
@@ -255,7 +370,6 @@ function cfw_query_formatDecimals(span, value, precision){
 		span.text(valueToProcess.toFixed(precision));
 	}
 
-	return span;
 }
 
 /*******************************************************************************
@@ -274,9 +388,6 @@ function cfw_query_formatEasterEggs(span, value, prefix){
 		$(this).css('color', CFW.colors.randomHSL(65,100,55,70));
 	})
 	
-	
-	
-	return span;
 }
 
 /*******************************************************************************
@@ -299,8 +410,6 @@ function cfw_query_formatLink(span, value, linkText, displayAs, icon, target){
 	
 	span.html('');
 	span.append(linkElement);
-	
-	return span;
 }
 
 
@@ -313,8 +422,6 @@ function cfw_query_formatPrefix(span, value, prefix){
 	
 	value = span.text();
 	span.text(prefix+value);
-	
-	return span;
 }
 
 /*******************************************************************************
@@ -325,7 +432,6 @@ function cfw_query_formatPostfix(span, value, postfix){
 	value = span.text();
 	span.text(value+postfix);
 	
-	return span;
 }
 
 /*******************************************************************************
@@ -333,7 +439,7 @@ function cfw_query_formatPostfix(span, value, postfix){
  ******************************************************************************/
 function cfw_query_formatSeparators(span, value, separator, eachDigit ){
 	
-	span.addClass('format-base text-right');
+	span.addClass('text-right');
 	
 		var valueToProcess = value;
 	
@@ -346,8 +452,6 @@ function cfw_query_formatSeparators(span, value, separator, eachDigit ){
 	if(valueToProcess != null){
 		span.text(CFW.format.numberSeparators(valueToProcess, separator, eachDigit));
 	}
-
-	return span;
 }
 
 /*******************************************************************************
@@ -364,7 +468,6 @@ function cfw_query_formatShowNulls(span, value, isVisible){
 		}
 	}
 	
-	return span;
 }
 
 
@@ -373,13 +476,12 @@ function cfw_query_formatShowNulls(span, value, isVisible){
  ******************************************************************************/
 function cfw_query_formatThousands(span, value, isBytes, decimals, addBlank ){
 	
-	span.addClass('format-base text-right');
+	span.addClass('text-right');
 	
 	if(value != null){
 		span.html(CFW.format.numbersInThousands(value, decimals, addBlank, isBytes));
 	}
 
-	return span;
 }
 
 
@@ -388,7 +490,7 @@ function cfw_query_formatThousands(span, value, isBytes, decimals, addBlank ){
  ******************************************************************************/
 function cfw_query_formatThreshold(span, value, excellent, good, warning, emergency, danger, type){
 	
-	span.addClass('format-base text-right font-weight-bold');
+	span.addClass('text-right font-weight-bold');
 	
 	var style = CFW.colors.getThresholdStyle(value, excellent, good, warning, emergency, danger, false);
 	
@@ -398,7 +500,6 @@ function cfw_query_formatThreshold(span, value, excellent, good, warning, emerge
 	
 	CFW.colors.colorizeElement(span, style, type, "2px");
 
-	return span;
 }
 
 
@@ -419,7 +520,7 @@ function cfw_query_formatDuration(span, value, durationUnit){
 	}
 	
 	
-	span.addClass('format-base text-right');
+	span.addClass('text-right');
 	
 	if(value != null){
 		if(!isNaN(value)){
@@ -429,7 +530,6 @@ function cfw_query_formatDuration(span, value, durationUnit){
 		}
 	}
 
-	return span;
 }
 
 
@@ -437,14 +537,11 @@ function cfw_query_formatDuration(span, value, durationUnit){
  * 
  ******************************************************************************/
 function cfw_query_formatTimestamp(span, value, format){
-	
-	span.addClass('format-base');
-	
+		
 	if(value != null){
 		span.text(new  moment(value).format(format));
 	}
 
-	return span;
 }
 
 	

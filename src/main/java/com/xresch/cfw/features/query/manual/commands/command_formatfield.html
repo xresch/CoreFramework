@@ -26,3 +26,36 @@ VALUE=threshold
 VALUE=[threshold,0,10,20,30,40]
 # As a list, same as array except without square braces
 VALUE=threshold,0,10,20,30,40</code></pre>
+
+
+
+
+<h3>Case Formatter</h3>
+<p>For special formatting you can use the 'case' formatter. 
+This formatter allows you check for specific conditions and apply a color or any formatter when the condition matches. </p>
+
+<p>Below example does the following: </p>
+<ul>
+	<li>If the value of the field is equals 'Warning', applies the background color orange.</li>
+	<li>If the value is equals 'Excellent' OR 'Good', applies the background color green.</li>
+	<li>If the value is equals 'Danger' OR 'Emergency', applies an array of various formatters.</li>
+</ul>
+<pre><code class="language-bash">| source random type=various
+| formatfield 
+    STATUS=['case', 
+		"Warning", 
+			"orange",
+		["Excellent", "OR", "Good"], 
+			[css, "color", "lightgreen"],
+		["Danger", "OR", "Emergency"], 
+			[
+				[css, "background-color", "darkred"],
+				[css, "color", "white"],
+				[css, "border", "5px dotted white"],
+				[css, "font-weight", "bold"],
+				[css, "text-transform", "uppercase"],
+				[align, "center"],
+				[postfix, " !!!"],
+				[prefix, "!!! "]
+			]
+	]</code></pre>

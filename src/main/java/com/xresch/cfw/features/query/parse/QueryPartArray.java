@@ -27,6 +27,9 @@ public class QueryPartArray extends QueryPart {
 	//holds index if this array is a index access expression(e.g. [1])
 	private Integer arrayIndex = null;
 	
+	// true if the array was embraced with square braces
+	// Used in add()-method to determine wether the array should be unwrapped when added
+	private boolean embracedArray = false;
 	
 	/******************************************************************************************************
 	 *  
@@ -70,8 +73,13 @@ public class QueryPartArray extends QueryPart {
 		if( !(part instanceof QueryPartArray)) {
 			partsArray.add(part);
 		}else {
-			//unwrap arrays
-			partsArray.addAll( ((QueryPartArray)part).getQueryPartsArray());
+			QueryPartArray array = (QueryPartArray)part;
+			if(array.isEmbracedArray()) {
+				partsArray.add(part);
+			}else {
+				//unwrap arrays
+				partsArray.addAll(array.getQueryPartsArray());
+			}
 		}
 		return this;
 	}
@@ -137,7 +145,23 @@ public class QueryPartArray extends QueryPart {
 		return arrayIndex;
 	}
 	
+	/******************************************************************************************************
+	 * Return True if the array was embraced with square braces.
+	 * 
+	 ******************************************************************************************************/
+	public boolean isEmbracedArray() {
+		return embracedArray;
+	}
 	
+	/******************************************************************************************************
+	 * Set to true if the array was embraced with square braces.
+	 * 
+	 ******************************************************************************************************/
+	public QueryPartArray isEmbracedArray(boolean enclosedArray) {
+		this.embracedArray = enclosedArray;
+		return this;
+	}
+
 	/******************************************************************************************************
 	 * Returns the element in the array represented by the index of this QueryPartArray.
 	 * Returns a JsonNull object if not resolvable.

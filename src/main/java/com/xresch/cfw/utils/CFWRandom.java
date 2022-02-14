@@ -477,6 +477,7 @@ public class CFWRandom {
 		object.addProperty("UUID", UUID.randomUUID().toString());
 		object.addProperty("BOOLEAN_STRING", ""+CFW.Random.randomBoolean());
 		object.add("ALWAYS_NULL", JsonNull.INSTANCE);
+		object.addProperty("STATUS", randomFromArray(new String[] {"Excellent", "Good", "Warning", "Emergency", "Danger"}));
 
 		return object;
 	}

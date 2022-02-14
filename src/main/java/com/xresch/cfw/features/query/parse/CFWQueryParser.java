@@ -333,8 +333,10 @@ public class CFWQueryParser {
 										//------------------------------
 										// QueryPartArray
 										tempPart = this.parseQueryPart();
-										firstPart = new QueryPartArray(currentContext).add(tempPart);
-
+										firstPart = new QueryPartArray(currentContext)
+															.isEmbracedArray(true)
+															.add(tempPart);
+											
 										break;	
 										
 //			case KEYWORD:				firstPart = QueryPartValue.newNull(currentContext);

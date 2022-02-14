@@ -91,7 +91,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 			.addField(
 					CFWField.newString(FormFieldType.TEXT, "type")
 						.setDescription("The type of data to generate, one of: 'default' | 'numbers' | 'arrays' | 'various' ")
-						.setValue("basic")
+						.setValue("default")
 				)
 		;
 	}
