@@ -5,7 +5,10 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.h2.util.json.JSONNull;
+
 import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -17,7 +20,8 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public class CFWRandom {
 
 	private static final Random random = new Random();
-		
+	
+	public static final String ALPHAS 	  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	public static final String ALPHA_NUMS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12345678901234567890";
 	public static final String ALPHA_NUMS_SPECIALS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12345678901234567890+*%&/()=?!{}[]><:;.,-_+*%&/()=?!{}[]><:;.,-_";
 
@@ -204,55 +208,7 @@ public class CFWRandom {
 		
 		return stringArray;
 	}
-	/******************************************************************************
-	 * Creates a random json array of people with various properties.
-	 * 
-	 * @param count
-	 ******************************************************************************/
-	public static JsonArray randomJSONArrayOfMightyPeople(int count) { 
-		JsonArray array = new JsonArray();
-				
-		for(int i = 0; i < count; i++) {
-			array.add(randomJSONObjectMightyPerson());
-		}
-		
-		return array;
-	}
 	
-	/******************************************************************************
-	 * Creates a random json array of people with various properties.
-	 * 
-	 * @param count
-	 ******************************************************************************/
-	public static JsonObject randomJSONObjectMightyPerson() { 
-		
-		return randomJSONObjectMightyPerson(0, false);
-		
-	}
-	/******************************************************************************
-	 * Creates a random json array of people with various properties.
-	 * 
-	 * @param count
-	 ******************************************************************************/
-	public static JsonObject randomJSONObjectMightyPerson(int nullRatioPercent, boolean addChartData) { 
-		long currentTime = new Date().getTime();
-		
-		JsonObject object = new JsonObject();
-		
-		String id = UUID.randomUUID().toString().substring(0, 22);
-		object.addProperty("ID",  id);
-		object.addProperty("FIRSTNAME", CFW.Random.randomFirstnameOfGod());
-		object.addProperty("LASTNAME", CFW.Random.randomLastnameSweden(nullRatioPercent));
-		object.addProperty("LOCATION", CFW.Random.randomMythicalLocation(nullRatioPercent));
-
-		object.addProperty("LIKES_TIRAMISU", CFW.Random.randomBoolean(nullRatioPercent));
-		object.addProperty("LAST_LOGIN", currentTime-(CFW.Random.randomIntegerInRange(100, 10000)*1000000) );
-		object.addProperty("URL", "http://www.example.url/mightyperson?id="+id);
-		object.addProperty("VALUE", CFW.Random.randomIntegerInRange(1, 100));
-
-		
-		return object;
-	}
 	/******************************************************************************
 	 * Creates a random integer between 0(inclusive) and the given number(inclusive).
 	 * 
@@ -275,6 +231,47 @@ public class CFWRandom {
 		return ThreadLocalRandom.current().nextInt(lowerInclusive, upperInclusive+1);
 	}
 	
+	/******************************************************************************
+	 * Creates a random integer between 0 and the given number(inclusive).
+	 * 
+	 * @param byteCount number of bytes to create
+	 * @return
+	 ******************************************************************************/
+	public static Double randomDoubleInRange(int lowerInclusive, int upperInclusive) {
+		
+		return ThreadLocalRandom.current().nextDouble(lowerInclusive, upperInclusive+1);
+	}
+	
+	/******************************************************************************
+	 * Creates a random integer between 0 and the given number(inclusive).
+	 * 
+	 * @param byteCount number of bytes to create
+	 * @return
+	 ******************************************************************************/
+	public static Float randomFloatInRange(int lowerInclusive, int upperInclusive) {
+		
+		float randomFloat = ThreadLocalRandom.current().nextFloat();
+		return (randomFloat * upperInclusive) + lowerInclusive;
+	}
+	
+	/******************************************************************************
+	 * Creates a random String containing lower and uppercase characters.
+	 * 
+	 * @param byteCount number of bytes to create
+	 * @return
+	 ******************************************************************************/
+	public static String randomString(int byteCount) {
+	
+		StringBuilder builder = new StringBuilder();
+	
+		//Random random = getInstance();
+		for (int i = 0; i < byteCount; i++) {
+			builder.append(ALPHAS.charAt(random.nextInt(51)));
+		}
+	
+		return builder.toString();
+	
+	}
 
 	/******************************************************************************
 	 * Creates a random String containing alphanumerical characters.
@@ -288,7 +285,7 @@ public class CFWRandom {
 	
 		//Random random = getInstance();
 		for (int i = 0; i < byteCount; i++) {
-			builder.append(ALPHA_NUMS_SPECIALS.charAt(random.nextInt(51)));
+			builder.append(ALPHA_NUMS.charAt(random.nextInt(51)));
 		}
 	
 		return builder.toString();
@@ -313,6 +310,156 @@ public class CFWRandom {
 	
 	}
 	
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfRandomStrings(int count, int stringLength) { 
+		JsonArray array = new JsonArray();
+				
+		for(int i = 0; i < count; i++) {
+			array.add(randomString(stringLength));
+		}
+		
+		return array;
+	}
+	
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfCharacters(int count) { 
+		JsonArray array = new JsonArray();
+				
+		for(int i = 0; i < count; i++) {
+			array.add(randomString(1));
+		}
+		
+		return array;
+	}
+	
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfIntegers(int count, int lowerInclusive, int upperInclusive) { 
+		JsonArray array = new JsonArray();
+				
+		for(int i = 0; i < count; i++) {
+			array.add(randomIntegerInRange(lowerInclusive, upperInclusive));
+		}
+		
+		return array;
+	}
+	
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfMightyPeople(int count) { 
+		JsonArray array = new JsonArray();
+				
+		for(int i = 0; i < count; i++) {
+			array.add(randomJSONObjectMightyPerson());
+		}
+		
+		return array;
+	}
+
+	
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonObject randomJSONObjectMightyPerson() { 
+		
+		return randomJSONObjectMightyPerson(0);
+		
+	}
+	
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonObject randomJSONObjectMightyPerson(int nullRatioPercent) { 
+		long currentTime = new Date().getTime();
+		
+		JsonObject object = new JsonObject();
+		
+		String id = UUID.randomUUID().toString().substring(0, 22);
+		object.addProperty("ID",  id);
+		object.addProperty("FIRSTNAME", CFW.Random.randomFirstnameOfGod());
+		object.addProperty("LASTNAME", CFW.Random.randomLastnameSweden(nullRatioPercent));
+		object.addProperty("LOCATION", CFW.Random.randomMythicalLocation(nullRatioPercent));
+
+		object.addProperty("LIKES_TIRAMISU", CFW.Random.randomBoolean(nullRatioPercent));
+		object.addProperty("LAST_LOGIN", currentTime-(CFW.Random.randomIntegerInRange(100, 10000)*1000000) );
+		object.addProperty("URL", "http://www.example.url/mightyperson?id="+id);
+		object.addProperty("VALUE", CFW.Random.randomIntegerInRange(1, 100));
+
+		
+		return object;
+	}
+	
+	/******************************************************************************
+	 * Creates a random json array of various random number data.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonObject randomJSONObjectNumberData(int nullRatioPercent) { 
+
+		//-------------------------------------------
+		// Prepare values in thousand steps
+		double multiplier = Math.pow(1000, randomIntegerInRange(0, 4));
+		double thousands = randomIntegerInRange(0, 1000) * multiplier;
+		
+		JsonObject object = new JsonObject();
+		
+		object.addProperty("UUID", UUID.randomUUID().toString());
+		object.addProperty("FLOAT",   CFW.Random.randomFloatInRange(1, 100000));
+		object.addProperty("THOUSANDS",   thousands);
+
+		return object;
+	}
+	
+	/******************************************************************************
+	 * Creates a random json array of various random array data.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonObject randomJSONObjectArrayData(int nullRatioPercent) { 
+
+
+		JsonObject object = new JsonObject();
+		
+		object.add("ARRAY_NUMBERS", randomJSONArrayOfIntegers(12,0,100));
+		object.add("ARRAY_CHARACTERS", randomJSONArrayOfCharacters(12));
+		object.add("ARRAY_STRINGS", randomJSONArrayOfRandomStrings(6, 6));
+
+		return object;
+	}
+	
+	/******************************************************************************
+	 * Creates a random json array of various data.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonObject randomJSONObjectVariousData(int nullRatioPercent) { 
+
+		JsonObject object = new JsonObject();
+		
+		object.addProperty("UUID", UUID.randomUUID().toString());
+		object.addProperty("BOOLEAN_STRING", ""+CFW.Random.randomBoolean());
+		object.add("ALWAYS_NULL", JsonNull.INSTANCE);
+
+		return object;
+	}
 
 	
 }

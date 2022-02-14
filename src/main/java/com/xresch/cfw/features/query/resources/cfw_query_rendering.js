@@ -111,6 +111,12 @@ function cfw_query_customizerCreateDefault(){
 		if(value === null || value === undefined){
 			return '<span class="badge badge-primary m-1">NULL</span>';
 		}
+		
+		//----------------------------------------------
+		// Arrays
+		if(Array.isArray(value)){
+			return JSON.stringify(value).replaceAll(',',', ');
+		}
 			
 		return value;
 	
@@ -142,9 +148,10 @@ function cfw_query_customizerCreateCustom(formatterArray){
 				case 'eastereggs': 	cfw_query_formatEasterEggs(resultSpan, value, current[1]); break;
 				case 'link': 		cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'none': 		return $('<span class="">').text(value); break;
-				case 'shownulls':	cfw_query_formatShowNulls(resultSpan, value, current[1]); break;
 				case 'prefix': 		cfw_query_formatPrefix(resultSpan, value, current[1]); break;
 				case 'postfix': 	cfw_query_formatPostfix(resultSpan, value, current[1]); break;
+				case 'separators':	cfw_query_formatSeparators(resultSpan, value, current[1], current[2]); break;
+				case 'shownulls':	cfw_query_formatShowNulls(resultSpan, value, current[1]); break;
 				case 'threshold': 	cfw_query_formatThreshold(resultSpan, value, current[1], current[2], current[3], current[4], current[5], current[6]); break;
 				case 'timestamp': 	cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
 			}	
@@ -262,22 +269,6 @@ function cfw_query_formatLink(span, value, linkText, displayAs, icon, target){
 
 
 
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_query_formatShowNulls(span, value, isVisible){
-	
-	if(value === null || value === undefined){
-		if(isVisible){
-			span.text("NULL");
-			span.addClass('format-base bg-primary text-white');
-		}else{
-			span.html("&nbsp;");
-		}
-	}
-	
-	return span;
-}
 
 /*******************************************************************************
  * 
@@ -300,6 +291,39 @@ function cfw_query_formatPostfix(span, value, postfix){
 	
 	return span;
 }
+
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatShowNulls(span, value, isVisible){
+	
+	if(value === null || value === undefined){
+		if(isVisible){
+			span.text("NULL");
+			span.addClass('format-base bg-primary text-white');
+		}else{
+			span.html("&nbsp;");
+		}
+	}
+	
+	return span;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatSeparators(span, value, separator, eachDigit ){
+	
+	span.addClass('format-base text-right');
+	
+	if(value != null){
+		span.text(CFW.format.numberSeparators(value, separator, eachDigit));
+	}
+
+	return span;
+}
+
 
 /*******************************************************************************
  * 

@@ -88,6 +88,11 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 					.setDescription("Number of records to generate. (Default: 1000)")
 					.setValue(1000)
 			)
+			.addField(
+					CFWField.newString(FormFieldType.TEXT, "type")
+						.setDescription("The type of data to generate, one of: 'default' | 'numbers' | 'arrays' | 'various' ")
+						.setValue("basic")
+				)
 		;
 	}
 	
@@ -99,20 +104,54 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 		
 		int records = (int)parameters.getField("records").getValue();
+		String type = (String)parameters.getField("type").getValue();
 
 		long earliest = this.getParent().getContext().getEarliestMillis();
 		long latest = this.getParent().getContext().getLatestMillis();
 		long diff = latest - earliest;
 		long diffStep = diff / records;
 		
-		for(int i = 0; i < records; i++) {
+		// if not inside for to increase perofmrnace
+		if(type.equals("default")) {
+			for(int i = 0; i < records; i++) {
+				
+				EnhancedJsonObject person = new EnhancedJsonObject( CFWRandom.randomJSONObjectMightyPerson(4) );
+				person.addProperty("INDEX", i );
+				person.addProperty("TIME", earliest +(i * diffStep));
+				outQueue.add(person);
+				
+				if( isLimitReached(limit, i)) { break; }
+			}
+		}else if(type.equals("numbers")) {
 			
-			EnhancedJsonObject person = new EnhancedJsonObject( CFWRandom.randomJSONObjectMightyPerson(4, true) );
-			person.addProperty("INDEX", i );
-			person.addProperty("TIME", earliest +(i * diffStep));
-			outQueue.add(person);
+			for(int i = 0; i < records; i++) {
+				
+				EnhancedJsonObject object = new EnhancedJsonObject( CFWRandom.randomJSONObjectNumberData(0) );
+				object.addProperty("TIME", earliest +(i * diffStep));
+				outQueue.add(object);
+				
+				if( isLimitReached(limit, i)) { break; }
+			}
+		}else if(type.equals("arrays")) {
 			
-			if( isLimitReached(limit, i)) { break; }
+			for(int i = 0; i < records; i++) {
+				
+				EnhancedJsonObject object = new EnhancedJsonObject( CFWRandom.randomJSONObjectArrayData(0) );
+				object.addProperty("TIME", earliest +(i * diffStep));
+				outQueue.add(object);
+				
+				if( isLimitReached(limit, i)) { break; }
+			}
+		}else if(type.equals("various")) {
+			
+			for(int i = 0; i < records; i++) {
+				
+				EnhancedJsonObject object = new EnhancedJsonObject( CFWRandom.randomJSONObjectVariousData(0) );
+				object.addProperty("TIME", earliest +(i * diffStep));
+				outQueue.add(object);
+				
+				if( isLimitReached(limit, i)) { break; }
+			}
 		}
 		
 

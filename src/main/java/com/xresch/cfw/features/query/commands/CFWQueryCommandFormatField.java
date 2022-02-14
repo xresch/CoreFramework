@@ -135,7 +135,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		);
 		
 		//------------------------------------------------
-		// Date
+		// Duration
 		//------------------------------------------------
 		formatterArray.put("duration",
 			instance.new FormatterDefinition(
@@ -146,7 +146,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				}
 			).example(
 				 "#Formats the LAST_LOGIN epoch milliseconds as a date."
-				+"\r\n| source random | formatfield LAST_LOGIN=date"
+				+"\r\n| source random | formatfield LAST_LOGIN=duration"
 			)
 		);
 		
@@ -183,25 +183,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield LIKES_TIRAMISU=none"
 			)
 		);
-		
-		//------------------------------------------------
-		// Shownulls 
-		//------------------------------------------------
-		formatterArray.put("shownulls",
-			instance.new FormatterDefinition(
-				"shownulls", 
-				"Show or hide null values.",
-				new Object[][] {
-					 new Object[] {"isVisible", true, "If true, shows nulls, if false make them blank."}
-				}
-			).example(
-				 "#Adds formatting for null values after default null handling got overridden"
-				+"\r\n| source random | formatfield LIKES_TIRAMISU=boolean LIKES_TIRAMISU=['shownulls']"
-				+"\r\n#Adds formatting for null values after default null handling got overridden"
-				+"\r\n| source random | formatfield LIKES_TIRAMISU=['shownulls', false]"
-			)
-		);
-				
+
 		//------------------------------------------------
 		// Postfix 
 		//------------------------------------------------
@@ -233,6 +215,44 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield VALUE=[prefix,\"$ \"]"
 			)
 		);
+		
+		//------------------------------------------------
+		// Separators
+		//------------------------------------------------
+		formatterArray.put("separators",
+			instance.new FormatterDefinition(
+				"separators", 
+				"Adds thousand separators to numbers.",
+				new Object[][] {
+					   new Object[] {"separator", "'", "The separator to add to the number."}
+					 , new Object[] {"eachDigit", "3", "Number of digits between the separators."}
+				}
+			).example(
+				 "#Add separators to the fields FLOAT and THOUSANDS."
+				+"\r\n| source random type=numbers"
+				+ "\r\n| formatfield FLOAT=separators THOUSANDS=separators"
+			)
+		);
+		
+		
+		//------------------------------------------------
+		// Shownulls 
+		//------------------------------------------------
+		formatterArray.put("shownulls",
+			instance.new FormatterDefinition(
+				"shownulls", 
+				"Show or hide null values.",
+				new Object[][] {
+					 new Object[] {"isVisible", true, "If true, shows nulls, if false make them blank."}
+				}
+			).example(
+				 "#Adds formatting for null values after default null handling got overridden"
+				+"\r\n| source random | formatfield LIKES_TIRAMISU=boolean LIKES_TIRAMISU=['shownulls']"
+				+"\r\n#Adds formatting for null values after default null handling got overridden"
+				+"\r\n| source random | formatfield LIKES_TIRAMISU=['shownulls', false]"
+			)
+		);
+				
 				
 		//------------------------------------------------
 		// Threshhold 

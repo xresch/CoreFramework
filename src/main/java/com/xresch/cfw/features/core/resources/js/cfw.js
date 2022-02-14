@@ -2162,6 +2162,41 @@ function cfw_format_capitalize(string) {
 }
 
 /**************************************************************************************
+ * Adds separator to numbers
+ *************************************************************************************/
+function cfw_format_numberSeparators(value, separator, eachDigit) {
+	
+	if(value == null) return '';
+	if(isNaN(value)) return value;
+	
+	var separator = (separator == null) ?  "'" : separator;
+	var eachDigit = (eachDigit == null) ?  3 : eachDigit;
+	
+	var stringValue = ""+value;
+	var startingPos = stringValue.lastIndexOf('.')-1;
+	var resultString = stringValue.substring(startingPos+1);
+	
+	//if no decimal point found, do this
+	if(startingPos == -2){	
+		startingPos = stringValue.length-1;
+		var resultString = "";
+	}
+	
+	var position = 0;
+	
+	for(var i = startingPos; i >= 0; i--){
+		position++;
+		
+		resultString = stringValue.charAt(i) + resultString;
+		if(position % 3 == 0 && i > 0){
+			resultString = separator + resultString;
+		}
+	}
+	
+	return resultString;
+}
+
+/**************************************************************************************
  * 
  *************************************************************************************/
 function cfw_format_arrayToBadges(stringArray, addLineBreaks) {
@@ -3786,6 +3821,7 @@ var CFW = {
 		csvToObjectArray: 	cfw_format_csvToObjectArray,
 		fieldNameToLabel: 	cfw_format_fieldNameToLabel,
 		capitalize: 		cfw_format_capitalize,
+		numberSeparators: 	cfw_format_numberSeparators,
 		arrayToBadges: 		cfw_format_arrayToBadges,
 		formToParams: 		cfw_format_formToParams,
 		formToArray: 		cfw_format_formToArray,

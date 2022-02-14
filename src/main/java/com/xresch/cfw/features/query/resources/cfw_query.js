@@ -93,13 +93,15 @@ function cfw_query_copyCurrentLine(direction, domElement){
 	//--------------------------------------------
 	// Find Line Start
 	var indexLineStart = selectionStart;
+	if(value.charAt(indexLineStart) == "\n"){ indexLineStart-- };
+	
 	for(; indexLineStart > 0 ;indexLineStart-- ){
 		if(value.charAt(indexLineStart) == "\n"){ break; }
 	}
 	
 	//--------------------------------------------
 	// Find Line End
-	var indexLineEnd = selectionStart;
+	var indexLineEnd = selectionEnd;
 	for(; indexLineEnd < value.length-1 ;indexLineEnd++ ){
 		if(value.charAt(indexLineEnd) == "\n"){ break; }
 	}
