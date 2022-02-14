@@ -252,7 +252,27 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield LIKES_TIRAMISU=['shownulls', false]"
 			)
 		);
-				
+			
+		
+		//------------------------------------------------
+		// Thousands
+		//------------------------------------------------
+		formatterArray.put("thousands",
+			instance.new FormatterDefinition(
+				"thousands", 
+				"Displays numbers in kilos, megas, gigas and terras.",
+				new Object[][] {
+					  new Object[] {"isBytes", false, "If true, appends a 'B' to the formatted string."}
+					 , new Object[] {"decimals", "1", "Number of decimal places to display."}
+					 , new Object[] {"addBlank", true, "If true, adds a blank between number and the K/M/G/T."}
+				}
+			).example(
+				 "#Displays the values of field FLOAT as kilos, megas..."
+				+"\r\n| source random type=numbers | formatfield FLOAT=thousands"
+				+"\r\n#Displays the values of field THOUSANDS as bytes, kilobytes..."
+				+"\r\n| source random type=numbers | formatfield THOUSANDS=thousands,true"
+			)
+		);
 				
 		//------------------------------------------------
 		// Threshhold 

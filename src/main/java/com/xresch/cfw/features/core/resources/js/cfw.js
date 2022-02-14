@@ -2197,6 +2197,32 @@ function cfw_format_numberSeparators(value, separator, eachDigit) {
 }
 
 /**************************************************************************************
+ * Formats numbers as kilos, megas, gigas and terras.
+ * @param value the value to format
+ * @param decimals number of decimal places
+ * @param addBlank if true, adds a blank between number and the K/M/G/T
+ * @param isBytes if true, adds "B" to the resulting format
+ **************************************************************************************/
+function cfw_format_numbersInThousands(value, decimals, addBlank, isBytes) {
+	
+	blankString = (addBlank) ? "&nbsp;" : "";
+	
+	bytesString = (isBytes) ? "B" : "";
+	
+	if (value > 1000000000000) {
+		return (value / 1000000000000).toFixed(decimals)+ blankString + "T" + bytesString;
+	} else if (value > 1000000000) {
+		return (value / 1000000000).toFixed(decimals)+ blankString + "G" + bytesString;
+	} else if (value > 1000000) {
+		return (value / 1000000).toFixed(decimals)+ blankString + "M"+bytesString;
+	} else if (value > 1000) {
+		return (value / 1000).toFixed(decimals)+ blankString + "K"+bytesString;
+	} else {
+		return value.toFixed(decimals)+blankString+((addBlank)?"&nbsp;":"")+bytesString;
+	}
+}
+
+/**************************************************************************************
  * 
  *************************************************************************************/
 function cfw_format_arrayToBadges(stringArray, addLineBreaks) {
@@ -3822,6 +3848,7 @@ var CFW = {
 		fieldNameToLabel: 	cfw_format_fieldNameToLabel,
 		capitalize: 		cfw_format_capitalize,
 		numberSeparators: 	cfw_format_numberSeparators,
+		numbersInThousands: 	cfw_format_numbersInThousands,
 		arrayToBadges: 		cfw_format_arrayToBadges,
 		formToParams: 		cfw_format_formToParams,
 		formToArray: 		cfw_format_formToArray,

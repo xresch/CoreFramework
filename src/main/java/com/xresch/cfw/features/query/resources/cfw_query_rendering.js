@@ -152,6 +152,7 @@ function cfw_query_customizerCreateCustom(formatterArray){
 				case 'postfix': 	cfw_query_formatPostfix(resultSpan, value, current[1]); break;
 				case 'separators':	cfw_query_formatSeparators(resultSpan, value, current[1], current[2]); break;
 				case 'shownulls':	cfw_query_formatShowNulls(resultSpan, value, current[1]); break;
+				case 'thousands': 	cfw_query_formatThousands(resultSpan, value, current[1], current[2], current[3]); break;
 				case 'threshold': 	cfw_query_formatThreshold(resultSpan, value, current[1], current[2], current[3], current[4], current[5], current[6]); break;
 				case 'timestamp': 	cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
 			}	
@@ -292,6 +293,19 @@ function cfw_query_formatPostfix(span, value, postfix){
 	return span;
 }
 
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatSeparators(span, value, separator, eachDigit ){
+	
+	span.addClass('format-base text-right');
+	
+	if(value != null){
+		span.text(CFW.format.numberSeparators(value, separator, eachDigit));
+	}
+
+	return span;
+}
 
 /*******************************************************************************
  * 
@@ -310,15 +324,16 @@ function cfw_query_formatShowNulls(span, value, isVisible){
 	return span;
 }
 
+
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_query_formatSeparators(span, value, separator, eachDigit ){
+function cfw_query_formatThousands(span, value, isBytes, decimals, addBlank ){
 	
 	span.addClass('format-base text-right');
 	
 	if(value != null){
-		span.text(CFW.format.numberSeparators(value, separator, eachDigit));
+		span.html(CFW.format.numbersInThousands(value, decimals, addBlank, isBytes));
 	}
 
 	return span;
