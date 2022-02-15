@@ -125,6 +125,69 @@ function cfw_query_copyCurrentLine(direction, domElement){
 	domElement.selectionEnd = newCursorPos;
 
 }
+
+/*******************************************************************************
+ * Main method for building the view.
+ * 
+ * @param direction of the indentation in case of multiline 'increase' or 'decrease' 
+ ******************************************************************************/
+function cfw_query_handleTab(domElement, direction){
+	
+	var start = domElement.selectionStart;
+    var end = domElement.selectionEnd;
+	var currentText = domElement.value;
+
+	var selectedText = null; 
+	if(start < end){
+		selectedText = currentText.substring(start, end);
+	}
+	
+	if(direction == "increase" 
+	&& (selectedText == null || !selectedText.includes("\n") )
+	){
+		
+		//-------------------------------
+		// Insert Tab
+	    domElement.value = currentText.substring(0, start) +
+	      "\t" + currentText.substring(end);
+	
+	    domElement.selectionStart =
+	      domElement.selectionEnd = start + 1;
+
+	}else{
+		
+		//--------------------------------------------
+		// Find Line Start
+		var indexLineStart = start;
+		if(currentText.charAt(indexLineStart) == "\n"){ indexLineStart-- };
+		
+		for(; indexLineStart > 0 ;indexLineStart-- ){
+			if(currentText.charAt(indexLineStart) == "\n"){ break; }
+		}
+		
+		//--------------------------------------------
+		// Create Replacement
+		var adjustTabsOnThis = currentText.substring(indexLineStart, end); 
+		var changeCount;
+		
+		if(direction == "increase"){
+			changeCount = (adjustTabsOnThis.match(/\n/g) || []).length;
+			adjustTabsOnThis = adjustTabsOnThis.replaceAll("\n", '\n\t');
+			
+		}else{
+			changeCount = -1 * (adjustTabsOnThis.match(/\n\t/g) || []).length;
+			adjustTabsOnThis = adjustTabsOnThis.replaceAll("\n\t", '\n');
+		}
+		
+		//-------------------------------
+		// Replace NewLine With Newline+Tab
+	    domElement.value = currentText.substring(0, indexLineStart) +
+	      adjustTabsOnThis + currentText.substring(end);
+
+		domElement.selectionStart = indexLineStart+1;
+	    domElement.selectionEnd = end + changeCount;
+	}
+}
 	
 /*******************************************************************************
  * 
@@ -218,40 +281,45 @@ function cfw_query_initialDraw(){
 		// Ctrl + Alt + Up
 		if (e.ctrlKey && e.altKey && e.keyCode == 38) {
 			cfw_query_copyCurrentLine('up', this);
+			return;
 		}
 		
 		//---------------------------
 		// Ctrl + Alt + Down
 		if (e.ctrlKey && e.altKey && e.keyCode == 40) {
 			cfw_query_copyCurrentLine('down', this);
+			return;
 		}
 		
+		//---------------------------
+		// Shift+Tab: Decrease Indentation
+		if (e.shiftKey && e.key == 'Tab') {
+		    e.preventDefault();
+			cfw_query_handleTab(this, "decrease");
+			return;
+		}
+			
 		//---------------------------
 		// Allow Tab for Indentation
 		if (e.key == 'Tab') {
 		    e.preventDefault();
-		    var start = this.selectionStart;
-		    var end = this.selectionEnd;
+			cfw_query_handleTab(this, "increase");
+		}
 		
-		    // set textarea value to: text before caret + tab + text after caret
-		    this.value = this.value.substring(0, start) +
-		      "\t" + this.value.substring(end);
-		
-		    // put caret at right position again
-		    this.selectionStart =
-		      this.selectionEnd = start + 1;
-		  }
+
 		
 		//---------------------------
 		// Ctrl + Enter
 		if (e.ctrlKey && e.keyCode == 13) {
 			cfw_query_execute();
+			return;
 		}
 		
 		//---------------------------
 		// Enter
 		if (e.keyCode == 13) {
 			cfw_query_resizeTextareaToFitQuery();
+			return;
 		}
 		
 	});
