@@ -152,6 +152,7 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
 				case 'duration': 	cfw_query_formatDuration(resultSpan, value, current[1]); break;
 				case 'eastereggs': 	cfw_query_formatEasterEggs(resultSpan, value, current[1]); break;
 				case 'link': 		cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
+				case 'lowercase': 	cfw_query_formatLowercase(resultSpan); break;
 				case 'none': 		return $('<span class="">').text(value); break;
 				case 'prefix': 		cfw_query_formatPrefix(resultSpan, value, current[1]); break;
 				case 'postfix': 	cfw_query_formatPostfix(resultSpan, value, current[1]); break;
@@ -160,6 +161,7 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
 				case 'thousands': 	cfw_query_formatThousands(resultSpan, value, current[1], current[2], current[3]); break;
 				case 'threshold': 	cfw_query_formatThreshold(resultSpan, value, current[1], current[2], current[3], current[4], current[5], current[6]); break;
 				case 'timestamp': 	cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
+				case 'uppercase': 	cfw_query_formatUppercase(resultSpan); break;
 			}	
 		}
 
@@ -375,6 +377,34 @@ function cfw_query_formatDecimals(span, value, precision){
 /*******************************************************************************
  * 
  ******************************************************************************/
+function cfw_query_formatDuration(span, value, durationUnit){
+	
+	var millisValue = value;
+	
+	if(durationUnit == 's'){
+		millisValue = value * 1000;
+	}else if(durationUnit == 'm'){
+		millisValue = value * 1000 * 60;
+	}else if(durationUnit == 'h'){
+		millisValue = value * 1000 * 60 * 60;
+	}
+	
+	
+	span.addClass('text-right');
+	
+	if(value != null){
+		if(!isNaN(value)){
+			span.text(CFW.format.millisToDuration(millisValue));
+		}else{
+			span.text(value);
+		}
+	}
+
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 function cfw_query_formatEasterEggs(span, value, prefix){
 	
 	value = span.text();
@@ -412,6 +442,16 @@ function cfw_query_formatLink(span, value, linkText, displayAs, icon, target){
 	span.append(linkElement);
 }
 
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatLowercase(span){
+	
+	span.addClass('text-lowercase');
+	span.removeClass('text-uppercase');
+
+}
 
 
 
@@ -503,36 +543,6 @@ function cfw_query_formatThreshold(span, value, excellent, good, warning, emerge
 }
 
 
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_query_formatDuration(span, value, durationUnit){
-	
-	var millisValue = value;
-	
-	if(durationUnit == 's'){
-		millisValue = value * 1000;
-	}else if(durationUnit == 'm'){
-		millisValue = value * 1000 * 60;
-	}else if(durationUnit == 'h'){
-		millisValue = value * 1000 * 60 * 60;
-	}
-	
-	
-	span.addClass('text-right');
-	
-	if(value != null){
-		if(!isNaN(value)){
-			span.text(CFW.format.millisToDuration(millisValue));
-		}else{
-			span.text(value);
-		}
-	}
-
-}
-
-
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -543,6 +553,19 @@ function cfw_query_formatTimestamp(span, value, format){
 	}
 
 }
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatUppercase(span){
+	
+	span.addClass('text-uppercase');
+	span.removeClass('text-lowercase');
+
+}
+
+
+
 
 	
 /*******************************************************************************

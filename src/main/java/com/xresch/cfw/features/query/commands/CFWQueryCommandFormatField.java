@@ -205,6 +205,21 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield URL=link,\"Open\",button"
 			)
 		);
+		
+		//------------------------------------------------
+		// Lowercase 
+		//------------------------------------------------
+		formatterArray.put("lowercase",
+			instance.new FormatterDefinition(
+				"lowercase", 
+				"Displays the value as lowercase.",
+				new Object[][] {
+				}
+			).example(
+				 "#Makes the firstname lowercase."
+				+"\r\n| source random | formatfield FIRSTNAME=lowercase"
+			)
+		);
 				
 		//------------------------------------------------
 		// None 
@@ -353,6 +368,23 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield LAST_LOGIN=timestamp"
 			)
 		);
+		
+		//------------------------------------------------
+		// Uppercase 
+		//------------------------------------------------
+		formatterArray.put("uppercase",
+			instance.new FormatterDefinition(
+				"uppercase", 
+				"Displays the value as uppercase.",
+				new Object[][] {
+				}
+			).example(
+				 "#makes the lastname uppercase."
+				+"\r\n| source random | formatfield LASTNAME=uppercase"
+			)
+		);
+		
+		
 		
 	}
 	
