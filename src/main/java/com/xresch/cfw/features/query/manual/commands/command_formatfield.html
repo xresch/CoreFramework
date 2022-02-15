@@ -34,6 +34,33 @@ VALUE=threshold,0,10,20,30,40</code></pre>
 <p>For special formatting you can use the 'case' formatter. 
 This formatter allows you check for specific conditions and apply a color or any formatter when the condition matches. </p>
 
+<p>Following example compares numbers and applies the first case that matches: </p>
+<pre><code class="language-bash">| source random type=numbers
+| formatfield 
+    THOUSANDS=['case', 
+			"&lt;=1000", 
+				"green",
+			["&gt;=100000", "&lt;500000"], 
+				"orange",
+			["&gt;1000000"], 
+				"darkred"
+	]</code></pre>
+	
+
+<p>Following example tests on strings and has a default case(empty array) that will be applied to anything else: </p>
+<pre><code class="language-bash">| source random type=various
+| source random type=various
+| formatfield 
+    STATUS=['case', 
+			["Excellent", "OR", "Good"], 
+				"green",
+			["!=Danger", "AND", "!=Emergency"], 
+				"orange",
+			[], 
+				"darkred"
+	]</code></pre>	
+
+
 <p>Below example does the following: </p>
 <ul>
 	<li>If the value of the field is equals 'Warning', applies the background color orange.</li>

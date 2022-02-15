@@ -299,14 +299,12 @@ public class CFWQueryParser {
 			throw new ParseException("Unexpected end of query.", cursor);
 		}
 		//------------------------------------------
-		// FIRST TOKEN EXPECT: 
-		//   LITERAL, 
-		//   QUOTED_TEXT,
-		//   NULL,
-		//   KEYWORD,
-		//   OPERATOR_NOT,
-		//   SIGN_BRACE_ROUND_OPEN,
-		//   FUNCTION_NAME
+		// FIRST TOKEN: Expect anything that can
+		// be part of an expression.
+		// Do not expect anything that would create
+		// a binary expression
+		// No not consume any tokens in the switch
+		// statement.
 		CFWQueryToken firstToken = this.consumeToken();
 		QueryPart firstPart = null;
 		
@@ -332,13 +330,23 @@ public class CFWQueryParser {
 			case SIGN_BRACE_SQUARE_OPEN: 
 										//------------------------------
 										// QueryPartArray
-										tempPart = this.parseQueryPart();
 										firstPart = new QueryPartArray(currentContext)
-															.isEmbracedArray(true)
-															.add(tempPart);
+															.isEmbracedArray(true);
+										
+										tempPart = this.parseQueryPart();
+										//Handle empty arrays
+										if(tempPart != null) {
+											((QueryPartArray)firstPart).add(tempPart);
+										}
 											
 										break;	
-										
+			
+			case SIGN_BRACE_SQUARE_CLOSE:
+			case SIGN_BRACE_ROUND_CLOSE:
+										//------------------------------
+										//End of Query Part
+										return null;
+									
 //			case KEYWORD:				firstPart = QueryPartValue.newNull(currentContext);
 //										break;
 //									
@@ -353,12 +361,11 @@ public class CFWQueryParser {
 		}
 		
 		
-		
 		//------------------------------------------
-		// NEXT TOKEN can basically be anything
+		// NEXT TOKEN can be anything that would
+		// create a binary expression or complete a expression
 		QueryPart resultPart = firstPart;
 
-		
 		if(!this.hasMoreTokens()) { return resultPart; }
 		
 		switch(this.lookahead().type()) {

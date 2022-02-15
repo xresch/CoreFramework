@@ -70,6 +70,7 @@ public class QueryPartArray extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	public QueryPartArray add(QueryPart part) {
+		
 		if( !(part instanceof QueryPartArray)) {
 			partsArray.add(part);
 		}else {
@@ -107,7 +108,9 @@ public class QueryPartArray extends QueryPart {
 			jsonArray = new JsonArray();
 			
 			for(QueryPart part : partsArray) {
-				jsonArray.add(part.determineValue(object).getAsJson());
+				if(part != null) {
+					jsonArray.add(part.determineValue(object).getAsJson());
+				}
 			}
 		}
 		return jsonArray;

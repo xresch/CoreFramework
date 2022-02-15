@@ -258,8 +258,17 @@ function cfw_query_formatCase(span, record, value, rendererName, fieldname, case
 		
 		//---------------------------
 		// Iterate Conditions
-		let hasMatched = null; 
-		let andOperation = true;
+		var hasMatched = null; 
+		var andOperation = true;
+		
+		//default case is an empty array
+		console.log("conditionArray.length:"+conditionArray.length);
+		
+		if(conditionArray.length == 0){
+			console.log("TRUE");
+			hasMatched = true;
+		}
+		
 		for(let index in conditionArray){
 			let condition = conditionArray[index];
 			console.log("condition:"+condition);
@@ -305,8 +314,8 @@ function cfw_query_formatCase(span, record, value, rendererName, fieldname, case
 		// Apply format
 		if(hasMatched){
 			let formatting = caseParams[i+1];
-			//console.log("condition:"+caseParams[i]);
-			//console.log("value:"+value);
+			console.log("condition:"+caseParams[i]);
+			console.log("value:"+value);
 			// treat string as color
 			if(typeof formatting == 'string'){
 				CFW.colors.colorizeElement(span, formatting, "bg");
@@ -336,6 +345,7 @@ function cfw_query_formatCase(span, record, value, rendererName, fieldname, case
 	}
 
 }
+	
 
 /*******************************************************************************
  * 
