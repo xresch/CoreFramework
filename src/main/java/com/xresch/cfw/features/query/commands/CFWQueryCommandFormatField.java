@@ -179,7 +179,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				"duration", 
 				"Formats a duration as seconds, minutes, hours and days.",
 				new Object[][] {
-					 new Object[] {"durationUnit", "ms", "The unit of the duration, either of 'ms', 's', 'm', 'h'."}
+					 new Object[] {"durationUnit", "ms", "The unit of the duration, either of 'ns', 'us', 'ms', 's', 'm', 'h'."}
 				}
 			).example(
 				 "#Formats the LAST_LOGIN epoch milliseconds as a date."
@@ -715,7 +715,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				}else if(defaultValue instanceof Boolean) {
 					array.add((Boolean)defaultValue);
 				}else {
-					throw new ParseException("Dear Developer, the type is not supported for formatter parameters default value", -1);
+					throw new ParseException("Dear Developer, the type is not supported for formatter parameters default value.", -1);
 				}
 			}
 			

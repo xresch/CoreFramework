@@ -30,11 +30,32 @@ VALUE=threshold,0,10,20,30,40</code></pre>
 
 
 
-<h3>Case Formatter</h3>
+<h3>The Case Formatter</h3>
 <p>For special formatting you can use the 'case' formatter. 
-This formatter allows you check for specific conditions and apply a color or any formatter when the condition matches. </p>
+This formatter allows you to check for specific conditions and apply a color or any formatter when the condition matches. </p>
 
-<p>Following example compares numbers and applies the first case that matches: </p>
+<p>With the case formatter, you can use the following operations.
+All operators are case sensitive. See the examples after the list to see how to use them.
+</p>
+<ul>
+	<li><b>'==':&nbsp;</b> Checks if the values are equal.</li>
+	<li><b>'!=':&nbsp;</b> Checks if the values are not equal.</li>
+	<li><b>'&lt;=':&nbsp;</b> Checks if the fields value is smaller or equals.</li>
+	<li><b>'&gt;=':&nbsp;</b> Checks if the fields value is greater or equals.</li>
+	<li><b>'&lt;':&nbsp;</b>  Checks if the fields value is smaller.</li>
+	<li><b>'&gt;':&nbsp;</b>  Checks if the fields value is greater.</li>
+	<li><b>'startsWith:':&nbsp;</b> Checks if the fields value is starts with the specified string.</li>
+	<li><b>'endsWith:':&nbsp;</b> Checks if the fields value is ends with the specified string.</li>
+	<li><b>'contains:':&nbsp;</b> Checks if the fields value contains the specified string.</li>
+	<li><b>'regex:':&nbsp;</b>  Checks if the fields value is matches the regular expression.</li>
+	<li><b>none:&nbsp;</b> If no prefix operator is defined, the values will be compared and checked if they are equals.</li>
+	<li><b>AND:&nbsp;</b> Used to combine two or more conditions. Condition matches only if both sides are true.</li>
+	<li><b>OR:&nbsp;</b>  Used to combine two or more conditions. Condition matches if either side is true.</li>
+</ul>
+	
+
+<p>Following example compares numbers and applies the first case that matches.
+After the first array value 'case', the values alternate between a condition and a format. </p>
 <pre><code class="language-bash">| source random type=numbers
 | formatfield 
     THOUSANDS=['case', 
@@ -47,7 +68,10 @@ This formatter allows you check for specific conditions and apply a color or any
 	]</code></pre>
 	
 
-<p>Following example tests on strings and has a default case(empty array) that will be applied to anything else: </p>
+<p>Following example tests on strings and has a default case(empty array) that will be applied to anything else. 
+If a condition has no prefix like 'Excellent', equal operation will be used. 
+When multiple conditions are specified, you can specify 'OR' to make the condition match if either of the conditions in the Array match.
+'AND' is used implicity but can be specified for easier readability. If more then two conditions are specified, the evaluation will always evaluate everything on the left side first. </p>
 <pre><code class="language-bash">| source random type=various
 | source random type=various
 | formatfield 
@@ -61,10 +85,25 @@ This formatter allows you check for specific conditions and apply a color or any
 	]</code></pre>	
 
 
-<p>Below example does the following: </p>
+
+<p>Here is an example how to use the startsWith, endsWith, contains and regex operations. </p>
+<pre><code class="language-bash">| source random
+| formatfield 
+    FIRSTNAME=['case', 
+			["startsWith:A", "OR", "endsWith:e"], 
+				"green",
+			["contains:en"], 
+				"orange",
+			["regex:.*er.*e"], 
+				"darkred"
+	]</code></pre>	
+
+
+
+<p>Below example shows the different variations of formatter specifications: </p>
 <ul>
 	<li>If the value of the field is equals 'Warning', applies the background color orange.</li>
-	<li>If the value is equals 'Excellent' OR 'Good', applies the background color green.</li>
+	<li>If the value is equals 'Excellent' OR 'Good', applies the css formatter with color green.</li>
 	<li>If the value is equals 'Danger' OR 'Emergency', applies an array of various formatters.</li>
 </ul>
 <pre><code class="language-bash">| source random type=various

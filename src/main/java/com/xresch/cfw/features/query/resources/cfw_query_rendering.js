@@ -150,7 +150,7 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
 				case 'date': 		cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
 				case 'decimals': 	cfw_query_formatDecimals(resultSpan, value, current[1]); break;
 				case 'duration': 	cfw_query_formatDuration(resultSpan, value, current[1]); break;
-				case 'eastereggs': 	cfw_query_formatEasterEggs(resultSpan, value, current[1]); break;
+				case 'eastereggs': 	cfw_query_formatEasterEggs(resultSpan, value); break;
 				case 'link': 		cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'lowercase': 	cfw_query_formatLowercase(resultSpan); break;
 				case 'none': 		return $('<span class="">').text(value); break;
@@ -175,6 +175,11 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
  ******************************************************************************/
 function cfw_query_formatAlign(span, value, alignment){
 	
+	// set defaults
+	if(alignment == null ){
+		alignment = 'center';
+	}
+	
 	lower = alignment.toLowerCase();
 	span.addClass('text-'+lower);
 	
@@ -193,6 +198,12 @@ function cfw_query_formatAlign(span, value, alignment){
  ******************************************************************************/
 function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTextColor, falseTextColor){
 	
+	// set defaults
+	if(trueBGColor == null )	{ trueBGColor = 'cfw-excellent'; }
+	if(falseBGColor == null )	{ falseBGColor = 'cfw-danger'; }
+	if(trueTextColor == null )	{ trueTextColor = 'white'; }
+	if(falseTextColor == null )	{ falseTextColor = 'white'; }
+
 	span.addClass('text-center');
 	
 	if(typeof value === "boolean"){
@@ -207,7 +218,7 @@ function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTex
 		var lower = value.trim().toLowerCase();
 		
 		if(lower == "true" || lower == "false"){
-			let color = lower == "true" ? trueColor : falseColor;
+			let color = lower == "true" ? trueBGColor : falseBGColor;
 			let textColor = lower == "true" ? trueTextColor : falseTextColor;
 			CFW.colors.colorizeElement(span, color, "bg");
 			CFW.colors.colorizeElement(span, textColor, "text");
@@ -286,13 +297,24 @@ function cfw_query_formatCase(span, record, value, rendererName, fieldname, case
 			}
 
 			let conditionResult;
-			if(condition.startsWith("=="))			{ conditionResult = (value == condition.substring(2)); }
-			else if(condition.startsWith("!="))		{ conditionResult = (value != condition.substring(2)); }
-			else if(condition.startsWith("<="))		{ conditionResult = (value <= condition.substring(2)); }
-			else if(condition.startsWith(">="))		{ conditionResult = (value >= condition.substring(2)); }
-			else if(condition.startsWith("<"))		{ conditionResult = (value < condition.substring(1)); }
-			else if(condition.startsWith(">"))		{ conditionResult = (value > condition.substring(1)); }
-			else 									{ conditionResult = (value == condition); }
+			if(condition.startsWith("=="))				{ conditionResult = (value == condition.substring(2)); }
+			else if(condition.startsWith("!="))			{ conditionResult = (value != condition.substring(2)); }
+			else if(condition.startsWith("<="))			{ conditionResult = (value <= condition.substring(2)); }
+			else if(condition.startsWith(">="))			{ conditionResult = (value >= condition.substring(2)); }
+			else if(condition.startsWith("<"))			{ conditionResult = (value < condition.substring(1)); }
+			else if(condition.startsWith(">"))			{ conditionResult = (value > condition.substring(1)); }
+			else if(condition.startsWith("startsWith:")){ conditionResult = ( (""+value).startsWith(condition.substring("startsWith:".length)) ); }
+			else if(condition.startsWith("endsWith:"))	{ conditionResult = ( (""+value).endsWith(condition.substring("endsWith:".length)) ); }
+			else if(condition.startsWith("contains:"))	{ conditionResult = ( (""+value).includes(condition.substring("contains:".length)) ); }
+			else if(condition.startsWith("regex:"))	{ 
+				var regexExpression = condition.substring("regex:".length);
+				var regex = new RegExp(regexExpression, "g")
+				
+				conditionResult = ( (""+value).match(regex) ); 
+			}else { 
+				// Default to equals
+				conditionResult = (value == condition); 
+			}
 			
 			//-------------------------------
 			// Combine results
@@ -352,6 +374,14 @@ function cfw_query_formatCase(span, record, value, rendererName, fieldname, case
  ******************************************************************************/
 function cfw_query_formatCSS(span, value, propertyName, propertyValue){
 	
+	// set defaults
+	if(propertyName == null ){
+		propertyName = 'font-weight';
+		if(propertyValue == null ){
+			propertyValue = 'bold';
+		}
+	}
+	
 	span.css(propertyName, propertyValue);
 }
 
@@ -359,6 +389,12 @@ function cfw_query_formatCSS(span, value, propertyName, propertyValue){
  * 
  ******************************************************************************/
 function cfw_query_formatDate(span, value, format){
+		
+	// set defaults
+	if(format == null ){
+		format = "YYYY-MM-DD";
+	}
+	
 		
 	if(value != null){
 		span.text(new  moment(value).format(format));
@@ -370,6 +406,11 @@ function cfw_query_formatDate(span, value, format){
  ******************************************************************************/
 function cfw_query_formatDecimals(span, value, precision){
 		
+	// set defaults
+	if(precision == null ){
+		precision = 2;
+	}
+	
 	var valueToProcess = value;
 	
 	var stringValue = span.text();
@@ -388,16 +429,20 @@ function cfw_query_formatDecimals(span, value, precision){
  * 
  ******************************************************************************/
 function cfw_query_formatDuration(span, value, durationUnit){
-	
+		// set defaults
+	if(durationUnit == null ){
+		durationUnit = "ms";
+	}
 	var millisValue = value;
 	
-	if(durationUnit == 's'){
-		millisValue = value * 1000;
-	}else if(durationUnit == 'm'){
-		millisValue = value * 1000 * 60;
-	}else if(durationUnit == 'h'){
-		millisValue = value * 1000 * 60 * 60;
+	switch(durationUnit){
+		case 'ns':	millisValue = value / 1000000; break
+		case 'us':	millisValue = value / 1000; break
+		case 's':	millisValue = value * 1000;
+		case 'm':	millisValue = value * 1000 * 60;
+		case 'h':	millisValue = value * 1000 * 60 * 60;
 	}
+	
 	
 	
 	span.addClass('text-right');
@@ -415,8 +460,8 @@ function cfw_query_formatDuration(span, value, durationUnit){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_query_formatEasterEggs(span, value, prefix){
-	
+function cfw_query_formatEasterEggs(span, value){
+		
 	value = span.text();
 	
 	value = value.replaceAll("o", '<i class="fas fa-egg"></i>')
@@ -434,6 +479,11 @@ function cfw_query_formatEasterEggs(span, value, prefix){
  * 
  ******************************************************************************/
 function cfw_query_formatLink(span, value, linkText, displayAs, icon, target){
+		
+	if(linkText == null )	{linkText = "Open Link";}
+	if(displayAs == null )	{displayAs = "button";}
+	if(icon == null )		{icon = "fa-external-link-square-alt";}
+	if(target == null )		{target = "blank";}
 	
 	var linkElement = $('<a>'+linkText+'</a>');
 	linkElement.attr('href', value)
@@ -489,6 +539,10 @@ function cfw_query_formatPostfix(span, value, postfix){
  ******************************************************************************/
 function cfw_query_formatSeparators(span, value, separator, eachDigit ){
 	
+	// set defaults
+	if(separator == null )	{ separator = "'"; }
+	if(eachDigit == null )	{ eachDigit = 3; }
+	
 	span.addClass('text-right');
 	
 		var valueToProcess = value;
@@ -509,6 +563,9 @@ function cfw_query_formatSeparators(span, value, separator, eachDigit ){
  ******************************************************************************/
 function cfw_query_formatShowNulls(span, value, isVisible){
 	
+	// set defaults
+	if(isVisible == null )	{ isVisible = true; }
+	
 	if(value === null || value === undefined){
 		if(isVisible){
 			span.text("NULL");
@@ -520,11 +577,15 @@ function cfw_query_formatShowNulls(span, value, isVisible){
 	
 }
 
-
 /*******************************************************************************
  * 
  ******************************************************************************/
 function cfw_query_formatThousands(span, value, isBytes, decimals, addBlank ){
+	
+	// set defaults
+	if(isBytes == null )	{ isBytes = false; }
+	if(decimals == null )	{ decimals = 1; }
+	if(addBlank == null )	{ addBlank = true; }
 	
 	span.addClass('text-right');
 	
@@ -539,6 +600,14 @@ function cfw_query_formatThousands(span, value, isBytes, decimals, addBlank ){
  * 
  ******************************************************************************/
 function cfw_query_formatThreshold(span, value, excellent, good, warning, emergency, danger, type){
+	
+	// set defaults
+	if(excellent 	=== undefined )		{ excellent = 0; }
+	if(good 		=== undefined )		{ good = 20; }
+	if(warning 		=== undefined )		{ warning = 40; }
+	if(emergency 	=== undefined )		{ emergency = 60; }
+	if(danger 		=== undefined )		{ danger = 80; }
+	if(type 		=== undefined )		{ type = 'bg'; }
 	
 	span.addClass('text-right font-weight-bold');
 	
@@ -557,6 +626,8 @@ function cfw_query_formatThreshold(span, value, excellent, good, warning, emerge
  * 
  ******************************************************************************/
 function cfw_query_formatTimestamp(span, value, format){
+	
+	if(format == null )	{ format = "YYYY-MM-DD HH:mm:ss"; }
 		
 	if(value != null){
 		span.text(new  moment(value).format(format));
