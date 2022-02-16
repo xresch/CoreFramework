@@ -5,15 +5,15 @@ Every following record with the same value will be removed. </p>
 
 <p>Following code will create 5000 random records and deduplicates them by FIRSTNAME:</p>
 
-<pre><code class="language-bash">source random records=5000
+<pre><code class="language-cfwquery">source random records=5000
 | distinct FIRSTNAME</code></pre>
 
 
 <p>Will remove duplicates based on a combination of LASTNAME and LIKES_TIRAMISU:</p>
-<pre><code class="language-bash">source random records=5000
+<pre><code class="language-cfwquery">source random records=5000
 | distinct LASTNAME, LIKES_TIRAMISU</code></pre>
 
 
 <p>By default, whitespaces are removed from the beginning and end of the values, if you want to keep the whitespaces you can set the trim parameter to false:</p>
-<pre><code class="language-bash">source random records=5000
+<pre><code class="language-cfwquery">source random records=5000
 | distinct trim=false LASTNAME, LIKES_TIRAMISU</code></pre>

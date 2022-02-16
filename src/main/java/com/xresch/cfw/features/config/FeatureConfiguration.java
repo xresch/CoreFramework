@@ -131,8 +131,8 @@ public class FeatureConfiguration extends CFWAppFeature {
 			new Configuration("Look and Feel", FeatureConfiguration.CONFIG_CODE_THEME)
 				.description("Set the style for the code highlighting.")
 				.type(FormFieldType.SELECT)
-				.options(new String[]{"androidstudio", "arduino-light", "magula", "pojoaque", "sunburst", "zenburn"})
-				.value("zenburn")
+				.options(new String[]{"androidstudio", "arduino-light", "darkarmament", "magula", "pojoaque", "sunburst", "zenburn"})
+				.value("darkarmament")
 		);
 		
 		//-----------------------------------------

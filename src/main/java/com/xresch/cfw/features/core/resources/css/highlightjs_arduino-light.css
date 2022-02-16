@@ -1,20 +1,22 @@
 /*
 
-Arduino® Light Theme - Stefania Mellai <s.mellai@arduino.cc>
+Arduino� Light Theme - Stefania Mellai <s.mellai@arduino.cc>
 
 */
 
+
+
 .hljs {
-  display: block;
-  overflow-x: auto;
-  padding: 0.5em;
-  background: #eee;
-  border: 1px solid #ccc;
+  background: white;
+  color: #434f54;
 }
 
-.hljs,
 .hljs-subst {
   color: #434f54;
+}
+
+.hljs-title, .hljs-title.class_, .hljs-title.class_.inherited__, .hljs-title.function_ {
+    color: #3c88c4;
 }
 
 .hljs-keyword,
@@ -53,22 +55,16 @@ Arduino® Light Theme - Stefania Mellai <s.mellai@arduino.cc>
   color: #005C5F;
 }
 
-.hljs-title,
-.hljs-section {
-  color: #880000;
-  font-weight: bold;
-}
-
 .hljs-comment {
   color: rgba(149,165,166,.8);
 }
 
-.hljs-meta-keyword {
+.hljs-meta .hljs-keyword {
+
   color: #728E00;
 }
 
 .hljs-meta {
-  color: #728E00;
   color: #434f54;
 }
 
@@ -84,6 +80,12 @@ Arduino® Light Theme - Stefania Mellai <s.mellai@arduino.cc>
   color: #728E00;
 }
 
+.hljs-title,
+.hljs-section {
+  color: #880000;
+  font-weight: bold;
+}
+
 .hljs-number {
-  color: #8A7B52;  
+  color: #8A7B52;
 }

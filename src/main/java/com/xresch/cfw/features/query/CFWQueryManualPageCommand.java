@@ -24,7 +24,7 @@ public class CFWQueryManualPageCommand extends ManualPage {
 			builder.append("<p>"+command.descriptionShort()+"</p>");
 			
 			builder.append("<h2 class=\"toc-hidden\">Syntax</h2>");
-			builder.append("<pre><code>"
+			builder.append("<pre><code class=\"language-cfwquery\">"
 						+ CFW.Security.escapeHTMLEntities(command.descriptionSyntax())
 						+"</code></pre>");
 			

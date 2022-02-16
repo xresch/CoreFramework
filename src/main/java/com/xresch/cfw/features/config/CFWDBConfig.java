@@ -219,6 +219,15 @@ public class CFWDBConfig {
 			if( CFW.DB.Config.selectByName(configuration.name()) == null ) {
 				result = false;
 			}
+		}else {
+			//--------------------------
+			// Update Available Options
+			Configuration configToUpdate = CFW.DB.Config.selectByName(configuration.name());
+			if( configToUpdate != null ) {
+				configToUpdate.options(configuration.options());
+				configToUpdate.update(ConfigFields.OPTIONS);
+			}
+			
 		}
 		
 		return result;

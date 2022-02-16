@@ -2,7 +2,7 @@
 <p>The applog source reads log events from this applications last log file.</p>
 
 <p>An example query that dedups the log data by url and shows the last 100 entries:</p>
-<pre><code>source applog
+<pre><code class="language-cfwquery">source applog
 | dedup url
 | tail 100</code></pre>
 

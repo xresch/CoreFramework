@@ -3,3 +3,35 @@
 	The query feature give you the possibility to fetch data from various sources and manipulate the data with commands to fit your needs.
 	Depending on how your application is extending this feature, you will find more or less sources, commands and functions available for your use.
 </p>
+
+<pre><code class="language-cfwquery">| source random type=various
+
+| comment "this" is a test | tail 10 
+| off another comment
+| false AND true OR null OR 1234 OR -333.26758983 AND [threshold,0,10,20,30,40]
+| multiline "
+	Test multiline string
+	test escaped \" quote
+" 
+| keep single '
+	Test multiline string
+	test escaped \' quote
+'
+| formatfield 
+    STATUS=['case', 
+		"Warning", 
+			"orange",
+		["Excellent", "OR", "Good"], 
+			[css, "color", "lightgreen"],
+		["Danger", "OR", "Emergency"], 
+			[
+				[css, "background-color", "darkred"],
+				[css, "color", "white"],
+				[css, "border", "5px dotted white"],
+				[css, "font-weight", "bold"],
+				[uppercase],
+				[align, "center"],
+				[postfix, " !!!"],
+				[prefix, "!!! "]
+			]
+	]</code></pre>

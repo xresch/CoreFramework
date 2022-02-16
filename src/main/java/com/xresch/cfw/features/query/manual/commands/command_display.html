@@ -3,11 +3,11 @@
 
 <p>The following query creates 42 random records and displays them as panels. </p>
 
-<pre><code class="language-bash">source random records = 42
+<pre><code class="language-cfwquery">source random records = 42
 | display as=panels</code></pre>
 
 <p>Further you can set the fields that should be visible by providing an array of fieldnames. This might not work for all renderers, for example the JSON display will always show all fields. </p>
-<pre><code class="language-bash">| source random
+<pre><code class="language-cfwquery">| source random
 | rename URL = url
 | rename LAST_LOGIN = "Last Login"
 | display as=biggertable  visiblefields=[FIRSTNAME, LASTNAME, "Last Login", url]</code></pre>
@@ -16,7 +16,7 @@
 <p>For renderers like panels, cards and tiles, you can set the fields used for the title by setting the parameters titlefields and titleformat.
 If titleformat is not set, the field values are joined with a blank as a separator: </p>
 
-<pre><code class="language-bash">| source random
+<pre><code class="language-cfwquery">| source random
 | rename URL = url
 | rename LAST_LOGIN = "Last Login"
 | display as=panels  

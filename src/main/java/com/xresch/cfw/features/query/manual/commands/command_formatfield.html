@@ -6,11 +6,11 @@ If you want to highly customize your display, use the 'css' formatter.
 
 <p>The following query adds a dollar sign to the VALUE field. </p>
 
-<pre><code class="language-bash">| source random 
+<pre><code class="language-cfwquery">| source random 
 | formatfield VALUE=[postfix," $"]</code></pre>
 
 <p>You can define multiple formatters for the same field. That will stack on top of each other. Be aware that some might cancel each other out. </p>
-<pre><code class="language-bash">| source random
+<pre><code class="language-cfwquery">| source random
 | formatfield INDEX=align,right
 	VALUE=[prefix,"Mighty Balance: "]
 	VALUE=[postfix," $"]
@@ -20,7 +20,7 @@ If you want to highly customize your display, use the 'css' formatter.
 
 <p>Further there are tree different styles how you can define the formatter: </p>
 
-<pre><code class="language-bash"># Just the name, will use the default values for parameters
+<pre><code class="language-cfwquery"># Just the name, will use the default values for parameters
 VALUE=threshold
 # An array where first element is the formatter name and every other is a parameter
 VALUE=[threshold,0,10,20,30,40]
@@ -56,7 +56,7 @@ All operators are case sensitive. See the examples after the list to see how to 
 
 <p>Following example compares numbers and applies the first case that matches.
 After the first array value 'case', the values alternate between a condition and a format. </p>
-<pre><code class="language-bash">| source random type=numbers
+<pre><code class="language-cfwquery">| source random type=numbers
 | formatfield 
     THOUSANDS=['case', 
 			"&lt;=1000", 
@@ -72,7 +72,7 @@ After the first array value 'case', the values alternate between a condition and
 If a condition has no prefix like 'Excellent', equal operation will be used. 
 When multiple conditions are specified, you can specify 'OR' to make the condition match if either of the conditions in the Array match.
 'AND' is used implicity but can be specified for easier readability. If more then two conditions are specified, the evaluation will always evaluate everything on the left side first. </p>
-<pre><code class="language-bash">| source random type=various
+<pre><code class="language-cfwquery">| source random type=various
 | source random type=various
 | formatfield 
     STATUS=['case', 
@@ -87,7 +87,7 @@ When multiple conditions are specified, you can specify 'OR' to make the conditi
 
 
 <p>Here is an example how to use the startsWith, endsWith, contains and regex operations. </p>
-<pre><code class="language-bash">| source random
+<pre><code class="language-cfwquery">| source random
 | formatfield 
     FIRSTNAME=['case', 
 			["startsWith:A", "OR", "endsWith:e"], 
@@ -106,7 +106,7 @@ When multiple conditions are specified, you can specify 'OR' to make the conditi
 	<li>If the value is equals 'Excellent' OR 'Good', applies the css formatter with color green.</li>
 	<li>If the value is equals 'Danger' OR 'Emergency', applies an array of various formatters.</li>
 </ul>
-<pre><code class="language-bash">| source random type=various
+<pre><code class="language-cfwquery">| source random type=various
 | formatfield 
     STATUS=['case', 
 		"Warning", 
