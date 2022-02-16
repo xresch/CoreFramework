@@ -58,34 +58,16 @@ function cfw_query_execute(){
 }
 
 /*******************************************************************************
- * Main method for building the view.
+ * Copy indentation from current line.
  * 
  ******************************************************************************/
-function cfw_query_resizeTextareaToFitQuery(){
+function cfw_query_handleEnter(domElement){
 		
-		var queryString = $('#query').val();
-		
-		if( !CFW.utils.isNullOrEmpty(queryString) ){
-			var oldLineCount = $('#query').attr('rows');
-			var currentLineCount = queryString.split(/\r\n|\n/).length + 1;
-			
-			if(currentLineCount <= 23 && oldLineCount < currentLineCount) {
-				$('#query').attr('rows', currentLineCount);
-			}else if(currentLineCount > 23){
-				$('#query').attr('rows', 23);
-			}
-		}
-}
-
-/*******************************************************************************
- * Main method for building the view.
- * 
- * @param direction 'up' or 'down' 
- ******************************************************************************/
-function cfw_query_copyCurrentLine(direction, domElement){
+	console.log("cfw_query_handleEnter");
 	
-	console.log("cfw_query_copyCurrentLine");
-	
+	//==========================================================
+	// Copy Indendation
+	//==========================================================
 	var selectionStart = domElement.selectionStart;
 	var selectionEnd = domElement.selectionEnd;
 	var value = domElement.value;
@@ -106,9 +88,80 @@ function cfw_query_copyCurrentLine(direction, domElement){
 		if(value.charAt(indexLineEnd) == "\n"){ break; }
 	}
 	
-	console.log("indexLineStart:"+indexLineStart);
-	console.log("indexLineEnd:"+indexLineEnd);
+	//--------------------------------------------
+	// Insert newline with indentation
+	var line = value.substring(indexLineStart, indexLineEnd);	
+	var indexFirstNonWhitespace = line.search(/[^\s]/);
 	
+	if(indexFirstNonWhitespace == -1){ indexFirstNonWhitespace = line.length; }
+	var indentation = line.substring(1, indexFirstNonWhitespace);
+	
+	console.log("line:"+line);
+	console.log("indexFirstNonWhitespace:"+indexFirstNonWhitespace);
+	console.log("indentation:"+indentation);
+	// set textarea value to: text before caret + tab + text after caret
+	value = value.substring(0, selectionStart) 
+					+"\n"
+					+indentation
+	    		+ value.substring(selectionEnd);
+	
+	domElement.value = value;
+	
+	let newCursorPos = selectionStart + indentation.length + 1;
+	
+	domElement.selectionStart = newCursorPos;
+	domElement.selectionEnd = newCursorPos;
+		
+}
+
+/*******************************************************************************
+ * Resize the text Area to fit query.
+ * 
+ ******************************************************************************/
+function cfw_query_resizeTextareaToFitQuery(){
+
+	value =  $('#query').val();
+	if( !CFW.utils.isNullOrEmpty(value) ){
+		var oldLineCount = $('#query').attr('rows');
+		var currentLineCount = value.split(/\r\n|\n/).length + 1;
+		
+		if(currentLineCount <= 23 && oldLineCount < currentLineCount) {
+			$('#query').attr('rows', currentLineCount);
+		}else if(currentLineCount > 23){
+			$('#query').attr('rows', 23);
+		}
+	}
+}
+
+/*******************************************************************************
+  * 
+ * @param direction 'up' or 'down' 
+ ******************************************************************************/
+function cfw_query_copyCurrentLine(direction, domElement){
+	
+
+	var selectionStart = domElement.selectionStart;
+	var selectionEnd = domElement.selectionEnd;
+	var value = domElement.value;
+	
+	//--------------------------------------------
+	// Find Line Start
+	var indexLineStart = selectionStart;
+	if(value.charAt(indexLineStart) == "\n"){ indexLineStart-- };
+	
+	for(; indexLineStart > 0 ;indexLineStart-- ){
+		if(value.charAt(indexLineStart) == "\n"){ break; }
+	}
+	
+	//--------------------------------------------
+	// Find Line End
+	var indexLineEnd = selectionEnd;
+	for(; indexLineEnd < value.length-1 ;indexLineEnd++ ){
+		if(value.charAt(indexLineEnd) == "\n"){ break; }
+	}
+	
+	//--------------------------------------------
+	// Insert Line
 	var line = value.substring(indexLineStart, indexLineEnd);	
 	
 	// set textarea value to: text before caret + tab + text after caret
@@ -318,6 +371,8 @@ function cfw_query_initialDraw(){
 		//---------------------------
 		// Enter
 		if (e.keyCode == 13) {
+			e.preventDefault();
+			cfw_query_handleEnter(this);
 			cfw_query_resizeTextareaToFitQuery();
 			return;
 		}

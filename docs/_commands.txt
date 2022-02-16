@@ -13,6 +13,14 @@ docker build -t xresch/cfw-server:latest -t xresch/cfw-server:5.0.0 .
 #########################################################
 
 #----------------------------------------------------
+# Count changes in repository
+#----------------------------------------------------
+git log --shortstat --author "Reto"  --since "5 days ago" --until "today" \
+    | egrep "file[s]* changed" \
+    | sed 's/changed, \([0-9]\+ deletions\)/changed, 0 insertions(+), \1/g' \
+    | awk '{files+=$1; inserted+=$4; deleted+=$6} END {print "files changed", files, "lines inserted:", inserted, "lines deleted:", deleted}'
+    
+#----------------------------------------------------
 # Count all the lines of all files in the repository
 #----------------------------------------------------
 git ls-files | xargs wc -l | cat > line_count.txt
