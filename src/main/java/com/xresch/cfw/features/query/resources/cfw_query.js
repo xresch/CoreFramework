@@ -92,9 +92,11 @@ function cfw_query_handleEnter(domElement){
 	// Insert newline with indentation
 	var line = value.substring(indexLineStart, indexLineEnd);	
 	var indexFirstNonWhitespace = line.search(/[^\s]/);
-	
-	if(indexFirstNonWhitespace == -1){ indexFirstNonWhitespace = line.length; }
-	var indentation = line.substring(1, indexFirstNonWhitespace);
+	var indentation = "";
+	if(indexFirstNonWhitespace != 0){
+		if(indexFirstNonWhitespace == -1){ indexFirstNonWhitespace = line.length; }
+		var indentation = line.substring(1, indexFirstNonWhitespace);
+	}
 	
 	console.log("line:"+line);
 	console.log("indexFirstNonWhitespace:"+indexFirstNonWhitespace);

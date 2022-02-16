@@ -629,8 +629,6 @@ function cfw_renderer_tiles(renderDef) {
 					var customizer = renderDef.customizers[fieldname];
 					var customizedValue = customizer(currentRecord, value, CFW_RENDER_NAME_TILES, fieldname);
 					if(customizedValue != null){
-						// remove width 100% etc... to not mess up the list 
-						$(customizedValue).css("width", "auto");
 				
 						var span = $('<span style="font-size: '+10*settings.sizefactor+'px;"><strong>'+renderDef.labels[fieldname]+':&nbsp;</strong></span>');
 						span.append(customizedValue);
@@ -976,7 +974,7 @@ function cfw_renderer_panels (renderDef) {
 		 
 		//---------------------------
 		// Resolve Title				
-		panelSettings.title.append(renderDef.getTitleHTML(currentRecord));	
+		panelSettings.title.append(renderDef.getTitleString(currentRecord));	
 		
 		//-------------------------
 		// Add Action buttons
@@ -1023,8 +1021,6 @@ function cfw_renderer_panels (renderDef) {
 			let fieldname = renderDef.visiblefields[key];
 			let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PANELS);
 			
-			// remove width 100% etc... to not mess up the list 
-			$(value).css("width", "auto");
 			if(!CFW.utils.isNullOrEmpty(value)){
 				item = $('<li><strong>' + renderDef.labels[fieldname] + ':&nbsp;</strong></li>');
 				item.append(value);
@@ -1131,7 +1127,7 @@ function cfw_renderer_cards (renderDef) {
 		 
 		//---------------------------
 		// Resolve Title				
-		cardSettings.title.append(renderDef.getTitleHTML(currentRecord));	
+		cardSettings.title.append(renderDef.getTitleString(currentRecord));	
 		
 		//-------------------------
 		// Add Action buttons
@@ -1172,9 +1168,7 @@ function cfw_renderer_cards (renderDef) {
 		for(let key in renderDef.visiblefields){
 			let fieldname = renderDef.visiblefields[key];
 			let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PANELS);
-			
-			// remove width 100% etc... to not mess up the list 
-			$(value).css("width", "auto");
+						
 			if(!CFW.utils.isNullOrEmpty(value)){
 				item = $('<li><strong>' + renderDef.labels[fieldname] + ':&nbsp;</strong></li>');
 				item.append(value);
