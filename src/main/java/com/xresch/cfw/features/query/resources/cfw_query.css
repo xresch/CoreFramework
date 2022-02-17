@@ -1,0 +1,76 @@
+
+.input-area {
+  position: relative;
+  outline: none;
+}
+
+.query-editor{
+	overflow: auto;
+}
+#query-highlighting {
+  position: relative;
+  display: inline-block;
+  /*background: transparent;*/
+  padding: 0;
+  bottom: 0;
+  top: 0;
+  min-width: 100%;
+  /*height: 100%;*/
+  overflow: none;
+}
+
+#query {
+	/*show cursor, only hide text, keep 10% opacity to see issues*/
+    -webkit-text-fill-color: rgba(255,255,255,0.1);
+    resize: none;
+	overflow: visible;
+	position: absolute;
+	display: inline-block;
+	padding: 0;
+	min-width: 100%;
+	
+	white-space: pre;
+    overflow-wrap: normal;
+  
+	z-index: 3;
+	margin: 0;
+	padding: 0;
+	background: none;
+	border: none;
+	border-radius: 0;
+	outline: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+
+}
+
+.query-text-format{
+	font-size: 14px;
+	font-weight: 200;
+	font-family: 'Source Code Pro', monospace;
+	line-height: normal;
+}
+
+
+.cursor {
+	position: absolute;
+	display: inline-block;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	margin: 0;
+	padding: 0;
+	background: none;
+	border: none;
+	border-radius: 0;
+	outline: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+.pointer {
+	color: #333;
+}

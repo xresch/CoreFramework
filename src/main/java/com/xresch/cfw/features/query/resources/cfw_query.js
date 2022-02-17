@@ -58,12 +58,39 @@ function cfw_query_execute(){
 }
 
 /*******************************************************************************
+ * To Be Done
+ * 
+ ******************************************************************************/
+
+$('#query').on("change", function (event) {
+
+  cfw_query_editor_refreshHighlighting();
+}, false);
+
+
+// Refresh highlighting when blured focus from textarea.
+/*$('#query').on("blur", function (event) {
+  cfw_query_editor_refreshHighlighting();
+}, false)*/
+
+
+function cfw_query_editor_refreshHighlighting() {
+	
+	var highlighting = $('#query-highlighting');
+	var queryInput = $('#query');
+	
+	highlighting.html(queryInput.val());
+	hljs.highlightElement(highlighting.get(0));
+	
+}
+
+/*******************************************************************************
  * Copy indentation from current line.
  * 
  ******************************************************************************/
-function cfw_query_handleEnter(domElement){
+function cfw_query_editor_handleEnter(domElement){
 		
-	console.log("cfw_query_handleEnter");
+	console.log("cfw_query_editor_handleEnter");
 	
 	//==========================================================
 	// Copy Indendation
@@ -121,25 +148,42 @@ function cfw_query_handleEnter(domElement){
  * 
  ******************************************************************************/
 function cfw_query_resizeTextareaToFitQuery(){
-
-	value =  $('#query').val();
+	
+	var $query = $('#query');
+	var value =  $('#query').val();
 	if( !CFW.utils.isNullOrEmpty(value) ){
-		var oldLineCount = $('#query').attr('rows');
-		var currentLineCount = value.split(/\r\n|\n/).length + 1;
+		//var oldLineCount = $('#query').attr('rows');
+		//var currentLineCount = value.split(/\r\n|\n/).length + 1;
+		//$('#query').attr('rows', currentLineCount);
+		// var queryHeight = $('#query').height();
 		
-		if(currentLineCount <= 23 && oldLineCount < currentLineCount) {
+		var queryHeight = $query[0].scrollHeight;
+		var queryWidth = $query[0].scrollWidth;
+		 $query.css("height", queryHeight+'px'); 
+		 $query.css("width", queryWidth+'px'); 
+		
+		var highlighting = $('#query-highlighting');
+		highlighting.css("height", queryHeight+"px");
+		highlighting.css("width", queryWidth+"px");
+		
+		if(queryHeight > 500){ queryHeight = 500; };
+		$('.query-editor').css('height',queryHeight+"px")
+		
+		
+		/*if(currentLineCount <= 23 && oldLineCount < currentLineCount) {
 			$('#query').attr('rows', currentLineCount);
 		}else if(currentLineCount > 23){
 			$('#query').attr('rows', 23);
-		}
+		}*/
 	}
+	
 }
 
 /*******************************************************************************
   * 
  * @param direction 'up' or 'down' 
  ******************************************************************************/
-function cfw_query_copyCurrentLine(direction, domElement){
+function cfw_query_editor_copyCurrentLine(direction, domElement){
 	
 
 	var selectionStart = domElement.selectionStart;
@@ -186,7 +230,7 @@ function cfw_query_copyCurrentLine(direction, domElement){
  * 
  * @param direction of the indentation in case of multiline 'increase' or 'decrease' 
  ******************************************************************************/
-function cfw_query_handleTab(domElement, direction){
+function cfw_query_editor_handleTab(domElement, direction){
 	
 	var start = domElement.selectionStart;
     var end = domElement.selectionEnd;
@@ -242,6 +286,7 @@ function cfw_query_handleTab(domElement, direction){
 		domElement.selectionStart = indexLineStart+1;
 	    domElement.selectionEnd = end + changeCount;
 	}
+	
 }
 	
 /*******************************************************************************
@@ -285,10 +330,15 @@ function cfw_query_initialDraw(){
 			</div>
 			<div class="row">
 				<div class="col-12">
-					<form id="${formID}">
-						<input id="cfw-formID" name="cfw-formID" type="hidden" value="${formID}">
-						<textarea id="query" name="query" class="form-control monospace" rows="3" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
-					</form>
+					<div class="query-editor">
+						<div class="scroll-fix" style="position: relative; height: auto; ">
+							<form id="${formID}">
+								<input id="cfw-formID" name="cfw-formID" type="hidden" value="${formID}">
+								<textarea id="query" name="query" class="form-control query-text-format" rows="3" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
+								<pre style="width: fit-content;"><code id="query-highlighting" class="preview language-cfwquery query-text-format"> </code></pre>
+							</form>
+						</div>
+					</div>
 				</div>
 			</div>
 			
@@ -322,8 +372,12 @@ function cfw_query_initialDraw(){
 	if( !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.query) ){
 
 		$('#query').val(CFW_QUERY_URLPARAMS.query);
+		
+
 		cfw_query_resizeTextareaToFitQuery();
+		cfw_query_editor_refreshHighlighting();
 		cfw_query_execute();
+
 	}
 	
 	//-----------------------------------
@@ -335,14 +389,14 @@ function cfw_query_initialDraw(){
 		//---------------------------
 		// Ctrl + Alt + Up
 		if (e.ctrlKey && e.altKey && e.keyCode == 38) {
-			cfw_query_copyCurrentLine('up', this);
+			cfw_query_editor_copyCurrentLine('up', this);
 			return;
 		}
 		
 		//---------------------------
 		// Ctrl + Alt + Down
 		if (e.ctrlKey && e.altKey && e.keyCode == 40) {
-			cfw_query_copyCurrentLine('down', this);
+			cfw_query_editor_copyCurrentLine('down', this);
 			return;
 		}
 		
@@ -350,7 +404,7 @@ function cfw_query_initialDraw(){
 		// Shift+Tab: Decrease Indentation
 		if (e.shiftKey && e.key == 'Tab') {
 		    e.preventDefault();
-			cfw_query_handleTab(this, "decrease");
+			cfw_query_editor_handleTab(this, "decrease");
 			return;
 		}
 			
@@ -358,7 +412,7 @@ function cfw_query_initialDraw(){
 		// Allow Tab for Indentation
 		if (e.key == 'Tab') {
 		    e.preventDefault();
-			cfw_query_handleTab(this, "increase");
+			cfw_query_editor_handleTab(this, "increase");
 		}
 		
 
@@ -374,13 +428,36 @@ function cfw_query_initialDraw(){
 		// Enter
 		if (e.keyCode == 13) {
 			e.preventDefault();
-			cfw_query_handleEnter(this);
+			cfw_query_editor_handleEnter(this);
 			cfw_query_resizeTextareaToFitQuery();
+			
 			return;
 		}
 		
 	});
 	
+	//-----------------------------------
+	// Refresh highlight on keyup
+	$('#query').on("keyup", function(e){
+		cfw_query_editor_refreshHighlighting();
+	});
+	
+	//-----------------------------------
+	// Monitor Window Resize
+	$(function() {
+	    var $window = $(window);
+	    var width = $window.width();
+	    var height = $window.height();
+	
+	    setInterval(function () {
+	        if ((width != $window.width()) || (height != $window.height())) {
+	            width = $window.width();
+	            height = $window.height();
+	
+				cfw_query_resizeTextareaToFitQuery();
+	        }
+	    }, 1000);
+	});
 	
 		
 }
