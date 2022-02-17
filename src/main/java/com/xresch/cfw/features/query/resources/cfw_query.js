@@ -2,6 +2,11 @@
 var CFW_QUERY_URLPARAMS = CFW.http.getURLParamsDecoded();
 var CFW_QUERY_URL="/app/query";
 
+//The query textarea containing the unformatted text
+var $QUERYAREA;
+//The code element that contains the highlighted syntax
+var $QUERYCODE;
+
 /*******************************************************************************
  * Main method for building the view.
  * 
@@ -10,7 +15,7 @@ function cfw_query_execute(){
 	
 	var targetDiv = $('#cfw-query-results');
 	var timeframe = JSON.parse($('#timeframePicker').val());
-	var query =  $('#query').val();
+	var query =  $QUERYAREA.val();
 	
 	params = {action: "execute"
 			, item: "query"
@@ -62,25 +67,10 @@ function cfw_query_execute(){
  * 
  ******************************************************************************/
 
-$('#query').on("change", function (event) {
-
-  cfw_query_editor_refreshHighlighting();
-}, false);
-
-
-// Refresh highlighting when blured focus from textarea.
-/*$('#query').on("blur", function (event) {
-  cfw_query_editor_refreshHighlighting();
-}, false)*/
-
-
 function cfw_query_editor_refreshHighlighting() {
 	
-	var highlighting = $('#query-highlighting');
-	var queryInput = $('#query');
-	
-	highlighting.html(queryInput.val());
-	hljs.highlightElement(highlighting.get(0));
+	$QUERYCODE.html($QUERYAREA.val());
+	hljs.highlightElement($QUERYCODE.get(0));
 	
 }
 
@@ -149,32 +139,20 @@ function cfw_query_editor_handleEnter(domElement){
  ******************************************************************************/
 function cfw_query_resizeTextareaToFitQuery(){
 	
-	var $query = $('#query');
-	var value =  $('#query').val();
+	var value =  $QUERYAREA.val();
 	if( !CFW.utils.isNullOrEmpty(value) ){
-		//var oldLineCount = $('#query').attr('rows');
-		//var currentLineCount = value.split(/\r\n|\n/).length + 1;
-		//$('#query').attr('rows', currentLineCount);
-		// var queryHeight = $('#query').height();
 		
-		var queryHeight = $query[0].scrollHeight;
-		var queryWidth = $query[0].scrollWidth;
-		 $query.css("height", queryHeight+'px'); 
-		 $query.css("width", queryWidth+'px'); 
+		var queryHeight = $QUERYAREA[0].scrollHeight;
+		var queryWidth = $QUERYAREA[0].scrollWidth;
+		 $QUERYAREA.css("height", queryHeight+'px'); 
+		 $QUERYAREA.css("width", queryWidth+'px'); 
 		
-		var highlighting = $('#query-highlighting');
-		highlighting.css("height", queryHeight+"px");
-		highlighting.css("width", queryWidth+"px");
+		$QUERYCODE.css("height", $QUERYAREA.height()+"px");
+		$QUERYCODE.css("width", $QUERYAREA.height()+"px");
 		
 		if(queryHeight > 500){ queryHeight = 500; };
 		$('.query-editor').css('height',queryHeight+"px")
 		
-		
-		/*if(currentLineCount <= 23 && oldLineCount < currentLineCount) {
-			$('#query').attr('rows', currentLineCount);
-		}else if(currentLineCount > 23){
-			$('#query').attr('rows', 23);
-		}*/
 	}
 	
 }
@@ -335,7 +313,7 @@ function cfw_query_initialDraw(){
 							<form id="${formID}">
 								<input id="cfw-formID" name="cfw-formID" type="hidden" value="${formID}">
 								<textarea id="query" name="query" class="form-control query-text-format" rows="3" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
-								<pre style="width: fit-content;"><code id="query-highlighting" class="preview language-cfwquery query-text-format"> </code></pre>
+								<pre id="query-pre-element"><code id="query-highlighting" class="preview language-cfwquery query-text-format"> </code></pre>
 							</form>
 						</div>
 					</div>
@@ -348,6 +326,8 @@ function cfw_query_initialDraw(){
 		</div>
 	`);
 	
+	$QUERYAREA = $('#query');
+	$QUERYCODE = $('#query-highlighting');
 	//-------------------------------------------------
 	// Initialize Autocomplete, trigger with Ctrl+Space
 	cfw_autocompleteInitialize(formID,'query',0,10, null, true);
@@ -371,18 +351,21 @@ function cfw_query_initialDraw(){
 	// Load Query from URL
 	if( !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.query) ){
 
-		$('#query').val(CFW_QUERY_URLPARAMS.query);
-		
+		$QUERYAREA.val(CFW_QUERY_URLPARAMS.query);
 
 		cfw_query_resizeTextareaToFitQuery();
 		cfw_query_editor_refreshHighlighting();
 		cfw_query_execute();
 
+	}else{
+		$QUERYAREA.val(" ");
+		cfw_query_resizeTextareaToFitQuery();
+		cfw_query_editor_refreshHighlighting();
 	}
 	
 	//-----------------------------------
 	// Query Field Event Handler
-	$('#query').on("keydown", function(e){
+	$QUERYAREA.on("keydown", function(e){
 		
 		cfw_query_highlightExecuteButton(true);
 		
@@ -438,7 +421,7 @@ function cfw_query_initialDraw(){
 	
 	//-----------------------------------
 	// Refresh highlight on keyup
-	$('#query').on("keyup", function(e){
+	$QUERYAREA.on("keyup", function(e){
 		cfw_query_editor_refreshHighlighting();
 	});
 	
