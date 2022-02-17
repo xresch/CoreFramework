@@ -277,7 +277,8 @@ public class CFW {
 	   		appToStart = new CFWAppInterface() {
 	   			@Override public void settings() { 
 	   					CFW.AppSettings.enableDashboarding(true); 
-	   					CFW.AppSettings.enableSpaces(true); 
+	   					CFW.AppSettings.enableContextSettings(true); 
+	   					//CFW.AppSettings.enableSpaces(true); 
 	   			}
 				@Override public void startApp(CFWApplicationExecutor executor) { executor.setDefaultURL("/dashboard/list", true); }
 				@Override public void register() { /* Do nothing */ }

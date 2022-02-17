@@ -138,8 +138,9 @@ DONE
 
 ------- current v6 -------
 - BREAKING CHANGE - H2 Migration: bumped from v1.4.200 to 2.0.206
-- Migrated  jQuery from 3.4.1 to 3.6.0
+- Migrated jQuery from 3.4.1 to 3.6.0
 - Migrated highlight.js from v9 to v11
+- Migrated Guava from v30.0 to v31.0
 - New Feature - Notification: Added Notification mechanism to notify user in the UI. Bell icon added to the Menu Bar 
 - Notifications: Added Startup Notifications for Admins and Superusers
 - Alerting: Added Channel for Notifications

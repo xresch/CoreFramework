@@ -241,9 +241,10 @@ public class CFWRegistryComponents {
 			
 			//---------------------------
 			// Tools
-			MenuItem toolsParentMenu = new MenuItem("Tools")
+			MenuItem toolsParentMenu = (MenuItem)new MenuItem("Tools")
 					.faicon("fas fa-tools")
-					.addPermission("PSEUDO_PERMISSION_HIDE_BY_DEFAULT");	
+					.addPermission("PSEUDO_PERMISSION_HIDE_BY_DEFAULT")
+					.addAttribute("id", "cfwMenuTools");	
 			
 			menu.addChild(toolsParentMenu);
 			
@@ -253,7 +254,10 @@ public class CFWRegistryComponents {
 			
 			//---------------------------
 			// Admin Menu
-			MenuItem adminParentMenu = new MenuItem("Admin").faicon("fas fa-cogs");	
+			MenuItem adminParentMenu = (MenuItem)new MenuItem("Admin")
+					.faicon("fas fa-cogs")
+					.addAttribute("id", "cfwMenuAdmin");
+			
 			menu.addChild(adminParentMenu);
 			
 			for(MenuItem item : adminMenuItems.values() ) {
@@ -290,10 +294,20 @@ public class CFWRegistryComponents {
 			}
 		
 			if(!sessionData.getUser().isForeign()) {
-				userParentMenu.addChild(new MenuItem("Change Password").faicon("fas fa-key").href("/app/changepassword"));
+				userParentMenu.addChild(
+						new MenuItem("Change Password")
+							.faicon("fas fa-key")
+							.href("/app/changepassword")
+							.addAttribute("id", "cfwMenuUser-ChangePassword")
+						);
 			}
 			
-			userParentMenu.addChild(new MenuItem("Logout").faicon("fas fa-sign-out-alt").href("/app/logout"));
+			userParentMenu.addChild(
+				new MenuItem("Logout")
+					.faicon("fas fa-sign-out-alt")
+					.href("/app/logout")
+					.addAttribute("id", "cfwMenuUser-Logout")
+				);
 			
 		}
 		return menu;

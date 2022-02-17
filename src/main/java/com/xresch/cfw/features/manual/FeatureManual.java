@@ -45,6 +45,7 @@ public class FeatureManual extends CFWAppFeature {
 				.faicon("fas fa-book")
 				.addPermission(FeatureManual.PERMISSION_MANUAL)
 				.href("/app/manual")
+				.addAttribute("id", "cfwMenuButtons-Manual")
 				, null
 		);
 

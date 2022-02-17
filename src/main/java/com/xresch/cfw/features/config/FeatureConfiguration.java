@@ -62,6 +62,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 					.faicon("fas fa-cog")
 					.addPermission(PERMISSION_CONFIGURATION)
 					.href("/app/configuration")	
+					.addAttribute("id", "cfwMenuAdmin-Config")
 				, null);
 		
 	}

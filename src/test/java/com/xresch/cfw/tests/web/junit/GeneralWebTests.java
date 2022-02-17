@@ -1,4 +1,4 @@
-package com.xresch.cfw.tests.web;
+package com.xresch.cfw.tests.web.junit;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

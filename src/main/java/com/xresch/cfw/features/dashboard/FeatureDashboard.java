@@ -115,6 +115,7 @@ public class FeatureDashboard extends CFWAppFeature {
 					.addPermission(PERMISSION_DASHBOARD_CREATOR)
 					.addPermission(PERMISSION_DASHBOARD_ADMIN)
 					.href("/app/dashboard/list")
+					.addAttribute("id", "cfwMenuTools-Dashboards")
 				, null);
 		
 		//----------------------------------

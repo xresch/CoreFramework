@@ -13,6 +13,7 @@ public class UserMenuItem extends MenuItem {
 		super(data.getUser().username());
 		this.alignDropdownRight(true);
 		this.faicon("fas fa-user");
+		this.addAttribute("id", "cfwMenuUser");
 	}
 
 }

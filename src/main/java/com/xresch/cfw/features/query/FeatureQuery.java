@@ -105,6 +105,7 @@ public class FeatureQuery extends CFWAppFeature {
 					.addPermission(PERMISSION_QUERY_USER)
 					.addPermission(PERMISSION_QUERY_ADMIN)
 					.href("/app/query")
+					.addAttribute("id", "cfwMenuTools-Query")
 				, null);
 		
 	}

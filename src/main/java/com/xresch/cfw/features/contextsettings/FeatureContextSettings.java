@@ -38,6 +38,7 @@ public class FeatureContextSettings extends CFWAppFeature {
 					.faicon("fas fa-cogs")
 					.addPermission(PERMISSION_CONTEXT_SETTINGS)
 					.href("/app/contextsettings")	
+					.addAttribute("id", "cfwMenuAdmin-ContextSettings")
 				, null);
 							
 	}

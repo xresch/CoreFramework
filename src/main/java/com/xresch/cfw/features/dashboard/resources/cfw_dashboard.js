@@ -401,8 +401,8 @@ function cfw_dashboard_registerCategory(faiconClasses, categoryName, categoryLab
 			// Create
 			var categoryHTML = 
 				'<li class="dropdown dropdown-submenu">'
-					+'<a href="#" class="dropdown-item dropdown-toggle" id="cfwMenuDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><div class="cfw-fa-box"><i class="'+faiconClasses+'"></i></div><span class="cfw-menuitem-label">'+currentLabel+'</span><span class="caret"></span></a>'
-					+'<ul class="dropdown-menu dropdown-submenu" aria-labelledby="cfwMenuDropdown" data-submenuof="'+currentCategoryName+'">'
+					+'<a href="#" class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><div class="cfw-fa-box"><i class="'+faiconClasses+'"></i></div><span class="cfw-menuitem-label">'+currentLabel+'</span><span class="caret"></span></a>'
+					+'<ul class="dropdown-menu dropdown-submenu" data-submenuof="'+currentCategoryName+'">'
 					+'</ul>'
 				+'</li>';
 			parent.append(categoryHTML);

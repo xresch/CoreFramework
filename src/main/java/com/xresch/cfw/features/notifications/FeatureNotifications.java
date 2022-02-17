@@ -45,7 +45,8 @@ public class FeatureNotifications extends CFWAppFeature {
 			.faicon("fas fa-bell")
 			.addPermission(PERMISSION_NOTIFICATIONS_USER)
 			.onclick("cfw_notifications_showModal();")
-			.addCssClass("cfw-menuitem-notification");
+			.addCssClass("cfw-menuitem-notification")
+			.addAttribute("id", "cfwMenuButtons-Notifications");
 		
 		CFW.Registry.Components.addButtonsMenuItem(notificationMenu, null);
 		

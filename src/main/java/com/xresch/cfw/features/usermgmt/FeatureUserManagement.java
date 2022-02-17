@@ -57,7 +57,8 @@ public class FeatureUserManagement extends CFWAppFeature {
 				(MenuItem)new MenuItem("Manage Users", "{!cfw_core_manage_users!}") 
 					.faicon("fas fa-users")
 					.addPermission(Permission.CFW_USER_MANAGEMENT)
-					.href("/app/usermanagement")	
+					.href("/app/usermanagement")
+					.addAttribute("id", "cfwMenuAdmin-UserMgmt")
 				, null);
 		
 	}

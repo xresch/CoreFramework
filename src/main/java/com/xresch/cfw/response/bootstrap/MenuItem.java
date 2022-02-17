@@ -119,13 +119,13 @@ public class MenuItem extends HierarchicalHTMLItem {
 			}
 			
 			html.append("\n<li class=\"dropdown "+cssClass+"\">")
-				.append("\n<a "+this.getAttributesString()+"class=\"dropdown-item dropdown-toggle\" id=\"cfwMenuDropdown\" data-toggle=\"dropdown\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">")
+				.append("\n<a "+this.getAttributesString()+"class=\"dropdown-item dropdown-toggle\" data-toggle=\"dropdown\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">")
 					.append("<div class=\"cfw-fa-box\"><i class=\""+faiconClasses+"\"></i></div>")
 					.append("<span class=\"cfw-menuitem-label\">")
 						.append(label)
 					.append("</span>")  
 				.append("<span class=\"caret\"></span></a>")   
-				.append("\n<ul class=\"dropdown-menu dropdown-submenu "+submenuClass+alignRightClass+"\" aria-labelledby=\"cfwMenuDropdown\">");
+				.append("\n<ul class=\"dropdown-menu dropdown-submenu "+submenuClass+alignRightClass+"\" >");
 
 			for(HierarchicalHTMLItem child : children) {
 				html.append("\t"+child.getHTML());

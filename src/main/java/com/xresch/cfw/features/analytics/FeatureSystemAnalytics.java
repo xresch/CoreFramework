@@ -53,14 +53,16 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem(SYSTEM_ANALYTICS)
 					.faicon("fas fa-traffic-light")
-					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)	
+					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
+					.addAttribute("id", "cfwMenuSystemAnalytics")
 				, null);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("DB Analytics")
 					.faicon("fas fa-database")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
-					.href("/app/dbanalytics")	
+					.href("/app/dbanalytics")
+					.addAttribute("id", "cfwMenuSystemAnalytics-DBAnalytics")
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
@@ -68,13 +70,15 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.faicon("fas fa-microchip")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/cpusampling")	
+					.addAttribute("id", "cfwMenuSystemAnalytics-CPUSampling")
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("Servlet Context Tree")
 					.faicon("fas fa-sitemap")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
-					.href("/app/servletcontexttree")	
+					.href("/app/servletcontexttree")
+					.addAttribute("id", "cfwMenuSystemAnalytics-ServletContextTree")
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
@@ -82,6 +86,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.faicon("fas fa-database")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/sessionoverview")	
+					.addAttribute("id", "cfwMenuSystemAnalytics-SessionOverview")
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
@@ -89,6 +94,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.faicon("fas fa-cubes")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/systemproperties")	
+					.addAttribute("id", "cfwMenuSystemAnalytics-SystemProperties")
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
@@ -96,6 +102,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.faicon("fas fa-sd-card")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/cachestatistics")	
+					.addAttribute("id", "cfwMenuSystemAnalytics-CacheStats")
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
@@ -103,6 +110,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.faicon("fas fa-book-open")
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/app/logconfiguration")	
+					.addAttribute("id", "cfwMenuSystemAnalytics-LogConfig")
 				, SYSTEM_ANALYTICS);
 		
 		CFW.Registry.Components.addAdminCFWMenuItem(
@@ -111,6 +119,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 					.addPermission(FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS)
 					.href("/metrics")	
 					.addAttribute("target", "_blank")
+					.addAttribute("id", "cfwMenuSystemAnalytics-Metrics")
 				, SYSTEM_ANALYTICS);
 	}
 

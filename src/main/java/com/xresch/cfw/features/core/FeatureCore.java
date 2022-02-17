@@ -92,6 +92,7 @@ public class FeatureCore extends CFWAppFeature {
 					.faicon("fas fa-star")
 					.addPermission(FeatureCore.PERMISSION_FEATURE_MGMT)	
 					.href("/app/featuremanagement")
+					.addAttribute("id", "cfwMenuAdmin-FeatureManagement")
 				, null);
 		
 		

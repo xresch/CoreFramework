@@ -60,6 +60,7 @@ public class FeatureJobs extends CFWAppFeature {
 					.addPermission(PERMISSION_JOBS_USER)
 					.addPermission(PERMISSION_JOBS_ADMIN)
 					.href("/app/jobs")
+					.addAttribute("id", "cfwMenuTools-Jobs")
 				, null);
 		
 	}
