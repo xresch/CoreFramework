@@ -358,8 +358,7 @@ function cfw_query_initialDraw(){
 		cfw_query_execute();
 
 	}else{
-		$QUERYAREA.val(" ");
-		cfw_query_resizeTextareaToFitQuery();
+		//cfw_query_resizeTextareaToFitQuery();
 		cfw_query_editor_refreshHighlighting();
 	}
 	
