@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**************************************************************************************************************
+ * Creates tokens from a string that can be used to parse a language.
  * 
- * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @author Reto Scheiwiller, (c) Copyright 2022
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWQueryTokenizer {
@@ -30,16 +31,19 @@ public class CFWQueryTokenizer {
 	private Pattern regexIsSplit = null;
 	
 	private boolean keywordsCaseSensitive = true;
+	private boolean hashComments = true;
 	private ArrayList<String> keywordList = new ArrayList<>();
 	
 	/***********************************************************************************************
 	 * El Grande Constructore
-	 * @param keywordsCaseSensitive TODO
+	 * @param keywordsCaseSensitive true makes keywords case sensitive, false otherwise
+	 * @param hashComments TODO
 	 ***********************************************************************************************/
-	public CFWQueryTokenizer(String tokenizeThis, boolean keywordsCaseSensitive) {
+	public CFWQueryTokenizer(String tokenizeThis, boolean keywordsCaseSensitive, boolean hashComments) {
 		
 		this.base = tokenizeThis.trim();		
 		this.keywordsCaseSensitive = keywordsCaseSensitive;		
+		this.hashComments = hashComments;		
 	}
 	
 	/***********************************************************************************************
@@ -89,7 +93,10 @@ public class CFWQueryTokenizer {
 		ArrayList<CFWQueryToken> tokenList = new ArrayList<>();
 		
 		while(this.hasMoreTokens()) {
-			tokenList.add(getNextToken());
+			CFWQueryToken token = getNextToken();
+			if(token != null) {
+				tokenList.add(token);
+			}
 		}
 		
 		return tokenList;
@@ -106,7 +113,18 @@ public class CFWQueryTokenizer {
 		// Skip Whitespaces
 		while(this.hasMoreTokens() && this.matchesCurrentChar(regexIsWhitespace)) {
 			cursor++;
-			slice = base.substring(cursor);
+		}
+
+		//-----------------------------------
+		// Hash Comments, skip all until newline
+		if(hashComments && this.hasMoreTokens() && this.currentChar().equals("#")) {
+			
+			while(this.hasMoreTokens() && !this.currentChar().equals("\n")) {
+				System.out.println("skip:"+this.currentChar());
+				cursor++;
+			}
+			System.out.println("newline:"+this.currentChar());
+			return getNextToken();
 		}
 
 		//-----------------------------------
@@ -169,7 +187,7 @@ public class CFWQueryTokenizer {
 			case '<':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_LOWERTHEN, startPos, cursor);
 			
 		}
-		
+
 		//-----------------------------------
 		// NULL
 		if(slice.toLowerCase().startsWith("null")) {
@@ -247,7 +265,7 @@ public class CFWQueryTokenizer {
 		//-----------------------------------
 		// UNKNOWN
 		cursor++;
-		return createToken(CFWQueryToken.CFWQueryTokenType.UNKNOWN, startPos+1, cursor-1);
+		return createToken(CFWQueryToken.CFWQueryTokenType.UNKNOWN, startPos, cursor);
 		
 	}
 	

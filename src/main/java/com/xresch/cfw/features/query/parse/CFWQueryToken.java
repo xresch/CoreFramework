@@ -59,6 +59,7 @@ public class CFWQueryToken{
 	  , /** The character ')' */ SIGN_BRACE_ROUND_CLOSE
 	  , /** The character '[' */ SIGN_BRACE_SQUARE_OPEN
 	  , /** The character ']' */ SIGN_BRACE_SQUARE_CLOSE
+	  , /** The character '#' */ SIGN_HASH
 		
 	  , /** The character '+' */ OPERATOR_PLUS
 	  , /** The character '-' */ OPERATOR_MINUS
@@ -68,6 +69,7 @@ public class CFWQueryToken{
 	  , /** The character '|' */ OPERATOR_OR
 	  , /** The character '!' */ OPERATOR_NOT
 	  , /** The character '.' */ OPERATOR_DOT
+
 	
 	  , /** Applied to any keyword defined with the method CFWQueryTokenizer.keywords() */
 	    KEYWORD

@@ -59,7 +59,7 @@ public class TestCFWQueryTokenizer {
 	public void testTokenizerSingleCharacter() throws IOException {
 		
 
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" c ", true);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" c ", true, true);
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testTokenizerSingleCharacter", results);
@@ -76,7 +76,7 @@ public class TestCFWQueryTokenizer {
 	public void testTokenizerBasics() throws IOException {
 		
 
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" c hello \"double quotes\" 'single quotes' 423 -33.431 true '42' false null ", true);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" c hello \"double quotes\" 'single quotes' 423 -33.431 true '42' false null ", true, true);
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("Basic Test", results);
@@ -120,7 +120,7 @@ public class TestCFWQueryTokenizer {
 	public void testTokenizerNumbers() throws IOException {
 		
 
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" -1 1234 \"5678\" 42.90 -71.55555551 321;", true);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" -1 1234 \"5678\" 42.90 -71.55555551 321;", true, true);
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("Basic Test", results);
@@ -151,7 +151,7 @@ public class TestCFWQueryTokenizer {
 	@Test
 	public void testTokenizerSplit() throws IOException {
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer("001 | part ABC | \"double quotes\" ", true)
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer("001 | part ABC | \"double quotes\" ", true, true)
 				 .splitBy("[\\|]");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
@@ -183,7 +183,7 @@ public class TestCFWQueryTokenizer {
 	@Test
 	public void testTokenizerKeywordsCaseSensitive() throws IOException {
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" \"my string\" AND 'another string' OR identifier_A NOT 42 and functionName(param)", true)
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" \"my string\" AND 'another string' OR identifier_A NOT 42 and functionName(param)", true, true)
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
@@ -223,7 +223,7 @@ public class TestCFWQueryTokenizer {
 	@Test
 	public void testTokenizerKeywordsCaseInsensitive() throws IOException {
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" \"my string\" and 'another string' OR identifier NOT 42 and", false)
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" \"my string\" and 'another string' OR identifier NOT 42 and", false, true)
 				 .keywords("AND", "or", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
@@ -261,7 +261,7 @@ public class TestCFWQueryTokenizer {
 	@Test
 	public void testTokenizerSignsAndOperators() throws IOException {
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" , () [] +- */ ! &| <> = != <= >= . ; == ", false);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" , () [] +- */ ! &| <> = != <= >= . ; == ", false, true);
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("Keywords Case Insensitive Test", results);
@@ -339,7 +339,7 @@ public class TestCFWQueryTokenizer {
 	@Test
 	public void testSourceSyntax() throws IOException {
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer("source json data=\'"+jsonTestData+"\' ", false);
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer("source json data=\'"+jsonTestData+"\' ", false, true);
 		System.out.println("source json data=\""+jsonTestData+"\"");
 		
 //		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer("source json data='[\r\n"

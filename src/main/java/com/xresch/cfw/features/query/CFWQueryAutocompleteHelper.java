@@ -52,7 +52,7 @@ public class CFWQueryAutocompleteHelper {
 		}
 		
 		
-		commandTokens = new CFWQueryTokenizer(commandPart, false)
+		commandTokens = new CFWQueryTokenizer(commandPart, false, true)
 				.keywords("AND", "OR", "NOT")
 				.getAllTokens();
 		

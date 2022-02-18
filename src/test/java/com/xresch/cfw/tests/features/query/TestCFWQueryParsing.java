@@ -64,7 +64,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		//String queryString = "source random records=100";
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(sourceString, true)
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(sourceString, true, true)
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
@@ -112,7 +112,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		String queryString = sourceString+" | distinct FIRSTNAME LIKES_TIRAMISU trim=true";
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true)
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true, true)
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
@@ -165,7 +165,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		String queryString = sourceString+" | distinct FIRSTNAME ;"
 							+sourceString+" | distinct LIKES_TIRAMISU ";
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true)
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true, true)
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
@@ -226,7 +226,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		String queryString = sourceString+" | dedup FIRSTNAME, LASTNAME, LIKES_TIRAMISU, TIME";
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true)
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true, true)
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
@@ -278,7 +278,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		String queryString = sourceString+" | display as=table titlefields=[FIRSTNAME, LASTNAME, LIKES_TIRAMISU, TIME]";
 		
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true)
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true, true)
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();

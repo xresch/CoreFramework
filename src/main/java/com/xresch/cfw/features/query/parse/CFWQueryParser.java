@@ -119,7 +119,7 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	public ArrayList<CFWQuery> parse() throws ParseException {
 		
-		tokenlist = new CFWQueryTokenizer(this.query, false)
+		tokenlist = new CFWQueryTokenizer(this.query, false, true)
 			.keywords("AND", "OR", "NOT")
 			.getAllTokens();
 		
