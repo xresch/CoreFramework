@@ -434,8 +434,13 @@ function cfw_query_initialDraw(){
 		}, 100);
 	});
 	
-	// needed for autocomplete
+	// needed for autocomplete, select with enter
 	$QUERYAREA.on("change", function(e){
+		cfw_query_editor_refreshHighlighting();
+	});
+	
+	// needed for autocomplete, select with click
+	$QUERYAREA.on("focus", function(e){
 		cfw_query_editor_refreshHighlighting();
 	});
 	

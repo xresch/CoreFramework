@@ -120,10 +120,8 @@ public class CFWQueryTokenizer {
 		if(hashComments && this.hasMoreTokens() && this.currentChar().equals("#")) {
 			
 			while(this.hasMoreTokens() && !this.currentChar().equals("\n")) {
-				System.out.println("skip:"+this.currentChar());
 				cursor++;
 			}
-			System.out.println("newline:"+this.currentChar());
 			return getNextToken();
 		}
 
