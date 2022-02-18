@@ -137,21 +137,23 @@ function cfw_query_editor_handleEnter(domElement){
  * Resize the text Area to fit query.
  * 
  ******************************************************************************/
-function cfw_query_resizeTextareaToFitQuery(){
+function cfw_query_editor_resizeToFitQuery(){
 	
 	var value =  $QUERYAREA.val();
 	if( !CFW.utils.isNullOrEmpty(value) ){
 		
 		var queryHeight = $QUERYAREA[0].scrollHeight;
-		var queryWidth = $QUERYAREA[0].scrollWidth;
+		var queryWidth = $QUERYAREA[0].scrollWidth-10;
+		
 		 $QUERYAREA.css("height", queryHeight+'px'); 
 		 $QUERYAREA.css("width", queryWidth+'px'); 
 		
-		$QUERYCODE.css("height", $QUERYAREA.height()+"px");
-		$QUERYCODE.css("width", $QUERYAREA.height()+"px");
+		$QUERYCODE.css("height", queryHeight+"px");
+		$QUERYCODE.css("width", queryWidth+"px");
 		
-		if(queryHeight > 500){ queryHeight = 500; };
-		$('.query-editor').css('height',queryHeight+"px")
+		var editorHeight = queryHeight+10;
+		if(editorHeight > 500){ editorHeight = 500; };
+		$('.query-editor').css('height',editorHeight+"px")
 		
 	}
 	
@@ -353,12 +355,12 @@ function cfw_query_initialDraw(){
 
 		$QUERYAREA.val(CFW_QUERY_URLPARAMS.query);
 
-		cfw_query_resizeTextareaToFitQuery();
+		cfw_query_editor_resizeToFitQuery();
 		cfw_query_editor_refreshHighlighting();
 		cfw_query_execute();
 
 	}else{
-		//cfw_query_resizeTextareaToFitQuery();
+		//cfw_query_editor_resizeToFitQuery();
 		cfw_query_editor_refreshHighlighting();
 	}
 	
@@ -411,7 +413,7 @@ function cfw_query_initialDraw(){
 		if (e.keyCode == 13) {
 			e.preventDefault();
 			cfw_query_editor_handleEnter(this);
-			cfw_query_resizeTextareaToFitQuery();
+			cfw_query_editor_resizeToFitQuery();
 			
 			return;
 		}
@@ -419,9 +421,16 @@ function cfw_query_initialDraw(){
 	});
 	
 	//-----------------------------------
-	// Refresh highlight on keyup
+	// Refresh highlight on keyup/paste
 	$QUERYAREA.on("keyup", function(e){
 		cfw_query_editor_refreshHighlighting();
+	});
+	
+	$QUERYAREA.on("paste", function(e){
+		window.setTimeout(function(){
+			cfw_query_editor_resizeToFitQuery();
+			cfw_query_editor_refreshHighlighting();
+		}, 100);
 	});
 	
 	//-----------------------------------
@@ -436,7 +445,7 @@ function cfw_query_initialDraw(){
 	            width = $window.width();
 	            height = $window.height();
 	
-				cfw_query_resizeTextareaToFitQuery();
+				cfw_query_editor_resizeToFitQuery();
 	        }
 	    }, 1000);
 	});
