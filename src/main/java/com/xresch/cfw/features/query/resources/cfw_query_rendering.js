@@ -662,7 +662,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 		execSeconds = " ("+(queryResult.execTimeMillis / 1000).toFixed(3)+"s)";
 	}
 	
-	var title = $('<h2>');
+	var title = $('<p class="query-title">');
 	if(queryResult.metadata.name == null){
 		title.text('Query Results '+ execSeconds);
 	}else{

@@ -1443,23 +1443,43 @@ function cfw_autocomplete_setParamEnhancer(functionToEnhanceParams){
  * @param minChars the minimum amount of chars for triggering the autocomplete
  * @param maxResults the max number of results listed for the autocomplete
  * @param array (optional) an array of strings used for the autocomplete
- * @param triggerWithCtrlSpace set to true to only trigger autocomplete with Ctrl+Space
+ * @param triggerWithCtrlSpace (optional)set to true to only trigger autocomplete with Ctrl+Space
+ * @param target (optional)set the target of the autocomplete results, either JQuery or selector
  * @return nothing
  *************************************************************************************/
-function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, array, triggerWithCtrlSpace){
-		
-	CFW.global.autocompleteFocus = -1;
-	var $input = $("#"+fieldName);
+function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, array, triggerWithCtrlSpace, target){
 	
+	//---------------------------------------
+	// Initialize	
+	CFW.global.autocompleteFocus = -1;
+	
+	var $input = $("#"+fieldName);	
 	if($input.attr('data-role') == "tagsinput"){
 		$input = $("#"+fieldName+"-tagsinput")
 	}
 	
+	var settings = {
+		$input: 				$input,
+		formID:					formID,
+		fieldName: 				fieldName,
+		minChars:				minChars,
+		maxResults:				maxResults,
+		triggerWithCtrlSpace:	triggerWithCtrlSpace,
+	}
+	
+	
 	//prevent browser default auto fill
 	$input.attr('autocomplete', 'off');
 	
-	var inputField = $input.get(0);
-	var autocompleteID = inputField.id + "-autocomplete";
+	settings.inputField = settings.$input.get(0);
+	settings.autocompleteID = settings.inputField.id + "-autocomplete";
+	
+	settings.autocompleteTarget = $input.parent();
+	if(target != null){
+		settings.autocompleteTarget = $(target);
+	}
+	
+	
 	
 	// For testing
 	//var array = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla"];
@@ -1487,7 +1507,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 			}
 			//----------------------------
 		    // Show AutoComplete	
-			cfw_autocompleteShow(this, {lists:[filteredArray], description: null});
+			cfw_autocompleteShow(this, autocompleteTarget, {lists:[filteredArray], description: null});
 		});
 	}
 	
@@ -1497,7 +1517,8 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 	if(array == null){
 		
 		$input.on('input', function(e) {
-			cfw_autocompleteEventHandler(e, fieldName, $input, minChars, maxResults, triggerWithCtrlSpace);
+			//cfw_autocompleteEventHandler(e, fieldName, $input, minChars, maxResults, triggerWithCtrlSpace, autocompleteTarget);
+			cfw_autocompleteEventHandler(e, settings);
 		});
 		
 		//--------------------------------
@@ -1506,7 +1527,8 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 		$input.on('keydown', function(e) {
 			
 			if (triggerWithCtrlSpace && (e.ctrlKey && e.keyCode == 32)) {
-				cfw_autocompleteEventHandler(e, fieldName, $input, minChars, maxResults, triggerWithCtrlSpace);
+				//cfw_autocompleteEventHandler(e, fieldName, $input, minChars, maxResults, triggerWithCtrlSpace, autocompleteTarget);
+				cfw_autocompleteEventHandler(e, settings);
 			}
 			
 		});
@@ -1518,7 +1540,7 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 	$input.on('keydown',  function(e) {
 		
 
-		var itemList = $("#"+autocompleteID);
+		var itemList = $("#"+settings.autocompleteID);
 		var items;
 		
 		if (itemList != null && itemList.length > 0){ 
@@ -1592,17 +1614,17 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
  * Listen on field input or Ctrl+Space and fetch data for autocomplete.
 
  *************************************************************************************/
-function cfw_autocompleteEventHandler(e, fieldName, $input, minChars, maxResults, triggerWithCtrlSpace) {
-	var inputField =$input.get(0);
+function cfw_autocompleteEventHandler(e, settings) {
 
+	
 	// --------------------------------
 	// Verify only do on  Ctrl+Space
-	if (triggerWithCtrlSpace && !(e.ctrlKey && e.keyCode == 32)) {
+	if (settings.triggerWithCtrlSpace && !(e.ctrlKey && e.keyCode == 32)) {
 		return;
 	}
 
 	// Only do autocomplete if at least N characters are typed			
-	if($input.val().length >= minChars){
+	if(settings.$input.val().length >= settings.minChars){
 		// use a count and set timeout to wait for the user 
 		// finishing his input before sending a request to the
 		// server. Reduces overhead.
@@ -1610,10 +1632,10 @@ function cfw_autocompleteEventHandler(e, fieldName, $input, minChars, maxResults
 		
 		//----------------------------
 		// Show Loader
-		var loader = $input.parent().find('#autocomplete-loader');
+		var loader = settings.autocompleteTarget.find('#autocomplete-loader');
 		if(loader.length == 0){
 			loader = $('<div id="autocomplete-loader"><small><i class="fa fa-cog fa-spin fa-1x"></i><span>&nbsp;Loading...</span></small></div>');
-			$input.after(loader);
+			settings.autocompleteTarget.append(loader);
 		}
 		
 		//----------------------------
@@ -1626,20 +1648,20 @@ function cfw_autocompleteEventHandler(e, fieldName, $input, minChars, maxResults
 					return;
 				}
 				
-				var params = CFW.format.formToParams($input.closest('form'));
-				console.log("fieldName:"+fieldName)
-				params.cfwAutocompleteFieldname = fieldName;
-				params.cfwAutocompleteSearchstring = inputField.value;
-				params.cfwAutocompleteCursorPosition = inputField.selectionStart;
+				var params = CFW.format.formToParams(settings.$input.closest('form'));
+
+				params.cfwAutocompleteFieldname = settings.fieldName;
+				params.cfwAutocompleteSearchstring = settings.inputField.value;
+				params.cfwAutocompleteCursorPosition = settings.inputField.selectionStart;
 				//function to customize the autocomplete
 				if(CFW.global.autcompleteParamEnhancerFunction != null){
-					CFW.global.autcompleteParamEnhancerFunction($input, params);
+					CFW.global.autcompleteParamEnhancerFunction(settings.$input, params);
 				}
 				
 				cfw_http_postJSON('/cfw/autocomplete', params, 
 					function(data) {
 						loader.remove();
-						cfw_autocompleteShow(inputField, inputField.selectionStart, data.payload);
+						cfw_autocompleteShow(settings.inputField, settings.autocompleteTarget, settings.inputField.selectionStart, data.payload);
 					})
 			},
 			1000);
@@ -1680,7 +1702,7 @@ document.addEventListener("click", function (e) {
 	"description": "<p>This is your HTML Description. Feel free to add some stuff like a list:<p <ol><li>Do this</li><li>Do that</li><li>Do even more...</li></ol>"
 }
  *************************************************************************************/
-function cfw_autocompleteShow(inputField, cursorPosition, autocompleteResults){
+function cfw_autocompleteShow(inputField, autocompleteTarget, cursorPosition, autocompleteResults){
 	//----------------------------
     // Initialize and Cleanup
 	var searchString = inputField.value;
@@ -1723,10 +1745,7 @@ function cfw_autocompleteShow(inputField, cursorPosition, autocompleteResults){
     
     autocompleteWrapper.append(multipleLists);
 	
-  
-	 
-	 
-	$(inputField).parent().append(autocompleteWrapper);
+	autocompleteTarget.append(autocompleteWrapper);
 	
 }
 

@@ -319,6 +319,7 @@ function cfw_query_initialDraw(){
 							</form>
 						</div>
 					</div>
+					<div id="query-autocomplete-results"></div>
 				</div>
 			</div>
 			
@@ -332,7 +333,7 @@ function cfw_query_initialDraw(){
 	$QUERYCODE = $('#query-highlighting');
 	//-------------------------------------------------
 	// Initialize Autocomplete, trigger with Ctrl+Space
-	cfw_autocompleteInitialize(formID,'query',0,10, null, true);
+	cfw_autocompleteInitialize(formID,'query',0,10, null, true, $('#query-autocomplete-results'));
 	
 	//-----------------------------------
 	// Load Timeframe from URL or set default
@@ -431,6 +432,11 @@ function cfw_query_initialDraw(){
 			cfw_query_editor_resizeToFitQuery();
 			cfw_query_editor_refreshHighlighting();
 		}, 100);
+	});
+	
+	// needed for autocomplete
+	$QUERYAREA.on("change", function(e){
+		cfw_query_editor_refreshHighlighting();
 	});
 	
 	//-----------------------------------

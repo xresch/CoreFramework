@@ -667,7 +667,6 @@ pre {
   position: absolute;
   z-index: 99;
   /*position the autocomplete items to be the same width as the container:*/
-  top: 100%;
   left: 0;
   right: 0;
   background-color: #fff;
@@ -705,7 +704,7 @@ pre {
   cursor: pointer;
   background-color: #fff;
   color: #333;
-  border-bottom: 1px solid #d4d4d4;
+  border-top: 1px solid #d4d4d4;
   border-right: 1px solid #d4d4d4;
   
 }
