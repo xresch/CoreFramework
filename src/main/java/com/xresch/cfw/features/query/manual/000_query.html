@@ -27,7 +27,7 @@
 			"darkred"
 	]
 # type 'off' or 'comment' after a pipe to turn off everything until the next pipe
-| tail 12 | off distinct BOOLEAN_STRING 
+| tail 12 | off distinct BOOLEAN_STRING | top 100
 # use keep to reorder and filter fields
 | keep LAST_LOGIN, FIRSTNAME, LASTNAME, LIKES_TIRAMISU, STATUS, VALUE, _source 
 | display as=table #change how to display the data

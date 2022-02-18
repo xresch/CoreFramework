@@ -8,7 +8,7 @@ var $QUERYAREA;
 var $QUERYCODE;
 
 /*******************************************************************************
- * Main method for building the view.
+ * Execute the query and fetch data from the server
  * 
  ******************************************************************************/
 function cfw_query_execute(){
@@ -23,7 +23,7 @@ function cfw_query_execute(){
 			, offset: timeframe.offset
 			, earliest: timeframe.earliest
 			, latest: timeframe.latest
-			};
+		};
 	
 	cfw_query_highlightExecuteButton(false);
 	cfw_ui_toogleLoader(true);	
@@ -34,27 +34,21 @@ function cfw_query_execute(){
 			if(data.success){
 				
 				//-----------------------------------
-				// Add Params to URL
+				// Update Params in URL
 				CFW.http.removeURLParam('query');
+				CFW.http.removeURLParam('earliest');
+				CFW.http.removeURLParam('latest');
+				CFW.http.removeURLParam('offset');
 				
 				if(timeframe.offset != null){
-					CFW.http.removeURLParam('earliest');
-					CFW.http.removeURLParam('latest');
 					CFW.http.setURLParam('offset', timeframe.offset);
 				}else{
 					CFW.http.setURLParam('earliest', timeframe.earliest);
 					CFW.http.setURLParam('latest', timeframe.latest);
-					CFW.http.removeURLParam('offset');
 				}
 				CFW.http.setURLParam('query', query);
 						
-				//-----------------------------------
-				// Iterate all Query results
-				for(var i = 0; i < data.payload.length; i++){
-					var currentResults = data.payload[i];
-						
-					cfw_query_renderQueryResult(targetDiv, currentResults);
-				}
+				cfw_query_renderAllQueryResults(targetDiv, data.payload);
 				
 			}
 			
@@ -284,88 +278,13 @@ function cfw_query_highlightExecuteButton(enableHighlighting){
 	
 }
 		
+		
 /*******************************************************************************
- * Main method for building the view.
+ * Initialize the editor field by adding the event listeners
  * 
  ******************************************************************************/
-function cfw_query_initialDraw(){
-	
-	//-----------------------------------
-	// Prepare HTML Base
-	var parent = $('#cfw-container');
-	var formID = JSDATA.formID;
-	parent.css('max-width', '100%');
-	
-	parent.append(`
-		<div id="cfw-query-content-wrapper">
-			<div class="row mb-2">
-				<div class="col-12 d-flex justify-content-end">
-					<input id="timeframePicker" name="timeframePicker" type="text" class="form-control">
-					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></button>
-					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></button>
-					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></button>
-					<button id="executeButton" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute();"><b>Execute</b></button>
-				</div>
-				
-			</div>
-			<div class="row">
-				<div class="col-12">
-					<div class="query-editor">
-						<div class="scroll-fix" style="position: relative; height: auto; ">
-							<form id="${formID}">
-								<input id="cfw-formID" name="cfw-formID" type="hidden" value="${formID}">
-								<textarea id="query" name="query" class="form-control query-text-format" rows="3" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
-								<pre id="query-pre-element"><code id="query-highlighting" class="preview language-cfwquery query-text-format"> </code></pre>
-							</form>
-						</div>
-					</div>
-					<div id="query-autocomplete-results"></div>
-				</div>
-			</div>
-			
-		</div>
-		
-		<div id="cfw-query-results" class="monospace">
-		</div>
-	`);
-	
-	$QUERYAREA = $('#query');
-	$QUERYCODE = $('#query-highlighting');
-	//-------------------------------------------------
-	// Initialize Autocomplete, trigger with Ctrl+Space
-	cfw_autocompleteInitialize(formID,'query',0,10, null, true, $('#query-autocomplete-results'));
-	
-	//-----------------------------------
-	// Load Timeframe from URL or set default
-	if(!CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.offset)){
-		cfw_initializeTimeframePicker('timeframePicker'
-						, {offset: CFW_QUERY_URLPARAMS.offset}
-						, function(){ cfw_query_highlightExecuteButton(true); } );
-	}else{
-		if(!CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.earliest)
-		&& !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.latest) ){
-			cfw_initializeTimeframePicker('timeframePicker', {earliest: CFW_QUERY_URLPARAMS.earliest, latest: CFW_QUERY_URLPARAMS.latest}, null);
-		}else{
-			cfw_initializeTimeframePicker('timeframePicker', {offset: '1-h'}, null);
-		}
-	}
-	
-	//-----------------------------------
-	// Load Query from URL
-	if( !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.query) ){
-
-		$QUERYAREA.val(CFW_QUERY_URLPARAMS.query);
-
-		cfw_query_editor_resizeToFitQuery();
-		cfw_query_editor_refreshHighlighting();
-		cfw_query_execute();
-
-	}else{
-		//cfw_query_editor_resizeToFitQuery();
-		cfw_query_editor_refreshHighlighting();
-	}
-	
-	//-----------------------------------
+function cfw_query_editor_initialize(){
+		//-----------------------------------
 	// Query Field Event Handler
 	$QUERYAREA.on("keydown", function(e){
 		
@@ -460,6 +379,94 @@ function cfw_query_initialDraw(){
 	        }
 	    }, 1000);
 	});
+	
+}
+	
+/*******************************************************************************
+ * Main method for building the view.
+ * 
+ ******************************************************************************/
+function cfw_query_initialDraw(){
+	
+	//-----------------------------------
+	// Prepare HTML Base
+	var parent = $('#cfw-container');
+	var formID = JSDATA.formID;
+	parent.css('max-width', '100%');
+	
+	parent.append(`
+		<div id="cfw-query-content-wrapper">
+			<div class="row">
+				<div class="col-12 d-flex justify-content-end">
+					<input id="timeframePicker" name="timeframePicker" type="text" class="form-control">
+					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></button>
+					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></button>
+					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></button>
+					<button id="executeButton" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute();"><b>Execute</b></button>
+				</div>
+				
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<div class="query-editor">
+						<div class="scroll-fix" style="position: relative; height: auto; ">
+							<form id="${formID}">
+								<input id="cfw-formID" name="cfw-formID" type="hidden" value="${formID}">
+								<textarea id="query" name="query" class="form-control query-text-format" rows="3" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
+								<pre id="query-pre-element"><code id="query-highlighting" class="preview language-cfwquery query-text-format"> </code></pre>
+							</form>
+						</div>
+					</div>
+					<div id="query-autocomplete-results"></div>
+				</div>
+			</div>
+			
+		</div>
+		
+		<div id="cfw-query-results" class="monospace">
+		</div>
+	`);
+	
+	$QUERYAREA = $('#query');
+	$QUERYCODE = $('#query-highlighting');
+	
+	//-------------------------------------------------
+	// Initialize Autocomplete, trigger with Ctrl+Space
+	cfw_autocompleteInitialize(formID,'query',0,10, null, true, $('#query-autocomplete-results'));
+	
+	//-----------------------------------
+	// Load Timeframe from URL or set default
+	if(!CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.offset)){
+		cfw_initializeTimeframePicker('timeframePicker'
+						, {offset: CFW_QUERY_URLPARAMS.offset}
+						, function(){ cfw_query_highlightExecuteButton(true); } );
+	}else{
+		if(!CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.earliest)
+		&& !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.latest) ){
+			cfw_initializeTimeframePicker('timeframePicker', {earliest: CFW_QUERY_URLPARAMS.earliest, latest: CFW_QUERY_URLPARAMS.latest}, null);
+		}else{
+			cfw_initializeTimeframePicker('timeframePicker', {offset: '1-h'}, null);
+		}
+	}
+	
+	//-----------------------------------
+	// Load Query from URL
+	if( !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.query) ){
+
+		$QUERYAREA.val(CFW_QUERY_URLPARAMS.query);
+
+		cfw_query_editor_resizeToFitQuery();
+		cfw_query_editor_refreshHighlighting();
+		cfw_query_execute();
+
+	}else{
+		//cfw_query_editor_resizeToFitQuery();
+		cfw_query_editor_refreshHighlighting();
+	}
+	
+	//-----------------------------------
+	// Initialize Editor
+	cfw_query_editor_initialize();
 	
 		
 }

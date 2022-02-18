@@ -640,8 +640,58 @@ function cfw_query_formatUppercase(span){
 }
 
 
-
-
+/*******************************************************************************
+ * Renders the result of a single query and appends it to the target Element.
+ * 
+ * @param resultTarget the DOM or JQuery Element to which the results are
+ *                     appended.
+ * @param queryResultPayload the payload received from the server holding one or
+ *        multipe query results.
+ ******************************************************************************/
+function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
+	resultTarget.html("");
+	//-----------------------------------
+	// Handle Emptiness 
+	if(queryResultsPayload == null || queryResultsPayload.length == 0){
+		resultTarget.append("The result is empty.");
+	}
+	
+	//-----------------------------------
+	// Handle MultiDisplay
+	var multidisplayColumns=1;
+	console.log("queryResultsPayload[0].globals.multidisplay: "+queryResultsPayload[0].globals.multidisplay);
+	if(queryResultsPayload[0].globals.multidisplay != null){
+		multidisplayColumns = queryResultsPayload[0].globals.multidisplay;
+	}
+	
+	if(multidisplayColumns < 1){ multidisplayColumns = 1; }
+	if(multidisplayColumns > 6){ multidisplayColumns = 6; }
+	
+	//get percent column
+	var colClass = "col-"+Math.floor(100/multidisplayColumns)+"pc";
+	
+	//-----------------------------------
+	// Iterate all Query results
+	
+	var currentRow = $('<div class="row">');
+	resultTarget.append(currentRow);
+	
+	for(var i = 0; i < queryResultsPayload.length; i++){
+		var currentColumn = $('<div class="col-percent '+colClass+'">');
+		
+		var currentResults = queryResultsPayload[i];
+			
+		cfw_query_renderQueryResult(currentColumn, currentResults);
+		currentRow.append(currentColumn);
+		
+		console.log("(i+1) % multidisplayColumns"+((i+1) % multidisplayColumns) );
+		if((i+1) % multidisplayColumns == 0){
+			console.log("Hit")
+			currentRow = $('<div class="row">');
+			resultTarget.append(currentRow);
+		}
+	}
+}
 	
 /*******************************************************************************
  * Renders the result of a single query and appends it to the target Element.

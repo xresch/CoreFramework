@@ -1,0 +1,19 @@
+
+<p>The globals command is used to add custom properties to all queries query. These global properties are case sensitive.</p>
+
+<p>The following globals will fullfill specific functions:</p>
+<ul>
+	<li><b>multidisplay:&nbsp;</b> Number of columns used when displaying the results of multiple queries. Value must be between 1 and 6.</li>
+</ul>
+
+<p>Following example has 4 different queries separated by semicolon. The first query sets two globals and fetches some random data.
+The query shows also the difference between globals and metadata command. Each query sets the query specific metadata property 'name' to change the title of the query. </p>
+
+<pre><code class="language-cfwquery">| globals multidisplay=4 myCustomProperty=MyCustomValue
+| metadata name="Default Table" | source random type=default records=5 | display as=table 
+;
+| metadata name="Bigger Number Table" | source random type=numbers records=5 | display as=biggertable 
+;
+| metadata name="Array Panels" | source random type=arrays records=5  | display as=panels titlefields=['_source'] 
+;
+| metadata name="Various Tiles" | source random type=various records=5 | display as=tiles titlefields=['_source']</code></pre>

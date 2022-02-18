@@ -765,7 +765,6 @@ pre {
 	align-content: center;
 }
 
-
 .flex-item-grow{
 	flex-grow: 1;
 	margin: 5px;
@@ -778,6 +777,39 @@ pre {
 	min-height: 200px;
 	background-size: cover; 
 	background-position: center; 
+}
+
+.col-percent{
+	padding-right: 5px;
+    padding-left: 5px;
+}
+.col-16pc {
+    flex: 0 0 16.0%;
+    max-width: 16.0%;
+}
+
+.col-20pc {
+    flex: 0 0 20.0%;
+    max-width: 20.0%;
+}
+
+.col-25pc {
+    flex: 0 0 25.0%;
+    max-width: 25.0%;
+}
+.col-33pc {
+    flex: 0 0 33.33333%;
+    max-width: 33.33333%;
+}
+
+.col-50pc {
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+
+.col-100pc {
+    flex: 0 0 100%;
+    max-width: 100%;
 }
 
 /*************************************************************************

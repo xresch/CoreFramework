@@ -24,6 +24,7 @@ public class CFWQueryContext{
 	private LinkedHashMap<String, AlertMessage> alertMap = CFW.Context.Request.getAlertMap();
 	
 	private JsonObject metadata = new JsonObject();
+	private JsonObject globals = new JsonObject();
 	private JsonObject displaySettings = new JsonObject();
 	
 	protected CFWQueryFieldnameManager contextFieldnameManager = new CFWQueryFieldnameManager();
@@ -81,6 +82,20 @@ public class CFWQueryContext{
 	 ***********************************************************************************************/
 	public void addMetadata(String propertyName, String value) {
 		metadata.addProperty(propertyName, value);
+	}
+	
+	/***********************************************************************************************
+	 * Returns the object containing the globals defined by this query.
+	 ***********************************************************************************************/
+	public JsonObject getGlobals() {
+		return globals;
+	}
+	
+	/***********************************************************************************************
+	 * Returns the object containing the globals of the query.
+	 ***********************************************************************************************/
+	public void addGlobal(String propertyName, String value) {
+		globals.addProperty(propertyName, value);
 	}
 	
 	/***********************************************************************************************

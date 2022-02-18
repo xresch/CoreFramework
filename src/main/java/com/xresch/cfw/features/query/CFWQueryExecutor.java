@@ -2,10 +2,12 @@ package com.xresch.cfw.features.query;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
@@ -39,6 +41,7 @@ public class CFWQueryExecutor {
 	 ****************************************************************/
 	public JsonArray parseAndExecuteAll(String queryString, long earliest, long latest) {
 		
+		
 		//------------------------
 		// Parse The Query
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
@@ -66,8 +69,10 @@ public class CFWQueryExecutor {
 		
 		//------------------------
 		// Iterate All Queries
-		
 		JsonArray returnValue = new JsonArray();
+		JsonObject multiQueryGlobals = new JsonObject();
+		multiQueryGlobals.addProperty("earliest", earliest);
+		multiQueryGlobals.addProperty("latest", latest);
 		
 		int index = 0;
 		for(CFWQuery query : queryList) {
@@ -125,12 +130,18 @@ public class CFWQueryExecutor {
 			}
 			
 			//--------------------------------
+			// Handle Globals
+			JsonObject queryGlobals = queryContext.getGlobals();
+			for(Entry<String, JsonElement> entry : queryGlobals.entrySet()){
+				multiQueryGlobals.add(entry.getKey(), entry.getValue());
+			}
+			
+			//--------------------------------
 			// Create Response
 			queryResults.addProperty("resultCount", resultCount);
 			queryResults.addProperty("execTimeMillis", execMillis);
-			queryResults.addProperty("earliest", earliest);
-			queryResults.addProperty("latest", latest);
 			
+			queryResults.add("globals", multiQueryGlobals);
 			queryResults.add("detectedFields", queryContext.getFieldnamesAsJsonArray() );
 			queryResults.add("metadata", query.getContext().getMetadata());
 			queryResults.add("displaySettings", query.getContext().getDisplaySettings());
