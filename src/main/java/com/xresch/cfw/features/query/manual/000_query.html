@@ -4,34 +4,31 @@
 	Depending on how your application is extending this feature, you will find more or less sources, commands and functions available for your use.
 </p>
 
-<pre><code class="language-cfwquery">| source random type=various
-
-| comment "this" is a test | tail 10 
-| off another comment
-| false AND true OR null OR 1234 OR -333.26758983 AND [threshold,0,10,20,30,40]
-| multiline "
-	Test multiline string
-	test escaped \" quote
-" 
-| keep single '
-	Test multiline string
-	test escaped \' quote
-'
-| formatfield 
+<p>Here, have some tasty sample query that shows you some basic features of the language: </p>
+<pre><code class="language-cfwquery">#source command bring data into your queue
+| source random type=default records=6
+| src random type=various records=6 #combine data by using multiple sources
+# multiline quoted string support, use either single or double quote
+| source json data='
+[ {"FIRSTNAME": "Serena", "LASTNAME": "Aloha",        "LIKES_TIRAMISU": true, "VALUE": 17},
+ ,{"FIRSTNAME": "Alena", "LASTNAME": "Konnichiwa",    "LIKES_TIRAMISU": false, "VALUE": 32},
+ ,{"FIRSTNAME": "Kassandra", "LASTNAME": "Ciaobella", "LIKES_TIRAMISU": true, "VALUE": 88}
+]'
+| formatfield  # change how your data is formatted
+    LAST_LOGIN='timestamp'
+    VALUE=['threshold', 0, 20, 40, 60, 80, "bg"]
+    VALUE=['postfix', " $"] 
     STATUS=['case', 
 		"Warning", 
 			"orange",
 		["Excellent", "OR", "Good"], 
-			[css, "color", "lightgreen"],
+			[css, "color", "green"],
 		["Danger", "OR", "Emergency"], 
-			[
-				[css, "background-color", "darkred"],
-				[css, "color", "white"],
-				[css, "border", "5px dotted white"],
-				[css, "font-weight", "bold"],
-				[uppercase],
-				[align, "center"],
-				[postfix, " !!!"],
-				[prefix, "!!! "]
-			]
-	]</code></pre>
+			"darkred"
+	]
+# type 'off' or 'comment' after a pipe to turn off everything until the next pipe
+| tail 12 | off distinct BOOLEAN_STRING 
+# use keep to reorder and filter fields
+| keep LAST_LOGIN, FIRSTNAME, LASTNAME, LIKES_TIRAMISU, STATUS, VALUE, _source 
+| display as=table #change how to display the data
+</code></pre>

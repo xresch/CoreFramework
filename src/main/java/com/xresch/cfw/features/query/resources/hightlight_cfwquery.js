@@ -127,11 +127,17 @@ function cfw_hljs_register_CFWQuery(hljs) {
 
   const SOURCE = {
     scope: 'built_in',
-    begin: /source\s+/,
+    begin: /\|\s*?(source|src)\s+/,
 	end: /[^\s]*/,
 	}
 
-  const COMMAND_NAMES = [
+  const COMMANDS = {
+    scope: 'keyword',
+    begin: /\|\s*?.*?\s+/,
+	end: /[^\s]*/,
+  }
+
+  /*const COMMAND_NAMES = [
     "comment",
 	"dedup",
 	"display",
@@ -147,11 +153,10 @@ function cfw_hljs_register_CFWQuery(hljs) {
 	"remove",
 	"rename",
 	"reorder",
-	"src",
 	"tail",
 	"top",
 	"uniq",
-  ];
+  ];*/
 
   return {
     name: 'cfwquery',
@@ -159,20 +164,21 @@ function cfw_hljs_register_CFWQuery(hljs) {
     keywords: {
       $pattern: /\b[a-z._-]+\b/,
       keyword: [
-		...COMMAND_NAMES,
-        
         ...KEYWORDS,
       ],
       literal: LITERALS,
       built_in:[],
     },
     contains: [
+	  COMMENTS,
+      hljs.HASH_COMMENT_MODE,
 	  SOURCE,
+	  COMMANDS,
 	  NUMBERS,
       FUNCTION,
       ARITHMETIC,
-	  COMMENTS,
-      hljs.HASH_COMMENT_MODE,
+
+
       HERE_DOC,
       PATH_MODE,
       QUOTE_STRING,
