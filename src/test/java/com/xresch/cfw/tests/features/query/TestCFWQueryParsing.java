@@ -398,4 +398,48 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		Assertions.assertEquals(99, evaluationResult.getAsInteger());
 	}
 	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testParsingQueryPartBinaryExpressionKeywords() throws ParseException {
+		
+		JsonObject object = new JsonObject();
+		object.addProperty("myString", "testString");
+		object.addProperty("myNumber", 33);
+		
+		EnhancedJsonObject enhanced = new EnhancedJsonObject(object);
+		
+		QueryPartValue evaluationResult;
+		ArrayList<QueryPart> parsedParts;
+		//-------------------------------------------------
+		// Test Parsing Expressions
+		String queryString = "myString==notEqualString OR myNumber>22 ";
+		
+		CFWQueryParser parser = new CFWQueryParser(queryString, true)
+				.enableTracing();
+		
+		parsedParts = parser.parseQueryParts();
+		
+		System.out.println("===== parsedParts =====");
+		System.out.println(CFW.JSON.toJSONPretty(parser.getTraceResults()));
+
+		Assertions.assertEquals(1, parsedParts.size());
+		
+		QueryPart binaryExpression = parsedParts.get(0);
+		System.out.println("===== binaryExpression Debug =====");
+		System.out.println( CFW.JSON.toJSONPretty(binaryExpression.createDebugObject(enhanced)) );
+
+		
+		
+		Assertions.assertTrue(binaryExpression instanceof QueryPartBinaryExpression);
+		
+		//-------------------------------------------------
+		// Test Evaluate OR Expression
+		evaluationResult = ((QueryPartBinaryExpression)binaryExpression).determineValue(enhanced);
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+	}
 }

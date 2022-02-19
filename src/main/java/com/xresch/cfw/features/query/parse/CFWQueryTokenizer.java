@@ -201,7 +201,7 @@ public class CFWQueryTokenizer {
 			if(!keywordsCaseSensitive) { keywordSlice = keywordSlice.toLowerCase(); }
 			
 			for(String keyword : keywordList) {
-				if(keywordSlice.startsWith(keyword)) {
+				if(keywordSlice.startsWith(keyword+" ")) {
 					cursor += keyword.length();
 					return createToken(CFWQueryToken.CFWQueryTokenType.KEYWORD, startPos, cursor);
 				}

@@ -71,6 +71,7 @@ public abstract class QueryPart {
 	 ***********************************************************************************************/
 	@Override
 	public String toString() {
+		
 		return this.determineValue(null).getAsString();
 		
 	}

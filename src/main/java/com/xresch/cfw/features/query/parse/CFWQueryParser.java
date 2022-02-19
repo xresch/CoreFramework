@@ -3,6 +3,8 @@ package com.xresch.cfw.features.query.parse;
 import java.text.ParseException;
 import java.util.ArrayList;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryCommand;
@@ -44,12 +46,20 @@ public class CFWQueryParser {
 	private ArrayList<CFWQueryToken> tokenlist;
 	CFWQuery currentQuery;
 	private CFWQueryContext currentContext;
+	ArrayList<QueryPart> currentQueryParts;
 	
 	// cached instance
 	private static CFWQueryCommandSource sourceCommand = new CFWQueryCommandSource(new CFWQuery());
 	private static String[] sourceCommandNames = sourceCommand.uniqueNameAndAliases();
 	
 	private int cursor;
+	
+	public static final String KEYWORD_AND = "AND";
+	public static final String KEYWORD_OR = "OR";
+	public static final String KEYWORD_NOT = "NOT";
+	
+	private boolean enableTracing = false;
+	private JsonArray traceArray;
 	
 	//Used for GIB-Easteregg
 	String obedienceMessage = CFW.Random.randomMessageOfObedience();
@@ -64,9 +74,66 @@ public class CFWQueryParser {
 		this.cursor = 0;
 		
 		tokenlist = new CFWQueryTokenizer(this.query, false, true)
-				.keywords("AND", "OR", "NOT")
+				.keywords(KEYWORD_AND
+						, KEYWORD_OR
+						, KEYWORD_NOT)
 				.getAllTokens();
 		
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryParser enableTracing() {
+		enableTracing = true;
+		traceArray = new JsonArray();
+		
+		if(tokenlist != null) {
+			
+			addTrace("TokenCount", ""+tokenlist.size(), "");
+			
+			StringBuilder tokenOverview = new StringBuilder();
+			for(CFWQueryToken token : tokenlist) {
+				tokenOverview.append(token.type().toString()+"("+token.value()+"), ");
+			}
+			
+
+			addTrace("TokenOverview", "", tokenOverview.toString());
+		}
+		return this;
+		
+	}
+	
+	/***********************************************************************************************
+	 * Add a trace object to the trace array.
+	 * @param key a key for your trace
+	 * @param value the value related to your key (use for smaller values)
+	 * @param message for your trace (use for longer values)
+	 ***********************************************************************************************/
+	public void addTrace(Object key, Object value, Object message) {
+		if(enableTracing) {
+			JsonObject object = new JsonObject();
+			object.addProperty("Key", 		(key != null) ? key.toString() : null);
+			object.addProperty("Value", 	(value != null) ? value.toString() : null);
+			object.addProperty("Message", 	(message != null) ? message.toString() : null);
+			object.addProperty("TokenPosition", cursor);
+			
+			if(cursor < tokenlist.size()) {
+				CFWQueryToken token = tokenlist.get(cursor);
+				object.addProperty("nextTokenType", (token != null) ? token.type().toString()  : null);
+				object.addProperty("nextTokenValue",(token != null) ? tokenlist.get(cursor).value()  : null);
+			}
+			
+			traceArray.add(object);
+			
+		}
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public JsonArray getTraceResults() {
+		return traceArray;
 	}
 	
 	/***********************************************************************************************
@@ -82,7 +149,6 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	public CFWQueryToken consumeToken() {
 		cursor++;
-		
 		return tokenlist.get(cursor-1);
 		
 	}
@@ -122,15 +188,12 @@ public class CFWQueryParser {
 	 * 
 	 ***********************************************************************************************/
 	public ArrayList<CFWQuery> parse() throws ParseException {
-		
-		tokenlist = new CFWQueryTokenizer(this.query, false, true)
-			.keywords("AND", "OR", "NOT")
-			.getAllTokens();
-		
+				
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
 		//-----------------------------------
 		// Skip preceding semicolons
 		if(this.lookahead().type() == CFWQueryTokenType.SIGN_SEMICOLON) {
+			addTrace("Skip Preceeding Semicolon", "", "");
 			this.consumeToken();
 		}
 		
@@ -142,6 +205,7 @@ public class CFWQueryParser {
 			CFWQuery query = parseQuery();
 			
 			if( query != null && query.getCommandList().size() > 0) {
+				
 				queryList.add(query);
 			}
 
@@ -155,21 +219,25 @@ public class CFWQueryParser {
 	 * It is recommended to use the parse()-method to parse a query that can contain multiple methods.
 	 ***********************************************************************************************/
 	public CFWQuery parseQuery() throws ParseException {
+		
+		addTrace("Parse", "Query", "[START]");
+		
 		currentQuery = new CFWQuery();
 		currentContext = currentQuery.getContext();
 		
 		while(this.hasMoreTokens() && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
+			
 			CFWQueryCommand command = parseQueryCommand(currentQuery);
 			if(command != null) {
 				currentQuery.addCommand(command);
 			}
 		}
-		
+
 		//Skip successive Semicolons
 		while(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.SIGN_SEMICOLON) {
 			this.consumeToken();
 		}
-				
+		addTrace("Parse", "Query", "[END]");	
 		return currentQuery;
 	}
 	
@@ -177,6 +245,8 @@ public class CFWQueryParser {
 	 * Parses a single command
 	 ***********************************************************************************************/
 	public CFWQueryCommand parseQueryCommand(CFWQuery parentQuery) throws ParseException {
+		
+		addTrace("Parse", "Command", "[START]");
 		
 		//------------------------------------
 		// Check Has More Tokens
@@ -205,6 +275,8 @@ public class CFWQueryParser {
 			// GIB-Easteregg for Vincent Theus
 			while(commandName.toLowerCase().equals("gib")
 				||(commandName.toLowerCase().equals("gimme"))) {
+				
+				addTrace(commandName, commandName, commandName);
 				
 				if(!this.hasMoreTokens()) {
 					this.throwParseException("Query cannot end with the super ultimate GIB as this would also end the universe.", 0);
@@ -264,12 +336,14 @@ public class CFWQueryParser {
 			CFWQueryCommand command = CFW.Registry.Query.createCommandInstance(parentQuery, commandName);
 			
 			command.setAndValidateQueryParts(this, parts);
+			addTrace("Parse", "Command", "[END]");
 			
 			return command;
 		}else {
 			this.throwParseException("Expected command name.", 0);
 		}
 		
+		addTrace("Parse", "Command", "[END] return null");
 		return null;
 		
 	}
@@ -279,18 +353,18 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	public ArrayList<QueryPart> parseQueryParts() throws ParseException {
 		
-		ArrayList<QueryPart> parts = new ArrayList<>();
-		
+		currentQueryParts = new ArrayList<>();
 		
 		while(this.hasMoreTokens() 
 		   && this.lookahead().type() != CFWQueryTokenType.OPERATOR_OR
 		   && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
-			
-			parts.add(parseQueryPart());
+			addTrace("Parse", "Query Part", "[START]");
+				currentQueryParts.add(parseQueryPart());
+			addTrace("Parse", "Query Part", "[END]");
 		}
 		
 		
-		return parts;
+		return currentQueryParts;
 	}
 	
 	/***********************************************************************************************
@@ -298,6 +372,7 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	public QueryPart parseQueryPart() throws ParseException {
 		
+
 		QueryPart secondPart = null;
 
 		if(!this.hasMoreTokens()) {
@@ -319,22 +394,27 @@ public class CFWQueryParser {
 		
 			case TEXT_SINGLE_QUOTES:
 			case TEXT_DOUBLE_QUOTES:	
-			case LITERAL_STRING:		firstPart = QueryPartValue.newString(currentContext, firstToken.value());
+			case LITERAL_STRING:		addTrace("Create Value Part", "String", firstToken.value());
+										firstPart = QueryPartValue.newString(currentContext, firstToken.value());
 										//TODO check lookahead, determine if AccessMember, Assignment, Method etc...
 										break;
 				
-			case LITERAL_BOOLEAN:		firstPart = QueryPartValue.newBoolean(currentContext, firstToken.valueAsBoolean());
+			case LITERAL_BOOLEAN:		addTrace("Create Value Part", "Boolean", firstToken.value());
+										firstPart = QueryPartValue.newBoolean(currentContext, firstToken.valueAsBoolean());
 										break;
 									
-			case LITERAL_NUMBER:		firstPart = QueryPartValue.newNumber(currentContext, firstToken.valueAsNumber());
+			case LITERAL_NUMBER:		addTrace("Create Value Part", "Number", firstToken.value());
+										firstPart = QueryPartValue.newNumber(currentContext, firstToken.valueAsNumber());
 										break;
 								
-			case NULL: 					firstPart = QueryPartValue.newNull(currentContext);
+			case NULL: 					addTrace("Create Value Part", "NULL", firstToken.value());
+										firstPart = QueryPartValue.newNull(currentContext);
 										break;
 	
 			case SIGN_BRACE_SQUARE_OPEN: 
 										//------------------------------
 										// QueryPartArray
+										addTrace("Start Part", "Open Array", firstToken.value());
 										firstPart = new QueryPartArray(currentContext)
 															.isEmbracedArray(true);
 										
@@ -350,10 +430,25 @@ public class CFWQueryParser {
 			case SIGN_BRACE_ROUND_CLOSE:
 										//------------------------------
 										//End of Query Part
+										addTrace("End Part", "Close Array or Group", firstToken.value());
 										return null;
 									
-//			case KEYWORD:				firstPart = QueryPartValue.newNull(currentContext);
-//										break;
+			case KEYWORD:
+				String keyword = firstToken.value();
+				
+				if(currentQueryParts.size() == 0) { 
+					this.throwParseException("Keyword cannot be at the beginning of the command: "+keyword, firstToken.position()); 
+				}
+				
+				QueryPart lastPart = currentQueryParts.remove(currentQueryParts.size()-1);
+				switch(keyword) {
+				
+					case KEYWORD_AND: 	return createBinaryExpressionPart(lastPart, CFWQueryTokenType.OPERATOR_AND, false ); 
+					case KEYWORD_OR: 	return createBinaryExpressionPart(lastPart, CFWQueryTokenType.OPERATOR_OR, false ); 
+					case KEYWORD_NOT: 	return createBinaryExpressionPart(lastPart, CFWQueryTokenType.OPERATOR_NOT, false );
+					default:			this.throwParseException("Unknown keyword:"+keyword, firstToken.position());
+				}
+			break;
 //									
 //			case OPERATOR_NOT:
 //				break;
@@ -384,22 +479,26 @@ public class CFWQueryParser {
 		//------------------------------
 		//End of Query Part
 		case SIGN_BRACE_SQUARE_CLOSE:
-		case SIGN_BRACE_ROUND_CLOSE:					
+		case SIGN_BRACE_ROUND_CLOSE:	
+			addTrace("End Part", "Close Array or Group", "");
 			this.consumeToken();
 			return resultPart;
 
 		
 		//------------------------------
 		// QueryPartAssignment
-		case OPERATOR_EQUAL:	
+		case OPERATOR_EQUAL:
 			this.consumeToken();
+			addTrace("Start Part", "Assignment", "");
 			QueryPart rightside = this.parseQueryPart();
 			resultPart = new QueryPartAssignment(currentContext, firstPart, rightside);
+			addTrace("End Part", "Assignment", "");
 		break;
 		
 		//------------------------------
 		// QueryPartArray						
-		case SIGN_COMMA:		
+		case SIGN_COMMA:
+			addTrace("Proceed with Array", "Comma encountered", "");
 			this.consumeToken();
 			secondPart = this.parseQueryPart();
 			resultPart = new QueryPartArray(currentContext, firstPart, secondPart);
@@ -408,22 +507,21 @@ public class CFWQueryParser {
 						
 		//------------------------------
 		// Binary Operations
-		case OPERATOR_AND:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_AND ); break;	
-		case OPERATOR_EQUAL_EQUAL:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_EQUAL ); break;	
-		case OPERATOR_EQUAL_NOT:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_NOT ); break;	
-		case OPERATOR_EQUAL_OR_GREATER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER ); break;	
-		case OPERATOR_EQUAL_OR_LOWER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER ); break;	
-		case OPERATOR_GREATERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_GREATERTHEN ); break;	
-		case OPERATOR_LOWERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_LOWERTHEN ); break;	
-		case OPERATOR_PLUS:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_PLUS ); break;	
-		case OPERATOR_MINUS:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MINUS ); break;	
-		case OPERATOR_MULTIPLY:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MULTIPLY ); break;	
-		case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_DIVIDE ); break;	
-		
-		case KEYWORD:
-			break;
+		//case OPERATOR_OR: not supported as pipe '|' is used as command separator, see keyword 'OR'
+		case OPERATOR_AND:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_AND, true ); break;	
+		case OPERATOR_EQUAL_EQUAL:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, true ); break;	
+		case OPERATOR_EQUAL_NOT:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_NOT, true ); break;	
+		case OPERATOR_EQUAL_OR_GREATER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, true ); break;	
+		case OPERATOR_EQUAL_OR_LOWER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, true ); break;	
+		case OPERATOR_GREATERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_GREATERTHEN, true ); break;	
+		case OPERATOR_LOWERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_LOWERTHEN, true ); break;	
+		case OPERATOR_PLUS:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_PLUS, true ); break;	
+		case OPERATOR_MINUS:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MINUS, true ); break;	
+		case OPERATOR_MULTIPLY:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MULTIPLY, true ); break;	
+		case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_DIVIDE, true ); break;	
 		case OPERATOR_NOT:
 			break;
+
 
 		case SIGN_BRACE_ROUND_OPEN:
 			break;
@@ -456,10 +554,13 @@ public class CFWQueryParser {
 	
 	/***********************************************************************************************
 	 * Creates a Binary Expression by parsing the Next Part of the expression.
+	 * @param consumeToken TODO
 	 ***********************************************************************************************/
-	private QueryPart createBinaryExpressionPart(QueryPart firstPart, CFWQueryTokenType operatorType ) throws ParseException {
-		this.consumeToken();
-		QueryPart secondPart = this.parseQueryPart();
+	private QueryPart createBinaryExpressionPart(QueryPart firstPart, CFWQueryTokenType operatorType, boolean consumeToken ) throws ParseException {
+		addTrace("Start Part", "Binary Expression", operatorType);
+			if(consumeToken) { this.consumeToken(); }
+			QueryPart secondPart = this.parseQueryPart();
+		addTrace("End Part", "Binary Expression", "");
 		return new QueryPartBinaryExpression(currentContext, firstPart, operatorType, secondPart);
 	}
 	

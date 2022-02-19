@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.parse;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw.features.query.CFWQueryContext;
@@ -63,7 +64,14 @@ public class QueryPartBinaryExpression extends QueryPart {
 	public QueryPartValue determineValue(EnhancedJsonObject object) {
 		
 		QueryPartValue leftValue = leftside.determineValue(object);
-		QueryPartValue rightValue = rightside.determineValue(object);
+		
+		QueryPartValue rightValue;
+		
+		if(rightside != null) { 
+			rightValue = rightside.determineValue(object);
+		}else {
+			rightValue = QueryPartValue.newNull(this.context());
+		}
 		
 		//-----------------------------------------
 		// Leftside get value from object 
@@ -225,11 +233,25 @@ public class QueryPartBinaryExpression extends QueryPart {
 		
 		JsonObject debugObject = new JsonObject();
 		
-		debugObject.addProperty("partType", "Assignment");
-		debugObject.add("leftside", leftside.createDebugObject(object));
-		debugObject.addProperty("binaryType", type.toString());
-		debugObject.add("rightside", rightside.createDebugObject(object));
+		debugObject.addProperty("partType", "Binary");
 		
+		if(leftside != null) {
+			debugObject.add("leftside", leftside.createDebugObject(object) );
+		} else {
+			debugObject.add("leftside", JsonNull.INSTANCE);
+		}
+		
+		
+		debugObject.addProperty("binaryType", type.toString());
+		
+		
+		
+		if(rightside != null) {
+			debugObject.add("rightside", rightside.createDebugObject(object));
+		}else {
+			debugObject.add("rightside", JsonNull.INSTANCE);
+		}
+		debugObject.addProperty("determinedValue", determineValue(object).toString());
 		return debugObject;
 	}
 

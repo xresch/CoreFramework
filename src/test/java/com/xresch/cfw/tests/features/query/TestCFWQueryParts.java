@@ -884,7 +884,7 @@ public class TestCFWQueryParts {
 		QueryPartValue evaluationResult;
 		
 		//-------------------------------
-		// Positive Test Expression +
+		// Test Expression +
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
@@ -898,7 +898,7 @@ public class TestCFWQueryParts {
 		Assertions.assertEquals(123456.789,evaluationResult.getAsDouble());
 		
 		//-------------------------------
-		// Positive Test Expression -
+		// Test Expression -
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
@@ -912,7 +912,7 @@ public class TestCFWQueryParts {
 		Assertions.assertEquals(123456.78, evaluationResult.getAsDouble());
 		
 		//-------------------------------
-		// Positive Test Expression *
+		// Test Expression *
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
@@ -926,7 +926,7 @@ public class TestCFWQueryParts {
 		Assertions.assertEquals(-2216.02992, evaluationResult.getAsDouble());
 		
 		//-------------------------------
-		// Positive Test Expression /
+		// Test Expression /
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
