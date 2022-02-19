@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryCommand;
@@ -18,6 +19,9 @@ import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
 import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
+import com.xresch.cfw.features.query.parse.QueryPart;
+import com.xresch.cfw.features.query.parse.QueryPartBinaryExpression;
+import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.tests._master.DBTestMaster;
 
 public class TestCFWQueryParsing extends DBTestMaster{
@@ -321,5 +325,77 @@ public class TestCFWQueryParsing extends DBTestMaster{
 
 		
 	}	
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testParsingQueryPartBinaryExpression() throws ParseException {
+		
+		JsonObject object = new JsonObject();
+		object.addProperty("myString", "testString");
+		object.addProperty("myNumber", 33);
+		
+		EnhancedJsonObject enhanced = new EnhancedJsonObject(object);
+		
+		QueryPartValue evaluationResult;
+		QueryPart parsedPart;
+		//-------------------------------------------------
+		// Test Parsing Expressions
+		String queryString = "myString==testString   myString!='testString'  22>=myNumber   myNumber<='44'   3 * myNumber ";
+		
+		CFWQueryParser parser = new CFWQueryParser(queryString, true);
+		
+		parsedPart = parser.parseQueryPart();
+		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
+		
+		//-------------------------------------------------
+		// Test Evaluate == Expression
+		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//-------------------------------------------------
+		// Test Evaluate != Expression
+		parsedPart = parser.parseQueryPart();
+		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
+		
+		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertFalse(evaluationResult.getAsBoolean());
+				
+		//-------------------------------------------------
+		// Test Evaluate >= Expression
+		parsedPart = parser.parseQueryPart();
+		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
+		
+		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertFalse(evaluationResult.getAsBoolean());
+		
+		//-------------------------------------------------
+		// Test Evaluate <= Expression 
+		parsedPart = parser.parseQueryPart();
+		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
+		
+		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//-------------------------------------------------
+		// Test Evaluate * Expression (multiply)
+		parsedPart = parser.parseQueryPart();
+		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
+		
+		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
+		
+		Assertions.assertTrue(evaluationResult.isInteger());
+		Assertions.assertEquals(99, evaluationResult.getAsInteger());
+	}
 	
 }

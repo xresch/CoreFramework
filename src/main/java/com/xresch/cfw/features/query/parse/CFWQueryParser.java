@@ -63,6 +63,10 @@ public class CFWQueryParser {
 		this.checkSourcePermissions = checkSourcePermissions;
 		this.cursor = 0;
 		
+		tokenlist = new CFWQueryTokenizer(this.query, false, true)
+				.keywords("AND", "OR", "NOT")
+				.getAllTokens();
+		
 	}
 	
 	/***********************************************************************************************
