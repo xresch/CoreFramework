@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.query.parse;
 
+import java.math.BigDecimal;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -37,8 +39,12 @@ public class QueryPartValue extends QueryPart {
 	 ******************************************************************************************************/
 	private QueryPartValue(CFWQueryContext context, QueryPartValueType type, Object value) {
 		super(context);
-		this.type = type;
 		this.value = value;
+		if(value != null) {
+			this.type = type;
+		}else {
+			this.type = QueryPartValueType.NULL;
+		}
 	}
 	
 	/******************************************************************************************************
@@ -165,6 +171,35 @@ public class QueryPartValue extends QueryPart {
 	
 	
 	/******************************************************************************************************
+	 * Check if the value is a number
+	 ******************************************************************************************************/
+	public boolean isNumberString() {
+		if(this.type == QueryPartValueType.STRING) {
+			String value = this.getAsString().trim();
+			
+			try{
+				Double.parseDouble(value);
+				return true;
+			}catch(Exception e){
+				return false;
+			}
+
+		}
+		
+		return false;
+
+	}
+	
+	/******************************************************************************************************
+	 * Check if the value is a number or a number string
+	 ******************************************************************************************************/
+	public boolean isNumberOrNumberString() {
+				
+		return this.isNumber() || this.isNumberString();
+	}
+	
+	
+	/******************************************************************************************************
 	 * Check if the value is null
 	 ******************************************************************************************************/
 	public boolean isInteger() {
@@ -238,7 +273,7 @@ public class QueryPartValue extends QueryPart {
 	
 			case BOOLEAN: 	return ((Boolean)value)  ? 1 : 0; 
 			
-			case STRING:	return Float.parseFloat((String)value);
+			case STRING:	return Double.parseDouble((String)value);
 			
 			case JSON:		return ((JsonElement)value).getAsBigDecimal();
 				
@@ -272,6 +307,32 @@ public class QueryPartValue extends QueryPart {
 		if(number == null) return null;
 		
 		return number.floatValue();
+
+	}
+	
+	/******************************************************************************************************
+	 * It is recommended to use isInteger() first to make sure number value is really a Integer.
+	 ******************************************************************************************************/
+	public Double getAsDouble() {
+			
+		Number number = this.getAsNumber();
+		
+		if(number == null) return null;
+		
+		return number.doubleValue();
+
+	}
+	
+	/******************************************************************************************************
+	 * It is recommended to use isInteger() first to make sure number value is really a Integer.
+	 ******************************************************************************************************/
+	public BigDecimal getAsBigDecimal() {
+			
+		Number number = this.getAsNumber();
+		
+		if(number == null) return null;
+		
+		return BigDecimal.valueOf(number.doubleValue());
 
 	}
 	

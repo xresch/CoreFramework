@@ -147,9 +147,10 @@ public class CFWQueryParser {
 	}
 	
 	/***********************************************************************************************
-	 * 
+	 * Method that parses a single query.
+	 * It is recommended to use the parse()-method to parse a query that can contain multiple methods.
 	 ***********************************************************************************************/
-	private CFWQuery parseQuery() throws ParseException {
+	public CFWQuery parseQuery() throws ParseException {
 		currentQuery = new CFWQuery();
 		currentContext = currentQuery.getContext();
 		
@@ -169,9 +170,9 @@ public class CFWQueryParser {
 	}
 	
 	/***********************************************************************************************
-	 * 
+	 * Parses a single command
 	 ***********************************************************************************************/
-	private CFWQueryCommand parseQueryCommand(CFWQuery parentQuery) throws ParseException {
+	public CFWQueryCommand parseQueryCommand(CFWQuery parentQuery) throws ParseException {
 		
 		//------------------------------------
 		// Check Has More Tokens
@@ -272,7 +273,7 @@ public class CFWQueryParser {
 	/***********************************************************************************************
 	 * Parse Parts Until End of Command ('|') or query (';')
 	 ***********************************************************************************************/
-	private ArrayList<QueryPart> parseQueryParts() throws ParseException {
+	public ArrayList<QueryPart> parseQueryParts() throws ParseException {
 		
 		ArrayList<QueryPart> parts = new ArrayList<>();
 		
@@ -289,11 +290,11 @@ public class CFWQueryParser {
 	}
 	
 	/***********************************************************************************************
-	 * 
+	 * Parses a query part.
 	 ***********************************************************************************************/
-	private QueryPart parseQueryPart() throws ParseException {
+	public QueryPart parseQueryPart() throws ParseException {
 		
-		QueryPart tempPart = null;
+		QueryPart secondPart = null;
 
 		if(!this.hasMoreTokens()) {
 			throw new ParseException("Unexpected end of query.", cursor);
@@ -333,10 +334,10 @@ public class CFWQueryParser {
 										firstPart = new QueryPartArray(currentContext)
 															.isEmbracedArray(true);
 										
-										tempPart = this.parseQueryPart();
+										secondPart = this.parseQueryPart();
 										//Handle empty arrays
-										if(tempPart != null) {
-											((QueryPartArray)firstPart).add(tempPart);
+										if(secondPart != null) {
+											((QueryPartArray)firstPart).add(secondPart);
 										}
 											
 										break;	
@@ -363,7 +364,7 @@ public class CFWQueryParser {
 		
 		//------------------------------------------
 		// NEXT TOKEN can be anything that would
-		// create a binary expression or complete a expression
+		// create a binary expression or complete an expression
 		QueryPart resultPart = firstPart;
 
 		if(!this.hasMoreTokens()) { return resultPart; }
@@ -375,66 +376,62 @@ public class CFWQueryParser {
 		case LITERAL_STRING:
 		case NULL:
 								return resultPart;
-								
+		
+		//------------------------------
+		//End of Query Part
 		case SIGN_BRACE_SQUARE_CLOSE:
-		case SIGN_BRACE_ROUND_CLOSE:
-								//------------------------------
-								//End of Query Part
-								this.consumeToken();
-								return resultPart;
+		case SIGN_BRACE_ROUND_CLOSE:					
+			this.consumeToken();
+			return resultPart;
+
 		
-		case OPERATOR_EQUAL:	//------------------------------
-								// QueryPartAssignment
-								this.consumeToken();
-								QueryPart rightside = this.parseQueryPart();
-								resultPart = new QueryPartAssignment(currentContext, firstPart, rightside);
-								break;
+		//------------------------------
+		// QueryPartAssignment
+		case OPERATOR_EQUAL:	
+			this.consumeToken();
+			QueryPart rightside = this.parseQueryPart();
+			resultPart = new QueryPartAssignment(currentContext, firstPart, rightside);
+		break;
 		
-		case SIGN_COMMA:		//------------------------------
-								// QueryPartArray
-								this.consumeToken();
-								tempPart = this.parseQueryPart();
-								resultPart = new QueryPartArray(currentContext, firstPart, tempPart);
-								break;			
+		//------------------------------
+		// QueryPartArray						
+		case SIGN_COMMA:		
+			this.consumeToken();
+			secondPart = this.parseQueryPart();
+			resultPart = new QueryPartArray(currentContext, firstPart, secondPart);
+		break;			
 		
-			
-		case FUNCTION_NAME:
-			break;
+						
+		//------------------------------
+		// Binary Operations
+		case OPERATOR_AND:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_AND ); break;	
+		case OPERATOR_EQUAL_EQUAL:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_EQUAL ); break;	
+		case OPERATOR_EQUAL_NOT:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_NOT ); break;	
+		case OPERATOR_EQUAL_OR_GREATER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER ); break;	
+		case OPERATOR_EQUAL_OR_LOWER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER ); break;	
+		case OPERATOR_GREATERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_GREATERTHEN ); break;	
+		case OPERATOR_LOWERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_LOWERTHEN ); break;	
+		case OPERATOR_PLUS:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_PLUS ); break;	
+		case OPERATOR_MINUS:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MINUS ); break;	
+		case OPERATOR_MULTIPLY:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MULTIPLY ); break;	
+		case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_DIVIDE ); break;	
+		
 		case KEYWORD:
 			break;
-
-		case OPERATOR_AND:
-			break;
-		case OPERATOR_DIVIDE:
-			break;
-		case OPERATOR_DOT:
-			break;
-
-		case OPERATOR_EQUAL_EQUAL:
-			break;
-		case OPERATOR_EQUAL_NOT:
-			break;
-		case OPERATOR_EQUAL_OR_GREATER:
-			break;
-		case OPERATOR_EQUAL_OR_LOWER:
-			break;
-		case OPERATOR_GREATERTHEN:
-			break;
-		case OPERATOR_LOWERTHEN:
-			break;
-		case OPERATOR_MINUS:
-			break;
-		case OPERATOR_MULTIPLY:
-			break;
 		case OPERATOR_NOT:
-			break;
-
-		case OPERATOR_PLUS:
 			break;
 
 		case SIGN_BRACE_ROUND_OPEN:
 			break;
 
+		case FUNCTION_NAME:
+			break;
+			
+
+			
+		case OPERATOR_DOT:
+		break;	
+		
 		case SIGN_SEMICOLON:
 			break;
 		case SPLIT:
@@ -453,7 +450,14 @@ public class CFWQueryParser {
 		return resultPart;
 	}
 	
-
+	/***********************************************************************************************
+	 * Creates a Binary Expression by parsing the Next Part of the expression.
+	 ***********************************************************************************************/
+	private QueryPart createBinaryExpressionPart(QueryPart firstPart, CFWQueryTokenType operatorType ) throws ParseException {
+		this.consumeToken();
+		QueryPart secondPart = this.parseQueryPart();
+		return new QueryPartBinaryExpression(currentContext, firstPart, operatorType, secondPart);
+	}
 	
 	/***********************************************************************************************
 	 * Create parse exception for a token.

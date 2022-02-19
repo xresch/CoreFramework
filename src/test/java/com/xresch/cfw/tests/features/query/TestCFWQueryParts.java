@@ -13,9 +13,11 @@ import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
+import com.xresch.cfw.features.query.parse.QueryPartBinaryExpression;
 import com.xresch.cfw.features.query.parse.QueryPartJsonMemberAccess;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
@@ -503,5 +505,440 @@ public class TestCFWQueryParts {
 				).getAsString()
 			);
 	}
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testQueryPartBinaryExpressionCompareStrings() throws IOException {
+		
+		CFWQueryContext context = new CFWQueryContext();
+		
+		QueryPartBinaryExpression expression;
+		QueryPartValue evaluationResult;
+		
+		//-------------------------------
+		// Positive Test Expression ==
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "testEqual"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_EQUAL,
+						QueryPartValue.newString(context, "testEqual"));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+	
+		//-------------------------------
+		// Negative Test Expression ==
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "testNotEqual"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_EQUAL,
+						QueryPartValue.newString(context, "test!="));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertFalse(evaluationResult.getAsBoolean());
+		
+		//-------------------------------
+		// Positive Test Expression !=
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "testEqual"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_NOT,
+						QueryPartValue.newString(context, "testEqual"));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertFalse(evaluationResult.getAsBoolean());
+	
+		//-------------------------------
+		// Negative Test Expression !=
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "testNotEqual"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_NOT,
+						QueryPartValue.newString(context, "test!="));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//-------------------------------
+		// Positive Test Expression = (Contains)
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "testContains"), 
+						CFWQueryTokenType.OPERATOR_EQUAL,
+						QueryPartValue.newString(context, "estCo"));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+	
+		//-------------------------------
+		// Negative Test Expression = (Contains)
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "testContains"), 
+						CFWQueryTokenType.OPERATOR_EQUAL,
+						QueryPartValue.newString(context, "notC"));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertFalse(evaluationResult.getAsBoolean());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testQueryPartBinaryExpressionCompareStringAndNumber() throws IOException {
+		
+		CFWQueryContext context = new CFWQueryContext();
+		
+		QueryPartBinaryExpression expression;
+		QueryPartValue evaluationResult;
+		
+		//-------------------------------
+		// Positive Test Expression ==
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_EQUAL,
+						QueryPartValue.newNumber(context, 1234.5));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//-------------------------------
+		// Positive Test Expression == Reverse
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newNumber(context, 1234.5), 
+						CFWQueryTokenType.OPERATOR_EQUAL_EQUAL,
+						QueryPartValue.newString(context, "1234.5"));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//-------------------------------
+		// Negative Test Expression ==
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_EQUAL,
+						QueryPartValue.newNumber(context, 9234.5));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertFalse(evaluationResult.getAsBoolean());
+		
+		//=================================================================
+		
+		//-------------------------------
+		// Positive Test Expression !=
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_NOT,
+						QueryPartValue.newNumber(context, 1234.5));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertFalse(evaluationResult.getAsBoolean());
+	
+		//-------------------------------
+		// Negative Test Expression !=
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_NOT,
+						QueryPartValue.newNumber(context, 9234.5));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//=================================================================
+		
+		//-------------------------------
+		// Positive Test Expression >= 
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER,
+						QueryPartValue.newNumber(context, 1234.1));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//-------------------------------
+		// Positive Test Expression >= Equals
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER,
+						QueryPartValue.newNumber(context, 1234.5));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//-------------------------------
+		// Positive Test Expression >= Both Strings
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER,
+						QueryPartValue.newString(context, "1234.1"));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//-------------------------------
+		// Negative Test Expression >=
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER,
+						QueryPartValue.newNumber(context, 1234.9));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertFalse(evaluationResult.getAsBoolean());
+		
+		//=================================================================
+		
+		//-------------------------------
+		// Positive Test Expression <= 
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.1"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER,
+						QueryPartValue.newNumber(context, 1234.5));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//-------------------------------
+		// Positive Test Expression <= Equals
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER,
+						QueryPartValue.newNumber(context, 1234.5));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//-------------------------------
+		// Negative Test Expression <=
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER,
+						QueryPartValue.newNumber(context, 1234.1));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertFalse(evaluationResult.getAsBoolean());
+		
+		
+		//=================================================================
+		
+		//-------------------------------
+		// Positive Test Expression >
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_GREATERTHEN,
+						QueryPartValue.newNumber(context, 1234.1));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//-------------------------------
+		// Negative Test Expression > (Equals)
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_GREATERTHEN,
+						QueryPartValue.newNumber(context, 1234.5));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertFalse(evaluationResult.getAsBoolean());
+				
+		//=================================================================
+		
+		//-------------------------------
+		// Positive Test Expression < 
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.1"), 
+						CFWQueryTokenType.OPERATOR_LOWERTHEN,
+						QueryPartValue.newNumber(context, 1234.5));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		//-------------------------------
+		// Negative Test Expression < (Equals)
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "1234.5"), 
+						CFWQueryTokenType.OPERATOR_LOWERTHEN,
+						QueryPartValue.newNumber(context, 1234.5));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertFalse(evaluationResult.getAsBoolean());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testQueryPartBinaryExpressionCalculateStringAndNumber() throws IOException {
+		
+		CFWQueryContext context = new CFWQueryContext();
+		
+		QueryPartBinaryExpression expression;
+		QueryPartValue evaluationResult;
+		
+		//-------------------------------
+		// Positive Test Expression +
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "156.459"), 
+						CFWQueryTokenType.OPERATOR_PLUS,
+						QueryPartValue.newNumber(context, 123300.33));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		Assertions.assertTrue(evaluationResult.isNumber());
+		Assertions.assertEquals(123456.789,evaluationResult.getAsDouble());
+		
+		//-------------------------------
+		// Positive Test Expression -
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "234567.89"), 
+						CFWQueryTokenType.OPERATOR_MINUS,
+						QueryPartValue.newNumber(context, 111111.11));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		Assertions.assertTrue(evaluationResult.isNumber());
+		Assertions.assertEquals(123456.78, evaluationResult.getAsDouble());
+		
+		//-------------------------------
+		// Positive Test Expression *
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "-345.176"), 
+						CFWQueryTokenType.OPERATOR_MULTIPLY,
+						QueryPartValue.newNumber(context, 6.42));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		Assertions.assertTrue(evaluationResult.isNumber());
+		Assertions.assertEquals(-2216.02992, evaluationResult.getAsDouble());
+		
+		//-------------------------------
+		// Positive Test Expression /
+		//-------------------------------
+		expression =
+				new QueryPartBinaryExpression(context,
+						QueryPartValue.newString(context, "-2216.02992"), 
+						CFWQueryTokenType.OPERATOR_DIVIDE,
+						QueryPartValue.newNumber(context, -345.176));
+		
+		evaluationResult = expression.determineValue(null);
+		
+		Assertions.assertTrue(evaluationResult.isNumber());
+		Assertions.assertEquals(6.42, evaluationResult.getAsDouble());
+	}
+	
 	
 }
