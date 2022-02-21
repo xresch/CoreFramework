@@ -10,7 +10,7 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @author Reto Scheiwiller, (c) Copyright 2022
  * @license MIT-License
  **************************************************************************************************************/
 public class QueryPartBinaryExpression extends QueryPart {
@@ -20,7 +20,9 @@ public class QueryPartBinaryExpression extends QueryPart {
 	private QueryPart rightside = null;
 		
 	/******************************************************************************************************
-	 * 
+	 * Create an instance of the Binary Expression.
+	 * In case of an expression that has only one side(e.g. OPERATOR_NOT), leave left side null and add value 
+	 * to the right side.
 	 * @param leftside The name on the left side of the assignment operation.
 	 * 
 	 ******************************************************************************************************/
@@ -63,10 +65,19 @@ public class QueryPartBinaryExpression extends QueryPart {
 	@Override
 	public QueryPartValue determineValue(EnhancedJsonObject object) {
 		
-		QueryPartValue leftValue = leftside.determineValue(object);
+		//-----------------------------------------
+		// Evaluate Left Side
+		QueryPartValue leftValue;
+		if(leftside != null) { 
+			leftValue = leftside.determineValue(object);
+		}else {
+			leftValue = QueryPartValue.newNull(this.context());
+		}
+
 		
+		//-----------------------------------------
+		// Evaluate Right Side
 		QueryPartValue rightValue;
-		
 		if(rightside != null) { 
 			rightValue = rightside.determineValue(object);
 		}else {
@@ -128,7 +139,15 @@ public class QueryPartBinaryExpression extends QueryPart {
 					evaluationResult = new JsonPrimitive(false);
 				}
 			break;
-				
+			
+			case OPERATOR_NOT:
+				if(rightValue.isBoolOrBoolString()) {
+					evaluationResult = new JsonPrimitive(!rightValue.getAsBoolean());
+				}else {
+					//in any other case use right value as string
+					evaluationResult = rightValue.getAsJson();
+				}
+			break;	
 				
 			case OPERATOR_EQUAL:
 				if(leftValue.isString()) {

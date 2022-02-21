@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw.features.query.CFWQueryContext;
@@ -371,7 +372,7 @@ public class QueryPartValue extends QueryPart {
 			
 			case STRING:	return new JsonPrimitive((String)value);
 			
-			default:		return null;
+			default:		return JsonNull.INSTANCE;
 
 		}
 

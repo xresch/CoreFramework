@@ -413,22 +413,26 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		QueryPartValue evaluationResult;
 		ArrayList<QueryPart> parsedParts;
-		//-------------------------------------------------
-		// Test Parsing Expressions
-		String queryString = "myString==notEqualString OR myNumber>22 ";
+		String queryString;
+		QueryPart binaryExpression;
+		CFWQueryParser parser;
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString, true)
+		//-------------------------------------------------
+		// Test Parsing OR Expressions
+		queryString = "myString==notEqualString OR myNumber>22 ";
+		
+		parser = new CFWQueryParser(queryString, true)
 				.enableTracing();
 		
 		parsedParts = parser.parseQueryParts();
 		
-		System.out.println("===== parsedParts =====");
+		System.out.println("===== parsedParts OR =====");
 		System.out.println(CFW.JSON.toJSONPretty(parser.getTraceResults()));
 
 		Assertions.assertEquals(1, parsedParts.size());
 		
-		QueryPart binaryExpression = parsedParts.get(0);
-		System.out.println("===== binaryExpression Debug =====");
+		binaryExpression = parsedParts.get(0);
+		System.out.println("===== binaryExpression Debug OR =====");
 		System.out.println( CFW.JSON.toJSONPretty(binaryExpression.createDebugObject(enhanced)) );
 
 		
@@ -441,5 +445,64 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		Assertions.assertTrue(evaluationResult.isBoolean());
 		Assertions.assertTrue(evaluationResult.getAsBoolean());
+		
+		
+		//-------------------------------------------------
+		// Test Parsing AND Expressions
+		queryString = "myString==notEqualString AND myNumber>22 ";
+		
+		parser = new CFWQueryParser(queryString, true)
+				.enableTracing();
+		
+		parsedParts = parser.parseQueryParts();
+		
+		System.out.println("===== parsedParts AND =====");
+		System.out.println(CFW.JSON.toJSONPretty(parser.getTraceResults()));
+
+		Assertions.assertEquals(1, parsedParts.size());
+		
+		binaryExpression = parsedParts.get(0);
+		System.out.println("===== binaryExpression Debug AND =====");
+		System.out.println( CFW.JSON.toJSONPretty(binaryExpression.createDebugObject(enhanced)) );
+
+		
+		
+		Assertions.assertTrue(binaryExpression instanceof QueryPartBinaryExpression);
+		
+		//-------------------------------------------------
+		// Test Evaluate AND Expression
+		evaluationResult = ((QueryPartBinaryExpression)binaryExpression).determineValue(enhanced);
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		Assertions.assertFalse(evaluationResult.getAsBoolean());
+		
+		//-------------------------------------------------
+				// Test Parsing AND Expressions
+				queryString = "NOT myNumber<22 ";
+				
+				parser = new CFWQueryParser(queryString, true)
+						.enableTracing();
+				
+				parsedParts = parser.parseQueryParts();
+				
+				System.out.println("===== parsedParts NOT =====");
+				System.out.println(CFW.JSON.toJSONPretty(parser.getTraceResults()));
+
+				Assertions.assertEquals(1, parsedParts.size());
+				
+				binaryExpression = parsedParts.get(0);
+				System.out.println("===== binaryExpression Debug NOT =====");
+				System.out.println( CFW.JSON.toJSONPretty(binaryExpression.createDebugObject(enhanced)) );
+
+				
+				
+				Assertions.assertTrue(binaryExpression instanceof QueryPartBinaryExpression);
+				
+				//-------------------------------------------------
+				// Test Evaluate AND Expression
+				evaluationResult = ((QueryPartBinaryExpression)binaryExpression).determineValue(enhanced);
+				
+				Assertions.assertTrue(evaluationResult.isBoolean());
+				Assertions.assertTrue(evaluationResult.getAsBoolean());
 	}
 }

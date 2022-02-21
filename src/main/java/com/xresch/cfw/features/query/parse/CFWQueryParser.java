@@ -115,7 +115,13 @@ public class CFWQueryParser {
 			JsonObject object = new JsonObject();
 			object.addProperty("Key", 		(key != null) ? key.toString() : null);
 			object.addProperty("Value", 	(value != null) ? value.toString() : null);
-			object.addProperty("Message", 	(message != null) ? message.toString() : null);
+			object.addProperty("Message", 	
+					(message != null) ? 
+						(
+							(!(message instanceof QueryPart)) ? message.toString() : ((QueryPart)message).createDebugObject(null).toString()
+						)
+						: null
+			);
 			object.addProperty("TokenPosition", cursor);
 			
 			if(cursor < tokenlist.size()) {
@@ -245,9 +251,7 @@ public class CFWQueryParser {
 	 * Parses a single command
 	 ***********************************************************************************************/
 	public CFWQueryCommand parseQueryCommand(CFWQuery parentQuery) throws ParseException {
-		
-		addTrace("Parse", "Command", "[START]");
-		
+				
 		//------------------------------------
 		// Check Has More Tokens
 		if(!this.hasMoreTokens()) {
@@ -270,7 +274,7 @@ public class CFWQueryParser {
 			// Get Command
 			CFWQueryToken commandNameToken = this.consumeToken();
 			String commandName = commandNameToken.value();
-			
+			addTrace("Parse", "Command", "[START] "+commandName);
 			//------------------------------------
 			// GIB-Easteregg for Vincent Theus
 			while(commandName.toLowerCase().equals("gib")
@@ -358,9 +362,9 @@ public class CFWQueryParser {
 		while(this.hasMoreTokens() 
 		   && this.lookahead().type() != CFWQueryTokenType.OPERATOR_OR
 		   && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
-			addTrace("Parse", "Query Part", "[START]");
-				currentQueryParts.add(parseQueryPart());
-			addTrace("Parse", "Query Part", "[END]");
+				QueryPart part = parseQueryPart();
+				currentQueryParts.add(part);
+			addTrace("Parse", "Query Part", part);
 		}
 		
 		
@@ -434,18 +438,25 @@ public class CFWQueryParser {
 										return null;
 									
 			case KEYWORD:
-				String keyword = firstToken.value();
+				String keyword = firstToken.value().toUpperCase();
 				
-				if(currentQueryParts.size() == 0) { 
-					this.throwParseException("Keyword cannot be at the beginning of the command: "+keyword, firstToken.position()); 
+				System.out.println("keyword: "+keyword);
+				QueryPart lastPart = null;
+				if( !keyword.equals(KEYWORD_NOT) && currentQueryParts.size() > 0) { 
+					lastPart = currentQueryParts.remove(currentQueryParts.size()-1);
+				}else {
+					if(!keyword.equals(KEYWORD_NOT)){
+						this.throwParseException("Keyword cannot be at the beginning of the command: "+keyword, firstToken.position()); 
+					}
 				}
 				
-				QueryPart lastPart = currentQueryParts.remove(currentQueryParts.size()-1);
+				
 				switch(keyword) {
 				
 					case KEYWORD_AND: 	return createBinaryExpressionPart(lastPart, CFWQueryTokenType.OPERATOR_AND, false ); 
 					case KEYWORD_OR: 	return createBinaryExpressionPart(lastPart, CFWQueryTokenType.OPERATOR_OR, false ); 
-					case KEYWORD_NOT: 	return createBinaryExpressionPart(lastPart, CFWQueryTokenType.OPERATOR_NOT, false );
+					
+					case KEYWORD_NOT: 	return createBinaryExpressionPart(null, CFWQueryTokenType.OPERATOR_NOT, false );
 					default:			this.throwParseException("Unknown keyword:"+keyword, firstToken.position());
 				}
 			break;
