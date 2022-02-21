@@ -21,6 +21,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
+import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
@@ -474,7 +475,16 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			if(currentPart instanceof QueryPartAssignment) {
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
 				
-				String fieldname = assignment.getLeftSideAsString(null);
+				ArrayList<String> fieldnames = new ArrayList<>();
+				QueryPart leftside = assignment.getLeftSide();
+				
+				if(leftside instanceof QueryPartArray) {
+					fieldnames = ((QueryPartArray)leftside).getAsStringArray(null, true);
+					
+				}else {
+					// add as String
+					fieldnames.add(assignment.getLeftSideAsString(null));
+				}
 
 				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
 				if(valuePart.isString()) {
@@ -484,8 +494,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 					
 					FormatterDefinition definition = formatterArray.get(formatterName);
 					if(definition != null) {
-						
-						definition.manifestTheMightyFormatterArray(fieldFormats, fieldname);
+						for(String fieldname : fieldnames) {
+							definition.manifestTheMightyFormatterArray(fieldFormats, fieldname);
+						}
 					}else {
 						parser.throwParseException("formatfield: Unknown formatter '"+formatterName+"'.", currentPart);
 					}
@@ -499,7 +510,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 					
 					FormatterDefinition definition = formatterArray.get(array.get(0).getAsString());
 					if(definition != null) {
-						definition.manifestTheMightyFormatterArray(fieldFormats, fieldname, array);
+						for(String fieldname : fieldnames) {
+							definition.manifestTheMightyFormatterArray(fieldFormats, fieldname, array);
+						}
 					}else {
 						parser.throwParseException("formatfield: Unknown formatter '"+array.get(0).getAsString()+"'.", currentPart);
 					}

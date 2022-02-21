@@ -17,6 +17,12 @@ If you want to highly customize your display, use the 'css' formatter.
 	VALUE=[threshold,0,10,20,30,40]
 	VALUE=align,center</code></pre>
 
+<p>If you want to add the same formatter to multiple fields, you can define an array of fieldnames on the left hand side of the assignment: </p>
+<pre><code class="language-cfwquery">| source random type=numbers
+| formatfield 
+    [THOUSANDS,FLOAT,BIG_DECIMAL]=separators
+    [THOUSANDS,FLOAT,BIG_DECIMAL]=['threshold', 0, null, 1000000, null, 1000000000, "text"]</code></pre>
+
 
 <p>Further there are tree different styles how you can define the formatter: </p>
 

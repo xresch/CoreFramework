@@ -23,6 +23,7 @@ public class QueryPartArray extends QueryPart {
 	
 	private ArrayList<QueryPart> partsArray;
 	private JsonArray jsonArray = null;
+	private ArrayList<String> stringArray = null;
 	
 	//holds index if this array is a index access expression(e.g. [1])
 	private Integer arrayIndex = null;
@@ -92,7 +93,7 @@ public class QueryPartArray extends QueryPart {
 	@Override
 	public QueryPartValue determineValue(EnhancedJsonObject object) {
 		
-		JsonArray array = getAsJsonArray(object);
+		JsonArray array = getAsJsonArray(object, true);
 		
 		return QueryPartValue.newJson(this.context(), array);
 	}
@@ -100,11 +101,13 @@ public class QueryPartArray extends QueryPart {
 
 	/******************************************************************************************************
 	 * Returns the values as JsonArray.
+	 * @param getFromCache TODO
 	 * 
 	 ******************************************************************************************************/
-	public JsonArray getAsJsonArray(EnhancedJsonObject object) {
+	public JsonArray getAsJsonArray(EnhancedJsonObject object, boolean getFromCache) {
 		
-		if(jsonArray == null) {
+		//cache instance
+		if(!getFromCache || jsonArray == null) {
 			jsonArray = new JsonArray();
 			
 			for(QueryPart part : partsArray) {
@@ -114,6 +117,25 @@ public class QueryPartArray extends QueryPart {
 			}
 		}
 		return jsonArray;
+	}
+	
+	/******************************************************************************************************
+	 * Returns the values as JsonArray.
+	 * 
+	 ******************************************************************************************************/
+	public ArrayList<String> getAsStringArray(EnhancedJsonObject object, boolean getFromCache) {
+		
+		//cache instance
+		if(!getFromCache || stringArray == null) {
+			stringArray = new ArrayList<>();
+			
+			for(QueryPart part : partsArray) {
+				if(part != null) {
+					stringArray.add(part.determineValue(object).getAsString());
+				}
+			}
+		}
+		return stringArray;
 	}
 	
 	/******************************************************************************************************

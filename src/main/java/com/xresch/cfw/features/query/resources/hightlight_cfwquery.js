@@ -103,9 +103,9 @@ function cfw_hljs_register_CFWQuery(hljs) {
   };
 
   const KEYWORDS = [
-    "AND",
-    "OR",
-    "NOT",
+    "AND", "and",
+    "OR", "or",
+    "NOT", "not"
   ];
 
   const LITERALS = [
@@ -162,7 +162,7 @@ function cfw_hljs_register_CFWQuery(hljs) {
     name: 'cfwquery',
     aliases: ['cfwql'],
     keywords: {
-      $pattern: /\b[a-z._-]+\b/,
+      $pattern: /\b[a-zA-Z._-]+\b/,
       keyword: [
         ...KEYWORDS,
       ],

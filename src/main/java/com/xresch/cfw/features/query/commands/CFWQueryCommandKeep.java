@@ -103,7 +103,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 			}else if(part instanceof QueryPartArray) {
 				QueryPartArray array = (QueryPartArray)part;
 
-				for(JsonElement element : array.getAsJsonArray(null)) {
+				for(JsonElement element : array.getAsJsonArray(null, true)) {
 					
 					if(!element.isJsonNull() && element.isJsonPrimitive()) {
 						fieldnames.add(element.getAsString());

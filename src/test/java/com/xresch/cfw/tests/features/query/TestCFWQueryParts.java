@@ -165,7 +165,7 @@ public class TestCFWQueryParts {
 		
 		arrayPart.add(QueryPartValue.newString(context, "YEEEHAAAA!!!"));
 		
-		JsonArray array = arrayPart.getAsJsonArray(new EnhancedJsonObject());
+		JsonArray array = arrayPart.getAsJsonArray(new EnhancedJsonObject(), true);
 		
 		Assertions.assertFalse(arrayPart.isIndex());
 		Assertions.assertEquals(4, array.size());

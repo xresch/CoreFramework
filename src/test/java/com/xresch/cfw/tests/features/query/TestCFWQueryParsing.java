@@ -449,7 +449,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		//-------------------------------------------------
 		// Test Parsing AND Expressions
-		queryString = "myString==notEqualString AND myNumber>22 ";
+		queryString = "myString==notEqualString and myNumber>22 ";
 		
 		parser = new CFWQueryParser(queryString, true)
 				.enableTracing();
@@ -478,7 +478,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		//-------------------------------------------------
 				// Test Parsing AND Expressions
-				queryString = "NOT myNumber<22 ";
+				queryString = "not myNumber<22 ";
 				
 				parser = new CFWQueryParser(queryString, true)
 						.enableTracing();
