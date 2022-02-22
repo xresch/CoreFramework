@@ -155,8 +155,9 @@ function cfw_query_editor_resizeToFitQuery(){
 		
 		var editorHeight = queryHeight+10;
 		if(editorHeight > 500){ editorHeight = 500; };
+		
 		$('.query-editor').css('height',editorHeight+"px")
-		//$('.query-editor').css('min-width',(queryWidth+10)+"px")
+		
 		
 	}
 	

@@ -64,6 +64,10 @@ public class CFWQueryParser {
 	//Used for GIB-Easteregg
 	String obedienceMessage = CFW.Random.randomMessageOfObedience();
 	
+	public enum ParsingContext{
+		DEFAULT, BINARY, ARRAY
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -133,6 +137,19 @@ public class CFWQueryParser {
 			traceArray.add(object);
 			
 		}
+	}
+	
+	/***********************************************************************************************
+	 * Pops the previous part from the array of parts.
+	 * Returns null of there is no previous part.
+	 ***********************************************************************************************/
+	private QueryPart popPreviousPart() {
+		QueryPart previousPart = null;
+		if( currentQueryParts.size() > 0) { 
+			previousPart = currentQueryParts.remove(currentQueryParts.size()-1);
+		}
+		
+		return previousPart;
 	}
 	
 	/***********************************************************************************************
@@ -351,6 +368,7 @@ public class CFWQueryParser {
 		return null;
 		
 	}
+	
 		
 	/***********************************************************************************************
 	 * Parse Parts Until End of Command ('|') or query (';')
@@ -362,7 +380,7 @@ public class CFWQueryParser {
 		while(this.hasMoreTokens() 
 		   && this.lookahead().type() != CFWQueryTokenType.OPERATOR_OR
 		   && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
-				QueryPart part = parseQueryPart();
+				QueryPart part = parseQueryPart(ParsingContext.DEFAULT);
 				currentQueryParts.add(part);
 			addTrace("Parse", "Query Part", part);
 		}
@@ -373,8 +391,9 @@ public class CFWQueryParser {
 	
 	/***********************************************************************************************
 	 * Parses a query part.
+	 * @param context TODO
 	 ***********************************************************************************************/
-	public QueryPart parseQueryPart() throws ParseException {
+	public QueryPart parseQueryPart(ParsingContext context) throws ParseException {
 		
 
 		QueryPart secondPart = null;
@@ -422,7 +441,7 @@ public class CFWQueryParser {
 										firstPart = new QueryPartArray(currentContext)
 															.isEmbracedArray(true);
 										
-										secondPart = this.parseQueryPart();
+										secondPart = this.parseQueryPart(context);
 										//Handle empty arrays
 										if(secondPart != null) {
 											((QueryPartArray)firstPart).add(secondPart);
@@ -443,7 +462,7 @@ public class CFWQueryParser {
 				System.out.println("keyword: "+keyword);
 				QueryPart lastPart = null;
 				if( !keyword.equals(KEYWORD_NOT) && currentQueryParts.size() > 0) { 
-					lastPart = currentQueryParts.remove(currentQueryParts.size()-1);
+					lastPart = popPreviousPart();
 				}else {
 					if(!keyword.equals(KEYWORD_NOT)){
 						this.throwParseException("Keyword cannot be at the beginning of the command: "+keyword, firstToken.position()); 
@@ -501,7 +520,7 @@ public class CFWQueryParser {
 		case OPERATOR_EQUAL:
 			this.consumeToken();
 			addTrace("Start Part", "Assignment", "");
-			QueryPart rightside = this.parseQueryPart();
+			QueryPart rightside = this.parseQueryPart(context);
 			resultPart = new QueryPartAssignment(currentContext, firstPart, rightside);
 			addTrace("End Part", "Assignment", "");
 		break;
@@ -509,10 +528,19 @@ public class CFWQueryParser {
 		//------------------------------
 		// QueryPartArray						
 		case SIGN_COMMA:
-			addTrace("Proceed with Array", "Comma encountered", "");
-			this.consumeToken();
-			secondPart = this.parseQueryPart();
-			resultPart = new QueryPartArray(currentContext, firstPart, secondPart);
+			if(context != ParsingContext.BINARY) {
+				addTrace("Proceed with Array", "Comma encountered", "");
+				
+				QueryPart firstArrayElement = firstPart;
+				QueryPart secondArrayElement = firstPart;
+				while(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_COMMA) {
+					this.consumeToken();
+					secondArrayElement = this.parseQueryPart(context);
+					firstArrayElement = new QueryPartArray(currentContext, firstArrayElement, secondArrayElement);
+				}
+				
+				resultPart = firstArrayElement;
+			}
 		break;			
 		
 						
@@ -570,7 +598,7 @@ public class CFWQueryParser {
 	private QueryPart createBinaryExpressionPart(QueryPart firstPart, CFWQueryTokenType operatorType, boolean consumeToken ) throws ParseException {
 		addTrace("Start Part", "Binary Expression", operatorType);
 			if(consumeToken) { this.consumeToken(); }
-			QueryPart secondPart = this.parseQueryPart();
+			QueryPart secondPart = this.parseQueryPart(ParsingContext.BINARY);
 		addTrace("End Part", "Binary Expression", "");
 		return new QueryPartBinaryExpression(currentContext, firstPart, operatorType, secondPart);
 	}

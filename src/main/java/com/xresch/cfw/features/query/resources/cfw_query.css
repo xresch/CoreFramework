@@ -35,6 +35,7 @@
 #query {
 	/*show cursor, only hide text, keep 10% opacity to see issues*/
     -webkit-text-fill-color: rgba(255,255,255,0.1);
+    color: #fff;
     resize: none;
 	overflow: visible;
 	position: absolute;
@@ -45,7 +46,6 @@
 	min-height: 100px;
 	white-space: pre;
     overflow-wrap: normal;
-  	  	
 	z-index: 3;
 	margin: 0;
 	padding: 0;
