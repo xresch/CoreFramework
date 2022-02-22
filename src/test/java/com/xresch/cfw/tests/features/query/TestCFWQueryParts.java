@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
@@ -50,7 +51,7 @@ public class TestCFWQueryParts {
 		Assertions.assertEquals(null, part.getAsNumber());
 		Assertions.assertEquals(null, part.getAsString());
 		Assertions.assertEquals(null, part.getAsBoolean());
-		Assertions.assertEquals(null, part.getAsJson());
+		Assertions.assertEquals(JsonNull.INSTANCE, part.getAsJson());
 		
 		//-------------------------------
 		// Number
