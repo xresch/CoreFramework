@@ -75,21 +75,42 @@ public class QueryPartGroup extends QueryPart {
 	}
 	
 	/******************************************************************************************************
+	 * Returns the number of elements in the group.
+	 * 
+	 ******************************************************************************************************/
+	public int size() {
+		return partsGroup.size(); 
+				
+	}
+	
+	/******************************************************************************************************
+	 * Returns true if the QueryPart evaluates to boolean.
+	 * 
+	 ******************************************************************************************************/
+	public static boolean partEvaluatesToBoolean(QueryPart part) {
+		return (
+				part instanceof QueryPartBinaryExpression
+				||  part instanceof QueryPartGroup
+				||  (
+						part instanceof QueryPartValue
+						&& ((QueryPartValue) part).isBoolOrBoolString()
+					)
+				);
+	}
+	/******************************************************************************************************
 	 * Adds a query part. If the query part is a QueryPartArray, the parts in that array are merged into
 	 * this array.
 	 * 
 	 ******************************************************************************************************/
 	public QueryPartGroup add(QueryPart part) {
 		
-		if( part instanceof QueryPartBinaryExpression
-		||  part instanceof QueryPartGroup) {
+		if(partEvaluatesToBoolean(part)) {
 			
 			if(partsGroup.size() == 1) { 
 				//---------------------------------------
 				// Merge together if all are Binary Expressions
 				QueryPart existingPart = partsGroup.get(0);
-				if( existingPart instanceof QueryPartBinaryExpression
-				|| existingPart instanceof QueryPartGroup) {
+				if(partEvaluatesToBoolean(existingPart)) {
 					partsGroup.clear();
 					partsGroup.add(
 						new QueryPartBinaryExpression(
@@ -129,7 +150,7 @@ public class QueryPartGroup extends QueryPart {
 			//---------------------------------------
 			// Evaluate as Binary
 			QueryPart singlePart = partsGroup.get(0);
-			if( singlePart instanceof QueryPartBinaryExpression) {
+			if(partEvaluatesToBoolean(singlePart)) {
 				return singlePart.determineValue(object);
 			}
 				

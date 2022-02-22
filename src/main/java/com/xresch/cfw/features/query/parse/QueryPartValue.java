@@ -350,6 +350,8 @@ public class QueryPartValue extends QueryPart {
 
 			case STRING:	return Boolean.parseBoolean((String)value);
 			
+			case NULL:		return false;
+			
 			case JSON:		return ((JsonElement)value).getAsBoolean();
 				
 			default:		return null;

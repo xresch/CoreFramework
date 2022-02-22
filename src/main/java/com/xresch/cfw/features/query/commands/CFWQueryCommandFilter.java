@@ -2,33 +2,29 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
-import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.features.query.parse.QueryPartAssignment;
+import com.xresch.cfw.features.query.parse.QueryPartArray;
+import com.xresch.cfw.features.query.parse.QueryPartGroup;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWQueryCommandFilter extends CFWQueryCommand {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandFilter.class.getName());
 	
-	CFWQuerySource source = null;
-	
-	int recordCounter = 0;
+	private QueryPartGroup evaluationGroup;
 	
 	/***********************************************************************************************
 	 * 
@@ -77,8 +73,8 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 			  + "	<li><b>'&gt;=':&nbsp;</b> Checks if the field value is greater or equals.</li>"
 			  + "	<li><b>'&lt;':&nbsp;</b>  Checks if the field value is smaller.</li>"
 			  + "	<li><b>'&gt;':&nbsp;</b>  Checks if the field value is greater.</li>"
-			  //+ "	<li><b>AND:&nbsp;</b> Used to combine two or more conditions. Condition matches only if both sides are true.</li>"
-			  //+ "	<li><b>OR:&nbsp;</b>  Used to combine two or more conditions. Condition matches if either side is true.</li>"
+			  + "	<li><b>AND:&nbsp;</b> Used to combine two or more conditions. Condition matches only if both sides are true.</li>"
+			  + "	<li><b>OR:&nbsp;</b>  Used to combine two or more conditions. Condition matches if either side is true.</li>"
 			  + "</ul>"
 				;
 	}
@@ -98,6 +94,9 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	@Override
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
 		
+		if(evaluationGroup == null) {
+			evaluationGroup = new QueryPartGroup(parent.getContext());
+		}
 		//------------------------------------------
 		// Get Parameters
 		
@@ -105,23 +104,12 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 			
 			QueryPart currentPart = parts.get(i);
 			
-			if(currentPart instanceof QueryPartAssignment) {
-				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-				
-				String oldName = assignment.getLeftSideAsString(null);
-				QueryPartValue newNamePart = assignment.getRightSide().determineValue(null);
-				if(newNamePart.isString()) {
-					String newName = newNamePart.getAsString();
-					
-					if(newName == null) {
-						throw new ParseException("filter: fieldname name cannot be null.", assignment.position());
-					}
-					if(CFW.Security.containsSequence(newName, "<", ">", "\"", "&")) {
-						throw new ParseException("rename: New name cannot contain the following characters: < > \" &", assignment.position());
-					}
-					//fieldnameMap.addProperty(oldName, newName);
-				}
+			// BinaryExpressions, Groups and Booleans
+			if(QueryPartGroup.partEvaluatesToBoolean(currentPart)) {
+				evaluationGroup.add(currentPart);
 								
+			}else if(currentPart instanceof QueryPartArray) {
+				setAndValidateQueryParts(parser, ((QueryPartArray)currentPart).getAsParts(done));
 			}else {
 				parser.throwParseException("filter: Only binary expressions allowed.", currentPart);
 			}
@@ -150,14 +138,26 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 		
 		while(keepPolling()) {
 			EnhancedJsonObject record = inQueue.poll();
-				
-//			for(String oldName : fieldnameMap.keySet()) {
-//				if( record.has(oldName) ) {
-//					record.add( fieldnameMap.get(oldName).getAsString(), record.remove(oldName) );
-//				}
-//			}
-//			
-			outQueue.add(record);
+			
+			if(evaluationGroup == null || evaluationGroup.size() == 0) {
+				outQueue.add(record);
+			}else {
+				QueryPartValue evalResult = evaluationGroup.determineValue(record);
+				if(evalResult.isBoolOrBoolString()) {
+					if(evalResult.getAsBoolean()) {
+						outQueue.add(record);
+					}
+				}else {
+					System.out.println("===========================");
+					System.out.println("evalResultString="+evalResult.getAsString());
+					System.out.println("evalResultBool="+evalResult.getAsBoolean());
+					System.out.println("Record="+CFW.JSON.toJSON(record.getWrappedObject()));
+					
+					this.getParent().getContext().addMessage(MessageType.WARNING, "filter: Something has not evaluated to a boolean value. You might want to check your expression.");
+				}
+			}
+		
+			
 			
 		}
 		
