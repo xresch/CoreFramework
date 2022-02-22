@@ -136,11 +136,19 @@ function cfw_query_editor_resizeToFitQuery(){
 	var value =  $QUERYAREA.val();
 	if( !CFW.utils.isNullOrEmpty(value) ){
 		
-		var queryHeight = $QUERYAREA[0].scrollHeight;
-		var queryWidth = $QUERYAREA[0].scrollWidth-10;
+		// Number of lines multiplied with 16px line high
+		var queryLineCount = (value.match(/\n/g) || []).length;
 		
-		 $QUERYAREA.css("height", queryHeight+'px'); 
-		 $QUERYAREA.css("width", queryWidth+'px'); 
+		// minimum height 7 lines
+		if(queryLineCount < 6) {	queryLineCount = 6; }
+		
+		var queryHeight = (queryLineCount+1) * 16;
+		
+		
+		var queryWidth = $QUERYAREA[0].scrollWidth+5;
+
+		$QUERYAREA.css("height", queryHeight+'px'); 
+		$QUERYAREA.css("width", queryWidth+'px'); 
 		
 		$QUERYCODE.css("height", queryHeight+"px");
 		$QUERYCODE.css("width", queryWidth+"px");
@@ -148,6 +156,7 @@ function cfw_query_editor_resizeToFitQuery(){
 		var editorHeight = queryHeight+10;
 		if(editorHeight > 500){ editorHeight = 500; };
 		$('.query-editor').css('height',editorHeight+"px")
+		//$('.query-editor').css('min-width',(queryWidth+10)+"px")
 		
 	}
 	
@@ -341,11 +350,14 @@ function cfw_query_editor_initialize(){
 	});
 	
 	//-----------------------------------
-	// Refresh highlight on keyup/paste
+	// Refresh highlight and resize
 	$QUERYAREA.on("keyup", function(e){
 		cfw_query_editor_refreshHighlighting();
+		cfw_query_editor_resizeToFitQuery();
 	});
 	
+	//-----------------------------------
+	// Refresh highlight and resize on keyup/paste
 	$QUERYAREA.on("paste", function(e){
 		window.setTimeout(function(){
 			cfw_query_editor_resizeToFitQuery();
@@ -412,8 +424,8 @@ function cfw_query_initialDraw(){
 						<div class="scroll-fix" style="position: relative; height: auto; ">
 							<form id="${formID}">
 								<input id="cfw-formID" name="cfw-formID" type="hidden" value="${formID}">
-								<textarea id="query" name="query" class="form-control query-text-format" rows="3" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
-								<pre id="query-pre-element"><code id="query-highlighting" class="preview language-cfwquery query-text-format"> </code></pre>
+								<textarea id="query" name="query" class="query-text-format" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
+								<pre id="query-pre-element"><code id="query-highlighting" class="preview language-cfwquery query-text-format"></code></pre>
 							</form>
 						</div>
 					</div>
