@@ -46,6 +46,8 @@ public class CFWJson {
 	private static Gson gsonInstancePretty;
 	
 	private static Gson gsonInstanceEncrypted;
+	private static Gson prettyTabWriter;
+	
 	static{
 		//Type cfwobjectListType = new TypeToken<LinkedHashMap<CFWObject>>() {}.getType();
 		
@@ -107,7 +109,16 @@ public class CFWJson {
 	 * 
 	 *************************************************************************************/
 	public static String toJSONPretty(Object object) {
+		
 		return gsonInstancePretty.toJson(object);
+	}
+	
+	/*************************************************************************************
+	 * 
+	 *************************************************************************************/
+	public static String toJSONPrettyDebugOnly(Object object) {
+		
+		return gsonInstancePretty.toJson(object).replaceAll("  ", "\t");
 	}
 	
 	/*************************************************************************************

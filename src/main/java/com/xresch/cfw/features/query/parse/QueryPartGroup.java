@@ -25,7 +25,7 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
  **************************************************************************************************************/
 public class QueryPartGroup extends QueryPart {
 	
-	private ArrayList<QueryPart> partsArray;
+	private ArrayList<QueryPart> partsGroup;
 	private JsonArray jsonArray = null;
 	private ArrayList<String> stringArray = null;
 	
@@ -37,11 +37,40 @@ public class QueryPartGroup extends QueryPart {
 	private boolean embracedArray = false;
 	
 	
+	
+	/******************************************************************************************************
+	 *  
+	 ******************************************************************************************************/
+	public QueryPartGroup(CFWQueryContext context) {
+		super(context);
+		this.partsGroup = new ArrayList<>();
+	}
+	
+	
+	/******************************************************************************************************
+	 *  
+	 ******************************************************************************************************/
+	public QueryPartGroup(CFWQueryContext context, QueryPart initialPart) {
+		this(context);
+		partsGroup.add(initialPart);
+	}
+	
+	
+	/******************************************************************************************************
+	 *  
+	 ******************************************************************************************************/
+	public QueryPartGroup(CFWQueryContext context, QueryPart... parts) {
+		super(context);
+		for(QueryPart part : parts) {
+			this.add(part);
+		}
+	}
+	
 	/******************************************************************************************************
 	 *  Creates an index expression
 	 ******************************************************************************************************/
 	public QueryPartGroup(CFWQueryContext context, int index) {
-		super(context);
+		this(context);
 		this.add(QueryPartValue.newNumber(context, index));
 	}
 	
@@ -52,18 +81,20 @@ public class QueryPartGroup extends QueryPart {
 	 ******************************************************************************************************/
 	public QueryPartGroup add(QueryPart part) {
 		
-		if( part instanceof QueryPartBinaryExpression) {
+		if( part instanceof QueryPartBinaryExpression
+		||  part instanceof QueryPartGroup) {
 			
-			if(partsArray.size() == 1) { 
+			if(partsGroup.size() == 1) { 
 				//---------------------------------------
 				// Merge together if all are Binary Expressions
-				QueryPart singlePart = partsArray.get(0);
-				if( singlePart instanceof QueryPartBinaryExpression) {
-					partsArray.clear();
-					partsArray.add(
+				QueryPart existingPart = partsGroup.get(0);
+				if( existingPart instanceof QueryPartBinaryExpression
+				|| existingPart instanceof QueryPartGroup) {
+					partsGroup.clear();
+					partsGroup.add(
 						new QueryPartBinaryExpression(
 							this.context()
-						  , singlePart
+						  , existingPart
 						  , CFWQueryTokenType.OPERATOR_AND
 						  , part)
 					);
@@ -72,17 +103,17 @@ public class QueryPartGroup extends QueryPart {
 			}
 		}else {
 			if(part instanceof QueryPartArray) {
-				QueryPartGroup array = (QueryPartGroup)part;
+				QueryPartArray array = (QueryPartArray)part;
 				if(!array.isEmbracedArray()) {
 					//unwrap arrays
-					partsArray.addAll(array.getQueryPartsArray());
+					partsGroup.addAll(array.getQueryPartsArray());
 					return this;
 				}
 			}
 		}
 		
 		// Just add if nothing of above has matched
-		partsArray.add(part);
+		partsGroup.add(part);
 		
 		return this;
 	}
@@ -94,10 +125,10 @@ public class QueryPartGroup extends QueryPart {
 	@Override
 	public QueryPartValue determineValue(EnhancedJsonObject object) {
 		
-		if(partsArray.size() == 1) {
+		if(partsGroup.size() == 1) {
 			//---------------------------------------
 			// Evaluate as Binary
-			QueryPart singlePart = partsArray.get(0);
+			QueryPart singlePart = partsGroup.get(0);
 			if( singlePart instanceof QueryPartBinaryExpression) {
 				return singlePart.determineValue(object);
 			}
@@ -122,7 +153,7 @@ public class QueryPartGroup extends QueryPart {
 		if(!getFromCache || jsonArray == null) {
 			jsonArray = new JsonArray();
 			
-			for(QueryPart part : partsArray) {
+			for(QueryPart part : partsGroup) {
 				if(part != null) {
 					jsonArray.add(part.determineValue(object).getAsJson());
 				}
@@ -141,7 +172,7 @@ public class QueryPartGroup extends QueryPart {
 		if(!getFromCache || stringArray == null) {
 			stringArray = new ArrayList<>();
 			
-			for(QueryPart part : partsArray) {
+			for(QueryPart part : partsGroup) {
 				if(part != null) {
 					stringArray.add(part.determineValue(object).getAsString());
 				}
@@ -154,7 +185,7 @@ public class QueryPartGroup extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	protected ArrayList<QueryPart> getQueryPartsArray() {
-		return partsArray;
+		return partsGroup;
 	}
 	
 	/******************************************************************************************************
@@ -163,8 +194,8 @@ public class QueryPartGroup extends QueryPart {
 	 ******************************************************************************************************/
 	public boolean isIndex() {
 		
-		if(partsArray.size() == 1) {
-			QueryPartValue value = partsArray.get(0).determineValue(null);
+		if(partsGroup.size() == 1) {
+			QueryPartValue value = partsGroup.get(0).determineValue(null);
 			if(value.isNumber() && value.isInteger()) {
 				arrayIndex = value.getAsInteger();
 				return true;
@@ -227,10 +258,10 @@ public class QueryPartGroup extends QueryPart {
 		
 		JsonObject debugObject = new JsonObject();
 		
-		debugObject.addProperty("partType", "Array");
+		debugObject.addProperty("partType", "Group");
 		
 		int i = 0;
-		for(QueryPart part : partsArray) {
+		for(QueryPart part : partsGroup) {
 			debugObject.add("Element["+i+"]", part.createDebugObject(object));
 			i++;
 		}
