@@ -479,42 +479,42 @@ public class CFWQueryParser {
 			// Parse Group Part
 			//=======================================================							
 			case SIGN_BRACE_ROUND_OPEN: 
-										//------------------------------
-										// QueryPartGroup
-										System.out.println("Open Group");
-										contextStack.add(CFWQueryParserContext.GROUP);
-										addTrace("Start Part", "Group", firstToken.value());
+				//------------------------------
+				// QueryPartGroup
+				System.out.println("Open Group");
+				contextStack.add(CFWQueryParserContext.GROUP);
+				addTrace("Start Part", "Group", firstToken.value());
 
-										QueryPartGroup groupPart = new QueryPartGroup(currentContext);
-										
-										QueryPart groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP);
-										
-										while(!(groupMember instanceof QueryPartEnd) ) {
-											
-											//handle AND & OR
-											CFWQueryToken nextToken = this.lookahead();
-											if(nextToken != null 
-											&& nextToken.type() == CFWQueryTokenType.KEYWORD 	
-											&& (
-													nextToken.value().toUpperCase().equals(KEYWORD_AND) 
-												|| nextToken.value().toUpperCase().equals(KEYWORD_OR) 
-												)
-											
-											) {
-												 currentQueryParts.add(groupMember);
-											}else {
-												groupPart.add(groupMember);
-											}
-											
-											if(this.hasMoreTokens()){
-												groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP);
-											}else {
-												break;
-											}
-										}
-										
-										firstPart = groupPart;
-										break;	
+				QueryPartGroup groupPart = new QueryPartGroup(currentContext);
+				
+				QueryPart groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP);
+				
+				while(!(groupMember instanceof QueryPartEnd) ) {
+					
+					//handle AND & OR
+					CFWQueryToken nextToken = this.lookahead();
+					if(nextToken != null 
+					&& nextToken.type() == CFWQueryTokenType.KEYWORD 	
+					&& (
+							nextToken.value().toUpperCase().equals(KEYWORD_AND) 
+						|| nextToken.value().toUpperCase().equals(KEYWORD_OR) 
+						)
+					
+					) {
+						 currentQueryParts.add(groupMember);
+					}else {
+						groupPart.add(groupMember);
+					}
+					
+					if(this.hasMoreTokens()){
+						groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP);
+					}else {
+						break;
+					}
+				}
+				
+				firstPart = groupPart;
+			break;	
 			
 			//=======================================================
 			// End of Group Part
