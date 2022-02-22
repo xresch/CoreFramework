@@ -52,15 +52,7 @@ public class CFWQueryToken{
 	  , /** The characters "!=" */ OPERATOR_EQUAL_NOT
 	  , /** The character '>' */ OPERATOR_GREATERTHEN
 	  , /** The character '<' */ OPERATOR_LOWERTHEN
-		  
-	  , /** The character ',' */ SIGN_COMMA
-	  , /** The character ';' */ SIGN_SEMICOLON
-	  , /** The character '(' */ SIGN_BRACE_ROUND_OPEN
-	  , /** The character ')' */ SIGN_BRACE_ROUND_CLOSE
-	  , /** The character '[' */ SIGN_BRACE_SQUARE_OPEN
-	  , /** The character ']' */ SIGN_BRACE_SQUARE_CLOSE
-	  , /** The character '#' */ SIGN_HASH
-		
+		  		
 	  , /** The character '+' */ OPERATOR_PLUS
 	  , /** The character '-' */ OPERATOR_MINUS
 	  , /** The character '*' */ OPERATOR_MULTIPLY
@@ -70,6 +62,14 @@ public class CFWQueryToken{
 	  , /** The character '|' */ OPERATOR_OR
 	  , /** The character '!' */ OPERATOR_NOT
 	  , /** The character '.' */ OPERATOR_DOT
+	  
+	  , /** The character ',' */ SIGN_COMMA
+	  , /** The character ';' */ SIGN_SEMICOLON
+	  , /** The character '(' */ SIGN_BRACE_ROUND_OPEN
+	  , /** The character ')' */ SIGN_BRACE_ROUND_CLOSE
+	  , /** The character '[' */ SIGN_BRACE_SQUARE_OPEN
+	  , /** The character ']' */ SIGN_BRACE_SQUARE_CLOSE
+	  , /** The character '#' */ SIGN_HASH
 
 	
 	  , /** Applied to any keyword defined with the method CFWQueryTokenizer.keywords() */
@@ -89,6 +89,8 @@ public class CFWQueryToken{
 	public CFWQueryToken.CFWQueryTokenType type() { 
 		return this.type;
 	}
+	
+
 	
 	/***********************************************************************************************
 	 * 
@@ -188,9 +190,10 @@ public class CFWQueryToken{
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public boolean isOperatorBinary() { 
-		return type == CFWQueryToken.CFWQueryTokenType.KEYWORD; 
-	};
+	public boolean isOperator() { 
+		return this.type.toString().startsWith("OPERATOR_");
+	}
+
 	
 	
 	/***********************************************************************************************

@@ -343,6 +343,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		EnhancedJsonObject enhanced = new EnhancedJsonObject(object);
 		
 		QueryPartValue evaluationResult;
+		ArrayList<QueryPart> parsedParts;
 		QueryPart parsedPart;
 		//-------------------------------------------------
 		// Test Parsing Expressions
@@ -350,7 +351,10 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		CFWQueryParser parser = new CFWQueryParser(queryString, true);
 		
-		parsedPart = parser.parseQueryPart(CFWQueryParserContext.DEFAULT);
+		parsedParts = parser.parseQueryParts();
+		Assertions.assertEquals(1, parsedParts.size());
+		
+		parsedPart = parsedParts.get(0);
 		Assertions.assertTrue(parsedPart instanceof QueryPartArray);
 		
 		System.out.println("===== testParsingQueryPartArrayWithBinaryExpression Debug  =====");
@@ -386,6 +390,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		EnhancedJsonObject enhanced = new EnhancedJsonObject(object);
 		
 		QueryPartValue evaluationResult;
+		ArrayList<QueryPart> parsedParts;
 		QueryPart parsedPart;
 		//-------------------------------------------------
 		// Test Parsing Expressions
@@ -393,7 +398,14 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		CFWQueryParser parser = new CFWQueryParser(queryString, true);
 		
-		parsedPart = parser.parseQueryPart(CFWQueryParserContext.BINARY);
+		parsedParts = parser.parseQueryParts();
+		//System.out.println("============= testParsingQueryPartBinaryExpression parsedPart ===============");
+		//System.out.println( CFW.JSON.toJSON(parsedPart.createDebugObject(enhanced)) );
+		
+		Assertions.assertEquals(6, parsedParts.size());
+		
+		int i = 0;
+		parsedPart = parsedParts.get(i++);
 		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
 		
 		//-------------------------------------------------
@@ -405,7 +417,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		//-------------------------------------------------
 		// Test Evaluate != Expression
-		parsedPart = parser.parseQueryPart(CFWQueryParserContext.BINARY);
+		parsedPart = parsedParts.get(i++);
 		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
 		
 		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
@@ -415,7 +427,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 				
 		//-------------------------------------------------
 		// Test Evaluate >= Expression
-		parsedPart = parser.parseQueryPart(CFWQueryParserContext.BINARY);
+		parsedPart = parsedParts.get(i++);
 		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
 		
 		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
@@ -425,7 +437,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		//-------------------------------------------------
 		// Test Evaluate <= Expression 
-		parsedPart = parser.parseQueryPart(CFWQueryParserContext.BINARY);
+		parsedPart = parsedParts.get(i++);
 		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
 		
 		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
@@ -435,7 +447,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		//-------------------------------------------------
 		// Test Evaluate * Expression (multiply)
-		parsedPart = parser.parseQueryPart(CFWQueryParserContext.BINARY);
+		parsedPart = parsedParts.get(i++);
 		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
 		
 		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
@@ -445,7 +457,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		//-------------------------------------------------
 		// Test Evaluate ^ Expression (power)
-		parsedPart = parser.parseQueryPart(CFWQueryParserContext.BINARY);
+		parsedPart = parsedParts.get(i++);
 		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
 		
 		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);

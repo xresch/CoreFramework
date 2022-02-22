@@ -355,7 +355,7 @@ public class CFWQueryParser {
 						throw new ParseException("User does not have permission to use the source: "+token.value(), token.position());
 					}
 				}else {
-					throw new ParseException("Could not verify permissions for source: "+token.value(), token.position());
+					throw new ParseException("Could not verify permissions for source: "+commandName, commandNameToken.position());
 				}
 				
 			}
@@ -393,9 +393,15 @@ public class CFWQueryParser {
 		while(this.hasMoreTokens() 
 		   && this.lookahead().type() != CFWQueryTokenType.OPERATOR_OR
 		   && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
-				QueryPart part = parseQueryPart(CFWQueryParserContext.DEFAULT);
-				currentQueryParts.add(part);
-			addTrace("Parse", "Query Part", part);
+				QueryPart part = parseQueryPart(CFWQueryParserContext.DEFAULT, null);
+				if(part != null && !(part instanceof QueryPartEnd)) {
+					System.out.println("========= add Part ==========");
+					System.out.println(CFW.JSON.toJSONPrettyDebugOnly(part.createDebugObject(null)));
+					System.out.println("========= add Part End ==========");
+					currentQueryParts.add(part);
+					addTrace("Parse", "Query Part", part);
+				}
+			
 		}
 		
 		
@@ -405,10 +411,10 @@ public class CFWQueryParser {
 	/***********************************************************************************************
 	 * Parses a query part.
 	 * @param context TODO
+	 * @param previousPart TODO
 	 ***********************************************************************************************/
-	public QueryPart parseQueryPart(CFWQueryParserContext context) throws ParseException {
+	private QueryPart parseQueryPart(CFWQueryParserContext context, QueryPart previousPart) throws ParseException {
 		
-
 		QueryPart secondPart = null;
 
 		if(!this.hasMoreTokens()) {
@@ -422,99 +428,121 @@ public class CFWQueryParser {
 		// No not consume any tokens in the switch
 		// statement.
 		CFWQueryToken firstToken = this.consumeToken();
-		QueryPart firstPart = null;
+		QueryPart resultPart = null;
 		
-		//System.out.println("firstToken:"+firstToken.value()+" "+firstToken.type());
+		System.out.println("firstToken:"+firstToken.value()+" "+firstToken.type());
 		
 		switch(firstToken.type()) {								
 		
+			//=======================================================
+			// LITERALS
+			//=======================================================	
 			case TEXT_SINGLE_QUOTES:
 			case TEXT_DOUBLE_QUOTES:	
 			case LITERAL_STRING:		addTrace("Create Value Part", "String", firstToken.value());
-										firstPart = QueryPartValue.newString(currentContext, firstToken.value());
+										resultPart = QueryPartValue.newString(currentContext, firstToken.value());
 										//TODO check lookahead, determine if AccessMember, Assignment, Method etc...
 										break;
 				
 			case LITERAL_BOOLEAN:		addTrace("Create Value Part", "Boolean", firstToken.value());
-										firstPart = QueryPartValue.newBoolean(currentContext, firstToken.valueAsBoolean());
+										resultPart = QueryPartValue.newBoolean(currentContext, firstToken.valueAsBoolean());
 										break;
 									
 			case LITERAL_NUMBER:		addTrace("Create Value Part", "Number", firstToken.value());
-										firstPart = QueryPartValue.newNumber(currentContext, firstToken.valueAsNumber());
+										resultPart = QueryPartValue.newNumber(currentContext, firstToken.valueAsNumber());
 										break;
 								
 			case NULL: 					addTrace("Create Value Part", "NULL", firstToken.value());
-										firstPart = QueryPartValue.newNull(currentContext);
+										resultPart = QueryPartValue.newNull(currentContext);
 										break;
-	
-			case SIGN_BRACE_SQUARE_OPEN: 
-										//------------------------------
-										// QueryPartArray
-										contextStack.add(CFWQueryParserContext.ARRAY);
-										addTrace("Start Part", "Open Array", firstToken.value());
-										firstPart = new QueryPartArray(currentContext)
-															.isEmbracedArray(true);
-										
-										secondPart = this.parseQueryPart(CFWQueryParserContext.ARRAY);
-										
-										//Handle empty arrays and end of array
-										if(secondPart != null && !(secondPart instanceof QueryPartEnd)) {
-											((QueryPartArray)firstPart).add(secondPart);
-										}
-										
-										break;	
 			
-			case SIGN_BRACE_SQUARE_CLOSE:
-										//------------------------------
-										//End of Array Part
-										addTrace("End Part", "Close Array", firstToken.value());
-										CFWQueryParserContext shouldBeArrayContext = contextStack.pop();	
-										if(shouldBeArrayContext != CFWQueryParserContext.ARRAY) {
-											this.throwParseException("Expected end of '"+shouldBeArrayContext+"' but found ']'", firstToken.position());
-										}
+			//=======================================================
+			// Array Part Open
+			//=======================================================	
+			case SIGN_BRACE_SQUARE_OPEN: 
 										
-										return new QueryPartEnd(null);
+				contextStack.add(CFWQueryParserContext.ARRAY);
+				addTrace("Start Part", "Array", firstToken.value());
+				resultPart = new QueryPartArray(currentContext)
+									.isEmbracedArray(true);
+				
+				secondPart = this.parseQueryPart(CFWQueryParserContext.ARRAY, previousPart);
+				
+				//Handle empty arrays and end of array
+				if(secondPart != null && !(secondPart instanceof QueryPartEnd)) {
+					((QueryPartArray)resultPart).add(secondPart);
+				}
+				
+			break;	
+			
+			//=======================================================
+			// Array Contents
+			//=======================================================						
+			case SIGN_COMMA:
+				if(context != CFWQueryParserContext.BINARY) {
+					addTrace("Proceed with Array", "Comma encountered", "");
+					
+					QueryPart firstArrayElement = previousPart;
+
+					QueryPart secondArrayElement = this.parseQueryPart(context, null);
+					firstArrayElement = new QueryPartArray(currentContext, firstArrayElement, secondArrayElement);
+					
+					
+					resultPart = firstArrayElement;
+				}
+			break;	
+			
+			//=======================================================
+			// Close Array END
+			//=======================================================	
+			case SIGN_BRACE_SQUARE_CLOSE:
+			
+				addTrace("End Part", "Array", firstToken.value());
+				CFWQueryParserContext shouldBeArrayContext = contextStack.pop();	
+				if(shouldBeArrayContext != CFWQueryParserContext.ARRAY) {
+					this.throwParseException("Expected end of '"+shouldBeArrayContext+"' but found ']'", firstToken.position());
+				}
+				
+			return new QueryPartEnd(null);
 										
 			//=======================================================
 			// Parse Group Part
 			//=======================================================							
 			case SIGN_BRACE_ROUND_OPEN: 
-										//------------------------------
-										// QueryPartGroup
-										System.out.println("Open Group");
-										contextStack.add(CFWQueryParserContext.GROUP);
-										addTrace("Start Part", "Group", firstToken.value());
 
-										QueryPartGroup groupPart = new QueryPartGroup(currentContext);
+				contextStack.add(CFWQueryParserContext.GROUP);
+				addTrace("Start Part", "Group", firstToken.value());
+
+				QueryPartGroup groupPart = new QueryPartGroup(currentContext);
+				
+				QueryPart groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP, previousPart);
+				
+				while(!(groupMember instanceof QueryPartEnd) ) {
+					
+					//handle AND & OR
+//					CFWQueryToken nextToken = this.lookahead();
+//					if(nextToken != null 
+//					&& nextToken.type() == CFWQueryTokenType.KEYWORD 	
+//					&& (
+//							nextToken.value().toUpperCase().equals(KEYWORD_AND) 
+//						|| nextToken.value().toUpperCase().equals(KEYWORD_OR) 
+//						)
+//					
+//					) {
+//						 groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP, groupMember); 
+//					}
 										
-										QueryPart groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP);
-										
-										while(!(groupMember instanceof QueryPartEnd) ) {
-											
-											//handle AND & OR
-											CFWQueryToken nextToken = this.lookahead();
-											if(nextToken != null 
-											&& nextToken.type() == CFWQueryTokenType.KEYWORD 	
-											&& (
-													nextToken.value().toUpperCase().equals(KEYWORD_AND) 
-												|| nextToken.value().toUpperCase().equals(KEYWORD_OR) 
-												)
-											
-											) {
-												 currentQueryParts.add(groupMember);
-											}else {
-												groupPart.add(groupMember);
-											}
-											
-											if(this.hasMoreTokens()){
-												groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP);
-											}else {
-												break;
-											}
-										}
-										
-										firstPart = groupPart;
-										break;	
+					groupPart.add(groupMember);			
+					if(this.hasMoreTokens()){
+						groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP, groupMember);
+					}else {
+						break;
+					}
+				}
+				
+				resultPart = groupPart;
+				
+			break;	
 			
 			//=======================================================
 			// End of Group Part
@@ -527,146 +555,116 @@ public class CFWQueryParser {
 				}
 			return new QueryPartEnd(null);
 			
-									
+			//=======================================================
+			// Keywords
+			//=======================================================						
 			case KEYWORD:
 				String keyword = firstToken.value().toUpperCase();
-				
-				QueryPart lastPart = null;
-				if( !keyword.equals(KEYWORD_NOT) && currentQueryParts.size() > 0) { 
-					lastPart = popPreviousPart();
-				}
-				
+								
 				switch(keyword) {
 				
-					case KEYWORD_AND: 	return createBinaryExpressionPart(lastPart, CFWQueryTokenType.OPERATOR_AND, false ); 
-					case KEYWORD_OR: 	return createBinaryExpressionPart(lastPart, CFWQueryTokenType.OPERATOR_OR, false ); 
+					case KEYWORD_AND: 	return createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_AND, CFWQueryParserContext.DEFAULT ); 
+					case KEYWORD_OR: 	return createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_OR, CFWQueryParserContext.DEFAULT ); 
 					
-					case KEYWORD_NOT: 	return createBinaryExpressionPart(null, CFWQueryTokenType.OPERATOR_NOT, false );
+					case KEYWORD_NOT: 	return createBinaryExpressionPart(null, CFWQueryTokenType.OPERATOR_NOT, CFWQueryParserContext.DEFAULT );
 					default:			this.throwParseException("Unknown keyword:"+keyword, firstToken.position());
 				}
 			break;
-//									
-//			case OPERATOR_NOT:
-//				break;
-//
-//			case FUNCTION_NAME:
-//				break;
-			default:					//this.throwParseException("Unexpected token.", firstToken.position());
-										break;
+
+			//=======================================================
+			// Assignment Part
+			//=======================================================	
+			case OPERATOR_EQUAL:
+				addTrace("Start Part", "Assignment", "");
+				QueryPart rightside = this.parseQueryPart(context, null);
+				resultPart = new QueryPartAssignment(currentContext, previousPart, rightside);
+				addTrace("End Part", "Assignment", "");
+			break;
+
+			default:		
+				//this.throwParseException("Unexpected token.", firstToken.position());
+			break;
+			
+			//=======================================================
+			// Binary Expressions
+			//=======================================================	
+
+			//case OPERATOR_OR: not supported as pipe '|' is used as command separator, see keyword 'OR'
+			case OPERATOR_AND:				resultPart = createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_AND, CFWQueryParserContext.BINARY ); break;	
+			case OPERATOR_EQUAL_EQUAL:		resultPart = createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, CFWQueryParserContext.BINARY ); break;	
+			case OPERATOR_EQUAL_NOT:		resultPart = createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_EQUAL_NOT, CFWQueryParserContext.BINARY ); break;	
+			case OPERATOR_EQUAL_OR_GREATER:	resultPart = createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, CFWQueryParserContext.BINARY ); break;	
+			case OPERATOR_EQUAL_OR_LOWER:	resultPart = createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, CFWQueryParserContext.BINARY ); break;	
+			case OPERATOR_GREATERTHEN:		resultPart = createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_GREATERTHEN, CFWQueryParserContext.BINARY ); break;	
+			case OPERATOR_LOWERTHEN:		resultPart = createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_LOWERTHEN, CFWQueryParserContext.BINARY ); break;	
+			case OPERATOR_PLUS:				resultPart = createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_PLUS, CFWQueryParserContext.BINARY ); break;	
+			case OPERATOR_MINUS:			resultPart = createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_MINUS, CFWQueryParserContext.BINARY ); break;	
+			case OPERATOR_MULTIPLY:			resultPart = createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_MULTIPLY, CFWQueryParserContext.BINARY ); break;	
+			case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_DIVIDE, CFWQueryParserContext.BINARY ); break;	
+			case OPERATOR_POWER:			resultPart = createBinaryExpressionPart(previousPart, CFWQueryTokenType.OPERATOR_POWER, CFWQueryParserContext.BINARY ); break;	
+			case OPERATOR_NOT:
+				break;
 
 		}
 		
 		
-		//------------------------------------------
-		// NEXT TOKEN can be anything that would
-		// create a binary expression or complete an expression
-		QueryPart resultPart = firstPart;
-
+		//##################################################################
+		// Check if next token should be fetched or 
+		//##################################################################
 		if(!this.hasMoreTokens()) { return resultPart; }
+		if(context == CFWQueryParserContext.BINARY) { return resultPart; }
 		
-		switch(this.lookahead().type()) {
-		case OPERATOR_OR:		
-		case LITERAL_BOOLEAN:
-		case LITERAL_NUMBER:
-		case LITERAL_STRING:
-		case NULL:
-								return resultPart;
 		
-		//------------------------------
-		//End of Query Part
-		case SIGN_BRACE_SQUARE_CLOSE:
-		case SIGN_BRACE_ROUND_CLOSE:	
-			addTrace("End Part", "Close Array or Group", "");
-			this.consumeToken();
-			return resultPart;
+		//##################################################################
+		// Check if Next Token would create a Composite Expression
+		//##################################################################
+		//handle Operators, Keywords AND & OR
+		
 
 		
-		//------------------------------
-		// QueryPartAssignment
-		case OPERATOR_EQUAL:
-			this.consumeToken();
-			addTrace("Start Part", "Assignment", "");
-			QueryPart rightside = this.parseQueryPart(context);
-			resultPart = new QueryPartAssignment(currentContext, firstPart, rightside);
-			addTrace("End Part", "Assignment", "");
-		break;
-		
-		//------------------------------
-		// QueryPartArray						
-		case SIGN_COMMA:
-			if(context != CFWQueryParserContext.BINARY) {
-				addTrace("Proceed with Array", "Comma encountered", "");
-				
-				QueryPart firstArrayElement = firstPart;
-				QueryPart secondArrayElement = firstPart;
-				while(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_COMMA) {
-					this.consumeToken();
-					secondArrayElement = this.parseQueryPart(context);
-					firstArrayElement = new QueryPartArray(currentContext, firstArrayElement, secondArrayElement);
-				}
-				
-				resultPart = firstArrayElement;
-			}
-		break;			
-		
-						
-		//------------------------------
-		// Binary Operations
-		//case OPERATOR_OR: not supported as pipe '|' is used as command separator, see keyword 'OR'
-		case OPERATOR_AND:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_AND, true ); break;	
-		case OPERATOR_EQUAL_EQUAL:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, true ); break;	
-		case OPERATOR_EQUAL_NOT:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_NOT, true ); break;	
-		case OPERATOR_EQUAL_OR_GREATER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, true ); break;	
-		case OPERATOR_EQUAL_OR_LOWER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, true ); break;	
-		case OPERATOR_GREATERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_GREATERTHEN, true ); break;	
-		case OPERATOR_LOWERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_LOWERTHEN, true ); break;	
-		case OPERATOR_PLUS:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_PLUS, true ); break;	
-		case OPERATOR_MINUS:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MINUS, true ); break;	
-		case OPERATOR_MULTIPLY:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MULTIPLY, true ); break;	
-		case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_DIVIDE, true ); break;	
-		case OPERATOR_POWER:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_POWER, true ); break;	
-		case OPERATOR_NOT:
-			break;
+		CFWQueryToken nextToken = this.lookahead();
 
-
-		case SIGN_BRACE_ROUND_OPEN:
-			break;
-
-		case FUNCTION_NAME:
-			break;
-						
-		case OPERATOR_DOT:
-			break;	
-		
-		case SIGN_SEMICOLON:
-			break;
-		case SPLIT:
-			break;
-		case TEXT_DOUBLE_QUOTES:
-			break;
-		case TEXT_SINGLE_QUOTES:
-			break;
-		case UNKNOWN:
-			break;
-		default:
-			break;
-		
+		//------------------------------
+		// Keep parsing array elements
+		if(nextToken.type() == CFWQueryTokenType.SIGN_COMMA) {
+			resultPart = parseQueryPart(CFWQueryParserContext.DEFAULT, resultPart);
 		}
+		
+		//------------------------------
+		// Create Binary Expressions 
+		if(   
+			   nextToken.isOperator() 
+		    && nextToken.type() != CFWQueryTokenType.OPERATOR_OR
+		    && nextToken.type() != CFWQueryTokenType.OPERATOR_NOT
+		    ) {
+			resultPart = parseQueryPart(CFWQueryParserContext.DEFAULT, resultPart);
+		}
+		
+		//------------------------------
+		// Create Keyword Expressions
+		if(nextToken.isKeyword()
+			&&( 
+				 nextToken.value().toUpperCase().equals(KEYWORD_AND) 
+			  || nextToken.value().toUpperCase().equals(KEYWORD_OR) 
+			)
+		){
+			resultPart = parseQueryPart(CFWQueryParserContext.DEFAULT, resultPart);
+		}
+			
 		
 		return resultPart;
 	}
 	
 	/***********************************************************************************************
 	 * Creates a Binary Expression by parsing the Next Part of the expression.
-	 * @param consumeToken TODO
+	 * @param contextType TODO
 	 ***********************************************************************************************/
-	private QueryPart createBinaryExpressionPart(QueryPart firstPart, CFWQueryTokenType operatorType, boolean consumeToken ) throws ParseException {
+	private QueryPart createBinaryExpressionPart(QueryPart leftside, CFWQueryTokenType operatorType, CFWQueryParserContext contextType ) throws ParseException {
 		addTrace("Start Part", "Binary Expression", operatorType);
-			if(consumeToken) { this.consumeToken(); }
-			QueryPart secondPart = this.parseQueryPart(CFWQueryParserContext.BINARY);
+			QueryPart secondPart = this.parseQueryPart(contextType, null);
 		addTrace("End Part", "Binary Expression", "");
 		
-		return new QueryPartBinaryExpression(currentContext, firstPart, operatorType, secondPart);
+		return new QueryPartBinaryExpression(currentContext, leftside, operatorType, secondPart);
 	}
 	
 	/***********************************************************************************************
