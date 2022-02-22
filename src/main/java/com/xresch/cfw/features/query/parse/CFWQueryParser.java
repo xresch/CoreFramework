@@ -459,7 +459,6 @@ public class CFWQueryParser {
 			case KEYWORD:
 				String keyword = firstToken.value().toUpperCase();
 				
-				System.out.println("keyword: "+keyword);
 				QueryPart lastPart = null;
 				if( !keyword.equals(KEYWORD_NOT) && currentQueryParts.size() > 0) { 
 					lastPart = popPreviousPart();
@@ -558,6 +557,7 @@ public class CFWQueryParser {
 		case OPERATOR_MINUS:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MINUS, true ); break;	
 		case OPERATOR_MULTIPLY:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MULTIPLY, true ); break;	
 		case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_DIVIDE, true ); break;	
+		case OPERATOR_POWER:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_POWER, true ); break;	
 		case OPERATOR_NOT:
 			break;
 

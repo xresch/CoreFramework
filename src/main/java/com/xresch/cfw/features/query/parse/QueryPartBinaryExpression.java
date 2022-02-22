@@ -207,9 +207,9 @@ public class QueryPartBinaryExpression extends QueryPart {
 				}
 			break;
 			
-			case OPERATOR_DIVIDE: 
+			case OPERATOR_PLUS:
 				if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsBigDecimal().divide(rightValue.getAsBigDecimal()));
+					evaluationResult = new JsonPrimitive(leftValue.getAsBigDecimal().add(rightValue.getAsBigDecimal()));
 				}
 			break;
 			
@@ -225,11 +225,12 @@ public class QueryPartBinaryExpression extends QueryPart {
 				}
 			break;
 			
-			case OPERATOR_PLUS:
+			case OPERATOR_POWER: 
 				if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsBigDecimal().add(rightValue.getAsBigDecimal()));
+					evaluationResult = new JsonPrimitive(leftValue.getAsBigDecimal().pow(rightValue.getAsInteger()));
 				}
 			break;
+
 			
 			default:
 				break;

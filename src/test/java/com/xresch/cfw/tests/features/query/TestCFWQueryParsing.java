@@ -388,11 +388,11 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		QueryPart parsedPart;
 		//-------------------------------------------------
 		// Test Parsing Expressions
-		String queryString = "myString==testString   myString!='testString'  22>=myNumber   myNumber<='44'   3 * myNumber ";
+		String queryString = "myString==testString   myString!='testString'  22>=myNumber   myNumber<='44'   3 * myNumber   10^5 ";
 		
 		CFWQueryParser parser = new CFWQueryParser(queryString, true);
 		
-		parsedPart = parser.parseQueryPart(ParsingContext.DEFAULT);
+		parsedPart = parser.parseQueryPart(ParsingContext.BINARY);
 		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
 		
 		//-------------------------------------------------
@@ -404,7 +404,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		//-------------------------------------------------
 		// Test Evaluate != Expression
-		parsedPart = parser.parseQueryPart(ParsingContext.DEFAULT);
+		parsedPart = parser.parseQueryPart(ParsingContext.BINARY);
 		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
 		
 		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
@@ -414,7 +414,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 				
 		//-------------------------------------------------
 		// Test Evaluate >= Expression
-		parsedPart = parser.parseQueryPart(ParsingContext.DEFAULT);
+		parsedPart = parser.parseQueryPart(ParsingContext.BINARY);
 		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
 		
 		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
@@ -424,7 +424,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		//-------------------------------------------------
 		// Test Evaluate <= Expression 
-		parsedPart = parser.parseQueryPart(ParsingContext.DEFAULT);
+		parsedPart = parser.parseQueryPart(ParsingContext.BINARY);
 		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
 		
 		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
@@ -434,13 +434,23 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		//-------------------------------------------------
 		// Test Evaluate * Expression (multiply)
-		parsedPart = parser.parseQueryPart(ParsingContext.DEFAULT);
+		parsedPart = parser.parseQueryPart(ParsingContext.BINARY);
 		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
 		
 		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
 		
 		Assertions.assertTrue(evaluationResult.isInteger());
 		Assertions.assertEquals(99, evaluationResult.getAsInteger());
+		
+		//-------------------------------------------------
+		// Test Evaluate ^ Expression (power)
+		parsedPart = parser.parseQueryPart(ParsingContext.BINARY);
+		Assertions.assertTrue(parsedPart instanceof QueryPartBinaryExpression);
+		
+		evaluationResult = ((QueryPartBinaryExpression)parsedPart).determineValue(enhanced);
+		
+		Assertions.assertTrue(evaluationResult.isInteger());
+		Assertions.assertEquals(100000, evaluationResult.getAsInteger());
 	}
 	
 	
