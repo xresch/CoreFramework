@@ -50,7 +50,7 @@ public class TestCFWQueryParts {
 		Assertions.assertFalse(part.isNumber());
 		Assertions.assertEquals(null, part.getAsNumber());
 		Assertions.assertEquals(null, part.getAsString());
-		Assertions.assertEquals(null, part.getAsBoolean());
+		Assertions.assertEquals(false, part.getAsBoolean());
 		Assertions.assertEquals(JsonNull.INSTANCE, part.getAsJson());
 		
 		//-------------------------------
