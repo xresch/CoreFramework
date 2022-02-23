@@ -120,94 +120,145 @@ public class QueryPartBinaryExpression extends QueryPart {
 		return evaluatedExpression;
 	}
 	
+	/******************************************************************************************************
+	 *
+	 ******************************************************************************************************/
+	private boolean bothNumbers(QueryPartValue leftValue, QueryPartValue rightValue){
+		return leftValue.isNumberOrNumberString() && rightValue.isNumberOrNumberString();
+	}
 	
 	/******************************************************************************************************
-	 * Returns "N/A" if not evaluateable, else returns value
+	 *
+	 ******************************************************************************************************/
+	private boolean bothBooleans(QueryPartValue leftValue, QueryPartValue rightValue){
+		return leftValue.isBoolOrBoolString() && rightValue.isBoolOrBoolString();
+	}
+	
+	/******************************************************************************************************
+	 *
+	 ******************************************************************************************************/
+	private boolean eitherBoolean(QueryPartValue leftValue, QueryPartValue rightValue){
+		return leftValue.isBoolOrBoolString() || rightValue.isBoolOrBoolString();
+	}
+	
+	/******************************************************************************************************
+	 *
+	 ******************************************************************************************************/
+	private void nullToZero(QueryPartValue leftValue, QueryPartValue rightValue){
+		leftValue.nullToZero();
+		rightValue.nullToZero();
+	}
+	
+	/******************************************************************************************************
+	 *
+	 ******************************************************************************************************/
+	private boolean bothNull(QueryPartValue leftValue, QueryPartValue rightValue){
+		return leftValue.isNull() && rightValue.isNull();
+	}
+	
+	/******************************************************************************************************
+	 *
+	 ******************************************************************************************************/
+	private boolean eitherNull(QueryPartValue leftValue, QueryPartValue rightValue){
+		return leftValue.isNull() || rightValue.isNull();
+	}
+	
+	/******************************************************************************************************
+	 * Returns "null" if not evaluatable, else returns value.
+	 * If both values are null 
 	 *
 	 ******************************************************************************************************/
 	private QueryPartValue evaluateBinaryExpression(QueryPartValue leftValue, QueryPartValue rightValue){
+			
+		JsonElement evalResult = null;
 		
-		//boolean bothStrings = leftValue.isString() && rightValue.isString();
-		boolean bothNumbers = leftValue.isNumberOrNumberString() && rightValue.isNumberOrNumberString();
-		boolean bothBoolean = leftValue.isBoolOrBoolString() && rightValue.isBoolOrBoolString();;
-		
-		JsonElement evaluationResult = null;
 		switch(type) {
 			case OPERATOR_AND:	
-				if(bothBoolean) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsBoolean() && rightValue.getAsBoolean());
+				if(bothBooleans(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(leftValue.getAsBoolean() && rightValue.getAsBoolean());
 				}else {
-					evaluationResult = new JsonPrimitive(false);
+					evalResult = new JsonPrimitive(false);
 				}
 			break;
 								
 			case OPERATOR_OR:
-				if(bothBoolean) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsBoolean() || rightValue.getAsBoolean());
+				if(eitherBoolean(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(leftValue.getAsBoolean() || rightValue.getAsBoolean());
 				}else {
-					evaluationResult = new JsonPrimitive(false);
+					evalResult = new JsonPrimitive(false);
 				}
 			break;
 			
 			case OPERATOR_NOT:
 				if(rightValue.isBoolOrBoolString()) {
-					evaluationResult = new JsonPrimitive(!rightValue.getAsBoolean());
+					evalResult = new JsonPrimitive(!rightValue.getAsBoolean());
 				}else {
 					//in any other case use right value as string
-					evaluationResult = rightValue.getAsJson();
+					evalResult = rightValue.getAsJson();
 				}
 			break;	
 				
 			case OPERATOR_EQUAL:
 				if(leftValue.isString()) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsString().contains(rightValue.getAsString()));
-				}else if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(0 == leftValue.getAsDouble().compareTo(rightValue.getAsDouble()));
-				}else if(bothBoolean) {
-					evaluationResult = new JsonPrimitive(0 == leftValue.getAsBoolean().compareTo(rightValue.getAsBoolean()));
+					evalResult = new JsonPrimitive(leftValue.getAsString().contains(rightValue.getAsString()));
+				}else if(bothNumbers(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(0 == leftValue.getAsDouble().compareTo(rightValue.getAsDouble()));
+				}else if(bothBooleans(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(0 == leftValue.getAsBoolean().compareTo(rightValue.getAsBoolean()));
 				}
 			break;
 			
 			case OPERATOR_EQUAL_EQUAL:
-				if(leftValue.isString()) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsString().equals(rightValue.getAsString()));
-				}else if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(0 == leftValue.getAsDouble().compareTo(rightValue.getAsDouble()));
-				}else if(bothBoolean) {
-					evaluationResult = new JsonPrimitive(0 == leftValue.getAsBoolean().compareTo(rightValue.getAsBoolean()));
-				}
+
+				if(leftValue.isString() || rightValue.isString()) {
+					evalResult = new JsonPrimitive(leftValue.getAsString().equals(rightValue.getAsString()));
+				}else if(bothNumbers(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(0 == leftValue.getAsBigDecimal().compareTo(rightValue.getAsBigDecimal()));
+				}else if(bothBooleans(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(0 == leftValue.getAsBoolean().compareTo(rightValue.getAsBoolean()));
+				}else if(bothNull(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(true);
+				} 
 			break;
 			
 			case OPERATOR_EQUAL_NOT:
-				if(leftValue.isString()) {
-					evaluationResult = new JsonPrimitive(!leftValue.getAsString().equals(rightValue.getAsString()));
-				}else if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(0 != leftValue.getAsDouble().compareTo(rightValue.getAsDouble()));
-				}else if(bothBoolean) {
-					evaluationResult = new JsonPrimitive(0 != leftValue.getAsBoolean().compareTo(rightValue.getAsBoolean()));
+				if(bothNull(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(false);
+				}else if (eitherNull(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(true);
+				}else if(leftValue.isString() || rightValue.isString()) {
+					evalResult = new JsonPrimitive(!leftValue.getAsString().equals(rightValue.getAsString()));
+				}else if(bothNumbers(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(0 != leftValue.getAsBigDecimal().compareTo(rightValue.getAsBigDecimal()));
+				}else if(bothBooleans(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(0 != leftValue.getAsBoolean().compareTo(rightValue.getAsBoolean()));
+				}else if (bothNull(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(false);
 				}
 			break;
 			
 			case OPERATOR_EQUAL_OR_GREATER:
-				if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsDouble() >= rightValue.getAsDouble());
+				nullToZero(leftValue, rightValue);
+				if(bothNumbers(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(leftValue.getAsDouble() >= rightValue.getAsDouble());
 				}
 			break;
 			
 			case OPERATOR_EQUAL_OR_LOWER:
-				if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsDouble() <= rightValue.getAsDouble());
+				nullToZero(leftValue, rightValue);
+				if(bothNumbers(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(leftValue.getAsDouble() <= rightValue.getAsDouble());
 				}
 			break;
 			
 			
 			case OPERATOR_REGEX:
 				if(rightValue.isNull() || leftValue.isNull()) { 
-					evaluationResult = new JsonPrimitive(false); 
+					evalResult = new JsonPrimitive(false); 
 				}else {
 					try{
 						Pattern pattern = Pattern.compile(rightValue.getAsString());
-						evaluationResult = new JsonPrimitive(pattern.matcher(leftValue.getAsString()).find());
+						evalResult = new JsonPrimitive(pattern.matcher(leftValue.getAsString()).find());
 					}catch(Exception e) {
 						this.context().addMessage(MessageType.ERROR, e.getMessage());
 					}
@@ -216,50 +267,54 @@ public class QueryPartBinaryExpression extends QueryPart {
 			
 			
 			case OPERATOR_GREATERTHEN:
-				if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsDouble() > rightValue.getAsDouble());
+				nullToZero(leftValue, rightValue);
+				if(bothNumbers(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(leftValue.getAsDouble() > rightValue.getAsDouble());
 				}
 			break;
 			
 			case OPERATOR_LOWERTHEN:
-				if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsDouble() < rightValue.getAsDouble());
+				nullToZero(leftValue, rightValue);
+				if(bothNumbers(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(leftValue.getAsDouble() < rightValue.getAsDouble());
 				}
 			break;
 			
 			case OPERATOR_PLUS:
-				if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsBigDecimal().add(rightValue.getAsBigDecimal()));
+				nullToZero(leftValue, rightValue);
+				if(bothNumbers(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(leftValue.getAsBigDecimal().add(rightValue.getAsBigDecimal()));
 				}else {
-					//Do Concatination
-					evaluationResult = new JsonPrimitive(leftValue.getAsString() + rightValue.getAsString());
+					//Do concatination
+					evalResult = new JsonPrimitive(leftValue.getAsString() + rightValue.getAsString());
 				}
 			break;
 			
 			case OPERATOR_MINUS:
-				if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsBigDecimal().subtract(rightValue.getAsBigDecimal()));
+				nullToZero(leftValue, rightValue);
+				if(bothNumbers(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(leftValue.getAsBigDecimal().subtract(rightValue.getAsBigDecimal()));
 				}
 			break;
 			
 			case OPERATOR_MULTIPLY:
-				if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsBigDecimal().multiply(rightValue.getAsBigDecimal()));
+				nullToZero(leftValue, rightValue);
+				if(bothNumbers(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(leftValue.getAsBigDecimal().multiply(rightValue.getAsBigDecimal()));
 				}
 			break;
 			
 			case OPERATOR_DIVIDE:
+				nullToZero(leftValue, rightValue);
 				BigDecimal rightDeci = rightValue.getAsBigDecimal();
 				BigDecimal leftDeci = leftValue.getAsBigDecimal();
-				if(rightDeci == null 
-				|| rightDeci.compareTo(BIG_ZERO) == 0
-				|| leftDeci == null) {   
+				if(rightDeci.compareTo(BIG_ZERO) == 0) {   
 					
-					evaluationResult = JsonNull.INSTANCE;
+					evalResult = JsonNull.INSTANCE;
 				}else {
-					if(bothNumbers) {
+					if(bothNumbers(leftValue, rightValue)) {
 						try {
-							evaluationResult = new JsonPrimitive(leftDeci.divide(rightDeci, 6, RoundingMode.HALF_UP));
+							evalResult = new JsonPrimitive(leftDeci.divide(rightDeci, 6, RoundingMode.HALF_UP));
 						}catch(Exception e) {
 							this.context().addMessage(MessageType.ERROR, e.getMessage());
 						}
@@ -268,8 +323,9 @@ public class QueryPartBinaryExpression extends QueryPart {
 			break;
 			
 			case OPERATOR_POWER: 
-				if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsBigDecimal().pow(rightValue.getAsInteger()));
+				nullToZero(leftValue, rightValue);
+				if(bothNumbers(leftValue, rightValue)) {
+					evalResult = new JsonPrimitive(leftValue.getAsBigDecimal().pow(rightValue.getAsInteger()));
 				}
 			break;
 
@@ -279,8 +335,8 @@ public class QueryPartBinaryExpression extends QueryPart {
 		
 		}
 		
-		if(evaluationResult != null) {
-			return QueryPartValue.newFromJsonElement(this.context(), evaluationResult);
+		if(evalResult != null) {
+			return QueryPartValue.newFromJsonElement(this.context(), evalResult);
 		}else {
 			return QueryPartValue.newNull(this.context());
 		}

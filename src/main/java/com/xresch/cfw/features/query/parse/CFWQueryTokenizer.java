@@ -23,7 +23,7 @@ public class CFWQueryTokenizer {
 	//substring(cursor, endOfString) of base string
 	String slice = null;
 		
-	private static final Pattern regexStartsWithDigit = Pattern.compile("^[\\-]?\\d.*");
+	private static final Pattern regexStartsWithDigit = Pattern.compile("^-?\\d");
 	private static final Pattern regexIsNumericalChar = Pattern.compile("[\\.\\d]");
 	private static final Pattern regexIsWhitespace = Pattern.compile("\\s");
 	private static final Pattern regexIsWordChar = Pattern.compile("[a-zA-Z_0-9]");
@@ -133,10 +133,11 @@ public class CFWQueryTokenizer {
 		// Create Slices
 		slice = base.substring(cursor);
 		int startPos = cursor; 
+		System.out.println("slice:'"+slice+"'");
 		
 		//-----------------------------------
 		// LITERAL_NUMBER
-		if(this.matches(regexStartsWithDigit, slice)) {
+		if(this.findPattern(regexStartsWithDigit, slice)) {
 			cursor++;
 			
 			while( this.matchesCurrentChar(regexIsNumericalChar) ){
@@ -203,7 +204,7 @@ public class CFWQueryTokenizer {
 			if(!keywordsCaseSensitive) { keywordSlice = keywordSlice.toLowerCase(); }
 			
 			for(String keyword : keywordList) {
-				if(keywordSlice.startsWith(keyword+" ")) {
+				if(keywordSlice.startsWith(keyword)) {
 					cursor += keyword.length();
 					return createToken(CFWQueryToken.CFWQueryTokenType.KEYWORD, startPos, cursor);
 				}
@@ -295,6 +296,10 @@ public class CFWQueryTokenizer {
 	
 	private boolean matches(Pattern pattern, String string){
 		return pattern.matcher(string).matches();
+	}
+	
+	private boolean findPattern(Pattern pattern, String string){
+		return pattern.matcher(string).find();
 	}
 	
 

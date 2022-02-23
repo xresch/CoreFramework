@@ -576,6 +576,7 @@ public class CFWQueryParser {
 		QueryPart resultPart = firstPart;
 
 		if(!this.hasMoreTokens()) { return resultPart; }
+		//if(context == CFWQueryParserContext.BINARY) { return resultPart; } 
 		
 		switch(this.lookahead().type()) {
 		case OPERATOR_OR:		

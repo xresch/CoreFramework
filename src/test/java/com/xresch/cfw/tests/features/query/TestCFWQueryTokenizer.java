@@ -342,10 +342,6 @@ public class TestCFWQueryTokenizer {
 		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer("source json data=\'"+jsonTestData+"\' ", false, true);
 		System.out.println("source json data=\""+jsonTestData+"\"");
 		
-//		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer("source json data='[\r\n"
-//		        + "  {\"FIRSTNAME\":\"Mars\",\"LASTNAME\":\"Lundgren\",\"LOCATION\":\"Vaikuntha\",\"ID\":\"hayoCpHhhlJXjryl\",\"LIKES_TIRAMISU\":true,\"LAST_LOGIN\":1642783356902,\"URL\":\"http://www.example.url/mightyperson?id\\u003dhayoCpHhhlJXjryl\",\"VALUE\":7,\"TIME\":1642151589524}\r\n"
-//				+ ", {\"FIRSTNAME\":\"Apollo\",\"LASTNAME\":\"Lindgren\",\"LOCATION\":\"Ayotha Amirtha Gangai\",\"ID\":\"gzKSwqQsalQKKXIL\",\"LIKES_TIRAMISU\":false,\"LAST_LOGIN\":1641126356902,\"URL\":\"http://www.example.url/mightyperson?id\\u003dgzKSwqQsalQKKXIL\",\"VALUE\":15,\"TIME\":1642151607524} \r\n"
-//				+ "\r\n]'", false);
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testSourceSyntax", results);
@@ -368,5 +364,25 @@ public class TestCFWQueryTokenizer {
 		//Assertions.assertEquals("[1,2,3]", 								results.get(i).value());
 	}
 	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testSpecialCaseNewLineAfterNegativeNumber() throws IOException {
+		
+		String queryString = 
+				"| source random type=numbers records=100 \r\n"
+				+ "| filter \r\n"
+				+ "		(null - 10)	== -10 	\r\n"
+				+ "	AND (null + 10)	== 10";
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, false, true);
+		
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
+		printResults("testSpecialCaseNewLineAfterNegativeNumber", results);
+		
+		int i = 0;
+
+	}
 	
 }

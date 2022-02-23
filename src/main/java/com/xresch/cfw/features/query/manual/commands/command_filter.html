@@ -23,7 +23,7 @@ If you do not specify any of the keywords AND/OR, and is used implicitely to com
 
 
 	
-<p>You can as well use arithmetic expressions in the filter query:</p>
+<p>You can as well use arithmetic expressions in the filter query.</p>
 
 <pre><code class="language-cfwquery">| source random type=numbers records=100000 limit=100000
 | filter 
@@ -35,7 +35,39 @@ If you do not specify any of the keywords AND/OR, and is used implicitely to com
 	[THOUSANDS,FLOAT,BIG_DECIMAL]=['threshold', 0, 1000, 1000^2, 1000^3, (1000^4)*500, "text"]</code></pre>
 
 
+	
+<p>If you process fields that contain null values, here is how the query language handles null values in binary expressions.
+The following filter will evaluate always to true as all conditions are true.</p>
 
-
+<pre><code class="language-cfwquery">| source random type=numbers records=10000 limit=10000
+| filter 
+	#in equal and not equal comparison, null is handled as null and only equal to itself
+	null == null
+	AND (null != null) == false 
+	AND (null != "anythingElse") == true
+	AND (null != false) == true
+	AND (null != 123) == true
+	# Division by null or zero will evaluate to null
+	AND (100 / 0) 	== null
+	AND (1 / null) 	== null
+	AND (0 / 0) 	== null
+	# in arithmetic expressions, null will be converted to zero
+	AND (null / 1) 	== 0
+	AND (0 / 100) 	== 0
+	AND (null * 10)	== 0
+	AND (10 * null)	== 0
+	AND (null - 10)	== -10
+	AND (10 - null)	== 10	
+	AND (null + 10)	== 10
+	AND (10 + null)	== 10
+	# for lower/greater than comparison, null will be converted to zero
+	AND (null &lt; 1)	== true
+	AND (null &lt;= 1)	== true
+	AND (1 > null)	== true
+	AND (1 >= null)	== true
+	# results of AND/OR with either side null 
+	AND (null AND true) == false
+	AND (null OR true) == true
+</code></pre>
 
 
