@@ -631,7 +631,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		ArrayList<QueryPart> parsedParts;
 		//-------------------------------------------------
 		// Test Parsing Expressions
-		String queryString = " ( myNumber < 999 OR myString=='not my string') myString == 'testString' ";
+		String queryString = " ( ( myNumber < 999 OR myString=='not my string') myString == 'testString' ) ";
 		
 		CFWQueryParser parser = new CFWQueryParser(queryString, true);
 		

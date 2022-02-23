@@ -1,5 +1,8 @@
 package com.xresch.cfw.features.query.parse;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
@@ -18,6 +21,7 @@ public class QueryPartBinaryExpression extends QueryPart {
 	private QueryPart leftside;
 	private CFWQueryTokenType type;
 	private QueryPart rightside = null;
+	
 		
 	/******************************************************************************************************
 	 * Create an instance of the Binary Expression.
@@ -31,6 +35,7 @@ public class QueryPartBinaryExpression extends QueryPart {
 		this.leftside = leftside;
 		this.type = type;
 		this.rightside = rightside;
+		
 	}
 		
 	/******************************************************************************************************
@@ -189,6 +194,12 @@ public class QueryPartBinaryExpression extends QueryPart {
 				if(bothNumbers) {
 					evaluationResult = new JsonPrimitive(leftValue.getAsDouble() <= rightValue.getAsDouble());
 				}
+			break;
+			
+			
+			case OPERATOR_REGEX:
+				Pattern pattern = Pattern.compile(rightValue.getAsString());
+				evaluationResult = new JsonPrimitive(pattern.matcher(leftValue.getAsString()).find());
 			break;
 			
 			

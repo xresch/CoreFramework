@@ -164,6 +164,7 @@ public class CFWQueryTokenizer {
 		if(slice.startsWith("!=")) { 	  cursor+=2; return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL_NOT, startPos, cursor); }
 		else if(slice.startsWith("<=")) { cursor+=2; return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, startPos, cursor); } 
 		else if(slice.startsWith(">=")) { cursor+=2; return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, startPos, cursor); } 
+		else if(slice.startsWith("~=")) { cursor+=2; return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_REGEX, startPos, cursor); } 
 		
 		switch(base.charAt(cursor)) {
 			case '=':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL, startPos, cursor);

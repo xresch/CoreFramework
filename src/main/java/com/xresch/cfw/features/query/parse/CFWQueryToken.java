@@ -50,6 +50,7 @@ public class CFWQueryToken{
 	  , /** The characters "<=" */ OPERATOR_EQUAL_OR_LOWER
 	  , /** The characters "==" */ OPERATOR_EQUAL_EQUAL
 	  , /** The characters "!=" */ OPERATOR_EQUAL_NOT
+	  , /** The characters "~=" */ OPERATOR_REGEX
 	  , /** The character '>' */ OPERATOR_GREATERTHEN
 	  , /** The character '<' */ OPERATOR_LOWERTHEN
 		  		
