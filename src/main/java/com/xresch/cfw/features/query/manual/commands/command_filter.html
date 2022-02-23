@@ -65,9 +65,13 @@ The following filter will evaluate always to true as all conditions are true.</p
 	AND (null &lt;= 1)	== true
 	AND (1 > null)	== true
 	AND (1 >= null)	== true
+	# results of regex operator is always false if either side is null 
+	AND ("myString" ~= null) == false
+	AND (null ~= ".*") == false
+	AND (null ~= null) == false
 	# results of AND/OR with either side null 
 	AND (null AND true) == false
-	AND (null OR true) == true
+	AND (null OR true) == true 
 </code></pre>
 
 
