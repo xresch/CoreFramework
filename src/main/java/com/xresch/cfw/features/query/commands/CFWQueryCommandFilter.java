@@ -14,6 +14,7 @@ import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
+import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartGroup;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
@@ -66,9 +67,10 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 			  +"<p><b>value:&nbsp;</b>The value to check.</p>"
 			  +"<p><b>operator:&nbsp;</b>The operator, any of:</p>"
 			  +"<ul>"
-			  + "	<li><b>'=':&nbsp;</b> Checks if the field contains the value.</li>"
+			 
 			  + "	<li><b>'==':&nbsp;</b> Checks if the values are equal.</li>"
 			  + "	<li><b>'!=':&nbsp;</b> Checks if the values are not equal.</li>"
+			  + "	<li><b>'~=':&nbsp;</b> Checks if the field matches a regular expression.</li>"
 			  + "	<li><b>'&lt;=':&nbsp;</b> Checks if the field value is smaller or equals.</li>"
 			  + "	<li><b>'&gt;=':&nbsp;</b> Checks if the field value is greater or equals.</li>"
 			  + "	<li><b>'&lt;':&nbsp;</b>  Checks if the field value is smaller.</li>"
@@ -110,6 +112,8 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 								
 			}else if(currentPart instanceof QueryPartArray) {
 				setAndValidateQueryParts(parser, ((QueryPartArray)currentPart).getAsParts(done));
+			}else if(currentPart instanceof QueryPartAssignment) { 
+				parser.throwParseException("filter: Single equal '=' is not supported. Please use '==' instead.", currentPart);
 			}else {
 				parser.throwParseException("filter: Only binary expressions allowed.", currentPart);
 			}

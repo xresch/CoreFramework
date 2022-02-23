@@ -1,0 +1,41 @@
+
+<p>Filters fields based on the conditions you specify.</p>
+
+<p>Following code will only keep records where the firstname is equals Athena: </p>
+<pre><code class="language-cfwquery">| source random
+| filter FIRSTNAME==Athena</code></pre>
+
+
+<p>This example keeps all records with firstname Venus and a lastname that matches the regex expression (ending with "son"). 
+If you do not specify any of the keywords AND/OR, and is used implicitely to combine multiple conditions. </p>
+<pre><code class="language-cfwquery">| source random records=10000
+| filter FIRSTNAME==Venus  LASTNAME~=".*son$"</code></pre>
+
+
+<p>The following code shows an example of how to use the keywords AND, OR and NOT, as well as how to group conditions using braces.</p>
+<pre><code class="language-cfwquery">| source random records=10000
+    #only humans called 'Luna' or with a lastname that does not end with "son"
+| filter (FIRSTNAME==Luna OR NOT LASTNAME~=".*son$") 
+	# only people that like tiramisu
+	NOT (LIKES_TIRAMISU==false)
+	# only record where value is bigger than index
+	NOT (VALUE / INDEX ) &lt;= 1</code></pre>
+
+
+	
+<p>You can as well use arithmetic expressions in the filter query:</p>
+
+<pre><code class="language-cfwquery">| source random type=numbers records=100000 limit=100000
+| filter 
+	_source~="^ra.*"+"dom" 
+	AND (THOUSANDS >= 1000^3 AND FLOAT >= (1000^2)*9 ) 
+	OR (BIG_DECIMAL>=700000 AND BIG_DECIMAL&lt;800000 ) 
+| formatfield 
+	[THOUSANDS,FLOAT,BIG_DECIMAL]=separators
+	[THOUSANDS,FLOAT,BIG_DECIMAL]=['threshold', 0, 1000, 1000^2, 1000^3, (1000^4)*500, "text"]</code></pre>
+
+
+
+
+
+

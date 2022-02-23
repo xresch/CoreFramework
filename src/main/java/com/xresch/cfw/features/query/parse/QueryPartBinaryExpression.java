@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.parse;
 
-import java.util.regex.Matcher;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.regex.Pattern;
 
 import com.google.gson.JsonElement;
@@ -10,6 +11,7 @@ import com.google.gson.JsonPrimitive;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -21,6 +23,8 @@ public class QueryPartBinaryExpression extends QueryPart {
 	private QueryPart leftside;
 	private CFWQueryTokenType type;
 	private QueryPart rightside = null;
+	
+	private BigDecimal BIG_ZERO = new BigDecimal(0);
 	
 		
 	/******************************************************************************************************
@@ -198,8 +202,16 @@ public class QueryPartBinaryExpression extends QueryPart {
 			
 			
 			case OPERATOR_REGEX:
-				Pattern pattern = Pattern.compile(rightValue.getAsString());
-				evaluationResult = new JsonPrimitive(pattern.matcher(leftValue.getAsString()).find());
+				if(rightValue.isNull() || leftValue.isNull()) { 
+					evaluationResult = new JsonPrimitive(false); 
+				}else {
+					try{
+						Pattern pattern = Pattern.compile(rightValue.getAsString());
+						evaluationResult = new JsonPrimitive(pattern.matcher(leftValue.getAsString()).find());
+					}catch(Exception e) {
+						this.context().addMessage(MessageType.ERROR, e.getMessage());
+					}
+				}
 			break;
 			
 			
@@ -237,8 +249,21 @@ public class QueryPartBinaryExpression extends QueryPart {
 			break;
 			
 			case OPERATOR_DIVIDE:
-				if(bothNumbers) {
-					evaluationResult = new JsonPrimitive(leftValue.getAsBigDecimal().divide(rightValue.getAsBigDecimal()));
+				BigDecimal rightDeci = rightValue.getAsBigDecimal();
+				BigDecimal leftDeci = leftValue.getAsBigDecimal();
+				if(rightDeci == null 
+				|| rightDeci.compareTo(BIG_ZERO) == 0
+				|| leftDeci == null) {   
+					
+					evaluationResult = JsonNull.INSTANCE;
+				}else {
+					if(bothNumbers) {
+						try {
+							evaluationResult = new JsonPrimitive(leftDeci.divide(rightDeci, 6, RoundingMode.HALF_UP));
+						}catch(Exception e) {
+							this.context().addMessage(MessageType.ERROR, e.getMessage());
+						}
+					}
 				}
 			break;
 			
