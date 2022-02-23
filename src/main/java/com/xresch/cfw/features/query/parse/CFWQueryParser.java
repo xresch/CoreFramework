@@ -489,26 +489,39 @@ public class CFWQueryParser {
 				
 				QueryPart groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP);
 				
-				while(!(groupMember instanceof QueryPartEnd) ) {
+				while( groupMember != null && !(groupMember instanceof QueryPartEnd) ) {
 					
-					//handle AND & OR
+					
 					CFWQueryToken nextToken = this.lookahead();
-					if(nextToken != null 
-					&& nextToken.type() == CFWQueryTokenType.KEYWORD 	
-					&& (
-							nextToken.value().toUpperCase().equals(KEYWORD_AND) 
-						|| nextToken.value().toUpperCase().equals(KEYWORD_OR) 
-						)
-					
-					) {
-						 currentQueryParts.add(groupMember);
-					}else {
-						groupPart.add(groupMember);
-					}
-					
-					if(this.hasMoreTokens()){
+					if(nextToken != null) {
+							
+						//------------------------------
+						//handle AND & OR
+						if( nextToken.type() == CFWQueryTokenType.KEYWORD 	
+						&& (
+								nextToken.value().toUpperCase().equals(KEYWORD_AND) 
+							|| nextToken.value().toUpperCase().equals(KEYWORD_OR) 
+							)
+						) {
+							 currentQueryParts.add(groupMember);
+						}else {
+							groupPart.add(groupMember);
+						}
+						
+						//------------------------------
+						// Break if next token is closing group
+						if(nextToken.type() == CFWQueryTokenType.SIGN_BRACE_ROUND_CLOSE) {
+							
+							this.consumeToken();
+							break;
+						}
+						
+						//------------------------------
+						// Parse Next Part
 						groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP);
+						
 					}else {
+
 						break;
 					}
 				}
@@ -573,12 +586,18 @@ public class CFWQueryParser {
 								return resultPart;
 		
 		//------------------------------
-		//End of Query Part
+		//End of Array Part
 		case SIGN_BRACE_SQUARE_CLOSE:
-		case SIGN_BRACE_ROUND_CLOSE:	
-			addTrace("End Part", "Close Array or Group", "");
+			addTrace("End Part", "Close Array", "");
 			this.consumeToken();
-			return resultPart;
+		return resultPart;
+		
+		//------------------------------
+		//End of Group
+		case SIGN_BRACE_ROUND_CLOSE:	
+			addTrace("End Part", "Close Group", "");
+		return resultPart;
+		
 
 		
 		//------------------------------
@@ -626,10 +645,6 @@ public class CFWQueryParser {
 		case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_DIVIDE, true ); break;	
 		case OPERATOR_POWER:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_POWER, true ); break;	
 		case OPERATOR_NOT:
-			break;
-
-
-		case SIGN_BRACE_ROUND_OPEN:
 			break;
 
 		case FUNCTION_NAME:

@@ -181,9 +181,6 @@ public class QueryPartBinaryExpression extends QueryPart {
 			
 			case OPERATOR_EQUAL_OR_GREATER:
 				if(bothNumbers) {
-					System.out.println("leftValue.getAsDouble(): "+leftValue.getAsDouble());
-					System.out.println("rightValue.getAsDouble(): "+rightValue.getAsDouble());
-					System.out.println("eval: "+(leftValue.getAsDouble() >= rightValue.getAsDouble()));
 					evaluationResult = new JsonPrimitive(leftValue.getAsDouble() >= rightValue.getAsDouble());
 				}
 			break;

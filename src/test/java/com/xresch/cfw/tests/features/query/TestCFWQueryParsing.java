@@ -604,6 +604,45 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		System.out.println("===== testParsingQueryPartGroupWithBinaryExpression Debug  =====");
 		System.out.println( CFW.JSON.toJSONPrettyDebugOnly(parsedPart.createDebugObject(enhanced)) );
 		
+		
+		//-------------------------------------------------
+		// Test Evaluate == Expression
+		evaluationResult = ((QueryPartGroup)parsedPart).determineValue(enhanced);
+		
+		Assertions.assertTrue(evaluationResult.isBoolean());
+		
+		Assertions.assertEquals(true, evaluationResult.getAsBoolean());
+	}	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testParsingQueryPartGroupWithBinaryExpression2() throws ParseException {
+		
+		JsonObject object = new JsonObject();
+		object.addProperty("myString", "testString");
+		object.addProperty("myNumber", 33);
+		
+		EnhancedJsonObject enhanced = new EnhancedJsonObject(object);
+		
+		QueryPartValue evaluationResult;
+		QueryPart parsedPart;
+		ArrayList<QueryPart> parsedParts;
+		//-------------------------------------------------
+		// Test Parsing Expressions
+		String queryString = " ( myNumber < 999 OR myString=='not my string') myString == 'testString' ";
+		
+		CFWQueryParser parser = new CFWQueryParser(queryString, true);
+		
+		parsedParts = parser.parseQueryParts();
+		Assertions.assertEquals(1, parsedParts.size());
+		parsedPart = parsedParts.get(0);
+		Assertions.assertTrue(parsedPart instanceof QueryPartGroup);
+		
+		System.out.println("===== testParsingQueryPartGroupWithBinaryExpression Debug  =====");
+		System.out.println( CFW.JSON.toJSONPrettyDebugOnly(parsedPart.createDebugObject(enhanced)) );
+		
 		//-------------------------------------------------
 		// Test Evaluate == Expression
 		evaluationResult = ((QueryPartGroup)parsedPart).determineValue(enhanced);

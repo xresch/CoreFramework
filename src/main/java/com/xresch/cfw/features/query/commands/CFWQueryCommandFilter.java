@@ -114,7 +114,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 				parser.throwParseException("filter: Only binary expressions allowed.", currentPart);
 			}
 		}
-			
+		
 	}
 	
 	/***********************************************************************************************
@@ -135,7 +135,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
-		
+		boolean printed = false;
 		while(keepPolling()) {
 			EnhancedJsonObject record = inQueue.poll();
 			
@@ -143,6 +143,12 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 				outQueue.add(record);
 			}else {
 				QueryPartValue evalResult = evaluationGroup.determineValue(record);
+				
+				if(!printed) { 
+					System.out.println(CFW.JSON.toJSONPrettyDebugOnly(evaluationGroup.createDebugObject(record)));
+					printed = true;
+				} 
+				
 				if(evalResult.isBoolOrBoolString()) {
 					if(evalResult.getAsBoolean()) {
 						outQueue.add(record);
@@ -150,7 +156,6 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 				}else {
 					System.out.println("===========================");
 					System.out.println("evalResultString="+evalResult.getAsString());
-					System.out.println("evalResultBool="+evalResult.getAsBoolean());
 					System.out.println("Record="+CFW.JSON.toJSON(record.getWrappedObject()));
 					
 					this.getParent().getContext().addMessage(MessageType.WARNING, "filter: Something has not evaluated to a boolean value. You might want to check your expression.");

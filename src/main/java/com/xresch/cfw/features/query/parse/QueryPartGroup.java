@@ -283,7 +283,11 @@ public class QueryPartGroup extends QueryPart {
 		
 		int i = 0;
 		for(QueryPart part : partsGroup) {
-			debugObject.add("Element["+i+"]", part.createDebugObject(object));
+			if(part != null) {
+				debugObject.add("Element["+i+"]", part.createDebugObject(object));
+			}else {
+				debugObject.add("Element["+i+"]", null);
+			}
 			i++;
 		}
 		
