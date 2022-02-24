@@ -27,7 +27,9 @@ import com.xresch.cfw._main.CFWApplicationExecutor;
 public interface CFWAppInterface {
 
 	/************************************************************************************
-	 * Set the application settings.
+	 * Set the application settings. 
+	 * You can change CFW.Properties inside this method e.g. for testing purposes.
+	 * Do not access the internal DB as it is not initialized yet.
 	 ************************************************************************************/
 	public void settings();
 	

@@ -303,7 +303,12 @@ public class CFW {
 			System.exit(0);
     		return;
 	    }
-		
+	    
+	    //--------------------------------
+	    // Load Application settings
+	    // before DB to load DB related settings as well
+	    appToStart.settings();
+	    
 		//---------------------------
 		// Initialize Database Server and/or Connection
 		CFW.DB.initializeDB(); 
@@ -312,11 +317,7 @@ public class CFW {
 		if(mode.contains(MODE_FULL) || mode.contains(MODE_APP) ) {
 			new KeyValuePair().createTable();
 		}
-		
-	    //--------------------------------
-	    // Load Application settings
-	    appToStart.settings();
-	    
+			    
 	    //--------------------------------
 	    // Register Components
 	    doRegister(appToStart);
@@ -566,7 +567,6 @@ public class CFW {
 		// Do Application init
 		appToStart.startTasks();
 		
-	
 	}
 	
 }

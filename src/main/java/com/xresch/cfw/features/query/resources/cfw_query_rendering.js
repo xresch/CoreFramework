@@ -181,7 +181,7 @@ function cfw_query_formatAlign(span, value, alignment){
 	}
 	
 	lower = alignment.toLowerCase();
-	span.addClass('text-'+lower);
+	span.addClass('w-100 text-'+lower);
 	
 	if(lower == "center"){
 		span.removeClass('text-left text-right');

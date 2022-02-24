@@ -67,14 +67,23 @@ class CFWRenderer{
 			 * Create Title HTML (uses customized values)
 			 *************************************************************/
 		 	getTitleHTML:  function(record){
-		 		var title = "";
+				//-------------------------
+				// Create title Base
+				var title;
 		 		if(!CFW.utils.isNullOrEmpty(this.titleformat)){
 		 			var title = this.titleformat;
-		 		}
+		 		}else{
+					title = '';
+				}
 		 		
+				//-------------------------
+				// Create Title
+
 		 		for(var j = 0; j < this.titlefields.length; j++){
 					var fieldname = this.titlefields[j];
-					let value = this.getCustomizedValue(record,fieldname);
+					var value = this.getCustomizedValue(record,fieldname);
+					
+					if( value instanceof jQuery ){ value = $('<div>').append(value).html(); }
 					
 					if(!CFW.utils.isNullOrEmpty(this.titleformat)){
 						title = title.replace('{'+j+'}', value);
@@ -91,8 +100,18 @@ class CFWRenderer{
 			 * Create Title String (does not use customize values)
 			 *************************************************************/
 			getTitleString:  function(record){
-		 		var title = this.titleformat;
 		 		
+				//-------------------------
+				// Create title Base
+				var title;
+		 		if(!CFW.utils.isNullOrEmpty(this.titleformat)){
+		 			var title = this.titleformat;
+		 		}else{
+					title = '';
+				}
+		 		
+				//-------------------------
+				// Create Title
 		 		for(var j = 0; j < this.titlefields.length; j++){
 
 		 			var fieldname = this.titlefields[j];
@@ -974,7 +993,7 @@ function cfw_renderer_panels (renderDef) {
 		 
 		//---------------------------
 		// Resolve Title				
-		panelSettings.title.append(renderDef.getTitleString(currentRecord));	
+		panelSettings.title.append(renderDef.getTitleHTML(currentRecord));	
 		
 		//-------------------------
 		// Add Action buttons
@@ -1127,7 +1146,7 @@ function cfw_renderer_cards (renderDef) {
 		 
 		//---------------------------
 		// Resolve Title				
-		cardSettings.title.append(renderDef.getTitleString(currentRecord));	
+		cardSettings.title.append(renderDef.getTitleHTML(currentRecord));	
 		
 		//-------------------------
 		// Add Action buttons

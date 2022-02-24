@@ -55,6 +55,13 @@ public class WebTestMaster {
 						public void settings() {
 							CFW.AppSettings.enableDashboarding(true);
 							CFW.AppSettings.enableContextSettings(true);
+							
+							// change ports to be able to start app when other instance is running.
+							CFW.Properties.HTTP_PORT = 7999;
+							CFW.Properties.DB_PORT = 8999;
+							
+							
+							
 						}
 						@Override
 						public void stopApp() {
@@ -76,7 +83,7 @@ public class WebTestMaster {
 						
 						@Override
 						public void initializeDB() {
-
+							
 						}
 
 						@Override
