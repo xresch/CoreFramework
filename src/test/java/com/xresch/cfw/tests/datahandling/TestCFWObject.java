@@ -77,8 +77,8 @@ public class TestCFWObject extends DBTestMaster{
 		
 		String json = CFW.JSON.toJSON(object);
 		System.out.println(json);
-		Assertions.assertEquals("{\"testInteger\":null,\"testBoolean\":null,\"testString\":null,\"testArray\":[\"foo\",\"bar\"],\"testDate\":61538828400000,\"testTimestamp\":61538843600000,\"children\":[]}",
-				json,
+		Assertions.assertEquals("{\"testInteger\":null,\"testBoolean\":null,\"testString\":null,\"testDate\":61538828400000,\"testTimestamp\":61538843600000,\"testArray\":[\"foo\",\"bar\"]}",
+				json,			
 				"Object is serialized.");
 		//---------------------------------
 		// Test Subclass CFWObject and
@@ -114,7 +114,7 @@ public class TestCFWObject extends DBTestMaster{
 		
 		String jsonHierarchy = CFW.JSON.toJSON(role);
 		System.out.println(jsonHierarchy);
-		Assertions.assertEquals("{\"PK_ID\":1,\"CATEGORY\":\"user\",\"NAME\":\"Top Role\",\"DESCRIPTION\":\"Test top role.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"IS_GROUP\":false,\"children\":[{\"PK_ID\":2,\"CATEGORY\":\"user\",\"NAME\":\"Sub Role\",\"DESCRIPTION\":\"Test sub role.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"IS_GROUP\":false,\"children\":[]},{\"PK_ID\":3,\"CATEGORY\":\"user\",\"NAME\":\"Sub Role B\",\"DESCRIPTION\":\"Test sub role B.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"IS_GROUP\":false,\"children\":[{\"PK_ID\":4,\"CATEGORY\":\"user\",\"NAME\":\"Sub Role B Child\",\"DESCRIPTION\":\"Test sub role B child.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"IS_GROUP\":false,\"children\":[]}]}]}",
+		Assertions.assertEquals("{\"PK_ID\":1,\"CATEGORY\":\"user\",\"NAME\":\"Top Role\",\"DESCRIPTION\":\"Test top role.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"IS_GROUP\":false,\"children\":[{\"PK_ID\":2,\"CATEGORY\":\"user\",\"NAME\":\"Sub Role\",\"DESCRIPTION\":\"Test sub role.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"IS_GROUP\":false},{\"PK_ID\":3,\"CATEGORY\":\"user\",\"NAME\":\"Sub Role B\",\"DESCRIPTION\":\"Test sub role B.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"IS_GROUP\":false,\"children\":[{\"PK_ID\":4,\"CATEGORY\":\"user\",\"NAME\":\"Sub Role B Child\",\"DESCRIPTION\":\"Test sub role B child.\",\"IS_DELETABLE\":true,\"IS_RENAMABLE\":true,\"IS_GROUP\":false}]}]}",
 				jsonHierarchy,
 				"Object is serialized.");
 	}

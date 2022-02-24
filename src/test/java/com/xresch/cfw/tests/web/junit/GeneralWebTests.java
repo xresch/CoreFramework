@@ -62,7 +62,7 @@ public class GeneralWebTests extends WebTestMaster {
 		Assertions.assertTrue(response.contains("<link rel=\"stylesheet\" href=\"/cfw/assembly?name=css_assembly_"),
 				"CSS Assembly is added to page.");
 		
-		Assertions.assertTrue(response.contains("<script src=\"/cfw/assembly?name=js_assembly_cfw_"),
+		Assertions.assertTrue(response.contains("<script src=\"/cfw/assembly?name=js_assembly_global_"),
 				"Javascript Assembly is added to page.");
 		
 		//System.out.println(response);
