@@ -133,7 +133,7 @@ public class CFWQueryTokenizer {
 		// Create Slices
 		slice = base.substring(cursor);
 		int startPos = cursor; 
-		System.out.println("slice:'"+slice+"'");
+		//System.out.println("slice:'"+slice+"'");
 		
 		//-----------------------------------
 		// LITERAL_NUMBER

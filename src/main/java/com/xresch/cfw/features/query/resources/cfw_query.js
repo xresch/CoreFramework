@@ -13,6 +13,9 @@ var $QUERYCODE;
  ******************************************************************************/
 function cfw_query_execute(){
 	
+	// hide messages to not confuse user
+	$('.toast.show').removeClass('show').addClass('hide');
+	
 	var targetDiv = $('#cfw-query-results');
 	var timeframe = JSON.parse($('#timeframePicker').val());
 	var query =  $QUERYAREA.val();
@@ -32,7 +35,7 @@ function cfw_query_execute(){
 		function(data) {
 						
 			if(data.success){
-				
+								
 				//-----------------------------------
 				// Update Params in URL
 				CFW.http.removeURLParam('query');

@@ -462,6 +462,11 @@ public class CFWQueryParser {
 											((QueryPartArray)firstPart).add(secondPart);
 										}
 										
+										// Close Array
+										if(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE) {
+											this.consumeToken();
+										}
+										
 										break;	
 			
 			case SIGN_BRACE_SQUARE_CLOSE:
@@ -496,7 +501,7 @@ public class CFWQueryParser {
 					if(nextToken != null) {
 							
 						//------------------------------
-						//handle AND & OR
+						// handle AND & OR
 						if( nextToken.type() == CFWQueryTokenType.KEYWORD 	
 						&& (
 								nextToken.value().toUpperCase().equals(KEYWORD_AND) 
@@ -590,7 +595,6 @@ public class CFWQueryParser {
 		//End of Array Part
 		case SIGN_BRACE_SQUARE_CLOSE:
 			addTrace("End Part", "Close Array", "");
-			this.consumeToken();
 		return resultPart;
 		
 		//------------------------------

@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
@@ -40,7 +41,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	int recordCounter = 0;
 	
 	// Key: FormatterName Value: FormatterDefinition
-	private static TreeMap<String, FormatterDefinition> formatterArray = new TreeMap<>();
+	private static TreeMap<String, FormatterDefinition> formatterDefinitionArray = new TreeMap<>();
 	
 	/***********************************************************************************************
 	 * Static initialize of Formatters
@@ -51,7 +52,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Easter Eggs
 		//------------------------------------------------
-		formatterArray.put(FORMATTER_NAME_EASTEREGGS,
+		formatterDefinitionArray.put(FORMATTER_NAME_EASTEREGGS,
 			instance.new FormatterDefinition(
 				FORMATTER_NAME_EASTEREGGS, 
 				"Adds easter eggs to the values.",
@@ -66,7 +67,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Align 
 		//------------------------------------------------
-		formatterArray.put("align",
+		formatterDefinitionArray.put("align",
 			instance.new FormatterDefinition(
 				"align", 
 				"Choose how the text is aligned.",
@@ -82,7 +83,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Boolean 
 		//------------------------------------------------
-		formatterArray.put("boolean",
+		formatterDefinitionArray.put("boolean",
 			instance.new FormatterDefinition(
 				"boolean", 
 				"Formats the value as a badge and adds two different colors for true/false.",
@@ -105,7 +106,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// css 
 		//------------------------------------------------
-		formatterArray.put("css",
+		formatterDefinitionArray.put("css",
 			instance.new FormatterDefinition(
 				"css", 
 				"Adds a custom CSS property to the formatting of the value. Adds font-weight bold by default.",
@@ -126,7 +127,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		// Case
 		//------------------------------------------------
 		
-		formatterArray.put("case",
+		formatterDefinitionArray.put("case",
 			instance.new FormatterDefinition(
 				"case", 
 				"Formats based on one or multiple cases. See manual for formatfield command for detailed instructions.",
@@ -143,7 +144,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Date
 		//------------------------------------------------
-		formatterArray.put("date",
+		formatterDefinitionArray.put("date",
 			instance.new FormatterDefinition(
 				"date", 
 				"Formats epoch milliseconds as date.",
@@ -159,7 +160,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Decimals
 		//------------------------------------------------
-		formatterArray.put("decimals",
+		formatterDefinitionArray.put("decimals",
 			instance.new FormatterDefinition(
 				"decimals", 
 				"Sets the decimal precision to a fixed number",
@@ -175,7 +176,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Duration
 		//------------------------------------------------
-		formatterArray.put("duration",
+		formatterDefinitionArray.put("duration",
 			instance.new FormatterDefinition(
 				"duration", 
 				"Formats a duration as seconds, minutes, hours and days.",
@@ -191,7 +192,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Link 
 		//------------------------------------------------
-		formatterArray.put("link",
+		formatterDefinitionArray.put("link",
 			instance.new FormatterDefinition(
 				"link", 
 				"Used to format URLs as links, either as text or as button.",
@@ -210,7 +211,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Lowercase 
 		//------------------------------------------------
-		formatterArray.put("lowercase",
+		formatterDefinitionArray.put("lowercase",
 			instance.new FormatterDefinition(
 				"lowercase", 
 				"Displays the value as lowercase.",
@@ -225,7 +226,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// None 
 		//------------------------------------------------
-		formatterArray.put("none",
+		formatterDefinitionArray.put("none",
 			instance.new FormatterDefinition(
 				"none", 
 				"Disables any formatting and displays the plain value.",
@@ -240,7 +241,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Postfix 
 		//------------------------------------------------
-		formatterArray.put("postfix",
+		formatterDefinitionArray.put("postfix",
 			instance.new FormatterDefinition(
 				"postfix", 
 				"Appends a postfix to the value.",
@@ -256,7 +257,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Prefix 
 		//------------------------------------------------
-		formatterArray.put("prefix",
+		formatterDefinitionArray.put("prefix",
 			instance.new FormatterDefinition(
 				"prefix", 
 				"Prepends a prefix to the value.",
@@ -272,7 +273,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Separators
 		//------------------------------------------------
-		formatterArray.put("separators",
+		formatterDefinitionArray.put("separators",
 			instance.new FormatterDefinition(
 				"separators", 
 				"Adds thousand separators to numbers.",
@@ -291,7 +292,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Shownulls 
 		//------------------------------------------------
-		formatterArray.put("shownulls",
+		formatterDefinitionArray.put("shownulls",
 			instance.new FormatterDefinition(
 				"shownulls", 
 				"Show or hide null values.",
@@ -310,7 +311,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Thousands
 		//------------------------------------------------
-		formatterArray.put("thousands",
+		formatterDefinitionArray.put("thousands",
 			instance.new FormatterDefinition(
 				"thousands", 
 				"Displays numbers in kilos, megas, gigas and terras.",
@@ -330,7 +331,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Threshhold 
 		//------------------------------------------------
-		formatterArray.put("threshold",
+		formatterDefinitionArray.put("threshold",
 			instance.new FormatterDefinition(
 				"threshold", 
 				"Colors the value based on a threshold.",
@@ -357,7 +358,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Timestamp
 		//------------------------------------------------
-		formatterArray.put("timestamp",
+		formatterDefinitionArray.put("timestamp",
 			instance.new FormatterDefinition(
 				"timestamp", 
 				"Formats epoch milliseconds as a timestamp.",
@@ -373,7 +374,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Uppercase 
 		//------------------------------------------------
-		formatterArray.put("uppercase",
+		formatterDefinitionArray.put("uppercase",
 			instance.new FormatterDefinition(
 				"uppercase", 
 				"Displays the value as uppercase.",
@@ -440,7 +441,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		builder.append(CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_formatfield.html"));
 		builder.append("<h2 class=\"toc-hidden\">Available Formatters</h3>");
 		
-		for(FormatterDefinition definition : formatterArray.values()) {
+		for(FormatterDefinition definition : formatterDefinitionArray.values()) {
 			
 			if(!definition.formatName.equals(FORMATTER_NAME_EASTEREGGS)) {
 				builder.append(definition.getHTMLDocumentation());
@@ -466,7 +467,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			displaySettings.add("fieldFormats", fieldFormatsElement);
 		}
 		
-		JsonObject fieldFormats = fieldFormatsElement.getAsJsonObject();
+		JsonObject displaySettingsFieldFormats = fieldFormatsElement.getAsJsonObject();
 		
 		for(int i = 0; i < parts.size(); i++) {
 			
@@ -488,33 +489,46 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 
 				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
 				if(valuePart.isString()) {
-					//--------------------------------------
-					// Add Formatter By Name
-					String formatterName = valuePart.getAsString().trim().toLowerCase();
-					
-					FormatterDefinition definition = formatterArray.get(formatterName);
-					if(definition != null) {
-						for(String fieldname : fieldnames) {
-							definition.manifestTheMightyFormatterArray(fieldFormats, fieldname);
-						}
-					}else {
-						parser.throwParseException("formatfield: Unknown formatter '"+formatterName+"'.", currentPart);
-					}
+					addFormatterByName(parser, displaySettingsFieldFormats, fieldnames, valuePart.getAsString());
 				}if(valuePart.isJsonArray()) {
 					//--------------------------------------
 					// Add Formatter By Array
-					JsonArray array = valuePart.getAsJsonArray();
-					if(array.isEmpty()) {
+					JsonArray formatterArray = valuePart.getAsJsonArray();
+					if(formatterArray.isEmpty()) {
 						parser.throwParseException("formatfield: The array was empty, please provide at least a name for the formatter.", currentPart);
 					}
 					
-					FormatterDefinition definition = formatterArray.get(array.get(0).getAsString());
-					if(definition != null) {
-						for(String fieldname : fieldnames) {
-							definition.manifestTheMightyFormatterArray(fieldFormats, fieldname, array);
+					//--------------------------------------
+					// Convert Single Formatter Array to Array
+					JsonArray arrayOfFormatterArrays = formatterArray;
+					if(formatterArray.get(0).isJsonPrimitive()) {
+						arrayOfFormatterArrays = new JsonArray();
+						arrayOfFormatterArrays.add(formatterArray);
+					}
+					
+					
+					//--------------------------------------
+					// iterate arrayOfFormatterArrays
+
+					for(JsonElement currentElement : arrayOfFormatterArrays) {
+						
+						System.out.println("currentElement: "+CFW.JSON.toJSON(currentElement));
+						// Add by Name if not JsonArray
+						if(!currentElement.isJsonArray()) {
+							addFormatterByName(parser, displaySettingsFieldFormats, fieldnames, currentElement.getAsString());
+							continue;
 						}
-					}else {
-						parser.throwParseException("formatfield: Unknown formatter '"+array.get(0).getAsString()+"'.", currentPart);
+						
+						// Add As Array JsonArray
+						JsonArray currentArray = currentElement.getAsJsonArray();
+						FormatterDefinition definition = formatterDefinitionArray.get(currentArray.get(0).getAsString());
+						if(definition != null) {
+							for(String fieldname : fieldnames) {
+								definition.manifestTheMightyFormatterArray(displaySettingsFieldFormats, fieldname, currentArray);
+							}
+						}else {
+							parser.throwParseException("formatfield: Unknown formatter '"+currentArray.get(0).getAsString()+"'.", currentPart);
+						}
 					}
 					
 				}
@@ -524,6 +538,24 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			}
 		}
 			
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	private void addFormatterByName(CFWQueryParser parser, JsonObject fieldFormats, ArrayList<String> fieldnames, String formatterName) throws ParseException {
+		//--------------------------------------
+		// Add Formatter By Name
+		formatterName = formatterName.trim().toLowerCase();
+		
+		FormatterDefinition definition = formatterDefinitionArray.get(formatterName);
+		if(definition != null) {
+			for(String fieldname : fieldnames) {
+				definition.manifestTheMightyFormatterArray(fieldFormats, fieldname);
+			}
+		}else {
+			parser.throwParseException("formatfield: Unknown formatter '"+formatterName+"'.", -1);
+		}
 	}
 	
 	/***********************************************************************************************
@@ -539,11 +571,11 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		AutocompleteList list = new AutocompleteList();
 		result.addList(list);
 		int i = 0;
-		for (String currentName : formatterArray.keySet() ) {
+		for (String currentName : formatterDefinitionArray.keySet() ) {
 
 			if(currentName.equals(FORMATTER_NAME_EASTEREGGS)) { continue; };
 			
-			FormatterDefinition formatter = formatterArray.get(currentName);
+			FormatterDefinition formatter = formatterDefinitionArray.get(currentName);
 			
 			list.addItem(
 				helper.createAutocompleteItem(

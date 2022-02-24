@@ -8,12 +8,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
-import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
+import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
 
 public class TestCFWQueryTokenizer {
 	
@@ -363,26 +366,5 @@ public class TestCFWQueryTokenizer {
 		Assertions.assertEquals(CFWQueryTokenType.TEXT_SINGLE_QUOTES, 		results.get(++i).type());
 		//Assertions.assertEquals("[1,2,3]", 								results.get(i).value());
 	}
-	
-	
-	/****************************************************************
-	 * 
-	 ****************************************************************/
-	@Test
-	public void testSpecialCaseNewLineAfterNegativeNumber() throws IOException {
 		
-		String queryString = 
-				"| source random type=numbers records=100 \r\n"
-				+ "| filter \r\n"
-				+ "		(null - 10)	== -10 	\r\n"
-				+ "	AND (null + 10)	== 10";
-		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, false, true);
-		
-		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
-		printResults("testSpecialCaseNewLineAfterNegativeNumber", results);
-		
-		int i = 0;
-
-	}
-	
 }

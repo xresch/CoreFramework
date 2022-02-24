@@ -68,7 +68,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testParsingSimpleSourceQuery() throws ParseException {
+	public void testSimpleSourceQuery() throws ParseException {
 		
 		//String queryString = "source random records=100";
 		
@@ -76,7 +76,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
-		printResults("testParsingSimpleSourceQuery", results);
+		printResults("testSimpleSourceQuery", results);
 		
 		CFWQueryParser parser = new CFWQueryParser(sourceString, true);
 		
@@ -116,7 +116,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testParsingPipedCommands() throws ParseException {
+	public void testPipedCommands() throws ParseException {
 		
 		String queryString = sourceString+" | distinct FIRSTNAME LIKES_TIRAMISU trim=true";
 		
@@ -124,7 +124,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
-		printResults("testParsingPipedCommands", results);
+		printResults("testPipedCommands", results);
 		
 		CFWQueryParser parser = new CFWQueryParser(queryString, true);
 		
@@ -168,7 +168,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testParsingMultipleQueries() throws ParseException {
+	public void testMultipleQueries() throws ParseException {
 		
 		String queryString = sourceString+" | distinct FIRSTNAME ;"
 							+sourceString+" | distinct LIKES_TIRAMISU ";
@@ -177,7 +177,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
-		printResults("testParsingMultipleQueries", results);
+		printResults("testMultipleQueries", results);
 		
 		CFWQueryParser parser = new CFWQueryParser(queryString, true);
 		
@@ -230,7 +230,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testParsingQueryPartArray() throws ParseException {
+	public void testArray() throws ParseException {
 		
 		String queryString = sourceString+" | dedup FIRSTNAME, LASTNAME, LIKES_TIRAMISU, TIME";
 		
@@ -238,7 +238,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
-		printResults("testParsingQueryPartArray", results);
+		printResults("testArray", results);
 		
 		CFWQueryParser parser = new CFWQueryParser(queryString, true);
 		
@@ -282,7 +282,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testParsingQueryPartArraySquareBraces() throws ParseException {
+	public void testArraySquareBraces() throws ParseException {
 		
 		String queryString = sourceString+" | display as=table titlefields=[FIRSTNAME, LASTNAME, LIKES_TIRAMISU, TIME]";
 		
@@ -290,7 +290,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 				 .keywords("AND", "OR", "NOT");
 		
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
-		printResults("testParsingQueryPartArray", results);
+		printResults("testArray", results);
 		
 		CFWQueryParser parser = new CFWQueryParser(queryString, true);
 		
@@ -330,11 +330,13 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 	}	
 	
+	
+	
 	/****************************************************************
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testParsingQueryPartArrayWithBinaryExpression() throws ParseException {
+	public void testArrayWithBinaryExpression() throws ParseException {
 		
 		JsonObject object = new JsonObject();
 		object.addProperty("myString", "testString");
@@ -357,7 +359,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		parsedPart = parsedParts.get(0);
 		Assertions.assertTrue(parsedPart instanceof QueryPartArray);
 		
-		System.out.println("===== testParsingQueryPartArrayWithBinaryExpression Debug  =====");
+		System.out.println("===== testArrayWithBinaryExpression Debug  =====");
 		System.out.println( CFW.JSON.toJSONPrettyDebugOnly(parsedPart.createDebugObject(enhanced)) );
 		
 		//-------------------------------------------------
@@ -367,7 +369,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		Assertions.assertTrue(evaluationResult.isJsonArray());
 		
 		JsonArray resultArray = evaluationResult.getAsJsonArray();
-		System.out.println("===== testParsingQueryPartArrayWithBinaryExpression Array  =====");
+		System.out.println("===== testArrayWithBinaryExpression Array  =====");
 		System.out.println( CFW.JSON.toJSONPrettyDebugOnly(resultArray) );
 		
 		Assertions.assertEquals(42, resultArray.get(0).getAsInt());
@@ -375,13 +377,63 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		Assertions.assertEquals(true, resultArray.get(2).getAsBoolean());
 		Assertions.assertEquals(99, resultArray.get(3).getAsInt());
 	}	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testArraysWithinArrays() throws ParseException {
+		
+		JsonObject object = new JsonObject();
+		object.addProperty("myString", "testString");
+		object.addProperty("myNumber", 33);
+		
+		EnhancedJsonObject enhanced = new EnhancedJsonObject(object);
+		
+		QueryPartValue evaluationResult;
+		ArrayList<QueryPart> parsedParts;
+		QueryPart parsedPart;
+		//-------------------------------------------------
+		// Test Parsing Expressions
+		String queryString = "[[], [1] ,[1,2], 42 , [3,\"3\", '3']] ";
+		
+		CFWQueryParser parser = new CFWQueryParser(queryString, true);
+		
+		parsedParts = parser.parseQueryParts();
+		Assertions.assertEquals(1, parsedParts.size());
+		
+		parsedPart = parsedParts.get(0);
+		Assertions.assertTrue(parsedPart instanceof QueryPartArray);
+		
+		System.out.println("===== testArraysWithinArrays Debug  =====");
+		System.out.println( CFW.JSON.toJSONPrettyDebugOnly(parsedPart.createDebugObject(enhanced)) );
+		
+		//-------------------------------------------------
+		// Test Evaluate == Expression
+		evaluationResult = ((QueryPartArray)parsedPart).determineValue(enhanced);
+		
+		Assertions.assertTrue(evaluationResult.isJsonArray());
+		
+		JsonArray resultArray = evaluationResult.getAsJsonArray();
+		System.out.println("===== testArraysWithinArrays Array  =====");
+		System.out.println( CFW.JSON.toJSONPrettyDebugOnly(resultArray) );
+		
+		Assertions.assertEquals(5, resultArray.size());
+		Assertions.assertEquals(0, resultArray.get(0).getAsJsonArray().size());
+		Assertions.assertEquals(1, resultArray.get(1).getAsJsonArray().size());
+		Assertions.assertEquals(2, resultArray.get(2).getAsJsonArray().size());
+		Assertions.assertEquals(42, resultArray.get(3).getAsInt());
+		Assertions.assertEquals(3, resultArray.get(4).getAsJsonArray().size());
+		
+
+	}	
 
 	
 	/****************************************************************
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testParsingQueryPartBinaryExpression() throws ParseException {
+	public void testBinaryExpression() throws ParseException {
 		
 		JsonObject object = new JsonObject();
 		object.addProperty("myString", "testString");
@@ -399,7 +451,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		CFWQueryParser parser = new CFWQueryParser(queryString, true);
 		
 		parsedParts = parser.parseQueryParts();
-		//System.out.println("============= testParsingQueryPartBinaryExpression parsedPart ===============");
+		//System.out.println("============= testBinaryExpression parsedPart ===============");
 		//System.out.println( CFW.JSON.toJSON(parsedPart.createDebugObject(enhanced)) );
 		
 		Assertions.assertEquals(6, parsedParts.size());
@@ -471,7 +523,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testParsingQueryPartBinaryExpressionKeywords() throws ParseException {
+	public void testBinaryExpressionKeywords() throws ParseException {
 		
 		JsonObject object = new JsonObject();
 		object.addProperty("myString", "testString");
@@ -579,7 +631,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testParsingQueryPartGroupWithBinaryExpression() throws ParseException {
+	public void testGroupWithBinaryExpression() throws ParseException {
 		
 		JsonObject object = new JsonObject();
 		object.addProperty("myString", "testString");
@@ -601,7 +653,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		parsedPart = parsedParts.get(0);
 		Assertions.assertTrue(parsedPart instanceof QueryPartGroup);
 		
-		System.out.println("===== testParsingQueryPartGroupWithBinaryExpression Debug  =====");
+		System.out.println("===== testGroupWithBinaryExpression Debug  =====");
 		System.out.println( CFW.JSON.toJSONPrettyDebugOnly(parsedPart.createDebugObject(enhanced)) );
 		
 		
@@ -618,7 +670,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testParsingQueryPartGroupWithBinaryExpression2() throws ParseException {
+	public void testGroupWithBinaryExpression2() throws ParseException {
 		
 		JsonObject object = new JsonObject();
 		object.addProperty("myString", "testString");
@@ -640,7 +692,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		parsedPart = parsedParts.get(0);
 		Assertions.assertTrue(parsedPart instanceof QueryPartGroup);
 		
-		System.out.println("===== testParsingQueryPartGroupWithBinaryExpression Debug  =====");
+		System.out.println("===== testGroupWithBinaryExpression Debug  =====");
 		System.out.println( CFW.JSON.toJSONPrettyDebugOnly(parsedPart.createDebugObject(enhanced)) );
 		
 		//-------------------------------------------------

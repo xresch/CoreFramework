@@ -101,6 +101,10 @@ public class CFWQueryCommandGlobals extends CFWQueryCommand {
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
 				
 				String propertyName = assignment.getLeftSideAsString(null);
+				if(propertyName.equals("earliest")
+				|| propertyName.equals("latest")) {
+					parser.throwParseException("globals: property name cannot be any of the following: earliest, latest", currentPart);
+				}
 				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
 				if(valuePart.isString()) {
 					String value = valuePart.getAsString();
@@ -109,7 +113,7 @@ public class CFWQueryCommandGlobals extends CFWQueryCommand {
 				}
 			
 			}else {
-				parser.throwParseException("global: Only parameters(key=value) are allowed.", currentPart);
+				parser.throwParseException("globals: Only parameters(key=value) are allowed.", currentPart);
 			}
 		}
 			
