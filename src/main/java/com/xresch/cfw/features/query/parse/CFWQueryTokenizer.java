@@ -170,11 +170,14 @@ public class CFWQueryTokenizer {
 		switch(base.charAt(cursor)) {
 			case '=':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_EQUAL, startPos, cursor);
 			case ',':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_COMMA, startPos, cursor); 
+			case ':':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_COLON, startPos, cursor); 
 			case ';':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_SEMICOLON, startPos, cursor); 
 			case '(':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_BRACE_ROUND_OPEN, startPos, cursor);
 			case ')':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_BRACE_ROUND_CLOSE, startPos, cursor);
 			case '[':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_BRACE_SQUARE_OPEN, startPos, cursor);
 			case ']':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE, startPos, cursor);
+			case '{':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_BRACE_CURLY_OPEN, startPos, cursor);
+			case '}':	return createToken(CFWQueryToken.CFWQueryTokenType.SIGN_BRACE_CURLY_CLOSE, startPos, cursor);
 			case '+':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_PLUS, startPos, cursor);
 			case '-':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_MINUS, startPos, cursor);
 			case '*':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_MULTIPLY, startPos, cursor);

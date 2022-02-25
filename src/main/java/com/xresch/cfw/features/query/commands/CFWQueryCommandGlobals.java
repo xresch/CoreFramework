@@ -110,6 +110,8 @@ public class CFWQueryCommandGlobals extends CFWQueryCommand {
 					String value = valuePart.getAsString();
 					value = CFW.Security.sanitizeHTML(value);
 					globalsObject.addProperty(propertyName, value);
+				}else {
+					globalsObject.add(propertyName, valuePart.getAsJson());
 				}
 			
 			}else {

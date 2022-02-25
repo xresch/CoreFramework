@@ -254,6 +254,13 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<!--dependency>
+			<groupId>com.xresch</groupId>
+			<artifactId>hiera-report</artifactId>
+			<version>1.0.0</version>
+			<scope>test</scope>
+		</dependency-->
+		
 		<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
 		<dependency>
 		    <groupId>org.seleniumhq.selenium</groupId>

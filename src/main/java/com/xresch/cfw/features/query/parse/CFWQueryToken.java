@@ -65,11 +65,14 @@ public class CFWQueryToken{
 	  , /** The character '.' */ OPERATOR_DOT
 	  
 	  , /** The character ',' */ SIGN_COMMA
+	  , /** The character ':' */ SIGN_COLON
 	  , /** The character ';' */ SIGN_SEMICOLON
 	  , /** The character '(' */ SIGN_BRACE_ROUND_OPEN
 	  , /** The character ')' */ SIGN_BRACE_ROUND_CLOSE
 	  , /** The character '[' */ SIGN_BRACE_SQUARE_OPEN
 	  , /** The character ']' */ SIGN_BRACE_SQUARE_CLOSE
+	  , /** The character '{' */ SIGN_BRACE_CURLY_OPEN
+	  , /** The character '}' */ SIGN_BRACE_CURLY_CLOSE
 	  , /** The character '#' */ SIGN_HASH
 
 	

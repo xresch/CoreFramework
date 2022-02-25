@@ -384,6 +384,8 @@ public class QueryPartValue extends QueryPart {
 			
 			case STRING:	return new JsonPrimitive((String)value);
 			
+			case NULL:	return new JsonPrimitive((String)value);
+			
 			default:		return JsonNull.INSTANCE;
 
 		}

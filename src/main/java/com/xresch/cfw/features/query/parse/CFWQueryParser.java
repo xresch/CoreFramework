@@ -447,46 +447,83 @@ public class CFWQueryParser {
 										firstPart = QueryPartValue.newNull(currentContext);
 										break;
 	
+			//=======================================================
+			// Create JSON Part
+			//=======================================================	
+			case SIGN_BRACE_CURLY_OPEN:		
+				
+				int openCount = 1;
+				
+				StringBuilder jsonBuilder = new StringBuilder("{");
+				while(openCount > 0 && this.hasMoreTokens()) {
+					CFWQueryToken token = this.consumeToken();
+					
+					//-------------------------------------------
+					// handle string values
+					if(token.type() == CFWQueryTokenType.TEXT_SINGLE_QUOTES
+					|| token.type() == CFWQueryTokenType.TEXT_DOUBLE_QUOTES
+					|| token.type() == CFWQueryTokenType.LITERAL_STRING) {
+						jsonBuilder.append("\""+CFW.JSON.escapeString(token.value())+"\"");
+						continue;
+					}
+					
+					//-------------------------------------------
+					// Handle others
+					jsonBuilder.append(token.value());
+					
+					if(token.type() == CFWQueryTokenType.SIGN_BRACE_CURLY_OPEN) {
+						openCount++;
+					}else if(token.type() == CFWQueryTokenType.SIGN_BRACE_CURLY_CLOSE) {
+						openCount--;
+					}
+				}
+				
+				firstPart = QueryPartValue.newJson(currentContext, CFW.JSON.fromJson(jsonBuilder.toString()) );
+				
+			break;
+				
+				
+			//=======================================================
+			// Start Array Part
+			//=======================================================	
 			case SIGN_BRACE_SQUARE_OPEN: 
-										//------------------------------
-										// QueryPartArray
-										contextStack.add(CFWQueryParserContext.ARRAY);
-										addTrace("Start Part", "Open Array", firstToken.value());
-										firstPart = new QueryPartArray(currentContext)
-															.isEmbracedArray(true);
-										
-										secondPart = this.parseQueryPart(CFWQueryParserContext.ARRAY);
-										
-										//Handle empty arrays and end of array
-										if(secondPart != null && !(secondPart instanceof QueryPartEnd)) {
-											((QueryPartArray)firstPart).add(secondPart);
-										}
-										
-										// Close Array
-										if(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE) {
-											this.consumeToken();
-										}
-										
-										break;	
+
+				contextStack.add(CFWQueryParserContext.ARRAY);
+				addTrace("Start Part", "Open Array", firstToken.value());
+				firstPart = new QueryPartArray(currentContext)
+									.isEmbracedArray(true);
+				
+				secondPart = this.parseQueryPart(CFWQueryParserContext.ARRAY);
+				
+				//Handle empty arrays and end of array
+				if(secondPart != null && !(secondPart instanceof QueryPartEnd)) {
+					((QueryPartArray)firstPart).add(secondPart);
+				}
+				
+				// Close Array
+				if(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE) {
+					this.consumeToken();
+				}
+				
+			break;	
 			
+			//=======================================================
+			// End Array Part
+			//=======================================================	
 			case SIGN_BRACE_SQUARE_CLOSE:
-										//------------------------------
-										//End of Array Part
-										addTrace("End Part", "Close Array", firstToken.value());
-										CFWQueryParserContext shouldBeArrayContext = contextStack.pop();	
-										if(shouldBeArrayContext != CFWQueryParserContext.ARRAY) {
-											this.throwParseException("Expected end of '"+shouldBeArrayContext+"' but found ']'", firstToken.position());
-										}
-										
-										return new QueryPartEnd(null);
+				addTrace("End Part", "Close Array", firstToken.value());
+				CFWQueryParserContext shouldBeArrayContext = contextStack.pop();	
+				if(shouldBeArrayContext != CFWQueryParserContext.ARRAY) {
+					this.throwParseException("Expected end of '"+shouldBeArrayContext+"' but found ']'", firstToken.position());
+				}
+				
+			return new QueryPartEnd(null);
 										
 			//=======================================================
 			// Parse Group Part
 			//=======================================================							
 			case SIGN_BRACE_ROUND_OPEN: 
-				//------------------------------
-				// QueryPartGroup
-				System.out.println("Open Group");
+
 				contextStack.add(CFWQueryParserContext.GROUP);
 				addTrace("Start Part", "Group", firstToken.value());
 
@@ -590,7 +627,7 @@ public class CFWQueryParser {
 		case LITERAL_STRING:
 		case NULL:
 								return resultPart;
-		
+					
 		//------------------------------
 		//End of Array Part
 		case SIGN_BRACE_SQUARE_CLOSE:
