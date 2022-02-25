@@ -12,10 +12,10 @@ import com.xresch.cfw.features.api.APITokenDBMethods;
 import com.xresch.cfw.features.api.APITokenPermission;
 import com.xresch.cfw.features.api.APITokenPermissionDBMethods;
 import com.xresch.cfw.features.api.APITokenPermissionMapDBMethods;
-import com.xresch.cfw.tests._master.DBTestMaster;
+import com.xresch.cfw.tests._master.WebTestMaster;
 import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
 
-public class TestAPITokenManagement extends DBTestMaster {
+public class TestAPITokenManagement extends WebTestMaster {
 
 	protected static APIToken testtokenA;
 	protected static APIToken testtokenB;

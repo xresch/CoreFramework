@@ -10,7 +10,7 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 public class SeleniumTest {
 
 
-    @Test
+    //@Test
 	public void seleniumTest() {
 
 	    WebDriverManager.chromedriver().setup();
