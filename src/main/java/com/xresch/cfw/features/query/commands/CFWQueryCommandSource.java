@@ -48,7 +48,6 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	CFWQuerySource source = null;
 	CFWObject paramsForSource = null;
 
-
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -227,38 +226,81 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+
+		String description = 
+				"<b>Description:&nbsp</b>"+this.descriptionShort()
+				+"<br><b>Syntax:&nbsp</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax());
+
+		//-------------------------------------
+		// Create Autocomplete List
+		if( helper.getTokenCount() == 1 ) {
+			
+			// Unfiltered list of up to 50 sources
+			autocompleteAddSources(result, helper, null);
+			
+		}else if( helper.getTokenCount() == 2 ) {
+			
+			String sourceName = helper.getToken(1).value();
+			if(getCachedSources().containsKey(sourceName)) {
+				// propagate autocomplete
+				CFWQuerySource source = getCachedSources().get(sourceName);
+				description += "<br><b>Parameters of "+sourceName+":&nbsp</b>"+source.getParameterListHTML();
+				source.autocomplete(result, helper);
+			}else {
+				//return filtered source list
+				autocompleteAddSources(result, helper,  sourceName);
+			}
+			
+		}else {
+			
+			String sourceName = helper.getToken(1).value();
+			if(getCachedSources().containsKey(sourceName)) {
+				// propagate autocomplete
+				CFWQuerySource source = getCachedSources().get(sourceName);
+				description += "<br><b>Parameters of "+sourceName+":&nbsp</b>"+source.getParameterListHTML();
+				source.autocomplete(result, helper);
+			}else {
+				CFW.Messages.addWarningMessage("Unknown source: "+sourceName);
+			}
+		}
+		
+		//-------------------------------------
+		// Set Description
+		result.setHTMLDescription(description);
+
+	}
+
+	private void autocompleteAddSources(AutocompleteResult result, CFWQueryAutocompleteHelper helper, String filter) {
 		
 		TreeMap<String, CFWQuerySource> sourceMap = getCachedSources();
 		
-		//-------------------------------
-		// List up to 50 sources if only 
-		// command name is given.
-		if( helper.getTokenCount() == 1 ) {
-			
-			AutocompleteList list = new AutocompleteList();
-			result.addList(list);
-			int i = 0;
-			for (String currentName : sourceMap.keySet() ) {
+		AutocompleteList list = new AutocompleteList();
+		result.addList(list);
+		int i = 0;
+		for (String currentName : sourceMap.keySet() ) {
 
-				CFWQuerySource source = sourceMap.get(currentName);
-				
-				list.addItem(
-					helper.createAutocompleteItem(
-						""
-					  , currentName
-					  , currentName
-					  , source.descriptionShort()
-					)
-				);
-				
-				i++;
-				
-				if((i % 10) == 0) {
-					list = new AutocompleteList();
-					result.addList(list);
-				}
-				if(i == 50) { break; }
+			if(filter != null && !currentName.contains(filter)) {
+				continue;
 			}
+			
+			CFWQuerySource source = sourceMap.get(currentName);
+			
+			list.addItem(
+				helper.createAutocompleteItem(
+					((filter == null) ? "" : filter)
+				  , currentName+" "
+				  , currentName
+				  , source.descriptionShort()
+				)
+			);
+			
+			i++;
+			
+			if((i % 10) == 0) {
+				list = new AutocompleteList();
+				result.addList(list);
+			}
+			if(i == 50) { break; }
 		}
 	}
 	

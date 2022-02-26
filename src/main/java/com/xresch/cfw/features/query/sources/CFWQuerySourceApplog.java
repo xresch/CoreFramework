@@ -8,7 +8,9 @@ import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
+import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
@@ -79,6 +81,14 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 		return user.hasPermission( FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS);
 	}
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+		// do nothing
+	}
+	
 	/******************************************************************
 	 *
 	 ******************************************************************/
@@ -92,6 +102,7 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 //				)
 			;
 	}
+	
 	
 	
 	/******************************************************************

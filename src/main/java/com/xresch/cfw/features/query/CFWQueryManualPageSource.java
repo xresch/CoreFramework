@@ -27,16 +27,8 @@ public class CFWQueryManualPageSource extends ManualPage {
 		//--------------------------------
 		// Parameters Section
 		builder.append("<h2 class=\"toc-hidden\" >Parameters</h2>");
-		CFWObject object = source.getParameters();
 		
-		builder.append("<ul>");
-			for(CFWField entry : object.getFields().values()) {
-				builder.append("<li><b>"+entry.getName()+":&nbsp;</b>")
-					   .append(CFW.Security.escapeHTMLEntities(entry.getDescription()))
-					   .append("</li>")
-					   ;
-			}
-		builder.append("</ul>");
+		builder.append(source.getParameterListHTML());
 				
 		
 		//--------------------------------

@@ -3,7 +3,10 @@ package com.xresch.cfw.features.query;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonObject;
+import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -47,6 +50,32 @@ public abstract class CFWQuerySource{
 	public abstract CFWObject getParameters();
 	
 	/***********************************************************************************************
+	 * Return the list of parameters as a HTML string.
+	 ***********************************************************************************************/
+	public String getParameterListHTML() {
+		
+		CFWObject parameters = this.getParameters();
+		
+		StringBuilder builder = new StringBuilder();
+		builder.append("<ul>");
+		
+			if(parameters.getFields().size() == 0) {
+				builder.append("<li>This source does not have any additional parameters.</li>");
+			}else {
+				for(CFWField entry : parameters.getFields().values()) {
+					builder.append("<li><b>"+entry.getName()+":&nbsp;</b>")
+						   .append(CFW.Security.escapeHTMLEntities(entry.getDescription()))
+						   .append("</li>")
+						   ;
+				}
+			}
+			
+		builder.append("</ul>");
+	
+		return builder.toString();
+	}
+	
+	/***********************************************************************************************
 	 * Return the description for the manual page.
 	 * This description will be shown on the manual under the header " <h2>Usage</h2>".
 	 * If you add headers to your description it is recommended to use <h3> or lower headers.
@@ -62,6 +91,13 @@ public abstract class CFWQuerySource{
 	 * Return if the user is able to fetch from this source.
 	 *************************************************************************/
 	public abstract boolean hasPermission(User user);
+	
+	/***********************************************************************************************
+	 * Return the description for the manual page.
+	 * This description will be shown on the manual under the header " <h2>Usage</h2>".
+	 * If you add headers to your description it is recommended to use <h3> or lower headers.
+	 ***********************************************************************************************/
+	public abstract void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper);
 	
 	/***********************************************************************************************
 	 * Implement the fetching of the data from your source.

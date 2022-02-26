@@ -151,7 +151,7 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 		}
 		
 		//----------------------------------------
-		// Handle Command Only
+		// Handle Command with params
 		if( helper.getTokenCount() > 1 ) {
 			CFWQueryToken commandNameToken = helper.getToken(0);
 			
@@ -159,8 +159,6 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 				String partialOrFullCommandName = commandNameToken.value();
 				
 				if(commandMap.containsKey(partialOrFullCommandName)) {
-					//--------------------------------
-					// Full Command Name already entered
 					CFWQueryCommand command = commandMap.get(partialOrFullCommandName);
 					
 					command.autocomplete(result, helper);
