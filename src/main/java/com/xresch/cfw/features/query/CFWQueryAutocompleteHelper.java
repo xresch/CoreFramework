@@ -36,12 +36,10 @@ public class CFWQueryAutocompleteHelper {
 		//------------------------------------------
 		//Extract Current Query from Full Query String
 		currentQuery = Strings.nullToEmpty(extractCurrentQueryPart(fullQueryString, cursorPosition));
-		System.out.println("Query Part: '"+currentQuery+"'");
-		
+
 		//------------------------------------------
 		//Extract Current Command
 		commandPart = Strings.nullToEmpty(extractCommandPart(currentQuery, cursorPosition));
-		System.out.println("Command Part: '"+commandPart+"'");
 		
 		if(Strings.isNullOrEmpty(commandPart)) {
 			return ;
@@ -113,7 +111,6 @@ public class CFWQueryAutocompleteHelper {
 	 *
 	 ******************************************************************/
 	public boolean isEmptyCommand() {
-		System.out.println("isEmptyCommand: "+commandPart.trim());
 		return commandPart.trim().isEmpty();
 	}
 	
