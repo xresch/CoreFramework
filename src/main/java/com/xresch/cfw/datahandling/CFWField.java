@@ -104,7 +104,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	private boolean isDecoratorDisplayed = true;
 	private String formLabel = "&nbsp;";
 	@SuppressWarnings("rawtypes")
-	private LinkedHashMap valueLabelOptions = null;
+	private HashMap valueLabelOptions = null;
 	private boolean isDisabled = false;
 	
 	public enum FormFieldType{
@@ -1300,7 +1300,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 		
 	@SuppressWarnings("rawtypes")
-	public LinkedHashMap getValueLabelOptions() {
+	public HashMap getValueLabelOptions() {
 		return valueLabelOptions;
 	}
 	
@@ -1406,7 +1406,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * @return instance for chaining
 	 ******************************************************************************************************/
 	@SuppressWarnings("rawtypes")
-	public CFWField<T> setOptions(LinkedHashMap valueLabelPairs) {
+	public CFWField<T> setOptions(HashMap valueLabelPairs) {
 		this.valueLabelOptions = valueLabelPairs;
 		return this;
 	}

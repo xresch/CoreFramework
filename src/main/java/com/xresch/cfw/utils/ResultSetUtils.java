@@ -175,6 +175,35 @@ public class ResultSetUtils {
 	}
 	
 	/***************************************************************************
+	 * Converts a ResultSet into a map with the key/values of the selected columns.
+	 * @return list of object, empty if results set is null or an error occurs.
+	 ***************************************************************************/
+	public static HashMap<Integer, Object> toIDValueMap(ResultSet result, Object idColumnName, Object valueColumnName) {
+		
+		HashMap<Integer, Object> keyValueMap = new HashMap<>();
+		
+		if(result == null) {
+			return keyValueMap;
+		}
+		
+		try {
+			while(result.next()) {
+				Integer key = result.getInt(idColumnName.toString());
+				Object value = result.getObject(valueColumnName.toString());
+				keyValueMap.put(key, value);
+			}
+		} catch (SQLException e) {
+			new CFWLog(logger)
+				.severe("Error reading object from database.", e);
+			
+		}finally {
+			CFWDB.close(result);
+		}
+			
+		return keyValueMap;
+	}
+	
+	/***************************************************************************
 	 * Converts a ResultSet into a list of maps with key/values.
 	 * @return list of maps holding key(column name) with values
 	 ***************************************************************************/

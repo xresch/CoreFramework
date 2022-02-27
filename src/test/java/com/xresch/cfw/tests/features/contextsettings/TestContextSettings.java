@@ -1,5 +1,6 @@
 package com.xresch.cfw.tests.features.contextsettings;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import org.junit.jupiter.api.Assertions;
@@ -142,7 +143,7 @@ public class TestContextSettings extends DBTestMaster {
 
 		//----------------------------------------
 		// Assert Access
-		LinkedHashMap<Object, Object> contextSettingsForUser = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(TestMockupContextSettings.SETTINGS_TYPE);
+		HashMap<Integer, Object> contextSettingsForUser = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(TestMockupContextSettings.SETTINGS_TYPE);
 		Assertions.assertTrue(contextSettingsForUser.containsKey(settingsAllHaveAccess.id()));
 		Assertions.assertTrue(contextSettingsForUser.containsKey(settingsRestricted.id()));
 	}
@@ -164,7 +165,7 @@ public class TestContextSettings extends DBTestMaster {
 
 		//----------------------------------------
 		// Assert Access
-		LinkedHashMap<Object, Object> contextSettingsForUser = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(TestMockupContextSettings.SETTINGS_TYPE);
+		HashMap<Integer, Object> contextSettingsForUser = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(TestMockupContextSettings.SETTINGS_TYPE);
 		Assertions.assertTrue(contextSettingsForUser.containsKey(settingsAllHaveAccess.id()));
 		Assertions.assertTrue(contextSettingsForUser.containsKey(settingsRestricted.id()));
 	}
@@ -186,7 +187,7 @@ public class TestContextSettings extends DBTestMaster {
 
 		//----------------------------------------
 		// Assert Access
-		LinkedHashMap<Object, Object> contextSettingsForUser = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(TestMockupContextSettings.SETTINGS_TYPE);
+		HashMap<Integer, Object> contextSettingsForUser = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(TestMockupContextSettings.SETTINGS_TYPE);
 		Assertions.assertTrue(contextSettingsForUser.containsKey(settingsAllHaveAccess.id()));
 		Assertions.assertTrue(contextSettingsForUser.containsKey(settingsRestricted.id()));
 	}
@@ -208,7 +209,7 @@ public class TestContextSettings extends DBTestMaster {
 
 		//----------------------------------------
 		// Assert Access
-		LinkedHashMap<Object, Object> contextSettingsForUser = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(TestMockupContextSettings.SETTINGS_TYPE);
+		HashMap<Integer, Object> contextSettingsForUser = CFW.DB.ContextSettings.getSelectOptionsForTypeAndUser(TestMockupContextSettings.SETTINGS_TYPE);
 		Assertions.assertTrue(contextSettingsForUser.containsKey(settingsAllHaveAccess.id()));
 		Assertions.assertFalse(contextSettingsForUser.containsKey(settingsRestricted.id()));
 	}

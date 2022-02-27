@@ -1535,7 +1535,7 @@ public class CFWSQL {
 	/***************************************************************
 	 * Execute the Query and gets the result as a key value map.
 	 ****************************************************************/
-	public HashMap<Object, Object> getKeyValueMap(String keyColumnName, String valueColumnName) {
+	public HashMap<Object, Object> getAsKeyValueMap(String keyColumnName, String valueColumnName) {
 		
 		HashMap<Object, Object> keyValueMap = new HashMap<Object, Object>();
 		
@@ -1548,9 +1548,24 @@ public class CFWSQL {
 	}
 	
 	/***************************************************************
+	 * Execute the Query and gets the result as a key value map.
+	 ****************************************************************/
+	public HashMap<Integer, Object> getAsIDValueMap(Object idColumnName, Object valueColumnName) {
+		
+		HashMap<Integer, Object> keyValueMap = new HashMap<>();
+		
+		if(this.execute()) {
+			keyValueMap = ResultSetUtils.toIDValueMap(result, idColumnName, valueColumnName);
+		}
+		
+		return keyValueMap;
+		
+	}
+	
+	/***************************************************************
 	 * Execute the Query and gets the result as a string array.
 	 ***************************************************************/
-	public String[] toStringArray(Object columnName) {
+	public String[] getAsStringArray(Object columnName) {
 		return ResultSetUtils.toStringArray(result, columnName.toString());
 	}
 	
@@ -1594,6 +1609,7 @@ public class CFWSQL {
 		return resultMap;
 		
 	}
+
 	
 	/***************************************************************
 	 * Execute the Query and gets the result as an AutocompleteResult

@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.dashboard.parameters;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
@@ -297,7 +298,7 @@ public class DashboardParameter extends CFWObject {
 				String fieldname = field.getName();
 				if(field.fieldType() == FormFieldType.SELECT) {
 					ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.getAvailableParamsForDashboard(dashboardID, widgetType, fieldname, true);
-					LinkedHashMap options = field.getValueLabelOptions();
+					HashMap options = field.getValueLabelOptions();
 					for(CFWObject object : availableParams) {
 						String param = "$"+((DashboardParameter)object).name()+"$";
 						options.put(param, param);

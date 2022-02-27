@@ -1,9 +1,7 @@
 package com.xresch.cfw.features.query;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.Set;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -20,6 +18,7 @@ public class CFWQueryContext{
 	
 	private long earliest = 0;
 	private long latest = 0;
+	private boolean checkPermissions = true;
 	
 	private LinkedHashMap<String, AlertMessage> alertMap = CFW.Context.Request.getAlertMap();
 	
@@ -57,6 +56,22 @@ public class CFWQueryContext{
 	public CFWQueryContext setLatest(long latest) {
 		this.latest = latest;
 		return this;
+	}
+	
+	/****************************************************************
+	 * Enable or disable if the users permissions should be
+	 * verified or not.
+	 ****************************************************************/
+	public CFWQueryContext checkPermissions(boolean checkPermissions) {
+		this.checkPermissions = checkPermissions;
+		return this;
+	}
+	
+	/****************************************************************
+	 * Return if the permissions should be checked.
+	 ****************************************************************/
+	public boolean checkPermissions() {
+		return checkPermissions;
 	}
 	
 	/***********************************************************************************************

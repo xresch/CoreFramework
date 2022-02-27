@@ -21,14 +21,14 @@ public class CFWQueryExecutor {
 	private static Logger logger = CFWLog.getLogger(CFWQueryExecutor.class.getName());
 	
 	private int resultCount = 0;
-	private boolean checkSourcePermissions = true;
+	private boolean checkPermissions = true;
 	
 	/****************************************************************
-	 * Enable or disable if the users permission for a source should be
+	 * Enable or disable if the users permissions should be
 	 * verified or not.
 	 ****************************************************************/
-	public CFWQueryExecutor checkSourcePermissions(boolean checkSourcePermissions) {
-		this.checkSourcePermissions = checkSourcePermissions;
+	public CFWQueryExecutor checkPermissions(boolean checkPermissions) {
+		this.checkPermissions = checkPermissions;
 		return this;
 	}
 	
@@ -47,7 +47,7 @@ public class CFWQueryExecutor {
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
 		
 		try {
-			CFWQueryParser parser = new CFWQueryParser(queryString, checkSourcePermissions);
+			CFWQueryParser parser = new CFWQueryParser(queryString, checkPermissions);
 			queryList = parser.parse();
 			
 		}catch (NumberFormatException e) {
@@ -87,6 +87,7 @@ public class CFWQueryExecutor {
 			CFWQueryContext queryContext = query.getContext();
 			queryContext.setEarliest(earliest);
 			queryContext.setLatest(latest);
+			queryContext.checkPermissions(checkPermissions);
 				
 			//--------------------------------
 			// Add Result Sink

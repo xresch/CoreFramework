@@ -340,9 +340,9 @@ public class CFWDBContextSettings {
 	 * @param type of the context setting
 	 * @param options for user, empty map if user is null.
 	 ****************************************************************/
-	public static LinkedHashMap<Object, Object> getSelectOptionsForTypeAndUser(String type) {
+	public static HashMap<Integer, Object> getSelectOptionsForTypeAndUser(String type) {
 		
-		LinkedHashMap<Object, Object> objects = new LinkedHashMap<>();
+		HashMap<Integer, Object> objects = new LinkedHashMap<>();
 		
 		//----------------------------------
 		// Get User
@@ -350,7 +350,7 @@ public class CFWDBContextSettings {
 		if (user == null) { return objects; }
 		
 		objects = createQueryForTypeAndUser(type, user)
-						.getAsLinkedHashMap(ContextSettingsFields.PK_ID, ContextSettingsFields.CFW_CTXSETTINGS_NAME);
+						.getAsIDValueMap(ContextSettingsFields.PK_ID, ContextSettingsFields.CFW_CTXSETTINGS_NAME);
 		
 		return objects;
 	}

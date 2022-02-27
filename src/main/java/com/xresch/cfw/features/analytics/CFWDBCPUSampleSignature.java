@@ -101,7 +101,7 @@ public class CFWDBCPUSampleSignature {
 		return new CPUSampleSignature()
 				.queryCache(CFWDBCPUSampleSignature.class, "getSignaturesAsKeyValueMap")
 				.select()
-				.getKeyValueMap(CPUSampleSignatureFields.SIGNATURE.toString(), 
+				.getAsKeyValueMap(CPUSampleSignatureFields.SIGNATURE.toString(), 
 								CPUSampleSignatureFields.PK_ID.toString());
 		
 	}
