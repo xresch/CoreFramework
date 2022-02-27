@@ -76,6 +76,7 @@ function cfw_query_customizerCreateDefault(){
 		
 	return function (record, value, rendererName, fieldname){
 	
+		
 		//----------------------------------------------
 		// Strings and Numbers
 		if (_.isString(value)){
@@ -84,7 +85,7 @@ function cfw_query_customizerCreateDefault(){
 			if(trimmed == ""){	return "&nbsp;"; }
 			if(trimmed.startsWith('http')){	return '<a href="'+value+'" target="blank">'+value+'</a>'; }
 			
-			return value;
+			return $('<span>').text(value);
 			
 		}else if(_.isNumber(value)){
 			

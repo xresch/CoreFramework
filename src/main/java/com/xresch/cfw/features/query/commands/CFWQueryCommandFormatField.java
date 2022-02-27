@@ -512,7 +512,6 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 
 					for(JsonElement currentElement : arrayOfFormatterArrays) {
 						
-						System.out.println("currentElement: "+CFW.JSON.toJSON(currentElement));
 						// Add by Name if not JsonArray
 						if(!currentElement.isJsonArray()) {
 							addFormatterByName(parser, displaySettingsFieldFormats, fieldnames, currentElement.getAsString());
