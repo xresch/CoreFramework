@@ -1,14 +1,19 @@
 package com.xresch.cfw.utils;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -425,20 +430,74 @@ public class ResultSetUtils {
 				
 				for(int i = 1; i <= columnCount; i++) {
 					String key = meta.getColumnLabel(i);
-					Object value = result.getObject(key);
-					if(value instanceof String) { currentObject.addProperty(key, (String)value); }
-					else if(value instanceof Boolean) { currentObject.addProperty(key, (Boolean)value); }
-					else if(value instanceof Number) { currentObject.addProperty(key, (Number)value); }
-					else if(value instanceof Character) { currentObject.addProperty(key, (Character)value); }
-					else if(value  == null ) { currentObject.add(key, null); }
-					else 								{ currentObject.addProperty(key, value.toString()); }
+					int type = meta.getColumnType(i);
+					
+					
+					switch(type) {
+					
+						case Types.BOOLEAN:
+							currentObject.addProperty(key, result.getBoolean(i));
+							break;
+							
+						case Types.BIT:
+						case Types.TINYINT:
+						case Types.SMALLINT:
+						case Types.INTEGER:
+						case Types.BIGINT:
+							currentObject.addProperty(key, result.getInt(i));
+							break;
+						
+						case Types.FLOAT:
+							currentObject.addProperty(key, result.getFloat(i));
+							break;	
+								
+						case Types.DOUBLE:
+						case Types.NUMERIC:
+							currentObject.addProperty(key, result.getDouble(i));
+							break;	
+							
+						case Types.DECIMAL:
+							currentObject.addProperty(key, result.getBigDecimal(i));
+							break;	
+						
+						case Types.TIME:
+							Time time = result.getTime(i);
+							if(time != null) {
+								currentObject.addProperty(key, time.getTime());
+							}else {
+								currentObject.add(key, JsonNull.INSTANCE);
+							}
+							break;	
+							
+						case Types.DATE:
+							Date date = result.getDate(i);
+							if(date != null) {
+								currentObject.addProperty(key, date.getTime());
+							}else {
+								currentObject.add(key, JsonNull.INSTANCE);
+							}
+							break;	
+							
+						case Types.TIMESTAMP:
+							Timestamp timestamp = result.getTimestamp(i);
+							if(timestamp != null) {
+								currentObject.addProperty(key, timestamp.getTime());
+							}else {
+								currentObject.add(key, JsonNull.INSTANCE);
+							}
+							
+							break;	
+							
+						default: currentObject.addProperty(key, result.getString(i));
+					}
+					
 				}
 				resultArray.add(currentObject);
 				
 			}
 		} catch (SQLException e) {
 			new CFWLog(logger)
-			.severe("Error reading object from database.", e);
+			.severe("Error reading object from database:"+e.getMessage(), e);
 			
 		}finally {
 			CFWDB.close(result);
