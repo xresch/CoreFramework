@@ -674,7 +674,7 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 	//-----------------------------------
 	// Iterate all Query results
 	
-	var currentRow = $('<div class="row">');
+	var currentRow = $('<div class="row m-0">');
 	resultTarget.append(currentRow);
 	
 	for(var i = 0; i < queryResultsPayload.length; i++){
@@ -708,18 +708,17 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	
 	//-----------------------------------
 	// Create Title				
-	var execSeconds = '';
-	if(queryResult.execTimeMillis != -1){
-		execSeconds = " ("+(queryResult.execTimeMillis / 1000).toFixed(3)+"s)";
+	if(queryResult.metadata.name != null){
+		var execSeconds = '';
+		if(queryResult.execTimeMillis != -1){
+			execSeconds = " ("+(queryResult.execTimeMillis / 1000).toFixed(3)+"s)";
+		}
+		var title = $('<p class="query-title">');
+		
+		title.text(queryResult.metadata.name + execSeconds);
+		targetDiv.append(title);
 	}
 	
-	var title = $('<p class="query-title">');
-	if(queryResult.metadata.name == null){
-		title.text('Query Results '+ execSeconds);
-	}else{
-		title.text(queryResult.metadata.name + execSeconds);
-	}
-	targetDiv.append(title);
 						
 	//-----------------------------------
 	// Handle Description
@@ -784,11 +783,19 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 						
 						{	label: 'Panels',
 							name: 'panels',
-							renderdef: {}
+							renderdef: {
+								rendererSettings: {
+									panels: {narrow: true},
+								},
+							}
 						},
 						{	label: 'Cards',
 							name: 'cards',
-							renderdef: {}
+							renderdef: {
+								rendererSettings: {
+									cards: {narrow: true},
+								},
+							}
 						},
 						{	label: 'Tiles',
 							name: 'tiles',

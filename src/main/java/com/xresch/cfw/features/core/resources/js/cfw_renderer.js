@@ -1127,7 +1127,7 @@ function cfw_renderer_cards (renderDef) {
 	
 	//-----------------------------------
 	// Print Records
-	var row = $('<div class="row">');
+	var row = $('<div class="row m-0">');
 	for(let i = 0; i < renderDef.data.length; i++ ){
 		
 		//---------------------------
@@ -1204,7 +1204,7 @@ function cfw_renderer_cards (renderDef) {
 		//new row
 		if( i > 0 && (i % settings.maxcolumns) == 0){
 			wrapper.append(row);
-			row = $('<div class="row">');
+			row = $('<div class="row m-0">');
 		}
 		var column = $('<div class="col-sm pr-0 mr-0">');
 		

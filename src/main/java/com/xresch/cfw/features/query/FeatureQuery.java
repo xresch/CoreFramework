@@ -95,6 +95,11 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerSource(new CFWQuerySourceRandom(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceApplog(null));
 		
+		
+		//----------------------------------
+		// Register Widgets
+		CFW.Registry.Widgets.add(new WidgetQueryResults());
+		
 		//----------------------------------
 		// Register Job Tasks
 		//CFW.Registry.Jobs.registerTask(new CFWJobTaskSendMail());
