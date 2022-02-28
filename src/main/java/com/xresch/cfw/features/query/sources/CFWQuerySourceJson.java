@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query.sources;
 
+import java.text.ParseException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonElement;
@@ -116,6 +117,14 @@ public class CFWQuerySourceJson extends CFWQuerySource {
 							.setValue("epoch")
 					)
 			;
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public void parametersPermissionCheck(CFWObject parameters) throws ParseException {
+		//do nothing
 	}
 	
 	

@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query;
 
+import java.text.ParseException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonObject;
@@ -48,6 +49,14 @@ public abstract class CFWQuerySource{
 	 * Make sure to add a description for every parameter and a default value.
 	 ***********************************************************************************************/
 	public abstract CFWObject getParameters();
+	
+	
+	/***********************************************************************************************
+	 * This method gets executed when the query is parsed and permission checks are enabled.
+	 * Implement this method to check the users permissions before the query is executed.
+	 * Throw a ParseException in case the user does not have permissions to use the given parameters.
+	 ***********************************************************************************************/
+	public abstract void parametersPermissionCheck(CFWObject parameters) throws ParseException;
 	
 	/***********************************************************************************************
 	 * Return the list of parameters as a HTML string.

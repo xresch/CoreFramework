@@ -260,6 +260,7 @@ public class CFWQueryParser {
 		
 		currentQuery = new CFWQuery();
 		currentContext = currentQuery.getContext();
+		currentContext.checkPermissions(checkSourcePermissions);
 		
 		while(this.hasMoreTokens() && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
 			

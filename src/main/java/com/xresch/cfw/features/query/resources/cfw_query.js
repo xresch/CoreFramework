@@ -33,7 +33,8 @@ function cfw_query_execute(){
 	
 	CFW.http.getJSON(CFW_QUERY_URL, params, 
 		function(data) {
-						
+			cfw_ui_toogleLoader(false);		
+				
 			if(data.success){
 								
 				//-----------------------------------
@@ -55,7 +56,7 @@ function cfw_query_execute(){
 				
 			}
 			
-		cfw_ui_toogleLoader(false);	
+		
 	});
 }
 

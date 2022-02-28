@@ -1894,7 +1894,51 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		return result;
 	}
 	
-	
+	/******************************************************************************************************
+	 * Map the values of the JsonObject to CFWFields.
+	 * @param url used for the request.
+	 * @return true if successful, false otherwise
+	 ******************************************************************************************************/
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static boolean mapJsonToFields(JsonObject json, HashMap<String,CFWField> fields) {
+		
+		Set<String> members = json.keySet();
+		boolean result = true;
+		
+		for(String key : members) {
+
+			if(!key.equals(CFWForm.FORM_ID)) {
+				if (fields.containsKey(key)) {
+					CFWField field = fields.get(key);
+					
+					JsonElement element = json.get(key);
+					
+					if(element.isJsonNull()) {
+						if(!field.setValueConvert(null) ){
+							result = false;
+						}
+					}else if(element.isJsonArray() ) {
+						if(!field.setValueConvert(CFW.JSON.jsonToObjectArray(element.getAsJsonArray())) ){
+							result = false;
+						}
+					}else if( element.isJsonObject()){
+						if(!field.setValueConvert(CFW.JSON.toJSON(element)) ){
+							result = false;
+						}
+					}
+					else if(!field.setValueConvert(element.getAsString())){
+						result = false;
+					}
+				}else {
+					new CFWLog(logger)
+						.silent(true)
+						.finer("The field with name '"+key+"' is unknown for this type.");
+				}
+			}
+		}
+		
+		return result;
+	}
 	
 	/******************************************************************************************************
 	 * Map the values of the JsonObject to CFWFields.

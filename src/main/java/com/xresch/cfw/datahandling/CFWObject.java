@@ -68,29 +68,36 @@ public class CFWObject {
 	 * Maps the JSON fields to this objects fields by name.
 	 * Validates the fields and returns true if all are valid.
 	 * If the string is null or empty it will return true.
+	 * @param doValidation TODO
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
-	public boolean mapJsonFields(String json) {
+	public boolean mapJsonFields(String json, boolean doValidation) {
 		
 		if(Strings.isNullOrEmpty(json)) {
 			return true;
 		}
 		
-		return mapJsonFields(CFW.JSON.fromJson(json));
+		return mapJsonFields(CFW.JSON.fromJson(json), doValidation);
 	}
 	
 	/****************************************************************
 	 * Maps the JSON fields to this objects fields by name.
 	 * Validates the fields and returns true if all are valid.
 	 * If the string is null or empty it will return true.
+	 * @param doValidation TODO
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
-	public boolean mapJsonFields(JsonElement element) {
+	public boolean mapJsonFields(JsonElement element, boolean doValidation) {
 		if(!element.isJsonObject()) {
 			new CFWLog(logger).severe("JsonElement has to be of the type object.", new IllegalArgumentException());
 			return false;
 		}
-		return CFWField.mapAndValidateJsonToFields(element.getAsJsonObject(), fields);
+		
+		if(doValidation) {
+			return CFWField.mapAndValidateJsonToFields(element.getAsJsonObject(), fields);
+		}else {
+			return CFWField.mapJsonToFields(element.getAsJsonObject(), fields);
+		}
 	}
 	
 	/****************************************************************

@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query.sources;
 
+import java.text.ParseException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.xresch.cfw._main.CFW;
@@ -106,6 +107,13 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 		;
 	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public void parametersPermissionCheck(CFWObject parameters) throws ParseException {
+		//do nothing
+	}
 	
 	/******************************************************************
 	 *

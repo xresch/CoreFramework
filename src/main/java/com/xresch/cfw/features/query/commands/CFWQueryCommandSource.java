@@ -24,6 +24,7 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.SysoutInterceptor;
 import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 import com.xresch.cfw.pipeline.PipelineActionListener;
@@ -198,7 +199,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		//------------------------------------------
 		// Map to Parameters Object
 		this.paramsForSource = source.getParameters();
-		if(!paramsForSource.mapJsonFields(parameters.getWrappedObject())) {
+		if(!paramsForSource.mapJsonFields(parameters.getWrappedObject(), true)) {
 			
 			for(CFWField field : paramsForSource.getFields().values()) {
 				ArrayList<String> invalidMessages = field.getInvalidationMessages();
@@ -208,6 +209,13 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			}
 			
 			throw new ParseException("Unknown error for source command '"+this.uniqueNameAndAliases()+"'", -1);
+		}
+		
+		
+		//------------------------------------------
+		// Check User can use parameter values
+		if(this.parent.getContext().checkPermissions()) {
+			this.source.parametersPermissionCheck(paramsForSource);
 		}
 	}
 	

@@ -352,7 +352,7 @@ public class ServletDashboardViewMethods
 				// Validate
 				CFWObject settings = definition.getSettings();
 				
-				boolean isValid = settings.mapJsonFields(jsonElement);
+				boolean isValid = settings.mapJsonFields(jsonElement, true);
 				
 				if(isValid) {
 					String widgetID = request.getParameter("PK_ID");
@@ -437,7 +437,7 @@ public class ServletDashboardViewMethods
 				// Create Form
 				CFWObject settings = definition.getSettings();
 				DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
-				settings.mapJsonFields(JSON_SETTINGS);
+				settings.mapJsonFields(JSON_SETTINGS, false);
 				
 				CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeReplacedByJavascript");
 				
@@ -526,7 +526,7 @@ public class ServletDashboardViewMethods
 				formObject.addField(scheduleField);
 				
 				CFWObject taskParams = definition.getTasksParameters();
-				taskParams.mapJsonFields(widget.taskParameters());
+				taskParams.mapJsonFields(widget.taskParameters(), true);
 				formObject.addAllFields(taskParams.getFields());
 				
 				CFWForm taskParamForm = formObject.toForm("cfwWidgetTaskParamForm"+CFW.Random.randomStringAlphaNumerical(16), "Save");
@@ -646,7 +646,7 @@ public class ServletDashboardViewMethods
 
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 		CFWObject settingsObject = definition.getSettings();
-		settingsObject.mapJsonFields(jsonSettings);
+		settingsObject.mapJsonFields(jsonSettings, false);
 		
 		//----------------------------
 		// Create Response
@@ -706,7 +706,7 @@ public class ServletDashboardViewMethods
 				//--------------------------------------
 				// Check is Global Override Parameter
 				DashboardParameter paramObject = new DashboardParameter();
-				paramObject.mapJsonFields(current);
+				paramObject.mapJsonFields(current, true);
 				
 				if(paramObject.mode().equals(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString())
 				&& ( paramObject.widgetType() == null || paramObject.widgetType().equals(widgetType)) ) {

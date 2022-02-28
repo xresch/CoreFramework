@@ -96,12 +96,12 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		//------------------------------
 		// Widget Settings
 		CFWObject widgetSettings = definition.getSettings();
-		widgetSettings.mapJsonFields(widget.settings());
+		widgetSettings.mapJsonFields(widget.settings(), true);
 
 		//------------------------------
 		// Task Parameters
 		CFWObject taskParams = definition.getTasksParameters();
-		taskParams.mapJsonFields(widget.taskParameters());
+		taskParams.mapJsonFields(widget.taskParameters(), true);
 		
 		//Add to job data, needed for mapping context to CFWJobAlertObject
 		for(Entry<String, CFWField> entry : taskParams.getFields().entrySet()) {

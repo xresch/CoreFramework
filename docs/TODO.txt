@@ -38,8 +38,6 @@ Migrate your Application, afterwards:
 Potential TODOs
 ===============
 
-- Features: Query
-
 - Features: Automator: Just Actions that can be triggered from the UI.
   - Create Default Dashboards for xyz
   - Send Mails

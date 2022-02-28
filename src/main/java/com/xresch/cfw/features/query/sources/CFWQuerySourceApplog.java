@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.sources;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonElement;
@@ -80,7 +81,7 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 	public boolean hasPermission(User user) {
 		return user.hasPermission( FeatureSystemAnalytics.PERMISSION_SYSTEM_ANALYTICS);
 	}
-	
+		
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -95,14 +96,16 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 	@Override
 	public CFWObject getParameters() {
 		return new CFWObject()
-//				.addField(
-//					CFWField.newString(FormFieldType.TEXTAREA, "data")
-//						.setDescription("The JSON string that should be parsed. Either an array of JSON Objects or a JSON Object.")
-//						.addValidator(new NotNullOrEmptyValidator())
-//				)
 			;
 	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public void parametersPermissionCheck(CFWObject parameters) throws ParseException {
+		//do nothing
+	}
 	
 	
 	/******************************************************************
