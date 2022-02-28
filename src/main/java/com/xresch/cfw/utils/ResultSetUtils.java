@@ -491,7 +491,6 @@ public class ResultSetUtils {
 							break;	
 							
 						default: 
-							System.out.println("type:"+type);
 							currentObject.addProperty(key, result.getString(i));
 					}
 					
