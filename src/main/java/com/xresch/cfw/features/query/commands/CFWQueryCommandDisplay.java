@@ -59,7 +59,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "display as=<asOption> [visiblefields=<arrayOfFieldnames>] [titlefields=<arrayOfFieldnames>] [titleformat=<titleformat>]";
+		return "display as=<asOption> [visiblefields=<arrayOfFieldnames>] [titlefields=<arrayOfFieldnames>] [titleformat=<titleformat>] [menu=<showMenu>]";
 	}
 	
 	/***********************************************************************************************
@@ -70,16 +70,16 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 		return "<p><b>asOption:&nbsp;</b>One of the following options:</p>"
 					+"<ul>"
 					+"<li>table</li>"
-					+"<li>biggertable</li>"
 					+"<li>panels</li>"
 					+"<li>cards</li>"
 					+"<li>tiles</li>"
 					+"<li>csv</li>"
-					+"<li>xml</li>"
 					+"<li>json</li>"
+					+"<li>xml</li>"
 					+"</ul>"
 				+"<p><b>arrayOfFieldnames:&nbsp;</b>(Optional) Array of the fieldnames.</p>"	
 				+"<p><b>titleformat:&nbsp;</b>(Optional) Format of the title. Use '{0}', '{1}'... as placeholders for field values.</p>"	
+				+"<p><b>showMenu:&nbsp;</b>(Optional) True or false to toggle the menu and pagination.</p>"	
 				;
 	}
 
@@ -112,14 +112,15 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 				
 				String propertyName = assignment.getLeftSideAsString(null);
 
-				
 				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
 				if(valuePart.isString()) {
 					String value = valuePart.getAsString();
 					value = CFW.Security.sanitizeHTML(value);
 					displaySettings.addProperty(propertyName, value);
-				}if(valuePart.isJsonArray()) {
+				}else if(valuePart.isJsonArray()) {
 					displaySettings.add(propertyName, valuePart.getAsJsonArray());
+				}else if(valuePart.isBoolean()) {
+					displaySettings.addProperty(propertyName, valuePart.getAsBoolean());
 				}
 			
 			}else {

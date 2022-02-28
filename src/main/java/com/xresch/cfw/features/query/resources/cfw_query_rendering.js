@@ -12,13 +12,12 @@ function cfw_query_getRendererIndex(queryResult){
 	if(queryResult.displaySettings.as != null){
 		switch(queryResult.displaySettings.as.trim().toLowerCase()){
 			case 'table':			rendererIndex = 0; break;		
-			case 'biggertable':		rendererIndex = 1; break;	
-			case 'panels':			rendererIndex = 2; break;	
-			case 'cards':			rendererIndex = 3; break;	
-			case 'tiles':			rendererIndex = 4; break;	
-			case 'csv':				rendererIndex = 5; break;	
+			case 'panels':			rendererIndex = 1; break;	
+			case 'cards':			rendererIndex = 2; break;	
+			case 'tiles':			rendererIndex = 3; break;	
+			case 'csv':				rendererIndex = 4; break;	
+			case 'json':			rendererIndex = 5; break;	
 			case 'xml':				rendererIndex = 6; break;	
-			case 'json':			rendererIndex = 7; break;	
 		}
 	}
 	
@@ -736,6 +735,12 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	
 	//-----------------------------------
 	// Get Renderer Settings
+	
+	var rendererName = "dataviewer";
+	if(queryResult.displaySettings.menu == false && queryResult.displaySettings.as != null){
+		rendererName = queryResult.displaySettings.as.trim().toLowerCase();
+	}
+		
 	rendererIndex = cfw_query_getRendererIndex(queryResult);		
 	labels = cfw_query_createLables(queryResult);	
 	
@@ -759,6 +764,16 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 		 	customizers: customizers,
 
 			rendererSettings: {
+				table: { filterable: false, narrow: true},
+				panels: { narrow: true},
+				cards: { narrow: true},
+				tiles: { 
+					popover: false,
+					border: '2px solid black'
+				},
+				csv: {},
+				json: {},
+				xml: {},
 				dataviewer: {
 					//storeid: 'cfw-query',
 					rendererIndex: rendererIndex,
@@ -769,14 +784,6 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 							renderdef: {
 								rendererSettings: {
 									table: {filterable: false, narrow: true},
-								},
-							}
-						},
-						{	label: 'Bigger Table',
-							name: 'table',
-							renderdef: {
-								rendererSettings: {
-									table: {filterable: false},
 								},
 							}
 						},
@@ -813,12 +820,12 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 							name: 'csv',
 							renderdef: {}
 						},
-						{	label: 'XML',
-							name: 'xml',
-							renderdef: {}
-						},
 						{	label: 'JSON',
 							name: 'json',
+							renderdef: {}
+						},
+						{	label: 'XML',
+							name: 'xml',
 							renderdef: {}
 						}
 					],
@@ -826,7 +833,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 			},
 		};
 
-	var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
+	var renderResult = CFW.render.getRenderer(rendererName).render(rendererSettings);	
 	
 	targetDiv.append(renderResult);
 }
