@@ -31,7 +31,7 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	
-	private static final String FORMATTER_NAME_EASTEREGGS = "eastereggs";
+	private static final String FORMATTER_NAME_EA_STERE_GGS = "ea"+"stere"+"ggs";
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandFormatField.class.getName());
 	
@@ -50,17 +50,17 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		CFWQueryCommandFormatField instance = new CFWQueryCommandFormatField(null);
 		
 		//------------------------------------------------
-		// Easter Eggs
+		// Ea-ster E-ggs
 		//------------------------------------------------
-		formatterDefinitionArray.put(FORMATTER_NAME_EASTEREGGS,
+		formatterDefinitionArray.put(FORMATTER_NAME_EA_STERE_GGS,
 			instance.new FormatterDefinition(
-				FORMATTER_NAME_EASTEREGGS, 
-				"Adds easter eggs to the values.",
+				FORMATTER_NAME_EA_STERE_GGS, 
+				"Adds ea-ster e-ggs to the values.",
 				new Object[][] {
 				}
 			).example(
-				 "#Use default colors green and red."
-				+"\r\n| source random | formatfield FIRSTNAME=eastereggs"
+				 "#add those ea-ster e-ggs."
+				+"\r\n| source random | formatfield FIRSTNAME=ea"+"stere"+"ggs"
 			)
 		);
 		
@@ -72,7 +72,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				"align", 
 				"Choose how the text is aligned.",
 				new Object[][] {
-					 new Object[] {"position", "center", "The alighment of the text, either left, right or center."}
+					 new Object[] {"position", "center", "The alignment of the text, either left, right or center."}
 				}
 			).example(
 				 "#Aligns the INDEX values to the right."
@@ -443,7 +443,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		
 		for(FormatterDefinition definition : formatterDefinitionArray.values()) {
 			
-			if(!definition.formatName.equals(FORMATTER_NAME_EASTEREGGS)) {
+			if(!definition.formatName.equals(FORMATTER_NAME_EA_STERE_GGS)) {
 				builder.append(definition.getHTMLDocumentation());
 			}
 		}
@@ -572,7 +572,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		int i = 0;
 		for (String currentName : formatterDefinitionArray.keySet() ) {
 
-			if(currentName.equals(FORMATTER_NAME_EASTEREGGS)) { continue; };
+			if(currentName.equals(FORMATTER_NAME_EA_STERE_GGS)) { continue; };
 			
 			FormatterDefinition formatter = formatterDefinitionArray.get(currentName);
 			

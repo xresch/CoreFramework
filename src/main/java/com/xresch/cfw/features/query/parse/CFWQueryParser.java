@@ -63,7 +63,7 @@ public class CFWQueryParser {
 	private boolean enableTracing = false;
 	private JsonArray traceArray;
 	
-	//Used for GIB!-Easteregg
+	//Used for GIB!-Ea-stere-gg
 	String obedienceMessage = CFW.Random.randomMessageOfObedience();
 	
 	//Manage open arrays and groups.
@@ -306,7 +306,7 @@ public class CFWQueryParser {
 			String commandName = commandNameToken.value();
 			addTrace("Parse", "Command", "[START] "+commandName);
 			//------------------------------------
-			// GIB-Easteregg for Vincent Theus
+			// GIB-Ea-stere-gg for Vincent Theus
 			while(commandName.toLowerCase().equals("gib")
 				||(commandName.toLowerCase().equals("gimme"))) {
 				

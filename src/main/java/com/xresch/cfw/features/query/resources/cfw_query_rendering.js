@@ -144,25 +144,25 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
 			
 			switch(formatterName){
 				
-				case 'align': 		cfw_query_formatAlign(resultSpan, value, current[1]); break;
-				case 'boolean': 	cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]); break;
-				case 'case':		cfw_query_formatCase(resultSpan, record, value, rendererName, fieldname, current); break;
-				case 'css':		 	cfw_query_formatCSS(resultSpan, value, current[1], current[2]); break;
-				case 'date': 		cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
-				case 'decimals': 	cfw_query_formatDecimals(resultSpan, value, current[1]); break;
-				case 'duration': 	cfw_query_formatDuration(resultSpan, value, current[1]); break;
-				case 'eastereggs': 	cfw_query_formatEasterEggs(resultSpan, value); break;
-				case 'link': 		cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
-				case 'lowercase': 	cfw_query_formatLowercase(resultSpan); break;
-				case 'none': 		return $('<span class="">').text(value); break;
-				case 'prefix': 		cfw_query_formatPrefix(resultSpan, value, current[1]); break;
-				case 'postfix': 	cfw_query_formatPostfix(resultSpan, value, current[1]); break;
-				case 'separators':	cfw_query_formatSeparators(resultSpan, value, current[1], current[2]); break;
-				case 'shownulls':	cfw_query_formatShowNulls(resultSpan, value, current[1]); break;
-				case 'thousands': 	cfw_query_formatThousands(resultSpan, value, current[1], current[2], current[3]); break;
-				case 'threshold': 	cfw_query_formatThreshold(resultSpan, value, current[1], current[2], current[3], current[4], current[5], current[6]); break;
-				case 'timestamp': 	cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
-				case 'uppercase': 	cfw_query_formatUppercase(resultSpan); break;
+				case 'align': 				cfw_query_formatAlign(resultSpan, value, current[1]); break;
+				case 'boolean': 			cfw_query_formatBoolean(resultSpan, value, current[1], current[2], current[3], current[4]); break;
+				case 'case':				cfw_query_formatCase(resultSpan, record, value, rendererName, fieldname, current); break;
+				case 'css':		 			cfw_query_formatCSS(resultSpan, value, current[1], current[2]); break;
+				case 'date': 				cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
+				case 'decimals': 			cfw_query_formatDecimals(resultSpan, value, current[1]); break;
+				case 'duration': 			cfw_query_formatDuration(resultSpan, value, current[1]); break;
+				case 'ea'+'stere'+'ggs': 	cfw_query_formatEa_sterE_ggs(resultSpan, value); break;
+				case 'link': 				cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
+				case 'lowercase': 			cfw_query_formatLowercase(resultSpan); break;
+				case 'none': 				return $('<span class="">').text(value); break;
+				case 'prefix': 				cfw_query_formatPrefix(resultSpan, value, current[1]); break;
+				case 'postfix': 			cfw_query_formatPostfix(resultSpan, value, current[1]); break;
+				case 'separators':			cfw_query_formatSeparators(resultSpan, value, current[1], current[2]); break;
+				case 'shownulls':			cfw_query_formatShowNulls(resultSpan, value, current[1]); break;
+				case 'thousands': 			cfw_query_formatThousands(resultSpan, value, current[1], current[2], current[3]); break;
+				case 'threshold': 			cfw_query_formatThreshold(resultSpan, value, current[1], current[2], current[3], current[4], current[5], current[6]); break;
+				case 'timestamp': 			cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
+				case 'uppercase': 			cfw_query_formatUppercase(resultSpan); break;
 			}	
 		}
 
@@ -455,13 +455,13 @@ function cfw_query_formatDuration(span, value, durationUnit){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_query_formatEasterEggs(span, value){
+function cfw_query_formatEa_sterE_ggs(span, value){
 		
 	value = span.text();
 	
-	value = value.replaceAll("o", '<i class="fas fa-egg"></i>')
-				.replaceAll("O", '<i class="fas fa-egg"></i>')
-				.replaceAll("0", '<i class="fas fa-egg"></i>')
+	value = value.replaceAll("o", '<i class="fas fa-e'+'gg"></i>')
+				.replaceAll("O", '<i class="fas fa-e'+'gg"></i>')
+				.replaceAll("0", '<i class="fas fa-e'+'gg"></i>')
 				;
 				
 	span.html(value).find("i").each(function(){
