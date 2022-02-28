@@ -478,7 +478,9 @@ public class ResultSetUtils {
 							}
 							break;	
 							
+							
 						case Types.TIMESTAMP:
+						case Types.TIMESTAMP_WITH_TIMEZONE:
 							Timestamp timestamp = result.getTimestamp(i);
 							if(timestamp != null) {
 								currentObject.addProperty(key, timestamp.getTime());
@@ -488,7 +490,9 @@ public class ResultSetUtils {
 							
 							break;	
 							
-						default: currentObject.addProperty(key, result.getString(i));
+						default: 
+							System.out.println("type:"+type);
+							currentObject.addProperty(key, result.getString(i));
 					}
 					
 				}
