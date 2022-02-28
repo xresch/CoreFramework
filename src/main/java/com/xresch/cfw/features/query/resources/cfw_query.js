@@ -113,9 +113,6 @@ function cfw_query_editor_handleEnter(domElement){
 		var indentation = line.substring(1, indexFirstNonWhitespace);
 	}
 	
-	console.log("line:"+line);
-	console.log("indexFirstNonWhitespace:"+indexFirstNonWhitespace);
-	console.log("indentation:"+indentation);
 	// set textarea value to: text before caret + tab + text after caret
 	value = value.substring(0, selectionStart) 
 					+"\n"
@@ -148,8 +145,7 @@ function cfw_query_editor_resizeToFitQuery(){
 		
 		var queryHeight = (queryLineCount+1) * 16;
 		
-		
-		var queryWidth = $QUERYAREA[0].scrollWidth+5;
+		var queryWidth = $QUERYAREA[0].scrollWidth;
 
 		$QUERYAREA.css("height", queryHeight+'px'); 
 		$QUERYAREA.css("width", queryWidth+'px'); 
