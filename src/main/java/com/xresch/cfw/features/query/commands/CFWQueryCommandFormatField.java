@@ -518,7 +518,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 							continue;
 						}
 						
-						// Add As Array JsonArray
+						// Add As JsonArray
 						JsonArray currentArray = currentElement.getAsJsonArray();
 						FormatterDefinition definition = formatterDefinitionArray.get(currentArray.get(0).getAsString());
 						if(definition != null) {

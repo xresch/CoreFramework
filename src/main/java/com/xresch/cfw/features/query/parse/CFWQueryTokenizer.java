@@ -206,8 +206,19 @@ public class CFWQueryTokenizer {
 			String keywordSlice = slice; 
 			if(!keywordsCaseSensitive) { keywordSlice = keywordSlice.toLowerCase(); }
 			
+			
 			for(String keyword : keywordList) {
-				if(keywordSlice.startsWith(keyword)) {
+				
+				String nextChar = null;
+				
+				//check if it is not end of string
+				if(keywordSlice.length() > keyword.length()) {
+					nextChar= ""+keywordSlice.charAt(keyword.length());
+				}
+				
+				//next char at query end or not followed by a word char
+				if(keywordSlice.startsWith(keyword) 
+				&& ( nextChar == null || !(regexIsWordChar.matcher(nextChar).find()) ) ) {
 					cursor += keyword.length();
 					return createToken(CFWQueryToken.CFWQueryTokenType.KEYWORD, startPos, cursor);
 				}

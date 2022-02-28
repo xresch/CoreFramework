@@ -144,7 +144,7 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 				}	
 				
 			}else {
-				result.setHTMLDescription("command has to start with a literal string:"+commandNameToken.value());
+				result.setHTMLDescription("Command has to start with a literal string:"+commandNameToken.value());
 				return result;
 			}
 			
