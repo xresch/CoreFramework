@@ -202,7 +202,6 @@ public class CFWQueryCommandSort extends CFWQueryCommand {
 							break;
 						}
 					}
-					System.out.println("compareResult"+compareResult);
 					return compareResult;
 				}
 			};
@@ -215,7 +214,6 @@ public class CFWQueryCommandSort extends CFWQueryCommand {
 
 			//-------------------------------------
 			// Push Sorted List to outQueue
-			
 			for(EnhancedJsonObject object : objectListToSort) {
 				//System.out.println("out: "+object.get(fieldnames.get(0)));
 				outQueue.add(object);

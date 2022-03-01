@@ -1,0 +1,16 @@
+
+<p>Use the sort command to sort the records by one or multiple fields.</p>
+
+<p>The following command sorts by the three fields in ascending order(reverse=false) and puts the nulls in the LASTNAME last while sorting(reversenulls=true). 
+The formatrecord command visualizes the order by adding colors based on the first character of the LASTNAME.
+</p>
+
+<pre><code class="language-cfwquery">| source random records=500
+| sort FIRSTNAME, LASTNAME, LIKES_TIRAMISU reverse=false reversenulls=true
+| formatrecord 
+	[(LASTNAME ~="^[A-E]"), "cfw-excellent"] 
+	[(LASTNAME ~="^[F-J]"), "cfw-good"] 
+	[(LASTNAME ~="^[K-O]"), "cfw-warning"] 
+	[(LASTNAME ~="^[P-T]"), "cfw-emergency"] 
+	[(LASTNAME ~="^[U-Z]"), "cfw-danger"]
+	[(LASTNAME == null), "#3a0756"] </code></pre>
