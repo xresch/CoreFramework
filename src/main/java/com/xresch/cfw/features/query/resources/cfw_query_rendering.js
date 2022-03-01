@@ -761,7 +761,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	titleFields = ((queryResult.displaySettings.titlefields != null)) ? queryResult.displaySettings.titlefields : null;
 	titleFormat = ((queryResult.displaySettings.titleformat != null)) ? queryResult.displaySettings.titleformat : null;
 	
-	customizers = cfw_query_createCustomizers(queryResult, visibleFields);
+	customizers = cfw_query_createCustomizers(queryResult, _.union(visibleFields, titleFields));
 	
 	//-----------------------------------
 	// Render Results

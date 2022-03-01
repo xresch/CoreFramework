@@ -31,5 +31,20 @@ If you want to specify a default case, use 'true' as the condition.
 	[true, "cfw-gray"]
 | formatfield LIKES_TIRAMISU=none</code></pre>
 
+<p>Using this command and combining it with the other format commands formatfield and display, you can create a traffic light overview for your records like this: 
+</p>
+<pre><code class="language-cfwquery">| source random records=100
+| remove _source
+| formatrecord 
+	[(VALUE >= 80), "cfw-danger"] 
+	[(VALUE >= 40), "cfw-warning"] 
+	[(VALUE >= 0), "cfw-excellent"] 
+| formatfield 
+	VALUE=postfix,"%" 
+	VALUE=css,"font-size","24px"
+| display as=tiles menu=false titlefields=[VALUE] visiblefields=[]</code></pre>
+
+
+
 
 
