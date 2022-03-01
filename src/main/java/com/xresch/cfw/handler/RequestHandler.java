@@ -45,10 +45,10 @@ public class RequestHandler extends HandlerWrapper
     	
 		// Used to calculate deltaStart by OMLogger.log()
     	// minus 1ms to be always first
-    	long startNanos = System.nanoTime()-1000000;
-    	CFW.Context.Request.setRequestStartNanos(startNanos);
+    	long startMillis = System.currentTimeMillis()-1;
+    	CFW.Context.Request.setRequestStartMillis(startMillis);
     	
-    	CFWLog log = new CFWLog(logger).start(startNanos);
+    	CFWLog log = new CFWLog(logger).start(startMillis);
     	
     	CFW.Context.Request.setRequest(request);
     	CFW.Context.Request.setHttpServletResponse(response);

@@ -39,8 +39,8 @@ public class LogMessage {
 	protected LogMessage(CFWLog log) {
 		
 		this.isMinimal = log.isMinimal;
-		this.starttimeNanos = log.starttimeNanos;
-		this.endtimeNanos = log.endtimeNanos;
+		this.starttimeNanos = log.starttimeMillis;
+		this.endtimeNanos = log.endtimeMillis;
 		this.durationMillis = log.durationMillis;
 		this.deltaStartMillis = log.deltaStartMillis;
 

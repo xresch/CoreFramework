@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 import org.h2.tools.Server;
@@ -55,7 +56,6 @@ public class CFWDB {
 		int port 				= CFWProperties.DB_PORT;
 		String username			= CFWProperties.DB_USERNAME;
 		String password			= CFWProperties.DB_PASSWORD;
-		
 
 		//---------------------------------------
     	// Create Folder  

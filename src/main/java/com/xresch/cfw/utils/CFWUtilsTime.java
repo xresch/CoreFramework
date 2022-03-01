@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import com.xresch.cfw._main.CFW.Utils;
@@ -18,10 +19,27 @@ import com.xresch.cfw._main.CFW.Utils;
 public class CFWUtilsTime {
 	
 	public static final String TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
-	
+	private static TimeZone machineTimezone = TimeZone.getDefault();
+			
 	private static SimpleDateFormat timestampFormatter = new SimpleDateFormat(CFWUtilsTime.TIMESTAMP_FORMAT);
-	// Don't use as static as it is not thread safe
-	//public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(CFWTime.TIME_FORMAT);
+
+	/********************************************************************************************
+	 * Get a timestamp string of the current time in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
+	 * 
+	 ********************************************************************************************/
+	public static void setMachineTimeZone(TimeZone timezone){
+		machineTimezone = timezone;
+	}
+	
+
+	/********************************************************************************************
+	 * Get a timestamp string of the current time in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
+	 * 
+	 ********************************************************************************************/
+	public static long machineTimeMillis(){
+		long millis = System.currentTimeMillis();
+		return millis + machineTimezone.getOffset(millis);
+	}
 	
 	/********************************************************************************************
 	 * Get a timestamp string of the current time in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".

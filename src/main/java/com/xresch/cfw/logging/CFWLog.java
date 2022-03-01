@@ -36,9 +36,9 @@ public class CFWLog {
 	
 	protected boolean isMinimal = false;
 	protected boolean isContextless = false;
-	protected long tempStartNanos = -1;
-	protected long starttimeNanos = -1;
-	protected long endtimeNanos = -1;
+	protected long tempStartMillis = -1;
+	protected long starttimeMillis = -1;
+	protected long endtimeMillis = -1;
 	protected long durationMillis = -1;
 	protected long deltaStartMillis = -1;
 	protected int estimatedResponseSizeChars = -1;
@@ -233,7 +233,7 @@ public class CFWLog {
 		
 		//save to temp variable to not mess up calls to other log methods 
 		//than end()
-		tempStartNanos = System.nanoTime();
+		tempStartMillis = System.currentTimeMillis();
 		return this;
 	}
 	
@@ -246,11 +246,11 @@ public class CFWLog {
 	 * @return OMLogger this instance
 	 *   
 	 ***********************************************************************/
-	public CFWLog start(long startNanos){
+	public CFWLog start(long startMillis){
 		
 		//save to temp variable to not mess up calls to other log methods 
 		//than end()
-		tempStartNanos = startNanos;
+		tempStartMillis = startMillis;
 		return this;
 	}
 	
@@ -261,7 +261,7 @@ public class CFWLog {
 	public void end(){
 		
 		//
-		starttimeNanos = tempStartNanos;
+		starttimeMillis = tempStartMillis;
 		this.log(Level.INFO, "Duration[ms]", null);
 				
 	}
@@ -271,7 +271,7 @@ public class CFWLog {
 	 * 
 	 ***********************************************************************/
 	public void end(Level level){
-		starttimeNanos = tempStartNanos;
+		starttimeMillis = tempStartMillis;
 		this.log(level, "Duration[ms]", null);		
 	}
 	
@@ -282,7 +282,7 @@ public class CFWLog {
 	 ***********************************************************************/
 	public void end(Level level, String message){
 		
-		starttimeNanos = tempStartNanos;
+		starttimeMillis = tempStartMillis;
 		this.log(level, message, null);
 				
 	}
@@ -358,13 +358,11 @@ public class CFWLog {
 			//-------------------------
 			// Calculate Time
 			//-------------------------
-			endtimeNanos = System.nanoTime();
+			endtimeMillis = System.currentTimeMillis();
 			
-			if(starttimeNanos != -1){
-				durationMillis = (endtimeNanos - starttimeNanos) / 1000000;
+			if(starttimeMillis != -1){
+				durationMillis = (endtimeMillis - starttimeMillis);
 			}
-			
-			//this.sourceClass = logger.getName();
 			
 			//-------------------------
 			// Handle Throwable
@@ -406,14 +404,13 @@ public class CFWLog {
 					this.userID = data.getUser().username();
 				}
 
-					
 				//--------------------------------
 				// Delta Start
-				long requestStartNanos = CFW.Context.Request.getRequestStartNanos();
-				if(starttimeNanos != -1){
-					this.deltaStartMillis = (starttimeNanos - requestStartNanos) / 1000000;
+				long requestStartMillis = CFW.Context.Request.getRequestStartMillis();
+				if(starttimeMillis != -1){
+					this.deltaStartMillis = (starttimeMillis - requestStartMillis);
 				}else{
-					this.deltaStartMillis = (endtimeNanos - requestStartNanos ) / 1000000;
+					this.deltaStartMillis = (endtimeMillis - requestStartMillis );
 				}
 				
 				//----------------------------------------
@@ -450,7 +447,7 @@ public class CFWLog {
 	
 	protected void reset() {
 		this.exception = null;
-		this.starttimeNanos = -1;
+		this.starttimeMillis = -1;
 		this.durationMillis = -1;
 		this.deltaStartMillis = -1;
 		this.customEntries = null;

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ServiceLoader;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.caching.CFWCacheManagement;
@@ -177,7 +178,7 @@ public class CFW {
 	 *   
 	 ***********************************************************************/
 	public static void initializeCore(String[] args) throws ArgumentsException, IOException{
-		
+				
 		//------------------------------------
 		// Command Line Arguments
 		CFW.CLI.readArguments(args);
@@ -309,6 +310,12 @@ public class CFW {
 	    // before DB to load DB related settings as well
 	    appToStart.settings();
 	    
+		//---------------------------------------
+    	// Set JVM TimeZone, needed for H2 database to 
+		// properly handle epoch times
+		CFW.Utils.Time.setMachineTimeZone(TimeZone.getDefault());
+		TimeZone.setDefault(TimeZone.getTimeZone(CFWProperties.JVM_TIMEZONE));
+
 		//---------------------------
 		// Initialize Database Server and/or Connection
 		CFW.DB.initializeDB(); 
@@ -487,7 +494,8 @@ public class CFW {
 	 * @param CFWAppInterface application to start
 	 ***********************************************************************/
 	private static void initializeDatabase(CFWAppInterface appToStart, ArrayList<CFWAppFeature> features, ArrayList<CFWObject> objectArray) {
-				
+		
+
 		//---------------------------
 		// Iterate over Registered Objects
     	for(CFWObject object : objectArray) {

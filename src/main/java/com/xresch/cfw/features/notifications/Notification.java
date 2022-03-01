@@ -3,6 +3,7 @@ package com.xresch.cfw.features.notifications;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;

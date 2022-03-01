@@ -173,6 +173,9 @@ public class CFWProperties {
 	// DATABASE
 	//##########################################################################################	
 	
+	/** The JVM Timezone, needed for h2 to treat give proper epoch times when handling time columns. (Property=cfw_jvm_timezone, Default="UTC") */
+	public static String JVM_TIMEZONE = "UTC";
+	
 	/** The name of the database server. (Property=cfw_h2_mode, Default="SERVER") */
 	public static String DB_MODE = "SERVER";
 	
@@ -194,7 +197,7 @@ public class CFWProperties {
 	/** The password for the database. (Property=cfw_h2_password, Default="sa") */
 	public static String DB_PASSWORD = "sa";
 
-
+	
 	/******************************************************************************
 	 * Initialize the configuration with the given properties file.
 	 * @param key
@@ -249,6 +252,7 @@ public class CFWProperties {
 		LDAP_ATTRIBUTE_FIRSTNAME		= CFWProperties.configAsString("authentication_ldap_attribute_firstname", LDAP_ATTRIBUTE_FIRSTNAME);
 		LDAP_ATTRIBUTE_LASTNAME			= CFWProperties.configAsString("authentication_ldap_attribute_lastname", LDAP_ATTRIBUTE_LASTNAME);
 				
+		JVM_TIMEZONE					= CFWProperties.configAsString("cfw_jvm_timezone", JVM_TIMEZONE);
 		DB_MODE							= CFWProperties.configAsString("cfw_h2_mode", DB_MODE);
 		DB_SERVER						= CFWProperties.configAsString("cfw_h2_server", DB_SERVER);
 		DB_PORT							= CFWProperties.configAsInt("cfw_h2_port", DB_PORT);
