@@ -152,6 +152,7 @@ DONE
 - Autocomplete: Added support to trigger with Control+Space, option to define title for item lists
 - Dataviewer: Fixed issue with quotes in filter
 - JS Renderer: Added support for custom colors without the need to use CFW color classes
+- Properties: added cfw_jvm_timezone=UTC for H2 to handle time properly
 
 ------- v5.0.0 -------
 - Mailing: Added Class CFWMailBuilder for creating eMails.
