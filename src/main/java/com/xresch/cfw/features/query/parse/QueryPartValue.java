@@ -7,7 +7,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
 /**************************************************************************************************************
@@ -19,10 +18,7 @@ public class QueryPartValue extends QueryPart {
 	
 	private QueryPartValueType type;
 	private Object value = null;
-	
-	//Store IntegerValue after isInteger()
-	private Integer integerValue;
-	
+		
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
@@ -38,8 +34,8 @@ public class QueryPartValue extends QueryPart {
 	 * Private Constructor to enforce correct types.
 	 * 
 	 ******************************************************************************************************/
-	private QueryPartValue(CFWQueryContext context, QueryPartValueType type, Object value) {
-		super(context);
+	private QueryPartValue(QueryPartValueType type, Object value) {
+		super();
 		this.value = value;
 		if(value != null) {
 			this.type = type;
@@ -51,56 +47,56 @@ public class QueryPartValue extends QueryPart {
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue newNumber(CFWQueryContext context, Number value){
-		return new QueryPartValue(context, QueryPartValueType.NUMBER, value);
+	public static QueryPartValue newNumber(Number value){
+		return new QueryPartValue(QueryPartValueType.NUMBER, value);
 	}
 	
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue newString(CFWQueryContext context, String value){
-		return new QueryPartValue(context,QueryPartValueType.STRING, value);
+	public static QueryPartValue newString(String value){
+		return new QueryPartValue(QueryPartValueType.STRING,value);
 	}
 	
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue newNull(CFWQueryContext context){
-		return new QueryPartValue(context, QueryPartValueType.NULL, null);
+	public static QueryPartValue newNull(){
+		return new QueryPartValue(QueryPartValueType.NULL, null);
 	}
 	
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue newBoolean(CFWQueryContext context, Boolean value){
-		return new QueryPartValue(context, QueryPartValueType.BOOLEAN, value);
+	public static QueryPartValue newBoolean(Boolean value){
+		return new QueryPartValue(QueryPartValueType.BOOLEAN, value);
 	}
 	
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public static QueryPartValue newJson(CFWQueryContext context, JsonElement value){
-		return new QueryPartValue(context, QueryPartValueType.JSON, value);
+	public static QueryPartValue newJson(JsonElement value){
+		return new QueryPartValue(QueryPartValueType.JSON, value);
 	}
 	
 	/******************************************************************************************************
 	 * Creates a new QueryPart based on the type of the JsonElement
 	 ******************************************************************************************************/
-	public static QueryPartValue newFromJsonElement(CFWQueryContext context, JsonElement value){
+	public static QueryPartValue newFromJsonElement(JsonElement value){
 		
 		if(value.isJsonNull()) {
-			return newNull(context); 
+			return newNull(); 
 		}
 		
 		if(value.isJsonPrimitive()) {
 			JsonPrimitive primitive = value.getAsJsonPrimitive();
 			
-			if(primitive.isBoolean()) {		return newBoolean(context, value.getAsBoolean()); }
-			if(primitive.isNumber()) {		return newNumber(context, value.getAsBigDecimal()); }
-			if(primitive.isString()) {		return newString(context, value.getAsString()); }
+			if(primitive.isBoolean()) {		return newBoolean(value.getAsBoolean()); }
+			if(primitive.isNumber()) {		return newNumber(value.getAsBigDecimal()); }
+			if(primitive.isString()) {		return newString(value.getAsString()); }
 		}
 		
-		return newJson(context, value);
+		return newJson(value);
 		
 			
 		

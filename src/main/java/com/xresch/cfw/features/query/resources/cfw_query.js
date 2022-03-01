@@ -153,7 +153,7 @@ function cfw_query_editor_resizeToFitQuery(){
 		$QUERYCODE.css("height", queryHeight+"px");
 		$QUERYCODE.css("width", queryWidth+"px");
 		
-		var editorHeight = queryHeight+10;
+		var editorHeight = queryHeight+20;
 		if(editorHeight > 500){ editorHeight = 500; };
 		
 		$('.query-editor').css('height',editorHeight+"px")

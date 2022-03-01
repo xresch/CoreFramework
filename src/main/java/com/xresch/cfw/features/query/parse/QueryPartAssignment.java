@@ -21,7 +21,7 @@ public class QueryPartAssignment extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	public QueryPartAssignment(CFWQueryContext context, QueryPart leftside, QueryPart rightside) {
-		super(context);
+		super();
 		this.leftside = leftside;
 		this.rightside = rightside;
 	}

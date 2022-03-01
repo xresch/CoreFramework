@@ -39,7 +39,7 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Null
 		//-------------------------------
-		QueryPartValue part = QueryPartValue.newNull(context);
+		QueryPartValue part = QueryPartValue.newNull();
 
 		Assertions.assertTrue(part.isNull());
 		Assertions.assertFalse(part.isBoolean());
@@ -56,7 +56,7 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Number
 		//-------------------------------
-		part = QueryPartValue.newNumber(context, 12.1);
+		part = QueryPartValue.newNumber(12.1);
 
 		Assertions.assertFalse(part.isNull());
 		Assertions.assertFalse(part.isBoolean());
@@ -73,7 +73,7 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Integer
 		//-------------------------------
-		part = QueryPartValue.newNumber(context, 8008);
+		part = QueryPartValue.newNumber(8008);
 		
 		Assertions.assertFalse(part.isNull());
 		Assertions.assertFalse(part.isBoolean());
@@ -90,7 +90,7 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Boolean
 		//-------------------------------
-		part = QueryPartValue.newBoolean(context, false);
+		part = QueryPartValue.newBoolean(false);
 
 		Assertions.assertFalse(part.isNull());
 		Assertions.assertTrue(part.isBoolean());
@@ -107,7 +107,7 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// String
 		//-------------------------------
-		part = QueryPartValue.newString(context, "False");
+		part = QueryPartValue.newString("False");
 
 		Assertions.assertFalse(part.isNull());
 		Assertions.assertFalse(part.isBoolean());
@@ -128,7 +128,7 @@ public class TestCFWQueryParts {
 		JsonObject object = new JsonObject();
 		object.addProperty("key", "value");
 		
-		part = QueryPartValue.newJson(context, object);
+		part = QueryPartValue.newJson(object);
 
 		Assertions.assertFalse(part.isNull());
 		Assertions.assertFalse(part.isBoolean());
@@ -158,13 +158,13 @@ public class TestCFWQueryParts {
 		// Check Array Values
 		//-------------------------------
 		ArrayList<QueryPart> parts = new ArrayList<>();
-		parts.add(QueryPartValue.newNull(context));
-		parts.add(QueryPartValue.newBoolean(context, false));
-		parts.add(QueryPartValue.newNumber(context, 42));
+		parts.add(QueryPartValue.newNull());
+		parts.add(QueryPartValue.newBoolean(false));
+		parts.add(QueryPartValue.newNumber(42));
 		
 		QueryPartArray arrayPart = new QueryPartArray(context, parts);
 		
-		arrayPart.add(QueryPartValue.newString(context, "YEEEHAAAA!!!"));
+		arrayPart.add(QueryPartValue.newString("YEEEHAAAA!!!"));
 		
 		JsonArray array = arrayPart.getAsJsonArray(new EnhancedJsonObject(), true);
 		
@@ -180,7 +180,7 @@ public class TestCFWQueryParts {
 		// Check Index
 		//-------------------------------
 		arrayPart = new QueryPartArray(context);
-		arrayPart.add(QueryPartValue.newNumber(context, 8008));
+		arrayPart.add(QueryPartValue.newNumber(8008));
 		
 		Assertions.assertTrue(arrayPart.isIndex());
 		Assertions.assertEquals(8008, arrayPart.getIndex());
@@ -206,8 +206,8 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Check MemberAccess Values
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "memba");
-		level2 = QueryPartValue.newString(context, "submemba");
+		level1 = QueryPartValue.newString("memba");
+		level2 = QueryPartValue.newString("submemba");
 		
 		QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
 		
@@ -222,9 +222,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Check third level
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "memba");
-		level2 = QueryPartValue.newString(context, "anothermemba");
-		level3 = QueryPartValue.newString(context, "numba");
+		level1 = QueryPartValue.newString("memba");
+		level2 = QueryPartValue.newString("anothermemba");
+		level3 = QueryPartValue.newString("numba");
 		
 		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
 					new QueryPartJsonMemberAccess(context, level2, level3)
@@ -239,7 +239,7 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Check Array Access
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "array");
+		level1 = QueryPartValue.newString("array");
 		level2 = new QueryPartArray(context, 1);
 
 		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
@@ -253,9 +253,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Check Object Array, Third Level
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "objectArray");
+		level1 = QueryPartValue.newString("objectArray");
 		level2 = new QueryPartArray(context, 1);
-		level3 = QueryPartValue.newString(context, "key");
+		level3 = QueryPartValue.newString("key");
 		
 		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
 					new QueryPartJsonMemberAccess(context, level2, level3)
@@ -288,8 +288,8 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Check Set Value
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "memba");
-		level2 = QueryPartValue.newString(context, "submemba");
+		level1 = QueryPartValue.newString("memba");
+		level2 = QueryPartValue.newString("submemba");
 		
 		QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
 		
@@ -306,9 +306,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Set value on third level
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "memba");
-		level2 = QueryPartValue.newString(context, "anothermemba");
-		level3 = QueryPartValue.newString(context, "numba");
+		level1 = QueryPartValue.newString("memba");
+		level2 = QueryPartValue.newString("anothermemba");
+		level3 = QueryPartValue.newString("numba");
 		
 		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
 					new QueryPartJsonMemberAccess(context, level2, level3)
@@ -325,7 +325,7 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Set Value in Array
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "array");
+		level1 = QueryPartValue.newString("array");
 		level2 = new QueryPartArray(context, 1);
 
 		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
@@ -341,9 +341,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Set value in Object Array, Third Level
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "objectArray");
+		level1 = QueryPartValue.newString("objectArray");
 		level2 = new QueryPartArray(context, 1);
-		level3 = QueryPartValue.newString(context, "key");
+		level3 = QueryPartValue.newString("key");
 		
 		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
 					new QueryPartJsonMemberAccess(context, level2, level3)
@@ -360,9 +360,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Set value in Object Array, Third Level
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "objectArray");
+		level1 = QueryPartValue.newString("objectArray");
 		level2 = new QueryPartArray(context, 1);
-		level3 = QueryPartValue.newString(context, "key");
+		level3 = QueryPartValue.newString("key");
 		
 		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
 					new QueryPartJsonMemberAccess(context, level2, level3)
@@ -379,9 +379,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Set value in not existing context
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "newEntry");
-		level2 = QueryPartValue.newString(context, "newSubEntry");
-		level3 = QueryPartValue.newString(context, "key");
+		level1 = QueryPartValue.newString("newEntry");
+		level2 = QueryPartValue.newString("newSubEntry");
+		level3 = QueryPartValue.newString("key");
 		
 		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
 					new QueryPartJsonMemberAccess(context, level2, level3)
@@ -398,9 +398,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Set value in not existing array
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "newArray");
+		level1 = QueryPartValue.newString("newArray");
 		level2 = new QueryPartArray(context, 0);
-		level3 = QueryPartValue.newString(context, "key");
+		level3 = QueryPartValue.newString("key");
 		
 		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
 					new QueryPartJsonMemberAccess(context, level2, level3)
@@ -435,12 +435,12 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Check Set Value to MemberName(String)
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "newMemba");
+		level1 = QueryPartValue.newString("newMemba");
 		
 
 		assignment = new QueryPartAssignment(context
 				, level1
-				, QueryPartValue.newString(context, "Itse not-e mee, itse Luigi!")
+				, QueryPartValue.newString("Itse not-e mee, itse Luigi!")
 			);
 		
 		assignment.assignToJsonObject(new EnhancedJsonObject(object));
@@ -452,12 +452,12 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Check Set Value to MemberName(Integer)
 		//-------------------------------
-		level1 = QueryPartValue.newNumber(context, 10);
+		level1 = QueryPartValue.newNumber(10);
 		
 
 		assignment = new QueryPartAssignment(context
 				, level1
-				, QueryPartValue.newBoolean(context, false)
+				, QueryPartValue.newBoolean(false)
 			);
 		
 		assignment.assignToJsonObject(new EnhancedJsonObject(object));
@@ -471,12 +471,12 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Check Set Value to MemberName(Boolean)
 		//-------------------------------
-		level1 = QueryPartValue.newBoolean(context, true);
+		level1 = QueryPartValue.newBoolean(true);
 		
 
 		assignment = new QueryPartAssignment(context
 				, level1
-				, QueryPartValue.newNumber(context, 123)
+				, QueryPartValue.newNumber(123)
 			);
 		
 		assignment.assignToJsonObject(new EnhancedJsonObject(object));
@@ -489,14 +489,14 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Check Set Value to JsonMemberAccess
 		//-------------------------------
-		level1 = QueryPartValue.newString(context, "memba");
-		level2 = QueryPartValue.newString(context, "submemba");
+		level1 = QueryPartValue.newString("memba");
+		level2 = QueryPartValue.newString("submemba");
 		
 		QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(context, level1, level2);
 		
 		Assertions.assertEquals("memba.submemba", memberAccessPart.determineValue(null).getAsString());
 		
-		assignment = new QueryPartAssignment(context, memberAccessPart, QueryPartValue.newString(context, "Itse not-e mee, itse Luigi!"));
+		assignment = new QueryPartAssignment(context, memberAccessPart, QueryPartValue.newString("Itse not-e mee, itse Luigi!"));
 		
 		assignment.assignToJsonObject(new EnhancedJsonObject(object));
 		
@@ -524,9 +524,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "testEqual"), 
+						QueryPartValue.newString("testEqual"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_EQUAL,
-						QueryPartValue.newString(context, "testEqual"));
+						QueryPartValue.newString("testEqual"));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -539,9 +539,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "testNotEqual"), 
+						QueryPartValue.newString("testNotEqual"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_EQUAL,
-						QueryPartValue.newString(context, "test!="));
+						QueryPartValue.newString("test!="));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -554,9 +554,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "testEqual"), 
+						QueryPartValue.newString("testEqual"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_NOT,
-						QueryPartValue.newString(context, "testEqual"));
+						QueryPartValue.newString("testEqual"));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -569,9 +569,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "testNotEqual"), 
+						QueryPartValue.newString("testNotEqual"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_NOT,
-						QueryPartValue.newString(context, "test!="));
+						QueryPartValue.newString("test!="));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -584,9 +584,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "testContains"), 
+						QueryPartValue.newString("testContains"), 
 						CFWQueryTokenType.OPERATOR_EQUAL,
-						QueryPartValue.newString(context, "estCo"));
+						QueryPartValue.newString("estCo"));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -599,9 +599,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "testContains"), 
+						QueryPartValue.newString("testContains"), 
 						CFWQueryTokenType.OPERATOR_EQUAL,
-						QueryPartValue.newString(context, "notC"));
+						QueryPartValue.newString("notC"));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -627,9 +627,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_EQUAL,
-						QueryPartValue.newNumber(context, 1234.5));
+						QueryPartValue.newNumber(1234.5));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -642,9 +642,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newNumber(context, 1234.5), 
+						QueryPartValue.newNumber(1234.5), 
 						CFWQueryTokenType.OPERATOR_EQUAL_EQUAL,
-						QueryPartValue.newString(context, "1234.5"));
+						QueryPartValue.newString("1234.5"));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -657,9 +657,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_EQUAL,
-						QueryPartValue.newNumber(context, 9234.5));
+						QueryPartValue.newNumber(9234.5));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -674,9 +674,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_NOT,
-						QueryPartValue.newNumber(context, 1234.5));
+						QueryPartValue.newNumber(1234.5));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -689,9 +689,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_NOT,
-						QueryPartValue.newNumber(context, 9234.5));
+						QueryPartValue.newNumber(9234.5));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -706,9 +706,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER,
-						QueryPartValue.newNumber(context, 1234.1));
+						QueryPartValue.newNumber(1234.1));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -721,9 +721,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER,
-						QueryPartValue.newNumber(context, 1234.5));
+						QueryPartValue.newNumber(1234.5));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -736,9 +736,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER,
-						QueryPartValue.newString(context, "1234.1"));
+						QueryPartValue.newString("1234.1"));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -751,9 +751,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER,
-						QueryPartValue.newNumber(context, 1234.9));
+						QueryPartValue.newNumber(1234.9));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -767,9 +767,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.1"), 
+						QueryPartValue.newString("1234.1"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER,
-						QueryPartValue.newNumber(context, 1234.5));
+						QueryPartValue.newNumber(1234.5));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -782,9 +782,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER,
-						QueryPartValue.newNumber(context, 1234.5));
+						QueryPartValue.newNumber(1234.5));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -797,9 +797,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER,
-						QueryPartValue.newNumber(context, 1234.1));
+						QueryPartValue.newNumber(1234.1));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -814,9 +814,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_GREATERTHEN,
-						QueryPartValue.newNumber(context, 1234.1));
+						QueryPartValue.newNumber(1234.1));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -829,9 +829,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_GREATERTHEN,
-						QueryPartValue.newNumber(context, 1234.5));
+						QueryPartValue.newNumber(1234.5));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -846,9 +846,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.1"), 
+						QueryPartValue.newString("1234.1"), 
 						CFWQueryTokenType.OPERATOR_LOWERTHEN,
-						QueryPartValue.newNumber(context, 1234.5));
+						QueryPartValue.newNumber(1234.5));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -861,9 +861,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "1234.5"), 
+						QueryPartValue.newString("1234.5"), 
 						CFWQueryTokenType.OPERATOR_LOWERTHEN,
-						QueryPartValue.newNumber(context, 1234.5));
+						QueryPartValue.newNumber(1234.5));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -889,9 +889,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "156.459"), 
+						QueryPartValue.newString("156.459"), 
 						CFWQueryTokenType.OPERATOR_PLUS,
-						QueryPartValue.newNumber(context, 123300.33));
+						QueryPartValue.newNumber(123300.33));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -903,9 +903,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "234567.89"), 
+						QueryPartValue.newString("234567.89"), 
 						CFWQueryTokenType.OPERATOR_MINUS,
-						QueryPartValue.newNumber(context, 111111.11));
+						QueryPartValue.newNumber(111111.11));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -917,9 +917,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "-345.176"), 
+						QueryPartValue.newString("-345.176"), 
 						CFWQueryTokenType.OPERATOR_MULTIPLY,
-						QueryPartValue.newNumber(context, 6.42));
+						QueryPartValue.newNumber(6.42));
 		
 		evaluationResult = expression.determineValue(null);
 		
@@ -931,9 +931,9 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		expression =
 				new QueryPartBinaryExpression(context,
-						QueryPartValue.newString(context, "-2216.02992"), 
+						QueryPartValue.newString("-2216.02992"), 
 						CFWQueryTokenType.OPERATOR_DIVIDE,
-						QueryPartValue.newNumber(context, -345.176));
+						QueryPartValue.newNumber(-345.176));
 		
 		evaluationResult = expression.determineValue(null);
 		

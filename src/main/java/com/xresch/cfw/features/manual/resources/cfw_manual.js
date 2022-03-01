@@ -4,6 +4,8 @@
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
+
+
 /******************************************************************
  * Global
  ******************************************************************/
@@ -15,6 +17,8 @@ var CFW_MANUAL_GUID_PAGE_MAP = {};
 var CFW_MANUAL_HOST_URL = CFW.http.getHostURL();
 
 var CFW_MANUAL_PRINTVIEW_PAGEPATH_ANCHOR_MAP = {};
+
+
 
 /*********************************************************************************
 * Creates a printView by opening a new window and returns a divElement where you 
@@ -199,7 +203,7 @@ function cfw_manual_addPageToPrintView(parentContainer, page, headerOffset){
 				var enhancedContent = cfw_manual_preparePageForPrint(pageData.content, head);				
 				pageDiv.find('h'+head).first(1).after(enhancedContent);
 				pageDiv.find('pre code').each(function(index, element){
-					hljs.highlightBlock(element);
+					hljs.highlightElement(element);
 				})
 			}
 			CFW_MANUAL_COUNTER_PRINT_IN_PROGRESS--;
@@ -410,7 +414,7 @@ function cfw_manual_printContent(domElement, callback){
 			//------------------------------
 			// Highlight Code Blocks
 			target.find('pre code').each(function(index, element){
-				hljs.highlightBlock(element);
+				hljs.highlightElement(element);
 			})
 			
 			//------------------------------

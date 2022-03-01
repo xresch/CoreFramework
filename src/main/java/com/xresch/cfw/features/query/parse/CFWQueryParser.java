@@ -75,7 +75,7 @@ public class CFWQueryParser {
 	
 	// Stub Class to indicate end of arrays and groups during parsing
 	private class QueryPartEnd extends QueryPart {
-		public QueryPartEnd(CFWQueryContext context) { super(context); }
+		public QueryPartEnd(CFWQueryContext context) { super(); }
 		@Override public QueryPartValue determineValue(EnhancedJsonObject object) { return null; }
 		@Override public JsonObject createDebugObject(EnhancedJsonObject object) { return null; }
 	};
@@ -432,20 +432,20 @@ public class CFWQueryParser {
 			case TEXT_SINGLE_QUOTES:
 			case TEXT_DOUBLE_QUOTES:	
 			case LITERAL_STRING:		addTrace("Create Value Part", "String", firstToken.value());
-										firstPart = QueryPartValue.newString(currentContext, firstToken.value());
+										firstPart = QueryPartValue.newString(firstToken.value());
 										//TODO check lookahead, determine if AccessMember, Assignment, Method etc...
 										break;
 				
 			case LITERAL_BOOLEAN:		addTrace("Create Value Part", "Boolean", firstToken.value());
-										firstPart = QueryPartValue.newBoolean(currentContext, firstToken.valueAsBoolean());
+										firstPart = QueryPartValue.newBoolean(firstToken.valueAsBoolean());
 										break;
 									
 			case LITERAL_NUMBER:		addTrace("Create Value Part", "Number", firstToken.value());
-										firstPart = QueryPartValue.newNumber(currentContext, firstToken.valueAsNumber());
+										firstPart = QueryPartValue.newNumber(firstToken.valueAsNumber());
 										break;
 								
 			case NULL: 					addTrace("Create Value Part", "NULL", firstToken.value());
-										firstPart = QueryPartValue.newNull(currentContext);
+										firstPart = QueryPartValue.newNull();
 										break;
 	
 			//=======================================================
@@ -479,7 +479,7 @@ public class CFWQueryParser {
 					}
 				}
 				
-				firstPart = QueryPartValue.newJson(currentContext, CFW.JSON.fromJson(jsonBuilder.toString()) );
+				firstPart = QueryPartValue.newJson(CFW.JSON.fromJson(jsonBuilder.toString()) );
 				
 			break;
 				

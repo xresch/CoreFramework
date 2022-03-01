@@ -4016,12 +4016,4 @@ CFW.utils.chainedOnload(function () {
 
 		return false;
 	});
-	  
-	//-----------------------------------
-	// Highlight Code Blocks
-	$(document).ready(function() {
-		$('pre code').each(function(i, block) {
-		    hljs.highlightBlock(block);
-		});
-	});
 })

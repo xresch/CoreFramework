@@ -39,6 +39,7 @@ If you want to specify a default case, use 'true' as the condition.
 	[(VALUE >= 80), "cfw-danger"] 
 	[(VALUE >= 40), "cfw-warning"] 
 	[(VALUE >= 0), "cfw-excellent"] 
+| sort VALUE reverse=true
 | formatfield 
 	VALUE=postfix,"%" 
 	VALUE=css,"font-size","24px"

@@ -1,7 +1,6 @@
 package com.xresch.cfw.features.query.parse;
 
 import com.google.gson.JsonObject;
-import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryMemoryException;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
@@ -13,13 +12,12 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 public abstract class QueryPart {
 	
 	private int cursorPosition = 0;
-	private CFWQueryContext context;
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public QueryPart(CFWQueryContext context) {
-		this.context = context;
+	public QueryPart() {
+
 	}
 	
 	/***********************************************************************************************
@@ -50,21 +48,7 @@ public abstract class QueryPart {
 	public int position() {
 		return cursorPosition;
 	}
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public CFWQueryContext context() {
-		return context;
-	}
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public void context(CFWQueryContext context) {
-		this.context = context;
-	}
-	
+		
 	
 	/***********************************************************************************************
 	 * 

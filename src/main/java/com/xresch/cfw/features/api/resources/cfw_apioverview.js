@@ -36,7 +36,7 @@ function cfw_apioverview_formResult(data, status, xhr){
 			+ serialized;
 	sampleURL.html('<a target="_blank" href="'+url+'">'+url+'</a>');
 
-	hljs.highlightBlock(sampleURL.get(0));
+	hljs.highlightElement(sampleURL.get(0));
 	
 	//-------------------------------
 	// Sample CURL
@@ -44,7 +44,7 @@ function cfw_apioverview_formResult(data, status, xhr){
 	var cookie = JSDATA.id;
 	var curlString = 'curl -H "Cookie: CFWSESSIONID='+cookie+'" -X GET "'+url+'"';
 	curl.text(curlString);
-	hljs.highlightBlock(curl.get(0));
+	hljs.highlightElement(curl.get(0));
 	//-------------------------------
 	// Sample Response
 	var responseElement = $('#cfw-apioverview-response');
@@ -168,9 +168,9 @@ function cfw_apioverview_printLoginPanel(parent){
 	//---------------------------
 	// Highlight Code Blocks
 	var codeblocks = $(".cfwApiOverviewCode");
-	hljs.highlightBlock(codeblocks.get(0));
-	hljs.highlightBlock(codeblocks.get(1));
-	hljs.highlightBlock(codeblocks.get(2));
+	hljs.highlightElement(codeblocks.get(0));
+	hljs.highlightElement(codeblocks.get(1));
+	hljs.highlightElement(codeblocks.get(2));
 }
 /******************************************************************
  * Print the overview of the apis .

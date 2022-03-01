@@ -26,6 +26,7 @@ public class QueryPartBinaryExpression extends QueryPart {
 	
 	private BigDecimal BIG_ZERO = new BigDecimal(0);
 	
+	private CFWQueryContext context;
 		
 	/******************************************************************************************************
 	 * Create an instance of the Binary Expression.
@@ -35,7 +36,8 @@ public class QueryPartBinaryExpression extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	public QueryPartBinaryExpression(CFWQueryContext context, QueryPart leftside, CFWQueryTokenType type, QueryPart rightside) {
-		super(context);
+
+		this.context = context;
 		this.leftside = leftside;
 		this.type = type;
 		this.rightside = rightside;
@@ -80,7 +82,7 @@ public class QueryPartBinaryExpression extends QueryPart {
 		if(leftside != null) { 
 			leftValue = leftside.determineValue(object);
 		}else {
-			leftValue = QueryPartValue.newNull(this.context());
+			leftValue = QueryPartValue.newNull();
 		}
 
 		
@@ -90,7 +92,7 @@ public class QueryPartBinaryExpression extends QueryPart {
 		if(rightside != null) { 
 			rightValue = rightside.determineValue(object);
 		}else {
-			rightValue = QueryPartValue.newNull(this.context());
+			rightValue = QueryPartValue.newNull();
 		}
 		
 		//-----------------------------------------
@@ -99,7 +101,7 @@ public class QueryPartBinaryExpression extends QueryPart {
 			if(leftValue.isString()) {
 				String potentialFieldname = leftValue.getAsString();
 				if(object.has(potentialFieldname)) {
-					leftValue = QueryPartValue.newFromJsonElement(this.context(), object.get(potentialFieldname));
+					leftValue = QueryPartValue.newFromJsonElement(object.get(potentialFieldname));
 				}
 			}
 		}
@@ -110,12 +112,12 @@ public class QueryPartBinaryExpression extends QueryPart {
 			if(rightValue.isString()) {
 				String potentialFieldname = rightValue.getAsString();
 				if(object.has(potentialFieldname)) {
-					rightValue = QueryPartValue.newFromJsonElement(this.context(), object.get(potentialFieldname));
+					rightValue = QueryPartValue.newFromJsonElement(object.get(potentialFieldname));
 				}
 			}
 		}
 		
-		QueryPartValue evaluatedExpression = evaluateBinaryExpression(leftValue, rightValue);	
+		QueryPartValue evaluatedExpression = evaluateBinaryExpression(context, leftValue, rightValue);	
 		
 		return evaluatedExpression;
 	}
@@ -168,7 +170,7 @@ public class QueryPartBinaryExpression extends QueryPart {
 	 * If both values are null 
 	 *
 	 ******************************************************************************************************/
-	private QueryPartValue evaluateBinaryExpression(QueryPartValue leftValue, QueryPartValue rightValue){
+	private QueryPartValue evaluateBinaryExpression(CFWQueryContext context, QueryPartValue leftValue, QueryPartValue rightValue){
 			
 		JsonElement evalResult = null;
 		
@@ -260,7 +262,7 @@ public class QueryPartBinaryExpression extends QueryPart {
 						Pattern pattern = Pattern.compile(rightValue.getAsString());
 						evalResult = new JsonPrimitive(pattern.matcher(leftValue.getAsString()).find());
 					}catch(Exception e) {
-						this.context().addMessage(MessageType.ERROR, e.getMessage());
+						context.addMessage(MessageType.ERROR, e.getMessage());
 					}
 				}
 			break;
@@ -316,7 +318,7 @@ public class QueryPartBinaryExpression extends QueryPart {
 						try {
 							evalResult = new JsonPrimitive(leftDeci.divide(rightDeci, 6, RoundingMode.HALF_UP));
 						}catch(Exception e) {
-							this.context().addMessage(MessageType.ERROR, e.getMessage());
+							context.addMessage(MessageType.ERROR, e.getMessage());
 						}
 					}
 				}
@@ -336,9 +338,9 @@ public class QueryPartBinaryExpression extends QueryPart {
 		}
 		
 		if(evalResult != null) {
-			return QueryPartValue.newFromJsonElement(this.context(), evalResult);
+			return QueryPartValue.newFromJsonElement(evalResult);
 		}else {
-			return QueryPartValue.newNull(this.context());
+			return QueryPartValue.newNull();
 		}
 	}
 		

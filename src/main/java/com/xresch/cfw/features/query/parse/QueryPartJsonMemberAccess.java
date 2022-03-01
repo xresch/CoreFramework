@@ -36,7 +36,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	public QueryPartJsonMemberAccess(CFWQueryContext context, QueryPart leftside, QueryPart rightside) {
-		super(context);
+		super();
 		this.leftside = leftside;
 		this.rightside = rightside;
 	}
@@ -62,15 +62,14 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	@Override
 	public QueryPartValue determineValue(EnhancedJsonObject object) throws CFWQueryMemoryException {	
 		if(object == null) {
-			return QueryPartValue.newString(this.context(), leftside+"."+rightside.determineValue(null));
+			return QueryPartValue.newString(leftside+"."+rightside.determineValue(null));
 		}else {				
 			return getValueOfMember(object, object.getWrappedObject());
 		}
 	}
 	
 	public QueryPartValue getValueOfMember(EnhancedJsonObject rootObject, JsonElement currentElement) {
-		return QueryPartValue.newFromJsonElement(this.context(), 
-				accessMemberRecursively(rootObject, currentElement)
+		return QueryPartValue.newFromJsonElement(accessMemberRecursively(rootObject, currentElement)
 		);
 		
 	}

@@ -25,6 +25,7 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
  **************************************************************************************************************/
 public class QueryPartGroup extends QueryPart {
 	
+	private CFWQueryContext context;
 	private ArrayList<QueryPart> partsGroup;
 	private JsonArray jsonArray = null;
 	private ArrayList<String> stringArray = null;
@@ -35,14 +36,14 @@ public class QueryPartGroup extends QueryPart {
 	// true if the array was embraced with square braces
 	// Used in add()-method to determine wether the array should be unwrapped when added
 	private boolean embracedArray = false;
-	
+
 	
 	
 	/******************************************************************************************************
 	 *  
 	 ******************************************************************************************************/
 	public QueryPartGroup(CFWQueryContext context) {
-		super(context);
+		this.context = context;
 		this.partsGroup = new ArrayList<>();
 	}
 	
@@ -60,7 +61,7 @@ public class QueryPartGroup extends QueryPart {
 	 *  
 	 ******************************************************************************************************/
 	public QueryPartGroup(CFWQueryContext context, QueryPart... parts) {
-		super(context);
+		super();
 		for(QueryPart part : parts) {
 			this.add(part);
 		}
@@ -71,7 +72,7 @@ public class QueryPartGroup extends QueryPart {
 	 ******************************************************************************************************/
 	public QueryPartGroup(CFWQueryContext context, int index) {
 		this(context);
-		this.add(QueryPartValue.newNumber(context, index));
+		this.add(QueryPartValue.newNumber(index));
 	}
 	
 	/******************************************************************************************************
@@ -114,7 +115,7 @@ public class QueryPartGroup extends QueryPart {
 					partsGroup.clear();
 					partsGroup.add(
 						new QueryPartBinaryExpression(
-							this.context()
+							this.context
 						  , existingPart
 						  , CFWQueryTokenType.OPERATOR_AND
 						  , part)
@@ -158,7 +159,7 @@ public class QueryPartGroup extends QueryPart {
 		
 		//Return evaluated array by default
 		JsonArray array = getAsJsonArray(object, true);
-		return QueryPartValue.newJson(this.context(), array);
+		return QueryPartValue.newJson(array);
 		
 	}
 	

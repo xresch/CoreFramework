@@ -660,7 +660,7 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 	//-----------------------------------
 	// Handle MultiDisplay
 	var multidisplayColumns=1;
-	console.log("queryResultsPayload[0].globals.multidisplay: "+queryResultsPayload[0].globals.multidisplay);
+	
 	if(queryResultsPayload[0].globals.multidisplay != null){
 		multidisplayColumns = queryResultsPayload[0].globals.multidisplay;
 	}
@@ -685,9 +685,8 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 		cfw_query_renderQueryResult(currentColumn, currentResults);
 		currentRow.append(currentColumn);
 		
-		console.log("(i+1) % multidisplayColumns"+((i+1) % multidisplayColumns) );
 		if((i+1) % multidisplayColumns == 0){
-			console.log("Hit")
+
 			currentRow = $('<div class="row">');
 			resultTarget.append(currentRow);
 		}

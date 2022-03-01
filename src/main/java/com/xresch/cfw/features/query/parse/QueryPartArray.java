@@ -36,7 +36,7 @@ public class QueryPartArray extends QueryPart {
 	 *  
 	 ******************************************************************************************************/
 	public QueryPartArray(CFWQueryContext context, ArrayList<QueryPart> parts) {
-		super(context);
+		super();
 		this.partsArray = parts;
 	}
 	
@@ -62,7 +62,7 @@ public class QueryPartArray extends QueryPart {
 	 ******************************************************************************************************/
 	public QueryPartArray(CFWQueryContext context, int index) {
 		this(context);
-		this.add(QueryPartValue.newNumber(context, index));
+		this.add(QueryPartValue.newNumber(index));
 	}
 	
 	/******************************************************************************************************
@@ -95,7 +95,7 @@ public class QueryPartArray extends QueryPart {
 		
 		JsonArray array = getAsJsonArray(object, true);
 		
-		return QueryPartValue.newJson(this.context(), array);
+		return QueryPartValue.newJson(array);
 	}
 	
 
