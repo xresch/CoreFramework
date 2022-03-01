@@ -66,7 +66,7 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 	public String descriptionSyntaxDetailsHTML() {
 		return "<p><b>condition:&nbsp;</b>The condition to be true for the record to be colored.</p>"
 			  +"<p><b>bgcolor:&nbsp;</b>The color to apply for the background.</p>"
-			  +"<p><b>textcolor:&nbsp;</b>The color to apply for the text.</p>"
+			  +"<p><b>textcolor:&nbsp;</b>The color to apply for the text.(Optional, default is white)</p>"
 				;
 	}
 
@@ -165,8 +165,6 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 							record.addProperty(FIELDNAME_TEXT_STYLE, textcolor);
 							break;
 						}
-					}else {
-						this.getParent().getContext().addMessage(MessageType.WARNING, "formatrecord: Some condition has not evaluated to a boolean value. You might want to check your expression.");
 					}
 				}
 				

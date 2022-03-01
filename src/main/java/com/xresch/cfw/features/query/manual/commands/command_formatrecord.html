@@ -6,7 +6,7 @@ All conditions you specify are evaluated in order like. The first condition that
 If you want to specify a default case, use 'true' as the condition. 
 </p>
 
-<p>The following example colors the records based on the VALUE field. Also it removes the default format from LIKES_TIRAMISU.
+<p>The following example colors the records based on the VALUE field with the cfw threshhold colors. Also it removes the default format from LIKES_TIRAMISU.
 </p>
 <pre><code class="language-cfwquery">| source random records=1000
 | remove _source
@@ -18,5 +18,18 @@ If you want to specify a default case, use 'true' as the condition.
 	[(VALUE >= 10), "cfw-excellent"] 
 	[true, "cfw-gray"] 
 | formatfield LIKES_TIRAMISU=none</code></pre>
+
+
+<p>You are free to use any binary expression you like for the condition. For the colors you can use either a 'cfw-' color class, a css color or a hex-color. 
+</p>
+<pre><code class="language-cfwquery">| source random records=1000
+| remove _source
+| formatrecord 
+	[(FIRSTNAME ~='^He'), "#332288"] 
+	[(VALUE >= 80 OR LIKES_TIRAMISU==false), "red"] 
+	[(LIKES_TIRAMISU==true), "green"] 
+	[true, "cfw-gray"]
+| formatfield LIKES_TIRAMISU=none</code></pre>
+
 
 

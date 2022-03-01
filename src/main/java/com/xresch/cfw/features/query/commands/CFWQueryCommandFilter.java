@@ -157,8 +157,6 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 					if(evalResult.getAsBoolean()) {
 						outQueue.add(record);
 					}
-				}else {
-					this.getParent().getContext().addMessage(MessageType.WARNING, "filter: Something has not evaluated to a boolean value. You might want to check your expression.");
 				}
 			}
 		
