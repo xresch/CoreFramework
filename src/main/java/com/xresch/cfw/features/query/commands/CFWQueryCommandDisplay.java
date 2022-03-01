@@ -59,7 +59,8 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "display as=<asOption> [visiblefields=<arrayOfFieldnames>] [titlefields=<arrayOfFieldnames>] [titleformat=<titleformat>] [menu=<showMenu>]";
+		return "display as=<asOption> [visiblefields=<arrayOfFieldnames>] [titlefields=<arrayOfFieldnames>]"
+				+"\n[titleformat=<titleformat>] [menu=<showMenu>] [zoom=<zoomNumber>]";
 	}
 	
 	/***********************************************************************************************
@@ -80,6 +81,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 				+"<p><b>arrayOfFieldnames:&nbsp;</b>(Optional) Array of the fieldnames.</p>"	
 				+"<p><b>titleformat:&nbsp;</b>(Optional) Format of the title. Use '{0}', '{1}'... as placeholders for field values.</p>"	
 				+"<p><b>showMenu:&nbsp;</b>(Optional) True or false to toggle the menu and pagination.</p>"	
+				+"<p><b>zoomNumber:&nbsp;</b>(Optional) Integer value, zoom in percent to resize the displayed data.</p>"	
 				;
 	}
 
@@ -117,10 +119,12 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 					String value = valuePart.getAsString();
 					value = CFW.Security.sanitizeHTML(value);
 					displaySettings.addProperty(propertyName, value);
-				}else if(valuePart.isJsonArray()) {
-					displaySettings.add(propertyName, valuePart.getAsJsonArray());
 				}else if(valuePart.isBoolean()) {
 					displaySettings.addProperty(propertyName, valuePart.getAsBoolean());
+				}else if(valuePart.isNumber()) {
+					displaySettings.addProperty(propertyName, valuePart.getAsNumber());
+				}else if(valuePart.isJsonArray()) {
+					displaySettings.add(propertyName, valuePart.getAsJsonArray());
 				}
 			
 			}else {

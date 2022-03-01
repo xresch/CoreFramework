@@ -687,7 +687,7 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 		
 		if((i+1) % multidisplayColumns == 0){
 
-			currentRow = $('<div class="row">');
+			currentRow = $('<div class="row m-0">');
 			resultTarget.append(currentRow);
 		}
 	}
@@ -744,14 +744,23 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	if(queryResult.displaySettings.textstylefield != undefined){
 		textstylefield = queryResult.displaySettings.textstylefield;
 	}
+	//-----------------------------------
+	// Zoom
+	if(queryResult.displaySettings.zoom != null){
+		var zoomString = ""+queryResult.displaySettings.zoom;
+		if(!zoomString.endsWith("%")){ zoomString += "%";}
+		targetDiv.css('zoom', zoomString);
+	}
+	
 	
 	//-----------------------------------
 	// Get Renderer Settings
-	
 	var rendererName = "dataviewer";
 	if(queryResult.displaySettings.menu == false && queryResult.displaySettings.as != null){
 		rendererName = queryResult.displaySettings.as.trim().toLowerCase();
 	}
+	
+	
 		
 	rendererIndex = cfw_query_getRendererIndex(queryResult);		
 	labels = cfw_query_createLables(queryResult);	
