@@ -820,7 +820,7 @@ function cfw_renderer_table(renderDef) {
 		
 		//-------------------------
 		// Add Styles
-		renderDef.colorizeElement(currentRecord, row, "bg");
+		renderDef.colorizeElement(currentRecord, row, "table");
 		renderDef.colorizeElement(currentRecord, row, "text");
 		
 		// Set text to white if bg is set but textcolor not 

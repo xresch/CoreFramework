@@ -101,10 +101,9 @@ public class QueryPartArray extends QueryPart {
 
 	/******************************************************************************************************
 	 * Returns a copy of the parts as added to the Array, nothing will be evaluated.
-	 * @param getFromCache TODO
 	 * 
 	 ******************************************************************************************************/
-	public ArrayList<QueryPart> getAsParts(boolean getFromCache) {
+	public ArrayList<QueryPart> getAsParts() {
 		
 		ArrayList<QueryPart> partsArrayClone = new ArrayList<>();
 		partsArrayClone.addAll(partsArray);

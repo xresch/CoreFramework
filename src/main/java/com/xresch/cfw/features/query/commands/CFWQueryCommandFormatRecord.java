@@ -2,8 +2,8 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -14,23 +14,24 @@ import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
-import com.xresch.cfw.features.query.parse.QueryPartAssignment;
+import com.xresch.cfw.features.query.parse.QueryPartBinaryExpression;
 import com.xresch.cfw.features.query.parse.QueryPartGroup;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
-public class CFWQueryCommandFilter extends CFWQueryCommand {
+public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 	
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandFilter.class.getName());
-	
-	private QueryPartGroup evaluationGroup;
+	private static final String FIELDNAME_TEXT_STYLE = "_textcolor";
+
+	private static final String FIELDNAME_BG_STYLE = "_bgcolor";
+
+	ArrayList<ArrayList<QueryPart>> conditions = new ArrayList<>();
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandFilter(CFWQuery parent) {
+	public CFWQueryCommandFormatRecord(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -39,7 +40,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"filter", "grep"};
+		return new String[] {"formatrecord", "recordformat"};
 	}
 
 	/***********************************************************************************************
@@ -47,7 +48,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Filters the record based on field values.";
+		return "Formats the record based on field values.";
 	}
 
 	/***********************************************************************************************
@@ -55,7 +56,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "filter <fieldname><operator><value> [<fieldname><operator><value> ...]";
+		return "formatrecord [<condition>, <bgcolor>, <textcolor>] ...";
 	}
 	
 	/***********************************************************************************************
@@ -63,21 +64,9 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>fieldname:&nbsp;</b>The name of the field to evaluate the value against.</p>"
-			  +"<p><b>value:&nbsp;</b>The value to check.</p>"
-			  +"<p><b>operator:&nbsp;</b>The operator, any of:</p>"
-			  +"<ul>"
-			 
-			  + "	<li><b>'==':&nbsp;</b> Checks if the values are equal.</li>"
-			  + "	<li><b>'!=':&nbsp;</b> Checks if the values are not equal.</li>"
-			  + "	<li><b>'~=':&nbsp;</b> Checks if the field matches a regular expression.</li>"
-			  + "	<li><b>'&lt;=':&nbsp;</b> Checks if the field value is smaller or equals.</li>"
-			  + "	<li><b>'&gt;=':&nbsp;</b> Checks if the field value is greater or equals.</li>"
-			  + "	<li><b>'&lt;':&nbsp;</b>  Checks if the field value is smaller.</li>"
-			  + "	<li><b>'&gt;':&nbsp;</b>  Checks if the field value is greater.</li>"
-			  + "	<li><b>AND:&nbsp;</b> Used to combine two or more conditions. Condition matches only if both sides are true.</li>"
-			  + "	<li><b>OR:&nbsp;</b>  Used to combine two or more conditions. Condition matches if either side is true.</li>"
-			  + "</ul>"
+		return "<p><b>condition:&nbsp;</b>The condition to be true for the record to be colored.</p>"
+			  +"<p><b>bgcolor:&nbsp;</b>The color to apply for the background.</p>"
+			  +"<p><b>textcolor:&nbsp;</b>The color to apply for the text.</p>"
 				;
 	}
 
@@ -87,7 +76,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_filter.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_formatrecord.html");
 	}
 
 	/***********************************************************************************************
@@ -96,9 +85,13 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	@Override
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
 		
-		if(evaluationGroup == null) {
-			evaluationGroup = new QueryPartGroup(parent.getContext());
-		}
+		//------------------------------------------
+		// set Style fields
+		JsonObject displaySettings = this.getParent().getContext().getDisplaySettings();
+		displaySettings.addProperty("bgstylefield", FIELDNAME_BG_STYLE);
+		displaySettings.addProperty("textstylefield", FIELDNAME_TEXT_STYLE);
+		
+	
 		//------------------------------------------
 		// Get Parameters
 		
@@ -106,16 +99,15 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 			
 			QueryPart currentPart = parts.get(i);
 			
-			// BinaryExpressions, Groups and Booleans
-			if(QueryPartGroup.partEvaluatesToBoolean(currentPart)) {
-				evaluationGroup.add(currentPart);
-								
-			}else if(currentPart instanceof QueryPartArray) {
-				setAndValidateQueryParts(parser, ((QueryPartArray)currentPart).getAsParts());
-			}else if(currentPart instanceof QueryPartAssignment) { 
-				parser.throwParseException("filter: Single equal '=' is not supported. Please use '==' instead.", currentPart);
+			if(currentPart instanceof QueryPartArray) {
+				ArrayList<QueryPart> conditionDefinition = ((QueryPartArray)currentPart).getAsParts();
+				if(conditionDefinition.size() > 0) {
+					conditions.add(conditionDefinition);
+				}
+				
+				
 			}else {
-				parser.throwParseException("filter: Only binary expressions allowed.", currentPart);
+				parser.throwParseException("formatrecord: Only array expression allowed.", currentPart);
 			}
 		}
 		
@@ -127,7 +119,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
 		result.setHTMLDescription(
-				"<b>Hint:&nbsp;</b>Filter by fields by using binary operators(== != >= <= > <).<br>"
+				"<b>Hint:&nbsp;</b>Create conditions using binary operators(== != >= <= > <).<br>"
 				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
 			);
 	}
@@ -143,27 +135,44 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 		while(keepPolling()) {
 			EnhancedJsonObject record = inQueue.poll();
 			
-			if(evaluationGroup == null || evaluationGroup.size() == 0) {
+			if(conditions == null || conditions.size() == 0) {
 				outQueue.add(record);
 			}else {
-				QueryPartValue evalResult = evaluationGroup.determineValue(record);
 				
-//				if(!printed) { 
-//					System.out.println(CFW.JSON.toJSONPrettyDebugOnly(evaluationGroup.createDebugObject(record)));
-//					printed = true;
-//				} 
-				
-				if(evalResult.isBoolOrBoolString()) {
-					if(evalResult.getAsBoolean()) {
-						outQueue.add(record);
+				for(ArrayList<QueryPart> conditionDefinition : conditions) {
+
+					QueryPart condition = conditionDefinition.get(0);
+					QueryPartValue evalResult = condition.determineValue(record);
+
+					if(evalResult.isBoolOrBoolString()) {
+
+						if(evalResult.getAsBoolean()) {
+
+							//-------------------------------
+							// Get BG Color
+							String bgcolor = ""; 	
+							if(conditionDefinition.size() > 1) { 
+								bgcolor = conditionDefinition.get(1).determineValue(record).getAsString();
+							}
+							//-------------------------------
+							// Get Text Color
+							String textcolor = "white";
+							if(conditionDefinition.size() > 2) { 
+								textcolor = conditionDefinition.get(2).determineValue(record).getAsString();
+							}
+							
+							record.addProperty(FIELDNAME_BG_STYLE, bgcolor);
+							record.addProperty(FIELDNAME_TEXT_STYLE, textcolor);
+							break;
+						}
+					}else {
+						this.getParent().getContext().addMessage(MessageType.WARNING, "formatrecord: Some condition has not evaluated to a boolean value. You might want to check your expression.");
 					}
-				}else {
-					this.getParent().getContext().addMessage(MessageType.WARNING, "filter: Something has not evaluated to a boolean value. You might want to check your expression.");
 				}
+				
+				outQueue.add(record);
 			}
 		
-			
-			
 		}
 		
 		this.setDoneIfPreviousDone();

@@ -1,0 +1,22 @@
+
+<p>Formats the record with colors based on the conditions you specify.
+The conditions are specified as arrays. The first element of the array is the condition to evaluate. 
+The seconds is the background color and the third is the text color.
+All conditions you specify are evaluated in order like. The first condition that matches is applied and following are ignored. 
+If you want to specify a default case, use 'true' as the condition. 
+</p>
+
+<p>The following example colors the records based on the VALUE field. Also it removes the default format from LIKES_TIRAMISU.
+</p>
+<pre><code class="language-cfwquery">| source random records=1000
+| remove _source
+| formatrecord 
+	[(VALUE >= 80), "cfw-danger"] 
+	[(VALUE >= 60), "cfw-emergency"]  
+	[(VALUE >= 40), "cfw-warning", "purple"] 
+	[(VALUE >= 20), "cfw-good"] 
+	[(VALUE >= 10), "cfw-excellent"] 
+	[true, "cfw-gray"] 
+| formatfield LIKES_TIRAMISU=none</code></pre>
+
+

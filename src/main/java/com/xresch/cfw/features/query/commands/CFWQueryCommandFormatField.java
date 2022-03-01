@@ -33,8 +33,6 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	
 	private static final String FORMATTER_NAME_EA_STERE_GGS = "ea"+"stere"+"ggs";
 
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandFormatField.class.getName());
-	
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
 		

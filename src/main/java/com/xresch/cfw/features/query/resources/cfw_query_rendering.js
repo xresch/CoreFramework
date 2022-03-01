@@ -82,7 +82,7 @@ function cfw_query_customizerCreateDefault(){
 			
 			let trimmed = value.trim();
 			if(trimmed == ""){	return "&nbsp;"; }
-			if(trimmed.startsWith('http')){	return '<a href="'+value+'" target="blank">'+value+'</a>'; }
+			if(trimmed.startsWith('http')){	return '<a href="'+value+'" target="blank" style="color: unset;">'+value+'</a>'; }
 			
 			return $('<span>').text(value);
 			
@@ -103,13 +103,13 @@ function cfw_query_customizerCreateDefault(){
 		// Booleans
 			if(typeof value === "boolean"){
 			let booleanClass = value ? 'bg-success' : 'bg-danger';
-			return '<span class="format-base text-white text-center '+booleanClass+' m-1">'+value+'</span>';
+			return '<span class="format-base text-white text-center '+booleanClass+' m-0">'+value+'</span>';
 		}
 	
 		//----------------------------------------------
 		// Nulls
 		if(value === null || value === undefined){
-			return '<span class="badge badge-primary m-1">NULL</span>';
+			return '<span class="format-base text-white text-center badge-primary m-0">NULL</span>';
 		}
 		
 		//----------------------------------------------
@@ -481,7 +481,8 @@ function cfw_query_formatLink(span, value, linkText, displayAs, icon, target){
 	
 	var linkElement = $('<a>'+linkText+'</a>');
 	linkElement.attr('href', value)
-			   .attr('target', value);
+			   .attr('target', value)
+			   .css('color', 'unset');
 	
 	if(displayAs == 'button'){
 		linkElement.attr('role', 'button')
@@ -734,6 +735,18 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	}
 	
 	//-----------------------------------
+	// Get StyleFields
+	var bgstylefield = null;
+	if(queryResult.displaySettings.bgstylefield != undefined){
+		bgstylefield = queryResult.displaySettings.bgstylefield;
+	}
+	
+	var textstylefield = null;
+	if(queryResult.displaySettings.textstylefield != undefined){
+		textstylefield = queryResult.displaySettings.textstylefield;
+	}
+	
+	//-----------------------------------
 	// Get Renderer Settings
 	
 	var rendererName = "dataviewer";
@@ -755,8 +768,8 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	var rendererSettings = {
 			data: queryResult.results,
 		 	//idfield: 'PK_ID',
-		 	bgstylefield: null,
-		 	textstylefield: null,
+		 	bgstylefield: bgstylefield,
+		 	textstylefield: textstylefield,
 		 	titlefields: titleFields,
 		 	titleformat: titleFormat,
 		 	visiblefields: visibleFields,

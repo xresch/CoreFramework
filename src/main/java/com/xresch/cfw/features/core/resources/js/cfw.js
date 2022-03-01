@@ -165,7 +165,7 @@ function cfw_utils_randomInt(min, max) {
  *      - a CSS color name
  *      - an RGB color code starting with '#'
  *      - CFW color class starting with 'cfw-'
- * @param type either 'bg' | 'text' | 'border' 
+ * @param type either 'bg' | 'text' | 'border' | 'table'
  * @param borderSize Optional size definition for the border.
  *************************************************************/
 function cfw_colors_colorizeElement(element, color, type, borderSize){
@@ -203,6 +203,14 @@ function cfw_colors_colorizeElement(element, color, type, borderSize){
 		}else{
 			
 			$element.css("border", size+" solid "+color);
+		}
+		return;
+	}else if(type == 'table'){
+		
+		if(color.startsWith("cfw-")){
+			$element.addClass("table-"+color);
+		}else{
+			$element.css("background-color", color);
 		}
 		return;
 	}
