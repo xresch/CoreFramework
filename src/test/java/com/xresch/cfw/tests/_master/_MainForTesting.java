@@ -3,8 +3,8 @@ package com.xresch.cfw.tests._master;
 import java.util.Locale;
 import java.util.logging.Logger;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
@@ -18,6 +18,7 @@ import com.xresch.cfw.spi.CFWAppInterface;
 import com.xresch.cfw.tests.assets.servlets.FormTestServlet;
 import com.xresch.cfw.tests.assets.servlets.GeneralTestServlet;
 import com.xresch.cfw.tests.features.contextsettings.TestMockupContextSettings;
+
 
 @Tag("development")
 public class _MainForTesting implements CFWAppInterface {

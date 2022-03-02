@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.jupiter.params.shadow.com.univocity.parsers.common.fields.FieldNameSelector;
-
 import com.google.gson.JsonArray;
 /**************************************************************************************************************
  * This class is used to manage fieldnames during query execution.

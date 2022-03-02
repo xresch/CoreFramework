@@ -243,16 +243,49 @@
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
 			<version>5.6.2</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
-
+		
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
 			<version>5.6.2</version>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons -->
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-commons</artifactId>
+		    <version>1.8.2</version>
+		    <scope>provided</scope>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-suite-api -->
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-suite-api</artifactId>
+		    <version>1.8.2</version>
+		    <scope>provided</scope>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-suite-engine -->
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-suite-engine</artifactId>
+		    <version>1.8.2</version>
+		    <scope>provided</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-suite-commons -->
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-suite-commons</artifactId>
+		    <version>1.8.2</version>
+		    <scope>runtime</scope>
+		</dependency>
+
 		
 		<!--dependency>
 			<groupId>com.xresch</groupId>
@@ -266,7 +299,7 @@
 		    <groupId>org.seleniumhq.selenium</groupId>
 		    <artifactId>selenium-java</artifactId>
 		    <version>4.1.2</version>
-		    <scope>test</scope>
+		    <scope>provided</scope>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/io.github.bonigarcia/webdrivermanager -->
@@ -274,7 +307,7 @@
 		    <groupId>io.github.bonigarcia</groupId>
 		    <artifactId>webdrivermanager</artifactId>
 		    <version>5.0.3</version>
-		    <scope>test</scope>
+		    <scope>provided</scope>
 		</dependency>
 		
 		
@@ -386,7 +419,7 @@
 						</goals>
 						<configuration>
 							<outputDirectory>${project.build.directory}/lib</outputDirectory>
-							<excludeScope>provided</excludeScope>
+       						<excludeScope>provided</excludeScope>
 						</configuration>
 					</execution>
 				</executions>
