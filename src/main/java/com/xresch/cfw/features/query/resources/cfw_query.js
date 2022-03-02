@@ -31,7 +31,7 @@ function cfw_query_execute(){
 	cfw_query_highlightExecuteButton(false);
 	cfw_ui_toogleLoader(true);	
 	
-	CFW.http.getJSON(CFW_QUERY_URL, params, 
+	CFW.http.postJSON(CFW_QUERY_URL, params, 
 		function(data) {
 			cfw_ui_toogleLoader(false);		
 				
@@ -141,9 +141,9 @@ function cfw_query_editor_resizeToFitQuery(){
 		var queryLineCount = (value.match(/\n/g) || []).length;
 		
 		// minimum height 7 lines
-		if(queryLineCount < 6) {	queryLineCount = 6; }
+		if(queryLineCount < 5) {	queryLineCount = 6; }
 		
-		var queryHeight = (queryLineCount+1) * 16;
+		var queryHeight = (queryLineCount+2) * 17;
 		
 		var queryWidth = $QUERYAREA[0].scrollWidth;
 

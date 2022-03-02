@@ -160,7 +160,6 @@ public class CFWQueryCommandSort extends CFWQueryCommand {
 		//-------------------------------------
 		// Create Sorted List
 		while(keepPolling()) {
-			System.out.println("poll");
 			objectListToSort.add(inQueue.poll());
 		}
 		

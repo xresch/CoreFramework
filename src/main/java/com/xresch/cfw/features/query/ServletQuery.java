@@ -40,6 +40,14 @@ public class ServletQuery extends HttpServlet
 	 *
 	 ******************************************************************/
 	@Override
+	protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException{
+	
+		doGet(request, response);
+	}
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
 		HTMLResponse html = new HTMLResponse("Query");

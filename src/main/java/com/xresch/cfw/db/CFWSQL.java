@@ -742,7 +742,7 @@ public class CFWSQL {
 				if(!field.equals(object.getPrimaryField())) {
 					
 					if(!isQueryCached()) {
-						columnNames.append(field.getName()).append(",");
+						columnNames.append("\""+field.getName()).append("\",");
 						placeholders.append("?,");
 					}
 					this.addFieldValue(field);
