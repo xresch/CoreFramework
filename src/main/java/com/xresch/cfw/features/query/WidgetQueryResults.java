@@ -46,23 +46,24 @@ public class WidgetQueryResults extends WidgetDefinition {
 							
 							@Override
 							public boolean validate(Object value) {
-								String stringValue = (String)value;
-								
-								if(Strings.isNullOrEmpty(stringValue)) {
-									return true;
-									
-								}
-								try {
-									//--------------------------
-									// Make sure query is parsable
-									// and User has the appropriate rights.
-									CFWQueryParser parser = new CFWQueryParser((String)value, true);
-									parser.parse();
-									
-								}catch (Error | Exception e) {
-									CFW.Messages.addErrorMessage(e.getMessage());
-									return false;
-								}
+								// does not work when using parameters
+//								String stringValue = (String)value;
+//								
+//								if(Strings.isNullOrEmpty(stringValue)) {
+//									return true;
+//									
+//								}
+//								try {
+//									//--------------------------
+//									// Make sure query is parsable
+//									// and User has the appropriate rights.
+//									CFWQueryParser parser = new CFWQueryParser((String)value, true);
+//									parser.parse();
+//									
+//								}catch (Error | Exception e) {
+//									CFW.Messages.addErrorMessage(e.getMessage());
+//									return false;
+//								}
 								return true;
 							}
 						})

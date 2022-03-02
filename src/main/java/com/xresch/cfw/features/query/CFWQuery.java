@@ -1,9 +1,6 @@
 package com.xresch.cfw.features.query;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandComment;
@@ -16,7 +13,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * 
  * <CFWQuery> ::= <CFWCommand>+ 
  * 
- * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @author Reto Scheiwiller, (c) Copyright 2022
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
