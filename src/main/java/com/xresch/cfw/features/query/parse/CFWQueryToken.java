@@ -33,12 +33,15 @@ public class CFWQueryToken{
 	    /** Type for unquoted strings that are not matched by other types like LITERAL_BOOLEAN, TEXT_*, KEYWORD  */
 	  , LITERAL_STRING
 	
-	  , /** Type for single quoted text, quoted will be removed  */
+	  , /** Type for single quoted text, quotes will be removed  */
 	    TEXT_SINGLE_QUOTES
 	    
-	  , /** Type for double quoted text, quoted will be removed */
+	  , /** Type for double quoted text, quotes will be removed */
 	  	TEXT_DOUBLE_QUOTES
 	
+	  , /** Type for backticks quoted text, backticks will be removed */
+		TEXT_BACKTICKS
+		
 	  , /** Type for matched split expressions defined by calling method CFWQueryTokenizer.splitBy()  */
 	    SPLIT
 	    

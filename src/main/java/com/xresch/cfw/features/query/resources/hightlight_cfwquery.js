@@ -74,9 +74,20 @@ function cfw_hljs_register_CFWQuery(hljs) {
     begin: /\\"/
 
   };
+
   const APOS_STRING = {
     scope: 'string',
     begin: /'/, end: /'/,
+	contains: [
+      hljs.BACKSLASH_ESCAPE,
+      VAR,
+      SUBST
+    ]
+  };
+
+  const BACKTICK_STRING = {
+    scope: 'string',
+    begin: /`/, end: /`/,
 	contains: [
       hljs.BACKSLASH_ESCAPE,
       VAR,
@@ -184,6 +195,7 @@ function cfw_hljs_register_CFWQuery(hljs) {
       QUOTE_STRING,
       ESCAPED_QUOTE,
       APOS_STRING,
+	  BACKTICK_STRING,
       VAR
     ]
   };

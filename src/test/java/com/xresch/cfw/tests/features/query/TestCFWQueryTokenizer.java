@@ -184,6 +184,57 @@ public class TestCFWQueryTokenizer {
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testTokenizerQuotesAndBackticks() throws IOException {
+		
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(
+				  " 'single quotes'"
+				+ " 'escaped single \\' quote' "
+				+ " 'single quote with double \" quote'"
+				+ " \"double quotes\""
+				+ " \"escaped double \\\" quote\""
+				+ " \"double quotes with single ' quote\""
+				+ " `backticked text`"
+				+ " `escaped back \\` tick`"
+				+ " `backticks with single ' and double \" quote`"
+				, true,
+				true);
+		
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
+		printResults("Split Test", results);
+		
+		int i = 0;
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_SINGLE_QUOTES, 	results.get(i).type());
+		Assertions.assertEquals("single quotes", 						results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_SINGLE_QUOTES, 	results.get(++i).type());
+		Assertions.assertEquals("escaped single \' quote", 				results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_SINGLE_QUOTES, 	results.get(++i).type());
+		Assertions.assertEquals("single quote with double \" quote", 	results.get(i).value());
+				
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_DOUBLE_QUOTES, 	results.get(++i).type());
+		Assertions.assertEquals("double quotes", 						results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_DOUBLE_QUOTES, 	results.get(++i).type());
+		Assertions.assertEquals("escaped double \" quote", 				results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_DOUBLE_QUOTES, 	results.get(++i).type());
+		Assertions.assertEquals("double quotes with single ' quote", 	results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_BACKTICKS, 		results.get(++i).type());
+		Assertions.assertEquals("backticked text", 						results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_BACKTICKS, 		results.get(++i).type());
+		Assertions.assertEquals("escaped back ` tick", 						results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.TEXT_BACKTICKS, 		results.get(++i).type());
+		Assertions.assertEquals("backticks with single ' and double \" quote", 	results.get(i).value());
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testTokenizerKeywordsCaseSensitive() throws IOException {
 		
 		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(" \"my string\" AND 'another string' OR identifier_A NOT 42 and functionName(param)", true, true)

@@ -431,6 +431,7 @@ public class CFWQueryParser {
 		
 			case TEXT_SINGLE_QUOTES:
 			case TEXT_DOUBLE_QUOTES:	
+			case TEXT_BACKTICKS:	
 			case LITERAL_STRING:		addTrace("Create Value Part", "String", firstToken.value());
 										firstPart = QueryPartValue.newString(firstToken.value());
 										//TODO check lookahead, determine if AccessMember, Assignment, Method etc...

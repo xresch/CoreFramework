@@ -3,6 +3,8 @@ package com.xresch.cfw.features.query.parse;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Strings;
+
 /**************************************************************************************************************
  * Creates tokens from a string that can be used to parse a language.
  * 
@@ -259,8 +261,14 @@ public class CFWQueryTokenizer {
 			if(!isCurrentCharEscaped()) {
 				this.advancetoQuotedTextEndPosition('"');	
 				
-				// do nut use createToken(), will not work if quoted text is at the end of the string
+				// do not use createToken(), will not work if quoted text is at the end of the string
 				String textValue = base.substring(startPos+1, cursor-1);
+				
+				// Unescape quotes
+				if(!Strings.isNullOrEmpty(textValue)) {
+					textValue = textValue.replace("\\\"", "\"");
+				}
+				
 				return new CFWQueryToken(CFWQueryToken.CFWQueryTokenType.TEXT_DOUBLE_QUOTES, textValue, startPos);
 			}
 		}
@@ -271,9 +279,33 @@ public class CFWQueryTokenizer {
 			if(!isCurrentCharEscaped()) {
 				this.advancetoQuotedTextEndPosition('\'');	
 				
-				// do nut use createToken(), will not work if quoted text is at the end of the string
+				// do not use createToken(), will not work if quoted text is at the end of the string
 				String textValue = base.substring(startPos+1, cursor-1);
+				
+				// Unescape quotes
+				if(!Strings.isNullOrEmpty(textValue)) {
+					textValue = textValue.replace("\\'", "'");
+				}
+				
 				return new CFWQueryToken(CFWQueryToken.CFWQueryTokenType.TEXT_SINGLE_QUOTES, textValue, startPos);
+			}
+		}
+		
+		//-----------------------------------
+		// TEXT_BACKTICKS
+		if( base.charAt(cursor) == '`' ) {
+			if(!isCurrentCharEscaped()) {
+				this.advancetoQuotedTextEndPosition('`');	
+				
+				// do not use createToken(), will not work if quoted text is at the end of the string
+				String textValue = base.substring(startPos+1, cursor-1);
+				
+				// Unescape quotes
+				if(!Strings.isNullOrEmpty(textValue)) {
+					textValue = textValue.replace("\\`", "`");
+				}
+				
+				return new CFWQueryToken(CFWQueryToken.CFWQueryTokenType.TEXT_BACKTICKS, textValue, startPos);
 			}
 		}
 		
@@ -371,6 +403,7 @@ public class CFWQueryTokenizer {
 	 * @return true if escaped, false otherwise
 	 ***********************************************************************************************/
 	private boolean isCurrentCharEscaped() {
+		
 		int backslashCount = 0;
 		int tempPos = cursor-1; 
 		while( tempPos >= 0 && base.charAt(tempPos) == '\\') {
