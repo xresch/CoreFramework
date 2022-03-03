@@ -70,10 +70,10 @@ All operators are case sensitive. See the examples after the list to see how to 
 	<li><b>'&gt;=':&nbsp;</b> Checks if the fields value is greater or equals.</li>
 	<li><b>'&lt;':&nbsp;</b>  Checks if the fields value is smaller.</li>
 	<li><b>'&gt;':&nbsp;</b>  Checks if the fields value is greater.</li>
+	<li><b>'~=':&nbsp;</b>  Checks if the fields value matches a regular expression.</li>
 	<li><b>'startsWith:':&nbsp;</b> Checks if the fields value is starts with the specified string.</li>
 	<li><b>'endsWith:':&nbsp;</b> Checks if the fields value is ends with the specified string.</li>
 	<li><b>'contains:':&nbsp;</b> Checks if the fields value contains the specified string.</li>
-	<li><b>'regex:':&nbsp;</b>  Checks if the fields value is matches the regular expression.</li>
 	<li><b>none:&nbsp;</b> If no prefix operator is defined, the values will be compared and checked if they are equals.</li>
 	<li><b>AND:&nbsp;</b> Used to combine two or more conditions. Condition matches only if both sides are true.</li>
 	<li><b>OR:&nbsp;</b>  Used to combine two or more conditions. Condition matches if either side is true.</li>
@@ -111,7 +111,6 @@ When multiple conditions are specified, you can specify 'OR' to make the conditi
 	]</code></pre>	
 
 
-
 <p>Here is an example how to use the startsWith, endsWith, contains and regex operations. </p>
 <pre><code class="language-cfwquery">| source random
 | formatfield 
@@ -120,10 +119,9 @@ When multiple conditions are specified, you can specify 'OR' to make the conditi
 				"green",
 			["contains:en"], 
 				"orange",
-			["regex:.*er.*e"], 
+			["~=.*er.*e"], 
 				"darkred"
 	]</code></pre>	
-
 
 
 <p>Below example shows the different variations of formatter specifications: </p>

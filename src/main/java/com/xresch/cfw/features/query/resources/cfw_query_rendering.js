@@ -304,8 +304,8 @@ function cfw_query_formatCase(span, record, value, rendererName, fieldname, case
 			else if(condition.startsWith("startsWith:")){ conditionResult = ( (""+value).startsWith(condition.substring("startsWith:".length)) ); }
 			else if(condition.startsWith("endsWith:"))	{ conditionResult = ( (""+value).endsWith(condition.substring("endsWith:".length)) ); }
 			else if(condition.startsWith("contains:"))	{ conditionResult = ( (""+value).includes(condition.substring("contains:".length)) ); }
-			else if(condition.startsWith("regex:"))	{ 
-				var regexExpression = condition.substring("regex:".length);
+			else if(condition.startsWith("~="))	{ 
+				var regexExpression = condition.substring("~=".length);
 				var regex = new RegExp(regexExpression, "g")
 				
 				conditionResult = ( (""+value).match(regex) ); 
@@ -756,8 +756,13 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	//-----------------------------------
 	// Get Renderer Settings
 	var rendererName = "dataviewer";
-	if(queryResult.displaySettings.menu == false && queryResult.displaySettings.as != null){
-		rendererName = queryResult.displaySettings.as.trim().toLowerCase();
+	if(queryResult.displaySettings.menu == false){
+		if(queryResult.displaySettings.as != null){
+			rendererName = queryResult.displaySettings.as.trim().toLowerCase();
+		}else{
+			// default to table
+			rendererName = "table";
+		}
 	}
 	
 	

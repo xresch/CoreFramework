@@ -128,14 +128,14 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		formatterDefinitionArray.put("case",
 			instance.new FormatterDefinition(
 				"case", 
-				"Formats based on one or multiple cases. See manual for formatfield command for detailed instructions.",
+				"Formats based on one or multiple cases. See manual of formatfield command for detailed instructions.",
 				new Object[][] {
 					 new Object[] {"conditions", "<100", "Either a single condition or an array of conditions."}
 				   , new Object[] {"format", "green", "Either a color or an array of formatter definitions."}
 				}
 			).example(
-				 "#Formats the LAST_LOGIN epoch milliseconds as a date."
-				+"\r\n| source random | formatfield LAST_LOGIN=date"
+				 "#Make values lower than 1000 green, everything else red."
+				+"\r\n| source random type=numbers | formatfield THOUSANDS=['case', \"<1000\", \"green\", [\">=1000\"],  \"darkred\" ]"
 			)
 		);
 		
