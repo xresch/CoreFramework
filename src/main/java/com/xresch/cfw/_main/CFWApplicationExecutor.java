@@ -397,7 +397,8 @@ public class CFWApplicationExecutor {
 			httpConf.setSecureScheme("https");
 		    // Add support for X-Forwarded headers
 			httpConf.addCustomizer( new org.eclipse.jetty.server.ForwardedRequestCustomizer());
-
+			httpConf.setRequestHeaderSize(CFWProperties.HTTP_MAX_REQUEST_HEADER_SIZE);
+			
 			ServerConnector httpConnector = new ServerConnector(server, new HttpConnectionFactory(httpConf));
 			httpConnector.setName("unsecured");
 			httpConnector.setHost(CFWProperties.HTTP_CONNECTOR_HOST);
@@ -412,7 +413,8 @@ public class CFWApplicationExecutor {
 			httpsConf.setSecureScheme("https");
 			// Add support for X-Forwarded headers
 			httpsConf.addCustomizer( new org.eclipse.jetty.server.ForwardedRequestCustomizer());
-
+			httpsConf.setRequestHeaderSize(CFWProperties.HTTP_MAX_REQUEST_HEADER_SIZE);
+			
 			SslContextFactory sslContextFactory = new SslContextFactory.Server();
 			sslContextFactory.setKeyStorePath(CFWProperties.HTTPS_KEYSTORE_PATH);
 			sslContextFactory.setKeyStorePassword(CFWProperties.HTTPS_KEYSTORE_PASSWORD);

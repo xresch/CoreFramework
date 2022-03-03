@@ -50,6 +50,13 @@ function cfw_query_execute(){
 					CFW.http.setURLParam('earliest', timeframe.earliest);
 					CFW.http.setURLParam('latest', timeframe.latest);
 				}
+				
+				queryLength = encodeURIComponent(query).length;
+				var finalLength = queryLength + CFW.http.getHostURL().length + CFW.http.getURLPath().length ;
+				console.log("FinalLength: "+finalLength)
+				if(finalLength > 8192){
+					CFW.ui.addToastInfo("The query is quite long and the URL might not work. Make sure to save a copy of your query.");
+				}
 				CFW.http.setURLParam('query', query);
 						
 				cfw_query_renderAllQueryResults(targetDiv, data.payload);

@@ -63,7 +63,7 @@ public class CFWProperties {
 	
 	/**  (Property=cfw_https_port, Default=443) */
 	public static int HTTPS_PORT = 443;
-	
+		
 	/**  (Property=cfw_https_keystore_path, Default=./config/keystore.jks) */
 	public static String HTTPS_KEYSTORE_PATH = "./config/keystore.jks";
 	
@@ -73,6 +73,8 @@ public class CFWProperties {
 	/**  (Property=cfw_https_keymanager_password, Default="") */
 	public static String HTTPS_KEYMANAGER_PASSWORD = "";
 	
+	/** Max size in bytes for request headers. (Property=cfw_http_max_request_header_size, Default=65535) */
+	public static int HTTP_MAX_REQUEST_HEADER_SIZE = 65535;
 	
 	//##########################################################################################
 	// PROXY
@@ -224,10 +226,12 @@ public class CFWProperties {
 
 		HTTPS_ENABLED 					= CFWProperties.configAsBoolean("cfw_https_enabled", HTTPS_ENABLED);
 		HTTPS_PORT 						= CFWProperties.configAsInt("cfw_https_port", HTTPS_PORT);
-		
+
 		HTTPS_KEYSTORE_PATH 			= CFWProperties.configAsString("cfw_https_keystore_path", HTTPS_KEYSTORE_PATH);
 		HTTPS_KEYSTORE_PASSWORD			= CFWProperties.configAsString("cfw_https_keystore_password", HTTPS_KEYSTORE_PASSWORD);
 		HTTPS_KEYMANAGER_PASSWORD		= CFWProperties.configAsString("cfw_https_keymanager_password", HTTPS_KEYMANAGER_PASSWORD);
+		
+		HTTP_MAX_REQUEST_HEADER_SIZE 	= CFWProperties.configAsInt("cfw_http_max_request_header_size", HTTP_MAX_REQUEST_HEADER_SIZE);
 		
 		PROXY_ENABLED 					= CFWProperties.configAsBoolean("cfw_proxy_enabled", PROXY_ENABLED);
 		PROXY_PAC						= CFWProperties.configAsString("cfw_proxy_pac", PROXY_PAC);
