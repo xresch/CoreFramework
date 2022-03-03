@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query;
 
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import com.xresch.cfw._main.CFW;
@@ -220,13 +221,29 @@ public class FeatureQuery extends CFWAppFeature {
 			
 		
 		//----------------------------------
-		// Source Main Page
+		// Cheat Sheet
 		ROOT_MANUAL_PAGE.addChild(new ManualPage("Cheat Sheet")
 				.faicon("fas fa-star")
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "010_query_cheatsheet.html")
 			);
 		
 		CFWQuery pseudoQuery = new CFWQuery();
+		
+		//----------------------------------
+		// Available TimeZones
+		String htmlString = "<p>Some of the query sources might provide the possibility to specify a time zone to manage time offsets."
+				+ "The following is a list of available time zones.</p>";
+				
+		for(String zone : TimeZone.getAvailableIDs()) {
+			htmlString += "<li>"+zone+"</li>";
+		}
+		htmlString += "</ul>";
+		
+		ManualPage timezonePage = new ManualPage("Available Time Zones")
+				.faicon("fas fa-clock")
+				.content(htmlString);
+		
+		ROOT_MANUAL_PAGE.addChild(timezonePage);
 		
 		//----------------------------------
 		// Source Main Page
