@@ -140,10 +140,13 @@ function cfw_query_editor_resizeToFitQuery(){
 		// Number of lines multiplied with 16px line high
 		var queryLineCount = (value.match(/\n/g) || []).length;
 		
-		// minimum height 7 lines
+		// minimum height 6 lines
 		if(queryLineCount < 5) {	queryLineCount = 6; }
 		
-		var queryHeight = (queryLineCount+2) * 17;
+		// Line heigth is 16px by css class query-text-format
+		// add 0.2 to make sure scrolling is prevented
+		// add +2 lines by default
+		var queryHeight = Math.floor((queryLineCount+2) * 16.2);
 		
 		var queryWidth = $QUERYAREA[0].scrollWidth;
 
