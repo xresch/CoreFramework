@@ -42,11 +42,13 @@ public class WidgetQueryResults extends WidgetDefinition {
 						.setLabel("{!cfw_widget_queryresults_query!}")
 						.setDescription("{!cfw_widget_queryresults_query_desc!}")
 						.disableSanitization()
-						.addValidator(new CustomValidator() {
-							
-							@Override
-							public boolean validate(Object value) {
-								// does not work when using parameters
+
+						// does not work when using dashboard parameters, will not properly parse the query
+//						.addValidator(new CustomValidator() {
+//							
+//							@Override
+//							public boolean validate(Object value) {
+
 //								String stringValue = (String)value;
 //								
 //								if(Strings.isNullOrEmpty(stringValue)) {
@@ -64,9 +66,9 @@ public class WidgetQueryResults extends WidgetDefinition {
 //									CFW.Messages.addErrorMessage(e.getMessage());
 //									return false;
 //								}
-								return true;
-							}
-						})
+//								return true;
+//							}
+//						})
 						.addCssClass("textarea-nowrap")	
 						
 				)

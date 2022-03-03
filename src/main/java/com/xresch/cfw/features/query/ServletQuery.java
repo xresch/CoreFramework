@@ -72,6 +72,7 @@ public class ServletQuery extends HttpServlet
 				
 				html.addJavascriptCode("cfw_query_initialDraw();");
 				html.addJavascriptData("formID", AUTOCOMPLETE_FORMID);
+				html.addJavascriptData("requestHeaderMaxSize", CFW.Properties.HTTP_MAX_REQUEST_HEADER_SIZE);
 		        response.setContentType("text/html");
 		        response.setStatus(HttpServletResponse.SC_OK);
 			}else {
