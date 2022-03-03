@@ -16,6 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -123,6 +124,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		DATEPICKER, 
 		DATETIMEPICKER, 
 		TIMEFRAMEPICKER,
+		TIMEZONEPICKER,
 		TAGS, 
 		// Input Order of elements messed up by client side when containing numbers in keys (numbers will be sorted and listed first)
 		TAGS_SELECTOR,
@@ -563,12 +565,16 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 									
 			case TIMEFRAMEPICKER:	createTimeframePicker(html, cssClasses);
 									break;
-
+									
+			case TIMEZONEPICKER: 	createTimezoneSelect(html, cssClasses);
+									break;	
+			
 			case SCHEDULE:		  	createSchedule(html, cssClasses);
 									break;
 			
 			case LANGUAGE:  		createLanguageSelect(html, cssClasses);
 									break;	
+									
 			case TAGS:			  	createTagsField(html, cssClasses+" cfw-tags", FormFieldType.TAGS);
 									break;
 									
@@ -857,7 +863,55 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	/***********************************************************************************
-	 * Create DatePicker
+	 * Create Select
+	 ***********************************************************************************/
+	private void createTimezoneSelect(StringBuilder html, String cssClasses) {
+		
+		this.removeAttribute("value");
+		
+		String stringVal = (value == null) ? "" : value.toString();
+		
+		html.append("<select class=\""+cssClasses+"\" "+this.getAttributesString()+" >");
+		
+		//-----------------------------------
+		// handle options
+		String timezones[] = TimeZone.getAvailableIDs();
+		Locale userLocale = CFW.Localization.getUsersPreferredLocale();
+		
+		TreeMap<String, String> sortedByDisplayName = new TreeMap<>();
+		for(String optionValue : timezones) {
+			
+			String currentLabel = TimeZone.getTimeZone(optionValue).getDisplayName(userLocale);
+			
+			sortedByDisplayName.put(currentLabel, optionValue);
+			
+		}
+		
+		//Add empty option
+		html.append("<option value=\"\">&nbsp;</option>");
+		
+		for(Entry<String, String> entry : sortedByDisplayName.entrySet()) {
+			
+			String currentLabel = entry.getKey();
+			String optionValue = entry.getValue();
+			
+			if(optionValue.toString().equals(stringVal)) {
+				html.append("<option value=\""+optionValue+"\" selected>")
+					.append(currentLabel)
+				.append("</option>");
+			}else {
+				html.append("<option value=\""+optionValue+"\">")
+					.append(currentLabel)
+				.append("</option>");
+			}
+		}
+		
+		html.append("</select>");
+	}
+	
+	
+	/***********************************************************************************
+	 * Create Schedule
 	 ***********************************************************************************/
 	private void createSchedule(StringBuilder html, String cssClasses) {
 		
