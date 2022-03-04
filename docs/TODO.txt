@@ -133,13 +133,15 @@ Potential TODOs
 
 DONE
 ====
+------- current -------
 
-------- current v6 -------
+------- v6.0.0 -------
+- New Feature - Query: Domain Specific Language(DSL) to fetch, process and format data from various sources
+- New Feature - Notification: Added Notification mechanism to notify user in the UI. Bell icon added to the Menu Bar 
 - BREAKING CHANGE - H2 Migration: bumped from v1.4.200 to 2.0.206
 - Migrated jQuery from 3.4.1 to 3.6.0
 - Migrated highlight.js from v9 to v11
 - Migrated Guava from v30.0 to v31.0
-- New Feature - Notification: Added Notification mechanism to notify user in the UI. Bell icon added to the Menu Bar 
 - Notifications: Added Startup Notifications for Admins and Superusers
 - Alerting: Added Channel for Notifications
 - Dashboard: Added option to make dashboards publicly available(public url, no user login needed).
