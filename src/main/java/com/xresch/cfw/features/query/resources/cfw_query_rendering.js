@@ -113,11 +113,11 @@ function cfw_query_customizerCreateDefault(){
 		}
 		
 		//----------------------------------------------
-		// Arrays
-		if(Array.isArray(value)){
+		// Arrays and Objects
+		if(typeof value === 'object'){
 			return JSON.stringify(value).replaceAll(',',', ');
 		}
-			
+
 		return value;
 	
 	}

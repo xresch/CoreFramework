@@ -437,18 +437,22 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				}
 				
 				//------------------------------------------
-				// Add Source Field
+				// Poll next item
 				EnhancedJsonObject item = localQueue.poll();
-				if(!item.has("_source")) {
-					item.addProperty("_source", this.source.uniqueName());
-				}
 				
 				//------------------------------------------
 				//Sample Fieldnames, first 512 and every 256th
 				if( recordCounter % 256 == 0 || recordCounter <= 256 ) {
-
 					fieldnameManager.addSourceFieldnames(item.keySet());
 				}
+				
+				//------------------------------------------
+				// Add Source Field
+				if(!item.has("_source")) {
+					item.addProperty("_source", this.source.uniqueName());
+				}
+				
+
 				
 				//------------------------------------------
 				// Throw to queue of next Command
