@@ -584,7 +584,7 @@ function cfw_query_formatThousands(span, value, isBytes, decimals, addBlank ){
 	
 	span.addClass('text-right');
 	
-	if(value != null && !isNaN(value)){
+	if(value != null){
 		span.html(CFW.format.numbersInThousands(value, decimals, addBlank, isBytes));
 	}
 
