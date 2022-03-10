@@ -2236,6 +2236,10 @@ function cfw_format_numbersInThousands(value, decimals, addBlank, isBytes) {
 	
 	bytesString = (isBytes) ? "B" : "";
 	
+	if(isNaN(value)){
+		return value;
+	}
+	
 	if (value > 1000000000000) {
 		return (value / 1000000000000).toFixed(decimals)+ blankString + "T" + bytesString;
 	} else if (value > 1000000000) {

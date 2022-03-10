@@ -413,7 +413,7 @@ function cfw_query_formatDecimals(span, value, precision){
 	}
 	
 
-	if(valueToProcess != null){
+	if(valueToProcess != null && !isNaN(valueToProcess)){
 		span.text(valueToProcess.toFixed(precision));
 	}
 
@@ -584,7 +584,7 @@ function cfw_query_formatThousands(span, value, isBytes, decimals, addBlank ){
 	
 	span.addClass('text-right');
 	
-	if(value != null){
+	if(value != null && !isNaN(value)){
 		span.html(CFW.format.numbersInThousands(value, decimals, addBlank, isBytes));
 	}
 
