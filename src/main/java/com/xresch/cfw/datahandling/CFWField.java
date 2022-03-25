@@ -1077,7 +1077,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			pwCache.put(placeholderName, this.value.toString());
 			this.addAttribute("value", placeholderName);
 		}
-		html.append("<input type=\"password\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
+		html.append("<input type=\"password\" class=\"form-control "+cssClasses+"\" autocomplete=\"new-password\" "+this.getAttributesString()+"/>");
 
 	}
 	
