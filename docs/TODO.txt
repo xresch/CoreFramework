@@ -134,6 +134,7 @@ Potential TODOs
 DONE
 ====
 ------- current -------
+- CFWField: Prevent autofill of password fields in forms
 
 ------- v6.0.0 -------
 - New Feature - Query: Domain Specific Language(DSL) to fetch, process and format data from various sources
