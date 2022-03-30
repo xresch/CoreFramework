@@ -123,8 +123,8 @@ public class CFWDBUser {
 	public static User selectByID(int id) {
 			
 		
-		return (User)new User()
-				.queryCache(CFWDBUser.class, "selectByID")
+		return (User)new CFWSQL(new User())
+				.queryCache()
 				.select()
 				.where(UserFields.PK_ID.toString(), id)
 				.getFirstAsObject();
@@ -140,8 +140,8 @@ public class CFWDBUser {
 	public static String selectUsernameByID(int id) {
 		
 		
-		User user = (User)new User()
-				.queryCache(CFWDBUser.class, "selectByID")
+		User user = (User)new CFWSQL(new User())
+				.queryCache()
 				.select(UserFields.USERNAME)
 				.where(UserFields.PK_ID.toString(), id)
 				.getFirstAsObject()

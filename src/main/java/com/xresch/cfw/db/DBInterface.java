@@ -790,6 +790,12 @@ public class DBInterface {
 			datasource.setDriverClassName(driverName);
 			datasource.setUrl(url);	
 			
+			// try to recover when DB connection was lost
+			datasource.setRemoveAbandonedOnBorrow(true);
+			datasource.setRemoveAbandonedTimeout(60);
+			datasource.setTestOnBorrow(true);
+			
+			
 			if(validationQuery != null) {
 				datasource.setValidationQuery(validationQuery);
 			}
