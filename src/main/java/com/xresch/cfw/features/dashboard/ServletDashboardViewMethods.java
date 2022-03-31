@@ -650,10 +650,14 @@ public class ServletDashboardViewMethods
 		
 		//----------------------------
 		// Create Response
-		if(jsonSettings.isJsonObject()) {
-		definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), earliest, latest);
-		}else {
-			new CFWLog(logger).warn("Widget Data was not of the correct type.", new IllegalArgumentException());
+		try {
+			if(jsonSettings.isJsonObject()) {
+			definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), earliest, latest);
+			}else {
+				new CFWLog(logger).warn("Widget Data was not of the correct type.", new IllegalArgumentException());
+			}
+		}catch(Throwable e) {
+			CFW.Messages.addErrorMessage(e.getMessage());
 		}
 					
 	}
