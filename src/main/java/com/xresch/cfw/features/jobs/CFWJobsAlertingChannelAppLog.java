@@ -37,7 +37,9 @@ public class CFWJobsAlertingChannelAppLog extends CFWJobsAlertingChannel {
 		
 		//------------------------
 		// Handle Custom Notes
-		if( !Strings.isNullOrEmpty(alertObject.getCustomNotes()) ) {
+		String customNotes = alertObject.getCustomNotes();
+		if( !Strings.isNullOrEmpty(customNotes) 
+		 && !customNotes.trim().toLowerCase().equals("null") ) {
 			logEvent.custom("customNotes", alertObject.getCustomNotes());
 		}
 		
