@@ -106,8 +106,9 @@ public abstract class WidgetDefinition {
 	 * Implement the actions your task should execute.
 	 * See {@link com.xresch.cfw.features.jobs.CFWJobTask#executeTask CFWJobTask.executeTask()} to get
 	 * more details on how to implement this method.
+	 * @param offsetMinutes used to replace time placeholders if executed by a task. Use null if you call this method manually.
 	 *************************************************************************/
-	public void executeTask(JobExecutionContext context, CFWObject taskParams, DashboardWidget widget, CFWObject settings) throws JobExecutionException {
+	public void executeTask(JobExecutionContext context, CFWObject taskParams, DashboardWidget widget, CFWObject settings, Integer offsetMinutes) throws JobExecutionException {
 		/* do nothing by default */
 	}
 	

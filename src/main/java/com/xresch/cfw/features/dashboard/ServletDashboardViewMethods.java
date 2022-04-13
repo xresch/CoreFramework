@@ -524,8 +524,11 @@ public class ServletDashboardViewMethods
 				CFWObject formObject = new CFWObject();
 				formObject.addField(isEnabled);
 				formObject.addField(scheduleField);
-				
-				CFWObject taskParams = definition.getTasksParameters();
+
+				CFWObject taskParams = new CFWObject();
+				taskParams.addField(CFWJobTaskWidgetTaskExecutor.createOffsetMinutesField());
+				taskParams.addAllFields(definition.getTasksParameters().getFields());
+
 				taskParams.mapJsonFields(widget.taskParameters(), true);
 				formObject.addAllFields(taskParams.getFields());
 				
@@ -536,7 +539,6 @@ public class ServletDashboardViewMethods
 					@SuppressWarnings("unchecked")
 					@Override
 					public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
-						
 						
 						//-------------------------------------
 						// Validate and save Task Params to Widget
@@ -565,7 +567,7 @@ public class ServletDashboardViewMethods
 							CFWObject taskExecutorParams = widgetTaskExecutor.getParameters();
 							taskExecutorParams.getField(CFWJobTaskWidgetTaskExecutor.PARAM_DASHBOARD_ID).setValue(dashboardID);
 							taskExecutorParams.getField(CFWJobTaskWidgetTaskExecutor.PARAM_WIDGET_ID).setValue(widget.id());
-							
+
 							jobToSave = new CFWJob()
 									.foreignKeyOwner(CFW.Context.Request.getUser().id())
 									.jobname("WidgetID-"+widget.id())
@@ -587,9 +589,16 @@ public class ServletDashboardViewMethods
 							if(board != null) {
 								taskExecutorParams.put(CFWJobTaskWidgetTaskExecutor.PARAM_DASHBOARD_NAME, board.name());
 							}
+							
 							if(widget != null) {
 								taskExecutorParams.put(CFWJobTaskWidgetTaskExecutor.PARAM_WIDGET_NAME, widget.title());
 							}
+							
+							Integer offsetMinutes = (Integer)formObject.getField(CFWJobTaskWidgetTaskExecutor.PARAM_TIMEFRAME_OFFSET_MINUTES).getValue();
+							if(offsetMinutes != null) {
+								taskExecutorParams.put(CFWJobTaskWidgetTaskExecutor.PARAM_TIMEFRAME_OFFSET_MINUTES, ""+offsetMinutes);
+							}
+							
 							jobToSave.properties(taskExecutorParams);
 							
 							//--------------------------------------

@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW.Utils;
 
 /**************************************************************************************************************
@@ -22,6 +23,45 @@ public class CFWUtilsTime {
 	private static TimeZone machineTimezone = TimeZone.getDefault();
 			
 	private static SimpleDateFormat timestampFormatter = new SimpleDateFormat(CFWUtilsTime.TIMESTAMP_FORMAT);
+
+	/********************************************************************************************
+	 * Replaces timeframe placeholders with earliest as "now - offset" and latest as "now".
+	 ********************************************************************************************/
+	public static String replaceTimeframePlaceholders(String value, Integer offsetMinutes) {
+		
+		if(!Strings.isNullOrEmpty(value) && offsetMinutes != null) {
+			long latest = System.currentTimeMillis();
+			long earliest = latest - (offsetMinutes * 60l * 1000l); 
+			value = replaceTimeframePlaceholders(value, earliest, latest);
+		}
+		
+		return value;
+		
+	}
+	
+	/********************************************************************************************
+	 * Replaces timeframe placeholders.
+	 ********************************************************************************************/
+	public static String replaceTimeframePlaceholders(String value, long earliest, long latest) {
+		
+		System.out.println("====================");
+		System.out.println("value:"+value);
+		System.out.println("earliest:"+earliest);
+		System.out.println("latest:"+latest);
+		
+		if(!Strings.isNullOrEmpty(value)){
+			if(value.contains("$")) {
+				value = value
+							.replace("$earliest$", ""+earliest)
+							.replace("$latest$", ""+latest)
+						;
+			}
+			System.out.println("value:"+value);
+		}
+		
+		return value;
+		
+	}
 
 	/********************************************************************************************
 	 * Get a timestamp string of the current time in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".

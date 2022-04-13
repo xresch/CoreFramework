@@ -23,6 +23,7 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 	
 	public static final String UNIQUE_NAME = "Widget Task Executor";
 	
+	public static final String PARAM_TIMEFRAME_OFFSET_MINUTES = "TIMEFRAME_OFFSET_MINUTES";
 	public static final String PARAM_WIDGET_ID = "WIDGET_ID";
 	public static final String PARAM_WIDGET_NAME = "WIDGET_NAME";
 	public static final String PARAM_DASHBOARD_ID = "DASHBOARD_ID";
@@ -40,9 +41,19 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		return "Executes tasks of dashboard widgets.";
 	}
 
+	@SuppressWarnings("rawtypes")
+	public static CFWField createOffsetMinutesField() {
+		return CFWField.newInteger(FormFieldType.NUMBER, PARAM_TIMEFRAME_OFFSET_MINUTES)
+						.setDescription("The offset in minutes from present time used in case the placeholders $earliest$ / $latest$ are used in your widget.")
+						.setValue(30);
+			
+	}
+	
 	@Override
 	public CFWObject getParameters() {
+		
 		return new CFWObject()
+			.addField(createOffsetMinutesField())
 			.addField(
 				CFWField.newInteger(FormFieldType.UNMODIFIABLE_TEXT, PARAM_DASHBOARD_ID)
 						.setLabel("Dashboard ID")
@@ -89,6 +100,7 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		//Do not allow people to create this task from the UI.	
 		return false;
 	}
+	
 
 	@Override
 	public void executeTask(JobExecutionContext context) throws JobExecutionException {
@@ -112,6 +124,7 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		//------------------------------
 		// Task Parameters
 		CFWObject taskParams = definition.getTasksParameters();
+		taskParams.addField(CFWJobTaskWidgetTaskExecutor.createOffsetMinutesField());
 		taskParams.mapJsonFields(widget.taskParameters(), true);
 		
 		//Add to job data, needed for mapping context to CFWJobAlertObject
@@ -127,7 +140,11 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 			
 		//------------------------------
 		// Call widget Task
-		definition.executeTask(context, taskParams, widget, widgetSettings);
+		Integer offsetMinutes = (Integer)taskParams.getField(CFWJobTaskWidgetTaskExecutor.PARAM_TIMEFRAME_OFFSET_MINUTES).getValue();
+		
+		//------------------------------
+		// Call widget Task
+		definition.executeTask(context, taskParams, widget, widgetSettings, offsetMinutes);
 	}
 	
 }
