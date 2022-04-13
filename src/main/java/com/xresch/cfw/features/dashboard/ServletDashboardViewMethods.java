@@ -578,7 +578,22 @@ public class ServletDashboardViewMethods
 						//-------------------------------------
 						// Map Params(Schedule/isEnabled) and create/save Job
 						if(jobToSave.mapRequestParameters(request)) {
-
+							
+							//--------------------------------------
+							// Update Dashboard and Widget Name
+							Dashboard board = CFW.DB.Dashboards.selectByID(dashboardID);
+							
+							LinkedHashMap<String, String> taskExecutorParams = jobToSave.propertiesAsMap();
+							if(board != null) {
+								taskExecutorParams.put(CFWJobTaskWidgetTaskExecutor.PARAM_DASHBOARD_NAME, board.name());
+							}
+							if(widget != null) {
+								taskExecutorParams.put(CFWJobTaskWidgetTaskExecutor.PARAM_WIDGET_NAME, widget.title());
+							}
+							jobToSave.properties(taskExecutorParams);
+							
+							//--------------------------------------
+							// Save Job
 							int scheduleIntervalSec = jobToSave.schedule().getCalculatedIntervalSeconds();
 							
 							if( !widgetTaskExecutor.isMinimumIntervalValid(scheduleIntervalSec) ) {

@@ -365,6 +365,10 @@ public class CFWJob extends CFWObject {
 		return CFW.JSON.objectToMap(object);
 	}
 	
+	public CFWJob properties(LinkedHashMap<String, String> propertiesMap) {
+		this.properties.setValue(CFW.JSON.toJSON(propertiesMap));
+		return this;
+	}
 	
 	public CFWJob properties(CFWObject propertiesObject) {
 		this.properties.setValue(propertiesObject.toJSON());

@@ -24,7 +24,9 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 	public static final String UNIQUE_NAME = "Widget Task Executor";
 	
 	public static final String PARAM_WIDGET_ID = "WIDGET_ID";
+	public static final String PARAM_WIDGET_NAME = "WIDGET_NAME";
 	public static final String PARAM_DASHBOARD_ID = "DASHBOARD_ID";
+	public static final String PARAM_DASHBOARD_NAME = "DASHBOARD_NAME";
 	
 	private static final Logger logger = CFWLog.getLogger(CFWJobTaskWidgetTaskExecutor.class.getName());
 	
@@ -48,14 +50,23 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 						.addValidator(new NotNullOrEmptyValidator())
 			)
 			.addField(
+					CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, PARAM_DASHBOARD_NAME)
+							.setLabel("Dashboard Name")
+							.setDescription("The name of the dashboard containing the widget.")
+				)
+			.addField(
 				CFWField.newInteger(FormFieldType.UNMODIFIABLE_TEXT, PARAM_WIDGET_ID)
 						.setLabel("Widget ID")
 						.setDescription("The ID of the widget whose task should be executed.")
 						.addValidator(new NotNullOrEmptyValidator())
 			)
+			.addField(
+					CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, PARAM_WIDGET_NAME)
+							.setLabel("Widget Name")
+							.setDescription("The name of the widget whose task should be executed")
+				)
 			;
 		
-
 	}
 
 	@Override
