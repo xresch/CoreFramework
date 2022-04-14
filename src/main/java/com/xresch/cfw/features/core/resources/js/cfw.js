@@ -612,13 +612,13 @@ function cfw_internal_updateCheckboxesField(element){
 	
 	var originalField = wrapper.find('> input').first();
 	
-	console.log("=================");
-	console.log(originalField);
+	//console.log("=================");
+	//console.log(originalField);
 	
 	var checkboxValues = {}
 	
 	checkboxesStateJsonString = originalField.val();
-	console.log("checkboxesStateJsonString: "+checkboxesStateJsonString);
+	//console.log("checkboxesStateJsonString: "+checkboxesStateJsonString);
 	if(!CFW.utils.isNullOrEmpty(checkboxesStateJsonString) && checkboxesStateJsonString != "null"){
 		checkboxValues = JSON.parse(checkboxesStateJsonString);
 	}
@@ -627,7 +627,7 @@ function cfw_internal_updateCheckboxesField(element){
 		let current = $(element);
 		let key = current.attr("name");
 		let value = current.prop('checked');
-		console.log(current);
+		//console.log(current);
 		
 		if(!CFW.utils.isNullOrEmpty(key)
 		|| !CFW.utils.isNullOrEmpty(value)){
@@ -1106,7 +1106,7 @@ function cfw_internal_confirmSchedule(elementID){
 	
 	//--------------------------------------
 	// Set Schedule
-	console.log(scheduleData);
+	//console.log(scheduleData);
 	if(isValid){
 		originalField.val(JSON.stringify(scheduleData));
 		originalField.dropdown('toggle');
@@ -1215,7 +1215,6 @@ function cfw_initializeTimeframePicker(fieldID, initalData, onchangeCallbackFunc
 	//----------------------------------
 	// Create HTML
 	wrapper.append( `
-
 <div id="${fieldID}-picker" class="btn-group">
 	<button class="btn btn-sm btn-primary btn-inline" onclick="cfw_timeframePicker_shift(this, 'earlier');" type="button">
 		<i class="fas fa-chevron-left"></i>
@@ -1279,13 +1278,40 @@ function cfw_initializeTimeframePicker(fieldID, initalData, onchangeCallbackFunc
 							<i class="fas fa-chevron-down mr-2"></i>
 						</div>
 						<div>
-							<span>Relative</span>
+							<span>Relative Time</span>
 						</div>
 					</div>
 				</div>
 				<div class="collapse" id="collapse1" data-parent="#timePickerAccordion" aria-labelledby="timepickerPanel-1">
 					<div class="card-body p-1">
-						<span>To Be Done</span>
+						
+						
+						<label class="col-sm-12 col-form-label col-form-label-sm">Present Time Offset:</label>
+						
+						<div class="row m-1">  
+							<div class="col-sm-12">
+								<div class="custom-control-inline w-100 mr-0">
+			    					<input id="${fieldID}-RELATIVE_OFFSET-count" type="number" class="col-md-4 form-control form-control-sm" min="0" value="4" >
+			    					<select id="${fieldID}-RELATIVE_OFFSET-unit" class="col-md-8 form-control form-control-sm" >	
+			    						<option value="m">{!cfw_core_minutes!}</option>
+			    						<option value="h">{!cfw_core_hours!}</option>
+			    						<option value="d">{!cfw_core_days!}</option>
+			    						<option value="M">{!cfw_core_months!}</option>
+			    					</select>   	
+								</div>
+							</div>
+						</div>
+						
+						<div class="row m-1">
+							<div class="col-sm-12">
+								<button class="btn btn-sm btn-primary" onclick="cfw_timeframePicker_confirmRelativeOffset(this);" type="button">
+									{!cfw_core_confirm!}
+								</button>
+							</div>
+						</div>
+						
+						
+						
 					</div>
 				</div>
 			</div>
@@ -1342,6 +1368,7 @@ function cfw_initializeTimeframePicker(fieldID, initalData, onchangeCallbackFunc
 		<i class="fas fa-chevron-right"></i>
 	</button>
 </div>
+
 	`);
 	
 	//----------------------------------
@@ -1405,20 +1432,66 @@ function cfw_timeframePicker_setOffset(origin, offset){
 	var fieldID = wrapper.data('id');
 	var selector = '#'+fieldID;
 	
-	var label = wrapper.find("#time-preset-"+offset).text();
-	$(selector+'-timeframeSelectorButton').text(label);
 
 	var split = offset.split('-');
-	
-	var earliestMillis = moment().utc().subtract(split[0], split[1]).utc().valueOf();
+	var count = split[0];
+	var unit = split[1];
+	var earliestMillis = moment().utc().subtract(count, unit).utc().valueOf();
 	var latestMillis = moment().utc().valueOf();
 
+	//-----------------------------------------
+	// Update Label
+	var unitLocale = (unit == "m") ? 'minutes' 
+					: (unit == "h") ? 'hours' 
+					: (unit == "d") ? 'days' 
+					: (unit == "M") ? 'months' 
+					: "unknown"
+					;
+	
+	var label = CFWL('cfw_core_last', 'Last')+" "+count+" "+CFWL('cfw_core_'+unitLocale, " ???");
+
+	$(selector+'-timeframeSelectorButton').text(label);
+	
+	// -----------------------------------------
+	// Update Relative Offset Picker
+	$(selector+'-RELATIVE_OFFSET-count').val(count);
+	$(selector+'-RELATIVE_OFFSET-unit').val(unit);
+
+	if(isNaN(count)){
+		CFW.ui.addToastWarning("Count must be at least 1.");
+		return;
+	}
 	// -----------------------------------------
 	// Update Original Field
 	cfw_timeframePicker_storeValue(fieldID, offset, earliestMillis, latestMillis);
 	
 	var dropdown = $(origin).closest(selector+'-timepickerDropdown');
 	dropdown.collapse('hide');
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_timeframePicker_confirmRelativeOffset(origin){
+
+	var wrapper = $(origin).closest('.cfw-timeframepicker-wrapper');
+	var fieldID = wrapper.data('id');
+		
+	var count = $('#'+fieldID+'-RELATIVE_OFFSET-count').val();
+	var unit = $('#'+fieldID+'-RELATIVE_OFFSET-unit').val();
+
+	if(isNaN(count)){
+		CFW.ui.addToastWarning("Count must be at least 1.");
+		return;
+	}
+	
+	cfw_timeframePicker_setOffset(origin, count+"-"+unit);
+	
+	//---------------------------
+	// Hide Dropdown
+	var dropdown = $(origin).closest('#'+fieldID+'-timepickerDropdown');
+	dropdown.collapse('hide');
+	
 }
 
 /*******************************************************************************
@@ -1457,6 +1530,7 @@ function cfw_timeframePicker_confirmCustom(origin){
 	dropdown.collapse('hide');
 	
 }
+
 
 /*******************************************************************************
  * 
