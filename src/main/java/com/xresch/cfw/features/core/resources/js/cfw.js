@@ -1417,18 +1417,21 @@ function cfw_timeframePicker_setOffset(origin, offset){
 	// Update Original Field
 	cfw_timeframePicker_storeValue(fieldID, offset, earliestMillis, latestMillis);
 	
+	var dropdown = $(origin).closest(selector+'-timepickerDropdown');
+	dropdown.collapse('hide');
 }
 
 /*******************************************************************************
  * 
  ******************************************************************************/
 function cfw_timeframePicker_setCustom(fieldID, earliestMillis, latestMillis){
-		
-	$('#'+fieldID+'-timeframeSelectorButton').text(CFWL('cfw_core_customtime', "Custom Time"));
+	var selector = '#'+fieldID;
+	$(selector+'-timeframeSelectorButton').text(CFWL('cfw_core_customtime', "Custom Time"));
 		
 	// -----------------------------------------
 	// Update Original Field
 	cfw_timeframePicker_storeValue(fieldID, null, parseFloat(earliestMillis), parseFloat(latestMillis) );
+	
 }
 
 /*******************************************************************************
@@ -1447,6 +1450,11 @@ function cfw_timeframePicker_confirmCustom(origin){
 		return;
 	}
 	cfw_timeframePicker_setCustom(fieldID, earliestMillis, latestMillis);
+	
+	//---------------------------
+	// Hide Dropdown
+	var dropdown = $(origin).closest('#'+fieldID+'-timepickerDropdown');
+	dropdown.collapse('hide');
 	
 }
 
