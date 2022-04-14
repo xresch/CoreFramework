@@ -1214,78 +1214,134 @@ function cfw_initializeTimeframePicker(fieldID, initalData, onchangeCallbackFunc
 
 	//----------------------------------
 	// Create HTML
-	wrapper.append( `<div id="${fieldID}-picker" class="btn-group">
-			<button class="btn btn-sm btn-primary btn-inline" onclick="cfw_timeframePicker_shift(this, 'earlier');" type="button">
-				<i class="fas fa-chevron-left"></i>
-			</button>
-			
-			<div class="dropdown">
-				<button id="${fieldID}-timeframeSelectorButton" class="btn btn-sm btn-primary dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					{!cfw_core_last!} 30 {!cfw_core_minutes!}
-				</button>
-				<div class="dropdown-menu" style="width: 350px;" aria-labelledby="dropdownMenuButton">
-					<div class="row ml-0 mr-0">
-						<div class="col-6">
-							<a id="time-preset-5-m" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '5-m');">{!cfw_core_last!} 5 {!cfw_core_minutes!}</a>
-							<a id="time-preset-15-m" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '15-m');">{!cfw_core_last!} 15 {!cfw_core_minutes!}</a>
-							<a id="time-preset-30-m" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '30-m');">{!cfw_core_last!} 30 {!cfw_core_minutes!}</a>
-							<a id="time-preset-1-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '1-h');">{!cfw_core_last!} 1 {!cfw_core_hour!}</a>
-							<a id="time-preset-2-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '2-h');">{!cfw_core_last!} 2 {!cfw_core_hours!}</a>
-							<a id="time-preset-4-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '4-h');">{!cfw_core_last!} 4 {!cfw_core_hours!}</a>
-							<a id="time-preset-6-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '6-h');">{!cfw_core_last!} 6 {!cfw_core_hours!}</a>
-							<a id="time-preset-12-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '12-h');">{!cfw_core_last!} 12 {!cfw_core_hours!}</a>
-							<a id="time-preset-24-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '24-h');">{!cfw_core_last!} 24 {!cfw_core_hours!}</a>
+	wrapper.append( `
+
+<div id="${fieldID}-picker" class="btn-group">
+	<button class="btn btn-sm btn-primary btn-inline" onclick="cfw_timeframePicker_shift(this, 'earlier');" type="button">
+		<i class="fas fa-chevron-left"></i>
+	</button>
+	
+	<div class="dropdown">
+		<button id="${fieldID}-timeframeSelectorButton" class="btn btn-sm btn-primary dropdown-toggle" type="button"  data-toggle="collapse" data-target="#${fieldID}-timepickerDropdown" aria-haspopup="true" aria-expanded="false">
+			{!cfw_core_last!} 30 {!cfw_core_minutes!}
+		</button>
+	
+	<div id="${fieldID}-timepickerDropdown" class="dropdown-menu" style="width: 400px;" aria-labelledby="dropdownMenuButton">			
+		<div class="accordion" id="timePickerAccordion">
+			<div class="card">
+				<div class="card-header p-1 pl-2" id="timepickerPanel-0">
+					<div role="button" data-toggle="collapse" data-target="#collapse0" aria-expanded="false">
+						<div class="cfw-fa-box">
+							<i class="fas fa-chevron-right mr-2"></i>
+							<i class="fas fa-chevron-down mr-2"></i>
 						</div>
-						<div class="col-6">
-							<a id="time-preset-2-d" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '2-d');">{!cfw_core_last!} 2 {!cfw_core_days!}</a>
-							<a id="time-preset-7-d" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '7-d');">{!cfw_core_last!} 7 {!cfw_core_days!}</a>
-							<a id="time-preset-14-d" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '14-d');">{!cfw_core_last!} 14 {!cfw_core_days!}</a>
-							<a id="time-preset-1-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '1-M');">{!cfw_core_last!} 1 {!cfw_core_month!}</a>
-							<a id="time-preset-2-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '2-M');">{!cfw_core_last!} 2 {!cfw_core_months!}</a>
-							<a id="time-preset-3-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '3-M');">{!cfw_core_last!} 3 {!cfw_core_months!}</a>
-							<a id="time-preset-6-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '6-M');">{!cfw_core_last!} 6 {!cfw_core_months!}</a>
-							<a id="time-preset-12-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '12-M');">{!cfw_core_last!} 12 {!cfw_core_months!}</a>
-							<a id="time-preset-24-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '24-M');">{!cfw_core_last!} 24 {!cfw_core_months!}</a>
-						</div>
-					</div>
-					<div class="row m-1">
-						<div class="col-sm-12"><strong>{!cfw_core_customtime!}:</strong></div>
-					</div>
-					<div class="row m-1">  
-						<label class="col-sm-2 col-form-label col-form-label-sm" for="${fieldID}-CUSTOM_EARLIEST">{!cfw_core_earliest!}:</label>   
-						<div class="col-sm-10">
-							<div class="custom-control-inline w-100 mr-0">
-		    					<input id="${fieldID}-CUSTOM_EARLIEST-datepicker" type="date" onchange="cfw_updateTimeField('${fieldID}-CUSTOM_EARLIEST')" class="col-md-7 form-control form-control-sm">
-		    					<input id="${fieldID}-CUSTOM_EARLIEST-timepicker" type="time" onchange="cfw_updateTimeField('${fieldID}-CUSTOM_EARLIEST')" class="col-md-5 form-control form-control-sm">	   
-		    					<input id="${fieldID}-CUSTOM_EARLIEST" type="hidden" class="form-control" placeholder="Earliest" name="${fieldID}-CUSTOM_EARLIEST" onkeydown="return event.key != 'Enter';">
-							</div>
-						</div>
-					</div>
-					<div class="row m-1">  
-						<label class="col-sm-2 col-form-label col-form-label-sm" for="${fieldID}-CUSTOM_LATEST">{!cfw_core_latest!}:</label>   
-						<div class="col-sm-10">  
-							<div class="custom-control-inline w-100 mr-0">
-		    					<input id="${fieldID}-CUSTOM_LATEST-datepicker" type="date" onchange="cfw_updateTimeField('${fieldID}-CUSTOM_LATEST')" class="col-md-7 form-control form-control-sm">
-		    					<input id="${fieldID}-CUSTOM_LATEST-timepicker" type="time" onchange="cfw_updateTimeField('${fieldID}-CUSTOM_LATEST')" class="col-md-5 form-control form-control-sm">	   
-		    					<input id="${fieldID}-CUSTOM_LATEST" type="hidden" class="form-control" placeholder="Latest" name="${fieldID}-CUSTOM_LATEST" onkeydown="return event.key != 'Enter';">
-							</div>
-						</div>
-					</div>
-					<div class="row m-1">
-						<div class="col-sm-12">
-							<button class="btn btn-sm btn-primary" onclick="cfw_timeframePicker_confirmCustom(this);" type="button">
-								{!cfw_core_confirm!}
-							</button>
+						<div>
+							<span>Presets</span>
 						</div>
 					</div>
 				</div>
-				
+				<div class="collapse" id="collapse0" data-parent="#timePickerAccordion" aria-labelledby="timepickerPanel-0">
+					<div class="card-body p-1">
+						<div class="row ml-0 mr-0">
+							<div class="col-6">
+								<a id="time-preset-5-m" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '5-m');">{!cfw_core_last!} 5 {!cfw_core_minutes!}</a>
+								<a id="time-preset-15-m" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '15-m');">{!cfw_core_last!} 15 {!cfw_core_minutes!}</a>
+								<a id="time-preset-30-m" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '30-m');">{!cfw_core_last!} 30 {!cfw_core_minutes!}</a>
+								<a id="time-preset-1-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '1-h');">{!cfw_core_last!} 1 {!cfw_core_hour!}</a>
+								<a id="time-preset-2-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '2-h');">{!cfw_core_last!} 2 {!cfw_core_hours!}</a>
+								<a id="time-preset-4-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '4-h');">{!cfw_core_last!} 4 {!cfw_core_hours!}</a>
+								<a id="time-preset-6-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '6-h');">{!cfw_core_last!} 6 {!cfw_core_hours!}</a>
+								<a id="time-preset-12-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '12-h');">{!cfw_core_last!} 12 {!cfw_core_hours!}</a>
+								<a id="time-preset-24-h" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '24-h');">{!cfw_core_last!} 24 {!cfw_core_hours!}</a>
+							</div>
+							<div class="col-6">
+								<a id="time-preset-2-d" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '2-d');">{!cfw_core_last!} 2 {!cfw_core_days!}</a>
+								<a id="time-preset-7-d" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '7-d');">{!cfw_core_last!} 7 {!cfw_core_days!}</a>
+								<a id="time-preset-14-d" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '14-d');">{!cfw_core_last!} 14 {!cfw_core_days!}</a>
+								<a id="time-preset-1-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '1-M');">{!cfw_core_last!} 1 {!cfw_core_month!}</a>
+								<a id="time-preset-2-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '2-M');">{!cfw_core_last!} 2 {!cfw_core_months!}</a>
+								<a id="time-preset-3-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '3-M');">{!cfw_core_last!} 3 {!cfw_core_months!}</a>
+								<a id="time-preset-6-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '6-M');">{!cfw_core_last!} 6 {!cfw_core_months!}</a>
+								<a id="time-preset-12-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '12-M');">{!cfw_core_last!} 12 {!cfw_core_months!}</a>
+								<a id="time-preset-24-M" class="dropdown-item" onclick="cfw_timeframePicker_setOffset(this, '24-M');">{!cfw_core_last!} 24 {!cfw_core_months!}</a>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-			<button class="btn btn-sm btn-primary btn-inline" onclick="cfw_timeframePicker_shift(this, 'later');" type="button">
-				<i class="fas fa-chevron-right"></i>
-			</button>
+			
+			
+			<div class="card">
+				<div class="card-header p-1 pl-2" id="timepickerPanel-1">
+					<div role="button" data-toggle="collapse" data-target="#collapse1" aria-expanded="false">
+						<div class="cfw-fa-box">
+							<i class="fas fa-chevron-right mr-2"></i>
+							<i class="fas fa-chevron-down mr-2"></i>
+						</div>
+						<div>
+							<span>Relative</span>
+						</div>
+					</div>
+				</div>
+				<div class="collapse" id="collapse1" data-parent="#timePickerAccordion" aria-labelledby="timepickerPanel-1">
+					<div class="card-body p-1">
+						<span>To Be Done</span>
+					</div>
+				</div>
+			</div>
+			
+			
+			<div class="card">
+				<div class="card-header p-1 pl-2" id="timepickerPanel-2">
+					<div role="button" data-toggle="collapse" data-target="#collapse2" aria-expanded="false">
+						<div class="cfw-fa-box">
+							<i class="fas fa-chevron-right mr-2"></i>
+							<i class="fas fa-chevron-down mr-2"></i>
+						</div>
+						<div>
+							<span>{!cfw_core_customtime!}</span>
+						</div>
+					</div>
+				</div>
+				<div class="collapse" id="collapse2" data-parent="#timePickerAccordion" aria-labelledby="timepickerPanel-2">
+					<div class="card-body p-1">
+						<div class="row m-1">  
+							<label class="col-sm-2 col-form-label col-form-label-sm" for="${fieldID}-CUSTOM_EARLIEST">{!cfw_core_earliest!}:</label>   
+							<div class="col-sm-10">
+								<div class="custom-control-inline w-100 mr-0">
+			    					<input id="${fieldID}-CUSTOM_EARLIEST-datepicker" type="date" onchange="cfw_updateTimeField('${fieldID}-CUSTOM_EARLIEST')" class="col-md-7 form-control form-control-sm">
+			    					<input id="${fieldID}-CUSTOM_EARLIEST-timepicker" type="time" onchange="cfw_updateTimeField('${fieldID}-CUSTOM_EARLIEST')" class="col-md-5 form-control form-control-sm">	   
+			    					<input id="${fieldID}-CUSTOM_EARLIEST" type="hidden" class="form-control" placeholder="Earliest" name="${fieldID}-CUSTOM_EARLIEST" onkeydown="return event.key != 'Enter';">
+								</div>
+							</div>
+						</div>
+						<div class="row m-1">  
+							<label class="col-sm-2 col-form-label col-form-label-sm" for="${fieldID}-CUSTOM_LATEST">{!cfw_core_latest!}:</label>   
+							<div class="col-sm-10">  
+								<div class="custom-control-inline w-100 mr-0">
+			    					<input id="${fieldID}-CUSTOM_LATEST-datepicker" type="date" onchange="cfw_updateTimeField('${fieldID}-CUSTOM_LATEST')" class="col-md-7 form-control form-control-sm">
+			    					<input id="${fieldID}-CUSTOM_LATEST-timepicker" type="time" onchange="cfw_updateTimeField('${fieldID}-CUSTOM_LATEST')" class="col-md-5 form-control form-control-sm">	   
+			    					<input id="${fieldID}-CUSTOM_LATEST" type="hidden" class="form-control" placeholder="Latest" name="${fieldID}-CUSTOM_LATEST" onkeydown="return event.key != 'Enter';">
+								</div>
+							</div>
+						</div>
+						<div class="row m-1">
+							<div class="col-sm-12">
+								<button class="btn btn-sm btn-primary" onclick="cfw_timeframePicker_confirmCustom(this);" type="button">
+									{!cfw_core_confirm!}
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
-	
+	</div>
+	</div>
+	<button class="btn btn-sm btn-primary btn-inline" onclick="cfw_timeframePicker_shift(this, 'later');" type="button">
+		<i class="fas fa-chevron-right"></i>
+	</button>
+</div>
 	`);
 	
 	//----------------------------------
