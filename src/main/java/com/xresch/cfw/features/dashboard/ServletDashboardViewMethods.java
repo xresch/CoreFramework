@@ -667,6 +667,7 @@ public class ServletDashboardViewMethods
 		String JSON_SETTINGS = widget.settings();
 		
 		//apply Parameters to JSONSettings
+		JSON_SETTINGS = CFW.Utils.Time.replaceTimeframePlaceholders(JSON_SETTINGS, earliest, latest);
 		JsonElement jsonSettings = replaceParamsInSettings(JSON_SETTINGS, dashboardParams, widgetType);
 
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
@@ -720,15 +721,12 @@ public class ServletDashboardViewMethods
 			JsonArray paramsArray = dashboardParams.getAsJsonArray();
 			
 			for(JsonElement current : paramsArray) {
+				String paramName = current.getAsJsonObject().get("NAME").getAsString();
 				
 				//--------------------------------------
-				// Handle Timeframe Params.
-				// Would throw validation issue if mapped
-				// to object.
-				String paramName = current.getAsJsonObject().get("NAME").getAsString();
+				// Skip Timeframe Params as they are already
+				// done.
 				if(paramName.equals("earliest") || paramName.equals("latest") ) {
-					String paramValue = current.getAsJsonObject().get("VALUE").getAsString();
-					jsonSettings = jsonSettings.replaceAll("\\$"+paramName+"\\$", paramValue);
 					continue;
 				}
 				

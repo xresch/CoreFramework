@@ -1195,8 +1195,6 @@ function cfw_initializeTimeframePicker(fieldID, initialData, onchangeCallbackFun
 	
 	var selector = '#'+fieldID;
 
-	console.log('yay!'+JSON.stringify(initialData));
-	
 	var timeframeStoreField = $(selector);
 	timeframeStoreField.addClass('d-none');
 	
