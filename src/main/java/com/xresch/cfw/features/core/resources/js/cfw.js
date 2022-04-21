@@ -1183,7 +1183,7 @@ function cfw_updateTimeField(fieldID){
  * The original field gets hidden and will be replaced by the timeframe picker itself. 
  * 
  * @param fieldID the id of the target field(without '#')
- * @param initalData the json object containing the initial value of the field as epoch time:
+ * @param initialData the json object containing the initial value of the field as epoch time:
  *        {
  *				earliest: 123455678989,
  *              latest: 1234567890
@@ -1191,10 +1191,12 @@ function cfw_updateTimeField(fieldID){
  * @param onchangeCallbackFunction function taking parameters func(fieldID, updateType, earliest, latest);
  *           updateType would be one of: 'custom' | 'shift-earlier' | 'shift-later' | a preset
  *************************************************************************************/
-function cfw_initializeTimeframePicker(fieldID, initalData, onchangeCallbackFunction){
+function cfw_initializeTimeframePicker(fieldID, initialData, onchangeCallbackFunction){
 	
 	var selector = '#'+fieldID;
 
+	console.log('yay!'+JSON.stringify(initialData));
+	
 	var timeframeStoreField = $(selector);
 	timeframeStoreField.addClass('d-none');
 	
@@ -1204,7 +1206,7 @@ function cfw_initializeTimeframePicker(fieldID, initalData, onchangeCallbackFunc
 		
 	//----------------------------------
 	// Set Intial Value
-	var pickerDataString = JSON.stringify(initalData);
+	var pickerDataString = JSON.stringify(initialData);
 	timeframeStoreField.val(pickerDataString);
 	
 	//----------------------------------
@@ -1374,11 +1376,14 @@ function cfw_initializeTimeframePicker(fieldID, initalData, onchangeCallbackFunc
 	//----------------------------------
 	// Initialize Value, do not trigger
 	// callback
-	if(initalData != null){
-		if(initalData.offset == null){
-			cfw_timeframePicker_setCustom(fieldID, initalData.earliest, initalData.latest);
+	if(initialData != null){
+
+		if(initialData.offset == null){
+			console.log(initialData)
+			cfw_timeframePicker_setCustom(fieldID, initialData.earliest, initialData.latest);
 		}else{
-			cfw_timeframePicker_setOffset("#"+fieldID, initalData.offset);
+			console.log("B")
+			cfw_timeframePicker_setOffset("#"+fieldID, initialData.offset);
 		}
 	}
 	

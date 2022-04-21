@@ -31,6 +31,7 @@ import com.xresch.cfw.datahandling.CFWMultiFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.datahandling.CFWSchedule.EndType;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
@@ -594,9 +595,9 @@ public class ServletDashboardViewMethods
 								taskExecutorParams.put(CFWJobTaskWidgetTaskExecutor.PARAM_WIDGET_NAME, widget.title());
 							}
 							
-							Integer offsetMinutes = (Integer)formObject.getField(CFWJobTaskWidgetTaskExecutor.PARAM_TIMEFRAME_OFFSET_MINUTES).getValue();
-							if(offsetMinutes != null) {
-								taskExecutorParams.put(CFWJobTaskWidgetTaskExecutor.PARAM_TIMEFRAME_OFFSET_MINUTES, ""+offsetMinutes);
+							CFWTimeframe offset = (CFWTimeframe)formObject.getField(CFWJobTaskWidgetTaskExecutor.PARAM_TIMEFRAME_OFFSET).getValue();
+							if(offset != null) {
+								taskExecutorParams.put(CFWJobTaskWidgetTaskExecutor.PARAM_TIMEFRAME_OFFSET, ""+offset.toString());
 							}
 							
 							jobToSave.properties(taskExecutorParams);

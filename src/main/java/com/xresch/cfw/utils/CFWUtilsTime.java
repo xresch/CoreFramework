@@ -129,7 +129,7 @@ public class CFWUtilsTime {
 	 * @return timestamp
 	 ********************************************************************************************/
 	public static Timestamp getCurrentTimestampWithOffset(int years, int months, int days, int hours, int minutes) {
-		return offsetTimestamp(new Timestamp(System.currentTimeMillis()), years, 0, days, hours, minutes);
+		return offsetTimestamp(new Timestamp(System.currentTimeMillis()), years, months, days, hours, minutes);
 	}
 	
 	/********************************************************************************************

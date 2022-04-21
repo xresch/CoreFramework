@@ -85,6 +85,36 @@ public class CFWTimeframe {
 	}
 	
 	/***************************************************************************************
+	 * Returns true if a timeframe is set, either offset or earliest latest
+	 ***************************************************************************************/
+	public boolean isSetAny() {
+		return isSetOffset() || isSetTime();
+	}
+	
+	/***************************************************************************************
+	 * Returns true if offset is set
+	 ***************************************************************************************/
+	public boolean isSetOffset() {
+		JsonElement offsetString = timeframeData.get(MEMBER_OFFSET);
+		if( offsetString != null 
+		&& !offsetString.isJsonNull() 
+		&&  offsetString.isJsonPrimitive() ) {
+			return true;
+		}
+		
+		return false;
+			
+	}
+	/***************************************************************************************
+	 * Returns true if custom time is set
+	 ***************************************************************************************/
+	public boolean isSetTime() {
+		return ( 
+					timeframeData.get(MEMBER_EARLIEST) != null
+				&&  timeframeData.get(MEMBER_LATEST) != null
+				);
+	}
+	/***************************************************************************************
 	 * Returns the earliest time of the timeframe as epoch millis.
 	 ***************************************************************************************/
 	public long getEarliest() {
@@ -96,6 +126,8 @@ public class CFWTimeframe {
 			int offsetCount = -1 * Integer.parseInt(splitted[0]);
 			String unit = splitted[1];
 			
+			System.out.println("offsetCount:"+offsetCount);
+			System.out.println("unit:"+unit);
 			Timestamp offsetTimestamp;
 			switch(unit) {
 				// Minutes
