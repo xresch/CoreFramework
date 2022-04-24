@@ -1229,7 +1229,7 @@ function cfw_initializeTimeframePicker(fieldID, initialData, onchangeCallbackFun
 		<div class="accordion" id="timePickerAccordion">
 			<div class="card">
 				<div class="card-header p-1 pl-2" id="timepickerPanel-0">
-					<div role="button" data-toggle="collapse" data-target="#collapse0" aria-expanded="false">
+					<div role="button" data-toggle="collapse" data-target="#collapse0" aria-expanded="true">
 						<div class="cfw-fa-box">
 							<i class="fas fa-chevron-right mr-2"></i>
 							<i class="fas fa-chevron-down mr-2"></i>
@@ -1239,7 +1239,7 @@ function cfw_initializeTimeframePicker(fieldID, initialData, onchangeCallbackFun
 						</div>
 					</div>
 				</div>
-				<div class="collapse" id="collapse0" data-parent="#timePickerAccordion" aria-labelledby="timepickerPanel-0">
+				<div class="collapse show" id="collapse0" data-parent="#timePickerAccordion" aria-labelledby="timepickerPanel-0">
 					<div class="card-body p-1">
 						<div class="row ml-0 mr-0">
 							<div class="col-6">
