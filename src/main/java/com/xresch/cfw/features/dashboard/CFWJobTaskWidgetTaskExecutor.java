@@ -119,7 +119,6 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		//------------------------------
 		// Job Settings 
 		CFWObject jobsettings = this.getParameters();
-		jobsettings.addField(this.createOffsetMinutesField());
 		jobsettings.mapJobExecutionContext(context);
 		
 		CFWTimeframe offset = (CFWTimeframe)jobsettings.getField(CFWJobTaskWidgetTaskExecutor.PARAM_TIMEFRAME_OFFSET).getValue();

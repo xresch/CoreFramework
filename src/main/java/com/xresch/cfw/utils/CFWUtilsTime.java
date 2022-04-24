@@ -43,12 +43,7 @@ public class CFWUtilsTime {
 	 * Replaces timeframe placeholders.
 	 ********************************************************************************************/
 	public static String replaceTimeframePlaceholders(String value, long earliest, long latest) {
-		
-		System.out.println("====================");
-		System.out.println("value:"+value);
-		System.out.println("earliest:"+earliest);
-		System.out.println("latest:"+latest);
-		
+				
 		if(!Strings.isNullOrEmpty(value)){
 			if(value.contains("$")) {
 				value = value
@@ -56,7 +51,6 @@ public class CFWUtilsTime {
 							.replace("$latest$", ""+latest)
 						;
 			}
-			System.out.println("value:"+value);
 		}
 		
 		return value;

@@ -126,8 +126,6 @@ public class CFWTimeframe {
 			int offsetCount = -1 * Integer.parseInt(splitted[0]);
 			String unit = splitted[1];
 			
-			System.out.println("offsetCount:"+offsetCount);
-			System.out.println("unit:"+unit);
 			Timestamp offsetTimestamp;
 			switch(unit) {
 				// Minutes

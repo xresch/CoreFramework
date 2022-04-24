@@ -252,7 +252,7 @@ public class CFWObject {
 			field.setRelatedCFWObject(this);
 		}else {
 			new CFWLog(logger)
-				.severe("The field with name '"+field.getName()+"' was already added to this object. Check the naming of the field.");
+				.severe("The field with name '"+field.getName()+"' was already added to this object. Check the naming of the field.", new Exception());
 		}
 		
 		return this;
