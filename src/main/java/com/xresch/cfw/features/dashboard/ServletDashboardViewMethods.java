@@ -424,6 +424,7 @@ public class ServletDashboardViewMethods
 			
 			//-----------------------------------
 			// Prepare Widget Settings
+
 			String widgetID = request.getParameter("PK_ID");
 			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
 			String widgetType = widget.type();
@@ -436,8 +437,10 @@ public class ServletDashboardViewMethods
 			if(definition.hasPermission(currentUser) || CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 				//----------------------------
 				// Create Form
+				
 				CFWObject settings = definition.getSettings();
 				DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
+				
 				settings.mapJsonFields(JSON_SETTINGS, false);
 				
 				CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeReplacedByJavascript");
@@ -669,7 +672,6 @@ public class ServletDashboardViewMethods
 		//apply Parameters to JSONSettings
 		JSON_SETTINGS = CFW.Utils.Time.replaceTimeframePlaceholders(JSON_SETTINGS, earliest, latest);
 		JsonElement jsonSettings = replaceParamsInSettings(JSON_SETTINGS, dashboardParams, widgetType);
-
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 		CFWObject settingsObject = definition.getSettings();
 		settingsObject.mapJsonFields(jsonSettings, false);
@@ -683,7 +685,7 @@ public class ServletDashboardViewMethods
 				new CFWLog(logger).warn("Widget Data was not of the correct type.", new IllegalArgumentException());
 			}
 		}catch(Throwable e) {
-			CFW.Messages.addErrorMessage(e.getMessage());
+			new CFWLog(logger).severe(e.getMessage(), e);
 		}
 					
 	}
