@@ -137,6 +137,7 @@ DONE
 - CFWField: Prevent autofill of password fields in forms
 - Timeframe Picker: Added custom Relative Offset
 - Job Task Widget Executor: Added timeframe picker tho handle time placeholders like $earliest and $latest
+- H2: Upgraded to 2.1.212
 
 ------- v6.0.0 -------
 - New Feature - Query: Domain Specific Language(DSL) to fetch, process and format data from various sources
