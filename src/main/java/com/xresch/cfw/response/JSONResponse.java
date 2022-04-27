@@ -1,17 +1,22 @@
 package com.xresch.cfw.response;
 
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+
 import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2022
  * @license MIT-License
  **************************************************************************************************************/
 public class JSONResponse extends AbstractTemplateJSON {
 
 	private boolean success = true;
+	private LinkedHashMap<String, JsonElement> jsonElements = new LinkedHashMap<>();
 	
 	public JSONResponse() {
 		super();
@@ -33,6 +38,13 @@ public class JSONResponse extends AbstractTemplateJSON {
 			   .append(",");
 		
 		//----------------------------
+		// Custom Elements
+		for(Entry<String, JsonElement> entry : jsonElements.entrySet()) {
+			builder.append("\""+entry.getKey()+"\": ")
+				   .append(entry.getValue().toString())
+				   .append(",");
+		}
+		//----------------------------
 		// Messages
 		if (content.length() == 0) {
 			content.append("null");
@@ -43,6 +55,22 @@ public class JSONResponse extends AbstractTemplateJSON {
 		// Close and Return
 		builder.append("}"); 
 		return builder;
+	}
+	
+	public void addCustomAttribute(String fieldname, Boolean bool) {
+		jsonElements.put(fieldname, new JsonPrimitive(bool));
+	}
+	
+	public void addCustomAttribute(String fieldname, Integer number) {
+		jsonElements.put(fieldname, new JsonPrimitive(number));
+	}
+	
+	public void addCustomAttribute(String fieldname, String string) {
+		jsonElements.put(fieldname, new JsonPrimitive(string));
+	}
+	
+	public void addCustomAttribute(String fieldname, JsonElement element) {
+		jsonElements.put(fieldname, element);
 	}
 	
 	public void setPayLoad(String text) {
