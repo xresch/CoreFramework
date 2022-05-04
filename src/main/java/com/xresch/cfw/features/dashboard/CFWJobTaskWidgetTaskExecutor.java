@@ -122,6 +122,8 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		jobsettings.mapJobExecutionContext(context);
 		
 		CFWTimeframe offset = (CFWTimeframe)jobsettings.getField(CFWJobTaskWidgetTaskExecutor.PARAM_TIMEFRAME_OFFSET).getValue();
+		data.put("earliest", offset.getEarliest()); 
+		data.put("latest", offset.getLatest()); 
 		
 		//------------------------------
 		// Fetch Widget 
