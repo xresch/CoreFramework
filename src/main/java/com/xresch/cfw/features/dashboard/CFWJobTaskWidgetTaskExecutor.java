@@ -103,10 +103,15 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		return false;
 	}
 	
-
-	public void fetchTaskParams(JobExecutionContext context) throws JobExecutionException {
-		
-		//////
+	/**************************************************************************************
+	 * Adds the earliest and latest parameter to the job data map.
+	 * @param data
+	 * @param jobsettings
+	 * @return
+	 **************************************************************************************/
+	public static CFWTimeframe getOffsetFromJobSettings(CFWObject jobsettings) {
+		CFWTimeframe offset = (CFWTimeframe)jobsettings.getField(CFWJobTaskWidgetTaskExecutor.PARAM_TIMEFRAME_OFFSET).getValue();
+		return offset;
 	}
 	
 	@SuppressWarnings("static-access")
@@ -121,9 +126,7 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		CFWObject jobsettings = this.getParameters();
 		jobsettings.mapJobExecutionContext(context);
 		
-		CFWTimeframe offset = (CFWTimeframe)jobsettings.getField(CFWJobTaskWidgetTaskExecutor.PARAM_TIMEFRAME_OFFSET).getValue();
-		data.put("earliest", offset.getEarliest()); 
-		data.put("latest", offset.getLatest()); 
+		CFWTimeframe offset = getOffsetFromJobSettings(jobsettings); 
 		
 		//------------------------------
 		// Fetch Widget 
@@ -135,7 +138,6 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		}
 		WidgetDefinition widgetDef = CFW.Registry.Widgets.getDefinition(widget.type());
 
-		
 		//------------------------------
 		// Prepare Widget Settings
 		CFWObject widgetSettings = widgetDef.getSettings();
@@ -169,7 +171,7 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 			
 		//------------------------------
 		// Call widget Task
-		widgetDef.executeTask(context, taskParams, widget, widgetSettings);
+		widgetDef.executeTask(context, taskParams, widget, widgetSettings, offset);
 	}
 	
 }
