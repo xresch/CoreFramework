@@ -2,8 +2,10 @@ package com.xresch.cfw.utils;
 
 import java.util.LinkedHashMap;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 import com.xresch.cfw.datahandling.CFWObject;
 
 public class CFWConditions {
@@ -42,6 +44,7 @@ public class CFWConditions {
 	public static final String CONDITION_DANGER 		= ThresholdCondition.DANGER.toString();
 	public static final String CONDITION_DISABLED 		= ThresholdCondition.DISABLED.toString();
 	
+	public static final String FIELDNAME_ALERT_THRESHOLD = "ALERT_THRESHOLD";
 	
 	/************************************************************************************
 	 * Returns default threshold fields as a LinkedHashMap.
@@ -91,6 +94,24 @@ public class CFWConditions {
 		return fieldsMap;
 	}
 	
+
+	
+	/***************************************************************************
+	 * Returns a list of condition options that can be used for selects etc...  
+	 * Always creates a new instance, as it could be extended, for example with
+	 * dashboard parameters.
+	 * @return list of options
+	 ***************************************************************************/
+	public static CFWField<String> createThresholdTriggerSelectorField() {
+		
+		return CFWField.newString(FormFieldType.SELECT, FIELDNAME_ALERT_THRESHOLD)
+			.setDescription("Select the threshhold that should trigger the alert when reached.")
+			.addValidator(new NotNullOrEmptyValidator())
+			.setOptions(CFW.Conditions.CONDITION_OPTIONS())
+			.setValue(CFW.Conditions.CONDITION_EMERGENCY.toString());
+		
+	}
+	
 	/***************************************************************************
 	 * Returns a list of condition options that can be used for selects etc...  
 	 * Always creates a new instance, as it could be extended, for example with
@@ -108,6 +129,8 @@ public class CFWConditions {
 		
 		return options;
 	}
+	
+	
 		
 	
 	/***************************************************************************
