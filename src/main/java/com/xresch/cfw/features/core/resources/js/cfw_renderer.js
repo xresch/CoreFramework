@@ -510,7 +510,9 @@ function cfw_renderer_tiles(renderDef) {
 		// the border that should be applied, like '1px solid black'
 		border: null,
 		// show a popover with details about the data when hovering a tile
-		popover: true
+		popover: true,
+		// The function(record, renderDef) used to create the popover
+		popoverFunction: cfw_renderer_tiles_createDetailsTable
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.tiles);
@@ -620,7 +622,7 @@ function cfw_renderer_tiles(renderDef) {
 				boundary: 'window',
 				// title: 'Details',
 				sanitize: false,
-				content: cfw_renderer_tiles_createDetailsTable(currentRecord, renderDef)
+				content: settings.popoverFunction(currentRecord, renderDef)
 			})
 		}
 		
