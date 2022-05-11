@@ -71,6 +71,8 @@ public class WidgetSettingsFactory {
 		
 		LinkedHashMap<String, String> rendererOptions = new LinkedHashMap<>();
 		rendererOptions.put("tiles", "Tiles");
+		rendererOptions.put("statusbar", "Status Bar");
+		rendererOptions.put("statusbarreverse", "Status Bar Reversed");
 		rendererOptions.put("table", "Table");
 		rendererOptions.put("panels", "Panels");
 		rendererOptions.put("cards", "Cards");

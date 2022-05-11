@@ -4,6 +4,8 @@ CFW_RENDER_NAME_JSON = 'json';
 CFW_RENDER_NAME_XML = 'xml';
 CFW_RENDER_NAME_TABLE = 'table';
 CFW_RENDER_NAME_TILES = 'tiles';
+CFW_RENDER_NAME_STATUSBAR = 'statusbar';
+CFW_RENDER_NAME_STATUSBAR_REVERSE = 'statusbarreverse';
 CFW_RENDER_NAME_CARDS = 'cards';
 CFW_RENDER_NAME_PANELS = 'panels';
 
@@ -267,6 +269,38 @@ class CFWRenderer{
 }
 
 /******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_common_createDefaultPopupTable(entry, renderDef){
+	
+	//-------------------------
+	// Create render definition
+	var definition = Object.assign({}, renderDef);
+	definition.data = entry;
+	
+	if(definition.rendererSettings.table == null){
+		definition.rendererSettings.table = {};
+	}
+	definition.rendererSettings.table.verticalize = true;
+	definition.rendererSettings.table.narrow = true;
+	definition.rendererSettings.table.filter = false;
+	//remove alertstyle and textstyle
+	var visiblefields = Object.keys(definition.data);
+	visiblefields.pop();
+	visiblefields.pop();
+	
+	definition.visiblefields = visiblefields;
+	
+	//-------------------------
+	// Show Details Modal
+	var renderer = CFW.render.getRenderer('table');
+	var wrappedTable = renderer.render(definition);
+	var sizingDiv = $('<div style="font-size: smaller;">');
+	sizingDiv.append(wrappedTable);
+	return sizingDiv;
+}
+
+/******************************************************************
  * Execute a multi action.
  * Element needs the following JQuery.data() attributes:
  *   - checkboxSelector: JQuery selection string without ":checked"
@@ -512,7 +546,7 @@ function cfw_renderer_tiles(renderDef) {
 		// show a popover with details about the data when hovering a tile
 		popover: true,
 		// The function(record, renderDef) used to create the popover
-		popoverFunction: cfw_renderer_tiles_createDetailsTable
+		popoverFunction: cfw_renderer_common_createDefaultPopupTable
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.tiles);
@@ -672,34 +706,116 @@ function cfw_renderer_tiles(renderDef) {
 
 CFW.render.registerRenderer(CFW_RENDER_NAME_TILES, new CFWRenderer(cfw_renderer_tiles));
 
-function cfw_renderer_tiles_createDetailsTable(entry, renderDef){
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_statusbar(renderDef, reverseOrder) {
 	
-	//-------------------------
-	// Create render definition
-	var definition = Object.assign({}, renderDef);
-	definition.data = entry;
-	
-	if(definition.rendererSettings.table == null){
-		definition.rendererSettings.table = {};
+	//-----------------------------------
+	// Check Data
+	if(renderDef.datatype != "array"){
+		return "<span>Unable to convert data into statusbar.</span>";
 	}
-	definition.rendererSettings.table.verticalize = true;
-	definition.rendererSettings.table.narrow = true;
-	definition.rendererSettings.table.filter = false;
-	//remove alertstyle and textstyle
-	var visiblefields = Object.keys(definition.data);
-	visiblefields.pop();
-	visiblefields.pop();
 	
-	definition.visiblefields = visiblefields;
+	//-----------------------------------
+	// Render Specific settings
+	var defaultSettings = {
+		// minimum height for the status bar
+		minheight: "100%",
+		// define if the order of the items should be reversed
+		reverse: reverseOrder,
+		// show a popover with details about the data when hovering a tile
+		popover: true,
+		// The function(record, renderDef) used to create the popover
+		popoverFunction: cfw_renderer_common_createDefaultPopupTable
+		
+	};
 	
-	//-------------------------
-	// Show Details Modal
-	var renderer = CFW.render.getRenderer('table');
-	var wrappedTable = renderer.render(definition);
-	var sizingDiv = $('<div style="font-size: smaller;">');
-	sizingDiv.append(wrappedTable);
-	return sizingDiv;
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.tiles);
+
+	//===================================================
+	// Create Tiles for Bar
+	//===================================================
+	
+	var reverseSuffix = "";
+	if(settings.reverse){
+		reverseSuffix = "-reverse";
+	}
+	var allTiles = $('<div class="d-flex flex-row'+reverseSuffix+' flex-grow-1"></div>');
+	//allTiles.addClass('h-100');
+	allTiles.css('height', settings.minheight);
+	allTiles.addClass('align-items-start');
+
+				
+	for(var i = 0; i < renderDef.data.length; i++ ){
+		var currentRecord = renderDef.data[i];
+		var currentTile = $('<div class="p-0 flex-fill">&nbsp;</div>');
+		currentTile.css('height', "100%");
+		
+		//=====================================
+		// Add Styles
+		renderDef.colorizeElement(currentRecord, currentTile, "bg");
+		
+		//=====================================
+		// Add Details Click
+		currentTile.data('record', currentRecord)
+		currentTile.bind('click', function(e) {
+			
+			e.stopPropagation();
+			//-------------------------
+			// Create render definition
+			var definition = Object.assign({}, renderDef);
+			definition.data = $(this).data('record');
+			if(definition.rendererSettings.table == null){
+				definition.rendererSettings.table = {};
+			}
+			definition.rendererSettings.table.verticalize = true;
+			definition.rendererSettings.table.striped = true;
+			//remove alertstyle and textstyle
+			var visiblefields = Object.keys(definition.data);
+			visiblefields.pop();
+			visiblefields.pop();
+			
+			definition.visiblefields = visiblefields;
+			
+			//-------------------------
+			// Show Details Modal
+			var renderer = CFW.render.getRenderer('table');
+			cfw_ui_showModal(
+					CFWL('cfw_core_details', 'Details'), 
+					renderer.render(definition))
+			;
+		})
+		
+		//=====================================
+		// Add Details Popover
+		if(settings.popover){
+			currentTile.popover({
+				trigger: 'hover',
+				html: true,
+				placement: 'auto',
+				boundary: 'window',
+				// title: 'Details',
+				sanitize: false,
+				content: settings.popoverFunction(currentRecord, renderDef)
+			})
+		}
+
+		allTiles.append(currentTile);
+	}
+	
+	return allTiles;
+
 }
+
+function cfw_renderer_statusbar_reverse(renderDef, reverseOrder) {
+	return cfw_renderer_statusbar(renderDef, true);
+}
+
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSBAR, new CFWRenderer(cfw_renderer_statusbar));
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSBAR_REVERSE, new CFWRenderer(cfw_renderer_statusbar_reverse));
+
+
 
 /******************************************************************
  * 
