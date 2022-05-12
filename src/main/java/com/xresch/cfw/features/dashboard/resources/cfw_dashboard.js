@@ -1024,6 +1024,22 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	).createHTML();
 	
 	// ------------------------------
+	// Title Position Selectors
+	var positionSelectOptions = {
+			'top': 			'Top', 
+			'left': 	'Left'
+	};
+	
+	defaultForm += new CFWFormField({ 
+		type: "select", 
+		name: "titleposition", 
+		label: CFWL('cfw_core_titlepos', 'Title Position'), 
+		value: widgetObject.TITLE_POSITION, 
+		options: positionSelectOptions,
+		description: CFWL('cfw_core_titlepos_desc', 'The position of the title.') 
+	}).createHTML();
+	
+	// ------------------------------
 	// Content Fontsize
 	defaultForm += new CFWFormField({ 
 			type: "number", 
@@ -1044,7 +1060,7 @@ function cfw_dashboard_widget_edit(widgetGUID){
 		}
 	).createHTML();
 	
-
+	
 	// ------------------------------
 	// Color Selectors
 	var selectOptions = {
@@ -1288,6 +1304,7 @@ function cfw_dashboard_widget_save_defaultSettings(widgetGUID){
 	var undoState = _.cloneDeep(widgetObject);
 	widgetObject.TITLE = settingsForm.find('input[name="title"]').val();
 	widgetObject.TITLE_FONTSIZE = settingsForm.find('input[name="titlefontsize"]').val();
+	widgetObject.TITLE_POSITION = settingsForm.find('select[name="titleposition"]').val();
 	widgetObject.CONTENT_FONTSIZE = settingsForm.find('input[name="contentfontsize"]').val();
 	widgetObject.FOOTER = settingsForm.find('textarea[name="footer"]').val();
 	widgetObject.BGCOLOR = settingsForm.find('select[name="BGCOLOR"]').val();
@@ -1563,6 +1580,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 			guid: cfw_dashboard_widget_createGUID(),
 			TITLE: "",
 			TITLE_FONTSIZE: 16,
+			TITLE_POSITION: 'top',
 			CONTENT_FONTSIZE: 16,
 			FOOTER: "",
 			BGCOLOR: "",
@@ -1596,8 +1614,15 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 		advancedDisplayClass = '';
 	}
 	
+	var titleposClass = "";
+	var titleBorderClass = "border-bottom ";
+	if(merged.TITLE_POSITION == "left"){ 
+		titleposClass = "flex-row "; 
+		titleBorderClass = "";
+	}
+	
 	var htmlString =
-		'<div class="grid-stack-item-content card d-flex '+BGCOLORClass+' '+FGCOLORClass+'">'
+		'<div class="grid-stack-item-content card d-flex '+titleposClass+BGCOLORClass+' '+FGCOLORClass+'">'
 		+'	<div role="button" class="cfw-dashboard-widget-actionicons '+settingsDisplayClass+' text-cfw-lightgray">'
 		+'		<div role="button" class="actionicon-delete '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_remove(\''+merged.guid+'\')"><i class="fas fa-times"></i></div>'
 		+'		<div role="button" class="actionicon-duplicate '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_duplicate(\''+merged.guid+'\')"><i class="fas fa-clone"></i></div>'
@@ -1614,7 +1639,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 
 	if(merged.TITLE != null && merged.TITLE != ''){
 		htmlString += 
-		 '     	  <div class="cfw-dashboard-widget-title border-bottom '+borderClass+'" style="font-size: '+merged.TITLE_FONTSIZE+'px;">'
+		 '     	  <div class="cfw-dashboard-widget-title '+titleBorderClass+borderClass+'" style="font-size: '+merged.TITLE_FONTSIZE+'px;">'
 		+'		  	<span>'+merged.TITLE+'</span>'
 		+'		  </div>'
 	}

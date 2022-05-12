@@ -34,6 +34,7 @@ public class DashboardWidget extends CFWObject {
 		WIDTH,
 		HEIGHT,
 		TITLE,
+		TITLE_POSITION,
 		TITLE_FONTSIZE,
 		CONTENT_FONTSIZE,
 		FOOTER,
@@ -85,6 +86,10 @@ public class DashboardWidget extends CFWObject {
 			.setDescription("The font size of the title.")
 			.addValidator(new NumberRangeValidator(6, 32).setNullAllowed(true));
 	
+	private CFWField<String> titleposition = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.TITLE_POSITION)
+			.setColumnDefinition("VARCHAR(32)")
+			.setDescription("The position of the title.");
+	
 	private CFWField<Integer> contentFontsize = CFWField.newInteger(FormFieldType.NUMBER, DashboardWidgetFields.CONTENT_FONTSIZE)
 			.setDescription("The font size of the content.")
 			.addValidator(new NumberRangeValidator(6, 32).setNullAllowed(true));
@@ -128,7 +133,7 @@ public class DashboardWidget extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titleFontsize, contentFontsize, footer, bgcolor, fgcolor, settings, taskParameters);
+		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titleFontsize, titleposition, contentFontsize, footer, bgcolor, fgcolor, settings, taskParameters);
 	}
 
 	/**************************************************************************************
@@ -174,6 +179,7 @@ public class DashboardWidget extends CFWObject {
 						DashboardWidgetFields.WIDTH.toString(),
 						DashboardWidgetFields.HEIGHT.toString(),
 						DashboardWidgetFields.TITLE.toString(),
+						DashboardWidgetFields.TITLE_POSITION.toString(),
 						DashboardWidgetFields.TITLE_FONTSIZE.toString(),
 						DashboardWidgetFields.CONTENT_FONTSIZE.toString(),
 						DashboardWidgetFields.FOOTER.toString(),
