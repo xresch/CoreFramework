@@ -140,6 +140,7 @@ DONE
 - H2: Upgraded to 2.1.212
 - Tiles Renderer: Made popup configurable
 - Renderer: Added Status Bar renderer
+- Widget Settings: Added option to define title position(top, left)
 
 ------- v6.0.0 -------
 - New Feature - Query: Domain Specific Language(DSL) to fetch, process and format data from various sources

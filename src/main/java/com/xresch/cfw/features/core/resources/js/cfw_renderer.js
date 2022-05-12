@@ -283,6 +283,7 @@ function cfw_renderer_common_createDefaultPopupTable(entry, renderDef){
 	}
 	definition.rendererSettings.table.verticalize = true;
 	definition.rendererSettings.table.narrow = true;
+	definition.rendererSettings.table.striped = true;
 	definition.rendererSettings.table.filter = false;
 	//remove alertstyle and textstyle
 	var visiblefields = Object.keys(definition.data);
@@ -617,32 +618,13 @@ function cfw_renderer_tiles(renderDef) {
 		
 		//=====================================
 		// Add Details Click
-		currentTile.data('record', currentRecord)
+		currentTile.data('record', currentRecord);
 		currentTile.bind('click', function(e) {
-			
 			e.stopPropagation();
-			//-------------------------
-			// Create render definition
-			var definition = Object.assign({}, renderDef);
-			definition.data = $(this).data('record');
-			if(definition.rendererSettings.table == null){
-				definition.rendererSettings.table = {};
-			}
-			definition.rendererSettings.table.verticalize = true;
-			definition.rendererSettings.table.striped = true;
-			//remove alertstyle and textstyle
-			var visiblefields = Object.keys(definition.data);
-			visiblefields.pop();
-			visiblefields.pop();
-			
-			definition.visiblefields = visiblefields;
-			
-			//-------------------------
-			// Show Details Modal
-			var renderer = CFW.render.getRenderer('table');
+
 			cfw_ui_showModal(
 					CFWL('cfw_core_details', 'Details'), 
-					renderer.render(definition))
+					settings.popoverFunction(currentRecord, renderDef))
 			;
 		})
 		
@@ -759,30 +741,11 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 		// Add Details Click
 		currentTile.data('record', currentRecord)
 		currentTile.bind('click', function(e) {
-			
 			e.stopPropagation();
-			//-------------------------
-			// Create render definition
-			var definition = Object.assign({}, renderDef);
-			definition.data = $(this).data('record');
-			if(definition.rendererSettings.table == null){
-				definition.rendererSettings.table = {};
-			}
-			definition.rendererSettings.table.verticalize = true;
-			definition.rendererSettings.table.striped = true;
-			//remove alertstyle and textstyle
-			var visiblefields = Object.keys(definition.data);
-			visiblefields.pop();
-			visiblefields.pop();
-			
-			definition.visiblefields = visiblefields;
-			
-			//-------------------------
-			// Show Details Modal
-			var renderer = CFW.render.getRenderer('table');
+
 			cfw_ui_showModal(
 					CFWL('cfw_core_details', 'Details'), 
-					renderer.render(definition))
+					settings.popoverFunction(currentRecord, renderDef))
 			;
 		})
 		
