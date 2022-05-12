@@ -139,6 +139,7 @@ DONE
 - Job Task Widget Executor: Added timeframe picker tho handle time placeholders like $earliest and $latest
 - H2: Upgraded to 2.1.212
 - Tiles Renderer: Made popup configurable
+- Renderer: Added Status Bar renderer
 
 ------- v6.0.0 -------
 - New Feature - Query: Domain Specific Language(DSL) to fetch, process and format data from various sources

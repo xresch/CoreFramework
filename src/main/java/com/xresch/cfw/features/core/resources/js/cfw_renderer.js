@@ -741,11 +741,10 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 	if(settings.reverse){
 		reverseSuffix = "-reverse";
 	}
-	var allTiles = $('<div class="d-flex flex-row'+reverseSuffix+' flex-grow-1"></div>');
+	var allTiles = $('<div class="d-flex flex-row'+reverseSuffix+' flex-grow-1 align-items-start"></div>');
 	//allTiles.addClass('h-100');
 	allTiles.css('height', settings.minheight);
-	allTiles.addClass('align-items-start');
-
+	allTiles.css('font-size', "0px"); //allow tiles to be very small
 				
 	for(var i = 0; i < renderDef.data.length; i++ ){
 		var currentRecord = renderDef.data[i];
