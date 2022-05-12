@@ -6,6 +6,7 @@ CFW_RENDER_NAME_TABLE = 'table';
 CFW_RENDER_NAME_TILES = 'tiles';
 CFW_RENDER_NAME_STATUSBAR = 'statusbar';
 CFW_RENDER_NAME_STATUSBAR_REVERSE = 'statusbarreverse';
+CFW_RENDER_NAME_STATUSMAP = 'statusmap';
 CFW_RENDER_NAME_CARDS = 'cards';
 CFW_RENDER_NAME_PANELS = 'panels';
 
@@ -777,7 +778,125 @@ function cfw_renderer_statusbar_reverse(renderDef, reverseOrder) {
 CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSBAR, new CFWRenderer(cfw_renderer_statusbar));
 CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSBAR_REVERSE, new CFWRenderer(cfw_renderer_statusbar_reverse));
 
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_statusmap(renderDef) {
+	
+	//-----------------------------------
+	// Check Data
+	if(renderDef.datatype != "array"){
+		return "<span>Unable to convert data into status map.</span>";
+	}
+	
+	if(renderDef.data.length == 0){
+		return "&nbsp;";
+	}
+	
+	//-----------------------------------
+	// Render Specific settings
+	var defaultSettings = {
+		// aspect ratio factor for the width. Used to calculate number of columns in the map.
+		widthfactor: 1,
+		// aspect ratio factor for the height. Used to calculate number of columns in the map.
+		heightfactor: 1,
+		// show a popover with details about the data when hovering a tile
+		popover: true,
+		// The function(record, renderDef) used to create the popover and details modal content
+		popoverFunction: cfw_renderer_common_createDefaultPopupTable
+		
+	};
+	
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.tiles);
 
+	//===================================================
+	// Calculate number of columns
+	//===================================================
+	var aspectRatio = settings.widthfactor / settings.heightfactor;
+	// landscape example: 2 / 1 = 2.0
+	// portrait example:  1 / 2 = 0.5
+	
+	var itemCount = renderDef.data.length;
+	
+	var numberColumns = 1;
+	var currentRatio = 0;
+	for(;currentRatio < aspectRatio; numberColumns++ ){
+		currentRatio = numberColumns / (itemCount / numberColumns);
+	}
+	numberColumns--;
+	
+
+	//===================================================
+	// Create Tiles for Map
+	//===================================================
+	
+	var allTiles = $('<div class="d-flex flex-column flex-grow-1 h-100"></div>');
+	allTiles.css("font-size", "0px");
+	
+	var currentRow = $('<div class="d-flex flex-row flex-grow-1 w-100"></div>');
+
+	allTiles.append(currentRow);
+	
+	for(var i = 1; i <= itemCount || ((i-1) % numberColumns) != 0 ; i++ ){
+
+		var currentTile = $('<div class="p-0 flex-fill">&nbsp;</div>');
+		currentTile.css('height', "100%");
+		currentRow.append(currentTile);
+
+		//=====================================
+		// Check has more records, else empty tile
+		if(i > renderDef.data.length){
+			//make same size to have proper alignment
+			currentTile.addClass("border-cfw-invisible");
+			
+			continue;
+		}
+		
+		var currentRecord = renderDef.data[i-1];
+		
+		//=====================================
+		// Add Styles
+		renderDef.colorizeElement(currentRecord, currentTile, "bg");
+		currentTile.addClass("border-cfw-overlay");
+		
+		//=====================================
+		// Add Details Click
+		currentTile.data('record', currentRecord)
+		currentTile.bind('click', function(e) {
+			e.stopPropagation();
+
+			cfw_ui_showModal(
+					CFWL('cfw_core_details', 'Details'), 
+					settings.popoverFunction(currentRecord, renderDef))
+			;
+		})
+		
+		//=====================================
+		// Add Details Popover
+		if(settings.popover){
+			currentTile.popover({
+				trigger: 'hover',
+				html: true,
+				placement: 'auto',
+				boundary: 'window',
+				// title: 'Details',
+				sanitize: false,
+				content: settings.popoverFunction(currentRecord, renderDef)
+			})
+		}
+	
+		//if current row has reached numberColumns create new row, except if it was the last item
+		if( (i % numberColumns) == 0 && i < itemCount){
+			currentRow = $('<div class="d-flex flex-row flex-grow-1 w-100"></div>');
+			allTiles.append(currentRow);
+		}
+	}
+	
+	return allTiles;
+
+}
+
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP, new CFWRenderer(cfw_renderer_statusmap));
 
 /******************************************************************
  * 

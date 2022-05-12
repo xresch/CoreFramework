@@ -113,6 +113,14 @@ pre {
 .border-cfw-black {			border-color: var(--cfw-black); }
 .border-cfw-none {			border-color: none; }
 
+.border-cfw-overlay {	
+	border: 1px rgba(0,0,0,0.2) solid; 
+}
+
+.border-cfw-invisible {
+    border: 1px rgba(0,0,0,0) solid; 
+}
+
 .table-cfw-excellent, .table-cfw-excellent th, .table-cfw-excellent td, .table-cfw-excellent thead, .table-cfw-excellent tbody, .table-hover .table-cfw-excellent:hover {		background-color: var(--cfw-excellent); }
 .table-cfw-good, .table-cfw-good th, .table-cfw-good td, .table-cfw-good thead, .table-cfw-good tbody, .table-hover .table-cfw-good:hover {		background-color: var(--cfw-good); }
 .table-cfw-warning, .table-cfw-warning th, .table-cfw-warning td, .table-cfw-warning thead, .table-cfw-warning tbody, .table-hover .table-cfw-warning:hover {		background-color: var(--cfw-warning); }

@@ -139,7 +139,8 @@ DONE
 - Job Task Widget Executor: Added timeframe picker tho handle time placeholders like $earliest and $latest
 - H2: Upgraded to 2.1.212
 - Tiles Renderer: Made popup configurable
-- Renderer: Added Status Bar renderer
+- Renderer: Added Status Bar Renderer
+- Renderer: Added Status Map Renderer
 - Widget Settings: Added option to define title position(top, left)
 
 ------- v6.0.0 -------
