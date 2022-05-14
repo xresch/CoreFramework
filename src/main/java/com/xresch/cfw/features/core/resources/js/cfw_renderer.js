@@ -7,6 +7,7 @@ CFW_RENDER_NAME_TILES = 'tiles';
 CFW_RENDER_NAME_STATUSBAR = 'statusbar';
 CFW_RENDER_NAME_STATUSBAR_REVERSE = 'statusbarreverse';
 CFW_RENDER_NAME_STATUSMAP = 'statusmap';
+CFW_RENDER_NAME_STATUSLIST = 'statuslist';
 CFW_RENDER_NAME_CARDS = 'cards';
 CFW_RENDER_NAME_PANELS = 'panels';
 
@@ -897,6 +898,133 @@ function cfw_renderer_statusmap(renderDef) {
 }
 
 CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP, new CFWRenderer(cfw_renderer_statusmap));
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_statuslist(renderDef) {
+	
+	//-----------------------------------
+	// Check Data
+	if(renderDef.datatype != "array"){
+		return "<span>Unable to convert data into alert tiles.</span>";
+	}
+	
+	//-----------------------------------
+	// Render Specific settings
+	var defaultSettings = {
+		// size factor for the text in the tile, or tile size of labels are not shown
+		sizefactor: 1,
+		// the border style of the tile, choose between: null | 'none' | 'round' | 'superround' | 'asymmetric' | 'superasymmetric' | 'ellipsis'
+		borderstyle: null,
+		// the border that should be applied, like '1px solid black'
+		border: null,
+		// show a popover with details about the data when hovering a tile
+		popover: true,
+		// The function(record, renderDef) used to create the popover
+		popoverFunction: cfw_renderer_common_createDefaultPopupTable
+	};
+	
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.tiles);
+
+	//===================================================
+	// Create Alert Tiles
+	//===================================================
+	var allTiles = $('<div class="d-flex flex-column flex-wrap h-100">');
+
+				
+	for(var i = 0; i < renderDef.data.length; i++ ){
+		var currentRecord = renderDef.data[i];
+		var currentListItem = $('<div class="d-flex flex-row align-items-center">')
+		var currentTile = $('<div>');
+		
+		currentTile.css('width', 20*settings.sizefactor+"px");
+		currentTile.css('height', 20*settings.sizefactor+"px");
+		
+		currentListItem.append(currentTile);
+		//=====================================
+		// Add padding
+		if(settings.sizefactor <= 1.0)		{ currentListItem.addClass('pb-1 pl-3'); }
+		else if(settings.sizefactor <= 1.5)	{ currentListItem.addClass('pb-2 pl-3'); }
+		else if(settings.sizefactor <= 2.5)	{ currentListItem.addClass('pb-3 pl-3'); }
+		else 								{ currentListItem.addClass('pb-4 pl-4'); }
+		
+		
+		//=====================================
+		// Add Styles
+		renderDef.colorizeElement(currentRecord, currentTile, "bg");
+		renderDef.colorizeElement(currentRecord, currentTile, "text");
+		
+		if(settings.border != null){
+			currentTile.css('border', settings.border);
+		}
+		
+		if(settings.borderstyle != null){
+			var baseradius = 10;
+			var radius;
+			switch(settings.borderstyle.toLowerCase()){
+				case 'round':  			currentTile.css('border-radius', baseradius * settings.sizefactor+'px');
+										break;
+										
+				case 'superround':  	currentTile.css('border-radius', baseradius * 2 * settings.sizefactor+'px');
+										break;
+				
+				case 'asymmetric':  	radius = baseradius * 2.4 * settings.sizefactor+'px ';
+										radius += baseradius * 0.8 * settings.sizefactor+'px';
+										currentTile.css('border-radius', radius);
+										break;
+										
+				case 'superasymmetric':	radius = baseradius * 5 * settings.sizefactor+'px ';
+										radius += baseradius * 2 * settings.sizefactor+'px';
+										currentTile.css('border-radius', radius);
+										break;
+										
+				case 'ellipsis':  		currentTile.css('border-radius', '50%');
+										break;						
+				
+			}
+		}
+		
+		//=====================================
+		// Add Details Click
+		currentTile.data('record', currentRecord);
+		currentTile.bind('click', function(e) {
+			e.stopPropagation();
+
+			cfw_ui_showModal(
+					CFWL('cfw_core_details', 'Details'), 
+					settings.popoverFunction(currentRecord, renderDef))
+			;
+		})
+		
+		//=====================================
+		// Add Details Popover
+		if(settings.popover){
+			currentTile.popover({
+				trigger: 'hover',
+				html: true,
+				placement: 'auto',
+				boundary: 'window',
+				// title: 'Details',
+				sanitize: false,
+				content: settings.popoverFunction(currentRecord, renderDef)
+			})
+		}
+		
+		//=====================================
+		// Create List Item Label
+		var recordTitle = renderDef.getTitleHTML(currentRecord);
+
+		currentListItem.append('<span style="font-size: '+18*settings.sizefactor+'px;">&nbsp;'+recordTitle+'</span>');
+
+		allTiles.append(currentListItem);
+	}
+	
+	return allTiles;
+
+}
+
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSLIST, new CFWRenderer(cfw_renderer_statuslist));
 
 /******************************************************************
  * 

@@ -141,6 +141,7 @@ DONE
 - Tiles Renderer: Made popup configurable
 - Renderer: Added Status Bar Renderer
 - Renderer: Added Status Map Renderer
+- Renderer: Added Status List Renderer
 - Widget Settings: Added option to define title position(top, left)
 
 ------- v6.0.0 -------

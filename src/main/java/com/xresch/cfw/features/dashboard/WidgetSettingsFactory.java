@@ -74,6 +74,7 @@ public class WidgetSettingsFactory {
 		rendererOptions.put("statusbar", "Status Bar");
 		rendererOptions.put("statusbarreverse", "Status Bar Reversed");
 		rendererOptions.put("statusmap", "Status Map");
+		rendererOptions.put("statuslist", "Status List");
 		rendererOptions.put("table", "Table");
 		rendererOptions.put("panels", "Panels");
 		rendererOptions.put("cards", "Cards");
