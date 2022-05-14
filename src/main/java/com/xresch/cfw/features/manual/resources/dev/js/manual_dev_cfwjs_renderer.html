@@ -182,18 +182,84 @@ The following are the available settings with defaults.
 </p>
 <pre>
 <code>rendererParams.rendererSettings.tiles = {
-	// size factor for the text in the tile, or tile size of labels are not shown
-	sizefactor: 1,
-	// show or hide labels
-	showlabels: false, 
-	// the border style of the tile, choose between: null | 'none' | 'round' | 'superround' | 'asymmetric' | 'superasymmetric' | 'ellipsis'
-	borderstyle: null
-	// the border that should be applied, like '1px solid black'
-	border: null,
-	// show a popover with details about the data when hovering a tile
-	popover: true
-};
+		// size factor for the text in the tile, or tile size of labels are not shown
+		sizefactor: 1,
+		// show or hide labels
+		showlabels: true, 
+		// the border style of the tile, choose between: null | 'none' | 'round' | 'superround' | 'asymmetric' | 'superasymmetric' | 'ellipsis'
+		borderstyle: null,
+		// the border that should be applied, like '1px solid black'
+		border: null,
+		// show a popover with details about the data when hovering a tile
+		popover: true,
+		// The function(record, renderDef) used to create the popover and details modal
+		popoverFunction: cfw_renderer_common_createDefaultPopupTable
+	};
 var tilesDiv = CFW.render.getRenderer('tiles').render(rendererParams);</code>
+</pre>
+
+
+<h3>Status Bar</h3>
+<p>
+The statusbar renderer will return a JQuery div-Element containing a colored bar. It's main purpose is to display historical data in a traffic light manner. <br />
+Alternatively you can use 'statusbarreverse', which sets settings.reverse to true by default.
+The following are the available settings with defaults.
+</p>
+<pre>
+<code>rendererParams.rendererSettings.statusbar = {
+		//height for the status bar
+		height: "100%",
+		// define if the order of the items should be reversed
+		reverse: false,
+		// show a popover with details about the data when hovering a tile
+		popover: true,
+		// The function(record, renderDef) used to create the popover  and details modal
+		popoverFunction: cfw_renderer_common_createDefaultPopupTable
+		
+	};
+var statusbarDiv = CFW.render.getRenderer('statusbar').render(rendererParams);</code>
+var statusbarreverseDiv = CFW.render.getRenderer('statusbarreverse').render(rendererParams);</code>
+</pre>
+
+<h3>Status Map</h3>
+<p>
+The statusmap renderer will return a JQuery div-Element containing colored tiles arranged as a scalable map. It's main purpose is to display data in a traffic light manner while using space efficiently. <br />
+The following are the available settings with defaults.
+</p>
+<pre>
+<code>rendererParams.rendererSettings.statusmap = {
+		// aspect ratio factor for the width. Used to calculate number of columns in the map.
+		widthfactor: 1,
+		// aspect ratio factor for the height. Used to calculate number of columns in the map.
+		heightfactor: 1,
+		// show a popover with details about the data when hovering a tile
+		popover: true,
+		// The function(record, renderDef) used to create the popover and details modal content
+		popoverFunction: cfw_renderer_common_createDefaultPopupTable
+		
+	};
+var statusmapDiv = CFW.render.getRenderer('statusmap').render(rendererParams);</code>
+</pre>
+
+<h3>Status List</h3>
+<p>
+The statuslist renderer will return a JQuery div-Element containing colored tiles with labels as a flexible list. It's main purpose is to display data in a traffic light manner . <br />
+The following are the available settings with defaults.
+</p>
+<pre>
+<code>rendererParams.rendererSettings.statuslist = {
+		// size factor for the text in the tile, or tile size of labels are not shown
+		sizefactor: 1,
+		// the border style of the tile, choose between: null | 'none' | 'round' | 'superround' | 'asymmetric' | 'superasymmetric' | 'ellipsis'
+		borderstyle: null,
+		// the border that should be applied, like '1px solid black'
+		border: null,
+		// show a popover with details about the data when hovering a tile
+		popover: true,
+		// The function(record, renderDef) used to create the popover and details modal
+		popoverFunction: cfw_renderer_common_createDefaultPopupTable
+	};
+var statuslistDiv = CFW.render.getRenderer('statuslist').render(rendererParams);</code>
 </pre>
 
 

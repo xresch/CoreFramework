@@ -548,7 +548,7 @@ function cfw_renderer_tiles(renderDef) {
 		border: null,
 		// show a popover with details about the data when hovering a tile
 		popover: true,
-		// The function(record, renderDef) used to create the popover
+		// The function(record, renderDef) used to create the popover and details modal
 		popoverFunction: cfw_renderer_common_createDefaultPopupTable
 	};
 	
@@ -704,13 +704,13 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 	//-----------------------------------
 	// Render Specific settings
 	var defaultSettings = {
-		// minimum height for the status bar
-		minheight: "100%",
+		//height for the status bar
+		height: "100%",
 		// define if the order of the items should be reversed
 		reverse: reverseOrder,
 		// show a popover with details about the data when hovering a tile
 		popover: true,
-		// The function(record, renderDef) used to create the popover
+		// The function(record, renderDef) used to create the popover and details modal
 		popoverFunction: cfw_renderer_common_createDefaultPopupTable
 		
 	};
@@ -727,7 +727,7 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 	}
 	var allTiles = $('<div class="d-flex flex-row'+reverseSuffix+' flex-grow-1 align-items-start"></div>');
 	//allTiles.addClass('h-100');
-	allTiles.css('height', settings.minheight);
+	allTiles.css('height', settings.height);
 	allTiles.css('font-size', "0px"); //allow tiles to be very small
 				
 	for(var i = 0; i < renderDef.data.length; i++ ){
@@ -921,7 +921,7 @@ function cfw_renderer_statuslist(renderDef) {
 		border: null,
 		// show a popover with details about the data when hovering a tile
 		popover: true,
-		// The function(record, renderDef) used to create the popover
+		// The function(record, renderDef) used to create the popover and details modal
 		popoverFunction: cfw_renderer_common_createDefaultPopupTable
 	};
 	
