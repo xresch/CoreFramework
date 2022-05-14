@@ -524,7 +524,6 @@ function cfw_dashboard_parameters_loadParameterForm(){
 						let columnSpan = $(element).find('span:first');
 						
 						let widgetType = columnSpan.text();
-						//console.log(widgetType);
 						let definition = cfw_dashboard_getWidgetDefinition(widgetType);
 						let label = (definition != undefined) ? definition.menulabel : undefined;
 						
@@ -605,7 +604,7 @@ function cfw_dashboard_parameters_applyToFields(object, widgetType, finalParams)
 	
 	var settingsString = JSON.stringify(object);
 	
-	console.log("settings before substitute	: "+settingsString);
+	//console.log("settings before substitute	: "+settingsString);
 	//=============================================
 	// Handle SUBSTITUTE PARAMS
 	//=============================================
@@ -637,7 +636,7 @@ function cfw_dashboard_parameters_applyToFields(object, widgetType, finalParams)
 		
 	}
 	
-	console.log("settings after substitute	: "+settingsString);
+	//console.log("settings after substitute	: "+settingsString);
 	
 	//=============================================
 	// Handle GLOBAL OVERRIDE PARAMS
@@ -670,99 +669,15 @@ function cfw_dashboard_parameters_applyToFields(object, widgetType, finalParams)
 			default:
 				// objects, numbers etc...
 				newSettingsObject[currentSettingName] = paramValue;
-				//console.log('DEFAULT OTHER: '+widgetJsonSettings[currentSettingName]);
+
 				break;
 		}
 	}
 	
-	console.log("settings after global		: "+JSON.stringify(newSettingsObject));
+	//console.log("settings after global		: "+JSON.stringify(newSettingsObject));
 
 	return newSettingsObject;
 	
-	//widgetType = widgetObject.TYPE;
-//	widgetJsonSettings = _.cloneDeep(widgetObject.JSON_SETTINGS);
-//	
-//	for(var index in finalParams){
-//		var currentParam = finalParams[index];
-//		var currentSettingName = currentParam.LABEL;
-//		var paramValue = currentParam.VALUE;
-//
-//		//console.log('=========================================');
-//		//console.log('widgetJsonSettings[currentSettingName]: '+widgetJsonSettings[currentSettingName]);
-//		//console.log('currentSettingName: '+currentSettingName);
-//		//console.log('settingsValue: '+widgetJsonSettings[currentSettingName]);
-//		//console.log('paramValue: '+paramValue);
-//
-//		// ----------------------------------------
-//		// Handle General Params
-//		if(CFW.utils.isNullOrEmpty(currentParam.WIDGET_TYPE)){
-//					// -------------------------------------
-//					// Replace Regular Parameters
-//					for(var key in widgetJsonSettings){
-//						//console.log('>> settingName: '+key);
-//						//console.log('>> oldsettingValue: '+widgetJsonSettings[key]);
-//						var oldSettingsValue = widgetJsonSettings[key];
-//						 if (typeof oldSettingsValue == "string"){
-//							widgetJsonSettings[key] = 
-//								oldSettingsValue.replaceAll('$'+currentParam.NAME+'$', paramValue);
-//							//console.log('applyToWidgetSettings-A-string: '+widgetJsonSettings[key]);
-//						}else if (currentParam.PARAM_TYPE == "BOOLEAN" 
-//							&& typeof oldSettingsValue == "boolean"
-//							&& oldSettingsValue == ('$'+currentParam.NAME+'$') ){
-//							widgetJsonSettings[key] = paramValue;
-//							//console.log('applyToWidgetSettings-A-boolean: '+widgetJsonSettings[key]);
-//							
-//						}else{
-//							//console.log('>>>>> applyToWidgetSettings-A-missed: '+key);
-//							//console.log('>>>>> applyToWidgetSettings-A-missedvalue: '+widgetJsonSettings[key]);
-//						}	
-//					}
-//		}else {
-//			
-//			// -------------------------------------
-//			// Replace Widget Settings Parameters
-//			var oldSettingsValue = widgetJsonSettings[currentSettingName];
-//			var mode = currentParam.MODE;
-//			switch(currentParam.PARAM_TYPE){
-//				case 'TAGS_SELECTOR':
-//					if(typeof paramValue == 'object'){
-//						widgetJsonSettings[currentSettingName] = paramValue;
-//					}else{
-//						widgetJsonSettings[currentSettingName] = JSON.parse(paramValue);
-//					}
-//					break;
-//				case 'BOOLEAN':  
-//					paramValue = paramValue.toLowerCase().trim();
-//					switch(paramValue){
-//			        	case "true": case "yes": case "1": widgetJsonSettings[currentSettingName] = true; break;
-//			        	case "false": case "no": case "0": widgetJsonSettings[currentSettingName] = false; break;
-//			        	default: widgetJsonSettings[currentSettingName] = Boolean(paramValue); break;
-//					}
-//					break;
-//				case 'NUMBER':
-//					// objects, numbers etc...
-//					widgetJsonSettings[currentSettingName] = paramValue;
-//					//console.log('NUMBER: '+widgetJsonSettings[currentSettingName]);
-//				
-//				// TEXT, TEXTAREA, PASSWORD, EMAIL, SELECT, LIST
-//				default:
-//					if(mode == "MODE_SUBSTITUTE" && typeof oldSettingsValue == "string"){
-//							widgetJsonSettings[currentSettingName] = oldSettingsValue.replaceAll('$'+currentParam.NAME+'$',paramValue);
-//							//console.log('DEFAULT SUB: '+widgetJsonSettings[currentSettingName]);
-//					}else{
-//						// objects, numbers etc...
-//						widgetJsonSettings[currentSettingName] = paramValue;
-//						//console.log('DEFAULT OTHER: '+widgetJsonSettings[currentSettingName]);
-//					}
-//					break;
-//			}
-//		}
-//	}
-//	
-//	var clone = _.cloneDeep(widgetObject);
-//	clone.JSON_SETTINGS = widgetJsonSettings;
-//	
-//	return clone;
 }
 
 /*******************************************************************************
@@ -1999,7 +1914,6 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 	
 	cfw_autocomplete_setParamEnhancer( function(inputField, requestAttributes){
 		
-			console.log('START')
 			//---------------------------
 			// Add DashboardID
 			requestAttributes['cfw-dashboardid'] = CFW_DASHBOARD_URLPARAMS.id;
@@ -2027,8 +1941,6 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			
 			if(form.attr('id').startsWith('cfwWidgetParameterForm')){
 				
-				console.log("do params");
-				
 				// Applied Param values from dashboard
 				dashboardParams = cfw_dashboard_parameters_getFinalParams();
 				for(index in dashboardParams){
@@ -2047,8 +1959,7 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 					var currentParamField = $(this);
 					var name = currentParamField.attr('name');
 					var value = requestSaveValues[name];
-					console.log('name:'+name);
-					console.log('value:'+value);
+
 					var widgettype = inputField.data("widgettype");
 					var settingslabel = inputField.data("settingslabel");
 					

@@ -2363,7 +2363,6 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			let totalRecords = sortedData.length;
 			let dataToRender = _.slice(sortedData, offset, offset+pageSize);
 			if(pageSize == -1){
-				console.log("ding: "+ pageSize);
 				dataToRender = sortedData;
 			}
 

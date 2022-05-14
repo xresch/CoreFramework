@@ -197,8 +197,6 @@ function cfwjobs_printAdminJobs(){
  ******************************************************************/
 function cfwjobs_formatMessages(record, value){
 	
-	console.log(record)
-	console.log(value.length)
 	//-------------------------
 	// Handle Null
 	if(CFW.utils.isNullOrEmpty(value)

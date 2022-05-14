@@ -272,7 +272,6 @@ function cfw_manual_preparePageForPrint(pageContent, headerOffset){
  ******************************************************************/
 function cfw_manual_printview_postProcessPageLinks(paper){
 	
-	console.log('test');
 	var pageLinks = paper.find('a[onclick^="cfw_manual_loadPage"]');
 	
 	pageLinks.each(function(){

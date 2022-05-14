@@ -612,13 +612,10 @@ function cfw_internal_updateCheckboxesField(element){
 	
 	var originalField = wrapper.find('> input').first();
 	
-	//console.log("=================");
-	//console.log(originalField);
-	
 	var checkboxValues = {}
 	
 	checkboxesStateJsonString = originalField.val();
-	//console.log("checkboxesStateJsonString: "+checkboxesStateJsonString);
+
 	if(!CFW.utils.isNullOrEmpty(checkboxesStateJsonString) && checkboxesStateJsonString != "null"){
 		checkboxValues = JSON.parse(checkboxesStateJsonString);
 	}
@@ -627,7 +624,6 @@ function cfw_internal_updateCheckboxesField(element){
 		let current = $(element);
 		let key = current.attr("name");
 		let value = current.prop('checked');
-		//console.log(current);
 		
 		if(!CFW.utils.isNullOrEmpty(key)
 		|| !CFW.utils.isNullOrEmpty(value)){
@@ -1106,7 +1102,6 @@ function cfw_internal_confirmSchedule(elementID){
 	
 	//--------------------------------------
 	// Set Schedule
-	//console.log(scheduleData);
 	if(isValid){
 		originalField.val(JSON.stringify(scheduleData));
 		originalField.dropdown('toggle');
@@ -1377,10 +1372,8 @@ function cfw_initializeTimeframePicker(fieldID, initialData, onchangeCallbackFun
 	if(initialData != null){
 
 		if(initialData.offset == null){
-			console.log(initialData)
 			cfw_timeframePicker_setCustom(fieldID, initialData.earliest, initialData.latest);
 		}else{
-			console.log("B")
 			cfw_timeframePicker_setOffset("#"+fieldID, initialData.offset);
 		}
 	}

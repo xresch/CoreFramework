@@ -53,7 +53,7 @@ function cfw_query_execute(){
 				
 				queryLength = encodeURIComponent(query).length;
 				var finalLength = queryLength + CFW.http.getHostURL().length + CFW.http.getURLPath().length ;
-				console.log("FinalLength: "+finalLength)
+				
 				if(finalLength+300 > JSDATA.requestHeaderMaxSize){
 					CFW.ui.addToastInfo("The query is quite long and the URL might not work. Make sure to save a copy of your query.");
 				}
@@ -84,8 +84,6 @@ function cfw_query_editor_refreshHighlighting() {
  * 
  ******************************************************************************/
 function cfw_query_editor_handleEnter(domElement){
-		
-	console.log("cfw_query_editor_handleEnter");
 	
 	//==========================================================
 	// Copy Indendation

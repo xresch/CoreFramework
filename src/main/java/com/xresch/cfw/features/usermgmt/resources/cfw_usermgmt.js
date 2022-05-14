@@ -24,7 +24,6 @@ function cfw_usermgmt_formatAuditResults(parent, item){
 		
 		//------------------------------------
 		// Handle Arrays
-		console.log(item);
 		for(key in item){
 			cfw_usermgmt_formatAuditResults(parent, item[key]);
 		} 
