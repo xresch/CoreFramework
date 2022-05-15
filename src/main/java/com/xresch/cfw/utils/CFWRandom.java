@@ -406,7 +406,7 @@ public class CFWRandom {
 		long timestep = timerange / valuesCount;
 		
 		
-		for(int i = 0; i < valuesCount; i++) {
+		for(int i = 0; i < seriesCount; i++) {
 			String warehouse = randomColorName()+" "+randomStringAlphaNumerical(1).toUpperCase()+randomIntegerInRange(1, 9);
 			String item = randomFruitName();
 					
