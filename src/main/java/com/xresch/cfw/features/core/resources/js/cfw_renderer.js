@@ -1772,6 +1772,13 @@ function cfw_renderer_chart(renderDef) {
 	}
 	
 	//========================================
+	// sort by x to avoid displaying issues
+	for(i in datasets){
+		
+		datasets[i].data = _.sortBy(datasets[i].data, ['x']);
+	}
+	
+	//========================================
 	// Create ChartJS Data Object
 	var data = {};
 	if(settings.charttype != 'radar'){
