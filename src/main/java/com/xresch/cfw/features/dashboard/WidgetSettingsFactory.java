@@ -71,13 +71,22 @@ public class WidgetSettingsFactory {
 		
 		LinkedHashMap<String, String> rendererOptions = new LinkedHashMap<>();
 		rendererOptions.put("tiles", "Tiles");
-		rendererOptions.put("statusbar", "Status Bar");
-		rendererOptions.put("statusbarreverse", "Status Bar Reversed");
-		rendererOptions.put("statusmap", "Status Map");
-		rendererOptions.put("statuslist", "Status List");
 		rendererOptions.put("table", "Table");
 		rendererOptions.put("panels", "Panels");
 		rendererOptions.put("cards", "Cards");
+		rendererOptions.put("statuslist", "Status List");
+		rendererOptions.put("statusbar", "Status Bar");
+		rendererOptions.put("statusbarreverse", "Status Bar Reversed");
+		
+		rendererOptions.put("statusmap", "Status Map(1:1)");
+		rendererOptions.put("statusmap_2to1", "Status Map(2:1)");
+		rendererOptions.put("statusmap_4to1", "Status Map(4:1)");
+		rendererOptions.put("statusmap_8to1", "Status Map(8:1)");
+		rendererOptions.put("statusmap_1to2", "Status Map(1:2)");
+		rendererOptions.put("statusmap_1to4", "Status Map(1:4)");
+		rendererOptions.put("statusmap_1to8", "Status Map(1:8)");
+		
+
 		rendererOptions.put("csv", "CSV");
 		rendererOptions.put("json", "JSON");
 		

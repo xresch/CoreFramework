@@ -6,7 +6,15 @@ CFW_RENDER_NAME_TABLE = 'table';
 CFW_RENDER_NAME_TILES = 'tiles';
 CFW_RENDER_NAME_STATUSBAR = 'statusbar';
 CFW_RENDER_NAME_STATUSBAR_REVERSE = 'statusbarreverse';
+
 CFW_RENDER_NAME_STATUSMAP = 'statusmap';
+CFW_RENDER_NAME_STATUSMAP_2to1 = 'statusmap_2to1';
+CFW_RENDER_NAME_STATUSMAP_4to1 = 'statusmap_4to1';
+CFW_RENDER_NAME_STATUSMAP_8to1 = 'statusmap_8to1';
+CFW_RENDER_NAME_STATUSMAP_1to2 = 'statusmap_1to2';
+CFW_RENDER_NAME_STATUSMAP_1to4 = 'statusmap_1to4';
+CFW_RENDER_NAME_STATUSMAP_1to8 = 'statusmap_1to8';
+
 CFW_RENDER_NAME_STATUSLIST = 'statuslist';
 CFW_RENDER_NAME_CARDS = 'cards';
 CFW_RENDER_NAME_PANELS = 'panels';
@@ -782,7 +790,7 @@ CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSBAR_REVERSE, new CFWRenderer(c
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_statusmap(renderDef) {
+function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 	
 	//-----------------------------------
 	// Check Data
@@ -798,9 +806,9 @@ function cfw_renderer_statusmap(renderDef) {
 	// Render Specific settings
 	var defaultSettings = {
 		// aspect ratio factor for the width. Used to calculate number of columns in the map.
-		widthfactor: 1,
+		widthfactor: widthfactor,
 		// aspect ratio factor for the height. Used to calculate number of columns in the map.
-		heightfactor: 1,
+		heightfactor: heightfactor,
 		// show a popover with details about the data when hovering a tile
 		popover: true,
 		// The function(record, renderDef) used to create the popover and details modal content
@@ -897,7 +905,21 @@ function cfw_renderer_statusmap(renderDef) {
 
 }
 
-CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP, new CFWRenderer(cfw_renderer_statusmap));
+function cfw_renderer_statusmap_default(renderDef){ return cfw_renderer_statusmap(renderDef, 1, 1); }
+function cfw_renderer_statusmap_2to1(renderDef){ return cfw_renderer_statusmap(renderDef, 2, 1); }
+function cfw_renderer_statusmap_4to1(renderDef){ return cfw_renderer_statusmap(renderDef, 4, 1); }
+function cfw_renderer_statusmap_8to1(renderDef){ return cfw_renderer_statusmap(renderDef, 8, 1); }
+function cfw_renderer_statusmap_1to2(renderDef){ return cfw_renderer_statusmap(renderDef, 1, 2); }
+function cfw_renderer_statusmap_1to4(renderDef){ return cfw_renderer_statusmap(renderDef, 1, 4); }
+function cfw_renderer_statusmap_1to8(renderDef){ return cfw_renderer_statusmap(renderDef, 1, 8); }
+
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP, new CFWRenderer(cfw_renderer_statusmap_default));
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_2to1, new CFWRenderer(cfw_renderer_statusmap_2to1));
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_4to1, new CFWRenderer(cfw_renderer_statusmap_4to1));
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_8to1, new CFWRenderer(cfw_renderer_statusmap_8to1));
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_1to2, new CFWRenderer(cfw_renderer_statusmap_1to2));
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_1to4, new CFWRenderer(cfw_renderer_statusmap_1to4));
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_1to8, new CFWRenderer(cfw_renderer_statusmap_1to8));
 
 /******************************************************************
  * 
