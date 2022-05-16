@@ -15,6 +15,8 @@ public class WidgetSettingsFactory {
 
 	//new String[]{"Area", "Line", "Bar", "Scatter"}
 	private static LinkedHashMap<String,String> linearChartTypes = new LinkedHashMap<String,String>();
+	private static LinkedHashMap<String,String> basicAxisTypes = new LinkedHashMap<String,String>();
+	private static LinkedHashMap<String,String> allAxisTypes = new LinkedHashMap<String,String>();
 	
 	static {
 		linearChartTypes.put("area", "Area");
@@ -23,6 +25,15 @@ public class WidgetSettingsFactory {
 		linearChartTypes.put("scatter", "Scatter");
 		linearChartTypes.put("steppedline", "Stepped Line");
 		linearChartTypes.put("steppedarea", "Stepped Area");
+		
+		allAxisTypes.put("linear", "Linear");
+		allAxisTypes.put("logarithmic", "Logarithmic");
+		//allAxisTypes.put("category", "Category");
+		allAxisTypes.put("time", "Time");
+		
+		//linear|logarithmic|category|time
+		basicAxisTypes.put("linear", "Linear");
+		basicAxisTypes.put("logarithmic", "Logarithmic");
 	}
 		
 	/************************************************************************************
@@ -157,24 +168,55 @@ public class WidgetSettingsFactory {
 	
 	/************************************************************************************
 	 * Returns default chart fields as a LinkedHashMap.
+	 * @param showXAxisOptions TODO
+	 * @param shoxExtendedYAxisOptions TODO
 	 * 
 	 * @return
 	 ************************************************************************************/
 	@SuppressWarnings("rawtypes")
-	public static LinkedHashMap<String,CFWField> createDefaultChartFields(){
+	public static LinkedHashMap<String,CFWField> createDefaultChartFields(boolean showXAxisOptions, boolean shoxExtendedYAxisOptions){
 		
 		LinkedHashMap<String,CFWField> fieldsMap = new LinkedHashMap<>();
 		
 		//Needed to clone because dashboard parameters might mess up the hashmap.
 		LinkedHashMap<String, String> chartOptions = new LinkedHashMap<>();
 		chartOptions.putAll(linearChartTypes);
-		
+				
 		fieldsMap.put("chart_type", CFWField.newString(FormFieldType.SELECT, "chart_type")
 				.setLabel("{!cfw_widget_charttype!}")
 				.setDescription("{!cfw_widget_charttype_desc!}")
 				.setOptions(chartOptions)
-				.setValue("Area")
+				.setValue("area")
 		);
+		//----------------------------------
+		// X Axis Type
+		if(showXAxisOptions) {
+			LinkedHashMap<String, String> xaxistypeOptions = new LinkedHashMap<>();
+			
+			xaxistypeOptions.putAll(allAxisTypes);
+	
+			fieldsMap.put("x_axis_type", CFWField.newString(FormFieldType.SELECT, "x_axis_type")
+					.setLabel("{!cfw_widget_xaxistype!}")
+					.setDescription("{!cfw_widget_xaxistype_desc!}")
+					.setOptions(xaxistypeOptions)
+					.setValue("linear")
+				);	
+		}
+		//----------------------------------
+		// Y Axis Type
+		LinkedHashMap<String, String> yaxistypeOptions = new LinkedHashMap<>();
+		
+		if(shoxExtendedYAxisOptions) {
+			yaxistypeOptions.putAll(allAxisTypes);
+		}else {
+			yaxistypeOptions.putAll(basicAxisTypes);
+		}
+		fieldsMap.put("y_axis_type", CFWField.newString(FormFieldType.SELECT, "y_axis_type")
+				.setLabel("{!cfw_widget_yaxistype!}")
+				.setDescription("{!cfw_widget_yaxistype_desc!}")
+				.setOptions(yaxistypeOptions)
+				.setValue("linear")
+				);
 		
 		fieldsMap.put("stacked", CFWField.newBoolean(FormFieldType.BOOLEAN, "stacked")
 				.setLabel("{!cfw_widget_chartstacked!}")
