@@ -199,7 +199,7 @@ public class WidgetSettingsFactory {
 					.setLabel("{!cfw_widget_xaxistype!}")
 					.setDescription("{!cfw_widget_xaxistype_desc!}")
 					.setOptions(xaxistypeOptions)
-					.setValue("linear")
+					.setValue("time")
 				);	
 		}
 		//----------------------------------
