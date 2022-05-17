@@ -1766,7 +1766,8 @@ function cfw_renderer_chart(renderDef) {
 
 		if(renderDef.titlefields != null){
 			for(let index in renderDef.titlefields){
-				let label = renderDef.titlefields[index];
+				let titlefield = renderDef.titlefields[index];
+				let label = renderDef.labels[titlefield];
 				renderDef.titleformat += label+'="{'+index+'}" / ';
 				index++;
 			}
@@ -1774,7 +1775,8 @@ function cfw_renderer_chart(renderDef) {
 			let index = 0;
 			for(let key in firstRecord){
 				if(key == settings.xfield || key == settings.yfield) { continue; }
-				renderDef.titleformat += key+'="{'+index+'}" / ';
+				let label = renderDef.labels[key];
+				renderDef.titleformat += label+'="{'+index+'}" / ';
 				index++;
 			}
 		}
