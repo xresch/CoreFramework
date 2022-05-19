@@ -12,7 +12,8 @@ public class WidgetSettingsFactory {
 	public static final String FIELDNAME_DISPLAYAS = "renderer";
 	public static final String FIELDNAME_DISABLE = "disable";
 	public static final String FIELDNAME_SAMPLEDATA = "sampledata";
-
+	public static final String FIELDNAME_SUFFIX = "suffix";
+	
 	//new String[]{"Area", "Line", "Bar", "Scatter"}
 	private static LinkedHashMap<String,String> linearChartTypes = new LinkedHashMap<String,String>();
 	private static LinkedHashMap<String,String> basicAxisTypes = new LinkedHashMap<String,String>();
@@ -72,6 +73,16 @@ public class WidgetSettingsFactory {
 		.setValue(false);
 	}
 	
+	/************************************************************************************
+	 * Create Display As field to Choose the Renderer.(fieldname=renderer)
+	 * 
+	 * @return
+	 ************************************************************************************/
+	public static CFWField<?> createDefaultSuffixField(){
+		return CFWField.newString(FormFieldType.TEXT, FIELDNAME_SUFFIX)
+			.setLabel("{!cfw_widget_suffix!}")
+			.setDescription("{!cfw_widget_suffix_desc!}");
+	}
 	
 	/************************************************************************************
 	 * Create Display As field to Choose the Renderer.(fieldname=renderer)
