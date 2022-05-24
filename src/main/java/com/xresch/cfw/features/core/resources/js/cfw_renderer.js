@@ -631,10 +631,10 @@ function cfw_renderer_tiles(renderDef) {
 		currentTile.data('record', currentRecord);
 		currentTile.bind('click', function(e) {
 			e.stopPropagation();
-
+			recordData = $(this).data('record');
 			cfw_ui_showModal(
 					CFWL('cfw_core_details', 'Details'), 
-					settings.popoverFunction(currentRecord, renderDef))
+					settings.popoverFunction(recordData, renderDef))
 			;
 		})
 		
@@ -752,10 +752,10 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 		currentTile.data('record', currentRecord)
 		currentTile.bind('click', function(e) {
 			e.stopPropagation();
-
+			recordData = $(this).data('record');
 			cfw_ui_showModal(
 					CFWL('cfw_core_details', 'Details'), 
-					settings.popoverFunction(currentRecord, renderDef))
+					settings.popoverFunction(recordData, renderDef))
 			;
 		})
 		
@@ -873,10 +873,10 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 		currentTile.data('record', currentRecord)
 		currentTile.bind('click', function(e) {
 			e.stopPropagation();
-
+			recordData = $(this).data('record');
 			cfw_ui_showModal(
 					CFWL('cfw_core_details', 'Details'), 
-					settings.popoverFunction(currentRecord, renderDef))
+					settings.popoverFunction(recordData, renderDef))
 			;
 		})
 		
@@ -1012,10 +1012,10 @@ function cfw_renderer_statuslist(renderDef) {
 		currentTile.data('record', currentRecord);
 		currentTile.bind('click', function(e) {
 			e.stopPropagation();
-
+			recordData = $(this).data('record');
 			cfw_ui_showModal(
 					CFWL('cfw_core_details', 'Details'), 
-					settings.popoverFunction(currentRecord, renderDef))
+					settings.popoverFunction(recordData, renderDef))
 			;
 		})
 		
