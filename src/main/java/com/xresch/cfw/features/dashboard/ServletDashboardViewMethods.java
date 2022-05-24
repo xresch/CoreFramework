@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -34,6 +35,7 @@ import com.xresch.cfw.datahandling.CFWSchedule.EndType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterMode;
@@ -199,6 +201,7 @@ public class ServletDashboardViewMethods
 												break;
 				}
 				break;	
+				
 			case "update": 			
 				switch(item.toLowerCase()) {
 					case "widget": 				updateWidget(request, response, jsonResponse);
@@ -651,10 +654,11 @@ public class ServletDashboardViewMethods
 		// Get Values
 		String widgetID = request.getParameter("widgetid");
 		String dashboardParams = request.getParameter("params");
+		String timeframepreset = request.getParameter("timeframepreset");
 		
 		String earliestString = request.getParameter("timeframe_earliest");
 		String latestString = request.getParameter("timeframe_latest");
-		
+
 		//-----------------------------------
 		// Prepare Widget Settings
 		long earliest = -1;
@@ -680,7 +684,47 @@ public class ServletDashboardViewMethods
 		// Create Response
 		try {
 			if(jsonSettings.isJsonObject()) {
-			definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), earliest, latest);
+				
+				//----------------------------
+				// Do that Cache Thingy
+				
+				WidgetDataCachePolicy cachePolicy = definition.getCachePolicy();
+				if(cachePolicy == WidgetDataCachePolicy.OFF
+				|| (
+					cachePolicy == WidgetDataCachePolicy.TIMEPRESET_BASED 
+					&& Strings.isNullOrEmpty(timeframepreset) 
+					) 
+				) {
+					//----------------------------
+					// Do Not Cache
+					definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), earliest, latest);
+				}else {
+					//----------------------------
+					// Create Cache ID
+					String cacheID = widgetID;
+					if(cachePolicy == WidgetDataCachePolicy.TIMEPRESET_BASED) {
+						cacheID += "_"+timeframepreset;
+					}
+					
+					cacheID += "_"+dashboardParams.hashCode()+"_"+jsonSettings.hashCode();
+					
+					//----------------------------
+					// Do Cached
+					final long finalEarliest = earliest;
+					final long finalLatest = latest;
+					JSONResponse responseFromCache = WidgetDataCache.CACHE.get(cacheID, 
+							new Callable<JSONResponse>() {
+
+								@Override
+								public JSONResponse call() throws Exception {
+									//Hack: update and return existing jsonResponse to not overwrite it by creating a new instance.
+									definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), finalEarliest, finalLatest);
+									return jsonResponse;
+								}
+							});
+							
+					jsonResponse.copyFrom(responseFromCache);
+				}
 			}else {
 				new CFWLog(logger).warn("Widget Data was not of the correct type.", new IllegalArgumentException());
 			}

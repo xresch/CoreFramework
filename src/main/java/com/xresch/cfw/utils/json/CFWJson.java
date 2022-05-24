@@ -32,6 +32,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.JSONResponse;
 
 /**************************************************************************************************************
  * 
@@ -56,6 +57,7 @@ public class CFWJson {
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
 				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
 				.registerTypeHierarchyAdapter(CFWTimeframe.class, new SerializerCFWTimeframe())
+				.registerTypeHierarchyAdapter(JSONResponse.class, new SerializerJSONResponse())
 				.serializeNulls()
 				.create();
 		
@@ -64,6 +66,7 @@ public class CFWJson {
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
 				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
 				.registerTypeHierarchyAdapter(CFWTimeframe.class, new SerializerCFWTimeframe())
+				.registerTypeHierarchyAdapter(JSONResponse.class, new SerializerJSONResponse())
 				.serializeNulls()
 				.setPrettyPrinting()
 				.create();

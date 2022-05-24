@@ -19,6 +19,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.dashboard.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.WidgetSettingsFactory;
+import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
@@ -30,7 +31,12 @@ public class WidgetQueryResults extends WidgetDefinition {
 	private static Logger logger = CFWLog.getLogger(WidgetQueryResults.class.getName());
 	@Override
 	public String getWidgetType() {return "cfw_widget_queryresults";}
-		
+	
+	@Override
+	public WidgetDataCachePolicy getCachePolicy() {
+		return WidgetDataCachePolicy.TIMEPRESET_BASED;
+	}
+	
 	@SuppressWarnings("rawtypes")
 	@Override
 	public CFWObject getSettings() {

@@ -1422,7 +1422,11 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 	
 	var formHTML = "";
 	
-	var urlParams = {action: 'fetch', item: 'widgetdata', dashboardid: CFW_DASHBOARD_URLPARAMS.id, widgetid: widgetObject.PK_ID, params: JSON.stringify(dashboardParams)}; 
+	var urlParams = { action: 'fetch'
+					, item: 'widgetdata'
+					, dashboardid: CFW_DASHBOARD_URLPARAMS.id
+					, timeframepreset: CFW.http.getURLParams()['timeframepreset']
+					, widgetid: widgetObject.PK_ID, params: JSON.stringify(dashboardParams)}; 
 	
 	var definition = CFW.dashboard.getWidgetDefinition(widgetObject.TYPE);
 	

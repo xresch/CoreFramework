@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.response.JSONResponse;
 
 public class WidgetEasterEggsSnow extends WidgetDefinition {
@@ -30,6 +31,11 @@ public class WidgetEasterEggsSnow extends WidgetDefinition {
 		;
 	}
 
+	@Override
+	public WidgetDataCachePolicy getCachePolicy() {
+		return WidgetDataCachePolicy.OFF;
+	}
+	
 	@Override
 	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, long earliest, long latest) { 
 		// nothing to do

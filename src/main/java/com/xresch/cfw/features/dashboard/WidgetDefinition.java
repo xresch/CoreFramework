@@ -13,6 +13,7 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
+import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.JSONResponse;
 
@@ -30,6 +31,13 @@ public abstract class WidgetDefinition {
 	 * @return CFWObject
 	 ************************************************************/
 	public abstract CFWObject getSettings();
+	
+	/************************************************************
+	 * Return the cache policy of this widget for the default
+	 * 1 minute widget data cache.
+	 * @return String name
+	 ************************************************************/
+	public abstract WidgetDataCachePolicy getCachePolicy();
 	
 	/************************************************************
 	 * Create a json response containing the data you need for 

@@ -15,8 +15,8 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class JSONResponse extends AbstractTemplateJSON {
 
-	private boolean success = true;
-	private LinkedHashMap<String, JsonElement> jsonElements = new LinkedHashMap<>();
+	protected boolean success = true;
+	protected LinkedHashMap<String, JsonElement> jsonElements = new LinkedHashMap<>();
 	
 	public JSONResponse() {
 		super();
@@ -79,11 +79,21 @@ public class JSONResponse extends AbstractTemplateJSON {
 		.append(CFW.JSON.escapeString(text))
 		.append("\"");
 	}
+	
+	
 	public void setPayLoad(JsonElement element) {
 		if(element == null) {
 			this.getContent().append("null");
 		}else {
 			this.getContent().append(element.toString());
+		}
+	}
+	
+	public void copyFrom(JSONResponse toCopy) {
+		if(toCopy != null) {
+			this.content = toCopy.content;
+			this.success = toCopy.success;
+			this.jsonElements = toCopy.jsonElements;
 		}
 	}
 	

@@ -66,7 +66,7 @@ public class CFWCacheManagement {
 			double loadTimeAvgMillis = stats.averageLoadPenalty() / 1000000;
 			
 			object.addProperty("name", name);
-			object.addProperty("entries", cache.size());
+			object.addProperty("estimated_entries", cache.size());
 			object.addProperty("requests", stats.requestCount());
 			object.addProperty("hit_count", hitCount);
 			object.addProperty("hit_rate", stats.hitRate());

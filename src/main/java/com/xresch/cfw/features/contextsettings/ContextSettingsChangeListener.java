@@ -13,6 +13,8 @@ public abstract class ContextSettingsChangeListener {
 	}
 
 	public boolean listensOnType(String configName) {
+		if(contextSettingTypes.size() == 0) return true;
+		
 		return contextSettingTypes.contains(configName.trim());
 	}
 	

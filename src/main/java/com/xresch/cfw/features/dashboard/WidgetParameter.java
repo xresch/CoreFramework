@@ -23,6 +23,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
+import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.response.JSONResponse;
@@ -33,6 +34,10 @@ public class WidgetParameter extends WidgetDefinition {
 
 	public static final String WIDGET_TYPE = "cfw_parameter";
 	
+	@Override
+	public WidgetDataCachePolicy getCachePolicy() {
+		return WidgetDataCachePolicy.OFF;
+	}
 	
 	@Override
 	public String getWidgetType() {return WIDGET_TYPE;}

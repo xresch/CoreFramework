@@ -2,12 +2,10 @@ package com.xresch.cfw.features.dashboard;
 
 import java.util.Locale;
 
-import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
-import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionBoolean;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionSelect;
@@ -66,6 +64,10 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Objects.addCFWObject(Dashboard.class);
 		CFW.Registry.Objects.addCFWObject(DashboardWidget.class);
 		CFW.Registry.Objects.addCFWObject(DashboardParameter.class);
+    	
+		//----------------------------------
+    	// Initialize Cache
+		WidgetDataCache.initialize();
 		
     	//----------------------------------
     	// Register Widgets
