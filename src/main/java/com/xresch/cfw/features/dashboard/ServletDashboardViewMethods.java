@@ -691,7 +691,7 @@ public class ServletDashboardViewMethods
 				WidgetDataCachePolicy cachePolicy = definition.getCachePolicy();
 				if(cachePolicy == WidgetDataCachePolicy.OFF
 				|| (
-					cachePolicy == WidgetDataCachePolicy.TIMEPRESET_BASED 
+					cachePolicy == WidgetDataCachePolicy.TIME_BASED 
 					&& Strings.isNullOrEmpty(timeframepreset) 
 					) 
 				) {
@@ -702,7 +702,7 @@ public class ServletDashboardViewMethods
 					//----------------------------
 					// Create Cache ID
 					String cacheID = widgetID;
-					if(cachePolicy == WidgetDataCachePolicy.TIMEPRESET_BASED) {
+					if(cachePolicy == WidgetDataCachePolicy.TIME_BASED) {
 						cacheID += "_"+timeframepreset;
 					}
 					

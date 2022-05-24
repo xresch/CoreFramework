@@ -134,6 +134,7 @@ Potential TODOs
 DONE
 ====
 ------- current -------
+- BREAKING CHANGE: Added 1 minute cache for widget data.
 - CFWField: Prevent autofill of password fields in forms
 - Timeframe Picker: Added custom Relative Offset
 - Job Task Widget Executor: Added timeframe picker tho handle time placeholders like $earliest and $latest

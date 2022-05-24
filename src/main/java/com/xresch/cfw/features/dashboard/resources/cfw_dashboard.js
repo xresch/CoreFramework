@@ -745,8 +745,8 @@ function cfw_dashboard_parameters_getFinalParams(){
 	var mergedParams = _.cloneDeep(CFW_DASHBOARD_PARAMS);
 	
 	//Add earliest and latest params
-	mergedParams.push({NAME: "earliest", VALUE: ""+CFW_DASHBOARD_TIME_EARLIEST_EPOCH});
-	mergedParams.push({NAME: "latest", VALUE: ""+CFW_DASHBOARD_TIME_LATEST_EPOCH});
+	//mergedParams.push({NAME: "earliest", VALUE: ""+CFW_DASHBOARD_TIME_EARLIEST_EPOCH});
+	//mergedParams.push({NAME: "latest", VALUE: ""+CFW_DASHBOARD_TIME_LATEST_EPOCH});
 
 		
 	for(var index in mergedParams){

@@ -20,8 +20,8 @@ public class WidgetDataCache {
 	public enum WidgetDataCachePolicy {
 		  /* Ignore timeframepreset and cache always */
 		  ALWAYS
-		  /* Cache based on timeframepreset value */
-		, TIMEPRESET_BASED
+		  /* Cache based on timepreset value */
+		, TIME_BASED
 		  /* Do not cache and always load new data */
 		, OFF
 	}
@@ -33,7 +33,7 @@ public class WidgetDataCache {
 			CacheBuilder.newBuilder()
 				.initialCapacity(10)
 				.maximumSize(2000)
-				.expireAfterWrite(1, TimeUnit.MINUTES)
+				.expireAfterWrite(59, TimeUnit.SECONDS)
 		);
 
 	/*************************************************************************
