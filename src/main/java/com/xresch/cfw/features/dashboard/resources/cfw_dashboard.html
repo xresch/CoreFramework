@@ -38,6 +38,7 @@
 	<div class="btn-group hideOnFullScreen">
 	  <select id="refreshSelector" class="form-control form-control-sm" onchange="cfw_dashboard_setReloadInterval(this)" title="Set Refresh Time">
 			<option value="stop">{!cfw_core_reload!} {!cfw_core_off!}</option>
+			$$fastreload$$
 			<option value="300000">5 {!cfw_core_minutes!}</option>
 			<option value="600000">10 {!cfw_core_minutes!}</option>
 			<option value="900000">15 {!cfw_core_minutes!}</option>

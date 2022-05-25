@@ -32,6 +32,7 @@ public class FeatureDashboard extends CFWAppFeature {
 	public static final String PERMISSION_DASHBOARD_CREATOR = "Dashboard Creator";
 	public static final String PERMISSION_DASHBOARD_ADMIN = "Dashboard Admin";
 	public static final String PERMISSION_DASHBOARD_TASKS = "Dashboard Tasks";
+	public static final String PERMISSION_DASHBOARD_FAST_RELOAD = "Dashboard Fast Reload";
 	
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.dashboard.resources";
 	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.dashboard.manual";
@@ -156,6 +157,13 @@ public class FeatureDashboard extends CFWAppFeature {
 				true,
 				false
 				);	
+		
+		CFW.DB.Permissions.oneTimeCreate(
+				new Permission(PERMISSION_DASHBOARD_FAST_RELOAD, FeatureUserManagement.CATEGORY_USER)
+				.description("Gives the user the option to reload the dashboard every minute."),
+				true,
+				false
+				);
 	}
 
 	@Override

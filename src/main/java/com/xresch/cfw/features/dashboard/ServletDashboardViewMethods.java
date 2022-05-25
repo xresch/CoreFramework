@@ -89,7 +89,7 @@ public class ServletDashboardViewMethods
 				}
 				
 				//---------------------------
-				// Build Response
+				// Add CSS and JS
 				html.addCSSFile(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "gridstack.min.css");
 				html.addCSSFile(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_dashboard.css");
 				
@@ -97,7 +97,21 @@ public class ServletDashboardViewMethods
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "gridstack.all.js");
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_dashboard.js");
 				
-				content.append(CFW.Files.readPackageResource(FeatureDashboard.PACKAGE_RESOURCES, "cfw_dashboard.html"));
+				//---------------------------
+				// Add HTML
+				String htmlTemplate = CFW.Files.readPackageResource(FeatureDashboard.PACKAGE_RESOURCES, "cfw_dashboard.html");
+				
+				if(isPublicServlet || !CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_FAST_RELOAD)) {
+					htmlTemplate = htmlTemplate.replace("$$fastreload$$", "");
+				}else {
+					htmlTemplate = htmlTemplate.replace(
+							"$$fastreload$$"
+							, "<option value=\"60000\">1 {!cfw_core_minute!}</option>"
+							+ "<option value=\"120000\">2 {!cfw_core_minutes!}</option>"
+						);
+				}
+				
+				content.append(htmlTemplate);
 				
 				//--------------------------------------
 				// Add widget CSS and JS files based on
