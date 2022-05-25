@@ -145,6 +145,7 @@ DONE
 - Widget Settings: Added option to define title position(top, left)
 - Chart Renderer: Sorting datasets to avoid displaying issues
 - Dashboard: Added Permission to allow Users to refresh dashboard every minute 
+- Config: Added Password Policy
 
 ------- v6.0.0 -------
 - New Feature - Query: Domain Specific Language(DSL) to fetch, process and format data from various sources

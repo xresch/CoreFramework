@@ -149,8 +149,8 @@ public class ServletUserManagement extends HttpServlet
 				.addValidator(new LengthValidator(1, 255));
 		
 		protected CFWField<String> password = CFWField.newString(FormFieldType.PASSWORD, "Password")
-				.addValidator(new LengthValidator(4, 255));
-				//.addValidator(new PasswordValidator());
+				.addValidator(new LengthValidator(1, 255))
+				.addValidator(new PasswordValidator());
 		
 		protected CFWField<String> repeatedPassword = CFWField.newString(FormFieldType.PASSWORD, "Repeat Password")
 				.addValidator(new NotNullOrEmptyValidator());

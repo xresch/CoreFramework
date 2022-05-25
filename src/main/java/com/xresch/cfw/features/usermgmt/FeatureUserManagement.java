@@ -25,6 +25,15 @@ public class FeatureUserManagement extends CFWAppFeature {
 	public static final String CONFIG_SESSIONTIMEOUT_VISITORS = "Session Timout Visitors";
 	public static final String CONFIG_SESSIONTIMEOUT_API = "Session Timout API";
 	
+	public static final String CONFIG_CATEGORY_PW_POLICY = "Password Policy";
+	public static final String CONFIG_PWPOLICY_ISENABLED = "Enable Password Policy";
+	public static final String CONFIG_PWPOLICY_MINLENGTH = "Minimum Length";
+	public static final String CONFIG_PWPOLICY_UPPERCASE = "Uppercase Check";
+	public static final String CONFIG_PWPOLICY_LOWERCASE = "Lowercase Check";
+	public static final String CONFIG_PWPOLICY_NUMBER = "Number Check";
+	public static final String CONFIG_PWPOLICY_SPECIAL = " Special Character";
+	public static final String CONFIG_PWPOLICY_SPECIALORNUM = " Special Or Number";
+	
 	public static final String CATEGORY_USER = "user";
 	
 	@Override
@@ -66,7 +75,7 @@ public class FeatureUserManagement extends CFWAppFeature {
 	@Override
 	public void initializeDB() {
     	//----------------------------------
-    	// Register Configurations
+    	// Register Timeout Configurations
 		CFW.DB.Config.oneTimeCreate(
 				new Configuration("Timeouts", CONFIG_SESSIONTIMEOUT_USERS)
 					.description("The session timeout in seconds for logged in users. Changes will be applied to active sessions on the next request.")
@@ -87,6 +96,57 @@ public class FeatureUserManagement extends CFWAppFeature {
 					.type(FormFieldType.NUMBER)
 					.value("10")
 			);
+		
+    	//----------------------------------
+    	// Register Password Policy Configurations
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY_PW_POLICY, CONFIG_PWPOLICY_ISENABLED)
+				.description("Enable or disable checks of passwords. If disabled only checks if the password is not empty.")
+				.type(FormFieldType.BOOLEAN)
+				.value("true")
+			);
+		
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY_PW_POLICY, CONFIG_PWPOLICY_MINLENGTH)
+				.description("Choose the minimum length of the password.")
+				.type(FormFieldType.NUMBER)
+				.value("4")
+			);
+		
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY_PW_POLICY, CONFIG_PWPOLICY_LOWERCASE)
+				.description("Toggle if the password must include a lowercase letter.")
+				.type(FormFieldType.BOOLEAN)
+				.value("false")
+			);
+		
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY_PW_POLICY, CONFIG_PWPOLICY_UPPERCASE)
+				.description("Toggle if the password must include an uppercase letter.")
+				.type(FormFieldType.BOOLEAN)
+				.value("false")
+			);
+		
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY_PW_POLICY, CONFIG_PWPOLICY_NUMBER)
+				.description("Toggle if the password must include a number.")
+				.type(FormFieldType.BOOLEAN)
+				.value("false")
+			);
+		
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY_PW_POLICY, CONFIG_PWPOLICY_SPECIAL)
+				.description("Toggle if the password must include a special character.")
+				.type(FormFieldType.BOOLEAN)
+				.value("false")
+			);
+		
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY_PW_POLICY, CONFIG_PWPOLICY_SPECIALORNUM)
+				.description("Toggle if the password must include either a special character or number. If this is true, ignores the other two settings.")
+				.type(FormFieldType.BOOLEAN)
+				.value("false")
+				);
 		
 		//----------------------------------
     	// Cleanup Expired Sessions to 

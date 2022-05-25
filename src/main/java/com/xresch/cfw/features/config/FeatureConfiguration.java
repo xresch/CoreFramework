@@ -1,7 +1,5 @@
 package com.xresch.cfw.features.config;
 
-import java.util.ArrayList;
-
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
