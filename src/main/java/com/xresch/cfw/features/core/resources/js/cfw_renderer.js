@@ -723,7 +723,7 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 		
 	};
 	
-	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.tiles);
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.statusbar);
 
 	//===================================================
 	// Create Tiles for Bar
@@ -816,7 +816,7 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 		
 	};
 	
-	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.tiles);
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.statusmap);
 
 	//===================================================
 	// Calculate number of columns
@@ -937,6 +937,8 @@ function cfw_renderer_statuslist(renderDef) {
 	var defaultSettings = {
 		// size factor for the text in the tile, or tile size of labels are not shown
 		sizefactor: 1,
+		// show or hide labels
+		showlabels: true, 
 		// the border style of the tile, choose between: null | 'none' | 'round' | 'superround' | 'asymmetric' | 'superasymmetric' | 'ellipsis'
 		borderstyle: null,
 		// the border that should be applied, like '1px solid black'
@@ -947,7 +949,7 @@ function cfw_renderer_statuslist(renderDef) {
 		popoverFunction: cfw_renderer_common_createDefaultPopupTable
 	};
 	
-	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.tiles);
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.statuslist);
 
 	//===================================================
 	// Create Alert Tiles
@@ -982,7 +984,7 @@ function cfw_renderer_statuslist(renderDef) {
 		}
 		
 		if(settings.borderstyle != null){
-			var baseradius = 10;
+			var baseradius = 3;
 			var radius;
 			switch(settings.borderstyle.toLowerCase()){
 				case 'round':  			currentTile.css('border-radius', baseradius * settings.sizefactor+'px');
@@ -1037,8 +1039,9 @@ function cfw_renderer_statuslist(renderDef) {
 		// Create List Item Label
 		var recordTitle = renderDef.getTitleHTML(currentRecord);
 
-		currentListItem.append('<span style="font-size: '+18*settings.sizefactor+'px;">&nbsp;'+recordTitle+'</span>');
-
+		if(settings.showlabels){
+			currentListItem.append('<span style="font-size: '+18*settings.sizefactor+'px;">&nbsp;'+recordTitle+'</span>');
+		}
 		allTiles.append(currentListItem);
 	}
 	

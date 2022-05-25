@@ -26,10 +26,10 @@ public class WidgetDataCache {
 		, OFF
 	}
 	
-	/** Cache widget data responses to reduce number of API calls. */
+	/** Cache widget data responses to reduce number of subsystem calls. DDOS prevention for subsystems. */
 	public static final Cache<String, JSONResponse> CACHE = 
 		CFW.Caching.addCache(
-			"Widget Data Cache[1min]", 
+			"CFW Widget Data Cache[1min]", 
 			CacheBuilder.newBuilder()
 				.initialCapacity(10)
 				.maximumSize(2000)

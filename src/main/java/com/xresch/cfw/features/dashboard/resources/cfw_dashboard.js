@@ -30,6 +30,37 @@ var CFW_DASHBOARD_TIME_FIELD_ID = "timeframePicker";
 var CFW_DASHBOARD_TIME_EARLIEST_EPOCH = moment().utc().subtract(30, 'm').utc().valueOf();
 var CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
 
+/*******************************************************************************
+ * Create default renderer settings for status widgets.
+ ******************************************************************************/
+function cfw_dashboard_createStatusWidgetRendererSettings(settings){
+	return {
+		tiles: {
+			sizefactor: settings.sizefactor,
+			showlabels: settings.showlabels,
+			borderstyle: settings.borderstyle
+		},
+		statuslist: {
+			sizefactor: settings.sizefactor,
+			showlabels: settings.showlabels,
+			borderstyle: settings.borderstyle
+		},
+		table: {
+			narrow: 	true,
+			striped: 	false,
+			hover: 		false,
+			filterable: false,
+		},
+		panels: {
+			narrow: 	true,
+		},
+		cards: {
+			narrow: 	true,
+			maxcolumns: 5,
+		}
+	};
+}
+
 
 /*******************************************************************************
  * Receives a call from the timeframe picker when selection is updated.
@@ -1717,6 +1748,7 @@ CFW.dashboard = {
 		registerCategory: 		cfw_dashboard_registerCategory,
 		getSettingsForm:		cfw_dashboard_widget_getSettingsForm,
 		fetchWidgetData: 		cfw_dashboard_widget_fetchData,
+		createStatusWidgetRendererSettings: cfw_dashboard_createStatusWidgetRendererSettings,
 };
 
 
