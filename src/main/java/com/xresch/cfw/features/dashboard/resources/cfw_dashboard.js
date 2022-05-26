@@ -635,7 +635,6 @@ function cfw_dashboard_parameters_applyToFields(object, widgetType, finalParams)
 	
 	var settingsString = JSON.stringify(object);
 	
-	//console.log("settings before substitute	: "+settingsString);
 	//=============================================
 	// Handle SUBSTITUTE PARAMS
 	//=============================================
@@ -1232,7 +1231,6 @@ function cfw_dashboard_widget_handlePaste() {
 					cfw_dashboard_widget_add(widgetObject.TYPE, widgetObject, true, true);
 				}
 										
-				console.log('handle Paste: '+JSON.stringify(widgetObject));
 			}
 		);
 	}
@@ -2050,13 +2048,15 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 		marginBottom: 0,
 		marginLeft: 5,
 		marginRight: 5,
+		// needed to avoid destroying dashboard layout when resizing window in edit mode.
+		disableOneColumnMode: true,
 
 	}, gridStackElementSelector);
 	
 	// -----------------------------
 	// Set update on dragstop
 	grid.on('change', function(event, items) {
-		console.log("change")
+		
 		cfw_dashboard_history_startOperationsBundle();
 		
 			for(var key in items){

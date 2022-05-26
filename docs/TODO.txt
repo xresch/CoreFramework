@@ -12,7 +12,6 @@ ALWAYS ON
 
 IMPORTANT FIXES
 ===============
-- Dashboard: editing widget when window is narrow causes widgets to get width 1
 
 
 H2 Database Migration v1.4.2 to v2.0.206
@@ -146,6 +145,7 @@ DONE
 - Widget Settings: Added option to define title position(top, left)
 - Chart Renderer: Sorting datasets to avoid displaying issues
 - Dashboard: Added Permission to allow Users to refresh dashboard every minute 
+- Dashboard: Fixed destruction of widget layout, resizing window width to change into 1 column layout disabled
 - Config: Added Password Policy Settings
 
 ------- v6.0.0 -------
