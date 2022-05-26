@@ -1354,8 +1354,8 @@ function cfw_dashboard_widget_remove(widgetGUID) {
  * 
  ******************************************************************************/
 function cfw_dashboard_widget_removeFromGrid(widgetElement) {
-	var grid = $('.grid-stack').data('gridstack');
-	grid.removeWidget(widgetElement);
+	var grid = cfw_dashboard_getGrid();
+	grid.removeWidget(widgetElement.get(0));
 };
 
 
@@ -1634,14 +1634,18 @@ function cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposit
 
 	var widgetInstance = cfw_dashboard_widget_createHTMLElement(placeholderWidget);
 
-	var grid = $('.grid-stack').data('gridstack');
+	var grid = cfw_dashboard_getGrid();
 
-    grid.addWidget($(widgetInstance),
-    		widgetObject.X, 
-    		widgetObject.Y, 
-    		widgetObject.WIDTH, 
-    		widgetObject.HEIGHT, 
-    		doAutoposition);
+    grid.addWidget($(widgetInstance).get(0),
+    		{
+    			x: widgetObject.X
+    			, y: widgetObject.Y
+    			, w: widgetObject.WIDTH
+    			, h: widgetObject.HEIGHT
+    			, minW: 3
+    			, autoPosition: doAutoposition
+    		}
+    	);
     
 }
 /*******************************************************************************
@@ -1695,14 +1699,24 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 					widgetAdjustedByWidgetDef.content = widgetContent;
 					var widgetInstance = cfw_dashboard_widget_createHTMLElement(widgetAdjustedByWidgetDef);
 	
-					var grid = $('.grid-stack').data('gridstack');
+					var grid = cfw_dashboard_getGrid();
 	
-				    grid.addWidget($(widgetInstance),
-				    		widgetAdjustedByWidgetDef.X, 
-				    		widgetAdjustedByWidgetDef.Y, 
-				    		widgetAdjustedByWidgetDef.WIDTH, 
-				    		widgetAdjustedByWidgetDef.HEIGHT, 
-				    		doAutoposition);
+//				    grid.addWidget($(widgetInstance),
+//				    		widgetAdjustedByWidgetDef.X, 
+//				    		widgetAdjustedByWidgetDef.Y, 
+//				    		widgetAdjustedByWidgetDef.WIDTH, 
+//				    		widgetAdjustedByWidgetDef.HEIGHT, 
+//				    		doAutoposition);
+				    grid.addWidget($(widgetInstance).get(0),
+				    		{
+				    			x: widgetAdjustedByWidgetDef.X
+				    			, y: widgetAdjustedByWidgetDef.Y
+				    			, w: widgetAdjustedByWidgetDef.WIDTH
+				    			, h: widgetAdjustedByWidgetDef.HEIGHT
+				    			, minW: 3
+				    			, autoPosition: doAutoposition
+				    		}
+				    		);
 				   
 				    // ----------------------------
 				    // Get Widget with applied default values
@@ -1717,10 +1731,10 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 
 				    // ----------------------------
 				    // Update Data of Original&Clone
-				    originalWidgetObject.WIDTH	= widgetInstance.attr("data-gs-width");
-				    originalWidgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
-				    originalWidgetObject.X		= widgetInstance.attr("data-gs-x");
-				    originalWidgetObject.Y		= widgetInstance.attr("data-gs-y");
+				    originalWidgetObject.WIDTH	= widgetInstance.attr("gs-w");
+				    originalWidgetObject.HEIGHT	= widgetInstance.attr("gs-h");
+				    originalWidgetObject.X		= widgetInstance.attr("gs-x");
+				    originalWidgetObject.Y		= widgetInstance.attr("gs-y");
 
 				    $(widgetInstance).data('widgetObject', originalWidgetObject);
 				    
@@ -1795,7 +1809,7 @@ function cfw_dashboard_toggleEditMode(){
 
 	// -----------------------------------------
 	// Toggle Edit Mode
-	var grid = $('.grid-stack').data('gridstack');
+	var grid = cfw_dashboard_getGrid();
 	if(CFW_DASHBOARD_EDIT_MODE){
 		CFW_DASHBOARD_EDIT_MODE = false;
 		$('.cfw-dashboard-widget-actionicons').addClass('d-none');
@@ -1821,6 +1835,12 @@ function cfw_dashboard_toggleEditMode(){
 	}
 }
 
+/*******************************************************************************
+ * Receives a call from the timeframe picker when selection is updated.
+ ******************************************************************************/
+function cfw_dashboard_getGrid(){
+	return document.querySelector('.grid-stack').gridstack;
+}
 /*******************************************************************************
  * Change duration between refreshes
  * 
@@ -2015,22 +2035,22 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 	
 	// -----------------------------
 	// Setup Gridstack
-	$(gridStackElementSelector).gridstack({
+	var grid = GridStack.init({
 		alwaysShowResizeHandle: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
 		resizable: {
 		    handles: 'e, se, s, sw, w'
 		  },
 		column: 64, 
-		cellHeight: 5,
+		cellHeight: '15px',
 		animate: true,
 		float: true,
-		verticalMargin: 10
-	});
+		margin: 5
+	}, gridStackElementSelector);
 	
 	// -----------------------------
 	// Set update on dragstop
-	$(gridStackElementSelector).on('change', function(event, items) {
-		 
+	grid.on('change', function(event, items) {
+		console.log("change")
 		cfw_dashboard_history_startOperationsBundle();
 		
 			for(var key in items){
@@ -2041,10 +2061,10 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 				var widgetObject 	 = widgetInstance.data("widgetObject");
 				var undoData = _.cloneDeep(widgetObject);
 				
-				widgetObject.X			= widgetInstance.attr("data-gs-x");
-				widgetObject.Y		 	= widgetInstance.attr("data-gs-y");
-				widgetObject.WIDTH	= widgetInstance.attr("data-gs-width");
-				widgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
+				widgetObject.X			= widgetInstance.attr("gs-x");
+				widgetObject.Y		 	= widgetInstance.attr("gs-y");
+				widgetObject.WIDTH	= widgetInstance.attr("gs-w");
+				widgetObject.HEIGHT	= widgetInstance.attr("gs-h");
 				
 				var redoData = _.cloneDeep(widgetObject);
 				cfw_dashboard_widget_save_state(widgetObject);
@@ -2140,7 +2160,8 @@ function cfw_dashboard_draw(){
 	function(){
 		// -----------------------------------
 		// Clear existing Widgets
-		var grid = $('.grid-stack').data('gridstack');
+		//var grid = $('.grid-stack').data('gridstack');
+		var grid = cfw_dashboard_getGrid();
 		grid.removeAll();
 		
 		CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "widgetsandparams", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
@@ -2154,7 +2175,7 @@ function cfw_dashboard_draw(){
 
 			// -----------------------------
 			// Disable resize & move
-			$('.grid-stack').data('gridstack').disable();
+			cfw_dashboard_getGrid().disable();
 		});
 		
 		CFW.ui.toogleLoader(false);

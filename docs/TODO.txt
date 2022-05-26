@@ -138,6 +138,7 @@ DONE
 - Timeframe Picker: Added custom Relative Offset
 - Job Task Widget Executor: Added timeframe picker tho handle time placeholders like $earliest and $latest
 - H2: Upgraded to 2.1.212
+- gridstack.js: upgraded from v0.6.0 to v5.1.0
 - Tiles Renderer: Made popup configurable
 - Renderer: Added Status Bar Renderer
 - Renderer: Added Status Map Renderer
@@ -145,7 +146,7 @@ DONE
 - Widget Settings: Added option to define title position(top, left)
 - Chart Renderer: Sorting datasets to avoid displaying issues
 - Dashboard: Added Permission to allow Users to refresh dashboard every minute 
-- Config: Added Password Policy
+- Config: Added Password Policy Settings
 
 ------- v6.0.0 -------
 - New Feature - Query: Domain Specific Language(DSL) to fetch, process and format data from various sources
