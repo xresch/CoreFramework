@@ -2046,7 +2046,11 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 		cellHeight: '15px',
 		animate: true,
 		float: true,
-		margin: 5
+		marginTop: 10,
+		marginBottom: 0,
+		marginLeft: 5,
+		marginRight: 5,
+
 	}, gridStackElementSelector);
 	
 	// -----------------------------
