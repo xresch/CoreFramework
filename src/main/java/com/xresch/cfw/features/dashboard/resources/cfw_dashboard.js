@@ -1642,6 +1642,7 @@ function cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposit
     			, y: widgetObject.Y
     			, w: widgetObject.WIDTH
     			, h: widgetObject.HEIGHT
+    			, minH: 1
     			, minW: 3
     			, autoPosition: doAutoposition
     		}
@@ -1713,6 +1714,7 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 				    			, y: widgetAdjustedByWidgetDef.Y
 				    			, w: widgetAdjustedByWidgetDef.WIDTH
 				    			, h: widgetAdjustedByWidgetDef.HEIGHT
+				    			, minH: 1
 				    			, minW: 3
 				    			, autoPosition: doAutoposition
 				    		}

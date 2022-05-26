@@ -61,14 +61,19 @@
 									subWidgetObject.content = widgetContent;
 									var widgetInstance = cfw_dashboard_widget_createHTMLElement(subWidgetObject);
 
-									var grid = $('.grid-stack').data('gridstack');
+									var grid =  cfw_dashboard_getGrid();
 
-								    grid.addWidget($(widgetInstance),
-								    		subWidgetObject.X, 
-								    		subWidgetObject.Y, 
-								    		subWidgetObject.WIDTH, 
-								    		subWidgetObject.HEIGHT, 
-								    		false);
+								    grid.addWidget($(widgetInstance).get(0),
+								    		{
+								    			x: subWidgetObject.X
+								    			, y: subWidgetObject.Y
+								    			, w: subWidgetObject.WIDTH
+								    			, h: subWidgetObject.HEIGHT
+								    			, minH: 1
+								    			, minW: 3
+								    			, autoPosition: false
+								    		}
+								    	);
 								   
 								    //----------------------------
 								    // Reload Widget from Instance
@@ -82,10 +87,10 @@
 								    }
 								    //----------------------------
 								    // Update Data
-								    subWidgetObject.WIDTH	= widgetInstance.attr("data-gs-width");
-								    subWidgetObject.HEIGHT	= widgetInstance.attr("data-gs-height");
-								    subWidgetObject.X		= widgetInstance.attr("data-gs-x");
-								    subWidgetObject.Y		= widgetInstance.attr("data-gs-y");
+								    subWidgetObject.WIDTH	= widgetInstance.attr("gs-w");
+								    subWidgetObject.HEIGHT	= widgetInstance.attr("gs-h");
+								    subWidgetObject.X		= widgetInstance.attr("gs-x");
+								    subWidgetObject.Y		= widgetInstance.attr("gs-y");
 
 								}
 							);
