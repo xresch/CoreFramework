@@ -788,8 +788,9 @@ pre {
 }
 
 .col-percent{
-	padding-right: 5px;
-    padding-left: 5px;
+	padding-right: 2.5px;
+    padding-left: 2.5px;
+    padding-bottom: 5px;
 }
 .col-16pc {
     flex: 0 0 16.0%;

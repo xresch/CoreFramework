@@ -13,11 +13,24 @@ function cfw_query_getRendererIndex(queryResult){
 		switch(queryResult.displaySettings.as.trim().toLowerCase()){
 			case 'table':			rendererIndex = 0; break;		
 			case 'panels':			rendererIndex = 1; break;	
-			case 'cards':			rendererIndex = 2; break;	
-			case 'tiles':			rendererIndex = 3; break;	
-			case 'csv':				rendererIndex = 4; break;	
-			case 'json':			rendererIndex = 5; break;	
-			case 'xml':				rendererIndex = 6; break;	
+			case 'cards':				rendererIndex = 2; break;	
+			case 'tiles':				rendererIndex = 3; break;
+			case 'statuslist':			rendererIndex = 4; break;
+			case 'statusbar':			rendererIndex = 5; break;
+			case 'statusbarreverse':	rendererIndex = 6; break;
+			
+			case 'statusmap':			rendererIndex = 7; break;
+			case 'statusmap_2to1':		rendererIndex = 8; break;
+			case 'statusmap_4to1':		rendererIndex = 9; break;
+			case 'statusmap_8to1':		rendererIndex = 10; break;
+			case 'statusmap_1to2':		rendererIndex = 11; break;
+			case 'statusmap_1to4':		rendererIndex = 12; break;
+			case 'statusmap_1to8':		rendererIndex = 14; break;
+			
+			case 'csv':				rendererIndex = 14; break;	
+			case 'json':			rendererIndex = 15; break;	
+			case 'xml':				rendererIndex = 16; break;	
+			
 		}
 	}
 	
@@ -674,7 +687,7 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 	//-----------------------------------
 	// Iterate all Query results
 	
-	var currentRow = $('<div class="row m-0">');
+	var currentRow = $('<div class="row m-0 flex-grow-1">');
 	resultTarget.append(currentRow);
 	
 	for(var i = 0; i < queryResultsPayload.length; i++){
@@ -685,9 +698,10 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 		cfw_query_renderQueryResult(currentColumn, currentResults);
 		currentRow.append(currentColumn);
 		
-		if((i+1) % multidisplayColumns == 0){
+		if((i+1) % multidisplayColumns == 0 
+		&& i < queryResultsPayload.length-1 ){
 
-			currentRow = $('<div class="row m-0">');
+			currentRow = $('<div class="row m-0 flex-grow-1">');
 			resultTarget.append(currentRow);
 		}
 	}
@@ -841,6 +855,46 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 								},
 								
 							}
+						},
+						{	label: 'Status List',
+							name: 'statuslist',
+							renderdef: {}
+						},
+						{	label: 'Status Bar',
+							name: 'statusbar',
+							renderdef: {}
+						},
+						{	label: 'Status Bar Reverse',
+							name: 'statusbarreverse',
+							renderdef: {}
+						},
+						{	label: 'Status Map(1:1)',
+							name: 'statusmap',
+							renderdef: {}
+						},
+						{	label: 'Status Map(2:1)',
+							name: 'statusmap_2to1',
+							renderdef: {}
+						},
+						{	label: 'Status Map(4:1)',
+							name: 'statusmap_4to1',
+							renderdef: {}
+						},
+						{	label: 'Status Map(8:1)',
+							name: 'statusmap_8to1',
+							renderdef: {}
+						},
+						{	label: 'Status Map(1:2)',
+							name: 'statusmap_1to2',
+							renderdef: {}
+						},
+						{	label: 'Status Map(1:4)',
+							name: 'statusmap_1to4',
+							renderdef: {}
+						},
+						{	label: 'Status Map(1:8)',
+							name: 'statusmap_1to8',
+							renderdef: {}
 						},
 						{	label: 'CSV',
 							name: 'csv',

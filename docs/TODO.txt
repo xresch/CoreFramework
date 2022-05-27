@@ -10,8 +10,10 @@ ALWAYS ON
 - Test with cache enabled
 
 
-IMPORTANT FIXES
-===============
+IMPORTANT FIXES / NEXT TODOS
+=============================
+- CFWQL Chart Command
+- Query Management
 
 
 H2 Database Migration v1.4.2 to v2.0.206
@@ -147,6 +149,8 @@ DONE
 - Dashboard: Added Permission to allow Users to refresh dashboard every minute 
 - Dashboard: Fixed destruction of widget layout, resizing window width to change into 1 column layout disabled
 - Config: Added Password Policy Settings
+- Query: Added new renderers to Query
+- Query: Make results 100% height in dashboard widget
 
 ------- v6.0.0 -------
 - New Feature - Query: Domain Specific Language(DSL) to fetch, process and format data from various sources

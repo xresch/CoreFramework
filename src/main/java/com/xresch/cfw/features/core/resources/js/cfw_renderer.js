@@ -714,6 +714,8 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 	var defaultSettings = {
 		//height for the status bar
 		height: "100%",
+		// min height for the statusbar
+		minheight: "10px",
 		// define if the order of the items should be reversed
 		reverse: reverseOrder,
 		// show a popover with details about the data when hovering a tile
@@ -742,6 +744,7 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 		var currentRecord = renderDef.data[i];
 		var currentTile = $('<div class="p-0 flex-fill">&nbsp;</div>');
 		currentTile.css('height', "100%");
+		currentTile.css('min-height', settings.minheight);
 		
 		//=====================================
 		// Add Styles

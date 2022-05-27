@@ -31,7 +31,7 @@
 					
 					//---------------------------------
 					// Render Data
-					var targetDiv = $('<div class="flex-grow-1">');
+					var targetDiv = $('<div class="flex-column align-items-stretch h-100 w-100">');
 					cfw_query_renderAllQueryResults(targetDiv, data.payload);
 				
 					callback(widgetObject, targetDiv);
