@@ -13,7 +13,7 @@ ALWAYS ON
 IMPORTANT FIXES / NEXT TODOS
 =============================
 - CFWQL Chart Command
-- Query Management
+- Query: Save and Manage queries
 
 
 H2 Database Migration v1.4.2 to v2.0.206
