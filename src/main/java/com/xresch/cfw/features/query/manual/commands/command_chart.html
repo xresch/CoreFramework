@@ -1,0 +1,26 @@
+
+<p>This command lets you render a chart from your data.</p>
+
+<p>The following query creates random series data and displays them as a line chart: </p>
+<pre><code class="language-cfwquery">| source random records=100 type=series
+| chart 
+	x=TIME 
+	y=COUNT 
+	groupby=[WAREHOUSE, ITEM]</code></pre>
+	
+
+<p>You can change the look and feel of your chart using various options. </p>
+<pre><code class="language-cfwquery">| source random records=100 type=series
+| chart 
+	type=area
+	x=TIME 
+	y=COUNT 
+	groupby=[WAREHOUSE, ITEM] 
+	stacked=true
+	axes=true
+	legend=false 
+	xtype=time 
+	ytype=linear
+	ymin=-100
+	ymax=400
+	pointradius=0</code></pre>

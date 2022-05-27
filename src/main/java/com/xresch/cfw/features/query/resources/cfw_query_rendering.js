@@ -768,6 +768,13 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	
 	
 	//-----------------------------------
+	// Do chart if it is Chart
+	if(queryResult.displaySettings.as == 'chart'){
+		cfw_query_renderAsChart(targetDiv, queryResult);
+		return;
+	}
+	
+	//-----------------------------------
 	// Get Renderer Settings
 	var rendererName = "dataviewer";
 	if(queryResult.displaySettings.menu == false){
@@ -779,8 +786,6 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 		}
 	}
 	
-	
-		
 	rendererIndex = cfw_query_getRendererIndex(queryResult);		
 	labels = cfw_query_createLables(queryResult);	
 	
@@ -917,3 +922,102 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	
 	targetDiv.append(renderResult);
 }
+
+/*******************************************************************************
+ * Renders the result of a single query as a chart.
+ * 
+ * @param resultTarget the JQuery Element to which the results are
+ *                     appended.
+ * @param queryResultPayload the payload received from the server holding one or
+ *        multiple query results.
+ ******************************************************************************/
+function cfw_query_renderAsChart(resultTarget, queryResult){
+
+	var settings = queryResult.displaySettings;
+	
+	//---------------------------------
+	// Prepare TitleFields
+	var seriesColumns = settings.groupby;
+	var titlefields = seriesColumns;
+	if(seriesColumns == null || seriesColumns.length == 0){
+		// use second as default
+		let keys = Object.keys(queryResult.results[0]);
+		titlefields = [keys[1]];
+	}
+	
+	//---------------------------------
+	// Use first Column if not specified
+	var xColumn;
+	if(CFW.utils.isNullOrEmpty(settings.x)){
+		let keys = Object.keys(queryResult.results[0]);
+		xColumn = keys[0];
+	}else{
+		var xColumn = settings.x.trim();
+	}
+	
+	
+	//---------------------------------
+	// Use last Column if not specified
+	var yColumn;
+	if(CFW.utils.isNullOrEmpty(settings.y)){
+		let keys = Object.keys(queryResult.results[0]);
+		yColumn = keys[keys.length-1];
+	}else{
+		var yColumn = settings.y.trim();
+	}
+	
+	//---------------------------------
+	// Fallback to Defaults if undefined
+	var defaultSettings = {
+		type: "line",
+		xtype: "time",
+		ytype: "linear",
+		stacked: false,
+		legend: false,
+		axes: true,
+		ymin: 0,
+		ymax: null,
+		pointradius: 1
+	};
+	
+	var settings = Object.assign({}, defaultSettings, settings);
+	
+	//---------------------------
+	// Render Settings
+	var dataToRender = {
+		data: queryResult.results,
+		titlefields: titlefields, 
+		titleformat: null, 
+		labels: {},
+		customizers: {},
+		rendererSettings:{
+			chart: {
+				charttype: settings.type,
+				// How should the input data be handled groupbytitle|arrays 
+				datamode: 'groupbytitle',
+				xfield: xColumn,
+				yfield: yColumn,
+				//the type of the x axis: linear|logarithmic|category|time
+				xtype: 			settings.xtype,
+				//the type of the y axis: linear|logarithmic|category|time
+				ytype: 			settings.ytype,
+				stacked: 		settings.stacked,
+				showlegend: 	settings.legend,
+				showaxes: 		settings.axes,
+				ymin: 			settings.ymin,
+				ymax: 			settings.ymax,
+				pointradius: 	settings.pointradius,
+				padding: 2
+			}
+		}
+	};
+									
+	//--------------------------
+	// Render Widget
+	var renderer = CFW.render.getRenderer('chart');
+	
+	var renderResult = CFW.render.getRenderer('chart').render(dataToRender);	
+	
+	targetDiv.append(renderResult);
+}
+

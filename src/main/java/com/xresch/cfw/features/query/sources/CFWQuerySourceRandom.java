@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.sources;
 import java.text.ParseException;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -13,9 +14,7 @@ import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
-import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWRandom;
 
 /**************************************************************************************************************
@@ -101,7 +100,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 			)
 			.addField(
 					CFWField.newString(FormFieldType.TEXT, "type")
-						.setDescription("The type of data to generate, one of: 'default' | 'numbers' | 'arrays' | 'various' ")
+						.setDescription("The type of data to generate, one of: 'default' | 'numbers' | 'arrays' | 'series' | 'various' ")
 						.setValue("default")
 				)
 		;
@@ -156,6 +155,17 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				
 				EnhancedJsonObject object = new EnhancedJsonObject( CFWRandom.randomJSONObjectArrayData(0) );
 				object.addProperty("TIME", earliest +(i * diffStep));
+				outQueue.add(object);
+				
+				if( isLimitReached(limit, i)) { break; }
+			}
+		}else if(type.equals("series")) {
+			
+			JsonArray array = CFW.Random.randomJSONArrayOfSeriesData(3, records, earliest, latest);
+			
+			for(int i = 0; i < array.size(); i++) {
+				
+				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
 				outQueue.add(object);
 				
 				if( isLimitReached(limit, i)) { break; }

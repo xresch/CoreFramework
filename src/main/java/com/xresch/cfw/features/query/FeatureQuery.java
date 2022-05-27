@@ -10,6 +10,7 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.manual.ManualPage;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandChart;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandComment;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandDisplay;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandDistinct;
@@ -57,7 +58,7 @@ public class FeatureQuery extends CFWAppFeature {
 				.addPermission(PERMISSION_QUERY_USER)
 				.addPermission(PERMISSION_QUERY_ADMIN)
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "000_query.html"))
-				;
+			;
 	
 	@Override
 	public void register() {
@@ -78,6 +79,7 @@ public class FeatureQuery extends CFWAppFeature {
 		// Register Commands
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandSource(null));
 		
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandChart(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandComment(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDisplay(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDistinct(null));
