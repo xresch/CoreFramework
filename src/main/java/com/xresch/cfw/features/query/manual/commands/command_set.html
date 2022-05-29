@@ -1,0 +1,22 @@
+
+<p>Sets a value to a field.
+</p>
+
+<p>
+</p>
+<pre><code class="language-cfwquery">| source random records=100 type=series
+| set 
+	# use math with fields
+	SQUARE=(COUNT*COUNT)
+	# use previously set fields 
+	ONE_THIRD_SQUARE=(SQUARE/3.3333333)
+	# concatenate fields 
+	CONCATENATE="https://www.fruittest.sample/query?id="+23+"&warehouse="+WAREHOUSE+"&item="+ITEM
+| formatfield 
+	CONCATENATE=['link', "Link", "button", "fa-external-link-square-alt", "blank"]
+	ONE_THIRD_SQUARE=['decimals', 2]</code></pre>
+
+
+
+
+

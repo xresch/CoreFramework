@@ -6,9 +6,9 @@ import java.util.Set;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
@@ -92,6 +92,9 @@ public class EnhancedJsonObject {
 						break;
 						
 		case JSON:		this.add(property, value.getAsJson());
+						break;
+						
+		case NULL:		this.add(property, JsonNull.INSTANCE);
 						break;
 
 		default:

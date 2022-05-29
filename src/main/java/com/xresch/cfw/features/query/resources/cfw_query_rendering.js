@@ -499,7 +499,7 @@ function cfw_query_formatLink(span, value, linkText, displayAs, icon, target){
 	
 	if(displayAs == 'button'){
 		linkElement.attr('role', 'button')
-				   .addClass('btn btn-sm btn-primary');
+			 .addClass('btn btn-sm btn-primary text-white');
 	}	
 	
 	if(icon != null){
