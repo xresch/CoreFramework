@@ -17,114 +17,22 @@ public class CFWQueryRegistry {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWQueryRegistry.class.getName());
 	
-	// command name and command class
-	private static TreeMap<String, Class<? extends CFWQueryCommand>> queryCommandMap = new TreeMap<>();
-	
-	
-	// command name and command class
+	// source name and class
 	private static TreeMap<String, Class<? extends CFWQuerySource>> querySourceMap = new TreeMap<>();
 	
+	// command name and class
+	private static TreeMap<String, Class<? extends CFWQueryCommand>> queryCommandMap = new TreeMap<>();
+	
+	// function name and class
+	private static TreeMap<String, Class<? extends CFWQueryFunction>> queryFunctionMap = new TreeMap<>();
 	
 	// Cache source instances for internal checks
 	private static TreeMap<String, CFWQuerySource> sourceInstanceCache = new TreeMap<>();
-	
-	
-	
-	/***********************************************************************
-	 * Adds a CFWObject class to the registry.
-	 * @param objectClass
-	 ***********************************************************************/
-	public static void registerCommand(CFWQueryCommand command)  {
-		
-		for(String name : command.uniqueNameAndAliases()) {
-			String lowercaseName = name.trim().toLowerCase();
-			
-			if( queryCommandMap.containsKey(lowercaseName) ) {
-				new CFWLog(logger).severe("A Command with the name '"+command.uniqueNameAndAliases()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
-				return;
-			}
-			
-			queryCommandMap.put(lowercaseName, command.getClass());
-		}
-		
-	}
-	
-	/***********************************************************************
-	 * Removes a CFWObject class to the registry.
-	 * @param objectClass
-	 ***********************************************************************/
-	public static void removeCommand(String commandName)  {
-		queryCommandMap.remove(commandName.trim().toLowerCase());
-	}
-	
-	/***********************************************************************
-	 * Removes a CFWObject class to the registry.
-	 * @param objectClass
-	 ***********************************************************************/
-	public static TreeMap<String, Class<? extends CFWQueryCommand>> getCommandList()  {
-		return queryCommandMap;
-	}
-	
-	/***********************************************************************
-	 * Get a list of Environment instances.
-	 * 
-	 ***********************************************************************/
-	public static TreeMap<String, CFWQueryCommand> createCommandInstances(CFWQuery parent)  {
-		TreeMap<String, CFWQueryCommand> instanceMap = new TreeMap<>();
-		
-		for(Entry<String, Class<? extends CFWQueryCommand>> entry : queryCommandMap.entrySet()) {
-			try {
-				String commandName = entry.getKey();
-				Class<? extends CFWQueryCommand> clazz = entry.getValue();
-				CFWQueryCommand instance = clazz.getConstructor(CFWQuery.class).newInstance(parent);
-				instanceMap.put(commandName, instance);
-			} catch (Exception e) {
-				new CFWLog(logger).severe("Issue creating instance for Command: "+e.getMessage(), e);
-			}
-		}
-		return instanceMap;
-	}
-	
-	/***********************************************************************
-	 * Get a new instance for the specified QueryCommand.
-	 * Returns null if the  is undefined.
-	 ***********************************************************************/
-	public static CFWQueryCommand createCommandInstance(CFWQuery parent, String commandName)  {
-		
-		CFWQueryCommand instance = null;
-		Class<? extends CFWQueryCommand> clazz =  queryCommandMap.get(commandName.trim().toLowerCase());
-		try {
-			if(clazz != null) {
-				instance = clazz.getConstructor(CFWQuery.class).newInstance(parent);
-			}
-		} catch (Exception e) {
-			new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
-		}
-		
-		return instance;
-	}
-	
-	
-	/***********************************************************************
-	 * Get a list of all registered QueryCommand s.
-	 * 
-	 ***********************************************************************/
-	public static ArrayList<String> getCommandNames()  {
-		ArrayList<String> Array = new ArrayList<String>();
-		Array.addAll(queryCommandMap.keySet());
-		
-		return Array;
-	}
-	
-	/***********************************************************************
-	 * Return true if a command with the specified name is registered, false
-	 * otherwise.
-	 * 
-	 ***********************************************************************/
-	public static boolean commandExists(String commandName)  {
-		return queryCommandMap.containsKey(commandName.trim().toLowerCase());
-	}
-	
+
+	//############################################################################################
+	// SOURCE RELATED METHODS
+	//############################################################################################
+
 	/***********************************************************************
 	 * Adds a CFWObject class to the registry.
 	 * @param objectClass
@@ -132,7 +40,7 @@ public class CFWQueryRegistry {
 	public static void registerSource(CFWQuerySource source)  {
 		String lowercaseName = source.uniqueName().trim().toLowerCase();
 		if( querySourceMap.containsKey(lowercaseName) ) {
-			new CFWLog(logger).severe("A JobTask with the name '"+source.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
+			new CFWLog(logger).severe("A source with the name '"+source.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
 			return;
 		}
 		
@@ -235,4 +143,199 @@ public class CFWQueryRegistry {
 		return querySourceMap.containsKey(sourceName.trim().toLowerCase());
 	}
 	
+	//############################################################################################
+	// COMMAND RELATED METHODS
+	//############################################################################################
+
+	/***********************************************************************
+	 * Adds a CFWObject class to the registry.
+	 * @param objectClass
+	 ***********************************************************************/
+	public static void registerCommand(CFWQueryCommand command)  {
+		
+		for(String name : command.uniqueNameAndAliases()) {
+			String lowercaseName = name.trim().toLowerCase();
+			
+			if( queryCommandMap.containsKey(lowercaseName) ) {
+				new CFWLog(logger).severe("A Command with the name '"+command.uniqueNameAndAliases()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
+				return;
+			}
+			
+			queryCommandMap.put(lowercaseName, command.getClass());
+		}
+		
+	}
+	
+	/***********************************************************************
+	 * Removes a CFWObject class to the registry.
+	 * @param objectClass
+	 ***********************************************************************/
+	public static void removeCommand(String commandName)  {
+		queryCommandMap.remove(commandName.trim().toLowerCase());
+	}
+	
+	/***********************************************************************
+	 * Removes a CFWObject class to the registry.
+	 * @param objectClass
+	 ***********************************************************************/
+	public static TreeMap<String, Class<? extends CFWQueryCommand>> getCommandList()  {
+		return queryCommandMap;
+	}
+	
+	/***********************************************************************
+	 * Get a list of Environment instances.
+	 * 
+	 ***********************************************************************/
+	public static TreeMap<String, CFWQueryCommand> createCommandInstances(CFWQuery parent)  {
+		TreeMap<String, CFWQueryCommand> instanceMap = new TreeMap<>();
+		
+		for(Entry<String, Class<? extends CFWQueryCommand>> entry : queryCommandMap.entrySet()) {
+			try {
+				String commandName = entry.getKey();
+				Class<? extends CFWQueryCommand> clazz = entry.getValue();
+				CFWQueryCommand instance = clazz.getConstructor(CFWQuery.class).newInstance(parent);
+				instanceMap.put(commandName, instance);
+			} catch (Exception e) {
+				new CFWLog(logger).severe("Issue creating instance for Command: "+e.getMessage(), e);
+			}
+		}
+		return instanceMap;
+	}
+	
+	/***********************************************************************
+	 * Get a new instance for the specified QueryCommand.
+	 * Returns null if the  is undefined.
+	 ***********************************************************************/
+	public static CFWQueryCommand createCommandInstance(CFWQuery parent, String commandName)  {
+		
+		CFWQueryCommand instance = null;
+		Class<? extends CFWQueryCommand> clazz =  queryCommandMap.get(commandName.trim().toLowerCase());
+		try {
+			if(clazz != null) {
+				instance = clazz.getConstructor(CFWQuery.class).newInstance(parent);
+			}
+		} catch (Exception e) {
+			new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
+		}
+		
+		return instance;
+	}
+	
+	
+	/***********************************************************************
+	 * Get a list of all registered QueryCommand s.
+	 * 
+	 ***********************************************************************/
+	public static ArrayList<String> getCommandNames()  {
+		ArrayList<String> Array = new ArrayList<String>();
+		Array.addAll(queryCommandMap.keySet());
+		
+		return Array;
+	}
+	
+	/***********************************************************************
+	 * Return true if a command with the specified name is registered, false
+	 * otherwise.
+	 * 
+	 ***********************************************************************/
+	public static boolean commandExists(String commandName)  {
+		return queryCommandMap.containsKey(commandName.trim().toLowerCase());
+	}
+	
+	//############################################################################################
+	// FUNCTION RELATED METHODS
+	//############################################################################################
+
+	/***********************************************************************
+	 * Adds a CFWQueryFunction class to the registry.
+	 * @param objectClass
+	 ***********************************************************************/
+	public static void registerFunction(CFWQueryFunction function)  {
+		
+		String lowercaseName = function.uniqueName().trim().toLowerCase();
+		if( queryFunctionMap.containsKey(lowercaseName) ) {
+			new CFWLog(logger).severe("A function with the name '"+function.uniqueName()+"' has already been registered. Please change the name or prevent multiple registration attempts.");
+			return;
+		}
+		
+		queryFunctionMap.put(lowercaseName, function.getClass());
+		
+	}
+	
+	/***********************************************************************
+	 * Removes a CFWQueryFunction class to the registry.
+	 * @param objectClass
+	 ***********************************************************************/
+	public static void removeFunction(String functionName)  {
+		queryFunctionMap.remove(functionName.trim().toLowerCase());
+	}
+	
+	/***********************************************************************
+	 * Removes a CFWQueryFunction class to the registry.
+	 * @param objectClass
+	 ***********************************************************************/
+	public static TreeMap<String, Class<? extends CFWQueryFunction>> getFunctionList()  {
+		return queryFunctionMap;
+	}
+	
+	/***********************************************************************
+	 * Get a list of Environment instances.
+	 * 
+	 ***********************************************************************/
+	public static TreeMap<String, CFWQueryFunction> createFunctionInstances(CFWQuery parent)  {
+		TreeMap<String, CFWQueryFunction> instanceMap = new TreeMap<>();
+		
+		for(Entry<String, Class<? extends CFWQueryFunction>> entry : queryFunctionMap.entrySet()) {
+			try {
+				String functionName = entry.getKey();
+				Class<? extends CFWQueryFunction> clazz = entry.getValue();
+				CFWQueryFunction instance = clazz.getConstructor(CFWQuery.class).newInstance(parent);
+				instanceMap.put(functionName, instance);
+			} catch (Exception e) {
+				new CFWLog(logger).severe("Issue creating instance for Function: "+e.getMessage(), e);
+			}
+		}
+		return instanceMap;
+	}
+	
+	/***********************************************************************
+	 * Get a new instance for the specified QueryFunction.
+	 * Returns null if the  is undefined.
+	 ***********************************************************************/
+	public static CFWQueryFunction createFunctionInstance(CFWQueryContext context, String functionName)  {
+		
+		CFWQueryFunction instance = null;
+		Class<? extends CFWQueryFunction> clazz =  queryFunctionMap.get(functionName.trim().toLowerCase());
+		try {
+			if(clazz != null) {
+				instance = clazz.getConstructor(CFWQueryContext.class).newInstance(context);
+			}
+		} catch (Exception e) {
+			new CFWLog(logger).severe("Issue creating instance for Class '"+clazz.getName()+"': "+e.getMessage(), e);
+		}
+		
+		return instance;
+	}
+	
+	
+	/***********************************************************************
+	 * Get a list of all registered QueryFunctions.
+	 * 
+	 ***********************************************************************/
+	public static ArrayList<String> getFunctionNames()  {
+		ArrayList<String> Array = new ArrayList<String>();
+		Array.addAll(queryFunctionMap.keySet());
+		
+		return Array;
+	}
+	
+	/***********************************************************************
+	 * Return true if a function with the specified name is registered, false
+	 * otherwise.
+	 * 
+	 ***********************************************************************/
+	public static boolean functionExists(String functionName)  {
+		return queryFunctionMap.containsKey(functionName.trim().toLowerCase());
+	}
+		
 }

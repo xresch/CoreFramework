@@ -70,7 +70,7 @@ public class CFWQueryParser {
 	private Stack<CFWQueryParserContext> contextStack = new Stack<>();
 	
 	public enum CFWQueryParserContext{
-		DEFAULT, BINARY, ARRAY, GROUP
+		DEFAULT, BINARY, ARRAY, GROUP, FUNCTION
 	}
 	
 	// Stub Class to indicate end of arrays and groups during parsing
@@ -450,6 +450,24 @@ public class CFWQueryParser {
 										break;
 	
 			//=======================================================
+			// Create Function Part
+			//=======================================================	
+			case FUNCTION_NAME: 		
+				String functionName = firstToken.value();
+				addTrace("Create Function Part", "Function", firstToken.value());
+				
+				QueryPart paramGroup = this.parseQueryPart(CFWQueryParserContext.FUNCTION);
+
+				if(paramGroup instanceof QueryPartGroup) {
+					firstPart = new QueryPartFunction(currentContext, functionName, (QueryPartGroup)paramGroup);
+				}else {
+					this.throwParseException("expected parameters after function: "+functionName, firstToken.position());
+				}
+				
+			break;
+			
+			
+			//=======================================================
 			// Create JSON Part
 			//=======================================================	
 			case SIGN_BRACE_CURLY_OPEN:		
@@ -606,8 +624,7 @@ public class CFWQueryParser {
 //			case OPERATOR_NOT:
 //				break;
 //
-//			case FUNCTION_NAME:
-//				break;
+
 			default:					//this.throwParseException("Unexpected token.", firstToken.position());
 										break;
 

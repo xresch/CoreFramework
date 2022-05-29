@@ -154,6 +154,8 @@ DONE
 - Query: Added new renderers to Query
 - Query: Make results 100% height in dashboard widget
 - Query: Added chart Command
+- Query: Added Functions feature to query framework
+- Query: added functions encode
 
 ------- v6.0.0 -------
 - New Feature - Query: Domain Specific Language(DSL) to fetch, process and format data from various sources
