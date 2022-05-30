@@ -28,7 +28,9 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTail;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTop;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionEncode;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionLength;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionNullTo;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionSubstring;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTrim;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceApplog;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
@@ -103,7 +105,9 @@ public class FeatureQuery extends CFWAppFeature {
 		//----------------------------------
 		// Register Functions
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionEncode(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionLength(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionNullTo(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSubstring(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTrim(null));
 		 
 		//----------------------------------

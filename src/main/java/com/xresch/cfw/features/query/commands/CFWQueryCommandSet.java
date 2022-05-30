@@ -96,7 +96,7 @@ public class CFWQueryCommandSet extends CFWQueryCommand {
 				fieldnames.add(assignment.getLeftSideAsString(null));
 				assignments.add((QueryPartAssignment)currentPart);
 			}else {
-				parser.throwParseException("formatrecord: Only assignment expressions(key=value) allowed.", currentPart);
+				parser.throwParseException("set: Only assignment expressions(key=value) allowed.", currentPart);
 			}
 		}
 		

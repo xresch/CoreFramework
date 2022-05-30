@@ -100,8 +100,11 @@ public class TestCFWQueryTokenizer {
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(++i).type());
 		Assertions.assertEquals("423", 									results.get(i).value());
 		
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_MINUS,		results.get(++i).type());
+		Assertions.assertEquals("-", 								results.get(i).value());
+		
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER,		results.get(++i).type());
-		Assertions.assertEquals("-33.431", 								results.get(i).value());
+		Assertions.assertEquals("33.431", 								results.get(i).value());
 		
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_BOOLEAN, 		results.get(++i).type());
 		Assertions.assertEquals("true", 								results.get(i).value());
@@ -129,8 +132,11 @@ public class TestCFWQueryTokenizer {
 		printResults("Basic Test", results);
 		
 		int i = 0;
-		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(i).type());
-		Assertions.assertEquals("-1", 									results.get(i).value());
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_MINUS, 		results.get(i).type());
+		Assertions.assertEquals("-", 									results.get(i).value());
+		
+		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(++i).type());
+		Assertions.assertEquals("1", 									results.get(i).value());
 		
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(++i).type());
 		Assertions.assertEquals("1234", 								results.get(i).value());
@@ -141,8 +147,11 @@ public class TestCFWQueryTokenizer {
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(++i).type());
 		Assertions.assertEquals("42.90", 								results.get(i).value());
 		
+		Assertions.assertEquals(CFWQueryTokenType.OPERATOR_MINUS, 		results.get(++i).type());
+		Assertions.assertEquals("-", 									results.get(i).value());
+		
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(++i).type());
-		Assertions.assertEquals("-71.55555551", 						results.get(i).value());
+		Assertions.assertEquals("71.55555551", 						results.get(i).value());
 		
 		Assertions.assertEquals(CFWQueryTokenType.LITERAL_NUMBER, 		results.get(++i).type());
 		Assertions.assertEquals("321", 									results.get(i).value());

@@ -25,7 +25,7 @@ public class CFWQueryTokenizer {
 	//substring(cursor, endOfString) of base string
 	String slice = null;
 		
-	private static final Pattern regexStartsWithDigit = Pattern.compile("^-?\\d");
+	private static final Pattern regexStartsWithDigit = Pattern.compile("^\\d");
 	private static final Pattern regexIsNumericalChar = Pattern.compile("[\\.\\d]");
 	private static final Pattern regexIsWhitespace = Pattern.compile("\\s");
 	private static final Pattern regexIsWordChar = Pattern.compile("[a-zA-Z_0-9]");

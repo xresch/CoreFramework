@@ -1,0 +1,28 @@
+
+<p>Returns the length of a string.</p>
+
+<p>Following query create random records and gets the length of certain values:</p>
+
+<pre><code class="language-cfwquery">| source random records=42
+| set 
+	LENGTH_ID=length(ID)
+	LENGTH_LIKES_TIRAMISU=length(LIKES_TIRAMISU)
+	LENGTH_FIRSTNAME=length(FIRSTNAME)
+| keep 
+		ID
+		, LENGTH_ID
+		, FIRSTNAME
+		, LENGTH_FIRSTNAME
+		, LIKES_TIRAMISU
+		, LENGTH_LIKES_TIRAMISU</code></pre>
+
+
+<p>This function can lead to incorrect result when used with number values:</p>
+
+<pre><code class="language-cfwquery">| source random records=9 type=numbers
+| set 
+	# string representation might be scientific notation 
+	LENGTH_BIGDEC=length(BIG_DECIMAL)
+	LENGTH_FLOAT=length(FLOAT)
+	# string representation might have decimals
+	LENGTH_THOUSANDS=length(THOUSANDS)</code></pre>

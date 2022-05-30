@@ -146,7 +146,7 @@ public class QueryPartGroup extends QueryPart {
 	 ******************************************************************************************************/
 	@Override
 	public QueryPartValue determineValue(EnhancedJsonObject object) {
-		
+
 		if(partsGroup.size() == 1) {
 			//---------------------------------------
 			// Evaluate as Binary

@@ -1,0 +1,21 @@
+
+<p>Returns a string which is a substring of the input string.</p>
+
+<p>Following query creates example records and does various sample substring operations:</p>
+
+<pre><code class="language-cfwquery">| source random records=999 
+| keep ID,FIRSTNAME, LASTNAME
+| set 
+	# get first 4 characters
+	FIRST_FOUR=substring(FIRSTNAME,0,4)
+	# get all characters after the first 4 
+	AFTER_FIRST_FOUR= substring(FIRSTNAME,4)
+	# retrieve last 4 characters of a string
+	LAST_FOUR=substring(LASTNAME, length(LASTNAME)-4)
+	# if an index is out of bounds it will get set to max or min value
+	OUT_OF_BOUNDS=substring(LASTNAME, -100, 999999)
+	# if indexes are swapped result is empty string
+	START_BIGGER_END=substring(LASTNAME, 10, 1)
+	'ID_1stPart'=substring(ID,0,8)
+	'ID_2ndPart'=substring(ID,9,13)</code></pre>
+

@@ -438,7 +438,7 @@ public class CFWQueryParser {
 			case LITERAL_BOOLEAN:		addTrace("Create Value Part", "Boolean", firstToken.value());
 										firstPart = QueryPartValue.newBoolean(firstToken.valueAsBoolean());
 										break;
-									
+			
 			case LITERAL_NUMBER:		addTrace("Create Value Part", "Number", firstToken.value());
 										firstPart = QueryPartValue.newNumber(firstToken.valueAsNumber());
 										break;
@@ -447,6 +447,19 @@ public class CFWQueryParser {
 										firstPart = QueryPartValue.newNull();
 										break;
 	
+			//=======================================================
+			// Negative Numbers
+			//=======================================================
+			case OPERATOR_MINUS:		
+				
+				if( this.hasMoreTokens()
+				&& this.lookahead().type() == CFWQueryTokenType.LITERAL_NUMBER ){
+					CFWQueryToken token = this.consumeToken();
+					firstPart = QueryPartValue.newNumber(token.valueAsNumber().negate());
+				}
+				
+			break;
+			
 			//=======================================================
 			// Create Function Part
 			//=======================================================	
