@@ -11,7 +11,11 @@
 	# use previously set fields 
 	ONE_THIRD_SQUARE=(SQUARE/3.3333333)
 	# concatenate fields 
-	CONCATENATE="https://www.fruittest.sample/query?id="+23+"&warehouse="+WAREHOUSE+"&item="+ITEM
+	CONCATENATE="https://www.fruittest.sample/query?id="+23+"&warehouse="+encode(WAREHOUSE)+"&item="+ITEM
+	# use function calls
+	FUNCTION_CALLS=encode(
+			trim("  "+WAREHOUSE+" --- "+"ITEM"+"  ")
+		)
 | formatfield 
 	CONCATENATE=['link', "Link", "button", "fa-external-link-square-alt", "blank"]
 	ONE_THIRD_SQUARE=['decimals', 2]</code></pre>

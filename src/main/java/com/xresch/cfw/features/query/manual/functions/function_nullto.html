@@ -1,0 +1,13 @@
+
+<p>Changes null values to another value.</p>
+
+<p>The following example creates 500 records and replaces null values:</p>
+
+<pre><code class="language-cfwquery">| source random records=999
+| set 
+	SAMPLE=null
+	TO_ZERO  = nullto(SAMPLE, 0)
+	TO_EMPTY = nullto(SAMPLE, "")
+	LASTNAME = nullto(LASTNAME, "N/A")
+	LOCATION = nullto(LOCATION, "unknown")</code></pre>
+

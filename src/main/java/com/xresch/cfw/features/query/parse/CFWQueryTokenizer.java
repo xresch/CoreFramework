@@ -196,9 +196,17 @@ public class CFWQueryTokenizer {
 
 		//-----------------------------------
 		// NULL
+		//if(slice.toLowerCase().matches("^null[^a-zA-Z].*|^null$")) {
 		if(slice.toLowerCase().startsWith("null")) {
-			cursor+=4;
-			return createToken(CFWQueryToken.CFWQueryTokenType.NULL, startPos, cursor);
+			
+			//if EOF or next char is not a character
+			if(cursor+4 >= base.length()
+			|| this.charAt(cursor+4).matches("[^a-zA-Z]")) {
+				cursor+=4;
+				return createToken(CFWQueryToken.CFWQueryTokenType.NULL, startPos, cursor);
+			}
+			
+			
 		}
 		
 		//-----------------------------------

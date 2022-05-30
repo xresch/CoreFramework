@@ -425,8 +425,6 @@ public class CFWQueryParser {
 		CFWQueryToken firstToken = this.consumeToken();
 		QueryPart firstPart = null;
 		
-		//System.out.println("firstToken:"+firstToken.value()+" "+firstToken.type());
-		
 		switch(firstToken.type()) {								
 		
 			case TEXT_SINGLE_QUOTES:
@@ -453,17 +451,12 @@ public class CFWQueryParser {
 			// Create Function Part
 			//=======================================================	
 			case FUNCTION_NAME: 	
-				System.out.println("===============");
-				System.out.println("firstToken:"+firstToken.value());
-				System.out.println("Token:"+this.lookat(0));
-				System.out.println("Token:"+this.lookat(1));
-				System.out.println("Token:"+this.lookat(2));
 				
 				String functionName = firstToken.value();
 				addTrace("Create Function Part", "Function", firstToken.value());
 				
 				QueryPart paramGroup = this.parseQueryPart(CFWQueryParserContext.FUNCTION);
-				System.out.println("paramGroup:"+paramGroup.createDebugObject(null));
+
 				if(paramGroup instanceof QueryPartGroup) {
 					firstPart = new QueryPartFunction(currentContext, functionName, (QueryPartGroup)paramGroup);
 				}else {

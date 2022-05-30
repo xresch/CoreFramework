@@ -28,6 +28,7 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTail;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTop;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionEncode;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionNullTo;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTrim;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceApplog;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
@@ -102,6 +103,7 @@ public class FeatureQuery extends CFWAppFeature {
 		//----------------------------------
 		// Register Functions
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionEncode(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionNullTo(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTrim(null));
 		 
 		//----------------------------------
@@ -296,6 +298,26 @@ public class FeatureQuery extends CFWAppFeature {
 			
 			new CFWQueryManualPageCommand(commandsPage, commandName, current);
 						
+		}
+		
+		//----------------------------------
+		// Functions Main Page
+		ManualPage functionsMainPage = new ManualPage("Functions")
+				.faicon("fas fa-cog")
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_03_functions.html");
+		
+		ROOT_MANUAL_PAGE.addChild(functionsMainPage);
+		
+		//----------------------------------
+		// Pages for each Function
+		TreeMap<String, Class<? extends CFWQueryFunction>> functionlist = CFW.Registry.Query.getFunctionList();
+		
+		for(String functionName : functionlist.keySet()) {
+			
+			CFWQueryFunction current = CFW.Registry.Query.createFunctionInstance(pseudoQuery.getContext(), functionName);
+			
+			CFWQueryManualPageFunction currentPage = new CFWQueryManualPageFunction(functionName, current);
+			functionsMainPage.addChild(currentPage);
 		}
 		
 

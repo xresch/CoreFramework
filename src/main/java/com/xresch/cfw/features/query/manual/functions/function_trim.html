@@ -1,0 +1,14 @@
+
+<p>This function allows you to trim away those whitespaces from the start and end of a string.</p>
+
+<p>Following code will create random series data and trims white spaces that were added for no reason but having something to demonstrate:</p>
+
+<pre><code class="language-cfwquery">| source random records=100 type=series
+| set 
+	# create string with leading and trailing white spaces
+	WHITESPACES="   "+WAREHOUSE+" "+ITEM+"   "
+	# make spaces visible with encode
+	ENCODED=encode(WHITESPACES)
+	# use trim to remove them
+	TRIMMED=encode( trim(WHITESPACES) )</code></pre>
+

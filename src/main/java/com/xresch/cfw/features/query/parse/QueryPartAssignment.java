@@ -76,12 +76,15 @@ public class QueryPartAssignment extends QueryPart {
 	 ******************************************************************************************************/
 	public void assignToJsonObject(EnhancedJsonObject object) throws CFWQueryMemoryException {
 		
+		QueryPartValue value = rightside.determineValue(object).convertFieldnameToFieldvalue(object);
+		
 		if (leftside instanceof QueryPartJsonMemberAccess) {
 			QueryPartJsonMemberAccess memberAccess = (QueryPartJsonMemberAccess)leftside;
-			memberAccess.setValueOfMember(object, rightside.determineValue(object).getAsJson());
+			
+			memberAccess.setValueOfMember(object, value.getAsJson());
 		}else {
 			String memberName = this.getLeftSideAsString(object);
-			object.addProperty(memberName, rightside.determineValue(object));
+			object.addProperty(memberName, value);
 			
 		}
 	

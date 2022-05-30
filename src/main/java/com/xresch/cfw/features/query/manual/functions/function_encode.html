@@ -1,0 +1,17 @@
+
+<p>This function allows you to encode strings so they can be used in URLs.</p>
+
+<p>Following code will create random series data and creates encoded links for these records:</p>
+
+<pre><code class="language-cfwquery">| source random records=100 type=series
+| set 
+	# encode a string
+	ENCODED=encode(WAREHOUSE)
+	# encode in URL concatenation
+	LINK="https://cfw.fruittest.sample/query?id="+COUNT+"&warehouse="+encode(WAREHOUSE)+"&item="+encode(ITEM)
+	# assign value of LINK to another field BUTTON
+	BUTTON=LINK
+| formatfield
+	# create a button from the link
+	BUTTON=['link', "Click!"]</code></pre>
+
