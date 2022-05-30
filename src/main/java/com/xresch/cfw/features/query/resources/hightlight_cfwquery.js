@@ -107,7 +107,7 @@ function cfw_hljs_register_CFWQuery(hljs) {
 
   const FUNCTION = {
     scope: 'function',
-    begin: /\w[\w\d_]*\s*\(\s*\)\s*\{/,
+    begin: /[a-zA-Z0-9_]+\(/,
     returnBegin: true,
     contains: [hljs.inherit(hljs.TITLE_MODE, {begin: /\w[\w\d_]*/})],
     relevance: 0
@@ -140,7 +140,7 @@ function cfw_hljs_register_CFWQuery(hljs) {
     scope: 'built_in',
     begin: /\|\s*?(source|src)\s+/,
 	end: /[^\s]*/,
-	}
+  }
 
   const COMMANDS = {
     scope: 'keyword',

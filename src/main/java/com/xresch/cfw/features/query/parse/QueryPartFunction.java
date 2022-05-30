@@ -122,6 +122,9 @@ public class QueryPartFunction extends QueryPart {
 		ArrayList<QueryPartValue> parameterValues = new ArrayList<>();
 
 		for(QueryPart param : functionParameters) {
+			if(param instanceof QueryPartValue) {
+				param = ((QueryPartValue)param).convertFieldnameToFieldvalue(object);
+			}
 			parameterValues.add(param.determineValue(object));
 		}
 		

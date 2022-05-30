@@ -97,25 +97,13 @@ public class QueryPartBinaryExpression extends QueryPart {
 		
 		//-----------------------------------------
 		// Leftside get value from object 
-		if(object != null) {
-			if(leftValue.isString()) {
-				String potentialFieldname = leftValue.getAsString();
-				if(object.has(potentialFieldname)) {
-					leftValue = QueryPartValue.newFromJsonElement(object.get(potentialFieldname));
-				}
-			}
-		}
+		leftValue = leftValue.convertFieldnameToFieldvalue(object);
+
 		
 		//-----------------------------------------
 		// Rightside get value from object 
-		if(object != null) {
-			if(rightValue.isString()) {
-				String potentialFieldname = rightValue.getAsString();
-				if(object.has(potentialFieldname)) {
-					rightValue = QueryPartValue.newFromJsonElement(object.get(potentialFieldname));
-				}
-			}
-		}
+		rightValue = rightValue.convertFieldnameToFieldvalue(object);
+
 		
 		QueryPartValue evaluatedExpression = evaluateBinaryExpression(context, leftValue, rightValue);	
 		

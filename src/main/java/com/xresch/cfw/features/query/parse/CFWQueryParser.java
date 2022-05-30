@@ -452,12 +452,18 @@ public class CFWQueryParser {
 			//=======================================================
 			// Create Function Part
 			//=======================================================	
-			case FUNCTION_NAME: 		
+			case FUNCTION_NAME: 	
+				System.out.println("===============");
+				System.out.println("firstToken:"+firstToken.value());
+				System.out.println("Token:"+this.lookat(0));
+				System.out.println("Token:"+this.lookat(1));
+				System.out.println("Token:"+this.lookat(2));
+				
 				String functionName = firstToken.value();
 				addTrace("Create Function Part", "Function", firstToken.value());
 				
 				QueryPart paramGroup = this.parseQueryPart(CFWQueryParserContext.FUNCTION);
-
+				System.out.println("paramGroup:"+paramGroup.createDebugObject(null));
 				if(paramGroup instanceof QueryPartGroup) {
 					firstPart = new QueryPartFunction(currentContext, functionName, (QueryPartGroup)paramGroup);
 				}else {
@@ -589,6 +595,10 @@ public class CFWQueryParser {
 				}
 				
 				firstPart = groupPart;
+				if(context == CFWQueryParserContext.FUNCTION) {
+					return firstPart;
+				}
+				
 			break;	
 			
 			//=======================================================
@@ -631,103 +641,105 @@ public class CFWQueryParser {
 		}
 		
 		
-		//------------------------------------------
+		//=====================================================
 		// NEXT TOKEN can be anything that would
 		// create a binary expression or complete an expression
+		//=====================================================
 		QueryPart resultPart = firstPart;
 
 		if(!this.hasMoreTokens()) { return resultPart; }
 		//if(context == CFWQueryParserContext.BINARY) { return resultPart; } 
 		
 		switch(this.lookahead().type()) {
-		case OPERATOR_OR:		
-		case LITERAL_BOOLEAN:
-		case LITERAL_NUMBER:
-		case LITERAL_STRING:
-		case NULL:
-								return resultPart;
+		
+			case OPERATOR_OR:		
+			case LITERAL_BOOLEAN:
+			case LITERAL_NUMBER:
+			case LITERAL_STRING:
+			case NULL:
+									return resultPart;
+						
+			//------------------------------
+			//End of Array Part
+			case SIGN_BRACE_SQUARE_CLOSE:
+				addTrace("End Part", "Close Array", "");
+			return resultPart;
+			
+			//------------------------------
+			//End of Group
+			case SIGN_BRACE_ROUND_CLOSE:	
+				addTrace("End Part", "Close Group", "");
+			return resultPart;
+			
+	
+			
+			//------------------------------
+			// QueryPartAssignment
+			case OPERATOR_EQUAL:
+				this.consumeToken();
+				addTrace("Start Part", "Assignment", "");
+				QueryPart rightside = this.parseQueryPart(context);
+				resultPart = new QueryPartAssignment(currentContext, firstPart, rightside);
+				addTrace("End Part", "Assignment", "");
+			break;
+			
+			//------------------------------
+			// QueryPartArray						
+			case SIGN_COMMA:
+				if(context != CFWQueryParserContext.BINARY) {
+					addTrace("Proceed with Array", "Comma encountered", "");
 					
-		//------------------------------
-		//End of Array Part
-		case SIGN_BRACE_SQUARE_CLOSE:
-			addTrace("End Part", "Close Array", "");
-		return resultPart;
-		
-		//------------------------------
-		//End of Group
-		case SIGN_BRACE_ROUND_CLOSE:	
-			addTrace("End Part", "Close Group", "");
-		return resultPart;
-		
-
-		
-		//------------------------------
-		// QueryPartAssignment
-		case OPERATOR_EQUAL:
-			this.consumeToken();
-			addTrace("Start Part", "Assignment", "");
-			QueryPart rightside = this.parseQueryPart(context);
-			resultPart = new QueryPartAssignment(currentContext, firstPart, rightside);
-			addTrace("End Part", "Assignment", "");
-		break;
-		
-		//------------------------------
-		// QueryPartArray						
-		case SIGN_COMMA:
-			if(context != CFWQueryParserContext.BINARY) {
-				addTrace("Proceed with Array", "Comma encountered", "");
-				
-				QueryPart firstArrayElement = firstPart;
-				QueryPart secondArrayElement = firstPart;
-				while(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_COMMA) {
-					this.consumeToken();
-					secondArrayElement = this.parseQueryPart(context);
-					firstArrayElement = new QueryPartArray(currentContext, firstArrayElement, secondArrayElement);
+					QueryPart firstArrayElement = firstPart;
+					QueryPart secondArrayElement = firstPart;
+					while(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_COMMA) {
+						this.consumeToken();
+						secondArrayElement = this.parseQueryPart(context);
+						firstArrayElement = new QueryPartArray(currentContext, firstArrayElement, secondArrayElement);
+					}
+					
+					resultPart = firstArrayElement;
 				}
-				
-				resultPart = firstArrayElement;
-			}
-		break;			
-		
-						
-		//------------------------------
-		// Binary Operations
-		//case OPERATOR_OR: not supported as pipe '|' is used as command separator, see keyword 'OR'
-		case OPERATOR_AND:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_AND, true ); break;	
-		case OPERATOR_EQUAL_EQUAL:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, true ); break;	
-		case OPERATOR_EQUAL_NOT:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_NOT, true ); break;	
-		case OPERATOR_EQUAL_OR_GREATER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, true ); break;	
-		case OPERATOR_EQUAL_OR_LOWER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, true ); break;	
-		case OPERATOR_REGEX:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_REGEX, true ); break;	
-		case OPERATOR_GREATERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_GREATERTHEN, true ); break;	
-		case OPERATOR_LOWERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_LOWERTHEN, true ); break;	
-		case OPERATOR_PLUS:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_PLUS, true ); break;	
-		case OPERATOR_MINUS:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MINUS, true ); break;	
-		case OPERATOR_MULTIPLY:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MULTIPLY, true ); break;	
-		case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_DIVIDE, true ); break;	
-		case OPERATOR_POWER:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_POWER, true ); break;	
-		case OPERATOR_NOT:
-			break;
-
-		case FUNCTION_NAME:
-			break;
-						
-		case OPERATOR_DOT:
-			break;	
-		
-		case SIGN_SEMICOLON:
-			break;
-		case SPLIT:
-			break;
-		case TEXT_DOUBLE_QUOTES:
-			break;
-		case TEXT_SINGLE_QUOTES:
-			break;
-		case UNKNOWN:
-			break;
-		default:
-			break;
-		
+			break;			
+			
+							
+			//------------------------------
+			// Binary Operations
+			//case OPERATOR_OR: not supported as pipe '|' is used as command separator, see keyword 'OR'
+			case OPERATOR_AND:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_AND, true ); break;	
+			case OPERATOR_EQUAL_EQUAL:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, true ); break;	
+			case OPERATOR_EQUAL_NOT:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_NOT, true ); break;	
+			case OPERATOR_EQUAL_OR_GREATER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, true ); break;	
+			case OPERATOR_EQUAL_OR_LOWER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, true ); break;	
+			case OPERATOR_REGEX:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_REGEX, true ); break;	
+			case OPERATOR_GREATERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_GREATERTHEN, true ); break;	
+			case OPERATOR_LOWERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_LOWERTHEN, true ); break;	
+			case OPERATOR_PLUS:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_PLUS, true ); break;	
+			case OPERATOR_MINUS:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MINUS, true ); break;	
+			case OPERATOR_MULTIPLY:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MULTIPLY, true ); break;	
+			case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_DIVIDE, true ); break;	
+			case OPERATOR_POWER:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_POWER, true ); break;	
+			case OPERATOR_NOT:
+				break;
+	
+			case FUNCTION_NAME:
+				break;
+							
+			case OPERATOR_DOT:
+				break;	
+			
+			case SIGN_SEMICOLON:
+				break;
+			case SPLIT:
+				break;
+			case TEXT_DOUBLE_QUOTES:
+				break;
+			case TEXT_SINGLE_QUOTES:
+				break;
+			case UNKNOWN:
+				break;
+			default:
+				break;
+			
 		}
 		
 		return resultPart;

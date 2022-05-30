@@ -423,6 +423,24 @@ public class QueryPartValue extends QueryPart {
 		
 		return value.toString();
 	}
+	/******************************************************************************************************
+	 * Checks if the value of this part is a fieldname of the object and returns the value of the field.
+	 * If false returns this QueryPart unchanged.
+	 * 
+	 ******************************************************************************************************/
+	public QueryPartValue convertFieldnameToFieldvalue(EnhancedJsonObject object) {
+		
+		if(value == null || object == null) return this;
+		
+		if(this.isString()){
+			String potentialFieldname = this.getAsString();
+			if(object.has(potentialFieldname)) {
+				return QueryPartValue.newFromJsonElement(object.get(potentialFieldname));
+			}
+		}
+		
+		return this;
+	}
 	
 	/******************************************************************************************************
 	 * 
