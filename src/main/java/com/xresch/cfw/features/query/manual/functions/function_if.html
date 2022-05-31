@@ -1,0 +1,17 @@
+
+<p>The following example creates sample records and show some example uses of the if function:</p>
+
+<pre><code class="language-cfwquery">| source random records=42
+| set 
+	SERVE=if(LIKES_TIRAMISU,"Tiramisu", "Ice Cream")
+	# default for elseValue will be empty String
+	HIGH_VALUE=if((VALUE>50),"Yes")
+	LONG_NAME=if((length(FIRSTNAME)>5), true, false)
+| keep
+	  LIKES_TIRAMISU
+	, SERVE
+	, VALUE
+	, HIGH_VALUE
+	, FIRSTNAME
+	, LONG_NAME</code></pre>
+

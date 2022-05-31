@@ -2,7 +2,6 @@ package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
 
-import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -10,10 +9,10 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
-public class CFWQueryFunctionLength extends CFWQueryFunction {
+public class CFWQueryFunctionIf extends CFWQueryFunction {
 
 	
-	public CFWQueryFunctionLength(CFWQueryContext context) {
+	public CFWQueryFunctionIf(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -22,7 +21,7 @@ public class CFWQueryFunctionLength extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "length";
+		return "if";
 	}
 	
 	/***********************************************************************************************
@@ -30,14 +29,14 @@ public class CFWQueryFunctionLength extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "length(valueOrFieldname)";
+		return "if(condition, trueValue, falseValue)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns the length of the string representation of the value.";
+		return "Evaluates the condition, returns the respective value for true or false.";
 	}
 	
 	/***********************************************************************************************
@@ -45,7 +44,9 @@ public class CFWQueryFunctionLength extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>valueOrFieldname:&nbsp;</b>The value to get the length from.</p>"
+		return "<p><b>condition:&nbsp;</b>The condition to evaluate for the if-statement.</p>"
+			  +"<p><b>trueValue:&nbsp;</b>The value to return if the condition is true.</p>"
+			  +"<p><b>falseValue:&nbsp;</b>The value to return if the condition is false.</p>"
 			;
 	}
 
@@ -54,7 +55,7 @@ public class CFWQueryFunctionLength extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_length.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_if.html");
 	}
 
 
@@ -80,19 +81,25 @@ public class CFWQueryFunctionLength extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		int paramCount = parameters.size();
-		if(paramCount == 0) {
-			return QueryPartValue.newNumber(0);
+		//----------------------------------
+		// Return same value if not second param
+		if(parameters.size() >= 2) { 
+			
+			QueryPartValue condition = parameters.get(0); 
+			QueryPartValue trueValue = parameters.get(1); 
+			QueryPartValue falseValue = (parameters.size() >= 3) ? parameters.get(2) : QueryPartValue.newString(""); 
+			
+			if(condition.getAsBoolean()) {
+				return trueValue;
+			}else {
+				return falseValue;
+			}
 		}
-
-		String initialValue = parameters.get(0).getAsString();
 		
-		if(initialValue != null) {
-			return QueryPartValue.newNumber(initialValue.length());
-		}
+		//----------------------------------
+		// Return empty string if not enough params
+		return QueryPartValue.newNull();
 		
-		// return empty in other cases
-		return QueryPartValue.newNumber(0);
 	}
 
 }
