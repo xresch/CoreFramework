@@ -891,7 +891,7 @@ function cfw_renderer_statusmap_createTiles(renderDef, settings, target, aspectR
 	//===================================================
 	// Precheck: NaN would cause OutOfMemory
 	//===================================================
-	if(isNaN(aspectRatio)){
+	if(isNaN(aspectRatio) || aspectRatio <= 0){
 		return;
 	}
 	//===================================================
