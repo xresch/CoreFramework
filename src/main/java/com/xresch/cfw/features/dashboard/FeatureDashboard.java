@@ -85,6 +85,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Widgets.add(new WidgetRefreshTime());
 		CFW.Registry.Widgets.add(new WidgetParameter());
 		CFW.Registry.Widgets.add(new WidgetReplica());
+		CFW.Registry.Widgets.add(new WidgetJavascript());
 		
 		CFW.Registry.Widgets.add(new WidgetHelloWorld());
 		CFW.Registry.Widgets.add(new WidgetEasterEggsDiscoMode());
