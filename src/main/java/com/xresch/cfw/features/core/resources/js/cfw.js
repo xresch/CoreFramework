@@ -46,7 +46,7 @@ function cfw_utils_executeCodeOrFunction(jsCodeOrFunction){
  *
  *************************************************************************************/
 function cfw_utils_randomString(maxChars){
-	return Math.random().toString(maxChars).substring(2, maxChars /2) + Math.random().toString(36).substring(2, maxChars /2);
+	return Math.random().toString(maxChars).substring(2, maxChars /2) + Math.random().toString(maxChars).substring(2, maxChars /2);
 }
 
 

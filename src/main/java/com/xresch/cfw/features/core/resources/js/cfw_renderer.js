@@ -8,6 +8,7 @@ CFW_RENDER_NAME_STATUSBAR = 'statusbar';
 CFW_RENDER_NAME_STATUSBAR_REVERSE = 'statusbarreverse';
 
 CFW_RENDER_NAME_STATUSMAP = 'statusmap';
+CFW_RENDER_NAME_STATUSMAP_1to1 = 'statusmap_1to1';
 CFW_RENDER_NAME_STATUSMAP_2to1 = 'statusmap_2to1';
 CFW_RENDER_NAME_STATUSMAP_4to1 = 'statusmap_4to1';
 CFW_RENDER_NAME_STATUSMAP_8to1 = 'statusmap_8to1';
@@ -820,14 +821,80 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.statusmap);
-
+	
 	//===================================================
-	// Calculate number of columns
+	// Calculate Aspect Ratio
 	//===================================================
 	var aspectRatio = settings.widthfactor / settings.heightfactor;
+	var listenOnResize = false;
+	if(settings.widthfactor == -1 || settings.heightfactor == -1){
+		aspectRatio = 1;
+		listenOnResize = true;
+	}
 	// landscape example: 2 / 1 = 2.0
 	// portrait example:  1 / 2 = 0.5
+		
+	//===================================================
+	// Create Tiles for Map
+	//===================================================
+	var allTiles = $('<div class="d-flex flex-column flex-grow-1 h-100"></div>');
+	allTiles.css("font-size", "0px");
 	
+	cfw_renderer_statusmap_createTiles(renderDef, settings, allTiles, aspectRatio);
+	
+	//===================================================
+	// Add Resize Observer
+	//===================================================
+	let timerID = 'redrawthrottle'+CFW.utils.randomString(12);
+	var resizeObserver = new ResizeObserver(function(e){
+		
+		//-------------------------------------
+		// Throttle: Check 100ms passed since last redraw
+		var currentMillis = Date.now();
+		
+		var lastMillis = CFW.cache.data[timerID];
+
+		if(lastMillis != null && (currentMillis - lastMillis) < 1000){
+			
+			return;
+		}
+		CFW.cache.data[timerID] = currentMillis;
+		
+		//-------------------------------------
+		// Redraw
+		console.log("resize");
+		var width = allTiles.width();
+		var height = allTiles.height();
+		var newAspectRatio = width/height;
+		allTiles.html('');
+		
+		resizeObserver.disconnect();
+		   
+			cfw_renderer_statusmap_createTiles(renderDef, settings, allTiles, newAspectRatio);
+		
+		resizeObserver.observe(allTiles.get(0));
+	});
+	
+	resizeObserver.observe(allTiles.get(0));
+
+	return allTiles;
+
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_statusmap_createTiles(renderDef, settings, target, aspectRatio) {
+	
+	//===================================================
+	// Precheck: NaN would cause OutOfMemory
+	//===================================================
+	if(isNaN(aspectRatio)){
+		return;
+	}
+	//===================================================
+	// Calculate Number of Columns
+	//===================================================
 	var itemCount = renderDef.data.length;
 	
 	var numberColumns = 1;
@@ -837,17 +904,12 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 	}
 	numberColumns--;
 	
-
 	//===================================================
-	// Create Tiles for Map
+	// Create Tiles
 	//===================================================
-	
-	var allTiles = $('<div class="d-flex flex-column flex-grow-1 h-100"></div>');
-	allTiles.css("font-size", "0px");
-	
 	var currentRow = $('<div class="d-flex flex-row flex-grow-1 w-100"></div>');
 
-	allTiles.append(currentRow);
+	target.append(currentRow);
 	
 	for(var i = 1; i <= itemCount || ((i-1) % numberColumns) != 0 ; i++ ){
 
@@ -900,15 +962,13 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 		//if current row has reached numberColumns create new row, except if it was the last item
 		if( (i % numberColumns) == 0 && i < itemCount){
 			currentRow = $('<div class="d-flex flex-row flex-grow-1 w-100"></div>');
-			allTiles.append(currentRow);
+			target.append(currentRow);
 		}
 	}
-	
-	return allTiles;
-
 }
 
-function cfw_renderer_statusmap_default(renderDef){ return cfw_renderer_statusmap(renderDef, 1, 1); }
+function cfw_renderer_statusmap_auto(renderDef){ return cfw_renderer_statusmap(renderDef, -1, -1); }
+function cfw_renderer_statusmap_1to1(renderDef){ return cfw_renderer_statusmap(renderDef, 1, 1); }
 function cfw_renderer_statusmap_2to1(renderDef){ return cfw_renderer_statusmap(renderDef, 2, 1); }
 function cfw_renderer_statusmap_4to1(renderDef){ return cfw_renderer_statusmap(renderDef, 4, 1); }
 function cfw_renderer_statusmap_8to1(renderDef){ return cfw_renderer_statusmap(renderDef, 8, 1); }
@@ -916,7 +976,8 @@ function cfw_renderer_statusmap_1to2(renderDef){ return cfw_renderer_statusmap(r
 function cfw_renderer_statusmap_1to4(renderDef){ return cfw_renderer_statusmap(renderDef, 1, 4); }
 function cfw_renderer_statusmap_1to8(renderDef){ return cfw_renderer_statusmap(renderDef, 1, 8); }
 
-CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP, new CFWRenderer(cfw_renderer_statusmap_default));
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP, new CFWRenderer(cfw_renderer_statusmap_auto));
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_1to1, new CFWRenderer(cfw_renderer_statusmap_1to1));
 CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_2to1, new CFWRenderer(cfw_renderer_statusmap_2to1));
 CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_4to1, new CFWRenderer(cfw_renderer_statusmap_4to1));
 CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_8to1, new CFWRenderer(cfw_renderer_statusmap_8to1));
