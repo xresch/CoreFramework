@@ -839,43 +839,45 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 	//===================================================
 	var allTiles = $('<div class="d-flex flex-column flex-grow-1 h-100"></div>');
 	allTiles.css("font-size", "0px");
-	
-	cfw_renderer_statusmap_createTiles(renderDef, settings, allTiles, aspectRatio);
-	
+		
 	//===================================================
 	// Add Resize Observer
 	//===================================================
-	let timerID = 'redrawthrottle'+CFW.utils.randomString(12);
-	var resizeObserver = new ResizeObserver(function(e){
-		
-		//-------------------------------------
-		// Throttle: Check 100ms passed since last redraw
-		var currentMillis = Date.now();
-		
-		var lastMillis = CFW.cache.data[timerID];
-
-		if(lastMillis != null && (currentMillis - lastMillis) < 1000){
+	if(!listenOnResize){
+		cfw_renderer_statusmap_createTiles(renderDef, settings, allTiles, aspectRatio);
+	}else{
+		let timerID = 'redrawthrottle'+CFW.utils.randomString(12);
+		var resizeObserver = new ResizeObserver(function(e){
 			
-			return;
-		}
-		CFW.cache.data[timerID] = currentMillis;
-		
-		//-------------------------------------
-		// Redraw
-		console.log("resize");
-		var width = allTiles.width();
-		var height = allTiles.height();
-		var newAspectRatio = width/height;
-		allTiles.html('');
-		
-		resizeObserver.disconnect();
-		   
-			cfw_renderer_statusmap_createTiles(renderDef, settings, allTiles, newAspectRatio);
+			//-------------------------------------
+			// Throttle: Check 100ms passed since last redraw
+			var currentMillis = Date.now();
+			
+			var lastMillis = CFW.cache.data[timerID];
+	
+			if(lastMillis != null && (currentMillis - lastMillis) < 1000){
+				
+				return;
+			}
+			CFW.cache.data[timerID] = currentMillis;
+			
+			//-------------------------------------
+			// Redraw
+			var width = allTiles.width();
+			var height = allTiles.height();
+			var newAspectRatio = width/height;
+			
+			allTiles.html('');
+			
+			resizeObserver.disconnect();
+			   
+				cfw_renderer_statusmap_createTiles(renderDef, settings, allTiles, newAspectRatio);
+			
+			resizeObserver.observe(allTiles.get(0));
+		});
 		
 		resizeObserver.observe(allTiles.get(0));
-	});
-	
-	resizeObserver.observe(allTiles.get(0));
+	}
 
 	return allTiles;
 
