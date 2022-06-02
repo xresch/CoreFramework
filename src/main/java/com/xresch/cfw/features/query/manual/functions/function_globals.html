@@ -1,0 +1,60 @@
+
+<p>Use this function to get the value of a property set with the globals command.
+Provide a second parameter to change the global property to that value.</p>
+
+
+<p>Following queries create random records and both uses the globals-function to get shared values:</p>
+
+<pre><code class="language-cfwquery">| globals 
+	id=22
+	name="Jane" 
+| source random records=5
+| keep INDEX
+| set
+	# Grab the values from the globals
+	ID   = globals(id)
+	NAME = globals(name)
+;
+| source random records=7
+| keep INDEX
+| set
+	# same values as above
+	ID   = globals(id)
+	NAME = globals(name)</code></pre>
+
+<p>Following is a more advanced example, it changes the value of 'mySwitch' on every record:</p>
+
+<pre><code class="language-cfwquery">| globals 
+	a=3 
+	A=14 
+	myMessage="Hello you gorgeous Query Engineer!" 
+	mySwitch=true
+| source random records=5
+| keep FIRSTNAME
+| set
+	# Grab the message from the globals 
+	IMPORTANT_MESSAGE = globals(myMessage)
+	
+	# those globals are case sensitive
+	MULTIPLIED = globals(a) * globals(A)
+	
+	# Print if the lights are on or off
+	LIGHTS_ON= if(globals(mySwitch), "It's shiny!", "Good Night!")
+	
+	# switch the lights on/off on every record
+	TOGGLE_LIGHTS=globals(
+					mySwitch
+					, (NOT globals(mySwitch)) 
+				)
+;
+| source random records=4
+| keep FIRSTNAME
+| set
+	# same values as in previous query
+	DIVIDE=globals(A) / globals(a)
+	# last status of light 
+	LIGHTS_ON= if( (globals(mySwitch))
+					, "It's shiny!"
+					, "Good Night!"
+				)
+	</code></pre>

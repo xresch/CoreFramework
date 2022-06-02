@@ -84,7 +84,7 @@ public class QueryPartValue extends QueryPart {
 	 ******************************************************************************************************/
 	public static QueryPartValue newFromJsonElement(JsonElement value){
 		
-		if(value.isJsonNull()) {
+		if(value == null || value.isJsonNull()) {
 			return newNull(); 
 		}
 		
@@ -96,9 +96,47 @@ public class QueryPartValue extends QueryPart {
 			if(primitive.isString()) {		return newString(value.getAsString()); }
 		}
 		
-		return newJson(value);
+		return newJson(value);	
 		
-			
+	}
+	/******************************************************************************************************
+	 * Creates a new QueryPart based on the type of the JsonElement
+	 ******************************************************************************************************/
+	public void addToJsonObject(String memberName, EnhancedJsonObject object){
+		 addToJsonObject(memberName, object.getWrappedObject());
+	}
+
+	/******************************************************************************************************
+	 * Creates a new QueryPart based on the type of the JsonElement
+	 ******************************************************************************************************/
+	public void addToJsonObject(String propertyName, JsonObject object){
+		
+		if(object == null) {
+			return;
+		}
+		
+		switch(type) {
+			case STRING: 	object.addProperty(propertyName, (String)value);
+							break;
+							
+			case NUMBER:	object.addProperty(propertyName, (Number)value);
+							break;
+							
+			case BOOLEAN:	object.addProperty(propertyName, (Boolean)value);
+							break;
+							
+			case JSON:		object.add(propertyName, (JsonElement)value);
+							break;
+							
+			case NULL:		object.add(propertyName, JsonNull.INSTANCE);
+							break;
+
+		default:
+			break;
+	
+		}
+		
+
 		
 	}
 
@@ -358,9 +396,19 @@ public class QueryPartValue extends QueryPart {
 			
 			case NULL:		return false;
 			
-			case JSON:		return ((JsonElement)value).getAsBoolean();
+			case JSON:
+				JsonElement element = (JsonElement)value;
+				if(element.isJsonPrimitive()) {
+					if(element.getAsJsonPrimitive().isBoolean()) {
+						return element.getAsBoolean();
+					}else {
+						return false;
+					}
+				}else {
+					return false;
+				}
 				
-			default:		return null;
+			default:		return false;
 
 		}
 

@@ -114,6 +114,13 @@ public class CFWQueryContext{
 	}
 	
 	/***********************************************************************************************
+	 * Sets the globals object that is shared by various queries.
+	 ***********************************************************************************************/
+	public void setGlobals(JsonObject globalsObject) {
+		globals = globalsObject;
+	}
+	
+	/***********************************************************************************************
 	 * Returns the object containing the metadata of the query.
 	 ***********************************************************************************************/
 	public JsonObject getDisplaySettings() {

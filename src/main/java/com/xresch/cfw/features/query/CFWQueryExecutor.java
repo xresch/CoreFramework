@@ -41,7 +41,6 @@ public class CFWQueryExecutor {
 	 ****************************************************************/
 	public JsonArray parseAndExecuteAll(String queryString, long earliest, long latest) {
 		
-		
 		//------------------------
 		// Parse The Query
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
@@ -70,9 +69,6 @@ public class CFWQueryExecutor {
 		//------------------------
 		// Iterate All Queries
 		JsonArray returnValue = new JsonArray();
-		JsonObject multiQueryGlobals = new JsonObject();
-		multiQueryGlobals.addProperty("earliest", earliest);
-		multiQueryGlobals.addProperty("latest", latest);
 		
 		int index = 0;
 		for(CFWQuery query : queryList) {
@@ -132,17 +128,17 @@ public class CFWQueryExecutor {
 			
 			//--------------------------------
 			// Handle Globals
-			JsonObject queryGlobals = queryContext.getGlobals();
-			for(Entry<String, JsonElement> entry : queryGlobals.entrySet()){
-				multiQueryGlobals.add(entry.getKey(), entry.getValue());
-			}
+//			JsonObject queryGlobals = queryContext.getGlobals();
+//			for(Entry<String, JsonElement> entry : queryGlobals.entrySet()){
+//				multiQueryGlobals.add(entry.getKey(), entry.getValue());
+//			}
 			
 			//--------------------------------
 			// Create Response
 			queryResults.addProperty("resultCount", resultCount);
 			queryResults.addProperty("execTimeMillis", execMillis);
 			
-			queryResults.add("globals", multiQueryGlobals);
+			queryResults.add("globals", queryContext.getGlobals());
 			queryResults.add("detectedFields", queryContext.getFieldnamesAsJsonArray() );
 			queryResults.add("metadata", query.getContext().getMetadata());
 			queryResults.add("displaySettings", query.getContext().getDisplaySettings());

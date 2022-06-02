@@ -156,7 +156,7 @@ DONE
 - Query: Make results 100% height in dashboard widget
 - Query: Added chart Command
 - Query: Added Functions feature to query framework
-- Query: added functions: encode, if, length, nullto, round, substring, trim
+- Query: added functions: encode, globals, if, length, nullto, round, substring, trim
 
 ------- v6.0.0 -------
 - New Feature - Query: Domain Specific Language(DSL) to fetch, process and format data from various sources

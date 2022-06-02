@@ -80,27 +80,7 @@ public class EnhancedJsonObject {
 	 * @param value the string value associated with the member.
 	 *************************************************************************************************/
 	public void addProperty(String property, QueryPartValue value) {
-		
-		switch(value.type()) {
-		case STRING: 	this.addProperty(property, value.getAsString());
-						break;
-						
-		case NUMBER:	this.addProperty(property, value.getAsNumber());
-						break;
-						
-		case BOOLEAN:	this.addProperty(property, value.getAsBoolean());
-						break;
-						
-		case JSON:		this.add(property, value.getAsJson());
-						break;
-						
-		case NULL:		this.add(property, JsonNull.INSTANCE);
-						break;
-
-		default:
-			break;
-	
-		}
+		value.addToJsonObject(property, this.getWrappedObject());
 	}
 	
 	

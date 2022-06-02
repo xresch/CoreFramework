@@ -48,6 +48,7 @@ public class CFWQueryParser {
 	private ArrayList<CFWQueryToken> tokenlist;
 	CFWQuery currentQuery;
 	private CFWQueryContext currentContext;
+	private JsonObject sharedGlobalsObject;
 	ArrayList<QueryPart> currentQueryParts = new ArrayList<>(); //initialized here so test cases don't run into nullpointer
 	
 	// cached instance
@@ -224,7 +225,10 @@ public class CFWQueryParser {
 	 * 
 	 ***********************************************************************************************/
 	public ArrayList<CFWQuery> parse() throws ParseException {
-				
+		
+		// create shared global object
+		sharedGlobalsObject = new JsonObject();
+		
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
 		//-----------------------------------
 		// Skip preceding semicolons
@@ -261,6 +265,7 @@ public class CFWQueryParser {
 		currentQuery = new CFWQuery();
 		currentContext = currentQuery.getContext();
 		currentContext.checkPermissions(checkSourcePermissions);
+		currentContext.setGlobals(sharedGlobalsObject);
 		
 		while(this.hasMoreTokens() && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
 			
