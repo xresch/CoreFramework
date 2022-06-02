@@ -154,7 +154,9 @@ DONE
 - Config: Added Password Policy Settings
 - Query: Added new renderers to Query
 - Query: Make results 100% height in dashboard widget
+- Query: Added set Command
 - Query: Added chart Command
+- Query: Added execute Command
 - Query: Added Functions feature to query framework
 - Query: added functions: encode, globals, if, length, nullto, round, substring, trim
 

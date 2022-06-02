@@ -14,6 +14,7 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandChart;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandComment;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandDisplay;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandDistinct;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandExecute;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFilter;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatRecord;
@@ -92,6 +93,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandComment(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDisplay(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDistinct(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandExecute(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandFilter(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandFormatField(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandFormatRecord(null));

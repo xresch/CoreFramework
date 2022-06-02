@@ -22,6 +22,26 @@ Provide a second parameter to change the global property to that value.</p>
 	ID   = globals(id)
 	NAME = globals(name)</code></pre>
 
+
+<p>If you want to change global properties between queries, use the execute command:</p>
+
+<pre><code class="language-cfwquery">| globals 
+	id=22
+| source random records=5
+| keep INDEX
+| set 
+	# will be 22
+	ID = globals(id)
+;
+| execute globals(id, 99)
+; 
+| source random records=5
+| keep INDEX
+| set 
+	# will be 99
+	ID = globals(id)</code></pre>
+
+	
 <p>Following is a more advanced example, it changes the value of 'mySwitch' on every record:</p>
 
 <pre><code class="language-cfwquery">| globals 
