@@ -1,0 +1,19 @@
+
+<p>Use this function to round the .</p>
+
+<p>Following query create random records and gets the length of certain values:</p>
+
+<pre><code class="language-cfwquery">| source random records=123 type=numbers
+| keep BIG_DECIMAL
+| set
+	# round to integer value: '123'
+	ROUND=round(BIG_DECIMAL) 
+	# round to number with 2 decimal positions: '123.45'
+	PRECISION_TWO=round(BIG_DECIMAL,2) 
+	# round to number with 3 decimal positions_ '123.456'
+	PRECISION_THREE=round(BIG_DECIMAL,3) 
+	# will concat unrounded value, results in something like: "lot of decimals: 798626.18120908735465" 
+	CONCAT_UNROUNDED="lot of decimals: "+BIG_DECIMAL
+	# will concat rounded value, results in something like: "lot of decimals: nice and clean: 44987.2" 
+	CONCAT_ROUNDED="nice and clean: "+round(BIG_DECIMAL, 1)
+	</code></pre>
