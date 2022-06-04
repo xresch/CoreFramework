@@ -19,7 +19,7 @@ import com.xresch.cfw.utils.CFWRandom;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @author Reto Scheiwiller, (c) Copyright 2022 
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWQuerySourceRandom extends CFWQuerySource {

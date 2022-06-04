@@ -10,10 +10,10 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
-public class CFWQueryFunctionSubstring extends CFWQueryFunction {
+public class CFWQueryFunctionIndexOf extends CFWQueryFunction {
 
 	
-	public CFWQueryFunctionSubstring(CFWQueryContext context) {
+	public CFWQueryFunctionIndexOf(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -22,7 +22,7 @@ public class CFWQueryFunctionSubstring extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "substring";
+		return "indexof";
 	}
 	
 	/***********************************************************************************************
@@ -30,14 +30,14 @@ public class CFWQueryFunctionSubstring extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "substring(stringOrFieldname, beingIndex, endIndex)";
+		return "indexof(stringOrFieldname, searchString[, beginIndex])";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns a substring for the given string.";
+		return "Returns the index of the first occurence for for the searched string.";
 	}
 	
 	/***********************************************************************************************
@@ -45,9 +45,9 @@ public class CFWQueryFunctionSubstring extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>stringOrFieldname:&nbsp;</b>The string or or a fieldname that should be substringed.</p>"
-			  +"<p><b>beginIndex:&nbsp;</b>The begin index.</p>"
-			  +"<p><b>endIndex:&nbsp;</b>(Optional)The end index.</p>"
+		return "<p><b>stringOrFieldname:&nbsp;</b>The string or or a fieldname, the value in which a string should be searched.</p>"
+			  +"<p><b>searchString:&nbsp;</b>The string to search for.</p>"
+			  +"<p><b>beginIndex:&nbsp;</b>(Optional)The index to start the search from.</p>"
 			;
 	}
 
@@ -56,7 +56,7 @@ public class CFWQueryFunctionSubstring extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_substring.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_indexof.html");
 	}
 
 
@@ -92,54 +92,35 @@ public class CFWQueryFunctionSubstring extends CFWQueryFunction {
 			//----------------------------------
 			// Get String
 			String initialString = initialValue.getAsString();
-			if(Strings.isNullOrEmpty(initialString)) { return initialValue; }
+			if(Strings.isNullOrEmpty(initialString)) { return QueryPartValue.newNumber(-1); }
 			
 			//----------------------------------
-			// Get Begin Index
-			Integer beginIndex;
-			if(parameters.get(1).isNumberOrNumberString()) {
-				beginIndex = parameters.get(1).getAsInteger();
+			// Get string to search
+			String searchThis = parameters.get(1).getAsString();
 				
-				if(beginIndex < 0) {
-					beginIndex = 0;
-				}else if(beginIndex >= initialString.length()) {
+			//----------------------------------
+			// Get Begin Index
+			Integer beginIndex = null;
+			if(paramCount > 2 && parameters.get(2).isNumberOrNumberString()) {
+				beginIndex = parameters.get(2).getAsInteger();
+
+				if(beginIndex >= initialString.length()) {
 					beginIndex = initialString.length();
 				}
-			}else {
-				return initialValue;
-			}
-			
-			//----------------------------------
-			// Get End Index
-			Integer endIndex = null;
-			if(paramCount > 2 && parameters.get(2).isNumberOrNumberString()) {
-				endIndex = parameters.get(2).getAsInteger();
-
-				if(endIndex >= initialString.length()) {
-					endIndex = initialString.length();
-				}else if(endIndex < beginIndex) {
-					endIndex = beginIndex;
-				}
-				
 			}
 			
 			//----------------------------------
 			// Get Begin Index
-			if(endIndex == null) { 
-				return QueryPartValue.newString(initialString.substring(beginIndex)); 
+			if(beginIndex == null) { 
+				return QueryPartValue.newNumber(initialString.indexOf(searchThis)); 
 			}else {
-				return QueryPartValue.newString(initialString.substring(beginIndex, endIndex)); 
+				return QueryPartValue.newNumber(initialString.indexOf(searchThis, beginIndex)); 
 			}
 		}
 		
 		//----------------------------------
-		// Return same if no params
-		if(parameters.size() == 1) { 
-			return parameters.get(0);
-		}
-		
-		// return empty in other cases
-		return QueryPartValue.newString("");
+		// Return -1 in other cases
+		return QueryPartValue.newNumber(-1);
 	}
 
 }

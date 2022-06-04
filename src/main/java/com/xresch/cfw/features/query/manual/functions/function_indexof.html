@@ -1,0 +1,26 @@
+
+<p>Returns the index of the first occurrence of a substring, or -1 if not found.</p>
+
+<p>Following query creates example records and does various sample indexof operations:</p>
+
+<pre><code class="language-cfwquery">| source random type=various
+| set
+	# find fist occurence of e
+	COLOR_INDEXOF_E  = indexof(COLOR, "e")
+	# find index of 2, start from index 8
+	UUID_INDEXOF_TWO = indexof(UUID, "2", 8)
+	# temp store for better performance
+	TEMP_INDEX_N=indexof(STATUS, 'n')
+	# create a substring from the first occurence of 'n'. Returns full string if 'n' is not found
+	STATUS_SUBSTRING = substring(STATUS, TEMP_INDEX_N)
+	# Use null if string 'n' was not found
+	STATUS_SUBSTRING_NULLS = 
+			if( (TEMP_INDEX_N >= 0) 
+				, substring(STATUS, TEMP_INDEX_N)
+				, null
+			)
+| keep 
+	  UUID  , UUID_INDEXOF_TWO
+	, COLOR , COLOR_INDEXOF_E
+	, STATUS, STATUS_SUBSTRING, STATUS_SUBSTRING_NULLS </code></pre>
+

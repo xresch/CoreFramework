@@ -14,7 +14,6 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandChart;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandComment;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandDisplay;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandDistinct;
-import com.xresch.cfw.features.query.commands.CFWQueryCommandExecute;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFilter;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatRecord;
@@ -31,6 +30,7 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandTop;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionEncode;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionGlobals;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionIf;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionIndexOf;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionLength;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionNullTo;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRound;
@@ -93,7 +93,8 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandComment(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDisplay(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDistinct(null));
-		CFW.Registry.Query.registerCommand(new CFWQueryCommandExecute(null));
+		// Not a nice solution
+		//CFW.Registry.Query.registerCommand(new CFWQueryCommandExecute(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandFilter(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandFormatField(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandFormatRecord(null));
@@ -112,6 +113,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionEncode(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionGlobals(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionIf(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionIndexOf(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionLength(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionNullTo(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRound(null));
