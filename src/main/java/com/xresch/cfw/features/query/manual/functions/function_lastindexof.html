@@ -1,0 +1,25 @@
+
+<p>Returns the index of the last occurrence of a substring, or -1 if not found.</p>
+
+<p>Following query creates example records and does various sample lastindexof operations:</p>
+
+<pre><code class="language-cfwquery">| source random type=various
+| set
+	# find last occurence of e
+	COLOR_INDEXOF_E  = lastindexof(COLOR, "e")
+	# find last index of 2, searching backwards from string length - 12
+	UUID_INDEXOF_TWO = lastindexof(UUID, "2",length(UUID)-12 )
+	# temp store for better performance
+	TEMP_INDEX_E=lastindexof(STATUS, 'e')
+	# create a substring from the last occurence of n. Returns full string if n is not found
+	STATUS_SUBSTRING = substring(STATUS, TEMP_INDEX_E)
+	# create a substring from the last occurence of n. Returns full string if n is not found
+	STATUS_SUBSTRING_NULLS = 
+			if( (TEMP_INDEX_E >= 0) 
+				, substring(STATUS, TEMP_INDEX_E)
+				, null)
+| keep 
+	  UUID  , UUID_INDEXOF_TWO
+	, COLOR , COLOR_INDEXOF_E
+	, STATUS, STATUS_SUBSTRING, STATUS_SUBSTRING_NULLS  </code></pre>
+
