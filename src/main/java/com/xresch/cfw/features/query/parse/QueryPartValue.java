@@ -479,8 +479,9 @@ public class QueryPartValue extends QueryPart {
 	public QueryPartValue convertFieldnameToFieldvalue(EnhancedJsonObject object) {
 		
 		if(value == null || object == null) return this;
-		
+
 		if(this.isString()){
+
 			String potentialFieldname = this.getAsString();
 			if(object.has(potentialFieldname)) {
 				return QueryPartValue.newFromJsonElement(object.get(potentialFieldname));

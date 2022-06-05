@@ -152,6 +152,7 @@ DONE
 - Dashboard: Fixed destruction of widget layout, resizing window width to change into 1 column layout disabled
 - Dashboard: Added Javascript Widget
 - Config: Added Password Policy Settings
+- Query: Fixed Binary Expression messing with parsing when in an array
 - Query: Added new renderers to Query
 - Query: Make results 100% height in dashboard widget
 - Query: Added set Command

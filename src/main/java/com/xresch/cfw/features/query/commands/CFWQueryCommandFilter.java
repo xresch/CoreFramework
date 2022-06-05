@@ -146,6 +146,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 			if(evaluationGroup == null || evaluationGroup.size() == 0) {
 				outQueue.add(record);
 			}else {
+
 				QueryPartValue evalResult = evaluationGroup.determineValue(record);
 				
 //				if(!printed) { 

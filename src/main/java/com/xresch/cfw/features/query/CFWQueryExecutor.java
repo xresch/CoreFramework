@@ -45,10 +45,12 @@ public class CFWQueryExecutor {
 		// Parse The Query
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
 		
+		CFWQueryParser parser = new CFWQueryParser(queryString, checkPermissions);
 		try {
-			CFWQueryParser parser = new CFWQueryParser(queryString, checkPermissions);
+			//tracing is experimental, might lead to errors
+			//parser.enableTracing();
 			queryList = parser.parse();
-			
+
 		}catch (NumberFormatException e) {
 			new CFWLog(logger).severe("Error Parsing a number:"+e.getMessage(), e);
 			return null;
@@ -64,13 +66,14 @@ public class CFWQueryExecutor {
 		}catch (Exception e) {
 			new CFWLog(logger).severe("Unexpected error when parsing the query: "+e.getMessage(), e);
 			return null;
+		}finally {
+			//System.out.println(parser.getTraceResults());
 		}
 		
 		//------------------------
 		// Iterate All Queries
 		JsonArray returnValue = new JsonArray();
 		
-		int index = 0;
 		for(CFWQuery query : queryList) {
 			
 			//--------------------------------
@@ -145,7 +148,7 @@ public class CFWQueryExecutor {
 			queryResults.add("results", results);
 			
 			returnValue.add(queryResults);
-			index++;
+
 		}
 		
 		return returnValue;

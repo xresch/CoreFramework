@@ -474,8 +474,8 @@ public class TestCFWQueryExecution extends DBTestMaster{
 		JsonObject globals  = resultArray.get(0).getAsJsonObject().get("globals").getAsJsonObject();
 		JsonObject metadata = resultArray.get(0).getAsJsonObject().get("metadata").getAsJsonObject();
 		
-		Assertions.assertTrue(globals.get("earliest").isJsonPrimitive());
-		Assertions.assertTrue(globals.get("latest").isJsonPrimitive());
+		//Assertions.assertTrue(globals.get("earliest").isJsonPrimitive());
+		//Assertions.assertTrue(globals.get("latest").isJsonPrimitive());
 		Assertions.assertEquals("MyCustomValue", globals.get("myCustomProperty").getAsString());
 		Assertions.assertEquals("Default Table", metadata.get("name").getAsString());
 		Assertions.assertEquals("hello", metadata.get("firstQueryProp").getAsString());
@@ -485,8 +485,8 @@ public class TestCFWQueryExecution extends DBTestMaster{
 		globals  = resultArray.get(1).getAsJsonObject().get("globals").getAsJsonObject();
 		metadata = resultArray.get(1).getAsJsonObject().get("metadata").getAsJsonObject();
 		
-		Assertions.assertTrue(globals.get("earliest").isJsonPrimitive());
-		Assertions.assertTrue(globals.get("latest").isJsonPrimitive());
+		//Assertions.assertTrue(globals.get("earliest").isJsonPrimitive());
+		//Assertions.assertTrue(globals.get("latest").isJsonPrimitive());
 		Assertions.assertEquals("MyCustomValue", globals.get("myCustomProperty").getAsString());
 		Assertions.assertEquals("Bigger Number Table", metadata.get("name").getAsString());
 		Assertions.assertEquals("world", metadata.get("secondQueryProp").getAsString());

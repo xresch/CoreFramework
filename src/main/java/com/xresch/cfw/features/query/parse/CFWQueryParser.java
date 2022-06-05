@@ -131,15 +131,27 @@ public class CFWQueryParser {
 	public void addTrace(Object key, Object value, Object message) {
 		if(enableTracing) {
 			JsonObject object = new JsonObject();
+			
+			//-------------------------------
+			// Create Message
+			String finalMessage = "";
+			if(message != null) { 
+		
+				if(!(message instanceof QueryPart)) {
+					finalMessage.toString();
+				}else{
+					JsonObject debugObject = ((QueryPart)message).createDebugObject(null);
+					if(debugObject != null) {
+						finalMessage = debugObject.toString();
+					}
+				}
+			}
+			
+			//-------------------------------
+			// Create Trace object
 			object.addProperty("Key", 		(key != null) ? key.toString() : null);
 			object.addProperty("Value", 	(value != null) ? value.toString() : null);
-			object.addProperty("Message", 	
-					(message != null) ? 
-						(
-							(!(message instanceof QueryPart)) ? message.toString() : ((QueryPart)message).createDebugObject(null).toString()
-						)
-						: null
-			);
+			object.addProperty("Message", 	finalMessage);
 			object.addProperty("TokenPosition", cursor);
 			
 			if(cursor < tokenlist.size()) {
@@ -414,7 +426,6 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	public QueryPart parseQueryPart(CFWQueryParserContext context) throws ParseException {
 		
-
 		QueryPart secondPart = null;
 
 		if(!this.hasMoreTokens()) {
@@ -427,40 +438,46 @@ public class CFWQueryParser {
 		// a binary expression
 		// No not consume any tokens in the switch
 		// statement.
-		CFWQueryToken firstToken = this.consumeToken();
+		CFWQueryToken firstToken;;
 		QueryPart firstPart = null;
 		
-		switch(firstToken.type()) {								
+		switch(this.lookahead().type()) {								
 		
 			case TEXT_SINGLE_QUOTES:
 			case TEXT_DOUBLE_QUOTES:	
 			case TEXT_BACKTICKS:	
-			case LITERAL_STRING:		addTrace("Create Value Part", "String", firstToken.value());
+			case LITERAL_STRING:		firstToken = this.consumeToken();
+										addTrace("Create Value Part", "String", firstToken.value());
 										firstPart = QueryPartValue.newString(firstToken.value());
 										//TODO check lookahead, determine if AccessMember, Assignment, Method etc...
 										break;
 				
-			case LITERAL_BOOLEAN:		addTrace("Create Value Part", "Boolean", firstToken.value());
+			case LITERAL_BOOLEAN:		firstToken = this.consumeToken();
+										addTrace("Create Value Part", "Boolean", firstToken.value());
 										firstPart = QueryPartValue.newBoolean(firstToken.valueAsBoolean());
 										break;
 			
-			case LITERAL_NUMBER:		addTrace("Create Value Part", "Number", firstToken.value());
+			case LITERAL_NUMBER:		firstToken = this.consumeToken();
+										addTrace("Create Value Part", "Number", firstToken.value());
 										firstPart = QueryPartValue.newNumber(firstToken.valueAsNumber());
 										break;
 								
-			case NULL: 					addTrace("Create Value Part", "NULL", firstToken.value());
+			case NULL: 					firstToken = this.consumeToken();
+										addTrace("Create Value Part", "NULL", firstToken.value());
 										firstPart = QueryPartValue.newNull();
 										break;
 	
 			//=======================================================
 			// Negative Numbers
 			//=======================================================
-			case OPERATOR_MINUS:		
-				
+			case OPERATOR_MINUS:	
+				firstToken = this.consumeToken();
 				if( this.hasMoreTokens()
 				&& this.lookahead().type() == CFWQueryTokenType.LITERAL_NUMBER ){
 					CFWQueryToken token = this.consumeToken();
 					firstPart = QueryPartValue.newNumber(token.valueAsNumber().negate());
+				}else {
+					this.throwParseException("Unexpected '-'", firstToken.position());
 				}
 				
 			break;
@@ -469,7 +486,7 @@ public class CFWQueryParser {
 			// Create Function Part
 			//=======================================================	
 			case FUNCTION_NAME: 	
-				
+				firstToken = this.consumeToken();
 				String functionName = firstToken.value();
 				addTrace("Create Function Part", "Function", firstToken.value());
 				
@@ -488,6 +505,8 @@ public class CFWQueryParser {
 			// Create JSON Part
 			//=======================================================	
 			case SIGN_BRACE_CURLY_OPEN:		
+				
+				firstToken = this.consumeToken();
 				
 				int openCount = 1;
 				
@@ -524,7 +543,8 @@ public class CFWQueryParser {
 			// Start Array Part
 			//=======================================================	
 			case SIGN_BRACE_SQUARE_OPEN: 
-
+				firstToken = this.consumeToken();
+				
 				contextStack.add(CFWQueryParserContext.ARRAY);
 				addTrace("Start Part", "Open Array", firstToken.value());
 				firstPart = new QueryPartArray(currentContext)
@@ -548,6 +568,7 @@ public class CFWQueryParser {
 			// End Array Part
 			//=======================================================	
 			case SIGN_BRACE_SQUARE_CLOSE:
+				firstToken = this.consumeToken();
 				addTrace("End Part", "Close Array", firstToken.value());
 				CFWQueryParserContext shouldBeArrayContext = contextStack.pop();	
 				if(shouldBeArrayContext != CFWQueryParserContext.ARRAY) {
@@ -560,7 +581,8 @@ public class CFWQueryParser {
 			// Parse Group Part
 			//=======================================================							
 			case SIGN_BRACE_ROUND_OPEN: 
-
+				firstToken = this.consumeToken();
+				
 				contextStack.add(CFWQueryParserContext.GROUP);
 				addTrace("Start Part", "Group", firstToken.value());
 
@@ -615,7 +637,8 @@ public class CFWQueryParser {
 			//=======================================================
 			// End of Group Part
 			//=======================================================
-			case SIGN_BRACE_ROUND_CLOSE:								
+			case SIGN_BRACE_ROUND_CLOSE:		
+				firstToken = this.consumeToken();
 				addTrace("End Part", "Group", firstToken.value());
 				CFWQueryParserContext shouldBeGroupContext = contextStack.pop();	
 				if(shouldBeGroupContext != CFWQueryParserContext.GROUP) {
@@ -625,6 +648,7 @@ public class CFWQueryParser {
 			
 									
 			case KEYWORD:
+				firstToken = this.consumeToken();
 				String keyword = firstToken.value().toUpperCase();
 				
 				QueryPart lastPart = null;
@@ -634,10 +658,10 @@ public class CFWQueryParser {
 				
 				switch(keyword) {
 				
-					case KEYWORD_AND: 	return createBinaryExpressionPart(lastPart, CFWQueryTokenType.OPERATOR_AND, false ); 
-					case KEYWORD_OR: 	return createBinaryExpressionPart(lastPart, CFWQueryTokenType.OPERATOR_OR, false ); 
+					case KEYWORD_AND: 	return createBinaryExpressionPart(context, lastPart, CFWQueryTokenType.OPERATOR_AND, false ); 
+					case KEYWORD_OR: 	return createBinaryExpressionPart(context, lastPart, CFWQueryTokenType.OPERATOR_OR, false ); 
 					
-					case KEYWORD_NOT: 	return createBinaryExpressionPart(null, CFWQueryTokenType.OPERATOR_NOT, false );
+					case KEYWORD_NOT: 	return createBinaryExpressionPart(context, null, CFWQueryTokenType.OPERATOR_NOT, false );
 					default:			this.throwParseException("Unknown keyword:"+keyword, firstToken.position());
 				}
 			break;
@@ -652,10 +676,10 @@ public class CFWQueryParser {
 		}
 		
 		
-		//=====================================================
+		//########################################################################
 		// NEXT TOKEN can be anything that would
 		// create a binary expression or complete an expression
-		//=====================================================
+		//########################################################################
 		QueryPart resultPart = firstPart;
 
 		if(!this.hasMoreTokens()) { return resultPart; }
@@ -698,17 +722,7 @@ public class CFWQueryParser {
 			// QueryPartArray						
 			case SIGN_COMMA:
 				if(context != CFWQueryParserContext.BINARY) {
-					addTrace("Proceed with Array", "Comma encountered", "");
-					
-					QueryPart firstArrayElement = firstPart;
-					QueryPart secondArrayElement = firstPart;
-					while(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_COMMA) {
-						this.consumeToken();
-						secondArrayElement = this.parseQueryPart(context);
-						firstArrayElement = new QueryPartArray(currentContext, firstArrayElement, secondArrayElement);
-					}
-					
-					resultPart = firstArrayElement;
+					resultPart = parseArrayPart(context, firstPart);
 				}
 			break;			
 			
@@ -716,19 +730,19 @@ public class CFWQueryParser {
 			//------------------------------
 			// Binary Operations
 			//case OPERATOR_OR: not supported as pipe '|' is used as command separator, see keyword 'OR'
-			case OPERATOR_AND:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_AND, true ); break;	
-			case OPERATOR_EQUAL_EQUAL:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, true ); break;	
-			case OPERATOR_EQUAL_NOT:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_NOT, true ); break;	
-			case OPERATOR_EQUAL_OR_GREATER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, true ); break;	
-			case OPERATOR_EQUAL_OR_LOWER:	resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, true ); break;	
-			case OPERATOR_REGEX:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_REGEX, true ); break;	
-			case OPERATOR_GREATERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_GREATERTHEN, true ); break;	
-			case OPERATOR_LOWERTHEN:		resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_LOWERTHEN, true ); break;	
-			case OPERATOR_PLUS:				resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_PLUS, true ); break;	
-			case OPERATOR_MINUS:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MINUS, true ); break;	
-			case OPERATOR_MULTIPLY:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_MULTIPLY, true ); break;	
-			case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_DIVIDE, true ); break;	
-			case OPERATOR_POWER:			resultPart = createBinaryExpressionPart(firstPart, CFWQueryTokenType.OPERATOR_POWER, true ); break;	
+			case OPERATOR_AND:				resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_AND, true ); break;	
+			case OPERATOR_EQUAL_EQUAL:		resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_EQUAL_EQUAL, true ); break;	
+			case OPERATOR_EQUAL_NOT:		resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_EQUAL_NOT, true ); break;	
+			case OPERATOR_EQUAL_OR_GREATER:	resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_GREATER, true ); break;	
+			case OPERATOR_EQUAL_OR_LOWER:	resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_EQUAL_OR_LOWER, true ); break;	
+			case OPERATOR_REGEX:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_REGEX, true ); break;	
+			case OPERATOR_GREATERTHEN:		resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_GREATERTHEN, true ); break;	
+			case OPERATOR_LOWERTHEN:		resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_LOWERTHEN, true ); break;	
+			case OPERATOR_PLUS:				resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_PLUS, true ); break;	
+			case OPERATOR_MINUS:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_MINUS, true ); break;	
+			case OPERATOR_MULTIPLY:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_MULTIPLY, true ); break;	
+			case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_DIVIDE, true ); break;	
+			case OPERATOR_POWER:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_POWER, true ); break;	
 			case OPERATOR_NOT:
 				break;
 	
@@ -755,18 +769,48 @@ public class CFWQueryParser {
 		
 		return resultPart;
 	}
+
+	/***********************************************************************************************
+	 * Parses an Array Part.
+	 * @param consumeToken TODO
+	 ***********************************************************************************************/
+	private QueryPart parseArrayPart(CFWQueryParserContext context, QueryPart firstPart) throws ParseException {
+
+		addTrace("Proceed with Array", "Comma encountered", "");
+		
+		QueryPart firstArrayElement = firstPart;
+		QueryPart secondArrayElement = firstPart;
+		while(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_COMMA) {
+			this.consumeToken();
+			secondArrayElement = this.parseQueryPart(context);
+			firstArrayElement = new QueryPartArray(currentContext, firstArrayElement, secondArrayElement);
+		}
+
+		return firstArrayElement;
+	}
 	
 	/***********************************************************************************************
 	 * Creates a Binary Expression by parsing the Next Part of the expression.
+	 * @param context TODO
 	 * @param consumeToken TODO
 	 ***********************************************************************************************/
-	private QueryPart createBinaryExpressionPart(QueryPart firstPart, CFWQueryTokenType operatorType, boolean consumeToken ) throws ParseException {
+	private QueryPart createBinaryExpressionPart(CFWQueryParserContext context, QueryPart firstPart, CFWQueryTokenType operatorType, boolean consumeToken ) throws ParseException {
 		addTrace("Start Part", "Binary Expression", operatorType);
 			if(consumeToken) { this.consumeToken(); }
 			QueryPart secondPart = this.parseQueryPart(CFWQueryParserContext.BINARY);
 		addTrace("End Part", "Binary Expression", "");
 		
-		return new QueryPartBinaryExpression(currentContext, firstPart, operatorType, secondPart);
+		QueryPartBinaryExpression expression = new QueryPartBinaryExpression(currentContext, firstPart, operatorType, secondPart);
+		
+		//----------------------------------
+		// If next sign is Comma parse Array
+		if(this.hasMoreTokens() 
+		&& this.lookahead().type() != CFWQueryTokenType.SIGN_COMMA) {
+			return expression;
+		}else {
+			return this.parseArrayPart(context, expression);
+		}
+
 	}
 	
 	/***********************************************************************************************

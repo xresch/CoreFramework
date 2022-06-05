@@ -1,1 +1,392 @@
-{}
+[
+	{
+		"Key": "TokenCount",
+		"Value": "32",
+		"Message": "",
+		"TokenPosition": 0,
+		"nextTokenType": "OPERATOR_OR",
+		"nextTokenValue": "|"
+	},
+	{
+		"Key": "TokenOverview",
+		"Value": "",
+		"Message": "",
+		"TokenPosition": 0,
+		"nextTokenType": "OPERATOR_OR",
+		"nextTokenValue": "|"
+	},
+	{
+		"Key": "Parse",
+		"Value": "Query",
+		"Message": "",
+		"TokenPosition": 0,
+		"nextTokenType": "OPERATOR_OR",
+		"nextTokenValue": "|"
+	},
+	{
+		"Key": "Parse",
+		"Value": "Command",
+		"Message": "",
+		"TokenPosition": 2,
+		"nextTokenType": "LITERAL_STRING",
+		"nextTokenValue": "random"
+	},
+	{
+		"Key": "Create Value Part",
+		"Value": "String",
+		"Message": "",
+		"TokenPosition": 3,
+		"nextTokenType": "LITERAL_STRING",
+		"nextTokenValue": "records"
+	},
+	{
+		"Key": "Parse",
+		"Value": "Query Part",
+		"Message": "{\"partType\":\"Value\",\"value\":\"random\"}",
+		"TokenPosition": 3,
+		"nextTokenType": "LITERAL_STRING",
+		"nextTokenValue": "records"
+	},
+	{
+		"Key": "Create Value Part",
+		"Value": "String",
+		"Message": "",
+		"TokenPosition": 4,
+		"nextTokenType": "OPERATOR_EQUAL",
+		"nextTokenValue": "="
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Assignment",
+		"Message": "",
+		"TokenPosition": 5,
+		"nextTokenType": "LITERAL_NUMBER",
+		"nextTokenValue": "10000"
+	},
+	{
+		"Key": "Create Value Part",
+		"Value": "Number",
+		"Message": "",
+		"TokenPosition": 6,
+		"nextTokenType": "OPERATOR_OR",
+		"nextTokenValue": "|"
+	},
+	{
+		"Key": "End Part",
+		"Value": "Assignment",
+		"Message": "",
+		"TokenPosition": 6,
+		"nextTokenType": "OPERATOR_OR",
+		"nextTokenValue": "|"
+	},
+	{
+		"Key": "Parse",
+		"Value": "Query Part",
+		"Message": "{\"partType\":\"Assignment\",\"leftside\":{\"partType\":\"Value\",\"value\":\"records\"},\"rightside\":{\"partType\":\"Value\",\"value\":10000}}",
+		"TokenPosition": 6,
+		"nextTokenType": "OPERATOR_OR",
+		"nextTokenValue": "|"
+	},
+	{
+		"Key": "Parse",
+		"Value": "Command",
+		"Message": "",
+		"TokenPosition": 6,
+		"nextTokenType": "OPERATOR_OR",
+		"nextTokenValue": "|"
+	},
+	{
+		"Key": "Parse",
+		"Value": "Command",
+		"Message": "",
+		"TokenPosition": 8,
+		"nextTokenType": "SIGN_BRACE_ROUND_OPEN",
+		"nextTokenValue": "("
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Group",
+		"Message": "",
+		"TokenPosition": 9,
+		"nextTokenType": "LITERAL_STRING",
+		"nextTokenValue": "FIRSTNAME"
+	},
+	{
+		"Key": "Create Value Part",
+		"Value": "String",
+		"Message": "",
+		"TokenPosition": 10,
+		"nextTokenType": "OPERATOR_EQUAL_EQUAL",
+		"nextTokenValue": "=="
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 10,
+		"nextTokenType": "OPERATOR_EQUAL_EQUAL",
+		"nextTokenValue": "=="
+	},
+	{
+		"Key": "Create Value Part",
+		"Value": "String",
+		"Message": "",
+		"TokenPosition": 12,
+		"nextTokenType": "KEYWORD",
+		"nextTokenValue": "OR"
+	},
+	{
+		"Key": "End Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 12,
+		"nextTokenType": "KEYWORD",
+		"nextTokenValue": "OR"
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 13,
+		"nextTokenType": "KEYWORD",
+		"nextTokenValue": "NOT"
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 14,
+		"nextTokenType": "LITERAL_STRING",
+		"nextTokenValue": "LASTNAME"
+	},
+	{
+		"Key": "Create Value Part",
+		"Value": "String",
+		"Message": "",
+		"TokenPosition": 15,
+		"nextTokenType": "OPERATOR_REGEX",
+		"nextTokenValue": "~="
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 15,
+		"nextTokenType": "OPERATOR_REGEX",
+		"nextTokenValue": "~="
+	},
+	{
+		"Key": "Create Value Part",
+		"Value": "String",
+		"Message": "",
+		"TokenPosition": 17,
+		"nextTokenType": "SIGN_BRACE_ROUND_CLOSE",
+		"nextTokenValue": ")"
+	},
+	{
+		"Key": "End Part",
+		"Value": "Close Group",
+		"Message": "",
+		"TokenPosition": 17,
+		"nextTokenType": "SIGN_BRACE_ROUND_CLOSE",
+		"nextTokenValue": ")"
+	},
+	{
+		"Key": "End Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 17,
+		"nextTokenType": "SIGN_BRACE_ROUND_CLOSE",
+		"nextTokenValue": ")"
+	},
+	{
+		"Key": "End Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 17,
+		"nextTokenType": "SIGN_BRACE_ROUND_CLOSE",
+		"nextTokenValue": ")"
+	},
+	{
+		"Key": "End Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 17,
+		"nextTokenType": "SIGN_BRACE_ROUND_CLOSE",
+		"nextTokenValue": ")"
+	},
+	{
+		"Key": "Parse",
+		"Value": "Query Part",
+		"Message": "{\"partType\":\"Group\",\"Element[0]\":{\"partType\":\"Binary\",\"leftside\":{\"partType\":\"Binary\",\"leftside\":{\"partType\":\"Value\",\"value\":\"FIRSTNAME\"},\"binaryType\":\"OPERATOR_EQUAL_EQUAL\",\"rightside\":{\"partType\":\"Value\",\"value\":\"Luna\"},\"determinedValue\":\"false\"},\"binaryType\":\"OPERATOR_OR\",\"rightside\":{\"partType\":\"Binary\",\"leftside\":null,\"binaryType\":\"OPERATOR_NOT\",\"rightside\":{\"partType\":\"Binary\",\"leftside\":{\"partType\":\"Value\",\"value\":\"LASTNAME\"},\"binaryType\":\"OPERATOR_REGEX\",\"rightside\":{\"partType\":\"Value\",\"value\":\".*son$\"},\"determinedValue\":\"false\"},\"determinedValue\":\"true\"},\"determinedValue\":\"true\"}}",
+		"TokenPosition": 18,
+		"nextTokenType": "KEYWORD",
+		"nextTokenValue": "NOT"
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 19,
+		"nextTokenType": "SIGN_BRACE_ROUND_OPEN",
+		"nextTokenValue": "("
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Group",
+		"Message": "",
+		"TokenPosition": 20,
+		"nextTokenType": "LITERAL_STRING",
+		"nextTokenValue": "LIKES_TIRAMISU"
+	},
+	{
+		"Key": "Create Value Part",
+		"Value": "String",
+		"Message": "",
+		"TokenPosition": 21,
+		"nextTokenType": "OPERATOR_EQUAL_EQUAL",
+		"nextTokenValue": "=="
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 21,
+		"nextTokenType": "OPERATOR_EQUAL_EQUAL",
+		"nextTokenValue": "=="
+	},
+	{
+		"Key": "Create Value Part",
+		"Value": "Boolean",
+		"Message": "",
+		"TokenPosition": 23,
+		"nextTokenType": "SIGN_BRACE_ROUND_CLOSE",
+		"nextTokenValue": ")"
+	},
+	{
+		"Key": "End Part",
+		"Value": "Close Group",
+		"Message": "",
+		"TokenPosition": 23,
+		"nextTokenType": "SIGN_BRACE_ROUND_CLOSE",
+		"nextTokenValue": ")"
+	},
+	{
+		"Key": "End Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 23,
+		"nextTokenType": "SIGN_BRACE_ROUND_CLOSE",
+		"nextTokenValue": ")"
+	},
+	{
+		"Key": "End Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 24,
+		"nextTokenType": "KEYWORD",
+		"nextTokenValue": "NOT"
+	},
+	{
+		"Key": "Parse",
+		"Value": "Query Part",
+		"Message": "{\"partType\":\"Binary\",\"leftside\":null,\"binaryType\":\"OPERATOR_NOT\",\"rightside\":{\"partType\":\"Group\",\"Element[0]\":{\"partType\":\"Binary\",\"leftside\":{\"partType\":\"Value\",\"value\":\"LIKES_TIRAMISU\"},\"binaryType\":\"OPERATOR_EQUAL_EQUAL\",\"rightside\":{\"partType\":\"Value\",\"value\":false},\"determinedValue\":\"false\"}},\"determinedValue\":\"true\"}",
+		"TokenPosition": 24,
+		"nextTokenType": "KEYWORD",
+		"nextTokenValue": "NOT"
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 25,
+		"nextTokenType": "SIGN_BRACE_ROUND_OPEN",
+		"nextTokenValue": "("
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Group",
+		"Message": "",
+		"TokenPosition": 26,
+		"nextTokenType": "LITERAL_STRING",
+		"nextTokenValue": "VALUE"
+	},
+	{
+		"Key": "Create Value Part",
+		"Value": "String",
+		"Message": "",
+		"TokenPosition": 27,
+		"nextTokenType": "OPERATOR_DIVIDE",
+		"nextTokenValue": "/"
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 27,
+		"nextTokenType": "OPERATOR_DIVIDE",
+		"nextTokenValue": "/"
+	},
+	{
+		"Key": "Create Value Part",
+		"Value": "String",
+		"Message": "",
+		"TokenPosition": 29,
+		"nextTokenType": "SIGN_BRACE_ROUND_CLOSE",
+		"nextTokenValue": ")"
+	},
+	{
+		"Key": "End Part",
+		"Value": "Close Group",
+		"Message": "",
+		"TokenPosition": 29,
+		"nextTokenType": "SIGN_BRACE_ROUND_CLOSE",
+		"nextTokenValue": ")"
+	},
+	{
+		"Key": "End Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 29,
+		"nextTokenType": "SIGN_BRACE_ROUND_CLOSE",
+		"nextTokenValue": ")"
+	},
+	{
+		"Key": "Start Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 30,
+		"nextTokenType": "OPERATOR_EQUAL_OR_LOWER",
+		"nextTokenValue": "<="
+	},
+	{
+		"Key": "Create Value Part",
+		"Value": "Number",
+		"Message": "",
+		"TokenPosition": 32
+	},
+	{
+		"Key": "End Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 32
+	},
+	{
+		"Key": "Proceed with Array",
+		"Value": "Comma encountered",
+		"Message": "",
+		"TokenPosition": 32
+	},
+	{
+		"Key": "End Part",
+		"Value": "Binary Expression",
+		"Message": "",
+		"TokenPosition": 32
+	},
+	{
+		"Key": "Proceed with Array",
+		"Value": "Comma encountered",
+		"Message": "",
+		"TokenPosition": 32
+	}
+]

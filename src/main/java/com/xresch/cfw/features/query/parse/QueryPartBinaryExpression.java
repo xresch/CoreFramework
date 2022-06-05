@@ -103,8 +103,7 @@ public class QueryPartBinaryExpression extends QueryPart {
 		//-----------------------------------------
 		// Rightside get value from object 
 		rightValue = rightValue.convertFieldnameToFieldvalue(object);
-
-		
+				
 		QueryPartValue evaluatedExpression = evaluateBinaryExpression(context, leftValue, rightValue);	
 		
 		return evaluatedExpression;
