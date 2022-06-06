@@ -1,0 +1,43 @@
+
+<p>Use this function to get the value of a property set with the metadata command.
+Provide a second parameter to change the metadata property to that value.</p>
+
+
+<p>Following query creates random records and uses the meta-function to use the metadata property:</p>
+
+<pre><code class="language-cfwquery">| metadata
+	mySwitch=true
+	herName='Jane'
+	hisNumber=42
+	yourNumber=420
+| source random records=10
+| keep INDEX
+| set
+	LIGHTS_ON=meta(mySwitch)
+	LOVELY_PERSON=meta(herName)
+	THE_WINNER_IS=meta(hisNumber)
+	SUM=meta(yourNumber) + meta(hisNumber)
+	SUBTRACT=meta(yourNumber) - meta(hisNumber)
+	MULTIPLY=meta(yourNumber) * meta(hisNumber)
+	DIVIDE=meta(yourNumber) / meta(hisNumber)
+	POWER=meta(yourNumber) ^ meta(hisNumber)
+</code></pre>
+	
+<p>Following is a more advanced example, it changes the values of the metadata by providing a second argument to the function:</p>
+
+<pre><code class="language-cfwquery">| metadata
+	mySwitch=true
+	herLastname='Wildcat'
+	hisNumber=42
+	yourNumber=420
+| source random records=10
+| keep INDEX
+| set
+	# changes will first apply and new value will be returned
+	HER_NEW_NAME=meta(herLastname, "Battlekitty")
+	#turn lights on and of
+	LIGHTS_ON=meta(mySwitch, NOT meta(mySwitch))
+	#increase hisNumber by 10 on every record
+	SUM=meta(yourNumber) + meta(hisNumber, meta(hisNumber)+10)
+	HIS_NUMBER=meta(hisNumber)
+	</code></pre>

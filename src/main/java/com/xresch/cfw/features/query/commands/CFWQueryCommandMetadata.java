@@ -102,11 +102,7 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 				
 				String propertyName = assignment.getLeftSideAsString(null);
 				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
-				if(valuePart.isString()) {
-					String value = valuePart.getAsString();
-					value = CFW.Security.sanitizeHTML(value);
-					metaObject.addProperty(propertyName, value);
-				}
+				valuePart.addToJsonObject(propertyName, metaObject);
 			
 			}else {
 				parser.throwParseException("metadata: Only parameters(key=value) are allowed.", currentPart);
