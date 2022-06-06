@@ -57,7 +57,7 @@ public abstract class CFWQueryFunction{
 	
 	/*************************************************************************
 	 * Implement the aggregation.
-	 * Return the result with the method execute.
+	 * Return the result with the method execute().
 	 * 
 	 *************************************************************************/
 	public abstract void aggregate(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters);

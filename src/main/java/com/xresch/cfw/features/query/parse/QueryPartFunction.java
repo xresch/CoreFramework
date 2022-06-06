@@ -2,21 +2,17 @@ package com.xresch.cfw.features.query.parse;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
- * QueryPart that will hold the following expressions:
- *  - A List of Binary expressions. AND is implicitly added between expressions if multiple expressions
- *  	are given: 
- *    (someValue != anotherValue [implicit AND] ( myfield == "value"  myNumber < 22 ...) [implicit AND] a < b )
- *    
- *  - An array of various parts, will result in an array when evaluated
- *  	- 
+ * QueryPart that will hold the function expressions.
  * 
  * @author Reto Scheiwiller, (c) Copyright 2022
  * @license MIT-License
@@ -26,7 +22,10 @@ public class QueryPartFunction extends QueryPart {
 	private CFWQueryContext context;
 	private ArrayList<QueryPart> functionParameters = new ArrayList<>();
 	private String functionName = null;
-	private CFWQueryFunction function = null;
+	private CFWQueryFunction internalfunctionInstance = null;
+	
+	// instance id and instance
+	private LinkedHashMap<String, CFWQueryFunction> managedInstances = new LinkedHashMap<>();
 	
 	
 	/******************************************************************************************************
@@ -36,7 +35,7 @@ public class QueryPartFunction extends QueryPart {
 	public QueryPartFunction(CFWQueryContext context, String functionName, QueryPart functionParameter) throws ParseException {
 		this.context=context;
 		this.functionName = functionName;
-		this.function = getFunctionInstance();
+		this.internalfunctionInstance = getFunctionInstance();
 		this.add(functionParameter);
 	}
 	
@@ -48,7 +47,7 @@ public class QueryPartFunction extends QueryPart {
 	public QueryPartFunction(CFWQueryContext context, String functionName, QueryPart... functionParams) throws ParseException {
 		this.context=context;
 		this.functionName = functionName;
-		this.function = getFunctionInstance();
+		this.internalfunctionInstance = getFunctionInstance();
 		for(QueryPart part : functionParams) {
 			this.add(part);
 		}
@@ -61,7 +60,7 @@ public class QueryPartFunction extends QueryPart {
 	public QueryPartFunction(CFWQueryContext context, String functionName, QueryPartGroup paramGroup) throws ParseException {
 		this.context=context;
 		this.functionName = functionName;
-		this.function = getFunctionInstance();
+		this.internalfunctionInstance = getFunctionInstance();
 		
 		ArrayList<QueryPart> partsArray = paramGroup.getQueryPartsArray();
 
@@ -74,13 +73,29 @@ public class QueryPartFunction extends QueryPart {
 		}
 	}
 	
+	/******************************************************************************************************
+	 * Returns the number of elements in the group.
+	 * @throws ParseException 
+	 * 
+	 ******************************************************************************************************/
+	public String createManagedInstance() {
+
+		CFWQueryFunction instance = CFW.Registry.Query.createFunctionInstance(this.context, functionName);
+		if(instance == null) {
+			context.addMessage(MessageType.ERROR, "There is no such method with the name '"+functionName+"'");
+		}
+		
+		String instanceID = CFW.Random.randomStringAlphaNumerical(32);
+		managedInstances.put(instanceID, instance);
+		return instanceID;
+	}
 	
 	/******************************************************************************************************
 	 * Returns the number of elements in the group.
 	 * @throws ParseException 
 	 * 
 	 ******************************************************************************************************/
-	private CFWQueryFunction getFunctionInstance() throws ParseException {
+	public CFWQueryFunction getFunctionInstance() throws ParseException {
 
 		CFWQueryFunction instance = CFW.Registry.Query.createFunctionInstance(this.context, functionName);
 		if(instance == null) {
@@ -109,16 +124,11 @@ public class QueryPartFunction extends QueryPart {
 		
 		return this;
 	}
-
+	
 	/******************************************************************************************************
-	 * Returns the values as QueryPartValue of type JSON containing a JsonArray
 	 * 
 	 ******************************************************************************************************/
-	@Override
-	public QueryPartValue determineValue(EnhancedJsonObject object) {
-		
-		//------------------------------------
-		//Evaluate params to QueryPartValue 
+	public ArrayList<QueryPartValue> prepareParameters(EnhancedJsonObject object) {
 		ArrayList<QueryPartValue> parameterValues = new ArrayList<>();
 
 		for(QueryPart param : functionParameters) {
@@ -127,13 +137,65 @@ public class QueryPartFunction extends QueryPart {
 			}
 			parameterValues.add(param.determineValue(object));
 		}
+		return parameterValues;
+	}
+	
+	/******************************************************************************************************
+	 * Returns the values as QueryPartValue of type JSON containing a JsonArray
+	 * 
+	 ******************************************************************************************************/
+	public void aggregateFunctionInstance(String instanceID, EnhancedJsonObject object) {
+		CFWQueryFunction  function = managedInstances.get(instanceID);
+		aggregateFunctionInstance(function, object);
+	}
+	
+	/******************************************************************************************************
+	 * Returns the values as QueryPartValue of type JSON containing a JsonArray
+	 * 
+	 ******************************************************************************************************/
+	private void aggregateFunctionInstance(CFWQueryFunction functionInstance, EnhancedJsonObject object) {
+		//------------------------------------
+		//Evaluate params to QueryPartValue 
+		ArrayList<QueryPartValue> parameterValues = prepareParameters(object);
 		
 		//------------------------------------
 		//execute Function 
-		return function.execute(object, parameterValues);
-		
+		functionInstance.aggregate(object, parameterValues);
+	}
+
+	/******************************************************************************************************
+	 * Returns the values as QueryPartValue of type JSON containing a JsonArray
+	 * 
+	 ******************************************************************************************************/
+	public QueryPartValue executeFunctionInstance(String instanceID, EnhancedJsonObject object) {
+		CFWQueryFunction  function = managedInstances.get(instanceID);
+		return executeFunctionInstance(function, object);
 	}
 	
+	/******************************************************************************************************
+	 * Returns the values as QueryPartValue of type JSON containing a JsonArray
+	 * 
+	 ******************************************************************************************************/
+	private QueryPartValue executeFunctionInstance(CFWQueryFunction functionInstance, EnhancedJsonObject object) {
+		
+		ArrayList<QueryPartValue> parameterValues = prepareParameters(object);
+		
+		//------------------------------------
+		//execute Function 
+		return functionInstance.execute(object, parameterValues);
+	}
+
+	/******************************************************************************************************
+	 * Returns the values as QueryPartValue of type JSON containing a JsonArray
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public QueryPartValue determineValue(EnhancedJsonObject object) {
+		
+		return executeFunctionInstance(internalfunctionInstance, object);
+		
+	}
+
 	
 	/******************************************************************************************************
 	 * 
