@@ -109,6 +109,25 @@ public class QueryPartFunction extends QueryPart {
 	 * Returns the number of elements in the group.
 	 * 
 	 ******************************************************************************************************/
+	public String getDefaultLabel() {
+		
+		StringBuilder builder = new StringBuilder(functionName);
+		
+		builder.append("(");
+			for(int i=0; i < functionParameters.size(); i++) {
+				builder.append(functionParameters.get(i).determineValue(null).getAsString());
+				
+				if(i < functionParameters.size()-1) {
+					builder.append(",");
+				}
+			}
+		builder.append(")");
+		return builder.toString(); 		
+	}
+	/******************************************************************************************************
+	 * Returns the number of elements in the group.
+	 * 
+	 ******************************************************************************************************/
 	public int paramCount() {
 		return functionParameters.size(); 		
 	}

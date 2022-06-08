@@ -101,7 +101,10 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 			
 			QueryPart currentPart = parts.get(i);
 			
+			
 			if(currentPart instanceof QueryPartAssignment) {
+				//--------------------------------------------------
+				// Resolve Fieldname=Function
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
 				String assignmentName = assignment.getLeftSideAsString(null);
 				QueryPart assignmentValue = ((QueryPartAssignment) currentPart).getRightSide();
@@ -153,6 +156,21 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 				}
 				
 				assignments.add((QueryPartAssignment)currentPart);
+			}else if(currentPart instanceof QueryPartFunction) {
+				//--------------------------------------------------
+				// Resolve Function only
+				QueryPartFunction function = ((QueryPartFunction)currentPart);
+				CFWQueryFunction functionInstance = function.getFunctionInstance();
+				String fieldname=function.getDefaultLabel();
+				
+				detectedFieldnames.add(fieldname);
+				
+				if(functionInstance.supportsAggregation()) {
+					functionMap.put(fieldname, function);
+				}else {
+					parser.throwParseException("stats: Function '"+functionInstance.uniqueName()+"' does not support aggregations.", currentPart);
+				}
+
 			}else {
 				parser.throwParseException("stats: Only assignment expressions(key=value) allowed.", currentPart);
 			}

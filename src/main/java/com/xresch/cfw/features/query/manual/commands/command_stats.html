@@ -1,0 +1,17 @@
+
+<p>Used to create statistical values from records.
+</p>
+
+<p>The following example generates sample records and creates statistical values grouped by LASTNAME and Tiramisu preference:
+</p>
+<pre><code class="language-cfwquery">| source random records=10000
+| stats by=[LASTNAME,LIKES_TIRAMISU] 
+	COUNT=count(LASTNAME, true) 
+	NO_NULLS=count(LASTNAME, false) 
+	NULLS=countnulls(LASTNAME) 
+	MIN=min(VALUE) 
+	AVG=avg(VALUE) 
+	MAX=max(VALUE)
+	SUM=sum(VALUE)
+| sort LASTNAME, LIKES_TIRAMISU reversenulls=true</code></pre>
+
