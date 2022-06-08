@@ -276,7 +276,7 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 			int index = 0;
 			for(Entry<String, QueryPartFunction> entry : functionMap.entrySet()) {
 				String propertyName = targetFieldnames.get(index);
-				System.out.println("propertyName"+propertyName);
+
 				String instanceID = entry.getKey();
 				QueryPartFunction functionPart = entry.getValue();
 				QueryPartValue aggregationValue = functionPart.executeFunctionInstance(instanceID, null);
