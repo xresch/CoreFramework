@@ -159,7 +159,24 @@ DONE
 - Query: Added chart Command
 - Query: Added stats Command
 - Query: Added Functions feature to query framework
-- Query: Added functions: avg, count, encode, globals, if, indexof, lastindexof, length, meta, nullto, round, substring, trim
+- Query: Added functions: 
+	- avg
+	- count
+	- countnulls
+	- encode
+	- globals
+	- if
+	- indexof
+	- lastindexof
+	- length
+	- max
+	- meta
+	- min
+	- nullto
+	- round
+	- substring
+	- sum
+	- trim
 
 
 ------- v6.0.0 -------

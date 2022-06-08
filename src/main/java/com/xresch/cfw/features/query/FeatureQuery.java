@@ -30,16 +30,20 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandTail;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTop;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionAvg;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionCount;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionCountNulls;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionEncode;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionGlobals;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionIf;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionIndexOf;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionLastIndexOf;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionLength;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionMax;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionMeta;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionMin;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionNullTo;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRound;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionSubstring;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionSum;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTrim;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceApplog;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
@@ -118,16 +122,20 @@ public class FeatureQuery extends CFWAppFeature {
 		// Register Functions
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionAvg(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionCount(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionCountNulls(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionEncode(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionGlobals(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionIf(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionIndexOf(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionLastIndexOf(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionLength(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionMax(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionMeta(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionMin(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionNullTo(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRound(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSubstring(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSum(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTrim(null));
 		 
 		//----------------------------------
