@@ -4,22 +4,17 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.lang.reflect.Type;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import javax.mail.Address;
-
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.gson.reflect.TypeToken;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWForm;
-import com.xresch.cfw.handler.RequestHandler;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.BTFooter;
 import com.xresch.cfw.response.bootstrap.BTMenu;
@@ -46,6 +41,8 @@ public class CFWSessionData implements Serializable {
 	protected HashMap<Integer, Role> userRoles = new HashMap<>();
 	protected HashMap<String, Permission> userPermissions = new HashMap<>();
 	
+	protected HashMap<String, String> customProperties = new HashMap<>();
+	
 	//formID and form
 	protected Cache<String, CFWForm> formCache;
 	
@@ -66,7 +63,7 @@ public class CFWSessionData implements Serializable {
 		if(user != null) {
 			user.lastLogin(new Timestamp(System.currentTimeMillis())).update();
 		}
-		
+				
 	}
 	
 	public void triggerLogout() {
@@ -74,6 +71,8 @@ public class CFWSessionData implements Serializable {
 		isLoggedIn = false;
 		userRoles.clear();
 		userPermissions.clear();
+		customProperties.clear();
+		
 		formCache.invalidateAll();
 		
 		loadMenu(false);
@@ -88,6 +87,19 @@ public class CFWSessionData implements Serializable {
 	
 	public void isLoggedIn(boolean isLoggedIn) {
 		 this.isLoggedIn = isLoggedIn;
+	}
+	
+	
+	public void setCustom(String key, String value) {
+		this.customProperties.put(key, value);
+	}
+	
+	public String getCustom(String key) {
+		return this.customProperties.get(key);
+	}
+	
+	public void removeCustom(String key) {
+		 this.customProperties.remove(key);
 	}
 	
 	public String getSessionID() {
@@ -180,6 +192,7 @@ public class CFWSessionData implements Serializable {
 		oos.writeObject(isLoggedIn);
 		oos.writeObject(sessionID);
 		oos.writeObject(clientIP);
+		oos.writeObject(CFW.JSON.toJSON(customProperties));
 		
 		String username = null;
 		if(user != null) {
@@ -200,6 +213,7 @@ public class CFWSessionData implements Serializable {
        this.isLoggedIn 		= (boolean) ois.readObject();
        this.sessionID 		= (String) ois.readObject();
        this.clientIP 		= (String) ois.readObject();
+       this.customProperties = CFW.JSON.fromJsonLinkedHashMap((String)ois.readObject());
        
        String username		= (String) ois.readObject();
        if(isLoggedIn && username != null) {

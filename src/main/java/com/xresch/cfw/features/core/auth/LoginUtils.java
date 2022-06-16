@@ -1,8 +1,33 @@
 package com.xresch.cfw.features.core.auth;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.nimbusds.oauth2.sdk.ErrorObject;
+import com.nimbusds.oauth2.sdk.ParseException;
+import com.nimbusds.oauth2.sdk.ResponseType;
+import com.nimbusds.oauth2.sdk.Scope;
+import com.nimbusds.oauth2.sdk.client.ClientRegistrationErrorResponse;
+import com.nimbusds.oauth2.sdk.client.ClientRegistrationResponse;
+import com.nimbusds.oauth2.sdk.http.HTTPResponse;
+import com.nimbusds.oauth2.sdk.id.ClientID;
+import com.nimbusds.oauth2.sdk.id.State;
+import com.nimbusds.oauth2.sdk.util.JSONObjectUtils;
+import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
+import com.nimbusds.openid.connect.sdk.Nonce;
+import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
+import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
+import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformationResponse;
+import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
+import com.nimbusds.openid.connect.sdk.rp.OIDCClientRegistrationRequest;
+import com.nimbusds.openid.connect.sdk.rp.OIDCClientRegistrationResponseParser;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
@@ -104,8 +129,14 @@ public class LoginUtils {
 	 * @param emailString email of the user or null
 	 * @param firstnameString firstname of the user or null
 	 * @param lastnameString lastname of the user or null
+	 * @param isForeign TODO
 	 ******************************************************************************/
-	public static User fetchUserCreateIfNotExists(String username, String emailString, String firstnameString, String lastnameString) {
+	public static User fetchUserCreateIfNotExists(
+			  String username
+			, String emailString
+			, String firstnameString
+			, String lastnameString
+			, boolean isForeign) {
 		
     	//------------------------------
     	// Create User in DB if not exists
@@ -113,7 +144,7 @@ public class LoginUtils {
     	if(!CFW.DB.Users.checkUsernameExists(username)) {
 
 	    	User newUser = new User(username)
-					.isForeign(true)
+					.isForeign(isForeign)
 					.status("Active")
 					.email(emailString)
 					.firstname(firstnameString)
@@ -153,6 +184,5 @@ public class LoginUtils {
     	
 		return userFromDB;
 	}
-	
-	
+		
 }

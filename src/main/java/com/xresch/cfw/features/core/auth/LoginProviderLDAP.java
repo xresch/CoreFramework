@@ -124,7 +124,7 @@ public class LoginProviderLDAP implements LoginProviderInterface {
 		    			    	
 		    	//------------------------------
 		    	// Create User in DB if not exists
-		    	User user = LoginUtils.fetchUserCreateIfNotExists(username, emailString, firstnameString, lastnameString);
+		    	User user = LoginUtils.fetchUserCreateIfNotExists(username, emailString, firstnameString, lastnameString, true);
 		    	
 		    	//------------------------------
 		    	// Add user data from LDAP

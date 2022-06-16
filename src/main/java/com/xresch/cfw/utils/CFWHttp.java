@@ -660,6 +660,7 @@ public class CFWHttp {
 
         return remoteAddr;
     }
+	
 	/**************************************************************************************
 	 * Returns the API token if provided and if the requested servlet is /app/api.
 	 * @param request
@@ -677,6 +678,22 @@ public class CFWHttp {
 		}
 		
 		return null;
+	}
+	
+	
+	/**************************************************************************************
+	 * Gets the server URL without any path or query parameters form a servlet request.
+	 * @param request
+	 * @return String
+	 **************************************************************************************/
+	public static String getServerURL(HttpServletRequest request) {
+		return 
+			request.getScheme() 
+		  + "://"
+	      + request.getServerName()
+	      + ":" 
+	      + request.getServerPort()   
+	    ;
 	}
 	
 	/******************************************************************************************************

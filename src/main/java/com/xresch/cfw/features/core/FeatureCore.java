@@ -13,12 +13,15 @@ import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.core.auth.SSOOpenIDConnectProvider;
+import com.xresch.cfw.features.core.auth.SSOOpenIDConnectProviderManagement;
 import com.xresch.cfw.features.core.auth.ServletChangePassword;
 import com.xresch.cfw.features.core.auth.ServletLogin;
 import com.xresch.cfw.features.core.auth.ServletLogout;
 import com.xresch.cfw.features.core.auth.ServletSAML2AssertionConsumerService;
 import com.xresch.cfw.features.core.auth.ServletSAML2Login;
 import com.xresch.cfw.features.core.auth.ServletSAML2Metadata;
+import com.xresch.cfw.features.core.auth.ServletSSOOpenIDCallback;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -31,6 +34,9 @@ import com.xresch.cfw.spi.CFWAppFeature;
  **************************************************************************************************************/
 public class FeatureCore extends CFWAppFeature {
 
+	public static final String SERVLET_PATH_LOGIN = "/app/login";
+	public static final String SERVLET_PATH_SSO_OPENID = "/sso/callback/openidconnect";
+
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.core.resources";
 		
 	public static final String PERMISSION_FEATURE_MGMT = "Feature Management";
@@ -39,6 +45,9 @@ public class FeatureCore extends CFWAppFeature {
 	
 	public static final String CONFIG_BROWSER_RESOURCE_MAXAGE = "Browser Resource Max Age";
 	
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
 	@Override
 	public void register() {
 		
@@ -84,7 +93,11 @@ public class FeatureCore extends CFWAppFeature {
 		//----------------------------------
 		// Register Objects
 		//CFW.Registry.Objects.addCFWObject(Configuration.class);
-    			
+    	
+		//----------------------------------
+		// Register Context Settings
+		CFW.Registry.ContextSettings.register(SSOOpenIDConnectProvider.SETTINGS_TYPE, SSOOpenIDConnectProvider.class);
+    
     	//----------------------------------
     	// Register Admin Menu
 		CFW.Registry.Components.addAdminCFWMenuItem(
@@ -98,7 +111,10 @@ public class FeatureCore extends CFWAppFeature {
 		
 				
 	}
-
+	
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
 	@Override
 	public void initializeDB() {
 
@@ -151,15 +167,24 @@ public class FeatureCore extends CFWAppFeature {
 			);
 	}
 
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
 		
 		//-----------------------------------------
+		// Initialize SSO Providers
+		SSOOpenIDConnectProviderManagement.initialize();
+		
+		//-----------------------------------------
 		// Authentication Servlets
 	    if(CFWProperties.AUTHENTICATION_ENABLED) {
-	    	app.addAppServlet(ServletLogin.class, "/login");
+	    	app.addAppServlet(ServletLogin.class, SERVLET_PATH_LOGIN);
 	        app.addAppServlet(ServletLogout.class,  "/logout");
 	        
+	    	app.addUnsecureServlet(ServletSSOOpenIDCallback.class, SERVLET_PATH_SSO_OPENID);
+	    	
 	        if(CFWProperties.AUTHENTICATION_SAML2_ENABLED) {
 	        	app.addUnsecureServlet(ServletSAML2Metadata.class,	"/cfw/saml2/metadata");
 	        	app.addUnsecureServlet(ServletSAML2Login.class,	"/cfw/saml2/login");
@@ -186,6 +211,9 @@ public class FeatureCore extends CFWAppFeature {
 		app.addUnsecureServlet(ServletShutdown.class, 		"/cfw/shutdown");
 	}
 
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
 	@Override
 	public void startTasks() {
 		
@@ -211,6 +239,9 @@ public class FeatureCore extends CFWAppFeature {
 		
 	}
 
+	/************************************************************************************
+	 * 
+	 ************************************************************************************/
 	@Override
 	public void stopFeature() {
 		// nothing to do

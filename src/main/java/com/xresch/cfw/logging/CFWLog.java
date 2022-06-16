@@ -255,14 +255,14 @@ public class CFWLog {
 	}
 	
 	/***********************************************************************
-	 * Ends a measurement and logs a duration log with level INFO.
+	 * Ends a measurement and logs a duration log with level FINE.
 	 * 
 	 ***********************************************************************/
 	public void end(){
 		
 		//
 		starttimeMillis = tempStartMillis;
-		this.log(Level.INFO, "Duration[ms]", null);
+		this.log(Level.FINE, "Duration[ms]", null);
 				
 	}
 	

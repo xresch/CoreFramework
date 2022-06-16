@@ -106,9 +106,9 @@ public class ServletSAML2AssertionConsumerService extends HttpServlet
 			if(nameIdFormat.contentEquals(Constants.NAMEID_EMAIL_ADDRESS)) {
 				String eMail = nameId;
 				nameId = nameId.split("@")[0];
-				user = LoginUtils.fetchUserCreateIfNotExists(nameId, eMail, null, null);
+				user = LoginUtils.fetchUserCreateIfNotExists(nameId, eMail, null, null, true);
 			}else {
-				user = LoginUtils.fetchUserCreateIfNotExists(nameId, null, null, null);
+				user = LoginUtils.fetchUserCreateIfNotExists(nameId, null, null, null, true);
 			}
 			
 			

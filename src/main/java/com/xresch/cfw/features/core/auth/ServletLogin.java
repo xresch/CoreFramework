@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWContextRequest;
 import com.xresch.cfw.features.core.FeatureCore;
@@ -29,13 +30,28 @@ public class ServletLogin extends HttpServlet
 	
 	private static Logger logger = CFWLog.getLogger(ServletLogin.class.getName());
 	
-	
+	/*****************************************************************
+	 *
+	 ******************************************************************/
 	protected void createLoginPage( HttpServletRequest request, HttpServletResponse response ) {
 		HTMLResponse html = new HTMLResponse("Login");
 		StringBuilder content = html.getContent();
 		
+		//------------------------------------
+		// Fetch Template and add SSO Options
 		String loginHTML = CFW.Files.readPackageResource(FeatureCore.RESOURCE_PACKAGE + ".html", "login.html");
 		
+		if(SSOOpenIDConnectProviderManagement.hasValidEnvironment()) {
+			
+			String ssoHTML = "<p class=\"text-center mt-4 mb-1\">Single Sign On</p>"
+					+ SSOOpenIDConnectProviderManagement.getHTMLButtonsForLoginPage();
+			loginHTML = loginHTML.replace("$$sso_placeholder$$", ssoHTML);
+		}else {
+			loginHTML = loginHTML.replace("$$sso_placeholder$$", "");
+		}
+		
+		//------------------------------------
+		// Handle Target URL
 		String url = request.getParameter("url");
 		url = CFW.Security.sanitizeHTML(url);
 		
@@ -51,11 +67,29 @@ public class ServletLogin extends HttpServlet
 	/*****************************************************************
 	 *
 	 ******************************************************************/
+	protected void doSSORedirect( HttpServletRequest request, HttpServletResponse response, String ssoid ) {
+		
+		System.out.println("doSSORedirect");
+		
+		SSOOpenIDConnectProvider providerSettings = SSOOpenIDConnectProviderManagement.getEnvironment(Integer.parseInt(ssoid));
+		
+		CFW.HTTP.redirectToURL(response, providerSettings.createRedirectURI(request).toString());
+		
+	}
+	
+	/*****************************************************************
+	 *
+	 ******************************************************************/
 	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
 		
-		createLoginPage(request, response);
+		String ssoid = request.getParameter("ssoid");
+		if(Strings.isNullOrEmpty(ssoid)) {
+			createLoginPage(request, response);
+		}else {
+			doSSORedirect(request, response, ssoid);
+		}
         
     }
 	

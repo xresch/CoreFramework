@@ -91,6 +91,14 @@
 			<artifactId>jetty-rewrite</artifactId>
 			<version>${jettyVersion}</version>
 		</dependency>
+				
+		<!-- https://mvnrepository.com/artifact/com.nimbusds/oauth2-oidc-sdk -->
+		<dependency>
+		    <groupId>com.nimbusds</groupId>
+		    <artifactId>oauth2-oidc-sdk</artifactId>
+		    <version>9.37.2</version>
+		</dependency>
+		
 
 		<!-- https://mvnrepository.com/artifact/javax.mail/mail -->
 		<dependency>
