@@ -38,17 +38,8 @@ public class ServletLogin extends HttpServlet
 		StringBuilder content = html.getContent();
 		
 		//------------------------------------
-		// Fetch Template and add SSO Options
+		// Fetch Template 
 		String loginHTML = CFW.Files.readPackageResource(FeatureCore.RESOURCE_PACKAGE + ".html", "login.html");
-		
-		if(SSOOpenIDConnectProviderManagement.hasValidEnvironment()) {
-			
-			String ssoHTML = "<p class=\"text-center mt-4 mb-1\">Single Sign On</p>"
-					+ SSOOpenIDConnectProviderManagement.getHTMLButtonsForLoginPage();
-			loginHTML = loginHTML.replace("$$sso_placeholder$$", ssoHTML);
-		}else {
-			loginHTML = loginHTML.replace("$$sso_placeholder$$", "");
-		}
 		
 		//------------------------------------
 		// Handle Target URL
@@ -56,7 +47,22 @@ public class ServletLogin extends HttpServlet
 		url = CFW.Security.sanitizeHTML(url);
 		
 		if(url == null) { url = "";}
-		loginHTML = loginHTML.replace("urlvalue", url);
+		
+		loginHTML = loginHTML.replace("$$urlvalue$$", url);
+		
+		//------------------------------------
+		// Add SSO Options
+		if(SSOOpenIDConnectProviderManagement.hasValidEnvironment()) {
+			String notSanitizedURL = request.getParameter("url");
+			
+			String ssoHTML = "<p class=\"text-center mt-4 mb-1\">Single Sign On</p>"
+					+ SSOOpenIDConnectProviderManagement.getHTMLButtonsForLoginPage(notSanitizedURL);
+			loginHTML = loginHTML.replace("$$sso_placeholder$$", ssoHTML);
+		}else {
+			loginHTML = loginHTML.replace("$$sso_placeholder$$", "");
+		}
+		
+
 		
 		content.append(loginHTML);
 		
@@ -68,12 +74,11 @@ public class ServletLogin extends HttpServlet
 	 *
 	 ******************************************************************/
 	protected void doSSORedirect( HttpServletRequest request, HttpServletResponse response, String ssoid ) {
-		
-		System.out.println("doSSORedirect");
-		
+				
 		SSOOpenIDConnectProvider providerSettings = SSOOpenIDConnectProviderManagement.getEnvironment(Integer.parseInt(ssoid));
+		String targetURL = request.getParameter("url");
 		
-		CFW.HTTP.redirectToURL(response, providerSettings.createRedirectURI(request).toString());
+		CFW.HTTP.redirectToURL(response, providerSettings.createRedirectURI(request, targetURL).toString());
 		
 	}
 	

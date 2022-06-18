@@ -1,11 +1,9 @@
 package com.xresch.cfw.features.core.auth;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Scanner;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -13,7 +11,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant;
@@ -30,7 +27,6 @@ import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.oauth2.sdk.token.Tokens;
-import com.nimbusds.oauth2.sdk.util.JSONObjectUtils;
 import com.nimbusds.openid.connect.sdk.AuthenticationErrorResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponseParser;
@@ -43,13 +39,10 @@ import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
-import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
-
-import net.minidev.json.JSONObject;
 
 /**************************************************************************************************************
  * Servlet which will handle the response from the identity provider(IdP).
@@ -82,6 +75,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		// will be encoded in the query string, parse them
 		// https://thisapp:8888/callback?state=6SK5S15Lwdp3Pem_55m-ayudGwno0eglKq6ZEWaykG8&code=eemeuWi9reingee0
 		String requestURL = request.getRequestURL()+"?"+request.getQueryString();
+		CFWSessionData sessionData = CFW.Context.Session.getSessionData();
 		
 		AuthenticationResponse authResponse;
 		try {
@@ -100,9 +94,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			
 			//------------------------------------
 			// Verify State is correct
-			String ssoStateString = CFW.Context.Session.getSessionData().getCustom(
-					SSOOpenIDConnectProvider.PROPERTY_SSO_STATE
-				);
+			String ssoStateString = sessionData.removeCustom(SSOOpenIDConnectProvider.PROPERTY_SSO_STATE);
 			System.out.println(ssoStateString);
 			if (authResponse == null || !authResponse.getState().equals(new State(ssoStateString))) {
 				new HTMLResponse("Unexpected authentication Response");
@@ -112,9 +104,8 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			
 			//------------------------------------
 			// Retrieve Authentication Code
-			String providerIDString = CFW.Context.Session.getSessionData().getCustom(
-					SSOOpenIDConnectProvider.PROPERTY_SSO_PROVIDER_ID
-				);
+			String providerIDString = sessionData.removeCustom(SSOOpenIDConnectProvider.PROPERTY_SSO_PROVIDER_ID);
+			
 			SSOOpenIDConnectProvider provider = SSOOpenIDConnectProviderManagement.getEnvironment(Integer.parseInt(providerIDString));
 			OIDCProviderMetadata providerMetadata = provider.getProviderMetadata();
 			
@@ -137,8 +128,9 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			String lastname = info.getFamilyName();
 			User user = LoginUtils.fetchUserCreateIfNotExists(username, email, firstname, lastname, true);
 			
-			System.out.println("redirectURI: "+redirectURI);
-			LoginUtils.loginUserAndCreateSession(request, response, user, CFW.Context.App.getApp().getDefaultURL());
+			String targetURL = sessionData.removeCustom(SSOOpenIDConnectProvider.PROPERTY_SSO_TARGET_URL);
+
+			LoginUtils.loginUserAndCreateSession(request, response, user, targetURL);
 			
 			System.out.println("======= Retrieved user info ======");
 			System.out.println(info.toJSONString());
@@ -193,9 +185,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		accessTokenResponse.getTokens().getAccessToken();
 		
 		return accessTokenResponse.getTokens();
-//		OIDCAccessTokenResponse accessTokenResponse = (OIDCAccessTokenResponse) tokenResponse;
-//		accessTokenResponse.getAccessToken();
-//		accessTokenResponse.getIDToken();
+
 	}
 	
 	/*******************************************************************
@@ -236,55 +226,39 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		
 		return successResponse.getUserInfo();
 	}
-	/*******************************************************************
-	 * 
-	 ******************************************************************/
-//	private ReadOnlyJWTClaimsSet verifyIdToken(JWT idToken, OIDCProviderMetadata providerMetadata) {
-//		RSAPublicKey providerKey = null;
-//		try {
-//			JSONObject key = getProviderRSAJWK(providerMetadata.getJWKSetURI().toURL().openStream());
-//			providerKey = RSAKey.parse(key).toRSAPublicKey();
-//		} catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException | java.text.ParseException e) {
-//			// TODO error handling
-//		}
-//
-//		DefaultJWTDecoder jwtDecoder = new DefaultJWTDecoder();
-//		jwtDecoder.addJWSVerifier(new RSASSAVerifier(providerKey));
-//		ReadOnlyJWTClaimsSet claims = null;
-//		try {
-//			claims = jwtDecoder.decodeJWT(idToken);
-//		} catch (JOSEException | java.text.ParseException e) {
-//			// TODO error handling
-//		}
-//
-//		return claims;
-//	}
-
 	
 	/*******************************************************************
 	 * 
 	 ******************************************************************/
-	private JSONObject getProviderRSAJWK(InputStream is) throws ParseException {
-		// Read all data from stream
-		StringBuilder sb = new StringBuilder();
-		try (Scanner scanner = new Scanner(is);) {
-			while (scanner.hasNext()) {
-				sb.append(scanner.next());
-			}
-		}
-
-		// Parse the data as json
-		String jsonString = sb.toString();
-		JSONObject json = JSONObjectUtils.parse(jsonString);
-
-		// Find the RSA signing key
-		JSONArray keyList = (JSONArray) json.get("keys");
-		for (Object key : keyList) {
-			JSONObject k = (JSONObject) key;
-			if (k.get("use").equals("sig") && k.get("kty").equals("RSA")) {
-				return k;
-			}
-		}
-		return null;
-	}
+//	private ReadOnlyJWTClaimsSet verifyIdToken(JWT idToken, OIDCProviderMetadata providerMetadata) {	
+//
+//		ConfigurableJWTProcessor<SecurityContext> jwtProcessor = new DefaultJWTProcessor<>();
+//		
+//		//JWKSource<SecurityContext> keySource = new RemoteJWKSet<>(new URL("https://demo.c2id.com/jwks.json"));
+//		JWKSet parsedSet = JWKSet.parse("MIICpzCCAY8CBgGBbLxgizANBgkqhkiG9w0BAQsFADAXMRUwEwYDVQQDDAxjZndsb2NhbGhvc3QwHhcNMjIwNjE2MTMzNjMzWhcNMzIwNjE2MTMzODEzWjAXMRUwEwYDVQQDDAxjZndsb2NhbGhvc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCA8R9ll4yU+QPgV3tkzX/S0fPx8b0V10YB8tU/SjwnjamuOtwsXB5QuMITDw6TQMDNX8MEr56PKrPe2I8VMuOP3B/uhSstOZrVFS0G4quEZpsgVUDOzkVMbcaV8wYgxHlqDKRGUk2C8BhAgjaqwtie3tfhZDAOjTqTCfo1Xc7g9+zIdTBP4L5qlmWycfbdC7syYGJ8YsPco/NrCkqHnwF2L4gYB0/GGFRcareaaWWvyAlBI1Jm7ZahYkLuF1s3yD/7lylrxX3vC5rp1zcEpfcSesH+vyQFbtLrA7isABIxpGaKL0H4c45+V47OFl6fCv1RdsfFXqkSU2CGDYao7Mz7AgMBAAEwDQYJKoZIhvcNAQELBQADggEBAAPENqpCBQNkrFeotbSUIKkThAnv8RbGhbfwopD0+afYR+BjUP/nLi/Qjaeopigtm1ogSvWjhAHWOsNgti5a914c8XYK2mPwitm3fjAoet4wQeFxinWruzYe3Cyaa0lo3d56c7kUxU0l3bxbZUOUtyf4iOfNnX0VjSS6VmoftcZ7jprpMcDVbKIRLAK+HyJrz1CcvOuUUGAT/s7v7F9aCztGnk19DGfGW9ab4NFRCLEQ0229t01PpLQ/V9lG3dwPn1eWgsrLNpfxJtir+QK61tcFPd9hk15ZpVVvolthi1WpFEZ6M+Q8EYt9FGRHQ6cjvDIJJQ+00dY5Gd/0oYYb1Oo=");
+//		
+//		JWKSource<SecurityContext> keySource = new ImmutableJWKSet<SecurityContext>(parsedSet);
+//
+//		// The expected JWS algorithm of the access tokens (agreed out-of-band)
+//		JWSAlgorithm expectedJWSAlg = JWSAlgorithm.RS256;
+//		
+//		JWSKeySelector<SecurityContext> keySelector =
+//			    new JWSVerificationKeySelector<>(expectedJWSAlg, keySource);
+//		
+//		jwtProcessor.setJWSKeySelector(keySelector);
+//
+//		// Set the required JWT claims for access tokens issued by the Connect2id
+//		// server, may differ with other servers
+//		jwtProcessor.setJWTClaimsSetVerifier(new DefaultJWTClaimsVerifier(
+//		    new JWTClaimsSet.Builder().issuer("https://demo.c2id.com").build(),
+//		    new HashSet<>(Arrays.asList("sub", "iat", "exp", "scp", "cid", "jti"))));
+//
+//		// Process the token
+//		SecurityContext ctx = null; // optional context parameter, not required here
+//		JWTClaimsSet claimsSet = jwtProcessor.process(accessToken, ctx);
+//
+//		// Print out the token claims set
+//		System.out.println(claimsSet.toJSONObject());
+//	}
+	
 }

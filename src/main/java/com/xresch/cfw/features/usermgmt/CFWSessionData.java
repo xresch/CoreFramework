@@ -98,8 +98,8 @@ public class CFWSessionData implements Serializable {
 		return this.customProperties.get(key);
 	}
 	
-	public void removeCustom(String key) {
-		 this.customProperties.remove(key);
+	public String removeCustom(String key) {
+		 return this.customProperties.remove(key);
 	}
 	
 	public String getSessionID() {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.contextsettings.AbstractContextSettings;
 import com.xresch.cfw.features.contextsettings.ContextSettingsChangeListener;
@@ -98,15 +99,21 @@ public class SSOOpenIDConnectProviderManagement {
 	/************************************************************************
 	 * 
 	 ************************************************************************/
-	public static String getHTMLButtonsForLoginPage() {
+	public static String getHTMLButtonsForLoginPage(String url) {
 		
+		String encodedURL = CFW.HTTP.encode(url);
+		
+		String urlParam = "";
+		if(!Strings.isNullOrEmpty(encodedURL)) {
+			urlParam = "&url="+encodedURL;
+		}
 		StringBuilder builder = new StringBuilder();
 		
 		for(SSOOpenIDConnectProvider setting : environments.values()) {
 			if(setting.isDefined()) {
 				int settingsid = setting.getDefaultObject().id(); 
 				String settingsName = setting.getDefaultObject().name(); 
-				builder.append("<a class=\"btn btn-primary w-100\" role=\"button\" href=\""+FeatureCore.SERVLET_PATH_LOGIN+"?ssoid="+settingsid+"\" >"+settingsName+"</a>");
+				builder.append("<a class=\"btn btn-primary w-100\" role=\"button\" href=\""+FeatureCore.SERVLET_PATH_LOGIN+"?ssoid="+settingsid+urlParam+"\" >"+settingsName+"</a>");
 			}
 		}
 		

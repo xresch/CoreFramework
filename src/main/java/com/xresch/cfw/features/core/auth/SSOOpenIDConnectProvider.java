@@ -35,6 +35,7 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	
 	public static final String PROPERTY_SSO_STATE = "ssoState";
 	public static final String PROPERTY_SSO_PROVIDER_ID = "ssoProviderID";
+	public static final String PROPERTY_SSO_TARGET_URL = "ssopTargetURL";
 
 	private static Logger logger = CFWLog.getLogger(SSOOpenIDConnectProvider.class.getName());
 	
@@ -172,40 +173,16 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	 * @throws  
 	 * 
 	 ******************************************************************************/
-	public URI createRedirectURI(HttpServletRequest request) {
+	public URI createRedirectURI(HttpServletRequest request, String targetURL) {
 		
 		try {
 			OIDCProviderMetadata providerMetadata = getProviderMetadata();
-			
-			//---------------------------------------
-			// Dynamic Client Registration
-//			String jsonMetadata = "{\"application_type\": \"web\",\"redirect_uris\": [\"http://client.example.com/auth_callback\"],\"response_types\": [\"code\"]}";
-//			OIDCClientMetadata metadata = OIDCClientMetadata.parse(JSONObjectUtils.parse(jsonMetadata));
-//
-//			// Make registration request
-//			OIDCClientRegistrationRequest registrationRequest = new OIDCClientRegistrationRequest(providerMetadata.getRegistrationEndpointURI(), metadata, null);
-//			HTTPResponse regHTTPResponse = registrationRequest.toHTTPRequest().send();
-//
-//			// Parse and check response
-//			ClientRegistrationResponse registrationResponse = OIDCClientRegistrationResponseParser.parse(regHTTPResponse);
-//
-//			if (registrationResponse instanceof ClientRegistrationErrorResponse) {
-//			  ErrorObject error = ((ClientRegistrationErrorResponse) registrationResponse)
-//			  .getErrorObject();
-//			  // TODO error handling
-//			}
-//
-//			// Store client information from OP
-//			OIDCClientInformation clientInformation = ((OIDCClientInformationResponse)registrationResponse).getOIDCClientInformation();
-//			
-			
-			
+
 			//---------------------------------------
 			// Authentication Request
 			// The client ID provisioned by the OpenID provider when
 			// the client was registered
 			ClientID clientID = new ClientID(this.clientID());
-			//ClientID clientID = clientInformation.getID();
 			
 			URI endpointURI = providerMetadata.getAuthorizationEndpointURI();
 
@@ -218,6 +195,7 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 			State state = new State();
 			CFW.Context.Session.getSessionData().setCustom(PROPERTY_SSO_STATE, state.getValue());
 			CFW.Context.Session.getSessionData().setCustom(PROPERTY_SSO_PROVIDER_ID, ""+this.getDefaultObject().id());
+			CFW.Context.Session.getSessionData().setCustom(PROPERTY_SSO_TARGET_URL, targetURL);
 			
 			// Generate nonce for the ID token
 			Nonce nonce = new Nonce();
