@@ -8,10 +8,15 @@
 | stats by=[LASTNAME,LIKES_TIRAMISU] 
 	COUNT=count(LASTNAME, true) 
 	NO_NULLS=count(LASTNAME, false) 
-	NULLS=countnulls(LASTNAME) 
+	NULLS=countnulls(VALUE) 
 	MIN=min(VALUE) 
 	AVG=avg(VALUE) 
 	MAX=max(VALUE)
 	SUM=sum(VALUE)
+	MEDIAN=median(VALUE)
+	#using percentile function without defining percentile will result in median	
+	"50th"=perc(VALUE)	
+	"80th"=perc(VALUE, 80)	
+	"90th"=perc(VALUE, 90)	
 | sort LASTNAME, LIKES_TIRAMISU reversenulls=true</code></pre>
 

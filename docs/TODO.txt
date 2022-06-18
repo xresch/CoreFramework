@@ -170,9 +170,11 @@ DONE
 	- lastindexof
 	- length
 	- max
+	- median
 	- meta
 	- min
 	- nullto
+	- perc
 	- round
 	- substring
 	- sum

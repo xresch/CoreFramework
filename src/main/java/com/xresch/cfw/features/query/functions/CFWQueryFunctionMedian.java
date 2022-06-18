@@ -1,23 +1,20 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
-import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
-public class CFWQueryFunctionAvg extends CFWQueryFunction {
-
-	private int count = 0; 
-	private BigDecimal sum = new BigDecimal(0); 
+public class CFWQueryFunctionMedian extends CFWQueryFunctionPerc {
 	
-	public CFWQueryFunctionAvg(CFWQueryContext context) {
+	public CFWQueryFunctionMedian(CFWQueryContext context) {
 		super(context);
+		
+		percentile = 50;
 	}
 
 	/***********************************************************************************************
@@ -25,7 +22,7 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "avg";
+		return "median";
 	}
 	
 	/***********************************************************************************************
@@ -33,14 +30,14 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "avg(valueOrFieldname, includeNulls)";
+		return "median(valueOrFieldname, includeNulls)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Aggregation function to create average.";
+		return "Aggregation function to calculate median values.";
 	}
 	
 	/***********************************************************************************************
@@ -48,8 +45,8 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>valueOrFieldname:&nbsp;</b>The value or fieldname used for the average.</p>"
-			 + "<p><b>includeNulls:&nbsp;</b>(Optional)Toggle if null values should be included in the average(Default:false).</p>"
+		return "<p><b>valueOrFieldname:&nbsp;</b>The value or fieldname used for the count.</p>"
+			 + "<p><b>includeNulls:&nbsp;</b>(Optional)Toggle if null values should be included in the median(Default:false).</p>"
 			;
 	}
 
@@ -58,18 +55,8 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_avg.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_median.html");
 	}
-
-
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	@Override
-	public boolean supportsAggregation() {
-		return true;
-	}
-
 	
 	/***********************************************************************************************
 	 * 
@@ -79,41 +66,27 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 		
 		int paramCount = parameters.size();
 		if(paramCount == 0) {
-			count++;
 			return;
 		}
 
 		QueryPartValue value = parameters.get(0);
+		
+		//---------------------------------
+		// Resolve countNulls
 		boolean countNulls = false;
 		if(paramCount > 1) {
 			countNulls = parameters.get(1).getAsBoolean();
 		}
 		
+		//---------------------------------
+		// Store values
 		if(value.isNumberOrNumberString()) {
-			count++;
-			sum = sum.add(value.getAsBigDecimal());
+			values.add(value.getAsBigDecimal());
 		}else if(countNulls && value.isNull()) {
-			count++;
-			// sum + 0
+			values.add(new BigDecimal(0));
 		}
 	
 	}
 
-	/***********************************************************************************************
-	 * Returns the current count and increases it by 1;
-	 ***********************************************************************************************/
-	@Override
-	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
-		
-		if(count == 0) {
-			return QueryPartValue.newNumber(0);
-		}
-		
-		BigDecimal average = sum.divide(new BigDecimal(count), RoundingMode.HALF_UP);
-		QueryPartValue result = QueryPartValue.newNumber(average);
-		
-		
-		return result;
-	}
 
 }

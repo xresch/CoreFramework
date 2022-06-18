@@ -1,7 +1,6 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import com.xresch.cfw._main.CFW;
@@ -11,12 +10,13 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
-public class CFWQueryFunctionAvg extends CFWQueryFunction {
+public class CFWQueryFunctionPerc extends CFWQueryFunction {
 
-	private int count = 0; 
-	private BigDecimal sum = new BigDecimal(0); 
+	protected ArrayList<BigDecimal> values = new ArrayList<>();
 	
-	public CFWQueryFunctionAvg(CFWQueryContext context) {
+	protected Integer percentile = null;
+	
+	public CFWQueryFunctionPerc(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -25,7 +25,7 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "avg";
+		return "perc";
 	}
 	
 	/***********************************************************************************************
@@ -33,14 +33,14 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "avg(valueOrFieldname, includeNulls)";
+		return "perc(valueOrFieldname, percentile, includeNulls)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Aggregation function to create average.";
+		return "Aggregation function to calculate percentile values.";
 	}
 	
 	/***********************************************************************************************
@@ -48,8 +48,9 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>valueOrFieldname:&nbsp;</b>The value or fieldname used for the average.</p>"
-			 + "<p><b>includeNulls:&nbsp;</b>(Optional)Toggle if null values should be included in the average(Default:false).</p>"
+		return "<p><b>valueOrFieldname:&nbsp;</b>The value or fieldname used for the count.</p>"
+			 + "<p><b>percentile:&nbsp;</b>(Optional)Value from 0 to 100 to define which percentile to calculate(Default:50).</p>"
+			 + "<p><b>includeNulls:&nbsp;</b>(Optional)Toggle if null values should be included in the percentile calculation(Default:false).</p>"
 			;
 	}
 
@@ -58,7 +59,7 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_avg.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_perc.html");
 	}
 
 
@@ -79,22 +80,37 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 		
 		int paramCount = parameters.size();
 		if(paramCount == 0) {
-			count++;
 			return;
 		}
 
 		QueryPartValue value = parameters.get(0);
-		boolean countNulls = false;
-		if(paramCount > 1) {
-			countNulls = parameters.get(1).getAsBoolean();
+		
+		//---------------------------------
+		// Resolve Percentile
+		if(percentile == null && paramCount > 1) {
+			if(parameters.get(1).isNumberOrNumberString()) {
+				percentile = parameters.get(1).getAsInteger();
+				if(percentile < 0) {
+					percentile = 0;
+				}else if(percentile > 100) {
+					percentile = 100;
+				}
+			}
 		}
 		
+		//---------------------------------
+		// Resolve countNulls
+		boolean countNulls = false;
+		if(paramCount > 2) {
+			countNulls = parameters.get(2).getAsBoolean();
+		}
+		
+		//---------------------------------
+		// Store values
 		if(value.isNumberOrNumberString()) {
-			count++;
-			sum = sum.add(value.getAsBigDecimal());
+			values.add(value.getAsBigDecimal());
 		}else if(countNulls && value.isNull()) {
-			count++;
-			// sum + 0
+			values.add(new BigDecimal(0));
 		}
 	
 	}
@@ -105,15 +121,31 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
+		int count = values.size();
+		
 		if(count == 0) {
-			return QueryPartValue.newNumber(0);
+			return QueryPartValue.newNull();
 		}
 		
-		BigDecimal average = sum.divide(new BigDecimal(count), RoundingMode.HALF_UP);
-		QueryPartValue result = QueryPartValue.newNumber(average);
+		if(percentile == null) {
+			percentile = 50;
+		}
+		
+		int percentilePosition = (int)Math.ceil( count * (percentile / 100f) );
+		
+		//---------------------------
+		// Retrieve number
+		values.sort(null);
+		
+		if(percentilePosition > 0) {
+			return QueryPartValue.newNumber(values.get(percentilePosition-1));
+		}else {
+			return QueryPartValue.newNumber(values.get(0));
+				
+		}
 		
 		
-		return result;
+		
 	}
 
 }
