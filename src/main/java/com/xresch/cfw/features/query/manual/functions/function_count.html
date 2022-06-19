@@ -1,0 +1,25 @@
+
+<p>This function is used to count elements. It supports aggregation and can be used in aggregation commands.</p>
+
+<p>Following query creates random records and uses the count-function:</p>
+
+<pre><code class="language-cfwquery">| source random type=arrays
+| set 
+	#return a number that increases by 1 every call
+	INDEX=count()
+	# return number of items in array
+	COUNT_NUMBERS=count(ARRAY_NUMBERS)
+	COUNT_CHARS=count(ARRAY_CHARACTERS)
+	COUNT_STRINGS=count(ARRAY_STRINGS)</code></pre>
+
+<p>Following is an example how to use this function in aggregation commands:</p>
+
+<pre><code class="language-cfwquery">| source random records=10000
+| stats by=[LIKES_TIRAMISU] 
+	# count elements that are not null or empty
+	COUNT=count(LASTNAME) 
+	# count all values, including null values
+	INCLUDE_NULLS=count(LASTNAME, true) 
+	# use function countnulls to count nulls
+	NULLS=countnulls(LASTNAME) 
+| sort COUNT reverse=true</code></pre>

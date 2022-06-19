@@ -1,6 +1,5 @@
 package com.xresch.cfw.features.query.functions;
 
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import com.xresch.cfw._main.CFW;
@@ -13,6 +12,7 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 public class CFWQueryFunctionCount extends CFWQueryFunction {
 
 	private int count = 0; 
+	private boolean isAggregated = false;
 	
 	public CFWQueryFunctionCount(CFWQueryContext context) {
 		super(context);
@@ -47,7 +47,7 @@ public class CFWQueryFunctionCount extends CFWQueryFunction {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return "<p><b>valueOrFieldname:&nbsp;</b>(Optional)The value or fieldname used for the count.</p>"
-			 + "<p><b>countNulls:&nbsp;</b>(Optional)Toggle if null values should be counted or not(Default:false).</p>"
+			 + "<p><b>countNulls:&nbsp;</b>(Optional)Toggle if null values and empty strings should be counted or not(Default:false).</p>"
 			;
 	}
 
@@ -75,6 +75,8 @@ public class CFWQueryFunctionCount extends CFWQueryFunction {
 	@Override
 	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
 		
+		isAggregated = true;
+		
 		int paramCount = parameters.size();
 		if(paramCount == 0) {
 			count++;
@@ -87,12 +89,12 @@ public class CFWQueryFunctionCount extends CFWQueryFunction {
 			countNulls = parameters.get(1).getAsBoolean();
 		}
 		
-		if(!value.isNull()) {
+		if(!value.isNullOrEmptyString()) {
 			count++;
 		}else if(countNulls) {
 			count++;
 		}
-	
+			
 	}
 
 	/***********************************************************************************************
@@ -101,7 +103,20 @@ public class CFWQueryFunctionCount extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		QueryPartValue result = QueryPartValue.newNumber(count);
+		QueryPartValue result = QueryPartValue.newNull();
+		if(isAggregated || parameters.size() == 0) {
+			result = QueryPartValue.newNumber(count);
+		}else if(parameters.size() > 0) {
+			
+			QueryPartValue param = parameters.get(0);
+			
+			if(param.isJsonArray()) {
+				result = QueryPartValue.newNumber(param.getAsJsonArray().size());
+			}else {
+				result = QueryPartValue.newNull();
+			}
+		}
+
 		count++;
 		
 		return result;

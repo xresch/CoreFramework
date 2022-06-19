@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.parse;
 
 import java.math.BigDecimal;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -177,6 +178,17 @@ public class QueryPartValue extends QueryPart {
 	 ******************************************************************************************************/
 	public boolean isNull() {
 		return value == null;
+	}
+	
+	/******************************************************************************************************
+	 * Check if the value is null
+	 ******************************************************************************************************/
+	public boolean isNullOrEmptyString() {
+		return 
+			value == null 
+			|| (this.type == QueryPartValueType.STRING 
+				&& Strings.isNullOrEmpty((String)value) 
+			);
 	}
 	
 	/******************************************************************************************************
