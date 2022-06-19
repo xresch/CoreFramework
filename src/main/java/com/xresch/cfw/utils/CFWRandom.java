@@ -350,6 +350,30 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
+	 * Creates a random json array.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfMixedTypes(int minElements, int maxElements) { 
+		JsonArray array = new JsonArray();
+		
+		int count = randomIntegerInRange(minElements, maxElements);
+		for(int i = 0; i < count; i++) {
+			
+			switch(i % 4) {
+				case 0: array.add(randomMythicalLocation(15));  break;
+				case 1: array.add(randomBoolean(15));  break;
+				case 2: array.add(randomIntegerInRange(0, 100));  break;
+				case 3: array.add(randomFloatInRange(0, 10000));  break;
+				default: array.add(randomStringAlphaNumSpecial(6));  break;
+			}
+			
+		}
+		
+		return array;
+	}
+	
+	/******************************************************************************
 	 * Creates a random json array of people with various properties.
 	 * 
 	 * @param count
@@ -496,9 +520,9 @@ public class CFWRandom {
 		JsonObject object = new JsonObject();
 		
 		object.add("ARRAY_NUMBERS", randomJSONArrayOfIntegers(12,0,100));
-		object.add("ARRAY_CHARACTERS", randomJSONArrayOfCharacters(12));
+		object.add("ARRAY_CHARACTERS", randomJSONArrayOfCharacters(10));
 		object.add("ARRAY_STRINGS", randomJSONArrayOfRandomStrings(6, 6));
-
+		object.add("ARRAY_MIXED", randomJSONArrayOfMixedTypes(5, 8));
 		return object;
 	}
 	

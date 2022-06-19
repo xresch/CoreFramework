@@ -1,8 +1,8 @@
 package com.xresch.cfw.features.query.functions;
 
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -11,7 +11,9 @@ import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
 public class CFWQueryFunctionCountNulls extends CFWQueryFunction {
-
+	
+	private boolean isAggregated = false;
+	
 	private int count = 0; 
 	
 	public CFWQueryFunctionCountNulls(CFWQueryContext context) {
@@ -74,6 +76,8 @@ public class CFWQueryFunctionCountNulls extends CFWQueryFunction {
 	@Override
 	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
 		
+		isAggregated = true;
+		
 		int paramCount = parameters.size();
 		if(paramCount == 0) {
 			count++;
@@ -93,7 +97,30 @@ public class CFWQueryFunctionCountNulls extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		QueryPartValue result = QueryPartValue.newNumber(count);
+		QueryPartValue result = QueryPartValue.newNull();
+		
+		if(isAggregated || parameters.size() == 0) {
+			result = QueryPartValue.newNumber(count);
+		}else if(parameters.size() > 0) {
+			
+			QueryPartValue param = parameters.get(0);
+			
+			if(param.isJsonArray()) {
+				
+				JsonArray array = param.getAsJsonArray();
+				
+				int nullCount = 0;
+				for(int i = 0; i < array.size(); i++) {
+					if(array.get(i).isJsonNull()) {
+						nullCount++;
+					}
+				}
+				result = QueryPartValue.newNumber(nullCount);
+				
+			}else {
+				result = QueryPartValue.newNull();
+			}
+		}
 		
 		return result;
 	}
