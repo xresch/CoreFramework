@@ -311,6 +311,13 @@ public class QueryPartValue extends QueryPart {
 	}
 	
 	/******************************************************************************************************
+	 * Check if the value is null
+	 ******************************************************************************************************/
+	public boolean isJsonObject() {
+		return this.type == QueryPartValueType.JSON && ((JsonElement)this.value).isJsonObject();
+	}
+	
+	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
 	@SuppressWarnings("unchecked")
@@ -429,7 +436,7 @@ public class QueryPartValue extends QueryPart {
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public JsonElement getAsJson() {
+	public JsonElement getAsJsonElement() {
 		
 		switch(type) {
 			case JSON:		return ((JsonElement)value);
@@ -445,7 +452,52 @@ public class QueryPartValue extends QueryPart {
 			default:	return JsonNull.INSTANCE;
 
 		}
-
+	}
+	
+	/******************************************************************************************************
+	 * Converts the value into a JsonObject if not already a json object.
+	 * If value is converted, resulting object contains two fields: type and value.
+	 * Use getAsJsonElement for not having conversion.
+	 ******************************************************************************************************/
+	public JsonObject getAsJsonObject() {
+		JsonObject object = new JsonObject();
+		switch(type) {
+			case JSON:		JsonElement element = ((JsonElement)value);
+							if(element.isJsonObject()) {
+								object = element.getAsJsonObject();
+							}else if(element.isJsonArray()) {
+								
+								object.addProperty("type", "array");
+								object.add("value", element);
+							}else {
+								//this code should never be reached
+								object.add("type", JsonNull.INSTANCE);
+								object.add("value", element);
+							}
+							break;
+			
+			case NUMBER:	object.addProperty("type", "number");
+							object.addProperty("value", (Number)value);
+							break; 
+							
+			case BOOLEAN:	object.addProperty("type", "boolean");
+							object.addProperty("value", (Boolean)value);
+							break; 
+							
+			case STRING:	object.addProperty("type", "string");
+							object.addProperty("value", (String)value);
+							break; 
+						
+			case NULL:		object.addProperty("type", "null");
+							object.add("value", JsonNull.INSTANCE);
+							break;
+							
+			default:		object.addProperty("type", "null");
+							object.add("value", JsonNull.INSTANCE);
+							break;
+		}
+		
+		return object;
 	}
 	
 	/******************************************************************************************************
@@ -513,7 +565,7 @@ public class QueryPartValue extends QueryPart {
 
 		debugObject.addProperty("partType", "Value");
 		
-		debugObject.add("value", this.getAsJson());
+		debugObject.add("value", this.getAsJsonElement());
 
 		return debugObject;
 	}

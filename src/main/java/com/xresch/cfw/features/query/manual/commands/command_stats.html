@@ -5,10 +5,16 @@
 <p>The following example generates sample records and creates statistical values grouped by LASTNAME and Tiramisu preference:
 </p>
 <pre><code class="language-cfwquery">| source random records=10000
-| stats by=[LASTNAME,LIKES_TIRAMISU] 
-	COUNT=count(LASTNAME, true) 
-	NO_NULLS=count(LASTNAME, false) 
-	NULLS=countnulls(VALUE) 
+| stats by=[LASTNAME] 
+	# regular count 
+	COUNT=count() 
+	# count values that are not null or empty string
+	COUNT_NO_NULLS=count(LIKES_TIRAMISU) 
+	#count all values, same as count()
+	COUNT_WITH_NULLS=count(LIKES_TIRAMISU, true) 
+	# count nulls only
+	NUMBER_OF_NULLS=countnulls(LIKES_TIRAMISU) 
+	# various statistics
 	MIN=min(VALUE) 
 	AVG=avg(VALUE) 
 	MAX=max(VALUE)
@@ -18,5 +24,5 @@
 	"50th"=perc(VALUE)	
 	"80th"=perc(VALUE, 80)	
 	"90th"=perc(VALUE, 90)	
-| sort LASTNAME, LIKES_TIRAMISU reversenulls=true</code></pre>
+| sort LASTNAME</code></pre>
 

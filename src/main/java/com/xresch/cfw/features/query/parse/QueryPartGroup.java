@@ -172,7 +172,7 @@ public class QueryPartGroup extends QueryPart {
 			
 			for(QueryPart part : partsGroup) {
 				if(part != null) {
-					jsonArray.add(part.determineValue(object).getAsJson());
+					jsonArray.add(part.determineValue(object).getAsJsonElement());
 				}
 			}
 		}

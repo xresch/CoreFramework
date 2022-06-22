@@ -294,8 +294,8 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		debugObject.addProperty("partType", "JsonMemberAccess");
 		debugObject.add("leftside", leftside.createDebugObject(object));
 		debugObject.add("rightside", leftside.createDebugObject(object));
-		debugObject.add("leftEvaluated", leftside.determineValue(object).getAsJson());
-		debugObject.add("rightEvaluated", leftside.determineValue(object).getAsJson());
+		debugObject.add("leftEvaluated", leftside.determineValue(object).getAsJsonElement());
+		debugObject.add("rightEvaluated", leftside.determineValue(object).getAsJsonElement());
 		return debugObject;
 	}
 	

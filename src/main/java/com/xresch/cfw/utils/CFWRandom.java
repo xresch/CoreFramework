@@ -536,9 +536,9 @@ public class CFWRandom {
 		JsonObject object = new JsonObject();
 		
 		object.addProperty("UUID", UUID.randomUUID().toString());
-		object.addProperty("BOOLEAN_STRING", ""+CFW.Random.randomBoolean());
+		object.addProperty("BOOLEAN_STRING", ""+CFW.Random.randomBoolean(nullRatioPercent));
 		object.add("ALWAYS_NULL", JsonNull.INSTANCE);
-		object.addProperty("COLOR", randomColorName());
+		object.addProperty("COLOR", randomColorName(nullRatioPercent));
 		object.addProperty("STATUS", randomFromArray(new String[] {"Excellent", "Good", "Warning", "Emergency", "Danger"}));
 
 		return object;

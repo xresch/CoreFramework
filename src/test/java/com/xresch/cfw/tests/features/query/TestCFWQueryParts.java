@@ -51,7 +51,7 @@ public class TestCFWQueryParts {
 		Assertions.assertEquals(null, part.getAsNumber());
 		Assertions.assertEquals(null, part.getAsString());
 		Assertions.assertEquals(false, part.getAsBoolean());
-		Assertions.assertEquals(JsonNull.INSTANCE, part.getAsJson());
+		Assertions.assertEquals(JsonNull.INSTANCE, part.getAsJsonElement());
 		
 		//-------------------------------
 		// Number
@@ -68,7 +68,7 @@ public class TestCFWQueryParts {
 		Assertions.assertEquals(12.1f, part.getAsNumber().floatValue());
 		Assertions.assertEquals("12.1", part.getAsString());
 		Assertions.assertEquals(true, part.getAsBoolean());
-		Assertions.assertEquals(12.1f, part.getAsJson().getAsFloat());
+		Assertions.assertEquals(12.1f, part.getAsJsonElement().getAsFloat());
 	
 		//-------------------------------
 		// Integer
@@ -85,7 +85,7 @@ public class TestCFWQueryParts {
 		Assertions.assertEquals(8008, part.getAsNumber().intValue());
 		Assertions.assertEquals("8008", part.getAsString());
 		Assertions.assertEquals(true, part.getAsBoolean());
-		Assertions.assertEquals(8008, part.getAsJson().getAsInt());
+		Assertions.assertEquals(8008, part.getAsJsonElement().getAsInt());
 		
 		//-------------------------------
 		// Boolean
@@ -102,7 +102,7 @@ public class TestCFWQueryParts {
 		Assertions.assertEquals(false, part.getAsBoolean());
 		Assertions.assertEquals("false", part.getAsString());
 		Assertions.assertEquals(0, part.getAsNumber());
-		Assertions.assertEquals(false, part.getAsJson().getAsBoolean());
+		Assertions.assertEquals(false, part.getAsJsonElement().getAsBoolean());
 		
 		//-------------------------------
 		// String
@@ -120,8 +120,8 @@ public class TestCFWQueryParts {
 		Assertions.assertEquals(false, part.getAsBoolean());
 		// NumberFormatException
 		// Assertions.assertEquals(0, part.getAsNumber());
-		Assertions.assertEquals(false, part.getAsJson().getAsBoolean());
-		Assertions.assertEquals("False", part.getAsJson().getAsString());
+		Assertions.assertEquals(false, part.getAsJsonElement().getAsBoolean());
+		Assertions.assertEquals("False", part.getAsJsonElement().getAsString());
 		//-------------------------------
 		// Json Element
 		//-------------------------------
@@ -137,7 +137,7 @@ public class TestCFWQueryParts {
 		Assertions.assertTrue(part.isJson());
 		Assertions.assertFalse(part.isInteger());
 		Assertions.assertFalse(part.isNumber());
-		Assertions.assertEquals("value", part.getAsJson().getAsJsonObject().get("key").getAsString());
+		Assertions.assertEquals("value", part.getAsJsonElement().getAsJsonObject().get("key").getAsString());
 		Assertions.assertEquals("{\"key\":\"value\"}", part.getAsString());
 		// UnsupportedOperationException
 		// Assertions.assertEquals(false, part.getAsBoolean());

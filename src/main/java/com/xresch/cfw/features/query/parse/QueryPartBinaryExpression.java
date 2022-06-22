@@ -183,7 +183,7 @@ public class QueryPartBinaryExpression extends QueryPart {
 					evalResult = new JsonPrimitive(!rightValue.getAsBoolean());
 				}else {
 					//in any other case use right value as string
-					evalResult = rightValue.getAsJson();
+					evalResult = rightValue.getAsJsonElement();
 				}
 			break;	
 				

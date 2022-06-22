@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -175,7 +176,16 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 			for(int i = 0; i < records; i++) {
 				
 				EnhancedJsonObject object = new EnhancedJsonObject( CFWRandom.randomJSONObjectVariousData(0) );
+				
+				JsonObject graphData = new JsonObject();
+				graphData.addProperty("x", i+0);
+				graphData.addProperty("y", Math.sin(i+1));
+				object.add("GRAPH_DATA", graphData);
+				
 				object.addProperty("TIME", earliest +(i * diffStep));
+				
+				
+				
 				outQueue.add(object);
 				
 				if( isLimitReached(limit, i)) { break; }

@@ -2,7 +2,6 @@
 <p>This function is used to count elements. It supports aggregation and can be used in aggregation commands.</p>
 
 <p>Following query creates random records and uses the count-function:</p>
-
 <pre><code class="language-cfwquery">| source random type=arrays
 | set 
 	#return a number that increases by 1 every call
@@ -14,8 +13,22 @@
 	# use count nulls to for getting number of null values in an array
 	COUNT_NULLS=countnulls(ARRAY_MIXED)</code></pre>
 
-<p>Following is an example how to use this function in aggregation commands:</p>
 
+<p>Some more examples for special cases of the count-function:</p>
+<pre><code class="language-cfwquery">| source random type=various
+| set 
+	# if value is an object returns number of fields.
+	GRAPH=count(GRAPH_DATA)
+	# returns size of array
+	COUNT=count([3,2,3,4])
+	# returns null as value is not countable.
+	UNCOUNTABLE_A=count("some_string")
+	UNCOUNTABLE_B=count(true)
+	UNCOUNTABLE_C=count(123)
+	UNCOUNTABLE_NULL=count(null)</code></pre>
+
+
+<p>Following is an example how to use this function in aggregation commands:</p>
 <pre><code class="language-cfwquery">| source random records=10000
 | stats by=[LIKES_TIRAMISU] 
 	# count elements that are not null or empty
@@ -25,3 +38,6 @@
 	# use function countnulls to count nulls
 	NULLS=countnulls(LASTNAME) 
 | sort COUNT reverse=true</code></pre>
+
+
+

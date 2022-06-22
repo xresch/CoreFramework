@@ -81,7 +81,7 @@ public class QueryPartAssignment extends QueryPart {
 		if (leftside instanceof QueryPartJsonMemberAccess) {
 			QueryPartJsonMemberAccess memberAccess = (QueryPartJsonMemberAccess)leftside;
 			
-			memberAccess.setValueOfMember(object, value.getAsJson());
+			memberAccess.setValueOfMember(object, value.getAsJsonElement());
 		}else {
 			String memberName = this.getLeftSideAsString(object);
 			object.addProperty(memberName, value);
