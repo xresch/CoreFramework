@@ -33,11 +33,6 @@ public class QueryPartGroup extends QueryPart {
 	//holds index if this array is a index access expression(e.g. [1])
 	private Integer arrayIndex = null;
 	
-	// true if the array was embraced with square braces
-	// Used in add()-method to determine wether the array should be unwrapped when added
-	private boolean embracedArray = false;
-
-	
 	
 	/******************************************************************************************************
 	 *  
@@ -235,23 +230,6 @@ public class QueryPartGroup extends QueryPart {
 		return arrayIndex;
 	}
 	
-	/******************************************************************************************************
-	 * Return True if the array was embraced with square braces.
-	 * 
-	 ******************************************************************************************************/
-	public boolean isEmbracedArray() {
-		return embracedArray;
-	}
-	
-	/******************************************************************************************************
-	 * Set to true if the array was embraced with square braces.
-	 * 
-	 ******************************************************************************************************/
-	public QueryPartGroup isEmbracedArray(boolean enclosedArray) {
-		this.embracedArray = enclosedArray;
-		return this;
-	}
-
 	/******************************************************************************************************
 	 * Returns the element in the array represented by the index of this QueryPartArray.
 	 * Returns a JsonNull object if not resolvable.

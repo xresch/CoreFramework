@@ -66,7 +66,12 @@ public class QueryPartFunction extends QueryPart {
 
 		for(QueryPart part : partsArray) {
 			if(part instanceof QueryPartArray) {
-				functionParameters.addAll( ((QueryPartArray)part).getAsParts() );
+				QueryPartArray array = (QueryPartArray)part;
+				if(!array.isEmbracedArray()) {
+					functionParameters.addAll( ((QueryPartArray)part).getAsParts() );
+				}else {
+					functionParameters.add(array);
+				}
 			}else {
 				this.add(part);
 			}	
