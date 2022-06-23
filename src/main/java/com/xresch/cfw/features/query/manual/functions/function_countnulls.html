@@ -27,8 +27,7 @@
 <pre><code class="language-cfwquery">| source random records=10000
 | stats by=[LASTNAME] 
 	# count number of nulls in field LIKES_TIRAMISU
-	NUMBER_OF_NULLS=countnulls(LIKES_TIRAMISU) 	
-| sort LASTNAME</code></pre>
+	NUMBER_OF_NULLS=countnulls(LIKES_TIRAMISU)</code></pre>
 
 
 

@@ -3,7 +3,10 @@ package com.xresch.cfw.features.query.functions;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -15,6 +18,9 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 
 	private int count = 0; 
 	private BigDecimal sum = new BigDecimal(0); 
+	
+	private boolean isAggregated = false;
+	
 	
 	public CFWQueryFunctionAvg(CFWQueryContext context) {
 		super(context);
@@ -74,20 +80,7 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	@Override
-	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
-		
-		int paramCount = parameters.size();
-		if(paramCount == 0) {
-			count++;
-			return;
-		}
-
-		QueryPartValue value = parameters.get(0);
-		boolean countNulls = false;
-		if(paramCount > 1) {
-			countNulls = parameters.get(1).getAsBoolean();
-		}
+	private void addValueToAggregation(QueryPartValue value, boolean countNulls) {
 		
 		if(value.isNumberOrNumberString()) {
 			count++;
@@ -96,8 +89,43 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 			count++;
 			// sum + 0
 		}
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	private QueryPartValue calculateAverage() {
+		
+		if(count == 0) {
+			return QueryPartValue.newNumber(0);
+		}
+		
+		BigDecimal average = sum.divide(new BigDecimal(count), RoundingMode.HALF_UP);
+		
+		//reset values when calculation is done
+		count = 0;
+		sum = new BigDecimal(0);
+		return QueryPartValue.newNumber(average);
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
+		
+		isAggregated = true;
+		
+		QueryPartValue value = parameters.get(0);
+		boolean countNulls = false;
+		if(parameters.size() > 1) {
+			countNulls = parameters.get(1).getAsBoolean();
+		}
+		
+		addValueToAggregation(value, countNulls);
 	
 	}
+	
 
 	/***********************************************************************************************
 	 * Returns the current count and increases it by 1;
@@ -105,15 +133,44 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		if(count == 0) {
-			return QueryPartValue.newNumber(0);
+	
+		if(isAggregated) {			
+			return calculateAverage();
+		}else if(parameters.size() == 0) {
+			return QueryPartValue.newNull();
+		}else {
+			
+			QueryPartValue param = parameters.get(0);
+			boolean countNulls = false;
+			if(parameters.size() > 1) {
+				countNulls = parameters.get(1).getAsBoolean();
+			}
+
+			if(param.isJsonArray()) {
+				
+				JsonArray array = param.getAsJsonArray();
+				
+				for(int i = 0; i < array.size(); i++) {
+					
+					//Be lazy, use QueryPart for conversion
+					QueryPartValue value = QueryPartValue.newFromJsonElement(array.get(i));
+					addValueToAggregation(value, countNulls);
+				}
+				return calculateAverage();
+				
+			}else if(param.isJsonObject()) {
+				
+				for(Entry<String, JsonElement> entry : param.getAsJsonObject().entrySet()){
+					QueryPartValue value = QueryPartValue.newFromJsonElement(entry.getValue());
+					addValueToAggregation(value, countNulls);
+				}
+				return calculateAverage();
+			}
+			
+			
 		}
 		
-		BigDecimal average = sum.divide(new BigDecimal(count), RoundingMode.HALF_UP);
-		QueryPartValue result = QueryPartValue.newNumber(average);
-		
-		
-		return result;
+		//return null in all other cases
+		return QueryPartValue.newNull();
 	}
-
 }
