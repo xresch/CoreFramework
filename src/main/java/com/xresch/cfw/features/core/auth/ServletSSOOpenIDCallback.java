@@ -95,7 +95,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			//------------------------------------
 			// Verify State is correct
 			String ssoStateString = sessionData.removeCustom(SSOOpenIDConnectProvider.PROPERTY_SSO_STATE);
-			System.out.println(ssoStateString);
+
 			if (authResponse == null || !authResponse.getState().equals(new State(ssoStateString))) {
 				new HTMLResponse("Unexpected authentication Response");
 			    CFW.Messages.addErrorMessage("Unexpected response from authentication provider. Please try to sign-on again.");
@@ -132,8 +132,8 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 
 			LoginUtils.loginUserAndCreateSession(request, response, user, targetURL);
 			
-			System.out.println("======= Retrieved user info ======");
-			System.out.println(info.toJSONString());
+			//System.out.println("======= Retrieved user info ======");
+			//System.out.println(info.toJSONString());
 			
 		} catch (Exception e) {
 			new HTMLResponse("Exception Occured");

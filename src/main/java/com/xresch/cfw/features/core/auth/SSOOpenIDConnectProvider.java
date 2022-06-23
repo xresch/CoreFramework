@@ -220,7 +220,7 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 			// &redirect_uri=https%3A%2F%2Fclient.com%2Fcallback
 			// &state=6SK5S15Lwdp3Pem_55m-ayudGwno0eglKq6ZEWaykG8
 			// &nonce=d_Y4LmbzpNHTkzTKJv6v59-OmqB_F2kNr8CbL-R2xWI
-			System.out.println(authRequest.toURI());
+			//System.out.println(authRequest.toURI());
 			
 			return authRequest.toURI();
 			
