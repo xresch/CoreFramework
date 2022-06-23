@@ -262,8 +262,9 @@ public class Role extends CFWObject {
 						RoleFields.PK_ID.toString(), 
 						RoleFields.CATEGORY.toString(),
 						RoleFields.NAME.toString(),
-						RoleFields.IS_DELETABLE.toString(),
-						RoleFields.IS_RENAMABLE.toString(),	
+						//do not put these, makes API easier to use
+						//RoleFields.IS_DELETABLE.toString(),
+						//RoleFields.IS_RENAMABLE.toString(),	
 						RoleFields.IS_GROUP.toString(),	
 				};
 		
