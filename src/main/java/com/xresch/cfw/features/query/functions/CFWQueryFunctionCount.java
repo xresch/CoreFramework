@@ -103,7 +103,6 @@ public class CFWQueryFunctionCount extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		
 		QueryPartValue result = QueryPartValue.newNull();
 		if(isAggregated || parameters.size() == 0) {
 			result = QueryPartValue.newNumber(count);

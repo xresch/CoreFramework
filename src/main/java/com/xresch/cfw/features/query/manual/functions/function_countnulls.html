@@ -1,0 +1,34 @@
+
+<p>This function is used to count null values. It supports aggregation and can be used in aggregation commands.</p>
+
+<p>Following query uses some json example data to demonstrate the countnulls-function:</p>
+<pre><code class="language-cfwquery">| source json data=`
+[
+	 {index: 0, array: [1,2,3], object: {a: 0, b: 1, c: 3 } }
+	,{index: 1, array: [1,null,3], object: {a: 11, b: 22, c: null} }
+	,{index: 2, array: [null,null,3], object: {a: null, b: 22, c: null} }
+	,{index: 3, array: [null,null,null], object: {a: null, b: null, c: null} }
+]
+`
+| set 
+	#if param is null returns count 1
+	COUNT_IS_ONE=countnulls(null)
+	# return number of items in array that are null
+	NULLS_IN_ARRAY=countnulls(array)
+	# counts the number of fields that have a null value
+	NULLS_IN_OBJECT=countnulls(object)
+	# everything else returns null as it is considered uncountable
+	UNCOUNTABLE_A=countnulls()
+	UNCOUNTABLE_B=countnulls(true)
+	UNCOUNTABLE_C=countnulls(123)
+	UNCOUNTABLE_D=countnulls("some_string")</code></pre>
+
+<p>Following is an example on how to use this function in aggregation commands:</p>
+<pre><code class="language-cfwquery">| source random records=10000
+| stats by=[LASTNAME] 
+	# count number of nulls in field LIKES_TIRAMISU
+	NUMBER_OF_NULLS=countnulls(LIKES_TIRAMISU) 	
+| sort LASTNAME</code></pre>
+
+
+

@@ -1,8 +1,10 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -99,9 +101,11 @@ public class CFWQueryFunctionCountNulls extends CFWQueryFunction {
 		
 		QueryPartValue result = QueryPartValue.newNull();
 		
-		if(isAggregated || parameters.size() == 0) {
+		if(isAggregated) {
 			result = QueryPartValue.newNumber(count);
-		}else if(parameters.size() > 0) {
+		}else if(parameters.size() == 0) {
+			result = QueryPartValue.newNull();
+		}else{
 			
 			QueryPartValue param = parameters.get(0);
 			
@@ -117,7 +121,20 @@ public class CFWQueryFunctionCountNulls extends CFWQueryFunction {
 				}
 				result = QueryPartValue.newNumber(nullCount);
 				
+			}else if(param.isJsonObject()) {
+				
+				int nullCount = 0;
+				for(Entry<String, JsonElement> entry : param.getAsJsonObject().entrySet()){
+		
+					if(entry.getValue().isJsonNull()) {
+						nullCount++;
+					}
+				}
+				result = QueryPartValue.newNumber(nullCount);
+			}else if(param.isNull()){
+				result = QueryPartValue.newNumber(1);
 			}else {
+			
 				result = QueryPartValue.newNull();
 			}
 		}

@@ -14,7 +14,7 @@
 	COUNT_NULLS=countnulls(ARRAY_MIXED)</code></pre>
 
 
-<p>Some more examples for special cases of the count-function:</p>
+<p>Some more examples for special cases the count-function:</p>
 <pre><code class="language-cfwquery">| source random type=various
 | set 
 	# if value is an object returns number of fields.
@@ -26,6 +26,7 @@
 	UNCOUNTABLE_B=count(true)
 	UNCOUNTABLE_C=count(123)
 	UNCOUNTABLE_NULL=count(null)</code></pre>
+
 
 
 <p>Following is an example how to use this function in aggregation commands:</p>
