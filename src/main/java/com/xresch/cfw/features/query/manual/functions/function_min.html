@@ -1,0 +1,35 @@
+
+<p>This function is used to find maximum values. It supports aggregation and can be used in aggregation commands.</p>
+
+<p>Following query uses some json example data to demonstrate the max-function:</p>
+<pre><code class="language-cfwquery">| source json data=`
+[
+	 {index: 0, array: [1,2,3], object: {a: 0, b: 1, c: 3 } }
+	,{index: 1, array: [1,null,3], object: {a: 11, b: 22, c: null} }
+	,{index: 2, array: [null,null,3], object: {a: null, b: 22, c: null} }
+	,{index: 3, array: [null,null,null], object: {a: null, b: null, c: null} }
+	,{index: 3, array: [1,2,3, "StringsAndBooleans_ignored"], object: {a: 11, b: 22, c: 33, string: "ignored"} }
+]
+`
+| set 
+	# return the smallest number in an array
+	MIN_ARRAY=min(array)
+	# returns the smallest of all numbers of all fields
+	MIN_OBJECT=min(object)
+	# following will return null
+	MIN_ZERO=min()
+	MIN_NULL=min(null)
+	UNSUPPORTED_A=min(true)
+	UNSUPPORTED_B=min(123)
+	UNSUPPORTED_C=min("some_string")</code></pre>
+
+<p>Following is an example on how to use this function in aggregation commands:</p>
+<pre><code class="language-cfwquery">| source random records=10000
+| stats by=[LIKES_TIRAMISU] 
+	# count nulls only
+	"index(min)"=min(INDEX) 	
+	"value(min)"=min(VALUE) 	
+| sort LASTNAME</code></pre>
+
+
+

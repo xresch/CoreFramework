@@ -1,7 +1,6 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 
@@ -161,7 +160,8 @@ public class CFWQueryFunctionMax extends CFWQueryFunction {
 			
 		}
 		
-		//return null in all other cases
+		//reset and return null in all other cases
+		max = null;
 		return QueryPartValue.newNull();
 	}
 

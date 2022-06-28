@@ -64,6 +64,9 @@ public abstract class CFWQueryFunction{
 	
 	/***********************************************************************************************
 	 * Execute the function and return the result as a QueryPartValue.
+	 * If the implementation of this class stores any internal values(e.g. for aggregation), the call
+	 * to this function has to reset all internally stored values. Else the resulting values might
+	 * be incorrect.
 	 * 
 	 ***********************************************************************************************/
 	public abstract QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters);
