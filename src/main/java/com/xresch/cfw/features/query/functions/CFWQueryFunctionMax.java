@@ -1,8 +1,12 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -13,6 +17,7 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 public class CFWQueryFunctionMax extends CFWQueryFunction {
 
 	private BigDecimal max = null; 
+	private boolean isAggregated = false;
 	
 	public CFWQueryFunctionMax(CFWQueryContext context) {
 		super(context);
@@ -66,6 +71,37 @@ public class CFWQueryFunctionMax extends CFWQueryFunction {
 	public boolean supportsAggregation() {
 		return true;
 	}
+	
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	private void addValueToAggregation(QueryPartValue value) {
+		
+		if(value.isNumberOrNumberString()) {
+			
+			BigDecimal decimal = value.getAsBigDecimal();
+			
+			if(max == null ) {
+				max = decimal;
+			}else if(decimal != null) {
+				max = max.max(decimal);
+			}
+		}
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	private QueryPartValue getMaximum() {
+		
+		QueryPartValue result = QueryPartValue.newNumber(max);
+		
+		//reset aggregation
+		max = null;
+		
+		return result;
+	}
 
 	
 	/***********************************************************************************************
@@ -74,6 +110,8 @@ public class CFWQueryFunctionMax extends CFWQueryFunction {
 	@Override
 	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
 		
+		isAggregated = true;
+		
 		int paramCount = parameters.size();
 		if(paramCount == 0) {
 			return;
@@ -81,16 +119,8 @@ public class CFWQueryFunctionMax extends CFWQueryFunction {
 
 		QueryPartValue value = parameters.get(0);
 		
-		if(value.isNumberOrNumberString()) {
-			
-			BigDecimal decimal = value.getAsBigDecimal();
-			
-			if(max == null ) {
-				max = decimal;
-			}else {
-				max = max.max(decimal);
-			}
-		}
+		addValueToAggregation(value);
+		
 	}
 
 	/***********************************************************************************************
@@ -99,9 +129,40 @@ public class CFWQueryFunctionMax extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		QueryPartValue result = QueryPartValue.newNumber(max);
+		if(isAggregated) {			
+			return getMaximum();
+		}else if(parameters.size() == 0) {
+			return QueryPartValue.newNull();
+		}else {
+			
+			QueryPartValue param = parameters.get(0);
+
+			if(param.isJsonArray()) {
+				
+				JsonArray array = param.getAsJsonArray();
+				
+				for(int i = 0; i < array.size(); i++) {
+					
+					//Be lazy, use QueryPart for conversion
+					QueryPartValue value = QueryPartValue.newFromJsonElement(array.get(i));
+					addValueToAggregation(value);
+				}
+				return getMaximum();
+				
+			}else if(param.isJsonObject()) {
+				
+				for(Entry<String, JsonElement> entry : param.getAsJsonObject().entrySet()){
+					QueryPartValue value = QueryPartValue.newFromJsonElement(entry.getValue());
+					addValueToAggregation(value);
+				}
+				return getMaximum();
+			}
+			
+			
+		}
 		
-		return result;
+		//return null in all other cases
+		return QueryPartValue.newNull();
 	}
 
 }

@@ -1,0 +1,35 @@
+
+<p>This function is used to find maximum values. It supports aggregation and can be used in aggregation commands.</p>
+
+<p>Following query uses some json example data to demonstrate the max-function:</p>
+<pre><code class="language-cfwquery">| source json data=`
+[
+	 {index: 0, array: [1,2,3], object: {a: 0, b: 1, c: 3 } }
+	,{index: 1, array: [1,null,3], object: {a: 11, b: 22, c: null} }
+	,{index: 2, array: [null,null,3], object: {a: null, b: 22, c: null} }
+	,{index: 3, array: [null,null,null], object: {a: null, b: null, c: null} }
+	,{index: 3, array: [1,2,3, "StringsAndBooleans_ignored"], object: {a: 11, b: 22, c: 33, string: "ignored"} }
+]
+`
+| set 
+	# return the highest number in an array
+	MAX_ARRAY=max(array)
+	# returns the average of all numbers of all fields
+	MAX_OBJECT=max(object)
+	# following will return null
+	MAX_ZERO=max()
+	MAX_NULL=max(null)
+	UNSUPPORTED_A=max(true)
+	UNSUPPORTED_B=max(123)
+	UNSUPPORTED_C=max("some_string")</code></pre>
+
+<p>Following is an example on how to use this function in aggregation commands:</p>
+<pre><code class="language-cfwquery">| source random records=10000
+| stats by=[LIKES_TIRAMISU] 
+	# count nulls only
+	"index(max)"=max(INDEX) 	
+	"value(max)"=max(VALUE) 	
+| sort LASTNAME</code></pre>
+
+
+

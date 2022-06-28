@@ -388,7 +388,7 @@ public class QueryPartValue extends QueryPart {
 	}
 	
 	/******************************************************************************************************
-	 * It is recommended to use isInteger() first to make sure number value is really a Integer.
+	 * 
 	 ******************************************************************************************************/
 	public BigDecimal getAsBigDecimal() {
 			
