@@ -27,7 +27,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 	
 	protected ArrayList<PipelineActionListener> listenerArray = new ArrayList<>();
 	
-	CountDownLatch latch;
+	protected CountDownLatch latch;
 
 	protected boolean done;
 	
@@ -60,7 +60,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 			this.initializeAction();
 			this.isInitialized = true;
 			
-				while (!done) {
+				while (!done && !this.isInterrupted()) {
 					
 					//---------------------------
 					// Execute
@@ -83,9 +83,9 @@ public abstract class PipelineAction<I, O> extends Thread {
 			
 		} catch (InterruptedException e) { 
 			// do nothing, expected exception caused by commands like top
-		} catch (Exception e) {
-			new CFWLog(logger).severe("Unexpected exception occured.", e);
-			e.printStackTrace();
+		} catch (Throwable e) {
+			new CFWLog(logger).severe("Unexpected exception occured: "+e.getMessage(), e);
+			parent.cancelExecution();
 		}  finally {
 			latch.countDown();
 		}

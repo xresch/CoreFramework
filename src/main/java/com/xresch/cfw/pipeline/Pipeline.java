@@ -27,6 +27,7 @@ public class Pipeline<I, O> {
 	protected Pipeline() {
 		
 	}
+	
 
 	/*************************************************************************************
 	 * Start all the actions as separate threads.
@@ -78,6 +79,23 @@ public class Pipeline<I, O> {
 	}
 	
 	/*************************************************************************************
+	 * Cancel the execution of this pipeline and all associated actions.
+	 *************************************************************************************/
+	public void cancelExecution() {
+		
+		for(PipelineAction<I,O> action : actionArray) {
+			action.setDone();
+			action.inQueue.clear();
+			action.outQueue.clear();
+			action.interrupt();
+		}
+		
+		Thread.currentThread().interrupt();
+			
+	}
+	
+	
+	/*************************************************************************************
 	 * Waits until all actions have completed.
 	 * @param args
 	 * @return
@@ -87,7 +105,7 @@ public class Pipeline<I, O> {
 			latch.await();
 		} catch (InterruptedException e) {
 			new CFWLog(logger).warn("Pipeline execution was interupted.", e);
-			Thread.currentThread().interrupt();
+			this.cancelExecution();
 			return null;
 		}	
 		

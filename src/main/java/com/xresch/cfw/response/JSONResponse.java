@@ -85,7 +85,7 @@ public class JSONResponse extends AbstractTemplateJSON {
 		if(element == null) {
 			this.getContent().append("null");
 		}else {
-			this.getContent().append(element.toString());
+			this.getContent().append(CFW.JSON.toJSON(element));
 		}
 	}
 	

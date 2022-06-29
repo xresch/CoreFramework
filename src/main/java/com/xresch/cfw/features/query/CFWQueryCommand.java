@@ -251,7 +251,7 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		} catch (Exception e) { 
 			this.parent.getContext().addMessage(MessageType.ERROR, "An unexpected error occured: "+e.getMessage());
 			new CFWLog(logger).silent(true).severe("Query ran into an unexpected error.", e);
-		} 
+		}
 		
 	}
 }
