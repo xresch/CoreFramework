@@ -157,7 +157,13 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		// Prepare Token Request
 		OIDCProviderMetadata providerMetadata = provider.getProviderMetadata();
 		ClientID clientID = new ClientID(provider.clientID());
-		Secret clientSecret = new Secret(provider.clientSecret());
+		
+		String secretString = provider.clientSecret();
+		if(secretString == null) {
+			secretString = "";
+		}
+		Secret clientSecret = new Secret(secretString);
+		
 		TokenRequest tokenReq = 
 				new TokenRequest(
 						providerMetadata.getTokenEndpointURI(),

@@ -59,7 +59,8 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 			.setDescription("The id used for this client.");
 	
 	private CFWField<String> clientSecret = CFWField.newString(FormFieldType.TEXT, PrometheusEnvironmentFields.CLIENT_SECRET)
-			.setDescription("The secret used for this client.");
+			.setDescription("The secret used for this client.")
+			.setValue("");
 	
 	private CFWField<LinkedHashMap<String, String>> customParams = CFWField.newValueLabel(PrometheusEnvironmentFields.JSON_CUSTOM_PARAMETERS)
 			.setDescription("Custom parameters that should be added to the authentication request.");
