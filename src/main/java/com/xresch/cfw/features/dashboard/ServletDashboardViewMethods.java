@@ -10,6 +10,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -726,7 +728,8 @@ public class ServletDashboardViewMethods
 					// Do Cached
 					final long finalEarliest = earliest;
 					final long finalLatest = latest;
-					JSONResponse responseFromCache = WidgetDataCache.CACHE.get(cacheID, 
+					
+					JSONResponse responseFromCache = WidgetDataCache.CACHE.get(cacheID,
 							new Callable<JSONResponse>() {
 
 								@Override

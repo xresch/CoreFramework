@@ -186,7 +186,9 @@ public abstract class PipelineAction<I, O> extends Thread {
 	 ****************************************************************************/
 	public boolean isPreviousDone() {
 		
-		if(previousAction == null || ( previousAction.isDone())) {
+		if(previousAction == null 
+		|| previousAction.isDone()
+		|| previousAction.isInterrupted()) {
 			return true; 
 		}
 		
@@ -197,7 +199,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 	 * 
 	 ****************************************************************************/
 	public boolean isDone() {
-		return done;
+		return done || this.isInterrupted();
 	}
 	
 	/****************************************************************************

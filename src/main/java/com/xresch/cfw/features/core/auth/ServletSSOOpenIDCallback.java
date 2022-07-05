@@ -117,6 +117,11 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			//------------------------------------
 			// Retrieve Tokens, UserInfo and do Login
 			Tokens tokens = fetchTokens(provider, code, redirectURI);
+			
+			if(tokens == null) {
+				//error
+				return;
+			}
 			// TODO Verification to be done!
 			UserInfo info = fetchUserInfo(tokens, providerMetadata);
 			
@@ -184,7 +189,8 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 
 		if (tokenResponse instanceof TokenErrorResponse) {
 			ErrorObject error = ((TokenErrorResponse) tokenResponse).getErrorObject();
-			// TODO error handling
+			new CFWLog(logger).severe("Error response received during single sign on: "+error.getDescription()+"(code="+error.getCode()+")");
+			return null;
 		}
 			
 		AccessTokenResponse accessTokenResponse = tokenResponse.toSuccessResponse();
