@@ -90,7 +90,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		CFWQuery query = queryList.get(0);
 		query.setContext(context);
 		
-		query.execute(false);
+		query.execute(-1, false);
 		
 		LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
 		int count = 0;
@@ -142,7 +142,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		Assertions.assertEquals(2, commandList.size());
 		
-		query.execute(false);
+		query.execute(-1, false);
 		
 		LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
 		int count = 0;
@@ -198,7 +198,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 			
 			Assertions.assertEquals(2, commandList.size());
 			
-			query.execute(false);
+			query.execute(-1, false);
 			
 			LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
 			int count = 0;
@@ -255,7 +255,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		Assertions.assertEquals(2, commandList.size());
 		
-		query.execute(false);
+		query.execute(-1, false);
 		
 		LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
 		int count = 0;
@@ -307,7 +307,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		Assertions.assertEquals(2, commandList.size());
 		
-		query.execute(false);
+		query.execute(-1, false);
 		
 		LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
 		int count = 0;

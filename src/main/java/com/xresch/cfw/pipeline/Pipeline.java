@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.analytics.TaskCPUSampling;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -20,6 +20,7 @@ public class Pipeline<I, O> {
 	
 	protected LinkedBlockingQueue<I> firstQueue = null;
 	protected LinkedBlockingQueue<O> lastQueue = new LinkedBlockingQueue<O>();
+
 	
 	/*************************************************************************************
 	 * Constructor
@@ -31,11 +32,14 @@ public class Pipeline<I, O> {
 
 	/*************************************************************************************
 	 * Start all the actions as separate threads.
-	 * @param args
+	 * @param maxExecTimeSec TODO
+	 * @param doWait if true, stay in this method until execution is complete. If false, 
+	 *   the caller of the method will manually use method waitForComplete() or isComplete()
+	 *   to check completion status.
 	 * @return
 	 *************************************************************************************/
-	public Pipeline<I, O> execute(boolean doWait) {
-		
+	public Pipeline<I, O> execute(long maxExecTimeSec, boolean doWait) {
+				
 		//-----------------------------------
 		// Check has Actions
 		if(actionArray.size() == 0) {
@@ -70,8 +74,10 @@ public class Pipeline<I, O> {
 			}
 		}
 		
+		//-----------------------------------
+		// Wait until Pipeline is Complete
 		if(doWait) {
-			return waitForComplete();
+			return waitForComplete(maxExecTimeSec);
 		}else {
 			return this;
 		}
@@ -82,7 +88,7 @@ public class Pipeline<I, O> {
 	 * Cancel the execution of this pipeline and all associated actions.
 	 *************************************************************************************/
 	public void cancelExecution() {
-		
+				
 		for(PipelineAction<I,O> action : actionArray) {
 			action.setDone();
 			action.inQueue.clear();
@@ -96,13 +102,22 @@ public class Pipeline<I, O> {
 	
 	
 	/*************************************************************************************
-	 * Waits until all actions have completed.
+	 * Waits until all actions have completed or thread is interrrupted.
+	 * @param maxExecTimeSec TODO
 	 * @param args
 	 * @return
 	 *************************************************************************************/
-	public Pipeline<I, O> waitForComplete() {
+	public Pipeline<I, O> waitForComplete(long maxExecTimeSec) {
 		try {
-			latch.await();
+			if(maxExecTimeSec > 0) {
+				boolean hasCompleted = latch.await(maxExecTimeSec, TimeUnit.SECONDS);
+				if(!hasCompleted) {
+					new CFWLog(logger).warn("Pipeline execution reached time limit of "+maxExecTimeSec+" second(s), execution aborted.");
+					this.cancelExecution();
+				}
+			}else {
+				latch.await();
+			}
 		} catch (InterruptedException e) {
 			new CFWLog(logger).warn("Pipeline execution was interupted.", e);
 			this.cancelExecution();

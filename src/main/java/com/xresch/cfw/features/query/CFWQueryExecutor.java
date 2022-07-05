@@ -123,7 +123,8 @@ public class CFWQueryExecutor {
 			long execMillis = -1;
 			try {
 				startMillis = System.currentTimeMillis();
-					query.execute(true);
+				query.execute(-1, true);
+				
 				execMillis = System.currentTimeMillis() - startMillis;
 			}catch(NullPointerException e) {
 				queryContext.addMessage(MessageType.ERROR, "Query ran into an issue: NullpointerException.");

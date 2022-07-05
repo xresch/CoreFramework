@@ -20,7 +20,7 @@ public class TestPipeline {
 		System.out.println(	"### Line Count Before: "+
 			pipe.countLines()
 				.data(CFW.Files.readPackageResource(WebTestMaster.RESOURCE_PACKAGE, "cfwjs_test.js").split("\\r\\n|\\n"))
-				.execute(true)
+				.execute(-1, true)
 				.resultToString()
 		);
 		
@@ -33,10 +33,10 @@ public class TestPipeline {
 			//.grep("cfwT", false)
 			//.countLines()
 			.data(CFW.Files.readPackageResource(WebTestMaster.RESOURCE_PACKAGE, "cfwjs_test.js").split("\\r\\n|\\n"))
-			.execute(false);
+			.execute(-1, false);
 			
 		System.out.println(	
-			pipe.waitForComplete()
+			pipe.waitForComplete(-1)
 				.resultToString()
 		);
 		
@@ -49,9 +49,9 @@ public class TestPipeline {
 			//.grep("cfwT", false)
 			.countLines()
 			.data(CFW.Files.readPackageResource(WebTestMaster.RESOURCE_PACKAGE, "cfwjs_test.js").split("\\r\\n|\\n"))
-			.execute(false);
+			.execute(-1, false);
 		
-		String lineCountAfter = pipe.waitForComplete().resultToString();
+		String lineCountAfter = pipe.waitForComplete(-1).resultToString();
 		System.out.println(	"### Line Count After: "+lineCountAfter);
 		
 		Assertions.assertEquals("54", lineCountAfter.trim());

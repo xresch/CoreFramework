@@ -227,6 +227,7 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 			if(!groupMap.containsKey(groupID)) {
 				JsonObject object = new JsonObject();
 				for(String fieldname : groupByFieldnames) {
+					
 					JsonElement element = record.get(fieldname);
 					object.add(fieldname, element);
 				}
