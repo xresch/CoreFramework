@@ -528,7 +528,7 @@ public class QueryPartValue extends QueryPart {
 	}
 	
 	/******************************************************************************************************
-	 * 
+	 * Returns a string representation of this value, except if the value is null.
 	 ******************************************************************************************************/
 	public String getAsString() {
 		if(value == null) return null;

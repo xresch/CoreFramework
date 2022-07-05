@@ -200,7 +200,11 @@ public class QueryPartBinaryExpression extends QueryPart {
 			case OPERATOR_EQUAL_EQUAL:
 
 				if(leftValue.isString() || rightValue.isString()) {
-					evalResult = new JsonPrimitive(leftValue.getAsString().equals(rightValue.getAsString()));
+					if(!leftValue.isNull()) {
+						evalResult = new JsonPrimitive(leftValue.getAsString().equals(rightValue.getAsString()));
+					}else {
+						evalResult = new JsonPrimitive(false);
+					}
 				}else if(bothNumbers(leftValue, rightValue)) {
 					evalResult = new JsonPrimitive(0 == leftValue.getAsBigDecimal().compareTo(rightValue.getAsBigDecimal()));
 				}else if(bothBooleans(leftValue, rightValue)) {
