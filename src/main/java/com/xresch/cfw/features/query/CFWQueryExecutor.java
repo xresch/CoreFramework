@@ -36,8 +36,9 @@ public class CFWQueryExecutor {
 	 * Parses the query string and executes all queries.
 	 * Returns a Json Array containing the Query Results, or null in
 	 * case of errors. 
+	 * Takes the max execution time from the in-app configuration for
+	 * limiting query execution time.
 	 * 
-	 * @throws InterruptedException 
 	 ****************************************************************/
 	public JsonArray parseAndExecuteAll(String queryString, long earliest, long latest) {
 		
@@ -123,7 +124,8 @@ public class CFWQueryExecutor {
 			long execMillis = -1;
 			try {
 				startMillis = System.currentTimeMillis();
-				query.execute(-1, true);
+				long maxExecTime = CFW.DB.Config.getConfigAsLong(FeatureQuery.CONFIG_QUERY_EXEC_LIMIT);
+				query.execute(maxExecTime, true);
 				
 				execMillis = System.currentTimeMillis() - startMillis;
 			}catch(NullPointerException e) {

@@ -72,6 +72,7 @@ public class FeatureQuery extends CFWAppFeature {
 	public static final String CONFIG_FETCH_LIMIT_MAX = "Fetch Limit Max";
 	public static final String CONFIG_QUERY_RECORD_LIMIT = "Query Record Limit";
 	public static final String CONFIG_QUERY_COMMAND_LIMIT = "Query Command Limit";
+	public static final String CONFIG_QUERY_EXEC_LIMIT = "Query Time Limit";
 	
 	public static final ManualPage ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
 			new ManualPage("Query")
@@ -231,6 +232,15 @@ public class FeatureQuery extends CFWAppFeature {
 				.description("The maximum number of commands that are allowed per query. Limits the number of threads started per query.")
 				.type(FormFieldType.NUMBER)
 				.value("30")
+				);
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration("Query", CONFIG_QUERY_EXEC_LIMIT)
+				.description("The maximum execution time in seconds before a query gets aborted.")
+				.type(FormFieldType.NUMBER)
+				.value("180")
 				);
 	}
 
