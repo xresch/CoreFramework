@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
+import com.nimbusds.openid.connect.sdk.AuthenticationRequest.Builder;
 import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.xresch.cfw._main.CFW;
@@ -63,6 +65,7 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 			.setValue("");
 	
 	private CFWField<LinkedHashMap<String, String>> customParams = CFWField.newValueLabel(PrometheusEnvironmentFields.JSON_CUSTOM_PARAMETERS)
+			.setLabel("Custom Parameters")
 			.setDescription("Custom parameters that should be added to the authentication request.");
 	
 	private OIDCProviderMetadata providerMetadata = null;
@@ -201,17 +204,27 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 			// Generate nonce for the ID token
 			Nonce nonce = new Nonce();
 
-			// Compose the OpenID authentication request (for the code flow)
-			AuthenticationRequest authRequest = new AuthenticationRequest.Builder(
+			//-------------------------------------------
+			// Compose the OpenID authentication request 
+			Builder authRequestBuilder = new AuthenticationRequest.Builder(
 			    new ResponseType("code"),
 			    new Scope("openid", "profile", "email"),
 			    clientID,
 			    callback)
 			    .endpointURI(endpointURI)
 			    .state(state)
-			    .nonce(nonce)
-			    .build();
-
+			    .nonce(nonce);
+			
+			LinkedHashMap<String, String> params = customParams.getValue();
+			if(params != null && params.size() > 0) {
+				for(Entry<String, String> entry : params.entrySet()) {
+					authRequestBuilder.customParameter(entry.getKey(), entry.getValue());
+				}
+			}
+			
+			AuthenticationRequest authRequest = authRequestBuilder.build();
+			
+			//-------------------------------------------
 			// The URI to send the user-user browser to the OpenID provider
 			// E.g.
 			// https://c2id.com/login?
