@@ -1,8 +1,12 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Map.Entry;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -15,6 +19,7 @@ public class CFWQueryFunctionPerc extends CFWQueryFunction {
 	protected ArrayList<BigDecimal> values = new ArrayList<>();
 	
 	protected Integer percentile = null;
+	private boolean isAggregated = false;
 	
 	public CFWQueryFunctionPerc(CFWQueryContext context) {
 		super(context);
@@ -75,35 +80,7 @@ public class CFWQueryFunctionPerc extends CFWQueryFunction {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	@Override
-	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
-		
-		int paramCount = parameters.size();
-		if(paramCount == 0) {
-			return;
-		}
-
-		QueryPartValue value = parameters.get(0);
-		
-		//---------------------------------
-		// Resolve Percentile
-		if(percentile == null && paramCount > 1) {
-			if(parameters.get(1).isNumberOrNumberString()) {
-				percentile = parameters.get(1).getAsInteger();
-				if(percentile < 0) {
-					percentile = 0;
-				}else if(percentile > 100) {
-					percentile = 100;
-				}
-			}
-		}
-		
-		//---------------------------------
-		// Resolve countNulls
-		boolean countNulls = false;
-		if(paramCount > 2) {
-			countNulls = parameters.get(2).getAsBoolean();
-		}
+	private void addValueToAggregation(QueryPartValue value, boolean countNulls) {
 		
 		//---------------------------------
 		// Store values
@@ -112,14 +89,13 @@ public class CFWQueryFunctionPerc extends CFWQueryFunction {
 		}else if(countNulls && value.isNull()) {
 			values.add(new BigDecimal(0));
 		}
-	
 	}
-
+	
+	
 	/***********************************************************************************************
-	 * Returns the current count and increases it by 1;
+	 * 
 	 ***********************************************************************************************/
-	@Override
-	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
+	private QueryPartValue calculatePercentile() {
 		
 		int count = values.size();
 		
@@ -136,16 +112,122 @@ public class CFWQueryFunctionPerc extends CFWQueryFunction {
 		//---------------------------
 		// Retrieve number
 		values.sort(null);
+		System.out.println("values:"+values);
 		
+		QueryPartValue result;
 		if(percentilePosition > 0) {
-			return QueryPartValue.newNumber(values.get(percentilePosition-1));
+			result = QueryPartValue.newNumber(values.get(percentilePosition-1));
 		}else {
-			return QueryPartValue.newNumber(values.get(0));
+			result = QueryPartValue.newNumber(values.get(0));
 				
 		}
+		System.out.println("result:"+result);
+		//reset values
+		values = new ArrayList<>();
+		percentile = null;
 		
+		return result;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
 		
+		isAggregated = true;
 		
+		int paramCount = parameters.size();
+		if(paramCount == 0) {
+			return;
+		}
+
+		QueryPartValue value = parameters.get(0);
+		
+		//---------------------------------
+		// Resolve Percentile
+		resolvePercentile(parameters);
+		
+		//---------------------------------
+		// Resolve countNulls
+		boolean countNulls = false;
+		if(paramCount > 2) {
+			countNulls = parameters.get(2).getAsBoolean();
+		}
+				
+		addValueToAggregation(value, countNulls);
+	
+	}
+
+	/***********************************************************************************************
+	 * If percentile was not yet resolved, get it from parameters.
+	 ***********************************************************************************************/
+	private void resolvePercentile(ArrayList<QueryPartValue> parameters) {
+		//---------------------------------
+		// Resolve Percentile
+		if(percentile == null && parameters.size() > 1) {
+			if(parameters.get(1).isNumberOrNumberString()) {
+				percentile = parameters.get(1).getAsInteger();
+				if(percentile < 0) {
+					percentile = 0;
+				}else if(percentile > 100) {
+					percentile = 100;
+				}
+			}
+		}
+	}
+	
+
+	/***********************************************************************************************
+	 * Returns the current count and increases it by 1;
+	 ***********************************************************************************************/
+	@Override
+	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
+		
+	
+		if(isAggregated) {			
+			return calculatePercentile();
+		}else if(parameters.size() == 0) {
+			return QueryPartValue.newNull();
+		}else {
+			
+			QueryPartValue param = parameters.get(0);
+			resolvePercentile(parameters);
+			
+			boolean countNulls = false;
+			if(parameters.size() > 2) {
+				countNulls = parameters.get(2).getAsBoolean();
+			}
+
+			if(param.isJsonArray()) {
+				
+				JsonArray array = param.getAsJsonArray();
+				
+				for(int i = 0; i < array.size(); i++) {
+					
+					//Be lazy, use QueryPart for conversion
+					QueryPartValue value = QueryPartValue.newFromJsonElement(array.get(i));
+					addValueToAggregation(value, countNulls);
+				}
+				return calculatePercentile();
+				
+			}else if(param.isJsonObject()) {
+				
+				for(Entry<String, JsonElement> entry : param.getAsJsonObject().entrySet()){
+					QueryPartValue value = QueryPartValue.newFromJsonElement(entry.getValue());
+					addValueToAggregation(value, countNulls);
+				}
+				return calculatePercentile();
+			}else if(param.isNumberOrNumberString()) {
+				
+				addValueToAggregation(param, countNulls);
+				return calculatePercentile();
+			}
+			
+		}
+		
+		//return null in all other cases
+		return QueryPartValue.newNull();
 	}
 
 }
