@@ -97,7 +97,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			String ssoStateString = sessionData.removeCustom(SSOOpenIDConnectProvider.PROPERTY_SSO_STATE);
 
 			if (authResponse == null || !authResponse.getState().equals(new State(ssoStateString))) {
-				new HTMLResponse("Unexpected authentication Response");
+				new HTMLResponse("Unexpected Response");
 			    CFW.Messages.addErrorMessage("Unexpected response from authentication provider. Please try to sign-on again.");
 			    return;
 			}
@@ -112,6 +112,12 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			AuthenticationSuccessResponse successResponse = (AuthenticationSuccessResponse) authResponse;
 			AuthorizationCode code = successResponse.getAuthorizationCode();
 			
+			new CFWLog(logger).finer("SSO Access Token:"+successResponse.getAccessToken());
+			new CFWLog(logger).finer("SSO Authorization Code:"+successResponse.getAuthorizationCode());
+			new CFWLog(logger).finer("SSO ID Token:"+successResponse.getIDToken());
+			new CFWLog(logger).finer("SSO Issuer:"+successResponse.getIssuer());
+			new CFWLog(logger).finer("SSO Redirection URI:"+successResponse.getRedirectionURI());
+			
 			URI redirectURI = successResponse.getRedirectionURI();
 			
 			//------------------------------------
@@ -119,7 +125,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			Tokens tokens = fetchTokens(provider, code, redirectURI);
 			
 			if(tokens == null) {
-				//error
+				new HTMLResponse("Error Occured");
 				return;
 			}
 			// TODO Verification to be done!
@@ -141,7 +147,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			//System.out.println(info.toJSONString());
 			
 		} catch (Exception e) {
-			new HTMLResponse("Exception Occured");
+			new HTMLResponse("Error Occured");
 			new CFWLog(logger).severe("Error occured during authentication process: "+e.getMessage(), e);
 			e.printStackTrace();
 		}
@@ -186,10 +192,17 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		TokenResponse tokenResponse = null;
 
 		tokenResponse = OIDCTokenResponseParser.parse(tokenHTTPResp);
-
+		
 		if (tokenResponse instanceof TokenErrorResponse) {
+			
 			ErrorObject error = ((TokenErrorResponse) tokenResponse).getErrorObject();
-			new CFWLog(logger).severe("Error response received during single sign on: "+error.getDescription()+"(code="+error.getCode()+")");
+			new CFWLog(logger).severe("Error response received during single sign on(fetch token): "+error.getDescription()+"(code="+error.getCode()+")");
+			new CFWLog(logger)
+						.silent(true)
+						.severe("Authorization Code: "+code);
+			new CFWLog(logger)
+						.silent(true)
+						.severe("Response Content: "+tokenHTTPResp.getContent());
 			return null;
 		}
 			

@@ -153,7 +153,7 @@ DONE
 - Dashboard: Added Javascript Widget
 - Config: Added Password Policy Settings
 - Query: Fixed Binary Expression messing with parsing when in an array
-- Query: Fixed Binary Expression "==" throwing NullpointerException when left side is null and right side is a string.
+- Query: Fixed Binary Expression "==" throwing NullPointerException when left side is null and right side is a string.
 - Query: Interrupt execution in case of exception(prevents hanging threads)
 - Query: Added configuration to limit query execution time to prevent long running queries and hanging threads.
 - Query: Added new renderers to Query
