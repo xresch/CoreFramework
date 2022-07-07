@@ -16,20 +16,20 @@
 	MIN_ARRAY=min(array)
 	# returns the smallest of all numbers of all fields
 	MIN_OBJECT=min(object)
+	# if input is a single number, returns the same number
+	MIN_NUMBER=min(index)
 	# following will return null
 	MIN_ZERO=min()
 	MIN_NULL=min(null)
 	UNSUPPORTED_A=min(true)
-	UNSUPPORTED_B=min(123)
-	UNSUPPORTED_C=min("some_string")</code></pre>
+	UNSUPPORTED_B=min("some_string")</code></pre>
 
 <p>Following is an example on how to use this function in aggregation commands:</p>
 <pre><code class="language-cfwquery">| source random records=10000
 | stats by=[LIKES_TIRAMISU] 
-	# count nulls only
-	"index(min)"=min(INDEX) 	
-	"value(min)"=min(VALUE) 	
-| sort LASTNAME</code></pre>
+	"min:index"=min(INDEX) 	
+	"min:value"=min(VALUE)
+| sort "min:index" reverse=true</code></pre>
 
 
 

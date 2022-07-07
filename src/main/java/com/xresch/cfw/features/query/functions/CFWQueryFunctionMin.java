@@ -155,6 +155,10 @@ public class CFWQueryFunctionMin extends CFWQueryFunction {
 					addValueToAggregation(value);
 				}
 				return getMinimum();
+			}else if(param.isNumberOrNumberString()) {
+				
+				addValueToAggregation(param);
+				return getMinimum();
 			}
 			
 			
