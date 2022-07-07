@@ -16,20 +16,20 @@
 	MAX_ARRAY=max(array)
 	# returns the average of all numbers of all fields
 	MAX_OBJECT=max(object)
+	# if input is a single number, returns the same number
+	MAX_NUMBER=max(index)
 	# following will return null
 	MAX_ZERO=max()
 	MAX_NULL=max(null)
 	UNSUPPORTED_A=max(true)
-	UNSUPPORTED_B=max(123)
-	UNSUPPORTED_C=max("some_string")</code></pre>
+	UNSUPPORTED_B=max("some_string")</code></pre>
 
 <p>Following is an example on how to use this function in aggregation commands:</p>
 <pre><code class="language-cfwquery">| source random records=10000
 | stats by=[LIKES_TIRAMISU] 
-	# count nulls only
-	"index(max)"=max(INDEX) 	
-	"value(max)"=max(VALUE) 	
-| sort LASTNAME</code></pre>
+	"max:index"=max(INDEX) 	
+	"max:value"=max(VALUE)
+| sort "max:index" reverse=true</code></pre>
 
 
 

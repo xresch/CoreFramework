@@ -155,6 +155,10 @@ public class CFWQueryFunctionMax extends CFWQueryFunction {
 					addValueToAggregation(value);
 				}
 				return getMaximum();
+			}else if(param.isNumberOrNumberString()) {
+				
+				addValueToAggregation(param);
+				return getMaximum();
 			}
 			
 			
