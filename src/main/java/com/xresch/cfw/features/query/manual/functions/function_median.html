@@ -1,0 +1,42 @@
+
+<p>This function is used to calculate median values. It supports aggregation and can be used in aggregation commands.</p>
+
+<p>Following query uses some json example data to demonstrate the median-function:</p>
+<pre><code class="language-cfwquery">| source json data=`
+[
+	 {index: 0, array: [1,2,3,4,5,6,7,8,9,10]
+	 		  , object: {a:11, b:22, c:33, d:44, e:55, f:66, g:77, h:88, i:99, j:111 } 
+	 }
+	,{index: 1, array: [10,9,8,7,6,5,4,3,2,1,null,null,null,null,null,null,null,null,null,null,null,null,null]
+			  , object: {a:11, b:22, c:33, d:44, e:55, f:66, g:77, h:88, i:99, j:111, k:null, l:null,m:null,n:null,o:null,p:null,q:null,r:null,s:null,t:null,u:null } 
+	 }
+	,{index: 3, array: [1,2,3,4,5,6,7,8,9,10, "StringsAndBooleans_ignored"]
+			  , object: {a: 11, b: 22, c: 33, string: "ignored"} 
+	}
+]
+`
+| set 
+	# returns the median for the values in the array
+	'Median'=median(array)
+	# returns the median, null values will be threated as zero
+	'MedianNulls'=median(array, true)
+	# returns the median for the values in the object fields
+	'MedianObject'=median(object)
+	# returns the median for the values in the object fields, null values will be threated as zero
+	'MedianObjectNulls'=median(object,true)
+	# if value is a single number, returns that number
+	MEDIAN_NUMBER=median(index)
+	# following will return null
+	MEDIAN_NONE=median()
+	MEDIAN_NULL=median(null)
+	UNSUPPORTED_A=median(true)
+	UNSUPPORTED_C=median("some_string")</code></pre>
+
+<p>Following is an example on how to use this function in aggregation commands:</p>
+<pre><code class="language-cfwquery">| source random records=10000
+| stats by=[LIKES_TIRAMISU] 
+	median(INDEX)
+	median(VALUE)</code></pre>
+
+
+

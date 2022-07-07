@@ -112,7 +112,6 @@ public class CFWQueryFunctionPerc extends CFWQueryFunction {
 		//---------------------------
 		// Retrieve number
 		values.sort(null);
-		System.out.println("values:"+values);
 		
 		QueryPartValue result;
 		if(percentilePosition > 0) {
@@ -121,7 +120,7 @@ public class CFWQueryFunctionPerc extends CFWQueryFunction {
 			result = QueryPartValue.newNumber(values.get(0));
 				
 		}
-		System.out.println("result:"+result);
+		
 		//reset values
 		values = new ArrayList<>();
 		percentile = null;

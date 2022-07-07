@@ -58,35 +58,47 @@ public class CFWQueryFunctionMedian extends CFWQueryFunctionPerc {
 		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_median.html");
 	}
 	
+	
+	/***********************************************************************************************
+	 * Creates parameters for perc-Function by mapping of median function parameters and adding
+	 ***********************************************************************************************/
+	private ArrayList<QueryPartValue> createPercParams(ArrayList<QueryPartValue> parameters) {
+		ArrayList<QueryPartValue> percParams = new ArrayList<QueryPartValue>();
+		
+		//-----------------------------------
+		//handle value param
+		if(parameters.size() > 0) {
+			percParams.add(parameters.get(0));
+			percParams.add(QueryPartValue.newNumber(50));
+		}
+		
+		//-----------------------------------
+		//handle value param
+		if(parameters.size() > 1) {
+			percParams.add(parameters.get(1));
+		}
+		return percParams;
+	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
 		
-		int paramCount = parameters.size();
-		if(paramCount == 0) {
-			return;
-		}
-
-		QueryPartValue value = parameters.get(0);
-		
-		//---------------------------------
-		// Resolve countNulls
-		boolean countNulls = false;
-		if(paramCount > 1) {
-			countNulls = parameters.get(1).getAsBoolean();
-		}
-		
-		//---------------------------------
-		// Store values
-		if(value.isNumberOrNumberString()) {
-			values.add(value.getAsBigDecimal());
-		}else if(countNulls && value.isNull()) {
-			values.add(new BigDecimal(0));
-		}
+		super.aggregate(object, createPercParams(parameters));
 	
 	}
-
+	
+	/**
+	 * @return *********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public QueryPartValue execute(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
+		
+		return super.execute(object, createPercParams(parameters));
+	
+	}
 
 }
