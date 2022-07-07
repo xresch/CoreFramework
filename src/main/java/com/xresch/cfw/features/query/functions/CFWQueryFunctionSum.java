@@ -151,6 +151,10 @@ public class CFWQueryFunctionSum extends CFWQueryFunction {
 					addValueToAggregation(value);
 				}
 				return getSum();
+			}else if(param.isNumberOrNumberString()) {
+				
+				addValueToAggregation(param);
+				return getSum();
 			}
 			
 			
