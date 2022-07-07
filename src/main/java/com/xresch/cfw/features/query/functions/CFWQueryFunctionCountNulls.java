@@ -134,8 +134,7 @@ public class CFWQueryFunctionCountNulls extends CFWQueryFunction {
 			}else if(param.isNull()){
 				result = QueryPartValue.newNumber(1);
 			}else {
-			
-				result = QueryPartValue.newNull();
+				result = QueryPartValue.newNumber(0);
 			}
 		}
 		

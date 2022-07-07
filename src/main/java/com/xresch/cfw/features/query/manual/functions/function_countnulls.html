@@ -17,11 +17,12 @@
 	NULLS_IN_ARRAY=countnulls(array)
 	# counts the number of fields that have a null value
 	NULLS_IN_OBJECT=countnulls(object)
-	# everything else returns null as it is considered uncountable
-	UNCOUNTABLE_A=countnulls()
-	UNCOUNTABLE_B=countnulls(true)
-	UNCOUNTABLE_C=countnulls(123)
-	UNCOUNTABLE_D=countnulls("some_string")</code></pre>
+	# every other value will result in count 0
+	NUMBER=countnulls(index)
+	BOOLEAN=countnulls(true)
+	STRING=countnulls("some_string")
+	# no params will result in returning null
+	UNCOUNTABLE=countnulls()</code></pre>
 
 <p>Following is an example on how to use this function in aggregation commands:</p>
 <pre><code class="language-cfwquery">| source random records=10000
