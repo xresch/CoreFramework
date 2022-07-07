@@ -22,7 +22,7 @@
 	'MedianNulls'=median(array, true)
 	# returns the median for the values in the object fields
 	'MedianObject'=median(object)
-	# returns the median for the values in the object fields, null values will be threated as zero
+	# returns the median for the values in the object fields, null values will be handled as zero
 	'MedianObjectNulls'=median(object,true)
 	# if value is a single number, returns that number
 	MEDIAN_NUMBER=median(index)
@@ -30,7 +30,7 @@
 	MEDIAN_NONE=median()
 	MEDIAN_NULL=median(null)
 	UNSUPPORTED_A=median(true)
-	UNSUPPORTED_C=median("some_string")</code></pre>
+	UNSUPPORTED_B=median("some_string")</code></pre>
 
 <p>Following is an example on how to use this function in aggregation commands:</p>
 <pre><code class="language-cfwquery">| source random records=10000

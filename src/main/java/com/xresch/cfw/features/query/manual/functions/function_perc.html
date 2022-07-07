@@ -21,9 +21,9 @@
 	'90Perc'=perc(array, 90)
 	# returns the 90th percentile, null values will be threated as zero
 	'90PercNulls'=perc(array, 90, true)
-	# returns the 90th percentile for the values in the array
+	# returns the 70th percentile for the values in the object fields
 	'70PercObject'=perc(object, 70)
-	# returns the 90th percentile for the values in the array
+	# returns the 70th percentile for the values in the object fields, null values will be handled as zero
 	'70PercObjectNulls'=perc(object, 70,true)
 	# if value is a single number, returns that number
 	PERCE_NUMBER=perc(index, 90)
@@ -31,7 +31,7 @@
 	PERC_NONE=perc()
 	PERC_NULL=perc(null)
 	UNSUPPORTED_A=perc(true)
-	UNSUPPORTED_C=perc("some_string")</code></pre>
+	UNSUPPORTED_B=perc("some_string")</code></pre>
 
 <p>Following is an example on how to use this function in aggregation commands:</p>
 <pre><code class="language-cfwquery">| source random records=10000

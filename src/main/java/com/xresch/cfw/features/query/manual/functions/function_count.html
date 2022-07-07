@@ -21,10 +21,11 @@
 	GRAPH=count(GRAPH_DATA)
 	# returns size of array
 	COUNT=count([3,2,3,4])
-	# returns null as value is not countable.
-	UNCOUNTABLE_A=count("some_string")
-	UNCOUNTABLE_B=count(true)
-	UNCOUNTABLE_C=count(123)
+	# returns 1 as value is a single entity
+	COUNT_STRING=count("some_string")
+	COUNT_BOOL=count(true)
+	COUNT_NUMBER=count(123)
+	# returns null as null is considered countable.
 	UNCOUNTABLE_NULL=count(null)</code></pre>
 
 

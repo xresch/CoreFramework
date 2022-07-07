@@ -165,6 +165,10 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 					addValueToAggregation(value, countNulls);
 				}
 				return calculateAverage();
+			}else if(param.isNumberOrNumberString()) {
+				
+				addValueToAggregation(param, countNulls);
+				return calculateAverage();
 			}
 			
 			

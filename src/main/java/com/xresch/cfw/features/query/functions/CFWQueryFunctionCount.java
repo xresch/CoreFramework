@@ -114,8 +114,10 @@ public class CFWQueryFunctionCount extends CFWQueryFunction {
 				result = QueryPartValue.newNumber(param.getAsJsonArray().size());
 			}else if(param.isJsonObject()) {
 				result = QueryPartValue.newNumber(param.getAsJsonObject().entrySet().size());
-			}else {
+			}else if(param.isNull()) {
 				result = QueryPartValue.newNull();
+			}else {
+				result = QueryPartValue.newNumber(1);
 			}
 		}
 

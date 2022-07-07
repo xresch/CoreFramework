@@ -20,17 +20,17 @@
 	AVG_OBJECT=avg(object)
 	# treat nulls as zero in the statistics
 	AVG_OBJECT_NULLS=avg(object,true)
+	# if input is a single number, returns that number
+	AVG_NUMBER=avg(index)
 	# following will return null
 	AVG_ZERO=avg()
 	AVG_NULL=avg(null)
 	UNSUPPORTED_A=avg(true)
-	UNSUPPORTED_B=avg(123)
-	UNSUPPORTED_C=avg("some_string")</code></pre>
+	UNSUPPORTED_B=avg("some_string")</code></pre>
 
 <p>Following is an example on how to use this function in aggregation commands:</p>
 <pre><code class="language-cfwquery">| source random records=10000
 | stats by=[LIKES_TIRAMISU] 
-	# count nulls only
 	"index(avg)"=avg(INDEX) 	
 	"value(avg)"=avg(VALUE)</code></pre>
 
