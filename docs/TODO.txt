@@ -168,6 +168,7 @@ DONE
 	- count
 	- countnulls
 	- encode
+	- extract
 	- globals
 	- if
 	- indexof

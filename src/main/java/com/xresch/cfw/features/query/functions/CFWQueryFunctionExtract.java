@@ -10,6 +10,7 @@ import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -39,7 +40,7 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "extract(stringOrFieldname, regex)";
+		return "extract(stringOrFieldname, regex, groupIndex)";
 	}
 	/***********************************************************************************************
 	 * 
@@ -56,6 +57,7 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 	public String descriptionSyntaxDetailsHTML() {
 		return "<p><b>stringOrFieldname:&nbsp;</b>The string or or a fieldname, the value in which a string should be searched.</p>"
 			  +"<p><b>regex:&nbsp;</b>The regex string to use.</p>"
+			  +"<p><b>groupIndex:&nbsp;</b> (Optional) The index of the group to extract the value from (Default: 0).</p>"
 			;
 	}
 
@@ -90,29 +92,50 @@ public class CFWQueryFunctionExtract extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
+		//-------------------------
+		// Validate Param Count
 		int paramCount = parameters.size();
 		if(paramCount < 2) {
 			return QueryPartValue.newNull();
 		}
 		
-		
+		//-------------------------
+		// Get value
 		QueryPartValue valueToSearch = parameters.get(0);
 		if(valueToSearch.isNull()) {
 			return QueryPartValue.newNull();
 		}
 		
+		//-------------------------
+		// Get expression
 		QueryPartValue regex = parameters.get(1);
 		if(regex.isNullOrEmptyString()) {
 			return QueryPartValue.newNull();
 		}
 		
-		Pattern p = Pattern.compile(regex.getAsString());
-		Matcher m = p.matcher(valueToSearch.getAsString());
-		if(m.matches()) {
-		    return QueryPartValue.newString(m.group(1));
+		//-------------------------
+		// Extract
+		int groupIndex = 0;
+		if(paramCount > 2) {
+			QueryPartValue indexValue = parameters.get(2);
+			if(indexValue.isInteger()) {
+				groupIndex = indexValue.getAsInteger();
+			}
 		}
 		
-	
+		//-------------------------
+		// Extract
+		Pattern p = Pattern.compile(regex.getAsString(), Pattern.MULTILINE | Pattern.DOTALL);
+		Matcher m = p.matcher(valueToSearch.getAsString());
+		if(m.matches()) {
+			if(m.groupCount() > groupIndex && groupIndex >= -1) {
+				return QueryPartValue.newString(m.group(groupIndex+1));
+			}else {
+				this.getContext().addMessage(MessageType.WARNING, "extract: could not match group with index: "+groupIndex);
+				QueryPartValue.newNull();
+			}
+		}
+		
 		return QueryPartValue.newNull();
 	}
 
