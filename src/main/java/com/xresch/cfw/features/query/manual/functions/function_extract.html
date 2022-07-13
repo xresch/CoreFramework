@@ -1,0 +1,14 @@
+
+<p>Returns the first group matched by the specified regex expression.</p>
+
+<p>Following query creates example records and does a regex extraction:</p>
+
+<pre><code class="language-cfwquery">| source random records=1000
+| set
+	# extracts the middle part from the ID
+	MIDDLE=extract(ID, ".*?-(.*?-.*?)-.*")
+	
+	# extracts the host from the url
+	HOST=extract(URL, ".*?www.(.*?).url.*")
+	</code></pre>
+
