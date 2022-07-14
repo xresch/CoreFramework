@@ -148,6 +148,7 @@ DONE
 - Renderer: Added Status List Renderer
 - Widget Website: Removed sandbox attribute from iframe.
 - WidgetSettings: Added option to define title position(top, left)
+- WidgetSettings: Added option to define a link for the title.
 - Chart Renderer: Sorting datasets to avoid displaying issues
 - Dashboard: Added Permission to allow Users to refresh dashboard every minute 
 - Dashboard: Fixed destruction of widget layout, resizing window width to change into 1 column layout disabled

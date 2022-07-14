@@ -143,6 +143,7 @@ function cfw_dashboard_history_completeOperationsBundle(){
 	}
 	
 }
+
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -958,11 +959,22 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	).createHTML();
 	
 	// ------------------------------
+	// Title
+	defaultForm += new CFWFormField({ 
+			type: "text", 
+			name: "titlelink", 
+			label: CFWL('cfw_core_title', 'Title') + ' Link'  , 
+			value: widgetObject.TITLE_LINK, 
+			description: CFWL('cfw_widget_titlelink_desc', 'An optional link for the title.')
+		}
+	).createHTML();
+	
+	// ------------------------------
 	// Title Fontsize
 	defaultForm += new CFWFormField({ 
 			type: "number", 
 			name: "titlefontsize", 
-			label: CFWL('cfw_core_fontsize', 'Font Size') + ' ' + CFWL('cfw_core_title', 'Title'), 
+			label: CFWL('cfw_core_title', 'Title')  + ' ' + CFWL('cfw_core_fontsize', 'Font Size'), 
 			value: widgetObject.TITLE_FONTSIZE, 
 			description: CFWL('cfw_widget_titlefontsize_desc', 'The font size of the title in pixel.') 
 		}
@@ -971,7 +983,7 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	// ------------------------------
 	// Title Position Selectors
 	var positionSelectOptions = {
-			'top': 			'Top', 
+			'top': 		'Top', 
 			'left': 	'Left'
 	};
 	
@@ -1247,6 +1259,7 @@ function cfw_dashboard_widget_save_defaultSettings(widgetGUID){
 			
 	var undoState = _.cloneDeep(widgetObject);
 	widgetObject.TITLE = settingsForm.find('input[name="title"]').val();
+	widgetObject.TITLE_LINK = settingsForm.find('input[name="titlelink"]').val();
 	widgetObject.TITLE_FONTSIZE = settingsForm.find('input[name="titlefontsize"]').val();
 	widgetObject.TITLE_POSITION = settingsForm.find('select[name="titleposition"]').val();
 	widgetObject.CONTENT_FONTSIZE = settingsForm.find('input[name="contentfontsize"]').val();
@@ -1527,6 +1540,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	var defaultOptions = {
 			guid: cfw_dashboard_widget_createGUID(),
 			TITLE: "",
+			TITLE_LINK: null,
 			TITLE_FONTSIZE: 16,
 			TITLE_POSITION: 'top',
 			CONTENT_FONTSIZE: 16,
@@ -1569,6 +1583,13 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 		titleBorderClass = "";
 	}
 	
+	var titleLinkStart = "";
+	var titleLinkEnd = "";
+	if( !CFW.utils.isNullOrEmpty(merged.TITLE_LINK) ){ 
+		titleLinkStart = '<a target="_blank" href="'+merged.TITLE_LINK+'">'; 
+		titleLinkEnd = "</a>";
+	}
+	
 	var htmlString =
 		'<div class="grid-stack-item-content card d-flex '+titleposClass+BGCOLORClass+' '+FGCOLORClass+'">'
 		+'	<div role="button" class="cfw-dashboard-widget-actionicons '+settingsDisplayClass+' text-cfw-lightgray">'
@@ -1588,7 +1609,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	if(merged.TITLE != null && merged.TITLE != ''){
 		htmlString += 
 		 '     	  <div class="cfw-dashboard-widget-title '+titleBorderClass+borderClass+'" style="font-size: '+merged.TITLE_FONTSIZE+'px;">'
-		+'		  	<span>'+merged.TITLE+'</span>'
+		+'		  	<span>'+titleLinkStart + merged.TITLE + titleLinkEnd+'</span>'
 		+'		  </div>'
 	}
 	
