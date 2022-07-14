@@ -126,11 +126,9 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 		
 			int recordCounter = 0;
 			while(true) {
-				System.out.println("in_loop.");
 				String currentLine = reader.readLine();
 				
 				if(currentLine == null) {
-					System.out.println("null");
 					break;
 				}
 				
@@ -140,9 +138,7 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 				JsonElement element = CFW.JSON.fromJson(currentLine);
 
 				if(element != null && element.isJsonObject()) {
-					System.out.println(currentLine);
 					if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
-						System.out.println("InRange!");
 						recordCounter++;
 						outQueue.add( new EnhancedJsonObject(element.getAsJsonObject()) );
 					}

@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -14,13 +18,14 @@ import javax.servlet.http.HttpServletResponse;
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant;
+import com.nimbusds.oauth2.sdk.ClientCredentialsGrant;
 import com.nimbusds.oauth2.sdk.ErrorObject;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.SerializeException;
 import com.nimbusds.oauth2.sdk.TokenErrorResponse;
 import com.nimbusds.oauth2.sdk.TokenRequest;
 import com.nimbusds.oauth2.sdk.TokenResponse;
-import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
+import com.nimbusds.oauth2.sdk.auth.ClientSecretPost;
 import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
@@ -175,13 +180,34 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		}
 		Secret clientSecret = new Secret(secretString);
 		
-		TokenRequest tokenReq = 
-				new TokenRequest(
-						providerMetadata.getTokenEndpointURI(),
-						new ClientSecretBasic(clientID, clientSecret),
-						new AuthorizationCodeGrant( code, redirectURI)
-		);
 		
+		
+		//String resource = "testresource";
+		TokenRequest tokenReq;
+		//if(resource == null) {
+			tokenReq = 
+					new TokenRequest(
+							providerMetadata.getTokenEndpointURI(),
+							new ClientSecretPost(clientID, clientSecret),
+							new AuthorizationCodeGrant( code, redirectURI)
+			);
+//		}else {
+//			Map<String, List<String>> params = new HashMap<>();
+//			
+//			params.put("resource", Collections.singletonList(resource));
+//			params.put("grant_type", Collections.singletonList("client_credentials"));
+//			
+//			ClientCredentialsGrant grant = ClientCredentialsGrant.parse(params);
+//			tokenReq = 
+//					new TokenRequest(
+//							providerMetadata.getTokenEndpointURI(),
+//							new ClientSecretPost(clientID, clientSecret),
+//							grant
+//			);
+//		}
+		
+		new CFWLog(logger).finer("SSO Token URL Code:"+tokenReq.toHTTPRequest().getURI());
+
 		//-------------------------------
 		// Send Request
 		HTTPResponse tokenHTTPResp = null;
