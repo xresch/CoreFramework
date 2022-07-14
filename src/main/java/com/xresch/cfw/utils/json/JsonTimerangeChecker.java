@@ -93,8 +93,6 @@ public class JsonTimerangeChecker {
 			String timeString = element.getAsString();
 			time = simpleDateFormat.parse(timeString).getTime();
 			
-			System.out.println("zone:"+zone.getDisplayName());
-			System.out.println("offset:"+zone.getOffset(time));
 			if(zone != null) {
 				//convert from local time to UTC
 				time = time - zone.getOffset(time);

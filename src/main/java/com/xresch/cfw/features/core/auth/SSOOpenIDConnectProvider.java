@@ -11,12 +11,17 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.eclipse.jetty.server.session.Session;
 
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.ResponseType;
 import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
+import com.nimbusds.oauth2.sdk.pkce.CodeChallengeMethod;
+import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
 import com.nimbusds.openid.connect.sdk.AuthenticationRequest.Builder;
 import com.nimbusds.openid.connect.sdk.Nonce;
@@ -36,6 +41,7 @@ import com.xresch.cfw.logging.CFWLog;
 public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	
 	public static final String PROPERTY_SSO_STATE = "ssoState";
+	public static final String PROPERTY_SSO_CODE_VERIFIER = "ssoCodeVerifier";
 	public static final String PROPERTY_SSO_PROVIDER_ID = "ssoProviderID";
 	public static final String PROPERTY_SSO_TARGET_URL = "ssopTargetURL";
 
@@ -193,13 +199,18 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 			// The client callback URL
 			String serverURL = CFW.HTTP.getServerURL(request);
 			URI callback = new URI(serverURL + FeatureCore.SERVLET_PATH_SSO_OPENID);
-
+			CodeVerifier codeVerifier = new CodeVerifier();
+			
 			// Generate random state string to securely pair the callback to this request
 			// add to session so it can be retrieved by class ServletSSOOpenIDCallback
 			State state = new State();
-			CFW.Context.Session.getSessionData().setCustom(PROPERTY_SSO_STATE, state.getValue());
-			CFW.Context.Session.getSessionData().setCustom(PROPERTY_SSO_PROVIDER_ID, ""+this.getDefaultObject().id());
-			CFW.Context.Session.getSessionData().setCustom(PROPERTY_SSO_TARGET_URL, targetURL);
+			
+			HttpSession session = request.getSession();
+			
+			session.setAttribute(PROPERTY_SSO_STATE, state.getValue());
+			session.setAttribute(PROPERTY_SSO_CODE_VERIFIER, codeVerifier);
+			session.setAttribute(PROPERTY_SSO_PROVIDER_ID, ""+this.getDefaultObject().id());
+			session.setAttribute(PROPERTY_SSO_TARGET_URL, targetURL);
 			
 			// Generate nonce for the ID token
 			Nonce nonce = new Nonce();
@@ -213,7 +224,8 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 			    callback)
 			    .endpointURI(endpointURI)
 			    .state(state)
-			    .nonce(nonce);
+			    .nonce(nonce)
+			    .codeChallenge(codeVerifier, CodeChallengeMethod.S256);
 			
 			LinkedHashMap<String, String> params = customParams.getValue();
 			if(params != null && params.size() > 0) {

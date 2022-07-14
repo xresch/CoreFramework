@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
@@ -30,6 +31,7 @@ import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
+import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.AuthenticationErrorResponse;
@@ -98,9 +100,36 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			}
 			
 			//------------------------------------
+			// Get SSO State
+			HttpSession session = request.getSession();
+			
+			Object ssoStateObject = session.getAttribute(SSOOpenIDConnectProvider.PROPERTY_SSO_STATE);
+			String ssoStateString = null;
+			if(ssoStateObject instanceof String) { ssoStateString = (String)ssoStateObject; }
+			
+			//------------------------------------
+			// Get SSO Provider ID
+			Object ssoProviderIDObject = session.getAttribute(SSOOpenIDConnectProvider.PROPERTY_SSO_PROVIDER_ID);
+			String providerIDString = null;
+			if(ssoProviderIDObject instanceof String) { providerIDString = (String)ssoProviderIDObject; }
+			
+			//------------------------------------
+			// Get SSO Target URL 
+			Object ssoTargetURLObject = session.getAttribute(SSOOpenIDConnectProvider.PROPERTY_SSO_TARGET_URL);
+			String targetURL = null;
+			if(ssoTargetURLObject instanceof String) { targetURL = (String)ssoTargetURLObject; }
+			
+			//------------------------------------
+			// Get SSO CodeVerifier
+			Object ssoCodeVerifierObject = session.getAttribute(SSOOpenIDConnectProvider.PROPERTY_SSO_CODE_VERIFIER);
+			CodeVerifier codeVerifier = null;
+			if(ssoCodeVerifierObject instanceof CodeVerifier) { codeVerifier = (CodeVerifier)ssoCodeVerifierObject; }
+			
+			
+			
+			//------------------------------------
 			// Verify State is correct
-			String ssoStateString = sessionData.removeCustom(SSOOpenIDConnectProvider.PROPERTY_SSO_STATE);
-
+			
 			if (authResponse == null || !authResponse.getState().equals(new State(ssoStateString))) {
 				new HTMLResponse("Unexpected Response");
 			    CFW.Messages.addErrorMessage("Unexpected response from authentication provider. Please try to sign-on again.");
@@ -109,7 +138,6 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			
 			//------------------------------------
 			// Retrieve Authentication Code
-			String providerIDString = sessionData.removeCustom(SSOOpenIDConnectProvider.PROPERTY_SSO_PROVIDER_ID);
 			
 			SSOOpenIDConnectProvider provider = SSOOpenIDConnectProviderManagement.getEnvironment(Integer.parseInt(providerIDString));
 			OIDCProviderMetadata providerMetadata = provider.getProviderMetadata();
@@ -127,7 +155,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			
 			//------------------------------------
 			// Retrieve Tokens, UserInfo and do Login
-			Tokens tokens = fetchTokens(provider, code, redirectURI);
+			Tokens tokens = fetchTokens(provider, code, codeVerifier, redirectURI);
 			
 			if(tokens == null) {
 				new HTMLResponse("Error Occured");
@@ -144,8 +172,6 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			String lastname = info.getFamilyName();
 			User user = LoginUtils.fetchUserCreateIfNotExists(username, email, firstname, lastname, true);
 			
-			String targetURL = sessionData.removeCustom(SSOOpenIDConnectProvider.PROPERTY_SSO_TARGET_URL);
-
 			LoginUtils.loginUserAndCreateSession(request, response, user, targetURL);
 			
 			//System.out.println("======= Retrieved user info ======");
@@ -166,7 +192,11 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 	 * @throws ParseException 
 	 * @throws MalformedURLException 
 	 ******************************************************************/
-	protected Tokens fetchTokens(SSOOpenIDConnectProvider provider, AuthorizationCode code, URI redirectURI ) 
+	protected Tokens fetchTokens(
+			SSOOpenIDConnectProvider provider
+			, AuthorizationCode code
+			, CodeVerifier codeVerifier
+			, URI redirectURI ) 
 			throws MalformedURLException, ParseException, URISyntaxException, IOException {
 	   
 		//-------------------------------
@@ -189,7 +219,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 					new TokenRequest(
 							providerMetadata.getTokenEndpointURI(),
 							new ClientSecretPost(clientID, clientSecret),
-							new AuthorizationCodeGrant( code, redirectURI)
+							new AuthorizationCodeGrant(code, redirectURI, codeVerifier)
 			);
 //		}else {
 //			Map<String, List<String>> params = new HashMap<>();
