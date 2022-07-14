@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.sources;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.util.TimeZone;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonElement;
@@ -116,27 +117,32 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 		
 		//String data = (String)parameters.getField("data").getValue();
 
+		TimeZone machineZone = CFW.Utils.Time.getMachineTimeZone();
 		JsonTimerangeChecker timerangeChecker = 
-				new JsonTimerangeChecker("time", CFW.Utils.Time.TIMESTAMP_FORMAT, earliestMillis, latestMillis)
+				new JsonTimerangeChecker("time", CFW.Utils.Time.TIMESTAMP_FORMAT, machineZone, earliestMillis, latestMillis)
 					.epochAsNewField("_epoch");
 		
 		try (BufferedReader reader = new BufferedReader (new InputStreamReader (new FileBackwardsInputReader("./log/applog_0_0.log"))) ){
 		
 			int recordCounter = 0;
 			while(true) {
-				
+				System.out.println("in_loop.");
 				String currentLine = reader.readLine();
 				
 				if(currentLine == null) {
+					System.out.println("null");
 					break;
 				}
 				
 				if( isLimitReached(limit, recordCounter)) { break; }
 				
+				
 				JsonElement element = CFW.JSON.fromJson(currentLine);
 
 				if(element != null && element.isJsonObject()) {
+					System.out.println(currentLine);
 					if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
+						System.out.println("InRange!");
 						recordCounter++;
 						outQueue.add( new EnhancedJsonObject(element.getAsJsonObject()) );
 					}

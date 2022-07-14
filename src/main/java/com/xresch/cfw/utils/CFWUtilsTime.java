@@ -61,6 +61,14 @@ public class CFWUtilsTime {
 	 * Get a timestamp string of the current time in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
 	 * 
 	 ********************************************************************************************/
+	public static TimeZone getMachineTimeZone(){
+		return machineTimezone;
+	}
+	
+	/********************************************************************************************
+	 * Get a timestamp string of the current time in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
+	 * 
+	 ********************************************************************************************/
 	public static void setMachineTimeZone(TimeZone timezone){
 		machineTimezone = timezone;
 	}

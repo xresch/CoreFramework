@@ -2,6 +2,7 @@ package com.xresch.cfw.utils.json;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -22,6 +23,7 @@ public class JsonTimerangeChecker {
 	private String epochFieldName;
 	
 	private static SimpleDateFormat simpleDateFormat;
+	private TimeZone zone;
 	
 	/*****************************************************************************************
 	 * 
@@ -32,15 +34,32 @@ public class JsonTimerangeChecker {
 	 * @param latestMillis latest time in epoch milliseconds
 	 *****************************************************************************************/
 	public JsonTimerangeChecker(String fieldname, String timeformat, long earliestMillis, long latestMillis) {
+		this(fieldname, timeformat, null, earliestMillis, latestMillis);
+	}
+	
+	/*****************************************************************************************
+	 * 
+	 * @param fieldname the name of the field containing time
+	 * @param timeformat the format of the time. use "epoch" for eopch time in millis, any other
+	 *        string will be used as a date format string by SimpleDateFormat
+	 * @param zone the time zone used for the time conversion
+	 * @param earliestMillis earliest time in epoch milliseconds
+	 * @param latestMillis latest time in epoch milliseconds
+	 *****************************************************************************************/
+	public JsonTimerangeChecker(String fieldname, String timeformat, TimeZone zone, long earliestMillis, long latestMillis) {
 		
 		this.fieldname       = fieldname;         
 		this.timeformat      = timeformat;        
 		this.earliestMillis  = earliestMillis;   
 		this.latestMillis    = latestMillis;     
+		this.zone = zone;
 		
 		if(!timeformat.equals("epoch")) {
 			simpleDateFormat = new SimpleDateFormat(timeformat);
 		}
+		
+		
+
 	}
 	
 	/************************************************************
@@ -73,6 +92,13 @@ public class JsonTimerangeChecker {
 		}else {
 			String timeString = element.getAsString();
 			time = simpleDateFormat.parse(timeString).getTime();
+			
+			System.out.println("zone:"+zone.getDisplayName());
+			System.out.println("offset:"+zone.getOffset(time));
+			if(zone != null) {
+				//convert from local time to UTC
+				time = time - zone.getOffset(time);
+			}
 			if(epochFieldName != null) {
 				object.addProperty(epochFieldName, time);
 			}
