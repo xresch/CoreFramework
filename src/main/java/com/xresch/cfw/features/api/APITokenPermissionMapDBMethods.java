@@ -3,6 +3,7 @@ package com.xresch.cfw.features.api;
 import java.sql.ResultSet;
 import java.util.logging.Logger;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
@@ -210,7 +211,7 @@ public class APITokenPermissionMapDBMethods {
 		new CFWLog(logger).audit(
 				CFWAuditLogAction.ADD, 
 				APIToken.class, 
-				"Permission to API Token: "+token.token()+", Permission: "+permission.getPermissionName() 
+				"Permission to API Token: "+CFW.Security.maskString(token.token(), 50)+", Permission: "+permission.getPermissionName() 
 			);
 		
 		return create(
@@ -274,7 +275,7 @@ public class APITokenPermissionMapDBMethods {
 		new CFWLog(logger).audit(
 				CFWAuditLogAction.REMOVE, 
 				APIToken.class, 
-				"Permission from API Token: "+token.token()+", Permission: "+permission.getPermissionName() 
+				"Permission from API Token: "+CFW.Security.maskString(token.token(), 50)+", Permission: "+permission.getPermissionName() 
 			);
 		
 		return new CFWSQL(new APITokenPermissionMap())

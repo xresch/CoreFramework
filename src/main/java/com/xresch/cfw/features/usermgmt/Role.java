@@ -180,12 +180,9 @@ public class Role extends CFWObject {
 		
 		Role superuserRole = CFW.DB.Roles.selectFirstByName(CFWDBRole.CFW_ROLE_SUPERUSER);
 		
-		if(superuserRole != null) {
-			superuserRole.isRenamable(false);
-			CFW.DB.Roles.update(superuserRole);
-		}else {
+		if(superuserRole == null) {
 			new CFWLog(logger)
-			.severe("User role '"+CFWDBRole.CFW_ROLE_SUPERUSER+"' was not found in the database.");
+				.severe("User role '"+CFWDBRole.CFW_ROLE_SUPERUSER+"' was not found in the database.");
 		}
 		
 		//-----------------------------------------
@@ -201,12 +198,9 @@ public class Role extends CFWObject {
 		
 		Role adminRole = CFW.DB.Roles.selectFirstByName(CFWDBRole.CFW_ROLE_ADMIN);
 		
-		if(adminRole != null) {
-			adminRole.isRenamable(false);
-			CFW.DB.Roles.update(adminRole);
-		}else {
+		if(adminRole == null) {
 			new CFWLog(logger)
-			.severe("User role '"+CFWDBRole.CFW_ROLE_ADMIN+"' was not found in the database.");
+				.severe("User role '"+CFWDBRole.CFW_ROLE_ADMIN+"' was not found in the database.");
 		}
 		
 		
@@ -223,12 +217,9 @@ public class Role extends CFWObject {
 		
 		Role userRole = CFW.DB.Roles.selectFirstByName(CFWDBRole.CFW_ROLE_USER);
 		
-		if(userRole != null) {
-			userRole.isRenamable(false);
-			CFW.DB.Roles.update(userRole);
-		}else {
+		if(userRole == null) {
 			new CFWLog(logger)
-			.severe("User role '"+CFWDBRole.CFW_ROLE_USER+"' was not found in the database.");
+				.severe("User role '"+CFWDBRole.CFW_ROLE_USER+"' was not found in the database.");
 		}
 		
 		
