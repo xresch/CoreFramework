@@ -10,11 +10,11 @@ import java.util.logging.Logger;
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.config.Configuration.ConfigFields;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -391,7 +391,7 @@ public class CFWDBConfig {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("UPDATE", Configuration.class, "Change config '"+config.name()+"' from '"+configCache.get(config.name())+"' to '"+config.value()+"'");
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Configuration.class, "Change config '"+config.name()+"' from '"+configCache.get(config.name())+"' to '"+config.value()+"'");
 		boolean updateResult =  config
 				.queryCache(CFWDBConfig.class, "update")
 				.update();
@@ -419,7 +419,7 @@ public class CFWDBConfig {
 			
 			if( (oldValue != null  && !oldValue.equals(value))
 			 || (oldValue == null  && !Strings.isNullOrEmpty(value))	) {
-				new CFWLog(logger).audit("UPDATE", Configuration.class, "Change config '"+currentConfigFromDB.name()+"' from '"+oldValue+"' to '"+value+"'");
+				new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Configuration.class, "Change config '"+currentConfigFromDB.name()+"' from '"+oldValue+"' to '"+value+"'");
 			}
 			
 			return new Configuration()
@@ -448,7 +448,7 @@ public class CFWDBConfig {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("DELETE", Configuration.class, "Delete configuration: '"+config.name()+"'");
+		new CFWLog(logger).audit(CFWAuditLogAction.DELETE, Configuration.class, "Delete configuration: '"+config.name()+"'");
 		return new Configuration()
 				.queryCache(CFWDBConfig.class, "deleteByID")
 				.delete()
@@ -472,7 +472,7 @@ public class CFWDBConfig {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("DELETE", Configuration.class, "Delete Multiple configurations: '"+resultIDs+"'");
+		new CFWLog(logger).audit(CFWAuditLogAction.DELETE, Configuration.class, "Delete Multiple configurations: '"+resultIDs+"'");
 		
 		return new Configuration()
 				.queryCache(CFWDBConfig.class, "deleteMultipleByID")
@@ -496,7 +496,7 @@ public class CFWDBConfig {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("DELETE", Configuration.class, "Delete configuration: '"+config.name()+"'");
+		new CFWLog(logger).audit(CFWAuditLogAction.DELETE, Configuration.class, "Delete configuration: '"+config.name()+"'");
 		
 		return new Configuration()
 				.queryCache(CFWDBConfig.class, "deleteByName")

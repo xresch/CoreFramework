@@ -16,10 +16,10 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -88,7 +88,7 @@ public class ServletLogConfiguration extends HttpServlet
 										this.setLogLevel(jsonResponse, loggerName, newLevel);
 										break;	
 										
-					case "configfile":	new CFWLog(logger).audit("UPDATE", "LogLevel", "Reload log levels from logging.properties.");
+					case "configfile":	new CFWLog(logger).audit(CFWAuditLogAction.RESET, "LogLevel", "Reload log levels from logging.properties.");
 										CFWLog.initializeLogging();
 										break;
 										
@@ -136,7 +136,7 @@ public class ServletLogConfiguration extends HttpServlet
 		//Do not use LogManager.getLogger() as it may return null
 		Logger loggerToChange = Logger.getLogger(loggerName);
 		
-		new CFWLog(logger).audit("UPDATE", "LogLevel", "Change level of logger "+loggerName+" from "+loggerToChange.getLevel().toString()+" to "+level);
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, "LogLevel", "Change level of logger "+loggerName+" from "+loggerToChange.getLevel().toString()+" to "+level);
 		loggerToChange.setLevel(Level.parse(level));
 		
 		response.setSuccess(true);

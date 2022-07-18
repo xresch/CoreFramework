@@ -11,6 +11,7 @@ import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.usermgmt.RolePermissionMap.RolePermissionMapFields;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
@@ -64,7 +65,7 @@ public class CFWDBRolePermissionMap {
 				  + RolePermissionMapFields.IS_DELETABLE +" "
 				  + ") VALUES (?,?,?);";
 		
-		new CFWLog(logger).audit("UPDATE", Role.class, "Add Permission to Role: "+role.name()+", Permission: "+permission.name());
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Role.class, "Add Permission to Role: "+role.name()+", Permission: "+permission.name());
 		return CFWDB.preparedExecute(insertPermissionSQL, 
 				permission.id(),
 				role.id(),
@@ -158,7 +159,7 @@ public class CFWDBRolePermissionMap {
 				  + RolePermissionMapFields.IS_DELETABLE +" = TRUE "
 				  + ";";
 		
-		new CFWLog(logger).audit("UPDATE", Role.class, "Remove Permission from Role: "+role.name()+", Permission: "+permission.name());
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Role.class, "Remove Permission from Role: "+role.name()+", Permission: "+permission.name());
 		return CFWDB.preparedExecute(removePermissionFromRoleSQL, 
 				permission.id(),
 				role.id()

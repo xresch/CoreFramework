@@ -13,6 +13,7 @@ import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 
 /**************************************************************************************************************
  * 
@@ -74,7 +75,7 @@ public class CFWDBUser {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("CREATE", "User", "Username: "+user.username());
+		new CFWLog(logger).audit(CFWAuditLogAction.CREATE, "User", "Username: "+user.username());
 		return user
 				.queryCache(CFWDBUser.class, "create")
 				.insert();
@@ -313,7 +314,7 @@ public class CFWDBUser {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("UPDATE", "User", "Username: "+user.username());
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, "User", "Username: "+user.username());
 
 		boolean resultUpdate = 
 			   user.queryCache(CFWDBUser.class, "update")
@@ -360,7 +361,7 @@ public class CFWDBUser {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("DELETE", "User", "Username: "+user.username());
+		new CFWLog(logger).audit(CFWAuditLogAction.DELETE, "User", "Username: "+user.username());
 
 		return new User()
 				.queryCache(CFWDBUser.class, "deleteByID")

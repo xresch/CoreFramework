@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 
 /**************************************************************************************************************
  * 
@@ -71,7 +72,7 @@ public  class CFWDBDefaultOperations {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("CREATE", object, auditLogFieldnames);
+		new CFWLog(logger).audit(CFWAuditLogAction.CREATE, object, auditLogFieldnames);
 		
 		return object
 			.queryCache(object.getClass(), "CFWDBDefaultOperations.create")
@@ -106,7 +107,7 @@ public  class CFWDBDefaultOperations {
 			return null;
 		}
 		
-		new CFWLog(logger).audit("CREATE", object, auditLogFieldnames);
+		new CFWLog(logger).audit(CFWAuditLogAction.CREATE, object, auditLogFieldnames);
 		
 		return object
 			.queryCache(object.getClass(), "CFWDBDefaultOperations.insertGetPrimaryKey")
@@ -171,7 +172,7 @@ public  class CFWDBDefaultOperations {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("UPDATE", object, auditLogFieldnames);
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, object, auditLogFieldnames);
 		
 		return object
 				.queryCache(object.getClass(), "CFWDBDefaultOperations.update")
@@ -204,7 +205,7 @@ public  class CFWDBDefaultOperations {
 				continue;
 			}
 			
-			new CFWLog(logger).audit("DELETE", object, auditLogFieldnames);
+			new CFWLog(logger).audit(CFWAuditLogAction.DELETE, object, auditLogFieldnames);
 			
 			isSuccess &= object
 					.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteBy"+column)
@@ -240,7 +241,7 @@ public  class CFWDBDefaultOperations {
 		
 		if(object != null) {
 			
-			new CFWLog(logger).audit("DELETE", object, auditLogFieldnames);
+			new CFWLog(logger).audit(CFWAuditLogAction.DELETE, object, auditLogFieldnames);
 			
 			return object
 				.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteFirstBy"+column)
@@ -357,7 +358,7 @@ public  class CFWDBDefaultOperations {
 					continue;
 				}
 				
-				new CFWLog(logger).audit("DELETE", object, auditLogFieldnames);
+				new CFWLog(logger).audit(CFWAuditLogAction.DELETE, object, auditLogFieldnames);
 				success &= 	object
 						.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteMultipleByIDWhere-Delete")
 						.delete()

@@ -13,6 +13,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.keyvaluepairs.KeyValuePair.KeyValuePairFields;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -330,7 +331,7 @@ public class CFWDBKeyValuePairs {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("UPDATE", KeyValuePair.class, "Change '"+keyVal.key()+"' from '"+keyValCache.get(keyVal.key())+"' to '"+keyVal.value()+"'");
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, KeyValuePair.class, "Change '"+keyVal.key()+"' from '"+keyValCache.get(keyVal.key())+"' to '"+keyVal.value()+"'");
 		boolean updateResult =  keyVal
 				.queryCache(CFWDBKeyValuePairs.class, "update")
 				.update();
@@ -358,7 +359,7 @@ public class CFWDBKeyValuePairs {
 			
 			if( (oldValue != null  && !oldValue.equals(value))
 			 || (oldValue == null  && !Strings.isNullOrEmpty(value))	) {
-				new CFWLog(logger).audit("UPDATE", KeyValuePair.class, "Change keyVal '"+currentConfigFromDB.key()+"' from '"+oldValue+"' to '"+value+"'");
+				new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, KeyValuePair.class, "Change keyVal '"+currentConfigFromDB.key()+"' from '"+oldValue+"' to '"+value+"'");
 			}
 			
 			return new KeyValuePair()
@@ -387,7 +388,7 @@ public class CFWDBKeyValuePairs {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("DELETE", KeyValuePair.class, "Delete keyValuePair: '"+keyVal.key()+"'");
+		new CFWLog(logger).audit(CFWAuditLogAction.DELETE, KeyValuePair.class, "Delete keyValuePair: '"+keyVal.key()+"'");
 		return new KeyValuePair()
 				.queryCache(CFWDBKeyValuePairs.class, "deleteByID")
 				.delete()
@@ -411,7 +412,7 @@ public class CFWDBKeyValuePairs {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("DELETE", KeyValuePair.class, "Delete Multiple keyValuePairs: '"+resultIDs+"'");
+		new CFWLog(logger).audit(CFWAuditLogAction.DELETE, KeyValuePair.class, "Delete Multiple keyValuePairs: '"+resultIDs+"'");
 		
 		return new KeyValuePair()
 				.queryCache(CFWDBKeyValuePairs.class, "deleteMultipleByID")
@@ -435,7 +436,7 @@ public class CFWDBKeyValuePairs {
 			return false;
 		}
 		
-		new CFWLog(logger).audit("DELETE", KeyValuePair.class, "Delete keyValuePair: '"+keyVal.key()+"'");
+		new CFWLog(logger).audit(CFWAuditLogAction.DELETE, KeyValuePair.class, "Delete keyValuePair: '"+keyVal.key()+"'");
 		
 		return new KeyValuePair()
 				.queryCache(CFWDBKeyValuePairs.class, "deleteByName")

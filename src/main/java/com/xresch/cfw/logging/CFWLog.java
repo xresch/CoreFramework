@@ -14,10 +14,9 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.CLI;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
-import com.xresch.cfw.logging.SysoutInterceptor.SysoutType;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -309,8 +308,8 @@ public class CFWLog {
 	 * @param itemClass the class of the CFWObject
 	 * @param message the log message, for example details about the affected item 
 	 ***********************************************************************/
-	public void audit(String action, Class<? extends CFWObject> itemClass, String message){
-		this.custom("auditAction", action);
+	public void audit(CFWAuditLogAction action, Class<? extends CFWObject> itemClass, String message){
+		this.custom("auditAction", action.toString());
 		this.custom("auditItem", itemClass.getSimpleName());
 		this.log(Level.OFF, message, null);
 	}
@@ -320,8 +319,8 @@ public class CFWLog {
 	 * @param item the item affected by the action (e.g. User, Role, Dashboard...)
 	 * @param message the log message, for example details about the affected item 
 	 ***********************************************************************/
-	public void audit(String action, String item, String message){
-		this.custom("auditAction", action);
+	public void audit(CFWAuditLogAction action, String item, String message){
+		this.custom("auditAction", action.toString());
 		this.custom("auditItem", item);
 		this.log(Level.OFF, message, null);
 	}
@@ -329,7 +328,7 @@ public class CFWLog {
 	/********************************************************************************************
 	 * 
 	 ********************************************************************************************/
-	public void audit(String auditAction, CFWObject object, String[] auditLogFieldnames) {
+	public void audit(CFWAuditLogAction auditAction, CFWObject object, String[] auditLogFieldnames) {
 		
 		if(auditLogFieldnames != null) {
 			StringBuilder logMessage = new StringBuilder();

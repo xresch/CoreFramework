@@ -11,6 +11,7 @@ import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.usermgmt.UserRoleMap.UserRoleMapFields;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
@@ -69,7 +70,7 @@ public class CFWDBUserRoleMap {
 				  + UserRoleMapFields.IS_DELETABLE +" "
 				  + ") VALUES (?,?,?);";
 		
-		new CFWLog(logger).audit("UPDATE", User.class, "Add Role to User: "+user.username()+", Role: "+role.name());
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, User.class, "Add Role to User: "+user.username()+", Role: "+role.name());
 		return CFWDB.preparedExecute(insertRoleSQL, 
 				user.id(),
 				role.id(),
@@ -122,7 +123,7 @@ public class CFWDBUserRoleMap {
 				  + UserRoleMapFields.IS_DELETABLE +" = TRUE "
 				  + ";";
 		
-		new CFWLog(logger).audit("UPDATE", User.class, "Remove Role from User: "+user.username()+", Role: "+role.name());
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, User.class, "Remove Role from User: "+user.username()+", Role: "+role.name());
 		return CFWDB.preparedExecute(removeUserFromRoleSQL, 
 				user.id(),
 				role.id()

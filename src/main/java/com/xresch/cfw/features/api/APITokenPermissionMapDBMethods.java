@@ -4,13 +4,11 @@ import java.sql.ResultSet;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.APITokenPermissionMap.APITokenPermissionMapFields;
-import com.xresch.cfw.features.usermgmt.CFWDBRolePermissionMap;
-import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -210,9 +208,9 @@ public class APITokenPermissionMapDBMethods {
 		}
 		
 		new CFWLog(logger).audit(
-				"UPDATE", 
+				CFWAuditLogAction.ADD, 
 				APIToken.class, 
-				"Add Permission to API Token: "+token.token()+", Permission: "+permission.getPermissionName() 
+				"Permission to API Token: "+token.token()+", Permission: "+permission.getPermissionName() 
 			);
 		
 		return create(
@@ -274,9 +272,9 @@ public class APITokenPermissionMapDBMethods {
 		}
 		
 		new CFWLog(logger).audit(
-				"UPDATE", 
+				CFWAuditLogAction.REMOVE, 
 				APIToken.class, 
-				"Remove Permission from API Token: "+token.token()+", Permission: "+permission.getPermissionName() 
+				"Permission from API Token: "+token.token()+", Permission: "+permission.getPermissionName() 
 			);
 		
 		return new CFWSQL(new APITokenPermissionMap())

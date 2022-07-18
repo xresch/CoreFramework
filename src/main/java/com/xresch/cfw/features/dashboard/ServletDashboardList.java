@@ -24,6 +24,7 @@ import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.features.notifications.Notification;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -398,7 +399,7 @@ public class ServletDashboardList extends HttpServlet
 	
 							if(!Strings.isNullOrEmpty(newOwner)) {
 								
-								new CFWLog(logger).audit("UPDATE", Dashboard.class, "Change owner ID of dashboard from "+dashboard.foreignKeyOwner()+" to "+newOwner);
+								new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Dashboard.class, "Change owner ID of dashboard from "+dashboard.foreignKeyOwner()+" to "+newOwner);
 								
 								Integer oldOwner = dashboard.foreignKeyOwner();
 								dashboard.foreignKeyOwner(Integer.parseInt(newOwner));

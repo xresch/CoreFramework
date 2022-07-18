@@ -13,6 +13,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -105,7 +106,7 @@ public class CFWDBRole {
 	//####################################################################################################
 	public static boolean 	deleteByID(int id) 	{ 
 		Role role = selectByID(id);
-		new CFWLog(logger).audit("DELETE", "Role", "Role: "+role.name());
+		new CFWLog(logger).audit(CFWAuditLogAction.DELETE, "Role", "Role: "+role.name());
 		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, RoleFields.PK_ID.toString(), id); 
 	}
 	
@@ -126,7 +127,7 @@ public class CFWDBRole {
 	}
 	
 	public static boolean 	deleteByName(String name) 		{ 
-		new CFWLog(logger).audit("DELETE", "Role", "Role: "+name);
+		new CFWLog(logger).audit(CFWAuditLogAction.DELETE, "Role", "Role: "+name);
 		return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, RoleFields.NAME.toString(), name); 
 	}
 	
