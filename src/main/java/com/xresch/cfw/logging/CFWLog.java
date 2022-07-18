@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
+import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -309,20 +310,7 @@ public class CFWLog {
 	 * @param message the log message, for example details about the affected item 
 	 ***********************************************************************/
 	public void audit(CFWAuditLogAction action, Class<? extends CFWObject> itemClass, String message){
-		this.custom("auditAction", action.toString());
-		this.custom("auditItem", itemClass.getSimpleName());
-		this.log(Level.OFF, message, null);
-	}
-	/***********************************************************************
-	 * Create an audit entry with level OFF to always log the audit logs.
-	 * @param action the action for the audit message(e.g. CREATE, UPDATE, DELETE)
-	 * @param item the item affected by the action (e.g. User, Role, Dashboard...)
-	 * @param message the log message, for example details about the affected item 
-	 ***********************************************************************/
-	public void audit(CFWAuditLogAction action, String item, String message){
-		this.custom("auditAction", action.toString());
-		this.custom("auditItem", item);
-		this.log(Level.OFF, message, null);
+		this.audit(action,itemClass.getSimpleName(), message);
 	}
 	
 	/********************************************************************************************
@@ -343,6 +331,45 @@ public class CFWLog {
 					object.getClass().getSimpleName(), 
 					logMessage.substring(0, logMessage.length()-2));
 		}	
+	}
+	
+	/***********************************************************************
+	 * Create an audit entry with level OFF to always log the audit logs.
+	 * @param action the action for the audit message(e.g. CREATE, UPDATE, DELETE)
+	 * @param item the item affected by the action (e.g. User, Role, Dashboard...)
+	 * @param message the log message, for example details about the affected item 
+	 ***********************************************************************/
+	public void audit(CFWAuditLogAction action, String item, String message){
+		
+		//------------------------
+		// Write to Database
+		
+		User user = CFW.Context.Request.getUser();
+		
+		Integer userID = null;
+		String username = null;
+		
+		if(user != null) {
+			userID = user.id();
+			username = user.username();
+		}
+		
+		CFWAuditLog auditLog = new CFWAuditLog()
+								//.timestamp(timestamp) use default what is current time
+								.foreignKeyUser(userID)
+								.username(username)
+								.action(action)
+								.item(item)
+								.message(message)
+							;
+		
+		CFWAuditLogDBMethods.create(auditLog);
+		
+		//------------------------
+		// Write to Log file
+		this.custom("auditAction", action.toString());
+		this.custom("auditItem", item);
+		this.log(Level.OFF, message, null);
 	}
 	
 	/***********************************************************************

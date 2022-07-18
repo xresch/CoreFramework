@@ -15,6 +15,7 @@ import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
+ * This object is registered by the class FeatureCore.
  * 
  * @author Reto Scheiwiller
  **************************************************************************************************************/
@@ -195,21 +196,21 @@ public class CFWAuditLog extends CFWObject {
 		return this;
 	}
 	
-	public String lastname() {
+	public String item() {
 		return item.getValue();
 	}
 	
-	public CFWAuditLog lastname(String lastname) {
-		this.item.setValue(lastname);
+	public CFWAuditLog item(String item) {
+		this.item.setValue(item);
 		return this;
 	}
 	
-	public String location() {
+	public String message() {
 		return message.getValue();
 	}
 	
-	public CFWAuditLog location(String location) {
-		this.message.setValue(location);
+	public CFWAuditLog message(String message) {
+		this.message.setValue(message);
 		return this;
 	}
 	

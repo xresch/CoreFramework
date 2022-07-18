@@ -24,6 +24,7 @@ import com.xresch.cfw.features.core.auth.ServletSAML2Metadata;
 import com.xresch.cfw.features.core.auth.ServletSSOOpenIDCallback;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.logging.CFWAuditLog;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
@@ -92,7 +93,7 @@ public class FeatureCore extends CFWAppFeature {
 		
 		//----------------------------------
 		// Register Objects
-		//CFW.Registry.Objects.addCFWObject(Configuration.class);
+		CFW.Registry.Objects.addCFWObject(CFWAuditLog.class);
     	
 		//----------------------------------
 		// Register Context Settings
