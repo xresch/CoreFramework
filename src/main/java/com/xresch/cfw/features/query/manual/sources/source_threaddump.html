@@ -1,0 +1,12 @@
+
+<p>
+	The threaddump source creates a thread dump of the current application instance and returns a record for each stacktrace element.
+	<br>The BLOCKING_THREAD field will be -1 if there is no other thread blocking the current one.
+</p>
+
+<p>An example query that creates count statistics by stacktrace element name:</p>
+<pre><code class="language-cfwquery">| source threaddump 
+| stats by=[STACK_ELEMENT] COUNT=count()
+| sort COUNT reverse=true</code></pre>
+
+
