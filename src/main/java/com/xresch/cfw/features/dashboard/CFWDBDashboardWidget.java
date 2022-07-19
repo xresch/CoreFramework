@@ -29,7 +29,12 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public class CFWDBDashboardWidget {
 	
 	private static Class<DashboardWidget> cfwObjectClass = DashboardWidget.class;
-	private static final String[] auditLogFieldnames = new String[] { DashboardWidgetFields.PK_ID.toString()};
+	private static final String[] auditLogFieldnames = new String[] { 
+			DashboardWidgetFields.PK_ID.toString()
+		  , DashboardWidgetFields.FK_ID_DASHBOARD.toString()
+		  , DashboardWidgetFields.TYPE.toString()
+		  , DashboardWidgetFields.TITLE.toString()
+			};
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBDashboardWidget.class.getName());
 
