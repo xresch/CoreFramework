@@ -1,5 +1,6 @@
 package com.xresch.cfw.logging;
 
+import java.sql.ResultSet;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.datahandling.CFWObject;
@@ -7,6 +8,7 @@ import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogFields;
+import com.xresch.cfw.utils.ResultSetUtils.ResultSetAsJsonReader;
 
 /**************************************************************************************************************
  * @author Reto Scheiwiller
@@ -71,6 +73,19 @@ public class CFWAuditLogDBMethods {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWAuditLogFields.ACTION.toString(), name);
 	}
 	
+	
+	public static ResultSetAsJsonReader selectByTimerange(long earliestMillis, long latestMillis) { 
+		
+		return new CFWSQL(new CFWAuditLog())
+				.select()
+				.where()
+					.custom("TIMESTAMP >= DATEADD(MILLISECOND, ?, DATE '1970-01-01')", earliestMillis)
+					.custom("AND TIMESTAMP <= DATEADD(MILLISECOND, ?, DATE '1970-01-01')", latestMillis)
+				.getAsJSONReader()
+				;
+
+	}
+
 		
 	
 	public static int getCount() {

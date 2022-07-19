@@ -25,6 +25,7 @@ import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.ResultSetUtils;
+import com.xresch.cfw.utils.ResultSetUtils.ResultSetAsJsonReader;
 
 /**************************************************************************************************************
  * Class used to create SQL statements for a CFWObject.
@@ -1659,6 +1660,16 @@ public class CFWSQL {
 		
 		this.execute();
 		return ResultSetUtils.toJSONArray(result);
+				
+	}
+	
+	/***************************************************************
+	 * Execute the Query and gets the result as JSON string.
+	 ****************************************************************/
+	public ResultSetAsJsonReader getAsJSONReader() {
+		
+		this.execute();
+		return ResultSetUtils.toJSONReader(result);
 				
 	}
 	

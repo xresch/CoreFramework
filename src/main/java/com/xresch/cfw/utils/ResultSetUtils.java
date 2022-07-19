@@ -1,5 +1,6 @@
 package com.xresch.cfw.utils;
 
+import java.sql.Clob;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -12,7 +13,10 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
+import org.h2.jdbc.JdbcArray;
+
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -21,6 +25,7 @@ import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.json.SerializerResultSet;
 
 /**************************************************************************************************************
  * 
@@ -31,6 +36,7 @@ public class ResultSetUtils {
 	
 	private static Logger logger = CFWLog.getLogger(ResultSetUtils.class.getName());
 	
+	private static final ResultSetUtils INSTANCE = new ResultSetUtils();
 	/***************************************************************************
 	 * Converts the first result into a CFWObject.
 	 * @return object, returns null if result set is empty or an error occurs.
@@ -409,6 +415,14 @@ public class ResultSetUtils {
 		return CFW.JSON.toJSON(resultSet);
 	}
 	
+	/********************************************************************************************
+	 * Returns a ResultSetAsJsonReader to convert SQL records to json objects one by one. 
+	 * 
+	 ********************************************************************************************/
+	public static ResultSetAsJsonReader toJSONReader(ResultSet resultSet) {
+		return INSTANCE.new ResultSetAsJsonReader(resultSet);
+	}
+	
 	/***************************************************************************
 	 * Converts a ResultSet into a JsonArray.
 	 * @return list of maps holding key(column name) with values
@@ -620,5 +634,74 @@ public class ResultSetUtils {
 		return json.toString();
 	}
 	
+	
+	/**************************************************************************************************************
+	 * Reads records from a Result set and converts them into Json Objects.
+	 * 
+	 **************************************************************************************************************/
+	public class ResultSetAsJsonReader {
+		
+		private ResultSet resultSet = null;
+		private ResultSetMetaData metadata;
+		private int columnCount;
+		/****************************************************************
+		 * 
+		 ****************************************************************/
+		public ResultSetAsJsonReader(ResultSet resultSet) {
+			this.resultSet = resultSet;
+			try {
+				this.metadata = resultSet.getMetaData();
+				this.columnCount = metadata.getColumnCount();
+			}catch (SQLException e) {
+					new CFWLog(logger).severe("Error while initializing ResultSetAsJsonReader:"+e.getMessage(), e);
+			}
+			
+		}
+		
+		/****************************************************************
+		 * Returns the next JsonObject or null if the end of the result set was reached.
+		 ****************************************************************/
+		public JsonObject next() {
+
+			try {
+				
+				if(resultSet.next()) {
+					JsonObject record = new JsonObject();
+					for(int i = 1 ; i <= columnCount; i++) {
+						String name = metadata.getColumnLabel(i);
+						
+						if(name.toUpperCase().startsWith("JSON")) {
+							JsonElement asElement = CFW.JSON.stringToJsonElement(resultSet.getString(i));
+							record.add(name, asElement);
+						}else {
+							
+							Object value = resultSet.getObject(i);
+							if(value instanceof Clob) {
+								CFW.JSON.addObject(record, name, resultSet.getString(i));
+							}else if(value instanceof JdbcArray) {
+								CFW.JSON.addObject(record, name, ((JdbcArray)value).getArray());
+							} else {
+								CFW.JSON.addObject(record, name, value);
+								
+							}
+						}
+					}
+					return record;
+				}else {
+					//-------------------------
+					// end of results
+					CFWDB.close(resultSet);
+					return null;
+				}
+			} catch (SQLException e) {
+				CFWDB.close(resultSet);
+				new CFWLog(logger).severe("Error while reading SQL results:"+e.getMessage(), e);
+			}
+			
+			//return null in case of error;
+			return null;
+		}
+		
+	}
 		
 }

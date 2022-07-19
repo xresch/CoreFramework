@@ -138,6 +138,7 @@ DONE
 ------- current -------
 - BREAKING CHANGE: Added 1 minute cache for widget data.
 - Audit: Audit logs get written to database.
+- Audit: Added source "auditlog" to CFWQL
 - CFWField: Prevent autofill of password fields in forms
 - Timeframe Picker: Added custom Relative Offset
 - Job Task Widget Executor: Added timeframe picker tho handle time placeholders like $earliest and $latest

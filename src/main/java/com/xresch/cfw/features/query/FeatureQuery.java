@@ -49,6 +49,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionSubstring;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionSum;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTrim;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceApplog;
+import com.xresch.cfw.features.query.sources.CFWQuerySourceAuditlog;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceRandom;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
@@ -147,9 +148,11 @@ public class FeatureQuery extends CFWAppFeature {
 		 
 		//----------------------------------
 		// Register Sources
+		CFW.Registry.Query.registerSource(new CFWQuerySourceApplog(null));
+		CFW.Registry.Query.registerSource(new CFWQuerySourceAuditlog(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceJson(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceRandom(null));
-		CFW.Registry.Query.registerSource(new CFWQuerySourceApplog(null));
+		
 		
 		//----------------------------------
 		// Register Widgets
