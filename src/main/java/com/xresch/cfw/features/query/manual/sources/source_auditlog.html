@@ -1,0 +1,9 @@
+
+<p>The auditlog source reads audit information from the database.</p>
+
+<p>An example query that fetches audit logs and creates statistics based on user and actions:</p>
+<pre><code class="language-cfwquery">| source auditlog
+| stats by=[USERNAME, ACTION] COUNT=count() 
+</code></pre>
+
+

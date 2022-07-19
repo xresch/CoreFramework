@@ -41,7 +41,10 @@ public class CFWDBDashboard {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBDashboard.class.getName());
 	
-	private static final String[] auditLogFieldnames = new String[] { DashboardFields.PK_ID.toString(), DashboardFields.NAME.toString()};
+	private static final String[] auditLogFieldnames = new String[] { 
+			DashboardFields.PK_ID.toString()
+		  , DashboardFields.NAME.toString()
+		};
 	
 	public static TreeSet<String> cachedTags = null;
 	
