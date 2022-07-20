@@ -690,6 +690,7 @@ public class CFWDBDashboard {
 				return false;
 			}
 		}
+		
 		//-----------------------------------
 		// Check User has Shared Role
 		LinkedHashMap<String, String> sharedRoles = dashboard.sharedWithGroups();

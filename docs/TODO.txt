@@ -138,7 +138,7 @@ DONE
 ------- current -------
 - BREAKING CHANGE: Added 1 minute cache for widget data.
 - Audit: Audit logs get written to database.
-- Audit: Added source "auditlog" to CFWQL
+- Error Page: Added custom error page for unhandled exceptions
 - CFWField: Prevent autofill of password fields in forms
 - Timeframe Picker: Added custom Relative Offset
 - Job Task Widget Executor: Added timeframe picker tho handle time placeholders like $earliest and $latest
@@ -156,6 +156,8 @@ DONE
 - Dashboard: Fixed destruction of widget layout, resizing window width to change into 1 column layout disabled
 - Dashboard: Added Javascript Widget
 - Config: Added Password Policy Settings
+- Query: Added source "auditlog" to CFWQL
+- Query: Added source "threaddump" to CFWQL
 - Query: Fixed Binary Expression messing with parsing when in an array
 - Query: Fixed Binary Expression "==" throwing NullPointerException when left side is null and right side is a string.
 - Query: Interrupt execution in case of exception(prevents hanging threads)

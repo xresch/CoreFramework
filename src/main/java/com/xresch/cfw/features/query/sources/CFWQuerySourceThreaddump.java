@@ -116,7 +116,6 @@ public class CFWQuerySourceThreaddump extends CFWQuerySource {
 	@Override
 	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 				
-		final StringBuilder dump = new StringBuilder();
         final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         final ThreadInfo[] threadInfos = threadMXBean.dumpAllThreads(true, true); //getThreadInfo(threadMXBean.getAllThreadIds(), 100);
         
@@ -136,9 +135,6 @@ public class CFWQuerySourceThreaddump extends CFWQuerySource {
 	        	
 	        	outQueue.add( new EnhancedJsonObject(currentObject) );
         	}
-        	
-        }
-					
+        }			
 	}
-
 }

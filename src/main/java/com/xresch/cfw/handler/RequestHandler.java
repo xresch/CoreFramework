@@ -17,9 +17,11 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFW.Context;
 import com.xresch.cfw.db.CFWDB;
-import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.AbstractResponse;
+import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.PlaintextResponse;
 
 /**************************************************************************************************************
@@ -31,6 +33,9 @@ public class RequestHandler extends HandlerWrapper
 {
 	private static Logger logger = CFWLog.getLogger(RequestHandler.class.getName());
 		
+	/**********************************************************
+	 * 
+	 **********************************************************/
 	@Override
     public void handle( String target,
                         Request baseRequest,
@@ -140,9 +145,15 @@ public class RequestHandler extends HandlerWrapper
 	    		PlaintextResponse plain = new PlaintextResponse();
 	    		plain.getContent().append("This application does not work with Internet Explorer. Please use a modern browser like Chrome, Edge or Safari.");
 	    	}
-		}catch(Exception e) {
-			new CFWLog(logger).severe("Unhandled Exception occured.", e);
-			throw e;
+		}catch(Throwable e) {
+			//==========================================
+			// Handle error Overwriting Response
+			//==========================================
+			response.setStatus(500);
+			new CFWLog(logger).silent(true).severe("Unhandled Exception occured.", e);
+		
+			this.createErrorResponse(request, e);
+
 		}finally {
 	    	//==========================================
 	    	// After
@@ -156,4 +167,50 @@ public class RequestHandler extends HandlerWrapper
 	    	Context.Request.clearRequestContext();
 		}
     }
+
+	/**********************************************************
+	 * 
+	 **********************************************************/
+	private void createErrorResponse(HttpServletRequest request, Throwable e) {
+		//AbstractResponse elGrandeResponse = Context.Request.getResponse();
+		// if(elGrandeResponse instanceof HTMLResponse) 
+		
+		HTMLResponse errorResponse = new HTMLResponse("Error Occured");
+			
+		StringBuilder builder = new StringBuilder();
+		builder.append("<h1>Whoops!</h1>");
+		builder.append("<p>An unexpected error occured. Here some things you can check or try:</p>");
+		builder.append("<ul>");
+		builder.append(		"<li><b>Outdated Bookmark:&nbsp;</b> If you used a boockmark check if the link is still valid.</li>");
+		builder.append(		"<li><b>Required Permissions:&nbsp;</b> If you clicked a link someone shared with you, you might not have enough permissions.</li>");
+		builder.append(		"<li><b>Go to Home:&nbsp;</b>Try to access the home page of the application: <a target=\"_blank\" href=\""+CFW.HTTP.getServerURL(request)+"\">Open Home Page</a></li>");
+		builder.append(		"<li><b>Contact Support:&nbsp;</b> Contact your application support and include below error details in your request.</li>");
+		builder.append("</ul>");
+		
+		builder.append("<h1>Error Details</h1>");
+		builder.append("<ul>");
+		builder.append(		"<li><b>System Time:&nbsp;</b>"+CFW.Utils.Time.currentTimestamp()+"</li>");
+		builder.append(		"<li><b>Method:&nbsp;</b>"+request.getMethod()+"</li>");
+		builder.append(		"<li><b>URL:&nbsp;</b>"+request.getRequestURL()+"</li>");
+		builder.append(		"<li><b>Query:&nbsp;</b>"+request.getQueryString()+"</li>");
+		if(CFW.Context.Request.getUser() !=null) {
+			builder.append(		"<li><b>User:&nbsp;</b>"+CFW.Context.Request.getUser().createUserLabel()+"</li>");
+		}
+		builder.append(		"<li><b>Session ID:&nbsp;</b>"+CFW.Context.Session.getSessionID()+"</li>");
+		builder.append(		"<li><b>Request ID:&nbsp;</b>"+request.getAttribute(CFW.REQUEST_ATTR_ID)+"</li>");
+		builder.append(		"<li><b>Message:&nbsp;</b>"+e.getMessage()+"</li>");
+		builder.append(		"<li><b>Error Class:&nbsp;</b>"+e.getClass().getName()+"</li>");
+		
+		builder.append(		"<li><b>Stack Trace:&nbsp;</b>");
+			builder.append("<ul>");
+			for(StackTraceElement element : e.getStackTrace()) {
+				builder.append("<li>"+element.toString()+"</li>");
+			}
+			builder.append("</ul>");
+		builder.append(		"</li>");
+		builder.append("</ul>");
+		errorResponse.setContent(builder);
+	}
+	
+	
 }
