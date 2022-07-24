@@ -71,8 +71,10 @@ public abstract class CFWHierarchyConfig {
 	 *  - The sorted element can be part of the target element.
 	 *  
 	 * This method is responsible for creating error messages.
-	 *  
+	 * 
+	 * @param movedElement the element that is moved in the hierarchy
+	 * @param targetParent target element or null if it should be moved to root
 	 ***************************************************************************/
-	public abstract boolean canSort(int sortedElementID, int targetParentID);
+	public abstract boolean canBeReordered(CFWObject movedElement, CFWObject targetParent);
 	
 }

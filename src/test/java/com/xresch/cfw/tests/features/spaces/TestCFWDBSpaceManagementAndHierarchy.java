@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWHierarchy;
-import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.spaces.Space;
 import com.xresch.cfw.features.spaces.Space.SpaceFields;
@@ -20,6 +19,12 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 	
 	@BeforeAll
 	public static void fillWithTestData() {
+		//----------------------------------------
+		// Clear Testdata
+		Space temp = new Space();
+		new CFWSQL(new Space())
+			.custom("TRUNCATE TABLE "+temp.getTableName())
+			.executeDelete();
 		
 		//----------------------------------------
 		// Create SpaceGroups
@@ -277,6 +282,19 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 		Assertions.assertFalse(subspace2WithHierarchy.setParent(subspace2WithHierarchy), "Cannot set as it's own parent.");
 		Assertions.assertFalse(subspace2WithHierarchy.setParent(subspace5WithHierarchy), "Cannot set parent as it would cause a circular reference.");
 		
+		//-----------------------------------------
+		// Test make element root
+		//-----------------------------------------
+		Assertions.assertTrue(CFWHierarchy.updateParent(subspace5.getHierarchyConfig(),null, subspace5.id()), "Subspace5 is set to be a root element.");
+		
+		String subspace5Dump =  new CFWHierarchy<Space>(subspace5WithHierarchy)
+				.fetchAndCreateHierarchy(fieldnames)
+				.dumpHierarchy(new String[] {SpaceFields.PK_ID.toString(), SpaceFields.NAME.toString()});
+		
+		System.out.println("============= SUBSPACE5 DUMP =============");
+		System.out.println(subspace5Dump);
+		
+		Assertions.assertTrue(subspace5Dump.matches("\\|--> \\d+ - SubSpace5[\\S\\s]*"), "Subspace 5 is the root element.");
 	}
 		
 }

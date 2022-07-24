@@ -75,11 +75,13 @@ public class CFWHierarchy<T extends CFWObject> {
 		object.addField(
 				CFWField.newInteger(FormFieldType.NONE, HIERARCHY_DEPTH)
 					.setDescription("The depth of this element in the hierarchy.")
+					.setValue(0)
 			);
 		
 		object.addField(
 				CFWField.newArray(FormFieldType.NONE, HIERARCHY_LINEAGE)
 					.setDescription("Linage of all the parents of this element.")
+					.setValue(new ArrayList<>())
 			);
 		
 		object.addField(
@@ -98,14 +100,20 @@ public class CFWHierarchy<T extends CFWObject> {
 	 *****************************************************************************/
 	public static boolean updateParent(CFWHierarchyConfig config, String parentID, String childID) {
 		
-		if(!NumberUtils.isDigits(parentID)) {
-			new CFWLog(logger).severe("parentID is not a integer.", new IllegalArgumentException());
-			return false;
-		}
 		if(!NumberUtils.isDigits(childID)) {
 			new CFWLog(logger).severe("childID is not an integer.", new IllegalArgumentException());
 			return false;
 		}
+		
+		if(parentID == null) {
+			return CFWHierarchy.updateParent(config, null, Integer.parseInt(childID));
+		}
+		
+		if(!NumberUtils.isDigits(parentID)) {
+			new CFWLog(logger).severe("parentID is not a integer.", new IllegalArgumentException());
+			return false;
+		}
+
 		
 		return CFWHierarchy.updateParent(config, Integer.parseInt(parentID), Integer.parseInt(childID));		
 	}
@@ -115,27 +123,30 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * Moves the child if true and returns true if successful.
 	 * CFWHierarchyConfig.canSort() is repsonsible for creating error messages.
 	 * 
+	 * @param config of the hierarchy
+	 * @param parentID id or null if child should turn root.
+	 * @param childID id of the child
 	 * @return true if successful, false otherwise.
 	 *****************************************************************************/
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static boolean updateParent(CFWHierarchyConfig config, int parentID, int childID) {
+	public static boolean updateParent(CFWHierarchyConfig config, Integer parentID, int childID) {
 
 		CFWObject instance = config.getCFWObjectInstance();
 		String primaryFieldName = instance.getPrimaryField().getName();
 		
-		if(!config.canSort(parentID, childID)) {
-			return false;
-		}
-		
 		//------------------------------------------
 		// Resolve Parent Object
-		CFWObject parentObject = instance.select()
-				.where(primaryFieldName, parentID)
-				.getFirstAsObject();
-		
-		CFWObject parentWithHierarchy = new CFWHierarchy(parentObject)
-				.fetchAndCreateHierarchy()
-				.getSingleRootObject();
+		CFWObject parentWithHierarchy = null;
+		CFWObject parentObject = null;
+		if(parentID != null) {
+			parentObject = instance.select()
+					.where(primaryFieldName, parentID)
+					.getFirstAsObject();
+			
+			parentWithHierarchy = new CFWHierarchy(parentObject)
+					.fetchAndCreateHierarchy()
+					.getSingleRootObject();
+		}
 		//------------------------------------------
 		// Resolve Child Object
 		CFWObject childObject = instance.select()
@@ -145,7 +156,15 @@ public class CFWHierarchy<T extends CFWObject> {
 		CFWObject childWithHierarchy = new CFWHierarchy(childObject)
 				.fetchAndCreateHierarchy()
 				.getSingleRootObject();
-						
+			
+		//------------------------------------------
+		// Check can be Reordered
+		if(!config.canBeReordered(parentObject, childObject)) {
+			return false;
+		}
+		
+		//------------------------------------------
+		// Set and save Parent
 		if(setParent(parentWithHierarchy, childWithHierarchy)) {
 			return saveNewParents(childWithHierarchy, true);
 		}else {
@@ -160,6 +179,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * IMPORTANT: The child object must contain all it's children or the hierarchy will
 	 * not be updated properly.
 	 * 
+	 * @param parentWithHierarchy CFWObject or null if child should turn to root
 	 * @return true if successful, false otherwise.
 	 *****************************************************************************/
 	@SuppressWarnings("unchecked")
@@ -167,8 +187,30 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		//-------------------------------
 		// Argument check
-		if(parentWithHierarchy == null || parentWithHierarchy.getPrimaryKey() == null) {
-			new CFWLog(logger).severe("Parent could not be found in the database.", new IllegalArgumentException());
+		if(childWithHierarchy == null) {
+			new CFWLog(logger).severe("ChildObject cannot be null.", new IllegalArgumentException());
+			return false;
+		}
+		
+		//-------------------------------
+		// Check if child should be made root
+		if(parentWithHierarchy == null) {
+			childWithHierarchy.getField(HIERARCHY_PARENT).setValue(null);
+			((CFWField<ArrayList<String>>)childWithHierarchy.getField(HIERARCHY_LINEAGE)).setValue(new ArrayList<>());
+			((CFWField<Integer>)childWithHierarchy.getField(HIERARCHY_DEPTH)).setValue(0);
+			
+			boolean isSuccess = true;
+			for(Entry<Integer, CFWObject> entry : childWithHierarchy.getChildObjects().entrySet()) {
+				isSuccess &= CFWHierarchy.setParent(childWithHierarchy, entry.getValue());
+			}
+			
+			return isSuccess;
+		}
+		
+		//-------------------------------
+		// Argument check
+		if(parentWithHierarchy.getPrimaryKey() == null) {
+			new CFWLog(logger).severe("Parent primary key is null. Please make sure to store it in the database first.", new IllegalArgumentException());
 			return false;
 		}
 		
@@ -197,7 +239,6 @@ public class CFWHierarchy<T extends CFWObject> {
 			parentWithHierarchy.childObjects = new LinkedHashMap<Integer, CFWObject>();
 		}
 		parentWithHierarchy.childObjects.put(childWithHierarchy.getPrimaryKey(), childWithHierarchy);
-		
 		
 		childWithHierarchy.getField(HIERARCHY_PARENT).setValue(parentWithHierarchy.getPrimaryKey());
 
@@ -513,8 +554,10 @@ public class CFWHierarchy<T extends CFWObject> {
 			
 			//--------------------------------
 			// Add root to hierarchy
-			if( (rootID == null && currentLineage == null) 
-			 || (rootID != null && rootID.equals(currentID)) ) {
+			if( (rootID == null 
+				 && ( currentLineage == null || currentLineage.size() == 0 ) ) 
+			 || (rootID != null 
+			     && rootID.equals(currentID)) ) {
 				//-------------------------
 				// is a root of the hierarchy
 				objectHierarchy.put(currentID, currentItem);
@@ -526,48 +569,7 @@ public class CFWHierarchy<T extends CFWObject> {
 			if(currentParentID != null) {
 				objectListFlat.get(currentParentID).childObjects.put(currentID, currentItem);
 			}
-			
-			//-----------------------------------------
-			// Iterate over Parent Fields of current object
-//			int parentCount = parentAndPrimaryFieldnames.length-1;
-//			for(int i=0; i < parentCount; i++) {
-//				
-//				//-----------------------------------------
-//				//Find last ParentID that is not null in fields P0 ... Pn, ignore Primary Field
-//				Integer parentValue = (Integer)currentItem.getField(parentAndPrimaryFieldnames[i]).getValue();
-//				if(parentValue == null) {
-//					
-//					if( i == 0 ) {
-//						//-------------------------
-//						// is a root of the hierarchy
-//						objectHierarchy.put(currentID, currentItem);
-//					}else {
-//						
-//					
-//						Integer lastParentID = (Integer)currentItem.getField(parentAndPrimaryFieldnames[i-1]).getValue();
-//						if(objectListFlat.get(lastParentID) == null) {
-//							
-//							//-------------------------
-//							// is a root of the hierarchy
-//							new CFWLog(logger).warn("This could should actually never be reached, included to have a fallback and prevent errors.(elementID: "+currentID+")");
-//							objectHierarchy.put(currentID, currentItem);
-//						}else {
-//							//-------------------------
-//							//is a child 
-//							objectListFlat.get(lastParentID).childObjects.put(currentID, currentItem);
-//						}
-//					}
-//					
-//					//stop and go to next object
-//					break;
-//				}else if(i == parentCount-1) {
-//					//-----------------------------------------
-//					// Handle Last Parent Field
-//					Integer lastParentID = (Integer)currentItem.getField(parentAndPrimaryFieldnames[i]).getValue();
-//					objectListFlat.get(lastParentID).childObjects.put(currentID, currentItem);
-//					break;
-//				}
-//			}
+		
 		}
 		
 		return this;

@@ -48,7 +48,7 @@ public class Space extends CFWObject {
 	private static CFWHierarchyConfig hierarchyConfig = new CFWHierarchyConfig(Space.class, 10, SpaceFields.NAME) {
 		
 		@Override
-		public boolean canSort(int sortedElementID, int targetParentID) { return true; }
+		public boolean canBeReordered(CFWObject sortedElement, CFWObject targetParent) { return true; }
 		
 		@Override
 		public boolean canAccessHierarchy(String rootElementID) { return true; }
