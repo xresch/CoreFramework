@@ -29,7 +29,6 @@ public class SerializerCFWObject implements JsonSerializer<CFWObject> {
 		JsonObject result = new JsonObject();
 		
 		for(CFWField field : object.getFields().values()) {
-			System.out.println("field: "+field.getValueClass()+" name: "+field.getName()+" value:"+field.getValue());
 			CFW.JSON.addFieldAsProperty(result, field, enableEncryptedValues);
 		}
 		

@@ -2,6 +2,8 @@ package com.xresch.cfw.features.query.parse;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -234,12 +236,7 @@ public class QueryPartValue extends QueryPart {
 		if(this.type == QueryPartValueType.STRING) {
 			String value = this.getAsString().trim();
 			
-			try{
-				Double.parseDouble(value);
-				return true;
-			}catch(Exception e){
-				return false;
-			}
+			return NumberUtils.isParsable(value);
 
 		}
 		
