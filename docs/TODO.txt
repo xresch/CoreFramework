@@ -136,7 +136,8 @@ Potential TODOs
 DONE
 ====
 ------- current -------
-- BREAKING CHANGE: Added 1 minute cache for widget data.
+- BREAKING CODE CHANGE: Added 1 minute cache for widget data.
+- BREAKING CODE CHANGE: Changing CFWHierarchy to use Lineage instead of single column for every parent.
 - Audit: Audit logs get written to database.
 - Error Page: Added custom error page for unhandled exceptions
 - CFWField: Prevent autofill of password fields in forms
