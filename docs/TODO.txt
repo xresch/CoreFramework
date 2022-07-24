@@ -141,6 +141,7 @@ DONE
 - Audit: Audit logs get written to database.
 - Error Page: Added custom error page for unhandled exceptions
 - CFWField: Prevent autofill of password fields in forms
+CFWField: Added support for number arrays
 - Timeframe Picker: Added custom Relative Offset
 - Job Task Widget Executor: Added timeframe picker tho handle time placeholders like $earliest and $latest
 - H2: Upgraded to 2.1.212

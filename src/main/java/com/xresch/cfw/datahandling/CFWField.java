@@ -26,6 +26,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
+import org.openqa.selenium.devtools.v85.runtime.model.ObjectPreview.Subtype;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 
@@ -100,6 +101,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	//--------------------------------
 	// Form and Display
 	private Class<T> valueClass;
+	private Class valueSubtypeClass;
 	private FormFieldType type;
 	private FormFieldType apiFieldType;
 	private boolean isDecoratorDisplayed = true;
@@ -247,8 +249,32 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	
 	public static CFWField<ArrayList<String>> newArray(FormFieldType type, String fieldName){
 		return new CFWField<ArrayList<String>>(ArrayList.class, type, fieldName)
-				.setColumnDefinition("VARCHAR ARRAY");
+				.setColumnDefinition("VARCHAR ARRAY")
+				.setValueSubtype(String.class);
 	}
+	
+	//===========================================
+	// ArrayNumber
+	//===========================================
+	public static CFWField<ArrayList<Number>> newArrayNumber(FormFieldType type, Enum<?> fieldName){
+		return newArrayNumber(type, fieldName.toString());
+	}
+	
+	public static CFWField<ArrayList<Number>> newArrayNumber(FormFieldType type, String fieldName){
+		return new CFWField<ArrayList<Number>>(ArrayList.class, type, fieldName)
+				.setColumnDefinition("NUMERIC ARRAY")
+				.setValueSubtype(Number.class);
+	}
+	
+	/******************************************************************************************************
+	 * Set the subtype of the value.
+	 * This is needed in case of Generic classes like ArrayList<T>.
+	 ******************************************************************************************************/
+	private CFWField<T> setValueSubtype(Class subtype) {
+		this.valueSubtypeClass = subtype;
+		return this;
+	}
+	
 	
 	//===========================================
 	// JSON_ PREFIX CHECK 
@@ -478,8 +504,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				this.addAttribute("value", value.toString().replace("\"", "&quot;")); 
 			}else {
 				StringBuilder builder = new StringBuilder();
-				ArrayList<String> array = (ArrayList<String>)value;
-				for(String current : array) {
+				ArrayList<Object> array = (ArrayList<Object>)value;
+				for(Object current : array) {
 					builder.append(current.toString()).append(",");
 				}
 				if(array.size() > 0) {
@@ -1696,24 +1722,43 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			else if(valueClass == Date.class)  		{ return this.changeValue(new Date(Long.parseLong( (stringValue).trim()) )); }
 			else if(valueClass == ArrayList.class)	{ 
 				
-				ArrayList<String> stringArray = new ArrayList<>();
-				
 				if(stringValue.trim().startsWith("[")) {
-					JsonElement element = CFW.JSON.fromJson(stringValue);
-					if(element.isJsonArray()) {
+					if(this.valueSubtypeClass == String.class) {
+						ArrayList<String> stringArray = new ArrayList<>();
+						JsonElement element = CFW.JSON.fromJson(stringValue);
+						if(element.isJsonArray()) {
+							
+							for(JsonElement current : element.getAsJsonArray()) {
+								stringArray.add(sanitizeString(current.getAsString()));
+							}
+							
+						}
+						return  this.changeValue(stringArray);
 						
-						for(JsonElement current : element.getAsJsonArray()) {
-							stringArray.add(sanitizeString(current.getAsString()));
+					}else if(this.valueSubtypeClass == Number.class) {
+						ArrayList<Number> stringArray = new ArrayList<>();
+						JsonElement element = CFW.JSON.fromJson(stringValue);
+						
+						if(element.isJsonArray()) {
+							for(JsonElement current : element.getAsJsonArray()) {
+								stringArray.add(current.getAsNumber());
+							}
 						}
 						
+						return  this.changeValue(stringArray);
+					}else {
+						new CFWLog(logger).severe("Unsupported subtype for array: "+this.valueSubtypeClass, new Throwable());	
 					}
 				}else {
+					ArrayList<String> stringArray = new ArrayList<>();
 					for(String current : stringValue.trim().split(",")) {
 						stringArray.add(sanitizeString(current));
 					}
+					return  this.changeValue(stringArray);
 				}
 				
-				return  this.changeValue(stringArray);
+				new CFWLog(logger).severe("Unable to convert ArrayList value: "+value, new Throwable());				
+				return false;
 			}
 			
 			else if(valueClass == LinkedHashMap.class){ 

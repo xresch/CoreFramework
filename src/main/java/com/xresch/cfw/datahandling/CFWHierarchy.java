@@ -28,9 +28,9 @@ public class CFWHierarchy<T extends CFWObject> {
 	
 	private static Logger logger = CFWLog.getLogger(CFWHierarchy.class.getName());
 	
-	private static final String HIERARCHY_LINEAGE = "HIERARCHY_LINEAGE";
-	private static final String HIERARCHY_PARENT = "HIERARCHY_PARENT";
-	private static final String HIERARCHY_DEPTH = "HIERARCHY_DEPTH";
+	private static final String H_LINEAGE = "H_LINEAGE";
+	private static final String H_PARENT = "H_PARENT";
+	private static final String H_DEPTH = "H_DEPTH";
 	
 	private CFWSQL partialWhereClauseFilter;
 	private T root;
@@ -73,19 +73,19 @@ public class CFWHierarchy<T extends CFWObject> {
 		//------------------------------------
 		// Add Hierarchy Fields
 		object.addField(
-				CFWField.newInteger(FormFieldType.NONE, HIERARCHY_DEPTH)
+				CFWField.newInteger(FormFieldType.NONE, H_DEPTH)
 					.setDescription("The depth of this element in the hierarchy.")
 					.setValue(0)
 			);
 		
 		object.addField(
-				CFWField.newArray(FormFieldType.NONE, HIERARCHY_LINEAGE)
+				CFWField.newArrayNumber(FormFieldType.NONE, H_LINEAGE)
 					.setDescription("Linage of all the parents of this element.")
 					.setValue(new ArrayList<>())
 			);
 		
 		object.addField(
-			CFWField.newInteger(FormFieldType.NONE, HIERARCHY_PARENT)
+			CFWField.newInteger(FormFieldType.NONE, H_PARENT)
 				.setDescription("ID of the parent element.")
 		);
 				
@@ -195,9 +195,9 @@ public class CFWHierarchy<T extends CFWObject> {
 		//-------------------------------
 		// Check if child should be made root
 		if(parentWithHierarchy == null) {
-			childWithHierarchy.getField(HIERARCHY_PARENT).setValue(null);
-			((CFWField<ArrayList<String>>)childWithHierarchy.getField(HIERARCHY_LINEAGE)).setValue(new ArrayList<>());
-			((CFWField<Integer>)childWithHierarchy.getField(HIERARCHY_DEPTH)).setValue(0);
+			childWithHierarchy.getField(H_PARENT).setValue(null);
+			((CFWField<ArrayList<String>>)childWithHierarchy.getField(H_LINEAGE)).setValue(new ArrayList<>());
+			((CFWField<Integer>)childWithHierarchy.getField(H_DEPTH)).setValue(0);
 			
 			boolean isSuccess = true;
 			for(Entry<Integer, CFWObject> entry : childWithHierarchy.getChildObjects().entrySet()) {
@@ -240,14 +240,14 @@ public class CFWHierarchy<T extends CFWObject> {
 		}
 		parentWithHierarchy.childObjects.put(childWithHierarchy.getPrimaryKey(), childWithHierarchy);
 		
-		childWithHierarchy.getField(HIERARCHY_PARENT).setValue(parentWithHierarchy.getPrimaryKey());
+		childWithHierarchy.getField(H_PARENT).setValue(parentWithHierarchy.getPrimaryKey());
 
 		//-------------------------------
 		// Propagate values from parentObject to child.
 		@SuppressWarnings("rawtypes")
 		LinkedHashMap<String, CFWField> parentFields = parentWithHierarchy.getFields();
 		
-		ArrayList<String> parentLinage = ((CFWField<ArrayList<String>>)parentFields.get(HIERARCHY_LINEAGE)).getValue();
+		ArrayList<String> parentLinage = ((CFWField<ArrayList<String>>)parentFields.get(H_LINEAGE)).getValue();
 		if(parentLinage == null) { parentLinage = new ArrayList<String>();}
 		
 		// do not work directly on parentLinage 
@@ -255,9 +255,9 @@ public class CFWHierarchy<T extends CFWObject> {
 		lineageForChild.addAll(parentLinage);
 		lineageForChild.add(parentWithHierarchy.getPrimaryKey()+"");
 
-		((CFWField<ArrayList<String>>)childWithHierarchy.getField(HIERARCHY_LINEAGE)).setValue(lineageForChild);
+		((CFWField<ArrayList<String>>)childWithHierarchy.getField(H_LINEAGE)).setValue(lineageForChild);
 		
-		((CFWField<Integer>)childWithHierarchy.getField(HIERARCHY_DEPTH)).setValue(lineageForChild.size());
+		((CFWField<Integer>)childWithHierarchy.getField(H_DEPTH)).setValue(lineageForChild.size());
 		//-----------------------------------------------------
 		// Do for all children of the childWithHierarchy
 		boolean isSuccess = true;
@@ -287,7 +287,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		//------------------------------
 		// Do Updates
 		boolean isSuccess = true;
-		isSuccess &= childWithHierarchy.update(HIERARCHY_DEPTH, HIERARCHY_LINEAGE, HIERARCHY_PARENT);
+		isSuccess &= childWithHierarchy.update(H_DEPTH, H_LINEAGE, H_PARENT);
 		 
 		for(Entry<Integer, CFWObject> entry : childWithHierarchy.childObjects.entrySet()) {
 			isSuccess &= saveNewParents(entry.getValue(), false);
@@ -350,7 +350,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		//--------------------------------
 		// Iterate parents hierarchy
 
-		ArrayList<String> lineage = (ArrayList<String>)newParent.getField(HIERARCHY_LINEAGE).getValue();
+		ArrayList<String> lineage = (ArrayList<String>)newParent.getField(H_LINEAGE).getValue();
 		if(lineage != null) {
 			for(String currentID : lineage) {
 				int currentSize = idCheckSet.size();
@@ -545,8 +545,8 @@ public class CFWHierarchy<T extends CFWObject> {
 			
 			T currentItem = currentEntry.getValue();
 			Integer currentID = currentItem.getPrimaryKey();
-			ArrayList<String> currentLineage = (ArrayList<String>)currentItem.getField(HIERARCHY_LINEAGE).getValue();
-			Integer currentParentID = (Integer)currentItem.getField(HIERARCHY_PARENT).getValue();
+			ArrayList<String> currentLineage = (ArrayList<String>)currentItem.getField(H_LINEAGE).getValue();
+			Integer currentParentID = (Integer)currentItem.getField(H_PARENT).getValue();
 			
 			//--------------------------------
 			// Add currentItem to Flat List
@@ -590,7 +590,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		String parentPrimaryFieldname = root.getPrimaryField().getName();
 		Integer parentPrimaryValue = root.getPrimaryKey();
-		String[] hierarchyAndPrimaryFieldnames = new String[] {HIERARCHY_DEPTH, HIERARCHY_PARENT, HIERARCHY_LINEAGE, parentPrimaryFieldname};
+		String[] hierarchyAndPrimaryFieldnames = new String[] {H_DEPTH, H_PARENT, H_LINEAGE, parentPrimaryFieldname};
 		String[] finalResultFields = CFW.Utils.Array.merge(
 				hierarchyAndPrimaryFieldnames, 
 				CFWUtilsArray.objectToStringArray(resultFields)
@@ -611,7 +611,7 @@ public class CFWHierarchy<T extends CFWObject> {
 			}
 			
 			statement
-				.orderby(HIERARCHY_LINEAGE, parentPrimaryFieldname)
+				.orderby(H_LINEAGE, parentPrimaryFieldname)
 				.nullsFirst();
 			return statement;
 		}
@@ -622,7 +622,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		CFWSQL statement = root.select(finalResultFields)
 				.where(parentPrimaryFieldname, parentPrimaryValue)
 				.append(partialWhereClauseFilter)
-				.or().arrayContains(HIERARCHY_LINEAGE, parentPrimaryValue+"")
+				.or().arrayContains(H_LINEAGE, parentPrimaryValue+"")
 				;
 				
 		//--------------------------------------------

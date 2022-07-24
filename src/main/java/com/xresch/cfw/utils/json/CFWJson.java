@@ -16,6 +16,8 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -194,9 +196,16 @@ public class CFWJson {
 	 * 
 	 *************************************************************************************/
 	public static JsonArray arrayToJsonArray(Object[] array) {
+		
 		JsonArray jsonArray = new JsonArray();
 		for(Object o : array) {
-			if(o instanceof String) 			{	jsonArray.add((String)o); }
+			if(o instanceof String) {	
+				if(!NumberUtils.isParsable((String)o)) {
+					jsonArray.add((String)o);
+				}else {
+					jsonArray.add(Double.parseDouble((String)o));
+				}
+			}
 			else if(o instanceof Number) 		{	jsonArray.add((Number)o); }
 			else if(o instanceof Boolean) 		{	jsonArray.add((Boolean)o); }
 			else if(o instanceof Character) 	{	jsonArray.add((Character)o); }
@@ -207,6 +216,15 @@ public class CFWJson {
 		}
 		
 		return jsonArray;
+	}
+	
+	/*************************************************************************************
+	 * 
+	 *************************************************************************************/
+	public static JsonArray arrayToJsonArray(ArrayList<?> array) {
+		
+		return arrayToJsonArray(array.toArray());
+	
 	}
 	
 	
@@ -332,7 +350,9 @@ public class CFWJson {
 		else if(object instanceof Timestamp) 	{	target.addProperty(propertyName, ((Timestamp)object).getTime()); }
 		else if(object instanceof OffsetDateTime) {	target.addProperty(propertyName, ((OffsetDateTime)object).toInstant().toEpochMilli()); }
 		else if(object instanceof Object[]) 	{	target.add(propertyName, CFW.JSON.arrayToJsonArray((Object[])object)); }
+		else if(object instanceof ArrayList) 	{	target.add(propertyName, CFW.JSON.arrayToJsonArray((ArrayList)object)); }
 		else {	
+			
 			target.add(propertyName, gsonInstance.toJsonTree(object)); 
 		}
 	}
@@ -353,6 +373,7 @@ public class CFWJson {
 				JsonElement asElement = CFW.JSON.stringToJsonElement(value.toString());
 				target.add(name, asElement);
 			}else {
+				
 				target.add(name, gsonInstance.toJsonTree(value));
 			}
 			

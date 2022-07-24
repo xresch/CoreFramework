@@ -682,7 +682,6 @@ public class ResultSetUtils {
 								CFW.JSON.addObject(record, name, ((JdbcArray)value).getArray());
 							} else {
 								CFW.JSON.addObject(record, name, value);
-								
 							}
 						}
 					}
