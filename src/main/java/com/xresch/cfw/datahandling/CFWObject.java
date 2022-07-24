@@ -510,19 +510,13 @@ public class CFWObject {
 	public CFWHierarchyConfig getHierarchyConfig() {
 		return hierarchyConfig;		
 	}
-	
-//	/****************************************************************
-//	 * 
-//	 ****************************************************************/
-//	public int getHierarchyLevels() {
-//		return hierarchyConfig.getMaxDepth();		
-//	}
-	
+
 	/****************************************************************
 	 * 
 	 ****************************************************************/
 	public void setHierarchyConfig(CFWHierarchyConfig hierarchyConfig) {
-		CFWHierarchy.setHierarchyLevels(this, hierarchyConfig);
+		this.hierarchyConfig = hierarchyConfig;
+		CFWHierarchy.setHierarchyConfig(this, hierarchyConfig);
 	}
 	
 	/****************************************************************
