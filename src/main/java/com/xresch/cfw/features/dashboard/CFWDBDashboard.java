@@ -527,7 +527,7 @@ public class CFWDBDashboard {
 							
 							//-----------------------------
 							// Create Parameter
-							Integer oldID = param.getPrimaryKey();
+							Integer oldID = param.getPrimaryKeyValue();
 							Integer newID = CFW.DB.DashboardParameters.createGetPrimaryKey(param);
 							if(newID == null) {
 								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error creating imported parameter.");

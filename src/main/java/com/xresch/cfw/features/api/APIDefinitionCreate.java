@@ -118,7 +118,7 @@ public class APIDefinitionCreate extends APIDefinition{
 					
 					CFWSQL statement = object.select((Object[])definition.getOutputFieldnames());
 					
-					statement.where(object.getPrimaryField().getName(), id);
+					statement.where(object.getPrimaryKeyField().getName(), id);
 
 					String format = request.getParameter(APIFORMAT);
 					if(format == null || format.equals("")) {

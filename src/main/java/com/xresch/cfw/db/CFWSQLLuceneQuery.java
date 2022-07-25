@@ -57,7 +57,7 @@ public class CFWSQLLuceneQuery {
 				.custom(initialSQL.getStatementString().replace("FROM", ", (SELECT COUNT(*) FROM FTL_SEARCH_DATA(?, 0, 0)) AS TOTAL_RECORDS FROM")
 					  , luceneQuery.toString())
 				.custom("JOIN FTL_SEARCH_DATA(?, ?, ?) FT", luceneQuery.toString(), limit, offset)
-				.custom("ON T."+initialObject.getPrimaryField().getName()+"=FT.KEYS[1]");
+				.custom("ON T."+initialObject.getPrimaryKeyField().getName()+"=FT.KEYS[1]");
 		
 		//--------------------------------
 		// Order By

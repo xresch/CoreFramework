@@ -283,7 +283,7 @@ public  class CFWDBDefaultOperations {
 		
 		try {
 			CFWObject instance = cfwObjectClass.newInstance();
-			String idColumn = instance.getPrimaryField().getName();
+			String idColumn = instance.getPrimaryKeyField().getName();
 			
 			for(String id : commaSeparatedIDs.split(",")) {
 				success &= deleteBy(precheck, auditLogFieldnames, cfwObjectClass, idColumn, id);
@@ -340,7 +340,7 @@ public  class CFWDBDefaultOperations {
 		boolean success = true;
 		try {
 			CFWObject instance = cfwObjectClass.newInstance();
-			String primaryFieldname = instance.getPrimaryField().getName();
+			String primaryFieldname = instance.getPrimaryKeyField().getName();
 			
 			String[] fieldsArray = CFW.Utils.Array.merge(new String[] {primaryFieldname}, auditLogFieldnames);
 			
@@ -362,7 +362,7 @@ public  class CFWDBDefaultOperations {
 				success &= 	object
 						.queryCache(cfwObjectClass, "CFWDBDefaultOperations.deleteMultipleByIDWhere-Delete")
 						.delete()
-						.where(primaryFieldname, object.getPrimaryField().getValue())
+						.where(primaryFieldname, object.getPrimaryKeyField().getValue())
 						.executeDelete();
 			}
 			

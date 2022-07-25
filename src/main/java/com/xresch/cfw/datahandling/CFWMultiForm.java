@@ -56,7 +56,7 @@ public class CFWMultiForm extends CFWForm {
 		// Create map
 		originsMap = new LinkedHashMap<>();
 		for(CFWObject object : origins) {
-			originsMap.put(object.getPrimaryKey(), object);
+			originsMap.put(object.getPrimaryKeyValue(), object);
 		}
 		
 		//---------------------------------------
@@ -276,7 +276,7 @@ public class CFWMultiForm extends CFWForm {
 			// Prevent concurrent modification exception
 			CFWField[] fields = object.getFields().values().toArray(new CFWField[]{});
 			for(CFWField field : fields) {			
-				field.setName(object.getPrimaryKey()+"-"+field.getName());
+				field.setName(object.getPrimaryKeyValue()+"-"+field.getName());
 			}
 		}
 	}

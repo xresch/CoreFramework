@@ -2,7 +2,6 @@ package com.xresch.cfw.datahandling;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -11,9 +10,12 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.db.CFWSQL;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.CFWUtilsArray;
 
@@ -90,6 +92,70 @@ public class CFWHierarchy<T extends CFWObject> {
 		);
 				
 	}
+	/*****************************************************************************
+	 * Write an audit log for changes in hierarchy structure
+	 *****************************************************************************/
+	@SuppressWarnings("unchecked")
+	private static void writeAuditLog(Integer oldParentID, CFWObject newParent, CFWObject movedObject) {
+		CFWHierarchyConfig config = movedObject.getHierarchyConfig();
+		Object[] auditFields = config.fieldsForAuditLog();
+		
+		if(auditFields != null && auditFields.length != 0) {
+			
+			//---------------------------------
+			// Get Old Parent from Database
+			CFWObject instance = config.getCFWObjectInstance();
+			CFWObject oldParent = null;
+			
+			if(oldParentID != null ) {
+			oldParent = instance.select()
+					.where(instance.getPrimaryKeyFieldname(), oldParentID)
+					.getFirstAsObject();
+			}
+			
+			//---------------------------------
+			// Get Object Details
+			JsonObject oldParentDetails = new JsonObject();
+			JsonObject newParentDetails = new JsonObject();
+			JsonObject childDetails = new JsonObject();
+			
+			for(Object fieldname : auditFields) {
+				String nameString = fieldname.toString();
+				
+				if(oldParent != null) {
+					Object value = oldParent.getField(nameString).getValue();
+					if(value != null) { oldParentDetails.addProperty(nameString, value.toString()); }
+					else 			  { oldParentDetails.add(nameString, JsonNull.INSTANCE); }
+				}
+				
+				if(newParent != null) {
+					Object value = newParent.getField(nameString).getValue();
+					if(value != null) { newParentDetails.addProperty(nameString, value.toString()); }
+					else 			  { newParentDetails.add(nameString, JsonNull.INSTANCE); }
+				}
+				
+				Object value = movedObject.getField(nameString).getValue();
+				if(value != null) { childDetails.addProperty(nameString, value.toString()); }
+				else			  { childDetails.add(nameString, JsonNull.INSTANCE); }
+				
+
+			}
+			
+			//---------------------------------
+			// Create Message
+			StringBuilder message = new StringBuilder();
+			
+			message.append("Reorder Hierarchy - Move:"+CFW.JSON.toJSON(childDetails)+", ");
+			
+			if(oldParent != null) {	message.append("From:"+CFW.JSON.toJSON(oldParentDetails)+", ");
+			}else 				  { message.append("From:Root, "); }
+			
+			if(newParent != null) {	message.append("To:"+CFW.JSON.toJSON(oldParentDetails));
+			}else 				  { message.append("To:Root"); }
+			
+			new CFWLog(logger).audit(CFWAuditLogAction.MOVE, movedObject.getClass(), message.toString());
+		}
+	}
 	
 	/*****************************************************************************
 	 * Checks if the child can moved to the parent using CFWHierarchyConfig.canSort().
@@ -132,7 +198,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	public static boolean updateParent(CFWHierarchyConfig config, Integer parentID, int childID) {
 
 		CFWObject instance = config.getCFWObjectInstance();
-		String primaryFieldName = instance.getPrimaryField().getName();
+		String primaryFieldName = instance.getPrimaryKeyFieldname();
 		
 		//------------------------------------------
 		// Resolve Parent Object
@@ -153,6 +219,8 @@ public class CFWHierarchy<T extends CFWObject> {
 				.where(primaryFieldName, childID)
 				.getFirstAsObject();	
 		
+		Integer oldParentID = (Integer)childObject.getField(H_PARENT).getValue();
+		
 		CFWObject childWithHierarchy = new CFWHierarchy(childObject)
 				.fetchAndCreateHierarchy()
 				.getSingleRootObject();
@@ -166,6 +234,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		//------------------------------------------
 		// Set and save Parent
 		if(setParent(parentWithHierarchy, childWithHierarchy)) {
+			writeAuditLog(oldParentID, parentWithHierarchy, childWithHierarchy);
 			return saveNewParents(childWithHierarchy, true);
 		}else {
 			return false;
@@ -175,6 +244,9 @@ public class CFWHierarchy<T extends CFWObject> {
 	/*****************************************************************************
 	 * Set the parent object of the child and adds it to the list of children.
 	 * The childs db entry has to be updated manually afterwards.
+	 * This function is useful to build initial structures in code.
+	 * If you want to update the hierarchy in the database, use updateParent()-method
+	 * instead.
 	 * 
 	 * IMPORTANT: The child object must contain all it's children or the hierarchy will
 	 * not be updated properly.
@@ -209,7 +281,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		//-------------------------------
 		// Argument check
-		if(parentWithHierarchy.getPrimaryKey() == null) {
+		if(parentWithHierarchy.getPrimaryKeyValue() == null) {
 			new CFWLog(logger).severe("Parent primary key is null. Please make sure to store it in the database first.", new IllegalArgumentException());
 			return false;
 		}
@@ -238,9 +310,9 @@ public class CFWHierarchy<T extends CFWObject> {
 		if(parentWithHierarchy.childObjects == null) {
 			parentWithHierarchy.childObjects = new LinkedHashMap<Integer, CFWObject>();
 		}
-		parentWithHierarchy.childObjects.put(childWithHierarchy.getPrimaryKey(), childWithHierarchy);
+		parentWithHierarchy.childObjects.put(childWithHierarchy.getPrimaryKeyValue(), childWithHierarchy);
 		
-		childWithHierarchy.getField(H_PARENT).setValue(parentWithHierarchy.getPrimaryKey());
+		childWithHierarchy.getField(H_PARENT).setValue(parentWithHierarchy.getPrimaryKeyValue());
 
 		//-------------------------------
 		// Propagate values from parentObject to child.
@@ -253,7 +325,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		// do not work directly on parentLinage 
 		ArrayList<String> lineageForChild = new ArrayList<String>();
 		lineageForChild.addAll(parentLinage);
-		lineageForChild.add(parentWithHierarchy.getPrimaryKey()+"");
+		lineageForChild.add(parentWithHierarchy.getPrimaryKeyValue()+"");
 
 		((CFWField<ArrayList<String>>)childWithHierarchy.getField(H_LINEAGE)).setValue(lineageForChild);
 		
@@ -328,8 +400,8 @@ public class CFWHierarchy<T extends CFWObject> {
 	@SuppressWarnings("unchecked")
 	public static boolean checkCausesCircularReference(CFWObject newParent, CFWObject child) {
 		
-		Integer parentID = newParent.getPrimaryKey();
-		Integer childID = child.getPrimaryKey();
+		Integer parentID = newParent.getPrimaryKeyValue();
+		Integer childID = child.getPrimaryKeyValue();
 		
 		//--------------------------------
 		// Check is it's own parent.
@@ -540,11 +612,11 @@ public class CFWHierarchy<T extends CFWObject> {
 
 		//-----------------------------------------
 		//Iterate over all objects
-		Integer rootID = root.getPrimaryKey();
+		Integer rootID = root.getPrimaryKeyValue();
 		for(Entry<Integer, T> currentEntry : objectListFlat.entrySet()) {
 			
 			T currentItem = currentEntry.getValue();
-			Integer currentID = currentItem.getPrimaryKey();
+			Integer currentID = currentItem.getPrimaryKeyValue();
 			ArrayList<String> currentLineage = (ArrayList<String>)currentItem.getField(H_LINEAGE).getValue();
 			Integer currentParentID = (Integer)currentItem.getField(H_PARENT).getValue();
 			
@@ -588,8 +660,8 @@ public class CFWHierarchy<T extends CFWObject> {
 			resultFields = root.getFieldnames();
 		}
 		
-		String parentPrimaryFieldname = root.getPrimaryField().getName();
-		Integer parentPrimaryValue = root.getPrimaryKey();
+		String parentPrimaryFieldname = root.getPrimaryKeyField().getName();
+		Integer parentPrimaryValue = root.getPrimaryKeyValue();
 		String[] hierarchyAndPrimaryFieldnames = new String[] {H_DEPTH, H_PARENT, H_LINEAGE, parentPrimaryFieldname};
 		String[] finalResultFields = CFW.Utils.Array.merge(
 				hierarchyAndPrimaryFieldnames, 
@@ -652,7 +724,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		for(Entry<Integer, T> entry : objectHierarchy.entrySet()) {
 			
-			Integer rootID = root.getPrimaryKey();
+			Integer rootID = root.getPrimaryKeyValue();
 			Integer currentID = entry.getKey();
 			if( (rootID == null && currentID == null) 
 			 || (rootID != null && rootID.equals(currentID)) ) {

@@ -128,7 +128,7 @@ public class TestDashboard extends DBTestMaster {
 		CFW.DB.Dashboards.create(
 			new Dashboard()
 				.name(boardName)
-				.foreignKeyOwner(userCreator.getPrimaryKey())
+				.foreignKeyOwner(userCreator.getPrimaryKeyValue())
 				.description("Test Dashboard")
 				.isShared(true)
 				.sharedWithUsers(sharedWithUser)
@@ -147,7 +147,7 @@ public class TestDashboard extends DBTestMaster {
 		CFW.DB.Dashboards.create(
 			new Dashboard()
 				.name(boardName)
-				.foreignKeyOwner(userCreator.getPrimaryKey())
+				.foreignKeyOwner(userCreator.getPrimaryKeyValue())
 				.description("Test Shared with All")
 				.isShared(true)
 		);
@@ -160,7 +160,7 @@ public class TestDashboard extends DBTestMaster {
 		CFW.DB.Dashboards.create(
 			new Dashboard()
 				.name(boardName)
-				.foreignKeyOwner(userCreator.getPrimaryKey())
+				.foreignKeyOwner(userCreator.getPrimaryKeyValue())
 				.description("Test Minimal Access")
 				.isShared(false)
 		);
@@ -173,7 +173,7 @@ public class TestDashboard extends DBTestMaster {
 		CFW.DB.Dashboards.create(
 			new Dashboard()
 				.name(boardName)
-				.foreignKeyOwner(userCreatorTwo.getPrimaryKey())
+				.foreignKeyOwner(userCreatorTwo.getPrimaryKeyValue())
 				.description("Test Other Creator not Shared")
 				.isShared(false)
 		);
@@ -189,7 +189,7 @@ public class TestDashboard extends DBTestMaster {
 				
 		Assertions.assertEquals("testDashboardAllHaveAccess", boardAllSpecificAccess.name());
 		Assertions.assertEquals("Test Dashboard", boardAllSpecificAccess.description());
-		Assertions.assertEquals(userCreator.getPrimaryKey(), boardAllSpecificAccess.foreignKeyOwner());
+		Assertions.assertEquals(userCreator.getPrimaryKeyValue(), boardAllSpecificAccess.foreignKeyOwner());
 		Assertions.assertTrue(boardAllSpecificAccess.isShared());
 		Assertions.assertTrue(boardAllSpecificAccess.sharedWithUsers().containsKey(userViewer.id()+""));
 		Assertions.assertTrue(boardAllSpecificAccess.sharedWithGroups().containsKey(roleGroupShared.id()+""));

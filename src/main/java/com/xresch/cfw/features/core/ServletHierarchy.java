@@ -168,7 +168,7 @@ public class ServletHierarchy extends HttpServlet
 	private void fetchHierarchy(JSONResponse jsonResponse, String rootID, CFWHierarchyConfig config) {
 		
 		CFWObject instance = config.getCFWObjectInstance();
-		String primaryFieldName = instance.getPrimaryField().getName();
+		String primaryFieldName = instance.getPrimaryKeyField().getName();
 		CFWObject parentObject = null;
 		
 		if(rootID != null) {
@@ -180,7 +180,7 @@ public class ServletHierarchy extends HttpServlet
 			// Fetch All elements in table by using
 			// primary key null
 			parentObject = instance;
-			parentObject.getPrimaryField().setValue(null);
+			parentObject.getPrimaryKeyField().setValue(null);
 		}
 											
 		CFWHierarchy hierarchy = new CFWHierarchy(parentObject)

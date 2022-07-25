@@ -382,14 +382,20 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public CFWField<Integer> getPrimaryField() {
+	public CFWField<Integer> getPrimaryKeyField() {
 		return primaryField;
 	}
 	
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public Integer getPrimaryKey() {
+	public String getPrimaryKeyFieldname() {
+		return primaryField.getName();
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	public Integer getPrimaryKeyValue() {
 		return primaryField.getValue();
 	}
 	
@@ -538,7 +544,7 @@ public class CFWObject {
 	 * 
 	 ****************************************************************/
 	public void removeChildObject(CFWObject child) {
-		this.childObjects.remove(((Integer)child.getPrimaryField().getValue()));
+		this.childObjects.remove(((Integer)child.getPrimaryKeyField().getValue()));
 	}
 	
 	/****************************************************************

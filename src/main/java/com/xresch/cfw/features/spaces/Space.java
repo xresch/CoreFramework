@@ -45,7 +45,11 @@ public class Space extends CFWObject {
 		IS_RENAMABLE,
 	}
 
-	private static CFWHierarchyConfig hierarchyConfig = new CFWHierarchyConfig(Space.class, 10, SpaceFields.NAME) {
+	private static CFWHierarchyConfig hierarchyConfig = 
+			new CFWHierarchyConfig(
+					  Space.class
+					, new Object[] {SpaceFields.NAME}
+					, new Object[] {SpaceFields.NAME}) {
 		
 		@Override
 		public boolean canBeReordered(CFWObject sortedElement, CFWObject targetParent) { return true; }

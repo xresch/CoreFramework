@@ -97,7 +97,7 @@ public class CFWDBJob {
 	public static boolean updateLastRun(String jobID){ 
 		
 		CFWJob jobData = new CFWJob();
-		jobData.getPrimaryField().setValue(Integer.parseInt(jobID));
+		jobData.getPrimaryKeyField().setValue(Integer.parseInt(jobID));
 		jobData.lastRun(new Timestamp(new Date().getTime()));
 		jobData.lastRunMessages(CFW.Context.Request.getAlertsAsJSONArray());
 		CFW.Context.Request.clearMessages();

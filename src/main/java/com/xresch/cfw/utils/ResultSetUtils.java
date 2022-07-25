@@ -143,7 +143,7 @@ public class ResultSetUtils {
 			while(result.next()) {
 				CFWObject current = clazz.newInstance();
 				current.mapResultSet(result);
-				objectMap.put(current.getPrimaryKey(), current);
+				objectMap.put(current.getPrimaryKeyValue(), current);
 			}
 		} catch (SQLException | InstantiationException | IllegalAccessException e) {
 			new CFWLog(logger)

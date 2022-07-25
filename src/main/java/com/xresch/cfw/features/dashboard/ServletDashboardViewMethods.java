@@ -1080,7 +1080,7 @@ public class ServletDashboardViewMethods
 										DashboardParameterFields.LABEL.toString());
 								
 								if(!success) {
-									CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The data with the ID '"+param.getPrimaryKey()+"' could not be saved to the database.");
+									CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The data with the ID '"+param.getPrimaryKeyValue()+"' could not be saved to the database.");
 								};
 							}else {
 								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The parameter name is already in use: '"+param.name());

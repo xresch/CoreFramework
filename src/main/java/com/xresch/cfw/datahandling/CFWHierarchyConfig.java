@@ -12,19 +12,21 @@ public abstract class CFWHierarchyConfig {
 	private static final Logger logger = CFWLog.getLogger(CFWHierarchyConfig.class.getName());
 	
 	private String configIdentifier = "";
-	private Object[] fieldnames = null;
+	private Object[] fieldsToRetrieve = null;
+	private Object[] fieldsForAuditLog = null;
 	private Class<? extends CFWObject> clazz;
 	
 	/***********************************************************************
 	 * Create a hierarchy config.
 	 * @param clazz of the CFWObject that will be hierarchical.
-	 * @param maxHierarchyDepth maximum number of levels in the hierarchy
-	 * @param 
+	 * @param fieldsToRetrieve used in case of using hierarchy sorter
+	 * @param fieldsForAuditLog used in audit logs
 	 ***********************************************************************/
-	public CFWHierarchyConfig(Class<? extends CFWObject> clazz, int maxHierarchyDepth, Object... fieldsToRetrieve) {
+	public CFWHierarchyConfig(Class<? extends CFWObject> clazz, Object[] fieldsToRetrieve, Object[] fieldsForAuditLog) {
 		this.configIdentifier = clazz.getSimpleName().toLowerCase();
 		this.clazz = clazz;
-		this.fieldnames = fieldsToRetrieve;
+		this.fieldsToRetrieve = fieldsToRetrieve;
+		this.fieldsForAuditLog = fieldsForAuditLog;
 		
 	}
 	
@@ -37,7 +39,11 @@ public abstract class CFWHierarchyConfig {
 	}
 	
 	public Object[] getFieldsToRetrieve() {
-		return this.fieldnames;
+		return this.fieldsToRetrieve;
+	}
+	
+	public Object[] fieldsForAuditLog() {
+		return this.fieldsForAuditLog;
 	}
 		
 	/***********************************************************************

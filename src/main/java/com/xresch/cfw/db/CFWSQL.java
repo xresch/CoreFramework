@@ -194,7 +194,7 @@ public class CFWSQL {
 		
 		//------------------------------------
 		// Check has primary field
-		if(object.getPrimaryField() == null) {
+		if(object.getPrimaryKeyField() == null) {
 			new CFWLog(logger)
 				.severe("CFWObjects need a primary field to create a table out of it. ", new IllegalStateException());
 			return false;
@@ -607,7 +607,7 @@ public class CFWSQL {
 			
 			for(Object fieldname : fieldnames) {
 				CFWField<?> field = fields.get(fieldname.toString());
-				if(field != object.getPrimaryField()) {
+				if(field != object.getPrimaryKeyField()) {
 					if(!isQueryCached()) {
 						columnNames.append("\""+field.getName()).append("\",");
 						placeholders.append("?,");
@@ -696,7 +696,7 @@ public class CFWSQL {
 		
 		for(Object fieldname : fieldnames) {
 			CFWField<?> field = fields.get(fieldname.toString());
-			if(!field.equals(object.getPrimaryField())) {
+			if(!field.equals(object.getPrimaryKeyField())) {
 				
 				if(!isQueryCached()) {
 					columnNames.append("\""+field.getName()).append("\",");
@@ -712,13 +712,13 @@ public class CFWSQL {
 			placeholders.deleteCharAt(placeholders.length()-1);
 		}
 		
-		this.addFieldValue(object.getPrimaryField());
+		this.addFieldValue(object.getPrimaryKeyField());
 		
 		if(!isQueryCached()) {
 			query.append("UPDATE "+object.getTableName()+" SET ("+columnNames
 					  + ") = ("+placeholders+")"
 					  +" WHERE "
-					  + object.getPrimaryField().getName()+" = ?");
+					  + object.getPrimaryKeyField().getName()+" = ?");
 		}
 		return this.execute();
 	}
@@ -740,7 +740,7 @@ public class CFWSQL {
 			//add if name is not in fieldnames
 			if(Arrays.binarySearch(fieldnames, entry.getKey()) < 0) {
 				CFWField<?> field = entry.getValue();
-				if(!field.equals(object.getPrimaryField())) {
+				if(!field.equals(object.getPrimaryKeyField())) {
 					
 					if(!isQueryCached()) {
 						columnNames.append("\""+field.getName()).append("\",");
@@ -757,13 +757,13 @@ public class CFWSQL {
 			placeholders.deleteCharAt(placeholders.length()-1);
 		}
 		
-		this.addFieldValue(object.getPrimaryField());
+		this.addFieldValue(object.getPrimaryKeyField());
 		
 		if(!isQueryCached()) {
 			query.append("UPDATE "+object.getTableName()+" SET ("+columnNames
 					  + ") = ("+placeholders+")"
 					  +" WHERE "
-					  + object.getPrimaryField().getName()+" = ?");
+					  + object.getPrimaryKeyField().getName()+" = ?");
 		}
 		return this.execute();
 	}
@@ -1380,7 +1380,7 @@ public class CFWSQL {
 		//----------------------------
 		// Execute Statement 
 		if(statement.trim().startsWith("INSERT")) {
-			return dbInterface.preparedInsertGetKey(statement, object.getPrimaryField().getName(), values.toArray());
+			return dbInterface.preparedInsertGetKey(statement, object.getPrimaryKeyField().getName(), values.toArray());
 			
 		}else {
 			new CFWLog(logger)
