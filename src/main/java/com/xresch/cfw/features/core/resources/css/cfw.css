@@ -604,22 +604,29 @@ pre {
 	text-align: center !important;
 }
 
-.cfw-draggable{
-}
-
+/*
+  .cfw-draggable{}
+  .cfw-droptarget{} 
+ */
+ 
 .cfw-draggable-handle{
 	cursor: move;
 }
 
 .cfw-draggable.dragging{
-	opacity: 0.5;
-}
-
-.cfw-droptarget{
-	border-color: var(--primary);
+	opacity: 0.4;
 	
 }
 
+.cfw-draggable.dragging > .cfw-draggable-handle{
+	background-color: var(--primary);
+}
+
+
+
+.cfw-droptarget-active{
+	border: 3px var(--primary) dashed;
+}
 
 /*************************************************************************
  * Tags Input

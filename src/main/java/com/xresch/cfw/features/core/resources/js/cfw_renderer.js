@@ -2893,7 +2893,13 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 	// Create Draggable element
 	var draggableItem = $('<div id="sortable-item-'+id+'" data-childid="'+id+'" class="cfw-draggable" draggable="true">');
 	var draggableHeader = $('<div id="sortable-header-'+id+'" class="cfw-draggable-handle card-header p-2 pl-3">'
-			+ '<div class="cfw-fa-box cursor-pointer" role="button" data-toggle="collapse" data-target="#children-'+id+'" aria-expanded="false"></i>'
+			/*+ '<div class="cfw-fa-box cursor-pointer" >'
+				+ '<i class="fas fa-caret-up mr-2"></i>'
+			+ '</div>'
+			+ '<div class="cfw-fa-box cursor-pointer" >'
+				+ '<i class="fas fa-caret-down mr-2"></i>'
+			+ '</div>'*/
+			+ '<div class="cfw-fa-box cursor-pointer" role="button" data-toggle="collapse" data-target="#children-'+id+'" aria-expanded="false">'
 				+ '<i class="fas fa-chevron-right mr-2"></i>'
 				+ '<i class="fas fa-chevron-down mr-2"></i>'
 			+ '</div>'
@@ -2932,6 +2938,7 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 					);
 			
 			$(this).removeClass('dragging');
+			$(".cfw-droptarget-active").removeClass("cfw-droptarget-active");
 			CFW_GLOBAL_HIERARCHYSORTER.notDraggedDroptargets=null;
 		}
 	});
@@ -2945,7 +2952,7 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 		// Major Performance Improvement: do only all 100ms as
 		// dragover event is executed a hell lot of times
 		//---------------------------------------------------------
-		if(Date.now() - CFW_GLOBAL_HIERARCHYSORTER.lastDragoverMillis < 100){
+		if(Date.now() - CFW_GLOBAL_HIERARCHYSORTER.lastDragoverMillis < 200){
 			return;
 		}
 		CFW_GLOBAL_HIERARCHYSORTER.lastDragoverMillis = Date.now();
@@ -2983,9 +2990,18 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 	    	//-------------------------------------
 	    	// Move Object
 	    	//Wait for number of millis of hovering over the element before expansion
-    	    if(Date.now() - CFW_GLOBAL_HIERARCHYSORTER.dropTargetChangeMillis > 500){
-	    		dropTarget.collapse('show');
-	    		dropTarget.prepend(draggable);
+    	    if(Date.now() - CFW_GLOBAL_HIERARCHYSORTER.dropTargetChangeMillis > 400){
+				
+				//-------------------------------------
+		    	// add Color	
+				$(".cfw-droptarget-active").removeClass("cfw-droptarget-active");
+				dropTarget.prev().addClass("cfw-droptarget-active");
+				
+				//-------------------------------------
+		    	// Open panel and prepend dragged 
+				dropTarget.append(draggable);	    		
+				dropTarget.collapse('show');
+	    		
     	    }
     		
 
