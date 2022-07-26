@@ -535,7 +535,7 @@ public class CFWObject {
 	/****************************************************************
 	 * 
 	 ****************************************************************/
-	public void getChildObjects(LinkedHashMap<Integer, CFWObject> childObjects) {
+	protected void setChildObjects(LinkedHashMap<Integer, CFWObject> childObjects) {
 		this.childObjects = childObjects;
 	}
 	
@@ -676,7 +676,7 @@ public class CFWObject {
 		return new CFWSQL(this).selectWithout(fieldnames);
 	}
 	/****************************************************************
-	 * Begins a SELECT * statement.
+	 *  Begins a SELECT COUNT(*) statement.
 	 * @return CFWQuery for method chaining
 	 ****************************************************************/
 	public CFWSQL selectCount() {

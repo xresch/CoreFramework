@@ -1406,8 +1406,11 @@ public class CFWSQL {
 	}
 	
 	/****************************************************************
-	 * Executes the query and saves the results in the global 
-	 * variable.
+	 * Executes a "SELECT COUNT(*)" query and returns the resulting
+	 * count.
+	 * Or executes any other query and returns the row number of the 
+	 * last row.
+	 * Returns -1 in case of error.  
 	 * 
 	 * @return int count or -1 on error
 	 ****************************************************************/

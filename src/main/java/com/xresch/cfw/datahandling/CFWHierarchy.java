@@ -33,6 +33,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	private static final String H_LINEAGE = "H_LINEAGE";
 	private static final String H_PARENT = "H_PARENT";
 	private static final String H_DEPTH = "H_DEPTH";
+	private static final String H_POS = "H_POS";
 	
 	private CFWSQL partialWhereClauseFilter;
 	private T root;
@@ -77,6 +78,12 @@ public class CFWHierarchy<T extends CFWObject> {
 		object.addField(
 				CFWField.newInteger(FormFieldType.NONE, H_DEPTH)
 					.setDescription("The depth of this element in the hierarchy.")
+					.setValue(0)
+			);
+		
+		object.addField(
+				CFWField.newInteger(FormFieldType.NONE, H_POS)
+					.setDescription("The position of this element in relation to other elements with the same parent.")
 					.setValue(0)
 			);
 		
@@ -145,7 +152,7 @@ public class CFWHierarchy<T extends CFWObject> {
 			// Create Message
 			StringBuilder message = new StringBuilder();
 			
-			message.append("Reorder Hierarchy - Move:"+CFW.JSON.toJSON(childDetails)+", ");
+			message.append("Move in Hierarchy - Item:"+CFW.JSON.toJSON(childDetails)+", ");
 			
 			if(oldParent != null) {	message.append("From:"+CFW.JSON.toJSON(oldParentDetails)+", ");
 			}else 				  { message.append("From:Root, "); }
@@ -271,6 +278,9 @@ public class CFWHierarchy<T extends CFWObject> {
 			((CFWField<ArrayList<String>>)childWithHierarchy.getField(H_LINEAGE)).setValue(new ArrayList<>());
 			((CFWField<Integer>)childWithHierarchy.getField(H_DEPTH)).setValue(0);
 			
+			int rootItemsCount = CFWHierarchy.getChildCount(childWithHierarchy.getHierarchyConfig(), null);
+			((CFWField<Integer>)childWithHierarchy.getField(H_POS)).setValue(rootItemsCount);
+
 			boolean isSuccess = true;
 			for(Entry<Integer, CFWObject> entry : childWithHierarchy.getChildObjects().entrySet()) {
 				isSuccess &= CFWHierarchy.setParent(childWithHierarchy, entry.getValue());
@@ -299,7 +309,6 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		//-------------------------------
 		// Circular Reference Check
-		
 		if(checkCausesCircularReference(parentWithHierarchy, childWithHierarchy)){
 			return false;
 		}
@@ -330,12 +339,31 @@ public class CFWHierarchy<T extends CFWObject> {
 		((CFWField<ArrayList<String>>)childWithHierarchy.getField(H_LINEAGE)).setValue(lineageForChild);
 		
 		((CFWField<Integer>)childWithHierarchy.getField(H_DEPTH)).setValue(lineageForChild.size());
+
+		// read child count from db as reading size from map can be inaccurate
+		int parentChildCount = CFWHierarchy.getChildCount(parentWithHierarchy.getHierarchyConfig(), parentWithHierarchy.getPrimaryKeyValue());
+		((CFWField<Integer>)childWithHierarchy.getField(H_POS)).setValue(parentChildCount);
+		
 		//-----------------------------------------------------
 		// Do for all children of the childWithHierarchy
 		boolean isSuccess = true;
 		for(Entry<Integer, CFWObject> entry : childWithHierarchy.getChildObjects().entrySet()) {
 			isSuccess &= CFWHierarchy.setParent(childWithHierarchy, entry.getValue());
 		}
+		
+		return isSuccess;
+	}
+	
+	/*****************************************************************************
+	 * 
+	 * @param config of the hierarchy
+	 * @param itemID the id of the item that should be moved up or down
+	 * @param moveUp true to move up, false to move down
+	 * @return true if order was updated, false otherwise.
+	 *****************************************************************************/
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static boolean updatePosition(CFWHierarchyConfig config, Integer itemID, boolean moveUp) {
+		boolean isSuccess = true;
 		
 		return isSuccess;
 	}
@@ -388,9 +416,15 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * 
 	 *****************************************************************************/
 	@SuppressWarnings("unchecked")
-	public static boolean checkCausesMaxDepthOverflow(CFWObject newParent, CFWObject childwithHierarchy) {
+	public static int getChildCount(CFWHierarchyConfig config, Integer parentID) {
 		
-		return false;
+		CFWObject instance = config.getCFWObjectInstance();
+		String primaryFieldName = instance.getPrimaryKeyFieldname();
+		
+		return instance
+			.selectCount()
+			.where(H_PARENT, parentID)
+			.getCount();
 	}
 	/*****************************************************************************
 	 * Returns true if newParent of child would cause a circular reference.
@@ -492,28 +526,6 @@ public class CFWHierarchy<T extends CFWObject> {
 		return resultMap;
 	}
 	
-	/*****************************************************************************
-	 * Returns the maximum depth of the given hierarchy. The root object is excluded 
-	 * in the resulting count.
-	 * 
-	 * @param childWithHierarchy the hierarchy to be counted
-	 * @param currentMaxDepth set to 0 when initially called
-	 * @return int max depth
-	 *****************************************************************************/
-	@SuppressWarnings("unchecked")
-	public static int getMaxDepthOfHierarchy(CFWObject rootWithHierarchy, int currentMaxDepth) {
-		
-		//if(currentMaxDepth == 0) { currentMaxDepth = 1; }
-		
-		int localMaxDepth = currentMaxDepth;
-		for(Entry<Integer, CFWObject> entry : rootWithHierarchy.getChildObjects().entrySet()) {
-			int depthCount = getMaxDepthOfHierarchy(entry.getValue(), currentMaxDepth+1);
-			if(depthCount > localMaxDepth) {
-				localMaxDepth = depthCount;
-			}
-		}
-		return localMaxDepth;
-	}
 		
 	/*****************************************************************************
 	 *  
@@ -662,7 +674,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		String parentPrimaryFieldname = root.getPrimaryKeyField().getName();
 		Integer parentPrimaryValue = root.getPrimaryKeyValue();
-		String[] hierarchyAndPrimaryFieldnames = new String[] {H_DEPTH, H_PARENT, H_LINEAGE, parentPrimaryFieldname};
+		String[] hierarchyAndPrimaryFieldnames = new String[] {H_DEPTH, H_POS, H_PARENT, H_LINEAGE, parentPrimaryFieldname};
 		String[] finalResultFields = CFW.Utils.Array.merge(
 				hierarchyAndPrimaryFieldnames, 
 				CFWUtilsArray.objectToStringArray(resultFields)
@@ -682,8 +694,9 @@ public class CFWHierarchy<T extends CFWObject> {
 					.append(partialWhereClauseFilter);
 			}
 			
+			// sort by lineage and position to get order of items correctly resolved.
 			statement
-				.orderby(H_LINEAGE, parentPrimaryFieldname)
+				.orderby(H_LINEAGE, H_POS)
 				.nullsFirst();
 			return statement;
 		}
