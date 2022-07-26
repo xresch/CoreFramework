@@ -2869,6 +2869,36 @@ function cfw_renderer_hierarchysorter_moveChildToParent(configID, parentElement,
 	});
 }
 
+/******************************************************************
+* Changes the position of an item in relation to its siblings.
+* 
+* @param configID the name of the hierarchy config
+* @param childElement the dragged element
+* @param moveup true to move up, false to move down
+* @return 
+******************************************************************/
+function cfw_renderer_hierarchysorter_changeChildPosition(configID, childElement, moveup){
+	
+	var childID = childElement.data('childid');
+	
+	params = {action: "update", item: "childposition", configid: configID, childid: childID, moveup: moveup};
+	
+	CFW.http.getJSON(HIERARCHY_URL, params, 
+		function(data) {
+			CFW_GLOBAL_HIERARCHYSORTER.parentUpdateInProgress = false;
+		
+			//------------------------------------------
+			// on success move reflect changes in tree
+			if(data.success){
+				if(moveup){
+					childElement.insertBefore(childElement.prev());
+				}else{
+					childElement.insertAfter(childElement.next());
+				}
+			}
+	});
+}
+
 
 /******************************************************************
 *
@@ -2906,9 +2936,36 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 			+renderDef.getTitleHTML(currentItem)
 			+'</div>');
 	
+	//--------------------------------------
+	// MoveDown Button
+	var moveDownButton = $('<div class="cfw-fa-box cursor-pointer" >'
+				+ '<i class="fas fa-caret-down mr-2"></i>'
+			+ '</div>')
+	
+	moveDownButton.on('click', function(e){	
+		var itemElement = $(this).parent().parent();
+		cfw_renderer_hierarchysorter_changeChildPosition(settings.configid, itemElement, false );
+	});
+	draggableHeader.prepend(moveDownButton);
+		
+	//--------------------------------------
+	// MoveUp Button
+	var moveUpButton = $('<div class="cfw-fa-box cursor-pointer" >'
+				+ '<i class="fas fa-caret-up mr-2"></i>'
+			+ '</div>')
+	
+	moveUpButton.on('click', function(e){	
+			var itemElement = $(this).parent().parent();
+			cfw_renderer_hierarchysorter_changeChildPosition(settings.configid, itemElement, true );
+	});
+	draggableHeader.prepend(moveUpButton);
+	
+	
+	//--------------------------------------
+	// Add Drag Start Listener
 	draggableItem.on('dragstart', function(e){
 		//-----------------------------
-		// get dragged element, if none makr the current object as dragged
+		// get dragged element, if none make the current object as dragged
 		var draggable = $('.cfw-draggable.dragging');
 		
 		if(draggable.length == 0){
@@ -2920,6 +2977,8 @@ function cfw_renderer_hierarchysorter_printHierarchyElement(renderDef, settings,
 		}
 	});
 	
+	//--------------------------------------
+	// Add Drag End Listener
 	draggableItem.on('dragend', function(e){
 		e.preventDefault();
 		

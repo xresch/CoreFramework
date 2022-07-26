@@ -357,13 +357,63 @@ public class CFWHierarchy<T extends CFWObject> {
 	/*****************************************************************************
 	 * 
 	 * @param config of the hierarchy
-	 * @param itemID the id of the item that should be moved up or down
+	 * @param itemID the primary key of the item that should be moved up or down
 	 * @param moveUp true to move up, false to move down
 	 * @return true if order was updated, false otherwise.
 	 *****************************************************************************/
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static boolean updatePosition(CFWHierarchyConfig config, Integer itemID, boolean moveUp) {
 		boolean isSuccess = true;
+		
+		CFWObject instance = config.getCFWObjectInstance();
+		String primaryFieldName = instance.getPrimaryKeyFieldname();
+		
+		//------------------------------------------
+		// Update if possible
+		if(itemID != null) {
+	
+			//---------------------------------
+			// Get Values
+			CFWObject itemToMove = instance.select()
+					.where(primaryFieldName, itemID)
+					.getFirstAsObject();
+			
+			Integer parentID = (Integer)itemToMove.getField(H_PARENT).getValue();
+			int childCount = CFWHierarchy.getChildCount(config, parentID);
+			
+			Integer originPos = (Integer)itemToMove.getField(H_POS).getValue();
+			
+			if( moveUp && originPos <= 0) {
+				CFW.Messages.addInfoMessage("Item is already at the highest position.");
+				return false;
+			}
+			
+			if( !moveUp && originPos >= childCount-1) {
+				CFW.Messages.addInfoMessage("Item is already at the lowest position.");
+				return false;
+			}
+			
+			int targetPos = (moveUp) ? originPos - 1 : originPos + 1;
+			
+			CFWObject itemToSwap = instance.select()
+					.where(H_PARENT, parentID)
+					.and(H_POS, targetPos)
+					.getFirstAsObject();
+			
+			if(itemToSwap != null) {
+				itemToSwap.getField(H_POS).setValue(originPos);
+				isSuccess &= itemToSwap.update(H_POS);
+
+				itemToMove.getField(H_POS).setValue(targetPos);
+				isSuccess &= itemToMove.update(H_POS);
+			}else {
+				CFW.Messages.addErrorMessage("CFWHierarchy.updatePosition(): Item to swap position with was not found in database.");
+				return false;
+			}
+			
+		}else {
+			CFW.Messages.addErrorMessage("CFWHierarchy.updatePosition(): ItemID cannot be null.");
+		}
 		
 		return isSuccess;
 	}

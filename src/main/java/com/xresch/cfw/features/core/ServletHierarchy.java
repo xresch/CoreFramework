@@ -95,9 +95,9 @@ public class ServletHierarchy extends HttpServlet
 	
     }
 	
-	/******************************************************************
-	 *
-	 ******************************************************************/
+	/***************************************************************************
+	 * 
+	 ***************************************************************************/
 	private void handleDataRequest( HttpServletRequest request, 
 									HttpServletResponse response, 
 									CFWHierarchyConfig config, 
@@ -138,7 +138,9 @@ public class ServletHierarchy extends HttpServlet
 				switch(item.toLowerCase()) {
 					case "parent": 				updateParent(jsonResponse, config, parentID, childID);
 	  											break;
-	  																						
+					case "childposition": 		Boolean moveUp = Boolean.parseBoolean(request.getParameter("moveup"));
+												updateChildPosition(jsonResponse, config, childID, moveUp);
+												break;																	
 					default: 					CFW.Messages.itemNotSupported(item);
 												break;
 				}
@@ -151,7 +153,9 @@ public class ServletHierarchy extends HttpServlet
 	}
 	
 	
-
+	/***************************************************************************
+	 * 
+	 ***************************************************************************/
 	private void updateParent(JSONResponse jsonResponse, CFWHierarchyConfig config, String parentID, String childID) {
 		
 		if(CFWHierarchy.updateParent(config, parentID, childID)) {
@@ -163,7 +167,25 @@ public class ServletHierarchy extends HttpServlet
 		};
 		
 	}
+	
+	/***************************************************************************
+	 * 
+	 ***************************************************************************/
+	private void updateChildPosition(JSONResponse jsonResponse, CFWHierarchyConfig config, String childID, Boolean moveUp) {
 		
+		if(CFWHierarchy.updatePosition(config, Integer.parseInt(childID), moveUp)) {
+			jsonResponse.setSuccess(true);
+			CFW.Messages.saved();
+		}else{
+			// error messages are created by CFWHierarchy.updatePosition();
+			jsonResponse.setSuccess(false);
+		};
+		
+	}
+	
+	/***************************************************************************
+	 * 
+	 ***************************************************************************/
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void fetchHierarchy(JSONResponse jsonResponse, String rootID, CFWHierarchyConfig config) {
 		
