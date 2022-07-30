@@ -309,6 +309,11 @@ public class ServletDashboardList extends HttpServlet
 			
 			if(dashboard != null) {
 				
+				if(!CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR_PUBLIC)
+				&& !CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
+					dashboard.getField(DashboardFields.IS_PUBLIC.toString()).isDisabled(true);
+				}
+				
 				CFWForm editDashboardForm = dashboard.toForm("cfwEditDashboardForm"+ID, "Update Dashboard");
 				
 				editDashboardForm.setFormHandler(new CFWFormHandler() {

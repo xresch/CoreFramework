@@ -1418,11 +1418,28 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		return apiFieldType;
 	}
 	
+	
+	/******************************************************************************************************
+	 * Add an option for selection fields. The string representations of the provided parameters will be used. 
+	 * The values will be used as labels for the options.
+	 * 
+	 * @param array with values
+	 * @return instance for chaining
+	 ******************************************************************************************************/
+	@SuppressWarnings("unchecked")
+	public CFWField<T> addOption(Object value, Object label) {
+		if(this.valueLabelOptions == null) {
+			this.valueLabelOptions = new LinkedHashMap<Object,Object>();
+		}
+		
+		this.valueLabelOptions.put(value, label);
+		return this;
+	}
 
 	/******************************************************************************************************
 	 * Set values for selection fields. The string representations of the provided elements will be used. 
 	 * The values will be used as labels for the options.
-	 * This will reset any options set with setValueLabelOptions().
+	 * This will reset any options set with setValueLabelOptions() or addOption()..
 	 * 
 	 * @param array with values
 	 * @return instance for chaining
@@ -1441,7 +1458,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/******************************************************************************************************
 	 * Set values for selection fields. The string representations of the provided elements will be used. 
 	 * The values will be used as labels for the options.
-	 * This will reset any options set with setValueLabelOptions().
+	 * This will reset any options set with setValueLabelOptions() or addOption()..
 	 * 
 	 * @param array with values
 	 * @return instance for chaining
@@ -1460,7 +1477,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/******************************************************************************************************
 	 * Set values for selection fields. The string representations of the provided elements will be used. 
 	 * The values will be used as labels for the options.
-	 * This will reset any options set with setValueLabelOptions().
+	 * This will reset any options set with setValueLabelOptions() or addOption()..
 	 * 
 	 * @param array with values
 	 * @return instance for chaining

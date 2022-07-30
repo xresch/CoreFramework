@@ -40,6 +40,9 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	
+	public static final String GRANTTYPE_CLIENT_CREDENTIALS = "client_credentials";
+	public static final String GRANTTYPE_AUTHORIZATION_CODE = "authorization_code";
+	
 	public static final String PROPERTY_SSO_STATE = "ssoState";
 	public static final String PROPERTY_SSO_CODE_VERIFIER = "ssoCodeVerifier";
 	public static final String PROPERTY_SSO_PROVIDER_ID = "ssoProviderID";
@@ -54,6 +57,8 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 		WELL_KNOWN_PATH,
 		CLIENT_ID,
 		CLIENT_SECRET,
+		GRANT_TYPE,
+		RESOURCE,
 		JSON_CUSTOM_PARAMETERS
 	}
 			
@@ -70,6 +75,16 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 			.setDescription("The secret used for this client.")
 			.setValue("");
 	
+	private CFWField<String> grantType = CFWField.newString(FormFieldType.SELECT, PrometheusEnvironmentFields.GRANT_TYPE)
+			.setDescription("The grant type used for this client.")
+			.addOption(GRANTTYPE_AUTHORIZATION_CODE, "Authorication Code")
+			.addOption(GRANTTYPE_CLIENT_CREDENTIALS, "Client Credentials")
+			.setValue(GRANTTYPE_AUTHORIZATION_CODE);
+	
+	private CFWField<String> resource = CFWField.newString(FormFieldType.TEXT, PrometheusEnvironmentFields.RESOURCE)
+			.setDescription("(Optional)The value for the resource parameter used for client credential grant flow.")
+			.setValue("");
+	
 	private CFWField<LinkedHashMap<String, String>> customParams = CFWField.newValueLabel(PrometheusEnvironmentFields.JSON_CUSTOM_PARAMETERS)
 			.setLabel("Custom Parameters")
 			.setDescription("Custom parameters that should be added to the authentication request.");
@@ -81,7 +96,7 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	}
 		
 	private void initializeFields() {
-		this.addFields(providerURL, wellknownPath, clientID, clientSecret, customParams);
+		this.addFields(providerURL, wellknownPath, clientID, clientSecret, grantType, resource, customParams);
 	}
 		
 		
@@ -97,83 +112,6 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 		}
 		
 		return false;
-	}
-			
-	public String providerURL() {
-		return providerURL.getValue();
-	}
-	
-	public SSOOpenIDConnectProvider providerURL(String value) {
-		this.providerURL.setValue(value);
-		return this;
-	}
-	
-	public String wellknownURL() {
-		return wellknownPath.getValue();
-	}
-	
-	public SSOOpenIDConnectProvider wellknownURL(String value) {
-		this.wellknownPath.setValue(value);
-		return this;
-	}
-		
-	public String clientID() {
-		return clientID.getValue();
-	}
-	
-	public SSOOpenIDConnectProvider clientID(String value) {
-		this.clientID.setValue(value);
-		return this;
-	}
-	
-	public String clientSecret() {
-		return clientSecret.getValue();
-	}
-	
-	public SSOOpenIDConnectProvider clientSecret(String value) {
-		this.clientSecret.setValue(value);
-		return this;
-	}
-	
-	public LinkedHashMap<String, String> customParams() {
-		return customParams.getValue();
-	}
-	
-	public SSOOpenIDConnectProvider customParams(LinkedHashMap<String, String> value) {
-		this.customParams.setValue(value);
-		return this;
-	}
-	
-	/******************************************************************************
-	 * 
-	 ******************************************************************************/
-	public OIDCProviderMetadata getProviderMetadata()
-			throws URISyntaxException, MalformedURLException, IOException, ParseException {
-		
-		//---------------------------------------
-		// Return if already discovered
-		if(providerMetadata != null) {
-			return providerMetadata;
-		}
-		
-		//---------------------------------------
-		// Discover Provider
-		String providerURLString = this.providerURL();
-		providerURLString = (providerURLString.endsWith("/")) ? providerURLString : providerURLString+"/";
-		
-		URI issuerURI = new URI(providerURLString);
-		URL providerConfigurationURL = issuerURI.resolve(this.wellknownURL()).toURL();
-		InputStream stream = providerConfigurationURL.openStream();
-		
-		// Read all data from URL
-		String providerInfo = null;
-		try (java.util.Scanner s = new java.util.Scanner(stream)) {
-		  providerInfo = s.useDelimiter("\\A").hasNext() ? s.next() : "";
-		}
-		
-		providerMetadata = OIDCProviderMetadata.parse(providerInfo);
-		
-		return providerMetadata;
 	}
 	
 	/******************************************************************************
@@ -257,6 +195,100 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 		return null;
 		
 	}
+			
+	public String providerURL() {
+		return providerURL.getValue();
+	}
 	
+	public SSOOpenIDConnectProvider providerURL(String value) {
+		this.providerURL.setValue(value);
+		return this;
+	}
+	
+	public String wellknownURL() {
+		return wellknownPath.getValue();
+	}
+	
+	public SSOOpenIDConnectProvider wellknownURL(String value) {
+		this.wellknownPath.setValue(value);
+		return this;
+	}
 		
+	public String clientID() {
+		return clientID.getValue();
+	}
+	
+	public SSOOpenIDConnectProvider clientID(String value) {
+		this.clientID.setValue(value);
+		return this;
+	}
+	
+	public String clientSecret() {
+		return clientSecret.getValue();
+	}
+	
+	public SSOOpenIDConnectProvider clientSecret(String value) {
+		this.clientSecret.setValue(value);
+		return this;
+	}
+	
+	public String grantType() {
+		return grantType.getValue();
+	}
+	
+	public SSOOpenIDConnectProvider grantType(String value) {
+		this.grantType.setValue(value);
+		return this;
+	}
+	
+	public String resource() {
+		return resource.getValue();
+	}
+	
+	public SSOOpenIDConnectProvider resource(String value) {
+		this.resource.setValue(value);
+		return this;
+	}
+	
+	public LinkedHashMap<String, String> customParams() {
+		return customParams.getValue();
+	}
+	
+	public SSOOpenIDConnectProvider customParams(LinkedHashMap<String, String> value) {
+		this.customParams.setValue(value);
+		return this;
+	}
+	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
+	public OIDCProviderMetadata getProviderMetadata()
+			throws URISyntaxException, MalformedURLException, IOException, ParseException {
+		
+		//---------------------------------------
+		// Return if already discovered
+		if(providerMetadata != null) {
+			return providerMetadata;
+		}
+		
+		//---------------------------------------
+		// Discover Provider
+		String providerURLString = this.providerURL();
+		providerURLString = (providerURLString.endsWith("/")) ? providerURLString : providerURLString+"/";
+		
+		URI issuerURI = new URI(providerURLString);
+		URL providerConfigurationURL = issuerURI.resolve(this.wellknownURL()).toURL();
+		InputStream stream = providerConfigurationURL.openStream();
+		
+		// Read all data from URL
+		String providerInfo = null;
+		try (java.util.Scanner s = new java.util.Scanner(stream)) {
+		  providerInfo = s.useDelimiter("\\A").hasNext() ? s.next() : "";
+		}
+		
+		providerMetadata = OIDCProviderMetadata.parse(providerInfo);
+		
+		return providerMetadata;
+	}
+			
 }

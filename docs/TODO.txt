@@ -141,7 +141,7 @@ DONE
 - Audit: Audit logs get written to database.
 - Error Page: Added custom error page for unhandled exceptions
 - CFWField: Prevent autofill of password fields in forms
-CFWField: Added support for number arrays
+- CFWField: Added support for number arrays
 - Timeframe Picker: Added custom Relative Offset
 - Job Task Widget Executor: Added timeframe picker tho handle time placeholders like $earliest and $latest
 - H2: Upgraded to 2.1.212
@@ -155,6 +155,7 @@ CFWField: Added support for number arrays
 - WidgetSettings: Added option to define a link for the title.
 - Chart Renderer: Sorting datasets to avoid displaying issues
 - Dashboard: Added Permission to allow Users to refresh dashboard every minute 
+- Dashboard: Added Permission to allow Users to create public links for dashboards
 - Dashboard: Fixed destruction of widget layout, resizing window width to change into 1 column layout disabled
 - Dashboard: Added Javascript Widget
 - Config: Added Password Policy Settings

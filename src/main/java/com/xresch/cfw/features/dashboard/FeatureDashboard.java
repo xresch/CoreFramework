@@ -30,6 +30,7 @@ public class FeatureDashboard extends CFWAppFeature {
 	
 	public static final String PERMISSION_DASHBOARD_VIEWER = "Dashboard Viewer";
 	public static final String PERMISSION_DASHBOARD_CREATOR = "Dashboard Creator";
+	public static final String PERMISSION_DASHBOARD_CREATOR_PUBLIC = "Dashboard Creator Public";
 	public static final String PERMISSION_DASHBOARD_ADMIN = "Dashboard Admin";
 	public static final String PERMISSION_DASHBOARD_TASKS = "Dashboard Tasks";
 	public static final String PERMISSION_DASHBOARD_FAST_RELOAD = "Dashboard Fast Reload";
@@ -141,6 +142,13 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.DB.Permissions.oneTimeCreate(
 				new Permission(PERMISSION_DASHBOARD_CREATOR, FeatureUserManagement.CATEGORY_USER)
 					.description("Can view and create dashboards and share them with other users."),
+					true,
+					false
+				);	
+		
+		CFW.DB.Permissions.oneTimeCreate(
+				new Permission(PERMISSION_DASHBOARD_CREATOR_PUBLIC, FeatureUserManagement.CATEGORY_USER)
+					.description("Additional permission for dashboard creators to allow making public links for dashboards."),
 					true,
 					false
 				);	

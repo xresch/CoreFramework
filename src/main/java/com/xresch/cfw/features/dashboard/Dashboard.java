@@ -40,7 +40,6 @@ public class Dashboard extends CFWObject {
 		NAME,
 		DESCRIPTION,
 		TAGS,
-		
 		IS_SHARED,
 		JSON_SHARE_WITH_USERS,
 		JSON_SHARE_WITH_GROUPS,

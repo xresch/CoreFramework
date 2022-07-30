@@ -149,7 +149,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			new CFWLog(logger).finer("SSO Authorization Code:"+successResponse.getAuthorizationCode());
 			new CFWLog(logger).finer("SSO ID Token:"+successResponse.getIDToken());
 			new CFWLog(logger).finer("SSO Issuer:"+successResponse.getIssuer());
-			new CFWLog(logger).finer("SSO Redirection URI:"+successResponse.getRedirectionURI());
+			new CFWLog(logger).finer("SSO Redirection URL:"+successResponse.getRedirectionURI());
 			
 			URI redirectURI = successResponse.getRedirectionURI();
 			
@@ -199,10 +199,11 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			, URI redirectURI ) 
 			throws MalformedURLException, ParseException, URISyntaxException, IOException {
 	   
+		
 		//-------------------------------
-		// Prepare Token Request
-		OIDCProviderMetadata providerMetadata = provider.getProviderMetadata();
-		ClientID clientID = new ClientID(provider.clientID());
+		// Get Provider Info
+		String grantType = provider.grantType();
+		String resource = provider.resource();
 		
 		String secretString = provider.clientSecret();
 		if(secretString == null) {
@@ -210,33 +211,40 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		}
 		Secret clientSecret = new Secret(secretString);
 		
-		
-		
-		//String resource = "testresource";
+		//-------------------------------
+		// Prepare Token Request
+		OIDCProviderMetadata providerMetadata = provider.getProviderMetadata();
+		ClientID clientID = new ClientID(provider.clientID());
+
+
 		TokenRequest tokenReq;
-		//if(resource == null) {
+		if(grantType.equals(SSOOpenIDConnectProvider.GRANTTYPE_AUTHORIZATION_CODE) ) {
 			tokenReq = 
 					new TokenRequest(
 							providerMetadata.getTokenEndpointURI(),
 							new ClientSecretPost(clientID, clientSecret),
 							new AuthorizationCodeGrant(code, redirectURI, codeVerifier)
 			);
-//		}else {
-//			Map<String, List<String>> params = new HashMap<>();
-//			
-//			params.put("resource", Collections.singletonList(resource));
-//			params.put("grant_type", Collections.singletonList("client_credentials"));
-//			
-//			ClientCredentialsGrant grant = ClientCredentialsGrant.parse(params);
-//			tokenReq = 
-//					new TokenRequest(
-//							providerMetadata.getTokenEndpointURI(),
-//							new ClientSecretPost(clientID, clientSecret),
-//							grant
-//			);
-//		}
+		}else if(grantType.equals(SSOOpenIDConnectProvider.GRANTTYPE_CLIENT_CREDENTIALS) ) {
+			Map<String, List<String>> params = new HashMap<>();
+			
+			params.put("resource", Collections.singletonList(resource));
+			params.put("grant_type", Collections.singletonList("client_credentials"));
+			
+			ClientCredentialsGrant grant = ClientCredentialsGrant.parse(params);
+			tokenReq = 
+					new TokenRequest(
+							providerMetadata.getTokenEndpointURI(),
+							new ClientSecretPost(clientID, clientSecret),
+							grant
+			);
+		}else {
+			new CFWLog(logger).severe("Unsupported Grant Type:"+grantType, new IllegalArgumentException());
+			return null;
+		}
 		
-		new CFWLog(logger).finer("SSO Token URL Code:"+tokenReq.toHTTPRequest().getURI());
+		new CFWLog(logger).finer("SSO Token URL:"+tokenReq.toHTTPRequest().getURL());
+		new CFWLog(logger).finer("SSO Token URL Query:"+tokenReq.toHTTPRequest().getQuery());
 
 		//-------------------------------
 		// Send Request
