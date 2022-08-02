@@ -59,9 +59,20 @@ class CFWRenderer{
 		 	bulkActions: null,
 		 	// position of the multi actions, either top|bottom|both|none
 		 	bulkActionsPos: "top",
+			// define if the data is hierarchical (Default: false)
+			hierarchy: false,
+			// define if the hierarchy should be displayed as tree or flat
+		 	hierarchyAsTree: true, 
+			// the field containing the array with children
+			hierarchyChildrenField: "children",
+			// number of pixels used for indentation
+			hierarchyIndentation: 20,
+			// icon classes to define the icon(fontawesome)
+			hierarchyIconClasses: "fas fa-level-up-alt fa-rotate-90 mr-2",
+
 		 	// settings specific for the renderer, add as "rendererSettings.{rendererName}.{setting}"
 		 	rendererSettings: {},
-		
+				
 			/*************************************************************
 			 * Customize The Value
 			 *************************************************************/
@@ -1233,83 +1244,9 @@ function cfw_renderer_table(renderDef) {
 	//-----------------------------------
 	// Print Records
 	for(let i = 0; i < renderDef.data.length; i++ ){
+		
 		let currentRecord = renderDef.data[i];
-		let row = $('<tr class="cfwRecordContainer">');
-		
-		//-------------------------
-		// Add Styles
-		renderDef.colorizeElement(currentRecord, row, "table");
-		renderDef.colorizeElement(currentRecord, row, "text");
-		
-		// Set text to white if bg is set but textcolor not 
-		if(renderDef.textstylefield != null 
-		&& renderDef.bgstylefield != null 
-		&& currentRecord[renderDef.textstylefield] == null
-		&& currentRecord[renderDef.bgstylefield] != null
-		&& currentRecord[renderDef.bgstylefield] != "cfw-none"){
-			row.addClass('text-white');
-		}
-					
-		//-------------------------
-		// Checkboxes for selects
-		var cellHTML = '';
-		if(renderDef.bulkActions != null){
-			
-			let value = "";
-			if(renderDef.idfield != null){
-				value = currentRecord[renderDef.idfield];
-			}
-			let checkboxCell = $('<td>');
-			let checkbox = $('<input class="'+selectorGroupClass+'" type="checkbox" value="'+value+'">');
-			checkbox.data('idfield', renderDef.idfield);
-			checkbox.data('record', currentRecord);
-			checkboxCell.append(checkbox);
-			row.append(checkboxCell);
-		}
-		
-		//-------------------------
-		// Add field Values as Cells
-		for(let key in renderDef.visiblefields){
-			let fieldname = renderDef.visiblefields[key];
-			let value = currentRecord[fieldname];
-			
-			if(renderDef.customizers[fieldname] == null){
-				
-				if(settings.verticalize){
-					//value already customized and may be a JQuery Object
-					let cell = $('<td>');
-					cell.append(value);
-					row.append(cell);
-				}else if(value != null){
-					cellHTML += '<td>'+value+'</td>';
-				}else{
-					cellHTML += '<td>&nbsp;</td>';
-				}
-			}else{
-				row.append(cellHTML);
-				cellHTML = "";
-				let customizer = renderDef.customizers[fieldname];
-				let customizedValue = customizer(currentRecord, value, CFW_RENDER_NAME_TABLE, fieldname);
-				let cell = $('<td>');
-				cell.append(customizedValue);
-				row.append(cell);
-				
-			}
-		}
-		row.append(cellHTML);
-		//-------------------------
-		// Add Action buttons
-		let id = null;
-		if(renderDef.idfield != null){
-			id = currentRecord[renderDef.idfield];
-		}
-		for(let fieldKey in renderDef.actions){
-			let td = $('<td>');
-			td.append(renderDef.actions[fieldKey](currentRecord, id ));
-			row.append(td);
-		}
-
-		cfwTable.addRow(row);
+		cfw_renderer_table_addRow(cfwTable, currentRecord, renderDef, settings, 0);
 	}
 	//----------------------------------
 	// If narrow make buttons smaller
@@ -1363,6 +1300,126 @@ function cfw_renderer_table(renderDef) {
 }
 CFW.render.registerRenderer(CFW_RENDER_NAME_TABLE, new CFWRenderer(cfw_renderer_table) );
 
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_table_addRow(targetTable, currentRecord, renderDef, settings, hierarchyDepth){
+
+	let row = $('<tr class="cfwRecordContainer">');
+	
+	//-------------------------
+	// Add Styles
+	renderDef.colorizeElement(currentRecord, row, "table");
+	renderDef.colorizeElement(currentRecord, row, "text");
+	
+	// Set text to white if bg is set but textcolor not 
+	if(renderDef.textstylefield != null 
+	&& renderDef.bgstylefield != null 
+	&& currentRecord[renderDef.textstylefield] == null
+	&& currentRecord[renderDef.bgstylefield] != null
+	&& currentRecord[renderDef.bgstylefield] != "cfw-none"){
+		row.addClass('text-white');
+	}
+				
+	//-------------------------
+	// Checkboxes for selects
+	var cellHTML = '';
+	if(renderDef.bulkActions != null){
+		
+		let value = "";
+		if(renderDef.idfield != null){
+			value = currentRecord[renderDef.idfield];
+		}
+		let checkboxCell = $('<td>');
+		let checkbox = $('<input class="'+selectorGroupClass+'" type="checkbox" value="'+value+'">');
+		checkbox.data('idfield', renderDef.idfield);
+		checkbox.data('record', currentRecord);
+		checkboxCell.append(checkbox);
+		row.append(checkboxCell);
+	}
+	
+	//-------------------------
+	// Add field Values as Cells
+	for(let key in renderDef.visiblefields){
+		let fieldname = renderDef.visiblefields[key];
+		let value = currentRecord[fieldname];
+
+		if(renderDef.customizers[fieldname] == null){
+			
+			if(settings.verticalize){
+				//value already customized and may be a JQuery Object
+				let cell = $('<td>');
+				cell.append(value);
+				row.append(cell);
+			}else {
+				
+				//---------------------------------------
+				// Create Cell, add indentation on title fields if neccessary
+				if(value == null){ value = "&nbsp;"}
+						
+				if(!renderDef.hierarchy || !renderDef.titlefields.includes(fieldname)){
+					cellHTML += '<td>'+value+'</td>';
+				}else{
+					cellHTML += '<td><div style="padding-left: '+renderDef.hierarchyIndentation*hierarchyDepth+'px;">'
+						+ '<i class="'+renderDef.hierarchyIconClasses+'"></i>'
+						+ value
+					+'</div></td>';
+				}
+			}
+
+		}else{
+			//add all cells created up until now
+			row.append(cellHTML);
+			cellHTML = "";
+			let customizer = renderDef.customizers[fieldname];
+			let customizedValue = customizer(currentRecord, value, CFW_RENDER_NAME_TABLE, fieldname);
+
+			//---------------------------------------
+			// Create Cell, add indentation on title fields if neccessary
+			let cell = $('<td>');
+			if(!renderDef.hierarchy || !renderDef.titlefields.includes(fieldname)){
+				cell.append(customizedValue);
+			}else{
+				let indendationDiv = $('<div style="padding-left: '+renderDef.hierarchyIndentation*hierarchyDepth+'px;">');
+				indendationDiv.append(customizedValue);
+				cell.append(indendationDiv);
+			}
+			row.append(cell);
+			
+		}
+	}
+	row.append(cellHTML);
+	
+	//-------------------------
+	// Add Action buttons
+	let id = null;
+	if(renderDef.idfield != null){
+		id = currentRecord[renderDef.idfield];
+	}
+	for(let fieldKey in renderDef.actions){
+		let td = $('<td>');
+		td.append(renderDef.actions[fieldKey](currentRecord, id ));
+		row.append(td);
+	}
+	
+	//-------------------------
+	// Print Row
+	targetTable.addRow(row);
+	
+	//-------------------------
+	// Print Children
+	if(renderDef.hierarchy){
+		var children = currentRecord[renderDef.hierarchyChildrenField];
+		if(children != null){
+			for(var index in children){
+				let currentChild = children[index];
+				let depth = (renderDef.hierarchyAsTree) ?  hierarchyDepth+1 :  0;
+				cfw_renderer_table_addRow(targetTable, currentChild, renderDef, settings, depth);
+			}
+		}
+	}
+	
+}
 /******************************************************************
  * 
  ******************************************************************/

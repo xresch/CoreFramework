@@ -147,9 +147,10 @@ DONE
 - H2: Upgraded to 2.1.212
 - gridstack.js: upgraded from v0.6.0 to v5.1.0
 - Tiles Renderer: Made popup configurable
-- Renderer: Added Status Bar Renderer
-- Renderer: Added Status Map Renderer
-- Renderer: Added Status List Renderer
+- JSRenderer: Added Status Bar Renderer
+- JSRenderer: Added Status Map Renderer
+- JSRenderer: Added Status List Renderer
+- JSRenderer: Table renderer supports hierarchical structures
 - Widget Website: Removed sandbox attribute from iframe.
 - WidgetSettings: Added option to define title position(top, left)
 - WidgetSettings: Added option to define a link for the title.
