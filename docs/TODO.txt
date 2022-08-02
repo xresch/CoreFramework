@@ -151,6 +151,8 @@ DONE
 - JSRenderer: Added Status Map Renderer
 - JSRenderer: Added Status List Renderer
 - JSRenderer: Table renderer supports hierarchical structures
+- JSRenderer: Panel renderer supports hierarchical structures
+- JSRenderer: DataViewer renderer adjusted for hierarchical structures
 - Widget Website: Removed sandbox attribute from iframe.
 - WidgetSettings: Added option to define title position(top, left)
 - WidgetSettings: Added option to define a link for the title.

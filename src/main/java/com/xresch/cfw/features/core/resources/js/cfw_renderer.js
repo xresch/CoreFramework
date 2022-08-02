@@ -1246,6 +1246,7 @@ function cfw_renderer_table(renderDef) {
 	for(let i = 0; i < renderDef.data.length; i++ ){
 		
 		let currentRecord = renderDef.data[i];
+		console.log(currentRecord)
 		cfw_renderer_table_addRow(cfwTable, currentRecord, renderDef, settings, 0);
 	}
 	//----------------------------------
@@ -1452,83 +1453,10 @@ function cfw_renderer_panels (renderDef) {
 	// Print Records
 	for(let i = 0; i < renderDef.data.length; i++ ){
 		
-		//---------------------------
-		// Preprarations
 		let currentRecord = renderDef.data[i];
-		
-		let panelSettings = {
-				cardstyle: currentRecord[renderDef.bgstylefield],
-				textstyle: currentRecord[renderDef.textstylefield],
-				textstyleheader: null,
-				title: $('<div>'),
-				titleright: "&nbsp;",
-				body: "&nbsp;",
-				narrow: settings.narrow,
-		};
-		 
-		//---------------------------
-		// Resolve Title				
-		panelSettings.title.append(renderDef.getTitleHTML(currentRecord));	
-		
-		//-------------------------
-		// Add Action buttons
-		if(renderDef.actions.length > 0){
-			let id = null;
-			if(renderDef.idfield != null){
-				id = currentRecord[renderDef.idfield];
-			}
-			
-			let actionDiv = $('<div>')
-			for(let fieldKey in renderDef.actions){
-				actionDiv.append(renderDef.actions[fieldKey](currentRecord, id ));
-			}
-			
-			panelSettings.titleright = actionDiv;
-		}
-		//-------------------------
-		// Checkboxes for selects
-		if(renderDef.bulkActions != null){
-			
-			let value = "";
-			if(renderDef.idfield != null){
-				value = currentRecord[renderDef.idfield];
-			}
-			
-			let checkboxDiv = $('<div>');
-			let checkbox = $('<input class="form-input float-left mt-1 mr-2 '+selectorGroupClass+'" type="checkbox" value="'+value+'" >');
-			checkbox.data('idfield', renderDef.idfield);
-			checkbox.data('record', currentRecord);
-			
-			//do not toggle panel collapse when clicking checkbox 
-			checkbox.on('click', function(e){
-				    e.stopPropagation();
-				});
-			checkboxDiv.append(checkbox);
-			
-			panelSettings.title.prepend(checkboxDiv);
-		}
-		
-		//-------------------------
-		// Add field Values as Unordered List
-		let list = $("<ul>");
-		for(let key in renderDef.visiblefields){
-			let fieldname = renderDef.visiblefields[key];
-			let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PANELS);
-			
-			if(!CFW.utils.isNullOrEmpty(value)){
-				item = $('<li><strong>' + renderDef.labels[fieldname] + ':&nbsp;</strong></li>');
-				item.append(value);
-				list.append(item);
-			}
-		}
-		
-		
-		panelSettings.body = list;
-				
-		//-------------------------
-		// Add Panel to Wrapper
-		var cfwPanel = new CFWPanel(panelSettings);
-		cfwPanel.appendTo(wrapper);
+
+		cfw_renderer_panels_addPanel(wrapper, currentRecord, renderDef, settings);
+
 	}
 	
 	//----------------------------------
@@ -1576,6 +1504,104 @@ function cfw_renderer_panels (renderDef) {
 }
 
 CFW.render.registerRenderer("panels", new CFWRenderer(cfw_renderer_panels) );
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_panels_addPanel(targetElement, currentRecord, renderDef, settings){
+	//---------------------------
+	// Preprarations
+	
+	let panelSettings = {
+			cardstyle: currentRecord[renderDef.bgstylefield],
+			textstyle: currentRecord[renderDef.textstylefield],
+			textstyleheader: null,
+			title: $('<div>'),
+			titleright: "&nbsp;",
+			body: "&nbsp;",
+			narrow: settings.narrow,
+	};
+	 
+	//---------------------------
+	// Resolve Title				
+	panelSettings.title.append(renderDef.getTitleHTML(currentRecord));	
+	
+	//-------------------------
+	// Add Action buttons
+	if(renderDef.actions.length > 0){
+		let id = null;
+		if(renderDef.idfield != null){
+			id = currentRecord[renderDef.idfield];
+		}
+		
+		let actionDiv = $('<div>')
+		for(let fieldKey in renderDef.actions){
+			actionDiv.append(renderDef.actions[fieldKey](currentRecord, id ));
+		}
+		
+		panelSettings.titleright = actionDiv;
+	}
+	//-------------------------
+	// Checkboxes for selects
+	if(renderDef.bulkActions != null){
+		
+		let value = "";
+		if(renderDef.idfield != null){
+			value = currentRecord[renderDef.idfield];
+		}
+		
+		let checkboxDiv = $('<div>');
+		let checkbox = $('<input class="form-input float-left mt-1 mr-2 '+selectorGroupClass+'" type="checkbox" value="'+value+'" >');
+		checkbox.data('idfield', renderDef.idfield);
+		checkbox.data('record', currentRecord);
+		
+		//do not toggle panel collapse when clicking checkbox 
+		checkbox.on('click', function(e){
+			    e.stopPropagation();
+			});
+		checkboxDiv.append(checkbox);
+		
+		panelSettings.title.prepend(checkboxDiv);
+	}
+	
+	//-------------------------
+	// Add field Values as Unordered List
+	let list = $("<ul>");
+	for(let key in renderDef.visiblefields){
+		let fieldname = renderDef.visiblefields[key];
+		let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PANELS);
+		
+		if(!CFW.utils.isNullOrEmpty(value)){
+			item = $('<li><strong>' + renderDef.labels[fieldname] + ':&nbsp;</strong></li>');
+			item.append(value);
+			list.append(item);
+		}
+	}
+	
+	
+	panelSettings.body = list;
+			
+	//-------------------------
+	// Add Panel to Wrapper
+	var cfwPanel = new CFWPanel(panelSettings);
+	cfwPanel.appendTo(targetElement);
+	
+	//-------------------------
+	// Print Children
+	if(renderDef.hierarchy){
+		var children = currentRecord[renderDef.hierarchyChildrenField];
+		if(children != null){
+			for(var index in children){
+				let currentChild = children[index];
+				if(renderDef.hierarchyAsTree){
+					cfw_renderer_panels_addPanel(cfwPanel.getPanelBody(), currentChild, renderDef, settings);
+				}else{
+					cfw_renderer_panels_addPanel(targetElement, currentChild, renderDef, settings);
+				}
+			}
+		}
+	}
+}
 
 /******************************************************************
  * 
@@ -2433,13 +2459,25 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	
 	//=====================================================
 	// Initialize
+
 	var dataviewerDiv = $(dataviewerIDOrJQuery);
 	var settingsDiv = dataviewerDiv.find('.cfw-dataviewer-settings');
 	var targetDiv = dataviewerDiv.find('.cfw-dataviewer-content');
 	var dataviewerID = "#"+dataviewerDiv.attr('id');
 	var renderDef = dataviewerDiv.data('renderDef');
+	// settings fir dataviewer
 	var settings = dataviewerDiv.data('settings');
 	
+	// create params object to have everything together and can be passed to other functions
+	var params = {
+		dataviewerDiv: dataviewerDiv
+		,settingsDiv: settingsDiv
+		,targetDiv: targetDiv
+		,dataviewerID: dataviewerID
+		,renderDef: renderDef
+		,settings: settings
+	}
+		
 	//=====================================================
 	// Handle Page to Render
 	if(pageToRender == null || pageToRender == undefined){
@@ -2448,9 +2486,10 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			pageToRender = 1;
 		}
 	}
+	params.pageToRender = pageToRender;
 	
 	dataviewerDiv.data('currentpage', pageToRender);
-	
+
 	//=====================================================
 	// Get Settings
 	var pageSize = settingsDiv.find('select[name="pagesize"]').val();
@@ -2471,6 +2510,14 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][sortbyField]', sortbyField);
 		CFW.cache.storeValueForPage('dataviewer['+settings.storeid+'][sortbyDirection]', sortbyDirection);
 	}
+	
+	// Add to params
+	params.pageSize = pageSize;
+	params.filterquery = filterquery;
+	params.rendererIndex = rendererIndex;
+	params.sortbyField = sortbyField;
+	params.sortbyDirection = sortbyDirection;
+	params.offset = offset;
 	
 	//=====================================================
 	// Handle Filter Highlight
@@ -2511,7 +2558,8 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			//---------------------------------
 			// Sort
 			let sortedData = renderDef.data;
-			if(sortbyField != null){
+			if(sortbyField != null 
+			&& (renderDef.hierarchy && !renderDef.hierarchyAsTree )){
 				sortedData = _.orderBy(sortedData, sortFunctionArray, sortDirectionArray);
 			}
 			
@@ -2522,8 +2570,9 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			if(pageSize == -1){
 				dataToRender = sortedData;
 			}
-
-			cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
+			params.totalRecords = totalRecords;
+			params.dataToRender = dataToRender;
+			cfw_renderer_dataviewer_renderPage(params);
 		}else{
 			
 			//---------------------------------
@@ -2547,26 +2596,28 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			if(pageSize == -1){
 				dataToRender = sortedData;
 			}	
-			cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
+			params.totalRecords = totalRecords;
+			params.dataToRender = dataToRender;
+			cfw_renderer_dataviewer_renderPage(params);
 		}
 	}else{
 		
 		//-------------------------------------
 		// Dynamic
-		let params = {};
-		params[settings.datainterface.actionparam] = "fetchpartial";
-		params[settings.datainterface.sizeparam] = pageSize;
-		params[settings.datainterface.pageparam] = pageToRender;
-		params[settings.datainterface.filterqueryparam] = filterquery;
-		params[settings.datainterface.itemparam] = settings.datainterface.item;
-		params[settings.datainterface.sortbyparam] = sortbyField;
-		params[settings.datainterface.sortascendingparam] = (sortbyDirection == 'desc') ? false : true;
+		let httpParams = {};
+		httpParams[settings.datainterface.actionparam] = "fetchpartial";
+		httpParams[settings.datainterface.sizeparam] = pageSize;
+		httpParams[settings.datainterface.pageparam] = pageToRender;
+		httpParams[settings.datainterface.filterqueryparam] = filterquery;
+		httpParams[settings.datainterface.itemparam] = settings.datainterface.item;
+		httpParams[settings.datainterface.sortbyparam] = sortbyField;
+		httpParams[settings.datainterface.sortascendingparam] = (sortbyDirection == 'desc') ? false : true;
 
 		for(key in settings.datainterface.customparams){
-			params[key] = settings.datainterface.customparams[key];
+			httpParams[key] = settings.datainterface.customparams[key];
 		}
 		
-		CFW.http.getJSON(settings.datainterface.url, params, function(data){
+		CFW.http.getJSON(settings.datainterface.url, httpParams, function(data){
 			
 			if(data.payload != null){
 				let dataToRender = data.payload;
@@ -2577,7 +2628,9 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 				if(settings.datainterface.preprocess != null){
 					settings.datainterface.preprocess(dataToRender);
 				}
-				cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender);
+				params.totalRecords = totalRecords;
+				params.dataToRender = dataToRender;
+				cfw_renderer_dataviewer_renderPage(params);
 			}
 		}
 	);
@@ -2588,40 +2641,34 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRecords, pageToRender) {
+function cfw_renderer_dataviewer_renderPage(params) {
 	
-	dataviewerDiv.data('visibledata', dataToRender);
+	params.dataviewerDiv.data('visibledata', params.dataToRender);
 	//-------------------------------------
 	// Initialize
 	//var dataviewerDiv = $(dataviewerID);
-	var settingsDiv = dataviewerDiv.find('.cfw-dataviewer-settings');
-	var targetDiv = dataviewerDiv.find('.cfw-dataviewer-content');
-	var dataviewerID = "#"+dataviewerDiv.attr('id');
-	var renderDef = dataviewerDiv.data('renderDef');
-	var dataviewerSettings = dataviewerDiv.data('settings');
+	var settingsDiv = params.settingsDiv;
+	var targetDiv = params.targetDiv;
+	var dataviewerID = params.dataviewerID;
+	var renderDef = params.renderDef;
+	var dataviewerSettings = params.settings;
+	var pageToRender = params.pageToRender;
+	var pageSize = params.pageSize;
+	var dataToRender = params.dataToRender;
+	var totalRecords = params.totalRecords;
 	
 	//-------------------------------------
 	// Get Settings
 	//var totalRecords = dataToRender.length;
-	var pageSize = settingsDiv.find('select[name="pagesize"]').val();
+	//var pageSize = settingsDiv.find('select[name="pagesize"]').val();
 	
 	var offset = pageSize * (pageToRender-1);
 		
 	//-------------------------------------
-	// Prepare Renderer
-	
-	let renderDefOverrides = dataviewerSettings.renderers[0].renderdef;
-	let rendererName = dataviewerSettings.renderers[0].name;
-	if(dataviewerSettings.renderers.length > 1){
-		var rendererIndex = settingsDiv.find('select[name="displayas"]').val();
-		renderDefOverrides = dataviewerSettings.renderers[rendererIndex].renderdef;
-		rendererName = dataviewerSettings.renderers[rendererIndex].name;
-	}
-	//-------------------------------------
 	// Call Renderer
-	let renderDefClone = _.assign({}, renderDef, renderDefOverrides);
-	renderDefClone.data = dataToRender;
-	var renderResult = CFW.render.getRenderer(rendererName).render(renderDefClone);
+	cfw_renderer_dataviewer_addSelectedRendererDetails(params);
+	params.finalRenderDef.data = dataToRender;
+	var renderResult = CFW.render.getRenderer(params.rendererName).render(params.finalRenderDef);
 	
 	//-------------------------------------
 	// Create Paginator
@@ -2632,6 +2679,35 @@ function cfw_renderer_dataviewer_renderPage(dataviewerDiv, dataToRender, totalRe
 	targetDiv.append(renderResult);
 	targetDiv.append(pageNavigation);
 }
+
+/******************************************************************
+ * Evaluates what the selected renderer is and adds the fields
+ # to the params object passed to this function.
+ * 
+ ******************************************************************/
+function cfw_renderer_dataviewer_addSelectedRendererDetails(params) {
+	
+	let dataviewerSettings = params.settings;
+	let settingsDiv = params.settingsDiv;
+	let renderDef = params.renderDef;
+	
+	//-------------------------------------
+	// Prepare Renderer
+	let renderDefOverrides = dataviewerSettings.renderers[0].renderdef;
+	let rendererName = dataviewerSettings.renderers[0].name;
+	if(dataviewerSettings.renderers.length > 1){
+		var rendererIndex = settingsDiv.find('select[name="displayas"]').val();
+		renderDefOverrides = dataviewerSettings.renderers[rendererIndex].renderdef;
+		rendererName = dataviewerSettings.renderers[rendererIndex].name;
+	}
+
+	let finalRenderDef = _.assign({}, renderDef, renderDefOverrides);
+	
+	params.rendererName =  rendererName;
+	params.finalRenderDef =	finalRenderDef;
+		
+}
+	
 /******************************************************************
  * 
  ******************************************************************/
@@ -2899,7 +2975,7 @@ function cfw_renderer_hierarchysorter_moveChildToParent(configID, parentElement,
 	
 	params = {action: "update", item: "parent", configid: configID, parentid: parentID, childid: childID};
 	
-	CFW.http.getJSON(HIERARCHY_URL, params, 
+	CFW.http.getJSON(CFW_GLOBAL_HIERARCHY_URL, params, 
 		function(data) {
 			CFW_GLOBAL_HIERARCHYSORTER.parentUpdateInProgress = false;
 		
@@ -2940,7 +3016,7 @@ function cfw_renderer_hierarchysorter_changeChildPosition(configID, childElement
 	
 	params = {action: "update", item: "childposition", configid: configID, childid: childID, moveup: moveup};
 	
-	CFW.http.getJSON(HIERARCHY_URL, params, 
+	CFW.http.getJSON(CFW_GLOBAL_HIERARCHY_URL, params, 
 		function(data) {
 			CFW_GLOBAL_HIERARCHYSORTER.parentUpdateInProgress = false;
 		

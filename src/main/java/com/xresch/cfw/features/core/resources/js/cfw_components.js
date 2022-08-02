@@ -411,6 +411,10 @@ class CFWPanel{
 		this.panelHeader.attr("id", "panelHead"+this.counter);	
 		
 		//----------------------------
+		// Create Body
+		this.panelBody = $(document.createElement("div"));
+		
+		//----------------------------
 		// Add Styles
 		if(this.settings.cardstyle != null){
 			CFW.colors.colorizeElement(this.panel, this.settings.cardstyle, "border");
@@ -467,13 +471,21 @@ class CFWPanel{
 		
 		//----------------------------
 		// Create Body
-		var panelBody = $(document.createElement("div"));
-		panelBody.addClass("card-body");
-		collapseContainer.append(panelBody);
-		panelBody.append(this.settings.body);
+		
+		this.panelBody.addClass("card-body");
+		collapseContainer.append(this.panelBody);
+		this.panelBody.append(this.settings.body);
 		
 		return this.panel;
 		 
+	 }
+
+	 /********************************************
+	  * Return the JQuery PanelBody object
+	  * @param 
+	  ********************************************/
+	 getPanelBody(){
+		return this.panelBody;
 	 }
 	 
 	 /********************************************
