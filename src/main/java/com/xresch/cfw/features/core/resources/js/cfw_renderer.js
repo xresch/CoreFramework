@@ -69,7 +69,6 @@ class CFWRenderer{
 			hierarchyIndentation: 20,
 			// icon classes to define the icon(fontawesome)
 			hierarchyIconClasses: "fas fa-level-up-alt fa-rotate-90 mr-2",
-
 		 	// settings specific for the renderer, add as "rendererSettings.{rendererName}.{setting}"
 		 	rendererSettings: {},
 				
@@ -1246,8 +1245,7 @@ function cfw_renderer_table(renderDef) {
 	for(let i = 0; i < renderDef.data.length; i++ ){
 		
 		let currentRecord = renderDef.data[i];
-		console.log(currentRecord)
-		cfw_renderer_table_addRow(cfwTable, currentRecord, renderDef, settings, 0);
+		cfw_renderer_table_addRow(cfwTable, currentRecord, renderDef, settings, selectorGroupClass, 0);
 	}
 	//----------------------------------
 	// If narrow make buttons smaller
@@ -1304,7 +1302,7 @@ CFW.render.registerRenderer(CFW_RENDER_NAME_TABLE, new CFWRenderer(cfw_renderer_
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_table_addRow(targetTable, currentRecord, renderDef, settings, hierarchyDepth){
+function cfw_renderer_table_addRow(targetTable, currentRecord, renderDef, settings, selectorGroupClass, hierarchyDepth){
 
 	let row = $('<tr class="cfwRecordContainer">');
 	
@@ -1415,7 +1413,7 @@ function cfw_renderer_table_addRow(targetTable, currentRecord, renderDef, settin
 			for(var index in children){
 				let currentChild = children[index];
 				let depth = (renderDef.hierarchyAsTree) ?  hierarchyDepth+1 :  0;
-				cfw_renderer_table_addRow(targetTable, currentChild, renderDef, settings, depth);
+				cfw_renderer_table_addRow(targetTable, currentChild, renderDef, settings, selectorGroupClass, depth);
 			}
 		}
 	}
@@ -1455,7 +1453,7 @@ function cfw_renderer_panels (renderDef) {
 		
 		let currentRecord = renderDef.data[i];
 
-		cfw_renderer_panels_addPanel(wrapper, currentRecord, renderDef, settings);
+		cfw_renderer_panels_addPanel(wrapper, currentRecord, renderDef, settings, selectorGroupClass);
 
 	}
 	
@@ -1508,7 +1506,7 @@ CFW.render.registerRenderer("panels", new CFWRenderer(cfw_renderer_panels) );
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_panels_addPanel(targetElement, currentRecord, renderDef, settings){
+function cfw_renderer_panels_addPanel(targetElement, currentRecord, renderDef, settings, selectorGroupClass){
 	//---------------------------
 	// Preprarations
 	
@@ -1594,9 +1592,9 @@ function cfw_renderer_panels_addPanel(targetElement, currentRecord, renderDef, s
 			for(var index in children){
 				let currentChild = children[index];
 				if(renderDef.hierarchyAsTree){
-					cfw_renderer_panels_addPanel(cfwPanel.getPanelBody(), currentChild, renderDef, settings);
+					cfw_renderer_panels_addPanel(cfwPanel.getPanelBody(), currentChild, renderDef, settings, selectorGroupClass);
 				}else{
-					cfw_renderer_panels_addPanel(targetElement, currentChild, renderDef, settings);
+					cfw_renderer_panels_addPanel(targetElement, currentChild, renderDef, settings, selectorGroupClass);
 				}
 			}
 		}
@@ -2459,7 +2457,6 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	
 	//=====================================================
 	// Initialize
-
 	var dataviewerDiv = $(dataviewerIDOrJQuery);
 	var settingsDiv = dataviewerDiv.find('.cfw-dataviewer-settings');
 	var targetDiv = dataviewerDiv.find('.cfw-dataviewer-content');
@@ -2476,6 +2473,23 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 		,dataviewerID: dataviewerID
 		,renderDef: renderDef
 		,settings: settings
+	}
+	
+	//=====================================================
+	// Get finalRenderDef and apply adjustments to dataviewer
+	// settings
+	cfw_renderer_dataviewer_resolveSelectedRendererDetails(params);
+	
+	if(params.finalRenderDef.rendererSettings != null
+	&& params.finalRenderDef.rendererSettings.dataviewer != null){
+		settings = _.merge({}, params.settings, params.finalRenderDef.rendererSettings.dataviewer);
+		params.settings = settings;
+	}
+	
+	if(settings.sortable){
+		settingsDiv.find('select[name="sortby"]').parent().removeClass("d-none");
+	}else{
+		settingsDiv.find('select[name="sortby"]').parent().addClass("d-none");
 	}
 		
 	//=====================================================
@@ -2558,8 +2572,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			//---------------------------------
 			// Sort
 			let sortedData = renderDef.data;
-			if(sortbyField != null 
-			&& (renderDef.hierarchy && !renderDef.hierarchyAsTree )){
+			if(settings.sortable && sortbyField != null){
 				sortedData = _.orderBy(sortedData, sortFunctionArray, sortDirectionArray);
 			}
 			
@@ -2585,7 +2598,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			//---------------------------------
 			// Sort
 			let sortedData = filteredData;
-			if(sortbyField != null){
+			if(settings.sortable && sortbyField != null){
 				sortedData = _.orderBy(sortedData, sortFunctionArray, sortDirectionArray);
 			}
 			
@@ -2666,7 +2679,6 @@ function cfw_renderer_dataviewer_renderPage(params) {
 		
 	//-------------------------------------
 	// Call Renderer
-	cfw_renderer_dataviewer_addSelectedRendererDetails(params);
 	params.finalRenderDef.data = dataToRender;
 	var renderResult = CFW.render.getRenderer(params.rendererName).render(params.finalRenderDef);
 	
@@ -2682,10 +2694,11 @@ function cfw_renderer_dataviewer_renderPage(params) {
 
 /******************************************************************
  * Evaluates what the selected renderer is and adds the fields
- # to the params object passed to this function.
+ * "rendererName" and "finalRenderDef"to the params object passed 
+ * to this function.
  * 
  ******************************************************************/
-function cfw_renderer_dataviewer_addSelectedRendererDetails(params) {
+function cfw_renderer_dataviewer_resolveSelectedRendererDetails(params) {
 	
 	let dataviewerSettings = params.settings;
 	let settingsDiv = params.settingsDiv;
