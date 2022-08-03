@@ -484,15 +484,15 @@ function cfw_dashboardlist_printDashboards(data, type){
 								name: 'table',
 								renderdef: {
 									rendererSettings: {
-										table: {filterable: false},
+										table: {filterable: false, narrow: true},
 									},
 								}
 							},
-							{	label: 'Smaller Table',
+							{	label: 'Bigger Table',
 								name: 'table',
 								renderdef: {
 									rendererSettings: {
-										table: {filterable: false, narrow: true},
+										table: {filterable: false},
 									},
 								}
 							},
