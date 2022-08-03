@@ -842,6 +842,7 @@ pre {
 /**************************************************************
  * Scrollbar
  **************************************************************/
+ 
 /* width */
 ::-webkit-scrollbar {
   width: 10px;
@@ -852,17 +853,17 @@ pre {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: var(--light);
+  background: lightgray;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: var(--gray);
+  background: gray;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--gray-dark);
+  background: #4e4e4e;
 }
 
 /*************************************************************************
