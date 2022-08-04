@@ -14,6 +14,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -113,18 +114,24 @@ public class CFWHttp {
 	 ******************************************************************************************************/
 	public static String  buildURL(String urlWithPath, HashMap<String,String> params) {
 		
-		if(urlWithPath.endsWith("?") || urlWithPath.endsWith("/")) {
-			urlWithPath = urlWithPath.substring(0, urlWithPath.length()-1);
+		if(params != null && !params.isEmpty()) {
+			
+			if(urlWithPath.endsWith("?") || urlWithPath.endsWith("/")) {
+				urlWithPath = urlWithPath.substring(0, urlWithPath.length()-1);
+			}
+			StringBuilder builder = new StringBuilder(urlWithPath);
+			
+			builder.append("?");
+			
+			for(Entry<String,String> param : params.entrySet()) {
+				builder.append(encode(param.getKey(), param.getValue()));
+			}
+			
+			return builder.toString();
 		}
-		StringBuilder builder = new StringBuilder(urlWithPath);
 		
-		builder.append("?");
+		return urlWithPath;
 		
-		for(Entry<String,String> param : params.entrySet()) {
-			builder.append(encode(param.getKey(), param.getValue()));
-		}
-		
-		return builder.toString();
 	}
 	
 	/******************************************************************************************************
@@ -404,10 +411,29 @@ public class CFWHttp {
 	 * @param params the parameters which should be added to the request or null
 	 * @return CFWHttpResponse response or null
 	 ******************************************************************************************************/
+	public static void addBasicAuthorizationHeader(HashMap<String, String> params, String basicUsername, String basicPassword) {
+		
+		String valueToEncode = basicUsername + ":" + basicPassword;
+		params.put("Authorization", "Basic "+Base64.getEncoder().encodeToString(valueToEncode.getBytes()));	    	
+	}
+	
+	/******************************************************************************************************
+	 * Creates a request builder for chained building of requests.
+	 * @param url used for the request.
+	 ******************************************************************************************************/
+	public static CFWHttpRequestBuilder newRequestBuilder(String url) {
+		return instance.new CFWHttpRequestBuilder(url);	    	
+	}
+	
+	/******************************************************************************************************
+	 * Send a HTTP GET request and returns the result or null in case of error.
+	 * @param url used for the request.
+	 * @param params the parameters which should be added to the request or null
+	 * @return CFWHttpResponse response or null
+	 ******************************************************************************************************/
 	public static CFWHttpResponse sendGETRequest(String url, HashMap<String, String> params) {
 		return sendGETRequest(url, params, null);	    	
 	}
-	
 	
 	/******************************************************************************************************
 	 * Send a HTTP GET request and returns the result or null in case of error.
@@ -423,17 +449,16 @@ public class CFWHttp {
 		try {
 			//-----------------------------------
 			// Handle params
-			if(params != null ) {
-				url = buildURL(url, params);
-			}
+			url = buildURL(url, params);
 			
 			//-----------------------------------
 			// Handle headers
 			HttpURLConnection connection = createProxiedURLConnection(url);
 			if(connection != null) {
-				if(headers != null ) {
-					for(Entry<String, String> header : headers.entrySet())
-					connection.setRequestProperty(header.getKey(), header.getValue());
+				if(headers != null && !headers.isEmpty() ) {
+					for(Entry<String, String> header : headers.entrySet()) {
+						connection.setRequestProperty(header.getKey(), header.getValue());
+					}
 				}
 				
 				//-----------------------------------
@@ -695,6 +720,137 @@ public class CFWHttp {
 	      + request.getServerPort()   
 	    ;
 	}
+	
+	/******************************************************************************************************
+	 * Inner Class for HTTP Response
+	 ******************************************************************************************************/
+	public class CFWHttpRequestBuilder {
+		
+		String method = "GET";
+		String URL = null;
+		String requestBody = null;
+		String requestBodyContentType = "plain/text; charset=UTF-8";
+		
+		private HashMap<String, String> params = new HashMap<>();
+		private HashMap<String, String> headers = new HashMap<>();
+		
+		public CFWHttpRequestBuilder(String urlNoParams) {
+			this.URL = urlNoParams;
+		}
+		
+		/***********************************************
+		 * Set method to GET
+		 ***********************************************/
+		public CFWHttpRequestBuilder GET() {
+			method = "GET";
+			return this;
+		}
+		
+		/***********************************************
+		 * Set method to POST
+		 ***********************************************/
+		public CFWHttpRequestBuilder POST() {
+			method = "POST";
+			return this;
+		}
+		
+		/***********************************************
+		 * Add a parameter to the request.
+		 ***********************************************/
+		public CFWHttpRequestBuilder param(String name, String value) {
+			params.put(name, value);
+			return this;
+		}
+		
+		/***********************************************
+		 * Add a header
+		 ***********************************************/
+		public CFWHttpRequestBuilder addHeader(String name, String value) {
+			params.put(name, value);
+			return this;
+		}
+		
+		/***********************************************
+		 * Add a header
+		 ***********************************************/
+		public CFWHttpRequestBuilder authenticationBasic(String username, String password) {
+			CFWHttp.addBasicAuthorizationHeader(params, username, password);
+			return this;
+		}
+		
+		/***********************************************
+		 * Add a request Body
+		 ***********************************************/
+		public CFWHttpRequestBuilder body(String contentType, String content) {
+			this.requestBodyContentType = contentType;
+			this.requestBody = content;
+			return this;
+		}
+		
+		/***********************************************
+		 * Add a request Body in JSON format UTF-8 encoding
+		 ***********************************************/
+		public CFWHttpRequestBuilder bodyJSON(String content) {
+			return this.body("application/json; charset=UTF-8", content);
+		}
+		
+		
+		/***********************************************
+		 * Build and send the request. Returns a 
+		 * CFWHttpResponse or null in case of errors.
+		 ***********************************************/
+		public CFWHttpResponse send() {
+			
+			CFWHttp.logFinerRequestInfo(method, URL, params, headers);	
+			
+			try {
+				
+				//---------------------------------
+				// Create URL
+				URL = buildURL(URL, params);
+				HttpURLConnection connection = createProxiedURLConnection(URL);
+				connection.setRequestMethod(method);
+				connection.setInstanceFollowRedirects(true);
+				
+				if(connection != null) {
+					
+					//-----------------------------------
+					// Handle headers
+					if(headers != null ) {
+						for(Entry<String, String> header : headers.entrySet())
+						connection.setRequestProperty(header.getKey(), header.getValue());
+					}
+					
+					//-----------------------------------
+					// Handle POST Body
+					if(method.equals("POST") && requestBody != null) {
+						if(!Strings.isNullOrEmpty(requestBodyContentType)) {
+							connection.setRequestProperty("Content-Type", requestBodyContentType);
+						}
+						connection.setDoOutput(true);
+						connection.connect();
+						try(OutputStream outStream = connection.getOutputStream()) {
+						    byte[] input = requestBody.getBytes("utf-8");
+						    outStream.write(input, 0, input.length);           
+						}
+					}
+
+					//-----------------------------------
+					// Connect and create response
+					if(connection != null) {			
+						outgoingHTTPCallsCounter.labels(method).inc();
+						return instance.new CFWHttpResponse(connection);
+					}
+				}
+			} catch (Exception e) {
+				new CFWLog(logger)
+					.severe("Exception occured: "+e.getMessage(), e);
+			} 
+
+			return null;		
+		}
+	}
+	
 	
 	/******************************************************************************************************
 	 * Inner Class for HTTP Response
