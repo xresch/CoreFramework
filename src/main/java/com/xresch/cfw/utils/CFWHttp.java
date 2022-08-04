@@ -388,8 +388,9 @@ public class CFWHttp {
 	
 	/******************************************************************************************************
 	 * Log details about get and post request
+	 * @param requestBody TODO
 	 ******************************************************************************************************/
-	private static void logFinerRequestInfo(String method, String url, HashMap<String, String> params, HashMap<String, String> headers) {
+	private static void logFinerRequestInfo(String method, String url, HashMap<String, String> params, HashMap<String, String> headers, String requestBody) {
 		if(logger.isLoggable(Level.FINER)) {
 			
 			String paramsString = (params == null) ? "null" : Joiner.on(",").withKeyValueSeparator("=").join(params);
@@ -400,6 +401,7 @@ public class CFWHttp {
 				.custom("CFWHttp-url", url)
 				.custom("CFWHttp-params", paramsString)
 				.custom("CFWHttp-headers", headersString)
+				.custom("CFWHttp-body", requestBody)
 				.finer("CFWHTTP Request Details");;
 
 		}
@@ -444,7 +446,7 @@ public class CFWHttp {
 	 ******************************************************************************************************/
 	public static CFWHttpResponse sendGETRequest(String url, HashMap<String, String> params, HashMap<String, String> headers) {
 		
-		CFWHttp.logFinerRequestInfo("GET", url, params, headers);
+		CFWHttp.logFinerRequestInfo("GET", url, params, headers, null);
 		
 		try {
 			//-----------------------------------
@@ -492,7 +494,7 @@ public class CFWHttp {
 	 ******************************************************************************************************/
 	public static CFWHttpResponse sendPOSTRequest(String url, HashMap<String, String> params, HashMap<String, String> headers) {
 		
-		CFWHttp.logFinerRequestInfo("POST", url, params, headers);	
+		CFWHttp.logFinerRequestInfo("POST", url, params, headers, null);	
 		
 		try {
 
@@ -765,8 +767,8 @@ public class CFWHttp {
 		/***********************************************
 		 * Add a header
 		 ***********************************************/
-		public CFWHttpRequestBuilder addHeader(String name, String value) {
-			params.put(name, value);
+		public CFWHttpRequestBuilder header(String name, String value) {
+			headers.put(name, value);
 			return this;
 		}
 		
@@ -774,7 +776,7 @@ public class CFWHttp {
 		 * Add a header
 		 ***********************************************/
 		public CFWHttpRequestBuilder authenticationBasic(String username, String password) {
-			CFWHttp.addBasicAuthorizationHeader(params, username, password);
+			CFWHttp.addBasicAuthorizationHeader(headers, username, password);
 			return this;
 		}
 		
@@ -783,6 +785,7 @@ public class CFWHttp {
 		 ***********************************************/
 		public CFWHttpRequestBuilder body(String contentType, String content) {
 			this.requestBodyContentType = contentType;
+			this.header("Content-Type", contentType);
 			this.requestBody = content;
 			return this;
 		}
@@ -801,7 +804,7 @@ public class CFWHttp {
 		 ***********************************************/
 		public CFWHttpResponse send() {
 			
-			CFWHttp.logFinerRequestInfo(method, URL, params, headers);	
+			CFWHttp.logFinerRequestInfo(method, URL, params, headers, requestBody);	
 			
 			try {
 				
@@ -823,7 +826,7 @@ public class CFWHttp {
 					
 					//-----------------------------------
 					// Handle POST Body
-					if(method.equals("POST") && requestBody != null) {
+					if(requestBody != null) {
 						if(!Strings.isNullOrEmpty(requestBodyContentType)) {
 							connection.setRequestProperty("Content-Type", requestBodyContentType);
 						}

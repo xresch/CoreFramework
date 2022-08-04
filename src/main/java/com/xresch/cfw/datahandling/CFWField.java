@@ -1322,6 +1322,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/******************************************************************************************************
 	 * Enable Encryption of values for storing them into the database. 32 bytes of the string
 	 * will be used, additional bytes will be ignored, bytes will be added if the string is shorter.
+	 * When values have already been stored in the database with encryption enabled, changing the salt 
+	 * will cause all the stored values to be wrongly decrypted. Never change a salt once set.
+	 * 
 	 ******************************************************************************************************/
 	public CFWField<T> enableEncryption(String encryptionSalt) {
 		if( String.class.isAssignableFrom(this.getValueClass()) ){
@@ -1418,6 +1421,17 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		return apiFieldType;
 	}
 	
+	/******************************************************************************************************
+	 * Add an option for selection fields. The string representations of the provided parameters will be used. 
+	 * The values will be used as labels for the options.
+	 * 
+	 * @param array with values
+	 * @return instance for chaining
+	 ******************************************************************************************************/
+	@SuppressWarnings("unchecked")
+	public CFWField<T> addOption(Object valueAndLabel) {		
+		return this.addOption(valueAndLabel, valueAndLabel);
+	}
 	
 	/******************************************************************************************************
 	 * Add an option for selection fields. The string representations of the provided parameters will be used. 
