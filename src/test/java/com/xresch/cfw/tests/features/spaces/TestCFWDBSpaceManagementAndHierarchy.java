@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWHierarchy;
+import com.xresch.cfw.datahandling.CFWHierarchyConfig;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.spaces.Space;
 import com.xresch.cfw.features.spaces.Space.SpaceFields;
@@ -39,7 +40,7 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 		// 
 		//-----------------------------------------
 		if(!CFW.DB.Spaces.checkSpaceExists("FacespaceB")) {
-			CFW.DB.Spaces.create(
+			CFW.DB.Spaces.create(null,
 					new Space(SpaceGroupB.id(), "FacespaceB")
 						.description("A spacy space for your face.")
 						.isDeletable(true)
@@ -52,6 +53,7 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 		//-----------------------------------------
 		// 
 		//-----------------------------------------
+		Integer currentParentID = parentSpace.getPrimaryKeyValue();
 		for(int i = 0; i < 10; i++) {
 			String spacename = "Subface"+i;
 			if(!CFW.DB.Spaces.checkSpaceExists(spacename)) {
@@ -61,10 +63,13 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 					.isDeletable(true)
 					.isRenamable(true);
 				
-				if(subSpace.setParent(parentSpace)) {
-					CFW.DB.Spaces.create(subSpace);
-					parentSpace = CFW.DB.Spaces.selectByName(spacename);
-					System.out.println(parentSpace.dumpFieldsAsKeyValueString());
+				currentParentID = CFWHierarchy.create(currentParentID, subSpace);
+				if(currentParentID != null) {
+					subSpace = CFW.DB.Spaces.selectByID(currentParentID);
+					System.out.println(subSpace.dumpFieldsAsKeyValueString());
+				}else {
+					//error
+					return;
 				}
 			}
 		}
@@ -153,7 +158,7 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 		// Create MySpace Parent
 		//-----------------------------------------
 		if(!CFW.DB.Spaces.checkSpaceExists("MySpace")) {
-			CFW.DB.Spaces.create(
+			CFW.DB.Spaces.create(null,
 					new Space(spacegroupid, "MySpace")
 						.description("A space for spacing away.")
 						.isDeletable(true)
@@ -166,6 +171,7 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 		//-----------------------------------------
 		// Create MySpace Children
 		//-----------------------------------------
+		Integer currentParentID = parentSpace.getPrimaryKeyValue();
 		for(int i = 0; i < 10; i++) {
 			String spacename = "SubSpace"+i;
 			if(!CFW.DB.Spaces.checkSpaceExists(spacename)) {
@@ -175,10 +181,13 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 					.isDeletable(true)
 					.isRenamable(true);
 				
-				if(subSpace.setParent(parentSpace)) {
-					CFW.DB.Spaces.create(subSpace);
-					parentSpace = CFW.DB.Spaces.selectByName(spacename);
-					System.out.println(parentSpace.dumpFieldsAsKeyValueString());
+				currentParentID = CFWHierarchy.create(currentParentID, subSpace);
+				if(currentParentID != null) {
+					subSpace = CFW.DB.Spaces.selectByID(currentParentID);
+					System.out.println(subSpace.dumpFieldsAsKeyValueString());
+				}else {
+					//error
+					return;
 				}
 			}
 		}
@@ -279,9 +288,10 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 				.fetchAndCreateHierarchy()
 				.getSingleRootObject();
 		
-		Assertions.assertFalse(subspace2WithHierarchy.setParent(subspace2WithHierarchy), "Cannot set as it's own parent.");
-		Assertions.assertFalse(subspace2WithHierarchy.setParent(subspace5WithHierarchy), "Cannot set parent as it would cause a circular reference.");
-		
+		CFWHierarchyConfig config = subspace2WithHierarchy.getHierarchyConfig();
+		Assertions.assertFalse(CFWHierarchy.updateParent(config,subspace2WithHierarchy.id(),subspace2WithHierarchy.id()), "Cannot set as it's own parent.");
+		Assertions.assertFalse(CFWHierarchy.updateParent(config,subspace5WithHierarchy.id(),subspace2WithHierarchy.id()), "Cannot set parent as it would cause a circular reference.");
+
 		//-----------------------------------------
 		// Test make element root
 		//-----------------------------------------

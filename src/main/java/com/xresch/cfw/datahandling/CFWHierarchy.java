@@ -163,6 +163,52 @@ public class CFWHierarchy<T extends CFWObject> {
 			new CFWLog(logger).audit(CFWAuditLogAction.MOVE, movedObject.getClass(), message.toString());
 		}
 	}
+		
+	/*****************************************************************************
+	 * Creates the object in the the hierarchy under the specified parent.
+	 * Makes it a root element if parentID is null.
+	 * This method will fail if the elementToCreate has already child elements
+	 * assigned to it.
+	 * 
+	 * @return id of the created element if successful, null otherwise.
+	 *****************************************************************************/
+	public static Integer create(Integer parentID, CFWObject elementToCreate) {
+		
+		//-----------------------------------
+		// Check Parameter
+		if(elementToCreate == null) {
+			new CFWLog(logger).severe("Element cannot be null.", new IllegalArgumentException());
+			return null;
+		}
+		
+		CFW.DB.transactionStart();
+		
+		//-----------------------------------
+		// Create Child Element
+		CFWHierarchyConfig config = elementToCreate.getHierarchyConfig();
+		
+		Integer createdElementID = new CFWSQL(elementToCreate)
+			.insertGetPrimaryKey();
+		
+		if(createdElementID == null) {
+			// return null on error
+			CFW.DB.transactionRollback();
+			return null;
+		}
+
+		//-----------------------------------
+		// Set Parent
+		boolean isSuccess = CFWHierarchy.updateParent(config, parentID, createdElementID);	
+		
+		if(isSuccess) {
+			CFW.DB.transactionCommit();
+			return createdElementID;
+		}else {
+			// return null on error
+			CFW.DB.transactionRollback();
+			return null;
+		}
+	}
 	
 	/*****************************************************************************
 	 * Checks if the child can moved to the parent using CFWHierarchyConfig.canSort().
@@ -262,7 +308,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * @return true if successful, false otherwise.
 	 *****************************************************************************/
 	@SuppressWarnings("unchecked")
-	public static boolean setParent(CFWObject parentWithHierarchy, CFWObject childWithHierarchy) {
+	private static boolean setParent(CFWObject parentWithHierarchy, CFWObject childWithHierarchy) {
 		
 		//-------------------------------
 		// Argument check
@@ -432,7 +478,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		//------------------------------
 		// Start Transaction
-		if(isFirstCall) { CFW.DB.beginTransaction(); };
+		if(!CFW.DB.transactionIsStarted()) { CFW.DB.transactionStart(); };
 		
 		//------------------------------
 		// Do Updates
@@ -451,10 +497,10 @@ public class CFWHierarchy<T extends CFWObject> {
 			//------------------------------
 			// Commit or Rollback
 			if(isSuccess) {
-				CFW.DB.commitTransaction();
+				CFW.DB.transactionCommit();
 				return isSuccess;
 			}else {
-				CFW.DB.rollbackTransaction();
+				CFW.DB.transactionRollback();
 				return isSuccess;
 			}
 		}

@@ -145,7 +145,7 @@ public class CFWDBCPUSample {
 	 ****************************************************************/
 	public static boolean aggregateStatistics(Timestamp startTime, Timestamp endTime, int newGranularity) {
 				
-		CFWDB.beginTransaction();
+		CFWDB.transactionStart();
 		boolean success = true;
 		int cacheCounter = 0;
 		//--------------------------------------------
@@ -160,7 +160,7 @@ public class CFWDBCPUSample {
 				.getCount();
 
 		if(count == 0) {
-			CFWDB.rollbackTransaction();
+			CFWDB.transactionRollback();
 			return true;
 		}
 		
@@ -214,9 +214,9 @@ public class CFWDBCPUSample {
 		
 		
 		if(success) {
-			CFWDB.commitTransaction();
+			CFWDB.transactionCommit();
 		}else {
-			CFWDB.rollbackTransaction();
+			CFWDB.transactionRollback();
 		}
 		
 		return success;

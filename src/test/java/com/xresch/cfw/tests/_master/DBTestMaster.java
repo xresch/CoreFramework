@@ -12,12 +12,12 @@ public class DBTestMaster extends WebTestMaster {
 	public static void startTransaction() throws Exception {
 		// Make sure it is started, should be done by superclass.
 		CFW.DB.initializeDB();
-		CFWDB.beginTransaction();
+		CFWDB.transactionStart();
 	}
 	
 	@AfterAll
 	public static void stopDefaultApplication() throws Exception {
-		CFWDB.rollbackTransaction();
+		CFWDB.transactionRollback();
 		System.out.println("========== ALERTS =========");
 		System.out.println(CFW.Context.Request.getAlertsAsJSONArray());
 	}

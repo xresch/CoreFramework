@@ -182,11 +182,20 @@ public class DBInterface {
 	}
 	
 	/********************************************************************************************
+	 * Returns if a DB transaction was already started in the current thread.
+	 * 
+	 * @throws SQLException 
+	 ********************************************************************************************/
+	public boolean transactionIsStarted() {	
+		return transactionConnection.get() != null;
+	}
+	
+	/********************************************************************************************
 	 * Starts a new transaction.
 	 * 
 	 * @throws SQLException 
 	 ********************************************************************************************/
-	public void beginTransaction() {	
+	public void transactionStart() {	
 		
 		if(transactionConnection.get() != null) {
 			new CFWLog(logger)
@@ -209,16 +218,16 @@ public class DBInterface {
 	}
 	
 	/********************************************************************************************
-	 * Starts a new transaction.
+	 * Commits the transaction started with transactionStart.
 	 * 
 	 * @throws SQLException 
 	 ********************************************************************************************/
-	public void commitTransaction() {	
+	public void transactionCommit() {	
 		
 		
 		if(transactionConnection.get() == null) {
 			new CFWLog(logger)
-				.severe("There is no running transaction. Use beginTransaction() before using commit.");
+				.finer("There is no running transaction. Use beginTransaction() before using commit.");
 			return;
 		}
 		
@@ -253,12 +262,12 @@ public class DBInterface {
 	 * 
 	 * @throws SQLException 
 	 ********************************************************************************************/
-	public void rollbackTransaction() {	
+	public void transactionRollback() {	
 		
 		
 		if(transactionConnection.get() == null) {
 			new CFWLog(logger)
-				.severe("There is no running transaction. Use beginTransaction() before using commit.");
+				.finer("There is no running transaction. Use beginTransaction() before using commit.");
 			return;
 		}
 		

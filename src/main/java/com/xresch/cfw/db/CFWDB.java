@@ -199,14 +199,23 @@ public class CFWDB {
 		db.forceCloseRemainingConnections();
 	}
 	
+	/********************************************************************************************
+	 * Starts a new transaction.
+	 * 
+	 * @throws SQLException 
+	 ********************************************************************************************/
+	public static boolean transactionIsStarted() {	
+		return db.transactionIsStarted();
+	}
+	
 	
 	/********************************************************************************************
 	 * Starts a new transaction.
 	 * 
 	 * @throws SQLException 
 	 ********************************************************************************************/
-	public static void beginTransaction() {	
-		db.beginTransaction();
+	public static void transactionStart() {	
+		db.transactionStart();
 	}
 	
 	/********************************************************************************************
@@ -214,8 +223,8 @@ public class CFWDB {
 	 * 
 	 * @throws SQLException 
 	 ********************************************************************************************/
-	public static void commitTransaction() {	
-		db.commitTransaction();
+	public static void transactionCommit() {	
+		db.transactionCommit();
 	}
 	
 	/********************************************************************************************
@@ -223,8 +232,8 @@ public class CFWDB {
 	 * 
 	 * @throws SQLException 
 	 ********************************************************************************************/
-	public static void rollbackTransaction() {	
-		db.rollbackTransaction();
+	public static void transactionRollback() {	
+		db.transactionRollback();
 	}
 	
 	/********************************************************************************************

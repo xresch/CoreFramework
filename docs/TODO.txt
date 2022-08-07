@@ -138,6 +138,7 @@ DONE
 ------- current -------
 - BREAKING CODE CHANGE: Added 1 minute cache for widget data.
 - BREAKING CODE CHANGE: Changing CFWHierarchy to use Lineage instead of single column for every parent.
+- BREAKING CODE CHANGE: CFWDB and DBInterface - Renaming of transaction handling methods
 - Audit: Audit logs get written to database.
 - Error Page: Added custom error page for unhandled exceptions
 - CFWField: Prevent autofill of password fields in forms

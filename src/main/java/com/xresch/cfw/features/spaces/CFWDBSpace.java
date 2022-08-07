@@ -3,6 +3,7 @@ package com.xresch.cfw.features.spaces;
 import java.sql.ResultSet;
 import java.util.logging.Logger;
 
+import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.features.spaces.Space.SpaceFields;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -15,48 +16,34 @@ public class CFWDBSpace {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBSpace.class.getName());
 	
-	/********************************************************************************************
-	 * Creates multiple spaces in the DB.
-	 * @param Spaces with the values that should be inserted. ID will be set by the Database.
-	 * @return nothing
-	 * 
-	 ********************************************************************************************/
-	public static void create(Space... spaces) {
-		
-		for(Space space : spaces) {
-			create(space);
-		}
-	}
 	
 	/********************************************************************************************
 	 * Creates a new space in the DB.
 	 * @param CFWSpace with the values that should be inserted. ID will be set by the Database.
-	 * @return true if successful, false otherwise
+	 * @return id of created element if successful, null otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean create(Space space) {
+	public static Integer create(Integer parentID, Space space) {
 		
 		if(space == null) {
 			new CFWLog(logger)
 				.warn("The space cannot be null.", new IllegalArgumentException());
-			return false;
+			return null;
 		}
 		
 		if(space.name() == null || space.name().isEmpty()) {
 			new CFWLog(logger)
 				.warn("Please specify a name for the space to create.", new IllegalStateException());
-			return false;
+			return null;
 		}
 		
 		if(checkSpaceExists(space)) {
 			new CFWLog(logger)
 				.warn("The space '"+space.name()+"' cannot be created as a space with this name already exists.");
-			return false;
+			return null;
 		}
 		
-		return space
-				.queryCache(CFWDBSpace.class, "create")
-				.insert();
+		return CFWHierarchy.create(parentID, space);
 	}
 	
 	/***************************************************************

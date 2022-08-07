@@ -62,10 +62,13 @@ public class CFWAuditLog extends CFWObject {
 			.setValue(new Timestamp(System.currentTimeMillis()));
 	
 	private CFWField<Integer> foreignKeyUser = CFWField.newInteger(FormFieldType.HIDDEN, CFWAuditLogFields.FK_ID_USER)
-			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
 			.setDescription("The id of the user that executed the action.")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(null);
+			.setValue(null)
+			// Will not work when table is created before CFW_UserTable exists.
+			// Also not needed, prevents audit logs from deletion when user is deleted.
+			//.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
+			;
 	
 	private CFWField<String> username = CFWField.newString(FormFieldType.TEXT, CFWAuditLogFields.USERNAME)
 			.setDescription("The name of the user that executed the action.");

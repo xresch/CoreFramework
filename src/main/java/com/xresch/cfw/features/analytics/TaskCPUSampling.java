@@ -54,7 +54,7 @@ public class TaskCPUSampling extends CFWScheduledTask {
 		Timestamp time = new Timestamp(System.currentTimeMillis());
 		int periodMinutes = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION);
 		
-		CFWDB.beginTransaction();
+		CFWDB.transactionStart();
 			for(CPUSample entry : counterMap.values()) {
 				if(entry.count() != 0) {
 					entry.time(time)
@@ -64,7 +64,7 @@ public class TaskCPUSampling extends CFWScheduledTask {
 					entry.count(0);
 				}
 			}
-		CFWDB.commitTransaction();
+		CFWDB.transactionCommit();
 		
 	}
 	

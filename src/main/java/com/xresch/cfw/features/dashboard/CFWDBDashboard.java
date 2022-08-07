@@ -99,7 +99,7 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	public static boolean 	deleteByID(String id) {
 		
-		CFW.DB.beginTransaction();
+		CFW.DB.transactionStart();
 		
 		boolean success = true;
 		// delete widgets and related jobs first to not have jobs unrelated to widgets.
@@ -107,9 +107,9 @@ public class CFWDBDashboard {
 		success &= CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, DashboardFields.PK_ID.toString(), id); 
 		
 		if(success) {
-			CFW.DB.commitTransaction();
+			CFW.DB.transactionCommit();
 		}else {
-			CFW.DB.rollbackTransaction();
+			CFW.DB.transactionRollback();
 		}
 		return success;
 	}

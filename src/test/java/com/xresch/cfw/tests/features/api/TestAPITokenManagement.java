@@ -53,8 +53,8 @@ public class TestAPITokenManagement extends WebTestMaster {
 		APITokenPermissionMapDBMethods.addPermissionToAPIToken(permissionA, testtokenA);
 		APITokenPermissionMapDBMethods.addPermissionToAPIToken(permissionB, testtokenB);
 		
-		CFW.DB.commitTransaction();
-		CFW.DB.beginTransaction();
+		CFW.DB.transactionCommit();
+		CFW.DB.transactionStart();
 	}
 	
 	
