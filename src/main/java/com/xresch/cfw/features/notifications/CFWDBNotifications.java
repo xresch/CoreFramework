@@ -234,11 +234,11 @@ public class CFWDBNotifications {
 	/*******************************************************
 	 * 
 	 *******************************************************/
-	public static String markAsReadForCurrentUser() {
+	public static boolean markAsReadForCurrentUser() {
 		return new CFWSQL(new Notification())
 				.queryCache()
 				.loadSQLResource(FeatureNotifications.PACKAGE_RESOURCE, "sql_markAsRead.sql", CFW.Context.Request.getUser().id())
-				.getAsJSON();
+				.execute();
 	}
 
 
