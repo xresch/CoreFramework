@@ -1483,7 +1483,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWObject getFirstAsObject() {
 		
-		if(this.execute()) {
+		if(this.execute(true)) {
 			return ResultSetUtils.getFirstAsObject(result, object.getClass());
 		}
 		
@@ -1497,7 +1497,7 @@ public class CFWSQL {
 		
 		ArrayList<CFWObject> objectArray = new ArrayList<>();
 		
-		if(this.execute()) {
+		if(this.execute(true)) {
 			objectArray = ResultSetUtils.toObjectList(result, object.getClass());
 		}
 		
@@ -1515,7 +1515,7 @@ public class CFWSQL {
 		
 		ArrayList<T> objectArray = new ArrayList<>();
 		
-		if(this.execute()) {
+		if(this.execute(true)) {
 			objectArray = ResultSetUtils.toObjectListConvert(result, clazz);
 		}
 		
@@ -1531,7 +1531,7 @@ public class CFWSQL {
 		
 		ArrayList<LinkedHashMap<String, Object>> resultArray =  new ArrayList<>(); 
 		
-		if(this.execute()) {
+		if(this.execute(true)) {
 			resultArray = ResultSetUtils.toListOfKeyValueMaps(result);
 		}
 		
@@ -1547,7 +1547,7 @@ public class CFWSQL {
 		
 		LinkedHashMap<Integer, CFWObject> objectMap = new LinkedHashMap<>();
 		
-		if(this.execute()) {
+		if(this.execute(true)) {
 			objectMap = ResultSetUtils.toKeyObjectMap(result, object.getClass());
 		}
 		
@@ -1562,7 +1562,7 @@ public class CFWSQL {
 		
 		HashMap<Object, Object> keyValueMap = new HashMap<Object, Object>();
 		
-		if(this.execute()) {
+		if(this.execute(true)) {
 			keyValueMap = ResultSetUtils.toKeyValueMap(result, keyColumnName, valueColumnName);
 		}
 		
@@ -1577,7 +1577,7 @@ public class CFWSQL {
 		
 		HashMap<Integer, Object> keyValueMap = new HashMap<>();
 		
-		if(this.execute()) {
+		if(this.execute(true)) {
 			keyValueMap = ResultSetUtils.toIDValueMap(result, idColumnName, valueColumnName);
 		}
 		
@@ -1589,7 +1589,12 @@ public class CFWSQL {
 	 * Execute the Query and gets the result as a string array.
 	 ***************************************************************/
 	public String[] getAsStringArray(Object columnName) {
-		return ResultSetUtils.toStringArray(result, columnName.toString());
+		String[] stringArray = new String[] {}; 
+		if(this.execute(true)) {
+			stringArray = ResultSetUtils.toStringArray(result, columnName.toString());
+		}
+		
+		return stringArray;
 	}
 	
 	/***************************************************************
@@ -1597,7 +1602,7 @@ public class CFWSQL {
 	 ***************************************************************/
 	public ArrayList<String> getAsStringArrayList(Object columnName) {
 		
-		if(this.execute()) {
+		if(this.execute(true)) {
 			return ResultSetUtils.toStringArrayList(result, columnName.toString());
 		}else {
 			return new ArrayList<String>();
@@ -1610,7 +1615,7 @@ public class CFWSQL {
 	 ***************************************************************/
 	public ArrayList<Integer> getAsIntegerArrayList(Object columnName) {
 
-		if(this.execute()) {
+		if(this.execute(true)) {
 			return ResultSetUtils.toIntegerArrayList(result, columnName.toString());
 		}else {
 			return new ArrayList<Integer>();
@@ -1625,7 +1630,7 @@ public class CFWSQL {
 		
 		LinkedHashMap<Object, Object>  resultMap = new LinkedHashMap<Object, Object>();
 		
-		if(this.execute()) {
+		if(this.execute(true)) {
 			resultMap = ResultSetUtils.toLinkedHashMap(result, keyColumnName, valueColumnName);
 		}
 		
@@ -1640,7 +1645,7 @@ public class CFWSQL {
 	 ***************************************************************/
 	public AutocompleteResult getAsAutocompleteResult(Object valueColumnName, Object labelColumnName) {
 		
-		if(this.execute()) {
+		if(this.execute(true)) {
 			return ResultSetUtils.toAsAutocompleteResult(result, valueColumnName, labelColumnName);
 		}else {
 			return new AutocompleteResult(new AutocompleteList());
@@ -1654,7 +1659,7 @@ public class CFWSQL {
 	 ***************************************************************/
 	public AutocompleteResult getAsAutocompleteResult(Object valueColumnName, Object labelColumnName, Object descriptionColumnName) {
 		
-		if(this.execute()) {
+		if(this.execute(true)) {
 			return ResultSetUtils.toAsAutocompleteResult(result, valueColumnName, labelColumnName, descriptionColumnName);
 		}else {
 			return new AutocompleteResult(new AutocompleteList());
@@ -1668,7 +1673,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public String getAsJSON() {
 		
-		this.execute();
+		this.execute(true);
 		String	string = ResultSetUtils.toJSON(result);
 		
 		return string;
@@ -1680,7 +1685,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public JsonArray getAsJSONArray() {
 		
-		this.execute();
+		this.execute(true);
 		return ResultSetUtils.toJSONArray(result);
 				
 	}
@@ -1690,7 +1695,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public ResultSetAsJsonReader getAsJSONReader() {
 		
-		this.execute();
+		this.execute(true);
 		return ResultSetUtils.toJSONReader(result);
 				
 	}
@@ -1732,7 +1737,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public String getAsCSV() {
 		
-		this.execute();
+		this.execute(true);
 		String string = ResultSetUtils.toCSV(result, ";");
 		dbInterface.close(result);
 		
@@ -1745,7 +1750,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public String getAsXML() {
 		
-		this.execute();
+		this.execute(true);
 		String	string = ResultSetUtils.toXML(result);
 		dbInterface.close(result);
 		
