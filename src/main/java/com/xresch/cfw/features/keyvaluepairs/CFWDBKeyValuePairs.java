@@ -471,7 +471,7 @@ public class CFWDBKeyValuePairs {
 				.queryCache(CFWDBKeyValuePairs.class, "checkConfigExists")
 				.selectCount()
 				.where(KeyValuePairFields.KEY.toString(), keyValName)
-				.getCount();
+				.executeCount();
 		
 		return (count > 0);
 		

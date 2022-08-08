@@ -627,7 +627,7 @@ public class CFWDBDashboard {
 			.selectCount()
 			.where(DashboardFields.PK_ID.toString(), dashboardID)
 			.and(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
-			.getCount();
+			.executeCount();
 		
 		return count > 0;
 	}
@@ -667,7 +667,7 @@ public class CFWDBDashboard {
 						userID, 
 						likeID,
 						likeID)
-				.getCount();
+				.executeCount();
 			
 			if( count > 0) {
 				return true;

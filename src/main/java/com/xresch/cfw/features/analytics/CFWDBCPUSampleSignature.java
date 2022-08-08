@@ -177,7 +177,7 @@ public class CFWDBCPUSampleSignature {
 				.queryCache(CFWDBCPUSampleSignature.class, "checkStatsMethodSignatureExists")
 				.selectCount()
 				.where(CPUSampleSignatureFields.SIGNATURE.toString(), signatureName)
-				.getCount();
+				.executeCount();
 		
 		return (count > 0);
 		

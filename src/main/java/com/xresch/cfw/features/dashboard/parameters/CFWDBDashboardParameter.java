@@ -157,7 +157,7 @@ public class CFWDBDashboardParameter {
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, parameter.foreignKeyDashboard())
 				.and(DashboardParameterFields.NAME, parameter.name())
 				.and().not().is(DashboardParameterFields.PK_ID, parameter.id())
-				.getCount();
+				.executeCount();
 		
 	}
 	/***************************************************************
@@ -171,7 +171,7 @@ public class CFWDBDashboardParameter {
 				.selectCount()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, parameter.foreignKeyDashboard())
 				.and(DashboardParameterFields.NAME, parameter.name())
-				.getCount();
+				.executeCount();
 		
 	}
 	
@@ -185,7 +185,7 @@ public class CFWDBDashboardParameter {
 				.selectCount()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
 				.and(DashboardParameterFields.PK_ID, parameterID)
-				.getCount();
+				.executeCount();
 		
 	}
 	

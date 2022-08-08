@@ -351,7 +351,7 @@ public class CFWDBJob {
 				.selectCount()
 				.where(CFWJobFields.FK_ID_USER, CFW.Context.Request.getUser().id())
 				.and(CFWJobFields.PK_ID, jobID.trim())
-				.getCount();
+				.executeCount();
 		
 	}
 	
@@ -363,7 +363,7 @@ public class CFWDBJob {
 		return new CFWSQL(new CFWJob())
 				.queryCache()
 				.selectCount()
-				.getCount();
+				.executeCount();
 		
 	}
 	
@@ -377,7 +377,7 @@ public class CFWDBJob {
 				.queryCache()
 				.selectCount()
 				.where(CFWJobFields.CUSTOM_INTEGER, customInteger)
-				.getCount();
+				.executeCount();
 		
 	}
 	

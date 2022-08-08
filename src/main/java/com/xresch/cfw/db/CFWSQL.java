@@ -261,7 +261,7 @@ public class CFWSQL {
 			// Check index exists
 			int count = new CFWSQL(null)
 			.custom("SELECT COUNT(*) FROM FTL.INDEXES WHERE \"TABLE\" = ? AND \"COLUMNS\" = ?", tableName, columnsString)
-			.getCount();
+			.executeCount();
 			
 			if(count == 0) {
 				
@@ -1315,15 +1315,34 @@ public class CFWSQL {
 		}
 		return this;
 	}
-	
-	
+
 	/****************************************************************
-	 * Executes the query and saves the results in the global 
-	 * variable.
+	 * Executes any SQL statement built with this class.
 	 * 
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public boolean execute() {
+		return this.execute(false);
+	}
+	
+
+	/****************************************************************
+	 * Executes SELECT statements built with this class.
+	 * Will fail if any other statement will be executed.
+	 * 
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public boolean executeQuery() {
+		return this.execute(true);
+	}
+	
+	/****************************************************************
+	 * Executes the query and saves the results in the global 
+	 * variable.
+	 * @param queryOnly true
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	private boolean execute(boolean queryOnly) {
 		
 		//----------------------------
 		// Handle Caching
@@ -1331,7 +1350,7 @@ public class CFWSQL {
 		
 		//----------------------------
 		// Execute Statement 
-		if(statement.trim().startsWith("SELECT")) {
+		if(queryOnly || statement.trim().startsWith("SELECT")) {
 			result = dbInterface.preparedExecuteQuery(statement, values.toArray());
 			if(result != null) {
 				return true;
@@ -1399,7 +1418,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public boolean executeDelete() {
 		
-		boolean success = this.execute();
+		boolean success = this.execute(false);
 		dbInterface.close(result);
 		
 		return success;
@@ -1414,11 +1433,11 @@ public class CFWSQL {
 	 * 
 	 * @return int count or -1 on error
 	 ****************************************************************/
-	public int getCount() {
+	public int executeCount() {
 		
 		try {
 			
-			this.execute();
+			this.execute(true);
 			if(result != null) {	
 				//----------------------------
 				// Handle Caching

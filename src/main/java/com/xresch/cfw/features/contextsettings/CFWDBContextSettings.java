@@ -423,7 +423,7 @@ public class CFWDBContextSettings {
 				.where(ContextSettingsFields.CFW_CTXSETTINGS_TYPE, type)
 				.and(ContextSettingsFields.CFW_CTXSETTINGS_NAME, name)
 				.limit(1)
-				.getCount();
+				.executeCount();
 		
 		return (count > 0);
 	}
@@ -440,7 +440,7 @@ public class CFWDBContextSettings {
 				.and(ContextSettingsFields.CFW_CTXSETTINGS_NAME, name)
 				.and().not().is(ContextSettingsFields.PK_ID, currentID)
 				.limit(1)
-				.getCount();
+				.executeCount();
 		
 		return (count > 0);
 	}

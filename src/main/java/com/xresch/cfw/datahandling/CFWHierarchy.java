@@ -167,8 +167,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	/*****************************************************************************
 	 * Creates the object in the the hierarchy under the specified parent.
 	 * Makes it a root element if parentID is null.
-	 * This method will fail if the elementToCreate has already child elements
-	 * assigned to it.
+	 * Existing children will be ignored and have to be created separately.
 	 * 
 	 * @return id of the created element if successful, null otherwise.
 	 *****************************************************************************/
@@ -201,6 +200,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		boolean isSuccess = CFWHierarchy.updateParent(config, parentID, createdElementID);	
 		
 		if(isSuccess) {
+			//Note: commit  might already have been done by updateParent() >> saveNewParents()
 			CFW.DB.transactionCommit();
 			return createdElementID;
 		}else {
@@ -208,6 +208,7 @@ public class CFWHierarchy<T extends CFWObject> {
 			CFW.DB.transactionRollback();
 			return null;
 		}
+
 	}
 	
 	/*****************************************************************************
@@ -293,7 +294,7 @@ public class CFWHierarchy<T extends CFWObject> {
 			return false;
 		}
 	}
-	
+		
 	/*****************************************************************************
 	 * Set the parent object of the child and adds it to the list of children.
 	 * The childs db entry has to be updated manually afterwards.
@@ -505,6 +506,27 @@ public class CFWHierarchy<T extends CFWObject> {
 			}
 		}
 	}
+	
+	/*****************************************************************************
+	 * Deletes the element and all its Child elements
+	 * 
+	 * @return boolean true if successful, false otherwise
+	 *****************************************************************************/
+	public static boolean deleteWithChildren(CFWHierarchyConfig config, int elementID) {
+		
+		//-----------------------------------
+		// Create Child Element
+		CFWObject tempObject = config.getCFWObjectInstance();
+		
+		return new CFWSQL(tempObject)
+			.delete()
+			.where(tempObject.getPrimaryKeyFieldname(), elementID)
+			.or().arrayContains(H_LINEAGE, elementID)
+			.executeDelete()
+			;
+		
+
+	}
 		
 	/*****************************************************************************
 	 * Returns true if newParent of child would cause a circular reference.
@@ -520,7 +542,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		return instance
 			.selectCount()
 			.where(H_PARENT, parentID)
-			.getCount();
+			.executeCount();
 	}
 	/*****************************************************************************
 	 * Returns true if newParent of child would cause a circular reference.

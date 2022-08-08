@@ -217,7 +217,7 @@ public class CFWDBRolePermissionMap {
 			.selectCount()
 			.where(RolePermissionMapFields.FK_ID_PERMISSION.toString(), permissionid)
 			.and(RolePermissionMapFields.FK_ID_ROLE.toString(), roleid)
-			.getCount();
+			.executeCount();
 
 	}
 	

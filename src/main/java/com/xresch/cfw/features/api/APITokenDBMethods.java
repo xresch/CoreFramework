@@ -110,7 +110,7 @@ public class APITokenDBMethods {
 		return new CFWSQL(new APIToken())
 				.queryCache()
 				.selectCount()
-				.getCount();
+				.executeCount();
 		
 	}
 	
@@ -121,7 +121,7 @@ public class APITokenDBMethods {
 				.selectCount()
 				.where(APITokenFields.IS_ACTIVE, true)
 				.and(APITokenFields.TOKEN, token)
-				.getCount();
+				.executeCount();
 		
 	}
 	

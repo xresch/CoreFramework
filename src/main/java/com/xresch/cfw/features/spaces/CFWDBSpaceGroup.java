@@ -243,7 +243,7 @@ public class CFWDBSpaceGroup {
 				.queryCache(CFWDBSpaceGroup.class, "checkSpaceGroupExists")
 				.selectCount()
 				.where(SpaceGroupFields.NAME.toString(), SpaceGroupName)
-				.getCount();
+				.executeCount();
 		
 		return (count > 0);
 		

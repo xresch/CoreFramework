@@ -272,7 +272,7 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 				.fetchAndCreateHierarchy(fieldnames)
 				.toJSONArray();
 		
-		System.out.println("============= JSON Array =============");
+		System.out.println("============= FETCH ALL WITH NULL =============");
 		System.out.println(CFW.JSON.toJSONPretty(array));
 		
 		//-----------------------------------------
@@ -305,6 +305,24 @@ public class TestCFWDBSpaceManagementAndHierarchy extends DBTestMaster {
 		System.out.println(subspace5Dump);
 		
 		Assertions.assertTrue(subspace5Dump.matches("\\|--> \\d+ - SubSpace5[\\S\\s]*"), "Subspace 5 is the root element.");
+		
+		//-----------------------------------------
+		// Test Delete
+		//-----------------------------------------
+		Assertions.assertTrue(CFWHierarchy.deleteWithChildren(config, subspace2WithHierarchy.id()), "Delete successful");
+		
+		hierarchyDump =  new CFWHierarchy<Space>(new Space(2, "dummyWithIDNull"))
+				.fetchAndCreateHierarchy(fieldnames)
+				.dumpHierarchy(new String[] {SpaceFields.PK_ID.toString(), SpaceFields.NAME.toString()});
+		
+		System.out.println("============= TEST DELETE =============");
+		System.out.println(hierarchyDump);
+		
+		Assertions.assertFalse(hierarchyDump.matches("(?s).*SubSpace2.*"), "SubSpace2 is deleted.");
+		Assertions.assertFalse(hierarchyDump.matches("(?s).*SubSpace3.*"), "SubSpace3(child of SubSpace2) of SubSpace2 is deleted.");
+		Assertions.assertFalse(hierarchyDump.matches("(?s).*SubSpace4.*"), "SubSpace3(child of SubSpace2) of SubSpace2 is deleted.");
+		Assertions.assertTrue(hierarchyDump.matches("(?s).*SubSpace5.*"), "SubSpace5(not child of SubSpace2) still exists.");
+
 	}
 		
 }

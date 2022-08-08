@@ -459,7 +459,7 @@ public  class CFWDBDefaultOperations {
 					.selectCount()
 					.where(column, value)
 					.limit(1)
-					.getCount();
+					.executeCount();
 			
 			return (count > 0);
 			

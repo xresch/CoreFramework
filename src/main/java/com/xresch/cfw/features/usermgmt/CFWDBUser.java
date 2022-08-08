@@ -425,7 +425,7 @@ public class CFWDBUser {
 				.queryCache(CFWDBUser.class, "checkUsernameExists")
 				.selectCount()
 				.where(UserFields.USERNAME.toString(), username, false)
-				.getCount();
+				.executeCount();
 		
 		return (count > 0);
 		
@@ -456,7 +456,7 @@ public class CFWDBUser {
 				.queryCache(CFWDBUser.class, "checkEmailExists")
 				.selectCount()
 				.where(UserFields.EMAIL.toString(), email, false)
-				.getCount();
+				.executeCount();
 		
 		return (count > 0);
 

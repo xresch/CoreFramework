@@ -157,7 +157,7 @@ public class CFWDBCPUSample {
 						" AND TIME < ?" + 
 						" AND GRANULARITY < ?;"
 						 ,startTime, endTime, newGranularity)
-				.getCount();
+				.executeCount();
 
 		if(count == 0) {
 			CFWDB.transactionRollback();

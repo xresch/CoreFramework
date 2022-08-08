@@ -93,7 +93,7 @@ public class CFWAuditLogDBMethods {
 		return new CFWAuditLog()
 				.queryCache(CFWAuditLogDBMethods.class, "getCount")
 				.selectCount()
-				.getCount();
+				.executeCount();
 		
 	}
 	

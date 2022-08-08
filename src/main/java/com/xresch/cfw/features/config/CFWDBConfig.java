@@ -531,7 +531,7 @@ public class CFWDBConfig {
 				.queryCache(CFWDBConfig.class, "checkConfigExists")
 				.selectCount()
 				.where(ConfigFields.NAME.toString(), configName)
-				.getCount();
+				.executeCount();
 		
 		return (count > 0);
 		

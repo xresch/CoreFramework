@@ -249,7 +249,7 @@ public class CFWDBSpace {
 				.queryCache(CFWDBSpace.class, "checkSpaceExists")
 				.selectCount()
 				.where(SpaceFields.NAME.toString(), spaceName)
-				.getCount();
+				.executeCount();
 		
 		return (count > 0);
 		

@@ -122,7 +122,7 @@ public class APITokenPermissionDBMethods {
 		return new CFWSQL(new APITokenPermission())
 				.queryCache()
 				.selectCount()
-				.getCount();
+				.executeCount();
 		
 	}
 	
@@ -133,7 +133,7 @@ public class APITokenPermissionDBMethods {
 				.selectCount()
 				.where(APITokenPermissionFields.API_NAME, apiName)
 				.and(APITokenPermissionFields.ACTION_NAME, actionName)
-				.getCount();
+				.executeCount();
 		
 	}
 	
