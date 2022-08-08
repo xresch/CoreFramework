@@ -534,22 +534,6 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * 
 	 *****************************************************************************/
 	@SuppressWarnings("unchecked")
-	public static int getChildCount(CFWHierarchyConfig config, Integer parentID) {
-		
-		CFWObject instance = config.getCFWObjectInstance();
-		String primaryFieldName = instance.getPrimaryKeyFieldname();
-		
-		return instance
-			.selectCount()
-			.where(H_PARENT, parentID)
-			.executeCount();
-	}
-	/*****************************************************************************
-	 * Returns true if newParent of child would cause a circular reference.
-	 * Creates client error messages. 
-	 * 
-	 *****************************************************************************/
-	@SuppressWarnings("unchecked")
 	public static boolean checkCausesCircularReference(CFWObject newParent, CFWObject child) {
 		
 		Integer parentID = newParent.getPrimaryKeyValue();
@@ -573,7 +557,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		//--------------------------------
 		// Iterate parents hierarchy
-
+	
 		ArrayList<String> lineage = (ArrayList<String>)newParent.getField(H_LINEAGE).getValue();
 		if(lineage != null) {
 			for(String currentID : lineage) {
@@ -627,6 +611,38 @@ public class CFWHierarchy<T extends CFWObject> {
 		}
 		
 		return false;
+	}
+
+	/*****************************************************************************
+	 * Returns the parent of the hierarchical element.
+	 * 
+	 *****************************************************************************/
+	public static Integer getParentID(CFWObject object) throws IllegalArgumentException {
+		
+		if(object != null 
+		&& object.isHierarchical() 
+		&& object.getFields().containsKey(H_PARENT) ) {
+			return (Integer)object.getField(H_PARENT).getValue();
+		}else {
+			throw new IllegalArgumentException("Provided object is either null or not hierarchical.");
+		}
+
+	}
+	/*****************************************************************************
+	 * Returns true if newParent of child would cause a circular reference.
+	 * Creates client error messages. 
+	 * 
+	 *****************************************************************************/
+	@SuppressWarnings("unchecked")
+	public static int getChildCount(CFWHierarchyConfig config, Integer parentID) {
+		
+		CFWObject instance = config.getCFWObjectInstance();
+		String primaryFieldName = instance.getPrimaryKeyFieldname();
+		
+		return instance
+			.selectCount()
+			.where(H_PARENT, parentID)
+			.executeCount();
 	}
 	
 	/*****************************************************************************

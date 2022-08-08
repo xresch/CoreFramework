@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -253,6 +254,63 @@ public class CFWObject {
 		}else {
 			new CFWLog(logger)
 				.severe("The field with name '"+field.getName()+"' was already added to this object. Check the naming of the field.", new Exception());
+		}
+		
+		return this;
+	}
+	
+	/****************************************************************
+	 * Adds the given field after the specified field that is already
+	 * in the map.
+	 * If the fieldname is null, inserts at the beginning.
+	 * If the fieldname is not null but is not in the list, inserts
+	 * at the end of the map.
+	 * If the name if the added field is the same as the fieldname to 
+	 * insert after, the existing field will be replaced.
+	 * 
+	 ****************************************************************/
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public CFWObject addFieldAfter(CFWField<?> field, Object fieldname) {
+				
+		//---------------------------
+		// Insert at beginning of null
+		if(fieldname == null) {
+			LinkedHashMap<String, CFWField> tempFields = (LinkedHashMap<String, CFWField>)fields.clone();
+			fields.clear();
+			fields.put(field.getName(), field);
+			field.setRelatedCFWObject(this);
+			fields.putAll(tempFields);
+			return this;
+		}
+		
+		//---------------------------
+		// Insert at end if fieldname is not found
+		String fieldnameString = fieldname.toString();
+		if(!fields.containsKey(fieldnameString)) {
+			addField(field);
+			return this;
+		}
+		
+		//---------------------------
+		// Replace if the name of the inserted 
+		// field already exists
+		if(field.getName().equals(fieldnameString)) {
+			addField(field);
+			return this;
+		}
+		
+		//---------------------------
+		// Insert After
+		LinkedHashMap<String, CFWField> tempFields = (LinkedHashMap<String, CFWField>)fields.clone();
+		fields.clear();
+		
+		for(Entry<String, CFWField> entry : tempFields.entrySet()) {
+			fields.put(entry.getKey(), entry.getValue());
+			
+			if(entry.getKey().equals(fieldnameString)) {
+				fields.put(field.getName(), field);
+				field.setRelatedCFWObject(this);
+			}
 		}
 		
 		return this;
