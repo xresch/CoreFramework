@@ -3,7 +3,10 @@
 	This cheat sheet gives you a quick introduction to the concepts of the query language and how to use it.
 </p>
 
-<h2>Basic Concepts</h2>
+<!-- ============================================================ -->
+<!-- CONCEPTS -->
+<!-- ============================================================ -->
+<h2>Concepts</h2>
 
 <!-- =========================== FIRST ROW ================================= -->
 <div class="d-flex flex-row page-break-avoid">
@@ -43,45 +46,7 @@
 	
 </div>
 
-
 <!-- =========================== SECOND ROW ================================= -->
-
-<div class="d-flex flex-row page-break-avoid">
-
-	<div class="card flex-grow-1">
-		<div class="card-header pt-1 pb-1">
-			<div>In-Memory Processing</div>
-		</div>
-		<div class="card-body maxvw-40">
-			All the data fetched by the query is processed in the memory and is returned to the client once all data is processed.
-			Therefore queries can be memory intensive. Therefore there are limits on how many data can be processed.
-		</div>
-	</div>
-	
-	<div class="card flex-grow-1">
-		<div class="card-header pt-1 pb-1">
-			<div>Limits</div>
-		</div>
-		<div class="card-body maxvw-40">
-			The limits are set by the system administrator. 
-			There is a default and maximum fetch limit on the number of records processed per source.
-			You can change the default limit on the source command using the parameter 'limit':
-			<pre><code>source random records=50000 limit=100000</code></pre>
-		</div>
-	</div>
-	
-	<div class="card flex-grow-1">
-		<div class="card-header pt-1 pb-1">
-			<div>CPU Intensive</div>
-		</div>
-		<div class="card-body maxvw-40">
-			As commands are chained together and executed in parallel, as more commands a query has the more threads are started and as higher it's CPU usage.
-		</div>
-	</div>
-	
-</div>
-
-<!-- =========================== THIRD ROW ================================= -->
 
 <div class="d-flex flex-row page-break-avoid">
 
@@ -119,11 +84,154 @@
 			documentation for the  source you are using or use the content assist.
 		</div>
 	</div>
-	
 </div>
 
 
+<!-- =========================== THIRD ROW ================================= -->
 
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>In-Memory Processing</div>
+		</div>
+		<div class="card-body maxvw-40">
+			All the data fetched by the query is processed in the memory and is returned to the client once all data is processed.
+			Therefore queries can be memory intensive. Therefore there are limits on how many data can be processed.
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Limits</div>
+		</div>
+		<div class="card-body maxvw-40">
+			The limits are set by the system administrator. 
+			There is a default and maximum fetch limit on the number of records processed per source.
+			You can change the default limit on the source command using the parameter 'limit':
+			<pre><code>| source random 
+	records=50000 
+	limit=100000</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>CPU Intensive</div>
+		</div>
+		<div class="card-body maxvw-40">
+			As commands are chained together and executed in parallel, as more commands a query has the more threads are started and as higher it's CPU usage.
+		</div>
+	</div>
+	
+</div>
+
+<!-- ============================================================ -->
+<!-- QUERY BASICS -->
+<!-- ============================================================ -->
+<h2>Query Basics</h2>
+
+<!-- =========================== FIRST ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Content Assist</div>
+		</div>
+		<div class="card-body maxvw-40">
+			When entering a query, use the keyboard shortcut 
+			<span class="badge badge-primary">CTRL</span> + <span class="badge badge-primary">Spacebar</span> 
+			to get some help at the cursor position. For example, entering "| di" and using content assist will give you a list of all commands containing "di".
+			Using the shortcut after "| source" will give you a list of available sources.
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Fast Edit and Execute</div>
+		</div>
+		<div class="card-body maxvw-40">
+			With the shortcut
+			<span class="badge badge-primary">CTRL</span> + <span class="badge badge-primary">Enter</span> 
+			you can execute a query.
+			Using the shortcut 
+			<span class="badge badge-primary">CTRL</span> + <span class="badge badge-primary">Up</span>/<span class="badge badge-primary">Down</span>
+			you can copy the current line or the selected lines.
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Filtering</div>
+		</div>
+		<div class="card-body maxvw-40">
+			To do basic filtering of the records based on field values use the 'filter' command:
+			<pre><code>| source random records=10000
+| filter 
+   LASTNAME ~= ".*son$" 
+   AND LIKES_TIRAMISU != false</code></pre>
+   		Available Operators: == != &lt;= >= &lt; > ~= AND OR
+		</div>
+	</div>
+	
+</div>
+
+<!-- =========================== SECOND ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Set Field Values</div>
+		</div>
+		<div class="card-body maxvw-40">
+			To set the value of a field or add new fields use the 'set' command. Existing values will be overwritten:
+			<pre><code>| source random 
+	records=100 
+	type=series
+| set 
+	SQUARE=COUNT*COUNT
+	CONCATENATE="Item: "+ITEM</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Removing Fields</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Use 'remove' command to remove some fields:
+			<pre><code>| source random 
+| remove INDEX, URL</code></pre>
+			Use 'keep' command to remove all fields except for the ones to keep:
+			<pre><code>| source random 
+| keep INDEX, FIRSTNAME</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Sorting</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Sorting records is achieved by using the 'sort' command and providing the fields to sort by:
+			<pre><code>| source random records=500
+| sort FIRSTNAME, LASTNAME
+	reverse=false 
+	reversenulls=true</code></pre>
+		</div>
+	</div>
+	
+</div>
+
+<!-- ============================================================ -->
+<!-- FORMATTING AND DISPLAY -->
+<!-- Strings, Operators, Functions, Comments, Arrays, Json -->
+<!-- ============================================================ -->
+
+<!-- ============================================================ -->
+<!-- SYNTAX -->
+<!-- Strings, Operators, Functions, Comments, Arrays, Json, BinaryExpressions&Groups -->
+<!-- ============================================================ -->
 
 
 <!-- 

@@ -566,7 +566,7 @@ function cfw_usermgmt_printUserList(data){
 				
 				if(record.IS_DELETABLE){
 					return '<button class="btn btn-sm btn-danger" alt="Delete" title="Delete"  '
-						+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the user?\', \'Delete\', \'cfw_usermgmt_delete(\\\'users\\\','+id+');\')">'
+						+'onclick="CFW.ui.confirmExecute(\'Deleting a user <font color=red><b>will also delete data associated</b></font> with the deleted user. If the deleted user has shared something with other users they might also lose that data. To avoid loss of data it is <span class=text-cfw-excellent><b>recommended to set the user to inactive</b></span>(prevents login).<br/><br/> Do you want to delete the user?\', \'Delete\', \'cfw_usermgmt_delete(\\\'users\\\','+id+');\')">'
 						+ '<i class="fa fa-trash"></i>'
 						+ '</button>';
 				}else{
