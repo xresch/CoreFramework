@@ -6,7 +6,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -204,6 +211,59 @@ public class CFWLog {
 		isLoggingInitialized = true;
 	}
 	
+	/***********************************************************************
+	 * Returns the log file folder or null of not found.
+	 *  
+	 * @return Logger 
+	 *   
+	 ***********************************************************************/
+	public static String getLogFolderPath(){
+		
+		String logPattern = LogManager.getLogManager().getProperty(AsyncLogHandler.class.getName()+".pattern");
+		
+		
+		File file = new File(logPattern);
+
+		String parentFolderPath = file.getParent();
+		
+		return parentFolderPath;
+	}
+	
+	/***********************************************************************
+	 * Returns the log files sorted from newest to oldest.
+	 *  
+	 * @return Logger 
+	 *   
+	 ***********************************************************************/
+	public static ArrayList<File> getAllLogfiles(){
+		
+		File logFolder = new File(getLogFolderPath());
+		
+		File[] files = logFolder.listFiles();
+		List<File> fileList = Arrays.asList(files);
+		ArrayList<File> fileArrayList = new ArrayList<>();
+		fileArrayList.addAll(fileList);
+		
+		//-------------------------
+		// Filter all non-log files
+		fileArrayList.removeIf(new Predicate<File>(){
+			@Override
+			public boolean test(File f) {
+				return !f.getName().endsWith(".log");
+			}
+		});
+
+		
+		//-------------------------
+		// Sort newest to oldest
+		Collections.sort(fileArrayList, new Comparator<File>(){
+		    public int compare(File f1, File f2)
+		    {
+		        return Long.valueOf(f2.lastModified()).compareTo(f1.lastModified());
+		    } });
+		
+		return fileArrayList;
+	}
 	/***********************************************************************
 	 * Returns a Logger.
 	 *  

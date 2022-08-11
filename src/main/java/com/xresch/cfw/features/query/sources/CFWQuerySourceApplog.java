@@ -1,13 +1,19 @@
 package com.xresch.cfw.features.query.sources;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.TimeZone;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Logger;
 
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.core.AutocompleteResult;
@@ -17,7 +23,7 @@ import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.usermgmt.User;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.FileBackwardsInputReader;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
 	
@@ -27,7 +33,9 @@ import com.xresch.cfw.utils.json.JsonTimerangeChecker;
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWQuerySourceApplog extends CFWQuerySource {
-
+	
+	private static Logger logger = CFWLog.getLogger(CFWQuerySourceApplog.class.getName());
+	
 	/******************************************************************
 	 *
 	 ******************************************************************/
@@ -97,6 +105,11 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 	@Override
 	public CFWObject getParameters() {
 		return new CFWObject()
+				.addField(
+						CFWField.newString(FormFieldType.TEXT, "scope")
+							.setDescription("The scope of the log scanning. 'last' searches in the last log file, 'all' (default) will search in all log files.")
+							.setValue("all")
+					)
 			;
 	}
 	
@@ -115,39 +128,115 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 	@Override
 	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 		
-		//String data = (String)parameters.getField("data").getValue();
+		//-----------------------------------
+		// Preparations
+		String scope = (String)parameters.getField("scope").getValue();
 
 		TimeZone machineZone = CFW.Utils.Time.getMachineTimeZone();
 		JsonTimerangeChecker timerangeChecker = 
 				new JsonTimerangeChecker("time", CFW.Utils.Time.TIMESTAMP_FORMAT, machineZone, earliestMillis, latestMillis)
 					.epochAsNewField("_epoch");
 		
-		try (BufferedReader reader = new BufferedReader (new InputStreamReader (new FileBackwardsInputReader("./log/applog_0_0.log"))) ){
 		
-			int recordCounter = 0;
-			while(true) {
-				String currentLine = reader.readLine();
-				
-				if(currentLine == null) {
-					break;
-				}
-				
-				if( isLimitReached(limit, recordCounter)) { break; }
-				
-				
-				JsonElement element = CFW.JSON.fromJson(currentLine);
-
-				if(element != null && element.isJsonObject()) {
-					if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
-						recordCounter++;
-						outQueue.add( new EnhancedJsonObject(element.getAsJsonObject()) );
-					}
-				}
-				
+		//-----------------------------------
+		// Get Last Log File
+		ArrayList<File> fileArray = CFWLog.getAllLogfiles();
+		if(fileArray.size() == 0) {
+			return;
+		}
+		
+		if(!scope.trim().equalsIgnoreCase("all")) {
+			File newestFile = fileArray.get(0);
+			fileArray.clear();
+			fileArray.add(newestFile);
+			System.out.println(newestFile.getName());
+		}
+		
+		//-----------------------------------
+		// Process Log
+		int recordCounter = 0;
+		for(File logFile : fileArray) {
+			
+			//-----------------------------------
+			// Worth to process this log?
+			if(!isFileInTimeRange(timerangeChecker, logFile)) {
+				continue;
 			}
-		
+			
+			//-----------------------------------
+			// Read the log
+			try (BufferedReader reader = new BufferedReader (new InputStreamReader (new FileBackwardsInputReader(logFile))) ){
+			
+				while(true) {
+					String currentLine = reader.readLine();
+					
+					if(currentLine == null) {
+						break;
+					}
+					
+					if( isLimitReached(limit, recordCounter)) { break; }
+					
+					JsonElement element = CFW.JSON.fromJson(currentLine);
+	
+					if(element != null && element.isJsonObject()) {
+						if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
+							recordCounter++;
+							outQueue.add( new EnhancedJsonObject(element.getAsJsonObject()) );
+						}
+					}
+					
+				}
+			}
 		}
 	
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private boolean isFileInTimeRange(JsonTimerangeChecker timerangeChecker, File logFile) {
+		
+		boolean hasLogsInRange = false;
+
+		//--------------------------------------
+		// Check Last Line in File
+		try (BufferedReader reader = new BufferedReader (new InputStreamReader (new FileBackwardsInputReader(logFile))) ){
+			
+			String currentLine = reader.readLine();
+			
+			if(currentLine != null) {
+				JsonElement element = CFW.JSON.fromJson(currentLine);
+				if(element != null && element.isJsonObject()) {
+					if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
+						hasLogsInRange = true;
+					}
+				}
+			}
+		} catch (Exception e) {
+			new CFWLog(logger).severe(e);
+		} 
+		
+		//--------------------------------------
+		// Check First Line in File
+		if(!hasLogsInRange) {
+			try (BufferedReader reader = new BufferedReader (new InputStreamReader (new FileInputStream(logFile))) ){
+				
+				String currentLine = reader.readLine();
+				
+				if(currentLine != null) {
+					JsonElement element = CFW.JSON.fromJson(currentLine);
+					if(element != null && element.isJsonObject()) {
+						if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
+							hasLogsInRange = true;
+						}
+					}
+				}
+			} catch (Exception e) {
+				new CFWLog(logger).severe(e);
+			} 
+		}
+		
+		return hasLogsInRange;
 	}
 
 }
