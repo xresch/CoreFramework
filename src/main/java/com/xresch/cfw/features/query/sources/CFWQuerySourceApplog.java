@@ -65,7 +65,7 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionTime() {
-		return "Time is automatically applied by this source.";
+		return "Time from time range picker is automatically applied. No special handling required.";
 	}
 	
 	/******************************************************************

@@ -40,7 +40,7 @@
 			Sources are data provider from which the queries are getting their data.
 			The 'source' command is used to choose one of these sources. For example 
 			you can choose the source 'random' which will give you randomized test data:
-			<pre><code>source random records=100</code></pre>
+			<pre><code class="language-cfwquery">source random records=100</code></pre>
 		</div>
 	</div>
 	
@@ -109,7 +109,7 @@
 			The limits are set by the system administrator. 
 			There is a default and maximum fetch limit on the number of records processed per source.
 			You can change the default limit on the source command using the parameter 'limit':
-			<pre><code>| source random 
+			<pre><code class="language-cfwquery">| source random 
 	records=50000 
 	limit=100000</code></pre>
 		</div>
@@ -166,7 +166,7 @@
 		</div>
 		<div class="card-body maxvw-40">
 			To do basic filtering of the records based on field values use the 'filter' command:
-			<pre><code>| source random records=10000
+			<pre><code class="language-cfwquery">| source random records=10000
 | filter 
    LASTNAME ~= ".*son$" 
    AND LIKES_TIRAMISU != false</code></pre>
@@ -185,7 +185,7 @@
 		</div>
 		<div class="card-body maxvw-40">
 			To set the value of a field or add new fields use the 'set' command. Existing values will be overwritten:
-			<pre><code>| source random 
+			<pre><code class="language-cfwquery">| source random 
 	records=100 
 	type=series
 | set 
@@ -200,10 +200,10 @@
 		</div>
 		<div class="card-body maxvw-40">
 			Use 'remove' command to remove some fields:
-			<pre><code>| source random 
+			<pre><code class="language-cfwquery">| source random 
 | remove INDEX, URL</code></pre>
 			Use 'keep' command to remove all fields except for the ones to keep:
-			<pre><code>| source random 
+			<pre><code class="language-cfwquery">| source random 
 | keep INDEX, FIRSTNAME</code></pre>
 		</div>
 	</div>
@@ -214,7 +214,7 @@
 		</div>
 		<div class="card-body maxvw-40">
 			Sorting records is achieved by using the 'sort' command and providing the fields to sort by:
-			<pre><code>| source random records=500
+			<pre><code class="language-cfwquery">| source random records=500
 | sort FIRSTNAME, LASTNAME
 	reverse=false 
 	reversenulls=true</code></pre>

@@ -56,7 +56,7 @@ public class CFWQuerySourceAuditlog extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionTime() {
-		return "No special handling required.";
+		return "Time from time range picker is automatically applied. No special handling required.";
 	}
 	
 	/******************************************************************

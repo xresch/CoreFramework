@@ -1,9 +1,19 @@
 
-<p>The applog source reads log events from this applications last log file.</p>
+<p>The applog source reads log events from this applications log files.</p>
 
 <p>An example query that dedups the log data by url and shows the last 100 entries:</p>
-<pre><code class="language-cfwquery">source applog
+<pre><code class="language-cfwquery">|source applog
 | dedup url
 | tail 100</code></pre>
+
+<p>Another example that filters the logs by server start messages:</p>
+<pre><code class="language-cfwquery">| source applog
+| filter message ~= "Started @"</code></pre>
+
+
+<p>If you want to only scan the logs in the last log file, add the parameter last:</p>
+<pre><code class="language-cfwquery">| source applog scope=last
+| filter level == "INFO"</code></pre>
+
 
 

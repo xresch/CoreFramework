@@ -59,7 +59,7 @@ public class CFWQuerySourceThreaddump extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionTime() {
-		return "Time is ignored.";
+		return "Picked time range is ignored.";
 	}
 	
 	/******************************************************************
