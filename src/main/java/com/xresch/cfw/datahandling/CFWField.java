@@ -195,8 +195,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	//===========================================
 	// Float
 	//===========================================
-	public static CFWField<Integer> newFloat(FormFieldType type, Enum<?> fieldName){
-		return newInteger(type, fieldName.toString());
+	public static CFWField<Float> newFloat(FormFieldType type, Enum<?> fieldName){
+		return newFloat(type, fieldName.toString());
 	}
 	public static CFWField<Float> newFloat(FormFieldType type, String fieldName){
 		return new CFWField<Float>(Float.class, type, fieldName)
@@ -1468,6 +1468,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		}
 		return this;
 	}
+	
 	
 	/******************************************************************************************************
 	 * Set values for selection fields. The string representations of the provided elements will be used. 

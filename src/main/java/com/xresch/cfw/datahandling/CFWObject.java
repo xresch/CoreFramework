@@ -33,7 +33,7 @@ public class CFWObject {
 	// General
 	@SuppressWarnings("rawtypes")
 	private LinkedHashMap<String, CFWField> fields = new LinkedHashMap<String, CFWField>();
-	protected CFWHierarchyConfig hierarchyConfig = null;
+	private CFWHierarchyConfig hierarchyConfig = null;
 	protected  CFWObject parent;
 	protected  LinkedHashMap<Integer, CFWObject> childObjects = new LinkedHashMap<Integer, CFWObject>();
 	
