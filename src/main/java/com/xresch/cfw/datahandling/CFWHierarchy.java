@@ -484,7 +484,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		//------------------------------
 		// Do Updates
 		boolean isSuccess = true;
-		isSuccess &= childWithHierarchy.update(H_DEPTH, H_LINEAGE, H_PARENT);
+		isSuccess &= childWithHierarchy.update(H_DEPTH, H_POS, H_LINEAGE, H_PARENT);
 		 
 		for(Entry<Integer, CFWObject> entry : childWithHierarchy.childObjects.entrySet()) {
 			isSuccess &= saveNewParents(entry.getValue(), false);
