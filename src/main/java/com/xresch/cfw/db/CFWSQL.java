@@ -5,8 +5,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +21,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWObject.ForeignKeyDefinition;
 import com.xresch.cfw.features.core.AutocompleteList;
@@ -676,10 +679,23 @@ public class CFWSQL {
 	 * Creates an update statement including all fields and executes
 	 * the statement with the values assigned to the fields of the
 	 * object.
+	 * This method will not update any hierarchical fields. Please use
+	 * the static methods of CFWHierarchy class to manage those.
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public boolean update() {
-		return update(fields.keySet().toArray(new Object[] {}));
+		
+		// clone, do not modify the instance returned by field.keySet() 
+		// as this would also remove the mapping from the map itself
+		Set<String> fieldnames = new HashSet<String>();
+		fieldnames.addAll(fields.keySet());
+		
+		fieldnames.remove(CFWHierarchy.H_DEPTH);
+		fieldnames.remove(CFWHierarchy.H_LINEAGE);
+		fieldnames.remove(CFWHierarchy.H_PARENT);
+		fieldnames.remove(CFWHierarchy.H_POS);
+		
+		return update(fieldnames.toArray(new Object[] {}));
 	}
 	
 	/****************************************************************

@@ -30,10 +30,10 @@ public class CFWHierarchy<T extends CFWObject> {
 	
 	private static Logger logger = CFWLog.getLogger(CFWHierarchy.class.getName());
 	
-	private static final String H_LINEAGE = "H_LINEAGE";
-	private static final String H_PARENT = "H_PARENT";
-	private static final String H_DEPTH = "H_DEPTH";
-	private static final String H_POS = "H_POS";
+	public static final String H_LINEAGE = "H_LINEAGE";
+	public static final String H_PARENT = "H_PARENT";
+	public static final String H_DEPTH = "H_DEPTH";
+	public static final String H_POS = "H_POS";
 	
 	private CFWSQL partialWhereClauseFilter;
 	private T root;

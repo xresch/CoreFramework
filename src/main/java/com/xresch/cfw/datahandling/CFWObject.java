@@ -774,7 +774,10 @@ public class CFWObject {
 	 * Creates an update statement including all fields and executes
 	 * the statement with the values assigned to the fields of the
 	 * object.
-	 * @return CFWQuery for method chaining
+	 * This method will not update any hierarchical fields. Please use
+	 * the static methods of CFWHierarchy class to manage those.
+	 * 
+	 * @return true if successful, false otherwise
 	 ****************************************************************/
 	public boolean update() {
 		return new CFWSQL(this).update();
