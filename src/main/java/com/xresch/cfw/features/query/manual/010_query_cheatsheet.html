@@ -223,14 +223,174 @@
 	
 </div>
 
+<!-- =========================== THIRD ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Unique Values</div>
+		</div>
+		<div class="card-body maxvw-40">
+			You can get unique records using the 'distinct' command. Following gives you unique values by Lastname and Tiramisu preference:
+			<pre><code class="language-cfwquery">| source random records=5000
+| distinct 
+	LASTNAME, LIKES_TIRAMISU
+	trim=false 
+| sort 
+	LASTNAME, LIKES_TIRAMISU</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Statistics</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Use 'stats' command to create statistics for field values. Choose any field with a numerical value to create statistics from:
+			<pre><code class="language-cfwquery">| source random records=10000
+| stats 
+    by=[LASTNAME, LIKES_TIRAMISU] 
+    COUNT=count() 
+	MIN=min(VALUE) 
+	AVG=avg(VALUE) 
+	MAX=max(VALUE)
+	SUM=sum(VALUE)
+	MEDIAN=median(VALUE)
+	"90th"=perc(VALUE, 90)	
+| sort LASTNAME</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Comments</div>
+		</div>
+		<div class="card-body maxvw-40">
+			You can use hash for line comments or 'comment'/'off' command to make everything until the next pipe a comment:
+			<pre><code class="language-cfwquery"># use hash for line comment
+| source random records=879
+| comment 
+	"applies until next pipe"
+	"same as off"
+| top 20
+| off distinct FIRSTNAME | tail 10</code></pre>
+		</div>
+	</div>
+</div>
+
 <!-- ============================================================ -->
 <!-- FORMATTING AND DISPLAY -->
-<!-- Strings, Operators, Functions, Comments, Arrays, Json -->
+<!-- formatfield, formatrecord, display, chart -->
 <!-- ============================================================ -->
+<!-- =========================== FIRST ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Formatting Fields</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Use the 'formatfield' command to define how fields should be formatted.
+			Use content assist(Ctrl+spacebar) to get a list of available formatters.
+			Following formats the field 'VALUE' to be uppercase and have a prefix 
+			and a suffix:
+			<pre><code class="language-cfwquery">| source random
+| formatfield 
+	VALUE=uppercase
+	VALUE=[prefix,"Mighty Balance: "]
+	VALUE=[postfix," $"]
+	</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Grouping Formats</div>
+		</div>
+		<div class="card-body maxvw-40">
+			To apply the same formats to multiple fields, you can use arrays on both sides of the assignment. 
+			Following adds a the formatters 'separators' and 'threshold' to the fields 'THOUSANDS,FLOAT,BIG_DECIMAL':
+			<pre><code class="language-cfwquery">| source random type=numbers
+| formatfield 
+	[THOUSANDS,FLOAT,BIG_DECIMAL]=
+		[
+			 [separators]
+			,['threshold'
+				, 0
+				, 1000
+				, 1000^2
+				, 1000^3
+				, 1000^4
+				, "text"
+			]
+		]</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Case Formatter</div>
+		</div>
+		<div class="card-body maxvw-40">
+			The case formatter allows you to do highly specific formatting based on the fields value.
+			The input alternates between a condition and a format. The first condition that matches will cause the format that follows it to be applied:
+			<pre><code class="language-cfwquery">| source random type=various
+| formatfield 
+   STATUS=
+   ['case', 
+	"Warning", 
+		"orange",
+	["Excellent", "OR", "Good"], 
+		[css, "color", "green"],
+	[], # default case 
+		[
+			[css, "background", "darkred"],
+			[css, "color", "white"],
+			[css, "border", "5px dotted white"],
+			[align, "center"]
+		]
+    ]</code></pre>
+		</div>
+	</div>
+</div>
+
+<!-- =========================== SECOND ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>xxxx</div>
+		</div>
+		<div class="card-body maxvw-40">
+			:
+			<pre><code class="language-cfwquery"></code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>xxxx</div>
+		</div>
+		<div class="card-body maxvw-40">
+			:
+			<pre><code class="language-cfwquery"></code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>xxxx</div>
+		</div>
+		<div class="card-body maxvw-40">
+			:
+			<pre><code class="language-cfwquery"></code></pre>
+		</div>
+	</div>
+</div>
 
 <!-- ============================================================ -->
 <!-- SYNTAX -->
-<!-- Strings, Operators, Functions, Comments, Arrays, Json, BinaryExpressions&Groups -->
+<!-- Strings, Operators, Functions, Arrays, Json, BinaryExpressions&Groups -->
 <!-- ============================================================ -->
 
 
