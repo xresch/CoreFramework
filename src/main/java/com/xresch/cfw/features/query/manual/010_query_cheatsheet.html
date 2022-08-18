@@ -487,21 +487,35 @@
 
 	<div class="card flex-grow-1">
 		<div class="card-header pt-1 pb-1">
-			<div>xxxx</div>
+			<div>Strings</div>
 		</div>
 		<div class="card-body maxvw-40">
-			:
-			<pre><code class="language-cfwquery"></code></pre>
+			All of the following are string in the CFWQL Syntax:
+			<pre><code class="language-cfwquery"># Strings
+"I'm a string"
+'I am another string' 
+`String in backticks`
+I_am_a_string
+We are strings too</code></pre>
 		</div>
 	</div>
 	
 	<div class="card flex-grow-1">
 		<div class="card-header pt-1 pb-1">
-			<div>xxxx</div>
+			<div>Fieldnames</div>
 		</div>
 		<div class="card-body maxvw-40">
-			:
-			<pre><code class="language-cfwquery"></code></pre>
+			Any string that matches a fieldname(case sensitive) will be replaced by the value of that field.
+			Following example assigns the value of the field INDEX to 4 other fields. 
+			The new field STRING will contain the string 'index' as it does not match the case:
+			<pre><code class="language-cfwquery">| source random records=100
+| set
+	INDEX_A=INDEX
+	INDEX_B="INDEX"
+	INDEX_C='INDEX'
+	INDEX_D=`INDEX`
+	STRING=index
+	</code></pre>
 		</div>
 	</div>
 	
