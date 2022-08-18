@@ -282,6 +282,8 @@
 <!-- FORMATTING AND DISPLAY -->
 <!-- formatfield, formatrecord, display, chart -->
 <!-- ============================================================ -->
+<h2>Formatting and Display</h2>
+
 <!-- =========================== FIRST ROW ================================= -->
 <div class="d-flex flex-row page-break-avoid">
 
@@ -355,6 +357,58 @@
 </div>
 
 <!-- =========================== SECOND ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Format Record</div>
+		</div>
+		<div class="card-body maxvw-40">
+			Use the command 'formatrecord' to colorize the records based on conditions.
+			The following checks the field VALUE and applies the default "cfw" threshold colors
+			for the first condition that is matched. Also default formats for LIKES_TIRAMISU and URL 
+			are disabled.
+			<pre><code class="language-cfwquery">| source random records=1000
+| formatrecord 
+	[(VALUE >= 80), "cfw-danger"] 
+	[(VALUE >= 60), "cfw-emergency"]  
+	[(VALUE >= 40), "cfw-warning", "purple"] 
+	[(VALUE >= 20), "cfw-good"] 
+	[(VALUE >= 10), "cfw-excellent"] 
+	[true, "cfw-gray"] 
+| formatfield LIKES_TIRAMISU=none URL=none</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Format Record Again</div>
+		</div>
+		<div class="card-body maxvw-40">
+			You can use any css color and hex colors too. Also your conditions can be as complex as you need them to be:
+			<pre><code class="language-cfwquery">| source random records=1000
+| remove _source
+| formatrecord 
+	[(FIRSTNAME ~='^He'), "#332288"] 
+	[(VALUE >= 80 OR LIKES_TIRAMISU==false), "red"] 
+	[(LIKES_TIRAMISU==true), "green"] 
+	[true, "cfw-gray"]
+| formatfield LIKES_TIRAMISU=none</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Combine</div>
+		</div>
+		<div class="card-body maxvw-40">
+			:
+			<pre><code class="language-cfwquery"></code></pre>
+		</div>
+	</div>
+</div>
+
+<!-- =========================== THIRD ROW ================================= -->
 <div class="d-flex flex-row page-break-avoid">
 
 	<div class="card flex-grow-1">

@@ -837,6 +837,7 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 	//===================================================
 	var aspectRatio = settings.widthfactor / settings.heightfactor;
 	var listenOnResize = false;
+
 	if(settings.widthfactor == -1 || settings.heightfactor == -1){
 		aspectRatio = 1;
 		listenOnResize = true;
@@ -849,7 +850,9 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 	//===================================================
 	var allTiles = $('<div class="d-flex flex-column flex-grow-1 h-100"></div>');
 	allTiles.css("font-size", "0px");
-		
+	// avoid aspect ratio being Infinity by setting a min size
+	allTiles.css("min-height", "10px");
+	allTiles.css("min-width", "10px");	
 	//===================================================
 	// Add Resize Observer
 	//===================================================
@@ -877,6 +880,9 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 			var height = allTiles.height();
 			var newAspectRatio = width/height;
 			
+			if(newAspectRatio == Infinity){
+				newAspectRatio = 1;
+			}
 			allTiles.html('');
 			
 			resizeObserver.disconnect();
@@ -897,6 +903,7 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
  * 
  ******************************************************************/
 function cfw_renderer_statusmap_createTiles(renderDef, settings, target, aspectRatio) {
+	
 	
 	//===================================================
 	// Precheck: NaN would cause OutOfMemory
@@ -2681,14 +2688,16 @@ function cfw_renderer_dataviewer_renderPage(params) {
 	// Call Renderer
 	params.finalRenderDef.data = dataToRender;
 	var renderResult = CFW.render.getRenderer(params.rendererName).render(params.finalRenderDef);
-	
+	var renderWrapper = $('<div class="cfw-dataviewer-renderresult d-flex w-100">');
+	renderWrapper.append(renderResult);
 	//-------------------------------------
 	// Create Paginator
 	var pageNavigation = cfw_renderer_dataviewer_createNavigationHTML(dataviewerID, totalRecords, pageSize, pageToRender);
 	
+
 	targetDiv.html('');
 	targetDiv.append(pageNavigation);
-	targetDiv.append(renderResult);
+	targetDiv.append(renderWrapper);
 	targetDiv.append(pageNavigation);
 }
 
