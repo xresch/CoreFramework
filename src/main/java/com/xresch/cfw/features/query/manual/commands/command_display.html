@@ -23,3 +23,38 @@ If titleformat is not set, the field values are joined with a blank as a separat
     visiblefields=[FIRSTNAME, LASTNAME, "Last Login", url] 
     titlefields=[INDEX, FIRSTNAME, LASTNAME, LOCATION]
     titleformat="{0}: {2} {1} (Location: {3})"</code></pre>
+    
+    
+
+<p>The statusmap renderer will only properly display when the menu is turned off using menu=false.
+The following example does that: </p>
+
+<pre><code class="language-cfwquery">| source random records=50
+| remove _source
+| formatrecord 
+	[(VALUE >= 80), "cfw-danger"] 
+	[(VALUE >= 40), "cfw-warning"] 
+	[(VALUE >= 0), "cfw-excellent"] 
+| sort VALUE reverse=true
+| display as=statusmap menu=false</code></pre>  
+    
+
+<p>To get rid of visible fields, define an empty array(mote: null is default and makes all fields visible).
+This is for example useful when displaying as tiles, when you only want to show a single value: </p>
+
+<pre><code class="language-cfwquery">| source random records=100
+| remove _source
+| formatrecord 
+	[(VALUE >= 80), "cfw-danger"] 
+	[(VALUE >= 40), "cfw-warning"] 
+	[(VALUE >= 0), "cfw-excellent"] 
+| sort VALUE reverse=true
+| formatfield 
+	VALUE=postfix,"%" 
+| display 
+	as=tiles 
+	menu=false 
+	titlefields=[VALUE] 
+	visiblefields=[]</code></pre>  
+
+

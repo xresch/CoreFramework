@@ -74,6 +74,19 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 					+"<li>panels</li>"
 					+"<li>cards</li>"
 					+"<li>tiles</li>"
+					+"<li>statuslist</li>"
+					+"<li>statusbar</li>"
+					+"<li>statusbarreverse</li>"
+					
+					+"<li>statusmap</li>"
+					+"<li>statusmap_1to1</li>"
+					+"<li>statusmap_2to1</li>"
+					+"<li>statusmap_4to1</li>"
+					+"<li>statusmap_8to1</li>"
+					+"<li>statusmap_1to2</li>"
+					+"<li>statusmap_1to4</li>"
+					+"<li>statusmap_1to8</li>"
+					
 					+"<li>csv</li>"
 					+"<li>json</li>"
 					+"<li>xml</li>"
@@ -83,6 +96,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 				+"<p><b>showMenu:&nbsp;</b>(Optional) True or false to toggle the menu and pagination.</p>"	
 				+"<p><b>zoomNumber:&nbsp;</b>(Optional) Integer value, zoom in percent to resize the displayed data.</p>"	
 				;
+		
 	}
 
 	/***********************************************************************************************

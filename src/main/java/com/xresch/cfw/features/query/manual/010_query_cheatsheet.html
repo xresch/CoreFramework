@@ -399,16 +399,90 @@
 	
 	<div class="card flex-grow-1">
 		<div class="card-header pt-1 pb-1">
-			<div>Combine</div>
+			<div>Choose Display</div>
 		</div>
 		<div class="card-body maxvw-40">
-			:
-			<pre><code class="language-cfwquery"></code></pre>
+			Use the display command to define which renderer to use. You have many options like: table, panels, cards, tiles, statuslist, statusbar, statusbarreverse, statusmap, csv, json, xml.
+			<br/>Following query displays the data as panels, while using FIRSTNAME and LASTNAME for the panel header.
+			<pre><code class="language-cfwquery">| source random records=100
+| remove _source
+| display 
+	as=panels
+	titlefields=[FIRSTNAME, LASTNAME]</code></pre>
 		</div>
 	</div>
 </div>
 
+
+
 <!-- =========================== THIRD ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Display: Tiles</div>
+		</div>
+		<div class="card-body maxvw-40">
+			for displaying as tiles it often makes sense to not have any visible fields.
+			This can be achieved thy setting visible fields to an empty array:
+			<pre><code class="language-cfwquery">| source random records=100
+| display 
+	as=tiles 
+	menu=false 
+	titlefields=[VALUE] 
+	visiblefields=[]</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Display: Title Format</div>
+		</div>
+		<div class="card-body maxvw-40">
+			For certain renderers you can specify title fields and a format.
+			Use placeholders like {0}, {1}...{n} in a template string to create you7r title format:
+			<pre><code class="language-cfwquery">| source random
+| display as=panels  
+    titlefields=[
+    	INDEX
+    	, FIRSTNAME
+    	, LASTNAME
+    ]
+    titleformat="{0}: {2} {1}"</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Combine Everything</div>
+		</div>
+		<div class="card-body maxvw-40">
+			You can combine the various formatting commands to get a highly customized view of your data.
+			The following will add colors to the records, ads a percentage to the VALUE and displays it as tiles:
+			<pre><code class="language-cfwquery">| source random records=100
+| formatrecord 
+	[(VALUE >= 80), "cfw-danger"] 
+	[(VALUE >= 40), "cfw-warning"] 
+	[(VALUE >= 0), "cfw-excellent"] 
+| sort VALUE reverse=true
+| formatfield 
+	VALUE=postfix,"%" 
+| display 
+	as=tiles
+	menu=false 
+	titlefields=[VALUE] 
+	visiblefields=[]</code></pre>
+		</div>
+	</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SYNTAX -->
+<!-- Strings, Operators, Functions, Arrays, Json, BinaryExpressions&Groups -->
+<!-- ============================================================ -->
+<h2>Syntax</h2>
+
+<!-- =========================== FIRST ROW ================================= -->
 <div class="d-flex flex-row page-break-avoid">
 
 	<div class="card flex-grow-1">
@@ -441,21 +515,3 @@
 		</div>
 	</div>
 </div>
-
-<!-- ============================================================ -->
-<!-- SYNTAX -->
-<!-- Strings, Operators, Functions, Arrays, Json, BinaryExpressions&Groups -->
-<!-- ============================================================ -->
-
-
-<!-- 
-
-	<div class="card flex-grow-1">
-		<div class="card-header  pt-1 pb-1">
-			<div>title</div>
-		</div>
-		<div class="card-body">
-			body
-		</div>
-	</div>
--->
