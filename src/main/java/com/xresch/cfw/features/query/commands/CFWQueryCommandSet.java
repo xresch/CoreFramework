@@ -18,6 +18,7 @@ import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartBinaryExpression;
 import com.xresch.cfw.features.query.parse.QueryPartGroup;
+import com.xresch.cfw.features.query.parse.QueryPartJsonMemberAccess;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -92,7 +93,11 @@ public class CFWQueryCommandSet extends CFWQueryCommand {
 			QueryPart currentPart = parts.get(i);
 			if(currentPart instanceof QueryPartAssignment) {
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-				fieldnames.add(assignment.getLeftSideAsString(null));
+				
+				//Do not add fieldnames for assignments to json members, for all others do
+				if( !(assignment.getLeftSide() instanceof QueryPartJsonMemberAccess) ) {
+					fieldnames.add(assignment.getLeftSideAsString(null));
+				}
 				assignments.add((QueryPartAssignment)currentPart);
 			}else {
 				parser.throwParseException("set: Only assignment expressions(key=value) allowed.", currentPart);

@@ -525,12 +525,16 @@ We are strings too</code></pre>
 		</div>
 		<div class="card-body maxvw-40">
 			Arrays can be represented in two different ways, with square braces and without. You can access an array value using an index in square braces:
-			<pre><code class="language-cfwquery">| source random type=numbers
+			<pre><code class="language-cfwquery">| source random type=numbers records=3
 | set
 	ARRAY_A=1,2,3,5,6
 	ARRAY_B=["a","b","c",true,42]
 	ARRAY_C=[ [a,b,c], [1,2,3]  ]
-	ARRAY_SUB=ARRAY_C[0] #contains [a,b,c]</code></pre>
+	# returns array [1,2,3]
+	# will finally be [1,"X",3]
+	ARRAY_SUB=ARRAY_C[1]
+	ARRAY_SUBSUB=ARRAY_C[1][1] # returns "2"
+	ARRAY_C[1][1]="X" # override "2" with "X"</code></pre>
 		</div>
 	</div>
 </div>

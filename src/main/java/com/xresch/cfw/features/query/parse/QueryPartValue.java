@@ -10,6 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 
 /**************************************************************************************************************
@@ -254,7 +255,7 @@ public class QueryPartValue extends QueryPart {
 	
 	
 	/******************************************************************************************************
-	 * Check if the value is null
+	 * Check if the value is an Integer
 	 ******************************************************************************************************/
 	public boolean isInteger() {
 		
@@ -287,28 +288,28 @@ public class QueryPartValue extends QueryPart {
 	}
 	
 	/******************************************************************************************************
-	 * Check if the value is null
+	 * Check if the value is of type String
 	 ******************************************************************************************************/
 	public boolean isString() {
 		return this.type == QueryPartValueType.STRING;
 	}
 	
 	/******************************************************************************************************
-	 * Check if the value is null
+	 * Check if the value is of type JSON
 	 ******************************************************************************************************/
 	public boolean isJson() {
 		return this.type == QueryPartValueType.JSON;
 	}
 	
 	/******************************************************************************************************
-	 * Check if the value is null
+	 * Check if the value is a JSON Array
 	 ******************************************************************************************************/
 	public boolean isJsonArray() {
 		return this.type == QueryPartValueType.JSON && ((JsonElement)this.value).isJsonArray();
 	}
 	
 	/******************************************************************************************************
-	 * Check if the value is null
+	 * Check if the value is a JSON Object
 	 ******************************************************************************************************/
 	public boolean isJsonObject() {
 		return this.type == QueryPartValueType.JSON && ((JsonElement)this.value).isJsonObject();
@@ -519,6 +520,34 @@ public class QueryPartValue extends QueryPart {
 							return array;
 
 			default:		return new JsonArray();
+
+		}
+
+	}
+	
+	/******************************************************************************************************
+	 * Creates a clone of this QueryPartValue.
+	 ******************************************************************************************************/
+	public QueryPartValue getAsClone() {
+		
+		switch(type) {
+			case NULL:		return QueryPartValue.newNull();
+			
+			case JSON:		String jsonString = CFW.JSON.toJSON((JsonElement)value);
+							JsonElement clone = CFW.JSON.fromJson(jsonString);
+							return QueryPartValue.newJson(clone);
+							
+			
+			case NUMBER:	double myDouble = ((Number)value).doubleValue();
+							return QueryPartValue.newNumber(myDouble);
+
+			case BOOLEAN: 	boolean boolClone = (Boolean)value;
+							return QueryPartValue.newBoolean(boolClone);
+			
+			case STRING:	String stringClone = ((String)value)+"";
+							return QueryPartValue.newString(stringClone);
+
+			default:		return QueryPartValue.newNull();
 
 		}
 

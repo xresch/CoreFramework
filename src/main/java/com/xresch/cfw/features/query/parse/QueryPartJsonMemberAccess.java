@@ -61,7 +61,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 ******************************************************************************************************/
 	@Override
 	public QueryPartValue determineValue(EnhancedJsonObject object) throws CFWQueryMemoryException {	
-		System.out.println(this.createDebugObject(null));
+
 		if(object == null) {
 			
 			if(!(rightside instanceof QueryPartArray)) {
@@ -103,14 +103,12 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		if(leftside instanceof QueryPartJsonMemberAccess){
 			//--------------------------
 			// Handle JsonMemberAccess
-			System.out.println("ZZZ");
 			QueryPartJsonMemberAccess accessExpression = (QueryPartJsonMemberAccess)leftside;
 			nextElement = accessExpression.accessMemberRecursively(rootObject, currentElement);
 		}
 		else if(currentElement.isJsonArray() && (leftside instanceof QueryPartArray) ){
 			//--------------------------
 			// Handle JsonArray
-			System.out.println("A");
 			QueryPartArray arrayExpression = (QueryPartArray)leftside;
 			nextElement = arrayExpression.getElementOfJsonArray(
 				currentElement.getAsJsonArray()
@@ -120,10 +118,8 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
 			//--------------------------
 			// Handle JsonObject
-			System.out.println("B");
 			JsonObject jsonObject = currentElement.getAsJsonObject();
 			String memberName = ((QueryPart)leftside).determineValue(rootObject).getAsString();
-			System.out.println("memberName:"+memberName);
 			if(jsonObject.has(memberName)) {
 
 				nextElement = jsonObject.get(memberName);
@@ -137,7 +133,6 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		//--------------------------
 		// Use current if Leftside is null
 		else if(leftside == null){
-			System.out.println("C");
 			nextElement = currentElement;
 		}
 		
@@ -151,15 +146,12 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		// Handle Rightside, resolve value or next level
 		//======================================================
 		if(rightside instanceof QueryPartJsonMemberAccess) {
-			System.out.println("D");
 			return ((QueryPartJsonMemberAccess)rightside).accessMemberRecursively(rootObject, nextElement);
 		}else {
-			System.out.println("E");
 			if(nextElement == null || nextElement.isJsonNull()){
 				return null;
 			}else {
 				if(nextElement.isJsonArray() && (rightside instanceof QueryPartArray) ){
-					System.out.println("F");
 					JsonElement valueOfMember = ((QueryPartArray)rightside).getElementOfJsonArray(
 							nextElement.getAsJsonArray()
 						);
@@ -167,7 +159,6 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 					return valueOfMember;
 					
 				}else if(nextElement.isJsonObject() && !(rightside instanceof QueryPartArray) ) {
-					System.out.println("G");
 					JsonElement valueOfMember = nextElement.getAsJsonObject().get(rightside.determineValue(rootObject).getAsString());
 					return valueOfMember;
 				}

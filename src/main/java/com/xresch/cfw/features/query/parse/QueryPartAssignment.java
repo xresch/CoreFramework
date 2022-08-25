@@ -76,15 +76,29 @@ public class QueryPartAssignment extends QueryPart {
 	 ******************************************************************************************************/
 	public void assignToJsonObject(EnhancedJsonObject object) throws CFWQueryMemoryException {
 		
-		QueryPartValue value = rightside.determineValue(object).convertFieldnameToFieldvalue(object);
+		//-------------------------------------
+		// Determine Value
+		QueryPartValue valueToAssign;
 		
+		if(rightside instanceof QueryPartArray
+		|| (rightside instanceof QueryPartValue && ((QueryPartValue)rightside).isJson() )) {
+			//make a clone to not assign the same object 
+			QueryPartValue tempPart = rightside.determineValue(object);
+			valueToAssign = tempPart.getAsClone();
+		}else {
+			valueToAssign = rightside.determineValue(object).convertFieldnameToFieldvalue(object);
+		}
+		
+		//-------------------------------------
+		// Assign Value
 		if (leftside instanceof QueryPartJsonMemberAccess) {
 			QueryPartJsonMemberAccess memberAccess = (QueryPartJsonMemberAccess)leftside;
 			
-			memberAccess.setValueOfMember(object, value.getAsJsonElement());
+			memberAccess.setValueOfMember(object, valueToAssign.getAsJsonElement());
 		}else {
 			String memberName = this.getLeftSideAsString(object);
-			object.addProperty(memberName, value);
+
+			object.addProperty(memberName, valueToAssign);
 			
 		}
 	
