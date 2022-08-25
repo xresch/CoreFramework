@@ -13,6 +13,7 @@ import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
+import com.xresch.cfw.logging.SysoutInterceptor;
 
 /**************************************************************************************************************
  * 
@@ -413,6 +414,7 @@ public class CFWQueryParser {
 		   && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
 				QueryPart part = parseQueryPart(CFWQueryParserContext.DEFAULT);
 				currentQueryParts.add(part);
+				
 			addTrace("Parse", "Query Part", part);
 		}
 		
@@ -610,33 +612,19 @@ public class CFWQueryParser {
 				contextStack.add(CFWQueryParserContext.GROUP);
 				addTrace("Start Part", "Group", firstToken.value());
 
-				QueryPartGroup groupPart = new QueryPartGroup(currentContext);
-				
+
 				QueryPart groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP);
 				
+				int startIndex = currentQueryParts.size();
+				
 				while( groupMember != null && !(groupMember instanceof QueryPartEnd) ) {
-					
+					currentQueryParts.add(groupMember);
 					
 					CFWQueryToken nextToken = this.lookahead();
 					if(nextToken != null) {
-							
-						//------------------------------
-						// handle AND & OR
-						if( nextToken.type() == CFWQueryTokenType.KEYWORD 	
-						&& (
-								nextToken.value().toUpperCase().equals(KEYWORD_AND) 
-							|| nextToken.value().toUpperCase().equals(KEYWORD_OR) 
-							)
-						) {
-							 currentQueryParts.add(groupMember);
-						}else {
-							groupPart.add(groupMember);
-						}
-						
 						//------------------------------
 						// Break if next token is closing group
 						if(nextToken.type() == CFWQueryTokenType.SIGN_BRACE_ROUND_CLOSE) {
-							
 							this.consumeToken();
 							break;
 						}
@@ -644,18 +632,24 @@ public class CFWQueryParser {
 						//------------------------------
 						// Parse Next Part
 						groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP);
-						
-					}else {
-
-						break;
 					}
 				}
 				
+				//------------------------------
+				// Steal all the parts from currentQueryParts
+				QueryPartGroup groupPart = new QueryPartGroup(currentContext);
 				firstPart = groupPart;
+				
+				for(; startIndex < currentQueryParts.size(); ) {
+					groupPart.add(currentQueryParts.remove(startIndex));
+				}
+				
+				//------------------------------
+				// Handle Functions
 				if(context == CFWQueryParserContext.FUNCTION) {
 					return firstPart;
 				}
-				
+								
 			break;	
 			
 			//=======================================================

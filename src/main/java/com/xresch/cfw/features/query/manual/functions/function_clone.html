@@ -1,0 +1,17 @@
+
+<p>Returns a clone for an array or json object. Useful if you want to avoid to modify the original value.</p>
+
+<p>Following query uses the clone function and manipulates the ARRAY_NUMBERS to demonstrate the clone function:</p>
+
+<pre><code class="language-cfwquery">| source random type=arrays records=5
+| keep ARRAY_NUMBERS
+| set
+	#get first number
+	FIRST_NUMBER=ARRAY_NUMBERS[0]
+	#reference the array
+	NOT_A_CLONE=ARRAY_NUMBERS
+	#create a clone of the array
+	NUMBERS_CLONE=clone(ARRAY_NUMBERS)
+	#override element in array
+	ARRAY_NUMBERS[0]=X</code></pre>
+

@@ -177,6 +177,7 @@ DONE
 - Query: Added Functions feature to query framework
 - Query: Added functions: 
 	- avg
+	- clone
 	- count
 	- countnulls
 	- encode

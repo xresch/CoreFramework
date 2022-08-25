@@ -533,7 +533,9 @@ We are strings too</code></pre>
 	# returns array [1,2,3]
 	# will finally be [1,"X",3]
 	ARRAY_SUB=ARRAY_C[1]
-	ARRAY_SUBSUB=ARRAY_C[1][1] # returns "2"
+	# clone will not be modified
+	CLONE=clone(ARRAY_C[1])
+	SUBVALUE=ARRAY_C[1][1] 	# returns "2"
 	ARRAY_C[1][1]="X" # override "2" with "X"</code></pre>
 		</div>
 	</div>
