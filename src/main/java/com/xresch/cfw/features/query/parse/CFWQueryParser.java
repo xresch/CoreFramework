@@ -544,9 +544,11 @@ public class CFWQueryParser {
 			//=======================================================	
 			case SIGN_BRACE_SQUARE_OPEN: 
 				
-				boolean isPreviousString = false;
-				if(this.lookat(-1) != null) {
-					isPreviousString =  this.lookat(-1).isStringOrText(true, true);
+				boolean isPreviousArrayable = false;
+				CFWQueryToken previousToken = this.lookat(-1);
+				if(previousToken != null) {
+					isPreviousArrayable =  previousToken.isStringOrText(true, true)
+										 ||  previousToken.type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE;
 				}
 				firstToken = this.consumeToken();
 				
@@ -563,7 +565,7 @@ public class CFWQueryParser {
 				}
 				
 				//Create member access if previous is string and array contains index
-				if(isPreviousString && arrayPart.isIndex()) {
+				if(isPreviousArrayable && arrayPart.isIndex()) {
 					QueryPart previousPart = popPreviousPart();
 					if(previousPart instanceof QueryPartAssignment) {
 						QueryPartAssignment assignmentPart = (QueryPartAssignment)previousPart;
