@@ -330,6 +330,57 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 	}	
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testArrayAccess() throws ParseException {
+		
+		String queryString = sourceString+" | set ARRAY_A=[1,2,3]  ARRAY_ACCESS=ARRAY_A[0]";
+		
+		CFWQueryTokenizer tokenizer = new CFWQueryTokenizer(queryString, true, true)
+				 .keywords("AND", "OR", "NOT");
+		
+		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
+		printResults("testArrayAccess", results);
+		
+		CFWQueryParser parser = new CFWQueryParser(queryString, true);
+		
+		ArrayList<CFWQuery> queryList = parser.parse();
+		Assertions.assertEquals(1, queryList.size());
+
+		//------------------------
+		// Execute Query
+		
+		CFWQuery query = queryList.get(0);
+		query.setContext(context);
+		ArrayList<CFWQueryCommand> commandList = query.getCommandList();
+		
+		Assertions.assertEquals(2, commandList.size());
+		
+		query.execute(-1, false);
+		
+		LinkedBlockingQueue<EnhancedJsonObject> queue = query.getLastQueue();
+		int count = 0;
+		while(!query.isFullyDrained()) {
+			
+			while(!queue.isEmpty()) {
+				count++;
+				System.out.println(
+					CFW.JSON.toJSON(
+						queue.poll().getWrappedObject()
+					)
+				); 
+			}
+		}
+		
+		Assertions.assertEquals(100, count);
+		
+		System.out.println();
+
+		
+	}	
+	
 	
 	
 	/****************************************************************

@@ -521,11 +521,16 @@ We are strings too</code></pre>
 	
 	<div class="card flex-grow-1">
 		<div class="card-header pt-1 pb-1">
-			<div>xxxx</div>
+			<div>Arrays</div>
 		</div>
 		<div class="card-body maxvw-40">
-			:
-			<pre><code class="language-cfwquery"></code></pre>
+			Arrays can be represented in two different ways, with square braces and without. You can access an array value using an index in square braces:
+			<pre><code class="language-cfwquery">| source random type=numbers
+| set
+	ARRAY_A=1,2,3,5,6
+	ARRAY_B=["a","b","c",true,42]
+	ARRAY_C=[ [a,b,c], [1,2,3]  ]
+	ARRAY_SUB=ARRAY_C[0] #contains [a,b,c]</code></pre>
 		</div>
 	</div>
 </div>

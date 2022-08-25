@@ -115,7 +115,6 @@ public class CFWQueryParser {
 				tokenOverview.append(token.type().toString()+"("+token.value()+"), ");
 			}
 			
-
 			addTrace("TokenOverview", "", tokenOverview.toString());
 		}
 		return this;
@@ -291,6 +290,7 @@ public class CFWQueryParser {
 		while(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.SIGN_SEMICOLON) {
 			this.consumeToken();
 		}
+		
 		addTrace("Parse", "Query", "[END]");	
 		return currentQuery;
 	}
@@ -543,24 +543,46 @@ public class CFWQueryParser {
 			// Start Array Part
 			//=======================================================	
 			case SIGN_BRACE_SQUARE_OPEN: 
+				
+				boolean isPreviousString = false;
+				if(this.lookat(-1) != null) {
+					isPreviousString =  this.lookat(-1).isStringOrText(true, true);
+				}
 				firstToken = this.consumeToken();
 				
 				contextStack.add(CFWQueryParserContext.ARRAY);
 				addTrace("Start Part", "Open Array", firstToken.value());
-				firstPart = new QueryPartArray(currentContext)
-									.isEmbracedArray(true);
+				QueryPartArray arrayPart = new QueryPartArray(currentContext).isEmbracedArray(true);
+				firstPart = arrayPart;
 				
 				secondPart = this.parseQueryPart(CFWQueryParserContext.ARRAY);
 				
 				//Handle empty arrays and end of array
 				if(secondPart != null && !(secondPart instanceof QueryPartEnd)) {
-					((QueryPartArray)firstPart).add(secondPart);
+					arrayPart.add(secondPart);
+				}
+				
+				//Create member access if previous is string and array contains index
+				if(isPreviousString && arrayPart.isIndex()) {
+					QueryPart previousPart = popPreviousPart();
+					if(previousPart instanceof QueryPartAssignment) {
+						QueryPartAssignment assignmentPart = (QueryPartAssignment)previousPart;
+						QueryPart leftside = assignmentPart.getLeftSide();
+						QueryPart rightside = assignmentPart.getRightSide();
+						QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(currentContext, rightside, arrayPart);
+						firstPart = new QueryPartAssignment(currentContext, leftside, memberAccessPart);
+					}else {
+						QueryPartJsonMemberAccess memberAccessPart = new QueryPartJsonMemberAccess(currentContext, previousPart, arrayPart);
+						firstPart = memberAccessPart;
+					}
 				}
 				
 				// Close Array
 				if(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE) {
 					this.consumeToken();
 				}
+				
+				
 				
 			break;	
 			

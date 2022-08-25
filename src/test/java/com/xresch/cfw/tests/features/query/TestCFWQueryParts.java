@@ -346,8 +346,8 @@ public class TestCFWQueryParts {
 		level3 = QueryPartValue.newString("key");
 		
 		memberAccessPart = new QueryPartJsonMemberAccess(context, level1, 
-					new QueryPartJsonMemberAccess(context, level2, level3)
-				);
+				new QueryPartJsonMemberAccess(context, level2, level3)
+			);
 		
 		memberAccessPart.setValueOfMember(new EnhancedJsonObject(object), new JsonPrimitive("Be the value"));
 		

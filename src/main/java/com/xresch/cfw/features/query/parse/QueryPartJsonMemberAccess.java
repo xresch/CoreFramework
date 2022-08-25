@@ -8,6 +8,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryMemoryException;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * Part that specifies a member access of a Json Field.
@@ -27,9 +28,8 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 public class QueryPartJsonMemberAccess extends QueryPart {
 	
 	private QueryPart leftside;
-	
 	private QueryPart rightside = null;
-		
+	private CFWQueryContext context;
 	/******************************************************************************************************
 	 * 
 	 * @param leftside The name on the left side of the assignment operation.
@@ -37,6 +37,7 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	 ******************************************************************************************************/
 	public QueryPartJsonMemberAccess(CFWQueryContext context, QueryPart leftside, QueryPart rightside) {
 		super();
+		this.context = context;
 		this.leftside = leftside;
 		this.rightside = rightside;
 	}
@@ -106,9 +107,9 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
 			JsonObject jsonObject = currentElement.getAsJsonObject();
 			String memberName = ((QueryPart)leftside).determineValue(rootObject).getAsString();
-			System.out.println("1"+memberName);
+
 			if(jsonObject.has(memberName)) {
-				System.out.println("2");
+
 				nextElement = jsonObject.get(memberName);
 			}else {
 				CFW.Messages.addWarningMessage("Member not found: "+leftside+"."+rightside);
@@ -135,13 +136,12 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		if(rightside instanceof QueryPartJsonMemberAccess) {
 			return ((QueryPartJsonMemberAccess)rightside).accessMemberRecursively(rootObject, nextElement);
 		}else {
-			System.out.println("a"+nextElement+"/"+rightside);
+
 			if(nextElement == null || nextElement.isJsonNull()){
-				
 				return null;
 			}else {
 				if(nextElement.isJsonArray() && (rightside instanceof QueryPartArray) ){
-					System.out.println("b");
+
 					JsonElement valueOfMember = ((QueryPartArray)rightside).getElementOfJsonArray(
 							nextElement.getAsJsonArray()
 						);
@@ -149,7 +149,6 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 					return valueOfMember;
 					
 				}else if(nextElement.isJsonObject() && !(rightside instanceof QueryPartArray) ) {
-					System.out.println("d");
 					JsonElement valueOfMember = nextElement.getAsJsonObject().get(rightside.determineValue(rootObject).getAsString());
 					return valueOfMember;
 				}
@@ -206,9 +205,8 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
 			JsonObject jsonObject = currentElement.getAsJsonObject();
 			String memberName = ((QueryPartValue)leftside).getAsString();
-			System.out.println("1"+memberName);
+
 			if(jsonObject.has(memberName)) {
-				System.out.println("2");
 				nextElement = jsonObject.get(memberName);
 			}else {
 				//---------------------------
@@ -238,17 +236,15 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 		if(rightside instanceof QueryPartJsonMemberAccess) {
 			return ((QueryPartJsonMemberAccess)rightside).setValueRecursively(rootObject, nextElement, valueToSet);
 		}else {
-			System.out.println("a"+nextElement+"/"+rightside);
 
 			if(nextElement.isJsonArray() && (rightside instanceof QueryPartArray) ){
-				System.out.println("b");
 				QueryPartArray arrayPart = (QueryPartArray)rightside;
 
 				if(arrayPart.isIndex()) {
 					nextElement.getAsJsonArray().set(arrayPart.getIndex(), valueToSet);
 					return true;
 				}else {
-					System.out.println("Unrecognized value for index: '"+arrayPart.determineValue(rootObject)+"'");
+					context.addMessage(MessageType.WARNING, "Unrecognized value for index: '"+arrayPart.determineValue(rootObject)+"'");
 					return false;
 				}
 				

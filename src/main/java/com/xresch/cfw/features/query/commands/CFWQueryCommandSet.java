@@ -90,7 +90,6 @@ public class CFWQueryCommandSet extends CFWQueryCommand {
 		for(int i = 0; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
-			
 			if(currentPart instanceof QueryPartAssignment) {
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
 				fieldnames.add(assignment.getLeftSideAsString(null));
