@@ -151,26 +151,43 @@ public class CFWQueryToken{
 	 * 
 	 * @param singleQuoted check if is single quoted text
 	 * @param doubleQuoted check if is double quoted text
+	 * @param doubleQuoted check if is backticked text
+	 * @param backTicked TODO
 	 * 
 	 ***********************************************************************************************/
-	public boolean isText(boolean singleQuoted, boolean doubleQuoted) { 
+	public boolean isText(boolean singleQuoted, boolean doubleQuoted, boolean backTicked) { 
 		
 		return (doubleQuoted && type == CFWQueryToken.CFWQueryTokenType.TEXT_DOUBLE_QUOTES)
 			|| (singleQuoted && type == CFWQueryToken.CFWQueryTokenType.TEXT_SINGLE_QUOTES)
+			|| (backTicked && type == CFWQueryToken.CFWQueryTokenType.TEXT_BACKTICKS)
 				; 
 	};
 	
 	/***********************************************************************************************
-	 * Check if the token is either a string literal or a single and/or double quoted text.
+	 * Check if the token is either a string literal or a single, double quoted or backticked text.
+	 * Either one of the parameters has to be true, else the return value will always be null.
+	 * 
+	 * @param backTicked TODO
+	 * 
+	 ***********************************************************************************************/
+	public boolean isStringOrText() { 
+		return type == CFWQueryToken.CFWQueryTokenType.LITERAL_STRING
+			 || isText(true, true, true); 
+	};
+	
+	/***********************************************************************************************
+	 * Check if the token is either a string literal or a single and/or double quoted and/or backticked text.
 	 * Either one of the parameters has to be true, else the return value will always be null.
 	 * 
 	 * @param singleQuoted check if is single quoted text
 	 * @param doubleQuoted check if is double quoted text
+	 * @param doubleQuoted check if is backticked text
+	 * @param backTicked TODO
 	 * 
 	 ***********************************************************************************************/
-	public boolean isStringOrText(boolean singleQuoted, boolean doubleQuoted) { 
+	public boolean isStringOrText(boolean singleQuoted, boolean doubleQuoted, boolean backTicked) { 
 		return type == CFWQueryToken.CFWQueryTokenType.LITERAL_STRING
-			 || isText(singleQuoted, doubleQuoted); 
+			 || isText(singleQuoted, doubleQuoted, backTicked); 
 	};
 	
 	/***********************************************************************************************

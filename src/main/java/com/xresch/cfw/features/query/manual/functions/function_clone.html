@@ -15,3 +15,16 @@
 	#override element in array
 	ARRAY_NUMBERS[0]=X</code></pre>
 
+
+<p>Following query uses creates a clone of the GRAPH_DATA JSON object and manipulates the original to demonstrate the clone function:</p>
+
+<pre><code class="language-cfwquery">| source random type=various records=10
+| keep GRAPH_DATA
+| set
+	GRAPH_DATA_CLONE=clone(GRAPH_DATA)
+	GRAPH_DATA.rounded.x=round(GRAPH_DATA.x,2)
+	GRAPH_DATA.rounded.y=round(GRAPH_DATA.y,2)
+| filter 
+	GRAPH_DATA.rounded.x &lt;= 5</code></pre>
+	
+

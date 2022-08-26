@@ -72,7 +72,7 @@ public class CFWQueryParser {
 	private Stack<CFWQueryParserContext> contextStack = new Stack<>();
 	
 	public enum CFWQueryParserContext{
-		DEFAULT, BINARY, ARRAY, GROUP, FUNCTION
+		DEFAULT, BINARY, ARRAY, GROUP, FUNCTION, JSON_MEMBER_ACCESS
 	}
 	
 	// Stub Class to indicate end of arrays and groups during parsing
@@ -414,7 +414,6 @@ public class CFWQueryParser {
 		   && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
 				QueryPart part = parseQueryPart(CFWQueryParserContext.DEFAULT);
 				currentQueryParts.add(part);
-				
 			addTrace("Parse", "Query Part", part);
 		}
 		
@@ -549,7 +548,7 @@ public class CFWQueryParser {
 				boolean isPreviousArrayable = false;
 				CFWQueryToken previousToken = this.lookat(-1);
 				if(previousToken != null) {
-					isPreviousArrayable =  previousToken.isStringOrText(true, true)
+					isPreviousArrayable =  previousToken.isStringOrText(true, true, true)
 										 ||  previousToken.type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_CLOSE;
 				}
 				firstToken = this.consumeToken();
@@ -729,9 +728,13 @@ public class CFWQueryParser {
 			//------------------------------
 			// QueryPartAssignment
 			case OPERATOR_EQUAL:
+				
 				this.consumeToken();
 				addTrace("Start Part", "Assignment", "");
 				QueryPart rightside = this.parseQueryPart(context);
+				if(firstPart == null) {
+					firstPart = this.popPreviousPart();
+				}
 				resultPart = new QueryPartAssignment(currentContext, firstPart, rightside);
 				addTrace("End Part", "Assignment", "");
 			break;
@@ -740,11 +743,51 @@ public class CFWQueryParser {
 			// QueryPartArray						
 			case SIGN_COMMA:
 				if(context != CFWQueryParserContext.BINARY) {
+					if(firstPart == null) {
+						firstPart = this.popPreviousPart();
+					}
 					resultPart = parseArrayPart(context, firstPart);
 				}
 			break;			
 			
-							
+			//------------------------------
+			// QueryPartJsonMemberAccess		
+			case OPERATOR_DOT:
+				this.consumeToken();
+				addTrace("Start Part", "JsonMemberAccess", "");
+
+				QueryPartJsonMemberAccess memberAccessPart = null;
+				while(this.hasMoreTokens()) {
+					
+					if(this.lookahead().isStringOrText()) {
+						//-------------------------------
+						// Create Access Part
+						CFWQueryToken nextToken = this.consumeToken();
+						QueryPart memberAccessValue = QueryPartValue.newString(nextToken.value());
+						if(memberAccessPart == null) {
+							memberAccessPart = new QueryPartJsonMemberAccess(currentContext, firstPart, memberAccessValue);
+						}else {
+							memberAccessPart = new QueryPartJsonMemberAccess(currentContext, memberAccessPart, memberAccessValue);
+						}
+						resultPart = memberAccessPart;
+						
+						//-------------------------------
+						// Check is there another Dot
+						if(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.OPERATOR_DOT) {
+							this.consumeToken();
+						}else {
+							break;
+						}
+						
+					}else {
+						this.throwParseException("Expected string after dot operator '.'. ", this.cursor()-1);
+					}
+					
+				}
+				addTrace("End Part", "JsonMemberAccess", "");
+			break;	
+			
+				
 			//------------------------------
 			// Binary Operations
 			//case OPERATOR_OR: not supported as pipe '|' is used as command separator, see keyword 'OR'
@@ -767,9 +810,7 @@ public class CFWQueryParser {
 			case FUNCTION_NAME:
 				break;
 							
-			case OPERATOR_DOT:
-				break;	
-			
+
 			case SIGN_SEMICOLON:
 				break;
 			case SPLIT:
@@ -814,6 +855,9 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	private QueryPart createBinaryExpressionPart(CFWQueryParserContext context, QueryPart firstPart, CFWQueryTokenType operatorType, boolean consumeToken ) throws ParseException {
 		addTrace("Start Part", "Binary Expression", operatorType);
+			if(firstPart == null) {
+				firstPart = this.popPreviousPart();
+			}
 			if(consumeToken) { this.consumeToken(); }
 			QueryPart secondPart = this.parseQueryPart(CFWQueryParserContext.BINARY);
 		addTrace("End Part", "Binary Expression", "");

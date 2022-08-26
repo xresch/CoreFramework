@@ -540,3 +540,53 @@ We are strings too</code></pre>
 		</div>
 	</div>
 </div>
+
+<!-- =========================== FIRST ROW ================================= -->
+<div class="d-flex flex-row page-break-avoid">
+
+
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>Accessing Object Data</div>
+		</div>
+		<div class="card-body maxvw-40">
+			The processed data can contain JSON objects. To access the data in these objects you can use the dot operator '.' like follows:
+			<pre><code class="language-cfwquery">| source random type=various records=10
+| keep GRAPH_DATA
+| set
+	X=GRAPH_DATA.x
+	Y=GRAPH_DATA.y
+	GRAPH_DATA_CLONE=clone(GRAPH_DATA)
+	GRAPH_DATA.rounded.x=round(GRAPH_DATA.x,2)
+	GRAPH_DATA.rounded.y=round(GRAPH_DATA.y,2)
+| filter 
+	GRAPH_DATA.rounded.x &lt;= 5</code></pre>
+		</div>
+	</div>
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>xxx</div>
+		</div>
+		<div class="card-body maxvw-40">
+			:
+			<pre><code class="language-cfwquery"></code></pre>
+		</div>
+	</div>
+	
+	
+	<div class="card flex-grow-1">
+		<div class="card-header pt-1 pb-1">
+			<div>xxx</div>
+		</div>
+		<div class="card-body maxvw-40">
+			:
+			<pre><code class="language-cfwquery"></code></pre>
+		</div>
+	</div>
+</div>
+
+
+
+
+	

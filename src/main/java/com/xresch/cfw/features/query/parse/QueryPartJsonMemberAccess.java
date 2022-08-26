@@ -38,8 +38,14 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 	public QueryPartJsonMemberAccess(CFWQueryContext context, QueryPart leftside, QueryPart rightside) {
 		super();
 		this.context = context;
-		this.leftside = leftside;
-		this.rightside = rightside;
+		if( !(leftside instanceof QueryPartJsonMemberAccess) ) {
+			this.leftside = leftside;
+			this.rightside = rightside;
+		}else {
+			QueryPartJsonMemberAccess memberAccess = (QueryPartJsonMemberAccess)leftside;
+			this.leftside = memberAccess.leftside;
+			this.rightside = new QueryPartJsonMemberAccess(context, memberAccess.rightside, rightside);
+		}
 	}
 	
 	/******************************************************************************************************
