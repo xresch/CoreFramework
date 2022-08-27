@@ -79,9 +79,10 @@ public class CFWQueryContext{
 	 ***********************************************************************************************/
 	public CFWQueryContext addMessage(MessageType type, String message) {
 
-		if(alertMap != null) {
-			alertMap.put(message, new AlertMessage(type, message));
-		}
+		CFW.Messages.addMessage(type, message);
+//		if(alertMap != null) {
+//			alertMap.put(message, new AlertMessage(type, message));
+//		}
 		return this;
 	}
 

@@ -18,8 +18,11 @@ import com.xresch.cfw.response.bootstrap.AlertMessage;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
+ * This Context allows to access data related to the current request.
+ * All the data is stored in a Thread local.
+ * If you start another Thread, you have to propagate the data manually.
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2022 
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWContextRequest {
@@ -47,6 +50,13 @@ public class CFWContextRequest {
 			context.set(INSTANCE.new CFWContextObject());
 		}
 		return context.get();
+	}
+	
+	/**************************************************************************
+	 * Use this method to propagate a context object to another thread.
+	 **************************************************************************/
+	public static void setContext(CFWContextObject newContext) {
+		context.set(newContext);
 	}
 	
 	/**************************************************************************

@@ -139,6 +139,7 @@ DONE
 - BREAKING CODE CHANGE: Added 1 minute cache for widget data.
 - BREAKING CODE CHANGE: Changing CFWHierarchy to use Lineage instead of single column for every parent.
 - BREAKING CODE CHANGE: CFWDB and DBInterface - Renaming of transaction handling methods
+- Security Improvement: SessionData not stored in InheritableThreadLocal
 - Audit: Audit logs get written to database.
 - Error Page: Added custom error page for unhandled exceptions
 - CFWField: Prevent autofill of password fields in forms
@@ -163,6 +164,7 @@ DONE
 - Dashboard: Fixed destruction of widget layout, resizing window width to change into 1 column layout disabled
 - Dashboard: Added Javascript Widget
 - Config: Added Password Policy Settings
+- Query: Created CFWContextAwareExecutor for proper context propagation.
 - Query: Added source "auditlog" to CFWQL
 - Query: Added source "threaddump" to CFWQL
 - Query: Fixed Binary Expression messing with parsing when in an array

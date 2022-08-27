@@ -3,8 +3,11 @@ package com.xresch.cfw.pipeline;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.xresch.cfw._main.CFWContextAwareExecutor;
 import com.xresch.cfw.logging.CFWLog;
 
 // http://www.informit.com/articles/article.aspx?p=366887&seqNum=8
@@ -31,7 +34,6 @@ public abstract class PipelineAction<I, O> extends Thread {
 
 	protected boolean done;
 	
-
 	/****************************************************************************
 	 * This is the main method of the Pipeline Action.
 	 * The code in this method will be called by the thread until the action

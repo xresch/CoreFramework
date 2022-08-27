@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWContextAwareExecutor;
 import com.xresch.cfw.features.analytics.TaskCPUSampling;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -21,6 +24,9 @@ public class Pipeline<I, O> {
 	protected LinkedBlockingQueue<I> firstQueue = null;
 	protected LinkedBlockingQueue<O> lastQueue = new LinkedBlockingQueue<O>();
 
+	protected ThreadPoolExecutor defaultThreadPoolExecutor = 
+			CFWContextAwareExecutor.createExecutor("PipelineDefaultPool", 5, 20, 3, TimeUnit.MINUTES);
+	
 	
 	/*************************************************************************************
 	 * Constructor
@@ -59,7 +65,9 @@ public class Pipeline<I, O> {
 		// Initialize
 		for (PipelineAction action : actionArray) {
 			action.setLatch(latch);
-			action.start();
+			
+			defaultThreadPoolExecutor.submit(action);
+			//action.start();
 			
 			//------------------------------
 			// Wait until initialized
