@@ -24,83 +24,131 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class CFWContextRequest {
 	
-	private static InheritableThreadLocal<HttpServletRequest> httpRequest = new InheritableThreadLocal<>();
-	private static InheritableThreadLocal<HttpServletResponse> httpResponse = new InheritableThreadLocal<>();
-	private static InheritableThreadLocal<Long> requestStartMillis = new InheritableThreadLocal<>();;
+	private static final CFWContextRequest INSTANCE = new CFWContextRequest();
+	private static ThreadLocal<CFWContextObject> context = new ThreadLocal<>();
 	
-	private static InheritableThreadLocal<AbstractResponse> responseContent = new InheritableThreadLocal<>();
-	private static InheritableThreadLocal<CFWSessionData> sessionData = new InheritableThreadLocal<>();
-	
-	private static InheritableThreadLocal<LinkedHashMap<String,AlertMessage>> messageArray = new InheritableThreadLocal<>();
+	public class CFWContextObject{
+		protected HttpServletRequest httpRequest = null;
+		protected HttpServletResponse httpResponse = null;
+		protected Long requestStartMillis = null;
 		
-	private static int localeFilesID = 0;
-	private static HashMap<String, FileDefinition> localeFiles = new HashMap<>();
+		protected AbstractResponse responseContent = null;
+		protected CFWSessionData sessionData = null;
+		
+		protected LinkedHashMap<String,AlertMessage> messageArray = null;
+		
+	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
+	public static CFWContextObject getContext() {
+		if(context.get() == null) {
+			context.set(INSTANCE.new CFWContextObject());
+		}
+		return context.get();
+	}
+	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static void clearRequestContext() {
-		httpRequest.set(null);
-		responseContent.set(null);
-		sessionData.set(null);
-		localeFilesID = 0;
-				
-		clearMessages();
+		context.set(null);
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/	
 	public static void clearMessages() {
-		messageArray.set(null);
+		getContext().messageArray = null;
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static HttpServletRequest getRequest() {
-		return httpRequest.get();
+		return getContext().httpRequest;
 	}
 
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static void setRequest(HttpServletRequest request) {
-		CFWContextRequest.httpRequest.set(request);
+		getContext().httpRequest = request;
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static long getRequestStartMillis() {
-		return requestStartMillis.get();
+		return getContext().requestStartMillis;
 	}
 
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static void setRequestStartMillis(long value) {
-		CFWContextRequest.requestStartMillis.set(value);
+		getContext().requestStartMillis = value;
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static AbstractResponse getResponse() {
-		return responseContent.get();
+		return getContext().responseContent;
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static void setResponse(AbstractResponse response) {
-		CFWContextRequest.responseContent.set(response);
+		getContext().responseContent = response;
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static void setHttpServletResponse(HttpServletResponse response) {
-		CFWContextRequest.httpResponse.set(response);
+		getContext().httpResponse = response;
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static HttpServletResponse getHttpServletResponse() {
-		return httpResponse.get();
+		return getContext().httpResponse;
 	}
 
-
-	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static CFWSessionData getSessionData() {
-		return sessionData.get();
+		return getContext().sessionData;
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static User getUser() {
-		if(sessionData.get() != null) {
-			return sessionData.get().getUser();
+		if(getContext().sessionData != null) {
+			return getContext().sessionData.getUser();
 		}
 		return null;
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static HashMap<Integer, Role> getUserRoles() {
-		if(sessionData.get() != null) {
-			return sessionData.get().getUserRoles();
+		if(getContext().sessionData != null) {
+			return getContext().sessionData.getUserRoles();
 		}
 		return new HashMap<Integer, Role>();
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static boolean hasRole(int roleID) {
 		
 		if(!CFW.Properties.AUTHENTICATION_ENABLED) {
@@ -114,13 +162,20 @@ public class CFWContextRequest {
 		return false;
 	}
 	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static HashMap<String, Permission> getUserPermissions() {
-		if(sessionData.get() != null) {
-			return sessionData.get().getUserPermissions();
+		if(getContext().sessionData != null) {
+			return getContext().sessionData.getUserPermissions();
 		}
 		return new HashMap<String, Permission>();
 	}
 	
+	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static boolean hasPermission(String permissionName) {
 		
 		if(!CFW.Properties.AUTHENTICATION_ENABLED) {
@@ -134,8 +189,11 @@ public class CFWContextRequest {
 		return false;
 	}
 
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
 	public static void setSessionData(CFWSessionData sessionData) {
-		CFWContextRequest.sessionData.set(sessionData);
+		getContext().sessionData = sessionData;
 	}
 
 	/****************************************************************
@@ -147,11 +205,11 @@ public class CFWContextRequest {
 	 ****************************************************************/
 	public static void addAlertMessage(MessageType type, String message){
 		
-		if(messageArray.get() == null) {
-			messageArray.set(new LinkedHashMap<>());
+		if(getContext().messageArray == null) {
+			getContext().messageArray = new LinkedHashMap<>();
 		}
 		
-		messageArray.get().put(message, new AlertMessage(type, message));
+		getContext().messageArray.put(message, new AlertMessage(type, message));
 				
 	}
 	
@@ -162,10 +220,10 @@ public class CFWContextRequest {
 	 *   
 	 ****************************************************************/
 	public static LinkedHashMap<String,AlertMessage> getAlertMap() {
-		if(messageArray.get() == null) {
-			messageArray.set(new LinkedHashMap<>());
+		if(getContext().messageArray == null) {
+			getContext().messageArray = new LinkedHashMap<>();
 		}
-		return messageArray.get();
+		return getContext().messageArray;
 	}
 	/****************************************************************
 	 * Returns a collection of alert Messages
@@ -174,10 +232,10 @@ public class CFWContextRequest {
 	 *   
 	 ****************************************************************/
 	public static Collection<AlertMessage> getAlertMessages() {
-		if(messageArray.get() == null) {
+		if(getContext().messageArray == null) {
 			return new ArrayList<>();
 		}
-		return messageArray.get().values();
+		return getContext().messageArray.values();
 	}
 	
 	/****************************************************************
@@ -188,13 +246,11 @@ public class CFWContextRequest {
 	 *   
 	 ****************************************************************/
 	public static String getAlertsAsJSONArray() {
-		if(messageArray.get() == null) {
+		if(getContext().messageArray == null) {
 			return "[]";
 		}
 
-		return CFW.JSON.toJSON(messageArray.get().values());
-	}
-	
-	
+		return CFW.JSON.toJSON(getContext().messageArray.values());
+	}	
 
 }
