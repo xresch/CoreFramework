@@ -24,6 +24,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.utils.FileBackwardsInputReader;
 import com.xresch.cfw.utils.json.JsonTimerangeChecker;
 	
@@ -165,6 +166,7 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 			
 			//-----------------------------------
 			// Read the log
+			int errorCounter = 0;
 			try (BufferedReader reader = new BufferedReader (new InputStreamReader (new FileBackwardsInputReader(logFile))) ){
 			
 				while(true) {
@@ -176,13 +178,21 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 					
 					if( isLimitReached(limit, recordCounter)) { break; }
 					
-					JsonElement element = CFW.JSON.fromJson(currentLine);
-	
-					if(element != null && element.isJsonObject()) {
-						if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
-							recordCounter++;
-							outQueue.add( new EnhancedJsonObject(element.getAsJsonObject()) );
+					try {
+						JsonElement element = CFW.JSON.fromJson(currentLine);
+					
+						if(element != null && element.isJsonObject()) {
+							if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
+								recordCounter++;
+								outQueue.add( new EnhancedJsonObject(element.getAsJsonObject()) );
+							}
 						}
+						
+					}catch(Throwable t) {
+						if(errorCounter == 0) {
+							this.parent.getContext().addMessage(MessageType.WARNING, "Some log line could not be parsed: "+currentLine);
+						}
+						errorCounter++;
 					}
 					
 				}
@@ -205,11 +215,15 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 			String currentLine = reader.readLine();
 			
 			if(currentLine != null) {
-				JsonElement element = CFW.JSON.fromJson(currentLine);
-				if(element != null && element.isJsonObject()) {
-					if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
-						hasLogsInRange = true;
+				try {
+					JsonElement element = CFW.JSON.fromJson(currentLine);
+					if(element != null && element.isJsonObject()) {
+						if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
+							hasLogsInRange = true;
+						}
 					}
+				}catch(Throwable t){
+					// do nothing
 				}
 			}
 		} catch (Exception e) {
@@ -224,11 +238,15 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 				String currentLine = reader.readLine();
 				
 				if(currentLine != null) {
-					JsonElement element = CFW.JSON.fromJson(currentLine);
-					if(element != null && element.isJsonObject()) {
-						if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
-							hasLogsInRange = true;
+					try {
+						JsonElement element = CFW.JSON.fromJson(currentLine);
+						if(element != null && element.isJsonObject()) {
+							if(timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
+								hasLogsInRange = true;
+							}
 						}
+					}catch(Throwable t){
+						// do nothing
 					}
 				}
 			} catch (Exception e) {

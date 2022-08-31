@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWContextAwareExecutor;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteList;
@@ -48,6 +50,10 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 
 	CFWQuerySource source = null;
 	CFWObject paramsForSource = null;
+	
+	CFWContextAwareExecutor sourceExecutor = CFWContextAwareExecutor.createExecutor("DefaultContextAwareExecutor", 5, 50, 5, TimeUnit.MINUTES);
+	
+	
 
 	/***********************************************************************************************
 	 * 
@@ -374,7 +380,9 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		// Read source asynchronously
 		
 		LinkedBlockingQueue<EnhancedJsonObject> localQueue = new LinkedBlockingQueue<>();
-		new Thread(
+
+		//use source Executor this to propagate Context
+		sourceExecutor.submit(
 			new Runnable() {
 				
 				@Override
@@ -386,7 +394,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 					}
 					setSourceFetchingDone();
 				}
-			}).start();
+			});
 		
 		
 		//==================================================
