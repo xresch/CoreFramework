@@ -23,8 +23,8 @@
 		<luceneVersion>8.0.0</luceneVersion>
 
 		<skipTests>true</skipTests>
-		<skipJavadoc>false</skipJavadoc>
-		<skipSigning>false</skipSigning>
+		<skipJavadoc>true</skipJavadoc>
+		<skipSigning>true</skipSigning>
 	</properties>
 
 	<!-- ================= LICENSES ================== -->
@@ -54,6 +54,9 @@
 
 
 	<!-- ================= DISTRIBUTION MANAGEMENT ================== -->
+	<!-- NOTE: If upload fails try to upload manually: -->
+	<!-- https://central.sonatype.org/publish/publish-manual/ -->
+
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
