@@ -18,13 +18,13 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-		<jettyVersion>9.4.43.v20210629</jettyVersion>
+		<jettyVersion>9.4.44.v20210927</jettyVersion>
 		<prometheusVersion>0.9.0</prometheusVersion>
 		<luceneVersion>8.0.0</luceneVersion>
 
 		<skipTests>true</skipTests>
-		<skipJavadoc>true</skipJavadoc>
-		<skipSigning>true</skipSigning>
+		<skipJavadoc>false</skipJavadoc>
+		<skipSigning>false</skipSigning>
 	</properties>
 
 	<!-- ================= LICENSES ================== -->
@@ -216,7 +216,7 @@
 		<dependency>
 			<groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
 			<artifactId>owasp-java-html-sanitizer</artifactId>
-			<version>20200713.1</version>
+			<version>20211018.1</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->

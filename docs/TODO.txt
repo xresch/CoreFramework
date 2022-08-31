@@ -135,6 +135,9 @@ Potential TODOs
 
 DONE
 ====
+
+------- current -------
+
 ------- v.7.0.0 -------
 - BREAKING CODE CHANGE: Added 1 minute cache for widget data.
 - BREAKING CODE CHANGE: Changing CFWHierarchy to use Lineage instead of single column for every parent.
