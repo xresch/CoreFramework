@@ -20,15 +20,14 @@ public class CFWContextAwareExecutor extends ThreadPoolExecutor {
 	 **************************************************************************/
 	public static CFWContextAwareExecutor createExecutor(String poolName, int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit) {
 		LinkedBlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>();
-		ThreadFactory threadFactory = Executors.defaultThreadFactory();
-		
+
 		BasicThreadFactory factory = new BasicThreadFactory.Builder()
-				.namingPattern("[Pool:"+poolName+"] thread-%d")
+				.namingPattern("[Pool:"+poolName+"-"+CFW.Random.randomStringAlphaNumerical(6)+"] thread-%d")
 				.daemon(false)
 				.priority(Thread.NORM_PRIORITY)
 				.build();
 		
-		return new CFWContextAwareExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
+		return new CFWContextAwareExecutor(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, factory);
 		
 	}
 	
@@ -38,6 +37,7 @@ public class CFWContextAwareExecutor extends ThreadPoolExecutor {
 	public CFWContextAwareExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit,
 			BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
 		super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
+		this.allowCoreThreadTimeOut(true);
 	}
 
 	/**************************************************************************
