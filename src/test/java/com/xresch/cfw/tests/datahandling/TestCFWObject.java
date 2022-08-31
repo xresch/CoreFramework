@@ -67,9 +67,7 @@ public class TestCFWObject extends DBTestMaster{
 		object.addField(CFWField.newInteger(FormFieldType.NUMBER, "testInteger"));
 		object.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, "testBoolean"));
 		object.addField(CFWField.newString(FormFieldType.TEXT, "testString"));
-		object.addField(CFWField.newDate(FormFieldType.DATEPICKER, "testDate").setValue(new Date(2020, 01, 03)));
-		object.addField(CFWField.newTimestamp(FormFieldType.DATEPICKER, "testTimestamp").setValue(new Timestamp(2020, 01, 03, 4, 5, 500, 0)));
-		
+
 		ArrayList<String> arrayValue = new ArrayList<>();
 		arrayValue.add("foo");
 		arrayValue.add("bar");
@@ -77,7 +75,7 @@ public class TestCFWObject extends DBTestMaster{
 		
 		String json = CFW.JSON.toJSON(object);
 		System.out.println(json);
-		Assertions.assertEquals("{\"testInteger\":null,\"testBoolean\":null,\"testString\":null,\"testDate\":61538828400000,\"testTimestamp\":61538843600000,\"testArray\":[\"foo\",\"bar\"]}",
+		Assertions.assertEquals("{\"testInteger\":null,\"testBoolean\":null,\"testString\":null,\"testArray\":[\"foo\",\"bar\"]}",
 				json,			
 				"Object is serialized.");
 		//---------------------------------
