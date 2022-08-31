@@ -129,7 +129,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 		long diff = latest - earliest;
 		long diffStep = diff / records;
 		
-		// if not inside for to increase perofmrnace
+		// if-statement not inside for-loop to increase performance
 		if(type.equals("default")) {
 			for(int i = 0; i < records; i++) {
 				
