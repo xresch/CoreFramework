@@ -1,8 +1,8 @@
 package com.xresch.cfw.features.query.functions;
 
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -10,10 +10,10 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
-public class CFWQueryFunctionRound extends CFWQueryFunction {
+public class CFWQueryFunctionReplace extends CFWQueryFunction {
 
 	
-	public CFWQueryFunctionRound(CFWQueryContext context) {
+	public CFWQueryFunctionReplace(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -22,7 +22,7 @@ public class CFWQueryFunctionRound extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "round";
+		return "replace";
 	}
 	
 	/***********************************************************************************************
@@ -30,14 +30,14 @@ public class CFWQueryFunctionRound extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "round(number, precision)";
+		return "replace(stringOrFieldname, searchString, replacement)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns the rounded representation for a number.";
+		return "Returns a string with every occurence of the search string replaced with the replacement.";
 	}
 	
 	/***********************************************************************************************
@@ -45,8 +45,9 @@ public class CFWQueryFunctionRound extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>number:&nbsp;</b>The value that should be rounded.</p>"
-			 + "<p><b>precision:&nbsp;</b>Number of decimal places.</p>"
+		return "<p><b>stringOrFieldname:&nbsp;</b>The string or or a fieldname that should be substringed.</p>"
+			  +"<p><b>searchString:&nbsp;</b>The string to search for.</p>"
+			  +"<p><b>replacement:&nbsp;</b>(Optional)The replacement for the findings.</p>"
 			;
 	}
 
@@ -55,7 +56,7 @@ public class CFWQueryFunctionRound extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_round.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_replace.html");
 	}
 
 
@@ -81,27 +82,57 @@ public class CFWQueryFunctionRound extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		int paramCount = parameters.size();
-		if(paramCount == 0) {
-			return QueryPartValue.newNumber(0);
-		}
 
-		QueryPartValue initialValue = parameters.get(0);
+		int paramCount = parameters.size();
 		
+		//----------------------------------
+		// Return null if no params
+		if(paramCount == 0) { 
+			return QueryPartValue.newNull();
+		}
 		
-		if(initialValue.isNumberOrNumberString()) {
-			int precision = 0;
-			if(paramCount > 1 && parameters.get(0).isNumberOrNumberString()) {
-				precision = parameters.get(1).getAsInteger();
+		//----------------------------------
+		// Return same if value only
+		if(parameters.size() == 1 ) { 
+			return parameters.get(0);
+		}
+		//----------------------------------
+		// Get String
+		if(paramCount > 1) { 
+			
+			//----------------------------------
+			// Get String
+			QueryPartValue initialValue = parameters.get(0);
+			String initialString = initialValue.getAsString();
+			
+			if(Strings.isNullOrEmpty(initialString)) { return initialValue; }
+			
+			//----------------------------------
+			// Get searchString
+			String searchString;
+			
+			if(parameters.get(1).isNullOrEmptyString()) {
+				 return initialValue;
 			}
 			
-			return QueryPartValue.newNumber(
-					initialValue.getAsBigDecimal().setScale(precision, RoundingMode.HALF_UP)
-				);
+			searchString = parameters.get(1).getAsString();
+				
+			//----------------------------------
+			// Get Replacement
+			String replacement = "";
+			if(paramCount > 2 && !parameters.get(2).isNullOrEmptyString()) {
+				replacement = parameters.get(2).getAsString();
+			}
+			
+			//----------------------------------
+			// Do Replacement
+			String result = initialString.replace(searchString, replacement);
+			return QueryPartValue.newString(result);
 		}
 		
+
 		// return empty in other cases
-		return QueryPartValue.newNumber(0);
+		return QueryPartValue.newString("");
 	}
 
 }

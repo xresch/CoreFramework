@@ -1,0 +1,22 @@
+
+<p>Use this function whenever you need to replace something in a string.</p>
+
+<p>Following query creates example records and does various sample replace operations:</p>
+
+<pre><code class="language-cfwquery">| source random 
+| keep VALUE, FIRSTNAME, LASTNAME, LOCATION, URL, LIKES_TIRAMISU
+| set
+	# no parameters will result in null
+	DEFAULT = replace()
+	# only one parameter will return the same value
+	FIRSTNAME_A = replace(FIRSTNAME)
+	# if no replacement is provided the occurences will be removed from the string
+	LASTNAME_A = replace(LASTNAME, "son")
+	# replacement will replace all the occurences of the searched string
+	URL = replace(URL, "example", "yayalot")
+	# if more than one thing has to be replaced just use the function again
+	URL = replace(URL, "mightyperson", "royalbeing")
+	# booleans and number inputs will be treated as string
+	BOOL = replace(LIKES_TIRAMISU, "true", "maybe")
+	NUMBER = replace(VALUE, "8", "-eight-")</code></pre>
+
