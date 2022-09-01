@@ -38,6 +38,13 @@ public abstract class PipelineAction<I, O> extends Thread {
 	 * This is the main method of the Pipeline Action.
 	 * The code in this method will be called by the thread until the action
 	 * is finished.
+	 * 
+	 * IMPORTANT: 
+	 *   This method will be called multiple times if "while(keepPolling()){}" is used.
+	 *   Whenever the inQueue gets empty, the loop be exited and the pipeline will wait until there 
+	 *   are more items in the inQueue before calling this method again.
+	 *   So it is important to not store any information in local variables if the info should
+	 *   persist over multiple calls. 
 	 ****************************************************************************/
 	public abstract void execute(PipelineActionContext context) throws Exception, InterruptedException;
 

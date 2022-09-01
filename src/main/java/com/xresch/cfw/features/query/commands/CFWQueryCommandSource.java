@@ -51,7 +51,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	CFWQuerySource source = null;
 	CFWObject paramsForSource = null;
 	
-	CFWContextAwareExecutor sourceExecutor = CFWContextAwareExecutor.createExecutor("DefaultContextAwareExecutor", 1, 2, 2, TimeUnit.SECONDS);
+	CFWContextAwareExecutor sourceExecutor = CFWContextAwareExecutor.createExecutor("QuerySource", 1, 2, 500, TimeUnit.MILLISECONDS);
 	
 	
 
