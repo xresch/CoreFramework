@@ -2,10 +2,9 @@ package com.xresch.cfw.utils;
 
 import java.util.Date;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-
-import org.h2.util.json.JSONNull;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
@@ -31,6 +30,7 @@ public class CFWRandom {
 	private static final String[] mythicalLocations = new String[] {"Agartha", "Alfheim", "Alomkik", "Annwn", "Amaravati", "Arcadia", "Asgard", "Asphodel Meadows", "Atlantis", "Avalon", "Axis Mundi", "Ayotha Amirtha Gangai", "Aztlan", "Baltia", "Biarmaland", "Biringan City", "Brahmapura", "Brittia", "Camelot", "City of the Caesars", "Cloud cuckoo land", "Cockaigne", "Dinas Affaraon", "Ffaraon", "Diyu", "El Dorado", "Elysian Fields", "Feather Mountain", "Garden of Eden", "Garden of the Hesperides", "Finias", "Hawaiki", "Heaven", "Hell", "Hyperborea", "Irkalla", "Islands of the Blessed", "Jabulqa", "Jambudvīpa", "Jotunheim", "Ketumati", "Kingdom of Reynes", "Kingdom of Saguenay", "Kitezh", "Kolob", "Kunlun Mountain", "Kvenland", "Kyoepelinvuori", "La Ciudad Blanca", "Laestrygon", "Lake Parime", "Land of Manu", "Lemuria", "Lintukoto", "Lyonesse", "Mag Mell", "Meropis", "Mictlan", "Mount Penglai", "Mu", "Muspelheim", "Naraka", "New Jerusalem", "Nibiru", "Niflheim", "Niflhel", "Nirvana", "Norumbega", "Nysa", "Olympus", "Paititi", "Panchaia", "Pangaia", "Pandaemonium", "Pleroma", "Pohjola", "Purgatory", "Quivira", "Cíbola", "Ram Setu", "Samavasarana", "Scholomance", "Sierra de la Plata", "Shambhala", "Shangri-La", "Suddene", "Summerland", "Svarga", "Svartalfaheimr", "Takama-ga-hara", "Tartarus", "Themiscyra", "Thule", "Thuvaraiyam Pathi", "Tir na nag", "Vaikuntha", "Valhalla", "Vanaheimr", "Westernesse", "Xanadu", "Shangdu", "Xibalba", "Yomi", "Ys", "Zarahemla", "Zerzura", "Zion"};
 	private static final String[] colorNames = new String[] { "Red", "Orange", "Yellow", "Cyan", "Green", "Blue", "Pink", "Purple", "Gold", "Silver", "Bronze" };
 	private static final String[] fruitNames = new String[] { "Apple", "Pear", "Orange", "Banana", "Pineapple", "Watermelon", "Grapefruit", "Papaya", "Mango", "Pomegranate", "Lemon", "Cherry", "Apricot", "Peach", "Strawberry", "Plum"};
+	private static final String[] italianDesserts = new String[] { "Tiramisu", "Panna Cotta", "Gelato", "Panettone", "Biscotti", "Bombolone", "Colomba di Pasqua", "Confetti", "Frutta Martorana", "Gianduiotto", "Mustacciuoli", "Nutella", "Pandoro", "Pasticciotto", "Ricciarelli", "Semifreddo", "Sanguinaccio Dolce", "Sfogliatella", "Struffoli", "Tartufo", "Torrone", "Torta alla Monferrina", "Torta Tre Monti", "Taralli", "Uovo sbattuto", "Zabaione", "Zuccotto"};
 	private static final String[] exaggeratingAdjectives = new String[] { "utterly arduous", "superfluous", "chocolate-addicted", "super-sneaky", "ultra cuddly", "mega religious", "totally angry", "absolutely arrogant", "totally-at-the-ready", "bat-sh*t-crazy", "bull-headed", "100% confused", "fully-cruel-hearted", "over-demanding", "fiercely loyal", "endlessly flirting", "free-loading", "frisky", "god-mode-greedy", "devil-like hateful", "house-broken", "above hyperactive", "high-end", "idiotic", "infuriating", "awfully insecure", "hilariously maniacal", "ultra narrow-minded", "out-of-control", "rebellious", "self-absorbed", "shaky", "shivering", "slippery", "stubborn", "territorial", "tripping", "twisted", "underhanded", "vengeful", "vile", "yapping", "zippy", "zombie-like" };
 	
 	private static final String[] messagesOfObedience = 
@@ -128,22 +128,35 @@ public class CFWRandom {
 	/*4 Random alphanumerical characters generated at startup. Useful to make sure content is reloaded after startup.*/
 	public static final String STARTUP_RANDOM_ALPHANUM = randomStringAlphaNumerical(4);
 	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
+	public static Random getInstance() { return random; }
 	
-	public static Random getInstance() { return random;}
-	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	public static Boolean randomBoolean() { return randomBoolean(0);}
 	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	public static Boolean randomBoolean(int nullRatioPercent) { 
 
 		if( checkReturnNull(nullRatioPercent) ) { return null; }
 		return random.nextInt(100) > 50 ? true : false; 
 	}
 	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	public static <T> T randomFromArray(T[] array) {
 	    return randomFromArray(0, array);
 	}
 	
-	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	private static boolean checkReturnNull(int nullRatioPercent) {
 		
 		if(nullRatioPercent >= randomIntegerInRange(1, 100) ) {
@@ -153,6 +166,43 @@ public class CFWRandom {
 		return false;
 	}
 	
+	/******************************************************************************
+	 * Returns a random item from Set.
+	 * 
+	 * @param nullRatioPercent number from 0 to 100 to determine if a null value
+	 * should be returned.
+	 * @param set to choose from
+	 * 
+	 * @return random value, null if Set is empty or null
+	 * 
+	 ******************************************************************************/
+	public static <T> T randomFromSet(int nullRatioPercent, Set<T> set) {
+		
+		if(set == null || set.isEmpty()) {
+			return null;
+		}
+		
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		
+		
+		int index = random.nextInt(set.size());
+
+		int counter = 0;
+		
+		T result = null ;
+		for(T element : set) {
+			if(counter >= index) {
+				result = element;
+				break;
+			}
+			counter++;
+		}
+		
+		return result;
+		
+	}
+	
+
 	/******************************************************************************
 	 * Returns a random item from an array.
 	 * 
@@ -168,32 +218,45 @@ public class CFWRandom {
 		return array[index];
 	}
 	
+	/******************************************************************************
+	 * Returns a random item from an array.
+	 * 
+	 * @param array to choose from
+	 * 
+	 ******************************************************************************/
 	public static String randomFromArray(String[] array) {
 	    int index = random.nextInt(array.length);
 	    return array[index];
 	}
 	
-	
-	public static String randomFirstnameOfGod() { return randomFirstnameOfGod(0); }
-	public static String randomLastnameSweden() { return randomLastnameSweden(0); }
-	public static String randomMythicalLocation() { return randomMythicalLocation(0); }
-	public static String randomColorName() { return randomColorName(0); }
-	public static String randomFruitName() { return randomFruitName(0); }
-	public static String randomExaggaratingAdjective() { return randomExaggaratingAdjective(0); }
-	public static String randomIssueResolvedMessage() { return randomIssueResolvedMessage(0); }
-	public static String randomMessageOfObedience() { return randomMessageOfObedience(0); }
-	
-	
+	//==============================================================================
+	// Various methods calling randomFromArray
+	//==============================================================================
 	public static String randomFirstnameOfGod(int nullRatioPercent) { return randomFromArray(nullRatioPercent, firstnameGods); }
 	public static String randomLastnameSweden(int nullRatioPercent) { return randomFromArray(nullRatioPercent, lastnameSweden); }
 	public static String randomMythicalLocation(int nullRatioPercent) { return randomFromArray(nullRatioPercent, mythicalLocations); }
 	public static String randomColorName(int nullRatioPercent) { return randomFromArray(nullRatioPercent, colorNames); }
 	public static String randomFruitName(int nullRatioPercent) { return randomFromArray(nullRatioPercent, fruitNames); }
+	public static String randomItalianDessert(int nullRatioPercent) { return randomFromArray(nullRatioPercent, italianDesserts); }
 	public static String randomExaggaratingAdjective(int nullRatioPercent) { return randomFromArray(nullRatioPercent, exaggeratingAdjectives); }
 	public static String randomIssueResolvedMessage(int nullRatioPercent) { return randomFromArray(nullRatioPercent, issueResolvedMessages); }
 	public static String randomMessageOfObedience(int nullRatioPercent) { return randomFromArray(nullRatioPercent, messagesOfObedience); }
 	
 	
+	//==============================================================================
+	// Overload methonds for above with 0% null ratio
+	//==============================================================================
+	public static String randomFirstnameOfGod() { return randomFirstnameOfGod(0); }
+	public static String randomLastnameSweden() { return randomLastnameSweden(0); }
+	public static String randomMythicalLocation() { return randomMythicalLocation(0); }
+	public static String randomColorName() { return randomColorName(0); }
+	public static String randomFruitName() { return randomFruitName(0); }
+	public static String randomItalianDessert() { return randomItalianDessert(0); }
+	public static String randomExaggaratingAdjective() { return randomExaggaratingAdjective(0); }
+	public static String randomIssueResolvedMessage() { return randomIssueResolvedMessage(0); }
+	public static String randomMessageOfObedience() { return randomMessageOfObedience(0); }
+	
+
 	/******************************************************************************
 	 * Creates a random Message Type.
 	 ******************************************************************************/

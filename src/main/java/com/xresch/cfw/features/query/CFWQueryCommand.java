@@ -69,6 +69,47 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	public abstract String descriptionHTML();
 
 	/***********************************************************************************************
+	 * This method receives the query parts associated with this command during parsing.
+	 * When implementing this method you want to iterate over the parts array and check if the part
+	 * are of the QueryPart Subclasses that are supported by your command.
+	 * If you encounter anything you cannot work with you can either ignore it or throw an exception
+	 * using parser.throwException().
+	 * Following is an example implementation that finds fieldnames and the parameter "customParam":
+	 * 
+	 	<pre><code>for(QueryPart part : parts) {
+			
+	if(part instanceof QueryPartAssignment) {
+		
+		QueryPartAssignment parameter = (QueryPartAssignment)part;
+		String paramName = parameter.getLeftSide().determineValue(null).getAsString();
+		if(paramName != null && paramName.equals("customParam")) {
+			QueryPartValue paramValue = parameter.getRightSide().determineValue(null);
+			if(paramValue.isBoolOrBoolString()) {
+				this.myParam = paramValue.getAsBoolean();
+			}else {
+				parser.throwParseException("customCommand: Expected a boolean value for parameter 'customParam'.", part);
+			}
+		}
+		
+	}else if(part instanceof QueryPartArray) {
+		//check for Arrays in case values have been comma separated
+		QueryPartArray array = (QueryPartArray)part;
+
+		for(JsonElement element : array.getAsJsonArray(null, true)) {
+			
+			if(!element.isJsonNull() && element.isJsonPrimitive()) {
+				fieldnames.add(element.getAsString());
+			}
+		}
+	}else {
+		QueryPartValue value = part.determineValue(null);
+		if(!value.isNull()) {
+			fieldnames.add(value.getAsString());
+		}
+	}
+}
+	 </code></pre>
+	 
 	 * 
 	 ***********************************************************************************************/
 	public abstract void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts)  throws ParseException;
