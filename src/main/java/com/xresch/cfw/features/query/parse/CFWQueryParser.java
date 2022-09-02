@@ -38,7 +38,7 @@ import com.xresch.cfw.logging.SysoutInterceptor;
  * 
  * 			<EXPRESSION_ACCESSMEMBER> ::= (<LITERAL>|<TEXT>) <OPERATOR_DOT>  (<LITERAL>|<TEXT>) 
  * 
- * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @author Reto Scheiwiller, (c) Copyright 2022 
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWQueryParser {
@@ -864,14 +864,18 @@ public class CFWQueryParser {
 		
 		QueryPartBinaryExpression expression = new QueryPartBinaryExpression(currentContext, firstPart, operatorType, secondPart);
 		
+
+		return expression;
+		
+		// following is outdated, kept here in case any more problems arise.
 		//----------------------------------
 		// If next sign is Comma parse Array
-		if(this.hasMoreTokens() 
-		&& this.lookahead().type() != CFWQueryTokenType.SIGN_COMMA) {
-			return expression;
-		}else {
-			return this.parseArrayPart(context, expression);
-		}
+//		if(this.hasMoreTokens() 
+//		&& this.lookahead().type() != CFWQueryTokenType.SIGN_COMMA) {
+//			return expression;
+//		}else {
+//			return this.parseArrayPart(context, expression);
+//		}
 
 	}
 	

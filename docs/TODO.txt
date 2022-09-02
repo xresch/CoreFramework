@@ -138,6 +138,7 @@ DONE
 
 ------- current -------
 
+- Query: Fixed comma after Binary breaks query by creating array in the wrong place
 - Query: Added functions: 
 	- replace
 
