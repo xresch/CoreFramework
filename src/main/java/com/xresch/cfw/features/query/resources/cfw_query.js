@@ -418,7 +418,7 @@ function cfw_query_initialDraw(){
 	parent.append(`
 		<div id="cfw-query-content-wrapper">
 			<div class="row">
-				<div class="col-12 d-flex justify-content-end">
+				<div class="col-12 d-flex justify-content-start">
 					<input id="timeframePicker" name="timeframePicker" type="text" class="form-control">
 					<!-- button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></button>
 					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></button>
