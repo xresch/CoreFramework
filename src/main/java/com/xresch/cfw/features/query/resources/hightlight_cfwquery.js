@@ -138,36 +138,16 @@ function cfw_hljs_register_CFWQuery(hljs) {
 
   const SOURCE = {
     scope: 'built_in',
-    begin: /\|\s*?(source|src)\s+/,
+    begin: /(^|\|)\s*?(source|src)\s+/,
 	end: /[^\s]*/,
   }
 
   const COMMANDS = {
     scope: 'keyword',
-    begin: /\|\s*?.*?\s+/,
+    begin: /\|\s*?.*?\s+/,		
 	end: /[^\s]*/,
   }
 
-  /*const COMMAND_NAMES = [
-    "comment",
-	"dedup",
-	"display",
-	"distinct",
-	"fieldformat",
-	"first",
-	"formatfield",
-	"keep",
-	"last",
-	"meta",
-	"metadata",
-	"off",
-	"remove",
-	"rename",
-	"reorder",
-	"tail",
-	"top",
-	"uniq",
-  ];*/
 
   return {
     name: 'cfwquery',
@@ -188,8 +168,6 @@ function cfw_hljs_register_CFWQuery(hljs) {
 	  NUMBERS,
       FUNCTION,
       ARITHMETIC,
-
-
       HERE_DOC,
       PATH_MODE,
       QUOTE_STRING,

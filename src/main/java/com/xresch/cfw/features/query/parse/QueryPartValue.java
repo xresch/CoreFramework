@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -326,7 +327,12 @@ public class QueryPartValue extends QueryPart {
 	
 	
 	/******************************************************************************************************
-	 * 
+	 * Returns this value as a number.
+	 * Booleans will be returned as 0 for false and 1 for true.
+	 * Strings will be parsed as double.
+	 * for JsonElements getBigDecimal will be called.
+	 * This function might throw runtime exceptions for parsing or if json element is not a number.
+	 * It is highly recommended to always call one of the isNumber()-methods before calling this method.
 	 ******************************************************************************************************/
 	public Number getAsNumber() {
 		
@@ -579,6 +585,143 @@ public class QueryPartValue extends QueryPart {
 		}
 		
 		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Checks if the JsonElement is equals to this value.
+	 * Ignores type safety as follows:
+	 * <ul>
+	 * 		<li>If this is of type boolean, compare to strings while ignoring case. Compare to numbers while 0 is false and everything else is true.</li>
+	 * 		<li>If this is string, compare to the string representations of booleans(case insensitive) and numbers </li>
+	 * 		<li>if this is a number, compare to strings by converting the number to a string. Compare to booleans with 0 as false and true everything else. </li>
+	 * 		<li>If this is null, compare to strings and only return true if string is exactly "null" </li>
+	 * </ul>
+	 ***********************************************************************************************/
+	public boolean equalsElement(JsonElement element) {
+		
+		switch(this.type()) {
+			case BOOLEAN:
+				if(element.isJsonPrimitive()) {
+					JsonPrimitive primitive = element.getAsJsonPrimitive();
+					if(primitive.isBoolean()) {
+						if(primitive.getAsBoolean() == this.getAsBoolean()) {
+							return true;
+						}
+					}else if(primitive.isString() || primitive.isNumber()) {
+						if(primitive.getAsString().equalsIgnoreCase(this.getAsString()) ) {
+							return true;
+						}
+					}
+				}
+				break;
+														
+			case NUMBER:
+				if(element.isJsonPrimitive()) {
+					JsonPrimitive primitive = element.getAsJsonPrimitive();
+					if(primitive.isNumber()) {
+						if(primitive.getAsNumber() == this.getAsNumber()) {
+							return true;
+						}
+					}else if(primitive.isString() || primitive.isBoolean()) {
+						if(primitive.getAsString().equals(this.getAsString()) ) {
+							return true;
+						}
+					}
+				}
+				break;
+				
+				
+			case STRING:
+				if(element.isJsonPrimitive()) {
+					JsonPrimitive primitive = element.getAsJsonPrimitive();
+					if(primitive.isString()) {
+						if(primitive.getAsString().equals(this.getAsString()) ) {
+							return true;
+						}
+					}else if(primitive.isBoolean()) {
+						if(this.getAsString().equalsIgnoreCase(primitive.getAsBoolean()+"") ) {
+							return true;
+						}
+					}else if(primitive.isNumber()) {
+						if(this.getAsString().equals(primitive.getAsNumber()+"") ) {
+							return true;
+						}
+					}
+				}
+				break;
+			
+				
+			case NULL:
+				if(element.isJsonNull()
+				|| ( element.isJsonPrimitive() && element.getAsString().equals("null") )  
+				) {
+					return true;
+				}
+				break;
+				
+				
+			case JSON: // Not supported
+				break;
+				
+			default: 
+				return false;
+		
+		}
+		
+		return false;
+	}
+	
+	/***********************************************************************************************
+	 * Checks if the this value is contained in the given JsonElement.
+	 * Ignores type safety as all values are converted and evaluated as strings.
+	 ***********************************************************************************************/
+	public boolean containedInElement(JsonElement element) {
+		
+		if(element.isJsonNull()) {
+			if(this.isNull()) return true;
+			
+			return "null".contains(this.getAsString());
+		}
+		
+		switch(this.type()) {
+			case NUMBER:	
+			case STRING:	
+				if(element.isJsonPrimitive()) {
+					
+					String primitiveString = element.getAsString();
+					String thisString = this.getAsString();
+					
+					// compare booleans case insensitive
+					if(element.getAsJsonPrimitive().isBoolean()) {
+						thisString = thisString.toLowerCase();
+					}
+					
+					return primitiveString.contains(thisString);
+				}
+				break;
+			
+			case BOOLEAN:
+				if(element.isJsonPrimitive()) {
+					String primitiveString = element.getAsString();
+					return primitiveString.toLowerCase().contains(this.getAsString().toLowerCase());
+				}
+				break;
+				
+			case NULL:
+				if(element.isJsonPrimitive()) {
+					String primitiveString = element.getAsString();
+					return primitiveString.contains("null");
+				}				 
+				
+			case JSON: // Not supported
+				break;
+				
+			default: 
+				return false;
+		
+		}
+		
+		return false;
 	}
 	
 	/******************************************************************************************************

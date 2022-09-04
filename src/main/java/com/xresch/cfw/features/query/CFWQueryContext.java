@@ -75,18 +75,6 @@ public class CFWQueryContext{
 	}
 	
 	/***********************************************************************************************
-	 * Set the latest time for this query.
-	 ***********************************************************************************************/
-	public CFWQueryContext addMessage(MessageType type, String message) {
-
-		CFW.Messages.addMessage(type, message);
-//		if(alertMap != null) {
-//			alertMap.put(message, new AlertMessage(type, message));
-//		}
-		return this;
-	}
-
-	/***********************************************************************************************
 	 * Returns the object containing the metadata of the query.
 	 ***********************************************************************************************/
 	public JsonObject getMetadata() {
@@ -154,6 +142,46 @@ public class CFWQueryContext{
 	 ***********************************************************************************************/
 	public void setFieldnames(CFWQueryFieldnameManager fieldnameManager) {
 		contextFieldnameManager = fieldnameManager;
+	}
+	
+	/***********************************************************************************************
+	 * Add a message for the user.
+	 ***********************************************************************************************/
+	public CFWQueryContext addMessage(MessageType type, String message) {
+
+		CFW.Messages.addMessage(type, message);
+//		if(alertMap != null) {
+//			alertMap.put(message, new AlertMessage(type, message));
+//		}
+		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Add a info message for the user.
+	 ***********************************************************************************************/
+	public CFWQueryContext addMessageInfo(String message) {
+		return this.addMessage(MessageType.INFO, message);
+	}
+	
+	/***********************************************************************************************
+	 * Add a success message for the user.
+	 ***********************************************************************************************/
+	public CFWQueryContext addMessageSuccess(String message) {
+		return this.addMessage(MessageType.SUCCESS, message);
+	}
+	
+	/***********************************************************************************************
+	 * Add a warning message for the user.
+	 ***********************************************************************************************/
+	public CFWQueryContext addMessageWarning(String message) {
+		return this.addMessage(MessageType.WARNING, message);
+	}
+	
+	/***********************************************************************************************
+	 * Add a error message for the user.
+	 ***********************************************************************************************/
+	public CFWQueryContext addMessageError(String message) {
+		return this.addMessage(MessageType.ERROR, message);
 	}
 	
 	

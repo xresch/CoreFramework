@@ -2662,18 +2662,37 @@ function cfw_ui_createTOC(contentAreaSelector, resultSelector, headerTag){
  *	  }, 100);
  *
  * @param isVisible true or false
+ * @param targetID the id of the element where the overlay should be loaded.
+ * 				   If undefined, the loader is added to the full body.
  ******************************************************************************/
-function cfw_ui_toogleLoader(isVisible){
+function cfw_ui_toogleLoader(isVisible, targetID){
 	
-	var loader = $("#cfw-loader");
+	var loaderID;
+	var target;
+	var cssClass;
 	
+	if(targetID != null){
+		loaderID = "cfw-loader-"+targetID;
+		target = $("#"+targetID);
+		cssClass = "cfw-loader-custom";
+	}else{
+		loaderID = "cfw-loader-body";
+		target = $("body");
+		cssClass = "";
+	}
+	
+	loader = $("#"+loaderID);
+
 	if(loader.length == 0){
-		loader = $('<div id="cfw-loader">'
+		loader = $('<div id="'+loaderID+'" class="'+cssClass+'">'
 				+'<div>'
-					+'<i class="fa fa-cog fa-spin fa-3x fa-fw margin-bottom"></i>'
-					+'<p class="m-0">Loading...</p>'
+					+'<i class="fa fa-cog fa-spin fa-1x fa-fw margin-bottom"></i>'
+					+'<span class="m-0">Loading...</span>'
 				+'</div>'
 			+'</div>');	
+		
+		var bgColor = $('body').css("background-color");
+		loader.css("background-color", bgColor);
 		
 //		loader.css("position","absolute");
 //		loader.css("top","50%");
@@ -2681,10 +2700,17 @@ function cfw_ui_toogleLoader(isVisible){
 //		loader.css("transform","translateX(-50%) translateY(-50%);");
 //		loader.css("visibility","hidden");
 		
-		$("body").append(loader);
+		target.append(loader);
 	}
+	
 	if(isVisible){
-		loader.css("display", "flex");
+		var parent = loader.parent();
+		
+		if(targetID != null){
+			loader.width( parent.width() );
+			loader.height( parent.height() );
+			loader.css("display", "flex");
+		}
 	}else{
 		loader.css("display", "none");
 	}

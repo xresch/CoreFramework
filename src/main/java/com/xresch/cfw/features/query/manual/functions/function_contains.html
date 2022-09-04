@@ -1,0 +1,109 @@
+
+<p>This function is used to check if an value is contained in another value. 
+This function ignores type safety.</p>
+
+<p><b>STRINGS:&nbsp;</b>Following query creates random records and uses the contains-function with string values:</p>
+<pre><code class="language-cfwquery">| source random records=100
+| remove URL, TIME, ID
+| set
+	# Strings with Strings
+	'S1' = contains(FIRSTNAME, "er")
+	'S2' = contains("Her name is Aurora.", FIRSTNAME)
+	
+	# Strings with Booleans
+	'B1' = contains("this is true", true) # true
+	'B2' = contains("this is TRUE too", true) # true, as booleans are compared case insensitive
+	'B3' = contains("this is not false, so it must be true", false) # true, as it contains false
+	'B4' = contains("this is false", true) # false, "true" is not found
+	
+	# Strings with Numbers
+	'N1' = contains("tiramisu counter: 42", 42) # true, string contains "42"	
+	'N2' = contains("abc_123456_xyz", 5) # true, string contains "5"	
+	'N3' = contains("we need 5.4 tiramisu", 5.4) # true
+	'N4' = contains("Nightmare: -99999.9 Tiramisu", -99999.9) # true
+	'N5' = contains("Nightmare: -99999.9 Tiramisu", -999) # true as well
+	'N6' = contains("Nightmare: -99999.9 Tiramisu", 0.99) # false, "0.99" not found
+	'N7' = contains("Reality: 1 Tiramisu", 12) # "12" is not found</code></pre>
+
+
+<p><b>NUMBER:&nbsp;</b>Following query creates random records and uses the contains-function with number values:</p>
+<pre><code class="language-cfwquery">| source random records=100
+| remove URL, TIME, ID
+| set
+	# Numbers with Numbers(are evaluated as strings)
+	'N1' = contains(42, 42) # true
+	'N2' = contains(123456, 34) # true, as compared as strings
+	'N3' = contains(-789, -7) # true
+	'N4' = contains(999.99, 9.9) # true
+	'N5' = contains(8000.88, 1.8) # false
+	
+	# Numbers with Strings(are evaluated as strings)
+	'S1' = contains(42, "42") # true
+	'S2' = contains(123456, "34") # true, as compared as strings
+	'S3' = contains(-789, "-7") # true
+	'S4' = contains(999.99, "9.9") # true
+	'S5' = contains(8000.88, "0.8") # false
+	'S6' = contains(8000.88, "bla") # false
+	
+	# Numbers with Booleans(always false)
+	'B1' = contains(42, true) # false
+	'B2' = contains(1010101, false) # false
+	'B3' = contains(0, false) # false
+	'B4' = contains(1, true) # false</code></pre>
+
+
+
+<p><b>BOOLEANS:&nbsp;</b>Following query creates random records and uses the contains-function with boolean values:</p>
+<pre><code class="language-cfwquery">| source random records=100
+| remove URL, TIME, ID
+| set
+	# Booleans with Booleans
+	'B1' = contains(true, true) # true
+	'B2' = contains(false, false) # true
+	'B3' = contains(true, false) # false
+	'B4' = contains(false , true) # false
+
+	# Booleans with Strings
+	'S1' = contains(true, "true") # true
+	'S2' = contains(true, "TruE") # true
+	'S3' = contains(false , "false") # also true
+	'S4' = contains(false , "als") # true
+	'S5' = contains(true , "maybe") # false
+	
+	# Booleans with Numbers(always false)
+	'N1' = contains(true, 1) # false
+	'N2' = contains(false, 0) # false
+	'N3' = contains(true, 42) # false
+	'N4' = contains(true, "0") # false</code></pre>
+
+
+
+<p><b>NULLS:&nbsp;</b>Following shows how null values are handled:</p>
+<pre><code class="language-cfwquery">| source random records=100
+| remove URL, TIME, ID
+| set
+	LOCATION = if(LOCATION == null, "null", LOCATION ) # make null strings
+| set
+	# following returns null, as one or both of the required arguments are null
+	A = contains()
+	AB = contains(FIRSTNAME)
+	
+	# following are true if value is null or string "null"
+	BA = contains(LASTNAME, null)
+	BB = contains(LASTNAME, "null")
+	BC = contains(LOCATION, null)
+	BD = contains(LOCATION, "null")
+	
+	# nulls compared
+	CA = contains(null, null) # true
+	CB = contains("contains null", null) # true
+	CC = contains(null, "ll") # true, "null" contains "ll"
+	CD = contains("NULL and Null are false", null) # false, only "null" is considered real null
+	CE = contains("ll", null) # false, "ll" does not contain "null"
+	CF = contains(null, true) # false on any boolean
+	CG = contains(null, 0) # false on any number</code></pre>
+
+
+
+
+

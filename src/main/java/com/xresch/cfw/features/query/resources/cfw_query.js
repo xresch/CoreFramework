@@ -7,15 +7,22 @@ var $QUERYAREA;
 //The code element that contains the highlighted syntax
 var $QUERYCODE;
 
+var IS_EXECUTING = false;
+
 /*******************************************************************************
  * Execute the query and fetch data from the server
  * 
  ******************************************************************************/
 function cfw_query_execute(){
 	
-	// hide messages to not confuse user
-	$('.toast.show').removeClass('show').addClass('hide');
+	//-----------------------------------
+	// Check is already Executing
+	if(IS_EXECUTING){
+		return;
+	}
 	
+	//-----------------------------------
+	// Prepare Parameters
 	var targetDiv = $('#cfw-query-results');
 	var timeframe = JSON.parse($('#timeframePicker').val());
 	var query =  $QUERYAREA.val();
@@ -27,48 +34,66 @@ function cfw_query_execute(){
 			, earliest: timeframe.earliest
 			, latest: timeframe.latest
 		};
+		
+	//-----------------------------------
+	// Update Params in URL
+	CFW.http.removeURLParam('query');
+	CFW.http.removeURLParam('earliest');
+	CFW.http.removeURLParam('latest');
+	CFW.http.removeURLParam('offset');
 	
+	if(timeframe.offset != null){
+		CFW.http.setURLParam('offset', timeframe.offset);
+	}else{
+		CFW.http.setURLParam('earliest', timeframe.earliest);
+		CFW.http.setURLParam('latest', timeframe.latest);
+	}
+	
+	queryLength = encodeURIComponent(query).length;
+	var finalLength = queryLength + CFW.http.getHostURL().length + CFW.http.getURLPath().length ;
+	
+	if(finalLength+300 > JSDATA.requestHeaderMaxSize){
+		CFW.ui.addToastInfo("The query is quite long and the URL might not work. Make sure to save a copy of your query.");
+	}
+	CFW.http.setURLParam('query', query);
+	
+	//-----------------------------------			
+	// hide existing messages to not confuse user
+	$('.toast.show').removeClass('show').addClass('hide');
+	
+
+	//-----------------------------------
+	// Revert Highlighting
 	cfw_query_highlightExecuteButton(false);
-	cfw_ui_toogleLoader(true);	
+	
+	//-----------------------------------
+	// Do Execution
+	cfw_query_toggleLoading(true);
 	
 	CFW.http.postJSON(CFW_QUERY_URL, params, 
 		function(data) {
-			cfw_ui_toogleLoader(false);		
-				
+			cfw_query_toggleLoading(false);
+		
 			if(data.success){
-								
-				//-----------------------------------
-				// Update Params in URL
-				CFW.http.removeURLParam('query');
-				CFW.http.removeURLParam('earliest');
-				CFW.http.removeURLParam('latest');
-				CFW.http.removeURLParam('offset');
-				
-				if(timeframe.offset != null){
-					CFW.http.setURLParam('offset', timeframe.offset);
-				}else{
-					CFW.http.setURLParam('earliest', timeframe.earliest);
-					CFW.http.setURLParam('latest', timeframe.latest);
-				}
-				
-				queryLength = encodeURIComponent(query).length;
-				var finalLength = queryLength + CFW.http.getHostURL().length + CFW.http.getURLPath().length ;
-				
-				if(finalLength+300 > JSDATA.requestHeaderMaxSize){
-					CFW.ui.addToastInfo("The query is quite long and the URL might not work. Make sure to save a copy of your query.");
-				}
-				CFW.http.setURLParam('query', query);
-						
+																		
 				cfw_query_renderAllQueryResults(targetDiv, data.payload);
 				
 			}
 			
-		
 	});
 }
-
 /*******************************************************************************
- * To Be Done
+ * 
+ ******************************************************************************/
+function cfw_query_toggleLoading(isLoading) {
+	
+	IS_EXECUTING = isLoading;
+	CFW.ui.toogleLoader(isLoading, 'query-button-menu');	
+	CFW.ui.toogleLoader(isLoading, 'cfw-query-results');	
+		
+}
+	
+/*******************************************************************************
  * 
  ******************************************************************************/
 
@@ -417,13 +442,13 @@ function cfw_query_initialDraw(){
 	
 	parent.append(`
 		<div id="cfw-query-content-wrapper">
-			<div class="row">
+			<div id="query-button-menu" class="row pb-2 pt-2">
 				<div class="col-12 d-flex justify-content-start">
 					<input id="timeframePicker" name="timeframePicker" type="text" class="form-control">
-					<!-- button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></button>
-					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></button>
-					<button type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></button -->
-					<button id="executeButton" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute();"><b>Execute</b></button>
+					<!-- a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></a>
+					<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></a>
+					<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></a -->
+					<a id="executeButton" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute();"><b>Execute</b></a>
 				</div>
 				
 			</div>

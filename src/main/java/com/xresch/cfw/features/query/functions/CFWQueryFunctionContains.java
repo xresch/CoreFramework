@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
@@ -11,8 +13,6 @@ import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWQueryFunctionContains extends CFWQueryFunction {
 	
@@ -95,110 +95,69 @@ public class CFWQueryFunctionContains extends CFWQueryFunction {
 			QueryPartValue itemToFind = parameters.get(1);
 			
 			if(itemToFind.isJson()) {
-				return QueryPartValue.newString("contains(): Error - Second parameter cannot be a JsonObject or Array.");
+				this.context.addMessageError("contains(): Error - Second parameter cannot be an Object or Array.");
+				return QueryPartValue.newBoolean(false);
 			}
-
-
 			
-			if(valueToCheck.isJsonArray()) {
+			switch(valueToCheck.type()) {
 				
 				//--------------------------------------
-				// Check if array contains the item
-				//--------------------------------------
-				JsonArray array = valueToCheck.getAsJsonArray();
+				// Check String
+				case STRING:
+				case NUMBER:
+					result = itemToFind.containedInElement(new JsonPrimitive(valueToCheck.getAsString()));
+					return QueryPartValue.newBoolean(result);
 				
-				forloop:
-				for(JsonElement current : array) {
-					switch(itemToFind.type()) {
-						case BOOLEAN:
-							if(current.isJsonPrimitive()) {
-								JsonPrimitive primitive = current.getAsJsonPrimitive();
-								if(primitive.isBoolean()) {
-									if(primitive.getAsBoolean() == itemToFind.getAsBoolean()) {
-										result = true;
-										break forloop;
-									}
-								}else if(primitive.isString()) {
-									if(primitive.getAsString().equalsIgnoreCase(itemToFind.getAsString()+"") ) {
-										result = true;
-										break forloop;
-									}
-								}
-							}
-							break;
-													
-							
-						case NULL:
-							if(current.isJsonNull()
-							|| ( current.isJsonPrimitive() && current.getAsString().equals("null") )  
-							) {
-								result = true;
-								break forloop;
-							}
-							break;
-							
-							
-						case NUMBER:
-							if(current.isJsonPrimitive()) {
-								JsonPrimitive primitive = current.getAsJsonPrimitive();
-								if(primitive.isNumber()) {
-									if(primitive.getAsNumber() == itemToFind.getAsNumber()) {
-										result = true;
-										break forloop;
-									}
-								}else if(primitive.isString()) {
-									if(primitive.getAsString().equals(itemToFind.getAsString()) ) {
-										result = true;
-										break forloop;
-									}
-								}
-							}
-							break;
-							
-							
-						case STRING:
-							if(current.isJsonPrimitive()) {
-								JsonPrimitive primitive = current.getAsJsonPrimitive();
-								if(primitive.isString()) {
-									if(primitive.getAsString().equals(itemToFind.getAsString()) ) {
-										result = true;
-										break forloop;
-									}
-								}else if(primitive.isBoolean()) {
-									if(itemToFind.getAsString().equals(primitive.getAsBoolean()+"") ) {
-										result = true;
-										break forloop;
-									}
-								}else if(primitive.isNumber()) {
-									if(itemToFind.getAsString().equals(primitive.getAsNumber()+"") ) {
-										result = true;
-										break forloop;
-									}
-								}
-							}
-							break;
-						
-							
-						case JSON: // Not supported
-							break;
-							
-						default: 
-							this.context.addMessage(MessageType.WARNING, "contains(): Warning - Code block reached that should not have been reached.");
-						break;
+				case BOOLEAN:
+					result = itemToFind.containedInElement(new JsonPrimitive(valueToCheck.getAsBoolean()));
+					return QueryPartValue.newBoolean(result);
 					
-					}
-				}	
+				case NULL:
+					result = itemToFind.containedInElement(JsonNull.INSTANCE);
+					return QueryPartValue.newBoolean(result);
+				
+				//--------------------------------------
+				// Check JSON
+				case JSON:
+					
+					if(valueToCheck.isJsonArray()) {
+						
+						//------------------------------
+						// Check Array
+						JsonArray array = valueToCheck.getAsJsonArray();
+						
+						for(JsonElement current : array) {
+							result = itemToFind.equalsElement(current);
+							if(result == true) {
+								return QueryPartValue.newBoolean(true);
+							}
+						}	
 
-			}else if(valueToCheck.isJsonObject()) {
-				return QueryPartValue.newNumber(valueToCheck.getAsJsonObject().entrySet().size());
-			}else if(valueToCheck.isNull()) {
-				return QueryPartValue.newNull();
-			}else {
-				return QueryPartValue.newNumber(1);
+					}else if(valueToCheck.isJsonObject()) {
+						//-----------------------------
+						// Check Object
+						JsonObject objectToCheck = valueToCheck.getAsJsonObject();
+						for(String current : objectToCheck.keySet()) {
+							result = itemToFind.equalsElement(new JsonPrimitive(current));
+							if(result == true) {
+								return QueryPartValue.newBoolean(true);
+							}
+						}
+
+					}
+					break;
+					
+				default:
+					this.context.addMessageError("contains(): Error - theoretically unreachable case reached.");
+					break;
+			
 			}
+
 		}
 		
 		return QueryPartValue.newBoolean(result);
 	}
+
+
 
 }
