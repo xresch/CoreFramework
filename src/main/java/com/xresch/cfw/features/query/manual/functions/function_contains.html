@@ -1,6 +1,17 @@
 
 <p>This function is used to check if an value is contained in another value. 
-This function ignores type safety.</p>
+This function ignores type safety as follows:<p>
+<ul>
+	<li>If one side is a string, compare values as strings.</li>
+	<li>For booleans, case in strings is ignored, so things like 'true', 'False' and 'TRUE' will match.</li>
+	<li>Numbers in strings are matched for the numbers string representation. So a string '123.4' will be matched with "3.4".</li>
+	<li>Nulls are only matched in strings if the values is a lowercase 'null'.</li>
+</ul>
+
+<p>When the first parameter is an array, contains returns true if the second parameter is contained(type unsafe).  </p>
+<p>When the first parameter is an object, contains returns true if the second parameter is the name of a member. This will not check any values.</p>
+
+<p>Copy and execute the following examples to get a good feeling for how this function works.  </p>
 
 <p><b>STRINGS:&nbsp;</b>Following query creates random records and uses the contains-function with string values:</p>
 <pre><code class="language-cfwquery">| source random records=100
@@ -76,6 +87,7 @@ This function ignores type safety.</p>
 	'N3' = contains(true, 42) # false
 	'N4' = contains(true, "0") # false</code></pre>
 
+
 <p><b>ARRAYS:&nbsp;</b>Following query creates random records and uses the contains-function with array values:</p>
 <pre><code class="language-cfwquery">| source random records=100
 | keep FIRSTNAME
@@ -113,6 +125,38 @@ This function ignores type safety.</p>
 	'Z4' = contains([], null) # false</code></pre>
 
 
+<p><b>OBJECTS:&nbsp;</b>Following query creates random records and uses the contains-function with array values:</p>
+<pre><code class="language-cfwquery">| source random records=100
+| keep FIRSTNAME
+| set
+	# Objects with Strings
+	'S1' = contains({"x": 1, "y": 2}, "x") # true, object contains field "x"
+	'S2' = contains({"abc_xyz": 123}, "abc_") # false, only matches on full member names
+	'S3' = contains({"1": "test", "2": "b"}, "test") # false, only checks member names, not values
+	'SX' = '||' # separator for table
+	
+	# Objects with Booleans
+	'B1' = contains({"true":  4242}, true) # true, object contains field "true"
+	'B2' = contains({"false": 2424}, false) # true
+	'B3' = contains({"TRUE":  4444}, true) # true, case insensitive
+	'B4' = contains({"eurt":  2222}, true) # false
+	'BX' = '||' # separator for table
+	
+	# Objects with Numbers
+	'N1' = contains({"1":   'a'}, 1) # true
+	'N2' = contains({"2":   'a'}, "2") # true
+	'N3' = contains({"3.3": 'a'}, 3.3) # true
+	'N4' = contains({"-4.4": 'a'}, -4.4) # true
+	'N5' = contains({"-5.55":'a'}, -5.5) # false
+	'N6' = contains({}, -0.99) # false
+	'NX' = '||' # separator for table
+	
+	# Objects with Null values
+	'Z1' = contains({"null":   'a'}, null) # true
+	'Z2' = contains({"Null":   'a'}, null) # false, case sensitive</code></pre>
+
+
+	
 <p><b>NULLS:&nbsp;</b>Following shows how null values are handled:</p>
 <pre><code class="language-cfwquery">| source random records=100
 | remove URL, TIME, ID
