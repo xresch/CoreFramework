@@ -221,6 +221,19 @@ pre {
 	resize: both;
 }
 
+/*bg color to be set with separate class*/
+.cfw-badge {
+    display: inline-block;
+    padding: 0.25em 0.4em;
+    margin: 0;
+    color: white;
+    line-height: 1;
+    white-space: nowrap;
+    text-align: center !important;
+    vertical-align: baseline;
+    font-weight: 500;
+}
+
 
 /*************************************************************************
  * Bootstrap Submenus and Menu Enhancements

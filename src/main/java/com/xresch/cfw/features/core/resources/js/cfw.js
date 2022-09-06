@@ -2585,6 +2585,16 @@ function cfw_format_objectToHTMLList(object){
 		
 }
 
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_customizer_booleanFormat(record, value) { 
+	if(value){
+		return '<span class="cfw-badge bg-success">true</span>';
+	}else{
+		return '<span class="cfw-badge bg-danger">false</span>';
+	} 
+};
 
 /**************************************************************************************
  * Create a table of contents for the h-elements on the page.
@@ -4030,22 +4040,24 @@ var CFW = {
 	format: {
 		epochToTimestamp: 	cfw_format_epochToTimestamp,
 		epochToDate: 		cfw_format_epochToDate,
+		fieldNameToLabel: 	cfw_format_fieldNameToLabel,
 		millisToClock: 		cfw_format_millisToClock,
 		millisToDuration: 	cfw_format_millisToDuration,
 		cfwSchedule: 		cfw_format_cfwSchedule,
 		splitCFWSchedule: 	cfw_format_splitCFWSchedule,
 		objectToHTMLList: 	cfw_format_objectToHTMLList,
 		csvToObjectArray: 	cfw_format_csvToObjectArray,
-		fieldNameToLabel: 	cfw_format_fieldNameToLabel,
 		capitalize: 		cfw_format_capitalize,
 		numberSeparators: 	cfw_format_numberSeparators,
-		numbersInThousands: 	cfw_format_numbersInThousands,
+		numbersInThousands: cfw_format_numbersInThousands,
 		arrayToBadges: 		cfw_format_arrayToBadges,
 		formToParams: 		cfw_format_formToParams,
 		formToArray: 		cfw_format_formToArray,
 		formToObject: 		cfw_format_formToObject
 	},
-	
+	customizer: {
+		booleanFormat: 	cfw_customizer_booleanFormat,
+	},
 	http: {
 		readCookie: cfw_http_readCookie,
 		getURLParams: cfw_http_getURLParams,
