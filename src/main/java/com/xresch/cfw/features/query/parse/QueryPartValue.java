@@ -619,7 +619,7 @@ public class QueryPartValue extends QueryPart {
 				if(element.isJsonPrimitive()) {
 					JsonPrimitive primitive = element.getAsJsonPrimitive();
 					if(primitive.isNumber()) {
-						if(primitive.getAsNumber() == this.getAsNumber()) {
+						if(primitive.getAsNumber().doubleValue() == this.getAsNumber().doubleValue()) {
 							return true;
 						}
 					}else if(primitive.isString() || primitive.isBoolean()) {
@@ -647,6 +647,8 @@ public class QueryPartValue extends QueryPart {
 							return true;
 						}
 					}
+				}else if(element.isJsonNull()) {
+					return this.getAsString().equals("null");
 				}
 				break;
 			

@@ -797,6 +797,12 @@ public class CFWHttp {
 			return this.body("application/json; charset=UTF-8", content);
 		}
 		
+		/***********************************************
+		 * Add a request Body in JSON format UTF-8 encoding
+		 ***********************************************/
+		public String buildURLwithParams() {
+			return  buildURL(URL, params);
+		}
 		
 		/***********************************************
 		 * Build and send the request. Returns a 
@@ -810,8 +816,8 @@ public class CFWHttp {
 				
 				//---------------------------------
 				// Create URL
-				URL = buildURL(URL, params);
-				HttpURLConnection connection = createProxiedURLConnection(URL);
+				String urlWithParams = buildURLwithParams();
+				HttpURLConnection connection = createProxiedURLConnection(urlWithParams);
 				connection.setRequestMethod(method);
 				connection.setInstanceFollowRedirects(true);
 				
