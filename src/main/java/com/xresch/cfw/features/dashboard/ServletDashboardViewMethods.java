@@ -381,7 +381,7 @@ public class ServletDashboardViewMethods
 					// check if default settings are valid
 					if(widgetToUpdate.mapRequestParameters(request)) {
 						//Use sanitized values
-						widgetToUpdate.settings(settings.toJSON());
+						widgetToUpdate.settings(settings.toJSONEncrypted());
 						CFW.DB.DashboardWidgets.update(widgetToUpdate);
 					}
 				}
