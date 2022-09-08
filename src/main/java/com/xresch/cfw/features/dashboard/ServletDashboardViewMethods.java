@@ -737,8 +737,13 @@ public class ServletDashboardViewMethods
 
 								@Override
 								public JSONResponse call() throws Exception {
-									//Hack: update and return existing jsonResponse to not overwrite it by creating a new instance.
-									definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), finalEarliest, finalLatest);
+									
+									try {
+										//Hack: update and return existing jsonResponse to not overwrite it by creating a new instance.
+										definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), finalEarliest, finalLatest);
+									}catch(Throwable e){
+										new CFWLog(logger).severe("Unexpected Error Occured: "+e.getMessage(), e);
+									}
 									return jsonResponse;
 								}
 							});

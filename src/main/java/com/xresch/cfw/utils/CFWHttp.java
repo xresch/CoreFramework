@@ -393,7 +393,7 @@ public class CFWHttp {
 	private static void logFinerRequestInfo(String method, String url, HashMap<String, String> params, HashMap<String, String> headers, String requestBody) {
 		if(logger.isLoggable(Level.FINER)) {
 			
-			String paramsString = (params == null) ? "null" : Joiner.on(",").withKeyValueSeparator("=").join(params);
+			String paramsString = (params == null) ? "null" : Joiner.on("&").withKeyValueSeparator("=").join(params);
 			String headersString = (headers == null) ? "null" : Joiner.on(",").withKeyValueSeparator("=").join(headers);
 			
 			new CFWLog(logger)
@@ -771,6 +771,20 @@ public class CFWHttp {
 			headers.put(name, value);
 			return this;
 		}
+		
+		/***********************************************
+		 * Adds a map of headers
+		 ***********************************************/
+		public CFWHttpRequestBuilder headers(Map<String, String> headerMap) {
+			
+			if(headerMap == null) { return this; }
+			
+			this.headers.putAll(headerMap);
+			return this;
+			
+		}
+		
+		
 		
 		/***********************************************
 		 * Add a header
