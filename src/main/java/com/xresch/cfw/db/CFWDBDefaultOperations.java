@@ -130,6 +130,7 @@ public  class CFWDBDefaultOperations {
 		
 		return result;
 	}
+	
 	/********************************************************************************************
 	 * Updates multiple items in the DB.
 	 * @param Objects with the values that should be inserted. ID will be set by the Database.
@@ -145,6 +146,7 @@ public  class CFWDBDefaultOperations {
 		
 		return result;
 	}
+	
 	/***************************************************************
 	 * Updates the object selecting by ID.
 	 * @param object
@@ -177,6 +179,43 @@ public  class CFWDBDefaultOperations {
 		return object
 				.queryCache(object.getClass(), "CFWDBDefaultOperations.update")
 				.update();
+		
+	}
+	
+	/***************************************************************
+	 * Updates the object selecting by ID, ignores the specified
+	 * fields.
+	 * @param object
+	 * @return true or false
+	 ****************************************************************/
+	public static boolean updateWithout(PrecheckHandler precheck, CFWObject object, String... fieldsToIgnore) {
+		
+		return updateWithout(precheck, null, object);
+	}
+	
+	/***************************************************************
+	 * Updates the object selecting by ID, ignores the specified
+	 * fields.
+	 * @param object
+	 * @return true or false
+	 ****************************************************************/
+	public static boolean updateWithout(PrecheckHandler precheck, String[] auditLogFieldnames, CFWObject object, String... fieldsToIgnore) {
+		
+		if(object == null) {
+			new CFWLog(logger)
+				.warn("The role that should be updated cannot be null");
+			return false;
+		}
+		
+		if(precheck != null && !precheck.doCheck(object)) {
+			return false;
+		}
+		
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, object, auditLogFieldnames);
+		
+		return object
+				.queryCache(object.getClass(), "CFWDBDefaultOperations.updateWithout")
+				.updateWithout(fieldsToIgnore);
 		
 	}
 	

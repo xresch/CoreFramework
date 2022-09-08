@@ -191,7 +191,7 @@ function cfw_dashboard_history_triggerUndo(){
 								current.undo(current.undoData);
 								var widgetObject = $("#"+current.undoData.guid).data('widgetObject');
 								if(widgetObject != null){
-									cfw_dashboard_widget_save_state(widgetObject, true);
+									cfw_dashboard_widget_save_state(widgetObject, true, true);
 								}
 							}
 						cfw_dashboard_toggleEditMode();
@@ -231,7 +231,7 @@ function cfw_dashboard_history_triggerRedo(){
 								current.redo(current.redoData);
 								var widgetObject = $("#"+current.redoData.guid).data('widgetObject');
 								if(widgetObject != null){
-									cfw_dashboard_widget_save_state(widgetObject, true);
+									cfw_dashboard_widget_save_state(widgetObject, true, true);
 								}
 							}
 						cfw_dashboard_toggleEditMode();
@@ -1277,7 +1277,6 @@ function cfw_dashboard_widget_save_defaultSettings(widgetGUID){
 				widgetObject, 
 				cfw_dashboard_history_undoUpdateAction,
 				cfw_dashboard_history_redoUpdateAction
-				
 		);
 	cfw_dashboard_history_completeOperationsBundle();
 	
@@ -1303,7 +1302,7 @@ function cfw_dashboard_widget_save_widgetSettings(formButton, widgetGUID){
 		
 		// Make sure to save state before rerender
 		$.ajaxSetup({async: false});
-			cfw_dashboard_widget_save_state(widgetObject, true);
+			cfw_dashboard_widget_save_state(widgetObject, true, false);
 		$.ajaxSetup({async: true});
 
 		// TODO: A bit ugly, triggers another save
@@ -1500,12 +1499,21 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_widget_save_state(widgetObject, forceSave) {
+function cfw_dashboard_widget_save_state(widgetObject, forceSave, defaultSettingsOnly) {
+
 
 	if(forceSave || ( JSDATA.canEdit == true && CFW_DASHBOARD_EDIT_MODE) ){
+		
+		var itemToUpdate = 'widgetfull';
+		if(defaultSettingsOnly){
+			itemToUpdate = 'widgetdefaultsettings';
+		}
+		console.log("==============================")
+		console.log("itemToUpdate: "+itemToUpdate)
+		console.trace()
 		// ----------------------------------
 		// Update Object
-		var params = Object.assign({action: 'update', item: 'widget'}, widgetObject); 
+		var params = Object.assign({action: 'update', item: itemToUpdate}, widgetObject); 
 		
 		delete params.content;
 		delete params.guid;
@@ -1759,7 +1767,7 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 
 				    $(widgetInstance).data('widgetObject', originalWidgetObject);
 				    
-				    cfw_dashboard_widget_save_state(originalWidgetObject);
+				    cfw_dashboard_widget_save_state(originalWidgetObject, false, true);
 				    
 				    if(callback != null){
 				    	callback(originalWidgetObject);
@@ -2094,7 +2102,7 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 				widgetObject.HEIGHT	= widgetInstance.attr("gs-h");
 				
 				var redoData = _.cloneDeep(widgetObject);
-				cfw_dashboard_widget_save_state(widgetObject);
+				cfw_dashboard_widget_save_state(widgetObject, false, true);
 				
 				// ----------------------------------
 				// Add Undoable Operation

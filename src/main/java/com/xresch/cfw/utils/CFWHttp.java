@@ -950,7 +950,7 @@ public class CFWHttp {
 		 * @param url used for the request.
 		 * @return JsonArray or null
 		 ******************************************************************************************************/
-		public JsonObject getRequestBodyAsJsonObject(){
+		public JsonObject getResponseBodyAsJsonObject(){
 			
 			JsonElement jsonElement = CFW.JSON.fromJson(body);
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -962,12 +962,13 @@ public class CFWHttp {
 			return jsonObject;
 
 		}
+		
 		/******************************************************************************************************
 		 * Get the body content of the request as a JsonArray.
 		 * @param url used for the request.
 		 * @return JsonArray or null
 		 ******************************************************************************************************/
-		public JsonArray getRequestBodyAsJsonArray(){
+		public JsonArray getResponseBodyAsJsonArray(){
 			
 			JsonElement jsonElement = CFW.JSON.fromJson(body);
 			
@@ -988,12 +989,34 @@ public class CFWHttp {
 			return jsonArray;
 		}
 
+		/******************************************************************************************************
+		 * 
+		 ******************************************************************************************************/
 		public int getStatus() {
 			return status;
 		}
 
+		/******************************************************************************************************
+		 * 
+		 ******************************************************************************************************/
 		public Map<String, List<String>> getHeaders() {
 			return headers;
+		}
+		
+		/******************************************************************************************************
+		 * 
+		 ******************************************************************************************************/
+		public JsonObject getHeadersAsJson() {
+			
+			JsonObject object = new JsonObject();
+			for(Entry<String, List<String>> entry : headers.entrySet()) {
+				
+				if(entry.getKey() != null) {
+					object.addProperty(entry.getKey(), Joiner.on(", ").join(entry.getValue()));
+				}
+			}
+			
+			return object;
 		}
 		
 	}

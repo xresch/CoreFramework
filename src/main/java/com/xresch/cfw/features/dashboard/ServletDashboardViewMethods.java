@@ -35,6 +35,7 @@ import com.xresch.cfw.datahandling.CFWSchedule.EndType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterFields;
@@ -218,9 +219,12 @@ public class ServletDashboardViewMethods
 				
 			case "update": 			
 				switch(item.toLowerCase()) {
-					case "widget": 				updateWidget(request, response, jsonResponse);
-	  											break;
-	  																
+					case "widgetfull": 				updateWidget(request, response, jsonResponse, false);
+	  												break;
+	  												
+					case "widgetdefaultsettings": 	updateWidget(request, response, jsonResponse, true);
+													break;
+	  														
 					default: 					CFW.Messages.itemNotSupported(item);
 												break;
 				}
@@ -349,7 +353,7 @@ public class ServletDashboardViewMethods
 	/*****************************************************************
 	 *
 	 *****************************************************************/
-	private static void updateWidget(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
+	private static void updateWidget(HttpServletRequest request, HttpServletResponse response, JSONResponse json, boolean defaultSettingsOnly) {
 		
 		String dashboardID = request.getParameter("FK_ID_DASHBOARD");
 
@@ -380,8 +384,13 @@ public class ServletDashboardViewMethods
 					// check if default settings are valid
 					if(widgetToUpdate.mapRequestParameters(request)) {
 						//Use sanitized values
+						
 						widgetToUpdate.settings(settings.toJSONEncrypted());
-						CFW.DB.DashboardWidgets.update(widgetToUpdate);
+						if(!defaultSettingsOnly) {
+							CFW.DB.DashboardWidgets.update(widgetToUpdate);
+						}else {
+							CFW.DB.DashboardWidgets.updateWithout(widgetToUpdate, DashboardWidgetFields.JSON_SETTINGS.toString());
+						}
 					}
 				}
 			}else {
@@ -393,7 +402,7 @@ public class ServletDashboardViewMethods
 		}
 
 	}
-	
+		
 	/*****************************************************************
 	 *
 	 *****************************************************************/

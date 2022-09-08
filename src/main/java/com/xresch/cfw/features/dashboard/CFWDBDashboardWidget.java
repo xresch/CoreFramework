@@ -108,6 +108,14 @@ public class CFWDBDashboardWidget {
 	}
 	
 	//####################################################################################################
+	// UPDATE
+	//####################################################################################################
+	public static boolean updateWithout(DashboardWidget item, String fieldnames) 		{ 
+		removeFromCache(item.id());
+		return CFWDBDefaultOperations.updateWithout(prechecksDeleteUpdate, auditLogFieldnames, item, fieldnames); 
+	}
+	
+	//####################################################################################################
 	// DELETE
 	//####################################################################################################
 	public static boolean 	deleteByID(String id) { 
