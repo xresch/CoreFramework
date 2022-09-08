@@ -10,6 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -33,6 +34,7 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.datahandling.CFWTimeframe;
+import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 
@@ -54,35 +56,41 @@ public class CFWJson {
 	static{
 		//Type cfwobjectListType = new TypeToken<LinkedHashMap<CFWObject>>() {}.getType();
 		
-		gsonInstance = new GsonBuilder()
-				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
+		gsonInstance = createGsonBuilderBase()
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
-				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
-				.registerTypeHierarchyAdapter(CFWTimeframe.class, new SerializerCFWTimeframe())
-				.registerTypeHierarchyAdapter(JSONResponse.class, new SerializerJSONResponse())
 				.serializeNulls()
 				.create();
 		
-		gsonInstancePretty = new GsonBuilder()
-				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
+		gsonInstancePretty = createGsonBuilderBase()
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false))
-				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
-				.registerTypeHierarchyAdapter(CFWTimeframe.class, new SerializerCFWTimeframe())
-				.registerTypeHierarchyAdapter(JSONResponse.class, new SerializerJSONResponse())
 				.serializeNulls()
 				.setPrettyPrinting()
 				.create();
 		
-		gsonInstanceEncrypted = new GsonBuilder()
+		gsonInstanceEncrypted = createGsonBuilderBase()
 				.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(true))
 				.serializeNulls()
 				.create();
 	}
 			
 	
-	private static Gson exposedOnlyInstance = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
-			.serializeNulls().create();
-
+	private static Gson exposedOnlyInstance = createGsonBuilderBase()
+			.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(true))
+			.excludeFieldsWithoutExposeAnnotation()
+			.serializeNulls()
+			.create();
+	
+	/*************************************************************************************
+	 * 
+	 *************************************************************************************/
+	private static GsonBuilder createGsonBuilderBase() {
+		return new GsonBuilder()
+				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
+				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
+				.registerTypeHierarchyAdapter(CFWTimeframe.class, new SerializerCFWTimeframe())
+				.registerTypeHierarchyAdapter(JSONResponse.class, new SerializerJSONResponse())
+				;
+	}
 	/*************************************************************************************
 	 * 
 	 *************************************************************************************/
@@ -108,6 +116,41 @@ public class CFWJson {
 	 *************************************************************************************/
 	public static String toJSON(Object object) {
 		return gsonInstance.toJson(object);
+	}
+	
+	/****************************************************************
+	 * Return a JSON element containing values of the fields of this 
+	 * object, flagged or not flagged with the specified flags.
+	 * 
+	 * @param enableEncryption if true, encrypt values that have 
+	 *        encryption enabled, false otherwise
+	 * @param flags the flags for the filter
+	 * @param includeFlagged if true, only includes the fields 
+	 *        with the specified flag, if false exclude flagged and
+	 *        keep the non-flagged
+	 ****************************************************************/
+	public static String toJSON(Object object, boolean enableEncryption, EnumSet<CFWFieldFlag> flags, boolean includeFlagged) {
+		return toJSONElement(object, enableEncryption, flags, includeFlagged).toString();
+	}
+	
+	/****************************************************************
+	 * Return a JSON element containing values of the fields of this 
+	 * object, flagged or not flagged with the specified flags.
+	 * 
+	 * @param enableEncryption if true, encrypt values that have 
+	 *        encryption enabled, false otherwise
+	 * @param flags the flags for the filter
+	 * @param includeFlagged if true, only includes the fields 
+	 *        with the specified flag, if false exclude flagged and
+	 *        keep the non-flagged
+	 ****************************************************************/
+	public static JsonElement toJSONElement(Object object, boolean enableEncryption, EnumSet<CFWFieldFlag> flags, boolean includeFlagged) {	
+		Gson gsonInstanceCustom = createGsonBuilderBase()
+			.registerTypeHierarchyAdapter(CFWObject.class, new SerializerCFWObject(false, flags, includeFlagged) )
+			.serializeNulls()
+			.create();
+		
+		return gsonInstanceCustom.toJsonTree(object);
 	}
 	
 	/*************************************************************************************

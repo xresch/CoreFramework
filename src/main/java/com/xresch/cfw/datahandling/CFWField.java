@@ -10,6 +10,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -26,7 +27,6 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 
-import org.openqa.selenium.devtools.v85.runtime.model.ObjectPreview.Subtype;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 
@@ -41,7 +41,6 @@ import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
 import com.xresch.cfw.utils.CFWRandom;
-import com.xresch.cfw.utils.CFWUtilsText;
 import com.xresch.cfw.validation.BooleanValidator;
 import com.xresch.cfw.validation.EpochOrTimeValidator;
 import com.xresch.cfw.validation.FloatValidator;
@@ -136,7 +135,21 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		VALUE_LABEL,
 		NONE
 	}
-		
+	
+	//--------------------------------
+	// Flags
+	public enum CFWFieldFlag{
+		/*Used for example by Dashboard Widgets to determine if a setting should be sent to client sidein json responses. */
+		SERVER_SIDE_ONLY,
+		/*Used for  custom filtering */
+		CUSTOM_A,
+		CUSTOM_B,
+		CUSTOM_C,
+		CUSTOM_D
+	}
+	
+	private EnumSet<CFWFieldFlag> flags;
+	
 	//--------------------------------
 	// Database
 	private String columnDefinition = null;
@@ -1517,11 +1530,84 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * @param map with value/label pairs
 	 * @return instance for chaining
 	 ******************************************************************************************************/
-	@SuppressWarnings("rawtypes")
 	public CFWField<T> setOptions(HashMap valueLabelPairs) {
 		this.valueLabelOptions = valueLabelPairs;
 		return this;
 	}
+	
+	/******************************************************************************************************
+	 * Adds the specified flags for this field.
+	 * 
+	 * @param flags the flags to set
+	 * @return instance for chaining
+	 ******************************************************************************************************/
+	public CFWField<T> addFlags(EnumSet<CFWFieldFlag> flags) {
+		if(this.flags == null) { 
+			this.flags = flags;
+		}else {
+			this.flags.addAll(flags);
+		}
+		return this;
+	}
+	
+	/******************************************************************************************************
+	 * Checks if this field if flagged the specified flag.
+	 * 
+	 * @param set of flags
+	 * @return true if all the given flags are specified for this field
+	 ******************************************************************************************************/
+	public CFWField<T> addFlag(CFWFieldFlag flag) {
+		if(this.flags == null) { 
+			this.flags = EnumSet.of(flag);
+		}else {
+			this.flags.add(flag);
+		}
+		return this;
+	}
+	
+	/******************************************************************************************************
+	 * Checks if this field if flagged the specified flag.
+	 * 
+	 * @param set of flags
+	 * @return true if all the given flags are specified for this field
+	 ******************************************************************************************************/
+	public boolean hasFlag(CFWFieldFlag flag) {
+		if(this.flags == null || flag == null) { return false;}
+		return this.flags.contains(flag);
+	}
+	
+	/******************************************************************************************************
+	 * Checks if this field has one of the specified flags.
+	 * 
+	 * @param set of flags
+	 * @return true if one or more of the given flags are specified for this field
+	 ******************************************************************************************************/
+	public boolean hasFlag(EnumSet<CFWFieldFlag> flags) {
+		if(this.flags == null || flags == null) { return false; }
+		for(CFWFieldFlag flag : flags) {
+			
+			if(this.flags.contains(flag)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/******************************************************************************************************
+	 * Checks if this field has all the specified flags.
+	 * 
+	 * @param set of flags
+	 * @return true if all the given flags are specified for this field
+	 ******************************************************************************************************/
+	public boolean hasFlags(EnumSet<CFWFieldFlag> flags) {
+		if(this.flags == null) { return false;}
+		return this.flags.containsAll(flags);
+	}
+	
+
+	
+	
 	
 	/******************************************************************************************************
 	 * Check if this field is disabled.

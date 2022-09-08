@@ -222,11 +222,10 @@ public class ServletDashboardList extends HttpServlet
 				//-----------------------------------------
 				// Duplicate Widgets
 				//-----------------------------------------
-				ArrayList<CFWObject> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
+				ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
 				
 				boolean success = true;
-				for(CFWObject object : widgetList) {
-					DashboardWidget widgetToCopy = (DashboardWidget)object;
+				for(DashboardWidget widgetToCopy : widgetList) {
 					widgetToCopy.id(null);
 					widgetToCopy.foreignKeyDashboard(newID);
 					

@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -16,9 +17,11 @@ import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.json.SerializerCFWObject;
 
 /**************************************************************************************************************
  * 
@@ -181,67 +184,6 @@ public class CFWObject {
 		return form;
 	}
 	
-	/****************************************************************
-	 * Return a JSON string containing all values of the fields of this 
-	 * object.
-	 ****************************************************************/
-	public String toJSON() {		
-		return CFW.JSON.toJSON(this);
-	}
-	
-	/****************************************************************
-	 * Return a JSON string containing all values of the fields of this 
-	 * object. The fields that have encryption enabled will have 
-	 * encrypted values.
-	 ****************************************************************/
-	public String toJSONEncrypted() {		
-		return CFW.JSON.toJSONEncrypted(this);
-	}
-	
-	/****************************************************************
-	 * Return a JSON Element containing all values of the fields of this 
-	 * object.
-	 ****************************************************************/
-	public JsonElement toJSONElement() {		
-		return CFW.JSON.toJSONElement(this);
-	}
-	
-	/****************************************************************
-	 * Return a JSON Element containing all values of the fields of this 
-	 * object. The fields that have encryption enabled will have 
-	 * encrypted values.
-	 ****************************************************************/
-	public JsonElement toJSONElementEncrypted() {		
-		return CFW.JSON.toJSONElementEncrypted(this);
-	}
-	
-	/****************************************************************
-	 * 
-	 ****************************************************************/
-	public String toJSONString(String... fieldnames) {
-		
-		StringBuilder builder = new StringBuilder();
-		
-		builder.append("{");
-		for(String fieldname : fieldnames) {
-			
-			CFWField<?> field = fields.get(fieldname);
-			builder
-				.append("\"")
-				.append(field.getName())
-				.append("\": \"")
-				.append(field.getValue())
-				.append("\", ");
-		}
-		
-		if(builder.length() > 1) {
-			builder.deleteCharAt(builder.length()-1);
-			builder.deleteCharAt(builder.length()-1);
-		}
-		builder.append("}");
-
-		return builder.toString();
-	}
 		
 	/****************************************************************
 	 * 
@@ -800,6 +742,105 @@ public class CFWObject {
 	 ****************************************************************/
 	public CFWSQL delete() {
 		return new CFWSQL(this).delete();
+	}
+	
+	
+	/****************************************************************
+	 * Return a JSON string containing all values of the fields of this 
+	 * object.
+	 ****************************************************************/
+	public String toJSON() {		
+		return CFW.JSON.toJSON(this);
+	}
+	
+	/****************************************************************
+	 * Return a JSON string containing values of the fields of this 
+	 * object, flagged or not flagged with the specified flags.
+	 * 
+	 * @param enableEncryption if true, encrypt values that have 
+	 *        encryption enabled, false otherwise
+	 * @param flags the flags for the filter
+	 * @param includeFlagged if true, only includes the fields 
+	 *        with the specified flag, if false exclude flagged and
+	 *        keep the non-flagged
+	 ****************************************************************/
+	public String toJSON(boolean enableEncryption, EnumSet<CFWFieldFlag> flags, boolean includeFlagged) {	
+		return this.toJSONElement(enableEncryption, flags, includeFlagged)
+				   .toString();
+	}
+	
+	/****************************************************************
+	 * Return a JSON string containing all values of the fields of this 
+	 * object. The fields that have encryption enabled will have 
+	 * encrypted values.
+	 ****************************************************************/
+	public String toJSONEncrypted() {		
+		return CFW.JSON.toJSONEncrypted(this);
+	}
+	
+	/****************************************************************
+	 * Return a JSON Element containing all values of the fields of this 
+	 * object.
+	 ****************************************************************/
+	public JsonElement toJSONElement() {		
+		return CFW.JSON.toJSONElement(this);
+	}
+	
+	/****************************************************************
+	 * Return a JSON element containing values of the fields of this 
+	 * object, flagged or not flagged with the specified flags.
+	 * 
+	 * @param enableEncryption if true, encrypt values that have 
+	 *        encryption enabled, false otherwise
+	 * @param flags the flags for the filter
+	 * @param includeFlagged if true, only includes the fields 
+	 *        with the specified flag, if false exclude flagged and
+	 *        keep the non-flagged
+	 ****************************************************************/
+	public JsonElement toJSONElement(boolean enableEncryption, EnumSet<CFWFieldFlag> flags, boolean includeFlagged) {	
+		SerializerCFWObject serializer = new SerializerCFWObject(enableEncryption, flags, includeFlagged);
+		
+		return serializer.serialize(this, getClass(), null);
+	}
+	
+	
+	/****************************************************************
+	 * Return a JSON Element containing all values of the fields of this 
+	 * object. The fields that have encryption enabled will have 
+	 * encrypted values.
+	 ****************************************************************/
+	public JsonElement toJSONElementEncrypted() {		
+		return CFW.JSON.toJSONElementEncrypted(this);
+	}
+	
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	public String toJSONString(String... fieldnames) {
+		
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append("{");
+		for(String fieldname : fieldnames) {
+			
+			CFWField<?> field = fields.get(fieldname);
+			builder
+				.append("\"")
+				.append(field.getName())
+				.append("\": \"")
+				.append(field.getValue())
+				.append("\", ");
+		}
+		
+		if(builder.length() > 1) {
+			builder.deleteCharAt(builder.length()-1);
+			builder.deleteCharAt(builder.length()-1);
+		}
+		builder.append("}");
+
+		return builder.toString();
 	}
 
 }

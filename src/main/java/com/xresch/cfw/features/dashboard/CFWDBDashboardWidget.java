@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.dashboard;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -11,7 +12,9 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
@@ -23,7 +26,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2019
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWDBDashboardWidget {
@@ -39,7 +42,7 @@ public class CFWDBDashboardWidget {
 	private static final Logger logger = CFWLog.getLogger(CFWDBDashboardWidget.class.getName());
 
 	// WidgetID and DashboardWidget
-	private static Cache<String, DashboardWidget> widgetCache = CFW.Caching.addCache("CFW Widgets", 
+	private static Cache<String, DashboardWidget> widgetCache = CFW.Caching.addCache("CFW Widget", 
 			CacheBuilder.newBuilder()
 				.initialCapacity(100)
 				.maximumSize(10000)
@@ -170,32 +173,59 @@ public class CFWDBDashboardWidget {
 	}
 		
 	/***************************************************************
-	 * Return a list of all user widgets
+	 * Return a list of all widgets for the specified dashboard.
+	 * This method filters out any widget settings that are marked with
+	 * SERVER_SIDE_ONLY.
 	 * 
 	 * @return Returns a resultSet with all widgets or null.
 	 ****************************************************************/
 	public static String getWidgetsForDashboardAsJSON(String dashboardID) {
 		
-		return new DashboardWidget()
-				.queryCache(CFWDBDashboardWidget.class, "getWidgetsForDashboardAsJSON")
-				.select()
-				.where(DashboardWidgetFields.FK_ID_DASHBOARD, dashboardID)
-				.getAsJSON();
+		ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
+		
+		//--------------------------------
+		// Iterate Array and filter settings
+		for(DashboardWidget widget : widgetList) {
+			WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widget.type());
+			CFWObject settingsObject = definition.getSettings();
+			settingsObject.mapJsonFields(widget.settings(), false);
+			
+			//--------------------------------
+			// Filter out fields flagged with
+			// SERVER_SIDE_ONLY
+			String filteredSettings = CFW.JSON.toJSON(
+					settingsObject
+					, true
+					, EnumSet.of(CFWFieldFlag.SERVER_SIDE_ONLY)
+					, false
+				);
+			
+			//--------------------------------
+			// Set Filtered Settings
+			widget.settings(filteredSettings);
+		}
+
+
+		return CFW.JSON.toJSON(widgetList);
 		
 	}
 	
 	/***************************************************************
-	 * Return a list of all user widgets
+	 * Return a list of all widgets for the given dashboard.
+	 * The data returned by this method is not save for sending to 
+	 * the browser and should be used on server side only. 
+	 * Use getWidgetsForDashboardAsJSON() to send
+	 * data to the browser.
 	 * 
 	 * @return Returns an array with the widgets or an empty list.
 	 ****************************************************************/
-	public static ArrayList<CFWObject> getWidgetsForDashboard(String dashboardID) {
+	public static ArrayList<DashboardWidget> getWidgetsForDashboard(String dashboardID) {
 		
 		return new CFWSQL(new DashboardWidget())
 				.queryCache()
 				.select()
 				.where(DashboardWidgetFields.FK_ID_DASHBOARD, dashboardID)
-				.getAsObjectList();
+				.getAsObjectListConvert(DashboardWidget.class);
 		
 	}
 	

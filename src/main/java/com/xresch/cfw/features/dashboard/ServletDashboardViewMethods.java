@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -25,6 +26,7 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormCustomAutocompleteHandler;
@@ -264,11 +266,12 @@ public class ServletDashboardViewMethods
 		if(isPublicServlet
 		||  dashboard.isShared() 
 		|| CFW.DB.Dashboards.checkCanEdit(dashboard) ) {
-			
+				
 			StringBuilder jsonString = new StringBuilder();
 			
 			jsonString
 				.append("{ \"widgets\": ")
+				// filters out any field flagged with SERVER_SIDE_ONLY
 				.append(CFW.DB.DashboardWidgets.getWidgetsForDashboardAsJSON(dashboardID))
 				.append(", \"params\": ")
 				.append(CFW.DB.DashboardParameters.getParametersForDashboardAsJSON(dashboardID))
@@ -861,12 +864,11 @@ public class ServletDashboardViewMethods
 			
 			//--------------------------------------------
 			// Add Params for Widgets on Dashboard
-			ArrayList<CFWObject> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
+			ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
 			HashSet<String> uniqueTypeChecker = new HashSet<>();
 			
-			for(CFWObject object : widgetList) {
+			for(DashboardWidget widget : widgetList) {
 				
-				DashboardWidget widget = (DashboardWidget)object;
 				String widgetType = widget.type();
 				
 				if(widgetType.equals(WidgetParameter.WIDGET_TYPE) 
