@@ -862,10 +862,11 @@ public class CFWHttp {
 					// Connect and create response
 					if(connection != null) {			
 						outgoingHTTPCallsCounter.labels(method).inc();
-						return instance.new CFWHttpResponse(connection);
+						CFWHttpResponse response = instance.new CFWHttpResponse(connection);
+						return response;
 					}
 				}
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				new CFWLog(logger)
 					.severe("Exception occured: "+e.getMessage(), e);
 			} 
@@ -885,6 +886,8 @@ public class CFWHttp {
 		private String body;
 		private int status = 500;
 		private Map<String, List<String>> headers;
+		
+		private boolean errorOccured = false;
 		
 		public CFWHttpResponse(HttpURLConnection conn) {
 			
@@ -925,6 +928,7 @@ public class CFWHttp {
 			}catch(Exception e) {
 				new CFWLog(responseLogger)
 					.severe("Exception occured while accessing URL: "+e.getMessage(), e);
+				errorOccured = true;
 			}finally {
 				if(in != null) {
 					try {
@@ -938,15 +942,22 @@ public class CFWHttp {
 			}
 		}
 
+		public boolean errorOccured() {
+			return errorOccured;
+		}
+		
+		/******************************************************************************************************
+		 * Get the body content of the response.
+		 * @param url used for the request.
+		 * @return String or null on error
+		 ******************************************************************************************************/
 		public String getResponseBody() {
 			return body;
 		}
 		
 		
-
-		
 		/******************************************************************************************************
-		 * Get the body content of the request as a JsonArray.
+		 * Get the body content of the response as a JsonObject.
 		 * @param url used for the request.
 		 * @return JsonArray or null
 		 ******************************************************************************************************/
@@ -964,7 +975,7 @@ public class CFWHttp {
 		}
 		
 		/******************************************************************************************************
-		 * Get the body content of the request as a JsonArray.
+		 * Get the body content of the response as a JsonArray.
 		 * @param url used for the request.
 		 * @return JsonArray or null
 		 ******************************************************************************************************/
