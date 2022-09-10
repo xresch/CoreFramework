@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.analytics;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -11,9 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.DBInterface;
-import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -28,9 +31,9 @@ public class ServletDatabaseAnalytics extends HttpServlet
 	private static final Logger logger = CFWLog.getLogger(ServletDatabaseAnalytics.class.getName());
 	private static final long serialVersionUID = 1L;
 
-	/*****************************************************************
+	/********************************************************************************
 	 *
-	 ******************************************************************/
+	 ********************************************************************************/
 	@Override
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
@@ -57,6 +60,9 @@ public class ServletDatabaseAnalytics extends HttpServlet
         
     }
 	
+	/********************************************************************************
+	 *
+	 ********************************************************************************/
 	private void handleActionRequest(HttpServletRequest request, HttpServletResponse response) {
 		
 		String action = request.getParameter("action");
@@ -73,6 +79,13 @@ public class ServletDatabaseAnalytics extends HttpServlet
 										CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while creating snapshot.");
 									}
 									break;
+									
+									
+			case "reindexfulltextsearch":	new CFWLog(logger).audit(CFWAuditLogAction.RESET, "FulltextSearch", "Fulltext search will be reindexed. Existing indexes are dropped and newly created.");
+											this.reindexFulltextSearch();
+											break;
+											
+											
 			case "fetch": 			
 				switch(item.toLowerCase()) {
 					case "tablerowcount": 		jsonResponse.getContent().append(CFW.DB.selectTableRowCountAsJSON());
@@ -93,6 +106,22 @@ public class ServletDatabaseAnalytics extends HttpServlet
 								break;
 								
 		}
+	}
+	
+	/********************************************************************************
+	 *
+	 ********************************************************************************/
+	private void reindexFulltextSearch() {
+
+		ArrayList<CFWObject> objects = CFW.Registry.Objects.getCFWObjectInstances();
+		for(CFWObject object : objects) {
+			if(object.hasFulltextSearch()) {
+				new CFWSQL(object).fulltextsearchReindex();
+			}
+		}
+		// does not properly work
+		// not really neccessary, as errors will be thrown by fulltextsearchReindex()
+		//return success;
 	}
 		
 	

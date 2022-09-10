@@ -17,6 +17,13 @@ function cfw_dbanalytics_createDatabaseSnapshot(){
 /******************************************************************
  * 
  ******************************************************************/
+function cfw_dbanalytics_reindexFulltextSearch(){
+	CFW.http.getJSON(CFW_DBANALYTICS_URL, {action: "reindexfulltextsearch"});
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
 function cfw_dbanalytics_fetchConnectionPoolStatsAndDisplay(){
 
 	CFW.http.getJSON(CFW_DBANALYTICS_URL, {action: "fetch", item: "connectionpoolstats"}, function(data){
@@ -139,9 +146,12 @@ function cfw_dbanalytics_draw(){
 		
 		parent.append('<h1>Database Analytics</h1>');
 		parent.append('<h2>Actions</h2>');
+		
+		var confirmMessage = "'This may take a while and could severely degrade performance. It is recommended to do this outside office hours.'";
 		parent.append(
 			'<p>'
-				+ '<a href="#" class="btn btn-sm btn-primary" onclick="cfw_dbanalytics_createDatabaseSnapshot();"><i class="fas fa-camera-retro mr-2"></i>Create Database Snapshot</a>'
+				+ '<a href="#" class="btn btn-sm btn-primary mr-1" onclick="cfw_ui_confirmExecute('+confirmMessage+', \'Do it!\', cfw_dbanalytics_createDatabaseSnapshot);"><i class="fas fa-camera-retro mr-2"></i>Create Database Snapshot</a>'
+				+ '<a href="#" class="btn btn-sm btn-primary mr-1" onclick="cfw_ui_confirmExecute('+confirmMessage+', \'Do it!\', cfw_dbanalytics_reindexFulltextSearch);"><i class="fas fa-flask mr-2"></i>Reindex Fulltext Search</a>'
 			+'</p>'
 		);
 		
