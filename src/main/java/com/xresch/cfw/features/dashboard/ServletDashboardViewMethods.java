@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -52,17 +53,21 @@ import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWModifiableHTTPRequest;
 import com.xresch.cfw.utils.CFWRandom;
+import com.xresch.cfw.utils.undoredo.UndoRedoHistory;
+import com.xresch.cfw.utils.undoredo.UndoRedoManager;
 import com.xresch.cfw.validation.ScheduleValidator;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2022
  * @license MIT-License
  **************************************************************************************************************/
 public class ServletDashboardViewMethods
 {
 	private static final Logger logger = CFWLog.getLogger(ServletDashboardViewMethods.class.getName());
 	
+	private static final UndoRedoManager<ArrayList<DashboardWidget>> undoredoManager = 
+									new UndoRedoManager<ArrayList<DashboardWidget>>("Dashboard", 20);
 	
 	/*****************************************************************
 	 *
@@ -1215,7 +1220,57 @@ public class ServletDashboardViewMethods
 			json.setSuccess(true);	
 		}
 	}
+
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private static UndoRedoHistory<ArrayList<DashboardWidget>> undoredo_GetHistory(int userID, String dashboardID) {
+		try {
+			return undoredoManager.getHistory(userID+"-"+dashboardID);
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error occured while trying to get undo/redo history.", e);
+		}
+		
+		return null;
+	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private static void undoredo_operationBundleStart(int userID, String dashboardID) {
+		
+		UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_GetHistory(userID, dashboardID);
+		
+		if(history != null) {
+			history.operationBundleStart();
+		}
+
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private static void undoredo_operationBundleEnd(int userID, String dashboardID) {
+		
+		UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_GetHistory(userID, dashboardID);
+		
+		if(history != null) {
+			history.operationBundleEnd();
+		}
+
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private static void undoredo_addOperation(UndoRedoHistory<ArrayList<DashboardWidget>> history) {
+		
+		if(history != null) {
+			history.operationBundleEnd();
+		}
+
+	}
+
 	
 
 }
