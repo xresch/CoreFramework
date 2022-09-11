@@ -139,6 +139,8 @@ DONE
 - Database: Added Feature 'Reindex Fulltext Search' to DB Analytics page
 - CFWField: Added flag SERVER_SIDE_ONLY
 - Dashboard: Widgets settings marked with SERVER_SIDE_ONLY are not sent to the browser
+- Dashobard: Copy widgets to clipboard does not copy task settings (Reason: Avoiding unintentional spamming of the jobs system)
+- Utils: Added Undo/Redo Manager 
 - Query: Fixed Comma after Binary Expression breaks query by creating array in the wrong place
 - Query: Loader does not block query editor
 - Query: URL is updated on each execution, even if the query fails
