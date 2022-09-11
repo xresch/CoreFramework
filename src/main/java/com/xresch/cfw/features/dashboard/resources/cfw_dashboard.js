@@ -1200,13 +1200,15 @@ function cfw_dashboard_widget_duplicate(widgetGUID) {
 function cfw_dashboard_widget_copyToClipboard(widgetGUID) {
 	var widgetInstance = $('#'+widgetGUID);
 	var widgetObject = widgetInstance.data("widgetObject");
+		
+
+	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "widget", widgetid: widgetObject.PK_ID}, function(data){
+		
+		if(data.success){
+			CFW.utils.clipboardWrite(data.payload);
+		}
 	
-	var duplicateData = {
-		widgetObject: widgetObject,
-		parametersArray: []
-	};
-	
-	CFW.utils.clipboardWrite(JSON.stringify(duplicateData));
+	});
 }
 
 /*******************************************************************************
@@ -1381,7 +1383,18 @@ function cfw_dashboard_widget_removeFromGrid(widgetElement) {
  ******************************************************************************/
 function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition, isPaste) {
 
-	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'widget', type: type, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
+	var params =  {
+		action: 'create'
+		, item: 'widget'
+		, type: type
+		, dashboardid: CFW_DASHBOARD_URLPARAMS.id 
+	}
+	
+	if(isPaste){
+		params.withdata = true;
+		params.data = JSON.stringify(optionalWidgetObjectData);
+	}
+	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){
 			var widgetObject = data.payload;
 			if(widgetObject != null){
 				

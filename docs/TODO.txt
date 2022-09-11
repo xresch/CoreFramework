@@ -12,8 +12,7 @@ ALWAYS ON
 
 IMPORTANT FIXES / NEXT TODOS
 =============================
-- Query: Set Command
-- Query: Stats Command
+- Dashboard: Fix Undo/Redo
 - Query: Save and Manage queries
 - 
 

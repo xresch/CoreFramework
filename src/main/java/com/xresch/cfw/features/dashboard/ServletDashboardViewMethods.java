@@ -174,7 +174,10 @@ public class ServletDashboardViewMethods
 				switch(item.toLowerCase()) {
 					case "widgetsandparams": 	fetchWidgetsAndParams(jsonResponse, dashboardID, isPublicServlet);
 	  											break;	
-	  											
+	  				
+					case "widget": 				getWidget(request, response, jsonResponse);
+					break;	
+					
 					case "widgetdata": 			getWidgetData(request, response, jsonResponse);
 												break;	
 												
@@ -196,7 +199,7 @@ public class ServletDashboardViewMethods
 				
 			case "create": 			
 				switch(item.toLowerCase()) {
-					case "widget": 				createWidget(jsonResponse, type, dashboardID);
+					case "widget": 				createWidget(request, response, jsonResponse);
 	  											break;
 	  											
 					case "param": 				createParam(request, response, jsonResponse);
@@ -286,9 +289,15 @@ public class ServletDashboardViewMethods
 	/*****************************************************************
 	 *
 	 *****************************************************************/
-	private static void createWidget(JSONResponse response, String type, String dashboardID) {
+	private static void createWidget(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
 
+		String dashboardID = request.getParameter("dashboardid");
+		
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			
+			String type = request.getParameter("type");
+			boolean withData = Boolean.parseBoolean(request.getParameter("withdata"));
+			String data = request.getParameter("data");
 			
 			//----------------------------
 			// Create Widget
@@ -297,17 +306,25 @@ public class ServletDashboardViewMethods
 			if(definition.hasPermission(currentUser) || CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 				DashboardWidget newWidget = new DashboardWidget();
 	
-				newWidget.type(type);
-				newWidget.foreignKeyDashboard(Integer.parseInt(dashboardID));
-				
-				if(definition != null) {
-					newWidget.settings(definition.getSettings().toJSON());
+				//----------------------------
+				// Prepare Data
+
+				if(!withData) {
+					newWidget.type(type);
+					if(definition != null) {
+						newWidget.settings(definition.getSettings().toJSON());
+					}
+				}else {
+					newWidget.mapJsonFields(data, false);
 				}
+				
+				//overwrite parent dashboard
+				newWidget.foreignKeyDashboard(Integer.parseInt(dashboardID));
 				
 				int id = CFW.DB.DashboardWidgets.createGetPrimaryKey(newWidget);
 				newWidget.id(id);
 				
-				response.getContent().append(CFW.JSON.toJSON(newWidget));
+				json.getContent().append(CFW.JSON.toJSON(newWidget));
 			}else {
 				CFW.Messages.noPermission();
 			}
@@ -668,9 +685,25 @@ public class ServletDashboardViewMethods
 
 	}
 	
-	
 	/*****************************************************************
 	 *
+	 *****************************************************************/
+	private static void getWidget(HttpServletRequest request, HttpServletResponse response, JSONResponse jsonResponse) {
+		
+		//----------------------------
+		// Get Values
+		String widgetID = request.getParameter("widgetid");
+
+		//-----------------------------------
+		// Prepare Widget Settings
+		DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
+		
+		jsonResponse.setPayLoad(widget.toJSON());
+	}
+	
+	/*****************************************************************
+	 * Returns the data to show as the widget content.
+	 * 
 	 *****************************************************************/
 	private static void getWidgetData(HttpServletRequest request, HttpServletResponse response, JSONResponse jsonResponse) {
 		
