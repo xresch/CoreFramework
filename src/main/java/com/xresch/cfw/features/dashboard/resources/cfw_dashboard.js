@@ -1202,10 +1202,11 @@ function cfw_dashboard_widget_copyToClipboard(widgetGUID) {
 	var widgetObject = widgetInstance.data("widgetObject");
 		
 
-	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "widget", widgetid: widgetObject.PK_ID}, function(data){
+	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "widgetcopy", widgetid: widgetObject.PK_ID}, function(data){
 		
 		if(data.success){
 			CFW.utils.clipboardWrite(data.payload);
+			CFW.ui.addToastInfo("Task settings are not copied.")
 		}
 	
 	});

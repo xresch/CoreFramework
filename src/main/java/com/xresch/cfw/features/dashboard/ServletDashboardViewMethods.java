@@ -175,7 +175,7 @@ public class ServletDashboardViewMethods
 					case "widgetsandparams": 	fetchWidgetsAndParams(jsonResponse, dashboardID, isPublicServlet);
 	  											break;	
 	  				
-					case "widget": 				getWidget(request, response, jsonResponse);
+					case "widgetcopy": 			getWidgetForCopy(request, response, jsonResponse);
 					break;	
 					
 					case "widgetdata": 			getWidgetData(request, response, jsonResponse);
@@ -688,7 +688,7 @@ public class ServletDashboardViewMethods
 	/*****************************************************************
 	 *
 	 *****************************************************************/
-	private static void getWidget(HttpServletRequest request, HttpServletResponse response, JSONResponse jsonResponse) {
+	private static void getWidgetForCopy(HttpServletRequest request, HttpServletResponse response, JSONResponse jsonResponse) {
 		
 		//----------------------------
 		// Get Values
@@ -697,6 +697,9 @@ public class ServletDashboardViewMethods
 		//-----------------------------------
 		// Prepare Widget Settings
 		DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
+		
+		// remove task to avoid spamming the system with jobs
+		widget.taskParameters("");
 		
 		jsonResponse.setPayLoad(widget.toJSON());
 	}
