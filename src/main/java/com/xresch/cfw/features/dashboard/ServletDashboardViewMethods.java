@@ -70,7 +70,7 @@ public class ServletDashboardViewMethods
 	private static final Logger logger = CFWLog.getLogger(ServletDashboardViewMethods.class.getName());
 	
 	private static final UndoRedoManager<ArrayList<DashboardWidget>> undoredoManager = 
-									new UndoRedoManager<ArrayList<DashboardWidget>>("Dashboard", 20);
+									new UndoRedoManager<ArrayList<DashboardWidget>>("Dashboard", 30);
 
 	private static Method methodResetToState = null;
 	

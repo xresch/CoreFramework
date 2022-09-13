@@ -33,7 +33,7 @@ public class UndoRedoManager<T> {
 				CacheBuilder.newBuilder()
 					.initialCapacity(1)
 					.maximumSize(cacheMaxSize)
-					.expireAfterAccess(24, TimeUnit.HOURS)
+					.expireAfterAccess(12, TimeUnit.HOURS)
 			);
 		
 	}

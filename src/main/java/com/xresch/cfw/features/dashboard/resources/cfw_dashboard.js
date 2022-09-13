@@ -118,26 +118,32 @@ function cfw_dashboard_timeframe_setCustom(earliestMillis, latestMillis){
  * 
  ******************************************************************************/
 function cfw_dashboard_history_startOperationsBundle(){
-	$.ajaxSetup({async: false});
-		CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "undoredo", item: "startbundle", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
-			if(data.success){
-				CFW_DASHBOARD_HISTORY_BUNDLE_STARTED = true;
-			}
-		});
-	$.ajaxSetup({async: true});
+	
+	if(!CFW_DASHBOARD_HISTORY_IS_UPDATING){
+		$.ajaxSetup({async: false});
+			CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "undoredo", item: "startbundle", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
+				if(data.success){
+					CFW_DASHBOARD_HISTORY_BUNDLE_STARTED = true;
+				}
+			});
+		$.ajaxSetup({async: true});
+	}
 }
 
 /*******************************************************************************
  * 
  ******************************************************************************/
 function cfw_dashboard_history_completeOperationsBundle(){
-	$.ajaxSetup({async: false});
-		CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "undoredo", item: "endbundle", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
-			if(data.success){
-				CFW_DASHBOARD_HISTORY_BUNDLE_STARTED = false;
-			}
-		});
-	$.ajaxSetup({async: true});
+	
+	if(!CFW_DASHBOARD_HISTORY_IS_UPDATING){
+		$.ajaxSetup({async: false});
+			CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "undoredo", item: "endbundle", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
+				if(data.success){
+					CFW_DASHBOARD_HISTORY_BUNDLE_STARTED = false;
+				}
+			});
+		$.ajaxSetup({async: true});
+	}
 	
 }
 
@@ -172,49 +178,19 @@ function cfw_dashboard_history_triggerUndo(){
 		
 		cfw_dashboard_toggleEditMode();
 			
-			CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "undoredo", item: "triggerundo", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
-				if(data.success){
-					cfw_dashboard_drawEveryWidget(data);
-				}
-				CFW_DASHBOARD_HISTORY_IS_UPDATING = false; 
-			});
+		CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "undoredo", item: "triggerundo", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
 			
-		cfw_dashboard_toggleEditMode();
+			if(data.success){
+				cfw_dashboard_drawEveryWidget(data);
+			}
+			
+			CFW_DASHBOARD_HISTORY_IS_UPDATING = false; 
+			cfw_dashboard_toggleEditMode();
+			
+		});
+
 	}
 	
-	/*if(CFW_DASHBOARD_EDIT_MODE){
-		
-		// ----------------------------------
-		// Check Position
-		if(CFW_DASHBOARD_HISTORY_POSITION > 0){
-			
-			CFW_DASHBOARD_HISTORY_POSITION--;
-			
-			CFW.ui.toogleLoader(true);
-			window.setTimeout( 
-				function(){
-					var commandBundle = CFW_DASHBOARD_COMMAND_HISTORY[CFW_DASHBOARD_HISTORY_POSITION];
-					$.ajaxSetup({async: false});
-						cfw_dashboard_toggleEditMode();
-							// ----------------------------------
-							// Iterate all Changes in Bundle
-							for(var i = 0;i < commandBundle.length ;i++){
-								var current = commandBundle[i];
-								current.undo(current.undoData);
-								var widgetObject = $("#"+current.undoData.guid).data('widgetObject');
-								if(widgetObject != null){
-									cfw_dashboard_widget_save_state(widgetObject, true, true);
-								}
-							}
-						cfw_dashboard_toggleEditMode();
-					$.ajaxSetup({async: true});
-					
-					CFW.ui.toogleLoader(false);
-				}, 50);
-		}
-		
-		// sole.log(CFW_DASHBOARD_HISTORY_POSITION);
-	}*/
 }
 
 /*******************************************************************************
@@ -227,48 +203,16 @@ function cfw_dashboard_history_triggerRedo(){
 		CFW_DASHBOARD_HISTORY_IS_UPDATING = true;
 		cfw_dashboard_toggleEditMode();
 			
-			CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "undoredo", item: "triggerredo", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
-				if(data.success){ 
-					cfw_dashboard_drawEveryWidget(data);
-				}
-				 CFW_DASHBOARD_HISTORY_IS_UPDATING = false; 
-			});
+		CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "undoredo", item: "triggerredo", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
+			if(data.success){ 
+				cfw_dashboard_drawEveryWidget(data);
+			}
+			 CFW_DASHBOARD_HISTORY_IS_UPDATING = false; 
+			 cfw_dashboard_toggleEditMode();
+		});
 				
-		cfw_dashboard_toggleEditMode();
-
 	}
 	
-	/*if(CFW_DASHBOARD_EDIT_MODE){
-		var commandBundle = [];
-		
-		// ----------------------------------
-		// Check Position
-		if(CFW_DASHBOARD_COMMAND_HISTORY.length != CFW_DASHBOARD_HISTORY_POSITION){
-			CFW_DASHBOARD_HISTORY_POSITION++;
-			commandBundle = CFW_DASHBOARD_COMMAND_HISTORY[CFW_DASHBOARD_HISTORY_POSITION-1];
-			
-			CFW.ui.toogleLoader(true);
-			window.setTimeout( 
-				function(){
-					$.ajaxSetup({async: false});
-						cfw_dashboard_toggleEditMode();
-						
-							// ----------------------------------
-							// Clear All Widgets
-							for(var i = 0;i < commandBundle.length ;i++){
-								var current = commandBundle[i];
-								current.redo(current.redoData);
-								var widgetObject = $("#"+current.redoData.guid).data('widgetObject');
-								if(widgetObject != null){
-									cfw_dashboard_widget_save_state(widgetObject, true, true);
-								}
-							}
-						cfw_dashboard_toggleEditMode();
-					$.ajaxSetup({async: true});
-					CFW.ui.toogleLoader(false);
-				}, 50);
-		}
-	}*/
 }
 
 /*******************************************************************************
@@ -951,6 +895,7 @@ function cfw_dashboard_widget_selectByGUID(widgetGUID){
  * 
  ******************************************************************************/
 function cfw_dashboard_widget_edit(widgetGUID){
+	
 	var widgetInstance = $('#'+widgetGUID);
 	var widgetObject = widgetInstance.data("widgetObject");
 	var widgetDef = CFW.dashboard.getWidgetDefinition(widgetObject.TYPE);
@@ -1184,43 +1129,7 @@ function cfw_dashboard_widget_editCreateTaskParamsForm(widgetID) {
 	
 }
 
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_dashboard_widget_duplicate(widgetGUID) {
-	var widgetInstance = $('#'+widgetGUID);
-	var widgetObject = widgetInstance.data("widgetObject");
-	
-	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'duplicate', item: 'widget', widgetid: widgetObject.PK_ID, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, 
-		function(data){
-			var newWidgetObject = data.payload;
-			if(newWidgetObject != null){
-				// ---------------------------------
-				// remove content to avoid circular
-				// references on deep copy
-				var withoutContent = Object.assign(widgetObject);
-				delete withoutContent.content;
-				
-				// ---------------------------------
-				// Deep copy and create Duplicate
-				var deepCopyWidgetObject = _.cloneDeep(withoutContent);
-				deepCopyWidgetObject.PK_ID = newWidgetObject.PK_ID;
-				delete deepCopyWidgetObject.guid;
-				
-				if(widgetObject.TYPE == "cfw_parameter"){
-					// do not allow the peeps(especially the theusinator) to get the same parameter twice.
-					deepCopyWidgetObject.JSON_SETTINGS = {JSON_PARAMETERS: {}};
-					CFW.ui.addToastInfo('Parameters removed to avoid duplicated parameters.');
-				}
 
-				cfw_dashboard_widget_createInstance(deepCopyWidgetObject, true, function(widgetObject2){
-					cfw_dashboard_history_UndoRedoBundleForCreate(widgetObject2,widgetObject2);
-					
-				});
-			}
-		}
-	);
-}
 
 /*******************************************************************************
  * 
@@ -1318,9 +1227,11 @@ function cfw_dashboard_widget_save_defaultSettings(widgetGUID){
  * 
  ******************************************************************************/
 function cfw_dashboard_widget_save_widgetSettings(formButton, widgetGUID){
+	
+	cfw_dashboard_history_startOperationsBundle();
+	
 	var widget = $('#'+widgetGUID);
 	var widgetObject = widget.data("widgetObject");
-	var undoState = _.cloneDeep(widgetObject);
 	
 	var widgetDef = CFW.dashboard.getWidgetDefinition(widgetObject.TYPE);
 	
@@ -1332,27 +1243,22 @@ function cfw_dashboard_widget_save_widgetSettings(formButton, widgetGUID){
 	if(success){
 		
 		// Make sure to save state before rerender
-		$.ajaxSetup({async: false});
-			cfw_dashboard_widget_save_state(widgetObject, true, false);
-		$.ajaxSetup({async: true});
+
+			$.ajaxSetup({async: false});
+				cfw_dashboard_widget_save_state(widgetObject, true, false);
+			$.ajaxSetup({async: true});
+			
 
 		// TODO: A bit ugly, triggers another save
 		cfw_dashboard_widget_rerender(widgetGUID);
-		
-	    // ----------------------------------
-		// Add Undoable Operation
-		cfw_dashboard_history_startOperationsBundle();
-			cfw_dashboard_history_addUndoableOperation(
-					undoState, 
-					widgetObject, 
-					cfw_dashboard_history_undoUpdateAction,
-					cfw_dashboard_history_redoUpdateAction
-					
-			);
+	
 		cfw_dashboard_history_completeOperationsBundle();
 		
 		CFW.ui.addToastInfo('Done');
+		
 	}
+	
+	
 }
 /*******************************************************************************
  * 
@@ -1368,21 +1274,13 @@ function cfw_dashboard_widget_remove(widgetGUID) {
 	var widget = $('#'+widgetGUID);
 	var widgetObject = widget.data('widgetObject');
 	
+	cfw_dashboard_history_startOperationsBundle();
+	
 	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'delete', item: 'widget', widgetid: widgetObject.PK_ID, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
 
 			if(data.success){
 				cfw_dashboard_widget_removeFromGrid(widget);
 				
-			    // ----------------------------------
-				// Add Undoable Operation
-				cfw_dashboard_history_startOperationsBundle();
-					cfw_dashboard_history_addUndoableOperation(
-							widgetObject, 
-							widgetObject, 
-							cfw_dashboard_history_redoCreateAction,
-							cfw_dashboard_history_undoCreateAction
-							
-					);
 				cfw_dashboard_history_completeOperationsBundle();
 			}
 		}
@@ -1427,7 +1325,7 @@ function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition
 	cfw_dashboard_history_startOperationsBundle();
 	
 	$.ajaxSetup({async: false});
-		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){
+	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){
 			var widgetObject = data.payload;
 			if(widgetObject != null){
 				
@@ -1469,6 +1367,49 @@ function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition
 					
 				});
 				
+			}
+		}
+	);
+	$.ajaxSetup({async: true});
+	cfw_dashboard_history_completeOperationsBundle();
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboard_widget_duplicate(widgetGUID) {
+	var widgetInstance = $('#'+widgetGUID);
+	var widgetObject = widgetInstance.data("widgetObject");
+	
+	cfw_dashboard_history_startOperationsBundle();
+	
+	$.ajaxSetup({async: false});
+	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'duplicate', item: 'widget', widgetid: widgetObject.PK_ID, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, 
+		function(data){
+			var newWidgetObject = data.payload;
+			if(newWidgetObject != null){
+				// ---------------------------------
+				// remove content to avoid circular
+				// references on deep copy
+				var withoutContent = Object.assign(widgetObject);
+				delete withoutContent.content;
+				
+				// ---------------------------------
+				// Deep copy and create Duplicate
+				var deepCopyWidgetObject = _.cloneDeep(withoutContent);
+				deepCopyWidgetObject.PK_ID = newWidgetObject.PK_ID;
+				delete deepCopyWidgetObject.guid;
+				
+				if(widgetObject.TYPE == "cfw_parameter"){
+					// do not allow the peeps(especially the theusinator) to get the same parameter twice.
+					deepCopyWidgetObject.JSON_SETTINGS = {JSON_PARAMETERS: {}};
+					CFW.ui.addToastInfo('Parameters removed to avoid duplicated parameters.');
+				}
+
+				cfw_dashboard_widget_createInstance(deepCopyWidgetObject, true, function(widgetObject2){
+					cfw_dashboard_history_UndoRedoBundleForCreate(widgetObject2,widgetObject2);
+					
+				});
 			}
 		}
 	);
