@@ -152,20 +152,6 @@ function cfw_dashboard_history_completeOperationsBundle(){
  ******************************************************************************/
 function cfw_dashboard_history_addUndoableOperation(widgetObjectOld, widgetObjectNew, undoFunction, redoFunction){
 	
-	/*if(CFW_DASHBOARD_EDIT_MODE && CFW_DASHBOARD_COMMAND_BUNDLE != null){
-		// ------------------------------------------
-		// Add State to History
-		var command = {
-				undo: undoFunction,
-				undoData: _.cloneDeep(widgetObjectOld),
-				redo: redoFunction,
-				redoData: _.cloneDeep(widgetObjectNew),
-		}
-		// var deepClone = _.cloneDeep(widgetObjectArray);
-		CFW_DASHBOARD_COMMAND_BUNDLE.push(command);
-	}*/
-
-	// sole.log(" >> Add Command");
 }
 
 /*******************************************************************************
@@ -1193,11 +1179,13 @@ function cfw_dashboard_widget_handlePaste() {
  * 
  ******************************************************************************/
 function cfw_dashboard_widget_save_defaultSettings(widgetGUID){
+	
+
+	
 	var widget = $('#'+widgetGUID);
 	var widgetObject = widget.data("widgetObject");
 	var settingsForm = $('#form-edit-'+widgetGUID);
 			
-	var undoState = _.cloneDeep(widgetObject);
 	widgetObject.TITLE = settingsForm.find('input[name="title"]').val();
 	widgetObject.TITLE_LINK = settingsForm.find('input[name="titlelink"]').val();
 	widgetObject.TITLE_FONTSIZE = settingsForm.find('input[name="titlefontsize"]').val();
@@ -1207,17 +1195,12 @@ function cfw_dashboard_widget_save_defaultSettings(widgetGUID){
 	widgetObject.BGCOLOR = settingsForm.find('select[name="BGCOLOR"]').val();
 	widgetObject.FGCOLOR = settingsForm.find('select[name="FGCOLOR"]').val();
 	
-	cfw_dashboard_widget_rerender(widgetGUID);
-	
-    // ----------------------------------
-	// Add Undoable Operation
 	cfw_dashboard_history_startOperationsBundle();
-		cfw_dashboard_history_addUndoableOperation(
-				undoState, 
-				widgetObject, 
-				cfw_dashboard_history_undoUpdateAction,
-				cfw_dashboard_history_redoUpdateAction
-		);
+	
+		$.ajaxSetup({async: false});
+			cfw_dashboard_widget_rerender(widgetGUID);
+		$.ajaxSetup({async: true});
+	
 	cfw_dashboard_history_completeOperationsBundle();
 	
 	CFW.ui.addToastInfo('Done');
@@ -1242,15 +1225,15 @@ function cfw_dashboard_widget_save_widgetSettings(formButton, widgetGUID){
 	
 	if(success){
 		
-		// Make sure to save state before rerender
-
-			$.ajaxSetup({async: false});
-				cfw_dashboard_widget_save_state(widgetObject, true, false);
-			$.ajaxSetup({async: true});
+		$.ajaxSetup({async: false});
 			
+			// Make sure to save state before rerender
+			cfw_dashboard_widget_save_state(widgetObject, true, false);
 
-		// TODO: A bit ugly, triggers another save
-		cfw_dashboard_widget_rerender(widgetGUID);
+			// TODO: A bit ugly, triggers another save
+			cfw_dashboard_widget_rerender(widgetGUID);
+		
+		$.ajaxSetup({async: true});
 	
 		cfw_dashboard_history_completeOperationsBundle();
 		
@@ -2078,7 +2061,7 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 	// Set update on dragstop
 	grid.on('change', function(event, items) {
 		
-		var manageBundle = !CFW_DASHBOARD_HISTORY_BUNDLE_STARTED;
+		var manageBundle = !CFW_DASHBOARD_HISTORY_BUNDLE_STARTED && !CFW_DASHBOARD_HISTORY_IS_UPDATING;
 		
 		if(manageBundle){
 			cfw_dashboard_history_startOperationsBundle();
@@ -2100,14 +2083,6 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 				var redoData = _.cloneDeep(widgetObject);
 				cfw_dashboard_widget_save_state(widgetObject, false, true);
 				
-				// ----------------------------------
-				// Add Undoable Operation
-				cfw_dashboard_history_addUndoableOperation(
-						undoData, 
-						redoData, 
-						cfw_dashboard_history_undoUpdateAction, 
-						cfw_dashboard_history_redoUpdateAction
-				);
 			}
 			
 		if(manageBundle){
