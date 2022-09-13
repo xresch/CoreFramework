@@ -76,7 +76,7 @@ public class ServletDashboardViewMethods
 	
 	static {
 		try {
-			methodResetToState = ServletDashboardViewMethods.class.getMethod("undoredo_executeResetToState", ArrayList.class);
+			methodResetToState = ServletDashboardViewMethods.class.getMethod("undoredo_executeResetToState", new ArrayList<DashboardWidget>().getClass());
 		} catch (Exception e) {
 			new CFWLog(logger).severe("Error during reflection of method: "+e.getMessage(), e);
 		}
@@ -105,6 +105,10 @@ public class ServletDashboardViewMethods
 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 					return;
 				}
+				
+				//---------------------------
+				// Clear existing History
+				undoredo_clearHistory(CFW.Context.Request.getUserID(), dashboardID);
 				
 				//---------------------------
 				// Add CSS and JS
@@ -145,7 +149,7 @@ public class ServletDashboardViewMethods
 		        response.setContentType("text/html");
 		        response.setStatus(HttpServletResponse.SC_OK);
 			}else {
-				handleDataRequest(request, response, isPublicServlet);
+				handleActionRequest(request, response, isPublicServlet);
 			}
 		}else {
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
@@ -163,7 +167,7 @@ public class ServletDashboardViewMethods
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_VIEWER)
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
-			handleDataRequest(request, response, isPublicServlet);
+			handleActionRequest(request, response, isPublicServlet);
 		}else {
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 		}
@@ -173,11 +177,12 @@ public class ServletDashboardViewMethods
 	/*****************************************************************
 	 *
 	 *****************************************************************/
-	private static void handleDataRequest(HttpServletRequest request, HttpServletResponse response, boolean isPublicServlet) {
+	private static void handleActionRequest(HttpServletRequest request, HttpServletResponse response, boolean isPublicServlet) {
 		
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
 		String dashboardID = request.getParameter("dashboardid");
+		Integer userID = CFW.Context.Request.getUser().id();
 		
 		JSONResponse jsonResponse = new JSONResponse();
 
@@ -235,10 +240,10 @@ public class ServletDashboardViewMethods
 			
 			case "undoredo": 			
 				switch(item.toLowerCase()) {
-					case "startbundle": 		undoredo_operationBundleStart(CFW.Context.Request.getUser().id(), dashboardID);
+					case "startbundle": 		undoredo_operationBundleStart(userID, dashboardID);
 	  											break;
 	  											
-					case "endbundle": 			undoredo_operationBundleEnd(CFW.Context.Request.getUser().id(), dashboardID);
+					case "endbundle": 			undoredo_operationBundleEnd(userID, dashboardID);
 												break;
 					
 					case "triggerundo": 		undoredo_triggerUndoRedo(request, jsonResponse, true, isPublicServlet);
@@ -1252,7 +1257,7 @@ public class ServletDashboardViewMethods
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private static UndoRedoHistory<ArrayList<DashboardWidget>> undoredo_GetHistory(int userID, String dashboardID) {
+	private static UndoRedoHistory<ArrayList<DashboardWidget>> undoredo_getHistory(int userID, String dashboardID) {
 		try {
 			return undoredoManager.getHistory(userID+"-"+dashboardID);
 		} catch (ExecutionException e) {
@@ -1265,10 +1270,20 @@ public class ServletDashboardViewMethods
 	/******************************************************************
 	 *
 	 ******************************************************************/
+	private static UndoRedoHistory<ArrayList<DashboardWidget>> undoredo_clearHistory(int userID, String dashboardID) {
+		
+		undoredo_getHistory(userID, dashboardID).clear();
+		
+		return null;
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	private static void undoredo_operationBundleStart(int userID, String dashboardID) {
 		
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
-			UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_GetHistory(userID, dashboardID);
+			UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_getHistory(userID, dashboardID);
 			
 			if(history != null) {
 				history.operationBundleStart();
@@ -1283,7 +1298,7 @@ public class ServletDashboardViewMethods
 	private static void undoredo_operationBundleEnd(int userID, String dashboardID) {
 		
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
-			UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_GetHistory(userID, dashboardID);
+			UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_getHistory(userID, dashboardID);
 			
 			if(history != null) {
 				undoredo_addResetStateOperation(history, dashboardID);
@@ -1318,7 +1333,7 @@ public class ServletDashboardViewMethods
 	 * Resets the state to the given snapshot
 	 ******************************************************************/
 	@SuppressWarnings("unused")
-	private static void undoredo_executeResetToState(ArrayList<DashboardWidget> state) {
+	public static void undoredo_executeResetToState(ArrayList<DashboardWidget> state) {
 		
 		if(state.size() > 0) {
 			//----------------------------
@@ -1353,7 +1368,7 @@ public class ServletDashboardViewMethods
 		Integer userID = CFW.Context.Request.getUser().id(); 
 		String dashboardID = request.getParameter("dashboardid");
 		
-		UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_GetHistory(userID, dashboardID);
+		UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_getHistory(userID, dashboardID);
 		
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			try {

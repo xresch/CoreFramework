@@ -26,6 +26,14 @@ public class UndoRedoHistory<T>{
 	}
 	
 	/**************************************************************
+	 * 
+	 **************************************************************/
+	public void clear() {
+		 operationBundleStack.clear();
+		 currentOperationBundle = null;
+	}
+	
+	/**************************************************************
 	 * Starts an operation bundle.
 	 * All operations added to the history will be packed into a 
 	 * single bundle until operationBundleEnd() is called.
@@ -52,25 +60,32 @@ public class UndoRedoHistory<T>{
 	 **************************************************************/
 	public void operationBundleEnd() {
 		
-		if(currentOperationBundle != null) {
-			
-			//-----------------------------------------
-			// If pointer is not at the end of the history
-			// stack, remove all entries after the current position.
-			
-			int bundleLastIndex = operationBundleStack.size() - 1;
-			int nextIndex = historyPointer + 1;
-			
-			while(nextIndex < bundleLastIndex ) {
-				operationBundleStack.remove(nextIndex);
-			}
-			
-			//-----------------------------------------
-			// Add Bundle to Stack and set pointer
-			operationBundleStack.add(currentOperationBundle);
-			historyPointer = operationBundleStack.size() - 1;
-			currentOperationBundle = null;
+		//-----------------------------------------
+		// Check Bundle State
+		if(currentOperationBundle == null) {
+			return;
 		}
+		
+		if(currentOperationBundle.size() == 0) {
+			currentOperationBundle = null;
+			return;
+		}
+		
+		//-----------------------------------------
+		// If pointer is not at the end of the history
+		// stack, remove all entries after the current position.
+		int nextIndex = historyPointer + 1;
+		
+		while(nextIndex < (operationBundleStack.size()-1) ) {
+			operationBundleStack.remove(nextIndex);
+		}
+		
+		//-----------------------------------------
+		// Add Bundle to Stack and set pointer
+		operationBundleStack.add(currentOperationBundle);
+		historyPointer = operationBundleStack.size() - 1;
+		currentOperationBundle = null;
+	
 	}
 	
 	/**************************************************************
@@ -129,7 +144,8 @@ public class UndoRedoHistory<T>{
 	 **************************************************************/
 	public void executeUndoDirect() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException  {
 		
-		if(historyPointer > 0) {
+		
+		if(historyPointer >= 0 && operationBundleStack.size() > 0) {
 			
 			ArrayList<UndoRedoOperation<T>> operationBundle = operationBundleStack.get(historyPointer);
 			
@@ -160,7 +176,9 @@ public class UndoRedoHistory<T>{
 	 **************************************************************/
 	public void executeRedoDirect() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException  {
 		
-		if( historyPointer < (operationBundleStack.size() - 1) ) {
+		if( historyPointer < (operationBundleStack.size() - 1) && operationBundleStack.size() > 0 ) {
+			
+			historyPointer++;
 			
 			ArrayList<UndoRedoOperation<T>> operationBundle = operationBundleStack.get(historyPointer);
 			
@@ -169,7 +187,7 @@ public class UndoRedoHistory<T>{
 				operation.executeRedo();
 			}
 			
-			historyPointer++;
+			
 		}
 		
 	}
