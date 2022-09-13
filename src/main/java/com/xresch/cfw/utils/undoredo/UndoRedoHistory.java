@@ -113,7 +113,11 @@ public class UndoRedoHistory<T>{
 	}
 	
 	/**************************************************************
-	 * Executes an undo operation.
+	 * Executes an undo operation. The method will not execute
+	 * every operation included in a bundle, but will directly execute
+	 * the first undo operation in a bundle. This is useful when 
+	 * the data contains a full state of some data and not a partial 
+	 * edit.
 	 * Does nothing if there are no more undo states.
 	 * This method does not want to throw anything but we make it 
 	 * throw things anyway.
@@ -123,18 +127,28 @@ public class UndoRedoHistory<T>{
 	 * @throws IllegalAccessException 
 	 * 
 	 **************************************************************/
-	public void executeUndo() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException  {
+	public void executeUndoDirect() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException  {
 		
 		if(historyPointer > 0) {
-			UndoRedoOperation<T> operation = currentOperationBundle.get(historyPointer);
-			operation.executeUndo();
+			
+			ArrayList<UndoRedoOperation<T>> operationBundle = operationBundleStack.get(historyPointer);
+			
+			if(operationBundle.size() > 0) {
+				UndoRedoOperation<T> operation = operationBundle.get(0);
+				operation.executeUndo();
+			}
+			
 			historyPointer--;
 		}
 		
 	}
 	
 	/**************************************************************
-	 * Executes a redo operation.
+	 * Executes a redo operation. The method will not execute
+	 * every operation included in a bundle, but will directly execute
+	 * the last redo operation in a bundle. This is useful when 
+	 * the data contains a full state of some data and not a partial 
+	 * edit.
 	 * Does nothing if there are no more undo states.
 	 * This method prefers to throw exceptions rather then throwing
 	 * itself out of the window.
@@ -144,11 +158,17 @@ public class UndoRedoHistory<T>{
 	 * @throws IllegalAccessException 
 	 * 
 	 **************************************************************/
-	public void executeRedo() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException  {
+	public void executeRedoDirect() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException  {
 		
 		if( historyPointer < (operationBundleStack.size() - 1) ) {
-			UndoRedoOperation<T> operation = currentOperationBundle.get(historyPointer);
-			operation.executeRedo();
+			
+			ArrayList<UndoRedoOperation<T>> operationBundle = operationBundleStack.get(historyPointer);
+			
+			if(operationBundle.size() > 0) {
+				UndoRedoOperation<T> operation = operationBundle.get(operationBundle.size()-1);
+				operation.executeRedo();
+			}
+			
 			historyPointer++;
 		}
 		

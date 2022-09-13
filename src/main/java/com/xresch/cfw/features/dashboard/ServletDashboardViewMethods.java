@@ -1,6 +1,8 @@
 package com.xresch.cfw.features.dashboard;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -55,6 +57,7 @@ import com.xresch.cfw.utils.CFWModifiableHTTPRequest;
 import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.utils.undoredo.UndoRedoHistory;
 import com.xresch.cfw.utils.undoredo.UndoRedoManager;
+import com.xresch.cfw.utils.undoredo.UndoRedoOperation;
 import com.xresch.cfw.validation.ScheduleValidator;
 
 /**************************************************************************************************************
@@ -68,7 +71,16 @@ public class ServletDashboardViewMethods
 	
 	private static final UndoRedoManager<ArrayList<DashboardWidget>> undoredoManager = 
 									new UndoRedoManager<ArrayList<DashboardWidget>>("Dashboard", 20);
+
+	private static Method methodResetToState = null;
 	
+	static {
+		try {
+			methodResetToState = ServletDashboardViewMethods.class.getMethod("undoredo_executeResetToState", ArrayList.class);
+		} catch (Exception e) {
+			new CFWLog(logger).severe("Error during reflection of method: "+e.getMessage(), e);
+		}
+	}
 	/*****************************************************************
 	 *
 	 ******************************************************************/
@@ -165,11 +177,7 @@ public class ServletDashboardViewMethods
 		
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
-		String type = request.getParameter("type");
 		String dashboardID = request.getParameter("dashboardid");
-		//String ID = request.getParameter("id");
-		//String IDs = request.getParameter("ids");
-		//int	userID = CFW.Context.Request.getUser().id();
 		
 		JSONResponse jsonResponse = new JSONResponse();
 
@@ -224,7 +232,26 @@ public class ServletDashboardViewMethods
 												break;
 				}
 				break;	
-				
+			
+			case "undoredo": 			
+				switch(item.toLowerCase()) {
+					case "startbundle": 		undoredo_operationBundleStart(CFW.Context.Request.getUser().id(), dashboardID);
+	  											break;
+	  											
+					case "endbundle": 			undoredo_operationBundleEnd(CFW.Context.Request.getUser().id(), dashboardID);
+												break;
+					
+					case "triggerundo": 		undoredo_triggerUndoRedo(request, jsonResponse, true, isPublicServlet);
+												break;
+												
+					case "triggerredo": 		undoredo_triggerUndoRedo(request, jsonResponse, false, isPublicServlet);
+												break;
+					
+					default: 					CFW.Messages.itemNotSupported(item);
+												break;
+				}
+				break;	
+			
 			case "update": 			
 				switch(item.toLowerCase()) {
 					case "widgetfull": 				updateWidget(request, response, jsonResponse, false);
@@ -383,6 +410,7 @@ public class ServletDashboardViewMethods
 		if(Strings.isNullOrEmpty(dashboardID)) {
 			return;
 		}
+		
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			//----------------------------
 			// Get Values
@@ -1239,12 +1267,14 @@ public class ServletDashboardViewMethods
 	 ******************************************************************/
 	private static void undoredo_operationBundleStart(int userID, String dashboardID) {
 		
-		UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_GetHistory(userID, dashboardID);
-		
-		if(history != null) {
-			history.operationBundleStart();
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_GetHistory(userID, dashboardID);
+			
+			if(history != null) {
+				history.operationBundleStart();
+				undoredo_addResetStateOperation(history, dashboardID);
+			}
 		}
-
 	}
 	
 	/******************************************************************
@@ -1252,10 +1282,13 @@ public class ServletDashboardViewMethods
 	 ******************************************************************/
 	private static void undoredo_operationBundleEnd(int userID, String dashboardID) {
 		
-		UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_GetHistory(userID, dashboardID);
-		
-		if(history != null) {
-			history.operationBundleEnd();
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_GetHistory(userID, dashboardID);
+			
+			if(history != null) {
+				undoredo_addResetStateOperation(history, dashboardID);
+				history.operationBundleEnd();
+			}
 		}
 
 	}
@@ -1263,14 +1296,90 @@ public class ServletDashboardViewMethods
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private static void undoredo_addOperation(UndoRedoHistory<ArrayList<DashboardWidget>> history) {
+	private static void undoredo_addResetStateOperation(UndoRedoHistory<ArrayList<DashboardWidget>> history, String dashboardID) {
 		
-		if(history != null) {
-			history.operationBundleEnd();
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			ArrayList<DashboardWidget> state = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
+			if(history != null) {
+				history.addOperation(
+						new UndoRedoOperation<ArrayList<DashboardWidget>>(
+								history
+								, methodResetToState
+								, methodResetToState
+								, state
+								, state)
+				);
+			}
 		}
 
 	}
+	
+	/******************************************************************
+	 * Resets the state to the given snapshot
+	 ******************************************************************/
+	@SuppressWarnings("unused")
+	private static void undoredo_executeResetToState(ArrayList<DashboardWidget> state) {
+		
+		if(state.size() > 0) {
+			//----------------------------
+			// Start Transaction
+			CFW.DB.transactionStart();
+				//----------------------------
+				// Reset Widgets 
+				boolean success = true;
+				int dashboardID = state.get(0).foreignKeyDashboard();
+				success &= CFW.DB.DashboardWidgets.deleteWidgetsForDashboard(""+dashboardID);
+				for(DashboardWidget widget : state) {
+					success &= CFW.DB.DashboardWidgets.create(widget);
+				}
+			
+			//----------------------------
+			// Commit or Rollback
+			if(success) {
+				CFW.DB.transactionCommit();
+			}else {
+				CFW.DB.transactionRollback();
+			}
+		}
 
+	}
+	
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private static void undoredo_triggerUndoRedo(HttpServletRequest request, JSONResponse json, boolean doUndo, boolean isPublicServlet) {
+		
+		Integer userID = CFW.Context.Request.getUser().id(); 
+		String dashboardID = request.getParameter("dashboardid");
+		
+		UndoRedoHistory<ArrayList<DashboardWidget>> history = undoredo_GetHistory(userID, dashboardID);
+		
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			try {
+				
+				//-----------------------------
+				// Execute Undo/Redo
+				if(doUndo) {
+						history.executeUndoDirect();
+				}else {
+					history.executeRedoDirect();
+				}
+				
+				//-----------------------------
+				// Read Current State and send
+				// to Browser
+				fetchWidgetsAndParams(json, dashboardID, isPublicServlet);
+				
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				new CFWLog(logger).severe("Exception while executing undo/redo:"+e, e);
+				json.setSuccess(false);
+			}
+		}
+		
+		
+		
+	}
 	
 
 }
