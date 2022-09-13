@@ -111,9 +111,6 @@ function cfw_dashboard_timeframe_setCustom(earliestMillis, latestMillis){
 }
 
 
-
-
-
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -147,12 +144,6 @@ function cfw_dashboard_history_completeOperationsBundle(){
 	
 }
 
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_dashboard_history_addUndoableOperation(widgetObjectOld, widgetObjectNew, undoFunction, redoFunction){
-	
-}
 
 /*******************************************************************************
  * 
@@ -199,69 +190,6 @@ function cfw_dashboard_history_triggerRedo(){
 				
 	}
 	
-}
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_dashboard_history_redoUpdateAction(redoData){
-	
-	var widgetObject = redoData;
-	var widget = $('#'+widgetObject.guid);
-	
-	cfw_dashboard_widget_removeFromGrid(widget);
-	cfw_dashboard_widget_createInstance(widgetObject, false);
-}
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_dashboard_history_undoUpdateAction(undoData){
-	
-	var widgetObject = undoData;
-	var widget = $('#'+widgetObject.guid);
-	
-	cfw_dashboard_widget_removeFromGrid(widget);
-	cfw_dashboard_widget_createInstance(widgetObject, false);
-}
-
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_dashboard_history_redoCreateAction(redoData){
-	
-	var widgetObject = redoData;
-	cfw_dashboard_widget_add(widgetObject.TYPE, widgetObject);
-	 
-}
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_dashboard_history_undoCreateAction(undoData){
-	
-	var widgetObject = undoData;
-	cfw_dashboard_widget_remove(widgetObject.guid);
-}
-
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_dashboard_history_UndoRedoBundleForCreate(undoData, redoData){
-	
-	// ----------------------------------
-	// Add Undoable Operation
-/*	cfw_dashboard_history_startOperationsBundle();
-	
-		cfw_dashboard_history_addUndoableOperation(
-				undoData, 
-				redoData, 
-				cfw_dashboard_history_undoCreateAction, 
-				cfw_dashboard_history_redoCreateAction
-		);
-		
-	cfw_dashboard_history_completeOperationsBundle();*/
 }
 
 
@@ -1324,11 +1252,7 @@ function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition
 					
 					//TODO: A bit ugly, triggers another save
 					cfw_dashboard_widget_rerender(optionalWidgetObjectData.guid);
-					
-					if(isPaste){
-						cfw_dashboard_history_UndoRedoBundleForCreate(optionalWidgetObjectData,optionalWidgetObjectData);
-					}
-					
+										
 					return;
 				}
 				
@@ -1389,10 +1313,7 @@ function cfw_dashboard_widget_duplicate(widgetGUID) {
 					CFW.ui.addToastInfo('Parameters removed to avoid duplicated parameters.');
 				}
 
-				cfw_dashboard_widget_createInstance(deepCopyWidgetObject, true, function(widgetObject2){
-					cfw_dashboard_history_UndoRedoBundleForCreate(widgetObject2,widgetObject2);
-					
-				});
+				cfw_dashboard_widget_createInstance(deepCopyWidgetObject, true);
 			}
 		}
 	);
