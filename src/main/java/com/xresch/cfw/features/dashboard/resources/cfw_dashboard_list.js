@@ -544,7 +544,9 @@ function cfw_dashboardlist_printDashboards(data, type){
 								name: 'table',
 								renderdef: {
 									labels: {
-		 								IS_FAVED: "&nbsp;"
+		 								IS_FAVED: "&nbsp;",
+										PK_ID: "ID",
+			 							IS_SHARED: 'Shared'
 									},
 									rendererSettings: {
 										table: {filterable: false},
