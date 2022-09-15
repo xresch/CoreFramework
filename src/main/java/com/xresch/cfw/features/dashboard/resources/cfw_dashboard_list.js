@@ -25,7 +25,6 @@ function cfw_dashboardlist_createTabs(){
 		|| CFW.hasPermission('Dashboard Admin')){
 			list.append(
 				'<li class="nav-item"><a class="nav-link" id="tab-mydashboards" data-toggle="pill" href="#" role="tab" onclick="cfw_dashboardlist_draw({tab: \'mydashboards\'})"><i class="fas fa-user-circle mr-2"></i>My Dashboards</a></li>'
-				+'<li class="nav-item"><a class="nav-link" id="tab-shareddashboards" data-toggle="pill" href="#" role="tab" onclick="cfw_dashboardlist_draw({tab: \'shareddashboards\'})"><i class="fas fa-share-alt mr-2"></i>Shared Dashboards</a></li>'
 			);
 		}
 		
@@ -36,7 +35,7 @@ function cfw_dashboardlist_createTabs(){
 		
 		//--------------------------------
 		// Faved Dashboard Tab	
-		list.append('<li class="nav-item"><a class="nav-link" id="tab-shareddashboards" data-toggle="pill" href="#" role="tab" onclick="cfw_dashboardlist_draw({tab: \'faveddashboards\'})"><i class="fas fa-star mr-2"></i>Favorites</a></li>');
+		list.append('<li class="nav-item"><a class="nav-link" id="tab-faveddashboards" data-toggle="pill" href="#" role="tab" onclick="cfw_dashboardlist_draw({tab: \'faveddashboards\'})"><i class="fas fa-star mr-2"></i>Favorites</a></li>');
 		
 		//--------------------------------
 		// Admin Dashboard Tab	
@@ -247,6 +246,24 @@ function cfw_dashboardlist_printDashboards(data, type){
 	
 	//--------------------------------
 	// Button
+
+	switch(type){
+		case "mydashboards":		parent.append('<p>This tab shows all dashboards where you are the owner.</p>')
+									break;	
+									
+		case "shareddashboards":	parent.append('<p>This list contains all the dashboard that are shared by others and by you.</p>')
+									break;
+									
+		case "faveddashboards":		parent.append('<p>Here you can find all the dashboards you have faved.</p>')
+									break;	
+									
+		case "admindashboards":		parent.append('<p class="bg-cfw-emergency p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all dashboards of all users.</b></p>')
+									break;	
+														
+		default:					break;
+	}
+	//--------------------------------
+	//  Button
 	if(type == 'mydashboards'){
 		var createButton = $('<button class="btn btn-sm btn-success m-1" onclick="cfw_dashboardlist_createDashboard()">'
 							+ '<i class="fas fa-plus-circle"></i> '+ CFWL('cfw_dashboardlist_createDashboard')
@@ -458,10 +475,10 @@ function cfw_dashboardlist_printDashboards(data, type){
 			 	bgstylefield: null,
 			 	textstylefield: null,
 			 	titlefields: ['NAME'],
-			 	titleformat: '{0}',
+			 	titleformat: null,
 			 	visiblefields: showFields,
 			 	labels: {
-			 		IS_FAVED: "&nbsp;",
+			 		IS_FAVED: "Favorite",
 			 		PK_ID: "ID",
 			 		IS_SHARED: 'Shared'
 			 	},
@@ -512,14 +529,23 @@ function cfw_dashboardlist_printDashboards(data, type){
 							{	label: 'Table',
 								name: 'table',
 								renderdef: {
+									labels: {
+		 								IS_FAVED: "&nbsp;",
+										PK_ID: "ID",
+			 							IS_SHARED: 'Shared'
+									},
 									rendererSettings: {
 										table: {filterable: false, narrow: true},
+										
 									},
 								}
 							},
 							{	label: 'Bigger Table',
 								name: 'table',
 								renderdef: {
+									labels: {
+		 								IS_FAVED: "&nbsp;"
+									},
 									rendererSettings: {
 										table: {filterable: false},
 									},
