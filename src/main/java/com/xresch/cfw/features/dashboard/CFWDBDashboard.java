@@ -37,6 +37,9 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class CFWDBDashboard {
 	
+	private static final String SQL_SUBQUERY_OWNER = "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER";
+	private static final String SQL_SUBQUERY_ISFAVED = "(SELECT COUNT(*) FROM CFW_DASHBOARD_FAVORITE_MAP M WHERE M.FK_ID_USER = ? AND M.FK_ID_DASHBOARD = T.PK_ID) > 0";
+
 	private static Class<Dashboard> cfwObjectClass = Dashboard.class;
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBDashboard.class.getName());
@@ -173,23 +176,7 @@ public class CFWDBDashboard {
 		
 	}
 	
-	/***************************************************************
-	 * Return a list of all user dashboards
-	 * 
-	 * @return Returns a resultSet with all dashboards or null.
-	 ****************************************************************/
-//	public static ResultSet getSharedDashboardList() {
-//		// SELECT (SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER ) AS USERNAME, * FROM CFW_DASHBOARD WHERE IS_SHARED = TRUE ORDER BY LOWER(NAME)
-//		return new Dashboard()
-//				.queryCache(CFWDBDashboard.class, "getSharedDashboardList")
-//				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
-//				.select()
-//				.where(DashboardFields.IS_SHARED.toString(), true)
-//				.orderby(DashboardFields.NAME.toString())
-//				.getResultSet();
-//		
-//	}
-	
+
 	/***************************************************************
 	 * Return a list of all user dashboards as json string.
 	 * 
@@ -199,10 +186,27 @@ public class CFWDBDashboard {
 		
 		return new Dashboard()
 				.queryCache(CFWDBDashboard.class, "getUserDashboardListAsJSON")
+				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
 				.where(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
 				.orderby(DashboardFields.NAME.toString())
 				.getAsJSON();
+	}
+	
+	/***************************************************************
+	 * Return a list of all user dashboards as json string.
+	 * 
+	 * @return Returns a result set with all users or null.
+	 ****************************************************************/
+	public static String getFavedDashboardListAsJSON() {
+		
+		return new CFWSQL(new Dashboard())
+				.queryCache()
+				.loadSQLResource(FeatureDashboard.PACKAGE_RESOURCES, "SQL_getFavedDashboardListAsJSON.sql", 
+						CFW.Context.Request.getUserID()
+					)
+				.getAsJSON();
+				
 	}
 	
 	/***************************************************************
@@ -215,7 +219,8 @@ public class CFWDBDashboard {
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 			return new Dashboard()
 				.queryCache(CFWDBDashboard.class, "getAdminDashboardListAsJSON")
-				.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
+				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
 				.orderby(DashboardFields.NAME.toString())
 				.getAsJSON();
@@ -241,6 +246,7 @@ public class CFWDBDashboard {
 			.loadSQLResource(FeatureDashboard.PACKAGE_RESOURCES, "SQL_getSharedDashboardListAsJSON.sql", 
 					userID,
 					userID,
+					userID,
 					sharedUserslikeID,
 					sharedUserslikeID);
 			
@@ -248,7 +254,8 @@ public class CFWDBDashboard {
 		//-------------------------
 		// Union with Shared Groups
 		query.union()
-			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
+			.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, userID)
 			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION, DashboardFields.TAGS)
 			.where(DashboardFields.IS_SHARED, true)
 			.and().custom("(");
@@ -267,7 +274,8 @@ public class CFWDBDashboard {
 		//-------------------------
 		// Union with Editor Roles
 		query.union()
-			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
+			.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, userID)
 			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION, DashboardFields.TAGS)
 			.where().custom("(");
 		
@@ -775,7 +783,7 @@ public class CFWDBDashboard {
 		
 		ResultSet resultSet = new Dashboard()
 			.queryCache(CFWDBDashboard.class, "autocompleteDashboard")
-			.columnSubquery("OWNER", "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER")
+			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.select(DashboardFields.PK_ID,
 					DashboardFields.NAME)
 			.whereLike(DashboardFields.NAME, "%"+searchValue+"%")

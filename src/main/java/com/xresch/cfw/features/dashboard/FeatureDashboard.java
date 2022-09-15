@@ -66,6 +66,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Objects.addCFWObject(Dashboard.class);
 		CFW.Registry.Objects.addCFWObject(DashboardWidget.class);
 		CFW.Registry.Objects.addCFWObject(DashboardParameter.class);
+		CFW.Registry.Objects.addCFWObject(DashboardFavoritesMap.class);
     	
 		//----------------------------------
     	// Initialize Cache

@@ -123,6 +123,9 @@ public class ServletDashboardList extends HttpServlet
 					case "mydashboards": 		jsonResponse.getContent().append(CFW.DB.Dashboards.getUserDashboardListAsJSON());
 	  											break;
 	  											
+					case "faveddashboards": 	jsonResponse.getContent().append(CFW.DB.Dashboards.getFavedDashboardListAsJSON());
+												break;
+	  											
 					case "shareddashboards": 	jsonResponse.getContent().append(CFW.DB.Dashboards.getSharedDashboardListAsJSON());
 												break;	
 												
@@ -147,14 +150,28 @@ public class ServletDashboardList extends HttpServlet
 										break;
 				}
 				break;	
-			case "delete": 			
+				
+			case "update": 			
 				switch(item.toLowerCase()) {
 
-					case "dashboard": 	deleteDashboard(jsonResponse, ID);
-										break;  
+					case "favorite": 	Integer userID = CFW.Context.Request.getUserID();
+										String dashboardID = request.getParameter("listitemid");
+										jsonResponse.setSuccess(CFW.DB.DashboardFavorites.toogleDashboardInUserFavs(dashboardID, ""+userID));
+										break;
 										
 					default: 			CFW.Messages.itemNotSupported(item);
 										break;
+				}
+				break;	
+				
+			case "delete": 			
+				switch(item.toLowerCase()) {
+				
+				case "dashboard": 	deleteDashboard(jsonResponse, ID);
+				break;  
+				
+				default: 			CFW.Messages.itemNotSupported(item);
+				break;
 				}
 				break;	
 				

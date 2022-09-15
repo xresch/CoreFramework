@@ -139,6 +139,7 @@ DONE
 - Database: Added Feature 'Reindex Fulltext Search' to DB Analytics page
 - CFWField: Added flag SERVER_SIDE_ONLY
 - Dashboard: Widgets settings marked with SERVER_SIDE_ONLY are not sent to the browser
+- Dashboard: Added Favorite Feature
 - Dashboard: Complete rework of undo/redo functionality because of introduction of SERVER_SIDE_ONLY
 - Dashboard: Copy widgets to clipboard does not copy task settings (Reason: Avoiding unintentional spamming of the jobs system)
 - JS Components: ToogleButton supports favorite style

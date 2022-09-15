@@ -355,10 +355,27 @@ public class CFWSQL {
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public CFWSQL columnSubquery(String asName, String query) {
+		return this.columnSubquery(asName, query, (Object[])null);
+	}
+	
+	/****************************************************************
+	 * Add a column subquery which will be added to the select statement.
+	 * This methd has to be called before you call the select*() method.
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public CFWSQL columnSubquery(String asName, String query, Object... values) {
+		
 		if(columnSubqueries == null) {
 			columnSubqueries = new LinkedHashMap<String, String>();
 		}
 		columnSubqueries.put(asName, query);
+		
+		if(values != null) {
+			for(Object object : values) {
+				this.values.add(object);
+			}
+		}
+		
 		return this;
 	}
 	
