@@ -623,15 +623,36 @@ class CFWCard{
  ******************************************************************/
 class CFWToggleButton{
 	
-	constructor(url, params, isEnabled){
-		this.url = url;
-		this.params = params;
-		this.isLocked = false;
-		this.button = $('<button class="btn btn-sm">');
-		this.button.data('instance', this);
-		this.button.attr('onclick', 'cfw_toggleTheToggleButton(this)');
-		this.button.html($('<i class="fa"></i>'));
+	constructor(url, params, isEnabled, style){
 		
+		this.options = {
+			url: url,
+			params: params,
+			isEnabled: isEnabled,
+			isLocked: false,
+			button: $('<button class="btn btn-sm">'),
+			//following are all css classes
+			bgColorTrue: 'btn-success',
+			bgColorFalse: 'btn-danger',
+			textColorTrue: '',
+			textColorFalse: '',
+			trueIcon: 'fa-check',
+			falseIcon: 'fa-ban',
+			lockedIcon: 'fa-lock',
+		};
+		
+		//this.options = Object.assign({}, this.defaultOptions, customOptions);
+		
+		if(style == "fave"){
+			this.styleFaveButton();
+		}
+		
+		this.options.button
+			.data('instance', this)
+			.attr('onclick', 'cfw_toggleTheToggleButton(this)')
+			.html($('<i class="fa"></i>'))
+			;
+					
 		if(isEnabled){
 			this.setEnabled();
 		}else{
@@ -640,49 +661,78 @@ class CFWToggleButton{
 	}
 	
 	/********************************************
+	 * Change the display of the button to a fave button.
+	 ********************************************/
+	styleFaveButton(){
+		this.options.button = $('<a class="btn btn-sm">');
+		
+		this.options.bgColorTrue = '';
+		this.options.bgColorFalse = '';
+		
+		this.options.textColorTrue = 'text-cfw-yellow';
+		this.options.textColorFalse = 'text-cfw-gray';
+		
+		this.options.trueIcon = 'fa-star';
+		this.options.falseIcon = 'fa-star';
+		this.options.lockedIcon = 'fa-lock';
+		
+	}
+	
+	/********************************************
 	 * Change the display of the button to locked.
 	 ********************************************/
 	setLocked(){
-		this.isLocked = true;
-		this.button
-		.prop('disabled', this.isLocked)
-		.attr('title', "Cannot be changed")
-		.find('i')
-			.removeClass('fa-check')
-			.removeClass('fa-ban')
-			.addClass('fa-lock');
+		this.options.isLocked = true;
+		this.options.button
+			.prop('disabled', this.options.isLocked)
+			.attr('title', "Cannot be changed")
+			.find('i')
+				.removeClass(this.options.trueIcon)
+				.removeClass(this.options.falseIcon)
+				.addClass(this.options.lockedIcon)
+				;
 	}
+	
 	/********************************************
 	 * Change the display of the button to enabled.
 	 ********************************************/
 	setEnabled(){
-		this.isEnabled = true;
-		this.button.addClass("btn-success")
-			.removeClass("btn-danger")
+		this.options.isEnabled = true;
+		this.options.button
+			.removeClass(this.options.bgColorFalse)
+			.addClass(this.options.bgColorTrue)
 			.attr('title', "Click to Disable")
 			.find('i')
-				.addClass('fa-check')
-				.removeClass('fa-ban');
+				.removeClass(this.options.falseIcon)
+				.removeClass(this.options.textColorFalse)
+				.addClass(this.options.trueIcon)
+				.addClass(this.options.textColorTrue)
+				;
+				
 	}
 	
 	/********************************************
 	 * Change the display of the button to locked.
 	 ********************************************/
 	setDisabled(){
-		this.isEnabled = false;
-		this.button.removeClass("btn-success")
-			.addClass("btn-danger")
+		this.options.isEnabled = false;
+		this.options.button
+			.removeClass(this.options.bgColorTrue)
+			.addClass(this.options.bgColorFalse)
 			.attr('title', "Click to Enable")
 			.find('i')
-				.removeClass('fa-check')
-				.addClass('fa-ban');
+				.removeClass(this.options.trueIcon)
+				.removeClass(this.options.textColorTrue)
+				.addClass(this.options.falseIcon)
+				.addClass(this.options.textColorFalse)
+				;
 	}
 
 	/********************************************
 	 * toggle the Button
 	 ********************************************/
 	toggleButton(){
-		if(this.isEnabled){
+		if(this.options.isEnabled){
 			this.setDisabled();
 		}else{
 			this.setEnabled();
@@ -694,9 +744,9 @@ class CFWToggleButton{
 	 * successful.
 	 ********************************************/
 	onClick(){
-		var button = this.button;
+		var button = this.options.button;
 
-		CFW.http.getJSON(this.url, this.params, 
+		CFW.http.getJSON(this.options.url, this.options.params, 
 			function(data){
 				if(data.success){
 					var instance = $(button).data('instance');
@@ -711,19 +761,19 @@ class CFWToggleButton{
 	 * Returns the button
 	 ********************************************/
 	getButton(){
-		return this.button;
+		return this.options.button;
 	}
 	
 	/********************************************
 	 * Toggle the table filter, default is true.
 	 ********************************************/
 	appendTo(parent){
-		parent.append(this.button);
+		parent.append(this.options.button);
 	}
 }
 
-function cfw_ui_createToggleButton(url, params, isEnabled){
-	return new CFWToggleButton(url, params, isEnabled);
+function cfw_ui_createToggleButton(url, params, isEnabled, style){
+	return new CFWToggleButton(url, params, isEnabled, style);
 }
 
 function cfw_toggleTheToggleButton(button){

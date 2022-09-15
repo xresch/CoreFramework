@@ -140,7 +140,8 @@ DONE
 - CFWField: Added flag SERVER_SIDE_ONLY
 - Dashboard: Widgets settings marked with SERVER_SIDE_ONLY are not sent to the browser
 - Dashboard: Complete rework of undo/redo functionality because of introduction of SERVER_SIDE_ONLY
-- Dashobard: Copy widgets to clipboard does not copy task settings (Reason: Avoiding unintentional spamming of the jobs system)
+- Dashboard: Copy widgets to clipboard does not copy task settings (Reason: Avoiding unintentional spamming of the jobs system)
+- JS Components: ToogleButton supports favorite style
 - Utils: Added Undo/Redo Manager 
 - Query: Fixed Comma after Binary Expression breaks query by creating array in the wrong place
 - Query: Loader does not block query editor
