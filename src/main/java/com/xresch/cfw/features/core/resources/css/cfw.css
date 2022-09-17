@@ -835,6 +835,16 @@ pre {
     border: 3px solid rgba(255, 255, 255, 0.75);
 }
 
+.cfw-tuts-textbox{
+	z-index: 1056;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    border: 3px solid rgba(255, 255, 255, 0.75);
+    padding: 15px;
+    background-color: rgba(0, 0, 0, 0.80);
+}
 
 .cfw-tuts-clickblock {
     z-index: 1055;

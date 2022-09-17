@@ -313,7 +313,7 @@ function cfw_dashboardlist_tutorialsFavedDashboards(){
 	cfw_tutorial_bundleStart($("#tab-faveddashboards"));
 	
 		cfw_tutorial_addStep({
-				  object: $("#tab-faveddashboards")
+				  selector: "#tab-faveddashboards"
 				, clickable: false
 				, text: "Here you can find all the dashboards you have marked as favorite."
 				, onNext: null

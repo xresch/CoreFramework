@@ -3955,10 +3955,25 @@ function cfw_tutorial_nextStep(){
 	var currentStepIndex = CFW.tutorial.data.currentStep;
 	
 	if( (currentStepIndex+1) < bundleToPlay.steps.length ){
+		
 		cfw_tutorial_drawStep(bundleToPlay.steps[currentStepIndex+1]);
 		CFW.tutorial.data.currentStep += 1;
 
+	}else if( (currentStepIndex+1) == bundleToPlay.steps.length ) {
+		
+		cfw_tutorial_drawStep({
+			  selector: null
+			, clickable: true
+			, text: "You have reached the end of the tutorial."
+			, drawDelay: 500
+			, beforeDraw: null
+		});
+		CFW.tutorial.data.currentStep += 1;
+	}else{
+		cfw_tutorial_drawStartpage();
+		return;
 	}
+	
 	
 }
 
@@ -3996,7 +4011,7 @@ function cfw_tutorial_drawStartpage(){
 	// Controls
 	var controls = $('<div class="cfw-tuts-controls">'
 						+'<div class="d-flex justify-content-center w-100">'
-						+'<a id="cfw-tuts-btn-home" class="btn btn-sm  btn-primary mr-2" onclick="cfw_tutorial_drawInitial()"><i class="fas fa-home"></i></a>'
+						+'<a id="cfw-tuts-btn-home" class="btn btn-sm  btn-primary mr-2" onclick="cfw_tutorial_drawStartpage()"><i class="fas fa-home"></i></a>'
 						+'<a id="cfw-tuts-btn-close" class="btn btn-sm  btn-primary mr-2" onclick="cfw_tutorial_close()"><i class="fas fa-times"></i></a>'
 						+'<a id="cfw-tuts-btn-next" class="btn btn-sm  btn-primary mr-2 d-none" onclick="cfw_tutorial_nextStep()">Next</a>'
 					+'</div>'
@@ -4024,10 +4039,10 @@ function cfw_tutorial_drawStep(stepData){
 	if(stepData.beforeDraw != null){
 		stepData.beforeDraw();
 	}
-			
-	//----------------------------------
-	// Handle Selector
+	
 	if(selector != null){
+		//----------------------------------
+		// Handle Selector
 		CFW.ui.waitForAppear(selector).then(function(element){
 
 			//----------------------------------
@@ -4050,6 +4065,17 @@ function cfw_tutorial_drawStep(stepData){
 			}, stepData.drawDelay);
 		})
 		return;
+	}else{
+		cfw_tutorial_reset();
+		
+		//----------------------------------
+		// Show TextBox Textbox
+		window.setTimeout(function(){
+			var textbox = $('<div class="cfw-tuts-textbox">');
+			textbox.append(stepData.text);
+			$('body').append(textbox);
+		}, stepData.drawDelay);
+		
 	}
 	
 }
@@ -4135,15 +4161,16 @@ function cfw_tutorial_objectAppendOverlays(targetObject){
  * 
  *************************************************************************************/
 function cfw_tutorial_reset(){
-	
+			
 	$('.tutorial-popover')
 		.popover('hide')
 		.removeClass('.tutorial-popover');
-				
+			
 	$('.popover').remove();
 	$('.cfw-tuts-highlight').removeClass('cfw-tuts-highlight');
 	$('.cfw-tuts-highlight-clickable').removeClass('cfw-tuts-highlight-clickable');
 	$('.cfw-tuts-playbundle').remove();
+	$('.cfw-tuts-textbox').remove();
 }
 
 /*************************************************************************************
@@ -4152,6 +4179,8 @@ function cfw_tutorial_reset(){
 function cfw_tutorial_close(){
 	cfw_tutorial_reset();
 	
+	$('.modal').modal('hide');
+		
 	$('.cfw-tuts-controls').remove();
 	$('.cfw-tuts-clickblock').remove();
 	$('.cfw-tuts-backdrop').remove();
