@@ -51,7 +51,9 @@ function cfw_dashboardlist_tutorialsMyDashboards(){
 			, clickable: false
 			, text: "Using this button allows you to add a new dashboard."
 			, drawDelay: 500
-			, beforeDraw: null
+			, beforeDraw: function(){
+				$("#tab-mydashboards").click();
+			}
 		});	
 
 		//----------------------------------
@@ -283,7 +285,7 @@ function cfw_dashboardlist_tutorialsMyDashboards(){
 		});	
 		
 		//----------------------------------
-		// Explain Delete Button
+		// Explain Import Button
 		cfw_tutorial_addStep({
 			  selector: "#button-import"
 			, clickable: false
@@ -312,12 +314,33 @@ function cfw_dashboardlist_tutorialsFavedDashboards(){
 	// Tutorial: Faved Dashboards
 	cfw_tutorial_bundleStart($("#tab-faveddashboards"));
 	
+		//----------------------------------
+		// Favorite Tab	
 		cfw_tutorial_addStep({
 				  selector: "#tab-faveddashboards"
 				, clickable: false
 				, text: "Here you can find all the dashboards you have marked as favorite."
-				, onNext: null
+				, drawDelay: 500
+				, beforeDraw: function(){				
+					}
 			});
+		
+		//----------------------------------
+		// Explain favorites
+		
+		cfw_tutorial_addStep({
+			  selector: null
+			, clickable: false
+			, text: 'The favorites tab lists all the dashboards you have marked as favorite.'
+					+'<br/>Else the functioniality is similar to the My Dashboards tab.'
+					+''
+			, drawDelay: 500
+			, beforeDraw: function(){
+				$("#tab-faveddashboards").click();
+				
+			}
+		});
+		
 					
 	cfw_tutorial_bundleEnd();
 }
