@@ -136,6 +136,7 @@ DONE
 ====
 
 ------- current -------
+- New Feature: Page Tutorials
 - Database: Added Feature 'Reindex Fulltext Search' to DB Analytics page
 - CFWField: Added flag SERVER_SIDE_ONLY
 - Dashboard: Widgets settings marked with SERVER_SIDE_ONLY are not sent to the browser

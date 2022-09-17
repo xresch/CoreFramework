@@ -299,7 +299,7 @@ function cfw_contextsettings_draw(options){
 	
 	cfw_contextsettings_reset();
 	
-	CFW.ui.toogleLoader(true);
+	CFW.ui.toggleLoader(true);
 	
 	window.setTimeout( 
 	function(){
@@ -310,6 +310,6 @@ function cfw_contextsettings_draw(options){
 			default:				CFW.ui.addToastDanger('This tab is unknown: '+options.tab);
 		}
 		
-		CFW.ui.toogleLoader(false);
+		CFW.ui.toggleLoader(false);
 	}, 50);
 }

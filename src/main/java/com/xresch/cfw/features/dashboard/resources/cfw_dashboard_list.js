@@ -12,6 +12,318 @@ var CFW_DASHBOARDLIST_LAST_OPTIONS = null;
 /******************************************************************
  * Reset the view.
  ******************************************************************/
+function cfw_dashboardlist_tutorialsRegister(){
+	cfw_dashboardlist_tutorialsMyDashboards();
+	cfw_dashboardlist_tutorialsFavedDashboards();
+}
+
+/*************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_dashboardlist_tutorialsMyDashboards(){
+		
+	//===================================================
+	// Check has Tab
+	if($("#tab-mydashboards").length == 0){
+		return;
+	}
+	
+	//===================================================
+	// Tutorial: My Dashboards
+	var DASHBOARD_NAME = 'A Nice Tutorial Dashboard';
+	
+	cfw_tutorial_bundleStart($("#tab-mydashboards"));
+	
+		//----------------------------------
+		// Tab MyDashboard
+		cfw_tutorial_addStep({
+			  selector: "#tab-mydashboards"
+			, clickable: false
+			, text: "In this tab you can create, view and manage your own dashboards."
+			, drawDelay: 500
+			, beforeDraw: null
+		});
+		
+		//----------------------------------
+		// Create Button
+		cfw_tutorial_addStep({
+			  selector: "#button-add-dashboard"
+			, clickable: false
+			, text: "Using this button allows you to add a new dashboard."
+			, drawDelay: 500
+			, beforeDraw: null
+		});	
+
+		//----------------------------------
+		// Enter Name
+		cfw_tutorial_addStep({
+			  selector: 'input#NAME'
+			, clickable: false
+			, text: "We have to give the dashboard a name."
+			, drawDelay: 1000
+			, beforeDraw: function(){
+				$("#button-add-dashboard").click();
+				CFW.ui.waitForAppear('input#NAME').then(function(){
+					
+					$('#cfw-default-modal').addClass('cfw-tuts-highlight').css('z-index', "1055");
+					$('input#NAME').val(DASHBOARD_NAME);
+				})
+			}
+		});	
+		
+		//----------------------------------
+		// Enter Description
+		cfw_tutorial_addStep({
+			  selector: "textarea#DESCRIPTION"
+			, clickable: false
+			, text: "We can enter a description for the dashboard."
+			, drawDelay: 500
+			, beforeDraw: function(){
+				$('textarea#DESCRIPTION').val("Dashboard showing cute cats blocking someones keyboard.");
+			}
+		});	
+		
+		//----------------------------------
+		// Enter TAGS
+		cfw_tutorial_addStep({
+			  selector: ".tutorial0-tagsparent"
+			, clickable: false
+			, text: "Lets add some tags too...."
+			, drawDelay: 500
+			, beforeDraw: function(){
+				$('input#TAGS-tagsinput').parent().addClass('tutorial0-tagsparent');
+				
+				$('input#TAGS').tagsinput('add', 'cute');
+				$('input#TAGS').tagsinput('add', 'cats');
+				$('input#TAGS').tagsinput('add', 'keyboard');
+				$('input#TAGS').tagsinput('add', 'siege');
+				
+			}
+		});	
+		
+		//----------------------------------
+		// Click Submit Button
+		cfw_tutorial_addStep({
+			  selector: "#cfwCreateDashboardForm-submitButton"
+			, clickable: false
+			, text: "With a click on create the dashboard will be added to your list."
+			, drawDelay: 500
+			, beforeDraw: null
+		});	
+		
+		//----------------------------------
+		// Close Button
+		cfw_tutorial_addStep({
+			  selector: "#cfw-default-modal-closebutton"
+			, clickable: false
+			, text: "After we created the dashboard we can close the modal."
+			, drawDelay: 500
+			, beforeDraw: function(){
+				$("#cfwCreateDashboardForm-submitButton").click();
+				
+			}
+		});		
+		
+		//----------------------------------
+		// Set Display as
+		cfw_tutorial_addStep({
+			  selector: "select.dataviewer-displayas"
+			, clickable: false
+			, text: "Here we can choose how to display the records. Let me make sure it is set to table so the tutorial will work properly."
+			, drawDelay: 1000
+			, beforeDraw: function(){
+				$("#cfw-default-modal-closebutton").click();
+				$("select.dataviewer-displayas").val(0);
+				
+			}
+		});	
+		
+		//----------------------------------
+		// Set Filter
+		cfw_tutorial_addStep({
+			  selector: "input.dataviewer-filterquery"
+			, clickable: false
+			, text: "Now let this automated tutorial set a filter to find that dashboard we just created."
+			, drawDelay: 1000
+			, beforeDraw: function(){
+				
+				window.setTimeout(function(){
+					$("input.dataviewer-filterquery").val(DASHBOARD_NAME);
+				}, 1000);
+			}
+		});	
+		
+		//----------------------------------
+		// First Row
+		cfw_tutorial_addStep({
+			  selector: ".cfwRecordContainer"
+			, clickable: false
+			, text: "Now we have the list filtered for our dashboard."
+			, drawDelay: 500
+			, beforeDraw: function(){
+				$("input.dataviewer-filterquery").trigger('change');
+				
+			}
+		});	
+		
+		//----------------------------------
+		// Explain Favorite
+		cfw_tutorial_addStep({
+			  selector: ".tutorial0-cell-0"
+			, clickable: false
+			, text: "Clicking the star will add the dashboard to your favorites."
+			, drawDelay: 500
+			, beforeDraw: function(){
+				
+				//add IDs to cells
+				$(".cfwRecordContainer:first td").each(function(index){
+					$(this).addClass('tutorial0-cell-'+index);
+				});
+				
+			}
+		});	
+		
+		//----------------------------------
+		// Explain Name
+		cfw_tutorial_addStep({
+			  selector: ".tutorial0-cell-1"
+			, clickable: false
+			, text: "Clicking the title will open your dashboard."
+			, drawDelay: 500
+			, beforeDraw: function(){					
+			}
+		});		
+		
+		//----------------------------------
+		// Explain Description
+		cfw_tutorial_addStep({
+			  selector: ".tutorial0-cell-2"
+			, clickable: false
+			, text: "Here is the description, as precise as ever."
+			, drawDelay: 500
+			, beforeDraw: function(){					
+			}
+		});		
+		
+		//----------------------------------
+		// Explain Tags
+		cfw_tutorial_addStep({
+			  selector: ".tutorial0-cell-3"
+			, clickable: false
+			, text: "Tags can be useful to filter and find the dashboard you search for faster."
+			, drawDelay: 500
+			, beforeDraw: function(){					
+			}
+		});	
+		
+		//----------------------------------
+		// Explain Shared
+		cfw_tutorial_addStep({
+			  selector: ".tutorial0-cell-4"
+			, clickable: false
+			, text: "Here you can see if the dashboard is shared with others."
+			, drawDelay: 500
+			, beforeDraw: function(){				
+			}
+		});		
+		
+		//----------------------------------
+		// Explain View Button
+		cfw_tutorial_addStep({
+			  selector: ".tutorial0-cell-6"
+			, clickable: false
+			, text: "Clicking this button opens the dashboard, same as clicking on the name of the dashboard."
+			, drawDelay: 500
+			, beforeDraw: function(){				
+			}
+		});		
+		
+		//----------------------------------
+		// Explain Edit Button
+		cfw_tutorial_addStep({
+			  selector: ".tutorial0-cell-7"
+			, clickable: false
+			, text: "The edit button opens a modal to edit the settings of the dashboard."
+			, drawDelay: 500
+			, beforeDraw: function(){				
+			}
+		});		
+				
+		//----------------------------------
+		// Explain Duplicate Button
+		cfw_tutorial_addStep({
+			  selector: ".tutorial0-cell-8"
+			, clickable: false
+			, text: "This will create a copy of the dashboard."
+			, drawDelay: 500
+			, beforeDraw: function(){				
+			}
+		});		
+		
+		//----------------------------------
+		// Explain Export Button
+		cfw_tutorial_addStep({
+			  selector: ".tutorial0-cell-9"
+			, clickable: false
+			, text: "Here you can export your dashboard to store it to a file. Can be useful to create backups."
+			, drawDelay: 500
+			, beforeDraw: function(){				
+			}
+		});	
+				
+		//----------------------------------
+		// Explain Delete Button
+		cfw_tutorial_addStep({
+			  selector: ".tutorial0-cell-10"
+			, clickable: false
+			, text: "To delete a dashboard use this button."
+			, drawDelay: 500
+			, beforeDraw: function(){				
+			}
+		});	
+		
+		//----------------------------------
+		// Explain Delete Button
+		cfw_tutorial_addStep({
+			  selector: "#button-import"
+			, clickable: false
+			, text: "Oh... not to forget what to do with your exports. Here you can import them when needed."
+			, drawDelay: 500
+			, beforeDraw: function(){				
+			}
+		});	
+			
+	cfw_tutorial_bundleEnd();
+	
+}
+
+/*************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_dashboardlist_tutorialsFavedDashboards(){
+	
+	//===================================================
+	// Check has Tab
+	if($("#tab-faveddashboards").length == 0){
+		return;
+	}
+	
+	//===================================================
+	// Tutorial: Faved Dashboards
+	cfw_tutorial_bundleStart($("#tab-faveddashboards"));
+	
+		cfw_tutorial_addStep({
+				  object: $("#tab-faveddashboards")
+				, clickable: false
+				, text: "Here you can find all the dashboards you have marked as favorite."
+				, onNext: null
+			});
+					
+	cfw_tutorial_bundleEnd();
+}
+/******************************************************************
+ * Reset the view.
+ ******************************************************************/
 function cfw_dashboardlist_createTabs(){
 	var pillsTab = $("#pills-tab");
 	
@@ -265,13 +577,13 @@ function cfw_dashboardlist_printDashboards(data, type){
 	//--------------------------------
 	//  Button
 	if(type == 'mydashboards'){
-		var createButton = $('<button class="btn btn-sm btn-success m-1" onclick="cfw_dashboardlist_createDashboard()">'
+		var createButton = $('<button id="button-add-dashboard" class="btn btn-sm btn-success m-1" onclick="cfw_dashboardlist_createDashboard()">'
 							+ '<i class="fas fa-plus-circle"></i> '+ CFWL('cfw_dashboardlist_createDashboard')
 					   + '</button>');
 	
 		parent.append(createButton);
 		
-		var importButton = $('<button class="btn btn-sm btn-success m-1" onclick="cfw_dashboardlist_importDashboard()">'
+		var importButton = $('<button id="button-import" class="btn btn-sm btn-success m-1" onclick="cfw_dashboardlist_importDashboard()">'
 				+ '<i class="fas fa-upload"></i> '+ CFWL('cfw_core_import', 'Import')
 		   + '</button>');
 
@@ -619,7 +931,15 @@ function cfw_dashboardlist_printDashboards(data, type){
 
 function cfw_dashboardlist_initialDraw(){
 	
+	//-------------------------------------------
+	// Create Tabs
 	cfw_dashboardlist_createTabs();
+	
+	//-------------------------------------------
+	// Register Tutorials
+	cfw_dashboardlist_tutorialsRegister()
+	
+
 	
 	var tabToDisplay = CFW.cache.retrieveValueForPage("dashboardlist-lasttab", "mydashboards");
 	
@@ -631,7 +951,10 @@ function cfw_dashboardlist_initialDraw(){
 	
 	$('#tab-'+tabToDisplay).addClass('active');
 	
+	//-------------------------------------------
+	// Draw Tab
 	cfw_dashboardlist_draw({tab: tabToDisplay});
+	
 }
 
 function cfw_dashboardlist_draw(options){
@@ -640,7 +963,7 @@ function cfw_dashboardlist_draw(options){
 	CFW.cache.storeValueForPage("dashboardlist-lasttab", options.tab);
 	$("#tab-content").html("");
 	
-	CFW.ui.toogleLoader(true);
+	CFW.ui.toggleLoader(true);
 	
 	window.setTimeout( 
 	function(){
@@ -657,6 +980,6 @@ function cfw_dashboardlist_draw(options){
 			default:				CFW.ui.addToastDanger('This tab is unknown: '+options.tab);
 		}
 		
-		CFW.ui.toogleLoader(false);
+		CFW.ui.toggleLoader(false);
 	}, 50);
 }

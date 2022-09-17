@@ -112,7 +112,7 @@ function cfw_sessionoverview_fetchsessionoverviewAndDisplay(){
  ******************************************************************/
 function cfw_sessionoverview_draw(){
 	
-	CFW.ui.toogleLoader(true);
+	CFW.ui.toggleLoader(true);
 	
 	
 	window.setTimeout( 
@@ -133,6 +133,6 @@ function cfw_sessionoverview_draw(){
 
 		cfw_sessionoverview_fetchsessionoverviewAndDisplay();
 			
-		CFW.ui.toogleLoader(false);
+		CFW.ui.toggleLoader(false);
 	}, 50);
 }

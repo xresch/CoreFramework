@@ -330,13 +330,13 @@ function cfw_apioverview_printOverview(data){
  ******************************************************************/
 function cfw_apioverview_draw(){
 	
-	CFW.ui.toogleLoader(true);
+	CFW.ui.toggleLoader(true);
 	
 	window.setTimeout( 
 	function(){
 
 		CFW.http.fetchAndCacheData("./api", {overviewdata: "fetch"}, "api_definitions", cfw_apioverview_printOverview);
 		
-		CFW.ui.toogleLoader(false);
+		CFW.ui.toggleLoader(false);
 	}, 100);
 }

@@ -642,11 +642,12 @@ function cfw_renderer_tiles(renderDef) {
 		currentTile.data('record', currentRecord);
 		currentTile.bind('click', function(e) {
 			e.stopPropagation();
+			
 			recordData = $(this).data('record');
 			cfw_ui_showModal(
-					CFWL('cfw_core_details', 'Details'), 
-					settings.popoverFunction(recordData, renderDef))
-			;
+					CFWL('cfw_core_details', 'Details'),
+					settings.popoverFunction(recordData, renderDef)
+				);
 		})
 		
 		//=====================================
@@ -2766,7 +2767,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 		
 		html += '<div class="float-right ml-2">'
 			+'	<label for="displayas">Display As:&nbsp;</label>'
-			+'	<select name="displayas" class="form-control form-control-sm" title="Choose Display" '+onchangeAttribute+'>'
+			+'	<select name="displayas" class="dataviewer-displayas form-control form-control-sm" '+onchangeAttribute+'>'
 		
 			for(index in dataviewerSettings.renderers){
 				var renderer = dataviewerSettings.renderers[index];
@@ -2791,7 +2792,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 		}
 		html += '<div class="float-right ml-2">'
 			+'	<label for="sortby">Sort By:&nbsp;</label>'
-			+'	<select name="sortby" class="form-control form-control-sm" title="Choose Sorting" '+onchangeAttribute+'>'
+			+'	<select name="sortby" class="dataviewer-sortby form-control form-control-sm" '+onchangeAttribute+'>'
 		
 			let ascendingHTML = ""; 
 			let descendingHTML = ""; 
@@ -2829,7 +2830,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	// Page Size
 	html += '<div class="float-right ml-2">'
 		+'	<label for="pagesize">Page Size:&nbsp;</label>'
-		+'	<select name="pagesize" class="form-control form-control-sm" title="Choose Page Size" '+onchangeAttribute+'>'
+		+'	<select name="pagesize" class="dataviewer-pagesize form-control form-control-sm" '+onchangeAttribute+'>'
 	
 		for(key in dataviewerSettings.sizes){
 			var size = dataviewerSettings.sizes[key];
@@ -2848,7 +2849,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 
 	html += '<div class="float-right  ml-2">'
 		+'	<label for="filterquery">Filter:&nbsp;</label>'
-		+'	<input type="text" name="filterquery" class="form-control form-control-sm '+filterHighlightClass+'" value="'+filterquery.replaceAll('"','&quot;')+'" placeholder="Filter..."  title="Filter the Results" '+onchangeAttribute+'>'
+		+'	<input type="text" name="filterquery" class="dataviewer-filterquery form-control form-control-sm '+filterHighlightClass+'" value="'+filterquery.replaceAll('"','&quot;')+'" placeholder="Filter..." '+onchangeAttribute+'>'
 		+'</div>';
 	
 	html += '</div>';

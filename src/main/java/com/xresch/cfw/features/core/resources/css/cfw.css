@@ -1,7 +1,22 @@
 
 /**************************************************************************************************************
+ * Contains the css for CFW core functionality. 
+ *
+ * Overview of Relevant z-indexes
+ * ==============================
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * Toast Messages >> 	#cfw-toasts 			z-index: 2048;
+ * BT Tooltip >> 		.tooltip 				z-index: 1070;
+ * BT Popover >> 		.popover 				z-index: 1060;
+ * BT Modals >> 		.modal 					z-index: 1050;
+ * BT Modal BG >> 		.modal -backdrop		z-index: 1040;
+ * Loaders >> 			#cfw-loader-body   		z-index: 1024;
+ * BT Dropdown Menu >> .dropdown-menu 			z-index: 1000;
+ * Sticky Headers >>	.cfw-sticky-th 			z-index: 999;
+ * Autocomplete >>		.autocomplete-wrapper 	z-index: 99;
+ *
+ *
+ * @author Reto Scheiwiller, (c) Copyright 2019
  * @license MIT-License
  **************************************************************************************************************/
  :root {
@@ -784,6 +799,71 @@ pre {
     margin-bottom: 10px;
 }
 
+
+/*************************************************************************
+ * Tutorial
+ *************************************************************************/
+
+.cfw-tuts-controls {
+    z-index: 1058;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.cfw-tuts-playbundle {
+    z-index: 1057;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.cfw-tuts-highlight {
+    z-index: 1054;
+    position: relative;
+    border: 3px solid rgba(255, 255, 255,  0.75);
+}
+
+.cfw-tuts-highlight-clickable {
+    z-index: 1056;
+    position: relative;
+    border: 3px solid rgba(255, 255, 255, 0.75);
+}
+
+
+.cfw-tuts-clickblock {
+    z-index: 1055;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+.cfw-tuts-backdrop {
+    z-index: 1053;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+/*************************************************************************
+ * Tutorial
+ *************************************************************************/
+.cfw-tuts-clickable {
+    z-index: 1010;
+    position: relative;
+    border: 4px solid var(--primary);
+}
 
 /*************************************************************************
  * Flex Classes

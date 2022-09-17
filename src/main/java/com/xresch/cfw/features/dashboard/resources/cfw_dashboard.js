@@ -2104,7 +2104,7 @@ function cfw_dashboard_drawEveryWidget(data){
  ******************************************************************************/
 function cfw_dashboard_draw(){
 		
-	CFW.ui.toogleLoader(true);
+	CFW.ui.toggleLoader(true);
 	
 	window.setTimeout( 
 	function(){
@@ -2119,7 +2119,7 @@ function cfw_dashboard_draw(){
 			 cfw_dashboard_drawEveryWidget(data);
 		});
 		
-		CFW.ui.toogleLoader(false);
+		CFW.ui.toggleLoader(false);
 	}, 100);
 }
 

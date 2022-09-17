@@ -432,7 +432,7 @@ function fetchAndRenderForSelectedTimeframe(){
  ******************************************************************/
 function cfw_cpusampling_draw(){
 	
-	CFW.ui.toogleLoader(true);
+	CFW.ui.toggleLoader(true);
 		
 	window.setTimeout( 
 	function(){
@@ -464,6 +464,6 @@ function cfw_cpusampling_draw(){
 		// Fetch Data and Display
 		fetchAndRenderForSelectedTimeframe();
 		
-		CFW.ui.toogleLoader(false);
+		CFW.ui.toggleLoader(false);
 	}, 100);
 }

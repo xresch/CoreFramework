@@ -133,7 +133,7 @@ function cfw_dbanalytics_fetchQueryStatisticsAndDisplay(){
  ******************************************************************/
 function cfw_dbanalytics_draw(){
 	
-	CFW.ui.toogleLoader(true);
+	CFW.ui.toggleLoader(true);
 		
 	window.setTimeout( 
 	function(){
@@ -172,6 +172,6 @@ function cfw_dbanalytics_draw(){
 		cfw_dbanalytics_fetchRowCountAndDisplay();
 		cfw_dbanalytics_fetchQueryStatisticsAndDisplay();
 			
-		CFW.ui.toogleLoader(false);
+		CFW.ui.toggleLoader(false);
 	}, 100);
 }

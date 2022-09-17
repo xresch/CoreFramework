@@ -942,7 +942,7 @@ function cfw_usermgmt_draw(options){
 	
 	cfw_usermgmt_reset();
 	
-	CFW.ui.toogleLoader(true);
+	CFW.ui.toggleLoader(true);
 	
 	window.setTimeout( 
 	function(){
@@ -969,6 +969,6 @@ function cfw_usermgmt_draw(options){
 			default:				CFW.ui.addToastDanger('This tab is unknown: '+options.tab);
 		}
 		
-		CFW.ui.toogleLoader(false);
+		CFW.ui.toggleLoader(false);
 	}, 100);
 }

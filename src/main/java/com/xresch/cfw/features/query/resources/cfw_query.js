@@ -88,8 +88,8 @@ function cfw_query_execute(){
 function cfw_query_toggleLoading(isLoading) {
 	
 	IS_EXECUTING = isLoading;
-	CFW.ui.toogleLoader(isLoading, 'query-button-menu');	
-	CFW.ui.toogleLoader(isLoading, 'cfw-query-results');	
+	CFW.ui.toggleLoader(isLoading, 'query-button-menu');	
+	CFW.ui.toggleLoader(isLoading, 'cfw-query-results');	
 		
 }
 	

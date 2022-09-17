@@ -319,13 +319,13 @@ function cfw_apitokenmgmt_printTokenList(data){
 
 function cfw_apitokenmgmt_draw(){
 	$("#cfw-container").addClass('maxvw-90');
-	CFW.ui.toogleLoader(true);
+	CFW.ui.toggleLoader(true);
 	
 	window.setTimeout( 
 	function(){
 		
 		CFW.http.fetchAndCacheData(CFW_APITOKENMGMT_URL, {action: "fetch", item: "tokenlist"}, "tokenlist", cfw_apitokenmgmt_printTokenList);
 
-		CFW.ui.toogleLoader(false);
+		CFW.ui.toggleLoader(false);
 	}, 50);
 }

@@ -112,7 +112,7 @@ function cfw_logconfiguration_fetchLoggersAndDisplay(){
  ******************************************************************/
 function cfw_logconfiguration_draw(){
 	
-	CFW.ui.toogleLoader(true);
+	CFW.ui.toggleLoader(true);
 		
 	window.setTimeout( 
 	function(){
@@ -130,6 +130,6 @@ function cfw_logconfiguration_draw(){
 
 		cfw_logconfiguration_fetchLoggersAndDisplay();
 			
-		CFW.ui.toogleLoader(false);
+		CFW.ui.toggleLoader(false);
 	}, 50);
 }

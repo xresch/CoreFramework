@@ -104,7 +104,7 @@ function cfw_cachestatistics_fetchcachestatisticsAndDisplay(){
  ******************************************************************/
 function cfw_cachestatistics_draw(){
 	
-	CFW.ui.toogleLoader(true);
+	CFW.ui.toggleLoader(true);
 		
 	window.setTimeout( 
 	function(){
@@ -126,6 +126,6 @@ function cfw_cachestatistics_draw(){
 
 		cfw_cachestatistics_fetchcachestatisticsAndDisplay();
 			
-		CFW.ui.toogleLoader(false);
+		CFW.ui.toggleLoader(false);
 	}, 50);
 }
