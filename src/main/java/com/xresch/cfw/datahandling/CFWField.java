@@ -1777,9 +1777,10 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/******************************************************************************************************
 	 * Change the value by first converting it to the correct type.
 	 * Value will not be validated.
+	 * @param doSanitize TODO
 	 * 
 	 ******************************************************************************************************/
-	public boolean setValueConvert(T value) {
+	public boolean setValueConvert(T value, boolean doSanitize) {
 		boolean success = true;
 		
 		//--------------------------------
@@ -1805,7 +1806,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		if(this.valueClass.isAssignableFrom(value.getClass())) {
 			//---------------------------------
 			// Sanitize strings if needed 
-			if(valueClass == String.class ) {
+			if(doSanitize && valueClass == String.class ) {
 				return this.changeValue(sanitizeString((String)value));
 			}else {
 				return this.changeValue(value);
@@ -1965,7 +1966,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//--------------------------------
 		// Do Validated
 		if(this.validateValue(value)) {
-			result = this.setValueConvert(value);
+			result = this.setValueConvert(value, true);
 		}else {
 			result = false;
 			if(invalidMessages != null) {
@@ -2113,11 +2114,12 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	
 	/******************************************************************************************************
 	 * Map the values of the JsonObject to CFWFields.
+	 * @param doSanitize TODO
 	 * @param url used for the request.
 	 * @return true if successful, false otherwise
 	 ******************************************************************************************************/
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static boolean mapJsonToFields(JsonObject json, HashMap<String,CFWField> fields) {
+	public static boolean mapJsonToFields(JsonObject json, HashMap<String,CFWField> fields, boolean doSanitize) {
 		
 		Set<String> members = json.keySet();
 		boolean result = true;
@@ -2131,19 +2133,19 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					JsonElement element = json.get(key);
 					
 					if(element.isJsonNull()) {
-						if(!field.setValueConvert(null) ){
+						if(!field.setValueConvert(null, doSanitize) ){
 							result = false;
 						}
 					}else if(element.isJsonArray() ) {
-						if(!field.setValueConvert(CFW.JSON.jsonToObjectArray(element.getAsJsonArray())) ){
+						if(!field.setValueConvert(CFW.JSON.jsonToObjectArray(element.getAsJsonArray()), doSanitize) ){
 							result = false;
 						}
 					}else if( element.isJsonObject()){
-						if(!field.setValueConvert(CFW.JSON.toJSON(element)) ){
+						if(!field.setValueConvert(CFW.JSON.toJSON(element), doSanitize) ){
 							result = false;
 						}
 					}
-					else if(!field.setValueConvert(element.getAsString())){
+					else if(!field.setValueConvert(element.getAsString(), doSanitize)){
 						result = false;
 					}
 				}else {
@@ -2233,29 +2235,29 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				if(fields.containsKey(colName)) {
 					CFWField current = fields.get(colName);
 					
-					if     ( String.class.isAssignableFrom(current.getValueClass()) )  { current.setValueConvert(result.getString(colName)); }
-					else if( Integer.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getObject(colName)); }
-					else if( Float.class.isAssignableFrom(current.getValueClass()))    { current.setValueConvert(result.getObject(colName)); }
-					else if( Boolean.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getBoolean(colName)); }
-					else if( Timestamp.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getTimestamp(colName)); }
-					else if( Date.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getDate(colName)); }
-					else if( CFWSchedule.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName)); }
-					else if( CFWTimeframe.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName)); }
+					if     ( String.class.isAssignableFrom(current.getValueClass()) )  { current.setValueConvert(result.getString(colName), true); }
+					else if( Integer.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getObject(colName), true); }
+					else if( Float.class.isAssignableFrom(current.getValueClass()))    { current.setValueConvert(result.getObject(colName), true); }
+					else if( Boolean.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getBoolean(colName), true); }
+					else if( Timestamp.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getTimestamp(colName), true); }
+					else if( Date.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getDate(colName), true); }
+					else if( CFWSchedule.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName), true); }
+					else if( CFWTimeframe.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName), true); }
 					else if( ArrayList.class.isAssignableFrom(current.getValueClass()))  { 
 						Array array = result.getArray(colName);
 						
 						if(array != null) {
-							current.setValueConvert(result.getArray(colName).getArray()); 
+							current.setValueConvert(result.getArray(colName).getArray(), true); 
 						}else {
-							current.setValueConvert(null);
+							current.setValueConvert(null, true);
 						}
 						
 					}else if( LinkedHashMap.class.isAssignableFrom(current.getValueClass()))  { 
 						String json = result.getString(colName);
 						if(json != null) {
-							current.setValueConvert(CFW.JSON.fromJsonLinkedHashMap(json)); 
+							current.setValueConvert(CFW.JSON.fromJsonLinkedHashMap(json), true); 
 						}else {
-							current.setValueConvert(null);
+							current.setValueConvert(null, true);
 						}
 					}
 					

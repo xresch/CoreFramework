@@ -132,7 +132,7 @@ public class ServletContextSettings extends HttpServlet
 			
 			ContextSettings settings = CFW.DB.ContextSettings.selectByID(id);
 			AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(settings.type());
-			typeSettings.mapJsonFields(settings.settings(), true);
+			typeSettings.mapJsonFields(settings.settings(), true, true);
 			if(typeSettings.isDeletable(settings.id())) {
 				jsonResponse.setSuccess(CFW.DB.ContextSettings.deleteByID(id));
 			}
@@ -231,7 +231,7 @@ public class ServletContextSettings extends HttpServlet
 			//--------------------------------
 			// Create instance for type
 			CFWObject typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(settings.type());
-			typeSettings.mapJsonFields(settings.settings(), true);
+			typeSettings.mapJsonFields(settings.settings(), true, true);
 			// reduce overhead
 			settings.settings("");
 			settings.addFields(typeSettings.getFields());

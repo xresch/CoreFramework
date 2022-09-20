@@ -205,7 +205,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		//------------------------------------------
 		// Map to Parameters Object
 		this.paramsForSource = source.getParameters();
-		if(!paramsForSource.mapJsonFields(parameters.getWrappedObject(), true)) {
+		if(!paramsForSource.mapJsonFields(parameters.getWrappedObject(), true, true)) {
 			
 			for(CFWField field : paramsForSource.getFields().values()) {
 				ArrayList<String> invalidMessages = field.getInvalidationMessages();

@@ -352,7 +352,7 @@ public class ServletDashboardViewMethods
 						newWidget.settings(definition.getSettings().toJSON());
 					}
 				}else {
-					newWidget.mapJsonFields(data, false);
+					newWidget.mapJsonFields(data, false, true);
 				}
 				
 				//overwrite parent dashboard
@@ -430,7 +430,7 @@ public class ServletDashboardViewMethods
 				// Validate
 				CFWObject settings = definition.getSettings();
 				
-				boolean isValid = settings.mapJsonFields(jsonElement, true);
+				boolean isValid = settings.mapJsonFields(jsonElement, true, true);
 				
 				if(isValid) {
 					String widgetID = request.getParameter("PK_ID");
@@ -523,7 +523,7 @@ public class ServletDashboardViewMethods
 				CFWObject settings = definition.getSettings();
 				DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
 				
-				settings.mapJsonFields(JSON_SETTINGS, false);
+				settings.mapJsonFields(JSON_SETTINGS, false, true);
 				
 				CFWForm form = settings.toForm("cfwWidgetFormSettings"+CFWRandom.randomStringAlphaNumSpecial(6), "n/a-willBeReplacedByJavascript");
 				
@@ -615,7 +615,7 @@ public class ServletDashboardViewMethods
 				taskParams.addField(CFWJobTaskWidgetTaskExecutor.createOffsetMinutesField());
 				taskParams.addAllFields(definition.getTasksParameters().getFields());
 
-				taskParams.mapJsonFields(widget.taskParameters(), true);
+				taskParams.mapJsonFields(widget.taskParameters(), true, true);
 				formObject.addAllFields(taskParams.getFields());
 				
 				CFWForm taskParamForm = formObject.toForm("cfwWidgetTaskParamForm"+CFW.Random.randomStringAlphaNumerical(16), "Save");
@@ -776,7 +776,7 @@ public class ServletDashboardViewMethods
 		JsonElement jsonSettings = replaceParamsInSettings(JSON_SETTINGS, dashboardParams, widgetType);
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 		CFWObject settingsObject = definition.getSettings();
-		settingsObject.mapJsonFields(jsonSettings, false);
+		settingsObject.mapJsonFields(jsonSettings, false, true);
 		
 		//----------------------------
 		// Create Response
@@ -883,7 +883,7 @@ public class ServletDashboardViewMethods
 				//--------------------------------------
 				// Check is Global Override Parameter
 				DashboardParameter paramObject = new DashboardParameter();
-				paramObject.mapJsonFields(current, true);
+				paramObject.mapJsonFields(current, true, true);
 				
 				if(paramObject.mode().equals(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString())
 				&& ( paramObject.widgetType() == null || paramObject.widgetType().equals(widgetType)) ) {
@@ -1071,7 +1071,7 @@ public class ServletDashboardViewMethods
 					param.paramSettingsLabel(widgetSetting);
 					param.name(widgetSetting.replace(" ", "_")+"_"+CFW.Random.randomStringAlphaNumerical(6));
 					param.paramType(settingsField.fieldType()); // used to fetch similar field types
-					param.getField(DashboardParameterFields.VALUE.toString()).setValueConvert(settingsField.getValue());
+					param.getField(DashboardParameterFields.VALUE.toString()).setValueConvert(settingsField.getValue(), true);
 					param.mode(DashboardParameterMode.MODE_GLOBAL_OVERRIDE);
 					
 					if(settingsField.fieldType() == FormFieldType.BOOLEAN

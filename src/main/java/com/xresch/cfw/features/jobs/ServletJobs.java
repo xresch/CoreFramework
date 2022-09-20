@@ -349,7 +349,7 @@ public class ServletJobs extends HttpServlet
 		CFWJobTask task = CFW.Registry.Jobs.createTaskInstance(job.taskName());
 		
 		CFWObject propertyFields = task.getParameters();
-		propertyFields.mapJsonFields(job.properties(), true);
+		propertyFields.mapJsonFields(job.properties(), true, true);
 		
 		job.addAllFields(propertyFields.getFields());
 		

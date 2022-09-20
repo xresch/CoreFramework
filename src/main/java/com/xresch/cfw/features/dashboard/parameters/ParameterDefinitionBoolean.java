@@ -26,7 +26,7 @@ public class ParameterDefinitionBoolean extends ParameterDefinition {
 		CFWField settingsField = CFWField.newBoolean(FormFieldType.BOOLEAN, LABEL);
 		
 		if(fieldValue !=null) {
-			settingsField.setValueConvert(fieldValue);
+			settingsField.setValueConvert(fieldValue, true);
 		}
 	
 		return settingsField;

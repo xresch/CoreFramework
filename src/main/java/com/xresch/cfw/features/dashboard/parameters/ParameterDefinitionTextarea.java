@@ -26,7 +26,7 @@ public class ParameterDefinitionTextarea extends ParameterDefinition {
 		CFWField settingsField = CFWField.newString(FormFieldType.TEXTAREA, LABEL);
 		
 		if(fieldValue !=null) {
-			settingsField.setValueConvert(fieldValue);
+			settingsField.setValueConvert(fieldValue, true);
 		}
 	
 		return settingsField;

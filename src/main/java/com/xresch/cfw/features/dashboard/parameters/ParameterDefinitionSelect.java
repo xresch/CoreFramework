@@ -29,7 +29,7 @@ public class ParameterDefinitionSelect extends ParameterDefinition {
 		CFWField settingsField = CFWField.newValueLabel("JSON_VALUE");
 
 		if(fieldValue != null) {
-			settingsField.setValueConvert(fieldValue);
+			settingsField.setValueConvert(fieldValue, true);
 		}
 
 		return settingsField;

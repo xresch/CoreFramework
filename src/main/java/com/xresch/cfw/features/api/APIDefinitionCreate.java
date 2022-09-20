@@ -78,7 +78,7 @@ public class APIDefinitionCreate extends APIDefinition{
 					if(field != null 
 					&& currentValue != null 
 					&& !currentValue.isEmpty()) {
-						field.setValueConvert(request.getParameter(current));
+						field.setValueConvert(request.getParameter(current), true);
 						fieldnames.add(field.getName());
 					}
 				}

@@ -26,7 +26,7 @@ public class ParameterDefinitionText extends ParameterDefinition {
 		CFWField settingsField = CFWField.newString(FormFieldType.TEXT, LABEL);
 		
 		if(fieldValue !=null) {
-			settingsField.setValueConvert(fieldValue);
+			settingsField.setValueConvert(fieldValue, true);
 		}
 	
 		return settingsField;

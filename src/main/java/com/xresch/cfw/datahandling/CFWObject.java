@@ -73,25 +73,31 @@ public class CFWObject {
 	 * Validates the fields and returns true if all are valid.
 	 * If the string is null or empty it will return true.
 	 * @param doValidation TODO
+	 * @param doSanitize TODO
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
-	public boolean mapJsonFields(String json, boolean doValidation) {
+	public boolean mapJsonFields(String json, boolean doValidation, boolean doSanitize) {
 		
 		if(Strings.isNullOrEmpty(json)) {
 			return true;
 		}
 		
-		return mapJsonFields(CFW.JSON.fromJson(json), doValidation);
+		return mapJsonFields(CFW.JSON.fromJson(json), doValidation, doSanitize);
 	}
 	
 	/****************************************************************
 	 * Maps the JSON fields to this objects fields by name.
 	 * Validates the fields and returns true if all are valid.
 	 * If the string is null or empty it will return true.
-	 * @param doValidation TODO
+	 * @param doValidation set true if values should be validated before assigning
+	 *   them to the fields
+	 * @param doSanitize set true if values should be sanitized. 
+	 *   Will always be true if values are validated. Do not set to
+	 *   false if user input is mapped. Only set false when reading
+	 *   already persisted(validated) data.
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
-	public boolean mapJsonFields(JsonElement element, boolean doValidation) {
+	public boolean mapJsonFields(JsonElement element, boolean doValidation, boolean doSanitize) {
 		if(!element.isJsonObject()) {
 			new CFWLog(logger).severe("JsonElement has to be of the type object.", new IllegalArgumentException());
 			return false;
@@ -100,7 +106,7 @@ public class CFWObject {
 		if(doValidation) {
 			return CFWField.mapAndValidateJsonToFields(element.getAsJsonObject(), fields);
 		}else {
-			return CFWField.mapJsonToFields(element.getAsJsonObject(), fields);
+			return CFWField.mapJsonToFields(element.getAsJsonObject(), fields, doSanitize);
 		}
 	}
 	

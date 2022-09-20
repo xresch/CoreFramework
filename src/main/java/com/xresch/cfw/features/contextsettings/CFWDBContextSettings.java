@@ -108,7 +108,7 @@ public class CFWDBContextSettings {
 			ContextSettings fromDB = CFW.DB.ContextSettings.selectByID(primaryKey);
 			
 			AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(fromDB.type());
-			typeSettings.mapJsonFields(fromDB.settings(), true);
+			typeSettings.mapJsonFields(fromDB.settings(), true, true);
 			typeSettings.setWrapper(fromDB);
 			
 			for(ContextSettingsChangeListener listener : changeListeners) {
@@ -151,7 +151,7 @@ public class CFWDBContextSettings {
 		boolean success = CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, item);
 		
 		AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(item.type());
-		typeSettings.mapJsonFields(item.settings(), true);
+		typeSettings.mapJsonFields(item.settings(), true, true);
 		typeSettings.setWrapper(item);
 		
 		for(ContextSettingsChangeListener listener : changeListeners) {
@@ -180,7 +180,7 @@ public class CFWDBContextSettings {
 		if(success) {
 			clearCache();
 			AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(item.type());
-			typeSettings.mapJsonFields(item.settings(), true);
+			typeSettings.mapJsonFields(item.settings(), true, true);
 			typeSettings.setWrapper(item);
 			
 			for(ContextSettingsChangeListener listener : changeListeners) {
@@ -247,7 +247,7 @@ public class CFWDBContextSettings {
 			ContextSettings current = (ContextSettings)object;
 			AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(current.type());
 			
-			typeSettings.mapJsonFields(current.settings(), true);
+			typeSettings.mapJsonFields(current.settings(), true, true);
 			typeSettings.setWrapper(current);
 			settingsArray.add(typeSettings);
 		}
@@ -326,7 +326,7 @@ public class CFWDBContextSettings {
 			
 			AbstractContextSettings typeSettings = CFW.Registry.ContextSettings.createContextSettingInstance(current.type());
 			
-			typeSettings.mapJsonFields(current.settings(), true);
+			typeSettings.mapJsonFields(current.settings(), true, true);
 			typeSettings.setWrapper(current);
 			settingsArray.add(typeSettings);
 		}

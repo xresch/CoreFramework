@@ -196,7 +196,9 @@ public class CFWDBDashboardWidget {
 		for(DashboardWidget widget : widgetList) {
 			WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widget.type());
 			CFWObject settingsObject = definition.getSettings();
-			settingsObject.mapJsonFields(widget.settings(), false);
+			//do not sanitize to not mess up values from DB
+			settingsObject.mapJsonFields(widget.settings(), false, false);
+			
 			
 			//--------------------------------
 			// Filter out fields flagged with

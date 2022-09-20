@@ -148,13 +148,13 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 						offset.getEarliest(), 
 						offset.getLatest());
 		
-		widgetSettings.mapJsonFields(placeholdersReplaced, true);
+		widgetSettings.mapJsonFields(placeholdersReplaced, true, true);
 		
 		//------------------------------
 		// Task Parameters
 		CFWObject taskParams = widgetDef.getTasksParameters();
 		taskParams.addField(CFWJobTaskWidgetTaskExecutor.createOffsetMinutesField());
-		taskParams.mapJsonFields(widget.taskParameters(), true);
+		taskParams.mapJsonFields(widget.taskParameters(), true, true);
 
 		//-------------------------------
 		// Map to Job Data

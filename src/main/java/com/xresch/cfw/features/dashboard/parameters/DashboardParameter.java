@@ -342,7 +342,7 @@ public class DashboardParameter extends CFWObject {
 				newValueField.setDescription("The value of the parameter.");
 				
 				//currentValue field is always a String field
-				newValueField.setValueConvert(currentValueField.getValue());
+				newValueField.setValueConvert(currentValueField.getValue(), true);
 
 			}else {
 				//----------------------------

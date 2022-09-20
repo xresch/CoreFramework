@@ -136,6 +136,7 @@ DONE
 ====
 
 ------- current -------
+- BREAKING: refactoring of mapJsonToFields() to toggle sanitation
 - New Feature: Page Tutorials
 - Database: Added Feature 'Reindex Fulltext Search' to DB Analytics page
 - CFWField: Added flag SERVER_SIDE_ONLY
