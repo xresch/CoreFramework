@@ -577,7 +577,7 @@ pre {
 
 .cfw-loader-custom {
 	z-index: 1024;
-    position: fixed;
+    position: absolute;
 /*     top: 50%;
     left: 50%;
     transform: translateX(-50%) translateY(-100%); */
