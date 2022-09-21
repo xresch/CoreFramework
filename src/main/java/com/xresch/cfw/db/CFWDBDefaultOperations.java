@@ -116,6 +116,41 @@ public  class CFWDBDefaultOperations {
 	}
 	
 	/********************************************************************************************
+	 * Creates a new item in the DB.
+	 * @param Object with the values that should be inserted. ID will be set by the Database.
+	 * @return primary key or null if not successful
+	 * 
+	 ********************************************************************************************/
+	public static Integer createGetPrimaryKeyWithout(PrecheckHandler precheck, CFWObject object, Object... fieldnamesToExclude) {
+		return createGetPrimaryKeyWithout(precheck, null, object, fieldnamesToExclude);
+	}
+	/********************************************************************************************
+	 * Creates a new item in the DB.
+	 * @param Object with the values that should be inserted. ID will be set by the Database.
+	 * @return primary key or null if not successful
+	 * 
+	 ********************************************************************************************/
+	public static Integer createGetPrimaryKeyWithout(PrecheckHandler precheck,  String[] auditLogFieldnames, CFWObject object, Object... fieldnamesToExclude) {
+		
+		if(object == null) {
+			new CFWLog(logger)
+				.warn("The object cannot be null", new Throwable());
+			return null;
+		}
+		
+		if(precheck != null && !precheck.doCheck(object)) {
+			return null;
+		}
+		
+		new CFWLog(logger).audit(CFWAuditLogAction.CREATE, object, auditLogFieldnames);
+		
+		return object
+			.queryCache(object.getClass(), "CFWDBDefaultOperations.insertGetPrimaryKey")
+			.insertGetPrimaryKeyWithout(fieldnamesToExclude);
+
+	}
+	
+	/********************************************************************************************
 	 * Updates multiple items in the DB.
 	 * @param Objects with the values that should be inserted. ID will be set by the Database.
 	 * @return true if all updated successful

@@ -709,6 +709,21 @@ public class CFWSQL {
 	}
 	
 	/****************************************************************
+	 * Creates an insert statement including all fields and executes
+	 * the statement with the values assigned to the fields of the
+	 * object.
+	 * @return  primary key or null if not successful
+	 ****************************************************************/
+	public Integer insertGetPrimaryKeyWithout(Object... fieldnamesToExclude) {
+		Set<String> fieldnames = new HashSet<>();
+		fieldnames.addAll(fields.keySet());
+		for(Object fieldname : fieldnamesToExclude) {
+			fieldnames.remove(fieldname.toString());
+		}
+		return insertGetPrimaryKey(fieldnames.toArray(new Object[] {}));
+	}
+	
+	/****************************************************************
 	 * Creates an insert statement including the specified fields
 	 * and executes it with the values assigned to the fields of the
 	 * object.
