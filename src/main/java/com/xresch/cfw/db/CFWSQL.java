@@ -1635,6 +1635,21 @@ public class CFWSQL {
 	/***************************************************************
 	 * Execute the Query and gets the result as a key value map.
 	 ****************************************************************/
+	public LinkedHashMap<String, String> getAsKeyValueMapString(String keyColumnName, String valueColumnName) {
+		
+		LinkedHashMap<String, String> keyValueMap = new LinkedHashMap<>();
+		
+		if(this.execute(true)) {
+			keyValueMap = ResultSetUtils.toKeyValueMapString(result, keyColumnName, valueColumnName);
+		}
+		
+		return keyValueMap;
+		
+	}
+	
+	/***************************************************************
+	 * Execute the Query and gets the result as a key value map.
+	 ****************************************************************/
 	public HashMap<Integer, Object> getAsIDValueMap(Object idColumnName, Object valueColumnName) {
 		
 		HashMap<Integer, Object> keyValueMap = new HashMap<>();

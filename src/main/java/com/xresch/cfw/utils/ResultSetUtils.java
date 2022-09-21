@@ -158,11 +158,11 @@ public class ResultSetUtils {
 	
 	/***************************************************************************
 	 * Converts a ResultSet into a map with the key/values of the selected columns.
-	 * @return list of object, empty if results set is null or an error occurs.
+	 * @return map of objects, empty if results set is null or an error occurs.
 	 ***************************************************************************/
 	public static HashMap<Object, Object> toKeyValueMap(ResultSet result, String keyColumnName, String valueColumnName) {
 		
-		HashMap<Object, Object> keyValueMap = new HashMap<Object, Object>();
+		HashMap<Object, Object> keyValueMap = new HashMap<>();
 		
 		if(result == null) {
 			return keyValueMap;
@@ -172,6 +172,35 @@ public class ResultSetUtils {
 			while(result.next()) {
 				Object key = result.getObject(keyColumnName);
 				Object value = result.getObject(valueColumnName);
+				keyValueMap.put(key, value);
+			}
+		} catch (SQLException e) {
+			new CFWLog(logger)
+				.severe("Error reading object from database.", e);
+			
+		}finally {
+			CFWDB.close(result);
+		}
+			
+		return keyValueMap;
+	}
+	
+	/***************************************************************************
+	 * Converts a ResultSet into a map with the key/values of the selected columns.
+	 * @return map of objects, empty if results set is null or an error occurs.
+	 ***************************************************************************/
+	public static LinkedHashMap<String, String> toKeyValueMapString(ResultSet result, String keyColumnName, String valueColumnName) {
+		
+		LinkedHashMap<String, String> keyValueMap = new LinkedHashMap<>();
+		
+		if(result == null) {
+			return keyValueMap;
+		}
+		
+		try {
+			while(result.next()) {
+				String key = result.getString(keyColumnName);
+				String value = result.getString(valueColumnName);
 				keyValueMap.put(key, value);
 			}
 		} catch (SQLException e) {

@@ -190,7 +190,7 @@ public  class CFWDBDefaultOperations {
 	 ****************************************************************/
 	public static boolean updateWithout(PrecheckHandler precheck, CFWObject object, String... fieldsToIgnore) {
 		
-		return updateWithout(precheck, null, object);
+		return updateWithout(precheck, null, object, fieldsToIgnore);
 	}
 	
 	/***************************************************************
