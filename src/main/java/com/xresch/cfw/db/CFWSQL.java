@@ -727,7 +727,7 @@ public class CFWSQL {
 	 * object.
 	 * This method will not update any hierarchical fields. Please use
 	 * the static methods of CFWHierarchy class to manage those.
-	 * @return CFWSQL for method chaining
+	 * @return true if successful, false otherwise
 	 ****************************************************************/
 	public boolean update() {
 		
@@ -749,7 +749,7 @@ public class CFWSQL {
 	 * and executes it with the values assigned to the fields of the
 	 * object.
 	 * @param fieldnames
-	 * @return CFWSQL for method chaining
+	 * @return true if successful, false otherwise
 	 ****************************************************************/
 	public boolean update(Object ...fieldnames) {
 		
@@ -790,7 +790,7 @@ public class CFWSQL {
 	 * and executes it with the values assigned to the fields of the
 	 * object.
 	 * @param fieldnames
-	 * @return CFWSQL for method chaining
+	 * @return true if successful, false otherwise
 	 ****************************************************************/
 	@SuppressWarnings("rawtypes")
 	public boolean updateWithout(String ...fieldnames) {

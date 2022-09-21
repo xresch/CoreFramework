@@ -736,10 +736,21 @@ public class CFWObject {
 	 * and executes it with the values assigned to the fields of the
 	 * object.
 	 * @param fieldnames
-	 * @return CFWQuery for method chaining
+	 * @return true if successful, false otherwise
 	 ****************************************************************/
 	public boolean update(Object ...fieldnames) {
 		return new CFWSQL(this).update(fieldnames);
+	}
+	
+	/****************************************************************
+	 * Creates an update statement excluding the specified fields.
+	 * and executes it with the values assigned to the fields of the
+	 * object.
+	 * @param fieldnames
+	 * @return true if successful, false otherwise
+	 ****************************************************************/
+	public boolean updateWithout(String... fieldnames) {
+		return new CFWSQL(this).updateWithout(fieldnames);
 	}
 	
 	/****************************************************************
