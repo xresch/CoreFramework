@@ -171,7 +171,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * 
 	 * @return id of the created element if successful, null otherwise.
 	 *****************************************************************************/
-	public static Integer create(Integer parentID, CFWObject elementToCreate) {
+	public static Integer create(Integer parentID, CFWObject elementToCreate, Object... fieldnamesToExclude) {
 		
 		//-----------------------------------
 		// Check Parameter
@@ -186,8 +186,13 @@ public class CFWHierarchy<T extends CFWObject> {
 		// Create Child Element
 		CFWHierarchyConfig config = elementToCreate.getHierarchyConfig();
 		
-		Integer createdElementID = new CFWSQL(elementToCreate)
-			.insertGetPrimaryKey();
+		Integer createdElementID = null;
+		if(fieldnamesToExclude == null) {
+			createdElementID = new CFWSQL(elementToCreate).insertGetPrimaryKey();
+		}else {
+			createdElementID = new CFWSQL(elementToCreate).insertGetPrimaryKeyWithout(fieldnamesToExclude);
+		}
+		
 		
 		if(createdElementID == null) {
 			// return null on error
