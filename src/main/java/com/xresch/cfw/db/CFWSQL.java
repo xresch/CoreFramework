@@ -24,7 +24,6 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWHierarchy;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.datahandling.CFWObject.ForeignKeyDefinition;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.logging.CFWLog;
@@ -63,6 +62,28 @@ public class CFWSQL {
 	private ArrayList<Object> values = new ArrayList<Object>();
 	
 	private ResultSet result = null;
+	
+	//--------------------------------
+	// Referential Actions
+	public enum CFWSQLReferentialAction{
+		  CASCADE
+		, SET_NULL
+		, SET_DEFAULT
+		, RESTRICT
+		, NO_ACTION
+		
+	}
+	
+	//--------------------------------
+	// Foreign Key Definition
+	public class ForeignKeyDefinition{
+		
+		public String fieldname;
+		public String foreignFieldname;
+		public Class<? extends CFWObject> foreignObject;
+		public CFWSQLReferentialAction referentialAction;
+	}
+	
 	
 	/****************************************************************
 	 * Creates a CFWSQL object with the DBInterface of the Internal H2
@@ -237,7 +258,7 @@ public class CFWSQL {
 				String createForeignKeysSQL = "ALTER TABLE "+tableName
 				  + " ADD CONSTRAINT IF NOT EXISTS PUBLIC.FK_"+tableName+"_"+fkd.fieldname
 				  + " FOREIGN KEY ("+fkd.fieldname
-				  + ") REFERENCES "+foreignTable+"("+fkd.foreignFieldname+") ON DELETE "+fkd.ondelete;
+				  + ") REFERENCES "+foreignTable+"("+fkd.foreignFieldname+") ON DELETE "+fkd.referentialAction.toString().replace("_", " ");
 			
 				success &= dbInterface.preparedExecute(createForeignKeysSQL);
 				

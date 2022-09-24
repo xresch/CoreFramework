@@ -35,6 +35,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.db.CFWSQL.CFWSQLReferentialAction;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.logging.CFWLog;
@@ -149,7 +150,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	private EnumSet<CFWFieldFlag> flags;
-	
+		
+
 	//--------------------------------
 	// Database
 	private String columnDefinition = null;
@@ -1391,7 +1393,12 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	public CFWField<T> setForeignKeyCascade(CFWObject parent, Class<? extends CFWObject> foreignObject, String foreignField) {
-		parent.addForeignKey(this.getName(), foreignObject, foreignField, "CASCADE");
+		this.setForeignKey(parent, foreignObject, foreignField, CFWSQLReferentialAction.CASCADE);
+		return this;
+	}
+	
+	public CFWField<T> setForeignKey(CFWObject parent, Class<? extends CFWObject> foreignObject, Object foreignFieldname, CFWSQLReferentialAction actionOnDelete) {
+		parent.addForeignKey(this.getName(), foreignObject, foreignFieldname, actionOnDelete);
 		return this;
 	}
 		

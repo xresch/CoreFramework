@@ -1,6 +1,5 @@
 package com.xresch.cfw.datahandling;
 
-import java.lang.reflect.Array;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,10 +14,11 @@ import org.quartz.JobExecutionContext;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.db.CFWSQL;
+import com.xresch.cfw.db.CFWSQL.CFWSQLReferentialAction;
+import com.xresch.cfw.db.CFWSQL.ForeignKeyDefinition;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.json.SerializerCFWObject;
@@ -46,15 +46,6 @@ public class CFWObject {
 	protected ArrayList<String> fulltextSearchColumns = null;
 	protected CFWField<Integer> primaryField = null;
 	private ArrayList<ForeignKeyDefinition> foreignKeys = new ArrayList<ForeignKeyDefinition>();
-	
-	public class ForeignKeyDefinition{
-		
-		public String fieldname;
-		public String foreignFieldname;
-		public Class<? extends CFWObject> foreignObject;
-		public String ondelete;
-	}
-	
 	
 	/****************************************************************
 	 * Map the request parameters to the objects CFWFields.
@@ -426,12 +417,12 @@ public class CFWObject {
 	 * @param fieldname
 	 * @return instance for chaining
 	 *****************************************************************************/
-	public CFWObject addForeignKey(String fieldname, Class<? extends CFWObject> foreignObject, String foreignFieldname, String ondelete) {
-		ForeignKeyDefinition fkd = new ForeignKeyDefinition();
+	public CFWObject addForeignKey(String fieldname, Class<? extends CFWObject> foreignObject, Object foreignFieldname, CFWSQLReferentialAction ondelete) {
+		ForeignKeyDefinition fkd = new CFWSQL(null).new ForeignKeyDefinition();
 		fkd.fieldname = fieldname;
 		fkd.foreignObject = foreignObject;
-		fkd.foreignFieldname = foreignFieldname;
-		fkd.ondelete = ondelete;
+		fkd.foreignFieldname = foreignFieldname.toString();
+		fkd.referentialAction = ondelete;
 		
 		foreignKeys.add(fkd);
 		return this;
