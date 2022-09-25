@@ -677,7 +677,9 @@ public class CFWSQL {
 			
 			for(Object fieldname : fieldnames) {
 				CFWField<?> field = fields.get(fieldname.toString());
-				if(field != object.getPrimaryKeyField()) {
+				if(field != object.getPrimaryKeyField()
+				|| (field == object.getPrimaryKeyField() && field.getValue() != null)
+				) {
 					if(!isQueryCached()) {
 						columnNames.append("\""+field.getName()).append("\",");
 						placeholders.append("?,");

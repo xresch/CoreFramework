@@ -1373,8 +1373,23 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		return this;
 	}
 	
+	
 	/******************************************************************************************************
 	 * Set the DB column definition of this field as a primary key.
+	 * 
+	 * @return instance for chaining
+	 ******************************************************************************************************/
+	@SuppressWarnings("unchecked")
+	public CFWField<T> setPrimaryKey(CFWObject parentObject) {
+		
+		this.columnDefinition = "INT PRIMARY KEY";
+		if(this.valueClass == Integer.class) {
+			parentObject.setPrimaryField((CFWField<Integer>)this);
+		}
+		return this;
+	}
+	/******************************************************************************************************
+	 * Set the DB column definition of this field as a primary key with auto increment.
 	 * 
 	 * @return instance for chaining
 	 ******************************************************************************************************/
