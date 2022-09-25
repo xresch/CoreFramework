@@ -11,17 +11,26 @@ import com.xresch.cfw.datahandling.CFWObject;
 public class CFWConditions {
 	
 	public enum ThresholdCondition{
-		  EXCELLENT
-		, GOOD
-		, WARNING
-		, EMERGENCY
-		, DANGER
+		  EXCELLENT(1, 1 << 1)
+		, GOOD(2, 1 << 2)
+		, WARNING(3, 1 << 3)
+		, EMERGENCY(4, 1 << 4)
+		, DANGER(5, 1 << 5)
 		/* Not evaluated because it is set to disabled */
-		, DISABLED
+		, DISABLED(6, 0)
 		/* Not evaluated because it is lower than the lowest set threshold value */
-		, NOT_EVALUATED
+		, NOT_EVALUATED(7, 0)
 		/* If the value to evaluate is null or no threshold is specified */
-		, NONE
+		, NONE(8, 0)
+		;
+		
+		public final int id;
+		public final int severity;
+		
+		private ThresholdCondition(int id, int severity) {
+			this.id = id;			
+			this.severity = severity;			
+		}
 	}
 	
 	
@@ -287,21 +296,11 @@ public class CFWConditions {
 	 ************************************************************************************************/
 	public static int getConditionSeverity(ThresholdCondition condition) {
 		
-		switch(condition) {
-		
-			case EXCELLENT:  	return 1 << 1;
-			case GOOD:			return 1 << 2;
-			case WARNING:		return 1 << 3;
-			case EMERGENCY:		return 1 << 4;
-			case DANGER:		return 1 << 5;
-			
-			case DISABLED:
-			case NONE:
-			case NOT_EVALUATED: return 0;
-	
-			default:			return -1;
-
+		if(condition == null) {
+			return -1;
 		}
+		return condition.severity;
+
 	}
 
 }

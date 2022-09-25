@@ -34,7 +34,7 @@ public class CPUSampleSignature extends CFWObject {
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the method signature.")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(-999);
+			.setValue(null);
 		
 	private CFWField<String> signature = CFWField.newString(FormFieldType.TEXT, CPUSampleSignatureFields.SIGNATURE.toString())
 			.setColumnDefinition("VARCHAR UNIQUE")
