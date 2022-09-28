@@ -28,10 +28,10 @@ import com.xresch.cfw.validation.PasswordValidator;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class SevletUserManagementAPI extends HttpServlet {
+public class ServletUserManagementAPI extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
-	private static Logger logger = LogManager.getLogManager().getLogger(SevletUserManagementAPI.class.getName());
+	private static Logger logger = LogManager.getLogManager().getLogger(ServletUserManagementAPI.class.getName());
        
 	/*****************************************************************
 	 *

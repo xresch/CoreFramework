@@ -162,7 +162,7 @@ public class FeatureUserManagement extends CFWAppFeature {
 	public void addFeature(CFWApplicationExecutor app) {	
 		app.addAppServlet(ServletUserManagement.class,  "/usermanagement");
 		app.addAppServlet(ServletPermissions.class,  "/usermanagement/permissions");
-		app.addAppServlet(SevletUserManagementAPI.class, "/usermanagement/data"); 
+		app.addAppServlet(ServletUserManagementAPI.class, "/usermanagement/data"); 
 	}
 
 	@Override
