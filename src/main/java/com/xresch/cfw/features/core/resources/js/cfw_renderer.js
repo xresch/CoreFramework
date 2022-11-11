@@ -306,11 +306,11 @@ function cfw_renderer_common_createDefaultPopupTable(entry, renderDef){
 	definition.rendererSettings.table.narrow = true;
 	definition.rendererSettings.table.striped = true;
 	definition.rendererSettings.table.filter = false;
+		
+	//-------------------------
 	//remove alertstyle and textstyle
 	var visiblefields = Object.keys(definition.data);
-	visiblefields.pop();
-	visiblefields.pop();
-	
+	visiblefields = _.without(visiblefields, definition.bgstylefield, definition.textstylefield);
 	definition.visiblefields = visiblefields;
 	
 	//-------------------------
@@ -577,14 +577,14 @@ function cfw_renderer_tiles(renderDef) {
 	// Create Alert Tiles
 	//===================================================
 	var allTiles = $('<div class="d-flex flex-row flex-grow-1 flex-wrap">');
-
-	if(renderDef.data.length == 1){
+	var totalRecords = renderDef.data.length;
+	if(totalRecords == 1){
 		allTiles.addClass('flex-column h-100');
 	}else{
 		allTiles.addClass('flex-row ');
 	}
 	
-	if(settings.showlabels == true || settings.showlabels == "true"){
+	if(settings.showlabels == true || settings.showlabels == "true" || totalRecords == 1){
 		allTiles.addClass('h-100');
 	}else{
 		allTiles.addClass('align-items-start');
@@ -642,7 +642,9 @@ function cfw_renderer_tiles(renderDef) {
 		currentTile.data('record', currentRecord);
 		currentTile.bind('click', function(e) {
 			e.stopPropagation();
-			
+			// make sure popover gets closed
+			$(this).popover("hide");
+		
 			recordData = $(this).data('record');
 			cfw_ui_showModal(
 					CFWL('cfw_core_details', 'Details'),
@@ -697,8 +699,12 @@ function cfw_renderer_tiles(renderDef) {
 			}
 		} else {
 			currentTile.css('margin', "0rem 0.125rem 0.25rem 0.125rem");
-			currentTile.css('width', 50*settings.sizefactor+"px");
-			currentTile.css('height', 50*settings.sizefactor+"px");
+			if(totalRecords > 1){
+				currentTile.css('width', 50*settings.sizefactor+"px");
+				currentTile.css('height', 50*settings.sizefactor+"px");
+			}else{
+				currentTile.addClass('h-100');
+			}
 		}
 
 		allTiles.append(currentTile);
