@@ -355,8 +355,9 @@ public class ServletDashboardViewMethods
 					newWidget.mapJsonFields(data, false, true);
 				}
 				
-				//overwrite parent dashboard
+				//overwrite parent dashboard, make sure id is null, e.g. from Copy & paste
 				newWidget.foreignKeyDashboard(Integer.parseInt(dashboardID));
+				newWidget.id(null);
 				
 				int id = CFW.DB.DashboardWidgets.createGetPrimaryKey(newWidget);
 				newWidget.id(id);

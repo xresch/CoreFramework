@@ -41,8 +41,7 @@ public class CPUSample extends CFWObject {
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.NONE, StatsCPUSampleFields.PK_ID.toString())
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the statistic.")
-			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(-999);
+			.apiFieldType(FormFieldType.NUMBER);
 	
 	private CFWField<Timestamp> time = CFWField.newTimestamp(FormFieldType.NONE, StatsCPUSampleFields.TIME)
 			.setDescription("The date and time of when the statistic was written to the database.")
