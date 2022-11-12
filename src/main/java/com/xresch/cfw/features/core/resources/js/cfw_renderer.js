@@ -565,6 +565,8 @@ function cfw_renderer_tiles(renderDef) {
 		borderstyle: null,
 		// the border that should be applied, like '1px solid black'
 		border: null,
+		// if show labels is false, and only one tile is rendered, expand the tile to 100% height and with if this is set to true 
+		expandsingle: false,
 		// show a popover with details about the data when hovering a tile
 		popover: true,
 		// The function(record, renderDef) used to create the popover and details modal
@@ -699,7 +701,7 @@ function cfw_renderer_tiles(renderDef) {
 			}
 		} else {
 			currentTile.css('margin', "0rem 0.125rem 0.25rem 0.125rem");
-			if(totalRecords > 1){
+			if(!settings.expandsingle || totalRecords > 1){
 				currentTile.css('width', 50*settings.sizefactor+"px");
 				currentTile.css('height', 50*settings.sizefactor+"px");
 			}else{
