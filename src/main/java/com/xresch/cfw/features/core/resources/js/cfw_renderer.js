@@ -20,6 +20,17 @@ CFW_RENDER_NAME_STATUSLIST = 'statuslist';
 CFW_RENDER_NAME_CARDS = 'cards';
 CFW_RENDER_NAME_PANELS = 'panels';
 
+CFW_RENDER_POPOVER_DEFAULTS = {
+				trigger: 'hover',
+				html: true,
+				placement: 'auto',
+				boundary: 'window',
+				animation: false,
+				delay: { "show": 200, "hide": 0 },
+				// title: 'Details',
+				sanitize: false
+			}
+
 /******************************************************************
  * Class to render HTML from JSON data.
  * 
@@ -643,7 +654,7 @@ function cfw_renderer_tiles(renderDef) {
 		// Add Details Click
 		currentTile.data('record', currentRecord);
 		currentTile.bind('click', function(e) {
-			e.stopPropagation();
+			//e.stopPropagation();
 			// make sure popover gets closed
 			$(this).popover("hide");
 		
@@ -658,13 +669,8 @@ function cfw_renderer_tiles(renderDef) {
 		// Add Details Popover
 		if(settings.popover){
 			currentTile.popover({
-				trigger: 'hover',
-				html: true,
-				placement: 'auto',
-				boundary: 'window',
-				// title: 'Details',
-				sanitize: false,
-				content: settings.popoverFunction(currentRecord, renderDef)
+				...CFW_RENDER_POPOVER_DEFAULTS
+				,content: settings.popoverFunction(currentRecord, renderDef)
 			})
 		}
 		
@@ -774,7 +780,10 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 		// Add Details Click
 		currentTile.data('record', currentRecord)
 		currentTile.bind('click', function(e) {
-			e.stopPropagation();
+			//e.stopPropagation();		
+			// make sure to hide popovers
+			$(this).popover('hide');
+			
 			recordData = $(this).data('record');
 			cfw_ui_showModal(
 					CFWL('cfw_core_details', 'Details'), 
@@ -786,12 +795,7 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 		// Add Details Popover
 		if(settings.popover){
 			currentTile.popover({
-				trigger: 'hover',
-				html: true,
-				placement: 'auto',
-				boundary: 'window',
-				// title: 'Details',
-				sanitize: false,
+				...CFW_RENDER_POPOVER_DEFAULTS,
 				content: settings.popoverFunction(currentRecord, renderDef)
 			})
 		}
@@ -977,12 +981,7 @@ function cfw_renderer_statusmap_createTiles(renderDef, settings, target, aspectR
 		// Add Details Popover
 		if(settings.popover){
 			currentTile.popover({
-				trigger: 'hover',
-				html: true,
-				placement: 'auto',
-				boundary: 'window',
-				// title: 'Details',
-				sanitize: false,
+				...CFW_RENDER_POPOVER_DEFAULTS,
 				content: settings.popoverFunction(currentRecord, renderDef)
 			})
 		}
@@ -1117,12 +1116,7 @@ function cfw_renderer_statuslist(renderDef) {
 		// Add Details Popover
 		if(settings.popover){
 			currentTile.popover({
-				trigger: 'hover',
-				html: true,
-				placement: 'auto',
-				boundary: 'window',
-				// title: 'Details',
-				sanitize: false,
+				...CFW_RENDER_POPOVER_DEFAULTS,
 				content: settings.popoverFunction(currentRecord, renderDef)
 			})
 		}
