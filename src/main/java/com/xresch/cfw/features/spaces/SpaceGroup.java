@@ -38,7 +38,7 @@ public class SpaceGroup extends CFWObject {
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the space group.")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(-999);
+			.setValue(null);
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, SpaceGroupFields.NAME.toString())
 			.setColumnDefinition("VARCHAR(255) UNIQUE")

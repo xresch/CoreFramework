@@ -34,7 +34,7 @@ public class Configuration extends CFWObject {
 									.setPrimaryKeyAutoIncrement(this)
 									.apiFieldType(FormFieldType.NUMBER)
 									.setDescription("The id of the configuration.")
-									.setValue(-999);
+									.setValue(null);
 	
 	private CFWField<String> category = CFWField.newString(FormFieldType.TEXT, ConfigFields.CATEGORY.toString())
 									.setColumnDefinition("VARCHAR(255)")

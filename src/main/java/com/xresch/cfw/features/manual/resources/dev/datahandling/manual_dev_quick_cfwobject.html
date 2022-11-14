@@ -31,7 +31,7 @@ public class Role extends CFWObject {
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the role.")
 			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(-999);
+			.setValue(null);
 	
 	// Creats a CFWField to hold a String that must be between 1 and 255 character long.
 	private CFWField&lt;String&gt; name = CFWField.newString(FormFieldType.TEXT, RoleFields.NAME.toString())

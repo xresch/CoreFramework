@@ -32,7 +32,7 @@ public class KeyValuePair extends CFWObject {
 									.setPrimaryKeyAutoIncrement(this)
 									.apiFieldType(FormFieldType.NUMBER)
 									.setDescription("The id of the key value pair.")
-									.setValue(-999);
+									.setValue(null);
 	
 	private CFWField<String> category = CFWField.newString(FormFieldType.TEXT, KeyValuePairFields.CATEGORY.toString())
 									.setColumnDefinition("VARCHAR(255)")

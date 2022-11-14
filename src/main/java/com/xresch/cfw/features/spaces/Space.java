@@ -92,7 +92,7 @@ public class Space extends CFWObject {
 //			.setDescription("The id of the space.")
 //			.apiFieldType(FormFieldType.SELECT)
 //			.setOptions(new String[] {"regular", "personal", "global", "system"})
-//			.setValue(-999);
+//			.setValue(null);
 	
 	private CFWField<String> description = CFWField.newString(FormFieldType.TEXTAREA, SpaceFields.DESCRIPTION.toString())
 			.setColumnDefinition("CLOB")
