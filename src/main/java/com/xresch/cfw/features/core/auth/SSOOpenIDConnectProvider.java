@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import com.google.common.base.Strings;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.ResponseType;
 import com.nimbusds.oauth2.sdk.Scope;
@@ -50,17 +51,20 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	
 	public static final String SETTINGS_TYPE = "OpenID Connect Provider";
 	
-	public static final Scope DEFAULT_SCOPE = new Scope("openid", "profile", "email");
+	private static Scope SCOPE = null;
+	//public static final Scope DEFAULT_SCOPE = new Scope("openid", "allatclaims");
 	
 	public enum SSOOpenIDConnectProviderFields{
 		PROVIDER_URL,
 		WELL_KNOWN_PATH,
 		CLIENT_ID,
 		CLIENT_SECRET,
+		ADDITIONAL_SCOPE,
 		GRANT_TYPE,
 		RESOURCE,
 		JSON_CUSTOM_PARAMETERS
 	}
+	
 			
 	private CFWField<String> providerURL = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.PROVIDER_URL)
 			.setDescription("The url of the OpenID Connect provider.");
@@ -74,6 +78,10 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	private CFWField<String> clientSecret = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.CLIENT_SECRET)
 			.setDescription("The secret used for this client.")
 			.setValue("");
+	
+	private CFWField<String> additionalScope = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.ADDITIONAL_SCOPE)
+			.setDescription("Comma separated list of additional scopes. For ADFS, add 'allatclaims'.")
+			.setValue(null);
 	
 	private CFWField<String> grantType = CFWField.newString(FormFieldType.SELECT, SSOOpenIDConnectProviderFields.GRANT_TYPE)
 			.setDescription("The grant type used for this client.")
@@ -96,7 +104,7 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	}
 		
 	private void initializeFields() {
-		this.addFields(providerURL, wellknownPath, clientID, clientSecret, grantType, resource, customParams);
+		this.addFields(providerURL, wellknownPath, clientID, clientSecret, additionalScope, grantType, resource, customParams);
 	}
 		
 		
@@ -114,6 +122,25 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 		return false;
 	}
 	
+	/******************************************************************************
+	 * Create Scope
+	 * 
+	 ******************************************************************************/
+	public Scope getScope() {
+		
+		if(SCOPE == null) {
+			SCOPE = new Scope("openid", "profile", "email");
+			
+			if( !Strings.isNullOrEmpty(additionalScope.getValue()) ) {
+				String scopesString = additionalScope.getValue();
+				for(String scope : scopesString.split(",")) {
+					SCOPE.add(scope.trim());
+				}
+			}
+		}
+		
+		return SCOPE;
+	}
 	/******************************************************************************
 	 * NimbusDS connect2id
 	 * https://connect2id.com/products/nimbus-oauth-openid-connect-sdk/guides/java-cookbook-for-openid-connect-public-clients
@@ -157,7 +184,7 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 			// Compose the OpenID authentication request 
 			Builder authRequestBuilder = new AuthenticationRequest.Builder(
 			    new ResponseType("code"),
-			    DEFAULT_SCOPE,
+			    this.getScope(),
 			    clientID,
 			    callback)
 			    .endpointURI(endpointURI)

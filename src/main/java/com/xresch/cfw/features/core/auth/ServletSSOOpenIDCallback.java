@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -17,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.google.common.base.Strings;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant;
@@ -156,9 +157,9 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			
 			//------------------------------------
 			// Retrieve Tokens, UserInfo and do Login
-			Tokens tokens = fetchTokens(provider, code, codeVerifier, redirectURI);
+			OIDCTokenResponse tokenResponse = fetchTokenResponse(provider, code, codeVerifier, redirectURI);
 
-			if(tokens == null) {
+			if(tokenResponse == null) {
 				new HTMLResponse("Error Occured");
 				return;
 			}
@@ -166,29 +167,9 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			// TODO Verification to be done!
 			
 			//------------------------------------
-			// Retrieve UserInfo 
-			UserInfo info = fetchUserInfo(tokens, providerMetadata);
-			
-			new CFWLog(logger).finer("SSO User Information:"+info.toJSONString());
-			
-			//------------------------------------
-			// Do Login and Redirect
-			String username = info.getPreferredUsername();
-			String email = info.getEmailAddress();
-			String firstname = info.getGivenName();
-			String lastname = info.getFamilyName();
-			User user = LoginUtils.fetchUserCreateIfNotExists(username, email, firstname, lastname, true);
-			
-
-			if(user != null) {
-				LoginUtils.loginUserAndCreateSession(request, response, user, targetURL);
-			}else {
-				new HTMLResponse("Error Occured");
-				new CFWLog(logger).severe("Unable to retrieve user information. If you try to connect to ADFS, use SAML Provider instead.");
-			}
-			
-			
-			
+			// Login
+			this.loginByTokens(request, response, tokenResponse, targetURL);
+						
 		} catch (Exception e) {
 			new HTMLResponse("Error Occured");
 			new CFWLog(logger).severe("Error occured during authentication process: "+e.getMessage(), e);
@@ -204,7 +185,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 	 * @throws ParseException 
 	 * @throws MalformedURLException 
 	 ******************************************************************/
-	protected Tokens fetchTokens(
+	protected OIDCTokenResponse fetchTokenResponse(
 			SSOOpenIDConnectProvider provider
 			, AuthorizationCode code
 			, CodeVerifier codeVerifier
@@ -236,7 +217,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 							providerMetadata.getTokenEndpointURI(),
 							new ClientSecretPost(clientID, clientSecret),
 							new AuthorizationCodeGrant(code, redirectURI, codeVerifier),
-							SSOOpenIDConnectProvider.DEFAULT_SCOPE
+							provider.getScope()
 							
 						);
 		}else if(grantType.equals(SSOOpenIDConnectProvider.GRANTTYPE_CLIENT_CREDENTIALS) ) {
@@ -251,7 +232,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 							providerMetadata.getTokenEndpointURI(),
 							new ClientSecretPost(clientID, clientSecret),
 							grant,
-							SSOOpenIDConnectProvider.DEFAULT_SCOPE
+							provider.getScope()
 							
 			);
 		}else {
@@ -287,31 +268,73 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 						.severe("Response Content: "+tokenHTTPResp.getContent());
 			return null;
 		}
-			
-		OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse;
-		OIDCTokens tokens = oidcTokenResponse.getTokens().toOIDCTokens();
 		
+		OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse;
+		
+		return oidcTokenResponse;
+		
+	}
+	
+	/**
+	 * @param targetURL *****************************************************************
+	 * 
+	 ******************************************************************/
+	private void loginByTokens(HttpServletRequest request, HttpServletResponse response, OIDCTokenResponse oidcTokenResponse, String targetURL) {
+		
+		OIDCTokens tokens = oidcTokenResponse.getTokens().toOIDCTokens();
 
-		try {
-			new CFWLog(logger).finer("SSO ID Token Content:"+tokens.getIDToken().getJWTClaimsSet().toString(true) );
+		try {		
+			//----------------------------------------
+			// Retrieve Claims
+			JWTClaimsSet claims = tokens.getIDToken().getJWTClaimsSet();
+			new CFWLog(logger).finer("SSO ID Token Content:"+claims.toString(true) );		
+			
+			//------------------------------------
+			// Retrieve Username
+			String username = claims.getStringClaim("preferred_username");
+			if(username == null ) {
+				String upn = claims.getStringClaim("upn");
+				if( !Strings.isNullOrEmpty(upn)) {
+					username = upn;
+				}
+			}
+			
+			if(username != null && username.contains("@")) {
+				username = username.substring(0, username.indexOf("@"));
+			}
+			
+			//------------------------------------
+			// Retrieve Other Information
+			String email 		= claims.getStringClaim("email");
+			String firstname 	= claims.getStringClaim("given_name");
+			String lastname 	= claims.getStringClaim("family_name");
+			
+			//------------------------------------
+			// Do Login and Redirect
+			User user = LoginUtils.fetchUserCreateIfNotExists(username, email, firstname, lastname, true);
+			
+			if(user != null) {
+				LoginUtils.loginUserAndCreateSession(request, response, user, targetURL);
+			}else {
+				new HTMLResponse("Error Occured");
+				new CFWLog(logger).severe("Unable to retrieve user information.");
+			}
+			
 		} catch (java.text.ParseException e) {
 			e.printStackTrace();
 		}
 		
-		AccessTokenResponse accessTokenResponse = tokenResponse.toSuccessResponse();
-		new CFWLog(logger).finer("SSO Token Response:"+accessTokenResponse.toJSONObject().toJSONString());
-		accessTokenResponse.getTokens().getAccessToken();
+		//------------------------------------
+		// Retrieve UserInfo 
+		//UserInfo info = fetchUserInfo(oidcTokenResponse.getTokens().getBearerAccessToken(), providerMetadata);
+		//new CFWLog(logger).finer("SSO User Information:"+info.toJSONString());
 		
-		return accessTokenResponse.getTokens();
-
 	}
 	
 	/*******************************************************************
 	 * 
 	 ******************************************************************/
-	private UserInfo fetchUserInfo(Tokens tokens, OIDCProviderMetadata providerMetadata) {
-		
-		BearerAccessToken accessToken = tokens.getBearerAccessToken();
+	private UserInfo fetchUserInfo(BearerAccessToken accessToken, OIDCProviderMetadata providerMetadata) {
 		
 		UserInfoRequest userInfoReq = 
 				new UserInfoRequest(
