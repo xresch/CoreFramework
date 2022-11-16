@@ -668,10 +668,9 @@ function cfw_renderer_tiles(renderDef) {
 		//=====================================
 		// Add Details Popover
 		if(settings.popover){
-			currentTile.popover({
-				...CFW_RENDER_POPOVER_DEFAULTS
-				, content: settings.popoverFunction(currentRecord, renderDef)
-			})
+			var popoverSettings = Object.assign({}, CFW_RENDER_POPOVER_DEFAULTS);
+			popoverSettings.content = settings.popoverFunction(currentRecord, renderDef);
+			currentTile.popover(popoverSettings);
 		}
 		
 		//=====================================
@@ -794,10 +793,9 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 		//=====================================
 		// Add Details Popover
 		if(settings.popover){
-			currentTile.popover({
-				...CFW_RENDER_POPOVER_DEFAULTS,
-				content: settings.popoverFunction(currentRecord, renderDef)
-			})
+			var popoverSettings = Object.assign({}, CFW_RENDER_POPOVER_DEFAULTS);
+			popoverSettings.content = settings.popoverFunction(currentRecord, renderDef);
+			currentTile.popover(popoverSettings);
 		}
 
 		allTiles.append(currentTile);
@@ -980,10 +978,9 @@ function cfw_renderer_statusmap_createTiles(renderDef, settings, target, aspectR
 		//=====================================
 		// Add Details Popover
 		if(settings.popover){
-			currentTile.popover({
-				...CFW_RENDER_POPOVER_DEFAULTS,
-				content: settings.popoverFunction(currentRecord, renderDef)
-			})
+			var popoverSettings = Object.assign({}, CFW_RENDER_POPOVER_DEFAULTS);
+			popoverSettings.content = settings.popoverFunction(currentRecord, renderDef);
+			currentTile.popover(popoverSettings);
 		}
 	
 		//if current row has reached numberColumns create new row, except if it was the last item
@@ -1115,10 +1112,9 @@ function cfw_renderer_statuslist(renderDef) {
 		//=====================================
 		// Add Details Popover
 		if(settings.popover){
-			currentTile.popover({
-				...CFW_RENDER_POPOVER_DEFAULTS,
-				content: settings.popoverFunction(currentRecord, renderDef)
-			})
+			var popoverSettings = Object.assign({}, CFW_RENDER_POPOVER_DEFAULTS);
+			popoverSettings.content = settings.popoverFunction(currentRecord, renderDef);
+			currentTile.popover(popoverSettings);
 		}
 		
 		//=====================================
