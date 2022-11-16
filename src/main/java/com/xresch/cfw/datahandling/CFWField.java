@@ -101,7 +101,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	//--------------------------------
 	// Form and Display
 	private Class<T> valueClass;
-	private Class valueSubtypeClass;
+	private Class valueSubtypeClass; // used when valueClass is a generic type, like ArrayList<Foo>, valueSubtypeClass would be "Foo"
 	private FormFieldType type;
 	private FormFieldType apiFieldType;
 	private boolean isDecoratorDisplayed = true;
@@ -130,6 +130,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		TAGS, 
 		// Input Order of elements messed up by client side when containing numbers in keys (numbers will be sorted and listed first)
 		TAGS_SELECTOR,
+		CHART_SETTINGS,
 		SCHEDULE, 
 		LANGUAGE,
 		UNMODIFIABLE_TEXT, 
@@ -327,7 +328,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	
 	public static CFWField<ArrayList<String>> newCustomList(String fieldName){
 		return new CFWField<ArrayList<String>>(ArrayList.class, FormFieldType.CUSTOM_LIST, fieldName)
-				.setColumnDefinition("ARRAY");
+				.setColumnDefinition("ARRAY")
+				.setValueSubtype(String.class);
 	}
 	
 	//===========================================
@@ -361,6 +363,21 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	//===========================================
+	// CHART SETTINGS
+	//===========================================
+	public static CFWField<String> newChartSettings(Enum<?> fieldName){
+		return newChartSettings(fieldName.toString());
+	}
+	public static CFWField<String> newChartSettings(String fieldName){
+		if( fieldnameStartsWithJSON(fieldName) ) {
+			return new CFWField<String> (String.class, FormFieldType.CHART_SETTINGS, fieldName)
+					.setColumnDefinition("VARCHAR");
+		}
+		return null;
+		
+	}
+	
+	//===========================================
 	// SCHEDULE
 	//===========================================
 	public static CFWField<CFWSchedule> newSchedule(Enum<?> fieldName){
@@ -376,7 +393,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	
 	//===========================================
-	// SCHEDULE
+	// TIMEFRAME
 	//===========================================
 	public static CFWField<CFWTimeframe> newTimeframe(Enum<?> fieldName){
 		return newTimeframe(fieldName.toString());
@@ -611,6 +628,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 									break;	
 			
 			case SCHEDULE:		  	createSchedule(html, cssClasses);
+									break;
+			
+			case CHART_SETTINGS:	createChartSettings(html, cssClasses);
 									break;
 			
 			case LANGUAGE:  		createLanguageSelect(html, cssClasses);
@@ -950,18 +970,26 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		html.append("</select>");
 	}
 	
+	/***********************************************************************************
+	 * Create Schedule
+	 ***********************************************************************************/
+	private void createChartSettings(StringBuilder html, String cssClasses) {
+				
+		//---------------------------------
+		// Create Field
+		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"chartsettings\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
+		
+		if(this.parent instanceof CFWForm) {
+			((CFWForm)this.parent).javascript.append("cfw_initializeChartSettingsField('"+name+"', "+CFW.JSON.toJSON(value)+");\r\n");
+		}
+				
+	}
 	
 	/***********************************************************************************
 	 * Create Schedule
 	 ***********************************************************************************/
 	private void createSchedule(StringBuilder html, String cssClasses) {
-		
-//		int maxTags = 128;
-//		
-//		if(attributes.containsKey("maxTags")) {
-//			maxTags = Integer.parseInt(attributes.get("maxTags"));
-//		}
-		
+				
 		//---------------------------------
 		// Create Field
 		html.append("<input id=\""+name+"\" type=\"hidden\" data-role=\"schedule\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");

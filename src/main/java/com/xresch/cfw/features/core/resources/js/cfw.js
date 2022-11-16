@@ -812,6 +812,266 @@ function cfw_internal_updateCustomListField(element){
 	originalField.val(JSON.stringify(newListValues));
 
 }
+/**************************************************************************************
+ * Initialize a ChartSettingsField created with the Java object CFWField.
+ * @param fieldID the name of the field
+ * @return nothing
+ *************************************************************************************/
+function cfw_initializeChartSettingsField(fieldID, jsonData){
+	
+	var selector = '#'+fieldID;
+
+	var chartSettingsField = $(selector);
+
+	var wrapper = $('<div class="cfw-chartsettings-field-wrapper flex-grow-1">');
+	chartSettingsField.before(wrapper);
+	wrapper.append(chartSettingsField);
+	
+	chartSettingsField.val(JSON.stringify(jsonData));
+	
+	//----------------------------------
+	// Add Classes
+	//var classes = chartSettingsField.attr('class');
+	//chartSettingsField.addClass('d-none');
+
+	//----------------------------------
+	// Create HTML
+	
+	wrapper.append(`<div class="dropdown">
+		<button id="chartSettingsButton" class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			Chart Settings
+		</button>
+		<div id="${fieldID}-DROPDOWNMENU" class="dropdown-menu col-sm-12" aria-labelledby="dropdownMenuButton" onclick="event.stopPropagation();">
+			
+			<div class="row m-1"><strong>Series Display</strong></div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-CHARTTYPE">Chart Type:</label>   
+				<div class="col-sm-9">
+					<select id="${fieldID}-CHARTTYPE"  class="form-control-inline form-control-sm col-md-12" onkeydown="return event.key != 'Enter';" id="chart_type">
+						<option value="area">Area</option>
+						<option value="line">Line</option>
+						<option value="bar">Bar</option>
+						<option value="scatter">Scatter</option>
+						<option value="steppedline">Stepped Line</option>
+						<option value="steppedarea">Stepped Area</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-POINTRADIUS">
+					Point Radius:
+				</label>   
+				<div class="col-sm-9">
+					<input id="${fieldID}-POINTRADIUS" type="number" class="form-control-inline form-control-sm col-md-12">
+				</div>
+			</div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-STACKED">
+					Stacked:
+				</label>   
+				<div class="col-sm-9">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="${fieldID}-STACKED" name="${fieldID}-STACKED" value="true" checked="checked"> 
+						<label class="form-check-label" for="inlineRadio1">true</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="${fieldID}-STACKED" name="${fieldID}-STACKED" value="false"> 
+						<label class="form-check-label" for="inlineRadio1">false</label>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-SHOWLEGEND">
+					Show Legend:
+				</label>   
+				<div class="col-sm-9">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="${fieldID}-SHOWLEGEND" name="${fieldID}-SHOWLEGEND" value="true"> 
+						<label class="form-check-label" for="inlineRadio1">true</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="${fieldID}-SHOWLEGEND" name="${fieldID}-SHOWLEGEND" value="false"  checked="checked"> 
+						<label class="form-check-label" for="inlineRadio1">false</label>
+					</div>
+				</div>
+			</div>
+
+
+
+			<div class="row m-1"><strong>Axes Display</strong></div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-SHOWAXES">
+					Stacked:
+				</label>   
+				<div class="col-sm-9">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="${fieldID}-SHOWAXES" name="${fieldID}-SHOWAXES" value="true"  checked="checked"> 
+						<label class="form-check-label" for="inlineRadio1">true</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="${fieldID}-SHOWAXES" name="${fieldID}-SHOWAXES" value="false"> 
+						<label class="form-check-label" for="inlineRadio1">false</label>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-XAXIS_TYPE">
+					X Axis Type:
+				</label>   
+				<div class="col-sm-9">
+					<select id="${fieldID}-XAXIS_TYPE" class="form-control-inline form-control-sm col-md-12">
+						<option value="time" selected="">Time</option>
+						<option value="linear">Linear</option>
+						<option value="logarithmic">Logarithmic</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-YAXIS_TYPE">
+					Y Axis Type:
+				</label>   
+				<div class="col-sm-9">
+					<select id="${fieldID}-YAXIS_TYPE" class="form-control-inline form-control-sm col-md-12">
+						<option value="linear">Linear</option>
+						<option value="logarithmic">Logarithmic</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-YAXIS_MIN">
+					Y Minimum:
+				</label>   
+				<div class="col-sm-9">
+					<input id="${fieldID}-YAXIS_MIN" type="number" class="form-control-inline form-control-sm col-md-12">
+				</div>
+			</div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-YAXIS_MAX">
+					Y Maximum:
+				</label>   
+				<div class="col-sm-9">
+					<input id="${fieldID}-YAXIS_MAX" type="number" class="form-control-inline form-control-sm col-md-12">
+				</div>
+			</div>
+															
+			<div class="row m-1">
+				<div class="col-sm-12">
+					<button class="btn btn-sm btn-primary" onclick="cfw_internal_confirmChartSettings('${fieldID}');" type="button">
+						{!cfw_core_confirm!}
+					</button>
+					<button class="btn btn-sm btn-primary" onclick="$('#${fieldID}').dropdown('toggle');" type="button">
+						{!cfw_core_close!}
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>`);
+	
+	//-----------------------------------------
+	// Set Data
+	 cfw_internal_applyChartSettings(fieldID, wrapper, jsonData);
+}
+
+
+/**************************************************************************************
+ * 
+	//========================================
+	// Render Specific settings
+	var defaultSettings = {
+		// The type of the chart: line|steppedline|area|steppedarea|bar|scatter (to be done radar|pie|doughnut|polarArea|bubble)
+		charttype: 'line',
+		// How should the input data be handled groupbytitle|arrays 
+		datamode: 'groupbytitle',
+		// stack the bars, lines etc...
+		stacked: false,
+		// show or hide the legend
+		showlegend: true, 
+		// show or hide the axes, useful to create sparkline like charts
+		showaxes: true,
+		// make the chart responsive
+		responsive: true,
+		// The name of the field which contains the values for the x-axis
+		xfield: null,
+		// The name of the field which contains the values for the y-axis
+		yfield: null,
+		// The suggested minimum value for the y axis 
+		ymin: 0,
+		// The suggested maximum value for the y axis 
+		ymax: null,
+		//the type of the x axis: linear|logarithmic|category|time
+		xtype: 'time',
+		//the type of the y axis: linear|logarithmic|category|time
+		ytype: 'linear',
+		//the radius for the points shown on line and area charts
+		pointradius: 0,
+		// the padding in pixels of the chart
+		padding: 10,
+		// the color of the x-axes grid lines
+		xaxescolor: 'rgba(128,128,128, 0.2)',
+		// the color of the y-axes grid lines
+		yaxescolor: 'rgba(128,128,128, 0.8)',
+	};
+ *************************************************************************************/
+function cfw_internal_applyChartSettings(fieldID, wrapper, chartSettings){
+	
+	var selector = "#"+fieldID; 
+	
+	if(chartSettings == null || chartSettings.timeframe == null){
+		return;
+	}
+	
+	wrapper.find(selector+"-CHARTTYPE").val(chartSettings.charttype );
+	wrapper.find(selector+"-XAXIS_TYPE").val(chartSettings.xtype );
+	wrapper.find(selector+"-YAXIS_TYPE").val(chartSettings.ytype );
+	wrapper.find(selector+"-YAXIS_MIN").val(chartSettings.ymin );
+	wrapper.find(selector+"-YAXIS_MAX").val(chartSettings.ymax );
+	
+	wrapper.find(selector+"-STACKED[value='" + chartSettings.stacked + "']").attr("checked", "checked");  
+	wrapper.find(selector+"-SHOWLEGEND[value='" + chartSettings.showlegend + "']").attr("checked", "checked");  
+	wrapper.find(selector+"-SHOWAXES[value='" + chartSettings.showaxes + "']").attr("checked", "checked");  
+	wrapper.find(selector+"-POINTRADIUS[value='" + chartSettings.pointradius + "']").attr("checked", "checked");  
+			
+}
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_internal_confirmChartSettings(elementID){
+	
+	var selector = "#"+elementID;
+	var originalField = $(selector);
+	var wrapper = originalField.closest('.cfw-chartsettings-field-wrapper');
+	
+	//--------------------------------------
+	// Create Data Structure
+	var chartSettings = {};
+	
+	chartSettings.charttype 	= $(selector+'-CHARTTYPE').val();
+	chartSettings.xtype 		= $(selector+'-XAXIS_TYPE').val();
+	chartSettings.ytype 		= $(selector+'-YAXIS_TYPE').val();
+	chartSettings.ymin 			= $(selector+'-YAXIS_MIN').val();
+	chartSettings.ymax			= $(selector+'-YAXIS_MAX').val();
+	chartSettings.stacked  		= $(selector+"-STACKED:checked").val();  
+	chartSettings.showlegend	= $(selector+"-SHOWLEGEND:checked").val();  
+	chartSettings.showaxes		= $(selector+"-SHOWAXES:checked").val();  
+	chartSettings.pointradius	= $(selector+"-POINTRADIUS").val();  
+
+	console.log('########### chartSettings ##########')
+	console.log(chartSettings)
+	//--------------------------------------
+	// Set ChartSettings
+	originalField.val(JSON.stringify(chartSettings));
+	originalField.dropdown('toggle');
+
+}
 
 /**************************************************************************************
  * Initialize a ScheduleField created with the Java object CFWField.
