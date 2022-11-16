@@ -391,6 +391,7 @@ public class CFWDBDashboard {
 				// Map values
 				Dashboard dashboard = new Dashboard();
 				dashboard.mapJsonFields(dashboardObject, true, true);
+				dashboard.id(null);
 				
 				String importedName = dashboard.name() +"(Imported)";
 				dashboard.name(importedName);
@@ -531,6 +532,7 @@ public class CFWDBDashboard {
 							
 							//-----------------------------
 							// Reset Dashboard ID
+							param.id(null);
 							param.foreignKeyDashboard(newDashboardID);
 							
 							//-----------------------------
@@ -574,6 +576,7 @@ public class CFWDBDashboard {
 							
 							//-----------------------------
 							// Reset Dashboard ID and Owner
+							widget.id(null);
 							widget.foreignKeyDashboard(newDashboardID);
 							
 							//-----------------------------
