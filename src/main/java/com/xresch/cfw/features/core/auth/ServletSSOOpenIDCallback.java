@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -38,6 +39,7 @@ import com.nimbusds.openid.connect.sdk.AuthenticationErrorResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponseParser;
 import com.nimbusds.openid.connect.sdk.AuthenticationSuccessResponse;
+import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponseParser;
 import com.nimbusds.openid.connect.sdk.UserInfoErrorResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoRequest;
@@ -45,6 +47,7 @@ import com.nimbusds.openid.connect.sdk.UserInfoResponse;
 import com.nimbusds.openid.connect.sdk.UserInfoSuccessResponse;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
+import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
@@ -125,8 +128,6 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			CodeVerifier codeVerifier = null;
 			if(ssoCodeVerifierObject instanceof CodeVerifier) { codeVerifier = (CodeVerifier)ssoCodeVerifierObject; }
 			
-			
-			
 			//------------------------------------
 			// Verify State is correct
 			
@@ -156,13 +157,19 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			//------------------------------------
 			// Retrieve Tokens, UserInfo and do Login
 			Tokens tokens = fetchTokens(provider, code, codeVerifier, redirectURI);
-			
+
 			if(tokens == null) {
 				new HTMLResponse("Error Occured");
 				return;
 			}
+			
 			// TODO Verification to be done!
+			
+			//------------------------------------
+			// Retrieve UserInfo 
 			UserInfo info = fetchUserInfo(tokens, providerMetadata);
+			
+			new CFWLog(logger).finer("SSO User Information:"+info.toJSONString());
 			
 			//------------------------------------
 			// Do Login and Redirect
@@ -172,10 +179,15 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			String lastname = info.getFamilyName();
 			User user = LoginUtils.fetchUserCreateIfNotExists(username, email, firstname, lastname, true);
 			
-			LoginUtils.loginUserAndCreateSession(request, response, user, targetURL);
+
+			if(user != null) {
+				LoginUtils.loginUserAndCreateSession(request, response, user, targetURL);
+			}else {
+				new HTMLResponse("Error Occured");
+				new CFWLog(logger).severe("Unable to retrieve user information. If you try to connect to ADFS, use SAML Provider instead.");
+			}
 			
-			//System.out.println("======= Retrieved user info ======");
-			//System.out.println(info.toJSONString());
+			
 			
 		} catch (Exception e) {
 			new HTMLResponse("Error Occured");
@@ -223,8 +235,10 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 					new TokenRequest(
 							providerMetadata.getTokenEndpointURI(),
 							new ClientSecretPost(clientID, clientSecret),
-							new AuthorizationCodeGrant(code, redirectURI, codeVerifier)
-			);
+							new AuthorizationCodeGrant(code, redirectURI, codeVerifier),
+							SSOOpenIDConnectProvider.DEFAULT_SCOPE
+							
+						);
 		}else if(grantType.equals(SSOOpenIDConnectProvider.GRANTTYPE_CLIENT_CREDENTIALS) ) {
 			Map<String, List<String>> params = new HashMap<>();
 			
@@ -236,7 +250,9 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 					new TokenRequest(
 							providerMetadata.getTokenEndpointURI(),
 							new ClientSecretPost(clientID, clientSecret),
-							grant
+							grant,
+							SSOOpenIDConnectProvider.DEFAULT_SCOPE
+							
 			);
 		}else {
 			new CFWLog(logger).severe("Unsupported Grant Type:"+grantType, new IllegalArgumentException());
@@ -261,16 +277,29 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			
 			ErrorObject error = ((TokenErrorResponse) tokenResponse).getErrorObject();
 			new CFWLog(logger).severe("Error response received during single sign on(fetch token): "+error.getDescription()+"(code="+error.getCode()+")");
+			
 			new CFWLog(logger)
 						.silent(true)
 						.severe("Authorization Code: "+code);
+			
 			new CFWLog(logger)
 						.silent(true)
 						.severe("Response Content: "+tokenHTTPResp.getContent());
 			return null;
 		}
 			
+		OIDCTokenResponse oidcTokenResponse = (OIDCTokenResponse) tokenResponse;
+		OIDCTokens tokens = oidcTokenResponse.getTokens().toOIDCTokens();
+		
+
+		try {
+			new CFWLog(logger).finer("SSO ID Token Content:"+tokens.getIDToken().getJWTClaimsSet().toString(true) );
+		} catch (java.text.ParseException e) {
+			e.printStackTrace();
+		}
+		
 		AccessTokenResponse accessTokenResponse = tokenResponse.toSuccessResponse();
+		new CFWLog(logger).finer("SSO Token Response:"+accessTokenResponse.toJSONObject().toJSONString());
 		accessTokenResponse.getTokens().getAccessToken();
 		
 		return accessTokenResponse.getTokens();
@@ -294,23 +323,23 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		try {
 			userInfoHTTPResp = userInfoReq.toHTTPRequest().send();
 		} catch (SerializeException | IOException e) {
-			// TODO proper error handling
+			new CFWLog(logger).severe("SSO - Error while retrieving user info:"+e.getMessage(), e);
 		}
 
 		UserInfoResponse userInfoResponse = null;
 		try {
 			userInfoResponse = UserInfoResponse.parse(userInfoHTTPResp);
+			
 		} catch (ParseException e) {
-			// TODO proper error handling
+			new CFWLog(logger).severe("SSO - Parsing Error while retrieving user info:"+e.getMessage(), e);
 		}
 
 		if (userInfoResponse instanceof UserInfoErrorResponse) {
 			ErrorObject error = ((UserInfoErrorResponse) userInfoResponse).getErrorObject();
-			// TODO error handling
+			new CFWLog(logger).severe("SSO - Error while retrieving user info: HTTP "+error.getHTTPStatusCode()+" - "+error.getDescription());
 		}
-
+				
 		UserInfoSuccessResponse successResponse = (UserInfoSuccessResponse) userInfoResponse;
-		
 		//JSONObject claims = successResponse.getUserInfo().toJSONObject();
 		
 		return successResponse.getUserInfo();

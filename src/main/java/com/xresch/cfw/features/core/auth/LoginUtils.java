@@ -1,38 +1,16 @@
 package com.xresch.cfw.features.core.auth;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.nimbusds.oauth2.sdk.ErrorObject;
-import com.nimbusds.oauth2.sdk.ParseException;
-import com.nimbusds.oauth2.sdk.ResponseType;
-import com.nimbusds.oauth2.sdk.Scope;
-import com.nimbusds.oauth2.sdk.client.ClientRegistrationErrorResponse;
-import com.nimbusds.oauth2.sdk.client.ClientRegistrationResponse;
-import com.nimbusds.oauth2.sdk.http.HTTPResponse;
-import com.nimbusds.oauth2.sdk.id.ClientID;
-import com.nimbusds.oauth2.sdk.id.State;
-import com.nimbusds.oauth2.sdk.util.JSONObjectUtils;
-import com.nimbusds.openid.connect.sdk.AuthenticationRequest;
-import com.nimbusds.openid.connect.sdk.Nonce;
-import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
-import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformation;
-import com.nimbusds.openid.connect.sdk.rp.OIDCClientInformationResponse;
-import com.nimbusds.openid.connect.sdk.rp.OIDCClientMetadata;
-import com.nimbusds.openid.connect.sdk.rp.OIDCClientRegistrationRequest;
-import com.nimbusds.openid.connect.sdk.rp.OIDCClientRegistrationResponseParser;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
+import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * 
@@ -42,6 +20,8 @@ import com.xresch.cfw.features.usermgmt.User.UserFields;
 public class LoginUtils {
 
 	private static LoginProviderInterface provider = null;
+	
+	private static Logger logger = CFWLog.getLogger(LoginUtils.class.getName());
 	
 	private LoginUtils() {
 		// Hide Constructor
@@ -138,9 +118,16 @@ public class LoginUtils {
 			, String lastnameString
 			, boolean isForeign) {
 		
+		new CFWLog(logger).finer("Fetch User from DB or Create: username:"+username+", email: "+emailString);
+		
+		if(username == null) {
+			return null;
+		}
+		
     	//------------------------------
     	// Create User in DB if not exists
-    	User userFromDB = null;
+		User userFromDB = null;
+
     	if(!CFW.DB.Users.checkUsernameExists(username)) {
 
 	    	User newUser = new User(username)

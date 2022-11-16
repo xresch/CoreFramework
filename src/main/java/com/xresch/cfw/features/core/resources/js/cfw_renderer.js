@@ -670,7 +670,7 @@ function cfw_renderer_tiles(renderDef) {
 		if(settings.popover){
 			currentTile.popover({
 				...CFW_RENDER_POPOVER_DEFAULTS
-				,content: settings.popoverFunction(currentRecord, renderDef)
+				, content: settings.popoverFunction(currentRecord, renderDef)
 			})
 		}
 		

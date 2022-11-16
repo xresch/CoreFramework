@@ -13,8 +13,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.eclipse.jetty.server.session.Session;
-
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.ResponseType;
 import com.nimbusds.oauth2.sdk.Scope;
@@ -52,7 +50,9 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	
 	public static final String SETTINGS_TYPE = "OpenID Connect Provider";
 	
-	public enum PrometheusEnvironmentFields{
+	public static final Scope DEFAULT_SCOPE = new Scope("openid", "profile", "email");
+	
+	public enum SSOOpenIDConnectProviderFields{
 		PROVIDER_URL,
 		WELL_KNOWN_PATH,
 		CLIENT_ID,
@@ -62,30 +62,30 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 		JSON_CUSTOM_PARAMETERS
 	}
 			
-	private CFWField<String> providerURL = CFWField.newString(FormFieldType.TEXT, PrometheusEnvironmentFields.PROVIDER_URL)
+	private CFWField<String> providerURL = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.PROVIDER_URL)
 			.setDescription("The url of the OpenID Connect provider.");
 	
-	private CFWField<String> wellknownPath = CFWField.newString(FormFieldType.TEXT, PrometheusEnvironmentFields.WELL_KNOWN_PATH)
+	private CFWField<String> wellknownPath = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.WELL_KNOWN_PATH)
 			.setDescription("The path to the .well-known provider configuration.");
 	
-	private CFWField<String> clientID = CFWField.newString(FormFieldType.TEXT, PrometheusEnvironmentFields.CLIENT_ID)
+	private CFWField<String> clientID = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.CLIENT_ID)
 			.setDescription("The id used for this client.");
 	
-	private CFWField<String> clientSecret = CFWField.newString(FormFieldType.TEXT, PrometheusEnvironmentFields.CLIENT_SECRET)
+	private CFWField<String> clientSecret = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.CLIENT_SECRET)
 			.setDescription("The secret used for this client.")
 			.setValue("");
 	
-	private CFWField<String> grantType = CFWField.newString(FormFieldType.SELECT, PrometheusEnvironmentFields.GRANT_TYPE)
+	private CFWField<String> grantType = CFWField.newString(FormFieldType.SELECT, SSOOpenIDConnectProviderFields.GRANT_TYPE)
 			.setDescription("The grant type used for this client.")
-			.addOption(GRANTTYPE_AUTHORIZATION_CODE, "Authorication Code")
+			.addOption(GRANTTYPE_AUTHORIZATION_CODE, "Authorization Code")
 			.addOption(GRANTTYPE_CLIENT_CREDENTIALS, "Client Credentials")
 			.setValue(GRANTTYPE_AUTHORIZATION_CODE);
 	
-	private CFWField<String> resource = CFWField.newString(FormFieldType.TEXT, PrometheusEnvironmentFields.RESOURCE)
+	private CFWField<String> resource = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.RESOURCE)
 			.setDescription("(Optional)The value for the resource parameter used for client credential grant flow.")
 			.setValue("");
 	
-	private CFWField<LinkedHashMap<String, String>> customParams = CFWField.newValueLabel(PrometheusEnvironmentFields.JSON_CUSTOM_PARAMETERS)
+	private CFWField<LinkedHashMap<String, String>> customParams = CFWField.newValueLabel(SSOOpenIDConnectProviderFields.JSON_CUSTOM_PARAMETERS)
 			.setLabel("Custom Parameters")
 			.setDescription("Custom parameters that should be added to the authentication request.");
 	
@@ -125,7 +125,7 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 		
 		try {
 			OIDCProviderMetadata providerMetadata = getProviderMetadata();
-
+			
 			//---------------------------------------
 			// Authentication Request
 			// The client ID provisioned by the OpenID provider when
@@ -157,7 +157,7 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 			// Compose the OpenID authentication request 
 			Builder authRequestBuilder = new AuthenticationRequest.Builder(
 			    new ResponseType("code"),
-			    new Scope("openid", "profile", "email"),
+			    DEFAULT_SCOPE,
 			    clientID,
 			    callback)
 			    .endpointURI(endpointURI)
