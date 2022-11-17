@@ -853,8 +853,8 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 						<option value="line">Line</option>
 						<option value="bar">Bar</option>
 						<option value="scatter">Scatter</option>
-						<option value="steppedline">Stepped Line</option>
 						<option value="steppedarea">Stepped Area</option>
+						<option value="steppedline">Stepped Line</option>
 					</select>
 				</div>
 			</div>
@@ -874,11 +874,11 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 				</label>   
 				<div class="col-sm-9">
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="${fieldID}-STACKED" name="${fieldID}-STACKED" value="true" checked="checked"> 
+						<input class="form-check-input" type="radio" id="${fieldID}-STACKED" name="${fieldID}-STACKED" value="true"> 
 						<label class="form-check-label" for="inlineRadio1">true</label>
 					</div>
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="${fieldID}-STACKED" name="${fieldID}-STACKED" value="false"> 
+						<input class="form-check-input" type="radio" id="${fieldID}-STACKED" name="${fieldID}-STACKED" value="false" checked="checked"> 
 						<label class="form-check-label" for="inlineRadio1">false</label>
 					</div>
 				</div>
@@ -906,7 +906,7 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 			
 			<div class="row m-1">  
 				<label class="col-sm-3" for="${fieldID}-SHOWAXES">
-					Stacked:
+					Show Axes:
 				</label>   
 				<div class="col-sm-9">
 					<div class="form-check form-check-inline">
@@ -1025,11 +1025,12 @@ function cfw_internal_applyChartSettings(fieldID, wrapper, chartSettings){
 	
 	var selector = "#"+fieldID; 
 	
-	if(chartSettings == null || chartSettings.timeframe == null){
+	if(chartSettings == null || chartSettings.charttype == null){
 		return;
 	}
-	
+
 	wrapper.find(selector+"-CHARTTYPE").val(chartSettings.charttype );
+	wrapper.find(selector+"-POINTRADIUS").val(chartSettings.pointradius );
 	wrapper.find(selector+"-XAXIS_TYPE").val(chartSettings.xtype );
 	wrapper.find(selector+"-YAXIS_TYPE").val(chartSettings.ytype );
 	wrapper.find(selector+"-YAXIS_MIN").val(chartSettings.ymin );
@@ -1038,7 +1039,7 @@ function cfw_internal_applyChartSettings(fieldID, wrapper, chartSettings){
 	wrapper.find(selector+"-STACKED[value='" + chartSettings.stacked + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-SHOWLEGEND[value='" + chartSettings.showlegend + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-SHOWAXES[value='" + chartSettings.showaxes + "']").attr("checked", "checked");  
-	wrapper.find(selector+"-POINTRADIUS[value='" + chartSettings.pointradius + "']").attr("checked", "checked");  
+
 			
 }
 /**************************************************************************************
@@ -1063,9 +1064,17 @@ function cfw_internal_confirmChartSettings(elementID){
 	chartSettings.showlegend	= $(selector+"-SHOWLEGEND:checked").val();  
 	chartSettings.showaxes		= $(selector+"-SHOWAXES:checked").val();  
 	chartSettings.pointradius	= $(selector+"-POINTRADIUS").val();  
-
-	console.log('########### chartSettings ##########')
-	console.log(chartSettings)
+	
+	//--------------------------------------
+	// Convert Numbers and Booleans
+	chartSettings.pointradius 	= !isNaN(chartSettings.pointradius) ? parseInt(chartSettings.pointradius) : 0;
+	chartSettings.ymin 			= !isNaN(chartSettings.ymin) ? parseInt(chartSettings.ymin) : 0;
+	chartSettings.ymax 			= !isNaN(chartSettings.ymax) ? parseInt(chartSettings.ymax) : null;
+	
+	chartSettings.stacked  		= (chartSettings.stacked.trim().toLowerCase() == "true") ? true : false;  
+	chartSettings.showlegend  	= (chartSettings.showlegend.trim().toLowerCase() == "true") ? true : false;  
+	chartSettings.showaxes  	= (chartSettings.showaxes.trim().toLowerCase() == "true") ? true : false;  
+	
 	//--------------------------------------
 	// Set ChartSettings
 	originalField.val(JSON.stringify(chartSettings));

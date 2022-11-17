@@ -365,12 +365,12 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	//===========================================
 	// CHART SETTINGS
 	//===========================================
-	public static CFWField<String> newChartSettings(Enum<?> fieldName){
+	public static CFWField<CFWChartSettings> newChartSettings(Enum<?> fieldName){
 		return newChartSettings(fieldName.toString());
 	}
-	public static CFWField<String> newChartSettings(String fieldName){
+	public static CFWField<CFWChartSettings> newChartSettings(String fieldName){
 		if( fieldnameStartsWithJSON(fieldName) ) {
-			return new CFWField<String> (String.class, FormFieldType.CHART_SETTINGS, fieldName)
+			return new CFWField<CFWChartSettings> (CFWChartSettings.class, FormFieldType.CHART_SETTINGS, fieldName)
 					.setColumnDefinition("VARCHAR");
 		}
 		return null;
@@ -1868,21 +1868,10 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		if(value.getClass() == String.class) {
 			
 			String stringValue = (String)value;
-			if( stringValue.trim().equals("")) { 
-				if(valueClass == Integer.class) 	    { return this.changeValue(null); }
-				else if(valueClass == Float.class) 		{ return this.changeValue(null); }
-				else if(valueClass == Boolean.class) 	{ return this.changeValue(false); }
-				else if(valueClass == Timestamp.class)  { return this.changeValue(null);  }
-				else if(valueClass == Date.class)  		{ return this.changeValue(null); }
-				else if(valueClass == ArrayList.class)	{ return this.changeValue(null); }
-				else if(valueClass == LinkedHashMap.class){ return this.changeValue(null); }
-				else if(valueClass == CFWSchedule.class){  return this.changeValue(null); }
-				else if(valueClass == CFWTimeframe.class){  return this.changeValue(null); }
-				else {	
-					new CFWLog(logger)
-					.severe("The choosen type is not supported: "+valueClass.getName());
-					return false;
-				}
+			if(stringValue.trim().equals("")) { 
+				if(valueClass == Boolean.class) { return this.changeValue(false); }
+				else {  return this.changeValue(null); }
+
 			}
 			else if(valueClass == Integer.class) 	{ return this.changeValue(Integer.parseInt(stringValue)); }
 			else if(valueClass == Float.class) 		{ return this.changeValue(Float.parseFloat(stringValue)); }
@@ -1945,10 +1934,15 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				CFWSchedule schedule = new CFWSchedule(stringValue);
 				return this.changeValue(schedule); 
 			}
+			
+			else if(valueClass == CFWChartSettings.class){ 
+				CFWChartSettings chartSettings = new CFWChartSettings(stringValue);
+				return this.changeValue(chartSettings); 
+			}
 
 			else if(valueClass == CFWTimeframe.class){ 
-				CFWTimeframe schedule = new CFWTimeframe(stringValue);
-				return this.changeValue(schedule); 
+				CFWTimeframe timeframe = new CFWTimeframe(stringValue);
+				return this.changeValue(timeframe); 
 			}
 			
 			else {
@@ -2291,6 +2285,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					else if( Boolean.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getBoolean(colName), true); }
 					else if( Timestamp.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getTimestamp(colName), true); }
 					else if( Date.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getDate(colName), true); }
+					else if( CFWChartSettings.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName), true); }
 					else if( CFWSchedule.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName), true); }
 					else if( CFWTimeframe.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getString(colName), true); }
 					else if( ArrayList.class.isAssignableFrom(current.getValueClass()))  { 

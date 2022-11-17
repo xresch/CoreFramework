@@ -30,11 +30,12 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWChartSettings;
 import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.datahandling.CFWTimeframe;
-import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 
@@ -87,9 +88,10 @@ public class CFWJson {
 		return new GsonBuilder()
 				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
 				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
+				.registerTypeHierarchyAdapter(CFWChartSettings.class, new SerializerCFWChartSettings())
 				.registerTypeHierarchyAdapter(CFWTimeframe.class, new SerializerCFWTimeframe())
 				.registerTypeHierarchyAdapter(JSONResponse.class, new SerializerJSONResponse())
-				;
+			;
 	}
 	/*************************************************************************************
 	 * 
