@@ -1039,9 +1039,9 @@ function cfw_internal_applyChartSettings(fieldID, wrapper, chartSettings){
 	wrapper.find(selector+"-STACKED[value='" + chartSettings.stacked + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-SHOWLEGEND[value='" + chartSettings.showlegend + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-SHOWAXES[value='" + chartSettings.showaxes + "']").attr("checked", "checked");  
-
 			
 }
+
 /**************************************************************************************
  * 
  *************************************************************************************/
@@ -1067,9 +1067,9 @@ function cfw_internal_confirmChartSettings(elementID){
 	
 	//--------------------------------------
 	// Convert Numbers and Booleans
-	chartSettings.pointradius 	= !isNaN(chartSettings.pointradius) ? parseInt(chartSettings.pointradius) : 0;
-	chartSettings.ymin 			= !isNaN(chartSettings.ymin) ? parseInt(chartSettings.ymin) : 0;
-	chartSettings.ymax 			= !isNaN(chartSettings.ymax) ? parseInt(chartSettings.ymax) : null;
+	chartSettings.pointradius 	= !isNaN(chartSettings.pointradius) ? parseFloat(chartSettings.pointradius) : 0;
+	chartSettings.ymin 			= !isNaN(chartSettings.ymin) ? parseFloat(chartSettings.ymin) : 0;
+	chartSettings.ymax 			= !isNaN(chartSettings.ymax) ? parseFloat(chartSettings.ymax) : null;
 	
 	chartSettings.stacked  		= (chartSettings.stacked.trim().toLowerCase() == "true") ? true : false;  
 	chartSettings.showlegend  	= (chartSettings.showlegend.trim().toLowerCase() == "true") ? true : false;  
@@ -2758,16 +2758,29 @@ function cfw_format_formToArray(formOrID, numbersAsStrings){
 	var paramsArray = $(formOrID).serializeArray();
 	
 	//---------------------------
-	// Convert String true/false to boolean
+	// Convert String Values
 	for(let i in paramsArray){
+		let name = paramsArray[i].name;
 		let current = paramsArray[i].value;
 		if(typeof current == 'string'){
-			if(!(current === '') && !isNaN(current)){
+			console.log("HIT!!!"+name+" - "+current+" - "+(typeof current));
+			//---------------------------
+			// Convert String Numbers
+			if(name.startsWith("JSON_") 
+			   && current.startsWith("{")){
+				console.log("HIT!!! BBB")
+				paramsArray[i].value = JSON.parse(current);
+				
+			//---------------------------
+			// Convert String Numbers
+			} else if(!(current === '') && !isNaN(current)){
 				if(numbersAsStrings){
 					paramsArray[i].value = current;
 				}else{
 					paramsArray[i].value = Number(current);
 				}
+			//---------------------------
+			// Convert String true/false to boolean
 			}else if(current.toLowerCase() === 'true'){
 				paramsArray[i].value = true;
 			}else if(current.toLowerCase() === 'false'){

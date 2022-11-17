@@ -6,13 +6,19 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWChartSettings;
+import com.xresch.cfw.datahandling.CFWChartSettings.AxisType;
+import com.xresch.cfw.datahandling.CFWChartSettings.ChartType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
@@ -210,6 +216,118 @@ public class DashboardWidget extends CFWObject {
 		
 		return apis;
 	}
+	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	@Override
+	public void updateTable() {
+		
+		//###########################################################
+		// Migration of Chart Settings
+		//###########################################################
+		
+		//------------------------------------
+		// Fetch Widgets with chart settings
+		ArrayList<DashboardWidget> chartWidgetArray = 
+				new CFWSQL(new DashboardWidget())
+					.select(  DashboardWidgetFields.PK_ID
+							, DashboardWidgetFields.TITLE
+							, DashboardWidgetFields.TYPE
+							, DashboardWidgetFields.JSON_SETTINGS
+						)
+					.whereLike(DashboardWidgetFields.JSON_SETTINGS, "%chart_type%")
+					.and().like(DashboardWidgetFields.JSON_SETTINGS, "%stacked%")
+					.getAsObjectListConvert(DashboardWidget.class);
+		
+		//------------------------------------
+		// Iterate widgets 
+		for(DashboardWidget widget : chartWidgetArray) {
+			
+			JsonObject settingsObject = widget.settingsAsJson();
+			
+			//------------------------------------
+			// Grab Existing Settings
+			ChartType charttype = ChartType.valueOf(settingsObject.get("chart_type").getAsString()); 	
+			
+			
+			Boolean stacked = settingsObject.get("stacked").getAsBoolean(); 		
+			Boolean showlegend = settingsObject.get("show_legend").getAsBoolean(); 	
+			Float pointradius = settingsObject.get("pointradius").getAsFloat(); 		
+			
+			Float ymin = 
+					! settingsObject.get("ymin").isJsonNull()
+					? settingsObject.get("ymin").getAsFloat()
+					: null; 
+			
+			Float ymax = 
+					! settingsObject.get("ymax").isJsonNull()
+					? settingsObject.get("ymax").getAsFloat()
+					: null; 
+			
+			Boolean showaxes = 
+					settingsObject.get("show_axes") != null
+					? settingsObject.get("show_axes").getAsBoolean()
+					: true;
+			
+			
+			AxisType xaxisType = 
+					settingsObject.get("x_axis_type") != null 
+						? AxisType.valueOf(settingsObject.get("x_axis_type").getAsString()) 
+						: AxisType.time; 
+			
+			
+			AxisType yaxisType = 
+					settingsObject.get("y_axis_type") != null 
+						? AxisType.valueOf(settingsObject.get("y_axis_type").getAsString()) 
+						: AxisType.time; 
+			
+			
+			//------------------------------------
+			// Remove Existing Settings
+			settingsObject.remove("chart_type");
+			settingsObject.remove("stacked");
+			settingsObject.remove("show_legend");
+			settingsObject.remove("pointradius");
+			settingsObject.remove("ymin");
+			settingsObject.remove("ymax");
+			settingsObject.remove("show_axes");
+			settingsObject.remove("x_axis_type");
+			settingsObject.remove("y_axis_type");
+			
+			//------------------------------------
+			// Create new Settings Structure
+			CFWChartSettings chartSettings = 
+				new CFWChartSettings()
+					.chartType(charttype)
+					.showLegend(showlegend)
+					.showAxes(showaxes)
+					.stacked(stacked)
+					.pointRadius(pointradius)
+					.xaxisType(xaxisType)
+					.yaxisType(yaxisType)
+					.yaxisMin(ymin)
+					.yaxisMax(ymax);
+			
+			settingsObject.add(WidgetSettingsFactory.FIELDNAME_CHARTSETTINGS, chartSettings.getAsJsonObject());
+
+			//------------------------------------
+			// Store in DB
+			widget.settings( CFW.JSON.toJSON(settingsObject) );
+			
+			if(widget.update(DashboardWidgetFields.JSON_SETTINGS)) {
+				new CFWLog(logger).audit(CFWAuditLogAction.MIGRATE
+						, DashboardWidget.class
+						, "Migrated Chart settings for widget: TITLE:'"+widget.title()+"',  TYPE:"+widget.type()+", ID:"+widget.id()
+					);
+			}else {
+				new CFWLog(logger).severe(
+						"Error while migrating chart settings for widget: TITLE:'"+widget.title()+"',  TYPE:"+widget.type()+", ID:"+widget.id()
+						, new Exception()
+					);
+			}
+		}
+	}
 
 	public Integer id() {
 		return id.getValue();
@@ -331,6 +449,10 @@ public class DashboardWidget extends CFWObject {
 	
 	public String settings() {
 		return settings.getValue();
+	}
+	
+	public JsonObject settingsAsJson() {
+		return CFW.JSON.stringToJsonObject(settings.getValue());
 	}
 	
 	public DashboardWidget settings(String settings) {

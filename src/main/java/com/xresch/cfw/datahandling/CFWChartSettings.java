@@ -165,16 +165,16 @@ public class CFWChartSettings {
 	/***************************************************************************************
 	 * can return null
 	 ***************************************************************************************/
-	public Integer yaxisMin() {
+	public Float yaxisMin() {
 		if(chartSettingsData == null || chartSettingsData.get(YAXIS_MIN).isJsonNull()) return null;
 		
-		return chartSettingsData.get(YAXIS_MIN).getAsInt();
+		return chartSettingsData.get(YAXIS_MIN).getAsFloat();
 	}
 	
 	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
-	public CFWChartSettings yaxisMin(int value) {
+	public CFWChartSettings yaxisMin(Float value) {
 		chartSettingsData.addProperty(YAXIS_MIN, value);
 		return this;
 	}
@@ -182,16 +182,16 @@ public class CFWChartSettings {
 	/***************************************************************************************
 	 * can return null
 	 ***************************************************************************************/
-	public Integer yaxisMax() {
+	public Float yaxisMax() {
 		if(chartSettingsData == null || chartSettingsData.get(YAXIS_MAX).isJsonNull()) return null;
 		
-		return chartSettingsData.get(YAXIS_MAX).getAsInt();
+		return chartSettingsData.get(YAXIS_MAX).getAsFloat();
 	}
 	
 	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
-	public CFWChartSettings yaxisMax(int value) {
+	public CFWChartSettings yaxisMax(Float value) {
 		chartSettingsData.addProperty(YAXIS_MAX, value);
 		return this;
 	}
@@ -199,16 +199,16 @@ public class CFWChartSettings {
 	/***************************************************************************************
 	 * can return null
 	 ***************************************************************************************/
-	public Integer pointRadius() {
+	public Float pointRadius() {
 		if(chartSettingsData == null || chartSettingsData.get(POINTRADIUS).isJsonNull()) return null;
 		
-		return chartSettingsData.get(POINTRADIUS).getAsInt();
+		return chartSettingsData.get(POINTRADIUS).getAsFloat();
 	}
 	
 	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
-	public CFWChartSettings pointRadius(int value) {
+	public CFWChartSettings pointRadius(float value) {
 		chartSettingsData.addProperty(POINTRADIUS, value);
 		return this;
 	}

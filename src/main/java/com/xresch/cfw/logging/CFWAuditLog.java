@@ -45,10 +45,12 @@ public class CFWAuditLog extends CFWObject {
 		RESET,
 		TRANSFER,
 		TRANSFORM,
+		MIGRATE,
 		MOVE,
 		RESIZE,
 		INCREASE,
-		DECREASE,
+		DECREASE, 
+		
 	}
 		
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWAuditLogFields.PK_ID)

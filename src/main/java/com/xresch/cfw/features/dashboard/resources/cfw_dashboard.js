@@ -1171,6 +1171,38 @@ function cfw_dashboard_widget_save_widgetSettings(formButton, widgetGUID){
 	
 	
 }
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboard_widget_save_state(widgetObject, forceSave, defaultSettingsOnly) {
+
+
+	if(forceSave || ( JSDATA.canEdit == true && CFW_DASHBOARD_EDIT_MODE) ){
+		
+		var itemToUpdate = 'widgetfull';
+		if(defaultSettingsOnly){
+			itemToUpdate = 'widgetdefaultsettings';
+		}
+		console.log("==============================")
+		console.log("itemToUpdate: "+itemToUpdate)
+		console.trace()
+		// ----------------------------------
+		// Update Object
+		var params = Object.assign({action: 'update', item: itemToUpdate}, widgetObject); 
+		
+		delete params.content;
+		delete params.guid;
+		delete params.JSON_SETTINGS;
+		
+		params.JSON_SETTINGS = JSON.stringify(widgetObject.JSON_SETTINGS);
+				
+		// ----------------------------------
+		// Update in Database
+		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){});
+	}
+}
+
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -1389,36 +1421,6 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 	return formHTML;
 }
 
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_dashboard_widget_save_state(widgetObject, forceSave, defaultSettingsOnly) {
-
-
-	if(forceSave || ( JSDATA.canEdit == true && CFW_DASHBOARD_EDIT_MODE) ){
-		
-		var itemToUpdate = 'widgetfull';
-		if(defaultSettingsOnly){
-			itemToUpdate = 'widgetdefaultsettings';
-		}
-		console.log("==============================")
-		console.log("itemToUpdate: "+itemToUpdate)
-		console.trace()
-		// ----------------------------------
-		// Update Object
-		var params = Object.assign({action: 'update', item: itemToUpdate}, widgetObject); 
-		
-		delete params.content;
-		delete params.guid;
-		delete params.JSON_SETTINGS;
-		
-		params.JSON_SETTINGS = JSON.stringify(widgetObject.JSON_SETTINGS);
-				
-		// ----------------------------------
-		// Update in Database
-		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){});
-	}
-}
 /*******************************************************************************
  * 
  ******************************************************************************/

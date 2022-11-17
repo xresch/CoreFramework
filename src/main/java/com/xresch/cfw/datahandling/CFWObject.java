@@ -580,7 +580,7 @@ public class CFWObject {
 	
 	/****************************************************************
 	 * Executed after createTable() and before initDB() is executed. 
-	 * Can be overriden to update tables and table data.
+	 * Can be overridden to update tables and table data.
 	 * @return CFWQuery for method chaining
 	 ****************************************************************/
 	public void updateTable() {

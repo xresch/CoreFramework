@@ -2,17 +2,19 @@ package com.xresch.cfw.features.dashboard;
 
 import java.util.LinkedHashMap;
 
+import com.xresch.cfw.datahandling.CFWChartSettings;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.validation.NumberRangeValidator;
 
 public class WidgetSettingsFactory {
+
 
 	// !!! DO NOT CHANGE VALUES AS IT WILL WASTE SETTINGS CHOSEN BY THE USER
 	public static final String FIELDNAME_DISPLAYAS = "renderer";
 	public static final String FIELDNAME_DISABLE = "disable";
 	public static final String FIELDNAME_SAMPLEDATA = "sampledata";
 	public static final String FIELDNAME_SUFFIX = "suffix";
+	public static final String FIELDNAME_CHARTSETTINGS = "JSON_CHART_SETTINGS";
 	
 	//new String[]{"Area", "Line", "Bar", "Scatter"}
 	private static LinkedHashMap<String,String> linearChartTypes = new LinkedHashMap<String,String>();
@@ -188,81 +190,90 @@ public class WidgetSettingsFactory {
 	@SuppressWarnings("rawtypes")
 	public static LinkedHashMap<String,CFWField> createDefaultChartFields(boolean showXAxisOptions, boolean shoxExtendedYAxisOptions){
 		
+		
 		LinkedHashMap<String,CFWField> fieldsMap = new LinkedHashMap<>();
 		
-		//Needed to clone because dashboard parameters might mess up the hashmap.
-		LinkedHashMap<String, String> chartOptions = new LinkedHashMap<>();
-		chartOptions.putAll(linearChartTypes);
-				
-		fieldsMap.put("chart_type", CFWField.newString(FormFieldType.SELECT, "chart_type")
-				.setLabel("{!cfw_widget_charttype!}")
-				.setDescription("{!cfw_widget_charttype_desc!}")
-				.setOptions(chartOptions)
-				.setValue("area")
-		);
-		//----------------------------------
-		// X Axis Type
-		if(showXAxisOptions) {
-			LinkedHashMap<String, String> xaxistypeOptions = new LinkedHashMap<>();
-			
-			xaxistypeOptions.putAll(allAxisTypes);
-	
-			fieldsMap.put("x_axis_type", CFWField.newString(FormFieldType.SELECT, "x_axis_type")
-					.setLabel("{!cfw_widget_xaxistype!}")
-					.setDescription("{!cfw_widget_xaxistype_desc!}")
-					.setOptions(xaxistypeOptions)
-					.setValue("time")
-				);	
-		}
-		//----------------------------------
-		// Y Axis Type
-		LinkedHashMap<String, String> yaxistypeOptions = new LinkedHashMap<>();
+		fieldsMap.put(FIELDNAME_CHARTSETTINGS, 
+			CFWField.newChartSettings(FIELDNAME_CHARTSETTINGS)
+				.setLabel("Chart Settings")
+				.setValue(new CFWChartSettings())
+			);
 		
-		if(shoxExtendedYAxisOptions) {
-			yaxistypeOptions.putAll(allAxisTypes);
-		}else {
-			yaxistypeOptions.putAll(basicAxisTypes);
-		}
-		fieldsMap.put("y_axis_type", CFWField.newString(FormFieldType.SELECT, "y_axis_type")
-				.setLabel("{!cfw_widget_yaxistype!}")
-				.setDescription("{!cfw_widget_yaxistype_desc!}")
-				.setOptions(yaxistypeOptions)
-				.setValue("linear")
-				);
-		
-		fieldsMap.put("stacked", CFWField.newBoolean(FormFieldType.BOOLEAN, "stacked")
-				.setLabel("{!cfw_widget_chartstacked!}")
-				.setDescription("{!cfw_widget_chartstacked_desc!}")
-				.setValue(false)
-		);
-		
-		fieldsMap.put("show_legend", CFWField.newBoolean(FormFieldType.BOOLEAN, "show_legend")
-				.setLabel("{!cfw_widget_chartshowlegend!}")
-				.setDescription("{!cfw_widget_chartshowlegend_desc!}")
-				.setValue(false)
-		);
-		
-		fieldsMap.put("show_axes", CFWField.newBoolean(FormFieldType.BOOLEAN, "show_axes")
-				.setLabel("{!cfw_widget_chartshowaxes!}")
-				.setDescription("{!cfw_widget_chartshowaxes_desc!}")
-				.setValue(true)
-		);
-		fieldsMap.put("pointradius", CFWField.newFloat(FormFieldType.NUMBER, "pointradius")
-				.setLabel("{!cfw_widget_chartpointradius!}")
-				.setDescription("{!cfw_widget_chartpointradius_desc!}")
-				.setValue(1.0f)
-				.addValidator(new NumberRangeValidator(0, 10))
-		);
-		fieldsMap.put("ymin", CFWField.newInteger(FormFieldType.NUMBER, "ymin")
-				.setLabel("{!cfw_widget_chart_ymin!}")
-				.setDescription("{!cfw_widget_chart_ymin_desc!}")
-				.setValue(0)
-		);
-		
-		fieldsMap.put("ymax", CFWField.newInteger(FormFieldType.NUMBER, "ymax")
-				.setLabel("{!cfw_widget_chart_ymax!}")
-				.setDescription("{!cfw_widget_chart_ymax_desc!}")
-		);
 		return fieldsMap;
+		
+//		//Needed to clone because dashboard parameters might mess up the hashmap.
+//		LinkedHashMap<String, String> chartOptions = new LinkedHashMap<>();
+//		chartOptions.putAll(linearChartTypes);
+//				
+//		fieldsMap.put("chart_type", CFWField.newString(FormFieldType.SELECT, "chart_type")
+//				.setLabel("{!cfw_widget_charttype!}")
+//				.setDescription("{!cfw_widget_charttype_desc!}")
+//				.setOptions(chartOptions)
+//				.setValue("area")
+//		);
+//		//----------------------------------
+//		// X Axis Type
+//		if(showXAxisOptions) {
+//			LinkedHashMap<String, String> xaxistypeOptions = new LinkedHashMap<>();
+//			
+//			xaxistypeOptions.putAll(allAxisTypes);
+//	
+//			fieldsMap.put("x_axis_type", CFWField.newString(FormFieldType.SELECT, "x_axis_type")
+//					.setLabel("{!cfw_widget_xaxistype!}")
+//					.setDescription("{!cfw_widget_xaxistype_desc!}")
+//					.setOptions(xaxistypeOptions)
+//					.setValue("time")
+//				);	
+//		}
+//		//----------------------------------
+//		// Y Axis Type
+//		LinkedHashMap<String, String> yaxistypeOptions = new LinkedHashMap<>();
+//		
+//		if(shoxExtendedYAxisOptions) {
+//			yaxistypeOptions.putAll(allAxisTypes);
+//		}else {
+//			yaxistypeOptions.putAll(basicAxisTypes);
+//		}
+//		fieldsMap.put("y_axis_type", CFWField.newString(FormFieldType.SELECT, "y_axis_type")
+//				.setLabel("{!cfw_widget_yaxistype!}")
+//				.setDescription("{!cfw_widget_yaxistype_desc!}")
+//				.setOptions(yaxistypeOptions)
+//				.setValue("linear")
+//				);
+//		
+//		fieldsMap.put("stacked", CFWField.newBoolean(FormFieldType.BOOLEAN, "stacked")
+//				.setLabel("{!cfw_widget_chartstacked!}")
+//				.setDescription("{!cfw_widget_chartstacked_desc!}")
+//				.setValue(false)
+//		);
+//		
+//		fieldsMap.put("show_legend", CFWField.newBoolean(FormFieldType.BOOLEAN, "show_legend")
+//				.setLabel("{!cfw_widget_chartshowlegend!}")
+//				.setDescription("{!cfw_widget_chartshowlegend_desc!}")
+//				.setValue(false)
+//		);
+//		
+//		fieldsMap.put("show_axes", CFWField.newBoolean(FormFieldType.BOOLEAN, "show_axes")
+//				.setLabel("{!cfw_widget_chartshowaxes!}")
+//				.setDescription("{!cfw_widget_chartshowaxes_desc!}")
+//				.setValue(true)
+//		);
+//		fieldsMap.put("pointradius", CFWField.newFloat(FormFieldType.NUMBER, "pointradius")
+//				.setLabel("{!cfw_widget_chartpointradius!}")
+//				.setDescription("{!cfw_widget_chartpointradius_desc!}")
+//				.setValue(1.0f)
+//				.addValidator(new NumberRangeValidator(0, 10))
+//		);
+//		fieldsMap.put("ymin", CFWField.newInteger(FormFieldType.NUMBER, "ymin")
+//				.setLabel("{!cfw_widget_chart_ymin!}")
+//				.setDescription("{!cfw_widget_chart_ymin_desc!}")
+//				.setValue(0)
+//		);
+//		
+//		fieldsMap.put("ymax", CFWField.newInteger(FormFieldType.NUMBER, "ymax")
+//				.setLabel("{!cfw_widget_chart_ymax!}")
+//				.setDescription("{!cfw_widget_chart_ymax_desc!}")
+//		);
+//		return fieldsMap;
 	}
 }
