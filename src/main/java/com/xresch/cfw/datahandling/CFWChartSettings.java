@@ -23,6 +23,7 @@ public class CFWChartSettings {
 	private static final String STACKED 		= "stacked";
 	private static final String SHOWLEGEND 		= "showlegend";
 	private static final String SHOWAXES 		= "showaxes";
+	private static final String SPANGAPS 		= "spangaps";
 	private static final String POINTRADIUS 	= "pointradius";
 	
 //	chartSettings.charttype 	= $(selector+'-CHARTTYPE').val();
@@ -88,9 +89,9 @@ public class CFWChartSettings {
 		defaults.add(YAXIS_MAX, null);
 		
 		defaults.addProperty(STACKED, false);
-		
 		defaults.addProperty(SHOWLEGEND, false);
 		defaults.addProperty(SHOWAXES, true);
+		defaults.addProperty(SPANGAPS, false);
 		defaults.addProperty(POINTRADIUS, 2);
 		
 		return defaults;
@@ -249,6 +250,23 @@ public class CFWChartSettings {
 	 ***************************************************************************************/
 	public CFWChartSettings showAxes(boolean value) {
 		chartSettingsData.addProperty(SHOWAXES, value);
+		return this;
+	}
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/
+	public Boolean spanGaps() {
+		if(chartSettingsData == null || chartSettingsData.get(SPANGAPS).isJsonNull()) return null;
+
+		return chartSettingsData.get(SPANGAPS).getAsBoolean();
+	}
+
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/
+	public CFWChartSettings spanGaps(boolean value) {
+		chartSettingsData.addProperty(SPANGAPS, value);
 		return this;
 	}
 	

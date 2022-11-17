@@ -1860,6 +1860,8 @@ function cfw_renderer_chart(renderDef) {
 		showlegend: true, 
 		// show or hide the axes, useful to create sparkline like charts
 		showaxes: true,
+		// if true, connect lines if there is a gap in the data 
+		spangaps: false,
 		// make the chart responsive
 		responsive: true,
 		// The name of the field which contains the values for the x-axis
@@ -2241,7 +2243,7 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 					fill: settings.doFill,
 		            borderColor: borderColor,
 		            borderWidth: 1,
-		            spanGaps: false,
+		            spanGaps: settings.spangaps,
 		            steppedLine: settings.isSteppedline,
 		            lineTension: 0,
 		            cfwSum: 0,
@@ -2297,7 +2299,7 @@ function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 					fill: settings.doFill,
 		            borderColor: borderColor,
 		            borderWidth: 1,
-		            spanGaps: false,
+		            spanGaps: settings.spangaps,
 		            steppedLine: settings.isSteppedline,
 		            lineTension: 0,
 		            cfwSum: 0,
@@ -2350,7 +2352,7 @@ function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
 		currentDataset.borderColor = borderColor; 
 		currentDataset.borderWidth = 1;
 		
-		currentDataset.spanGaps = false;
+		currentDataset.spanGaps = settings.spangaps;
 		currentDataset.steppedLine = settings.isSteppedline;
 		currentDataset.lineTension = 0;
 	}
@@ -2361,7 +2363,7 @@ function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
 				fill: settings.doFill,
 	            borderColor: borderColor,
 	            borderWidth: 1,
-	            spanGaps: false,
+	            spanGaps: settings.spangaps,
 	            steppedLine: settings.isSteppedline,
 	            lineTension: 0,
 	            cfwSum: 0,

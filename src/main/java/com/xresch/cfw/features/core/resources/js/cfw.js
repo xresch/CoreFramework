@@ -900,7 +900,21 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 				</div>
 			</div>
 
-
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-SPANGAPS">
+					Connect Gaps:
+				</label>   
+				<div class="col-sm-9">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="${fieldID}-SPANGAPS" name="${fieldID}-SPANGAPS" value="true"> 
+						<label class="form-check-label" for="inlineRadio1">true</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="${fieldID}-SPANGAPS" name="${fieldID}-SPANGAPS" value="false"  checked="checked"> 
+						<label class="form-check-label" for="inlineRadio1">false</label>
+					</div>
+				</div>
+			</div>
 
 			<div class="row m-1"><strong>Axes Display</strong></div>
 			
@@ -984,42 +998,6 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 
 /**************************************************************************************
  * 
-	//========================================
-	// Render Specific settings
-	var defaultSettings = {
-		// The type of the chart: line|steppedline|area|steppedarea|bar|scatter (to be done radar|pie|doughnut|polarArea|bubble)
-		charttype: 'line',
-		// How should the input data be handled groupbytitle|arrays 
-		datamode: 'groupbytitle',
-		// stack the bars, lines etc...
-		stacked: false,
-		// show or hide the legend
-		showlegend: true, 
-		// show or hide the axes, useful to create sparkline like charts
-		showaxes: true,
-		// make the chart responsive
-		responsive: true,
-		// The name of the field which contains the values for the x-axis
-		xfield: null,
-		// The name of the field which contains the values for the y-axis
-		yfield: null,
-		// The suggested minimum value for the y axis 
-		ymin: 0,
-		// The suggested maximum value for the y axis 
-		ymax: null,
-		//the type of the x axis: linear|logarithmic|category|time
-		xtype: 'time',
-		//the type of the y axis: linear|logarithmic|category|time
-		ytype: 'linear',
-		//the radius for the points shown on line and area charts
-		pointradius: 0,
-		// the padding in pixels of the chart
-		padding: 10,
-		// the color of the x-axes grid lines
-		xaxescolor: 'rgba(128,128,128, 0.2)',
-		// the color of the y-axes grid lines
-		yaxescolor: 'rgba(128,128,128, 0.8)',
-	};
  *************************************************************************************/
 function cfw_internal_applyChartSettings(fieldID, wrapper, chartSettings){
 	
@@ -1039,6 +1017,7 @@ function cfw_internal_applyChartSettings(fieldID, wrapper, chartSettings){
 	wrapper.find(selector+"-STACKED[value='" + chartSettings.stacked + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-SHOWLEGEND[value='" + chartSettings.showlegend + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-SHOWAXES[value='" + chartSettings.showaxes + "']").attr("checked", "checked");  
+	wrapper.find(selector+"-SPANGAPS[value='" + chartSettings.spangaps + "']").attr("checked", "checked");  
 			
 }
 
@@ -1063,6 +1042,7 @@ function cfw_internal_confirmChartSettings(elementID){
 	chartSettings.stacked  		= $(selector+"-STACKED:checked").val();  
 	chartSettings.showlegend	= $(selector+"-SHOWLEGEND:checked").val();  
 	chartSettings.showaxes		= $(selector+"-SHOWAXES:checked").val();  
+	chartSettings.spangaps		= $(selector+"-SPANGAPS:checked").val();  
 	chartSettings.pointradius	= $(selector+"-POINTRADIUS").val();  
 	
 	//--------------------------------------

@@ -61,7 +61,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	public String descriptionSyntax() {
 		return "chart [type=<typeOptions>] [groupby=<groupFieldnames>] [x=<xFieldname>] [y=<yFieldname>]"
 			 + " [xtype=<xAxisType>] [ytype=<yAxisType>] [stacked=<isStacked>] [legend=<showLegend>]"
-			 + " [axes=<showAxes>] [pointradius=<pointRadius>] [ymin=<yAxisMinimum>] [ymax=<yAxisMaximum>]";
+			 + " [axes=<showAxes>] [pointradius=<pointRadius>] [ymin=<yAxisMinimum>] [ymax=<yAxisMaximum>]  [spangaps=<spanGaps>]";
 	}
 	
 	/***********************************************************************************************
@@ -98,6 +98,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 				+"<p><b>pointRadius:&nbsp;</b>Radius of the points drawn in charts. (Default: 1)</p>"	
 				+"<p><b>yAxisMinimum:&nbsp;</b>Suggest a minimum value for the y-axis.</p>"	
 				+"<p><b>yAxisMaximum:&nbsp;</b>Suggest a maximum value for the y-axis.</p>"	
+				+"<p><b>spanGaps:&nbsp;</b>Set to true to connect lines if there is a gap in the data.</p>"	
 				;
 	}
 

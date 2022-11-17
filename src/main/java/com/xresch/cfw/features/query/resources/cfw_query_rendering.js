@@ -940,7 +940,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 function cfw_query_renderAsChart(resultTarget, queryResult){
 
 	var settings = queryResult.displaySettings;
-	
+
 	//---------------------------------
 	// Prepare TitleFields
 	var seriesColumns = settings.groupby;
@@ -983,7 +983,8 @@ function cfw_query_renderAsChart(resultTarget, queryResult){
 		axes: true,
 		ymin: 0,
 		ymax: null,
-		pointradius: 1
+		pointradius: 1,
+		spangaps: false
 	};
 	
 	var settings = Object.assign({}, defaultSettings, settings);
@@ -1013,6 +1014,7 @@ function cfw_query_renderAsChart(resultTarget, queryResult){
 				ymin: 			settings.ymin,
 				ymax: 			settings.ymax,
 				pointradius: 	settings.pointradius,
+				spangaps: 		settings.spangaps,
 				padding: 2
 			}
 		}
