@@ -554,8 +554,6 @@ function cfw_dashboard_parameters_applyToFields(object, widgetType, finalParams)
 		
 	}
 	
-	//console.log("settings after substitute	: "+settingsString);
-	
 	//=============================================
 	// Handle GLOBAL OVERRIDE PARAMS
 	//=============================================
@@ -591,8 +589,6 @@ function cfw_dashboard_parameters_applyToFields(object, widgetType, finalParams)
 				break;
 		}
 	}
-	
-	//console.log("settings after global		: "+JSON.stringify(newSettingsObject));
 
 	return newSettingsObject;
 	
@@ -706,12 +702,6 @@ function cfw_dashboard_parameters_getFinalParams(){
 		}
 	}
 	
-//	console.log('3======== storedViewerParams ========');
-//	console.log(storedViewerParams);
-//	
-//	console.log('3======== mergedParams ========');
-//	console.log(mergedParams);
-
 	return mergedParams;
 }
 
@@ -1184,9 +1174,7 @@ function cfw_dashboard_widget_save_state(widgetObject, forceSave, defaultSetting
 		if(defaultSettingsOnly){
 			itemToUpdate = 'widgetdefaultsettings';
 		}
-		console.log("==============================")
-		console.log("itemToUpdate: "+itemToUpdate)
-		console.trace()
+
 		// ----------------------------------
 		// Update Object
 		var params = Object.assign({action: 'update', item: itemToUpdate}, widgetObject); 
@@ -1598,19 +1586,11 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 			// ---------------------------------------
 			// Add Placeholder
 			cfw_dashboard_widget_createLoadingPlaceholder(widgetCloneParameterized, doAutoposition);
-			
-			//console.log('========= Original ==========');
-			//console.log(originalWidgetObject);
-			//console.log('========= Clone ==========');
-			//console.log(widgetCloneParameterized);
-	
+
 			// ---------------------------------------
 			// Create Instance by Widget Definition
 			widgetDefinition.createWidgetInstance(widgetCloneParameterized, finalParams,
 				function(widgetAdjustedByWidgetDef, widgetContent){
-					
-				//console.log('========= Adjusted ==========');
-				//console.log(widgetAdjustedByWidgetDef);
 				
 					// ---------------------------------------
 					// Remove Placeholder
@@ -1624,12 +1604,7 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 	
 					var grid = cfw_dashboard_getGrid();
 	
-//				    grid.addWidget($(widgetInstance),
-//				    		widgetAdjustedByWidgetDef.X, 
-//				    		widgetAdjustedByWidgetDef.Y, 
-//				    		widgetAdjustedByWidgetDef.WIDTH, 
-//				    		widgetAdjustedByWidgetDef.HEIGHT, 
-//				    		doAutoposition);
+
 				    grid.addWidget($(widgetInstance).get(0),
 				    		{
 				    			x: widgetAdjustedByWidgetDef.X

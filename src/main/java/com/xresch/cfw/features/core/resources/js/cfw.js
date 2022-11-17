@@ -2763,12 +2763,10 @@ function cfw_format_formToArray(formOrID, numbersAsStrings){
 		let name = paramsArray[i].name;
 		let current = paramsArray[i].value;
 		if(typeof current == 'string'){
-			console.log("HIT!!!"+name+" - "+current+" - "+(typeof current));
 			//---------------------------
 			// Convert String Numbers
 			if(name.startsWith("JSON_") 
 			   && current.startsWith("{")){
-				console.log("HIT!!! BBB")
 				paramsArray[i].value = JSON.parse(current);
 				
 			//---------------------------
@@ -4336,7 +4334,6 @@ function cfw_tutorial_drawStep(stepData){
 			CFW.ui.toggleLoader(true);	
 			
 			window.setTimeout(function(){
-				console.log("testAAA");
 				
 				//----------------------------------
 				// Highlight and Popover
@@ -4366,7 +4363,6 @@ function cfw_tutorial_drawStep(stepData){
  * 
  *************************************************************************************/
 function cfw_tutorial_objectHighlight(objectToHighlight, clickable){
-	console.log(objectToHighlight);
 	
 	if(objectToHighlight != null){
 		
