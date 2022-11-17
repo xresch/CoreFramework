@@ -521,9 +521,9 @@ public class CFWDBDashboard {
 					// Create Parameters
 					JsonArray paramsArray = dashboardObject.get("parameters").getAsJsonArray();
 					for(JsonElement paramsElement : paramsArray) {
-						
+						System.out.println("AAAAA");
 						if(paramsElement.isJsonObject()) {
-							
+							System.out.println("BBBBBB");
 							JsonObject paramsObject = paramsElement.getAsJsonObject();
 							//-----------------------------
 							// Map values
@@ -531,13 +531,14 @@ public class CFWDBDashboard {
 							param.mapJsonFields(paramsObject, true, true);
 							
 							//-----------------------------
-							// Reset Dashboard ID
+							// Reset IDs
+							Integer oldID = param.getPrimaryKeyValue();
 							param.id(null);
 							param.foreignKeyDashboard(newDashboardID);
 							
 							//-----------------------------
 							// Create Parameter
-							Integer oldID = param.getPrimaryKeyValue();
+							
 							Integer newID = CFW.DB.DashboardParameters.createGetPrimaryKey(param);
 							if(newID == null) {
 								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error creating imported parameter.");

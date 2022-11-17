@@ -2034,16 +2034,22 @@ function cfw_renderer_chart(renderDef) {
 						},
 						// Custom Tick Format
 						callback : function(value, index, values) {
-
-							if (value > 1000000000) {
-								return (value / 1000000000).toFixed(2) + "G";
-							} else if (value > 1000000) {
-								return (value / 1000000).toFixed(2) + "M";
-							} else if (value > 1000) {
-								return (value / 1000).toFixed(2) + "K";
-							} else {
-								return value.toFixed(2);
+							
+							if(!isNaN(value)){
+								let sureNumber = parseFloat(value);
+								if (sureNumber > 1000000000) {
+									return (sureNumber / 1000000000).toFixed(2) + "G";
+								} else if (sureNumber > 1000000) {
+									return (sureNumber / 1000000).toFixed(2) + "M";
+								} else if (sureNumber > 1000) {
+									return (sureNumber / 1000).toFixed(2) + "K";
+								} else{
+									
+									return sureNumber.toFixed(2);
+								}
 							}
+							
+							return value;
 						}
 					},
 				}]

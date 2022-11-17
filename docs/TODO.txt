@@ -144,6 +144,7 @@ DONE
 - Dashboard: Added Favorite Feature
 - Dashboard: Complete rework of undo/redo functionality because of introduction of SERVER_SIDE_ONLY
 - Dashboard: Copy widgets to clipboard does not copy task settings (Reason: Avoiding unintentional spamming of the jobs system)
+- CFWChartSettings: Added FormFieldType and DataObject Class to manage Chart Settings
 - JS Components: ToogleButton supports favorite style
 - JS Renderer: Tiles - fixed issue with removing alertstyle fields
 - Utils: Added Undo/Redo Manager 

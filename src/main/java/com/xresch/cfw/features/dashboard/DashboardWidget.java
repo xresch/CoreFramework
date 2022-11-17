@@ -280,7 +280,7 @@ public class DashboardWidget extends CFWObject {
 			AxisType yaxisType = 
 					settingsObject.get("y_axis_type") != null 
 						? AxisType.valueOf(settingsObject.get("y_axis_type").getAsString()) 
-						: AxisType.time; 
+						: AxisType.linear; 
 			
 			
 			//------------------------------------

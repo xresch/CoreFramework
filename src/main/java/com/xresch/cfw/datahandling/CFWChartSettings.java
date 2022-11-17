@@ -1,25 +1,12 @@
 package com.xresch.cfw.datahandling;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Logger;
-
-import org.quartz.CalendarIntervalScheduleBuilder;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.DailyTimeIntervalScheduleBuilder;
-import org.quartz.SimpleScheduleBuilder;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.validation.AbstractValidatable;
-import com.xresch.cfw.validation.ScheduleValidator;
 
 public class CFWChartSettings {
 
@@ -68,8 +55,7 @@ public class CFWChartSettings {
 	 * 
 	 ***************************************************************************************/
 	public CFWChartSettings() {
-		setToDefaults();
-		
+		chartSettingsData = createDefaults();
 	}
 	
 	/***************************************************************************************
@@ -78,7 +64,7 @@ public class CFWChartSettings {
 	public CFWChartSettings(String jsonString) {
 		
 		if(Strings.isNullOrEmpty(jsonString)) {
-			setToDefaults();
+			chartSettingsData = createDefaults();
 			return;
 		}
 		
@@ -91,22 +77,23 @@ public class CFWChartSettings {
 	/***************************************************************************************
 	 * 
 	 ***************************************************************************************/
-	private void setToDefaults() {
+	private JsonObject createDefaults() {
 
-		chartSettingsData = new JsonObject();
+		JsonObject defaults = new JsonObject();
 		
-		chartSettingsData.addProperty(CHARTTYPE, ChartType.area.toString());
-		chartSettingsData.addProperty(XAXIS_TYPE, AxisType.time.toString());
-		chartSettingsData.addProperty(YAXIS_TYPE, AxisType.linear.toString());
-		chartSettingsData.addProperty(YAXIS_MIN, 0);
-		chartSettingsData.add(YAXIS_MAX, null);
+		defaults.addProperty(CHARTTYPE, ChartType.area.toString());
+		defaults.addProperty(XAXIS_TYPE, AxisType.time.toString());
+		defaults.addProperty(YAXIS_TYPE, AxisType.linear.toString());
+		defaults.addProperty(YAXIS_MIN, 0);
+		defaults.add(YAXIS_MAX, null);
 		
-		chartSettingsData.addProperty(STACKED, false);
+		defaults.addProperty(STACKED, false);
 		
-		chartSettingsData.addProperty(SHOWLEGEND, false);
-		chartSettingsData.addProperty(SHOWAXES, true);
-		chartSettingsData.addProperty(POINTRADIUS, 2);
-								
+		defaults.addProperty(SHOWLEGEND, false);
+		defaults.addProperty(SHOWAXES, true);
+		defaults.addProperty(POINTRADIUS, 2);
+		
+		return defaults;
 	}
 	
 	
