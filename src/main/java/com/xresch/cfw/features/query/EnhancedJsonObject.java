@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query;
 
 import java.lang.ref.SoftReference;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.gson.JsonArray;
@@ -63,6 +64,25 @@ public class EnhancedJsonObject {
 		}
 	}
 	
+	/*************************************************************************************************
+	 * Convenience method to add all fields of another object to this object.
+	 * will override existing values with the same fieldname.
+	 *
+	 *************************************************************************************************/
+	public void addAll(EnhancedJsonObject object) {
+		this.addAll(object.getWrappedObject());
+	}
+	
+	/*************************************************************************************************
+	 * Convenience method to add all fields of another object to this object.
+	 * will override existing values with the same fieldname.
+	 *
+	 *************************************************************************************************/
+	public void addAll(JsonObject object) {
+		for(Entry<String, JsonElement> entry : object.entrySet()) {
+			this.add(entry.getKey(), entry.getValue());
+		}
+	}
 	/*************************************************************************************************
 	 * Convenience method to add a value of a QueryPart
 	 *

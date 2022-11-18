@@ -223,6 +223,21 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		if(sourceFieldmanager != null) {
 			sourceFieldmanager.add(fieldname);
 		}
+	}
+	
+	/***********************************************************************************************
+	 * Add a fieldname
+	 ***********************************************************************************************/
+	protected void fieldnameAddAll(EnhancedJsonObject record) {
+		
+		//-----------------------------------
+		// Add Change to Source fieldmanager
+		CFWQueryFieldnameManager sourceFieldmanager = this.getSourceFieldmanager();
+			
+		if(sourceFieldmanager != null) {
+			
+			sourceFieldmanager.addall(record.keySet());
+		}
 		
 	}
 	
@@ -267,6 +282,21 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 			
 		if(sourceFieldmanager != null) {
 			sourceFieldmanager.keep(fieldnames);
+		}
+		
+	}
+	
+	/***********************************************************************************************
+	 * Removes all existing fieldnames
+	 ***********************************************************************************************/
+	protected void fieldnameClearAll() {
+		
+		//-----------------------------------
+		// Add Change to source
+		CFWQueryFieldnameManager sourceFieldmanager = this.getSourceFieldmanager();
+			
+		if(sourceFieldmanager != null) {
+			sourceFieldmanager.clear();
 		}
 		
 	}

@@ -1,0 +1,272 @@
+package com.xresch.cfw.features.query.sources;
+
+import java.text.ParseException;
+import java.util.LinkedHashMap;
+import java.util.concurrent.LinkedBlockingQueue;
+
+import com.google.common.base.Strings;
+import com.google.gson.JsonElement;
+import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.query.CFWQuery;
+import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
+import com.xresch.cfw.features.query.CFWQuerySource;
+import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.utils.CFWRandom;
+import com.xresch.cfw.utils.CFWHttp.CFWHttpRequestBuilder;
+import com.xresch.cfw.utils.CFWHttp.CFWHttpResponse;
+import com.xresch.cfw.utils.json.JsonTimerangeChecker;
+import com.xresch.cfw.validation.CustomValidator;
+import com.xresch.cfw.validation.NotNullOrEmptyValidator;
+	
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @license MIT-License
+ **************************************************************************************************************/
+public class CFWQuerySourceWeb extends CFWQuerySource {
+
+	private static final String PARAM_METHOD 	= "method";
+	private static final String PARAM_URL 		= "url";
+	private static final String PARAM_HEADERS 	= "headers";
+	private static final String PARAM_USERNAME 	= "username";
+	private static final String PARAM_PASSWORD 	= "password";
+	
+
+	private static final String PARAM_TIMEFIELD = "timefield";
+	private static final String PARAM_TIMEFORMAT = "timeformat";
+
+
+
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public CFWQuerySourceWeb(CFWQuery parent) {
+		super(parent);
+	}
+
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public String uniqueName() {
+		return "web";
+	}
+
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public String descriptionShort() {
+		return "Takes http parameters as input and loads JSON data from a Web API.";
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public String descriptionTime() {
+		return "Use the parameters timefield and timeformat to specify the time filtering.(Default: no filtering by time)";
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".sources", "source_web.html");
+	}
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public String descriptionRequiredPermission() {
+		return "None";
+	}
+
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public boolean hasPermission(User user) {
+		return true;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+		// do nothing
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public CFWObject getParameters() {
+		return new CFWObject()
+				.addField(
+						CFWField.newString(FormFieldType.TEXTAREA, PARAM_METHOD)
+							.setDescription("The HTTP method used for the request. Either GET(default) or POST.")
+							.setValue("GET")
+							.addValidator(new CustomValidator() {
+								
+								@Override
+								public boolean validate(Object value) {
+									
+									if (value == null) { 
+										setInvalidMessage("Method cannot be null.");
+										return false;
+									} 
+									
+									String valueString = value.toString().trim().toUpperCase();
+									if(Strings.isNullOrEmpty(valueString)) {
+										setInvalidMessage("Method cannot be empty.");
+										return false;
+									}
+									
+									
+									if( !valueString.equals("GET") && !valueString.equals("POST") ) {
+										setInvalidMessage("Method must be either GET or POST.");
+										return false;
+									}
+									
+									return true;
+								}
+								
+							})
+					)
+				
+				.addField(
+					CFWField.newString(FormFieldType.TEXTAREA, PARAM_URL)
+						.setDescription("The JSON string that should be parsed. Either an array of JSON Objects or a single JSON Object.")
+						.addValidator(new NotNullOrEmptyValidator())
+				)
+				
+				// currently only support JSON
+//				.addField(
+//						CFWField.newString(FormFieldType.TEXTAREA, FIELDNAME_FORMAT)
+//							.setDescription("The format of the returned data.")	
+//					)
+				
+				.addField(
+						CFWField.newString(FormFieldType.TEXTAREA, PARAM_TIMEFIELD)
+							.setDescription("The field of the response that contains the time.")	
+					)
+				
+				.addField(
+						CFWField.newString(FormFieldType.TEXTAREA, PARAM_TIMEFORMAT)
+							.setDescription("The format of the time in the time field. (Default: 'epoch').")	
+							.setValue("epoch")
+					)
+			;
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public void parametersPermissionCheck(CFWObject parameters) throws ParseException {
+		//do nothing
+	}
+	
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
+		
+		//------------------------------------
+		// Get Parameters
+		String method = (String) parameters.getField(PARAM_METHOD).getValue();	
+		
+		String url = (String) parameters.getField(PARAM_URL).getValue();
+		if(!url.contains("://")) {
+			url = "https://"+url;
+		}
+
+//		String username = (String) parameters.getField(PARAM_USERNAME).getValue();
+//		String password = (String) parameters.getField(PARAM_PASSWORD).getValue();
+		
+//		LinkedHashMap<String, String> headers = (LinkedHashMap<String, String>) parameters.getField(PARAM_HEADERS).getValue();
+						
+		//----------------------------------------
+		// Build Request
+
+		CFWHttpRequestBuilder requestBuilder = CFW.HTTP.newRequestBuilder(url);
+		
+		if(method.trim().toUpperCase().equals("GET")) {
+			requestBuilder.GET();
+		}else {
+			requestBuilder.POST();
+		}
+		
+//		if(!Strings.isNullOrEmpty(username)) {
+//			requestBuilder.authenticationBasic(username, password);
+//		}
+//		
+//		requestBuilder.headers(headers);
+
+		
+		//----------------------------------------
+		// Send Request and Fetch Data
+		CFWHttpResponse response = requestBuilder.send();
+
+		if(response.errorOccured()) {
+			CFW.Messages.addInfoMessage("Hint: Check if your URL includes the right protocol(http, https..).");
+			CFW.Messages.addInfoMessage("Another Hint: The application server might not have access to the URL. Check with the application support.");
+			return;
+		}
+		
+		String data = response.getResponseBody();
+		
+		//------------------------------------
+		// Setup Timerange Filter
+		String timefield = (String)parameters.getField(PARAM_TIMEFIELD).getValue();
+		String timeformat = (String)parameters.getField(PARAM_TIMEFORMAT).getValue();
+		
+		JsonTimerangeChecker timerangeChecker = 
+				new JsonTimerangeChecker(timefield, timeformat, earliestMillis, latestMillis)
+					.epochAsNewField("_epoch");
+		
+		JsonElement element = CFW.JSON.fromJson(data);
+		
+		if(element.isJsonObject()) {
+			
+			if(timefield != null && !timerangeChecker.isInTimerange(element.getAsJsonObject(), false)) {
+				return; 
+			}
+			
+			outQueue.add( new EnhancedJsonObject(element.getAsJsonObject()) );
+			return;
+		}
+		
+		if(element.isJsonArray()) {
+			int recordCounter = 0;
+			for(JsonElement current : element.getAsJsonArray() ) {
+				if(current.isJsonObject()) {
+					
+					if( this.isLimitReached(limit, recordCounter)) { break; }
+					
+					if(timefield != null && !timerangeChecker.isInTimerange(current.getAsJsonObject(), false)) {
+						continue; 
+					}
+					
+					outQueue.add( new EnhancedJsonObject(current.getAsJsonObject()) );
+					recordCounter++;
+				}
+				
+			}
+		}
+	
+	}
+
+}

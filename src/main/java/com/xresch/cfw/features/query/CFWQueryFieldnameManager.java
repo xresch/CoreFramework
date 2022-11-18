@@ -26,7 +26,7 @@ public class CFWQueryFieldnameManager {
 	
 	ArrayList<FieldModification> modifications = new ArrayList<>();
 	
-	protected enum ModificationType { ADD, RENAME, REMOVE, CLEAR};
+	protected enum ModificationType { ADD, ADDALL, RENAME, REMOVE, CLEAR};
 	
 	/***********************************************************************************************
 	 * Apply all modifications and return resulting list
@@ -42,6 +42,9 @@ public class CFWQueryFieldnameManager {
 			switch(currentMod.type) {
 			
 				case ADD:		finalNames.add(currentMod.fieldname);
+								break;
+								
+				case ADDALL:	finalNames.addAll(currentMod.fieldnames);
 								break;
 								
 				case CLEAR: 	finalNames.clear();
@@ -111,6 +114,26 @@ public class CFWQueryFieldnameManager {
 	}
 	
 	/***********************************************************************************************
+	 * add the fieldnames
+	 ***********************************************************************************************/
+	public CFWQueryFieldnameManager addall(Set<String> names) {
+		
+		if(modifications.size()>0) {
+			FieldModification previous = modifications.get(modifications.size()-1);
+			
+			if(previous.type == ModificationType.ADDALL && previous.fieldnames.equals(names)) {
+				// save memory by doing nothing
+				return this;
+			}
+			
+		}
+		
+		modifications.add(new FieldModification(ModificationType.ADDALL, names) );
+		
+		return this;
+	}
+	
+	/***********************************************************************************************
 	 * remove the fieldname
 	 ***********************************************************************************************/
 	public CFWQueryFieldnameManager remove(String fieldname) {
@@ -145,12 +168,18 @@ public class CFWQueryFieldnameManager {
 		
 		protected ModificationType type;
 		protected String fieldname;
+		protected Set<String> fieldnames;
 		protected String newName;
 		
 		public FieldModification(ModificationType modification, String fieldname, String newName) {
 			this.type 	= modification;
 			this.fieldname		= fieldname;
 			this.newName 		= newName;
+		}
+		
+		public FieldModification(ModificationType modification, Set<String> fieldnames) {
+			this.type 		= modification;
+			this.fieldnames	= fieldnames;
 		}
 	}
 	

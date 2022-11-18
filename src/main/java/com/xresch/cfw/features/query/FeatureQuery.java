@@ -28,6 +28,7 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandStats;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTail;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTop;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandUnbox;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionAvg;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionClone;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionContains;
@@ -56,6 +57,7 @@ import com.xresch.cfw.features.query.sources.CFWQuerySourceAuditlog;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceRandom;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceThreaddump;
+import com.xresch.cfw.features.query.sources.CFWQuerySourceWeb;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -126,6 +128,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandStats(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandTail(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandTop(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandUnbox(null));
 		
 		//----------------------------------
 		// Register Functions
@@ -160,6 +163,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerSource(new CFWQuerySourceJson(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceRandom(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceThreaddump(null));
+		CFW.Registry.Query.registerSource(new CFWQuerySourceWeb(null));
 		
 		
 		//----------------------------------
