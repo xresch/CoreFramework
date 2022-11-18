@@ -75,7 +75,7 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return "<p><b>fieldnameOrPath:&nbsp;</b> Fieldnames or JSON paths that should be used as replacement.</p>"
-		 	  +"<p><b>replace:&nbsp;</b> Toogle if the original record should be replaced.(Default: true)</p>";
+		 	  +"<p><b>replace:&nbsp;</b> Toogle if the original fields should be replaced.(Default: true)</p>";
 	}
 
 	/***********************************************************************************************
@@ -114,8 +114,8 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 
 				for(QueryPart element : ((QueryPartArray)part).getAsParts()) {
 					
-					if(part instanceof QueryPartValue
-					|| part instanceof QueryPartJsonMemberAccess) {
+					if(element instanceof QueryPartValue
+					|| element instanceof QueryPartJsonMemberAccess) {
 						unboxFields.add(element);
 					}else { /* ignore */ }
 					
@@ -151,13 +151,16 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 		
 		while(keepPolling()) {
 			
+			ArrayList<EnhancedJsonObject> newRecordsArray = new ArrayList<EnhancedJsonObject>();
+			
 			//------------------------------------
 			// Get Original Record
 			EnhancedJsonObject originalRecord = inQueue.poll();
 			if(!doReplaceOriginal) {
-				outQueue.add(originalRecord);
+				newRecordsArray.add(originalRecord);
 			}else {
 				this.fieldnameClearAll();
+				newRecordsArray.add(new EnhancedJsonObject());
 			}
 			
 			//------------------------------------
@@ -165,8 +168,8 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 			
 			// if array >> add new records
 			// if other add value by name
-			ArrayList<EnhancedJsonObject> newRecordsArray = new ArrayList<EnhancedJsonObject>();
-			newRecordsArray.add(new EnhancedJsonObject());
+			
+			
 			
 			for(QueryPart part : unboxFields.getAsParts()) {
 				
@@ -183,7 +186,9 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 					QueryPartJsonMemberAccess access = (QueryPartJsonMemberAccess)part;
 					QueryPartValue newRecordValue = access.determineValue(originalRecord);
 					
-					addJsonElementToRecords(access.determineValue(null).getAsString(), newRecordValue.getAsJsonElement(), newRecordsArray);
+					String fieldname = access.determineValue(null).getAsString();
+					fieldname = fieldname.substring(fieldname.lastIndexOf(".")+1);
+					addJsonElementToRecords(fieldname, newRecordValue.getAsJsonElement(), newRecordsArray);
 				}else { 
 					/*ignore*/ 
 				}
@@ -211,7 +216,6 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	private void addJsonElementToRecords(String fieldname, JsonElement newRecordValue, ArrayList<EnhancedJsonObject> recordsArray) {
 		
-
 		if(newRecordValue == null) {
 			return;
 		}
@@ -228,17 +232,13 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 			
 			for(EnhancedJsonObject existingRecord : recordsArray) {
 				
-				for(JsonElement element : newRecordValue.getAsJsonArray()) {
+				for(JsonElement entry : newRecordValue.getAsJsonArray()) {
 					
-					EnhancedJsonObject recordForArrayEntry = new EnhancedJsonObject();
-					recordForArrayEntry.addAll(existingRecord);
-					recordsCreatedForArray.add(recordForArrayEntry);
+					EnhancedJsonObject recordForEntry = new EnhancedJsonObject();
+					recordForEntry.addAll(existingRecord);
+					recordsCreatedForArray.add(recordForEntry);
 					
-					if(element.isJsonObject()){
-						recordForArrayEntry.addAll(element.getAsJsonObject());
-					}else {
-						recordForArrayEntry.add(fieldname, element);
-					}
+					recordForEntry.add(fieldname, entry);
 					
 				}
 			}

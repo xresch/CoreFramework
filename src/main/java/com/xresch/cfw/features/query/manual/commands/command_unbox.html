@@ -1,0 +1,334 @@
+
+<p>Unboxing(unwrapping) is useful to make data structures more flat and make it easier to process and display it properly.
+The unboxing command works differently depending on the value you provide to unbox:</p>
+<ul>
+	<li><b>Objects:&nbsp;</b>If the unboxed value is an object, take all it's fields and move them to the root record.</li>
+	<li><b>Arrays:&nbsp;</b>If the unboxed value is an array, make a copy of the root record for every value in the array. Add the array value to each record with the original array field name. </li>
+	<li><b>All Other Types:&nbsp;</b> Strings, Numbers and Booleans Will be kept as is when the field is specified in the unboxing. If the field is not specified it will vanish.  </li>
+</ul>
+
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+
+<h3> Unboxing Objects</h3>
+<p>Following query will use the unbox command to keep the values from id and name, and unboxes everything from the object field:</p>
+
+<pre><code class="language-cfwquery">| source json data=`
+[
+	 {id: 0, name="Cookiena", array: [1,2,3], object: {a: 0, b: 1, c: 3 } }
+	,{id: 3, name="Chocolatina", array: ["cacao", "cocoa", "milk"], object: {a: null, b: "string", c: true} }
+	,{id: 3, name="Tiramisya", array: [777,888,999, "string"], object: {a: 11, b: 22, c: 33, sugar: "yes!"} }
+]
+`
+| unbox id, name, object</code></pre>
+
+<p>Above command will give you the following result:</p>
+
+<table class="table table-striped table-hover table-sm">
+	<thead>
+		<tr>
+			<th><div>id</div></th>
+			<th><div>name</div></th>
+			<th><div>a</div></th>
+			<th><div>b</div></th>
+			<th><div>c</div></th>
+			<th><div>sugar</div></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="cfwRecordContainer">
+			<td>0</td>
+			<td><span>Cookiena</span></td>
+			<td>0</td>
+			<td>1</td>
+			<td>3</td>
+			<td><span
+				class="format-base text-white text-center badge-primary m-0">NULL</span></td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>3</td>
+			<td><span>Chocolatina</span></td>
+			<td><span
+				class="format-base text-white text-center badge-primary m-0">NULL</span></td>
+			<td><span>string</span></td>
+			<td><span
+				class="format-base text-white text-center bg-success m-0">true</span></td>
+			<td><span
+				class="format-base text-white text-center badge-primary m-0">NULL</span></td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>3</td>
+			<td><span>Tiramisya</span></td>
+			<td>11</td>
+			<td>22</td>
+			<td>33</td>
+			<td><span>yes!</span></td>
+		</tr>
+	</tbody>
+</table>
+
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+
+<h3> Unboxing Array</h3>
+<p>When unboxing arrays, a copy of the record will be created for every entry of the array. Lets add the field 'array' to the previous example:</p>
+
+<pre><code class="language-cfwquery">| source json data=`
+[
+	 {id: 0, name="Cookiena", array: [1,2,3], object: {a: 0, b: 1, c: 3 } }
+	,{id: 3, name="Chocolatina", array: ["cacao", "cocoa", "milk"], object: {a: null, b: "string", c: true} }
+	,{id: 3, name="Tiramisya", array: [777,888,999, "string"], object: {a: 11, b: 22, c: 33, sugar: "yes!"} }
+]
+`
+| unbox id name object array</code></pre>
+
+<p>Above command will give you the following result:</p>
+
+<table class="table table-striped table-hover table-sm">
+	<thead>
+		<th><div>id</div></th>
+		<th><div>name</div></th>
+		<th><div>a</div></th>
+		<th><div>b</div></th>
+		<th><div>c</div></th>
+		<th><div>sugar</div></th>
+		<th><div>array</div></th>
+	</thead>
+	<tbody>
+		<tr class="cfwRecordContainer">
+			<td>0</td>
+			<td><span>Cookiena</span></td>
+			<td>0</td>
+			<td>1</td>
+			<td>3</td>
+			<td><span
+				class="format-base text-white text-center badge-primary m-0">NULL</span></td>
+			<td>1</td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>0</td>
+			<td><span>Cookiena</span></td>
+			<td>0</td>
+			<td>1</td>
+			<td>3</td>
+			<td><span
+				class="format-base text-white text-center badge-primary m-0">NULL</span></td>
+			<td>2</td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>0</td>
+			<td><span>Cookiena</span></td>
+			<td>0</td>
+			<td>1</td>
+			<td>3</td>
+			<td><span
+				class="format-base text-white text-center badge-primary m-0">NULL</span></td>
+			<td>3</td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>3</td>
+			<td><span>Chocolatina</span></td>
+			<td><span
+				class="format-base text-white text-center badge-primary m-0">NULL</span></td>
+			<td><span>string</span></td>
+			<td><span
+				class="format-base text-white text-center bg-success m-0">true</span></td>
+			<td><span
+				class="format-base text-white text-center badge-primary m-0">NULL</span></td>
+			<td><span>cacao</span></td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>3</td>
+			<td><span>Chocolatina</span></td>
+			<td><span
+				class="format-base text-white text-center badge-primary m-0">NULL</span></td>
+			<td><span>string</span></td>
+			<td><span
+				class="format-base text-white text-center bg-success m-0">true</span></td>
+			<td><span
+				class="format-base text-white text-center badge-primary m-0">NULL</span></td>
+			<td><span>cocoa</span></td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>3</td>
+			<td><span>Chocolatina</span></td>
+			<td><span
+				class="format-base text-white text-center badge-primary m-0">NULL</span></td>
+			<td><span>string</span></td>
+			<td><span
+				class="format-base text-white text-center bg-success m-0">true</span></td>
+			<td><span
+				class="format-base text-white text-center badge-primary m-0">NULL</span></td>
+			<td><span>milk</span></td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>3</td>
+			<td><span>Tiramisya</span></td>
+			<td>11</td>
+			<td>22</td>
+			<td>33</td>
+			<td><span>yes!</span></td>
+			<td>777</td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>3</td>
+			<td><span>Tiramisya</span></td>
+			<td>11</td>
+			<td>22</td>
+			<td>33</td>
+			<td><span>yes!</span></td>
+			<td>888</td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>3</td>
+			<td><span>Tiramisya</span></td>
+			<td>11</td>
+			<td>22</td>
+			<td>33</td>
+			<td><span>yes!</span></td>
+			<td>999</td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>3</td>
+			<td><span>Tiramisya</span></td>
+			<td>11</td>
+			<td>22</td>
+			<td>33</td>
+			<td><span>yes!</span></td>
+			<td><span>string</span></td>
+		</tr>
+	</tbody>
+</table>
+
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+
+<h3> Advanced Unboxing</h3>
+<p>Below query is a more advanced example using the unbox command. It shows you:</p>
+<ul>
+	<li><b>Using Member Access:&nbsp;</b>You can access elements deeper in the json structure using member access expressions like "properties.legs.count".</li>
+	<li><b>Keep Existing:&nbsp;</b> By default only fields specified in the unbox command are kept. You can keep existing fields by specifying 'replace=false'. </li>
+	<li><b>Unboxing Arrays of Objects:&nbsp;</b> Unbox the array first. Then do another unbox on the objects to get the fields of the objects unboxed as well.  </li>
+	<li><b>Post Processing:&nbsp;</b> Using the unboxed values to calculate total cost and format the costs based on a threshold. </li>
+</ul>
+
+<pre><code class="language-cfwquery">| source json data=`[
+{product="Table", 
+	properties: { legs:{ count: 4, length: 80}, lengthUnit: "cm" }, 
+	costs: {
+		dollaresPerCM: 0.2, 
+		sellerFees: [
+			{seller: "Super Market", feeUSD: 30},
+			{seller: "Jane's Furniture", feeUSD: 50},
+			{seller: "Mega Store", feeUSD: 25} ]
+}},
+{product="Chair", 
+	properties: { legs:{ count: 4, length: 50}, lengthUnit: "cm" }, 
+	costs: {
+		dollaresPerCM: 0.1, 
+		sellerFees: [
+			{seller: "Super Market", feeUSD: 25},
+			{seller: "Jane's Furniture", feeUSD: 37},
+			{seller: "Mega Store", feeUSD: 55} ]
+}}
+]`
+| unbox 
+	product                # keep product field
+	properties.legs.count  # unboxed to count 
+	properties.legs.length # unboxed to length
+	costs.dollaresPerCM    # unboxed to dollaresPerCM
+	costs.sellerFees       # unbox array of objects
+| unbox
+	replace=false # keep all existing fields
+	sellerFees # unbox the previously unboxed objects
+| remove sellerFees
+| set totalCostUSD = (count * length * dollaresPerCM) + feeUSD
+| formatfield totalCostUSD=[
+	['threshold', 0, 60, 70, 80, 90, "bg"]
+	, ['align', "right"]
+	, ['postfix', " USD"]
+]</code></pre>
+
+<p>Above will give you the following result:</p>
+<table class="table table-striped table-hover table-sm">
+	<thead>
+		<th><div>product</div></th>
+		<th><div>count</div></th>
+		<th><div>length</div></th>
+		<th><div>dollaresPerCM</div></th>
+		<th><div>seller</div></th>
+		<th><div>feeUSD</div></th>
+		<th><div>totalCostUSD</div></th>
+	</thead>
+	<tbody>
+		<tr class="cfwRecordContainer">
+			<td><span>Table</span></td>
+			<td>4</td>
+			<td>80</td>
+			<td>0.2</td>
+			<td><span>Super Market</span></td>
+			<td>30</td>
+			<td><span
+				class="format-base text-right font-weight-bold bg-cfw-danger w-100"
+				style="color: rgb(255, 255, 255);">94 USD</span></td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td><span>Table</span></td>
+			<td>4</td>
+			<td>80</td>
+			<td>0.2</td>
+			<td><span>Jane's Furniture</span></td>
+			<td>50</td>
+			<td><span
+				class="format-base text-right font-weight-bold bg-cfw-danger w-100"
+				style="color: rgb(255, 255, 255);">114 USD</span></td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td><span>Table</span></td>
+			<td>4</td>
+			<td>80</td>
+			<td>0.2</td>
+			<td><span>Mega Store</span></td>
+			<td>25</td>
+			<td><span
+				class="format-base text-right font-weight-bold bg-cfw-emergency w-100"
+				style="color: rgb(255, 255, 255);">89 USD</span></td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td><span>Chair</span></td>
+			<td>4</td>
+			<td>50</td>
+			<td>0.1</td>
+			<td><span>Super Market</span></td>
+			<td>25</td>
+			<td><span
+				class="format-base text-right font-weight-bold bg-cfw-excellent w-100"
+				style="color: rgb(255, 255, 255);">45 USD</span></td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td><span>Chair</span></td>
+			<td>4</td>
+			<td>50</td>
+			<td>0.1</td>
+			<td><span>Jane's Furniture</span></td>
+			<td>37</td>
+			<td><span
+				class="format-base text-right font-weight-bold bg-cfw-excellent w-100"
+				style="color: rgb(255, 255, 255);">57 USD</span></td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td><span>Chair</span></td>
+			<td>4</td>
+			<td>50</td>
+			<td>0.1</td>
+			<td><span>Mega Store</span></td>
+			<td>55</td>
+			<td><span
+				class="format-base text-right font-weight-bold bg-cfw-warning w-100"
+				style="color: rgb(255, 255, 255);">75 USD</span></td>
+		</tr>
+	</tbody>
+</table>
