@@ -216,7 +216,8 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		String headersString = (String) parameters.getField(PARAM_HEADERS).getValue();
 		
 		HashMap<String, String> headersMap = new HashMap<>();
-		if(headersString.startsWith("{")) {
+		
+		if(headersString != null && headersString.startsWith("{")) {
 			JsonObject headersObject = CFW.JSON.fromJson(headersString).getAsJsonObject();
 			
 			for(Entry<String, JsonElement> entry : headersObject.entrySet()) {

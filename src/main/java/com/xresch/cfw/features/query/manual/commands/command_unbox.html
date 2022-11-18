@@ -84,7 +84,7 @@ The unboxing command works differently depending on the value you provide to unb
 `
 | unbox id name object array</code></pre>
 
-<p>Above command will give you the following result:</p>
+<p>Above query will give you the following result:</p>
 
 <table class="table table-striped table-hover table-sm">
 	<thead>
@@ -202,6 +202,60 @@ The unboxing command works differently depending on the value you provide to unb
 	</tbody>
 </table>
 
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+
+<h3> Unboxing Object Array</h3>
+<p>A typical REST API response contains a JSON object, which has a field that contains an array of data objects.
+To unbox the data objects in such a structure you would need to call unbox twice for the same field. 
+<br>First call to unbox the array from the response object, what gives you a field only containing the array.
+<br>Second call to unbox the data objects from the array. Here is an example:</p>
+
+<pre><code class="language-cfwquery">| source json data=`
+{
+	success: true,
+	code: 200,
+	payload: [
+		  {id: 111, item: "Apple", price: 0.5, currency: "USD"}
+		, {id: 123, item: "Light Bulb", price: 2.7, currency: "EUR"}
+		, {id: 123, item: "The Mighty Book", price: 7222.05, currency: "AUD"}
+	]
+}
+`
+| unbox payload
+| unbox payload
+</code></pre>
+
+<p>Above query will give you the following result:</p>
+<table class="table table-striped table-hover table-sm">
+	<thead>
+		<th><div>id</div></th>
+		<th><div>item</div></th>
+		<th><div>price</div></th>
+		<th><div>currency</div></th>
+	</thead>
+	<tbody>
+		<tr class="cfwRecordContainer">
+			<td>111</td>
+			<td><span>Apple</span></td>
+			<td>0.5</td>
+			<td><span>USD</span></td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>123</td>
+			<td><span>Light Bulb</span></td>
+			<td>2.7</td>
+			<td><span>EUR</span></td>
+		</tr>
+		<tr class="cfwRecordContainer">
+			<td>123</td>
+			<td><span>The Mighty Book</span></td>
+			<td>7222.05</td>
+			<td><span>AUD</span></td>
+		</tr>
+	</tbody>
+</table>
 <!-- ============================================================== -->
 <!-- ============================================================== -->
 <!-- ============================================================== -->

@@ -248,20 +248,30 @@ public class DashboardWidget extends CFWObject {
 			
 			//------------------------------------
 			// Grab Existing Settings
-			ChartType charttype = ChartType.valueOf(settingsObject.get("chart_type").getAsString()); 	
+			ChartType charttype = ChartType.valueOf(settingsObject.get("chart_type").getAsString().toLowerCase().trim()); 	
 			
+			Boolean stacked = 
+					! (settingsObject.get("stacked") == null || settingsObject.get("stacked").isJsonNull() )
+					? settingsObject.get("stacked").getAsBoolean()
+					: false; 
 			
-			Boolean stacked = settingsObject.get("stacked").getAsBoolean(); 		
-			Boolean showlegend = settingsObject.get("show_legend").getAsBoolean(); 	
-			Float pointradius = settingsObject.get("pointradius").getAsFloat(); 		
+			Boolean showlegend = 
+					! (settingsObject.get("show_legend") == null || settingsObject.get("show_legend").isJsonNull() )
+					? settingsObject.get("show_legend").getAsBoolean()
+					: false; 
+			
+			Float pointradius = 
+					! (settingsObject.get("pointradius") == null || settingsObject.get("pointradius").isJsonNull() )
+					? settingsObject.get("pointradius").getAsFloat()
+					: 2; 
 			
 			Float ymin = 
-					! settingsObject.get("ymin").isJsonNull()
+					! (settingsObject.get("ymin") == null || settingsObject.get("ymin").isJsonNull() )
 					? settingsObject.get("ymin").getAsFloat()
 					: null; 
 			
 			Float ymax = 
-					! settingsObject.get("ymax").isJsonNull()
+					! (settingsObject.get("ymax") == null || settingsObject.get("ymax").isJsonNull() )
 					? settingsObject.get("ymax").getAsFloat()
 					: null; 
 			
