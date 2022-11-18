@@ -18,6 +18,7 @@ public class CFWQueryContext{
 	
 	private long earliest = 0;
 	private long latest = 0;
+	private int timezoneOffsetMinutes = 0;
 	private boolean checkPermissions = true;
 	
 	private LinkedHashMap<String, AlertMessage> alertMap = CFW.Context.Request.getAlertMap();
@@ -55,6 +56,20 @@ public class CFWQueryContext{
 	 ***********************************************************************************************/
 	public CFWQueryContext setLatest(long latest) {
 		this.latest = latest;
+		return this;
+	}
+	/***********************************************************************************************
+	 * Get the timezoneoffsetMinutes time for this query.
+	 ***********************************************************************************************/
+	public long getTimezoneOffsetMinutes() {
+		return timezoneOffsetMinutes;
+	}
+	
+	/***********************************************************************************************
+	 * Set the timezoneoffsetMinutes time for this query.
+	 ***********************************************************************************************/
+	public CFWQueryContext  setTimezoneOffsetMinutes(int timezoneOffsetMinutes) {
+		this.timezoneOffsetMinutes = timezoneOffsetMinutes;
 		return this;
 	}
 	

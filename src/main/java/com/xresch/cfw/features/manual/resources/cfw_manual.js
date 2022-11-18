@@ -400,6 +400,8 @@ function cfw_manual_printContent(domElement, callback){
 	titleTarget.html('');
 	target.html('');
 	
+	window.scrollTo(0, 0);
+	
 	CFW.http.fetchAndCacheData("./manual", {action: "fetch", item: "page", path: page.path}, "page"+page.path, function (data){
 		if(data.payload != undefined){
 			var pageData = data.payload;
@@ -424,6 +426,7 @@ function cfw_manual_printContent(domElement, callback){
 				callback();
 			}
 		}
+		
 	})
 	
 	

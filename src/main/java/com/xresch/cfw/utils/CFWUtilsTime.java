@@ -139,18 +139,105 @@ public class CFWUtilsTime {
 	 * Use positive values to go to the future, use negative values to go to the past.
 	 * @return timestamp
 	 ********************************************************************************************/
-	public static Timestamp offsetTimestamp(Timestamp timestamp, int years, int months, int days, int hours, int minutes) {
+	public static Timestamp offsetTimestamp(Timestamp timestamp, int years, int months, int days) {
+		
+		return new Timestamp(
+				offsetTime(timestamp.getTime(), years, months, days)
+			);
+	}
+	
+	/********************************************************************************************
+	 * Return a new instance of Timestamp with an offset starting from the given timestamp.
+	 * Use positive values to go to the future, use negative values to go to the past.
+	 * @return timestamp
+	 ********************************************************************************************/
+	public static Timestamp offsetTimestamp(Timestamp timestamp, int years, int months, int days, int hours, int minutes) {		
+		return new Timestamp(
+				offsetTime(timestamp.getTime(), years, months, days, hours, minutes)
+			);
+	}
+	
+	/********************************************************************************************
+	 * Return a new instance of Timestamp with an offset starting from the given timestamp.
+	 * Use positive values to go to the future, use negative values to go to the past.
+	 * @return timestamp
+	 ********************************************************************************************/
+	public static Timestamp offsetTimestamp(Timestamp timestamp
+											, int years
+											, int months
+											, int days
+											, int hours
+											, int minutes
+											, int seconds
+											, int milliseconds) {
+				
+		return new Timestamp(
+				offsetTime(timestamp.getTime(), years, months, days, hours, minutes, seconds, milliseconds)
+			);
+	}
+	
+	/********************************************************************************************
+	 * Return time with an offset starting from the given time.
+	 * Use positive values to go to the future, use negative values to go to the past.
+	 * @return time in epoch milliseconds
+	 ********************************************************************************************/
+	public static long offsetTime(long timeMillis, int years, int months, int days) {
 		
 		Calendar calendar = Calendar.getInstance();
 		
-		calendar.setTimeInMillis(timestamp.getTime());
+		calendar.setTimeInMillis(timeMillis);
+		calendar.add(Calendar.YEAR, years);
+		calendar.add(Calendar.MONTH, months);
+		calendar.add(Calendar.DAY_OF_YEAR, days);
+		
+		return calendar.getTimeInMillis();
+	}
+	
+	/********************************************************************************************
+	 * Return time with an offset starting from the given time.
+	 * Use positive values to go to the future, use negative values to go to the past.
+	 * @return time in epoch milliseconds
+	 ********************************************************************************************/
+	public static long offsetTime(long timeMillis, int years, int months, int days, int hours, int minutes) {
+		
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTimeInMillis(timeMillis);
 		calendar.add(Calendar.YEAR, years);
 		calendar.add(Calendar.MONTH, months);
 		calendar.add(Calendar.DAY_OF_YEAR, days);
 		calendar.add(Calendar.HOUR_OF_DAY, hours);
 		calendar.add(Calendar.MINUTE, minutes);
 		
-		return new Timestamp(calendar.getTimeInMillis());
+		return calendar.getTimeInMillis();
+	}
+	
+	/********************************************************************************************
+	 * Return time with an offset starting from the given time.
+	 * Use positive values to go to the future, use negative values to go to the past.
+	 * @return time in epoch milliseconds
+	 ********************************************************************************************/
+	public static long offsetTime(long timeMillis
+								, int years
+								, int months
+								, int days
+								, int hours
+								, int minutes
+								, int seconds
+								, int milliseconds) {
+		
+		Calendar calendar = Calendar.getInstance();
+		
+		calendar.setTimeInMillis(timeMillis);
+		calendar.add(Calendar.YEAR, years);
+		calendar.add(Calendar.MONTH, months);
+		calendar.add(Calendar.DAY_OF_YEAR, days);
+		calendar.add(Calendar.HOUR_OF_DAY, hours);
+		calendar.add(Calendar.MINUTE, minutes);
+		calendar.add(Calendar.SECOND, seconds);
+		calendar.add(Calendar.MILLISECOND, milliseconds);
+		
+		return calendar.getTimeInMillis();
 	}
 	
 	/********************************************************************************************

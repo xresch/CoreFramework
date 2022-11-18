@@ -1380,7 +1380,8 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 					, item: 'widgetdata'
 					, dashboardid: CFW_DASHBOARD_URLPARAMS.id
 					, timeframepreset: CFW.http.getURLParams()['timeframepreset']
-					, widgetid: widgetObject.PK_ID, params: JSON.stringify(dashboardParams)}; 
+					, widgetid: widgetObject.PK_ID, 
+					params: JSON.stringify(dashboardParams)}; 
 	
 	var definition = CFW.dashboard.getWidgetDefinition(widgetObject.TYPE);
 	
@@ -1397,6 +1398,11 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 		urlParams.timeframe_earliest = CFW_DASHBOARD_TIME_EARLIEST_EPOCH;
 		urlParams.timeframe_latest = CFW_DASHBOARD_TIME_LATEST_EPOCH;
 	}
+	
+	//--------------------------------------
+	// Add timeZoneOffset
+	var timeZoneOffset = new Date().getTimezoneOffset();
+	urlParams.timezoneOffsetMinutes = timeZoneOffset;
 	
 	// ----------------------------
 	// Fetch Data

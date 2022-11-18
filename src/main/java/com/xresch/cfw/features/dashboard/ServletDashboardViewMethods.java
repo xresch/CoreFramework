@@ -757,6 +757,7 @@ public class ServletDashboardViewMethods
 		
 		String earliestString = request.getParameter("timeframe_earliest");
 		String latestString = request.getParameter("timeframe_latest");
+		int timezoneOffsetMinutes = Integer.parseInt(request.getParameter("timezoneOffsetMinutes"));
 
 		//-----------------------------------
 		// Prepare Widget Settings
@@ -796,7 +797,7 @@ public class ServletDashboardViewMethods
 				) {
 					//----------------------------
 					// Do Not Cache
-					definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), earliest, latest);
+					definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), earliest, latest, timezoneOffsetMinutes);
 				}else {
 					//----------------------------
 					// Create Cache ID
@@ -820,7 +821,7 @@ public class ServletDashboardViewMethods
 									
 									try {
 										//Hack: update and return existing jsonResponse to not overwrite it by creating a new instance.
-										definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), finalEarliest, finalLatest);
+										definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), finalEarliest, finalLatest, timezoneOffsetMinutes);
 									}catch(Throwable e){
 										new CFWLog(logger).severe("Unexpected Error Occured: "+e.getMessage(), e);
 									}

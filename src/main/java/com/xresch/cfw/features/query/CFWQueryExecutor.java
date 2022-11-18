@@ -39,8 +39,16 @@ public class CFWQueryExecutor {
 	 * Takes the max execution time from the in-app configuration for
 	 * limiting query execution time.
 	 * 
+	 * @params queryString the query to execute
+	 * @param earliest time in epoch millis
+	 * @param latest time in epoch millis
+	 * @param timezoneOffsetMinutes TODO
+	 * @param timezoneOffsetMinutes offset for the clients time zone.
+	 * You can use the following in javascript to get this:
+	 * 		var timeZoneOffset = new Date().getTimezoneOffset();
+	 * 
 	 ****************************************************************/
-	public JsonArray parseAndExecuteAll(String queryString, long earliest, long latest) {
+	public JsonArray parseAndExecuteAll(String queryString, long earliest, long latest, int timezoneOffsetMinutes) {
 		
 		//------------------------
 		// Parse The Query
@@ -87,6 +95,7 @@ public class CFWQueryExecutor {
 			CFWQueryContext queryContext = query.getContext();
 			queryContext.setEarliest(earliest);
 			queryContext.setLatest(latest);
+			queryContext.setTimezoneOffsetMinutes(timezoneOffsetMinutes);
 			queryContext.checkPermissions(checkPermissions);
 				
 			//--------------------------------

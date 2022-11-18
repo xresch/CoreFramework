@@ -66,7 +66,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				+ "	AND (null + 10)	== 10";
 		
 		JsonArray resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest);
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -86,7 +86,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFilterNullValues.txt");
 		
 		JsonArray resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest);
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -107,7 +107,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				+ "			| comment filter LIKES_TIRAMISU==true | tail 100 | off filter LIKES_TIRAMISU==false | top 100 #filter LIKES_TIRAMISU==true";
 		
 		JsonArray resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest);
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
@@ -130,7 +130,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				;
 		
 		JsonArray resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest);
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 3 results for distinct, dedup and uniq
 		Assertions.assertEquals(3, resultArray.size());
@@ -168,7 +168,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 		
 		
 		JsonArray resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest);
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 
@@ -224,7 +224,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				;
 		
 		JsonArray resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest);
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 2 results for first and top
 		Assertions.assertEquals(2, resultArray.size());
@@ -256,7 +256,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				;
 		
 		JsonArray resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest);
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 2 results for last and tail
 		Assertions.assertEquals(2, resultArray.size());
@@ -288,7 +288,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				;
 		
 		JsonArray resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest);
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 1 query results
 		Assertions.assertEquals(1, resultArray.size());
@@ -328,7 +328,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				;
 		
 		JsonArray resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest);
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 1 query results
 		Assertions.assertEquals(1, resultArray.size());
@@ -381,7 +381,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				;
 		
 		JsonArray resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest);
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 1 query results
 		Assertions.assertEquals(1, resultArray.size());
@@ -454,7 +454,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				;
 		
 		JsonArray resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest);
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 2 query results
 		Assertions.assertEquals(2, resultArray.size());

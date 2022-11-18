@@ -41,7 +41,7 @@ public class ServletQuery extends HttpServlet
 	 ******************************************************************/
 	@Override
 	protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException{
-	
+		
 		doGet(request, response);
 	}
 	/******************************************************************
@@ -171,9 +171,9 @@ public class ServletQuery extends HttpServlet
 		String query = request.getParameter("query");
 		String earliest = request.getParameter("earliest");
 		String latest = request.getParameter("latest");
-		
+		int timezoneOffsetMinutes = Integer.parseInt(request.getParameter("timezoneOffsetMinutes"));
 
-		JsonArray array = new CFWQueryExecutor().parseAndExecuteAll(query, Long.parseLong(earliest), Long.parseLong(latest));
+		JsonArray array = new CFWQueryExecutor().parseAndExecuteAll(query, Long.parseLong(earliest), Long.parseLong(latest), timezoneOffsetMinutes);
 		
 		if(array != null) {
 			jsonResponse.setPayLoad(array);

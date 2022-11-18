@@ -26,10 +26,13 @@ function cfw_query_execute(){
 	var targetDiv = $('#cfw-query-results');
 	var timeframe = JSON.parse($('#timeframePicker').val());
 	var query =  $QUERYAREA.val();
-	
+
+ 	var timeZoneOffset = new Date().getTimezoneOffset();
+
 	params = {action: "execute"
 			, item: "query"
 			, query: query
+			, timezoneOffsetMinutes: timeZoneOffset
 			, offset: timeframe.offset
 			, earliest: timeframe.earliest
 			, latest: timeframe.latest
