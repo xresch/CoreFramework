@@ -151,8 +151,11 @@ DONE
 - Query: Fixed Comma after Binary Expression breaks query by creating array in the wrong place
 - Query: Loader does not block query editor
 - Query: URL is updated on each execution, even if the query fails
+- Query: Added sources:
+	- web 
 - Query: Added functions: 
 	- replace
+	- unbox
 
 ------- v.7.0.0 -------
 - BREAKING CODE CHANGE: Added 1 minute cache for widget data.

@@ -1,11 +1,14 @@
 package com.xresch.cfw.features.query.sources;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -112,9 +115,16 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	@Override
 	public CFWObject getParameters() {
 		return new CFWObject()
+				
 				.addField(
-						CFWField.newString(FormFieldType.TEXTAREA, PARAM_METHOD)
-							.setDescription("The HTTP method used for the request. Either GET(default) or POST.")
+						CFWField.newString(FormFieldType.TEXT, PARAM_URL)
+							.setDescription("The JSON string that should be parsed. Either an array of JSON Objects or a single JSON Object.")
+							.addValidator(new NotNullOrEmptyValidator())
+					)
+				
+				.addField(
+						CFWField.newString(FormFieldType.TEXT, PARAM_METHOD)
+							.setDescription("(Optional)The HTTP method used for the request. Either GET(default) or POST.")
 							.setValue("GET")
 							.addValidator(new CustomValidator() {
 								
@@ -145,24 +155,30 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 					)
 				
 				.addField(
-					CFWField.newString(FormFieldType.TEXTAREA, PARAM_URL)
-						.setDescription("The JSON string that should be parsed. Either an array of JSON Objects or a single JSON Object.")
-						.addValidator(new NotNullOrEmptyValidator())
-				)
-				
-				// currently only support JSON
-//				.addField(
-//						CFWField.newString(FormFieldType.TEXTAREA, FIELDNAME_FORMAT)
-//							.setDescription("The format of the returned data.")	
-//					)
+						CFWField.newString(FormFieldType.TEXT, PARAM_HEADERS)
+							.setDescription("(Optional)The HTTP headers for the request.")
+							.addValidator(new NotNullOrEmptyValidator())
+					)
 				
 				.addField(
-						CFWField.newString(FormFieldType.TEXTAREA, PARAM_TIMEFIELD)
+						CFWField.newString(FormFieldType.TEXT, PARAM_USERNAME)
+						.setDescription("(Optional)The username for Basic Authentication.")
+						.addValidator(new NotNullOrEmptyValidator())
+						)
+				
+				.addField(
+						CFWField.newString(FormFieldType.TEXT, PARAM_PASSWORD)
+						.setDescription("(Optional)The password for Basic Authentication.")
+						.addValidator(new NotNullOrEmptyValidator())
+						)
+				
+				.addField(
+						CFWField.newString(FormFieldType.TEXT, PARAM_TIMEFIELD)
 							.setDescription("The field of the response that contains the time.")	
 					)
 				
 				.addField(
-						CFWField.newString(FormFieldType.TEXTAREA, PARAM_TIMEFORMAT)
+						CFWField.newString(FormFieldType.TEXT, PARAM_TIMEFORMAT)
 							.setDescription("The format of the time in the time field. (Default: 'epoch').")	
 							.setValue("epoch")
 					)
@@ -193,11 +209,22 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 			url = "https://"+url;
 		}
 
-//		String username = (String) parameters.getField(PARAM_USERNAME).getValue();
-//		String password = (String) parameters.getField(PARAM_PASSWORD).getValue();
+		String username = (String) parameters.getField(PARAM_USERNAME).getValue();
+		String password = (String) parameters.getField(PARAM_PASSWORD).getValue();
 		
-//		LinkedHashMap<String, String> headers = (LinkedHashMap<String, String>) parameters.getField(PARAM_HEADERS).getValue();
-						
+		
+		String headersString = (String) parameters.getField(PARAM_HEADERS).getValue();
+		
+		HashMap<String, String> headersMap = new HashMap<>();
+		if(headersString.startsWith("{")) {
+			JsonObject headersObject = CFW.JSON.fromJson(headersString).getAsJsonObject();
+			
+			for(Entry<String, JsonElement> entry : headersObject.entrySet()) {
+				headersMap.put(entry.getKey(), entry.getValue().getAsString());
+			}
+		}
+
+		
 		//----------------------------------------
 		// Build Request
 
@@ -209,11 +236,11 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 			requestBuilder.POST();
 		}
 		
-//		if(!Strings.isNullOrEmpty(username)) {
-//			requestBuilder.authenticationBasic(username, password);
-//		}
-//		
-//		requestBuilder.headers(headers);
+		if(!Strings.isNullOrEmpty(username)) {
+			requestBuilder.authenticationBasic(username, password);
+		}
+		
+		requestBuilder.headers(headersMap);
 
 		
 		//----------------------------------------
