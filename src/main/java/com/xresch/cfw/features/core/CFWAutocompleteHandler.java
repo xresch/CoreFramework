@@ -24,6 +24,7 @@ public abstract class CFWAutocompleteHandler {
 	}
 	
 	public CFWAutocompleteHandler(int maxResults, int minChars) {
+		this.maxResults = maxResults;
 		this.minChars = minChars;
 	}
 	

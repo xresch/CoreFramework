@@ -226,7 +226,7 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	}
 	
 	/***********************************************************************************************
-	 * Add a fieldname
+	 * Add all fieldnames, except for fieldnames that start with an underscore.
 	 ***********************************************************************************************/
 	protected void fieldnameAddAll(EnhancedJsonObject record) {
 		

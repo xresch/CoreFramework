@@ -44,7 +44,11 @@ public class CFWQueryFieldnameManager {
 				case ADD:		finalNames.add(currentMod.fieldname);
 								break;
 								
-				case ADDALL:	finalNames.addAll(currentMod.fieldnames);
+				case ADDALL:	for(String name : currentMod.fieldnames) {
+									if(!name.startsWith("_")) {
+										finalNames.add(name);
+									}
+								}
 								break;
 								
 				case CLEAR: 	finalNames.clear();
@@ -114,7 +118,7 @@ public class CFWQueryFieldnameManager {
 	}
 	
 	/***********************************************************************************************
-	 * add the fieldnames
+	 * Add all fieldnames, except for fieldnames that start with an underscore.
 	 ***********************************************************************************************/
 	public CFWQueryFieldnameManager addall(Set<String> names) {
 		
