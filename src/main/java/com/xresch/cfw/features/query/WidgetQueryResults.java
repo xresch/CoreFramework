@@ -15,6 +15,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.dashboard.WidgetDefinition;
@@ -48,6 +49,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 						.setLabel("{!cfw_widget_queryresults_query!}")
 						.setDescription("{!cfw_widget_queryresults_query_desc!}")
 						.disableSanitization()
+						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
 
 						// does not work when using dashboard parameters, will not properly parse the query
 //						.addValidator(new CustomValidator() {
