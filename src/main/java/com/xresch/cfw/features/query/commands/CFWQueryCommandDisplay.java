@@ -87,6 +87,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 					+"<li>statusmap_1to4</li>"
 					+"<li>statusmap_1to8</li>"
 					
+					+"<li>title</li>"
 					+"<li>csv</li>"
 					+"<li>json</li>"
 					+"<li>xml</li>"
@@ -156,6 +157,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 		result.setHTMLDescription(
 				"<b>Hint:&nbsp;</b>Specify how the data should be displayed.<br>"
 				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
+				+ descriptionSyntaxDetailsHTML()
 			);
 
 	}

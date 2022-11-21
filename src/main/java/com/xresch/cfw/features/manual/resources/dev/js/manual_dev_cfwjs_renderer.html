@@ -320,6 +320,17 @@ CSV Renderer will return a JQuery pre-Element wrapping a code block with the csv
 var csvPre = CFW.render.getRenderer('csv').render(rendererParams);</code>
 </pre>
 
+<h3>Title</h3>
+<p>
+Title Renderer will return a JQuery div element containing all the titles of the records.
+This renderer has no additional settings.
+</p>
+<pre>
+<code>var rendererParams.rendererSettings.title = {
+	// no renderer specific settings
+};
+var csvPre = CFW.render.getRenderer('title').render(rendererParams);</code>
+</pre>
 
 
 <h3>Data Viewer</h3>

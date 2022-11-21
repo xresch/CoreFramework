@@ -29,9 +29,10 @@ function cfw_query_getRendererIndex(queryResult){
 			case 'statusmap_1to4':		rendererIndex = 13; break;
 			case 'statusmap_1to8':		rendererIndex = 14; break;
 			
-			case 'csv':				rendererIndex = 15; break;	
-			case 'json':			rendererIndex = 16; break;	
-			case 'xml':				rendererIndex = 17; break;	
+			case 'title':			rendererIndex = 15; break;	
+			case 'csv':				rendererIndex = 16; break;	
+			case 'json':			rendererIndex = 17; break;	
+			case 'xml':				rendererIndex = 18; break;	
 			
 		}
 	}
@@ -824,6 +825,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 				csv: {},
 				json: {},
 				xml: {},
+				title: {},
 				dataviewer: {
 					//storeid: 'cfw-query',
 					rendererIndex: rendererIndex,
@@ -908,6 +910,10 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 						},
 						{	label: 'Status Map(1:8)',
 							name: 'statusmap_1to8',
+							renderdef: {}
+						},
+						{	label: 'Title',
+							name: 'title',
 							renderdef: {}
 						},
 						{	label: 'CSV',

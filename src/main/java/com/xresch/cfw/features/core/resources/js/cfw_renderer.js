@@ -2,6 +2,7 @@
 CFW_RENDER_NAME_CSV = 'csv';
 CFW_RENDER_NAME_JSON = 'json';
 CFW_RENDER_NAME_XML = 'xml';
+CFW_RENDER_NAME_TITLE = 'title';
 CFW_RENDER_NAME_TABLE = 'table';
 CFW_RENDER_NAME_TILES = 'tiles';
 CFW_RENDER_NAME_STATUSBAR = 'statusbar';
@@ -487,6 +488,46 @@ function cfw_renderer_csv(renderDef) {
 }
 CFW.render.registerRenderer(CFW_RENDER_NAME_CSV,  new CFWRenderer(cfw_renderer_csv));
 
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_title(renderDef) {
+		 
+	//-----------------------------------
+	// Render Specific settings
+	var defaultSettings = {
+		// this renderer has no additional settings
+	};
+	
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.title);
+	
+	//-----------------------------------
+	// Target Element
+	let resultDiv = $('<div class="w-100 h-100">');
+	
+	//-----------------------------------
+	// Print Records
+	for(let i = 0; i < renderDef.data.length; i++ ){
+		renderDef.visiblefields
+		let currentRecord = renderDef.data[i];
+		let recordTitle = renderDef.getTitleHTML(currentRecord);;
+
+		//=====================================
+		// Create Colored span
+		let wrapper = $('<div>');
+		wrapper.html(recordTitle)
+		
+		//=====================================
+		// Add Styles
+		renderDef.colorizeElement(currentRecord, wrapper, "bg");
+		renderDef.colorizeElement(currentRecord, wrapper, "text");
+		
+		resultDiv.append(wrapper);
+	}
+
+	return resultDiv;
+}
+CFW.render.registerRenderer(CFW_RENDER_NAME_TITLE,  new CFWRenderer(cfw_renderer_title));
 
 /******************************************************************
  * 
