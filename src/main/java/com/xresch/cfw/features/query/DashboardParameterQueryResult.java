@@ -56,7 +56,7 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 			
 			CFWQueryExecutor executor = new CFWQueryExecutor().checkPermissions(false);
 			
-			JsonArray resultArray = executor.parseAndExecuteAll(query, earliest, latest, timezoneOffsetMinutes);
+			//JsonArray resultArray = executor.parseAndExecuteAll(query, earliest, latest, timezoneOffsetMinutes);
 			
 			settingsField.setValueConvert(fieldValue, true);
 			//response.setPayLoad(resultArray);	

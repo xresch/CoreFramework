@@ -39,7 +39,7 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	
-	public static final String GRANTTYPE_CLIENT_CREDENTIALS = "client_credentials";
+	//public static final String GRANTTYPE_CLIENT_CREDENTIALS = "client_credentials";
 	public static final String GRANTTYPE_AUTHORIZATION_CODE = "authorization_code";
 	
 	public static final String PROPERTY_SSO_STATE = "ssoState";
@@ -66,8 +66,14 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	}
 	
 			
-	private CFWField<String> providerURL = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.PROVIDER_URL)
-			.setDescription("The url of the OpenID Connect provider.");
+//	private CFWField<String> providerURL = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.PROVIDER_URL)
+//			.setDescription("The url of the OpenID Connect provider.");
+	
+	private CFWField<String> grantType = CFWField.newString(FormFieldType.SELECT, SSOOpenIDConnectProviderFields.GRANT_TYPE)
+			.setDescription("The grant type used for this client.")
+			.addOption(GRANTTYPE_AUTHORIZATION_CODE, "Authorization Code Grant with PKCE")
+			//.addOption(GRANTTYPE_CLIENT_CREDENTIALS, "Client Credentials")
+			.setValue(GRANTTYPE_AUTHORIZATION_CODE);
 	
 	private CFWField<String> wellknownPath = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.WELL_KNOWN_PATH)
 			.setDescription("The path to the .well-known provider configuration.");
@@ -75,19 +81,15 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	private CFWField<String> clientID = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.CLIENT_ID)
 			.setDescription("The id used for this client.");
 	
-	private CFWField<String> clientSecret = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.CLIENT_SECRET)
-			.setDescription("The secret used for this client.")
-			.setValue("");
+//	private CFWField<String> clientSecret = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.CLIENT_SECRET)
+//			.setDescription("The secret used for this client.")
+//			.setValue("");
 	
 	private CFWField<String> additionalScope = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.ADDITIONAL_SCOPE)
 			.setDescription("Comma separated list of additional scopes. For ADFS, add 'allatclaims'.")
 			.setValue(null);
 	
-	private CFWField<String> grantType = CFWField.newString(FormFieldType.SELECT, SSOOpenIDConnectProviderFields.GRANT_TYPE)
-			.setDescription("The grant type used for this client.")
-			.addOption(GRANTTYPE_AUTHORIZATION_CODE, "Authorization Code")
-			.addOption(GRANTTYPE_CLIENT_CREDENTIALS, "Client Credentials")
-			.setValue(GRANTTYPE_AUTHORIZATION_CODE);
+
 	
 	private CFWField<String> resource = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.RESOURCE)
 			.setDescription("(Optional)The value for the resource parameter used for client credential grant flow.")
@@ -104,7 +106,16 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	}
 		
 	private void initializeFields() {
-		this.addFields(providerURL, wellknownPath, clientID, clientSecret, additionalScope, grantType, resource, customParams);
+		this.addFields(
+				//providerURL
+				  grantType
+				, wellknownPath
+				, clientID
+				//, clientSecret
+				, additionalScope
+				, resource
+				, customParams
+			);
 	}
 		
 		
@@ -114,7 +125,7 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 	}
 	
 	public boolean isDefined() {
-		if(providerURL.getValue() != null
+		if(wellknownPath.getValue() != null
 		&& clientID.getValue() != null) {
 			return true;
 		}
@@ -163,7 +174,7 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 
 			// The client callback URL
 			String serverURL = CFW.HTTP.getServerURL(request);
-			URI callback = new URI(serverURL + FeatureCore.SERVLET_PATH_SSO_OPENID);
+			URI callbackURI = new URI(serverURL + FeatureCore.SERVLET_PATH_SSO_OPENID);
 			CodeVerifier codeVerifier = new CodeVerifier();
 			
 			// Generate random state string to securely pair the callback to this request
@@ -186,7 +197,7 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 			    new ResponseType("code"),
 			    this.getScope(),
 			    clientID,
-			    callback)
+			    callbackURI)
 			    .endpointURI(endpointURI)
 			    .state(state)
 			    .nonce(nonce)
@@ -223,14 +234,14 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 		
 	}
 			
-	public String providerURL() {
-		return providerURL.getValue();
-	}
-	
-	public SSOOpenIDConnectProvider providerURL(String value) {
-		this.providerURL.setValue(value);
-		return this;
-	}
+//	public String providerURL() {
+//		return providerURL.getValue();
+//	}
+//	
+//	public SSOOpenIDConnectProvider providerURL(String value) {
+//		this.providerURL.setValue(value);
+//		return this;
+//	}
 	
 	public String wellknownURL() {
 		return wellknownPath.getValue();
@@ -250,14 +261,14 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 		return this;
 	}
 	
-	public String clientSecret() {
-		return clientSecret.getValue();
-	}
-	
-	public SSOOpenIDConnectProvider clientSecret(String value) {
-		this.clientSecret.setValue(value);
-		return this;
-	}
+//	public String clientSecret() {
+//		return clientSecret.getValue();
+//	}
+//	
+//	public SSOOpenIDConnectProvider clientSecret(String value) {
+//		this.clientSecret.setValue(value);
+//		return this;
+//	}
 	
 	public String grantType() {
 		return grantType.getValue();
@@ -300,11 +311,11 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 		
 		//---------------------------------------
 		// Discover Provider
-		String providerURLString = this.providerURL();
-		providerURLString = (providerURLString.endsWith("/")) ? providerURLString : providerURLString+"/";
 		
-		URI issuerURI = new URI(providerURLString);
-		URL providerConfigurationURL = issuerURI.resolve(this.wellknownURL()).toURL();
+		//providerURLString = (providerURLString.endsWith("/")) ? providerURLString : providerURLString+"/";
+		
+		URI wellknownURI = new URI(this.wellknownURL());
+		URL providerConfigurationURL = wellknownURI.toURL();
 		InputStream stream = providerConfigurationURL.openStream();
 		
 		// Read all data from URL

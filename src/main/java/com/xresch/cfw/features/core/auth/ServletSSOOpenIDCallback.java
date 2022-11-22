@@ -145,7 +145,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			OIDCProviderMetadata providerMetadata = provider.getProviderMetadata();
 			
 			AuthenticationSuccessResponse successResponse = (AuthenticationSuccessResponse) authResponse;
-			AuthorizationCode code = successResponse.getAuthorizationCode();
+			AuthorizationCode authorizationCode = successResponse.getAuthorizationCode();
 			
 			new CFWLog(logger).finer("SSO Access Token:"+successResponse.getAccessToken());
 			new CFWLog(logger).finer("SSO Authorization Code:"+successResponse.getAuthorizationCode());
@@ -157,7 +157,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			
 			//------------------------------------
 			// Retrieve Tokens, UserInfo and do Login
-			OIDCTokenResponse tokenResponse = fetchTokenResponse(provider, code, codeVerifier, redirectURI);
+			OIDCTokenResponse tokenResponse = fetchTokenResponse(provider, authorizationCode, codeVerifier, redirectURI);
 
 			if(tokenResponse == null) {
 				new HTMLResponse("Error Occured");
@@ -196,46 +196,47 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		//-------------------------------
 		// Get Provider Info
 		String grantType = provider.grantType();
-		String resource = provider.resource();
+		//String resource = provider.resource();
 		
-		String secretString = provider.clientSecret();
-		if(secretString == null) {
-			secretString = "";
-		}
-		Secret clientSecret = new Secret(secretString);
+		//String secretString = provider.clientSecret();
+//		if(secretString == null) {
+//			secretString = "";
+//		}
+//		Secret clientSecret = new Secret(secretString);
 		
 		//-------------------------------
 		// Prepare Token Request
 		OIDCProviderMetadata providerMetadata = provider.getProviderMetadata();
 		ClientID clientID = new ClientID(provider.clientID());
 
-
 		TokenRequest tokenReq;
 		if(grantType.equals(SSOOpenIDConnectProvider.GRANTTYPE_AUTHORIZATION_CODE) ) {
 			tokenReq = 
 					new TokenRequest(
 							providerMetadata.getTokenEndpointURI(),
-							new ClientSecretPost(clientID, clientSecret),
+							new ClientID(clientID),
 							new AuthorizationCodeGrant(code, redirectURI, codeVerifier),
 							provider.getScope()
 							
 						);
-		}else if(grantType.equals(SSOOpenIDConnectProvider.GRANTTYPE_CLIENT_CREDENTIALS) ) {
-			Map<String, List<String>> params = new HashMap<>();
-			
-			params.put("resource", Collections.singletonList(resource));
-			params.put("grant_type", Collections.singletonList("client_credentials"));
-			
-			ClientCredentialsGrant grant = ClientCredentialsGrant.parse(params);
-			tokenReq = 
-					new TokenRequest(
-							providerMetadata.getTokenEndpointURI(),
-							new ClientSecretPost(clientID, clientSecret),
-							grant,
-							provider.getScope()
-							
-			);
-		}else {
+		}
+//		else if(grantType.equals(SSOOpenIDConnectProvider.GRANTTYPE_CLIENT_CREDENTIALS) ) {
+//			Map<String, List<String>> params = new HashMap<>();
+//			
+//			params.put("resource", Collections.singletonList(resource));
+//			params.put("grant_type", Collections.singletonList("client_credentials"));
+//			
+//			ClientCredentialsGrant grant = ClientCredentialsGrant.parse(params);
+//			tokenReq = 
+//					new TokenRequest(
+//							providerMetadata.getTokenEndpointURI(),
+//							new ClientSecretPost(clientID, clientSecret),
+//							grant,
+//							provider.getScope()
+//							
+//			);
+//		}
+		else {
 			new CFWLog(logger).severe("Unsupported Grant Type:"+grantType, new IllegalArgumentException());
 			return null;
 		}
@@ -257,7 +258,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		if (tokenResponse instanceof TokenErrorResponse) {
 			
 			ErrorObject error = ((TokenErrorResponse) tokenResponse).getErrorObject();
-			new CFWLog(logger).severe("Error response received during single sign on(fetch token): "+error.getDescription()+"(code="+error.getCode()+")");
+			new CFWLog(logger).severe("Error response received during single sign on(fetch token): "+error.getDescription()+"(errorcode="+error.getCode()+")");
 			
 			new CFWLog(logger)
 						.silent(true)

@@ -21,8 +21,6 @@ public class CFWQueryContext{
 	private int timezoneOffsetMinutes = 0;
 	private boolean checkPermissions = true;
 	
-	private LinkedHashMap<String, AlertMessage> alertMap = CFW.Context.Request.getAlertMap();
-	
 	private JsonObject metadata = new JsonObject();
 	private JsonObject globals = new JsonObject();
 	private JsonObject displaySettings = new JsonObject();
