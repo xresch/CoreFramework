@@ -58,6 +58,7 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 			
 			JsonArray resultArray = executor.parseAndExecuteAll(query, earliest, latest, timezoneOffsetMinutes);
 			
+			settingsField.setValueConvert(fieldValue, true);
 			//response.setPayLoad(resultArray);	
 		}			
 
