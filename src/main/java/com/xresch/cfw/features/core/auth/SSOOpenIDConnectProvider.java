@@ -85,15 +85,13 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 //			.setDescription("The secret used for this client.")
 //			.setValue("");
 	
-	private CFWField<String> additionalScope = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.ADDITIONAL_SCOPE)
-			.setDescription("Comma separated list of additional scopes. For ADFS, add 'allatclaims'.")
-			.setValue(null);
-	
-
-	
 	private CFWField<String> resource = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.RESOURCE)
 			.setDescription("(Optional)The value for the resource parameter used for client credential grant flow.")
 			.setValue("");
+	
+	private CFWField<String> additionalScope = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.ADDITIONAL_SCOPE)
+			.setDescription("Comma separated list of additional scopes. For ADFS, add 'allatclaims'.")
+			.setValue(null);
 	
 	private CFWField<LinkedHashMap<String, String>> customParams = CFWField.newValueLabel(SSOOpenIDConnectProviderFields.JSON_CUSTOM_PARAMETERS)
 			.setLabel("Custom Parameters")
@@ -112,8 +110,8 @@ public class SSOOpenIDConnectProvider extends AbstractContextSettings {
 				, wellknownPath
 				, clientID
 				//, clientSecret
-				, additionalScope
 				, resource
+				, additionalScope
 				, customParams
 			);
 	}

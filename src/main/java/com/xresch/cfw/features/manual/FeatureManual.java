@@ -108,6 +108,11 @@ public class FeatureManual extends CFWAppFeature {
 				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".admin", "manual_admin_configuration.html")
 		);
 		
+		TOP_PAGE_ADMIN.addChild(new ManualPage("Single Sign On(SSO)")
+				.faicon("fas fa-user")
+				.addPermission(PERMISSION_ADMIN_MANUAL)
+				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".admin", "manual_admin_singlesignon.html")
+				);
 		
 		TOP_PAGE_ADMIN.addChild(new ManualPage("User Management")
 				.faicon("fas fa-users")
