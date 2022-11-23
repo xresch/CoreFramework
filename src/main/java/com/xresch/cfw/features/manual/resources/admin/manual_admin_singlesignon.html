@@ -1,15 +1,17 @@
 
 <h3>OpenID Connect Provider</h3>
-<p>The implementation uses Authorization Code Grant Flow with PKCE. A public client has to be used when setting up the provider.</p>
+<p>The implementation uses Authorization Code Grant Flow with PKCE. A public client has to be used when setting up the provider.
+The redirect URL of your application is https://&lt;yourserver:port&gt;/sso/callback/openidconnect.</p>
+
 
 <h4>OpenID Connect with ADFS</h4>
-<p>To setup SSO with ADFS do the following. Some ADFS setups are known to return "invalid_grant" errors.   
+<p>To setup SSO with ADFS do the following. Some ADFS setups are known to return &quot;invalid_grant&quot; errors.   
 If this is the case for you, try using another SSO connection like SAML.
 </p>
 <ol>
-	<li><strong>Open ADFS:&nbsp;</strong>Connect to you ADFS Server and open the AD FS Management Tool.</li>
+	<li><strong>Open ADFS:&nbsp;</strong>Connect to your ADFS Server and open the AD FS Management Tool.</li>
 	<li><strong>Add Application Group:&nbsp;</strong>Right Click 'Application Groups' and choose 'Add Application Group...'.</li>
-	<li><strong>Web Access:&nbsp;</strong>Enter a Name and choose "Web Browser accessing a web application". Click Next.</li>
+	<li><strong>Web Access:&nbsp;</strong>Enter a Name and choose &quot;Web Browser accessing a web application&quot;. Click Next.</li>
 	<li><strong>Redirect URI:&nbsp;</strong>Add the redirect URI:
 		<ul>
 			<li><strong>Template:&nbsp;</strong>https://&lt;yourserver:port&gt;/sso/callback/openidconnect</li>
@@ -22,14 +24,14 @@ If this is the case for you, try using another SSO connection like SAML.
 		<ul>
 			<li>Double Click the application group you have created.</li>
 			<li>Double click the web application in the list.</li>
-			<li>Change to the tab "Client Permissions".</li>
+			<li>Change to the tab &quot;Client Permissions&quot;.</li>
 			<li>Select the scopes 'openid, profile, email, allatclaims' and click 'Apply'.</li>
 		</ul>
 	</li>
 	<li><strong>Issuance Transform Rules:&nbsp;</strong>
 		<ul>
-			<li>Change to the tab "Issuance Transform Rules" and click 'Add Rule...'.</li>
-			<li>Choose "Send LDAP Attributes as Claims" and click Next.</li>
+			<li>Change to the tab &quot;Issuance Transform Rules&quot; and click 'Add Rule...'.</li>
+			<li>Choose &quot;Send LDAP Attributes as Claims&quot; and click Next.</li>
 			<li>Add a name, choose the attribute store and add the following mappings:
 				<ul>
 					<li><strong>User-Principal-Name:&nbsp;</strong>upn</li>
@@ -42,18 +44,18 @@ If this is the case for you, try using another SSO connection like SAML.
 			<li>Click 'Finish'.</li>
 		</ul>
 	</li>
-	<li><strong>Open EMP:&nbsp;</strong>Open EMP and go to "Menu &gt;&gt; Admin &gt;&gt; Context Settings".</li>
-	<li><strong>Add Provider:&nbsp;</strong>Click on "Add >> OpenID Connect Provider" to add a new provider.</li>
+	<li><strong>Open EMP:&nbsp;</strong>Open EMP and go to &quot;Menu &gt;&gt; Admin &gt;&gt; Context Settings&quot;.</li>
+	<li><strong>Add Provider:&nbsp;</strong>Click on &quot;Add &gt;&gt; OpenID Connect Provider&quot; to add a new provider.</li>
 	<li><strong>Required Settings for the Provider:&nbsp;</strong>
 		<ul>
 			<li><strong>Name:&nbsp;</strong>Name for this SSO Connection. Will be added as a button in the login page.</li>
 			<li><strong>Well Known Path:&nbsp;</strong>URL to the well-known config of your server.(e.g. https://acme.youradfsserver.com/adfs/.well-known/openid-configuration)</li>
 			<li><strong>Client ID:&nbsp;</strong>The Client ID that you copied in a previous step. You can retrieve this from the properties of your application.</li>
-			<li><strong>Resource:&nbsp;</strong>By default this is also the ClientID. You can find this under "Your Application Group >> Web Application >> Identifiers >> Relying Party Identifiers".</li>
-			<li><strong>Additional Scope:&nbsp;</strong> Enter "allatclaims".</li>
+			<li><strong>Resource:&nbsp;</strong>By default this is also the ClientID. You can find this under &quot;Your Application Group &gt;&gt; Web Application &gt;&gt; Identifiers &gt;&gt; Relying Party Identifiers&quot;.</li>
+			<li><strong>Additional Scope:&nbsp;</strong> Enter &quot;allatclaims&quot;.</li>
 		</ul>
 	</li>
-	<li><strong>Finish Setup:&nbsp;</strong>Click on "Add" to add the new provider.</li>
+	<li><strong>Finish Setup:&nbsp;</strong>Click on &quot;Add&quot; to add the new provider.</li>
 	<li><strong>Test:&nbsp;</strong>Open a new incognito window in your browser, open the start page and check if a single-sign-on button is present. Test the login by using the button.</li>
 </ol>
 
