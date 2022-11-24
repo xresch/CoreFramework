@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -18,24 +14,19 @@ import javax.servlet.http.HttpSession;
 
 import com.google.common.base.Strings;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.oauth2.sdk.AccessTokenResponse;
 import com.nimbusds.oauth2.sdk.AuthorizationCode;
 import com.nimbusds.oauth2.sdk.AuthorizationCodeGrant;
-import com.nimbusds.oauth2.sdk.ClientCredentialsGrant;
 import com.nimbusds.oauth2.sdk.ErrorObject;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.SerializeException;
 import com.nimbusds.oauth2.sdk.TokenErrorResponse;
 import com.nimbusds.oauth2.sdk.TokenRequest;
 import com.nimbusds.oauth2.sdk.TokenResponse;
-import com.nimbusds.oauth2.sdk.auth.ClientSecretPost;
-import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.pkce.CodeVerifier;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
-import com.nimbusds.oauth2.sdk.token.Tokens;
 import com.nimbusds.openid.connect.sdk.AuthenticationErrorResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponseParser;
@@ -51,6 +42,8 @@ import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.auth.LoginUtils;
+import com.xresch.cfw.features.core.auth.SSOProviderSettings;
+import com.xresch.cfw.features.core.auth.SSOProviderSettingsManagement;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
@@ -142,7 +135,10 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			//------------------------------------
 			// Retrieve Authentication Code
 			
-			SSOOpenIDConnectProvider provider = SSOOpenIDConnectProviderManagement.getEnvironment(Integer.parseInt(providerIDString));
+			SSOProviderSettings providerSettings = SSOProviderSettingsManagement.getEnvironment(Integer.parseInt(providerIDString));
+			
+			SSOOpenIDConnectProvider provider = (SSOOpenIDConnectProvider)providerSettings;
+
 			OIDCProviderMetadata providerMetadata = provider.getProviderMetadata();
 			
 			AuthenticationSuccessResponse successResponse = (AuthenticationSuccessResponse) authResponse;

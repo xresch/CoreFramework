@@ -13,7 +13,6 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWContextRequest;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.core.auth.openid.SSOOpenIDConnectProvider;
-import com.xresch.cfw.features.core.auth.openid.SSOOpenIDConnectProviderManagement;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
@@ -54,11 +53,11 @@ public class ServletLogin extends HttpServlet
 		
 		//------------------------------------
 		// Add SSO Options
-		if(SSOOpenIDConnectProviderManagement.hasValidEnvironment()) {
+		if(SSOProviderSettingsManagement.hasValidEnvironment()) {
 			String notSanitizedURL = request.getParameter("url");
 			
 			String ssoHTML = "<p class=\"text-center mt-4 mb-1\">Single Sign On</p>"
-					+ SSOOpenIDConnectProviderManagement.getHTMLButtonsForLoginPage(notSanitizedURL);
+					+ SSOProviderSettingsManagement.getHTMLButtonsForLoginPage(notSanitizedURL);
 			loginHTML = loginHTML.replace("$$sso_placeholder$$", ssoHTML);
 		}else {
 			loginHTML = loginHTML.replace("$$sso_placeholder$$", "");
@@ -77,7 +76,7 @@ public class ServletLogin extends HttpServlet
 	 ******************************************************************/
 	protected void doSSORedirect( HttpServletRequest request, HttpServletResponse response, String ssoid ) {
 				
-		SSOOpenIDConnectProvider providerSettings = SSOOpenIDConnectProviderManagement.getEnvironment(Integer.parseInt(ssoid));
+		SSOProviderSettings providerSettings = SSOProviderSettingsManagement.getEnvironment(Integer.parseInt(ssoid));
 		String targetURL = request.getParameter("url");
 		
 		CFW.HTTP.redirectToURL(response, providerSettings.createRedirectURI(request, targetURL).toString());

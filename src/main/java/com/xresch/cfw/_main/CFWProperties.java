@@ -210,7 +210,6 @@ public class CFWProperties {
 		CFWProperties.configProperties.load(new FileReader(new File(configFilePath)));
 		logConfiguration();
 		
-		
 		APPLICATION_ID					= CFWProperties.configAsString("cfw_application_id", APPLICATION_ID);
 		APPLICATION_NAME				= CFWProperties.configAsString("cfw_application_name", APPLICATION_NAME);
 		APPLICATION_MAX_UPLOADSIZE		= CFWProperties.configAsInt("cfw_application_max_uploadsize", APPLICATION_MAX_UPLOADSIZE);

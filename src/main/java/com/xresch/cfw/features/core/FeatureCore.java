@@ -13,11 +13,11 @@ import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.core.auth.SSOProviderSettingsManagement;
 import com.xresch.cfw.features.core.auth.ServletChangePassword;
 import com.xresch.cfw.features.core.auth.ServletLogin;
 import com.xresch.cfw.features.core.auth.ServletLogout;
 import com.xresch.cfw.features.core.auth.openid.SSOOpenIDConnectProvider;
-import com.xresch.cfw.features.core.auth.openid.SSOOpenIDConnectProviderManagement;
 import com.xresch.cfw.features.core.auth.openid.ServletSSOOpenIDCallback;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2AssertionConsumerService;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2Login;
@@ -98,6 +98,7 @@ public class FeatureCore extends CFWAppFeature {
 		//----------------------------------
 		// Register Context Settings
 		CFW.Registry.ContextSettings.register(SSOOpenIDConnectProvider.SETTINGS_TYPE, SSOOpenIDConnectProvider.class);
+		SSOProviderSettingsManagement.register(SSOOpenIDConnectProvider.class);
     
     	//----------------------------------
     	// Register Admin Menu
@@ -176,7 +177,7 @@ public class FeatureCore extends CFWAppFeature {
 		
 		//-----------------------------------------
 		// Initialize SSO Providers
-		SSOOpenIDConnectProviderManagement.initialize();
+		SSOProviderSettingsManagement.initialize();
 		
 		//-----------------------------------------
 		// Authentication Servlets

@@ -87,8 +87,6 @@ public class CFWRegistryComponents {
 		return assemblyGlobalJavascript;
 	}
 	
-	
-	
 	/***********************************************************************
 	 * Adds a menuItem to the regular menu.
 	 * Define the position of in the menu with the menuPath parameter. Use
@@ -148,8 +146,6 @@ public class CFWRegistryComponents {
 		}
 		addMenuItem(adminMenuItemsCFW, itemToAdd, menuPath);
 	}
-	
-	
 	
 	
 	/***********************************************************************
