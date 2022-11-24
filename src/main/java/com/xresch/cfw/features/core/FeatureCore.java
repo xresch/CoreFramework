@@ -13,15 +13,15 @@ import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfiguration;
-import com.xresch.cfw.features.core.auth.SSOOpenIDConnectProvider;
-import com.xresch.cfw.features.core.auth.SSOOpenIDConnectProviderManagement;
 import com.xresch.cfw.features.core.auth.ServletChangePassword;
 import com.xresch.cfw.features.core.auth.ServletLogin;
 import com.xresch.cfw.features.core.auth.ServletLogout;
-import com.xresch.cfw.features.core.auth.ServletSAML2AssertionConsumerService;
-import com.xresch.cfw.features.core.auth.ServletSAML2Login;
-import com.xresch.cfw.features.core.auth.ServletSAML2Metadata;
-import com.xresch.cfw.features.core.auth.ServletSSOOpenIDCallback;
+import com.xresch.cfw.features.core.auth.openid.SSOOpenIDConnectProvider;
+import com.xresch.cfw.features.core.auth.openid.SSOOpenIDConnectProviderManagement;
+import com.xresch.cfw.features.core.auth.openid.ServletSSOOpenIDCallback;
+import com.xresch.cfw.features.core.auth.saml.ServletSAML2AssertionConsumerService;
+import com.xresch.cfw.features.core.auth.saml.ServletSAML2Login;
+import com.xresch.cfw.features.core.auth.saml.ServletSAML2Metadata;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.logging.CFWAuditLog;
@@ -192,7 +192,7 @@ public class FeatureCore extends CFWAppFeature {
 	        	app.addUnsecureServlet(ServletSAML2AssertionConsumerService.class,	"/cfw/saml2/acs");
 	        }
 	    }
-	  
+	    
 		//-----------------------------------------
 		// User Profile Servlets
 	    app.addAppServlet(ServletChangePassword.class,  "/changepassword");

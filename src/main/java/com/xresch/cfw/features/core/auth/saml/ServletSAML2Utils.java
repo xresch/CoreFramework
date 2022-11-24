@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.core.auth;
+package com.xresch.cfw.features.core.auth.saml;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,6 +32,7 @@ public class ServletSAML2Utils
 		//------------------------------------
 		// Create Auth and Login
 		SettingsBuilder builder = new SettingsBuilder();
+		
 		Properties props = new Properties();
 		
 		try(FileInputStream configStream = new FileInputStream(CFW.Properties.AUTHENTICATION_SAML2_CONFIGFILE)){

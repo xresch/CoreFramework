@@ -1,4 +1,5 @@
 
+
 <h3>OpenID Connect Provider</h3>
 <p>The implementation uses Authorization Code Grant Flow with PKCE. A public client has to be used when setting up the provider.
 The redirect URL of your application is https://&lt;yourserver:port&gt;/sso/callback/openidconnect.</p>
@@ -59,6 +60,13 @@ If this is the case for you, try using another SSO connection like SAML.
 	<li><strong>Test:&nbsp;</strong>Open a new incognito window in your browser, open the start page and check if a single-sign-on button is present. Test the login by using the button.</li>
 </ol>
 
+<!-- 
+ADFS with SAML
 
+<ol>
+	<li><strong>Enable SAML:&nbsp;</strong>in "{APP_HOME}/config/cfw.properties" set the property "cfw_authentication_saml2_enabled=true".</li>
+	<li><strong>Config File:&nbsp;</strong></li>
+</ol>
+-->
 
 

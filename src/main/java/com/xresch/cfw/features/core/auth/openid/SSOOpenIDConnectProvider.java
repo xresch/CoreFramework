@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.core.auth;
+package com.xresch.cfw.features.core.auth.openid;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.core.auth;
+package com.xresch.cfw.features.core.auth.openid;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -50,6 +50,7 @@ import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.core.auth.LoginUtils;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;

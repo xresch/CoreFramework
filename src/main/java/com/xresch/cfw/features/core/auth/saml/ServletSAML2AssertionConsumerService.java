@@ -1,11 +1,8 @@
-package com.xresch.cfw.features.core.auth;
+package com.xresch.cfw.features.core.auth.saml;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -17,9 +14,9 @@ import com.onelogin.saml2.Auth;
 import com.onelogin.saml2.exception.SettingsException;
 import com.onelogin.saml2.servlet.ServletUtils;
 import com.onelogin.saml2.settings.Saml2Settings;
-import com.onelogin.saml2.settings.SettingsBuilder;
 import com.onelogin.saml2.util.Constants;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.core.auth.LoginUtils;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 

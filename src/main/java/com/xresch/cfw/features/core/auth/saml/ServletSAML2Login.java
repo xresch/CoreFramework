@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.core.auth;
+package com.xresch.cfw.features.core.auth.saml;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -55,7 +55,7 @@ public class ServletSAML2Login extends HttpServlet
 			}else {
 				auth.login(CFW.Context.App.getApp().getDefaultURL());
 			}
-			//auth.login(request.getContextPath() + "/redirect_servlet");
+
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

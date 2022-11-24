@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.core.auth;
+package com.xresch.cfw.features.core.auth.openid;
 
 import java.util.ArrayList;
 import java.util.HashMap;

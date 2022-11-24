@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.core.auth;
+package com.xresch.cfw.features.core.auth.saml;
 
 import java.io.IOException;
 import java.util.List;
