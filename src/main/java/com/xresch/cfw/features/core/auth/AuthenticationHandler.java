@@ -1,4 +1,4 @@
-package com.xresch.cfw.handler;
+package com.xresch.cfw.features.core.auth;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -45,7 +45,7 @@ public class AuthenticationHandler extends HandlerWrapper
                                                       ServletException
     {
 		//##################################
-    	// Handle unsecured servlets
+    	// Handle Disabled Authentication
     	//##################################
     	if(!CFWProperties.AUTHENTICATION_ENABLED) {
     		loginAsAnonymous(target, baseRequest, request, response);

@@ -58,54 +58,6 @@ cfw_job_threads=25
 </code></pre>
 
 
-<h2>Configure Authentication</h2>
-<p>
-The authentication settings can be found in the cfw.properties file.
-Here you can choose between authentication methods like CSV, DB and LDAP.
-</p>
-<pre><code># Choose if you want to prompt for login
-cfw_authentication_enabled=true
-
-# Choose authentication method and set the respective settings
-#   - "CSV":  Use the "username;password" credentials from a file
-#   - "LDAP": Authenticate against a directory
-#   - "DB": Authenticate against the internal database
-authentication_method=DB
-
-# ===== CSV Settings =====
-# The file containing "username;password" credentials
-authentication_csv_file=./config/credentials.csv
-
-
-# ===== LDAP Settings =====
-# The URL with port of the LDAP which should be used for authentication
-authentication_ldap_url=ldap://localhost:10389
-
-# Define if the LDAP connection should be done using ssl
-authentication_ldap_ssl_enabled=false
-
-# The DN of the ldap account used to query the directory
-authentication_ldap_user=uid=admin,ou=system
-
-#The password for above user
-authentication_ldap_password=secret
-
-# The DN of the ldap entry where the users are stored in
-authentication_ldap_searchbase=ou=users,dc=example,dc=com
-
-# The name of the attribute storing the username used for authentication
-authentication_ldap_attribute_username=userid
-
-# The name of the attribute storing the mail of the user
-authentication_ldap_attribute_mail=mail
-
-# The name of the attribute storing the firstname of the user
-authentication_ldap_attribute_firstname=givenName
-
-# The name of the attribute storing the lastname of the user
-authentication_ldap_attribute_lastname=sn</code></pre>
-
-
 <h2>Configure Mailing</h2>
 <p>
 The mailing settings can be found in the cfw.properties file.
@@ -130,7 +82,6 @@ cfw_mail_smtp_login_password=TestPW1234
 # The eMails used as the from-addresses
 cfw_mail_smtp_frommail_reply=contact@acme-test.io
 cfw_mail_smtp_frommail_noreply=no-reply@acme-test.io</code></pre>
-
 
 
 <h2>Configure Database </h2>

@@ -102,7 +102,13 @@
 		    <version>9.37.2</version>
 		</dependency>
 		
-
+		<!-- https://mvnrepository.com/artifact/com.microsoft.azure/msal4j -->
+<!-- 		<dependency>
+		    <groupId>com.microsoft.azure</groupId>
+		    <artifactId>msal4j</artifactId>
+		    <version>1.13.3</version>
+		</dependency> -->
+		
 		<!-- https://mvnrepository.com/artifact/javax.mail/mail -->
 		<dependency>
 			<groupId>javax.mail</groupId>

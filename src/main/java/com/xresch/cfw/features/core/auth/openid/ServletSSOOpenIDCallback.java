@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -101,25 +105,25 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			// Get SSO State
 			HttpSession session = request.getSession();
 			
-			Object ssoStateObject = session.getAttribute(SSOOpenIDConnectProvider.PROPERTY_SSO_STATE);
+			Object ssoStateObject = session.getAttribute(SSOProviderSettingsOpenID.PROPERTY_SSO_STATE);
 			String ssoStateString = null;
 			if(ssoStateObject instanceof String) { ssoStateString = (String)ssoStateObject; }
 			
 			//------------------------------------
 			// Get SSO Provider ID
-			Object ssoProviderIDObject = session.getAttribute(SSOOpenIDConnectProvider.PROPERTY_SSO_PROVIDER_ID);
+			Object ssoProviderIDObject = session.getAttribute(SSOProviderSettings.PROPERTY_SSO_PROVIDER_ID);
 			String providerIDString = null;
 			if(ssoProviderIDObject instanceof String) { providerIDString = (String)ssoProviderIDObject; }
 			
 			//------------------------------------
 			// Get SSO Target URL 
-			Object ssoTargetURLObject = session.getAttribute(SSOOpenIDConnectProvider.PROPERTY_SSO_TARGET_URL);
+			Object ssoTargetURLObject = session.getAttribute(SSOProviderSettingsOpenID.PROPERTY_SSO_TARGET_URL);
 			String targetURL = null;
 			if(ssoTargetURLObject instanceof String) { targetURL = (String)ssoTargetURLObject; }
 			
 			//------------------------------------
 			// Get SSO CodeVerifier
-			Object ssoCodeVerifierObject = session.getAttribute(SSOOpenIDConnectProvider.PROPERTY_SSO_CODE_VERIFIER);
+			Object ssoCodeVerifierObject = session.getAttribute(SSOProviderSettingsOpenID.PROPERTY_SSO_CODE_VERIFIER);
 			CodeVerifier codeVerifier = null;
 			if(ssoCodeVerifierObject instanceof CodeVerifier) { codeVerifier = (CodeVerifier)ssoCodeVerifierObject; }
 			
@@ -137,7 +141,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			
 			SSOProviderSettings providerSettings = SSOProviderSettingsManagement.getEnvironment(Integer.parseInt(providerIDString));
 			
-			SSOOpenIDConnectProvider provider = (SSOOpenIDConnectProvider)providerSettings;
+			SSOProviderSettingsOpenID provider = (SSOProviderSettingsOpenID)providerSettings;
 
 			OIDCProviderMetadata providerMetadata = provider.getProviderMetadata();
 			
@@ -149,8 +153,10 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			new CFWLog(logger).finer("SSO ID Token:"+successResponse.getIDToken());
 			new CFWLog(logger).finer("SSO Issuer:"+successResponse.getIssuer());
 			new CFWLog(logger).finer("SSO Redirection URL:"+successResponse.getRedirectionURI());
+			new CFWLog(logger).finer("Provider Redirection URL:"+provider.createRedirectURI(request, targetURL));
 			
 			URI redirectURI = successResponse.getRedirectionURI();
+			
 			
 			//------------------------------------
 			// Retrieve Tokens, UserInfo and do Login
@@ -183,7 +189,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 	 * @throws MalformedURLException 
 	 ******************************************************************/
 	protected OIDCTokenResponse fetchTokenResponse(
-			SSOOpenIDConnectProvider provider
+			SSOProviderSettingsOpenID provider
 			, AuthorizationCode code
 			, CodeVerifier codeVerifier
 			, URI redirectURI ) 
@@ -193,21 +199,15 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 		//-------------------------------
 		// Get Provider Info
 		String grantType = provider.grantType();
-		//String resource = provider.resource();
-		
-		//String secretString = provider.clientSecret();
-//		if(secretString == null) {
-//			secretString = "";
-//		}
-//		Secret clientSecret = new Secret(secretString);
-		
+		String resource = provider.resource();
+				
 		//-------------------------------
 		// Prepare Token Request
 		OIDCProviderMetadata providerMetadata = provider.getProviderMetadata();
 		ClientID clientID = new ClientID(provider.clientID());
 
 		TokenRequest tokenReq;
-		if(grantType.equals(SSOOpenIDConnectProvider.GRANTTYPE_AUTHORIZATION_CODE) ) {
+		if(grantType.equals(SSOProviderSettingsOpenID.GRANTTYPE_AUTHORIZATION_CODE) ) {
 			tokenReq = 
 					new TokenRequest(
 							providerMetadata.getTokenEndpointURI(),

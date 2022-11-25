@@ -1,5 +1,48 @@
 
 
+<h3>Admin Default Credentials</h3>
+<p> The default credentials of the application are username "admin" with password "admin". To have a secure application, you need to change the default password.</p>
+
+
+<h3>Disabled Authentication - Use Anonymous</h3>
+<p>You can operate the application without any login and disable authentication entirely. 
+Everyone accessing the application will operate as the user "anonymous", which is by default a Superuser that can do anything.
+This can be useful as a playground setup.
+Set the following property to false in /config/cfw.properties:</p>
+<pre><code>cfw_authentication_enabled=false</code></pre>
+
+
+<h3>Database Authentication</h3>
+<p>Database authentication is the default authentication of the application and is also used as fallback for other authentication methods like CSV or LDAP.
+Users can be created by admin users in the application that are stored in the database. 
+As the credentials of those users are stored in the DB, they will always be able to login even when foreign authentication is unavailable(CSV, LDAP, SSO ...).
+This setup is useful if you just want to run the application without the effort of installing other software(like an Active Directory).
+It is also useful to create system accounts.
+Set the following property to "DB" in /config/cfw.properties:</p>
+<pre><code>authentication_method=DB</code></pre>
+<p><b>Note:</b> Users from other sources(CSV, LDAP, SSO...) are still created in the database with the property "is Foreign = true".
+They show up in the database but will not be able to authenticate against the DB.</p>
+
+
+<h3>CSV Authentication</h3>
+<p>You can define username/password combinations in the file /config/credentials.csv, which can then be used to login into the application.
+This can be useful for demo purposes. The users will be added to the Database and can be further edited with the admin user.
+Set the following property to "CSV" in /config/cfw.properties:</p>
+<pre><code>authentication_method=CSV</code></pre>
+<p><b>Note:</b> The database will still be used as fallback. If a user is not found in the CSV file, the application will check for the username or email in the database.
+If there is a matching user, the login will check the credentials stored in the database.(passwords from CSV file are not stored in DB)</p>
+
+
+<h3>LDAP Authentication</h3>
+<p>LDAP Authentication allows you to connect your application to an Active Directory and let your users authenticate with they AD credentials.
+Set the following properties in /config/cfw.properties:</p>
+<pre><code>authentication_method=LDAP
+#Adjust the properties starting with 'authentication_ldap_*' to fit your needs
+authentication_ldap_*</code></pre>
+<p><b>Note:</b> The database will still be used as fallback. If a user is not found in the CSV file, the application will check for the username or email in the database.
+If there is a matching user, the login will check the credentials stored in the database.(passwords from LDAP are not stored in DB)</p>
+
+
 <h3>OpenID Connect Provider</h3>
 <p>The implementation uses Authorization Code Grant Flow with PKCE. A public client has to be used when setting up the provider.
 The redirect URL of your application is https://&lt;yourserver:port&gt;/sso/callback/openidconnect.</p>

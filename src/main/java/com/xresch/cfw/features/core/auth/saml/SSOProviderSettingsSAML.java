@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.core.auth.openid;
+package com.xresch.cfw.features.core.auth.saml;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ import com.xresch.cfw.logging.CFWLog;
  * @author Reto Scheiwiller, (c) Copyright 2022 
  * @license MIT-License
  **************************************************************************************************************/
-public class SSOOpenIDConnectProvider extends SSOProviderSettings {
+public class SSOProviderSettingsSAML extends SSOProviderSettings {
 	
 	//public static final String GRANTTYPE_CLIENT_CREDENTIALS = "client_credentials";
 	public static final String GRANTTYPE_AUTHORIZATION_CODE = "authorization_code";
@@ -47,9 +47,9 @@ public class SSOOpenIDConnectProvider extends SSOProviderSettings {
 	public static final String PROPERTY_SSO_PROVIDER_ID = "ssoProviderID";
 	public static final String PROPERTY_SSO_TARGET_URL = "ssopTargetURL";
 
-	private static Logger logger = CFWLog.getLogger(SSOOpenIDConnectProvider.class.getName());
+	private static Logger logger = CFWLog.getLogger(SSOProviderSettingsSAML.class.getName());
 	
-	public static final String SETTINGS_TYPE = "OpenID Connect Provider";
+	public static final String SETTINGS_TYPE = "SSO SAML";
 	
 	private static Scope SCOPE = null;
 	//public static final Scope DEFAULT_SCOPE = new Scope("openid", "allatclaims");
@@ -99,7 +99,7 @@ public class SSOOpenIDConnectProvider extends SSOProviderSettings {
 	
 	private OIDCProviderMetadata providerMetadata = null;
 	
-	public SSOOpenIDConnectProvider() {
+	public SSOProviderSettingsSAML() {
 		initializeFields();
 	}
 		
@@ -245,7 +245,7 @@ public class SSOOpenIDConnectProvider extends SSOProviderSettings {
 		return wellknownPath.getValue();
 	}
 	
-	public SSOOpenIDConnectProvider wellknownURL(String value) {
+	public SSOProviderSettingsSAML wellknownURL(String value) {
 		this.wellknownPath.setValue(value);
 		return this;
 	}
@@ -254,7 +254,7 @@ public class SSOOpenIDConnectProvider extends SSOProviderSettings {
 		return clientID.getValue();
 	}
 	
-	public SSOOpenIDConnectProvider clientID(String value) {
+	public SSOProviderSettingsSAML clientID(String value) {
 		this.clientID.setValue(value);
 		return this;
 	}
@@ -272,7 +272,7 @@ public class SSOOpenIDConnectProvider extends SSOProviderSettings {
 		return grantType.getValue();
 	}
 	
-	public SSOOpenIDConnectProvider grantType(String value) {
+	public SSOProviderSettingsSAML grantType(String value) {
 		this.grantType.setValue(value);
 		return this;
 	}
@@ -281,7 +281,7 @@ public class SSOOpenIDConnectProvider extends SSOProviderSettings {
 		return resource.getValue();
 	}
 	
-	public SSOOpenIDConnectProvider resource(String value) {
+	public SSOProviderSettingsSAML resource(String value) {
 		this.resource.setValue(value);
 		return this;
 	}
@@ -290,7 +290,7 @@ public class SSOOpenIDConnectProvider extends SSOProviderSettings {
 		return customParams.getValue();
 	}
 	
-	public SSOOpenIDConnectProvider customParams(LinkedHashMap<String, String> value) {
+	public SSOProviderSettingsSAML customParams(LinkedHashMap<String, String> value) {
 		this.customParams.setValue(value);
 		return this;
 	}
