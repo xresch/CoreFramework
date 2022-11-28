@@ -151,6 +151,7 @@ DONE
 - Query: Loader does not block query editor
 - Query: URL is updated on each execution, even if the query fails
 - Query: Added sources:
+	- empty
 	- web 
 - Query: Added functions: 
 	- decode

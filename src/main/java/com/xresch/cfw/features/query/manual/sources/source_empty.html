@@ -1,0 +1,17 @@
+
+<p>The empty source creates empty records that you can fill with data yourself. Useful for demo purposes or creating your own labels in combination with the query widget.</p>
+
+<p>The following query creates 1 empty record:</p>
+<pre><code class="language-cfwquery">source empty</code></pre>
+
+
+<p>Example on how to create 88 records and fill them with data:</p>
+<pre><code class="language-cfwquery">| source empty records=88
+| set 
+	# add your own Values
+	INDEX=count()
+	MESSAGE="Hello World! #happyplanet #eattiramisu"
+	ENCODED=encode(MESSAGE)
+	LINK="https://cfw.message.sample/query?id="+INDEX+"&message="+ENCODED</code></pre>
+
+

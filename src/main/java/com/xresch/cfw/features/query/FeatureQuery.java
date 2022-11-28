@@ -56,6 +56,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionSum;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTrim;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceApplog;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceAuditlog;
+import com.xresch.cfw.features.query.sources.CFWQuerySourceEmpty;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceRandom;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceThreaddump;
@@ -164,6 +165,7 @@ public class FeatureQuery extends CFWAppFeature {
 		// Register Sources
 		CFW.Registry.Query.registerSource(new CFWQuerySourceApplog(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceAuditlog(null));
+		CFW.Registry.Query.registerSource(new CFWQuerySourceEmpty(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceJson(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceRandom(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceThreaddump(null));
