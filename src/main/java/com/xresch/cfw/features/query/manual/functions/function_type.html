@@ -1,0 +1,16 @@
+
+<p>Returns the type of a value. This is especially useful to validate if a value is an actual object or an object array. 
+JSON strings can be converted into objects and arrays using the tojson()-function.</p>
+
+<p>Following code will return the types for the given values:</p>
+
+<pre><code class="language-cfwquery">| source empty records=44
+| set 
+	NULLS_A=type()
+	NULLS_B=type(null)
+	BOOLEAN=type(true)
+	NUMBER=type(222)
+	STRING=type("string")
+	ARRAY=type([1,3,"bla", false])
+	OBJECT=type({number: 1, text: "bla", bool: true })</code></pre>
+
