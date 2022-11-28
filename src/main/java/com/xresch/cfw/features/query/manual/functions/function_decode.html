@@ -1,0 +1,18 @@
+
+<p>This function allows you to decode URL strings so they are easier to read for regular and non-regular humans.</p>
+
+<p>Following code will create random series data and creates encoded and decoded values:</p>
+
+<pre><code class="language-cfwquery">| source random records=100 type=series
+| set 
+	# encode a string
+	ENCODED=encode(WAREHOUSE)
+	DECODED=decode(ENCODED)
+	# encode in URL concatenation
+	LINK="https://cfw.fruittest.sample/query?id="+COUNT+"&warehouse="+encode(WAREHOUSE)+"&item="+encode(ITEM)
+	# assign value of LINK to another field BUTTON
+	BUTTON=LINK
+| formatfield
+	# create a button from the link
+	BUTTON=['link', "Click!"]</code></pre>
+

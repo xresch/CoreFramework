@@ -11,6 +11,7 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -65,6 +66,16 @@ public class CFWHttp {
 		);
 	private static CFWHttp instance = new CFWHttp();
 	
+
+	private static final Counter outgoingHTTPCallsCounter = Counter.build()
+	         .name("cfw_http_outgoing_calls_total")
+	         .help("Number of outgoing HTTP calls executed with the CFWHTTP utils.")
+	         .labelNames("method")
+	         .register();
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
 	public static String encode(String toEncode) {
 		
 		if(toEncode == null) {
@@ -80,11 +91,24 @@ public class CFWHttp {
 		return toEncode;
 	}
 	
-	private static final Counter outgoingHTTPCallsCounter = Counter.build()
-	         .name("cfw_http_outgoing_calls_total")
-	         .help("Number of outgoing HTTP calls executed with the CFWHTTP utils.")
-	         .labelNames("method")
-	         .register();
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	public static String decode(String toDecode) {
+		
+		if(toDecode == null) {
+			return null;
+		}
+		try {
+			return URLDecoder.decode(toDecode, StandardCharsets.UTF_8.toString());
+		} catch (UnsupportedEncodingException e) {
+			new CFWLog(logger)
+				.severe("Exception while decoding: "+e.getMessage(), e);	
+		}
+		
+		return toDecode;
+	}
+	
 	
 	/******************************************************************************************************
 	 * Returns an encoded parameter string with leading '&'.

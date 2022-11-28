@@ -153,6 +153,7 @@ DONE
 - Query: Added sources:
 	- web 
 - Query: Added functions: 
+	- decode
 	- now
 	- replace
 	- unbox
