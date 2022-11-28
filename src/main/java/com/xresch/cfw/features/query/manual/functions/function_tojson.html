@@ -1,0 +1,14 @@
+
+<p>Converts a string value, which is a json object or array, into an object. This is needed if the value should be unboxed.</p>
+
+<p>Following code will create example values and converts them into objects, then unboxes them:</p>
+
+<pre><code class="language-cfwquery">| source empty records=44
+| set 
+	# add your own Values
+	MESSAGE='{index: '+count()+', message:"Hello World"}'
+	ARRAY='[1,2,3, "a", "b", "c", true, false]'
+	OBJECT_MESSAGE=tojson(MESSAGE)
+	OBJECT_ARRAY=tojson(ARRAY)
+| unbox OBJECT_MESSAGE, OBJECT_ARRAY</code></pre>
+

@@ -256,6 +256,7 @@ To unbox the data objects in such a structure you would need to call unbox twice
 		</tr>
 	</tbody>
 </table>
+
 <!-- ============================================================== -->
 <!-- ============================================================== -->
 <!-- ============================================================== -->
@@ -386,3 +387,22 @@ To unbox the data objects in such a structure you would need to call unbox twice
 		</tr>
 	</tbody>
 </table>
+
+
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+<!-- ============================================================== -->
+
+<h3>Unboxing JSON Strings</h3>
+
+<p>String representation of json elements first have to be converted into objects. 
+Following code will create example values and converts them into objects using tojson(), then unboxes them:</p>
+
+<pre><code class="language-cfwquery">| source empty records=44
+| set 
+	# add your own Values
+	MESSAGE='{index: '+count()+', message:"Hello World"}'
+	ARRAY='[1,2,3, "a", "b", "c", true, false]'
+	OBJECT_MESSAGE=tojson(MESSAGE)
+	OBJECT_ARRAY=tojson(ARRAY)
+| unbox OBJECT_MESSAGE, OBJECT_ARRAY</code></pre>
