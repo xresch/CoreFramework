@@ -120,7 +120,7 @@ public class ServletSAML2AssertionConsumerService extends HttpServlet
 					
 			
 			String redirectTo = request.getParameter("RelayState");
-			System.out.println("redirectTo:"+redirectTo);
+
 			if (redirectTo == null 
 			|| redirectTo.equals("null")
 			|| redirectTo.isEmpty() 
@@ -132,7 +132,7 @@ public class ServletSAML2AssertionConsumerService extends HttpServlet
 			
 	    	//------------------------------
 	    	// Create User in DB if not exists
-			System.out.println("redirectTo:"+redirectTo);
+
 	    	LoginUtils.loginUserAndCreateSession(request, response, user, redirectTo);
 
 		} catch (SettingsException e) {

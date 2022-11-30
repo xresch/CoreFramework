@@ -109,6 +109,14 @@ ADFS with SAML
 <ol>
 	<li><strong>Enable SAML:&nbsp;</strong>in "{APP_HOME}/config/cfw.properties" set the property "cfw_authentication_saml2_enabled=true".</li>
 	<li><strong>Config File:&nbsp;</strong></li>
+	
+	>> keycloak
+		- Client ID must match URL: http://server:port/cfw/saml2/acs/metadata
+		- Signature Algo: RSA_SHA-1
+		- Client Signature Required: Off
+		- Valid Redirect URIs: http://localhost:8888/*
+		- Master SAML Processing URL: http://localhost:8888/cfw/saml2
+		- Scope Tab >> Full Scope Allowed: Off
 </ol>
 -->
 
