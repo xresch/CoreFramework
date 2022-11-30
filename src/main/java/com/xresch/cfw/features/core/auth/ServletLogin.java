@@ -75,11 +75,14 @@ public class ServletLogin extends HttpServlet
 	 *
 	 ******************************************************************/
 	protected void doSSORedirect( HttpServletRequest request, HttpServletResponse response, String ssoid ) {
-				
+		
+
+		request.getSession().setAttribute(SSOProviderSettings.PROPERTY_SSO_PROVIDER_ID, ssoid);
+		
 		SSOProviderSettings providerSettings = SSOProviderSettingsManagement.getEnvironment(Integer.parseInt(ssoid));
 		String targetURL = request.getParameter("url");
 		
-		CFW.HTTP.redirectToURL(response, providerSettings.createRedirectURI(request, targetURL).toString());
+		CFW.HTTP.redirectToURL(response, providerSettings.createRedirectURI(request, response, targetURL).toString());
 		
 	}
 	

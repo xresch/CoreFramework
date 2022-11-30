@@ -2,7 +2,7 @@ package com.xresch.cfw.response.bootstrap;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2021
  * @license MIT-License
  **************************************************************************************************************/
 public class AlertMessage {
@@ -43,5 +43,25 @@ public class AlertMessage {
 		
 		return html.toString();
 	}
+
+	public AlertMessage.MessageType getType() {
+		return type;
+	}
+
+	public AlertMessage setType(AlertMessage.MessageType type) {
+		this.type = type;
+		return this;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public AlertMessage setMessage(String message) {
+		this.message = message;
+		return this;
+	}
+	
+	
 	
 }

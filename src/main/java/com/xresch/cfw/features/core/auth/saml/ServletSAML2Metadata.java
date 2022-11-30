@@ -47,7 +47,7 @@ public class ServletSAML2Metadata extends HttpServlet
 
 			//------------------------------------
 			// Create Auth 
-			Saml2Settings settings = ServletSAML2Utils.getSAMLSettings();
+			Saml2Settings settings = ServletSAML2Utils.getSAMLSettings(request);
 			Auth auth = new Auth(settings, request, response);
 			settings = auth.getSettings();
 			settings.setSPValidationOnly(true);

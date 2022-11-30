@@ -8,9 +8,11 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.common.base.Strings;
@@ -26,6 +28,7 @@ import com.nimbusds.openid.connect.sdk.AuthenticationRequest.Builder;
 import com.nimbusds.openid.connect.sdk.Nonce;
 import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.core.FeatureCore;
@@ -56,18 +59,25 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 	
 	public enum SSOOpenIDConnectProviderFields{
 		PROVIDER_URL,
-		WELL_KNOWN_PATH,
-		CLIENT_ID,
-		CLIENT_SECRET,
+		IDP_METADATA_URL,
+		X509_CERTIFICATE,
+		X509_CERTIFICATE_NEW,
 		ADDITIONAL_SCOPE,
 		GRANT_TYPE,
 		RESOURCE,
 		JSON_CUSTOM_PARAMETERS
 	}
 	
-			
-//	private CFWField<String> providerURL = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.PROVIDER_URL)
-//			.setDescription("The url of the OpenID Connect provider.");
+//	String idpEntityIDURL			= "https://capriza.github.io/samling/public/metadata.xml";
+//	String idpSSOEnpointURL 		= "https://capriza.github.io/samling/samling.html";
+//	String idpSLOEnpointURL 		= "https://capriza.github.io/samling/samling.html";
+//	
+//	String spX509cert				= "574892305643256";
+//	String spX509certNew			= "574892305643256";
+//	String spPrivateKey				= "574892305643256";
+	
+	private CFWField<String> providerURL = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.PROVIDER_URL)
+			.setDescription("The url of the OpenID Connect provider.");
 	
 	private CFWField<String> grantType = CFWField.newString(FormFieldType.SELECT, SSOOpenIDConnectProviderFields.GRANT_TYPE)
 			.setDescription("The grant type used for this client.")
@@ -75,15 +85,13 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 			//.addOption(GRANTTYPE_CLIENT_CREDENTIALS, "Client Credentials")
 			.setValue(GRANTTYPE_AUTHORIZATION_CODE);
 	
-	private CFWField<String> wellknownPath = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.WELL_KNOWN_PATH)
-			.setDescription("The path to the .well-known provider configuration.");
+	private CFWField<String> idpMetadataURL = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.IDP_METADATA_URL)
+			.setDescription("Identifier of the IdP entity  (must be a URI).");
 	
-	private CFWField<String> clientID = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.CLIENT_ID)
+	private CFWField<String> clientID = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.X509_CERTIFICATE)
 			.setDescription("The id used for this client.");
 	
-//	private CFWField<String> clientSecret = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.CLIENT_SECRET)
-//			.setDescription("The secret used for this client.")
-//			.setValue("");
+
 	
 	private CFWField<String> resource = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.RESOURCE)
 			.setDescription("(Optional)The value for the resource parameter used for client credential grant flow.")
@@ -107,7 +115,7 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		this.addFields(
 				//providerURL
 				  grantType
-				, wellknownPath
+				, idpMetadataURL
 				, clientID
 				//, clientSecret
 				, resource
@@ -123,12 +131,15 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 	}
 	
 	public boolean isDefined() {
-		if(wellknownPath.getValue() != null
-		&& clientID.getValue() != null) {
-			return true;
-		}
 		
-		return false;
+		return true;
+		
+//		if(idpMetadataURL.getValue() != null
+//		&& clientID.getValue() != null) {
+//			return true;
+//		}
+		
+//		return false;
 	}
 	
 	/******************************************************************************
@@ -157,78 +168,9 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 	 * @throws  
 	 * 
 	 ******************************************************************************/
-	public URI createRedirectURI(HttpServletRequest request, String targetURL) {
+	public URI createRedirectURI(HttpServletRequest request, HttpServletResponse response, String targetURL) {
 		
-		try {
-			OIDCProviderMetadata providerMetadata = getProviderMetadata();
-			
-			//---------------------------------------
-			// Authentication Request
-			// The client ID provisioned by the OpenID provider when
-			// the client was registered
-			ClientID clientID = new ClientID(this.clientID());
-			
-			URI endpointURI = providerMetadata.getAuthorizationEndpointURI();
-
-			// The client callback URL
-			String serverURL = CFW.HTTP.getServerURL(request);
-			URI callbackURI = new URI(serverURL + FeatureCore.SERVLET_PATH_SSO_OPENID);
-			CodeVerifier codeVerifier = new CodeVerifier();
-			
-			// Generate random state string to securely pair the callback to this request
-			// add to session so it can be retrieved by class ServletSSOOpenIDCallback
-			State state = new State();
-			
-			HttpSession session = request.getSession();
-			
-			session.setAttribute(PROPERTY_SSO_STATE, state.getValue());
-			session.setAttribute(PROPERTY_SSO_CODE_VERIFIER, codeVerifier);
-			session.setAttribute(PROPERTY_SSO_PROVIDER_ID, ""+this.getDefaultObject().id());
-			session.setAttribute(PROPERTY_SSO_TARGET_URL, targetURL);
-			
-			// Generate nonce for the ID token
-			Nonce nonce = new Nonce();
-
-			//-------------------------------------------
-			// Compose the OpenID authentication request 
-			Builder authRequestBuilder = new AuthenticationRequest.Builder(
-			    new ResponseType("code"),
-			    this.getScope(),
-			    clientID,
-			    callbackURI)
-			    .endpointURI(endpointURI)
-			    .state(state)
-			    .nonce(nonce)
-			    .codeChallenge(codeVerifier, CodeChallengeMethod.S256);
-			
-			LinkedHashMap<String, String> params = customParams.getValue();
-			if(params != null && params.size() > 0) {
-				for(Entry<String, String> entry : params.entrySet()) {
-					authRequestBuilder.customParameter(entry.getKey(), entry.getValue());
-				}
-			}
-			
-			AuthenticationRequest authRequest = authRequestBuilder.build();
-			
-			//-------------------------------------------
-			// The URI to send the user-user browser to the OpenID provider
-			// E.g.
-			// https://c2id.com/login?
-			// client_id=123
-			// &response_type=code
-			// &scope=openid
-			// &redirect_uri=https%3A%2F%2Fclient.com%2Fcallback
-			// &state=6SK5S15Lwdp3Pem_55m-ayudGwno0eglKq6ZEWaykG8
-			// &nonce=d_Y4LmbzpNHTkzTKJv6v59-OmqB_F2kNr8CbL-R2xWI
-			//System.out.println(authRequest.toURI());
-			
-			return authRequest.toURI();
-			
-		}catch(Exception e) {
-			new CFWLog(logger).severe("Exception occured while creating redirect to OpenID Connect Provider: "+e.getMessage(), e);
-		} 
-		
-		return null;
+		return URI.create( "/cfw/saml2/login?url="+CFW.HTTP.encode(targetURL) );
 		
 	}
 			
@@ -242,11 +184,11 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 //	}
 	
 	public String wellknownURL() {
-		return wellknownPath.getValue();
+		return idpMetadataURL.getValue();
 	}
 	
 	public SSOProviderSettingsSAML wellknownURL(String value) {
-		this.wellknownPath.setValue(value);
+		this.idpMetadataURL.setValue(value);
 		return this;
 	}
 		
@@ -330,6 +272,207 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 	@Override
 	protected String getSettingsType() {
 		return SETTINGS_TYPE;
+	}
+	
+	
+	/**********************************************************************************
+	 * Returns SAML properties for the onelogin framework
+	 * 
+	 **********************************************************************************/
+	public Properties createSAMLProperties(HttpServletRequest request) {
+		
+		Properties properties = new Properties();
+		
+		//========================================
+		// Specify Dynamic Values
+		String serverURL 				= CFW.HTTP.getServerURL(request);
+		String spEntityID 				= serverURL+"/cfw/saml2/acs/metadata";
+		String spAssertionConsumerService = serverURL+"/cfw/saml2/acs";
+		
+		String idpEntityIDURL			= "http://localhost:8080/realms/myrealm/protocol/saml/descriptor";
+		String idpSSOEnpointURL 		= "http://localhost:8080/realms/myrealm/protocol/saml";
+		String idpSLOEnpointURL 		= "http://localhost:8080/realms/myrealm/protocol/saml";
+		String idpX509Cert 				= "MIICnTCCAYUCBgGBZ5UxFzANBgkqhkiG9w0BAQsFADASMRAwDgYDVQQDDAdteXJlYWxtMB4XDTIyMDYxNTEzMzUzOVoXDTMyMDYxNTEzMzcxOVowEjEQMA4GA1UEAwwHbXlyZWFsbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJdXvIQe5ygZy6PdQzDIfh60c1MwmspRRPM9NUlT3katnzjHOemQDw0cLoPD0YZVmlFadFyOp5+xac8sIsobCgMU4kbeYCuQsSiHf/0cqOjcWn/g3elPKGMsuoNjvm3f+fRru9gZXp5puuUop9eZTbvp6/b6wTjKQbamRMtCq9BVYP3Gs+cPwu9dLD4BegRTniwUIvDEsiU9Xf3yLkF1ZQnIck2+3h8bLzkw9i19mKxRtKsJMcrz0x28xRYrWWEdNfmld6GFKmxejYKM9OLWPdGsnvXicovv1/xAjflgEd+x7pEWVb47cekw1aerJbGwGo3745rdGXAKaVfDd+LyNW0CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAGJS5EqpPhEI46YXovnxtCawj45ti0K2ASeYe5q6I+LbXvXwNgSVof1OKjkNIIorRH1Z67LYPxUR5XK3G9G4GDFNnZjof+6z5bvmragcuGdSE0DPmWL2VYr1XOGFCDNJgyWurLb3zn11I9Ykb5AFU6f9VNQnIz07PR4dpksM9imDLZLvMCoDjdoAGPCu6cXxo0DirNMt00KSX4awEQDzMyQG+4B1xN8k1hF0Wra9JMBosEHX8X49Tsg4164NzUFVHbW1lfFzQ8N761J1uEp4JQx6bpWdmkPPjBuselO60W7lQGQHsvkit6eLi9f1uX2BwPJKzad//WrCwE1Q7LVyjWw==";
+		
+		String spX509cert				= "MIICrzCCAZcCBgGEyMwWgzANBgkqhkiG9w0BAQsFADAbMRkwFwYDVQQDDBBjZndsb2NhbGhvc3RzYW1sMB4XDTIyMTEzMDEzNDcwOVoXDTMyMTEzMDEzNDg0OVowGzEZMBcGA1UEAwwQY2Z3bG9jYWxob3N0c2FtbDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAISJdMmbFauQYPzVF9clqCcei7swYSVQjMrRDCKG1HfgKd+29emUJ+hHslOzowt+fJuW+CJR1ARS1g5Bd79hjRpepSdBrex6AtGX0GKwZu3hTnmDn4+dGgUgvGjOgmsHpkA6Ln/4g6RltPTFHmux1cbtshWktQZ6kc+7fCzHVWKrwnJTo2TqmR7SDV8vseIq3VmVTHqQs44e7UdiwXm3VZt0CWOqVFf/YPxxhqUChYrsrVd40gWeG3JJ0dsIhgRVYzSYd78Wmrz2Hzqr4TAcAPTNyDP9j1FZ8HS7Z/8b7XUFeRVK9Eel1XQvHUQyeFwGj6QhIxqcFzdKOC3g7X33FUMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAUGFl7UKzkJagkQvCwhUfVYPw4zwvdDOgaMYTadPqlTZbWPNKewVIATtL7mHJ5Pu9bITwEC4tQxGa0hoA/OvYF2N6UCW6Xm6gaJxHAK9T3bPSIi1tyQBdpIL8lYTHsmTpUWzEKkmXHRcPrRh3SPeSxjv/CZ5QAWPcHBWEllFFs8mijODKQ+MIxtE4y954HrNBjI9nz9v33BAyAx31H4OKh9jw0jnzpZqQbs9v4NyuDbJBo10nrSgB6OsvwNAMlzWk5Es+3IoRG5JY0rehIqrsJokxmn+dCCdEnua1ojhyl1CJlSjx2YGyRqClasDmw1hKTI8itgIaMErFaYsY+AO/vQ==";
+		String spX509certNew			= spX509cert;
+		String spPrivateKey				= "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCEiXTJmxWrkGD81RfXJagnHou7MGElUIzK0QwihtR34CnftvXplCfoR7JTs6MLfnyblvgiUdQEUtYOQXe/YY0aXqUnQa3segLRl9BisGbt4U55g5+PnRoFILxozoJrB6ZAOi5/+IOkZbT0xR5rsdXG7bIVpLUGepHPu3wsx1Viq8JyU6Nk6pke0g1fL7HiKt1ZlUx6kLOOHu1HYsF5t1WbdAljqlRX/2D8cYalAoWK7K1XeNIFnhtySdHbCIYEVWM0mHe/Fpq89h86q+EwHAD0zcgz/Y9RWfB0u2f/G+11BXkVSvRHpdV0Lx1EMnhcBo+kISManBc3Sjgt4O199xVDAgMBAAECggEATy6YGYKP9cnyR9s/vQgAaC61qIYE4/g1xU4Tg+Utttiz67YxQPWEyh9biOo/tLRC2eneIRLmKhcbT7UJR8uOM3zsCoIQ2MEkQfgDRZLCS8hZy/s5LuHbE8k1ByCphiwxxRl9gnMEowkojTvfKtQ6Nfj4djnK9S3xQzxtuYr1llbOUZuRDmImvCA1GLmLKlVuZp9pzcmI9uG/ZMcp7u/ESW+Gw2FVarvfooBYaRql7CaqI7RDj/l4mZKgvlOmqY2M2oixIZle/KqDPBJlTJNXZE4gU1drypVXb11g0mwDFm70VdvmwFi3HAh/OpGFiCcBLebov2dtmG3IvQVQynLTcQKBgQDLOUW6HGHkmLjYVDouS5hdlv9Odnv5ZiHcNHIy0kXE/bZ8NxjFgSac+N6nIak7Hvsb2vUpPreK/JO6F5FaXB2LwZSFXKISD8p6vArrcnNQ4v44J1IAeSgcUYaDW1ka6I+4djt8mvEyORVqpr0HBT1MyC4j4DOc+iTds1zcy88kFwKBgQCm9MhGMVQJ3BV1lSk+4npUKZdczNY3XJPt5QLYwiKFqckBVyUv7dcJg3MaqXkgHR09/XWvaxVShbjZlAVpNrZNbPASlxx8Su3yrPYhuV2aMd1XXbUSAKIQkqPLVnxyk6o16a/VpCgy5fLGCjYw0kPET7B44/iJGELOq/VB2i+XtQKBgHFTVMC+BxD04U8xWOhsG2FFTMWyaNvgyk0DqhMREvsRCGwoRVYN+Txbw72rlbV0R093QHNpl+yXgMGrVtDuwUMoBeyAhZhQ2farWeOGBSw8CMvDkYTWCzoPdFVX4U6SFWMl+3I27P22u2yn4o1BrLdegexboCyPiXNgDA7MUIytAoGAFUbcvxVKQHdrxLBdsUXrkQ472/e+1Q9XStoEotsayy34D9OrSZBl9zBpWtx+MzmCoIPMm65p6TphdFkI13/Be9yGO9hGKRDjginItEOLSjtQmfG3QbQS80m81g0PjwqChpxhbDifZt0nM1XZ0h75w+rj8oQbCF2vJeeEOgA0UIECgYAHTShM1lhSgiRnCLafgjwB6BlgsRgwbiu+2AbYXRjbfLMjmaDfzFbPBnyb1IamZIVcPZxsG4DZykfiAozXukE8U648t4TsdM+VZmDx5hyLTAYkzILguEHkp98ghoWpuSR8k/g0XOUhscDoSVNx5T5bn7cNSfrU+23ihFqUZvvF9A==";	
+		
+		//  If 'strict' is True, then the Java Toolkit will reject unsigned
+		//  or unencrypted messages if it expects them signed or encrypted
+		//  Also will reject the messages if not strictly follow the SAML
+		properties.put("onelogin.saml2.strict", "false");
+	
+		// Enable debug mode (to print errors)
+		properties.put("onelogin.saml2.debug", "true");
+	
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		//// Service Provider Data that we are deploying 
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+	
+		//  Identifier of the SP entity  (must be a URI)
+		properties.put("onelogin.saml2.sp.entityid", spEntityID);
+	
+		// Specifies info about where and how the <AuthnResponse> message MUST be
+		// returned to the requester, in this case our SP.
+		// URL Location where the <Response> from the IdP will be returned
+		properties.put("onelogin.saml2.sp.assertion_consumer_service.url", spAssertionConsumerService);
+	
+		// SAML protocol binding to be used when returning the <Response>
+		// message.  Onelogin Toolkit supports for this endpoint the
+		// HTTP-POST binding only
+		properties.put("onelogin.saml2.sp.assertion_consumer_service.binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST");
+	
+		// Specifies info about where and how the <Logout Response> message MUST be
+		// returned to the requester, in this case our SP.
+		properties.put("onelogin.saml2.sp.single_logout_service.url", "http://localhost:8080/java-saml-tookit-jspsample/sls.jsp");
+	
+		// SAML protocol binding to be used when returning the <LogoutResponse> or sending the <LogoutRequest>
+		// message.  Onelogin Toolkit supports for this endpoint the
+		// HTTP-Redirect binding only
+		properties.put("onelogin.saml2.sp.single_logout_service.binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect");
+	
+		// Specifies constraints on the name identifier to be used to
+		// represent the requested subject.
+		// Take a look on core/src/main/java/com/onelogin/saml2/util/Constants.java to see the NameIdFormat supported
+		properties.put("onelogin.saml2.sp.nameidformat", "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified");
+
+		// Usually x509cert and privateKey of the SP are provided by files placed at
+		// the certs folder. But we can also provide them with the following parameters
+	
+		properties.put("onelogin.saml2.sp.x509cert", spX509cert);
+		
+		// Future SP certificate, to be used during SP Key roll over
+		properties.put("onelogin.saml2.sp.x509certNew",  spX509certNew);
+		
+		// Requires Format PKCS//8   BEGIN PRIVATE KEY       
+		// If you have     PKCS//1   BEGIN RSA PRIVATE KEY  convert it by openssl pkcs8 -topk8 -inform pem -nocrypt -in sp.rsa_key -outform pem -out sp.pem
+		properties.put("onelogin.saml2.sp.privatekey",  spPrivateKey);
+		
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//// Identity Provider Data that we want connect with our SP ////
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+		// Identifier of the IdP entity  (must be a URI)
+		properties.put("onelogin.saml2.idp.entityid", idpEntityIDURL);
+	
+		// SSO endpoint info of the IdP. (Authentication Request protocol)
+		// URL Target of the IdP where the SP will send the Authentication Request Message
+		// Example: properties.put("onelogin.saml2.idp.single_sign_on_service.url", "http://localhost:8080/java-saml-tookit-jspsample/acs.jsp
+		
+		properties.put("onelogin.saml2.idp.single_sign_on_service.url", idpSSOEnpointURL);
+	
+		// SAML protocol binding to be used when returning the <Response>
+		// message.  Onelogin Toolkit supports for this endpoint the
+		// HTTP-Redirect binding only
+		properties.put("onelogin.saml2.idp.single_sign_on_service.binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect");
+	
+		// SLO endpoint info of the IdP.
+		// URL Location of the IdP where the SP will send the SLO Request
+		properties.put("onelogin.saml2.idp.single_logout_service.url", idpSLOEnpointURL);
+	
+		// Optional SLO Response endpoint info of the IdP.
+		// URL Location of the IdP where the SP will send the SLO Response. If left blank, same URL as properties.put("onelogin.saml2.idp.single_logout_service.url will be used.
+		// Some IdPs use a separate URL for sending a logout request and response, use this property to set the separate response url
+		properties.put("onelogin.saml2.idp.single_logout_service.response.url", "");
+	
+		// SAML protocol binding to be used when returning the <Response>
+		// message.  Onelogin Toolkit supports for this endpoint the
+		// HTTP-Redirect binding only
+		properties.put("onelogin.saml2.idp.single_logout_service.binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect");
+	
+		// Public x509 certificate of the IdP
+		properties.put("onelogin.saml2.idp.x509cert", idpX509Cert);
+		
+		// Instead of using the whole x509cert you can use a fingerprint in order to
+		// validate a SAMLResponse (but you still need the x509cert to validate LogoutRequest and LogoutResponse using the HTTP-Redirect binding).
+		// But take in mind that the fingerprint, is a hash, so at the end is open to a collision attack that can end on a signature validation bypass,
+		// that why we don't recommend it use for production environments.
+		// (openssl x509 -noout -fingerprint -in "idp.crt" to generate it,
+		// or add for example the -sha256 , -sha384 or -sha512 parameter)
+		//
+		// If a fingerprint is provided, then the certFingerprintAlgorithm is required in order to
+		// let the toolkit know which Algorithm was used. Possible values: sha1, sha256, sha384 or sha512
+		// 'sha1' is the default value.
+		// properties.put("onelogin.saml2.idp.certfingerprint", "
+		// properties.put("onelogin.saml2.idp.certfingerprint_algorithm", "sha1
+	
+		// Security settings
+		//
+	
+		// Indicates that the nameID of the <samlp:logoutRequest> sent by this SP
+		// will be encrypted.
+		properties.put("onelogin.saml2.security.nameid_encrypted", "false");
+	
+		// Indicates whether the <samlp:AuthnRequest> messages sent by this SP
+		// will be signed.              [The Metadata of the SP will offer this info]
+		properties.put("onelogin.saml2.security.authnrequest_signed", "false");
+	
+		// Indicates whether the <samlp:logoutRequest> messages sent by this SP
+		// will be signed.
+		properties.put("onelogin.saml2.security.logoutrequest_signed", "false");
+	
+		// Indicates whether the <samlp:logoutResponse> messages sent by this SP
+		// will be signed.
+		properties.put("onelogin.saml2.security.logoutresponse_signed", "false");
+	
+		// Indicates a requirement for the <samlp:Response>, <samlp:LogoutRequest> and
+		// <samlp:LogoutResponse> elements received by this SP to be signed.
+		properties.put("onelogin.saml2.security.want_messages_signed", "false");
+	
+		// Indicates a requirement for the <saml:Assertion> elements received by this SP to be signed.
+		properties.put("onelogin.saml2.security.want_assertions_signed", "false");
+	
+		// Indicates a requirement for the Metadata of this SP to be signed.
+		// Right now supported null (in order to not sign) or true (sign using SP private key) 
+		properties.put("onelogin.saml2.security.sign_metadata", "");
+	
+		// Indicates a requirement for the Assertions received by this SP to be encrypted
+		properties.put("onelogin.saml2.security.want_assertions_encrypted", "false");
+	
+		// Indicates a requirement for the NameID received by this SP to be encrypted
+		properties.put("onelogin.saml2.security.want_nameid_encrypted", "false");
+	
+	
+		// Authentication context.
+		// Set Empty and no AuthContext will be sent in the AuthNRequest,
+		// Set comma separated values urn:oasis:names:tc:SAML:2.0:ac:classes:urn:oasis:names:tc:SAML:2.0:ac:classes:Password
+		properties.put("onelogin.saml2.security.requested_authncontext", "urn:oasis:names:tc:SAML:2.0:ac:classes:urn:oasis:names:tc:SAML:2.0:ac:classes:Password");
+	
+		// Allows the authn comparison parameter to be set, defaults to 'exact'
+		properties.put("onelogin.saml2.security.requested_authncontextcomparison", "exact");
+	
+		// Indicates if the SP will validate all received xmls.
+		// (In order to validate the xml, 'strict' and 'wantXMLValidation' must be true).
+		properties.put("onelogin.saml2.security.want_xml_validation", "true");
+	
+		// Algorithm that the toolkit will use on signing process. Options:
+		// Algorithm that the toolkit will use on signing process. Options:
+		//  'http://www.w3.org/2000/09/xmldsig#rsa-sha1'
+		//  'http://www.w3.org/2000/09/xmldsig#dsa-sha1'
+		//  'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
+		//  'http://www.w3.org/2001/04/xmldsig-more#rsa-sha384'
+		//  'http://www.w3.org/2001/04/xmldsig-more#rsa-sha512'
+		properties.put("onelogin.saml2.security.signature_algorithm", "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
+	
+		// Organization
+//		properties.put("onelogin.saml2.organization.name", "SP Java");
+//		properties.put("onelogin.saml2.organization.displayname", "SP Java Example");
+//		properties.put("onelogin.saml2.organization.url", "http://sp.example.com");
+//		properties.put("onelogin.saml2.organization.lang", "en");
+	
+		// Contacts
+//		properties.put("onelogin.saml2.contacts.technical.given_name", "Technical Guy");
+//		properties.put("onelogin.saml2.contacts.technical.email_address", "technical@example.com");
+//		properties.put("onelogin.saml2.contacts.support.given_name", "Support Guy");
+//		properties.put("onelogin.saml2.contacts.support.email_address", "support@example.com");
+	
+		// Prefix used in generated Unique IDs.
+		// Optional, defaults to ONELOGIN_ or full ID is like ONELOGIN_ebb0badd-4f60-4b38-b20a-a8e01f0592b1.
+		// At minimun, the prefix can be non-numeric character such as "_".
+		// properties.put("onelogin.saml2.unique_id_prefix", "_
+		
+		return properties;
 	}
 			
 }

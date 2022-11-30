@@ -113,7 +113,7 @@ public class SSOProviderSettingsManagement {
 		for(SSOProviderSettings settingsInstance : getSSOProviderSettingsInstances()) {
 
 			ArrayList<AbstractContextSettings> settingsArray = CFW.DB.ContextSettings.getContextSettingsForType(settingsInstance.getSettingsType());
-	
+			
 			for(AbstractContextSettings settings : settingsArray) {
 				SSOProviderSettings current = (SSOProviderSettings)settings;
 				createEnvironment(current);

@@ -19,6 +19,7 @@ import com.xresch.cfw.features.core.auth.ServletLogin;
 import com.xresch.cfw.features.core.auth.ServletLogout;
 import com.xresch.cfw.features.core.auth.openid.SSOProviderSettingsOpenID;
 import com.xresch.cfw.features.core.auth.openid.ServletSSOOpenIDCallback;
+import com.xresch.cfw.features.core.auth.saml.SSOProviderSettingsSAML;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2AssertionConsumerService;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2Login;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2Metadata;
@@ -99,6 +100,9 @@ public class FeatureCore extends CFWAppFeature {
 		// Register Context Settings
 		CFW.Registry.ContextSettings.register(SSOProviderSettingsOpenID.SETTINGS_TYPE, SSOProviderSettingsOpenID.class);
 		SSOProviderSettingsManagement.register(SSOProviderSettingsOpenID.class);
+		
+		CFW.Registry.ContextSettings.register(SSOProviderSettingsSAML.SETTINGS_TYPE, SSOProviderSettingsSAML.class);
+		SSOProviderSettingsManagement.register(SSOProviderSettingsSAML.class);
     
     	//----------------------------------
     	// Register Admin Menu
@@ -167,6 +171,10 @@ public class FeatureCore extends CFWAppFeature {
 					.type(FormFieldType.NUMBER)
 					.value("36000")
 			);
+		
+    	//----------------------------------
+    	// Migrate Context Settings
+		SSOProviderSettingsOpenID.renameExistingSettings();
 	}
 
 	/************************************************************************************
@@ -187,11 +195,10 @@ public class FeatureCore extends CFWAppFeature {
 	        
 	    	app.addUnsecureServlet(ServletSSOOpenIDCallback.class, SERVLET_PATH_SSO_OPENID);
 	    	
-	        if(CFWProperties.AUTHENTICATION_SAML2_ENABLED) {
-	        	app.addUnsecureServlet(ServletSAML2Metadata.class,	"/cfw/saml2/metadata");
-	        	app.addUnsecureServlet(ServletSAML2Login.class,	"/cfw/saml2/login");
-	        	app.addUnsecureServlet(ServletSAML2AssertionConsumerService.class,	"/cfw/saml2/acs");
-	        }
+	        app.addUnsecureServlet(ServletSAML2Metadata.class,	"/cfw/saml2/metadata");
+	        app.addUnsecureServlet(ServletSAML2Login.class,	"/cfw/saml2/login");
+	        app.addUnsecureServlet(ServletSAML2AssertionConsumerService.class,	"/cfw/saml2/acs");
+	        
 	    }
 	    
 		//-----------------------------------------

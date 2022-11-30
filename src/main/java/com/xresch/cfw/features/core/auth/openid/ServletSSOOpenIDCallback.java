@@ -153,7 +153,7 @@ public class ServletSSOOpenIDCallback extends HttpServlet
 			new CFWLog(logger).finer("SSO ID Token:"+successResponse.getIDToken());
 			new CFWLog(logger).finer("SSO Issuer:"+successResponse.getIssuer());
 			new CFWLog(logger).finer("SSO Redirection URL:"+successResponse.getRedirectionURI());
-			new CFWLog(logger).finer("Provider Redirection URL:"+provider.createRedirectURI(request, targetURL));
+			new CFWLog(logger).finer("Provider Redirection URL:"+provider.createRedirectURI(request, response, targetURL));
 			
 			URI redirectURI = successResponse.getRedirectionURI();
 			

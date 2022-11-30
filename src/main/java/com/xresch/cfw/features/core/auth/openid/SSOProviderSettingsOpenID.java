@@ -6,11 +6,13 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.google.common.base.Strings;
@@ -28,9 +30,14 @@ import com.nimbusds.openid.connect.sdk.op.OIDCProviderMetadata;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.db.CFWSQL;
+import com.xresch.cfw.features.contextsettings.ContextSettings;
+import com.xresch.cfw.features.contextsettings.ContextSettings.ContextSettingsFields;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.core.auth.SSOProviderSettings;
+import com.xresch.cfw.features.dashboard.DashboardWidget;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 
 /**************************************************************************************************************
  * 
@@ -48,7 +55,7 @@ public class SSOProviderSettingsOpenID extends SSOProviderSettings {
 
 	private static Logger logger = CFWLog.getLogger(SSOProviderSettingsOpenID.class.getName());
 	
-	//public static final String SETTINGS_TYPE = "OpenID Connect Provider";
+	public static final String SETTINGS_TYPE_OLD = "OpenID Connect Provider";
 	public static final String SETTINGS_TYPE = "SSO OpenID";
 	
 	private Scope SCOPE = null;
@@ -131,6 +138,32 @@ public class SSOProviderSettingsOpenID extends SSOProviderSettings {
 	}
 	
 	/******************************************************************************
+	 * 
+	 ******************************************************************************/
+	public static void renameExistingSettings() {
+		
+		ArrayList<ContextSettings> recordsToUpdate = new CFWSQL(new ContextSettings())
+				.select(ContextSettingsFields.PK_ID, ContextSettingsFields.CFW_CTXSETTINGS_TYPE)
+				.where(ContextSettingsFields.CFW_CTXSETTINGS_TYPE, SETTINGS_TYPE_OLD)
+				.getAsObjectListConvert(ContextSettings.class);
+			
+		for(ContextSettings settings : recordsToUpdate) {
+			if(settings.type(SETTINGS_TYPE).update(ContextSettingsFields.CFW_CTXSETTINGS_TYPE) ) {
+				new CFWLog(logger).audit(CFWAuditLogAction.CHANGE
+						, SSOProviderSettingsOpenID.class
+						, "Change Context Settings type from '"+SETTINGS_TYPE_OLD+"' to '"+SETTINGS_TYPE+"'"
+					);
+			}else {
+				new CFWLog(logger).severe(
+						"Error while changing Context Settings from '"+SETTINGS_TYPE_OLD+"' to '"+SETTINGS_TYPE+"'"
+						, new Exception()
+					);
+			}
+			
+		}
+		
+	}
+	/******************************************************************************
 	 * Create Scope
 	 * 
 	 ******************************************************************************/
@@ -156,7 +189,7 @@ public class SSOProviderSettingsOpenID extends SSOProviderSettings {
 	 * @throws  
 	 * 
 	 ******************************************************************************/
-	public URI createRedirectURI(HttpServletRequest request, String targetURL) {
+	public URI createRedirectURI(HttpServletRequest request, HttpServletResponse response, String targetURL) {
 		
 		try {
 			OIDCProviderMetadata providerMetadata = getProviderMetadata();
@@ -182,7 +215,6 @@ public class SSOProviderSettingsOpenID extends SSOProviderSettings {
 			
 			session.setAttribute(PROPERTY_SSO_STATE, state.getValue());
 			session.setAttribute(PROPERTY_SSO_CODE_VERIFIER, codeVerifier);
-			session.setAttribute(SSOProviderSettings.PROPERTY_SSO_PROVIDER_ID, ""+this.getDefaultObject().id());
 			session.setAttribute(PROPERTY_SSO_TARGET_URL, targetURL);
 			
 			// Generate nonce for the ID token

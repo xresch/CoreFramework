@@ -132,11 +132,14 @@ public class AuthenticationHandler extends HandlerWrapper
 			if(request.getQueryString() != null && !request.getQueryString().equals("#")) {
 				query = "?"+request.getQueryString();
 			}
-			if(!CFWProperties.AUTHENTICATION_SAML2_ENABLED) {
-				CFW.HTTP.redirectToURL(response, "/app/login?url="+CFW.HTTP.encode(request.getRequestURI()+query));
-			}else {
-				CFW.HTTP.redirectToURL(response, "/cfw/saml2/login?url="+CFW.HTTP.encode(request.getRequestURI()+query));
-			}
+			
+			CFW.HTTP.redirectToURL(response, "/app/login?url="+CFW.HTTP.encode(request.getRequestURI()+query));
+			
+//			if(!CFWProperties.AUTHENTICATION_SAML2_ENABLED) {
+//				CFW.HTTP.redirectToURL(response, "/app/login?url="+CFW.HTTP.encode(request.getRequestURI()+query));
+//			}else {
+//				CFW.HTTP.redirectToURL(response, "/cfw/saml2/login?url="+CFW.HTTP.encode(request.getRequestURI()+query));
+//			}
 		}
 	}
 	

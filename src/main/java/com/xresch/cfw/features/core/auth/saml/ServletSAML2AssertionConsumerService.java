@@ -52,7 +52,7 @@ public class ServletSAML2AssertionConsumerService extends HttpServlet
 		try {
 			//------------------------------------
 			// Create Auth and Process Response
-			Saml2Settings settings = ServletSAML2Utils.getSAMLSettings();
+			Saml2Settings settings = ServletSAML2Utils.getSAMLSettings(request);
 			Auth auth = new Auth(settings, request, response);
 
 			auth.processResponse();
@@ -120,16 +120,19 @@ public class ServletSAML2AssertionConsumerService extends HttpServlet
 					
 			
 			String redirectTo = request.getParameter("RelayState");
-			
+			System.out.println("redirectTo:"+redirectTo);
 			if (redirectTo == null 
+			|| redirectTo.equals("null")
 			|| redirectTo.isEmpty() 
 			|| redirectTo.equals(ServletUtils.getSelfRoutedURLNoQuery(request)) 
-			|| redirectTo.contains("/saml2/login")) { // We don't want to be redirected to SAML2 login
+			|| redirectTo.contains("/saml2")) { // We don't want to be redirected to SAML2 login
+				
 				redirectTo = CFW.Context.App.getApp().getDefaultURL();
 			}
 			
 	    	//------------------------------
 	    	// Create User in DB if not exists
+			System.out.println("redirectTo:"+redirectTo);
 	    	LoginUtils.loginUserAndCreateSession(request, response, user, redirectTo);
 
 		} catch (SettingsException e) {

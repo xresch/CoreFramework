@@ -130,7 +130,6 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 
 				nextElement = jsonObject.get(memberName);
 			}else {
-				CFW.Messages.addWarningMessage("Member not found: "+leftside+"."+rightside);
 				return JsonNull.INSTANCE;
 			}
 			

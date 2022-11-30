@@ -733,7 +733,10 @@ public class CFWHttp {
 	
 	
 	/**************************************************************************************
-	 * Gets the server URL without any path or query parameters form a servlet request.
+	 * Gets the server URL as used by the client side from a servlet request.
+	 * Returned string will look like "https://www.servername.io:1234" without slash at the
+	 * end of the string.
+	 * 
 	 * @param request
 	 * @return String
 	 **************************************************************************************/

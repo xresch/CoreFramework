@@ -45,7 +45,7 @@ public class ServletSAML2Login extends HttpServlet
 		try {
 			//------------------------------------
 			// Create Auth and Login
-			Saml2Settings settings = ServletSAML2Utils.getSAMLSettings();
+			Saml2Settings settings = ServletSAML2Utils.getSAMLSettings(request);
 			Auth auth = new Auth(settings, request, response);
 			
 			String redirectToURL = request.getParameter("url");
