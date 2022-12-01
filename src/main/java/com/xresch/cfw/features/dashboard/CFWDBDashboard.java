@@ -3,6 +3,8 @@ package com.xresch.cfw.features.dashboard;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -387,11 +389,13 @@ public class CFWDBDashboard {
 		for(JsonElement dashboardElement : array) {
 			if(dashboardElement.isJsonObject()) {
 				JsonObject dashboardObject = dashboardElement.getAsJsonObject();
+				
 				//-----------------------------
 				// Map values
 				Dashboard dashboard = new Dashboard();
 				dashboard.mapJsonFields(dashboardObject, true, true);
 				dashboard.id(null);
+				dashboard.timeCreated( new Timestamp(new Date().getTime()) );
 				
 				String importedName = dashboard.name() +"(Imported)";
 				dashboard.name(importedName);

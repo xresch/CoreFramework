@@ -1,7 +1,9 @@
 package com.xresch.cfw.features.dashboard;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
@@ -226,6 +228,7 @@ public class ServletDashboardList extends HttpServlet
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 			Dashboard duplicate = CFW.DB.Dashboards.selectByID(dashboardID);
 			duplicate.id(null);
+			duplicate.timeCreated( new Timestamp(new Date().getTime()) );
 			duplicate.foreignKeyOwner(CFW.Context.Request.getUser().id());
 			duplicate.name(duplicate.name()+"(Copy)");
 			duplicate.isShared(false);

@@ -628,12 +628,12 @@ function cfw_dashboardlist_printDashboards(data, type){
 		// Prepare Columns
 		var showFields = [];
 		if(type == 'mydashboards'){
-			showFields = ['IS_FAVED', 'NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED'];
+			showFields = ['IS_FAVED', 'NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
 		}else if ( type == 'shareddashboards'
 				|| type == 'faveddashboards'){
 			showFields = ['IS_FAVED', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS'];
 		}else if (type == 'admindashboards'){
-			showFields = ['IS_FAVED', 'PK_ID', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS','IS_SHARED'];
+			showFields = ['IS_FAVED', 'PK_ID', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
 		}
 		
 		
@@ -851,6 +851,15 @@ function cfw_dashboardlist_printDashboards(data, type){
 						} 
 			 		},
 			 		TAGS: badgeCustomizerFunction,
+			 		TIME_CREATED: function(record, value) { 
+			 			if(value == null) return "&nbsp;";
+			 			if(isNaN(value)){
+			 				return value; 
+			 			}else{
+			 				return CFW.format.epochToTimestamp(parseInt(value)); 
+			 			}
+			 			
+			 		},
 			 		JSON_SHARE_WITH_USERS: badgeCustomizerFunction, 
 			 		JSON_SHARE_WITH_GROUPS: badgeCustomizerFunction, 
 			 		JSON_EDITORS: badgeCustomizerFunction, 
@@ -959,6 +968,10 @@ function cfw_dashboardlist_printDashboards(data, type){
  ******************************************************************/
 
 function cfw_dashboardlist_initialDraw(){
+	
+	//-------------------------------------------
+	// Increase Width
+	$('#cfw-container').css('max-width', '100%');
 	
 	//-------------------------------------------
 	// Create Tabs

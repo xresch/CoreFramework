@@ -2,7 +2,9 @@ package com.xresch.cfw.features.dashboard;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
@@ -45,9 +47,10 @@ public class Dashboard extends CFWObject {
 		JSON_SHARE_WITH_GROUPS,
 		JSON_EDITORS,
 		JSON_EDITOR_GROUPS,
+		TIME_CREATED,
 		IS_PUBLIC,
 		IS_DELETABLE,
-		IS_RENAMABLE,
+		IS_RENAMABLE, 
 	}
 
 	private static Logger logger = CFWLog.getLogger(Dashboard.class.getName());
@@ -151,6 +154,10 @@ public class Dashboard extends CFWObject {
 				}
 			});
 	
+	private CFWField<Timestamp> timeCreated = CFWField.newTimestamp(FormFieldType.NONE, DashboardFields.TIME_CREATED)
+			.setDescription("The date and time the dashboard was created.")
+			.setValue(new Timestamp(new Date().getTime()));
+	
 	private CFWField<Boolean> isPublic = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.IS_PUBLIC)
 			.apiFieldType(FormFieldType.TEXT)
 			.setColumnDefinition("BOOLEAN DEFAULT FALSE")
@@ -190,7 +197,21 @@ public class Dashboard extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyOwner, name, description, tags, isShared, shareWithUsers, shareWithGroups, editors, editorGroups, isPublic, isDeletable, isRenamable);
+		this.addFields(id
+				, foreignKeyOwner
+				, name
+				, description
+				, tags
+				, isShared
+				, shareWithUsers
+				, shareWithGroups
+				, editors
+				, editorGroups
+				, timeCreated
+				, isPublic
+				, isDeletable
+				, isRenamable
+			);
 	}
 	
 	/**************************************************************************************
@@ -215,9 +236,6 @@ public class Dashboard extends CFWObject {
 		new CFWSQL(this)
 			.custom("ALTER TABLE IF EXISTS CFW_DASHBOARD ALTER COLUMN IF EXISTS NAME SET DATA TYPE VARCHAR_IGNORECASE;")
 			.execute();
-		
-
-		
 	}
 	/**************************************************************************************
 	 * 
@@ -246,6 +264,7 @@ public class Dashboard extends CFWObject {
 						DashboardFields.JSON_SHARE_WITH_GROUPS.toString(),
 						DashboardFields.JSON_EDITORS.toString(),
 						DashboardFields.JSON_EDITOR_GROUPS.toString(),
+						DashboardFields.TIME_CREATED.toString(),
 						DashboardFields.IS_PUBLIC.toString(),
 						DashboardFields.IS_DELETABLE.toString(),
 						DashboardFields.IS_RENAMABLE.toString(),		
@@ -360,6 +379,15 @@ public class Dashboard extends CFWObject {
 	
 	public Dashboard editorGroups(LinkedHashMap<String,String> value) {
 		this.editorGroups.setValue(value);
+		return this;
+	}
+	
+	public Timestamp timeCreated() {
+		return timeCreated.getValue();
+	}
+	
+	public Dashboard timeCreated(Timestamp creationDate) {
+		this.timeCreated.setValue(creationDate);
 		return this;
 	}
 	
