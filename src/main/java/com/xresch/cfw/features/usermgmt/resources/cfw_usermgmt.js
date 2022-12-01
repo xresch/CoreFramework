@@ -566,7 +566,7 @@ function cfw_usermgmt_printUserList(data){
 				
 				if(record.IS_DELETABLE){
 					return '<button class="btn btn-sm btn-danger" alt="Delete" title="Delete"  '
-						+'onclick="CFW.ui.confirmExecute(\'Deleting a user <font color=red><b>will also delete data associated</b></font> with the deleted user. If the deleted user has shared something with other users they might also lose that data. To avoid loss of data it is <span class=text-cfw-excellent><b>recommended to set the user to inactive</b></span>(prevents login).<br/><br/> Do you want to delete the user?\', \'Delete\', \'cfw_usermgmt_delete(\\\'users\\\','+id+');\')">'
+						+'onclick="CFW.ui.confirmExecute(\'Deleting a user <font color=red><b>will also delete data associated</b></font> with the deleted user. If the deleted user has shared something with other users they might also lose that data. To avoid loss of data it is <span class=text-cfw-excellent><b>recommended to set the user to inactive</b></span>(prevents login).<br/><br/> Do you want to delete the user <b>&quot;'+record.USERNAME+'&quot;</b>?\', \'Delete\', \'cfw_usermgmt_delete(\\\'users\\\','+id+');\')">'
 						+ '<i class="fa fa-trash"></i>'
 						+ '</button>';
 				}else{
@@ -734,7 +734,7 @@ function cfw_usermgmt_printRoleList(data){
 			//Delete Button
 			if(current.IS_DELETABLE){
 				htmlString += '<td><button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the role?\', \'Delete\', \'cfw_usermgmt_delete(\\\'roles\\\','+current.PK_ID+');\')">'
+					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the role <b>&quot;'+current.NAME+'&quot;</b> ?\', \'Delete\', \'cfw_usermgmt_delete(\\\'roles\\\','+current.PK_ID+');\')">'
 					+ '<i class="fa fa-trash"></i>'
 					+ '</button></td>';
 			}else{
@@ -804,7 +804,7 @@ function cfw_usermgmt_printGroupList(data){
 			//Delete Button
 			if(current.IS_DELETABLE){
 				htmlString += '<td><button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the group?\', \'Delete\', \'cfw_usermgmt_delete(\\\'groups\\\','+current.PK_ID+');\')">'
+					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the group <b>&quot;'+current.NAME+'&quot;</b>?\', \'Delete\', \'cfw_usermgmt_delete(\\\'groups\\\','+current.PK_ID+');\')">'
 					+ '<i class="fa fa-trash"></i>'
 					+ '</button></td>';
 			}else{
