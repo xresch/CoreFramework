@@ -57,53 +57,50 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 	private static Scope SCOPE = null;
 	//public static final Scope DEFAULT_SCOPE = new Scope("openid", "allatclaims");
 	
-	public enum SSOOpenIDConnectProviderFields{
-		PROVIDER_URL,
-		IDP_METADATA_URL,
-		X509_CERTIFICATE,
-		X509_CERTIFICATE_NEW,
-		ADDITIONAL_SCOPE,
-		GRANT_TYPE,
-		RESOURCE,
-		JSON_CUSTOM_PARAMETERS
+	public enum SSOProviderSettingsSAMLFields{
+		IDP_ENTITY_URI,
+		IDP_SSO_URL,
+		IDP_X509_CERTIFICATE,
+		SP_X509_CERTIFICATE,
+		SP_X509_CERTIFICATE_NEW,
+		SP_PKCS8_PRIVATE_KEY,
 	}
 	
-//	String idpEntityIDURL			= "https://capriza.github.io/samling/public/metadata.xml";
-//	String idpSSOEnpointURL 		= "https://capriza.github.io/samling/samling.html";
-//	String idpSLOEnpointURL 		= "https://capriza.github.io/samling/samling.html";
+//	x String idpEntityIDURL			= "http://localhost:8080/realms/myrealm/protocol/saml/descriptor";
+//	String idpSSOEnpointURL 		= "http://localhost:8080/realms/myrealm/protocol/saml";
+//	String idpSLOEnpointURL 		= "http://localhost:8080/realms/myrealm/protocol/saml";
+//	x String idpX509Cert 				= "MIICnTCCAYUCBgGBZ5UxFzANBgkqhkiG9w0BAQsFADASMRAwDgYDVQQDDAdteXJlYWxtMB4XDTIyMDYxNTEzMzUzOVoXDTMyMDYxNTEzMzcxOVowEjEQMA4GA1UEAwwHbXlyZWFsbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJdXvIQe5ygZy6PdQzDIfh60c1MwmspRRPM9NUlT3katnzjHOemQDw0cLoPD0YZVmlFadFyOp5+xac8sIsobCgMU4kbeYCuQsSiHf/0cqOjcWn/g3elPKGMsuoNjvm3f+fRru9gZXp5puuUop9eZTbvp6/b6wTjKQbamRMtCq9BVYP3Gs+cPwu9dLD4BegRTniwUIvDEsiU9Xf3yLkF1ZQnIck2+3h8bLzkw9i19mKxRtKsJMcrz0x28xRYrWWEdNfmld6GFKmxejYKM9OLWPdGsnvXicovv1/xAjflgEd+x7pEWVb47cekw1aerJbGwGo3745rdGXAKaVfDd+LyNW0CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAGJS5EqpPhEI46YXovnxtCawj45ti0K2ASeYe5q6I+LbXvXwNgSVof1OKjkNIIorRH1Z67LYPxUR5XK3G9G4GDFNnZjof+6z5bvmragcuGdSE0DPmWL2VYr1XOGFCDNJgyWurLb3zn11I9Ykb5AFU6f9VNQnIz07PR4dpksM9imDLZLvMCoDjdoAGPCu6cXxo0DirNMt00KSX4awEQDzMyQG+4B1xN8k1hF0Wra9JMBosEHX8X49Tsg4164NzUFVHbW1lfFzQ8N761J1uEp4JQx6bpWdmkPPjBuselO60W7lQGQHsvkit6eLi9f1uX2BwPJKzad//WrCwE1Q7LVyjWw==";
 //	
-//	String spX509cert				= "574892305643256";
-//	String spX509certNew			= "574892305643256";
-//	String spPrivateKey				= "574892305643256";
+//	x String spX509cert				= "MIICrzCCAZcCBgGEyMwWgzANBgkqhkiG9w0BAQsFADAbMRkwFwYDVQQDDBBjZndsb2NhbGhvc3RzYW1sMB4XDTIyMTEzMDEzNDcwOVoXDTMyMTEzMDEzNDg0OVowGzEZMBcGA1UEAwwQY2Z3bG9jYWxob3N0c2FtbDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAISJdMmbFauQYPzVF9clqCcei7swYSVQjMrRDCKG1HfgKd+29emUJ+hHslOzowt+fJuW+CJR1ARS1g5Bd79hjRpepSdBrex6AtGX0GKwZu3hTnmDn4+dGgUgvGjOgmsHpkA6Ln/4g6RltPTFHmux1cbtshWktQZ6kc+7fCzHVWKrwnJTo2TqmR7SDV8vseIq3VmVTHqQs44e7UdiwXm3VZt0CWOqVFf/YPxxhqUChYrsrVd40gWeG3JJ0dsIhgRVYzSYd78Wmrz2Hzqr4TAcAPTNyDP9j1FZ8HS7Z/8b7XUFeRVK9Eel1XQvHUQyeFwGj6QhIxqcFzdKOC3g7X33FUMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAUGFl7UKzkJagkQvCwhUfVYPw4zwvdDOgaMYTadPqlTZbWPNKewVIATtL7mHJ5Pu9bITwEC4tQxGa0hoA/OvYF2N6UCW6Xm6gaJxHAK9T3bPSIi1tyQBdpIL8lYTHsmTpUWzEKkmXHRcPrRh3SPeSxjv/CZ5QAWPcHBWEllFFs8mijODKQ+MIxtE4y954HrNBjI9nz9v33BAyAx31H4OKh9jw0jnzpZqQbs9v4NyuDbJBo10nrSgB6OsvwNAMlzWk5Es+3IoRG5JY0rehIqrsJokxmn+dCCdEnua1ojhyl1CJlSjx2YGyRqClasDmw1hKTI8itgIaMErFaYsY+AO/vQ==";
+//	x String spX509certNew			= spX509cert;
+//	x String spPrivateKey				= "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCEiXTJmxWrkGD81RfXJagnHou7MGElUIzK0QwihtR34CnftvXplCfoR7JTs6MLfnyblvgiUdQEUtYOQXe/YY0aXqUnQa3segLRl9BisGbt4U55g5+PnRoFILxozoJrB6ZAOi5/+IOkZbT0xR5rsdXG7bIVpLUGepHPu3wsx1Viq8JyU6Nk6pke0g1fL7HiKt1ZlUx6kLOOHu1HYsF5t1WbdAljqlRX/2D8cYalAoWK7K1XeNIFnhtySdHbCIYEVWM0mHe/Fpq89h86q+EwHAD0zcgz/Y9RWfB0u2f/G+11BXkVSvRHpdV0Lx1EMnhcBo+kISManBc3Sjgt4O199xVDAgMBAAECggEATy6YGYKP9cnyR9s/vQgAaC61qIYE4/g1xU4Tg+Utttiz67YxQPWEyh9biOo/tLRC2eneIRLmKhcbT7UJR8uOM3zsCoIQ2MEkQfgDRZLCS8hZy/s5LuHbE8k1ByCphiwxxRl9gnMEowkojTvfKtQ6Nfj4djnK9S3xQzxtuYr1llbOUZuRDmImvCA1GLmLKlVuZp9pzcmI9uG/ZMcp7u/ESW+Gw2FVarvfooBYaRql7CaqI7RDj/l4mZKgvlOmqY2M2oixIZle/KqDPBJlTJNXZE4gU1drypVXb11g0mwDFm70VdvmwFi3HAh/OpGFiCcBLebov2dtmG3IvQVQynLTcQKBgQDLOUW6HGHkmLjYVDouS5hdlv9Odnv5ZiHcNHIy0kXE/bZ8NxjFgSac+N6nIak7Hvsb2vUpPreK/JO6F5FaXB2LwZSFXKISD8p6vArrcnNQ4v44J1IAeSgcUYaDW1ka6I+4djt8mvEyORVqpr0HBT1MyC4j4DOc+iTds1zcy88kFwKBgQCm9MhGMVQJ3BV1lSk+4npUKZdczNY3XJPt5QLYwiKFqckBVyUv7dcJg3MaqXkgHR09/XWvaxVShbjZlAVpNrZNbPASlxx8Su3yrPYhuV2aMd1XXbUSAKIQkqPLVnxyk6o16a/VpCgy5fLGCjYw0kPET7B44/iJGELOq/VB2i+XtQKBgHFTVMC+BxD04U8xWOhsG2FFTMWyaNvgyk0DqhMREvsRCGwoRVYN+Txbw72rlbV0R093QHNpl+yXgMGrVtDuwUMoBeyAhZhQ2farWeOGBSw8CMvDkYTWCzoPdFVX4U6SFWMl+3I27P22u2yn4o1BrLdegexboCyPiXNgDA7MUIytAoGAFUbcvxVKQHdrxLBdsUXrkQ472/e+1Q9XStoEotsayy34D9OrSZBl9zBpWtx+MzmCoIPMm65p6TphdFkI13/Be9yGO9hGKRDjginItEOLSjtQmfG3QbQS80m81g0PjwqChpxhbDifZt0nM1XZ0h75w+rj8oQbCF2vJeeEOgA0UIECgYAHTShM1lhSgiRnCLafgjwB6BlgsRgwbiu+2AbYXRjbfLMjmaDfzFbPBnyb1IamZIVcPZxsG4DZykfiAozXukE8U648t4TsdM+VZmDx5hyLTAYkzILguEHkp98ghoWpuSR8k/g0XOUhscDoSVNx5T5bn7cNSfrU+23ihFqUZvvF9A==";	
 	
-	private CFWField<String> providerURL = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.PROVIDER_URL)
-			.setDescription("The url of the OpenID Connect provider.");
-	
-	private CFWField<String> grantType = CFWField.newString(FormFieldType.SELECT, SSOOpenIDConnectProviderFields.GRANT_TYPE)
-			.setDescription("The grant type used for this client.")
-			.addOption(GRANTTYPE_AUTHORIZATION_CODE, "Authorization Code Grant with PKCE")
-			//.addOption(GRANTTYPE_CLIENT_CREDENTIALS, "Client Credentials")
-			.setValue(GRANTTYPE_AUTHORIZATION_CODE);
-	
-	private CFWField<String> idpMetadataURL = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.IDP_METADATA_URL)
+		
+	private CFWField<String> idpEntityURI = CFWField.newString(FormFieldType.TEXT, SSOProviderSettingsSAMLFields.IDP_ENTITY_URI)
+			.setLabel("IdP Entity URI")
 			.setDescription("Identifier of the IdP entity  (must be a URI).");
 	
-	private CFWField<String> clientID = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.X509_CERTIFICATE)
-			.setDescription("The id used for this client.");
+	private CFWField<String> idpSSOURL = CFWField.newString(FormFieldType.TEXT, SSOProviderSettingsSAMLFields.IDP_SSO_URL)
+			.setLabel("IdP SSO URL")
+			.setDescription(" URL Target of the IdP where the SP will send the Authentication Request Message.");
 	
+	private CFWField<String> idpX509Cert = CFWField.newString(FormFieldType.TEXTAREA, SSOProviderSettingsSAMLFields.IDP_X509_CERTIFICATE)
+			.setLabel("IdP X509 Certificate")
+			.setDescription("The certificate of the IdP.");
+	
+	private CFWField<String> spX509Cert = CFWField.newString(FormFieldType.TEXTAREA, SSOProviderSettingsSAMLFields.SP_X509_CERTIFICATE)
+			.setLabel("SP X509 Certificate")
+			.setDescription("The certificate of the Service Provider.");
 
+	private CFWField<String> spX509CertNew = CFWField.newString(FormFieldType.TEXTAREA, SSOProviderSettingsSAMLFields.SP_X509_CERTIFICATE_NEW)
+			.setLabel("SP X509 Certificate New")
+			.setDescription("Future Service Provider certificate, to be used during key roll over.");
 	
-	private CFWField<String> resource = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.RESOURCE)
-			.setDescription("(Optional)The value for the resource parameter used for client credential grant flow.")
-			.setValue("");
+	private CFWField<String> spPrivateKey = CFWField.newString(FormFieldType.TEXTAREA, SSOProviderSettingsSAMLFields.SP_PKCS8_PRIVATE_KEY)
+			.setLabel("SP PKCS8 Private Key")
+			.setDescription("The private key of the Service Provider.");
 	
-	private CFWField<String> additionalScope = CFWField.newString(FormFieldType.TEXT, SSOOpenIDConnectProviderFields.ADDITIONAL_SCOPE)
-			.setDescription("Comma separated list of additional scopes. For ADFS, add 'allatclaims'.")
-			.setValue(null);
 	
-	private CFWField<LinkedHashMap<String, String>> customParams = CFWField.newValueLabel(SSOOpenIDConnectProviderFields.JSON_CUSTOM_PARAMETERS)
-			.setLabel("Custom Parameters")
-			.setDescription("Custom parameters that should be added to the authentication request.");
 	
 	private OIDCProviderMetadata providerMetadata = null;
 	
@@ -113,14 +110,12 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		
 	private void initializeFields() {
 		this.addFields(
-				//providerURL
-				  grantType
-				, idpMetadataURL
-				, clientID
-				//, clientSecret
-				, resource
-				, additionalScope
-				, customParams
+				  idpEntityURI
+				, idpSSOURL
+				, idpX509Cert
+				, spX509Cert
+				, spX509CertNew
+				, spPrivateKey
 			);
 	}
 		
@@ -151,8 +146,8 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		if(SCOPE == null) {
 			SCOPE = new Scope("openid", "profile", "email");
 			
-			if( !Strings.isNullOrEmpty(additionalScope.getValue()) ) {
-				String scopesString = additionalScope.getValue();
+			if( !Strings.isNullOrEmpty(spX509CertNew.getValue()) ) {
+				String scopesString = spX509CertNew.getValue();
 				for(String scope : scopesString.split(",")) {
 					SCOPE.add(scope.trim());
 				}
@@ -174,101 +169,63 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		
 	}
 			
-//	public String providerURL() {
-//		return providerURL.getValue();
-//	}
-//	
-//	public SSOOpenIDConnectProvider providerURL(String value) {
-//		this.providerURL.setValue(value);
-//		return this;
-//	}
-	
-	public String wellknownURL() {
-		return idpMetadataURL.getValue();
-	}
-	
-	public SSOProviderSettingsSAML wellknownURL(String value) {
-		this.idpMetadataURL.setValue(value);
-		return this;
-	}
-		
-	public String clientID() {
-		return clientID.getValue();
-	}
-	
-	public SSOProviderSettingsSAML clientID(String value) {
-		this.clientID.setValue(value);
-		return this;
-	}
-	
-//	public String clientSecret() {
-//		return clientSecret.getValue();
-//	}
-//	
-//	public SSOOpenIDConnectProvider clientSecret(String value) {
-//		this.clientSecret.setValue(value);
-//		return this;
-//	}
-	
-	public String grantType() {
-		return grantType.getValue();
-	}
-	
-	public SSOProviderSettingsSAML grantType(String value) {
-		this.grantType.setValue(value);
-		return this;
-	}
-	
-	public String resource() {
-		return resource.getValue();
-	}
-	
-	public SSOProviderSettingsSAML resource(String value) {
-		this.resource.setValue(value);
-		return this;
-	}
-	
-	public LinkedHashMap<String, String> customParams() {
-		return customParams.getValue();
-	}
-	
-	public SSOProviderSettingsSAML customParams(LinkedHashMap<String, String> value) {
-		this.customParams.setValue(value);
-		return this;
-	}
-	
-	/******************************************************************************
-	 * 
-	 ******************************************************************************/
-	public OIDCProviderMetadata getProviderMetadata()
-			throws URISyntaxException, MalformedURLException, IOException, ParseException {
-		
-		//---------------------------------------
-		// Return if already discovered
-		if(providerMetadata != null) {
-			return providerMetadata;
-		}
-		
-		//---------------------------------------
-		// Discover Provider
-		
-		//providerURLString = (providerURLString.endsWith("/")) ? providerURLString : providerURLString+"/";
-		
-		URI wellknownURI = new URI(this.wellknownURL());
-		URL providerConfigurationURL = wellknownURI.toURL();
-		InputStream stream = providerConfigurationURL.openStream();
-		
-		// Read all data from URL
-		String providerInfo = null;
-		try (java.util.Scanner s = new java.util.Scanner(stream)) {
-		  providerInfo = s.useDelimiter("\\A").hasNext() ? s.next() : "";
-		}
-		
-		providerMetadata = OIDCProviderMetadata.parse(providerInfo);
-		
-		return providerMetadata;
-	}
 
+	public String idpEntityURI() {
+		return idpEntityURI.getValue();
+	}
+	
+	public SSOProviderSettingsSAML idpEntityURI(String value) {
+		this.idpEntityURI.setValue(value);
+		return this;
+	}
+	
+	public String idpSSOURL() {
+		return idpSSOURL.getValue();
+	}
+	
+	public SSOProviderSettingsSAML idpSSOURL(String value) {
+		this.idpSSOURL.setValue(value);
+		return this;
+	}
+		
+	public String idpX509Cert() {
+		return idpX509Cert.getValue();
+	}
+	
+	public SSOProviderSettingsSAML idpX509Cert(String value) {
+		this.idpX509Cert.setValue(value);
+		return this;
+	}
+	
+	
+	
+	public String spX509Cert() {
+		return spX509Cert.getValue();
+	}
+	
+	public SSOProviderSettingsSAML spX509Cert(String value) {
+		this.spX509Cert.setValue(value);
+		return this;
+	}
+	
+	public String spX509CertNew() {
+		return spX509CertNew.getValue();
+	}
+	
+	public SSOProviderSettingsSAML spX509CertNew(String value) {
+		this.spX509CertNew.setValue(value);
+		return this;
+	}
+	
+	public String spPrivateKey() {
+		return spPrivateKey.getValue();
+	}
+	
+	public SSOProviderSettingsSAML spPrivateKey(String value) {
+		this.spPrivateKey.setValue(value);
+		return this;
+	}
+	
 	@Override
 	protected String getSettingsType() {
 		return SETTINGS_TYPE;
@@ -289,15 +246,14 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		String spEntityID 				= serverURL+"/cfw/saml2/acs/metadata";
 		String spAssertionConsumerService = serverURL+"/cfw/saml2/acs";
 		
-		String idpEntityIDURL			= "http://localhost:8080/realms/myrealm/protocol/saml/descriptor";
-		String idpSSOEnpointURL 		= "http://localhost:8080/realms/myrealm/protocol/saml";
-		String idpSLOEnpointURL 		= "http://localhost:8080/realms/myrealm/protocol/saml";
-		String idpX509Cert 				= "MIICnTCCAYUCBgGBZ5UxFzANBgkqhkiG9w0BAQsFADASMRAwDgYDVQQDDAdteXJlYWxtMB4XDTIyMDYxNTEzMzUzOVoXDTMyMDYxNTEzMzcxOVowEjEQMA4GA1UEAwwHbXlyZWFsbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAJdXvIQe5ygZy6PdQzDIfh60c1MwmspRRPM9NUlT3katnzjHOemQDw0cLoPD0YZVmlFadFyOp5+xac8sIsobCgMU4kbeYCuQsSiHf/0cqOjcWn/g3elPKGMsuoNjvm3f+fRru9gZXp5puuUop9eZTbvp6/b6wTjKQbamRMtCq9BVYP3Gs+cPwu9dLD4BegRTniwUIvDEsiU9Xf3yLkF1ZQnIck2+3h8bLzkw9i19mKxRtKsJMcrz0x28xRYrWWEdNfmld6GFKmxejYKM9OLWPdGsnvXicovv1/xAjflgEd+x7pEWVb47cekw1aerJbGwGo3745rdGXAKaVfDd+LyNW0CAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAGJS5EqpPhEI46YXovnxtCawj45ti0K2ASeYe5q6I+LbXvXwNgSVof1OKjkNIIorRH1Z67LYPxUR5XK3G9G4GDFNnZjof+6z5bvmragcuGdSE0DPmWL2VYr1XOGFCDNJgyWurLb3zn11I9Ykb5AFU6f9VNQnIz07PR4dpksM9imDLZLvMCoDjdoAGPCu6cXxo0DirNMt00KSX4awEQDzMyQG+4B1xN8k1hF0Wra9JMBosEHX8X49Tsg4164NzUFVHbW1lfFzQ8N761J1uEp4JQx6bpWdmkPPjBuselO60W7lQGQHsvkit6eLi9f1uX2BwPJKzad//WrCwE1Q7LVyjWw==";
-		
-		String spX509cert				= "MIICrzCCAZcCBgGEyMwWgzANBgkqhkiG9w0BAQsFADAbMRkwFwYDVQQDDBBjZndsb2NhbGhvc3RzYW1sMB4XDTIyMTEzMDEzNDcwOVoXDTMyMTEzMDEzNDg0OVowGzEZMBcGA1UEAwwQY2Z3bG9jYWxob3N0c2FtbDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAISJdMmbFauQYPzVF9clqCcei7swYSVQjMrRDCKG1HfgKd+29emUJ+hHslOzowt+fJuW+CJR1ARS1g5Bd79hjRpepSdBrex6AtGX0GKwZu3hTnmDn4+dGgUgvGjOgmsHpkA6Ln/4g6RltPTFHmux1cbtshWktQZ6kc+7fCzHVWKrwnJTo2TqmR7SDV8vseIq3VmVTHqQs44e7UdiwXm3VZt0CWOqVFf/YPxxhqUChYrsrVd40gWeG3JJ0dsIhgRVYzSYd78Wmrz2Hzqr4TAcAPTNyDP9j1FZ8HS7Z/8b7XUFeRVK9Eel1XQvHUQyeFwGj6QhIxqcFzdKOC3g7X33FUMCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAUGFl7UKzkJagkQvCwhUfVYPw4zwvdDOgaMYTadPqlTZbWPNKewVIATtL7mHJ5Pu9bITwEC4tQxGa0hoA/OvYF2N6UCW6Xm6gaJxHAK9T3bPSIi1tyQBdpIL8lYTHsmTpUWzEKkmXHRcPrRh3SPeSxjv/CZ5QAWPcHBWEllFFs8mijODKQ+MIxtE4y954HrNBjI9nz9v33BAyAx31H4OKh9jw0jnzpZqQbs9v4NyuDbJBo10nrSgB6OsvwNAMlzWk5Es+3IoRG5JY0rehIqrsJokxmn+dCCdEnua1ojhyl1CJlSjx2YGyRqClasDmw1hKTI8itgIaMErFaYsY+AO/vQ==";
-		String spX509certNew			= spX509cert;
-		String spPrivateKey				= "MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCEiXTJmxWrkGD81RfXJagnHou7MGElUIzK0QwihtR34CnftvXplCfoR7JTs6MLfnyblvgiUdQEUtYOQXe/YY0aXqUnQa3segLRl9BisGbt4U55g5+PnRoFILxozoJrB6ZAOi5/+IOkZbT0xR5rsdXG7bIVpLUGepHPu3wsx1Viq8JyU6Nk6pke0g1fL7HiKt1ZlUx6kLOOHu1HYsF5t1WbdAljqlRX/2D8cYalAoWK7K1XeNIFnhtySdHbCIYEVWM0mHe/Fpq89h86q+EwHAD0zcgz/Y9RWfB0u2f/G+11BXkVSvRHpdV0Lx1EMnhcBo+kISManBc3Sjgt4O199xVDAgMBAAECggEATy6YGYKP9cnyR9s/vQgAaC61qIYE4/g1xU4Tg+Utttiz67YxQPWEyh9biOo/tLRC2eneIRLmKhcbT7UJR8uOM3zsCoIQ2MEkQfgDRZLCS8hZy/s5LuHbE8k1ByCphiwxxRl9gnMEowkojTvfKtQ6Nfj4djnK9S3xQzxtuYr1llbOUZuRDmImvCA1GLmLKlVuZp9pzcmI9uG/ZMcp7u/ESW+Gw2FVarvfooBYaRql7CaqI7RDj/l4mZKgvlOmqY2M2oixIZle/KqDPBJlTJNXZE4gU1drypVXb11g0mwDFm70VdvmwFi3HAh/OpGFiCcBLebov2dtmG3IvQVQynLTcQKBgQDLOUW6HGHkmLjYVDouS5hdlv9Odnv5ZiHcNHIy0kXE/bZ8NxjFgSac+N6nIak7Hvsb2vUpPreK/JO6F5FaXB2LwZSFXKISD8p6vArrcnNQ4v44J1IAeSgcUYaDW1ka6I+4djt8mvEyORVqpr0HBT1MyC4j4DOc+iTds1zcy88kFwKBgQCm9MhGMVQJ3BV1lSk+4npUKZdczNY3XJPt5QLYwiKFqckBVyUv7dcJg3MaqXkgHR09/XWvaxVShbjZlAVpNrZNbPASlxx8Su3yrPYhuV2aMd1XXbUSAKIQkqPLVnxyk6o16a/VpCgy5fLGCjYw0kPET7B44/iJGELOq/VB2i+XtQKBgHFTVMC+BxD04U8xWOhsG2FFTMWyaNvgyk0DqhMREvsRCGwoRVYN+Txbw72rlbV0R093QHNpl+yXgMGrVtDuwUMoBeyAhZhQ2farWeOGBSw8CMvDkYTWCzoPdFVX4U6SFWMl+3I27P22u2yn4o1BrLdegexboCyPiXNgDA7MUIytAoGAFUbcvxVKQHdrxLBdsUXrkQ472/e+1Q9XStoEotsayy34D9OrSZBl9zBpWtx+MzmCoIPMm65p6TphdFkI13/Be9yGO9hGKRDjginItEOLSjtQmfG3QbQS80m81g0PjwqChpxhbDifZt0nM1XZ0h75w+rj8oQbCF2vJeeEOgA0UIECgYAHTShM1lhSgiRnCLafgjwB6BlgsRgwbiu+2AbYXRjbfLMjmaDfzFbPBnyb1IamZIVcPZxsG4DZykfiAozXukE8U648t4TsdM+VZmDx5hyLTAYkzILguEHkp98ghoWpuSR8k/g0XOUhscDoSVNx5T5bn7cNSfrU+23ihFqUZvvF9A==";	
-		
+		String idpEntityIDURI			= this.idpEntityURI();
+		String idpSSOEnpointURL 		= this.idpSSOURL();
+		String idpSLOEnpointURL 		= "";
+		String idpX509Cert 				= this.idpX509Cert();
+		String spX509cert				= this.spX509Cert();
+		String spX509certNew			= this.spX509CertNew();
+		String spPrivateKey				= this.spPrivateKey();
+	
 		//  If 'strict' is True, then the Java Toolkit will reject unsigned
 		//  or unencrypted messages if it expects them signed or encrypted
 		//  Also will reject the messages if not strictly follow the SAML
@@ -343,10 +299,12 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		properties.put("onelogin.saml2.sp.x509cert", spX509cert);
 		
 		// Future SP certificate, to be used during SP Key roll over
-		properties.put("onelogin.saml2.sp.x509certNew",  spX509certNew);
+		if(spX509certNew != null) {
+			properties.put("onelogin.saml2.sp.x509certNew",  spX509certNew);
+		}
 		
-		// Requires Format PKCS//8   BEGIN PRIVATE KEY       
-		// If you have     PKCS//1   BEGIN RSA PRIVATE KEY  convert it by openssl pkcs8 -topk8 -inform pem -nocrypt -in sp.rsa_key -outform pem -out sp.pem
+		// Requires Format PKCS#8   BEGIN PRIVATE KEY       
+		// If you have     PKCS#1   BEGIN RSA PRIVATE KEY  convert it by openssl pkcs8 -topk8 -inform pem -nocrypt -in sp.rsa_key -outform pem -out sp.pem
 		properties.put("onelogin.saml2.sp.privatekey",  spPrivateKey);
 		
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -354,7 +312,7 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 		// Identifier of the IdP entity  (must be a URI)
-		properties.put("onelogin.saml2.idp.entityid", idpEntityIDURL);
+		properties.put("onelogin.saml2.idp.entityid", idpEntityIDURI);
 	
 		// SSO endpoint info of the IdP. (Authentication Request protocol)
 		// URL Target of the IdP where the SP will send the Authentication Request Message
