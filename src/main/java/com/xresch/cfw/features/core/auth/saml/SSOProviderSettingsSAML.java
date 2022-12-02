@@ -65,6 +65,8 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		SP_X509_CERTIFICATE,
 		SP_X509_CERTIFICATE_NEW,
 		SP_PKCS8_PRIVATE_KEY,
+		ENABLE_SIGNING,
+		SIGNING_ALGORITHM
 	}
 	
 //	x String idpEntityIDURL			= "http://localhost:8080/realms/myrealm/protocol/saml/descriptor";
@@ -106,10 +108,22 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 			.setLabel("SP PKCS8 Private Key")
 			.setDescription("The private key of the Service Provider.");
 	
+	private CFWField<String> enableSigning = CFWField.newString(FormFieldType.BOOLEAN, SSOProviderSettingsSAMLFields.ENABLE_SIGNING)
+			.setDescription("Toogle if the requests/responses originated by the SP should be signed.")
+			.setValue("false");
 	
+	private CFWField<String> spSigningAlgorithm = CFWField.newString(FormFieldType.SELECT, SSOProviderSettingsSAMLFields.SIGNING_ALGORITHM)
+			.setLabel("Signing Algorithm")
+			.setDescription("The algorithm used for signing.")
+			.addOption("http://www.w3.org/2000/09/xmldsig#rsa-sha1", "RSA-SHA1")
+			.addOption("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256", "RSA-SHA256")
+			.addOption("http://www.w3.org/2001/04/xmldsig-more#rsa-sha384", "RSA-SHA384")
+			.addOption("http://www.w3.org/2001/04/xmldsig-more#rsa-sha512", "RSA-SHA512")
+			.addOption("http://www.w3.org/2000/09/xmldsig#dsa-sha1", "DSA-SHA1")
+			.setValue("http://www.w3.org/2001/04/xmldsig-more#rsa-sha256")
+			;
 	
-	private OIDCProviderMetadata providerMetadata = null;
-	
+		
 	public SSOProviderSettingsSAML() {
 		initializeFields();
 	}
@@ -123,6 +137,8 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 				, spX509Cert
 				, spX509CertNew
 				, spPrivateKey
+				, enableSigning
+				, spSigningAlgorithm
 			);
 	}
 		
@@ -242,6 +258,24 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		return this;
 	}
 	
+	public String enableSigning() {
+		return enableSigning.getValue();
+	}
+	
+	public SSOProviderSettingsSAML enableSigning(Boolean value) {
+		this.enableSigning.setValue(value.toString());
+		return this;
+	}
+	
+	public String spSigningAlgorithm() {
+		return spSigningAlgorithm.getValue();
+	}
+	
+	public SSOProviderSettingsSAML spSigningAlgorithm(String value) {
+		this.spSigningAlgorithm.setValue(value);
+		return this;
+	}
+	
 	@Override
 	protected String getSettingsType() {
 		return SETTINGS_TYPE;
@@ -270,7 +304,8 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		String spX509cert				= this.spX509Cert();
 		String spX509certNew			= this.spX509CertNew();
 		String spPrivateKey				= this.spPrivateKey();
-		Boolean toogleSigning			= false;
+		String spSigningAlgorithm		= this.spSigningAlgorithm();
+		String enableSigning			= this.enableSigning();
 	
 		//  If 'strict' is True, then the Java Toolkit will reject unsigned
 		//  or unencrypted messages if it expects them signed or encrypted
@@ -391,22 +426,22 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 	
 		// Indicates whether the <samlp:AuthnRequest> messages sent by this SP
 		// will be signed.              [The Metadata of the SP will offer this info]
-		properties.put("onelogin.saml2.security.authnrequest_signed", toogleSigning);
+		properties.put("onelogin.saml2.security.authnrequest_signed", enableSigning);
 	
 		// Indicates whether the <samlp:logoutRequest> messages sent by this SP
 		// will be signed.
-		properties.put("onelogin.saml2.security.logoutrequest_signed", toogleSigning);
+		properties.put("onelogin.saml2.security.logoutrequest_signed", enableSigning);
 	
 		// Indicates whether the <samlp:logoutResponse> messages sent by this SP
 		// will be signed.
-		properties.put("onelogin.saml2.security.logoutresponse_signed", toogleSigning);
+		properties.put("onelogin.saml2.security.logoutresponse_signed", enableSigning);
 	
 		// Indicates a requirement for the <samlp:Response>, <samlp:LogoutRequest> and
 		// <samlp:LogoutResponse> elements received by this SP to be signed.
-		properties.put("onelogin.saml2.security.want_messages_signed", toogleSigning);
+		properties.put("onelogin.saml2.security.want_messages_signed", enableSigning);
 	
 		// Indicates a requirement for the <saml:Assertion> elements received by this SP to be signed.
-		properties.put("onelogin.saml2.security.want_assertions_signed", toogleSigning);
+		properties.put("onelogin.saml2.security.want_assertions_signed", enableSigning);
 	
 		// Indicates a requirement for the Metadata of this SP to be signed.
 		// Right now supported null (in order to not sign) or true (sign using SP private key) 
@@ -432,13 +467,12 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		properties.put("onelogin.saml2.security.want_xml_validation", "true");
 	
 		// Algorithm that the toolkit will use on signing process. Options:
-		// Algorithm that the toolkit will use on signing process. Options:
 		//  'http://www.w3.org/2000/09/xmldsig#rsa-sha1'
 		//  'http://www.w3.org/2000/09/xmldsig#dsa-sha1'
 		//  'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256'
 		//  'http://www.w3.org/2001/04/xmldsig-more#rsa-sha384'
 		//  'http://www.w3.org/2001/04/xmldsig-more#rsa-sha512'
-		properties.put("onelogin.saml2.security.signature_algorithm", "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
+		properties.put("onelogin.saml2.security.signature_algorithm", spSigningAlgorithm);
 																	 
 		// Organization
 //		properties.put("onelogin.saml2.organization.name", "SP Java");
