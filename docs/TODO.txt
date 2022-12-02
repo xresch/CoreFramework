@@ -137,6 +137,7 @@ DONE
 ------- current -------
 - BREAKING: refactoring of mapJsonToFields() to toggle sanitation
 - New Feature: Page Tutorials
+- User Management: Added names of user/roles/group in delete confirmation popup
 - Database: Added Feature 'Reindex Fulltext Search' to DB Analytics page
 - CFWField: Added flag SERVER_SIDE_ONLY
 - Dashboard: Widgets settings marked with SERVER_SIDE_ONLY are not sent to the browser
