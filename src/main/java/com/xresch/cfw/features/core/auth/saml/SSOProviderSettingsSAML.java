@@ -61,6 +61,7 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		IDP_ENTITY_URI,
 		IDP_SSO_URL,
 		IDP_X509_CERTIFICATE,
+		SP_ENTITY_URI,
 		SP_X509_CERTIFICATE,
 		SP_X509_CERTIFICATE_NEW,
 		SP_PKCS8_PRIVATE_KEY,
@@ -88,6 +89,11 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 			.setLabel("IdP X509 Certificate")
 			.setDescription("The certificate of the IdP.");
 	
+	private CFWField<String> spEntityURI = CFWField.newString(FormFieldType.TEXT, SSOProviderSettingsSAMLFields.SP_ENTITY_URI)
+			.setLabel("SP Entity URI")
+			.setDescription("Identifier of the SP entity.");
+	
+
 	private CFWField<String> spX509Cert = CFWField.newString(FormFieldType.TEXTAREA, SSOProviderSettingsSAMLFields.SP_X509_CERTIFICATE)
 			.setLabel("SP X509 Certificate")
 			.setDescription("The certificate of the Service Provider.");
@@ -113,6 +119,7 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 				  idpEntityURI
 				, idpSSOURL
 				, idpX509Cert
+				, spEntityURI
 				, spX509Cert
 				, spX509CertNew
 				, spPrivateKey
@@ -198,6 +205,15 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 	}
 	
 	
+
+	public String spEntityURI() {
+		return spEntityURI.getValue();
+	}
+	
+	public SSOProviderSettingsSAML spEntityURI(String value) {
+		this.spEntityURI.setValue(value);
+		return this;
+	}
 	
 	public String spX509Cert() {
 		return spX509Cert.getValue();
@@ -243,16 +259,18 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		//========================================
 		// Specify Dynamic Values
 		String serverURL 				= CFW.HTTP.getServerURL(request);
-		String spEntityID 				= serverURL+"/cfw/saml2/acs/metadata";
 		String spAssertionConsumerService = serverURL+"/cfw/saml2/acs";
 		
 		String idpEntityIDURI			= this.idpEntityURI();
 		String idpSSOEnpointURL 		= this.idpSSOURL();
 		String idpSLOEnpointURL 		= "";
 		String idpX509Cert 				= this.idpX509Cert();
+		
+		String spEntityID 				= this.spEntityURI();
 		String spX509cert				= this.spX509Cert();
 		String spX509certNew			= this.spX509CertNew();
 		String spPrivateKey				= this.spPrivateKey();
+		Boolean toogleSigning			= false;
 	
 		//  If 'strict' is True, then the Java Toolkit will reject unsigned
 		//  or unencrypted messages if it expects them signed or encrypted
@@ -293,42 +311,50 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		// Take a look on core/src/main/java/com/onelogin/saml2/util/Constants.java to see the NameIdFormat supported
 		properties.put("onelogin.saml2.sp.nameidformat", "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified");
 
-		// Usually x509cert and privateKey of the SP are provided by files placed at
-		// the certs folder. But we can also provide them with the following parameters
-	
-		properties.put("onelogin.saml2.sp.x509cert", spX509cert);
+		if(spX509cert != null) {
+			// Usually x509cert and privateKey of the SP are provided by files placed at
+			// the certs folder. But we can also provide them with the following parameters
+			properties.put("onelogin.saml2.sp.x509cert", spX509cert);
+		}
 		
-		// Future SP certificate, to be used during SP Key roll over
 		if(spX509certNew != null) {
+			// Future SP certificate, to be used during SP Key roll over
 			properties.put("onelogin.saml2.sp.x509certNew",  spX509certNew);
 		}
 		
-		// Requires Format PKCS#8   BEGIN PRIVATE KEY       
-		// If you have     PKCS#1   BEGIN RSA PRIVATE KEY  convert it by openssl pkcs8 -topk8 -inform pem -nocrypt -in sp.rsa_key -outform pem -out sp.pem
-		properties.put("onelogin.saml2.sp.privatekey",  spPrivateKey);
+		if(spPrivateKey != null) {
+			// Requires Format PKCS#8   BEGIN PRIVATE KEY       
+			// If you have     PKCS#1   BEGIN RSA PRIVATE KEY  convert it by openssl pkcs8 -topk8 -inform pem -nocrypt -in sp.rsa_key -outform pem -out sp.pem
+			properties.put("onelogin.saml2.sp.privatekey",  spPrivateKey);
+		}
 		
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		//// Identity Provider Data that we want connect with our SP ////
 		//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-		// Identifier of the IdP entity  (must be a URI)
-		properties.put("onelogin.saml2.idp.entityid", idpEntityIDURI);
-	
-		// SSO endpoint info of the IdP. (Authentication Request protocol)
-		// URL Target of the IdP where the SP will send the Authentication Request Message
-		// Example: properties.put("onelogin.saml2.idp.single_sign_on_service.url", "http://localhost:8080/java-saml-tookit-jspsample/acs.jsp
+		if(idpEntityIDURI != null) {
+			// Identifier of the IdP entity  (must be a URI)
+			properties.put("onelogin.saml2.idp.entityid", idpEntityIDURI);
+		}
+
+		if(idpSSOEnpointURL != null) {
+			// SSO endpoint info of the IdP. (Authentication Request protocol)
+			// URL Target of the IdP where the SP will send the Authentication Request Message
+			// Example: properties.put("onelogin.saml2.idp.single_sign_on_service.url", "http://localhost:8080/java-saml-tookit-jspsample/acs.jsp
+			properties.put("onelogin.saml2.idp.single_sign_on_service.url", idpSSOEnpointURL);
+		}
 		
-		properties.put("onelogin.saml2.idp.single_sign_on_service.url", idpSSOEnpointURL);
-	
 		// SAML protocol binding to be used when returning the <Response>
 		// message.  Onelogin Toolkit supports for this endpoint the
 		// HTTP-Redirect binding only
 		properties.put("onelogin.saml2.idp.single_sign_on_service.binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect");
 	
-		// SLO endpoint info of the IdP.
-		// URL Location of the IdP where the SP will send the SLO Request
-		properties.put("onelogin.saml2.idp.single_logout_service.url", idpSLOEnpointURL);
-	
+		if(idpSLOEnpointURL != null) {
+			// SLO endpoint info of the IdP.
+			// URL Location of the IdP where the SP will send the SLO Request
+			properties.put("onelogin.saml2.idp.single_logout_service.url", idpSLOEnpointURL);
+		}
+		
 		// Optional SLO Response endpoint info of the IdP.
 		// URL Location of the IdP where the SP will send the SLO Response. If left blank, same URL as properties.put("onelogin.saml2.idp.single_logout_service.url will be used.
 		// Some IdPs use a separate URL for sending a logout request and response, use this property to set the separate response url
@@ -338,10 +364,11 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		// message.  Onelogin Toolkit supports for this endpoint the
 		// HTTP-Redirect binding only
 		properties.put("onelogin.saml2.idp.single_logout_service.binding", "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect");
-	
-		// Public x509 certificate of the IdP
-		properties.put("onelogin.saml2.idp.x509cert", idpX509Cert);
 		
+		if(idpX509Cert != null) {
+			// Public x509 certificate of the IdP
+			properties.put("onelogin.saml2.idp.x509cert", idpX509Cert);
+		}
 		// Instead of using the whole x509cert you can use a fingerprint in order to
 		// validate a SAMLResponse (but you still need the x509cert to validate LogoutRequest and LogoutResponse using the HTTP-Redirect binding).
 		// But take in mind that the fingerprint, is a hash, so at the end is open to a collision attack that can end on a signature validation bypass,
@@ -364,22 +391,22 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 	
 		// Indicates whether the <samlp:AuthnRequest> messages sent by this SP
 		// will be signed.              [The Metadata of the SP will offer this info]
-		properties.put("onelogin.saml2.security.authnrequest_signed", "false");
+		properties.put("onelogin.saml2.security.authnrequest_signed", toogleSigning);
 	
 		// Indicates whether the <samlp:logoutRequest> messages sent by this SP
 		// will be signed.
-		properties.put("onelogin.saml2.security.logoutrequest_signed", "false");
+		properties.put("onelogin.saml2.security.logoutrequest_signed", toogleSigning);
 	
 		// Indicates whether the <samlp:logoutResponse> messages sent by this SP
 		// will be signed.
-		properties.put("onelogin.saml2.security.logoutresponse_signed", "false");
+		properties.put("onelogin.saml2.security.logoutresponse_signed", toogleSigning);
 	
 		// Indicates a requirement for the <samlp:Response>, <samlp:LogoutRequest> and
 		// <samlp:LogoutResponse> elements received by this SP to be signed.
-		properties.put("onelogin.saml2.security.want_messages_signed", "false");
+		properties.put("onelogin.saml2.security.want_messages_signed", toogleSigning);
 	
 		// Indicates a requirement for the <saml:Assertion> elements received by this SP to be signed.
-		properties.put("onelogin.saml2.security.want_assertions_signed", "false");
+		properties.put("onelogin.saml2.security.want_assertions_signed", toogleSigning);
 	
 		// Indicates a requirement for the Metadata of this SP to be signed.
 		// Right now supported null (in order to not sign) or true (sign using SP private key) 
@@ -412,7 +439,7 @@ public class SSOProviderSettingsSAML extends SSOProviderSettings {
 		//  'http://www.w3.org/2001/04/xmldsig-more#rsa-sha384'
 		//  'http://www.w3.org/2001/04/xmldsig-more#rsa-sha512'
 		properties.put("onelogin.saml2.security.signature_algorithm", "http://www.w3.org/2000/09/xmldsig#rsa-sha1");
-	
+																	 
 		// Organization
 //		properties.put("onelogin.saml2.organization.name", "SP Java");
 //		properties.put("onelogin.saml2.organization.displayname", "SP Java Example");
