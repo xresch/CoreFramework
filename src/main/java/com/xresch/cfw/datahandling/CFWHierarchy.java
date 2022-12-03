@@ -181,7 +181,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		}
 		
 		CFW.DB.transactionStart();
-		
+
 		//-----------------------------------
 		// Create Child Element
 		CFWHierarchyConfig config = elementToCreate.getHierarchyConfig();
@@ -193,7 +193,7 @@ public class CFWHierarchy<T extends CFWObject> {
 			createdElementID = new CFWSQL(elementToCreate).insertGetPrimaryKeyWithout(fieldnamesToExclude);
 		}
 		
-		
+
 		if(createdElementID == null) {
 			// return null on error
 			CFW.DB.transactionRollback();
@@ -201,9 +201,16 @@ public class CFWHierarchy<T extends CFWObject> {
 		}
 
 		//-----------------------------------
-		// Set Parent
-		boolean isSuccess = CFWHierarchy.updateParent(config, parentID, createdElementID);	
+		// Check ParentID not Null
+		if(parentID == null) {
+			CFW.DB.transactionCommit();
+			return createdElementID;
+		}
 		
+		//-----------------------------------
+		// Set Parent if not Null
+		boolean isSuccess = CFWHierarchy.updateParent(config, parentID, createdElementID);	
+			
 		if(isSuccess) {
 			//Note: commit  might already have been done by updateParent() >> saveNewParents()
 			CFW.DB.transactionCommit();
@@ -213,6 +220,9 @@ public class CFWHierarchy<T extends CFWObject> {
 			CFW.DB.transactionRollback();
 			return null;
 		}
+		
+		
+		
 
 	}
 	
@@ -733,7 +743,7 @@ public class CFWHierarchy<T extends CFWObject> {
 			.custom("SELECT MAX("+H_POS+") AS MAX_POS FROM "+instance.getTableName()+" T ")
 			.where(H_PARENT, parentID)
 			.getFirstAsInteger();
-		System.out.println("maxPos:"+maxPos);
+
 		return maxPos;
 	}
 	
