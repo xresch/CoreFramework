@@ -1590,6 +1590,21 @@ public class CFWSQL {
 		return null;
 	}
 	
+	/****************************************************************
+	 * Executes the query and returns the first value of the first
+	 * column as integer.
+	 * Useful for getting counts, averages, maximum etc...
+	 * @return integer value, 0 if no rows are selected, null in case of errors
+	 ****************************************************************/
+	public Integer getFirstAsInteger() {
+		
+		if(this.execute(true)) {
+			return ResultSetUtils.getFirstAsInteger(result);
+		}
+		
+		return null;
+	}
+	
 	/***************************************************************
 	 * Execute the Query and gets the result as Objects.
 	 ****************************************************************/

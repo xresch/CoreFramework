@@ -62,6 +62,34 @@ public class ResultSetUtils {
 		
 	}
 	
+	/****************************************************************
+	 * Executes the query and returns the first value of the first
+	 * column as integer.
+	 * Useful for getting counts, averages, maximum etc...
+	 * @return integer value, 0 if no rows are selected, null in case of errors
+	 ****************************************************************/
+	public static Integer getFirstAsInteger(ResultSet result) {
+		
+		try {
+			if(result.next()) {
+				
+				return result.getInt(1);
+				
+			}else {
+				return 0;
+			}
+		}catch (SQLException e) {
+			new CFWLog(logger)
+			.severe("Error reading integer from database.", e);
+			
+		}finally {
+			CFWDB.close(result);
+		}
+		
+		return null;
+		
+	}
+	
 	/***************************************************************************
 	 * Converts a ResultSet into an array list of CFWObjects.
 	 * @return list of object, empty if results set is null or an error occurs.

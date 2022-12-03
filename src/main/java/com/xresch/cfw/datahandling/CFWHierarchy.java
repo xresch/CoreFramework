@@ -249,29 +249,16 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * CFWHierarchyConfig.canSort() is repsonsible for creating error messages.
 	 * 
 	 * @param config of the hierarchy
-	 * @param parentID id or null if child should turn root.
+	 * @param newParentID id or null if child should turn root.
 	 * @param childID id of the child
 	 * @return true if successful, false otherwise.
 	 *****************************************************************************/
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static boolean updateParent(CFWHierarchyConfig config, Integer parentID, int childID) {
+	public static boolean updateParent(CFWHierarchyConfig config, Integer newParentID, int childID) {
 
 		CFWObject instance = config.getCFWObjectInstance();
 		String primaryFieldName = instance.getPrimaryKeyFieldname();
 		
-		//------------------------------------------
-		// Resolve Parent Object
-		CFWObject parentWithHierarchy = null;
-		CFWObject parentObject = null;
-		if(parentID != null) {
-			parentObject = instance.select()
-					.where(primaryFieldName, parentID)
-					.getFirstAsObject();
-			
-			parentWithHierarchy = new CFWHierarchy(parentObject)
-					.fetchAndCreateHierarchy()
-					.getSingleRootObject();
-		}
 		//------------------------------------------
 		// Resolve Child Object
 		CFWObject childObject = instance.select()
@@ -280,9 +267,34 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		Integer oldParentID = (Integer)childObject.getField(H_PARENT).getValue();
 		
+		if(oldParentID == newParentID
+		|| (   oldParentID != null
+			&& newParentID != null
+			&& oldParentID.intValue() == newParentID.intValue()
+			)
+		) {
+			// Do not update Parent if it is still the same
+			// avoids corrupting order(H_POS) in DB
+			return false;
+		}
+		
 		CFWObject childWithHierarchy = new CFWHierarchy(childObject)
 				.fetchAndCreateHierarchy()
 				.getSingleRootObject();
+		
+		//------------------------------------------
+		// Resolve Parent Object
+		CFWObject parentWithHierarchy = null;
+		CFWObject parentObject = null;
+		if(newParentID != null) {
+			parentObject = instance.select()
+					.where(primaryFieldName, newParentID)
+					.getFirstAsObject();
+			
+			parentWithHierarchy = new CFWHierarchy(parentObject)
+					.fetchAndCreateHierarchy()
+					.getSingleRootObject();
+		}
 			
 		//------------------------------------------
 		// Check can be Reordered
@@ -292,9 +304,24 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		//------------------------------------------
 		// Set and save Parent
-		if(setParent(parentWithHierarchy, childWithHierarchy)) {
+		if(setParentNoSave(parentWithHierarchy, childWithHierarchy)) {
+			
+			//------------------------------------------
+			// Fetch Old Parent Object
+			CFWObject oldParentWithHierarchy = null;
+			CFWObject oldParentObject = null;
+			if(oldParentID != null) {
+				oldParentObject = instance.select()
+						.where(primaryFieldName, oldParentID)
+						.getFirstAsObject();
+				
+				oldParentWithHierarchy = new CFWHierarchy(oldParentObject)
+						.fetchAndCreateHierarchy()
+						.getSingleRootObject();
+			}
+			
 			writeAuditLog(oldParentID, parentWithHierarchy, childWithHierarchy);
-			return saveNewParents(childWithHierarchy, true);
+			return saveNewParentStructure(oldParentWithHierarchy, childWithHierarchy, true);
 		}else {
 			return false;
 		}
@@ -314,7 +341,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * @return true if successful, false otherwise.
 	 *****************************************************************************/
 	@SuppressWarnings("unchecked")
-	private static boolean setParent(CFWObject parentWithHierarchy, CFWObject childWithHierarchy) {
+	private static boolean setParentNoSave(CFWObject parentWithHierarchy, CFWObject childWithHierarchy) {
 		
 		//-------------------------------
 		// Argument check
@@ -329,13 +356,13 @@ public class CFWHierarchy<T extends CFWObject> {
 			childWithHierarchy.getField(H_PARENT).setValue(null);
 			((CFWField<ArrayList<String>>)childWithHierarchy.getField(H_LINEAGE)).setValue(new ArrayList<>());
 			((CFWField<Integer>)childWithHierarchy.getField(H_DEPTH)).setValue(0);
-			
-			int rootItemsCount = CFWHierarchy.getChildCount(childWithHierarchy.getHierarchyConfig(), null);
-			((CFWField<Integer>)childWithHierarchy.getField(H_POS)).setValue(rootItemsCount);
+
+			int rootItemsCount = CFWHierarchy.getLastChildPosition(childWithHierarchy.getHierarchyConfig(), null);
+			((CFWField<Integer>)childWithHierarchy.getField(H_POS)).setValue(rootItemsCount+1);
 
 			boolean isSuccess = true;
 			for(Entry<Integer, CFWObject> entry : childWithHierarchy.getChildObjects().entrySet()) {
-				isSuccess &= CFWHierarchy.setParent(childWithHierarchy, entry.getValue());
+				isSuccess &= CFWHierarchy.setParentNoSave(childWithHierarchy, entry.getValue());
 			}
 			
 			return isSuccess;
@@ -393,19 +420,51 @@ public class CFWHierarchy<T extends CFWObject> {
 		((CFWField<Integer>)childWithHierarchy.getField(H_DEPTH)).setValue(lineageForChild.size());
 
 		// read child count from db as reading size from map can be inaccurate
-		int parentChildCount = CFWHierarchy.getChildCount(parentWithHierarchy.getHierarchyConfig(), parentWithHierarchy.getPrimaryKeyValue());
-		((CFWField<Integer>)childWithHierarchy.getField(H_POS)).setValue(parentChildCount);
+		Integer parentLastChildPos = CFWHierarchy.getLastChildPosition(parentWithHierarchy.getHierarchyConfig(), parentWithHierarchy.getPrimaryKeyValue());
+		if(parentLastChildPos == null) {
+			new CFWLog(logger).severe("Error while selecting position of last child.", new Exception());
+			return false;
+		}
+		((CFWField<Integer>)childWithHierarchy.getField(H_POS)).setValue(parentLastChildPos+1);
 		
 		//-----------------------------------------------------
 		// Do for all children of the childWithHierarchy
 		boolean isSuccess = true;
 		for(Entry<Integer, CFWObject> entry : childWithHierarchy.getChildObjects().entrySet()) {
-			isSuccess &= CFWHierarchy.setParent(childWithHierarchy, entry.getValue());
+			isSuccess &= CFWHierarchy.setParentNoSave(childWithHierarchy, entry.getValue());
 		}
 		
 		return isSuccess;
 	}
 	
+	
+	/*****************************************************************************
+	 * Resets the positions of direct children of the given hierarchy.
+	 * This function is used to keep proper order of the positions in the database. 
+	 * The children in the hierarchy have to be ordered by H_POS in ascending order.
+	 * This function should be called during an active DB transaction.
+	 * 
+	 *****************************************************************************/
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static boolean resetChildPositions(CFWObject parentWithHierarchy, Integer removedChildID) {
+		boolean isSuccess = true;
+		int newPos = 1;
+		
+		// done by caller
+		//CFW.DB.transactionStart();
+		for(Entry<Integer, CFWObject> entry : parentWithHierarchy.getChildObjects().entrySet()) {
+			CFWObject current = entry.getValue();
+			
+			// Skip if it the child is not anymore in the hierarchy.
+			if(current.getPrimaryKeyValue().intValue() != removedChildID.intValue()) {
+				current.getField(H_POS).setValue(newPos);
+				isSuccess &= current.update(H_POS);
+				newPos++;
+			}
+		}
+		
+		return isSuccess;
+	}
 	/*****************************************************************************
 	 * 
 	 * @param config of the hierarchy
@@ -435,17 +494,19 @@ public class CFWHierarchy<T extends CFWObject> {
 			
 			Integer originPos = (Integer)itemToMove.getField(H_POS).getValue();
 			
-			if( moveUp && originPos <= 0) {
+
+			if( moveUp && originPos <= 1) {
 				CFW.Messages.addInfoMessage("Item is already at the highest position.");
 				return false;
 			}
 			
-			if( !moveUp && originPos >= childCount-1) {
+			if( !moveUp && originPos >= childCount) {
 				CFW.Messages.addInfoMessage("Item is already at the lowest position.");
 				return false;
 			}
 			
 			int targetPos = (moveUp) ? originPos - 1 : originPos + 1;
+			
 			
 			CFWObject itemToSwap = instance.select()
 					.where(H_PARENT, parentID)
@@ -480,20 +541,28 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * @return true if successful, false otherwise.
 	 *****************************************************************************/
 	@SuppressWarnings("unchecked")
-	private static boolean saveNewParents(CFWObject childWithHierarchy, boolean isFirstCall) {
+	private static boolean saveNewParentStructure(CFWObject oldParentWithHierarchy, CFWObject childWithHierarchy, boolean isFirstCall) {
 		
 		//------------------------------
 		// Start Transaction
+		boolean isSuccess = true;
 		if(!CFW.DB.transactionIsStarted()) { CFW.DB.transactionStart(); };
 		
+		
+		//------------------------------
+		// Do Update Old Parent
+		if(oldParentWithHierarchy != null) {
+			isSuccess &= resetChildPositions(oldParentWithHierarchy, childWithHierarchy.getPrimaryKeyValue());
+		}
 		//------------------------------
 		// Do Updates
-		boolean isSuccess = true;
 		isSuccess &= childWithHierarchy.update(H_DEPTH, H_POS, H_LINEAGE, H_PARENT);
 		 
 		for(Entry<Integer, CFWObject> entry : childWithHierarchy.childObjects.entrySet()) {
-			isSuccess &= saveNewParents(entry.getValue(), false);
+			isSuccess &= saveNewParentStructure(null, entry.getValue(), false);
 		}
+		
+		
 		
 		//------------------------------
 		// Return result
@@ -648,6 +717,45 @@ public class CFWHierarchy<T extends CFWObject> {
 			.selectCount()
 			.where(H_PARENT, parentID)
 			.executeCount();
+	}
+	
+	/*****************************************************************************
+	 * Returns the highest number in the Column H_POS for the direct descendants 
+	 * in the given hierarchy.
+	 * @return highest child position, 0 if there are no children
+	 *****************************************************************************/
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static Integer getLastChildPosition(CFWHierarchyConfig config, Integer parentID) {
+		
+		CFWObject instance = config.getCFWObjectInstance();
+
+		Integer maxPos = new CFWSQL(instance)
+			.custom("SELECT MAX("+H_POS+") AS MAX_POS FROM "+instance.getTableName()+" T ")
+			.where(H_PARENT, parentID)
+			.getFirstAsInteger();
+		System.out.println("maxPos:"+maxPos);
+		return maxPos;
+	}
+	
+	/*****************************************************************************
+	 * Returns the highest number in the Column H_POS for the direct descendants 
+	 * in the given hierarchy.
+	 * @return highest child position, 0 if there are no children
+	 *****************************************************************************/
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static int getLastChildPosition(CFWObject objectWithHierarchy) {
+		boolean isSuccess = true;
+		int highestPos = 0;
+		
+		for(Entry<Integer, CFWObject> entry : objectWithHierarchy.getChildObjects().entrySet()) {
+			CFWObject current = entry.getValue();
+			Integer currentPos = ((CFWField<Integer>)objectWithHierarchy.getField(H_POS)).getValue();
+			if(currentPos != null && currentPos.intValue() > highestPos) {
+				highestPos = currentPos.intValue();
+			}
+		}
+		
+		return highestPos;
 	}
 	
 	/*****************************************************************************
