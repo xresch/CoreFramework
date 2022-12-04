@@ -225,7 +225,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 
 	}
-	
+		
 	/*****************************************************************************
 	 * Checks if the child can moved to the parent using CFWHierarchyConfig.canSort().
 	 * Moves the child if true and returns true if successful.
@@ -364,7 +364,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		// Check if child should be made root
 		if(parentWithHierarchy == null) {
 			childWithHierarchy.getField(H_PARENT).setValue(null);
-			((CFWField<ArrayList<String>>)childWithHierarchy.getField(H_LINEAGE)).setValue(new ArrayList<>());
+			((CFWField<ArrayList<Number>>)childWithHierarchy.getField(H_LINEAGE)).setValue(new ArrayList<>());
 			((CFWField<Integer>)childWithHierarchy.getField(H_DEPTH)).setValue(0);
 
 			int rootItemsCount = CFWHierarchy.getLastChildPosition(childWithHierarchy.getHierarchyConfig(), null);
@@ -417,15 +417,15 @@ public class CFWHierarchy<T extends CFWObject> {
 		@SuppressWarnings("rawtypes")
 		LinkedHashMap<String, CFWField> parentFields = parentWithHierarchy.getFields();
 		
-		ArrayList<String> parentLinage = ((CFWField<ArrayList<String>>)parentFields.get(H_LINEAGE)).getValue();
-		if(parentLinage == null) { parentLinage = new ArrayList<String>();}
+		ArrayList<Number> parentLinage = ((CFWField<ArrayList<Number>>)parentFields.get(H_LINEAGE)).getValue();
+		if(parentLinage == null) { parentLinage = new ArrayList<>();}
 		
 		// do not work directly on parentLinage 
-		ArrayList<String> lineageForChild = new ArrayList<String>();
+		ArrayList<Number> lineageForChild = new ArrayList<>();
 		lineageForChild.addAll(parentLinage);
-		lineageForChild.add(parentWithHierarchy.getPrimaryKeyValue()+"");
+		lineageForChild.add(parentWithHierarchy.getPrimaryKeyValue());
 
-		((CFWField<ArrayList<String>>)childWithHierarchy.getField(H_LINEAGE)).setValue(lineageForChild);
+		((CFWField<ArrayList<Number>>)childWithHierarchy.getField(H_LINEAGE)).setValue(lineageForChild);
 		
 		((CFWField<Integer>)childWithHierarchy.getField(H_DEPTH)).setValue(lineageForChild.size());
 
@@ -637,14 +637,14 @@ public class CFWHierarchy<T extends CFWObject> {
 		//===================================================
 		// Check if same ID is twice in the hierarchy
 		//===================================================
-		HashSet<String> idCheckSet = new HashSet<>();
+		HashSet<Number> idCheckSet = new HashSet<>();
 		
 		//--------------------------------
 		// Iterate parents hierarchy
 	
-		ArrayList<String> lineage = (ArrayList<String>)newParent.getField(H_LINEAGE).getValue();
+		ArrayList<Number> lineage = (ArrayList<Number>)newParent.getField(H_LINEAGE).getValue();
 		if(lineage != null) {
-			for(String currentID : lineage) {
+			for(Number currentID : lineage) {
 				int currentSize = idCheckSet.size();
 				
 				idCheckSet.add(currentID);
@@ -662,7 +662,7 @@ public class CFWHierarchy<T extends CFWObject> {
 		//--------------------------------
 		// Check Child
 		int currentSize = idCheckSet.size();
-		idCheckSet.add(childID+"");
+		idCheckSet.add(childID);
 		
 		//circular reference if the id was already present in the idCheckerSet
 		// and size has therefore not increased
@@ -682,7 +682,7 @@ public class CFWHierarchy<T extends CFWObject> {
 				break;
 			} else {
 				int tempSize = idCheckSet.size();
-				idCheckSet.add(currentID+"");
+				idCheckSet.add(currentID);
 				
 				// circular reference if the id was already present in the idCheckerSet
 				// and size has therefore not increased
@@ -766,6 +766,48 @@ public class CFWHierarchy<T extends CFWObject> {
 		}
 		
 		return highestPos;
+	}
+	
+	/*****************************************************************************
+	 * Returns a list of all the parents of a hierarchical object.
+	 * 
+	 * @return true if successful, false otherwise.
+	 *****************************************************************************/
+	public static LinkedHashMap<Integer, CFWObject> getParentsAsFlatList(CFWHierarchyConfig config, String childID) {
+		
+		CFWObject instance = config.getCFWObjectInstance();
+		
+		CFWObject childObject = instance.select()
+				.where(instance.getPrimaryKeyFieldname(), childID)
+				.getFirstAsObject();	
+		
+		return getParentsAsFlatList(childObject);
+		
+	}
+	
+	/*****************************************************************************
+	 * Returns a list of all the parents of a hierarchical object.
+	 * 
+	 * @return true if successful, false otherwise.
+	 *****************************************************************************/
+	public static LinkedHashMap<Integer, CFWObject>  getParentsAsFlatList(CFWObject child) {
+				
+		if(!child.isHierarchical()) {
+			return new LinkedHashMap<>();
+		}
+		
+		CFWField<ArrayList<Number>> numberArrayField = (CFWField<ArrayList<Number>>)child.getField(H_LINEAGE);
+		
+		 LinkedHashMap<Integer, CFWObject> result = new  LinkedHashMap<>();
+		for(Number parentID : numberArrayField.getValue()) {
+			CFWObject currentParent = new CFWSQL(child)
+										.select()
+										.where(child.getPrimaryKeyFieldname(), parentID.intValue())
+										.getFirstAsObject();
+			result.put(parentID.intValue(), currentParent);
+		}
+		
+		return result;
 	}
 	
 	/*****************************************************************************
@@ -886,7 +928,7 @@ public class CFWHierarchy<T extends CFWObject> {
 			
 			T currentItem = currentEntry.getValue();
 			Integer currentID = currentItem.getPrimaryKeyValue();
-			ArrayList<String> currentLineage = (ArrayList<String>)currentItem.getField(H_LINEAGE).getValue();
+			ArrayList<Number> currentLineage = (ArrayList<Number>)currentItem.getField(H_LINEAGE).getValue();
 			Integer currentParentID = (Integer)currentItem.getField(H_PARENT).getValue();
 			
 			//--------------------------------

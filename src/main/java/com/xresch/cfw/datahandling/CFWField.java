@@ -1955,12 +1955,33 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//-------------------------------------------------
 		// Convert Arrays to String ArrayList
 		if(value.getClass() == Object[].class) {
-			ArrayList<String> stringArray = new ArrayList<>();
-			for(Object object : (Object[])value ){
-				stringArray.add(object.toString());
+
+			if(this.valueSubtypeClass == String.class) {
+				ArrayList<String> stringArray = new ArrayList<>();
+				for(Object object : (Object[])value ){
+					stringArray.add(object.toString());
+				}
+				return  this.changeValue(stringArray);
+				
+			}else if(this.valueSubtypeClass == Number.class) {
+				ArrayList<Number> numberArray = new ArrayList<>();
+				for(Object object : (Object[])value ){
+					
+					if(object instanceof Number) {
+						numberArray.add((Number)object);
+					}else if(object instanceof String) {
+						numberArray.add(Double.parseDouble((String)object));
+					}else {
+						new CFWLog(logger).severe("Unexpected type for array values: "+object.getClass());	
+						return false;
+					}
+				}
+				return  this.changeValue(numberArray);
+			}else {
+				new CFWLog(logger).severe("Unsupported subtype for array: "+this.valueSubtypeClass, new Throwable());	
+				return false;
 			}
 			
-			return this.changeValue(stringArray); 
 		}
 		
 		return success;
