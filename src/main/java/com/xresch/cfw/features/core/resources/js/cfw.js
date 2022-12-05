@@ -2304,8 +2304,8 @@ function cfw_sortArrayByValueOfObject(array, key, reverse){
 			if(valueA == undefined) valueA = 0;
 			if(valueB == undefined) valueA = 0;
 			
-			if(isNaN(valueA)) valueA = 9999999;
-			if(isNaN(valueB)) valueB = 9999999;
+			if(isNaN(valueA)) valueA = Number.MAX_VALUE;
+			if(isNaN(valueB)) valueB = Number.MAX_VALUE;
 			
 			
 		if(reverse){
