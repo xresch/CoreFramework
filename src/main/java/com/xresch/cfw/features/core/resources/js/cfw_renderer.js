@@ -2031,7 +2031,7 @@ function cfw_renderer_chart(renderDef) {
 	    		display: settings.showlegend,
 	    	},
 			scales: {
-				xAxes: [{
+				xAxis: {
 					display: settings.showaxes,
 					type: settings.xtype,
 					distribution: 'linear',
@@ -2053,8 +2053,8 @@ function cfw_renderer_chart(renderDef) {
 						//sampleSize: 1000
 					},
 					
-				}],
-				yAxes: [{
+				},
+				yAxis: {
 					display: settings.showaxes,
 					stacked: settings.stacked,
 					type: settings.ytype,
@@ -2095,7 +2095,7 @@ function cfw_renderer_chart(renderDef) {
 							return value;
 						}
 					},
-				}]
+				}
 			},
 			
 			elements: {
@@ -2134,15 +2134,19 @@ function cfw_renderer_chart(renderDef) {
 
 	//========================================
 	// Set Min Max
-	if(settings.ymin != null){ chartOptions.scales.yAxes[0].ticks.suggestedMin = settings.ymin; }
-	if(settings.ymax != null){ chartOptions.scales.yAxes[0].ticks.suggestedMax = settings.ymax; }
+	if(settings.ymin != null){ chartOptions.scales.yAxis.ticks.suggestedMin = settings.ymin; }
+	if(settings.ymax != null){ chartOptions.scales.yAxis.ticks.suggestedMax = settings.ymax; }
 
-	
 	//========================================
 	// Create Chart
 	var chartCanvas = $('<canvas class="chartJSCanvas" width="100%">');
+	var wrapper = $('<div class="cfw-chartjs-wrapper">');
+	wrapper.append(chartCanvas);
+	
+	workspace.append(wrapper);
+	workspace.css("display", "block");
 	var chartCtx = chartCanvas.get(0).getContext("2d");
-	workspace.append(chartCanvas);
+	//var chartCtx = chartCanvas.get(0);
 	
 	new Chart(chartCtx, {
 	    type: settings.charttype,
@@ -2150,30 +2154,36 @@ function cfw_renderer_chart(renderDef) {
 	    options: chartOptions
 	});
 	
-	// Wrap canvas to avoid scrollbars 
-	var wrapper = $('<div class="cfw-chartjs-wrapper">');
-	wrapper.append(chartCanvas);
 	return wrapper;
 }
+
+/*window.addEventListener('beforeprint', () => {
+  for (let id in Chart.instances) {
+        Chart.instances[id].resize();
+    }
+});*/
 
 CFW.render.registerRenderer("chart", new CFWRenderer(cfw_renderer_chart) );
 
 /******************************************************************
  * 
  ******************************************************************/
+
 function cfw_renderer_chart_setGlobals() {
-	Chart.defaults.global.responsive = true; 
-	Chart.defaults.global.maintainAspectRatio = false;
+	
+	
+	Chart.defaults.responsive = true; 
+	Chart.defaults.maintainAspectRatio = false;
 
-	Chart.defaults.global.legend.display = false;
-	Chart.defaults.global.legend.position =  'bottom';
-	Chart.defaults.global.legend.labels.boxWidth = 16;
+	Chart.defaults.plugins.legend.display = false;
+	Chart.defaults.plugins.legend.position =  'bottom';
+	Chart.defaults.plugins.legend.labels.boxWidth = 16;
 
-	Chart.defaults.global.animation.duration = 0;
+	Chart.defaults.animation.duration = 0;
 		
-	//Chart.defaults.global.datasets.line.showLine = false;
+	//Chart.defaults.datasets.line.showLine = false;
 		
-	Chart.defaults.global.layout = {
+	Chart.defaults.layout = {
         padding: {
             left: 10,
             right: 10,
