@@ -841,14 +841,14 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 		<button id="chartSettingsButton" class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			Chart Settings
 		</button>
-		<div id="${fieldID}-DROPDOWNMENU" class="dropdown-menu col-sm-12" aria-labelledby="dropdownMenuButton" onclick="event.stopPropagation();">
+		<div id="${fieldID}-DROPDOWNMENU" class="dropdown-menu col-sm-12" style="max-height: 60vh; overflow-x: auto;" aria-labelledby="dropdownMenuButton" onclick="event.stopPropagation();">
 			
 			<div class="row m-1"><strong>Series Display</strong></div>
 			
 			<div class="row m-1">  
 				<label class="col-sm-3" for="${fieldID}-CHARTTYPE">Chart Type:</label>   
 				<div class="col-sm-9">
-					<select id="${fieldID}-CHARTTYPE"  class="form-control-inline form-control-sm col-md-12" onkeydown="return event.key != 'Enter';" id="chart_type">
+					<select id="${fieldID}-CHARTTYPE"  class="form-control-inline form-control-sm col-md-12" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')" onkeydown="return event.key != 'Enter';" id="chart_type">
 						<option value="area">Area</option>
 						<option value="line">Line</option>
 						<option value="bar">Bar</option>
@@ -864,7 +864,7 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 					Point Radius:
 				</label>   
 				<div class="col-sm-9">
-					<input id="${fieldID}-POINTRADIUS" type="number" class="form-control-inline form-control-sm col-md-12">
+					<input id="${fieldID}-POINTRADIUS" type="number" class="form-control-inline form-control-sm col-md-12" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')">
 				</div>
 			</div>
 			
@@ -874,11 +874,11 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 				</label>   
 				<div class="col-sm-9">
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="${fieldID}-STACKED" name="${fieldID}-STACKED" value="true"> 
+						<input class="form-check-input" type="radio" id="${fieldID}-STACKED" name="${fieldID}-STACKED" value="true" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')"> 
 						<label class="form-check-label" for="inlineRadio1">true</label>
 					</div>
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="${fieldID}-STACKED" name="${fieldID}-STACKED" value="false" checked="checked"> 
+						<input class="form-check-input" type="radio" id="${fieldID}-STACKED" name="${fieldID}-STACKED" value="false" checked="checked" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')"> 
 						<label class="form-check-label" for="inlineRadio1">false</label>
 					</div>
 				</div>
@@ -890,11 +890,11 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 				</label>   
 				<div class="col-sm-9">
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="${fieldID}-SHOWLEGEND" name="${fieldID}-SHOWLEGEND" value="true"> 
+						<input class="form-check-input" type="radio" id="${fieldID}-SHOWLEGEND" name="${fieldID}-SHOWLEGEND" value="true" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')"> 
 						<label class="form-check-label" for="inlineRadio1">true</label>
 					</div>
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="${fieldID}-SHOWLEGEND" name="${fieldID}-SHOWLEGEND" value="false"  checked="checked"> 
+						<input class="form-check-input" type="radio" id="${fieldID}-SHOWLEGEND" name="${fieldID}-SHOWLEGEND" value="false"  checked="checked" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')"> 
 						<label class="form-check-label" for="inlineRadio1">false</label>
 					</div>
 				</div>
@@ -906,11 +906,11 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 				</label>   
 				<div class="col-sm-9">
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="${fieldID}-SPANGAPS" name="${fieldID}-SPANGAPS" value="true"> 
+						<input class="form-check-input" type="radio" id="${fieldID}-SPANGAPS" name="${fieldID}-SPANGAPS" value="true" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')"> 
 						<label class="form-check-label" for="inlineRadio1">true</label>
 					</div>
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="${fieldID}-SPANGAPS" name="${fieldID}-SPANGAPS" value="false"  checked="checked"> 
+						<input class="form-check-input" type="radio" id="${fieldID}-SPANGAPS" name="${fieldID}-SPANGAPS" value="false"  checked="checked" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')"> 
 						<label class="form-check-label" for="inlineRadio1">false</label>
 					</div>
 				</div>
@@ -924,11 +924,11 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 				</label>   
 				<div class="col-sm-9">
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="${fieldID}-SHOWAXES" name="${fieldID}-SHOWAXES" value="true"  checked="checked"> 
+						<input class="form-check-input" type="radio" id="${fieldID}-SHOWAXES" name="${fieldID}-SHOWAXES" value="true"  checked="checked" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')"> 
 						<label class="form-check-label" for="inlineRadio1">true</label>
 					</div>
 					<div class="form-check form-check-inline">
-						<input class="form-check-input" type="radio" id="${fieldID}-SHOWAXES" name="${fieldID}-SHOWAXES" value="false"> 
+						<input class="form-check-input" type="radio" id="${fieldID}-SHOWAXES" name="${fieldID}-SHOWAXES" value="false" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')"> 
 						<label class="form-check-label" for="inlineRadio1">false</label>
 					</div>
 				</div>
@@ -939,7 +939,7 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 					X Axis Type:
 				</label>   
 				<div class="col-sm-9">
-					<select id="${fieldID}-XAXIS_TYPE" class="form-control-inline form-control-sm col-md-12">
+					<select id="${fieldID}-XAXIS_TYPE" class="form-control-inline form-control-sm col-md-12" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')">
 						<option value="time" selected="">Time</option>
 						<option value="linear">Linear</option>
 						<option value="logarithmic">Logarithmic</option>
@@ -952,7 +952,7 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 					Y Axis Type:
 				</label>   
 				<div class="col-sm-9">
-					<select id="${fieldID}-YAXIS_TYPE" class="form-control-inline form-control-sm col-md-12">
+					<select id="${fieldID}-YAXIS_TYPE" class="form-control-inline form-control-sm col-md-12" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')">
 						<option value="linear">Linear</option>
 						<option value="logarithmic">Logarithmic</option>
 					</select>
@@ -964,7 +964,7 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 					Y Minimum:
 				</label>   
 				<div class="col-sm-9">
-					<input id="${fieldID}-YAXIS_MIN" type="number" class="form-control-inline form-control-sm col-md-12">
+					<input id="${fieldID}-YAXIS_MIN" type="number" class="form-control-inline form-control-sm col-md-12" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')">
 				</div>
 			</div>
 			
@@ -973,20 +973,10 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 					Y Maximum:
 				</label>   
 				<div class="col-sm-9">
-					<input id="${fieldID}-YAXIS_MAX" type="number" class="form-control-inline form-control-sm col-md-12">
+					<input id="${fieldID}-YAXIS_MAX" type="number" class="form-control-inline form-control-sm col-md-12" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')">
 				</div>
 			</div>
 															
-			<div class="row m-1">
-				<div class="col-sm-12">
-					<button class="btn btn-sm btn-primary" onclick="cfw_internal_confirmChartSettings('${fieldID}');" type="button">
-						{!cfw_core_confirm!}
-					</button>
-					<button class="btn btn-sm btn-primary" onclick="$('#${fieldID}').dropdown('toggle');" type="button">
-						{!cfw_core_close!}
-					</button>
-				</div>
-			</div>
 		</div>
 	</div>`);
 	
@@ -1024,7 +1014,7 @@ function cfw_internal_applyChartSettings(fieldID, wrapper, chartSettings){
 /**************************************************************************************
  * 
  *************************************************************************************/
-function cfw_internal_confirmChartSettings(elementID){
+function cfw_internal_updateChartSettings(elementID){
 	
 	var selector = "#"+elementID;
 	var originalField = $(selector);
@@ -1058,7 +1048,7 @@ function cfw_internal_confirmChartSettings(elementID){
 	//--------------------------------------
 	// Set ChartSettings
 	originalField.val(JSON.stringify(chartSettings));
-	originalField.dropdown('toggle');
+	//originalField.dropdown('toggle');
 
 }
 
