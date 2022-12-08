@@ -46,6 +46,7 @@ import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.validation.BooleanValidator;
 import com.xresch.cfw.validation.DoubleValidator;
 import com.xresch.cfw.validation.EpochOrTimeValidator;
+import com.xresch.cfw.validation.FloatValidator;
 import com.xresch.cfw.validation.IValidatable;
 import com.xresch.cfw.validation.IValidator;
 import com.xresch.cfw.validation.IntegerValidator;
@@ -207,6 +208,18 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		return new CFWField<Long>(Long.class, type, fieldName)
 				.setColumnDefinition("BIGINT")
 				.addValidator(new IntegerValidator());
+	}
+	
+	//===========================================
+	// BigDecimal
+	//===========================================
+	public static CFWField<Float> newFloat(FormFieldType type, Enum<?> fieldName){
+		return newFloat(type, fieldName.toString());
+	}
+	public static CFWField<Float> newFloat(FormFieldType type, String fieldName){
+		return new CFWField<Float>(Float.class, type, fieldName)
+				.setColumnDefinition("FLOAT")
+				.addValidator(new FloatValidator());
 	}
 	
 	//===========================================
@@ -1882,6 +1895,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			}
 			else if(valueClass == Integer.class) 	{ return this.changeValue(Integer.parseInt(stringValue)); }
 			else if(valueClass == BigDecimal.class) 		{ return this.changeValue( BigDecimal.valueOf(Double.parseDouble(stringValue)) ); }
+			else if(valueClass == Float.class) 		{ return this.changeValue( Float.valueOf(Float.parseFloat(stringValue)) ); }
 			else if(valueClass == Boolean.class) 	{ return this.changeValue(Boolean.parseBoolean( (stringValue).trim()) ); }
 			else if(valueClass == Timestamp.class)  { return this.changeValue(new Timestamp(Long.parseLong( (stringValue).trim()) )); }
 			else if(valueClass == Date.class)  		{ return this.changeValue(new Date(Long.parseLong( (stringValue).trim()) )); }
@@ -2310,6 +2324,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 					if     ( String.class.isAssignableFrom(current.getValueClass()) )  { current.setValueConvert(result.getString(colName), true); }
 					else if( Integer.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getObject(colName), true); }
 					else if( BigDecimal.class.isAssignableFrom(current.getValueClass()))    { current.setValueConvert(result.getBigDecimal(colName), true); }
+					else if( Float.class.isAssignableFrom(current.getValueClass()))    { current.setValueConvert(result.getFloat(colName), true); }
 					else if( Boolean.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getBoolean(colName), true); }
 					else if( Timestamp.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getTimestamp(colName), true); }
 					else if( Date.class.isAssignableFrom(current.getValueClass()))  { current.setValueConvert(result.getDate(colName), true); }
