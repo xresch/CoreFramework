@@ -2027,9 +2027,6 @@ function cfw_renderer_chart(renderDef) {
 	// Create Options
 	var chartOptions =  {
 	    	responsive: settings.responsive,
-	    	legend: {
-	    		display: settings.showlegend,
-	    	},
 			scales: {
 				xAxis: {
 					display: settings.showaxes,
@@ -2062,9 +2059,9 @@ function cfw_renderer_chart(renderDef) {
 						drawBorder: false,
 						color: settings.yaxescolor
 					},
-					scaleLabel: {
+					title: {
 						display: false,
-						labelString: 'Closing price ($)'
+						//text: 'Closing price ($)'
 					},
 					ticks: {
 						source: 'data',
@@ -2112,30 +2109,35 @@ function cfw_renderer_chart(renderDef) {
                     bottom: settings.padding
                 }
             },
-                
-			tooltips: {
-				intersect: false,
-				enabled: false,
-				mode: 'index',
-				custom: cfw_renderer_chart_customTooltip,
-//				callbacks: {
-//					label: function(tooltipItem, myData) {
-//						var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-//						if (label) {
-//							label += ': ';
-//						}
-//						label += parseFloat(tooltipItem.value).toFixed(2);
-//						return label;
-//					}
-//				}
-
-			},
+            
+			plugins:  {
+				legend: {
+		    		display: settings.showlegend,
+		    	},
+				tooltip: {
+					intersect: false,
+					enabled: false,
+					mode: 'index',
+					external: cfw_renderer_chart_customTooltip,
+					/*callbacks: {
+						label: function(tooltipItem, myData) {
+							var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+							if (label) {
+								label += ': ';
+							}
+							label += parseFloat(tooltipItem.value).toFixed(2);
+							return label;
+						}
+					}*/
+	
+				},
+			}
 	    };
 
 	//========================================
 	// Set Min Max
-	if(settings.ymin != null){ chartOptions.scales.yAxis.ticks.suggestedMin = settings.ymin; }
-	if(settings.ymax != null){ chartOptions.scales.yAxis.ticks.suggestedMax = settings.ymax; }
+	if(settings.ymin != null){ chartOptions.scales.yAxis.suggestedMin = settings.ymin; }
+	if(settings.ymax != null){ chartOptions.scales.yAxis.suggestedMax = settings.ymax; }
 
 	//========================================
 	// Create Chart
@@ -2197,9 +2199,10 @@ cfw_renderer_chart_setGlobals();
  * 
  ******************************************************************/
 
-function cfw_renderer_chart_customTooltip(tooltipModel) {
+function cfw_renderer_chart_customTooltip(context) {
     // Tooltip Element
     var $tooltip = $('#chartjs-tooltip');
+	var tooltipModel = context.tooltip;
 
     // Create element on first render
     if ($tooltip.length === 0) {
@@ -2253,20 +2256,20 @@ function cfw_renderer_chart_customTooltip(tooltipModel) {
         tableRoot.html(innerHtml);
     }
 
-    // `this` will be the overall tooltip
-    var position = this._chart.canvas.getBoundingClientRect();
+    var position = context.chart.canvas.getBoundingClientRect();
+	const bodyFont = Chart.helpers.toFont(tooltipModel.options.bodyFont);
+
 
     // Display, position, and set styles for font
     $tooltip.css('opacity', 1);
     $tooltip.css('position', 'absolute');
     $tooltip.css('left', position.left + window.pageXOffset + tooltipModel.caretX + 'px');
     $tooltip.css('top', position.top + window.pageYOffset + tooltipModel.caretY + 'px');
-    $tooltip.css('fontFamily', tooltipModel._bodyFontFamily);
-    $tooltip.css('fontSize', tooltipModel.bodyFontSize + 'px');
-    $tooltip.css('fontStyle', tooltipModel._bodyFontStyle);
-    $tooltip.css('padding', tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px');
+    $tooltip.css('font', bodyFont.string);
+    //$tooltip.css('padding', tooltipModel.padding + 'px ' + tooltipModel.padding + 'px');
+    $tooltip.css('padding', '5px');
     $tooltip.css('pointerEvents', 'none');
-    $tooltip.css('z-index', 128);
+    $tooltip.css('z-index', 2048);
 }
 
 /******************************************************************
@@ -2295,7 +2298,7 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 		            borderColor: borderColor,
 		            borderWidth: 1,
 		            spanGaps: settings.spangaps,
-		            steppedLine: settings.isSteppedline,
+		            stepped: settings.isSteppedline,
 		            lineTension: 0,
 		            cfwSum: 0,
 		            cfwCount: 0
