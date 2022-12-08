@@ -8,15 +8,15 @@ import com.xresch.cfw.utils.Ternary;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class FloatValidator extends AbstractValidator {
+public class DoubleValidator extends AbstractValidator {
 
 	
-	public FloatValidator(IValidatable<?> validateable) {
+	public DoubleValidator(IValidatable<?> validateable) {
 		super(validateable);
 		// TODO Auto-generated constructor stub
 	}
 	
-	public FloatValidator() {}
+	public DoubleValidator() {}
 
 	@Override
 	public boolean validate(Object value) {
@@ -30,7 +30,7 @@ public class FloatValidator extends AbstractValidator {
 		if(value instanceof String) {
 
 			try {
-				Float.parseFloat((String)value);
+				Double.parseDouble((String)value);
 				return true;
 			}catch(NumberFormatException e){
 				this.setInvalidMessage("The value of "+validateable.getLabel()+" is not a decimal number.(value='"+value+"')");

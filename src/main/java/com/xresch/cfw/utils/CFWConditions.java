@@ -64,31 +64,31 @@ public class CFWConditions {
 	public static LinkedHashMap<String,CFWField> createThresholdFields(){
 		LinkedHashMap<String,CFWField> fieldsMap = new LinkedHashMap<>();
 		
-		fieldsMap.put(CFWConditions.FIELDNAME_THRESHOLD_EXCELLENT, CFWField.newFloat(FormFieldType.NUMBER, FIELDNAME_THRESHOLD_EXCELLENT)
+		fieldsMap.put(CFWConditions.FIELDNAME_THRESHOLD_EXCELLENT, CFWField.newBigDecimal(FormFieldType.NUMBER, FIELDNAME_THRESHOLD_EXCELLENT)
 					.setLabel("{!cfw_core_thresholdexcellent!}")
 					.setDescription("{!cfw_core_thresholdexcellent_desc!}")
 					.setValue(null)
 				);
 		
-		fieldsMap.put(CFWConditions.FIELDNAME_THRESHOLD_GOOD, CFWField.newFloat(FormFieldType.NUMBER, FIELDNAME_THRESHOLD_GOOD)
+		fieldsMap.put(CFWConditions.FIELDNAME_THRESHOLD_GOOD, CFWField.newBigDecimal(FormFieldType.NUMBER, FIELDNAME_THRESHOLD_GOOD)
 					.setLabel("{!cfw_core_thresholdgood!}")
 					.setDescription("{!cfw_core_thresholdgood_desc!}")
 					.setValue(null)
 				);	
 		
-		fieldsMap.put(CFWConditions.FIELDNAME_THRESHOLD_WARNING, CFWField.newFloat(FormFieldType.NUMBER, FIELDNAME_THRESHOLD_WARNING)
+		fieldsMap.put(CFWConditions.FIELDNAME_THRESHOLD_WARNING, CFWField.newBigDecimal(FormFieldType.NUMBER, FIELDNAME_THRESHOLD_WARNING)
 					.setLabel("{!cfw_core_thresholdwarning!}")
 					.setDescription("{!cfw_core_thresholdwarning_desc!}")
 					.setValue(null)
 				);	
 		
-		fieldsMap.put(CFWConditions.FIELDNAME_THRESHOLD_EMERGENCY, CFWField.newFloat(FormFieldType.NUMBER, FIELDNAME_THRESHOLD_EMERGENCY)
+		fieldsMap.put(CFWConditions.FIELDNAME_THRESHOLD_EMERGENCY, CFWField.newBigDecimal(FormFieldType.NUMBER, FIELDNAME_THRESHOLD_EMERGENCY)
 					.setLabel("{!cfw_core_thresholdemergency!}")
 					.setDescription("{!cfw_core_thresholdemergency_desc!}")
 					.setValue(null)
 				);			
 		
-		fieldsMap.put(CFWConditions.FIELDNAME_THRESHOLD_DANGER, CFWField.newFloat(FormFieldType.NUMBER, FIELDNAME_THRESHOLD_DANGER)
+		fieldsMap.put(CFWConditions.FIELDNAME_THRESHOLD_DANGER, CFWField.newBigDecimal(FormFieldType.NUMBER, FIELDNAME_THRESHOLD_DANGER)
 					.setLabel("{!cfw_core_thresholddanger!}")
 					.setDescription("{!cfw_core_thresholddanger_desc!}")
 					.setValue(null)

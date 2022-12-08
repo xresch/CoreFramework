@@ -1,5 +1,6 @@
 package com.xresch.cfw.db;
 
+import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -564,7 +565,7 @@ public class DBInterface {
 			for(int i = 0; i < values.length ; i++) {
 				Object currentValue = values[i];
 				// TODO: Could be a better/faster solution: prepared.setObject(i+1, currentValue);
-				
+
 				if		(currentValue instanceof String) 	{ prepared.setString(i+1, (String)currentValue); }
 				else if	(currentValue instanceof StringBuilder) 	{ prepared.setString(i+1, currentValue.toString() ); }
 				else if	(currentValue instanceof char[]) 	{ prepared.setString(i+1, new String((char[])currentValue)); }
@@ -572,6 +573,7 @@ public class DBInterface {
 				else if (currentValue instanceof Long) 		{ prepared.setLong(i+1, (Long)currentValue); }
 				else if (currentValue instanceof Boolean) 	{ prepared.setBoolean(i+1, (Boolean)currentValue); }
 				else if (currentValue instanceof Float) 	{ prepared.setFloat(i+1, (Float)currentValue); }
+				else if (currentValue instanceof BigDecimal) 	{ prepared.setBigDecimal(i+1, (BigDecimal)currentValue); }
 				else if (currentValue instanceof Date) 		{ prepared.setDate(i+1, (Date)currentValue); }
 				else if (currentValue instanceof Timestamp) { prepared.setTimestamp(i+1, (Timestamp)currentValue); }
 				else if (currentValue instanceof Blob) 		{ prepared.setBlob(i+1, (Blob)currentValue); }
