@@ -1922,9 +1922,9 @@ function cfw_renderer_chart(renderDef) {
 		// the padding in pixels of the chart
 		padding: 10,
 		// the color of the x-axes grid lines
-		xaxescolor: 'rgba(128,128,128, 0.2)',
+		xaxescolor: 'rgba(128,128,128, 0.1)',
 		// the color of the y-axes grid lines
-		yaxescolor: 'rgba(128,128,128, 0.8)',
+		yaxescolor: 'rgba(128,128,128, 0.2)',
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
@@ -2034,8 +2034,12 @@ function cfw_renderer_chart(renderDef) {
 					distribution: 'linear',
 					offset: true,
 					stacked: settings.stacked,
-					gridLines: {
-						drawBorder: false,
+					grid: {
+						display: true,
+						color: settings.xaxescolor
+					},
+					border: {
+						display: false,
 						color: settings.xaxescolor
 					},
 					ticks: {
@@ -2055,8 +2059,12 @@ function cfw_renderer_chart(renderDef) {
 					display: settings.showaxes,
 					stacked: settings.stacked,
 					type: settings.ytype,
-					gridLines: {
-						drawBorder: false,
+					grid: {
+						display: true,
+						color: settings.yaxescolor
+					},
+					border: {
+						display: false,
 						color: settings.yaxescolor
 					},
 					title: {
