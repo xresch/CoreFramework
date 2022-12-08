@@ -230,7 +230,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	public static CFWField<BigDecimal> newBigDecimal(FormFieldType type, String fieldName){
 		return new CFWField<BigDecimal>(BigDecimal.class, type, fieldName)
-				.setColumnDefinition("DECIMAL")
+				.setColumnDefinition("NUMERIC(1000, 12)")
 				.addValidator(new DoubleValidator());
 	}
 	//===========================================
@@ -1846,13 +1846,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 ******************************************************************************************************/
 	public boolean setValueConvert(T value, boolean doSanitize) {
 		boolean success = true;
-		
-		System.out.println("=======================");
-		System.out.println("Name: "+this.name);
-		System.out.println("Value: "+value);
-		System.out.println("value.getClass(): "+(value == null ? null :value.getClass()));
-		System.out.println("valueClass: "+valueClass);
-		
+				
 		//--------------------------------
 		// Decryption
 		if(this.encryptionSalt != null
@@ -1894,7 +1888,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 
 			}
 			else if(valueClass == Integer.class) 	{ return this.changeValue(Integer.parseInt(stringValue)); }
-			else if(valueClass == BigDecimal.class) 		{ return this.changeValue( BigDecimal.valueOf(Double.parseDouble(stringValue)) ); }
+			else if(valueClass == BigDecimal.class) 		{ return this.changeValue(new BigDecimal(stringValue)); }
 			else if(valueClass == Float.class) 		{ return this.changeValue( Float.valueOf(Float.parseFloat(stringValue)) ); }
 			else if(valueClass == Boolean.class) 	{ return this.changeValue(Boolean.parseBoolean( (stringValue).trim()) ); }
 			else if(valueClass == Timestamp.class)  { return this.changeValue(new Timestamp(Long.parseLong( (stringValue).trim()) )); }

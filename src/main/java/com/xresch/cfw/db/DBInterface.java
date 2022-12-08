@@ -562,29 +562,29 @@ public class DBInterface {
 	public static void prepareStatement(PreparedStatement prepared, Object... values) throws SQLException{
 		
 		if(values != null) {
-			for(int i = 0; i < values.length ; i++) {
-				Object currentValue = values[i];
+			for(int i = 1; i <= values.length ; i++) {
+				Object currentValue = values[i-1];
 				// TODO: Could be a better/faster solution: prepared.setObject(i+1, currentValue);
 
-				if		(currentValue instanceof String) 	{ prepared.setString(i+1, (String)currentValue); }
-				else if	(currentValue instanceof StringBuilder) 	{ prepared.setString(i+1, currentValue.toString() ); }
-				else if	(currentValue instanceof char[]) 	{ prepared.setString(i+1, new String((char[])currentValue)); }
-				else if (currentValue instanceof Integer) 	{ prepared.setInt(i+1, (Integer)currentValue); }
-				else if (currentValue instanceof Long) 		{ prepared.setLong(i+1, (Long)currentValue); }
-				else if (currentValue instanceof Boolean) 	{ prepared.setBoolean(i+1, (Boolean)currentValue); }
-				else if (currentValue instanceof Float) 	{ prepared.setFloat(i+1, (Float)currentValue); }
-				else if (currentValue instanceof BigDecimal) 	{ prepared.setBigDecimal(i+1, (BigDecimal)currentValue); }
-				else if (currentValue instanceof Date) 		{ prepared.setDate(i+1, (Date)currentValue); }
-				else if (currentValue instanceof Timestamp) { prepared.setTimestamp(i+1, (Timestamp)currentValue); }
-				else if (currentValue instanceof Blob) 		{ prepared.setBlob(i+1, (Blob)currentValue); }
-				else if (currentValue instanceof Clob) 		{ prepared.setClob(i+1, (Clob)currentValue); }
-				else if (currentValue instanceof Byte) 		{ prepared.setByte(i+1, (Byte)currentValue); }
-				else if (currentValue instanceof ArrayList) 	{ prepared.setArray(i+1, prepared.getConnection().createArrayOf("VARCHAR", ((ArrayList)currentValue).toArray() )); }
-				else if (currentValue instanceof Object[]) 	{ prepared.setArray(i+1, prepared.getConnection().createArrayOf("VARCHAR", (Object[])currentValue)); }
-				else if (currentValue instanceof LinkedHashMap)	{ prepared.setString(i+1, CFW.JSON.toJSON(currentValue)); }
-				else if (currentValue instanceof CFWSchedule)	{ prepared.setString(i+1, CFW.JSON.toJSON(currentValue)); }
-				else if (currentValue instanceof CFWTimeframe)	{ prepared.setString(i+1, CFW.JSON.toJSON(currentValue)); }
-				else if (currentValue == null) 				{ prepared.setNull(i+1, Types.NULL); }
+				if		(currentValue instanceof String) 	{ prepared.setString(i, (String)currentValue); }
+				else if	(currentValue instanceof StringBuilder) 	{ prepared.setString(i, currentValue.toString() ); }
+				else if	(currentValue instanceof char[]) 	{ prepared.setString(i, new String((char[])currentValue)); }
+				else if (currentValue instanceof Integer) 	{ prepared.setInt(i, (Integer)currentValue); }
+				else if (currentValue instanceof Long) 		{ prepared.setLong(i, (Long)currentValue); }
+				else if (currentValue instanceof Boolean) 	{ prepared.setBoolean(i, (Boolean)currentValue); }
+				else if (currentValue instanceof Float) 	{ prepared.setFloat(i, (Float)currentValue); }
+				else if (currentValue instanceof BigDecimal) 	{ prepared.setBigDecimal(i, (BigDecimal)currentValue); }
+				else if (currentValue instanceof Date) 		{ prepared.setDate(i, (Date)currentValue); }
+				else if (currentValue instanceof Timestamp) { prepared.setTimestamp(i, (Timestamp)currentValue); }
+				else if (currentValue instanceof Blob) 		{ prepared.setBlob(i, (Blob)currentValue); }
+				else if (currentValue instanceof Clob) 		{ prepared.setClob(i, (Clob)currentValue); }
+				else if (currentValue instanceof Byte) 		{ prepared.setByte(i, (Byte)currentValue); }
+				else if (currentValue instanceof ArrayList) 	{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", ((ArrayList)currentValue).toArray() )); }
+				else if (currentValue instanceof Object[]) 	{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", (Object[])currentValue)); }
+				else if (currentValue instanceof LinkedHashMap)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
+				else if (currentValue instanceof CFWSchedule)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
+				else if (currentValue instanceof CFWTimeframe)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
+				else if (currentValue == null) 				{ prepared.setNull(i, Types.NULL); }
 				else { throw new RuntimeException("Unsupported database field type: "+ currentValue.getClass().getName());}
 			}
 		}
