@@ -395,12 +395,15 @@ public class QueryPartValue extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	public BigDecimal getAsBigDecimal() {
-			
-		Number number = this.getAsNumber();
 		
+		if(this.isNumberString()) {
+			return new BigDecimal(this.getAsString());
+		}
+		
+		Number number = this.getAsNumber();
 		if(number == null) return null;
 		
-		return BigDecimal.valueOf(number.doubleValue());
+		return new BigDecimal(number.doubleValue());
 
 	}
 	
