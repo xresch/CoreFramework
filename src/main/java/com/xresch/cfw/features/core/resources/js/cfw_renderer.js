@@ -2028,7 +2028,7 @@ function cfw_renderer_chart(renderDef) {
 	var chartOptions =  {
 	    	responsive: settings.responsive,
 			scales: {
-				xAxis: {
+				x: {
 					display: settings.showaxes,
 					type: settings.xtype,
 					distribution: 'linear',
@@ -2051,7 +2051,7 @@ function cfw_renderer_chart(renderDef) {
 					},
 					
 				},
-				yAxis: {
+				y: {
 					display: settings.showaxes,
 					stacked: settings.stacked,
 					type: settings.ytype,
@@ -2136,8 +2136,8 @@ function cfw_renderer_chart(renderDef) {
 
 	//========================================
 	// Set Min Max
-	if(settings.ymin != null){ chartOptions.scales.yAxis.suggestedMin = settings.ymin; }
-	if(settings.ymax != null){ chartOptions.scales.yAxis.suggestedMax = settings.ymax; }
+	if(settings.ymin != null){ chartOptions.scales.y.suggestedMin = settings.ymin; }
+	if(settings.ymax != null){ chartOptions.scales.y.suggestedMax = settings.ymax; }
 
 	//========================================
 	// Create Chart

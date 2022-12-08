@@ -150,6 +150,7 @@ DONE
 - CFWChartSettings: Added FormFieldType and DataObject Class to manage Chart Settings
 - JS Components: ToogleButton supports favorite style
 - JS Renderer: Tiles - fixed issue with removing alertstyle fields
+- JS Renderer: Upgrade ChartJS from v2.93 to v4.0.1
 - Utils: Added Undo/Redo Manager 
 - Query: Fixed Comma after Binary Expression breaks query by creating array in the wrong place
 - Query: Loader does not block query editor
