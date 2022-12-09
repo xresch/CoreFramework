@@ -2498,10 +2498,13 @@ function cfw_format_splitCFWSchedule(dataArray, fieldname){
 /**************************************************************************************
  * 
  *************************************************************************************/
-function cfw_format_fieldNameToLabel(fieldName){
+function cfw_format_fieldNameToLabel(fieldname){
 	
+	if(fieldname == null){
+		return "";
+	}
  	var regex = /[-_]/;
-	var splitted = fieldName.split(regex);
+	var splitted = fieldname.split(regex);
 	
 	var result = '';
 	for(var i = 0; i < splitted.length; i++) {

@@ -1,6 +1,7 @@
 package com.xresch.cfw.utils.json;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Date;
@@ -91,6 +92,7 @@ public class CFWJson {
 				.registerTypeHierarchyAdapter(CFWChartSettings.class, new SerializerCFWChartSettings())
 				.registerTypeHierarchyAdapter(CFWTimeframe.class, new SerializerCFWTimeframe())
 				.registerTypeHierarchyAdapter(JSONResponse.class, new SerializerJSONResponse())
+				.registerTypeHierarchyAdapter(BigDecimal.class, new SerializerBigDecimal())
 			;
 	}
 	/*************************************************************************************

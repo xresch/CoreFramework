@@ -230,7 +230,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 	public static CFWField<BigDecimal> newBigDecimal(FormFieldType type, String fieldName){
 		return new CFWField<BigDecimal>(BigDecimal.class, type, fieldName)
-				.setColumnDefinition("NUMERIC(1000, 12)")
+				.setColumnDefinition("NUMERIC(64, 6)")
 				.addValidator(new DoubleValidator());
 	}
 	//===========================================
