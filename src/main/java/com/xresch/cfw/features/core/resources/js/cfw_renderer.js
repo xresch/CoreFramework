@@ -1190,7 +1190,7 @@ function cfw_renderer_table(renderDef) {
 			stickyheader: false, 
 			// define if single element arrays should be converted into vertical table (convert columns to rows)
 			verticalize: false,
-			// define if the verticalized fieldnames should be capitalized and underscores removed
+			// define if the verticalized fieldnames should be using labels
 			verticalizelabelize: true,
 			headerclasses: [],
 	};
@@ -1215,7 +1215,7 @@ function cfw_renderer_table(renderDef) {
 			let fieldname = renderDef.visiblefields[i];
 			let label = fieldname;
 			if(settings.verticalizelabelize){
-				label = CFW.format.fieldNameToLabel(fieldname);
+				label = renderDef.labels[fieldname];
 			}
 			let finalValue = singleRecord[fieldname];
 			
@@ -1395,7 +1395,11 @@ function cfw_renderer_table_addRow(targetTable, currentRecord, renderDef, settin
 			if(settings.verticalize){
 				//value already customized and may be a JQuery Object
 				let cell = $('<td>');
-				cell.append(value);
+				if(typeof value != "boolean" ){
+					cell.append(value);
+				}else{
+					cell.append(""+value);
+				}
 				row.append(cell);
 			}else {
 				

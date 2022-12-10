@@ -637,6 +637,11 @@ pre {
     border: 1px solid var(--cfw-darkgray);
 }
 
+.cfw-link:hover{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 .cfw-tile{
 	display: flex !important;
 	flex-direction: column !important;
