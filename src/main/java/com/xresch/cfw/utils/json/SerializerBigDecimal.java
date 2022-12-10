@@ -21,10 +21,7 @@ public class SerializerBigDecimal implements JsonSerializer<BigDecimal> {
 	
 	@Override
 	public JsonElement serialize(BigDecimal object, Type type, JsonSerializationContext context) {
-		
-		System.out.println("serialize:"+object.stripTrailingZeros().toPlainString());
-		object.precision();
-		
+			
 		return new JsonPrimitive(object.stripTrailingZeros().toPlainString());
 	}
 
