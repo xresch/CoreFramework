@@ -514,19 +514,22 @@ public class ResultSetUtils {
 						case Types.TINYINT:
 						case Types.SMALLINT:
 						case Types.INTEGER:
-						case Types.BIGINT:
 							currentObject.addProperty(key, result.getInt(i));
 							break;
 						
+						case Types.BIGINT:
+							currentObject.addProperty(key, result.getLong(i));
+							break;
+							
 						case Types.FLOAT:
 							currentObject.addProperty(key, result.getFloat(i));
 							break;	
 								
 						case Types.DOUBLE:
-						case Types.NUMERIC:
 							currentObject.addProperty(key, result.getDouble(i));
 							break;	
-							
+						
+						case Types.NUMERIC:
 						case Types.DECIMAL:
 							currentObject.addProperty(key, result.getBigDecimal(i));
 							break;	
