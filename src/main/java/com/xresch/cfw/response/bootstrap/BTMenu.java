@@ -61,7 +61,7 @@ public class BTMenu extends HierarchicalHTMLItem {
 		
 		//-----------------------------
 		// Right User menus
-		html.append("\n<ul class=\"nav navbar-nav navbar-right\">");
+		html.append("\n<ul id=\"cfw-navbar-right\" class=\"nav navbar-nav navbar-right\">");
 			for(MenuItem item : rightMenuItems) {
 				html.append(item.getHTML());
 			}

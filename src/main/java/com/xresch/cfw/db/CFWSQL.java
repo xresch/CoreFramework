@@ -186,8 +186,8 @@ public class CFWSQL {
 	public CFWSQL queryCache() {
 		
 		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
-		StackTraceElement cfwLogInstantiatingMethod = stacktrace[2];
-		this.queryName = cfwLogInstantiatingMethod.toString();
+		StackTraceElement cfwQueryInstantiatingMethod = stacktrace[2];
+		this.queryName = cfwQueryInstantiatingMethod.toString();
 		return this;
 	}
 	
