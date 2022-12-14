@@ -12,27 +12,28 @@ function cfw_query_getRendererIndex(queryResult){
 	
 	if(queryResult.displaySettings.as != null){
 		switch(queryResult.displaySettings.as.trim().toLowerCase()){
-			case 'table':			rendererIndex = 0; break;		
-			case 'panels':			rendererIndex = 1; break;	
+			case 'table':				rendererIndex = 0; break;		
+			case 'panels':				rendererIndex = 1; break;	
 			case 'cards':				rendererIndex = 2; break;	
 			case 'tiles':				rendererIndex = 3; break;
-			case 'statuslist':			rendererIndex = 4; break;
-			case 'statusbar':			rendererIndex = 5; break;
-			case 'statusbarreverse':	rendererIndex = 6; break;
+			case 'tileandbar':			rendererIndex = 4; break;
+			case 'statuslist':			rendererIndex = 5; break;
+			case 'statusbar':			rendererIndex = 6; break;
+			case 'statusbarreverse':	rendererIndex = 7; break;
 			
-			case 'statusmap':			rendererIndex = 7; break;
-			case 'statusmap_1to1':		rendererIndex = 8; break;
-			case 'statusmap_2to1':		rendererIndex = 9; break;
-			case 'statusmap_4to1':		rendererIndex = 10; break;
-			case 'statusmap_8to1':		rendererIndex = 11; break;
-			case 'statusmap_1to2':		rendererIndex = 12; break;
-			case 'statusmap_1to4':		rendererIndex = 13; break;
-			case 'statusmap_1to8':		rendererIndex = 14; break;
+			case 'statusmap':			rendererIndex = 8; break;
+			case 'statusmap_1to1':		rendererIndex = 9; break;
+			case 'statusmap_2to1':		rendererIndex = 10; break;
+			case 'statusmap_4to1':		rendererIndex = 11; break;
+			case 'statusmap_8to1':		rendererIndex = 12; break;
+			case 'statusmap_1to2':		rendererIndex = 13; break;
+			case 'statusmap_1to4':		rendererIndex = 14; break;
+			case 'statusmap_1to8':		rendererIndex = 15; break;
 			
-			case 'title':			rendererIndex = 15; break;	
-			case 'csv':				rendererIndex = 16; break;	
-			case 'json':			rendererIndex = 17; break;	
-			case 'xml':				rendererIndex = 18; break;	
+			case 'title':			rendererIndex = 16; break;	
+			case 'csv':				rendererIndex = 17; break;	
+			case 'json':			rendererIndex = 18; break;	
+			case 'xml':				rendererIndex = 19; break;	
 			
 		}
 	}
@@ -820,8 +821,9 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 				cards: { narrow: true},
 				tiles: { 
 					popover: false,
-					border: '2px solid black'
+					//border: '2px solid black'
 				},
+				tileandbar: {},
 				csv: {},
 				json: {},
 				xml: {},
@@ -862,11 +864,15 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 								rendererSettings: {
 									tiles: {
 										popover: false,
-										border: '2px solid black'
+										//border: '2px solid black'
 									},
 								},
 								
 							}
+						},
+						{	label: 'Tile and Bar',
+							name: 'tileandbar',
+							renderdef: { }
 						},
 						{	label: 'Status List',
 							name: 'statuslist',

@@ -5,6 +5,7 @@ CFW_RENDER_NAME_XML = 'xml';
 CFW_RENDER_NAME_TITLE = 'title';
 CFW_RENDER_NAME_TABLE = 'table';
 CFW_RENDER_NAME_TILES = 'tiles';
+CFW_RENDER_NAME_TILEANDBAR = 'tileandbar';
 CFW_RENDER_NAME_STATUSBAR = 'statusbar';
 CFW_RENDER_NAME_STATUSBAR_REVERSE = 'statusbarreverse';
 
@@ -603,7 +604,7 @@ function cfw_renderer_tiles(renderDef) {
 	//-----------------------------------
 	// Check Data
 	if(renderDef.datatype != "array"){
-		return "<span>Unable to convert data into alert tiles.</span>";
+		return "<span>Unable to convert data into tiles.</span>";
 	}
 	
 	//-----------------------------------
@@ -763,6 +764,105 @@ function cfw_renderer_tiles(renderDef) {
 }
 
 CFW.render.registerRenderer(CFW_RENDER_NAME_TILES, new CFWRenderer(cfw_renderer_tiles));
+
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_tileandbar(renderDef) {
+	
+	console.log(renderDef);
+	//-----------------------------------
+	// Check Data
+	if(renderDef.datatype != "array"){
+		return "<span>Unable to convert data into tile.</span>";
+	}
+	
+	//-----------------------------------
+	// Render Specific settings
+	var defaultSettings = {
+		// Class or color to use for the tile that sums up the status of all monitors
+		summarystyle: null,
+		// Class or color to use for the text of the tile
+		summarytextstyle: 'white',
+	};
+	
+	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.tileandbar);
+
+	//---------------------------------
+	// Evaluate summarystyle
+	if(settings.summarystyle == null){
+		var worstStatusStyle = CFW.style.notevaluated;
+		for(var index in renderDef.data){
+			var current = renderDef.data[index];
+			var alertstyle = current[renderDef.bgstylefield];
+			worstStatusStyle = CFW.colors.getThresholdWorse(worstStatusStyle, alertstyle);
+		}
+		
+		settings.summarystyle = worstStatusStyle;
+	}
+
+	//---------------------------------
+	// Create Grouped Data for Rendering
+	var summaryData = {
+		items: renderDef.data
+	};
+	
+	summaryData[renderDef.bgstylefield] = settings.summarystyle;
+	summaryData[renderDef.textstylefield] = settings.summarytextstyle;
+	
+	//--------------------------------
+	// Adjust Render Definition
+	var renderDefClone = _.cloneDeep(renderDef);
+	renderDefClone.data = summaryData;
+
+	renderDefClone.rendererSettings.tiles.expandsingle = true;
+	renderDefClone.rendererSettings.tiles.popover = true;
+	
+	if(renderDefClone.rendererSettings.tiles == null){
+		renderDefClone.rendererSettings.tiles = {};
+	}
+	
+	renderDefClone.rendererSettings.tiles.showlabels = false;
+	
+	renderDefClone.customizers.items =  function(record, value) { 
+			if(value != null && value != ""){
+
+			var itemsRenderDef = _.cloneDeep(renderDef);
+			itemsRenderDef.data = value;
+			itemsRenderDef.rendererSettings.tiles.showlabels = false; 
+			itemsRenderDef.rendererSettings.tiles.popover = true; 
+			itemsRenderDef.rendererSettings.tiles.sizefactor = 0.5; 
+			
+			return  CFW.render.getRenderer("tiles").render(itemsRenderDef); 
+		
+			}else {
+				return "&nbsp;";
+			}
+	};
+	
+	//--------------------------
+	// Create Tiles and Status Bar
+	var tiles = CFW.render.getRenderer('tiles').render(renderDefClone);
+	tiles.removeClass('h-100');
+	tiles.css('height', '90%');
+	tiles.find('div').css('margin', '0px');
+	
+	var statusBarData = Object.assign({}, renderDefClone);
+	statusBarData.data = renderDef.data;
+	var statusbar = CFW.render.getRenderer('statusbar').render(statusBarData);
+	statusbar.css('height', '10%');
+	
+	var tileAndBarWrapper = $('<div class="d-flex-column w-100 h-100">');
+	tileAndBarWrapper.append(tiles);
+	tileAndBarWrapper.append(statusbar);
+	
+	return tileAndBarWrapper;
+	
+}
+
+CFW.render.registerRenderer(CFW_RENDER_NAME_TILEANDBAR, new CFWRenderer(cfw_renderer_tileandbar));
+
 
 /******************************************************************
  * 

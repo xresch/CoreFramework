@@ -264,19 +264,75 @@ function cfw_colors_randomSL(hue, minS, maxS, minL, maxL) {
 }
 
 /************************************************************************************************
- * Returns a cfw style string for the value based on the defined thresholds e.g "cfw-excellent".
+ * Returns the style class string that indicates the status that is worse.
+ * If both are null, returns CFW.style.excellent.
+ * @param thresholdClassOne threshold class 
+ * @param thresholdClassTwo threshold class 
+ ************************************************************************************************/
+function cfw_colors_getThresholdWorse(thresholdClassOne, thresholdClassTwo ) {
+	
+
+	if(thresholdClassOne == null){
+		if(thresholdClassTwo != null){
+			return thresholdClassTwo;
+		}else{
+			return CFW.style.excellent;
+		}
+	}
+	
+	
+	if(thresholdClassOne != CFW.style.danger){
+		switch(thresholdClassTwo){
+			
+			case CFW.style.danger: 
+				return CFW.style.danger;
+			break;
+			
+			
+			case CFW.style.emergency: 
+				return CFW.style.emergency;
+			break;
+			
+			
+			case CFW.style.warning: 
+				if(thresholdClassOne != CFW.style.danger
+				&& thresholdClassOne != CFW.style.emergency){
+					return CFW.style.warning;
+				}
+			break;
+			
+			
+			case CFW.style.good: 
+				if(thresholdClassOne != CFW.style.danger
+				&& thresholdClassOne != CFW.style.emergency
+				&& thresholdClassOne != CFW.style.warning
+				){
+					return CFW.style.good;
+				}
+			break;
+			
+			default:
+				// do nothing
+			break;
+		}
+	}
+
+	return thresholdClassOne;
+}
+/************************************************************************************************
+ * Returns a cfw style string for the value based on the defined thresholds e.g CFW.style.excellent.
  * You can use the string for creating a class like: 
  *   "bg-cfw-excellent"
  *   "text-cfw-excellent"
  *   "border-cfw-excellent"
  *   "table-cfw-excellent"
  *   
- * If all the thresholds are null/undefined or the value is NaN returns an "cfw-none".
+ * If all the thresholds are null/undefined or the value is NaN returns an CFW.style.none.
  * You can define thresholds values increasing from Excellent to Danger, or from Danger to Excellent.
  * You can let thresholds undefined/null to skip the color. Values below the lowest threshold value
- * will result in "cfw-gray".
+ * will result in CFW.style.notevaluated.
  * 
- * If isDisabled is set to "true", returns "cfw-darkgray".
+ * If isDisabled is set to "true", returns CFW.style.disabled.
  * 
  * @param value the value that should be thresholded
  * @param tExellent the threshold for excellent
@@ -290,7 +346,7 @@ function cfw_colors_getThresholdStyle(value, tExellent, tGood, tWarning, tEmerge
 
 	//---------------------------
 	// Initial Checks
-	if(isDisabled) { return "cfw-darkgray"; }
+	if(isDisabled) { return CFW.style.disabled; }
 	
 	if(isNaN(value)
 	|| (
@@ -301,7 +357,7 @@ function cfw_colors_getThresholdStyle(value, tExellent, tGood, tWarning, tEmerge
 	   && CFW.utils.isNullOrEmpty(tDanger)
 	   )
 	){
-		return "cfw-none";
+		return CFW.style.none;
 	}
 
 	//---------------------------
@@ -327,22 +383,22 @@ function cfw_colors_getThresholdStyle(value, tExellent, tGood, tWarning, tEmerge
 	//---------------------------
 	// Set Colors for Thresholds
 
-	var styleString = "cfw-gray";
+	var styleString = CFW.style.notevaluated;
 	
 	if(direction == 'HIGH_TO_LOW'){
-		if 		(!CFW.utils.isNullOrEmpty(tExellent) 	&& value >= tExellent) 	{ styleString = "cfw-excellent"; } 
-		else if (!CFW.utils.isNullOrEmpty(tGood) 		&& value >= tGood) 		{ styleString = "cfw-good"; } 
-		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value >= tWarning) 	{ styleString = "cfw-warning"; } 
-		else if (!CFW.utils.isNullOrEmpty(tEmergency) 	&& value >= tEmergency) { styleString = "cfw-emergency"; } 
-		else if (!CFW.utils.isNullOrEmpty(tDanger) 		&& value >= tDanger)  	{ styleString = "cfw-danger"; } 
-		else																	{ styleString = "cfw-gray"; } 
+		if 		(!CFW.utils.isNullOrEmpty(tExellent) 	&& value >= tExellent) 	{ styleString = CFW.style.excellent; } 
+		else if (!CFW.utils.isNullOrEmpty(tGood) 		&& value >= tGood) 		{ styleString = CFW.style.good; } 
+		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value >= tWarning) 	{ styleString = CFW.style.warning; } 
+		else if (!CFW.utils.isNullOrEmpty(tEmergency) 	&& value >= tEmergency) { styleString = CFW.style.emergency; } 
+		else if (!CFW.utils.isNullOrEmpty(tDanger) 		&& value >= tDanger)  	{ styleString = CFW.style.danger; } 
+		else																	{ styleString = CFW.style.notevaluated; } 
 	}else{
-		if 		(!CFW.utils.isNullOrEmpty(tDanger) 		&& value>= tDanger)  	{ styleString = "cfw-danger"; } 
-		else if (!CFW.utils.isNullOrEmpty(tEmergency) 	&& value>= tEmergency) 	{ styleString = "cfw-emergency"; } 
-		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value>= tWarning) 	{ styleString = "cfw-warning"; } 
-		else if (!CFW.utils.isNullOrEmpty(tGood) 		&& value>= tGood) 		{ styleString = "cfw-good"; } 
-		else if (!CFW.utils.isNullOrEmpty(tExellent) 	&& value>= tExellent) 	{ styleString = "cfw-excellent"; } 	
-		else																	{ styleString = "cfw-gray"; } 
+		if 		(!CFW.utils.isNullOrEmpty(tDanger) 		&& value>= tDanger)  	{ styleString = CFW.style.danger; } 
+		else if (!CFW.utils.isNullOrEmpty(tEmergency) 	&& value>= tEmergency) 	{ styleString = CFW.style.emergency; } 
+		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value>= tWarning) 	{ styleString = CFW.style.warning; } 
+		else if (!CFW.utils.isNullOrEmpty(tGood) 		&& value>= tGood) 		{ styleString = CFW.style.good; } 
+		else if (!CFW.utils.isNullOrEmpty(tExellent) 	&& value>= tExellent) 	{ styleString = CFW.style.excellent; } 	
+		else																	{ styleString = CFW.style.notevaluated; } 
 	}
 	
 	return styleString;
@@ -4640,6 +4696,7 @@ var CFW = {
 		randomHSL: cfw_colors_randomHSL,
 		randomSL: cfw_colors_randomSL,
 		getThresholdStyle: cfw_colors_getThresholdStyle,
+		getThresholdWorse: cfw_colors_getThresholdWorse,
 	},
 	config: {
 		toastDelay: 	 3000,
@@ -4704,6 +4761,16 @@ var CFW = {
 	
 	selection: {
 		selectElementContent: cfw_selectElementContent
+	},
+	style: {
+		  excellent: 'cfw-excellent'
+		, good: 'cfw-good'
+		, warning: 'cfw-warning'
+		, emergency: 'cfw-emergency'
+		, danger: 'cfw-danger'
+		, disabled: 'cfw-darkgray'
+		, notevaluated: 'cfw-gray'
+		, none: 'cfw-none'
 	},
 	tutorial: {
 		data: {
