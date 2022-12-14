@@ -52,7 +52,7 @@ public class Space extends CFWObject {
 					, new Object[] {SpaceFields.NAME}) {
 		
 		@Override
-		public boolean canBeReordered(CFWObject sortedElement, CFWObject targetParent) { return true; }
+		public boolean canBeReordered(CFWObject targetParent, CFWObject sortedElement) { return true; }
 		
 		@Override
 		public boolean canAccessHierarchy(String rootElementID) { return true; }
