@@ -712,6 +712,30 @@ public class CFWHierarchy<T extends CFWObject> {
 		}
 
 	}
+	
+	/*****************************************************************************
+	 * Returns the id of the root element of the provided object.
+	 * If it is a root object itself, returns its own id.
+	 * 
+	 *****************************************************************************/
+	@SuppressWarnings("unchecked")
+	public static Integer getRootID(CFWObject object) throws IllegalArgumentException {
+		
+		if(object != null 
+		&& object.isHierarchical() 
+		&& object.getFields().containsKey(H_LINEAGE) ) {
+			
+			ArrayList<Number> lineage = (ArrayList<Number>)object.getField(H_LINEAGE).getValue();
+			if(lineage != null && lineage.size() > 0) {
+				return lineage.get(0).intValue();
+			}else {
+				return object.getPrimaryKeyValue();
+			}
+		}else {
+			throw new IllegalArgumentException("Provided object is either null or not hierarchical.");
+		}
+
+	}
 	/*****************************************************************************
 	 * Returns true if newParent of child would cause a circular reference.
 	 * Creates client error messages. 
