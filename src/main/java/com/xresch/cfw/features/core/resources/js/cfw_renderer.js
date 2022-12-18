@@ -2029,6 +2029,10 @@ function cfw_renderer_chart(renderDef) {
 		xaxescolor: 'rgba(128,128,128, 0.1)',
 		// the color of the y-axes grid lines
 		yaxescolor: 'rgba(128,128,128, 0.2)',
+		// the minimum unit used to display time: millisecond|second|minute|hour|day|week|month|quarter|year
+		xminunit: 'millisecond',
+		// the momentjs format used to parse the time, or a function(value) that returns a value that can be parsed by moment
+		timeformat: null
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
@@ -2138,6 +2142,10 @@ function cfw_renderer_chart(renderDef) {
 					distribution: 'linear',
 					offset: true,
 					stacked: settings.stacked,
+					time:{
+						minUnit: settings.xminunit,
+						parser:  settings.timeformat
+					},
 					grid: {
 						display: true,
 						color: settings.xaxescolor
