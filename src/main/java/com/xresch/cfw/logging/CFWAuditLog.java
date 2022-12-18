@@ -43,6 +43,7 @@ public class CFWAuditLog extends CFWObject {
 		REMOVE,
 		CHANGE,
 		RENAME,
+		CLEAR,
 		RESET,
 		TRANSFER,
 		TRANSFORM,

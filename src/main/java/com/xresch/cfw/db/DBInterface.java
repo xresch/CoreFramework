@@ -200,7 +200,7 @@ public class DBInterface {
 		
 		if(transactionConnection.get() != null) {
 			new CFWLog(logger)
-				.severe("A transaction was already started for this thread. Use commitTransaction() before starting another one.");
+				.severe("A transaction was already started for this thread. Use commitTransaction() before starting another one.", new Throwable());
 			return;
 		}
 		
