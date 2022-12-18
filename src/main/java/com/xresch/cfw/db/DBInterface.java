@@ -566,25 +566,26 @@ public class DBInterface {
 				Object currentValue = values[i-1];
 				// TODO: Could be a better/faster solution: prepared.setObject(i+1, currentValue);
 
-				if		(currentValue instanceof String) 	{ prepared.setString(i, (String)currentValue); }
-				else if	(currentValue instanceof StringBuilder) 	{ prepared.setString(i, currentValue.toString() ); }
-				else if	(currentValue instanceof char[]) 	{ prepared.setString(i, new String((char[])currentValue)); }
-				else if (currentValue instanceof Integer) 	{ prepared.setInt(i, (Integer)currentValue); }
-				else if (currentValue instanceof Long) 		{ prepared.setLong(i, (Long)currentValue); }
-				else if (currentValue instanceof Boolean) 	{ prepared.setBoolean(i, (Boolean)currentValue); }
-				else if (currentValue instanceof Float) 	{ prepared.setFloat(i, (Float)currentValue); }
+				if		(currentValue instanceof String) 		{ prepared.setString(i, (String)currentValue); }
+				else if	(currentValue instanceof StringBuilder) { prepared.setString(i, currentValue.toString() ); }
+				else if	(currentValue instanceof char[]) 		{ prepared.setString(i, new String((char[])currentValue)); }
+				else if (currentValue instanceof Integer) 		{ prepared.setInt(i, (Integer)currentValue); }
+				else if (currentValue instanceof Long) 			{ prepared.setLong(i, (Long)currentValue); }
+				else if (currentValue instanceof Boolean) 		{ prepared.setBoolean(i, (Boolean)currentValue); }
+				else if (currentValue instanceof Float) 		{ prepared.setFloat(i, (Float)currentValue); }
 				else if (currentValue instanceof BigDecimal) 	{ prepared.setBigDecimal(i, (BigDecimal)currentValue); }
-				else if (currentValue instanceof Date) 		{ prepared.setDate(i, (Date)currentValue); }
-				else if (currentValue instanceof Timestamp) { prepared.setTimestamp(i, (Timestamp)currentValue); }
-				else if (currentValue instanceof Blob) 		{ prepared.setBlob(i, (Blob)currentValue); }
-				else if (currentValue instanceof Clob) 		{ prepared.setClob(i, (Clob)currentValue); }
-				else if (currentValue instanceof Byte) 		{ prepared.setByte(i, (Byte)currentValue); }
+				else if (currentValue instanceof Date) 			{ prepared.setDate(i, (Date)currentValue); }
+				else if (currentValue instanceof Timestamp) 	{ prepared.setTimestamp(i, (Timestamp)currentValue); }
+				else if (currentValue instanceof Blob) 			{ prepared.setBlob(i, (Blob)currentValue); }
+				else if (currentValue instanceof Clob) 			{ prepared.setClob(i, (Clob)currentValue); }
+				else if (currentValue instanceof Byte) 			{ prepared.setByte(i, (Byte)currentValue); }
 				else if (currentValue instanceof ArrayList) 	{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", ((ArrayList)currentValue).toArray() )); }
-				else if (currentValue instanceof Object[]) 	{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", (Object[])currentValue)); }
+				else if (currentValue instanceof Object[]) 		{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", (Object[])currentValue)); }
 				else if (currentValue instanceof LinkedHashMap)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
 				else if (currentValue instanceof CFWSchedule)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
 				else if (currentValue instanceof CFWTimeframe)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
-				else if (currentValue == null) 				{ prepared.setNull(i, Types.NULL); }
+				else if (currentValue == null) 					{ prepared.setNull(i, Types.NULL); }
+				else if (currentValue.getClass().isEnum()) 		{ prepared.setString(i, currentValue.toString());}
 				else { throw new RuntimeException("Unsupported database field type: "+ currentValue.getClass().getName());}
 			}
 		}
