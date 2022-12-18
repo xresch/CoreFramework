@@ -33,7 +33,7 @@ public class LogFormatterJSON extends Formatter {
 			//-------------------------
 			// Timestamp
 			buf.append("\"time\":\"");
-			buf.append(Utils.Time.formatDate(new Date(rec.getMillis())));
+			buf.append(Utils.Time.formatDateAsTimestamp(new Date(rec.getMillis())));
 			buf.append("\"");
 						
 			//-------------------------

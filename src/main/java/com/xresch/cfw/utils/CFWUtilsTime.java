@@ -19,10 +19,13 @@ import com.xresch.cfw._main.CFW.Utils;
  **************************************************************************************************************/
 public class CFWUtilsTime {
 	
-	public static final String TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	public static final String FORMAT_TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+	public static final String FORMAT_ISO8601_DATE = "yyyy-MM-dd";
+	
 	private static TimeZone machineTimezone = TimeZone.getDefault();
 			
-	private static SimpleDateFormat timestampFormatter = new SimpleDateFormat(CFWUtilsTime.TIMESTAMP_FORMAT);
+	private static SimpleDateFormat formatterTimestamp = new SimpleDateFormat(CFWUtilsTime.FORMAT_TIMESTAMP);
+	private static SimpleDateFormat formatterISODate = new SimpleDateFormat(CFWUtilsTime.FORMAT_ISO8601_DATE);
 
 	/********************************************************************************************
 	 * Replaces timeframe placeholders with earliest as "now - offset" and latest as "now".
@@ -89,15 +92,22 @@ public class CFWUtilsTime {
 	 ********************************************************************************************/
 	public static String currentTimestamp(){
 		
-		return CFWUtilsTime.formatDate(new Date());
+		return CFWUtilsTime.formatDateAsTimestamp(new Date());
 	}
 	
 	
 	/********************************************************************************************
 	 * Get a string representation of the date in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
 	 ********************************************************************************************/
-	public static String formatDate(Date date){
-		return timestampFormatter.format(date);
+	public static String formatDateAsTimestamp(Date date){
+		return formatterTimestamp.format(date);
+	}
+	
+	/********************************************************************************************
+	 * Get a string representation of the date in the format  "YYYY-MM-dd".
+	 ********************************************************************************************/
+	public static String formatDateAsISO(Date date){
+		return formatterISODate.format(date);
 	}
 	
 	/********************************************************************************************
