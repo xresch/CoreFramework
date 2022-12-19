@@ -144,8 +144,8 @@ public  class CFWDBDefaultOperations {
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.CREATE, object, auditLogFieldnames);
 		
-		return object
-			.queryCache(object.getClass(), "CFWDBDefaultOperations.insertGetPrimaryKey")
+		return new CFWSQL(object)
+			//.queryCache(object.getClass(), "CFWDBDefaultOperations.createGetPrimaryKeyWithout")
 			.insertGetPrimaryKeyWithout(fieldnamesToExclude);
 
 	}
