@@ -1,6 +1,116 @@
 #########################################################
-# Linux Setup Notes
+# Setup CFW Application on CentOS
 #########################################################
+
+#===========================================
+# After first login
+
+passwd
+
+sudo adduser {appusername}
+sudo passwd {appuserpw}
+
+sudo yum check-update
+sudo yum update
+sudo reboot
+
+#===========================================
+# Install Java
+
+yum install java-1.8.0-openjdk
+
+#===========================================
+# Open Firewall Ports
+
+sudo firewall-cmd --list-all
+sudo firewall-cmd --zone=public --add-port=80/tcp --permanent
+sudo firewall-cmd --zone=public --add-port=443/tcp --permanent
+sudo firewall-cmd --reload
+
+#===========================================
+# Enable FTP
+
+dnf install vsftpd
+systemctl start vsftpd
+systemctl enable vsftpd
+
+-------------- 
+
+vi /etc/vsftpd/vsftpd.conf
+
+Set/uncomment/add following properties:
+	anonymous_enable=NO
+	local_enable=YES
+	write_enable=YES
+	chroot_local_user=YES 		# limits access to home directory
+	allow_writeable_chroot=YES	# grants permission to change and write files via FTP
+
+---------------
+
+vi /etc/pam.d/vsftpd
+
+Comment following line: 
+	#auth   	required	pam_shells.so
+	
+---------------
+
+firewall-cmd --permanent --add-service=ftp
+firewall-cmd --reload 
+
+systemctl restart vsftpd
+
+#===========================================
+# Prepare Application
+
+1. Connect to FTP using user appuser.
+2. Upload application folder to /home/{appusername}/
+3. Connect to server via SSH/Putty
+4. Change to appfolder:
+	cd /home/{appusername}/{appfolder}
+5. Edit Config:
+	vi ./
+	cfw_http_port=80
+6. Test if application starts:
+	/{appfolder}/start.sh
+	
+#===========================================
+# Create Service
+1. Create file:
+	touch /etc/systemd/system/{appname}.service
+	sudo chmod 664 /etc/systemd/system/{appname}.service
+
+2. Add file content:
+	[Unit]
+	Description={applicationname}
+	[Service]
+	User={appuser}
+	# The configuration file application.properties should be here:
+
+	#change this to your workspace
+	WorkingDirectory=/home/{appuser}/{appfolder}
+
+	#path to executable. 
+	#executable is a bash script which calls jar file
+	ExecStart=/bin/bash /home/{appuser}/{appfolder}/start.sh
+	ExecStop=/bin/bash /home/{appuser}/{appfolder}/stop.sh
+	SuccessExitStatus=143
+	TimeoutStopSec=10
+	Restart=on-failure
+	RestartSec=15
+
+	[Install]
+	WantedBy=multi-user.target
+
+3. Enable:
+systemctl enable orgmanager
+systemctl status orgmanager
+
+4. Test:
+sudo systemctl start {appname}
+sudo systemctl stop {appname}
+sudo systemctl restart {appname}
+
+	
 
 #########################################################
 # After first login
