@@ -256,7 +256,8 @@ public class CFWHierarchy<T extends CFWObject> {
 	/*****************************************************************************
 	 * Checks if the child can moved to the parent using CFWHierarchyConfig.canSort().
 	 * Moves the child if true and returns true if successful.
-	 * CFWHierarchyConfig.canSort() is repsonsible for creating error messages.
+	 * CFWHierarchyConfig.canSort() is responsible for creating error messages.
+	 * Will return false if the parent is still the same.
 	 * 
 	 * @param config of the hierarchy
 	 * @param newParentID id or null if child should turn root.
