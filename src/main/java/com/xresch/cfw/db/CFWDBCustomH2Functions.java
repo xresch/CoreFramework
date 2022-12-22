@@ -40,7 +40,8 @@ public class CFWDBCustomH2Functions {
 	}
 	
 	/************************************************************************
-	 * 
+	 * Extracts distinct values from all arrays in an array column.
+	 * Sorts by natural order.
 	 ************************************************************************/
 	public static SimpleResultSet CFW_ARRAY_DISTINCT(Connection conn, String tableName, String columnName) throws SQLException {
 		
