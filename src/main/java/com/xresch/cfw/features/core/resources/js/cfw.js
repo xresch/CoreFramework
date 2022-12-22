@@ -2906,6 +2906,14 @@ function cfw_customizer_booleanFormat(record, value) {
 };
 
 /**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_customizer_badgeFormat(record, value) { 
+	
+	return cfw_format_arrayToBadges(value);
+};
+
+/**************************************************************************************
  * Create a table of contents for the h-elements on the page.
  * If you do not want a section and it's subsection to appear in the table of contents,
  * add the class 'toc-hidden' to your header element.
@@ -4741,6 +4749,7 @@ var CFW = {
 	},
 	customizer: {
 		booleanFormat: 	cfw_customizer_booleanFormat,
+		badgeFormat: 	cfw_customizer_badgeFormat,
 	},
 	http: {
 		readCookie: cfw_http_readCookie,

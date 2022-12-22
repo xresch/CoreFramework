@@ -25,6 +25,7 @@ import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.ResultSetUtils.ResultSetAsJsonReader;
 import com.xresch.cfw.utils.json.SerializerResultSet;
 
 /**************************************************************************************************************
@@ -486,101 +487,115 @@ public class ResultSetUtils {
 	 ***************************************************************************/
 	public static JsonArray toJSONArray(ResultSet result) {
 		
-		JsonArray resultArray =  new JsonArray();
-		
+		JsonArray resultArray = new JsonArray();
 		if(result == null) {
 			return resultArray;
 		}
+		ResultSetAsJsonReader reader = ResultSetUtils.toJSONReader(result);
 		
-		try {
-			ResultSetMetaData meta = result.getMetaData();
-			int columnCount = meta.getColumnCount();
-			
-			while(result.next()) {
-				JsonObject currentObject = new JsonObject();
-				
-				for(int i = 1; i <= columnCount; i++) {
-					String key = meta.getColumnLabel(i);
-					int type = meta.getColumnType(i);
-					
-					
-					switch(type) {
-					
-						case Types.BOOLEAN:
-							currentObject.addProperty(key, result.getBoolean(i));
-							break;
-							
-						case Types.BIT:
-						case Types.TINYINT:
-						case Types.SMALLINT:
-						case Types.INTEGER:
-							currentObject.addProperty(key, result.getInt(i));
-							break;
-						
-						case Types.BIGINT:
-							currentObject.addProperty(key, result.getLong(i));
-							break;
-							
-						case Types.FLOAT:
-							currentObject.addProperty(key, result.getFloat(i));
-							break;	
-								
-						case Types.DOUBLE:
-							currentObject.addProperty(key, result.getDouble(i));
-							break;	
-						
-						case Types.NUMERIC:
-						case Types.DECIMAL:
-							currentObject.addProperty(key, result.getBigDecimal(i));
-							break;	
-						
-						case Types.TIME:
-							Time time = result.getTime(i);
-							if(time != null) {
-								currentObject.addProperty(key, time.getTime());
-							}else {
-								currentObject.add(key, JsonNull.INSTANCE);
-							}
-							break;	
-							
-						case Types.DATE:
-							Date date = result.getDate(i);
-							if(date != null) {
-								currentObject.addProperty(key, date.getTime());
-							}else {
-								currentObject.add(key, JsonNull.INSTANCE);
-							}
-							break;	
-							
-							
-						case Types.TIMESTAMP:
-						case Types.TIMESTAMP_WITH_TIMEZONE:
-							Timestamp timestamp = result.getTimestamp(i);
-							if(timestamp != null) {
-								currentObject.addProperty(key, timestamp.getTime());
-							}else {
-								currentObject.add(key, JsonNull.INSTANCE);
-							}
-							
-							break;	
-							
-						default: 
-							currentObject.addProperty(key, result.getString(i));
-					}
-					
-				}
-				resultArray.add(currentObject);
-				
-			}
-		} catch (SQLException e) {
-			new CFWLog(logger)
-			.severe("Error reading object from database:"+e.getMessage(), e);
-			
-		}finally {
-			CFWDB.close(result);
+		JsonObject object;
+		while( (object = reader.next()) != null) {
+			resultArray.add(object);
 		}
-		
+
 		return resultArray;
+		
+//		JsonArray resultArray =  new JsonArray();
+//		
+//		if(result == null) {
+//			return resultArray;
+//		}
+//		
+//		try {
+//			ResultSetMetaData meta = result.getMetaData();
+//			int columnCount = meta.getColumnCount();
+//			
+//			while(result.next()) {
+//				JsonObject currentObject = new JsonObject();
+//				
+//				for(int i = 1; i <= columnCount; i++) {
+//					String key = meta.getColumnLabel(i);
+//					int type = meta.getColumnType(i);
+//					
+//					
+//					switch(type) {
+//					
+//						case Types.BOOLEAN:
+//							currentObject.addProperty(key, result.getBoolean(i));
+//							break;
+//							
+//						case Types.BIT:
+//						case Types.TINYINT:
+//						case Types.SMALLINT:
+//						case Types.INTEGER:
+//							currentObject.addProperty(key, result.getInt(i));
+//							break;
+//						
+//						case Types.BIGINT:
+//							currentObject.addProperty(key, result.getLong(i));
+//							break;
+//							
+//						case Types.FLOAT:
+//							currentObject.addProperty(key, result.getFloat(i));
+//							break;	
+//								
+//						case Types.DOUBLE:
+//							currentObject.addProperty(key, result.getDouble(i));
+//							break;	
+//						
+//						case Types.NUMERIC:
+//						case Types.DECIMAL:
+//							currentObject.addProperty(key, result.getBigDecimal(i));
+//							break;	
+//						
+//						case Types.TIME:
+//							Time time = result.getTime(i);
+//							if(time != null) {
+//								currentObject.addProperty(key, time.getTime());
+//							}else {
+//								currentObject.add(key, JsonNull.INSTANCE);
+//							}
+//							break;	
+//							
+//						case Types.DATE:
+//							Date date = result.getDate(i);
+//							if(date != null) {
+//								currentObject.addProperty(key, date.getTime());
+//							}else {
+//								currentObject.add(key, JsonNull.INSTANCE);
+//							}
+//							break;	
+//							
+//							
+//						case Types.TIMESTAMP:
+//						case Types.TIMESTAMP_WITH_TIMEZONE:
+//							Timestamp timestamp = result.getTimestamp(i);
+//							if(timestamp != null) {
+//								currentObject.addProperty(key, timestamp.getTime());
+//							}else {
+//								currentObject.add(key, JsonNull.INSTANCE);
+//							}
+//							
+//							break;	
+//							
+//						default: 
+//							currentObject.addProperty(key, result.getString(i));
+//					}
+//					
+//				}
+//				resultArray.add(currentObject);
+//				
+//			}
+//		} catch (SQLException e) {
+//			new CFWLog(logger)
+//			.severe("Error reading object from database:"+e.getMessage(), e);
+//			
+//		}finally {
+//			CFWDB.close(result);
+//		}
+//		
+//		return resultArray;
+		
 	}
 	
 	
