@@ -546,7 +546,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		if(value != null) {	
 			
-			if( !(value instanceof ArrayList) ) {
+			if(value instanceof BigDecimal) {
+				this.addAttribute("value", ((BigDecimal) value).stripTrailingZeros().toPlainString() ); 
+			}else if( !(value instanceof ArrayList) ) {
 				this.addAttribute("value", value.toString().replace("\"", "&quot;")); 
 			}else {
 				StringBuilder builder = new StringBuilder();

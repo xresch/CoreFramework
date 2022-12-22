@@ -89,9 +89,10 @@ public class CFWDB {
 			try {
 				CFWDB.server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "" +port).start();
 				db = DBInterface.createDBInterfaceH2(server, port, storePath, databaseName, username, password);
-				CFWDB.isInitialized = true;
-				initializeFullTextSearch();
 				
+				CFWDBCustomH2Functions.initialize(db);
+				initializeFullTextSearch();
+				CFWDB.isInitialized = true;
 			} catch (SQLException e) {
 				new CFWLog(logger).severe("Error starting database server: "+e.getMessage(), e);
 			}
@@ -101,8 +102,11 @@ public class CFWDB {
 	    	// Start in MIXED mode, first application
 			// instance accessing db will create a server
 			db = DBInterface.createDBInterfaceH2AutoServer(port, storePath, databaseName, username, password);
-			CFWDB.isInitialized = true;
+
+			CFWDBCustomH2Functions.initialize(db);
 			initializeFullTextSearch();
+			
+			CFWDB.isInitialized = true;
 		}
 	}
 		
