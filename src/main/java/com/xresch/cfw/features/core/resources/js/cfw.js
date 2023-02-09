@@ -280,6 +280,10 @@ function cfw_colors_getThresholdWorse(thresholdClassOne, thresholdClassTwo ) {
 		}
 	}
 	
+	// increase performance
+	if(thresholdClassOne == thresholdClassTwo){
+		return thresholdClassOne;
+	}
 	
 	if(thresholdClassOne != CFW.style.danger){
 		switch(thresholdClassTwo){
@@ -308,6 +312,16 @@ function cfw_colors_getThresholdWorse(thresholdClassOne, thresholdClassTwo ) {
 				&& thresholdClassOne != CFW.style.warning
 				){
 					return CFW.style.good;
+				}
+			break;
+			
+			case CFW.style.excellent: 
+				if(thresholdClassOne != CFW.style.danger
+				&& thresholdClassOne != CFW.style.emergency
+				&& thresholdClassOne != CFW.style.warning
+				&& thresholdClassOne != CFW.style.good
+				){
+					return CFW.style.excellent;
 				}
 			break;
 			
