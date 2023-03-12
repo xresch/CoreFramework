@@ -371,15 +371,14 @@ public class DBInterface {
 	 * 
 	 * @param sql string with placeholders
 	 * @param values the values to be placed in the prepared statement
-	 * @return true if update count is > 0, false otherwise
+	 * @return int number of updated rows, -1 in case of error
 	 ********************************************************************************************/
-	public boolean preparedExecuteBatch(String sql, Object... values){	
+	public int preparedExecuteBatch(String sql, Object... values){	
         
 		CFWLog log = new CFWLog(logger).start();
 		Connection conn = null;
 		PreparedStatement prepared = null;
 
-		boolean result = true;
 		try {
 			//-----------------------------------------
 			// Initialize Variables
@@ -395,15 +394,16 @@ public class DBInterface {
 			// Execute
 			int[] resultCounts = prepared.executeBatch();
 
+			int totalRows = 0;
 			for(int i : resultCounts) {
-				if(i < 0) {
-					result = false;
-					break;
+				if(i >= 0) {
+					totalRows += i;
 				}
 			}
 			increaseDBCallsCount(conn, false);
+			return totalRows;
+			
 		} catch (SQLException e) {
-			result = false;
 			increaseDBCallsCount(conn, true);
 			log.severe("Database Error: "+e.getMessage(), e);
 		} finally {
@@ -420,7 +420,7 @@ public class DBInterface {
 		}
 		
 		log.custom("sql", sql).end(Level.FINE);
-		return result;
+		return -1;
 	}
 	
 	/********************************************************************************************

@@ -8,9 +8,9 @@ The formatrecord command visualizes the order by adding colors based on the firs
 <pre><code class="language-cfwquery">| source random records=500
 | sort FIRSTNAME, LASTNAME, LIKES_TIRAMISU reverse=false reversenulls=true
 | formatrecord 
-	[(LASTNAME ~="^[A-E]"), "cfw-excellent"] 
-	[(LASTNAME ~="^[F-J]"), "cfw-good"] 
-	[(LASTNAME ~="^[K-O]"), "cfw-warning"] 
-	[(LASTNAME ~="^[P-T]"), "cfw-emergency"] 
-	[(LASTNAME ~="^[U-Z]"), "cfw-danger"]
+	[(LASTNAME ~="^[A-E]"), "cfw-green"] 
+	[(LASTNAME ~="^[F-J]"), "cfw-limegreen"] 
+	[(LASTNAME ~="^[K-O]"), "cfw-yellow"] 
+	[(LASTNAME ~="^[P-T]"), "cfw-orange"] 
+	[(LASTNAME ~="^[U-Z]"), "cfw-red"]
 	[(LASTNAME == null), "#3a0756"] </code></pre>

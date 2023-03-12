@@ -46,11 +46,11 @@ function cfw_notifications_addStyleFields(data){
 			switch(current.MESSAGE_TYPE){
 				case 'INFO': 		current.BGSTYLE = "cfw-blue"; 
 									break;
-				case 'SUCCESS':		current.BGSTYLE = "cfw-excellent"; 
+				case 'SUCCESS':		current.BGSTYLE = "cfw-green"; 
 									break;
-				case 'WARNING':		current.BGSTYLE = "cfw-emergency"; 
+				case 'WARNING':		current.BGSTYLE = "cfw-orange"; 
 									break;
-				case 'ERROR':		current.BGSTYLE = "cfw-danger"; 
+				case 'ERROR':		current.BGSTYLE = "cfw-red"; 
 									break;
 				default:			current.BGSTYLE = "cfw-none"; 
 									current.TEXTSTYLE = "cfw-none";
@@ -126,9 +126,9 @@ function cfw_notifications_updateUnreadCountAndSeverity(){
 
 					switch(info.SEVERITY){
 						case 1:		badge.addClass('bg-cfw-blue'); break;
-						case 2: 	badge.addClass('bg-cfw-excellent'); break;
-						case 3: 	badge.addClass('bg-cfw-emergency'); break;
-						case 4:		badge.addClass('bg-cfw-danger'); break;
+						case 2: 	badge.addClass('bg-cfw-green'); break;
+						case 3: 	badge.addClass('bg-cfw-orange'); break;
+						case 4:		badge.addClass('bg-cfw-red'); break;
 						default:			break;
 					}
 					

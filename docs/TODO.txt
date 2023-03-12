@@ -135,6 +135,7 @@ DONE
 ====
 
 ------- current -------
+- BREAKING CODE CHANGE: Renaming of Threshold Fields and CSS-Classes
 - BREAKING CODE CHANGE: refactoring of mapJsonToFields() to toggle sanitation
 - New Feature: Page Tutorials
 - New Feature: Single-Sign-On with SAML and OpenID Connect

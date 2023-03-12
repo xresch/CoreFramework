@@ -11,11 +11,11 @@ If you want to specify a default case, use 'true' as the condition.
 <pre><code class="language-cfwquery">| source random records=1000
 | remove _source
 | formatrecord 
-	[(VALUE >= 80), "cfw-danger"] 
-	[(VALUE >= 60), "cfw-emergency"]  
-	[(VALUE >= 40), "cfw-warning", "purple"] 
-	[(VALUE >= 20), "cfw-good"] 
-	[(VALUE >= 10), "cfw-excellent"] 
+	[(VALUE >= 80), "cfw-red"] 
+	[(VALUE >= 60), "cfw-orange"]  
+	[(VALUE >= 40), "cfw-yellow", "purple"] 
+	[(VALUE >= 20), "cfw-limegreen"] 
+	[(VALUE >= 10), "cfw-green"] 
 	[true, "cfw-gray"] 
 | formatfield LIKES_TIRAMISU=none</code></pre>
 
@@ -36,9 +36,9 @@ If you want to specify a default case, use 'true' as the condition.
 <pre><code class="language-cfwquery">| source random records=100
 | remove _source
 | formatrecord 
-	[(VALUE >= 80), "cfw-danger"] 
-	[(VALUE >= 40), "cfw-warning"] 
-	[(VALUE >= 0), "cfw-excellent"] 
+	[(VALUE >= 80), "cfw-red"] 
+	[(VALUE >= 40), "cfw-yellow"] 
+	[(VALUE >= 0), "cfw-green"] 
 | sort VALUE reverse=true
 | formatfield 
 	VALUE=postfix,"%" 

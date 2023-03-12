@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.core;
 
 import java.util.Locale;
+import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
@@ -8,6 +9,7 @@ import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.TaskDatabaseBackup;
 import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.config.ConfigChangeListener;
@@ -23,9 +25,11 @@ import com.xresch.cfw.features.core.auth.saml.SSOProviderSettingsSAML;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2AssertionConsumerService;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2Login;
 import com.xresch.cfw.features.core.auth.saml.ServletSAML2Metadata;
+import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.logging.CFWAuditLog;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
@@ -35,7 +39,9 @@ import com.xresch.cfw.spi.CFWAppFeature;
  * @license MIT-License
  **************************************************************************************************************/
 public class FeatureCore extends CFWAppFeature {
-
+	
+	private static Logger logger = CFWLog.getLogger(FeatureCore.class.getName());
+	
 	public static final String SERVLET_PATH_LOGIN = "/app/login";
 	public static final String SERVLET_PATH_SSO_OPENID = "/sso/callback/openidconnect";
 
@@ -126,6 +132,21 @@ public class FeatureCore extends CFWAppFeature {
 	@Override
 	public void initializeDB() {
 
+		//============================================================
+		// TEMP: MIGRATE CFWState
+		//============================================================
+		new CFWLog(logger)
+			.off("Migration: Updating threshold fields and names in database...");
+		
+		int updateCount = new CFWSQL(null)
+			.loadSQLResource(RESOURCE_PACKAGE+".sql", "cfw_state_migration_batch_script.sql")
+			.executeBatch()
+			;
+		
+		if(updateCount != -1) {
+			new CFWLog(logger).off("Migration: Updated "+updateCount+" rows");
+		}
+		
 		//============================================================
 		// PERMISSIONS
 		//============================================================

@@ -420,7 +420,7 @@
  * Dashboard styling
  **************************************************************/
 .ruler {
-   /*  background-color: var(--cfw-danger); */
+   /*  background-color: var(--cfw-red); */
     list-style: none;
     display: flex;
     color: #ccc;

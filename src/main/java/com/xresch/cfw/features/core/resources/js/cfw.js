@@ -265,7 +265,7 @@ function cfw_colors_randomSL(hue, minS, maxS, minL, maxL) {
 
 /************************************************************************************************
  * Returns the style class string that indicates the status that is worse.
- * If both are null, returns CFW.style.excellent.
+ * If both are null, returns CFW.style.green.
  * @param thresholdClassOne threshold class 
  * @param thresholdClassTwo threshold class 
  ************************************************************************************************/
@@ -276,7 +276,7 @@ function cfw_colors_getThresholdWorse(thresholdClassOne, thresholdClassTwo ) {
 		if(thresholdClassTwo != null){
 			return thresholdClassTwo;
 		}else{
-			return CFW.style.excellent;
+			return CFW.style.green;
 		}
 	}
 	
@@ -285,43 +285,43 @@ function cfw_colors_getThresholdWorse(thresholdClassOne, thresholdClassTwo ) {
 		return thresholdClassOne;
 	}
 	
-	if(thresholdClassOne != CFW.style.danger){
+	if(thresholdClassOne != CFW.style.red){
 		switch(thresholdClassTwo){
 			
-			case CFW.style.danger: 
-				return CFW.style.danger;
+			case CFW.style.red: 
+				return CFW.style.red;
 			break;
 			
 			
-			case CFW.style.emergency: 
-				return CFW.style.emergency;
+			case CFW.style.orange: 
+				return CFW.style.orange;
 			break;
 			
 			
-			case CFW.style.warning: 
-				if(thresholdClassOne != CFW.style.danger
-				&& thresholdClassOne != CFW.style.emergency){
-					return CFW.style.warning;
+			case CFW.style.yellow: 
+				if(thresholdClassOne != CFW.style.red
+				&& thresholdClassOne != CFW.style.orange){
+					return CFW.style.yellow;
 				}
 			break;
 			
 			
-			case CFW.style.good: 
-				if(thresholdClassOne != CFW.style.danger
-				&& thresholdClassOne != CFW.style.emergency
-				&& thresholdClassOne != CFW.style.warning
+			case CFW.style.limegreen: 
+				if(thresholdClassOne != CFW.style.red
+				&& thresholdClassOne != CFW.style.orange
+				&& thresholdClassOne != CFW.style.yellow
 				){
-					return CFW.style.good;
+					return CFW.style.limegreen;
 				}
 			break;
 			
-			case CFW.style.excellent: 
-				if(thresholdClassOne != CFW.style.danger
-				&& thresholdClassOne != CFW.style.emergency
-				&& thresholdClassOne != CFW.style.warning
-				&& thresholdClassOne != CFW.style.good
+			case CFW.style.green: 
+				if(thresholdClassOne != CFW.style.red
+				&& thresholdClassOne != CFW.style.orange
+				&& thresholdClassOne != CFW.style.yellow
+				&& thresholdClassOne != CFW.style.limegreen
 				){
-					return CFW.style.excellent;
+					return CFW.style.green;
 				}
 			break;
 			
@@ -334,12 +334,12 @@ function cfw_colors_getThresholdWorse(thresholdClassOne, thresholdClassTwo ) {
 	return thresholdClassOne;
 }
 /************************************************************************************************
- * Returns a cfw style string for the value based on the defined thresholds e.g CFW.style.excellent.
+ * Returns a cfw style string for the value based on the defined thresholds e.g CFW.style.green.
  * You can use the string for creating a class like: 
- *   "bg-cfw-excellent"
- *   "text-cfw-excellent"
- *   "border-cfw-excellent"
- *   "table-cfw-excellent"
+ *   "bg-cfw-green"
+ *   "text-cfw-green"
+ *   "border-cfw-green"
+ *   "table-cfw-green"
  *   
  * If all the thresholds are null/undefined or the value is NaN returns an CFW.style.none.
  * You can define thresholds values increasing from Excellent to Danger, or from Danger to Excellent.
@@ -400,18 +400,18 @@ function cfw_colors_getThresholdStyle(value, tExellent, tGood, tWarning, tEmerge
 	var styleString = CFW.style.notevaluated;
 	
 	if(direction == 'HIGH_TO_LOW'){
-		if 		(!CFW.utils.isNullOrEmpty(tExellent) 	&& value >= tExellent) 	{ styleString = CFW.style.excellent; } 
-		else if (!CFW.utils.isNullOrEmpty(tGood) 		&& value >= tGood) 		{ styleString = CFW.style.good; } 
-		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value >= tWarning) 	{ styleString = CFW.style.warning; } 
-		else if (!CFW.utils.isNullOrEmpty(tEmergency) 	&& value >= tEmergency) { styleString = CFW.style.emergency; } 
-		else if (!CFW.utils.isNullOrEmpty(tDanger) 		&& value >= tDanger)  	{ styleString = CFW.style.danger; } 
+		if 		(!CFW.utils.isNullOrEmpty(tExellent) 	&& value >= tExellent) 	{ styleString = CFW.style.green; } 
+		else if (!CFW.utils.isNullOrEmpty(tGood) 		&& value >= tGood) 		{ styleString = CFW.style.limegreen; } 
+		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value >= tWarning) 	{ styleString = CFW.style.yellow; } 
+		else if (!CFW.utils.isNullOrEmpty(tEmergency) 	&& value >= tEmergency) { styleString = CFW.style.orange; } 
+		else if (!CFW.utils.isNullOrEmpty(tDanger) 		&& value >= tDanger)  	{ styleString = CFW.style.red; } 
 		else																	{ styleString = CFW.style.notevaluated; } 
 	}else{
-		if 		(!CFW.utils.isNullOrEmpty(tDanger) 		&& value>= tDanger)  	{ styleString = CFW.style.danger; } 
-		else if (!CFW.utils.isNullOrEmpty(tEmergency) 	&& value>= tEmergency) 	{ styleString = CFW.style.emergency; } 
-		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value>= tWarning) 	{ styleString = CFW.style.warning; } 
-		else if (!CFW.utils.isNullOrEmpty(tGood) 		&& value>= tGood) 		{ styleString = CFW.style.good; } 
-		else if (!CFW.utils.isNullOrEmpty(tExellent) 	&& value>= tExellent) 	{ styleString = CFW.style.excellent; } 	
+		if 		(!CFW.utils.isNullOrEmpty(tDanger) 		&& value>= tDanger)  	{ styleString = CFW.style.red; } 
+		else if (!CFW.utils.isNullOrEmpty(tEmergency) 	&& value>= tEmergency) 	{ styleString = CFW.style.orange; } 
+		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value>= tWarning) 	{ styleString = CFW.style.yellow; } 
+		else if (!CFW.utils.isNullOrEmpty(tGood) 		&& value>= tGood) 		{ styleString = CFW.style.limegreen; } 
+		else if (!CFW.utils.isNullOrEmpty(tExellent) 	&& value>= tExellent) 	{ styleString = CFW.style.green; } 	
 		else																	{ styleString = CFW.style.notevaluated; } 
 	}
 	
@@ -4786,11 +4786,11 @@ var CFW = {
 		selectElementContent: cfw_selectElementContent
 	},
 	style: {
-		  excellent: 'cfw-excellent'
-		, good: 'cfw-good'
-		, warning: 'cfw-warning'
-		, emergency: 'cfw-emergency'
-		, danger: 'cfw-danger'
+		  green: 'cfw-green'
+		, limegreen: 'cfw-limegreen'
+		, yellow: 'cfw-yellow'
+		, orange: 'cfw-orange'
+		, red: 'cfw-red'
 		, disabled: 'cfw-darkgray'
 		, notevaluated: 'cfw-gray'
 		, none: 'cfw-none'

@@ -216,8 +216,8 @@ function cfw_query_formatAlign(span, value, alignment){
 function cfw_query_formatBoolean(span, value, trueBGColor, falseBGColor, trueTextColor, falseTextColor){
 	
 	// set defaults
-	if(trueBGColor == null )	{ trueBGColor = 'cfw-excellent'; }
-	if(falseBGColor == null )	{ falseBGColor = 'cfw-danger'; }
+	if(trueBGColor == null )	{ trueBGColor = 'cfw-green'; }
+	if(falseBGColor == null )	{ falseBGColor = 'cfw-red'; }
 	if(trueTextColor == null )	{ trueTextColor = 'white'; }
 	if(falseTextColor == null )	{ falseTextColor = 'white'; }
 

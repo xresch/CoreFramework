@@ -86,8 +86,8 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				"boolean", 
 				"Formats the value as a badge and adds two different colors for true/false.",
 				new Object[][] {
-					 new Object[] {"trueColor", "cfw-excellent", "The background color used for values that are true."}
-					,new Object[] {"falseColor", "cfw-danger", "The background color used for values that are false."}
+					 new Object[] {"trueColor", "cfw-green", "The background color used for values that are true."}
+					,new Object[] {"falseColor", "cfw-red", "The background color used for values that are false."}
 					,new Object[] {"trueTextColor", "white", "The text color used for values that are true."}
 					 ,new Object[] {"falseTextColor", "white", "The text color used for values that are false."}
 				}

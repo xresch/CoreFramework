@@ -1466,9 +1466,9 @@ public class CFWSQL {
 	 * Executes the query and saves the results in the global 
 	 * variable.
 	 * 
-	 * @return CFWSQL for method chaining
+	 * @return number of updated rows, -1 in case of error
 	 ****************************************************************/
-	public boolean executeBatch() {
+	public int executeBatch() {
 		
 		//----------------------------
 		// Handle Caching
@@ -1476,11 +1476,11 @@ public class CFWSQL {
 		
 		//----------------------------
 		// Execute Statement 
-		boolean success = dbInterface.preparedExecuteBatch(statement, values.toArray());
+		int count = dbInterface.preparedExecuteBatch(statement, values.toArray());
 		
 		dbInterface.close(result);
 		
-		return success;
+		return count;
 
 	}
 	

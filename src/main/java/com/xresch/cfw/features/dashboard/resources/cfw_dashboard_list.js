@@ -592,7 +592,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 		case "faveddashboards":		parent.append('<p>Here you can find all the dashboards you have faved. If you unfave a dashboard here it will vanish from the list the next time the tab or page gets refreshed.</p>')
 									break;	
 									
-		case "admindashboards":		parent.append('<p class="bg-cfw-emergency p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all dashboards of all users.</b></p>')
+		case "admindashboards":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all dashboards of all users.</b></p>')
 									break;	
 														
 		default:					break;

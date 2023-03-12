@@ -32,9 +32,9 @@ The following example does that: </p>
 <pre><code class="language-cfwquery">| source random records=50
 | remove _source
 | formatrecord 
-	[(VALUE >= 80), "cfw-danger"] 
-	[(VALUE >= 40), "cfw-warning"] 
-	[(VALUE >= 0), "cfw-excellent"] 
+	[(VALUE >= 80), "cfw-red"] 
+	[(VALUE >= 40), "cfw-yellow"] 
+	[(VALUE >= 0), "cfw-green"] 
 | sort VALUE reverse=true
 | display as=statusmap menu=false</code></pre>  
     
@@ -45,9 +45,9 @@ This is for example useful when displaying as tiles, when you only want to show 
 <pre><code class="language-cfwquery">| source random records=100
 | remove _source
 | formatrecord 
-	[(VALUE >= 80), "cfw-danger"] 
-	[(VALUE >= 40), "cfw-warning"] 
-	[(VALUE >= 0), "cfw-excellent"] 
+	[(VALUE >= 80), "cfw-red"] 
+	[(VALUE >= 40), "cfw-yellow"] 
+	[(VALUE >= 0), "cfw-green"] 
 | sort VALUE reverse=true
 | formatfield 
 	VALUE=postfix,"%" 

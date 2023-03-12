@@ -20,20 +20,16 @@
  * @license MIT-License
  **************************************************************************************************************/
  :root {
-	--cfw-excellent: #28a438;
-	--cfw-good: #89bb35;
-	--cfw-warning: #efbf00;
-	--cfw-emergency: #eb8905;
-	--cfw-danger: #c70707;
+	--cfw-green: #28a438;
+	--cfw-limegreen: #89bb35;
+	--cfw-yellow: #efbf00;
+	--cfw-orange: #eb8905;
+	--cfw-red: #c70707;
 	
 	--cfw-blue: #0c62c0;
     --cfw-indigo: #6610f2;
     --cfw-purple: #8b43c0;
     --cfw-pink: #e83e8c;
-    --cfw-red: #bb1b16;
-    --cfw-orange: #fd7e14;
-    --cfw-yellow: #fbca04;
-    --cfw-green: #0eaa0e;
     --cfw-teal: #20c997;
     --cfw-cyan: #0894be;
     --cfw-white: #fff;
@@ -62,19 +58,15 @@ pre {
 /*************************************************************************
  * Bootstrap Theme extensions
  *************************************************************************/
-.bg-cfw-excellent{ 		background-color: var(--cfw-excellent); }
-.bg-cfw-good{ 			background-color: var(--cfw-good); }
-.bg-cfw-warning{ 		background-color: var(--cfw-warning); }
-.bg-cfw-emergency{ 		background-color: var(--cfw-emergency); }
-.bg-cfw-danger{ 		background-color: var(--cfw-danger); }
+.bg-cfw-green{ 		background-color: var(--cfw-green); }
+.bg-cfw-limegreen{ 			background-color: var(--cfw-limegreen); }
+.bg-cfw-yellow{ 		background-color: var(--cfw-yellow); }
+.bg-cfw-orange{ 		background-color: var(--cfw-orange); }
+.bg-cfw-red{ 		background-color: var(--cfw-red); }
 .bg-cfw-blue {			background-color: var(--cfw-blue); }
 .bg-cfw-indigo {		background-color: var(--cfw-indigo); }
 .bg-cfw-purple {		background-color: var(--cfw-purple); }
 .bg-cfw-pink {			background-color: var(--cfw-pink); }
-.bg-cfw-red {			background-color: var(--cfw-red); }
-.bg-cfw-orange {		background-color: var(--cfw-orange); }
-.bg-cfw-yellow {		background-color: var(--cfw-yellow); }
-.bg-cfw-green {			background-color: var(--cfw-green); }
 .bg-cfw-teal {			background-color: var(--cfw-teal); }
 .bg-cfw-cyan {			background-color: var(--cfw-cyan); }
 .bg-cfw-white {			background-color: var(--cfw-white); }
@@ -84,19 +76,15 @@ pre {
 .bg-cfw-black {			background-color: var(--cfw-black); }
 .bg-cfw-none {			background-color: none; }
 
-.text-cfw-excellent{ 		color: var(--cfw-excellent); }
-.text-cfw-good{ 			color: var(--cfw-good); }
-.text-cfw-warning{ 			color: var(--cfw-warning); }
-.text-cfw-emergency{ 		color: var(--cfw-emergency); }
-.text-cfw-danger{ 			color: var(--cfw-danger); }
+.text-cfw-green{ 		color: var(--cfw-green); }
+.text-cfw-limegreen{ 			color: var(--cfw-limegreen); }
+.text-cfw-yellow{ 			color: var(--cfw-yellow); }
+.text-cfw-orange{ 		color: var(--cfw-orange); }
+.text-cfw-red{ 			color: var(--cfw-red); }
 .text-cfw-blue {			color: var(--cfw-blue); }
 .text-cfw-indigo {			color: var(--cfw-indigo); }
 .text-cfw-purple {			color: var(--cfw-purple); }
 .text-cfw-pink {			color: var(--cfw-pink); }
-.text-cfw-red {				color: var(--cfw-red); }
-.text-cfw-orange {			color: var(--cfw-orange); }
-.text-cfw-yellow {			color: var(--cfw-yellow); }
-.text-cfw-green {			color: var(--cfw-green); }
 .text-cfw-teal {			color: var(--cfw-teal); }
 .text-cfw-cyan {			color: var(--cfw-cyan); }
 .text-cfw-white {			color: var(--cfw-white); }
@@ -106,19 +94,15 @@ pre {
 .text-cfw-black {			color: var(--cfw-black); }
 .text-cfw-none {			color: none; }
 
-.border-cfw-excellent{ 		border-color: var(--cfw-excellent); }
-.border-cfw-good{ 			border-color: var(--cfw-good); }
-.border-cfw-warning{ 		border-color: var(--cfw-warning); }
-.border-cfw-emergency{ 		border-color: var(--cfw-emergency); }
-.border-cfw-danger{ 		border-color: var(--cfw-danger); }
+.border-cfw-green{ 		border-color: var(--cfw-green); }
+.border-cfw-limegreen{ 			border-color: var(--cfw-limegreen); }
+.border-cfw-yellow{ 		border-color: var(--cfw-yellow); }
+.border-cfw-orange{ 		border-color: var(--cfw-orange); }
+.border-cfw-red{ 		border-color: var(--cfw-red); }
 .border-cfw-blue {			border-color: var(--cfw-blue); }
 .border-cfw-indigo {		border-color: var(--cfw-indigo); }
 .border-cfw-purple {		border-color: var(--cfw-purple); }
 .border-cfw-pink {			border-color: var(--cfw-pink); }
-.border-cfw-red {			border-color: var(--cfw-red); }
-.border-cfw-orange {		border-color: var(--cfw-orange); }
-.border-cfw-yellow {		border-color: var(--cfw-yellow); }
-.border-cfw-green {			border-color: var(--cfw-green); }
 .border-cfw-teal {			border-color: var(--cfw-teal); }
 .border-cfw-cyan {			border-color: var(--cfw-cyan); }
 .border-cfw-white {			border-color: var(--cfw-white); }
@@ -136,19 +120,15 @@ pre {
     border: 1px rgba(0,0,0,0) solid; 
 }
 
-.table-cfw-excellent, .table-cfw-excellent th, .table-cfw-excellent td, .table-cfw-excellent thead, .table-cfw-excellent tbody, .table-hover .table-cfw-excellent:hover {		background-color: var(--cfw-excellent); }
-.table-cfw-good, .table-cfw-good th, .table-cfw-good td, .table-cfw-good thead, .table-cfw-good tbody, .table-hover .table-cfw-good:hover {		background-color: var(--cfw-good); }
-.table-cfw-warning, .table-cfw-warning th, .table-cfw-warning td, .table-cfw-warning thead, .table-cfw-warning tbody, .table-hover .table-cfw-warning:hover {		background-color: var(--cfw-warning); }
-.table-cfw-emergency, .table-cfw-emergency th, .table-cfw-emergency td, .table-cfw-emergency thead, .table-cfw-emergency tbody, .table-hover .table-cfw-emergency:hover {		background-color: var(--cfw-emergency); }
-.table-cfw-danger, .table-cfw-danger th, .table-cfw-danger td, .table-cfw-danger thead, .table-cfw-danger tbody, .table-hover .table-cfw-danger:hover {		background-color: var(--cfw-danger); }
+.table-cfw-green, .table-cfw-green th, .table-cfw-green td, .table-cfw-green thead, .table-cfw-green tbody, .table-hover .table-cfw-green:hover {		background-color: var(--cfw-green); }
+.table-cfw-limegreen, .table-cfw-limegreen th, .table-cfw-limegreen td, .table-cfw-limegreen thead, .table-cfw-limegreen tbody, .table-hover .table-cfw-limegreen:hover {		background-color: var(--cfw-limegreen); }
+.table-cfw-yellow, .table-cfw-yellow th, .table-cfw-yellow td, .table-cfw-yellow thead, .table-cfw-yellow tbody, .table-hover .table-cfw-yellow:hover {		background-color: var(--cfw-yellow); }
+.table-cfw-orange, .table-cfw-orange th, .table-cfw-orange td, .table-cfw-orange thead, .table-cfw-orange tbody, .table-hover .table-cfw-orange:hover {		background-color: var(--cfw-orange); }
+.table-cfw-red, .table-cfw-red th, .table-cfw-red td, .table-cfw-red thead, .table-cfw-red tbody, .table-hover .table-cfw-red:hover {		background-color: var(--cfw-red); }
 .table-cfw-blue, .table-cfw-blue th, .table-cfw-blue td, .table-cfw-blue thead, .table-cfw-blue tbody, .table-hover .table-cfw-blue:hover {		background-color: var(--cfw-blue); }
 .table-cfw-indigo, .table-cfw-indigo th, .table-cfw-indigo td, .table-cfw-indigo thead, .table-cfw-indigo tbody, .table-hover .table-cfw-indigo:hover {		background-color: var(--cfw-indigo); }
 .table-cfw-purple, .table-cfw-purple th, .table-cfw-purple td, .table-cfw-purple thead, .table-cfw-purple tbody, .table-hover .table-cfw-purple:hover {		background-color: var(--cfw-purple); }
 .table-cfw-pink, .table-cfw-pink th, .table-cfw-pink td, .table-cfw-pink thead, .table-cfw-pink tbody, .table-hover .table-cfw-pink:hover {		background-color: var(--cfw-pink); }
-.table-cfw-red, .table-cfw-red th, .table-cfw-red td, .table-cfw-red thead, .table-cfw-red tbody, .table-hover .table-cfw-red:hover {		background-color: var(--cfw-red); }
-.table-cfw-orange, .table-cfw-orange th, .table-cfw-orange td, .table-cfw-orange thead, .table-cfw-orange tbody, .table-hover .table-cfw-orange:hover {		background-color: var(--cfw-orange); }
-.table-cfw-yellow, .table-cfw-yellow th, .table-cfw-yellow td, .table-cfw-yellow thead, .table-cfw-yellow tbody, .table-hover .table-cfw-yellow:hover {		background-color: var(--cfw-yellow); }
-.table-cfw-green, .table-cfw-green th, .table-cfw-green td, .table-cfw-green thead, .table-cfw-green tbody, .table-hover .table-cfw-green:hover {		background-color: var(--cfw-green); }
 .table-cfw-teal, .table-cfw-teal th, .table-cfw-teal td, .table-cfw-teal thead, .table-cfw-teal tbody, .table-hover .table-cfw-teal:hover {		background-color: var(--cfw-teal); }
 .table-cfw-cyan, .table-cfw-cyan th, .table-cfw-cyan td, .table-cfw-cyan thead, .table-cfw-cyan tbody, .table-hover .table-cfw-cyan:hover {		background-color: var(--cfw-cyan); }
 .table-cfw-white, .table-cfw-white th, .table-cfw-white td, .table-cfw-white thead, .table-cfw-white tbody, .table-hover .table-cfw-white:hover {		background-color: var(--cfw-white); }
