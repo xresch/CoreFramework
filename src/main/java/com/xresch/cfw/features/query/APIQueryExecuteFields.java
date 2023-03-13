@@ -17,7 +17,7 @@ public class APIQueryExecuteFields extends CFWObject {
 		this.addField(
 				CFWField.newTimeframe(APIQueryExecute.FIELDNAME_TIME)
 				.setLabel("Time")
-				.setDescription("The timeframe the query should be executed for.")
+				.setDescription("The timeframe the query should be executed for, specified in JSON object notation. You can either specify an offset or earliest/latest. If offset is specified, earliest/latest is ignored. Parameter clientTimezoneOffset(offset in minutes) might be needed to adjust for timezone differences.")
 				.addValidator(new NotNullOrEmptyValidator())
 				.setValue(new CFWTimeframe())
 				);

@@ -91,13 +91,13 @@ public class CFWTimeframe {
 	 * Returns true if a timeframe is set, either offset or earliest latest
 	 ***************************************************************************************/
 	public boolean isSetAny() {
-		return isSetOffset() || isSetTime();
+		return isOffsetDefined() || isSetTime();
 	}
 	
 	/***************************************************************************************
 	 * Returns true if offset is set
 	 ***************************************************************************************/
-	public boolean isSetOffset() {
+	public boolean isOffsetDefined() {
 		JsonElement offsetString = timeframeData.get(MEMBER_OFFSET);
 		if( offsetString != null 
 		&& !offsetString.isJsonNull() 
@@ -123,7 +123,7 @@ public class CFWTimeframe {
 	public long getEarliest() {
 		
 		JsonElement offsetString = timeframeData.get(MEMBER_OFFSET);
-		if( offsetString != null && !offsetString.isJsonNull() && offsetString.isJsonPrimitive() ) {
+		if( isOffsetDefined() ) {
 			String[] splitted = offsetString.getAsString().trim().split("-");
 			
 			int offsetCount = -1 * Integer.parseInt(splitted[0]);
@@ -185,10 +185,8 @@ public class CFWTimeframe {
 	 ***************************************************************************************/
 	public long getLatest() {
 		
-		JsonElement preset = timeframeData.get(MEMBER_OFFSET);
-		if( preset != null && !preset.isJsonNull() && preset.isJsonPrimitive() ) {
+		if( isOffsetDefined() ) {
 				
-			
 			return System.currentTimeMillis();
 			
 		}else if( timeframeData.get(MEMBER_LATEST) != null) {

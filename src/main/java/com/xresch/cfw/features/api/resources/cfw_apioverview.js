@@ -7,7 +7,6 @@
 /******************************************************************
  * Global
  ******************************************************************/
-var MODAL_CURRENT_NAME = "";
 var MODAL_CURRENT_ACTION = "";
 
 /******************************************************************
@@ -15,26 +14,37 @@ var MODAL_CURRENT_ACTION = "";
  ******************************************************************/
 function cfw_apioverview_formResult(data, status, xhr){
 	
+	console.log(MODAL_CURRENT_ACTION);
 	//-------------------------------
 	// Get Form
 	var form = $('#cfw-apioverview-samplemodal form');
-	var serialized = form.serialize();
+	var paramNameArray = _.map(MODAL_CURRENT_ACTION.params, 'name');
+	var paramObject = CFW.format.formToObject(form);
+	var filteredParams = _.pick(paramObject, paramNameArray);
 	
 	//-------------------------------
-	// Regex hack remove empty params
-	serialized = serialized.replace(/cfw-formID.*?&/g, "&");
-	serialized = serialized.replace(/&[^=]+=&/g, "&");
-	serialized = serialized.replace(/&[^=]+=&/g, "&");
-	serialized = serialized.replace(/&[^=]+=&/g, "&");
-	serialized = serialized.replace(/&[^=]+=$/g, "&");
+	// Create Query Parts
+	var rawQueryPart = "";
+	var encodedQueryPart = "";
+	var curlDataURLEncode = 
+		' \\\r\n --data-urlencode "apiName='+MODAL_CURRENT_ACTION.name+'"'+
+		' \\\r\n --data-urlencode "actionName='+MODAL_CURRENT_ACTION.action+'"'
+		;
+	for(index in paramNameArray){
+		var paramName = paramNameArray[index];
+		console.log(paramName);
+		var paramValue = form.find("#"+paramName).val();
+		rawQueryPart += "&"+paramName+"="+paramValue;
+		encodedQueryPart += "&"+paramName+"="+encodeURIComponent(paramValue);
+		curlDataURLEncode += ' \\\r\n --data-urlencode "'+paramName+'='+paramValue.replaceAll('"', '\\"')+'" ';
+	}
 	
 	//-------------------------------
 	// Sample Parameters
 	var sampleParams = $('#cfw-apioverview-sampleparams');
-	
-	
+		
 	sampleParams.text(
-		JSON.stringify( CFW.format.formToObject(form), null, 2)
+		JSON.stringify(filteredParams , null, 2)
 	);
 	hljs.highlightElement(sampleParams.get(0));
 
@@ -42,18 +52,27 @@ function cfw_apioverview_formResult(data, status, xhr){
 	// Sample URL
 	var sampleURL = $('#cfw-apioverview-sampleurl');
 	
-	var url = window.location.href 
-			+ "?apiName="+MODAL_CURRENT_NAME
-			+ "&actionName="+MODAL_CURRENT_ACTION
-			+ serialized;
-	sampleURL.html('<a target="_blank" href="'+url+'">'+url+'</a>');
+	var baseURL = window.location.href;
+	var baseURLAction = baseURL
+			+ "?apiName="+MODAL_CURRENT_ACTION.name
+			+ "&actionName="+MODAL_CURRENT_ACTION.action;
+			
+	var urlRaw = baseURLAction + rawQueryPart;
+	var urlEncoded = baseURLAction + encodedQueryPart;
+	
+	sampleURL.html('<a target="_blank" href="'+urlEncoded+'">'+urlRaw+'</a>');
 
 	//-------------------------------
 	// Sample CURL GET
 	var curl = $('#cfw-apioverview-samplecurl');
 	var cookie = JSDATA.id;
-	var curlString = 'curl -H "Cookie: CFWSESSIONID='+cookie+'" -X GET "'+url+'"';
-	curl.text(curlString);
+	var baseCurlString = 'curl -H "Cookie: CFWSESSIONID='+cookie+'" ';
+	curl.text(
+		  "# CURL with encoded URL \r\n"
+		+ baseCurlString + ' -X GET "'+ urlEncoded +'" \r\n'
+		+ "# CURL using --data-urlencode \r\n"
+		+ baseCurlString +"-G "+ curlDataURLEncode +'\\\r\n -X GET "'+ baseURL+'"' 
+	);
 	hljs.highlightElement(curl.get(0));
 	
 	//-------------------------------
@@ -63,17 +82,22 @@ function cfw_apioverview_formResult(data, status, xhr){
 		var bodyParamName = curlPost.attr('data-bodyParamName');
 		var bodyContents = form.find('#'+bodyParamName).val();
 		if(bodyContents != null){
-			bodyContents = bodyContents.replaceAll("'", "\\'");
+			bodyContents = bodyContents.replaceAll('"', '\\"');
 		}
 		var regex = new RegExp("&"+bodyParamName+"=[^&]*");
-		var postURL = url.replace(regex, '');
+		var postURL = urlEncoded.replace(regex, '');
 		console.log("bodyParamName: "+bodyParamName)
 		console.log("postURL: "+postURL)
-		var curlString = 'curl -H "Cookie: CFWSESSIONID='+cookie+'" -X POST "'+postURL+'"'
-		+' \\\r\n -H "Content-Type: text/plain"'
-		+' \\\r\n -d \''+bodyContents+'\'';
+
+		var postContentTypeEncoded   = ' \\\r\n -H "Content-Type: application/x-www-form-urlencoded"';
+		var postContentTypePlaintext = ' \\\r\n -H "Content-Type: text/plain"';
 		
-		curlPost.text(curlString);
+		curlPost.text(
+			"# CURL with encoded URL and content type text/plain \r\n"
+			+ baseCurlString + postContentTypePlaintext +'\\\r\n -X POST "'+ postURL +'" \\\r\n -d "'+bodyContents+'" \r\n'
+			+ "# CURL using --data-urlencode and content type application/x-www-form-urlencoded \r\n"
+			+ baseCurlString + postContentTypeEncoded +'\\\r\n -X POST "'+ baseURL +'" '+curlDataURLEncode
+		);
 		hljs.highlightElement(curlPost.get(0));
 	}
 	
@@ -99,10 +123,16 @@ function cfw_apioverview_formResult(data, status, xhr){
 /******************************************************************
  * Edit user
  ******************************************************************/
-function cfw_apioverview_createExample(apiName, actionName, bodyParamName){
+function cfw_apioverview_createExample(domElement){
 	
-	MODAL_CURRENT_NAME = apiName;
-	MODAL_CURRENT_ACTION = actionName;
+	var origin = $(domElement);
+	var action = origin.data('action');
+	var apiName = action.name;
+	var actionName = action.action;
+	var bodyParamName = action.bodyParamName;
+	
+	MODAL_CURRENT_ACTION = action;
+
 	var allDiv = $('<div id="cfw-apioverview-samplemodal">');	
 
 	//-----------------------------------
@@ -119,7 +149,7 @@ function cfw_apioverview_createExample(apiName, actionName, bodyParamName){
 	allDiv.append('<pre class="m-3" ><code id="cfw-apioverview-sampleparams"></code></pre>');
 	
 	allDiv.append('<h4>URL:</h4>');
-	allDiv.append('<p class="m-3" id="cfw-apioverview-sampleurl"></p>');
+	allDiv.append('<p class="m-3 word-break-all" id="cfw-apioverview-sampleurl"></p>');
 	
 	allDiv.append('<h4>CURL GET:</h4>');
 	allDiv.append('<pre class="m-3"><code id="cfw-apioverview-samplecurl"></code></pre>');
@@ -252,6 +282,8 @@ function cfw_apioverview_printOverview(data){
 			
 			if(panels[name][action] == undefined){
 				panels[name][action] = {
+						name: name,
+						action: action,
 						description: current.description,
 						bodyParamName: current.bodyParamName,
 						params: current.params,
@@ -341,7 +373,9 @@ function cfw_apioverview_printOverview(data){
 
 				//----------------------------
 				// Create Example Button
-				content.append('<button class="btn btn-primary" onclick="cfw_apioverview_createExample(\''+name+'\', \''+action+'\', \''+sub.bodyParamName+'\')">Example</button>');
+				var exampleButton = $('<button class="btn btn-primary" onclick="cfw_apioverview_createExample(this)">Example</button>');
+				exampleButton.data('action', sub)
+				content.append(exampleButton);
 				
 				//----------------------------------------
 				// Create Panel
