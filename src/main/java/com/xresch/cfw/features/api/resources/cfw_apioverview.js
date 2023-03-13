@@ -251,6 +251,9 @@ function cfw_apioverview_printOverview(data){
 				if(sub.params != undefined && sub.params.length > 0){
 					content.append('<h3>Parameters:</h3>');
 					
+					if(sub.bodyParamName != null){
+						content.append('<p><b>Body Parameter:&nbsp;<b> The value for parameter \''+sub.bodyParamName +'\' can be provided as the request body.<p>');
+					}
 					var cfwTable = new CFWTable({filterable: false, narrow: true});
 
 					cfwTable.addHeaders(['Name','Type','Description']);

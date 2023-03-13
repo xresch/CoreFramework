@@ -1707,7 +1707,8 @@ function cfw_timeframePicker_storeValue(fieldID, offset, earliest, latest){
 	var pickerData = {
 		offset: 	offset,
 		earliest:	parseFloat(earliest),
-		latest: 	parseFloat(latest)
+		latest: 	parseFloat(latest),
+		clientTimezoneOffset: 	new Date().getTimezoneOffset()
 	}
 
 	$(selector).val(JSON.stringify(pickerData));

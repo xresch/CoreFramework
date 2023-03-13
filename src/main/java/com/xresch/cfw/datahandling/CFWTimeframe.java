@@ -28,6 +28,8 @@ public class CFWTimeframe {
 	private static final String MEMBER_LATEST = "latest";
 	private static final String MEMBER_EARLIEST = "earliest";
 	private static final String MEMBER_OFFSET = "offset";
+	
+	private static final String MEMBER_CLIENT_TIMEZONE_OFFSET = "clientTimezoneOffset";
 
 
 	private JsonObject timeframeData;
@@ -64,6 +66,7 @@ public class CFWTimeframe {
 		timeframeData.addProperty(MEMBER_OFFSET, "30-m");
 		timeframeData.add(MEMBER_EARLIEST, JsonNull.INSTANCE);
 		timeframeData.add(MEMBER_LATEST, JsonNull.INSTANCE);
+		timeframeData.addProperty(MEMBER_CLIENT_TIMEZONE_OFFSET, 0);
 				
 	}
 	
@@ -193,6 +196,21 @@ public class CFWTimeframe {
 		}else {
 			CFW.Messages.addWarningMessage("Unrecognized latest timeframe settings, use last 30 minutes.");
 			return System.currentTimeMillis();
+		}
+		
+	}
+	
+	
+	/***************************************************************************************
+	 * Returns the timezone offset of the client in minutes.
+	 ***************************************************************************************/
+	public int getClientTimezoneOffset() {
+		
+		JsonElement timezoneOffset = timeframeData.get(MEMBER_CLIENT_TIMEZONE_OFFSET);
+		if( timeframeData.get(MEMBER_CLIENT_TIMEZONE_OFFSET) != null) {
+			return timeframeData.get(MEMBER_CLIENT_TIMEZONE_OFFSET).getAsInt();
+		}else {
+			return 0;
 		}
 		
 	}

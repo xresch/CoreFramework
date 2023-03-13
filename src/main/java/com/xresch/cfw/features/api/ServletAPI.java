@@ -3,6 +3,7 @@ package com.xresch.cfw.features.api;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Enumeration;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -205,7 +206,6 @@ public class ServletAPI extends HttpServlet
 		}
 	}
 	
-	
 	/***************************************************************************************************
 	 * 
 	 * @param request
@@ -228,8 +228,51 @@ public class ServletAPI extends HttpServlet
 			json.setSuccess(false);
 			return;
 		}
+		
+		//--------------------------------------
+		// Get API Definition
+		handleAPIRequest(request, response, definition);
+	}
+	
+	/***************************************************************************************************
+	 * 
+	 * @param request
+	 * @param response
+	 ****************************************************************************************************/
+	private void handleAPIRequest(HttpServletRequest request, HttpServletResponse response, APIDefinition definition) {
+		
+		callCounter.inc();
+		
+		//--------------------------------------
+		// Get Request Body
+		String bodyContents = null;
+		if(definition.getPostBodyParamName() != null) {
+			Enumeration<String> paramNames = request.getParameterNames();
+			String bodyParamName = definition.getPostBodyParamName();
+			
+			//------------------------
+			// Make case insensitive
+			while(paramNames.hasMoreElements()) {
+				String name = paramNames.nextElement();
 
-		definition.getRequestHandler().handleRequest(request, response, definition);
+				if(bodyParamName.equalsIgnoreCase(name)) {
+					bodyParamName = name;
+					break;
+				}
+			}
+			
+			//------------------------
+			// Read Body Contents		
+			
+			bodyContents = request.getParameter(bodyParamName);
+			if(bodyContents == null) {
+				bodyContents = CFW.HTTP.getRequestBody(request);
+			}
+		}
+		
+		//--------------------------------------
+		// Handle Request
+		definition.getRequestHandler().handleRequest(request, response, definition, bodyContents);
 		
 	}
 	
@@ -270,8 +313,7 @@ public class ServletAPI extends HttpServlet
 			
 			@Override
 			public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
-				
-				definition.getRequestHandler().handleRequest(request, response, definition);
+				handleAPIRequest(request, response, definition);
 				
 			}
 		});

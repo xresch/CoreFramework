@@ -29,7 +29,7 @@ public class APIDashboardExport extends APIDefinition{
 			
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			@Override
-			public void handleRequest(HttpServletRequest request, HttpServletResponse response, APIDefinition definition) {
+			public void handleRequest(HttpServletRequest request, HttpServletResponse response, APIDefinition definition, String bodyContents) {
 				
 				JSONResponse json = new JSONResponse();
 											

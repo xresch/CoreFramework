@@ -21,6 +21,7 @@ public class APIDefinition {
 	private String apiName;
 	private String actionName;
 	private String description;
+	private String bodyParamName;
 
 	// Fieldname and Field
 	private LinkedHashMap<String, CFWField> inputFields = new LinkedHashMap<>();
@@ -147,6 +148,21 @@ public class APIDefinition {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+	
+	public String getPostBodyParamName() {
+		return bodyParamName;
+	}
+
+	/********************************************************************************
+	 * Set the bodyParam name to support Post requests with body contents.
+	 * If the param is provided as a request parameter, the contents of the parameter
+	 * are read and provided to the method {@link com.xresch.cfw.features.api.APIRequestHandler#handleRequest()}
+	 * as the argument "body".
+	 * If the value is not given as a request parameter, the request body is read. 
+	 ********************************************************************************/
+	public void setPostBodyParamName(String bodyParamName) {
+		this.bodyParamName = bodyParamName;
+	}
 
 	public Class<? extends CFWObject> getObjectClass() {
 		return clazz;
@@ -212,6 +228,7 @@ public class APIDefinition {
 		object.addProperty("name", apiName);
 		object.addProperty("action", actionName);
 		object.addProperty("description", description);
+		object.addProperty("bodyParamName", bodyParamName);
 		
 		//-----------------------------------
 		//resolve parameters

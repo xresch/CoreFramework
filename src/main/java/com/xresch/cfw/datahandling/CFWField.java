@@ -436,12 +436,22 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * 
 	 * @return FormFieldType
 	 ***********************************************************************************/
+	@SuppressWarnings("unchecked")
 	private FormFieldType prepareFinalFormField() {
 		//---------------------------------------------
 		// Check Type
 		//---------------------------------------------
 		FormFieldType formFieldType = this.type;
 		if(this.parent instanceof CFWForm) {
+			
+			if(this.valueLabelOptions != null
+			&& (
+					((CFWForm)this.parent).isAPIForm() 
+				||	((CFWForm)this.parent).isEmptyForm() 
+				)
+			) {
+				valueLabelOptions.put("", "");
+			}
 			
 			// Use normal fieldType if apiFieldType is not defined
 			if(((CFWForm)this.parent).isAPIForm() && this.apiFieldType != null) {
@@ -451,10 +461,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			if ( ((CFWForm)this.parent).isEmptyForm() && !this.name.contentEquals("cfw-formID") ){
 				// Set Value to null
 				value = null;
-				
-				if(this.valueLabelOptions != null) {
-					valueLabelOptions.put("", "");
-				}
 			}
 		}
 		return formFieldType;

@@ -240,7 +240,6 @@ public class CFWForm extends HierarchicalHTMLItem {
 
 	public void isAPIForm(boolean isAPIForm) {
 		this.isAPIForm = isAPIForm;
-		this.isEmptyForm = true;
 	}
 	
 	public boolean isAPIForm() {

@@ -198,6 +198,9 @@ public class FeatureQuery extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuTools-Query")
 				, null);
 		
+		//----------------------------------
+    	// Register APIs
+		CFW.Registry.API.add( new APIQueryExecute("Query", "execute") );
 	}
 
 	@Override

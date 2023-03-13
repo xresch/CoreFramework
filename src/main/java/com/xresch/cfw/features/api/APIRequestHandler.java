@@ -12,6 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class APIRequestHandler {
 	
 
-	public abstract void handleRequest(HttpServletRequest request, HttpServletResponse response, APIDefinition definition);
+	public abstract void handleRequest(HttpServletRequest request, HttpServletResponse response, APIDefinition definition, String bodyContents);
 
 }
