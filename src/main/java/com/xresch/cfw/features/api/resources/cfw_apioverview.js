@@ -32,11 +32,12 @@ function cfw_apioverview_formResult(data, status, xhr){
 		;
 	for(index in paramNameArray){
 		var paramName = paramNameArray[index];
-		console.log(paramName);
 		var paramValue = form.find("#"+paramName).val();
-		rawQueryPart += "&"+paramName+"="+paramValue;
-		encodedQueryPart += "&"+paramName+"="+encodeURIComponent(paramValue);
-		curlDataURLEncode += ' \\\r\n --data-urlencode "'+paramName+'='+paramValue.replaceAll('"', '\\"')+'" ';
+		if(!CFW.utils.isNullOrEmpty(paramValue)){
+			rawQueryPart += "&"+paramName+"="+paramValue;
+			encodedQueryPart += "&"+paramName+"="+encodeURIComponent(paramValue);
+			curlDataURLEncode += ' \\\r\n --data-urlencode "'+paramName+'='+paramValue.replaceAll('"', '\\"')+'" ';
+		}
 	}
 	
 	//-------------------------------
