@@ -16,7 +16,7 @@ var MODAL_CURRENT_ACTION = "";
 function cfw_apioverview_formResult(data, status, xhr){
 	
 	//-------------------------------
-	// URL
+	// Get Form
 	var form = $('#cfw-apioverview-samplemodal form');
 	var serialized = form.serialize();
 	
@@ -28,6 +28,18 @@ function cfw_apioverview_formResult(data, status, xhr){
 	serialized = serialized.replace(/&[^=]+=&/g, "&");
 	serialized = serialized.replace(/&[^=]+=$/g, "&");
 	
+	//-------------------------------
+	// Sample Parameters
+	var sampleParams = $('#cfw-apioverview-sampleparams');
+	
+	
+	sampleParams.text(
+		JSON.stringify( CFW.format.formToObject(form), null, 2)
+	);
+	hljs.highlightElement(sampleParams.get(0));
+
+	//-------------------------------
+	// Sample URL
 	var sampleURL = $('#cfw-apioverview-sampleurl');
 	
 	var url = window.location.href 
@@ -36,15 +48,35 @@ function cfw_apioverview_formResult(data, status, xhr){
 			+ serialized;
 	sampleURL.html('<a target="_blank" href="'+url+'">'+url+'</a>');
 
-	hljs.highlightElement(sampleURL.get(0));
-	
 	//-------------------------------
-	// Sample CURL
+	// Sample CURL GET
 	var curl = $('#cfw-apioverview-samplecurl');
 	var cookie = JSDATA.id;
 	var curlString = 'curl -H "Cookie: CFWSESSIONID='+cookie+'" -X GET "'+url+'"';
 	curl.text(curlString);
 	hljs.highlightElement(curl.get(0));
+	
+	//-------------------------------
+	// Sample CURL POST
+	var curlPost = $('#cfw-apioverview-samplecurlpost');
+	if(curlPost.length > 0){
+		var bodyParamName = curlPost.attr('data-bodyParamName');
+		var bodyContents = form.find('#'+bodyParamName).val();
+		if(bodyContents != null){
+			bodyContents = bodyContents.replaceAll("'", "\\'");
+		}
+		var regex = new RegExp("&"+bodyParamName+"=[^&]*");
+		var postURL = url.replace(regex, '');
+		console.log("bodyParamName: "+bodyParamName)
+		console.log("postURL: "+postURL)
+		var curlString = 'curl -H "Cookie: CFWSESSIONID='+cookie+'" -X POST "'+postURL+'"'
+		+' \\\r\n -H "Content-Type: text/plain"'
+		+' \\\r\n -d \''+bodyContents+'\'';
+		
+		curlPost.text(curlString);
+		hljs.highlightElement(curlPost.get(0));
+	}
+	
 	//-------------------------------
 	// Sample Response
 	var responseElement = $('#cfw-apioverview-response');
@@ -67,7 +99,7 @@ function cfw_apioverview_formResult(data, status, xhr){
 /******************************************************************
  * Edit user
  ******************************************************************/
-function cfw_apioverview_createExample(apiName, actionName){
+function cfw_apioverview_createExample(apiName, actionName, bodyParamName){
 	
 	MODAL_CURRENT_NAME = apiName;
 	MODAL_CURRENT_ACTION = actionName;
@@ -83,11 +115,19 @@ function cfw_apioverview_createExample(apiName, actionName){
 	//-----------------------------------
 	// Placeholders
 	//-----------------------------------
-	allDiv.append('<h4>URL:</h4>');
-	allDiv.append('<pre class="m-3" style="height: 50px;" ><code id="cfw-apioverview-sampleurl"></code></pre>');
+	allDiv.append('<h4>Parameters:</h4>');
+	allDiv.append('<pre class="m-3" ><code id="cfw-apioverview-sampleparams"></code></pre>');
 	
-	allDiv.append('<h4>CURL:</h4>');
-	allDiv.append('<pre class="m-3" style="height: 50px;" ><code id="cfw-apioverview-samplecurl"></code></pre>');
+	allDiv.append('<h4>URL:</h4>');
+	allDiv.append('<p class="m-3" id="cfw-apioverview-sampleurl"></p>');
+	
+	allDiv.append('<h4>CURL GET:</h4>');
+	allDiv.append('<pre class="m-3"><code id="cfw-apioverview-samplecurl"></code></pre>');
+	
+	if(bodyParamName != null){
+		allDiv.append('<h4>CURL POST:</h4>');
+		allDiv.append('<pre class="m-3"><code id="cfw-apioverview-samplecurlpost" data-bodyParamName="'+bodyParamName+'"></code></pre>');
+	}
 	
 	allDiv.append('<h4>Response:</h4>');
 	allDiv.append('<pre class="m-3" style="max-height: 400px; display:block; white-space:pre-wrap" ><code id="cfw-apioverview-response"></code></pre>');
@@ -213,6 +253,7 @@ function cfw_apioverview_printOverview(data){
 			if(panels[name][action] == undefined){
 				panels[name][action] = {
 						description: current.description,
+						bodyParamName: current.bodyParamName,
 						params: current.params,
 						returnValues: current.returnValues
 				}
@@ -250,9 +291,9 @@ function cfw_apioverview_printOverview(data){
 				
 				if(sub.params != undefined && sub.params.length > 0){
 					content.append('<h3>Parameters:</h3>');
-					
+
 					if(sub.bodyParamName != null){
-						content.append('<p><b>Body Parameter:&nbsp;<b> The value for parameter \''+sub.bodyParamName +'\' can be provided as the request body.<p>');
+						content.append('<p><b>Body Parameter:&nbsp;</b> The value for parameter \''+sub.bodyParamName +'\' can be provided as the request body.<p>');
 					}
 					var cfwTable = new CFWTable({filterable: false, narrow: true});
 
@@ -300,7 +341,7 @@ function cfw_apioverview_printOverview(data){
 
 				//----------------------------
 				// Create Example Button
-				content.append('<button class="btn btn-primary" onclick="cfw_apioverview_createExample(\''+name+'\', \''+action+'\')">Example</button>');
+				content.append('<button class="btn btn-primary" onclick="cfw_apioverview_createExample(\''+name+'\', \''+action+'\', \''+sub.bodyParamName+'\')">Example</button>');
 				
 				//----------------------------------------
 				// Create Panel

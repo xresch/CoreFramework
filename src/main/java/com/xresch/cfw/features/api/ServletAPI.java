@@ -265,7 +265,7 @@ public class ServletAPI extends HttpServlet
 			// Read Body Contents		
 			
 			bodyContents = request.getParameter(bodyParamName);
-			if(bodyContents == null) {
+			if(Strings.isNullOrEmpty(bodyContents)) {
 				bodyContents = CFW.HTTP.getRequestBody(request);
 			}
 		}
