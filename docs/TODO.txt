@@ -150,6 +150,7 @@ DONE
 - Dashboard: Added Time Created for dashboards.
 - Dashboard: Made list full with of window 
 - API: Added possibility to provide data in request body
+- Caching: Added Caches for user roles and permissions
 - CFWChartSettings: Added FormFieldType and DataObject Class to manage Chart Settings
 - JS Components: ToogleButton supports favorite style
 - JS Renderer: Tiles - fixed issue with removing alertstyle fields

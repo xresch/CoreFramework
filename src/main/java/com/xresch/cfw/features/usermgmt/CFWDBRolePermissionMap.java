@@ -3,8 +3,13 @@ package com.xresch.cfw.features.usermgmt;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
@@ -25,7 +30,23 @@ public class CFWDBRolePermissionMap {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBRolePermissionMap.class.getName());
 	
+	// Cache<UserID, HashMap<PermissionName, PermissionObject>>
+	// Cached to make loading permissions of API Tokens more efficient
+	private static Cache<Integer, HashMap<String, Permission>> userPermissionsCache = CFW.Caching.addCache("CFW User Permissions", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(50)
+				.maximumSize(500)
+				.expireAfterAccess(1, TimeUnit.HOURS)
+		);
 
+	/********************************************************************************************
+	 * 
+	 ********************************************************************************************/
+	private static void invalidateCache() {
+		System.out.println("Invalidate Permission Cache");
+		userPermissionsCache.invalidateAll();
+	}
+	
 	/********************************************************************************************
 	 * Adds the permission to the specified role.
 	 * @param permission
@@ -65,7 +86,9 @@ public class CFWDBRolePermissionMap {
 				  + RolePermissionMapFields.IS_DELETABLE +" "
 				  + ") VALUES (?,?,?);";
 		
+		invalidateCache();
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Role.class, "Add Permission to Role: "+role.name()+", Permission: "+permission.name());
+		
 		return CFWDB.preparedExecute(insertPermissionSQL, 
 				permission.id(),
 				role.id(),
@@ -159,7 +182,9 @@ public class CFWDBRolePermissionMap {
 				  + RolePermissionMapFields.IS_DELETABLE +" = TRUE "
 				  + ";";
 		
+		invalidateCache();
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Role.class, "Remove Permission from Role: "+role.name()+", Permission: "+permission.name());
+		
 		return CFWDB.preparedExecute(removePermissionFromRoleSQL, 
 				permission.id(),
 				role.id()
@@ -261,31 +286,58 @@ public class CFWDBRolePermissionMap {
 	
 	}
 	
+	
 	/***************************************************************
 	 * Retrieve the permissions for the specified user.
 	 * @param role
 	 * @return Hashmap with permissions(key=role name), or null on exception
 	 ****************************************************************/
 	public static HashMap<String, Permission> selectPermissionsForUser(User user) {
+		return selectPermissionsForUser(user.id());
+	}
+	
+	/***************************************************************
+	 * Retrieve the permissions for the specified user.
+	 * @param role
+	 * @return Hashmap with permissions(key=role name), or null on exception
+	 ****************************************************************/
+	public static HashMap<String, Permission> selectPermissionsForUser(int userID) {
 		
-		ResultSet result = selectPermissionsForUserResultSet(user);
-		
-		HashMap<String, Permission> permissionMap = new HashMap<String, Permission>(); 
+		HashMap<String, Permission> userPermissions = new HashMap<>();
 		try {
-			while(result != null && result.next()) {
-				Permission permission = new Permission(result);
-				permissionMap.put(permission.name(), permission);
-			}
-		} catch (SQLException e) {
-			new CFWLog(logger)
-			.severe("Error while selecting permissions for the role '"+user.username()+"'.", e);
-			return null;
-		}finally {
-			CFWDB.close(result);
+			System.out.println("Call Cache");
+			userPermissions = userPermissionsCache.get(userID, new Callable<HashMap<String, Permission>>() {
+
+				@Override
+				public HashMap<String, Permission> call() throws Exception {
+					System.out.println("Load Permission from DB");
+					ResultSet result = selectPermissionsForUserResultSet(userID);
+					
+					HashMap<String, Permission> permissionMap = new HashMap<String, Permission>(); 
+					try {
+						while(result != null && result.next()) {
+							Permission permission = new Permission(result);
+							permissionMap.put(permission.name(), permission);
+						}
+					} catch (SQLException e) {
+						new CFWLog(logger)
+						.severe("Error while selecting permissions for the user with id '"+userID+"'.", e);
+						return null;
+					}finally {
+						CFWDB.close(result);
+					}
+					
+					return permissionMap;
+				}
+				
+			});
+			System.out.println("userPermissions: "+CFW.JSON.toJSON(userPermissions));
+			
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error while reading permissions from cache or database.", e);
 		}
 		
-		return permissionMap;
-		
+		return userPermissions;
 	}
 	
 	/***************************************************************
@@ -295,13 +347,23 @@ public class CFWDBRolePermissionMap {
 	 ****************************************************************/
 	public static ResultSet selectPermissionsForUserResultSet(User user) {
 		
-		if( user == null) {
+		if(user == null) {
 			new CFWLog(logger)
 				.severe("The user cannot be null.");
 			return null;
 		}
 		
-		return new CFWSQL(user)
+		return selectPermissionsForUserResultSet(user.id());
+	}
+	
+	/***************************************************************
+	 * Retrieve the permissions for the specified user.
+	 * @param role
+	 * @return Hashmap with permissions(key=role name), or null on exception
+	 ****************************************************************/
+	public static ResultSet selectPermissionsForUserResultSet(int userID) {
+		
+		return new CFWSQL(new User())
 				.queryCache(CFWDBRolePermissionMap.class, "selectPermissionsForUserResultSet")
 				.custom(
 					"SELECT P.* "
@@ -309,7 +371,7 @@ public class CFWDBRolePermissionMap {
 					+"JOIN CFW_ROLE_PERMISSION_MAP AS GP ON GP.FK_ID_PERMISSION = P.PK_ID "
 					+"JOIN CFW_USER_ROLE_MAP AS UG ON UG.FK_ID_ROLE = GP.FK_ID_ROLE "
 					+"WHERE UG.FK_ID_USER = ?;", 
-					user.id())
+					userID)
 				.getResultSet();
 		
 	}

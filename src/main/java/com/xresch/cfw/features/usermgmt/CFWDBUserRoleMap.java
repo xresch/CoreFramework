@@ -1,10 +1,16 @@
 package com.xresch.cfw.features.usermgmt;
 
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
@@ -12,6 +18,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.usermgmt.UserRoleMap.UserRoleMapFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
+import com.xresch.cfw.utils.CFWFiles;
 import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
@@ -25,6 +32,22 @@ public class CFWDBUserRoleMap {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBUserRoleMap.class.getName());
 	
+	// Cache<UserID, HashMap<RoleID, Role>>
+	// Cached to make loading permissions of API Tokens more efficient
+	private static Cache<Integer, HashMap<Integer, Role>> userRolesCache = CFW.Caching.addCache("CFW User Roles", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(50)
+				.maximumSize(500)
+				.expireAfterAccess(1, TimeUnit.HOURS)
+		);
+	
+	/********************************************************************************************
+	 * 
+	 ********************************************************************************************/
+	private static void invalidateCache(int userID) {
+		System.out.println("Invalidate Role Cache");
+		userRolesCache.invalidate(userID);
+	}
 	
 	/********************************************************************************************
 	 * Adds the user to the specified role.
@@ -70,7 +93,9 @@ public class CFWDBUserRoleMap {
 				  + UserRoleMapFields.IS_DELETABLE +" "
 				  + ") VALUES (?,?,?);";
 		
+		invalidateCache(user.id());
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, User.class, "Add Role to User: "+user.username()+", Role: "+role.name());
+		
 		return CFWDB.preparedExecute(insertRoleSQL, 
 				user.id(),
 				role.id(),
@@ -123,7 +148,9 @@ public class CFWDBUserRoleMap {
 				  + UserRoleMapFields.IS_DELETABLE +" = TRUE "
 				  + ";";
 		
+		invalidateCache(user.id());
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, User.class, "Remove Role from User: "+user.username()+", Role: "+role.name());
+		
 		return CFWDB.preparedExecute(removeUserFromRoleSQL, 
 				user.id(),
 				role.id()
@@ -244,35 +271,48 @@ public class CFWDBUserRoleMap {
 	 ****************************************************************/
 	public static HashMap<Integer, Role> selectAllRolesForUser(Integer userID) {
 		
-		if(userID == null) {
-			return new HashMap<Integer, Role>();
-		}
-		
-		String selectRolesForUser = "SELECT * FROM "+Role.TABLE_NAME+" G "
-				+ " INNER JOIN "+CFWDBUserRoleMap.TABLE_NAME+" M "
-				+ " ON M.FK_ID_ROLE = G.PK_ID "
-				+ " WHERE M.FK_ID_USER = ?";
-		
-		ResultSet result = CFWDB.preparedExecuteQuery(selectRolesForUser, 
-				userID);
-		
-		HashMap<Integer, Role> roleMap = new HashMap<Integer, Role>(); 
-		
+		HashMap<Integer, Role> result = new HashMap<Integer, Role>();
 		try {
-			while(result != null && result.next()) {
-				Role role = new Role(result);
-				roleMap.put(role.id(), role);
-			}
-		} catch (SQLException e) {
-			new CFWLog(logger)
-			.severe("Error while selecting roles for the user with id '"+userID+"'.", e);
-			return null;
-		}finally {
-			CFWDB.close(result);
+			result = userRolesCache.get(userID, new Callable<HashMap<Integer, Role>>() {
+
+				@Override
+				public HashMap<Integer, Role> call() throws Exception {
+					if(userID == null) {
+						return new HashMap<Integer, Role>();
+					}
+					
+					String selectRolesForUser = "SELECT * FROM "+Role.TABLE_NAME+" G "
+							+ " INNER JOIN "+CFWDBUserRoleMap.TABLE_NAME+" M "
+							+ " ON M.FK_ID_ROLE = G.PK_ID "
+							+ " WHERE M.FK_ID_USER = ?";
+					
+					ResultSet result = CFWDB.preparedExecuteQuery(selectRolesForUser, 
+							userID);
+					
+					HashMap<Integer, Role> roleMap = new HashMap<Integer, Role>(); 
+					
+					try {
+						while(result != null && result.next()) {
+							Role role = new Role(result);
+							roleMap.put(role.id(), role);
+						}
+					} catch (SQLException e) {
+						new CFWLog(logger)
+						.severe("Error while selecting roles for the user with id '"+userID+"'.", e);
+						return null;
+					}finally {
+						CFWDB.close(result);
+					}
+					
+					return roleMap;
+				}
+				
+			});
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error while reading roles from cache or database.", e);
 		}
 		
-		return roleMap;
-	
+		return result;
 	}
 	
 	/***************************************************************

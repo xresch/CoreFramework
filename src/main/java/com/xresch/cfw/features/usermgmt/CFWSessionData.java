@@ -48,13 +48,19 @@ public class CFWSessionData implements Serializable {
 	
 	protected BTMenu menu;
 	protected BTFooter footer;
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public CFWSessionData(String sessionID) {
 		initializeFormCache();
 		this.sessionID = sessionID;
 		loadMenu(false);
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public void triggerLogin() {
 		initializeFormCache();
 		
@@ -65,7 +71,10 @@ public class CFWSessionData implements Serializable {
 		}
 				
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public void triggerLogout() {
 		
 		isLoggedIn = false;
@@ -80,36 +89,60 @@ public class CFWSessionData implements Serializable {
 		
 		CFW.Context.App.getApp().removeSession(sessionID);
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public boolean isLoggedIn() {
 		return isLoggedIn;
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public void isLoggedIn(boolean isLoggedIn) {
 		 this.isLoggedIn = isLoggedIn;
 	}
 	
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public void setCustom(String key, String value) {
 		this.customProperties.put(key, value);
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public String getCustom(String key) {
 		return this.customProperties.get(key);
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public String removeCustom(String key) {
 		 return this.customProperties.remove(key);
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public String getSessionID() {
 		return sessionID;
 	}
-		
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/	
 	public User getUser() {
 		return user;
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public void setUser(User user) {
 		if(user != null) {
 			this.user = user;
@@ -117,52 +150,94 @@ public class CFWSessionData implements Serializable {
 		}
 	}
 	
+	/***********************************************************************
+	 * Loads the current users roles and permissions
+	 ***********************************************************************/
 	public void loadUserPermissions() {
 		if(user != null) {
-			this.userRoles = CFW.DB.Users.selectRolesForUser(user);
-			this.userPermissions = CFW.DB.Users.selectPermissionsForUser(user);
-			loadMenu(true);
+			loadUserPermissions(user.id());
 		}
 	}
 	
+	/***********************************************************************
+	 * Load the roles for the specified user.
+	 * This is used to load permissions for API tokens.
+	 ***********************************************************************/
+	public void loadUserPermissions(int userID) {
+		// use putAll() to not clear the HashMaps which are cached in classes CFWDBUserRoleMap/CFWDBRolePermissionMap
+		this.userRoles.putAll( CFW.DB.Users.selectRolesForUser(userID) );
+		this.userPermissions.putAll( CFW.DB.Users.selectPermissionsForUser(userID) );
+		loadMenu(true);
+	}
+	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public void loadMenu(boolean withUserMenu) {
 		menu = CFW.Registry.Components.createMenuInstance(this, withUserMenu);
 		footer = CFW.Registry.Components.createDefaultFooterInstance();
 	}
 	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public void resetUser() {
 		user = null;
 	}
 	
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public HashMap<Integer, Role> getUserRoles() {
 		return userRoles;
 	}
 
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public HashMap<String, Permission> getUserPermissions() {
 		return userPermissions;
 	}
 
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public BTMenu getMenu() {
 		return menu;
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public BTFooter getFooter() {
 		return footer;
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public void addForm(CFWForm form){		
 		formCache.put(form.getFormID(), form);	
 	}
 	
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public String getClientIP() {
 		return clientIP;
 	}
 
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public void setClientIP(String clientIP) {
 		this.clientIP = clientIP;
 	}
 
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	private void initializeFormCache() {
 		if(formCache == null) {
 			formCache = CacheBuilder.newBuilder()
@@ -172,19 +247,31 @@ public class CFWSessionData implements Serializable {
 				.build();
 		}
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public void removeForm(CFWForm form){
 		formCache.invalidate(form.getFormID());	
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public CFWForm getForm(String formID) {
 		return formCache.getIfPresent(formID);
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
 	public Collection<CFWForm> getForms() {
 		return formCache.asMap().values();
 	}
-	
+
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/	
 	 private void writeObject(ObjectOutputStream oos) 
       throws IOException {
 				
@@ -206,6 +293,9 @@ public class CFWSessionData implements Serializable {
 				 
     }
 
+	/***********************************************************************
+	 * 
+	 ***********************************************************************/
     private void readObject(ObjectInputStream ois) throws ClassNotFoundException, IOException {
     	
     	//ois.defaultReadObject();

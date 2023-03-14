@@ -297,6 +297,15 @@ public class CFWDBUser {
 	 * @param role
 	 * @return Hashmap with permissions(key=role name), or null on exception
 	 ****************************************************************/
+	public static HashMap<String, Permission> selectPermissionsForUser(int userID) {
+		return CFW.DB.RolePermissionMap.selectPermissionsForUser(userID);
+	}
+	
+	/***************************************************************
+	 * Retrieve the permissions for the specified user.
+	 * @param role
+	 * @return Hashmap with permissions(key=role name), or null on exception
+	 ****************************************************************/
 	public static HashMap<String, Permission> selectPermissionsForUser(User user) {
 		return CFW.DB.RolePermissionMap.selectPermissionsForUser(user);
 	}
