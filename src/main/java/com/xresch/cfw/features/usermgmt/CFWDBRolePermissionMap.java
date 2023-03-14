@@ -43,7 +43,6 @@ public class CFWDBRolePermissionMap {
 	 * 
 	 ********************************************************************************************/
 	private static void invalidateCache() {
-		System.out.println("Invalidate Permission Cache");
 		userPermissionsCache.invalidateAll();
 	}
 	
@@ -305,12 +304,10 @@ public class CFWDBRolePermissionMap {
 		
 		HashMap<String, Permission> userPermissions = new HashMap<>();
 		try {
-			System.out.println("Call Cache");
 			userPermissions = userPermissionsCache.get(userID, new Callable<HashMap<String, Permission>>() {
 
 				@Override
 				public HashMap<String, Permission> call() throws Exception {
-					System.out.println("Load Permission from DB");
 					ResultSet result = selectPermissionsForUserResultSet(userID);
 					
 					HashMap<String, Permission> permissionMap = new HashMap<String, Permission>(); 
@@ -331,7 +328,6 @@ public class CFWDBRolePermissionMap {
 				}
 				
 			});
-			System.out.println("userPermissions: "+CFW.JSON.toJSON(userPermissions));
 			
 		} catch (ExecutionException e) {
 			new CFWLog(logger).severe("Error while reading permissions from cache or database.", e);

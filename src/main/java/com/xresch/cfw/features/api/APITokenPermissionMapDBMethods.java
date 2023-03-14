@@ -309,7 +309,6 @@ public class APITokenPermissionMapDBMethods {
 		
 	}
 	
-	
 	/****************************************************************
 	 * Check if the permission exists by name.
 	 * 
@@ -319,6 +318,18 @@ public class APITokenPermissionMapDBMethods {
 	public static boolean checkHasTokenThePermission(String token, String apiName, String actionName) {
 		
 		APIToken apiToken = APITokenDBMethods.selectFirstByToken(token);
+
+		return checkHasTokenThePermission(apiToken, apiName, actionName);
+
+	}
+	/****************************************************************
+	 * Check if the permission exists by name.
+	 * 
+	 * @param permission to check
+	 * @return true if exists, false otherwise or in case of exception.
+	 ****************************************************************/
+	public static boolean checkHasTokenThePermission(APIToken apiToken, String apiName, String actionName) {
+		
 		APITokenPermission permission = APITokenPermissionDBMethods.selectFirst(apiName, actionName);
 
 		return checkHasTokenThePermission(apiToken, permission);

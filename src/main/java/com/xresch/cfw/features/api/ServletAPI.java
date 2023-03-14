@@ -127,7 +127,18 @@ public class ServletAPI extends HttpServlet
 		//------------------------------------------
 		// Check if token has permission and handle
 		// request
-		if(APITokenPermissionMapDBMethods.checkHasTokenThePermission(token, apiName, actionName)){
+		APIToken apiToken = APITokenDBMethods.selectFirstByToken(token);
+		if(APITokenPermissionMapDBMethods.checkHasTokenThePermission(apiToken, apiName, actionName)){
+			
+			//------------------------------------------
+			// Load User Permissions
+			String userID = apiToken.permissionsOfUserID();
+			if(!Strings.isNullOrEmpty(userID)) {
+				CFW.Context.Request.getSessionData().loadUserPermissions(Integer.parseInt(userID));
+			}
+			
+			//------------------------------------------
+			// Handle Request
 			handleAPIRequest(request, response);
 		}else {
 			json.setSuccess(false);

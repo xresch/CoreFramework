@@ -45,7 +45,6 @@ public class CFWDBUserRoleMap {
 	 * 
 	 ********************************************************************************************/
 	private static void invalidateCache(int userID) {
-		System.out.println("Invalidate Role Cache");
 		userRolesCache.invalidate(userID);
 	}
 	

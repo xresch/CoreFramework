@@ -39,6 +39,7 @@ public class APIToken extends CFWObject {
 		DESCRIPTION,
 		IS_ACTIVE,
 		JSON_RESPONSIBLE_USERS,
+		JSON_PERMISSIONS_OF_USER,
 	}
 
 	private static Logger logger = CFWLog.getLogger(APIToken.class.getName());
@@ -75,6 +76,15 @@ public class APIToken extends CFWObject {
 				}
 			});
 	
+	private CFWField<LinkedHashMap<String,String>> permissionsOfUser = CFWField.newTagsSelector(APITokenFields.JSON_PERMISSIONS_OF_USER)
+			.setLabel("Permissions Of User")
+			.setDescription("Load the permissions of the specified user. This is needed to use certain endpoints like the Query.execute endpoint.")
+			.addAttribute("maxTags", "1")
+			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+				}
+			});
 
 	
 	public APIToken() {
@@ -88,7 +98,7 @@ public class APIToken extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyCreator, token, description, isActive, responsibleUsers);
+		this.addFields(id, foreignKeyCreator, token, description, isActive, responsibleUsers, permissionsOfUser);
 	}
 		
 	/**************************************************************************************
@@ -168,11 +178,6 @@ public class APIToken extends CFWObject {
 		this.description.setValue(description);
 		return this;
 	}
-
-	
-	public LinkedHashMap<String,String> responsibleUsers() {
-		return responsibleUsers.getValue();
-	}
 	
 	public APIToken isActive(boolean isActive) {
 		this.isActive.setValue(isActive);
@@ -183,9 +188,38 @@ public class APIToken extends CFWObject {
 		return isActive.getValue();
 	}
 	
+	
+	public LinkedHashMap<String,String> responsibleUsers() {
+		return responsibleUsers.getValue();
+	}
+	
 	public APIToken responsibleUsers(LinkedHashMap<String,String> responsibleUsers) {
 		this.responsibleUsers.setValue(responsibleUsers);
 		return this;
+	}
+	
+	public LinkedHashMap<String,String> permissionsOfUser() {
+		return permissionsOfUser.getValue();
+	}
+	
+	public APIToken permissionsOfUser(LinkedHashMap<String,String> permissionsOfUser) {
+		this.permissionsOfUser.setValue(permissionsOfUser);
+		return this;
+	}
+	
+	/*********************************************************
+	 *  Returns the ID of the user or null if not set.
+	 *********************************************************/
+	public String permissionsOfUserID() {
+		if(permissionsOfUser.getValue() != null 
+		&& !permissionsOfUser.getValue().isEmpty() ) {
+			return permissionsOfUser
+						.getValue()
+						.keySet()
+						.toArray(new String[] {})[0];
+		}
+		
+		return null;
 	}
 		
 }

@@ -62,7 +62,7 @@ public class APIQueryExecute extends APIDefinition{
 				long latest = fieldsObject.getTimeframe().getLatest();
 				int timezoneOffsetMinutes = fieldsObject.getTimeframe().getClientTimezoneOffset();
 				
-				CFWQueryExecutor executor = new CFWQueryExecutor().checkPermissions(false);
+				CFWQueryExecutor executor = new CFWQueryExecutor().checkPermissions(true);
 				
 				JsonArray resultArray = executor.parseAndExecuteAll(query, earliest, latest, timezoneOffsetMinutes);
 				
