@@ -47,14 +47,38 @@ public class CFWTimeframe {
 	 ***************************************************************************************/
 	public CFWTimeframe(String jsonString) {
 		
+		setToDefaults();
+		
 		if(Strings.isNullOrEmpty(jsonString)) {
-			setToDefaults();
 			return;
 		}
 		
 		JsonElement element = CFW.JSON.stringToJsonElement(jsonString);
 		if(!element.isJsonNull() && element.isJsonObject()) {
-			timeframeData = element.getAsJsonObject();
+			JsonObject object = element.getAsJsonObject();
+			
+			if(object.keySet().isEmpty()) {
+				return;
+			}
+			
+			if(object.has(MEMBER_OFFSET)) {
+				timeframeData.add(MEMBER_OFFSET, object.get(MEMBER_OFFSET));
+			}else {
+				timeframeData.remove(MEMBER_OFFSET);
+			}
+			
+			if(object.has(MEMBER_EARLIEST)) {
+				timeframeData.add(MEMBER_EARLIEST, object.get(MEMBER_EARLIEST));
+			}
+			
+			if(object.has(MEMBER_LATEST)) {
+				timeframeData.add(MEMBER_LATEST, object.get(MEMBER_LATEST));
+			}
+			
+			if(object.has(MEMBER_CLIENT_TIMEZONE_OFFSET)) {
+				timeframeData.add(MEMBER_CLIENT_TIMEZONE_OFFSET, object.get(MEMBER_CLIENT_TIMEZONE_OFFSET));
+			}
+			
 		}
 	}
 	

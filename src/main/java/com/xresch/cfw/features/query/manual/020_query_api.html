@@ -1,0 +1,107 @@
+
+<p>
+	The query feature can also be used through the API. This allows you to execute queries to fetch data into other applications.
+	The return format is the same as used interally in the application.
+</p>
+
+<h2>Setup</h2>
+<div>
+	To be able to properly use the query API with a token, the token needs a user assigned in the field 'Permissions of User'.
+	Before a query is executed, the query engine will check if the user has permission to access the specified source in the query.
+	<br>Some things that are good to know:
+	<ul>
+		<li>This permission check ensures that a user cannot access every available source in the system.</li>
+		<li>If no user is set for 'Permissions of User', the query will not be executed in case the user does not have access to a source.</li>
+		<li>If such error occurs, the response will contain a message of type ERROR, specifying the source that cannot be accessed.</li>
+	</ul>
+</div>
+
+<h2>Endpoint: Query.execute</h2>
+<h3>Parameters</h3>
+<p>The parameters for this endpoint are as follows:</p>
+	<ul>
+		<li>QUERY<b>:&nbsp;</b> The CFWQL query that should be executed.</li>
+		<li>JSON_TIME<b>:&nbsp;</b> A JSON object string that specifies the time range. All fields are optional, if nothing is specified, default is set to last 30 minutes:
+			<ul>
+				<li>offset<b>:&nbsp;</b>An offset in the format '{number}-{unit}', while unit is one of 'm | h | d | M'.</li>
+				<li>earliest<b>:&nbsp;</b>The earliest time in epoch milliseconds. Ignored if offset is defined.</li>
+				<li>latest<b>:&nbsp;</b>The latest time in epoch milliseconds. Ignored if offset is defined.</li>
+				<li>clientTimezoneOffset<b>:&nbsp;</b>The timezone offset in minutes of the client. Might be needed for some sources to return the correct time frame.</li>
+			</ul>
+		</li>
+	</ul>
+		
+	
+<h3>Examples</h3>
+<p>You can create example URLs, CURL calls and get more details using the user interface of the API.</p>
+<pre><code class="language-cfwquery">
+# CURL GET with encoded URL 
+curl -H "Cookie: CFWSESSIONID=0nl1-T1r4M15U-l0ver5-c4N-rE4d-tH15"  -X GET "http://localhost:8888/app/api?apiName=Query&actionName=execute&JSON_TIME=%7B%22offset%22%3A%2230-m%22%2C%22earliest%22%3A1678783183438%2C%22latest%22%3A1678784983439%2C%22clientTimezoneOffset%22%3A-60%7D&QUERY=%7C%20source%20random%20limit%3D10%0A%7C%20keep%20ID%2C%20VALUE" 
+
+# CURL GET using --data-urlencode 
+curl -H "Cookie: CFWSESSIONID=0nl1-T1r4M15U-l0ver5-c4N-rE4d-tH15" -G  \
+ --data-urlencode "apiName=Query" \
+ --data-urlencode "actionName=execute" \
+ --data-urlencode "JSON_TIME={\"offset\":\"30-m\",\"earliest\":1678783183438,\"latest\":1678784983439,\"clientTimezoneOffset\":-60}"  \
+ --data-urlencode "QUERY=| source random limit=10
+| keep ID, VALUE" \
+ -X GET "http://localhost:8888/app/api"
+ 
+# CURL POST with encoded URL and content type text/plain 
+curl -H "Cookie: CFWSESSIONID=0nl1-T1r4M15U-l0ver5-c4N-rE4d-tH15"  \
+ -H "Content-Type: text/plain"\
+ -X POST "http://localhost:8888/app/api?apiName=Query&actionName=execute&JSON_TIME=%7B%22offset%22%3A%2230-m%22%2C%22earliest%22%3A1678783183438%2C%22latest%22%3A1678784983439%2C%22clientTimezoneOffset%22%3A-60%7D" \
+ -d "| source random limit=10
+| keep ID, VALUE" 
+
+# CURL POST using --data-urlencode and content type application/x-www-form-urlencoded 
+curl -H "Cookie: CFWSESSIONID=0nl1-T1r4M15U-l0ver5-c4N-rE4d-tH15"  \
+ -H "Content-Type: application/x-www-form-urlencoded"\
+ -X POST "http://localhost:8888/app/api"  \
+ --data-urlencode "apiName=Query" \
+ --data-urlencode "actionName=execute" \
+ --data-urlencode "JSON_TIME={\"offset\":\"30-m\",\"earliest\":1678783183438,\"latest\":1678784983439,\"clientTimezoneOffset\":-60}"  \
+ --data-urlencode "QUERY=| source random limit=10
+| keep ID, VALUE" 
+</code></pre>
+
+
+<h3>Return Format</h3>
+<p>Here an example of a JSON object returned by the API endpoint Query.execute: </p>
+<pre><code class="language-cfwquery">
+{
+  # true if execution was successful, false otherwise 
+  "success": true,
+  # Any messages with type: INFO | SUCCESS | WARNING | ERROR
+  "messages": [
+    {
+      "type": "INFO",
+      "message": "One or more sources have reached their fetch limit."
+    }
+  ],
+  # payload contains the results
+  "payload": [
+    {
+      "resultCount": 10,
+      "execTimeMillis": 32,
+      # globals and metadata added using query commands or functions
+      "globals": {},
+      "metadata": {},
+      # the fields detected in the result
+      "detectedFields": [
+        "ID",
+        "VALUE"
+      ],
+      # display settings added using the query commands or functions
+      "displaySettings": {},
+      "results": [
+        {
+          "ID": "6e79070c-5cb2-4549-b2e",
+          "VALUE": 77
+        },
+        ...
+      ]
+    }
+  ]
+}
+</code></pre>

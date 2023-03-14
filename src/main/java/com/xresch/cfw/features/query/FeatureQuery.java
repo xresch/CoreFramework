@@ -307,7 +307,8 @@ public class FeatureQuery extends CFWAppFeature {
 	 *
 	 ******************************************************************/
 	public void registerManual() {
-			
+		
+		CFWQuery pseudoQuery = new CFWQuery();
 		
 		//----------------------------------
 		// Cheat Sheet
@@ -316,8 +317,13 @@ public class FeatureQuery extends CFWAppFeature {
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "010_query_cheatsheet.html")
 			);
 		
-		CFWQuery pseudoQuery = new CFWQuery();
-		
+		//----------------------------------
+		// Query API
+		ROOT_MANUAL_PAGE.addChild(new ManualPage("Query API")
+				.faicon("fas fa-code")
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "020_query_api.html")
+			);
+				
 		//----------------------------------
 		// Available TimeZones
 		String htmlString = "<p>Some of the query sources might provide the possibility to specify a time zone to manage time offsets."
