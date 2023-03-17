@@ -34,6 +34,9 @@ public class User extends CFWObject {
 	
 	public static final String TABLE_NAME = "CFW_USER";
 	
+	// Used to avoid saving when users are acting under a different userid(e.g. API Tokens).
+	private boolean isSaveable = true;
+	
 	public enum UserFields{
 		PK_ID, 
 		USERNAME,
@@ -581,6 +584,22 @@ public class User extends CFWObject {
 		return this;
 	}
 	
-
+	/***********************************************************
+	 * Not stored to DB.
+	 * Used to avoid saving when users are acting under a different userid(e.g. API Tokens).
+	 ***********************************************************/
+	public boolean isSaveable() {
+		return isSaveable;
+	}
+	
+	/***********************************************************
+	 * Not stored to DB.
+	 * Used to avoid saving when users are acting under a different userid(e.g. API Tokens).
+	 * Set to false to avoid saving the user.
+	 ***********************************************************/
+	public User isSaveable(boolean isForeign) {
+		this.isSaveable = isForeign;
+		return this;
+	}
 	
 }

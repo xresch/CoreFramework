@@ -74,11 +74,12 @@ public class AuthenticationHandler extends HandlerWrapper
 		String token = CFW.HTTP.getCFWAPIToken(request);
 
     	if(!Strings.isNullOrEmpty(token)) {
-    		CFWSessionData data = CFW.Context.Request.getSessionData(); 
+    		CFWSessionData sessionData = CFW.Context.Request.getSessionData(); 
     		User tokenUser = new User("apitoken["+CFW.Security.maskString(token, 50)+"]");
     		tokenUser.id(-9999999); //prevent potential null pointer exceptions
-    		data.setUser(tokenUser);
-    		data.isLoggedIn(true);
+    		tokenUser.isSaveable(false);
+    		sessionData.setUser(tokenUser);
+    		sessionData.isLoggedIn(true);
     		this._handler.handle(target, baseRequest, request, response);
     		
     		//-----------------------------------

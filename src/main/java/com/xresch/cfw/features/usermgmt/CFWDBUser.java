@@ -323,6 +323,12 @@ public class CFWDBUser {
 			return false;
 		}
 		
+		if(!user.isSaveable()) {
+			new CFWLog(logger)
+			.severe("The user cannot be updated as it was marked as not saveable.");
+			return false;
+		}
+		
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, "User", "Username: "+user.username());
 
 		boolean resultUpdate = 
