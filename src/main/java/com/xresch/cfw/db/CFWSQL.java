@@ -1889,10 +1889,21 @@ public class CFWSQL {
 	}
 	
 	/***************************************************************
+	 * Closes the ResultSet related to the CFWSQL instance.
+	 * Does nothing if ResultSet is null.
+	 ****************************************************************/
+	public void close() {
+		if(result != null) {
+			dbInterface.close(result);
+		}
+	}
+	
+	/***************************************************************
 	 * Returns the CFWObject the instance was created with
 	 ****************************************************************/
 	public CFWObject getObject() {
 		return this.object;
 	}
+	
 	
 }
