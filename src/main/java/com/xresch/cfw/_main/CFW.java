@@ -13,6 +13,11 @@ import com.xresch.cfw.cli.CFWCommandLineInterface;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWRegistryObjects;
 import com.xresch.cfw.db.CFWDB;
+import com.xresch.cfw.extensions.databases.FeatureDBExtensions;
+import com.xresch.cfw.extensions.databases.generic.FeatureDBExtensionsGenericJDBC;
+import com.xresch.cfw.extensions.databases.mssql.FeatureDBExtensionsMSSQL;
+import com.xresch.cfw.extensions.databases.mysql.FeatureDBExtensionsMySQL;
+import com.xresch.cfw.extensions.databases.oracle.FeatureDBExtensionsOracle;
 import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.api.CFWRegistryAPI;
 import com.xresch.cfw.features.api.FeatureAPI;
@@ -63,13 +68,13 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.schedule.CFWTaskScheduler;
 import com.xresch.cfw.spi.CFWAppFeature;
 import com.xresch.cfw.spi.CFWAppInterface;
-import com.xresch.cfw.utils.CFWState;
 import com.xresch.cfw.utils.CFWDump;
 import com.xresch.cfw.utils.CFWFiles;
 import com.xresch.cfw.utils.CFWHttp;
 import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.utils.CFWScripting;
 import com.xresch.cfw.utils.CFWSecurity;
+import com.xresch.cfw.utils.CFWState;
 import com.xresch.cfw.utils.CFWUtilsAnalysis;
 import com.xresch.cfw.utils.CFWUtilsArray;
 import com.xresch.cfw.utils.CFWUtilsText;
@@ -445,6 +450,14 @@ public class CFW {
 		if(CFW.AppSettings.isSpacesEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureSpaces.class);	
 		}
+		
+		//---------------------------
+		// Register Extensions
+		CFW.Registry.Features.addFeature(FeatureDBExtensions.class);
+		CFW.Registry.Features.addFeature(FeatureDBExtensionsMySQL.class);
+		CFW.Registry.Features.addFeature(FeatureDBExtensionsMSSQL.class);
+		CFW.Registry.Features.addFeature(FeatureDBExtensionsOracle.class);
+		CFW.Registry.Features.addFeature(FeatureDBExtensionsGenericJDBC.class);
 		
 		//---------------------------
 		// Application Register
