@@ -1,7 +1,7 @@
 package com.xresch.cfw.features.api;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
@@ -16,7 +16,7 @@ public class CFWRegistryAPI {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWRegistryAPI.class.getName());
 	
-	private static LinkedHashMap<String, APIDefinition> definitionArray = new LinkedHashMap<String, APIDefinition>();
+	private static TreeMap<String, APIDefinition> definitionArray = new TreeMap<String, APIDefinition>();
 	
 	public static String getFullyQualifiedName(APIDefinition definition) {
 		return definition.getApiName()+"-"+definition.getActionName();
@@ -84,7 +84,7 @@ public class CFWRegistryAPI {
 	 * Removes a APIDefinition class to the registry.
 	 * @param definition
 	 ***********************************************************************/
-	public static LinkedHashMap<String, APIDefinition> getAPIDefinitions()  {
+	public static TreeMap<String, APIDefinition> getAPIDefinitions()  {
 		return definitionArray;
 	}
 	

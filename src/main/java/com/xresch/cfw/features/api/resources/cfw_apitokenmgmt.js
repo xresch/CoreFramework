@@ -106,38 +106,6 @@ function cfw_apitokenmgmt_edit(id){
 }
 
 /******************************************************************
- * Edit user
- ******************************************************************/
-function cfw_usermgmt_editUser(userID){
-	
-	var allDiv = $('<div id="cfw-usermgmt">');	
-
-	//-----------------------------------
-	// User Details
-	//-----------------------------------
-	var detailsDiv = $('<div id="cfw-usermgmt-details">');
-	detailsDiv.append('<h2>'+CFWL('cfw_usermgmt_user', 'User')+'Details</h2>');
-	allDiv.append(detailsDiv);
-	
-	//-----------------------------------
-	// Roles
-	//-----------------------------------
-	var roleDiv = $('<div id="cfw-usermgmt-roles">');
-	roleDiv.append('<h2>'+CFWL('cfw_usermgmt_roles', "Roles")+'</h2>');
-	allDiv.append(roleDiv);
-	
-	cfw_usermgmt_createToggleTable(roleDiv, "userrolemap", userID)
-	
-	CFW.ui.showModalMedium("Edit User", allDiv, "CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'users'})");
-	
-	//-----------------------------------
-	// Load Form
-	//-----------------------------------
-	CFW.http.createForm(CFW_USRMGMT_URL, {action: "getform", item: "edituser", id: userID}, detailsDiv);
-	
-}
-
-/******************************************************************
  * Delete
  ******************************************************************/
 function cfw_apitokenmgmt_delete(id){
