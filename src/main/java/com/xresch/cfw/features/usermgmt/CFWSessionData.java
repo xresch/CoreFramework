@@ -160,12 +160,20 @@ public class CFWSessionData implements Serializable {
 	}
 	
 	/***********************************************************************
-	 * Load the roles for the specified user.
+	 * Load the roles for the specified user. Also sets the userID
+	 * of the user set in the session data. This is needed to check for permissions
+	 * based on userID when API Token is used. 
 	 * This is used to load permissions for API tokens.
 	 ***********************************************************************/
 	public void loadUserPermissions(int userID) {
+		
+		if(user != null) {
+			user.id(userID);
+		}
 		// use putAll() to not clear the HashMaps which are cached in classes CFWDBUserRoleMap/CFWDBRolePermissionMap
+		this.userRoles.clear();
 		this.userRoles.putAll( CFW.DB.Users.selectRolesForUser(userID) );
+		this.userPermissions.clear();
 		this.userPermissions.putAll( CFW.DB.Users.selectPermissionsForUser(userID) );
 		loadMenu(true);
 	}
