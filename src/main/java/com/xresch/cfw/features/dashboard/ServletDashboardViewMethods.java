@@ -854,7 +854,7 @@ public class ServletDashboardViewMethods
 		//###############################################################################
 		// When changing this method you have to apply the same changes in the javascript 
 		// method:
-		// cfw_dashboard.js >> cfw_dashboard_parameters_applyToWidgetSettings()
+		// cfw_dashboard.js >> cfw_dashboard_parameters_applyToFields()
 		//
 		//###############################################################################
 

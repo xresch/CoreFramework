@@ -563,9 +563,11 @@ function cfw_dashboard_parameters_applyToFields(object, widgetType, finalParams)
 		let currentParam = globalOverrideParams[index];
 		let paramValue = currentParam.VALUE;
 		let currentSettingName = currentParam.LABEL;
-		
+		console.log("currentParam"+JSON.stringify(currentParam))
+
 		switch(currentParam.PARAM_TYPE){
 			case 'TAGS_SELECTOR':
+			case 'CHART_SETTINGS':
 				if(typeof paramValue == 'object'){
 					newSettingsObject[currentSettingName] = paramValue;
 				}else{

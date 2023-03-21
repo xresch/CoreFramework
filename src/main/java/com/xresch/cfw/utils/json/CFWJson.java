@@ -431,6 +431,27 @@ public class CFWJson {
 	}
 	
 	/*************************************************************************************
+	 * Copies data from the dataToMerge object to the target object.
+	 * @param target the object to copy the data into
+	 * @param dataToMerge the object to copy the data from
+	 * @param createMissing if true, add the members only present int dataToMerge to target,
+	 * 		  if false skip missing members.
+	 *************************************************************************************/
+	public static void mergeData(JsonObject target, JsonObject dataToMerge, boolean createMissing) {
+		
+		for(Entry<String, JsonElement> entry : dataToMerge.entrySet()) {
+			
+			String memberName = entry.getKey();
+			
+			if(target.has(memberName)) {
+				target.add(memberName, dataToMerge.get(memberName));
+			}else if(createMissing) {
+				target.add(memberName, dataToMerge.get(memberName));
+			}
+		}
+	}
+	
+	/*************************************************************************************
 	 * Makes a HTML table string from a JSON Object.
 	 * 
 	 * @param thisToTable the object to covnert

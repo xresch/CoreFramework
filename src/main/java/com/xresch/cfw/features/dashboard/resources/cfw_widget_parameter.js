@@ -70,6 +70,10 @@
 								for(var index in tagsInputValues){
 									inputField.tagsinput('add', tagsInputValues[index]);
 								}
+							}else if(inputField.data('role') == "chartsettings"){
+								var chartsettingsValues = JSON.parse(viewerCustomValue);
+								var wrapper = inputField.closest('.cfw-chartsettings-field-wrapper');
+								 cfw_internal_applyChartSettings(inputField.attr('id'), wrapper, chartsettingsValues);
 							}else{
 								inputField.val(viewerCustomValue);
 							}

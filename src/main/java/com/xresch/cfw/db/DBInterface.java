@@ -29,6 +29,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWChartSettings;
 import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.config.FeatureConfiguration;
@@ -559,6 +560,7 @@ public class DBInterface {
 	 *               Boolean, Float, Date, Timestamp, Blob, Clob, Byte
 	 * @throws SQLException 
 	 ********************************************************************************************/
+	@SuppressWarnings("rawtypes")
 	public static void prepareStatement(PreparedStatement prepared, Object... values) throws SQLException{
 		
 		if(values != null) {
@@ -570,8 +572,9 @@ public class DBInterface {
 				else if	(currentValue instanceof StringBuilder) { prepared.setString(i, currentValue.toString() ); }
 				else if	(currentValue instanceof char[]) 		{ prepared.setString(i, new String((char[])currentValue)); }
 				else if (currentValue instanceof Integer) 		{ prepared.setInt(i, (Integer)currentValue); }
-				else if (currentValue instanceof Long) 			{ prepared.setLong(i, (Long)currentValue); }
 				else if (currentValue instanceof Boolean) 		{ prepared.setBoolean(i, (Boolean)currentValue); }
+				else if (currentValue == null) 					{ prepared.setNull(i, Types.NULL); }
+				else if (currentValue instanceof Long) 			{ prepared.setLong(i, (Long)currentValue); }
 				else if (currentValue instanceof Float) 		{ prepared.setFloat(i, (Float)currentValue); }
 				else if (currentValue instanceof BigDecimal) 	{ prepared.setBigDecimal(i, (BigDecimal)currentValue); }
 				else if (currentValue instanceof Date) 			{ prepared.setDate(i, (Date)currentValue); }
@@ -582,9 +585,9 @@ public class DBInterface {
 				else if (currentValue instanceof ArrayList) 	{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", ((ArrayList)currentValue).toArray() )); }
 				else if (currentValue instanceof Object[]) 		{ prepared.setArray(i, prepared.getConnection().createArrayOf("VARCHAR", (Object[])currentValue)); }
 				else if (currentValue instanceof LinkedHashMap)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
-				else if (currentValue instanceof CFWSchedule)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
-				else if (currentValue instanceof CFWTimeframe)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
-				else if (currentValue == null) 					{ prepared.setNull(i, Types.NULL); }
+				else if (  currentValue instanceof CFWChartSettings
+						|| currentValue instanceof CFWSchedule
+						|| currentValue instanceof CFWTimeframe)	{ prepared.setString(i, CFW.JSON.toJSON(currentValue)); }
 				else if (currentValue.getClass().isEnum()) 		{ prepared.setString(i, currentValue.toString());}
 				else { throw new RuntimeException("Unsupported database field type: "+ currentValue.getClass().getName());}
 			}
