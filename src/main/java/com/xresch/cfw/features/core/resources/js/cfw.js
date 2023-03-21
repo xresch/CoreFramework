@@ -3199,7 +3199,7 @@ function cfw_ui_addToast(toastTitle, toastBody, style, delay){
  * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_ui_showModal(modalTitle, modalBody, jsCode, size, keepOnOutsideClick){
+function cfw_ui_showModal(modalTitle, modalBody, jsCodeOrFunction, size, keepOnOutsideClick){
 	
 	var modalID = 'cfw-default-modal';
 	var modalHeaderClass = '';
@@ -3281,10 +3281,10 @@ function cfw_ui_showModal(modalTitle, modalBody, jsCode, size, keepOnOutsideClic
 
 	//---------------------------------
 	// Add Callback
-	if(jsCode != null){
+	if(jsCodeOrFunction != null){
 
 		modal.on('hidden.bs.modal', function () {
-			cfw_utils_executeCodeOrFunction(jsCode);
+			cfw_utils_executeCodeOrFunction(jsCodeOrFunction);
 			$("#"+modalID).off('hidden.bs.modal');
 		});	
 	}
@@ -3302,12 +3302,12 @@ function cfw_ui_showModal(modalTitle, modalBody, jsCode, size, keepOnOutsideClic
  * Create a model with content.
  * @param modalTitle the title for the modal
  * @param modalBody the body of the modal
- * @param jsCode to execute on modal close
+ * @param jsCodeOrFunction to execute on modal close
  * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_ui_showModalMedium(modalTitle, modalBody, jsCode, keepOnOutsideClick){
-	cfw_ui_showModal(modalTitle, modalBody, jsCode, 'regular', keepOnOutsideClick);
+function cfw_ui_showModalMedium(modalTitle, modalBody, jsCodeOrFunction, keepOnOutsideClick){
+	cfw_ui_showModal(modalTitle, modalBody, jsCodeOrFunction, 'regular', keepOnOutsideClick);
 }
 	
 /**************************************************************************************
@@ -3318,8 +3318,8 @@ function cfw_ui_showModalMedium(modalTitle, modalBody, jsCode, keepOnOutsideClic
  * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_ui_showModalSmall(modalTitle, modalBody, jsCode, keepOnOutsideClick){
-	cfw_ui_showModal(modalTitle, modalBody, jsCode, 'small', keepOnOutsideClick);
+function cfw_ui_showModalSmall(modalTitle, modalBody, jsCodeOrFunction, keepOnOutsideClick){
+	cfw_ui_showModal(modalTitle, modalBody, jsCodeOrFunction, 'small', keepOnOutsideClick);
 }
 	
 /**************************************************************************************
@@ -3330,8 +3330,8 @@ function cfw_ui_showModalSmall(modalTitle, modalBody, jsCode, keepOnOutsideClick
  * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_ui_showModalLarge(modalTitle, modalBody, jsCode, keepOnOutsideClick){
-	cfw_ui_showModal(modalTitle, modalBody, jsCode, 'large');
+function cfw_ui_showModalLarge(modalTitle, modalBody, jsCodeOrFunction, keepOnOutsideClick){
+	cfw_ui_showModal(modalTitle, modalBody, jsCodeOrFunction, 'large');
 }	
 
 /**************************************************************************************
@@ -4701,6 +4701,7 @@ var CFWL = cfw_lang;
 
 var CFW = {
 	global: {
+		formID: 'cfw-formID',
 		autocompleteCounter: 0,
 		autocompleteFocus: -1,
 		autcompleteParamEnhancerFunction: null,

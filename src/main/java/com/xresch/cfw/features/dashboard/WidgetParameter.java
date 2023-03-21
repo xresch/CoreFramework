@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
@@ -16,6 +17,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -32,26 +34,42 @@ import com.xresch.cfw.validation.CustomValidator;
 
 public class WidgetParameter extends WidgetDefinition {
 
+	public static final String FIELDNAME_PASSWORD = "password";
+	public static final String FIELDNAME_CHECKPASSWORD = "checkpassword";
+	public static final String FIELDNAME_BUTTONLABEL = "buttonlabel";
+	public static final String FIELDNAME_SHOWBUTTON = "showbutton";
+	public static final String FIELDNAME_JSON_PARAMETERS = "JSON_PARAMETERS";
+	public static final String FIELDNAME_DESCRIPTION = "description";
+	
 	public static final String WIDGET_TYPE = "cfw_parameter";
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public WidgetDataCachePolicy getCachePolicy() {
 		return WidgetDataCachePolicy.OFF;
 	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public String getWidgetType() {return WIDGET_TYPE;}
-
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public CFWObject getSettings() {
 		return new CFWObject()
 				
-				.addField(CFWField.newString(FormFieldType.WYSIWYG, "description")
+				.addField(CFWField.newString(FormFieldType.WYSIWYG, FIELDNAME_DESCRIPTION)
 					.setLabel("{!cfw_widget_parameter_description!}")
 					.setDescription("{!cfw_widget_parameter_description_desc!}")
 					.allowHTML(true)
 				)
-				.addField(CFWField.newTagsSelector("JSON_PARAMETERS")
+				.addField(CFWField.newTagsSelector(FIELDNAME_JSON_PARAMETERS)
 						.setLabel("{!cfw_widget_parameter_params!}")
 						.setDescription("{!cfw_widget_parameter_params_desc!}")
 						.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
@@ -76,14 +94,36 @@ public class WidgetParameter extends WidgetDefinition {
 						})	
 					)
 				
-			.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, "showbutton")
+			.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_SHOWBUTTON)
 					.setLabel("{!cfw_widget_parameter_showbutton!}")
 					.setDescription("{!cfw_widget_parameter_showbutton_desc!}")
 					.setValue(true)
 				)
+			
+			.addField(CFWField.newString(FormFieldType.TEXT, FIELDNAME_BUTTONLABEL)
+					.setLabel("{!cfw_widget_parameter_buttonlabel!}")
+					.setDescription("{!cfw_widget_parameter_buttonlabel_desc!}")
+					.setValue("")
+				)
+			
+			.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_CHECKPASSWORD)
+					.setLabel("{!cfw_widget_parameter_checkpassword!}")
+					.setDescription("{!cfw_widget_parameter_checkpassword_desc!}")
+					.setValue(false)
+				)
+			
+			.addField(CFWField.newString(FormFieldType.PASSWORD, FIELDNAME_PASSWORD)
+					.setLabel("{!cfw_widget_parameter_password!}")
+					.setDescription("{!cfw_widget_parameter_password_desc!}")
+					.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
+					.setValue("")
+				)
 		;
 	}
-
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, long earliest, long latest, int timezoneOffsetMinutes) {
 		// fetch Parameter objects
@@ -96,7 +136,7 @@ public class WidgetParameter extends WidgetDefinition {
 		
 		//---------------------------------
 		// Resolve Parameters
-		JsonElement paramsElement = jsonSettings.get("JSON_PARAMETERS");
+		JsonElement paramsElement = jsonSettings.get(FIELDNAME_JSON_PARAMETERS);
 		if(paramsElement.isJsonNull()) {
 			return;
 		}
@@ -123,28 +163,33 @@ public class WidgetParameter extends WidgetDefinition {
 		
 		//---------------------------------
 		// Resolve Parameters
-		JsonElement showbuttonElement = jsonSettings.get("showbutton");
-		String buttonLabel = "Update";
-		if(showbuttonElement !=null && !showbuttonElement.isJsonNull()) {
-			boolean showButton = showbuttonElement.getAsBoolean();
-			if(!showButton) {
-				buttonLabel = null;
+		Boolean showButton = (Boolean)settings.getField(FIELDNAME_SHOWBUTTON).getValue();
+		String buttonLabel = null;
+
+		if(showButton != null && showButton) {
+			buttonLabel = (String)settings.getField(FIELDNAME_BUTTONLABEL).getValue();
+			
+			if(Strings.isNullOrEmpty(buttonLabel)) {
+				System.out.println("hit: "+buttonLabel);
+				buttonLabel = "Update"; 
 			}
 		}
+		System.out.println("buttonLabel: "+buttonLabel);
 		//--------------------------------------
-		// Add on change event for triggering updates
+		// Create Form with Custom onclick event
 		
 		CFWForm paramForm = new CFWForm("cfwWidgetParameterForm"+CFW.Random.randomStringAlphaNumerical(12), buttonLabel);
 		paramForm.isInlineForm(true);
-		paramForm.addAttribute("onclick", "cfw_dashboard_parameters_fireParamWidgetUpdate(this, true);");
+		paramForm.addAttribute("onclick", "cfw_dashboard_parameters_fireParamWidgetUpdate(this);");
+		
+		//--------------------------------------
+		// Add parameter fields to form
 		
 		for(CFWObject object : paramsResultArray) {
 			DashboardParameter param = (DashboardParameter)object;
 			
 			CFWField valueField = param.getField(DashboardParameterFields.VALUE.toString());
 			valueField
-				//.addAttribute("onchange", "cfw_dashboard_parameters_fireParamWidgetUpdate(this, true);")
-				//.addAttribute("onblur", "cfw_dashboard_parameters_fireParamWidgetUpdate(this, true);")
 				.addAttribute("data-widgettype", param.widgetType())
 				.addAttribute("data-settingslabel", param.paramSettingsLabel())
 				.setName(param.name())
@@ -155,10 +200,24 @@ public class WidgetParameter extends WidgetDefinition {
 			paramForm.addField(valueField);
 		}
 		
+		//--------------------------------------
+		// Add Fields for password check
+		Boolean checkPassword = (Boolean)settings.getField(FIELDNAME_CHECKPASSWORD).getValue();
+
+		//For security reasons, password check will always be sent, regardless if prompt is shown or not
+		paramForm.addField(
+			CFWField.newBoolean(FormFieldType.HIDDEN, "cfw-promptpassword") 
+				.setValue( (checkPassword != null && checkPassword) )
+		);
+		
+		
 		paramForm.appendToPayload(response);		
 		
 	}
-
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public ArrayList<FileDefinition> getJavascriptFiles() {
 		FileDefinition js = new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_widget_parameter.js");
@@ -166,10 +225,16 @@ public class WidgetParameter extends WidgetDefinition {
 		array.add(js);
 		return array;
 	}
-
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public ArrayList<FileDefinition> getCSSFiles() { return null; }
-
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	@Override
 	public HashMap<Locale, FileDefinition> getLocalizationFiles() {
 		HashMap<Locale, FileDefinition> map = new HashMap<Locale, FileDefinition>();
@@ -177,6 +242,9 @@ public class WidgetParameter extends WidgetDefinition {
 	}
 	
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	private HashSet<String> getParamIDsAlreadyInUse(String dashboardID){
 		//---------------------------------------
 		// Get Params already in use
@@ -193,14 +261,57 @@ public class WidgetParameter extends WidgetDefinition {
 			JsonObject settings = CFW.JSON.fromJson(widget.settings()).getAsJsonObject();
 			
 			if(!settings.isJsonNull() 
-			&& settings.has("JSON_PARAMETERS")
-			&& settings.get("JSON_PARAMETERS").isJsonObject()) {
-				usedParamIDs.addAll(settings.get("JSON_PARAMETERS").getAsJsonObject().keySet());
+			&& settings.has(FIELDNAME_JSON_PARAMETERS)
+			&& settings.get(FIELDNAME_JSON_PARAMETERS).isJsonObject()) {
+				usedParamIDs.addAll(settings.get(FIELDNAME_JSON_PARAMETERS).getAsJsonObject().keySet());
 			}
 		}
 		
 		return usedParamIDs;
 		
+	}
+	
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public static void checkParameterWidgetPassword(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
+		
+		//-----------------------------------
+		// Prepare Widget Settings
+		String widgetID = request.getParameter("widgetid");
+		DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
+		String widgetType = widget.type();
+		String JSON_SETTINGS = widget.settings();
+		
+		//apply Parameters to JSONSettings
+		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
+		CFWObject settingsObject = definition.getSettings();
+		settingsObject.mapJsonFields(JSON_SETTINGS, false, true);
+		
+		//-----------------------------------
+		// Check if Password should be checked
+		Boolean checkPassword = (Boolean)settingsObject.getField(FIELDNAME_CHECKPASSWORD).getValue();
+		System.out.println("checkPassword:"+checkPassword);
+		if(checkPassword != null && !checkPassword) {
+			json.setSuccess(true);
+			return;
+		}
+		
+		//-----------------------------------
+		// Check Password
+
+		String password = (String)settingsObject.getField(FIELDNAME_PASSWORD).getValue();
+		String givenPassword = request.getParameter("credentialKey");
+		
+		if(givenPassword.equals(password)) {
+			json.setSuccess(true);
+			return;
+		}
+		
+		CFW.Messages.addErrorMessage("Password verification failed.");
+		json.setSuccess(false);
+		return;
 	}
 
 }

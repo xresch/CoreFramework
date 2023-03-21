@@ -150,6 +150,8 @@ DONE
 - Dashboard: Copy widgets to clipboard does not copy task settings (Reason: Avoiding unintentional spamming of the jobs system)
 - Dashboard: Added Time Created for dashboards.
 - Dashboard: Made list full with of window 
+- Dashboard: Parameter Widget supports password verification before update
+- Dashboard: Parameter Widget supports custom button labels 
 - API: Added possibility to provide data in request body
 - API: Endpoints sorted by name
 - API Tokens: Added field "Permissions of User" to make sure security can be kept for certain endpoints like Query.execute

@@ -619,33 +619,74 @@ function cfw_dashboard_parameters_getStoredViewerParams(){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement, triggerRedraw){
+function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
 	
+	//----------------------------------
+	// Initialize
+	var FIELDNAME_PROMPT_PW = "cfw-promptpassword";
 	var paramField = $(paramElement);
 	var paramValue = paramField.val();
 	var paramForms = $('.cfw-parameter-widget-parent form');
+	var widgetElement = paramField.closest('.grid-stack-item');
+	var widgetID = widgetElement.data('id');
 	
+	//----------------------------------
+	// Create merged Params
 	var mergedParams = {}; 
 	paramForms.each(function(){
 		var userParamsForWidget = CFW.format.formToParams($(this), true);
 		// add to URL
 		for(key in userParamsForWidget){
-			if(key != "cfw-formID"){
+			if(key != CFW.global.formID && key != FIELDNAME_PROMPT_PW){
 				CFW.http.setURLParam(key, userParamsForWidget[key]);
 			}
 		}
 		Object.assign(mergedParams, userParamsForWidget); 
 	});
 	
+	//----------------------------------
+	// Get Prompt and Store
+	var doPrompt = mergedParams[FIELDNAME_PROMPT_PW];
+	
 	var storekey = cfw_dashboard_parameters_getViewerParamsStoreKey();
 
-	delete mergedParams['cfw-formID'];
-	
+	delete mergedParams[CFW.global.formID];
+	delete mergedParams[FIELDNAME_PROMPT_PW];
 	CFW.cache.storeValueForPage(storekey, JSON.stringify(mergedParams));
+	
+	//----------------------------------
+	// To Prompt, or not to prompt, that's the mighty question
+	var urlParams = { action: 'fetch'
+					, item: 'paramwidgetpwcheck'
+					, dashboardid: CFW_DASHBOARD_URLPARAMS.id
+					, widgetid: widgetID
+					, credentialKey: ''
+					}; 
+	if(!doPrompt){
 
-	if(triggerRedraw){
-		cfw_dashboard_draw();
+		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, urlParams, function(data){
+			if(data.success){
+				cfw_dashboard_draw();
+			}
+		});
+	}else{
+		var modalBody = '<input id="widget-param-password" name="credentialKey" class="w-100" type="password" autocomplete="off">';
+		CFW.ui.showModalSmall("Password", modalBody, function(){
+
+			var givenPassword = $('#widget-param-password').val();
+			
+			urlParams.credentialKey = givenPassword;
+			
+			$.ajaxSetup({async: false});
+				CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, urlParams, function(data){
+					if(data.success){
+						cfw_dashboard_draw();
+					}
+				});
+			$.ajaxSetup({async: true});
+		});
 	}
+
 }
 
 /*******************************************************************************
@@ -1404,14 +1445,13 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 	var timeZoneOffset = new Date().getTimezoneOffset();
 	urlParams.timezoneOffsetMinutes = timeZoneOffset;
 	
-	// ----------------------------
+	//----------------------------
 	// Fetch Data
 	
 	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, urlParams, function(data){
 		callback(data);
 	});
 
-	
 	return formHTML;
 }
 

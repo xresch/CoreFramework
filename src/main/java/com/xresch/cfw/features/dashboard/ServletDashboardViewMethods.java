@@ -194,7 +194,7 @@ public class ServletDashboardViewMethods
 	  											break;	
 	  				
 					case "widgetcopy": 			getWidgetForCopy(request, response, jsonResponse);
-					break;	
+												break;	
 					
 					case "widgetdata": 			getWidgetData(request, response, jsonResponse);
 												break;	
@@ -209,7 +209,11 @@ public class ServletDashboardViewMethods
 												break;	
 												
 					case "paramform": 			createParameterEditForm(request, response, jsonResponse);
-												break;								
+												break; 
+												
+					case "paramwidgetpwcheck": 	WidgetParameter.checkParameterWidgetPassword(request, response, jsonResponse);
+												break;
+												
 					default: 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
 												break;
 				}
