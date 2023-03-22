@@ -219,11 +219,23 @@ function cfw_query_editor_copyCurrentLine(direction, domElement){
 		if(value.charAt(indexLineStart) == "\n"){ break; }
 	}
 	
+	// no clue why this is needed and why it works, but hey I take it! XD 
+	// Might look into it in the future when I find more time. ;-)
+	var breakAtStart = '';
+	if(indexLineStart == 0){
+		breakAtStart = '\n';
+	}
+	
 	//--------------------------------------------
 	// Find Line End
 	var indexLineEnd = selectionEnd;
+	var newlineFound = false;
 	for(; indexLineEnd < value.length-1 ;indexLineEnd++ ){
-		if(value.charAt(indexLineEnd) == "\n"){ break; }
+		if(value.charAt(indexLineEnd) == "\n"){ newlineFound = true; break; }
+	}
+	
+	if(!newlineFound){
+		indexLineEnd = value.length;
 	}
 	
 	//--------------------------------------------
@@ -232,7 +244,7 @@ function cfw_query_editor_copyCurrentLine(direction, domElement){
 	
 	// set textarea value to: text before caret + tab + text after caret
 	value = value.substring(0, indexLineStart) 
-					+line
+					+line+breakAtStart
 					+line
 	    		+ value.substring(indexLineEnd);
 	
