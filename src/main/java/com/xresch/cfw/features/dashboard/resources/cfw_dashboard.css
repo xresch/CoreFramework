@@ -15,6 +15,19 @@
 /**************************************************************
  *Override gridstack
  **************************************************************/
+ 
+ .show-on-edit {
+	visibility: hidden;
+}
+
+.edit-mode .show-on-edit {
+	visibility: visible;
+}
+
+
+/**************************************************************
+ *Override gridstack
+ **************************************************************/
 .grid-stack > .grid-stack-item > .grid-stack-item-content {
 	right: 5px;
 	left: 5px;
@@ -419,16 +432,21 @@
 /**************************************************************
  * Dashboard styling
  **************************************************************/
+ #bottom-ruler {
+ 	position: fixed;
+ 	bottom: 0px;
+ 	margin-left: 0; /*correcting offset from position fixed*/
+ }
 .ruler {
    /*  background-color: var(--cfw-red); */
     list-style: none;
     display: flex;
     color: #ccc;
-    flex: align-content: space-evenly;
+    align-content: space-evenly;
     flex-direction: row;
     margin: 7px;
     height: 30px;
-    width: 100%;
+    width: 98vw;
     padding: 0;
     padding-right: 5px;
     padding-left: 10px;

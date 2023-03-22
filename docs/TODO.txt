@@ -146,6 +146,7 @@ DONE
 - CFWField: Added flag SERVER_SIDE_ONLY
 - Dashboard: Widgets settings marked with SERVER_SIDE_ONLY are not sent to the browser
 - Dashboard: Added Favorite Feature
+- Dashboard: Added Bottom Ruler in Edit Mode
 - Dashboard: Complete rework of undo/redo functionality because of introduction of SERVER_SIDE_ONLY
 - Dashboard: Copy widgets to clipboard does not copy task settings (Reason: Avoiding unintentional spamming of the jobs system)
 - Dashboard: Added Time Created for dashboards.

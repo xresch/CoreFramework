@@ -1533,12 +1533,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	if(merged.BGCOLOR != null && merged.BGCOLOR.trim().length > 0){
 		BGCOLORClass = 'bg-'+merged.BGCOLOR;
 	}
-	
-	var settingsDisplayClass = 'd-none';
-	if(CFW_DASHBOARD_EDIT_MODE){
-		settingsDisplayClass = '';
-	}
-	
+		
 	var advancedDisplayClass = 'd-none';
 	if(CFW_DASHBOARD_EDIT_MODE_ADVANCED){
 		advancedDisplayClass = '';
@@ -1560,7 +1555,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	
 	var htmlString =
 		'<div class="grid-stack-item-content card d-flex '+titleposClass+BGCOLORClass+' '+FGCOLORClass+'">'
-		+'	<div role="button" class="cfw-dashboard-widget-actionicons '+settingsDisplayClass+' text-cfw-lightgray">'
+		+'	<div role="button" class="cfw-dashboard-widget-actionicons text-cfw-lightgray show-on-edit">'
 		+'		<div role="button" class="actionicon-delete '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_remove(\''+merged.guid+'\')"><i class="fas fa-times"></i></div>'
 		+'		<div role="button" class="actionicon-duplicate '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_duplicate(\''+merged.guid+'\')"><i class="fas fa-clone"></i></div>'
 		+'		<div role="button" class="actionicon-edit '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_edit(\''+merged.guid+'\')"><i class="fas fa-pen"></i></div>'
@@ -1788,11 +1783,13 @@ function cfw_dashboard_toggleEditMode(){
 	var grid = cfw_dashboard_getGrid();
 	if(CFW_DASHBOARD_EDIT_MODE){
 		CFW_DASHBOARD_EDIT_MODE = false;
+		$('#cfw-container').removeClass('edit-mode')
 		$('.cfw-dashboard-widget-actionicons').addClass('d-none');
 		$('#addWidget').addClass('d-none');
 		$('#parametersButton').addClass('d-none');
 		$('#doneButton').addClass('d-none');
 		$('#top-ruler').addClass('d-none');
+		$('#bottom-ruler').addClass('d-none');
 		$('#editButton').removeClass('d-none');
 		
 		
@@ -1800,11 +1797,13 @@ function cfw_dashboard_toggleEditMode(){
 		
 	}else{
 		CFW_DASHBOARD_EDIT_MODE = true;
+		$('#cfw-container').addClass('edit-mode')
 		$('.cfw-dashboard-widget-actionicons').removeClass('d-none');
 		$('#addWidget').removeClass('d-none');
 		$('#parametersButton').removeClass('d-none');
 		$('#doneButton').removeClass('d-none');
 		$('#top-ruler').removeClass('d-none');
+		$('#bottom-ruler').removeClass('d-none');
 		$('#editButton').addClass('d-none');
 		
 		grid.enable();
