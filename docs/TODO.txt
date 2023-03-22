@@ -152,6 +152,7 @@ DONE
 - Dashboard: Made list full with of window 
 - Dashboard: Parameter Widget supports password verification before update
 - Dashboard: Parameter Widget supports custom button labels 
+- Dashboard: Parameter Widget supports choosing the widgets which are affected on update
 - Dashboard: Parameter Widget supports Chart Settings Field 
 - API: Added possibility to provide data in request body
 - API: Endpoints sorted by name

@@ -66,15 +66,14 @@ public class CFWChartSettings {
 		
 		chartSettingsData = createDefaults();
 
-		System.out.println("before: "+CFW.JSON.toJSON(chartSettingsData));
 		JsonElement element = CFW.JSON.stringToJsonElement(jsonString);
 		if(!element.isJsonNull() && element.isJsonObject()) {
 			JsonObject object = element.getAsJsonObject();
 			
 			CFW.JSON.mergeData(chartSettingsData, object, false);
-			System.out.println("merged");
+
 		}
-		System.out.println("after: "+CFW.JSON.toJSON(chartSettingsData));
+
 	}
 	
 	/***************************************************************************************

@@ -626,6 +626,7 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
 	//----------------------------------
 	// Initialize
 	var FIELDNAME_PROMPT_PW = "cfw-promptpassword";
+	var FIELDNAME_AFFECTED_WIDGETS = "cfw-affectedwidgets";
 	var paramField = $(paramElement);
 	var paramValue = paramField.val();
 	var paramForms = $('.cfw-parameter-widget-parent form');
@@ -639,7 +640,10 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
 		var userParamsForWidget = CFW.format.formToParams($(this), true);
 		// add to URL
 		for(key in userParamsForWidget){
-			if(key != CFW.global.formID && key != FIELDNAME_PROMPT_PW){
+			if(key != CFW.global.formID 
+			&& key != FIELDNAME_PROMPT_PW
+			&& key != FIELDNAME_AFFECTED_WIDGETS
+			){
 				CFW.http.setURLParam(key, userParamsForWidget[key]);
 			}
 		}
@@ -649,26 +653,51 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
 	//----------------------------------
 	// Get Prompt and Store
 	var doPrompt = mergedParams[FIELDNAME_PROMPT_PW];
-	
+	var affectedWidgetsString = mergedParams[FIELDNAME_AFFECTED_WIDGETS];
+	var affectedWidgetsArray = 
+		(affectedWidgetsString == null && affectedWidgetsString == "[]") ? [] : JSON.parse(affectedWidgetsString);
+		
 	var storekey = cfw_dashboard_parameters_getViewerParamsStoreKey();
 
 	delete mergedParams[CFW.global.formID];
 	delete mergedParams[FIELDNAME_PROMPT_PW];
+	delete mergedParams[FIELDNAME_AFFECTED_WIDGETS];
 	CFW.cache.storeValueForPage(storekey, JSON.stringify(mergedParams));
 	
 	//----------------------------------
-	// To Prompt, or not to prompt, that's the mighty question
-	var urlParams = { action: 'fetch'
+	// Prepare Params and Update Function
+	
+	//For security reasons, password check will always be sent, regardless if prompt is shown or not
+	var passwordCheckParams = { action: 'fetch'
 					, item: 'paramwidgetpwcheck'
 					, dashboardid: CFW_DASHBOARD_URLPARAMS.id
 					, widgetid: widgetID
 					, credentialKey: ''
 					}; 
+	
+	var updateFunction = function(affectedWidgetsArray){
+		
+		if(affectedWidgetsArray.length == 0){ 
+			cfw_dashboard_draw();
+		}else{
+			for(var i in affectedWidgetsArray){
+				var widgetID = affectedWidgetsArray[i];
+				var guid = $(".grid-stack-item[data-id="+widgetID+"]").attr('id');
+				if(guid != null){
+					cfw_dashboard_widget_rerender(guid);
+				}
+			}
+		}	
+	}
+	
+	//----------------------------------
+	// Execute Prompt and Updates
+	
 	if(!doPrompt){
 
-		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, urlParams, function(data){
+		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, passwordCheckParams, function(data){
 			if(data.success){
-				cfw_dashboard_draw();
+				updateFunction(affectedWidgetsArray);
 			}
 		});
 	}else{
@@ -677,12 +706,12 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
 
 			var givenPassword = $('#widget-param-password').val();
 			
-			urlParams.credentialKey = givenPassword;
+			passwordCheckParams.credentialKey = givenPassword;
 			
 			$.ajaxSetup({async: false});
-				CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, urlParams, function(data){
+				CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, passwordCheckParams, function(data){
 					if(data.success){
-						cfw_dashboard_draw();
+						updateFunction(affectedWidgetsArray);
 					}
 				});
 			$.ajaxSetup({async: true});

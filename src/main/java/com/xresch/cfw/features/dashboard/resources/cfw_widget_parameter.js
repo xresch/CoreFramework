@@ -43,6 +43,14 @@
 						var name = inputField.attr('name');
 						var type = inputField.attr('type');
 						
+						//--------------------
+						// Skip Hidden Fields
+						if(type == "hidden"){
+							return;
+						}
+						
+						//--------------------
+						// Do others
 						var viewerCustomValue = storedViewerParams[name];
 						if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
 							if(type == 'radio'){

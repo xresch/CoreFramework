@@ -34,6 +34,7 @@ import com.xresch.cfw.validation.CustomValidator;
 
 public class WidgetParameter extends WidgetDefinition {
 
+	public static final String FIELDNAME_AFFECTED_WIDGETS = "JSON_AFFECTED_WIDGETS";
 	public static final String FIELDNAME_PASSWORD = "password";
 	public static final String FIELDNAME_CHECKPASSWORD = "checkpassword";
 	public static final String FIELDNAME_BUTTONLABEL = "buttonlabel";
@@ -118,17 +119,27 @@ public class WidgetParameter extends WidgetDefinition {
 					.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
 					.setValue("")
 				)
+			
+			.addField(CFWField.newTagsSelector(FIELDNAME_AFFECTED_WIDGETS)
+					.setLabel("{!cfw_widget_parameter_affected_widgets!}")
+					.setDescription("{!cfw_widget_parameter_affected_widgets_desc!}")
+					.addAttribute("maxTags", "128")
+					.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+						public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+							String dashboardID = request.getParameter("cfw-dashboardid");
+							return CFW.DB.DashboardWidgets.autocompleteWidget(dashboardID, searchValue, this.getMaxResults());					
+						}
+					})
+			)
 		;
 	}
 	
 	/******************************************************************
 	 *
 	 ******************************************************************/
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, long earliest, long latest, int timezoneOffsetMinutes) {
-		// fetch Parameter objects
-		// Create html Form Fields
-		// remove submit Button
 		
 		//---------------------------------
 		// Get ID
@@ -150,7 +161,7 @@ public class WidgetParameter extends WidgetDefinition {
 		for(Entry<String, JsonElement> entry : paramsObject.entrySet()) {
 			paramNames.add(entry.getValue().getAsString());
 		}
-		
+
 		//Filter by names instead of IDs to still get parameters if they were changed.
 		ArrayList<CFWObject> paramsResultArray = new CFWSQL(new DashboardParameter())
 				.select()
@@ -160,7 +171,7 @@ public class WidgetParameter extends WidgetDefinition {
 				.getAsObjectList();
 		
 		DashboardParameter.prepareParamObjectsForForm(request, paramsResultArray, true);
-		
+
 		//---------------------------------
 		// Resolve Parameters
 		Boolean showButton = (Boolean)settings.getField(FIELDNAME_SHOWBUTTON).getValue();
@@ -170,11 +181,11 @@ public class WidgetParameter extends WidgetDefinition {
 			buttonLabel = (String)settings.getField(FIELDNAME_BUTTONLABEL).getValue();
 			
 			if(Strings.isNullOrEmpty(buttonLabel)) {
-				System.out.println("hit: "+buttonLabel);
+				
 				buttonLabel = "Update"; 
 			}
 		}
-		System.out.println("buttonLabel: "+buttonLabel);
+		
 		//--------------------------------------
 		// Create Form with Custom onclick event
 		
@@ -196,21 +207,35 @@ public class WidgetParameter extends WidgetDefinition {
 				.setLabel(CFW.Utils.Text.fieldNameToLabel(param.name()))
 				.isDecoratorDisplayed(false)
 				.addCssClass(" form-control-sm cfw-widget-parameter-marker");
-			
+
 			paramForm.addField(valueField);
 		}
-		
+
 		//--------------------------------------
-		// Add Fields for password check
+		// Add Field for password check
 		Boolean checkPassword = (Boolean)settings.getField(FIELDNAME_CHECKPASSWORD).getValue();
 
-		//For security reasons, password check will always be sent, regardless if prompt is shown or not
 		paramForm.addField(
 			CFWField.newBoolean(FormFieldType.HIDDEN, "cfw-promptpassword") 
 				.setValue( (checkPassword != null && checkPassword) )
 		);
 		
+		//--------------------------------------
+		// Add Fields containing Affected Widgets
+		LinkedHashMap<String, String> affectedWidgets = (LinkedHashMap<String, String>)settings.getField(FIELDNAME_AFFECTED_WIDGETS).getValue();
+		System.out.println("affectedWidgets: "+CFW.JSON.toJSON(affectedWidgets));
+		if(affectedWidgets == null) { affectedWidgets = new LinkedHashMap<String, String>(); }
 		
+		String[] affectedIDs = affectedWidgets.keySet().toArray(new String[] {});
+		System.out.println("affectedWidgets.keySet(): "+CFW.JSON.toJSON(affectedWidgets.keySet()));
+		System.out.println("affectedIDs: "+CFW.JSON.toJSON(affectedIDs));
+		paramForm.addField(
+				CFWField.newString(FormFieldType.HIDDEN, "cfw-affectedwidgets") 
+					.setValue( CFW.JSON.toJSON(affectedIDs).replaceAll("\"", "") )
+			);
+		
+		//--------------------------------------
+		// Return Form in Payload
 		paramForm.appendToPayload(response);		
 		
 	}
@@ -292,7 +317,7 @@ public class WidgetParameter extends WidgetDefinition {
 		//-----------------------------------
 		// Check if Password should be checked
 		Boolean checkPassword = (Boolean)settingsObject.getField(FIELDNAME_CHECKPASSWORD).getValue();
-		System.out.println("checkPassword:"+checkPassword);
+		
 		if(checkPassword != null && !checkPassword) {
 			json.setSuccess(true);
 			return;

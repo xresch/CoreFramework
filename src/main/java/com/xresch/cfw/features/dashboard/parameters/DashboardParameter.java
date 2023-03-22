@@ -314,7 +314,7 @@ public class DashboardParameter extends CFWObject {
 	 *****************************************************************/
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void prepareParamObjectsForForm(HttpServletRequest request, ArrayList<CFWObject> parameterList, boolean doForWidget) {
-		System.out.println("parameterList: "+CFW.JSON.toJSON(parameterList));
+		
 		String dashboardID = request.getParameter("dashboardid");
 		
 		//===========================================
@@ -335,11 +335,6 @@ public class DashboardParameter extends CFWObject {
 				newValueField = settings.getField(param.paramSettingsLabel());
 				
 				//adjust labels
-				
-				System.out.println("===================");
-				System.out.println("param: "+CFW.JSON.toJSON(param));
-				System.out.println("newValueField: "+newValueField);
-				System.out.println("newValueField.getName: "+CFW.JSON.toJSON(newValueField.getName()));
 				param.paramSettingsLabel(newValueField.getName()); //change value displayed in column "Widget Setting"
 				newValueField.setLabel("Value"); //Change name of column to "Value"
 				

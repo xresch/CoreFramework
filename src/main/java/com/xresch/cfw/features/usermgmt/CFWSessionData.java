@@ -33,15 +33,15 @@ public class CFWSessionData implements Serializable {
 	
 	private static Logger logger = CFWLog.getLogger(CFWSessionData.class.getName());
 	
-	protected boolean isLoggedIn = false;
+	private boolean isLoggedIn = false;
 
-	protected User user = null;
-	protected String clientIP = "";
-	protected String sessionID = null;
-	protected HashMap<Integer, Role> userRoles = new HashMap<>();
-	protected HashMap<String, Permission> userPermissions = new HashMap<>();
+	private User user = null;
+	private String clientIP = "";
+	private String sessionID = null;
+	private HashMap<Integer, Role> userRoles = new HashMap<>();
+	private HashMap<String, Permission> userPermissions = new HashMap<>();
 	
-	protected HashMap<String, String> customProperties = new HashMap<>();
+	private HashMap<String, String> customProperties = new HashMap<>();
 	
 	//formID and form
 	protected Cache<String, CFWForm> formCache;
@@ -78,9 +78,11 @@ public class CFWSessionData implements Serializable {
 	public void triggerLogout() {
 		
 		isLoggedIn = false;
-		userRoles.clear();
-		userPermissions.clear();
-		customProperties.clear();
+		
+		// make new HashMaps instead of map.clear() to avoid some strange NullPointerExceptions that occurs for some strange reasons and I have absolutely no intention to now go and check why the hell this is happening, as it seems that it is caused by Jetty session handler, which stores a strange state into the database but I have no interest in finding out how to reproduce the issue, so I write this overly lengthy comment just to make sure you have something to laugh when you get to the end of this line. ;-P 
+		userRoles = new HashMap<>();
+		userPermissions = new HashMap<>();
+		customProperties= new HashMap<>();
 		
 		formCache.invalidateAll();
 		
