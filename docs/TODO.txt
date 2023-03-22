@@ -165,6 +165,7 @@ DONE
 - JS Renderer: Added Tile and Status Bar Renderer(tileandbar)
 - Utils: Added Undo/Redo Manager 
 - Validator: Added ExcludeStringsValidator
+- Query: Editor - Fixed issues with html characters like "<" or ">"
 - Query: Fixed Comma after Binary Expression breaks query by creating array in the wrong place
 - Query: Loader does not block query editor
 - Query: URL is updated on each execution, even if the query fails

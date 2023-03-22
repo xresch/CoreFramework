@@ -102,7 +102,7 @@ function cfw_query_toggleLoading(isLoading) {
 
 function cfw_query_editor_refreshHighlighting() {
 	
-	$QUERYCODE.html($QUERYAREA.val());
+	$QUERYCODE.text($QUERYAREA.val());
 	hljs.highlightElement($QUERYCODE.get(0));
 	
 }
