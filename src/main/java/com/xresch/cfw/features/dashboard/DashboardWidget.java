@@ -47,6 +47,7 @@ public class DashboardWidget extends CFWObject {
 		FOOTER,
 		BGCOLOR,
 		FGCOLOR,
+		INVISIBLE,
 		JSON_SETTINGS,
 		JSON_TASK_PARAMETERS,
 	}
@@ -117,6 +118,9 @@ public class DashboardWidget extends CFWObject {
 			.setColumnDefinition("VARCHAR(64)")
 			.setDescription("The forground color of the widget, used for text and borders.");
 	
+	private CFWField<Boolean> invisible = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardWidgetFields.INVISIBLE)
+			.setDescription("Makes the widget invisible when not in edit mode. It's still there and still executes whatever it executes when visible. So basically it's a ninja, but don't tell anyone!");
+	
 	/** Settings are coming from the fields defined by {@link WidgetDefinition#getSettings()}. Security can be disabled here. */
 	private CFWField<String> settings = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.JSON_SETTINGS)
 			.setDescription("The custom settings of the widget as JSON.")
@@ -144,7 +148,7 @@ public class DashboardWidget extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titlelink, titleFontsize, titleposition, contentFontsize, footer, bgcolor, fgcolor, settings, taskParameters);
+		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titlelink, titleFontsize, titleposition, contentFontsize, footer, bgcolor, fgcolor, invisible, settings, taskParameters);
 	}
 
 	/**************************************************************************************
@@ -197,6 +201,7 @@ public class DashboardWidget extends CFWObject {
 						DashboardWidgetFields.FOOTER.toString(),
 						DashboardWidgetFields.BGCOLOR.toString(),
 						DashboardWidgetFields.FGCOLOR.toString(),
+						DashboardWidgetFields.INVISIBLE.toString(),
 						DashboardWidgetFields.JSON_SETTINGS.toString(),	 	
 						DashboardWidgetFields.JSON_TASK_PARAMETERS.toString(),	 	
 				};
@@ -242,6 +247,7 @@ public class DashboardWidget extends CFWObject {
 		
 		//------------------------------------
 		// Iterate widgets 
+		new CFWLog(logger).off("Migration: Update Chart Settings of "+chartWidgetArray.size()+" Widget(s).");
 		for(DashboardWidget widget : chartWidgetArray) {
 			
 			JsonObject settingsObject = widget.settingsAsJson();

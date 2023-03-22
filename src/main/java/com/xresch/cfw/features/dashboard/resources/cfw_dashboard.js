@@ -563,7 +563,6 @@ function cfw_dashboard_parameters_applyToFields(object, widgetType, finalParams)
 		let currentParam = globalOverrideParams[index];
 		let paramValue = currentParam.VALUE;
 		let currentSettingName = currentParam.LABEL;
-		console.log("currentParam"+JSON.stringify(currentParam))
 
 		switch(currentParam.PARAM_TYPE){
 			case 'TAGS_SELECTOR':
@@ -1007,6 +1006,14 @@ function cfw_dashboard_widget_edit(widgetGUID){
 		description: CFWL('cfw_core_fgcolor_desc', 'Define the color used for the foreground, like text and borders.')
 	}).createHTML();
 	
+	defaultForm += new CFWFormField({ 
+		type: "boolean", 
+		name: "INVISIBLE", 
+		label: 'Invisible', 
+		value: widgetObject.INVISIBLE, 
+		description: "Makes the widget invisible when not in edit mode. It's still there and still executes whatever it executes when visible. So basically it's a ninja, but don't tell anyone!"
+	}).createHTML();
+	
 	// ------------------------------
 	// Save Button
 	defaultForm += '<button type="button" onclick="cfw_dashboard_widget_save_defaultSettings(\''+widgetGUID+'\')" class="form-control btn-primary">'+CFWL('cfw_core_save', 'Save')+'</button>';
@@ -1184,7 +1191,8 @@ function cfw_dashboard_widget_save_defaultSettings(widgetGUID){
 	widgetObject.FOOTER = settingsForm.find('textarea[name="footer"]').val();
 	widgetObject.BGCOLOR = settingsForm.find('select[name="BGCOLOR"]').val();
 	widgetObject.FGCOLOR = settingsForm.find('select[name="FGCOLOR"]').val();
-	
+	widgetObject.INVISIBLE = settingsForm.find('input[name="INVISIBLE", value="true"]').prop('checked');
+
 	cfw_dashboard_history_startOperationsBundle();
 	
 		$.ajaxSetup({async: false});
@@ -1515,6 +1523,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 			FOOTER: "",
 			BGCOLOR: "",
 			FGCOLOR: "",
+			INVISIBLE: false,
 			JSON_SETTINGS: {}
 	}
 	
@@ -1699,6 +1708,12 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 				    	grid.movable('#'+widgetAdjustedByWidgetDef.guid, false);
 				    	grid.resizable('#'+widgetAdjustedByWidgetDef.guid, false);
 				    }
+
+					// ----------------------------
+				    // Check Visibility
+					if(originalWidgetObject.INVISIBLE != null && originalWidgetObject.INVISIBLE){
+						$('#'+originalWidgetObject.guid).addClass('show-on-edit');
+					}
 
 				    // ----------------------------
 				    // Update Data of Original&Clone
