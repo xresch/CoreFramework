@@ -295,6 +295,34 @@ public class CFWObject {
 	}
 	
 	/****************************************************************
+	 * Removes a field from this object and returns it.
+	 * @param fieldname of type Object to support enum value
+	 * 
+	 ****************************************************************/
+	@SuppressWarnings("rawtypes")
+	public CFWField removeField(Object fieldname) {
+		CFWField removed = fields.remove(fieldname);
+
+		if(removed != null) {
+			removed.setRelatedCFWObject(null);
+		}
+		return removed;
+	}
+	
+	/****************************************************************
+	 * Removes the fields with the given fieldnames.
+	 * 
+	 * @param fieldnames of type Object to support enum values
+	 ****************************************************************/
+	@SuppressWarnings("rawtypes")
+	public void removeFields(Object ...fieldnames) {
+		for(Object name : fieldnames) {
+			this.removeField(name);
+		}
+	}
+	
+	
+	/****************************************************************
 	 * @return the field or null if not found.
 	 * 
 	 ****************************************************************/

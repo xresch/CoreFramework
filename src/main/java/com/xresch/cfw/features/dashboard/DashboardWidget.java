@@ -3,6 +3,8 @@ package com.xresch.cfw.features.dashboard;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -12,6 +14,7 @@ import com.xresch.cfw.datahandling.CFWChartSettings;
 import com.xresch.cfw.datahandling.CFWChartSettings.AxisType;
 import com.xresch.cfw.datahandling.CFWChartSettings.ChartType;
 import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
@@ -20,6 +23,7 @@ import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.SysoutInterceptor;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
 /**************************************************************************************************************
@@ -50,6 +54,27 @@ public class DashboardWidget extends CFWObject {
 		INVISIBLE,
 		JSON_SETTINGS,
 		JSON_TASK_PARAMETERS,
+	}
+	
+	private static final LinkedHashMap<String, String> colorOptions = new LinkedHashMap<String, String>();
+	
+	static {
+		colorOptions.put("", 				"Default"); 
+		colorOptions.put("cfw-blue", 		"Blue"); 
+		colorOptions.put("cfw-indigo", 		"Indigo");
+		colorOptions.put("cfw-purple", 		"Purple"); 
+		colorOptions.put("cfw-pink", 		"Pink"); 
+		colorOptions.put("cfw-red", 		"Red"); 
+		colorOptions.put("cfw-orange", 		"Orange"); 
+		colorOptions.put("cfw-yellow", 		"Yellow"); 
+		colorOptions.put("cfw-green", 		"Green");
+		colorOptions.put("cfw-teal", 		"Teal");
+		colorOptions.put("cfw-cyan", 		"Cyan");
+		colorOptions.put("cfw-white", 		"White");
+		colorOptions.put("cfw-lightgray",	"Light Gray");
+		colorOptions.put("cfw-gray", 		"Gray");
+		colorOptions.put("cfw-darkgray", 	"Dark Gray");
+		colorOptions.put("cfw-black", 		"Black");
 	}
 
 	private static Logger logger = CFWLog.getLogger(DashboardWidget.class.getName());
@@ -88,43 +113,66 @@ public class DashboardWidget extends CFWObject {
 	
 	private CFWField<String> title = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.TITLE)
 			.setColumnDefinition("VARCHAR(32767)")
-			.setDescription("The title of the widget.");
+			.setDescription("The title of the widget.")
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			;
 	
 	private CFWField<String> titlelink = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.TITLE_LINK)
 			.setColumnDefinition("VARCHAR(32767)")
-			.setDescription("An optional link for the title.");
+			.setDescription("An optional link for the title.")
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			;
 	
 	private CFWField<Integer> titleFontsize = CFWField.newInteger(FormFieldType.NUMBER, DashboardWidgetFields.TITLE_FONTSIZE)
 			.setDescription("The font size of the title.")
-			.addValidator(new NumberRangeValidator(6, 32).setNullAllowed(true));
+			.addValidator(new NumberRangeValidator(6, 64).setNullAllowed(true))
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			;
 	
-	private CFWField<String> titleposition = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.TITLE_POSITION)
+	private CFWField<String> titleposition = CFWField.newString(FormFieldType.SELECT, DashboardWidgetFields.TITLE_POSITION)
 			.setColumnDefinition("VARCHAR(32)")
-			.setDescription("The position of the title.");
+			.setDescription("The position of the title.")
+			.addOption("top", "Top")
+			.addOption("left", "Left")
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			;
 	
 	private CFWField<Integer> contentFontsize = CFWField.newInteger(FormFieldType.NUMBER, DashboardWidgetFields.CONTENT_FONTSIZE)
 			.setDescription("The font size of the content.")
-			.addValidator(new NumberRangeValidator(6, 32).setNullAllowed(true));
+			.addValidator(new NumberRangeValidator(6, 32).setNullAllowed(true))
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			;
 	
 	private CFWField<String> footer = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.FOOTER)
 			.setColumnDefinition("VARCHAR(32767)")
-			.setDescription("The footer of the widget.");
+			.setDescription("The footer of the widget.")
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			;
 	
-	private CFWField<String> bgcolor = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.BGCOLOR)
+	private CFWField<String> bgcolor = CFWField.newString(FormFieldType.SELECT, DashboardWidgetFields.BGCOLOR)
 			.setColumnDefinition("VARCHAR(64)")
-			.setDescription("The background color of the widget.");
+			.setDescription("The background color of the widget.")
+			.addOptions(colorOptions)
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			;
 	
-	private CFWField<String> fgcolor = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.FGCOLOR)
+	private CFWField<String> fgcolor = CFWField.newString(FormFieldType.SELECT, DashboardWidgetFields.FGCOLOR)
 			.setColumnDefinition("VARCHAR(64)")
-			.setDescription("The forground color of the widget, used for text and borders.");
+			.setDescription("The forground color of the widget, used for text and borders.")
+			.addOptions(colorOptions)
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			;
 	
 	private CFWField<Boolean> invisible = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardWidgetFields.INVISIBLE)
-			.setDescription("Makes the widget invisible when not in edit mode. It's still there and still executes whatever it executes when visible. So basically it's a ninja, but don't tell anyone!");
+			.setDescription("Makes the widget invisible when not in edit mode. It's still there and still executes whatever it executes when visible. So basically it's a ninja, but don't tell anyone!")
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			;
 	
 	/** Settings are coming from the fields defined by {@link WidgetDefinition#getSettings()}. Security can be disabled here. */
 	private CFWField<String> settings = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.JSON_SETTINGS)
 			.setDescription("The custom settings of the widget as JSON.")
-			.disableSanitization();
+			.disableSanitization()
+			;
 	
 	/** TaskParameters are coming from the fields defined by {@link WidgetDefinition#getTasksParameters()}. Security can be disabled here. */
 	private CFWField<String> taskParameters = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.JSON_TASK_PARAMETERS)
@@ -483,5 +531,26 @@ public class DashboardWidget extends CFWObject {
 	public DashboardWidget taskParameters(String value) {
 		this.taskParameters.setValue(value);
 		return this;
+	}
+
+	/**********************************************************************
+	 * Removes the fields that are not part of the Default Settings
+	 **********************************************************************/
+	public DashboardWidget createCloneForDefaultSettingsForm() {
+		
+		// create clone, as widgets are cached
+		DashboardWidget clone = new DashboardWidget();
+		clone.mapJsonFields(this.toJSON(), false, false);
+		
+		ArrayList<Object> fieldnames = new ArrayList<>();
+		for(CFWField field : clone.getFields().values()) {
+			
+			if(!field.hasFlag(CFWFieldFlag.KEEP)) {
+				fieldnames.add(field.getName());
+			}
+		}
+		clone.removeFields(fieldnames.toArray());
+		
+		return clone;
 	}
 }

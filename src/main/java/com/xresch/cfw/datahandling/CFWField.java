@@ -142,14 +142,16 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	
 	//--------------------------------
 	// Flags
+	
 	public enum CFWFieldFlag{
-		/*Used for example by Dashboard Widgets to determine if a setting should be sent to client sidein json responses. */
+		/*Used for example by Dashboard Widgets to determine if a setting should be sent to client side in json responses. */
 		SERVER_SIDE_ONLY,
-		/*Used for  custom filtering */
-		CUSTOM_A,
-		CUSTOM_B,
-		CUSTOM_C,
-		CUSTOM_D
+		/* Can be used for custom filtering */
+		REMOVE,
+		/* Can be used for custom filtering */
+		KEEP,
+		/*Used for general custom stuff */
+		A, B, C, D, E, F, G
 	}
 	
 	private EnumSet<CFWFieldFlag> flags;
@@ -1327,10 +1329,18 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		return this;
 	}
 	
+	/******************************************************************************************************
+	 * 
+	 * @return String the name of the field
+	 ******************************************************************************************************/
 	public String getName() {
 		return name;
 	}
-		
+	
+	/******************************************************************************************************
+	 * 
+	 * @return String the label of the field
+	 ******************************************************************************************************/	
 	public String getLabel() {
 		return formLabel;
 	}
@@ -1534,6 +1544,22 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		this.valueLabelOptions.put(value, label);
 		return this;
 	}
+	
+	/******************************************************************************************************
+	 * Adds options for selection fields. The string representations of the provided parameters will be used. 
+	 * The values will be used as labels for the options.
+	 * 
+	 * @param map with value/label pairs
+	 * @return instance for chaining
+	 ******************************************************************************************************/
+	public CFWField<T> addOptions(HashMap valueLabelPairs) {
+		if(this.valueLabelOptions == null) {
+			this.valueLabelOptions = new LinkedHashMap<Object,Object>();
+		}
+		
+		this.valueLabelOptions.putAll(valueLabelPairs);
+		return this;
+	}
 
 	/******************************************************************************************************
 	 * Set values for selection fields. The string representations of the provided elements will be used. 
@@ -1629,6 +1655,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * @return true if all the given flags are specified for this field
 	 ******************************************************************************************************/
 	public CFWField<T> addFlag(CFWFieldFlag flag) {
+		
 		if(this.flags == null) { 
 			this.flags = EnumSet.of(flag);
 		}else {

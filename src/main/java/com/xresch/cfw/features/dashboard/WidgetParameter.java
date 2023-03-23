@@ -225,12 +225,11 @@ public class WidgetParameter extends WidgetDefinition {
 		//--------------------------------------
 		// Add Fields containing Affected Widgets
 		LinkedHashMap<String, String> affectedWidgets = (LinkedHashMap<String, String>)settings.getField(FIELDNAME_AFFECTED_WIDGETS).getValue();
-		System.out.println("affectedWidgets: "+CFW.JSON.toJSON(affectedWidgets));
+
 		if(affectedWidgets == null) { affectedWidgets = new LinkedHashMap<String, String>(); }
 		
 		String[] affectedIDs = affectedWidgets.keySet().toArray(new String[] {});
-		System.out.println("affectedWidgets.keySet(): "+CFW.JSON.toJSON(affectedWidgets.keySet()));
-		System.out.println("affectedIDs: "+CFW.JSON.toJSON(affectedIDs));
+
 		paramForm.addField(
 				CFWField.newString(FormFieldType.HIDDEN, "cfw-affectedwidgets") 
 					.setValue( CFW.JSON.toJSON(affectedIDs).replaceAll("\"", "") )

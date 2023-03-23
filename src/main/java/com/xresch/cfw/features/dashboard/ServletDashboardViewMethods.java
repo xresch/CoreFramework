@@ -202,7 +202,10 @@ public class ServletDashboardViewMethods
 					case "availableparams": 	getAvailableParams(request, jsonResponse, dashboardID);
 												break;	
 												
-					case "settingsform": 		getSettingsForm(request, response, jsonResponse);
+					case "settingsformwidget":  getSettingsFormWidget(request, response, jsonResponse);
+												break;	
+												
+					case "settingsformdefault": getSettingsFormDefault(request, response, jsonResponse);
 												break;	
 												
 					case "taskparamform": 		getTaskParamForm(request, response, jsonResponse);
@@ -440,7 +443,7 @@ public class ServletDashboardViewMethods
 				if(isValid) {
 					String widgetID = request.getParameter("PK_ID");
 					DashboardWidget widgetToUpdate = CFW.DB.DashboardWidgets.selectByID(widgetID);
-					
+
 					// check if default settings are valid
 					if(widgetToUpdate.mapRequestParameters(request)) {
 						//Use sanitized values
@@ -493,7 +496,7 @@ public class ServletDashboardViewMethods
 	/*****************************************************************
 	 *
 	 *****************************************************************/
-	private static void getSettingsForm(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
+	private static void getSettingsFormWidget(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
 		
 		String dashboardID = request.getParameter("FK_ID_DASHBOARD");
 
@@ -536,6 +539,47 @@ public class ServletDashboardViewMethods
 			}else {
 				CFW.Messages.noPermissionToEdit();
 				
+			}
+			
+		}else{
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+		}
+
+	}
+	
+	/*****************************************************************
+	 *
+	 *****************************************************************/
+	private static void getSettingsFormDefault(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
+		
+		String dashboardID = request.getParameter("FK_ID_DASHBOARD");
+
+		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+						
+			//-----------------------------------
+			// Prepare Widget Settings
+
+			String widgetID = request.getParameter("PK_ID");
+			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
+			String widgetType = widget.type();
+			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
+
+			User currentUser = CFW.Context.Request.getUser();
+			
+			widget.createCloneForDefaultSettingsForm();
+			if(definition.hasPermission(currentUser) || CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
+				//----------------------------
+				// Create Form
+				
+				//DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
+				
+				DashboardWidget clone = widget.createCloneForDefaultSettingsForm();
+				CFWForm form = clone.toForm("formEditDefaultSettings"+widgetID, CFW.L("cfw_core_save", "Save") );
+				form.addAttribute("onclick", "cfw_dashboard_widget_save_defaultSettings('"+widgetID+"')");
+				
+				form.appendToPayload(json);
+			}else {
+				CFW.Messages.noPermissionToEdit();
 			}
 			
 		}else{

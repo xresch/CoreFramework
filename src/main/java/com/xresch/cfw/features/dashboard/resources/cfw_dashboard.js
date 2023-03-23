@@ -891,10 +891,22 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	}else{
 		return;
 	}
+	
+	// ##################################################
+	// Create Widget Specific Form
+	// ##################################################
+	var defaultForm = cfw_dashboard_widget_getSettingsFormDefault(widgetObject);
+	if(defaultForm != null){
+		defaultForm = $(defaultForm);
+	}else{
+		return;
+	}
+	
+/*	
 	// ##################################################
 	// Show Form for Default values
 	// ##################################################
-	var defaultForm = '<form id="form-edit-'+widgetGUID+'">';
+	var defaultForm = '<form id="formEditDefaultSettings'+widgetGUID+'">';
 	
 	// ------------------------------
 	// Title
@@ -1017,7 +1029,8 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	// ------------------------------
 	// Save Button
 	defaultForm += '<button type="button" onclick="cfw_dashboard_widget_save_defaultSettings(\''+widgetGUID+'\')" class="form-control btn-primary">'+CFWL('cfw_core_save', 'Save')+'</button>';
-	
+*/
+
 	// ##################################################
 	// Create and show Modal
 	// ##################################################
@@ -1175,21 +1188,22 @@ function cfw_dashboard_widget_handlePaste() {
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_widget_save_defaultSettings(widgetGUID){
+function cfw_dashboard_widget_save_defaultSettings(widgetID){
 	
-	var widget = $('#'+widgetGUID);
+	var widget = $('.grid-stack-item[data-id='+widgetID+']')
+	var widgetGUID = widget.attr('id');
 	var widgetObject = widget.data("widgetObject");
-	var settingsForm = $('#form-edit-'+widgetGUID);
+	var settingsForm = $('#formEditDefaultSettings'+widgetID);
 			
-	widgetObject.TITLE = settingsForm.find('input[name="title"]').val();
-	widgetObject.TITLE_LINK = settingsForm.find('input[name="titlelink"]').val();
-	widgetObject.TITLE_FONTSIZE = settingsForm.find('input[name="titlefontsize"]').val();
-	widgetObject.TITLE_POSITION = settingsForm.find('select[name="titleposition"]').val();
-	widgetObject.CONTENT_FONTSIZE = settingsForm.find('input[name="contentfontsize"]').val();
-	widgetObject.FOOTER = settingsForm.find('textarea[name="footer"]').val();
+	widgetObject.TITLE = settingsForm.find('input[name="TITLE"]').val();
+	widgetObject.TITLE_LINK = settingsForm.find('input[name="TITLE_LINK"]').val();
+	widgetObject.TITLE_FONTSIZE = settingsForm.find('input[name="TITLE_FONTSIZE"]').val();
+	widgetObject.TITLE_POSITION = settingsForm.find('select[name="TITLE_POSITION"]').val();
+	widgetObject.CONTENT_FONTSIZE = settingsForm.find('input[name="CONTENT_FONTSIZE"]').val();
+	widgetObject.FOOTER = settingsForm.find('textarea[name="FOOTER"]').val();
 	widgetObject.BGCOLOR = settingsForm.find('select[name="BGCOLOR"]').val();
 	widgetObject.FGCOLOR = settingsForm.find('select[name="FGCOLOR"]').val();
-	widgetObject.INVISIBLE = settingsForm.find('input[name="INVISIBLE", value="true"]').prop('checked');
+	widgetObject.INVISIBLE = settingsForm.find('input[name="INVISIBLE"]').prop('checked');
 
 	cfw_dashboard_history_startOperationsBundle();
 	
@@ -1422,17 +1436,42 @@ function cfw_dashboard_widget_duplicate(widgetGUID) {
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_widget_getSettingsForm(widgetObject) {
+function cfw_dashboard_widget_getSettingsFormWidget(widgetObject) {
 	
 	var formHTML = null;
 	
-	var params = Object.assign({action: 'fetch', item: 'settingsform'}, widgetObject); 
+	var params = Object.assign({action: 'fetch', item: 'settingsformwidget'}, widgetObject); 
 	
 	delete params.content;
 	delete params.guid;
 	delete params.JSON_SETTINGS;
 	
 	params.JSON_SETTINGS = JSON.stringify(widgetObject.JSON_SETTINGS);
+	
+	$.ajaxSetup({async: false});
+		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){
+				if(data.payload != null){
+					formHTML = data.payload.html;
+				}
+			}
+		);
+	$.ajaxSetup({async: true});
+	
+	return formHTML;
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboard_widget_getSettingsFormDefault(widgetObject) {
+	
+	var formHTML = null;
+	
+	var params = Object.assign({action: 'fetch', item: 'settingsformdefault'}, widgetObject); 
+	
+	delete params.content;
+	delete params.guid;
+	delete params.JSON_SETTINGS;
 	
 	$.ajaxSetup({async: false});
 		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){
@@ -1744,7 +1783,8 @@ CFW.dashboard = {
 		registerWidget: 		cfw_dashboard_registerWidget,
 		getWidgetDefinition: 	cfw_dashboard_getWidgetDefinition,
 		registerCategory: 		cfw_dashboard_registerCategory,
-		getSettingsForm:		cfw_dashboard_widget_getSettingsForm,
+		getSettingsForm:		cfw_dashboard_widget_getSettingsFormWidget,
+		getSettingsFormDefault:	cfw_dashboard_widget_getSettingsFormDefault,
 		fetchWidgetData: 		cfw_dashboard_widget_fetchData,
 		createStatusWidgetRendererSettings: cfw_dashboard_createStatusWidgetRendererSettings,
 };
@@ -2062,8 +2102,8 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 				var widgetObject 	 = widgetInstance.data("widgetObject");
 				var undoData = _.cloneDeep(widgetObject);
 				
-				widgetObject.X			= widgetInstance.attr("gs-x");
-				widgetObject.Y		 	= widgetInstance.attr("gs-y");
+				widgetObject.X		= widgetInstance.attr("gs-x");
+				widgetObject.Y		= widgetInstance.attr("gs-y");
 				widgetObject.WIDTH	= widgetInstance.attr("gs-w");
 				widgetObject.HEIGHT	= widgetInstance.attr("gs-h");
 				
