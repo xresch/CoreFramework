@@ -583,6 +583,13 @@ pre {
     justify-content: center;
 }
 
+.cfw-centered {
+	position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
+
 .cfw-chartjs-wrapper{
 	position:relative;
 	width: 100%;

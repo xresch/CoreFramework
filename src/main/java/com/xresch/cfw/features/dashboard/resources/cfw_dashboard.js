@@ -87,7 +87,7 @@ function cfw_dashboard_timeframeChangeCallback(fieldID, pickerData){
 		CFW.http.removeURLParam('timeframepreset');
 	}
 
-	cfw_dashboard_draw();
+	cfw_dashboard_draw(false);
 	
 }
 /*******************************************************************************
@@ -376,7 +376,7 @@ function cfw_dashboard_parameters_save(){
 	// paramListDiv.find('button').click();
 	cfw_internal_postForm('/cfw/formhandler', '#'+formID, function(data){
 		if(data.success){
-			cfw_dashboard_draw();
+			cfw_dashboard_draw(false);
 		}
 	});
 	
@@ -677,13 +677,13 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
 	var updateFunction = function(affectedWidgetsArray){
 		
 		if(affectedWidgetsArray.length == 0){ 
-			cfw_dashboard_draw();
+			cfw_dashboard_draw(true);
 		}else{
 			for(var i in affectedWidgetsArray){
 				var widgetID = affectedWidgetsArray[i];
 				var guid = $(".grid-stack-item[data-id="+widgetID+"]").attr('id');
 				if(guid != null){
-					cfw_dashboard_widget_rerender(guid);
+					cfw_dashboard_widget_rerender(guid, true);
 				}
 			}
 		}	
@@ -901,135 +901,6 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	}else{
 		return;
 	}
-	
-/*	
-	// ##################################################
-	// Show Form for Default values
-	// ##################################################
-	var defaultForm = '<form id="formEditDefaultSettings'+widgetGUID+'">';
-	
-	// ------------------------------
-	// Title
-	defaultForm += new CFWFormField({ 
-			type: "text", 
-			name: "title", 
-			label: CFWL('cfw_core_title', 'Title'), 
-			value: widgetObject.TITLE, 
-			description: CFWL('cfw_widget_title_desc', 'The title of the widget.')
-		}
-	).createHTML();
-	
-	// ------------------------------
-	// Title
-	defaultForm += new CFWFormField({ 
-			type: "text", 
-			name: "titlelink", 
-			label: CFWL('cfw_core_title', 'Title') + ' Link'  , 
-			value: widgetObject.TITLE_LINK, 
-			description: CFWL('cfw_widget_titlelink_desc', 'An optional link for the title.')
-		}
-	).createHTML();
-	
-	// ------------------------------
-	// Title Fontsize
-	defaultForm += new CFWFormField({ 
-			type: "number", 
-			name: "titlefontsize", 
-			label: CFWL('cfw_core_title', 'Title')  + ' ' + CFWL('cfw_core_fontsize', 'Font Size'), 
-			value: widgetObject.TITLE_FONTSIZE, 
-			description: CFWL('cfw_widget_titlefontsize_desc', 'The font size of the title in pixel.') 
-		}
-	).createHTML();
-	
-	// ------------------------------
-	// Title Position Selectors
-	var positionSelectOptions = {
-			'top': 		'Top', 
-			'left': 	'Left'
-	};
-	
-	defaultForm += new CFWFormField({ 
-		type: "select", 
-		name: "titleposition", 
-		label: CFWL('cfw_core_titlepos', 'Title Position'), 
-		value: widgetObject.TITLE_POSITION, 
-		options: positionSelectOptions,
-		description: CFWL('cfw_core_titlepos_desc', 'The position of the title.') 
-	}).createHTML();
-	
-	// ------------------------------
-	// Content Fontsize
-	defaultForm += new CFWFormField({ 
-			type: "number", 
-			name: "contentfontsize", 
-			label: CFWL('cfw_core_fontsize', 'Font Size') + ' ' + CFWL('cfw_core_content', 'Content'), 
-			value: widgetObject.CONTENT_FONTSIZE, 
-			description: CFWL('cfw_widget_contentfontsize_desc', 'The font size used for the widget content. Some widgets might ignore or override this value.') 
-		}
-	).createHTML();
-	// ------------------------------
-	// Footer
-	defaultForm += new CFWFormField({ 
-			type: "textarea", 
-			name: "footer", 
-			label: CFWL('cfw_core_footer', 'Footer'), 
-			value: widgetObject.FOOTER, 
-			description: CFWL('cfw_widget_footer_desc', 'The contents of the footer of the widget.') 
-		}
-	).createHTML();
-	
-	
-	// ------------------------------
-	// Color Selectors
-	var selectOptions = {
-			'': 			'Default', 
-			'cfw-blue': 	'Blue', 
-			'cfw-indigo': 	'Indigo',
-			'cfw-purple': 	'Purple', 
-			'cfw-pink': 	'Pink', 
-			'cfw-red': 		'Red', 
-			'cfw-orange': 	'Orange', 
-			'cfw-yellow': 	'Yellow', 
-			'cfw-green': 	'Green',
-			'cfw-teal': 	'Teal',
-			'cfw-cyan': 	'Cyan',
-			'cfw-white': 	'White',
-			'cfw-lightgray': 'Light Gray',
-			'cfw-gray': 	'Gray',
-			'cfw-darkgray': 'Dark Gray',
-			'cfw-black': 	'Black',
-	};
-	
-	defaultForm += new CFWFormField({ 
-		type: "select", 
-		name: "BGCOLOR", 
-		label: CFWL('cfw_core_bgcolor', 'Background Color'), 
-		value: widgetObject.BGCOLOR, 
-		options: selectOptions,
-		description: CFWL('cfw_core_bgcolor_desc', 'Define the color used for the background.') 
-	}).createHTML();
-	
-	defaultForm += new CFWFormField({ 
-		type: "select", 
-		name: "FGCOLOR", 
-		label: CFWL('cfw_core_fgcolor', 'Foreground Color'), 
-		value: widgetObject.FGCOLOR, 
-		options: selectOptions,
-		description: CFWL('cfw_core_fgcolor_desc', 'Define the color used for the foreground, like text and borders.')
-	}).createHTML();
-	
-	defaultForm += new CFWFormField({ 
-		type: "boolean", 
-		name: "INVISIBLE", 
-		label: 'Invisible', 
-		value: widgetObject.INVISIBLE, 
-		description: "Makes the widget invisible when not in edit mode. It's still there and still executes whatever it executes when visible. So basically it's a ninja, but don't tell anyone!"
-	}).createHTML();
-	
-	// ------------------------------
-	// Save Button
-	defaultForm += '<button type="button" onclick="cfw_dashboard_widget_save_defaultSettings(\''+widgetGUID+'\')" class="form-control btn-primary">'+CFWL('cfw_core_save', 'Save')+'</button>';
-*/
 
 	// ##################################################
 	// Create and show Modal
@@ -1209,7 +1080,7 @@ function cfw_dashboard_widget_save_defaultSettings(widgetID){
 	cfw_dashboard_history_startOperationsBundle();
 	
 		$.ajaxSetup({async: false});
-			cfw_dashboard_widget_rerender(widgetGUID);
+			cfw_dashboard_widget_rerender(widgetGUID, false);
 		$.ajaxSetup({async: true});
 	
 	cfw_dashboard_history_completeOperationsBundle();
@@ -1242,7 +1113,7 @@ function cfw_dashboard_widget_save_widgetSettings(formButton, widgetGUID){
 			cfw_dashboard_widget_save_state(widgetObject, true, false);
 
 			// TODO: A bit ugly, triggers another save
-			cfw_dashboard_widget_rerender(widgetGUID);
+			cfw_dashboard_widget_rerender(widgetGUID, false);
 		
 		$.ajaxSetup({async: true});
 	
@@ -1360,11 +1231,11 @@ function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition
 					
 					// Make sure to save state before rerender
 					$.ajaxSetup({async: false});
-						cfw_dashboard_widget_createInstance(optionalWidgetObjectData, doAutoposition);
+						cfw_dashboard_widget_createInstance(optionalWidgetObjectData, doAutoposition, false);
 					$.ajaxSetup({async: true});
 					
 					//TODO: A bit ugly, triggers another save
-					cfw_dashboard_widget_rerender(optionalWidgetObjectData.guid);
+					cfw_dashboard_widget_rerender(optionalWidgetObjectData.guid, false);
 										
 					return;
 				}
@@ -1383,7 +1254,7 @@ function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition
 					widgetObject.WIDTH  = widgetDefinition.defaultwidth;
 				}
 
-				cfw_dashboard_widget_createInstance(widgetObject, true, function(subWidgetObject){
+				cfw_dashboard_widget_createInstance(widgetObject, true, false, function(subWidgetObject){
 					
 				});
 				
@@ -1426,7 +1297,7 @@ function cfw_dashboard_widget_duplicate(widgetGUID) {
 					CFW.ui.addToastInfo('Parameters removed to avoid duplicated parameters.');
 				}
 
-				cfw_dashboard_widget_createInstance(deepCopyWidgetObject, true);
+				cfw_dashboard_widget_createInstance(deepCopyWidgetObject, true, false);
 			}
 		}
 	);
@@ -1535,12 +1406,12 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_widget_rerender(widgetGUID) {
+function cfw_dashboard_widget_rerender(widgetGUID, manualLoad) {
 	var widget = $('#'+widgetGUID);
 	var widgetObject = widget.data("widgetObject");
 	
 	cfw_dashboard_widget_removeFromGrid(widget);
-	cfw_dashboard_widget_createInstance(widgetObject, false);
+	cfw_dashboard_widget_createInstance(widgetObject, false, manualLoad);
 	
 }
 
@@ -1561,6 +1432,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 			FOOTER: "",
 			BGCOLOR: "",
 			FGCOLOR: "",
+			MANUAL_LOAD: false,
 			INVISIBLE: false,
 			JSON_SETTINGS: {}
 	}
@@ -1681,7 +1553,7 @@ function cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposit
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutoposition, callback) {
+function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutoposition, manualLoad, callback) {
 	
 	if(originalWidgetObject.guid == null){
 		CFW_DASHBOARD_WIDGET_GUID++;
@@ -1707,13 +1579,21 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 			cfw_dashboard_widget_createLoadingPlaceholder(widgetCloneParameterized, doAutoposition);
 
 			// ---------------------------------------
+			// Handle Manual Load
+			var placeholderWidget = $('#'+originalWidgetObject.guid);
+			
+			if(!manualLoad && widgetCloneParameterized.MANUAL_LOAD == true){
+				placeholderWidget.find('.cfw-dashboard-widget-body')
+					.html('<button class="btn btn-sm btn-primary cfw-centered" onclick="cfw_dashboard_widget_rerender(\''+originalWidgetObject.guid+'\', true)">Click to Load</button>');
+				return;
+			}
+			// ---------------------------------------
 			// Create Instance by Widget Definition
 			widgetDefinition.createWidgetInstance(widgetCloneParameterized, finalParams,
 				function(widgetAdjustedByWidgetDef, widgetContent){
 				
 					// ---------------------------------------
 					// Remove Placeholder
-					var placeholderWidget = $('#'+widgetAdjustedByWidgetDef.guid);
 					cfw_dashboard_widget_removeFromGrid(placeholderWidget);
 					
 					// ---------------------------------------
@@ -1922,7 +1802,7 @@ function cfw_dashboard_setReloadInterval(selector) {
 			// on reload
     		// $('.grid-stack').html('');
     		
-	    	cfw_dashboard_draw();
+	    	cfw_dashboard_draw(false);
 	    };
     }, refreshInterval);
 	
@@ -2150,7 +2030,7 @@ function cfw_dashboard_initialDraw(){
 		// -----------------------------
 		// Get Preset from URL		
 		cfw_dashboard_timeframe_setOffset(CFW_DASHBOARD_URLPARAMS.timeframepreset);
-		// above method calls cfw_dashboard_draw()
+		// above method calls cfw_dashboard_draw(false)
 	}else{
 
 		var timeframePreset=window.localStorage.getItem("dashboard-timeframe-preset-"+CFW_DASHBOARD_URLPARAMS.id);
@@ -2158,7 +2038,7 @@ function cfw_dashboard_initialDraw(){
 			// ---------------------------------
 			// Get last preset from local store
 			cfw_dashboard_timeframe_setOffset(timeframePreset);
-			// above method calls cfw_dashboard_draw()
+			// above method calls cfw_dashboard_draw(false)
 		}else{
 			// ---------------------------------
 			// draw with default
@@ -2202,7 +2082,7 @@ function cfw_dashboard_initialDraw(){
  * Main method for building the view.
  * 
  ******************************************************************************/
-function cfw_dashboard_drawEveryWidget(data){
+function cfw_dashboard_drawEveryWidget(data, manualLoad){
 	var widgetArray = data.payload.widgets;
 	CFW_DASHBOARD_PARAMS =  data.payload.params;
 	
@@ -2210,7 +2090,7 @@ function cfw_dashboard_drawEveryWidget(data){
 	grid.removeAll();
 		
 	for(var i = 0;i < widgetArray.length ;i++){
-		cfw_dashboard_widget_createInstance(widgetArray[i], false);
+		cfw_dashboard_widget_createInstance(widgetArray[i], false, manualLoad);
 	}
 
 	// -----------------------------
@@ -2223,7 +2103,7 @@ function cfw_dashboard_drawEveryWidget(data){
  * Main method for building the view.
  * 
  ******************************************************************************/
-function cfw_dashboard_draw(){
+function cfw_dashboard_draw(manualLoad){
 		
 	CFW.ui.toggleLoader(true);
 	
@@ -2237,7 +2117,7 @@ function cfw_dashboard_draw(){
 		
 		CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "widgetsandparams", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
 			
-			 cfw_dashboard_drawEveryWidget(data);
+			 cfw_dashboard_drawEveryWidget(data, manualLoad);
 		});
 		
 		CFW.ui.toggleLoader(false);

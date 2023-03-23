@@ -146,6 +146,7 @@ DONE
 - CFWField: Added flag SERVER_SIDE_ONLY
 - Dashboard: Widgets settings marked with SERVER_SIDE_ONLY are not sent to the browser
 - Dashboard: Widget Standard Settings - Make widgets invisible when outside of edit mode
+- Dashboard: Widget Standard Settings - Added Settings to make widget loading manual
 - Dashboard: Added Favorite Feature
 - Dashboard: Added Bottom Ruler in Edit Mode
 - Dashboard: Complete rework of undo/redo functionality because of introduction of SERVER_SIDE_ONLY

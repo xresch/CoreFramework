@@ -51,6 +51,7 @@ public class DashboardWidget extends CFWObject {
 		FOOTER,
 		BGCOLOR,
 		FGCOLOR,
+		MANUAL_LOAD,
 		INVISIBLE,
 		JSON_SETTINGS,
 		JSON_TASK_PARAMETERS,
@@ -147,6 +148,7 @@ public class DashboardWidget extends CFWObject {
 			.setColumnDefinition("VARCHAR(32767)")
 			.setDescription("The footer of the widget.")
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			.setValue("")
 			;
 	
 	private CFWField<String> bgcolor = CFWField.newString(FormFieldType.SELECT, DashboardWidgetFields.BGCOLOR)
@@ -154,6 +156,7 @@ public class DashboardWidget extends CFWObject {
 			.setDescription("The background color of the widget.")
 			.addOptions(colorOptions)
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			.setValue("")
 			;
 	
 	private CFWField<String> fgcolor = CFWField.newString(FormFieldType.SELECT, DashboardWidgetFields.FGCOLOR)
@@ -161,11 +164,19 @@ public class DashboardWidget extends CFWObject {
 			.setDescription("The forground color of the widget, used for text and borders.")
 			.addOptions(colorOptions)
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			.setValue("")
+			;
+	
+	private CFWField<Boolean> manualLoad = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardWidgetFields.MANUAL_LOAD)
+			.setDescription("Makes the widget loading on a button press. Shows a button instead of the widget content. Will also load on button press of parameter widgets.")
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			.setValue(false)
 			;
 	
 	private CFWField<Boolean> invisible = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardWidgetFields.INVISIBLE)
 			.setDescription("Makes the widget invisible when not in edit mode. It's still there and still executes whatever it executes when visible. So basically it's a ninja, but don't tell anyone!")
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			.setValue(false)
 			;
 	
 	/** Settings are coming from the fields defined by {@link WidgetDefinition#getSettings()}. Security can be disabled here. */
@@ -196,7 +207,7 @@ public class DashboardWidget extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titlelink, titleFontsize, titleposition, contentFontsize, footer, bgcolor, fgcolor, invisible, settings, taskParameters);
+		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titlelink, titleFontsize, titleposition, contentFontsize, footer, bgcolor, fgcolor, manualLoad, invisible, settings, taskParameters);
 	}
 
 	/**************************************************************************************
