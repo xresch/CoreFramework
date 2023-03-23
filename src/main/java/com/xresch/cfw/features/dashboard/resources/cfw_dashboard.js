@@ -1190,21 +1190,22 @@ function cfw_dashboard_widget_handlePaste() {
  ******************************************************************************/
 function cfw_dashboard_widget_save_defaultSettings(widgetID){
 	
+	//---------------------------
+	// Get Variables
 	var widget = $('.grid-stack-item[data-id='+widgetID+']')
 	var widgetGUID = widget.attr('id');
 	var widgetObject = widget.data("widgetObject");
 	var settingsForm = $('#formEditDefaultSettings'+widgetID);
-			
-	widgetObject.TITLE = settingsForm.find('input[name="TITLE"]').val();
-	widgetObject.TITLE_LINK = settingsForm.find('input[name="TITLE_LINK"]').val();
-	widgetObject.TITLE_FONTSIZE = settingsForm.find('input[name="TITLE_FONTSIZE"]').val();
-	widgetObject.TITLE_POSITION = settingsForm.find('select[name="TITLE_POSITION"]').val();
-	widgetObject.CONTENT_FONTSIZE = settingsForm.find('input[name="CONTENT_FONTSIZE"]').val();
-	widgetObject.FOOTER = settingsForm.find('textarea[name="FOOTER"]').val();
-	widgetObject.BGCOLOR = settingsForm.find('select[name="BGCOLOR"]').val();
-	widgetObject.FGCOLOR = settingsForm.find('select[name="FGCOLOR"]').val();
-	widgetObject.INVISIBLE = settingsForm.find('input[name="INVISIBLE"]').prop('checked');
+	
+	//---------------------------
+	// Set Data to Object
+	var settingsObject = CFW.format.formToObject(settingsForm, false);	
+	delete settingsObject[CFW.global.formID];
+	
+	Object.assign(widgetObject, settingsObject);
 
+	//---------------------------
+	// Rerender
 	cfw_dashboard_history_startOperationsBundle();
 	
 		$.ajaxSetup({async: false});

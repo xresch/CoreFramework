@@ -13,7 +13,192 @@
 }
 
 /**************************************************************
- *Override gridstack
+ * Dashboard styling
+ **************************************************************/
+#cfw-dashboard-control-panel {
+    padding: 0px;
+    margin-bottom: 10px;
+    position: sticky;
+    top: 40px;
+    z-index: 16;
+    background: inherit;
+    width: 101%;
+}
+
+.cfw-dashboard-widget-title {
+    padding: 0.4rem 0.4rem;
+    font-weight: 600;
+}
+
+.cfw-dashboard-widget-body {
+    padding: 0.4rem;
+    overflow-x: auto;
+    overflow-y: auto; 
+    background: inherit;
+    display: flex;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: start;
+}
+
+.cfw-dashboard-widget-footer {
+	padding: 0.4rem 0.7rem;
+    padding-right: 1.5rem;
+    position: absolute;
+    font-size: medium;
+    width: 100%;
+    bottom: 0px;
+    right: 0px;
+    opacity: 0.50;
+    overflow-y: hidden;
+    background: inherit;
+}
+
+.cfw-dashboard-widget-actionicons{
+	cursor: pointer;
+	position: absolute;
+	top: -12.5px;
+    right: -8px;
+    display: flex;
+}
+.cfw-dashboard-widget-actionicons div{
+	padding-left: 6px;
+}
+
+.fullscreenButton{
+    position: absolute;
+    right: 10px;
+    z-index: 1024;
+}
+
+.fullscreened-button{
+	position: absolute;
+    z-index: 1024;
+    top: -16px;
+    right: 5px;
+    padding: 2px;
+    line-height: 4px;
+}
+
+.dashboard-image {
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+}
+
+.strikethrough-checkbox + label {
+    opacity: 0.5;
+    font-style: oblique;
+    text-decoration: line-through;
+    font-weight: 100;
+}
+
+.easter-egg-dropdown{
+	position: absolute; 
+	height:15px; 
+	width:15px; 
+	top: -10px;
+	z-index: 1024;
+}
+.easter-egg-dropdown::after{
+    display: none;
+    content: "";
+}
+
+.label-box{
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/**************************************************************
+ * Rulers
+ **************************************************************/
+#bottom-ruler {
+ 	position: fixed;
+ 	bottom: 0px;
+ 	margin-left: 0; /*correcting offset from position fixed*/
+}
+
+#side-ruler {
+ 	position: fixed;
+ 	flex-direction: column;
+ 	right: 0px;
+ 	height: 98vh;
+ 	width: 23px;
+ 	margin-left: 0;
+ 	margin-top: -24px;
+ 	padding-right: 2px;
+}
+
+.ruler {
+   /*  background-color: var(--cfw-red); */
+    list-style: none;
+    display: flex;
+    color: #ccc;
+    align-content: space-evenly;
+    flex-direction: row;
+    height: 23px;
+    width: 100vw;
+    padding: 0;
+    padding-top: 3px;
+    padding-right: 2vw;
+    margin: 0;
+    white-space: nowrap;
+    font-size: x-small;
+}
+
+
+.ruler li {
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: center !important;
+	justify-content: flex-end !important;
+	flex-grow: 1 !important;
+	text-align: center !important;
+	position: relative;
+	top: -5px;
+}
+
+.ruler li:after {
+    content: '';
+    position: absolute;
+    border-left: 3px solid #ccc;
+    height: 0.5em;
+    bottom: -.45em;
+    right: 0.25em;
+}
+
+.ruler li:before {
+    content: '';
+    position: absolute;
+    border-left: 1px solid #ccc;
+    height: 30%;
+    right: 55%;
+}
+
+#side-ruler li:after {
+	border-left: 0px;
+    border-top: 3px solid #ccc;
+    width: 0.5em;
+    bottom: unset;
+    left: 0.3em;
+}
+
+#side-ruler li:before {
+	border-left: 0px;
+    border-bottom: 1px solid #ccc;
+    width: 30%;
+    right: 10%;
+    bottom: 0em;
+}
+
+/**************************************************************
+ * Edit mode
  **************************************************************/
  
  .show-on-edit {
@@ -326,188 +511,3 @@
 .grid-stack > .grid-stack-item[gs-max-w="62"] {	max-width: 96.72%; }
 .grid-stack > .grid-stack-item[gs-max-w="63"] {	max-width: 98.28%; }
 .grid-stack > .grid-stack-item[gs-max-w="64"] {	max-width: 100%; }
-
-/**************************************************************
- * Dashboard styling
- **************************************************************/
-#cfw-dashboard-control-panel {
-    padding: 0px 0px 0px 7px;
-    margin-bottom: 10px;
-    position: sticky;
-    top: 40px;
-    z-index: 16;
-    background: inherit;
-    width: 101%;
-}
-
-.cfw-dashboard-widget-title {
-    padding: 0.4rem 0.4rem;
-    font-weight: 600;
-}
-
-.cfw-dashboard-widget-body {
-    padding: 0.4rem;
-    overflow-x: auto;
-    overflow-y: auto; 
-    background: inherit;
-    display: flex;
-    flex-grow: 1;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    align-content: start;
-}
-
-.cfw-dashboard-widget-footer {
-	padding: 0.4rem 0.7rem;
-    padding-right: 1.5rem;
-    position: absolute;
-    font-size: medium;
-    width: 100%;
-    bottom: 0px;
-    right: 0px;
-    opacity: 0.50;
-    overflow-y: hidden;
-    background: inherit;
-}
-
-.cfw-dashboard-widget-actionicons{
-	cursor: pointer;
-	position: absolute;
-	top: -12.5px;
-    right: -8px;
-    display: flex;
-}
-.cfw-dashboard-widget-actionicons div{
-	padding-left: 6px;
-}
-
-.fullscreenButton{
-    position: absolute;
-    right: 10px;
-    z-index: 1024;
-}
-
-.fullscreened-button{
-	position: absolute;
-    z-index: 1024;
-    top: -16px;
-    right: 5px;
-    padding: 2px;
-    line-height: 4px;
-}
-
-.dashboard-image {
-    width: 100%;
-    background-size: cover;
-    background-position: center;
-    overflow: hidden;
-}
-
-.strikethrough-checkbox + label {
-    opacity: 0.5;
-    font-style: oblique;
-    text-decoration: line-through;
-    font-weight: 100;
-}
-
-.easter-egg-dropdown{
-	position: absolute; 
-	height:15px; 
-	width:15px; 
-	top: -10px;
-	z-index: 1024;
-}
-.easter-egg-dropdown::after{
-    display: none;
-    content: "";
-}
-
-.label-box{
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-/**************************************************************
- * Dashboard styling
- **************************************************************/
-#bottom-ruler {
- 	position: fixed;
- 	bottom: 0px;
- 	margin-left: 0; /*correcting offset from position fixed*/
-}
-
-#side-ruler {
- 	position: fixed;
- 	flex-direction: column;
- 	right: 0px;
- 	height: 98vh;
- 	width: 23px;
- 	margin-left: 0;
- 	margin-top: -24px;
- 	padding-right: 2px;
-}
-
-.ruler {
-   /*  background-color: var(--cfw-red); */
-    list-style: none;
-    display: flex;
-    color: #ccc;
-    align-content: space-evenly;
-    flex-direction: row;
-    height: 23px;
-    width: 100vw;
-    padding: 0;
-    padding-top: 3px;
-    padding-right: 2vw;
-    margin: 0;
-    white-space: nowrap;
-    font-size: x-small;
-}
-
-
-.ruler li {
-	display: flex !important;
-	flex-direction: row !important;
-	align-items: center !important;
-	justify-content: flex-end !important;
-	flex-grow: 1 !important;
-	text-align: center !important;
-	position: relative;
-	top: -5px;
-}
-
-.ruler li:after {
-    content: '';
-    position: absolute;
-    border-left: 3px solid #ccc;
-    height: 0.5em;
-    bottom: -.45em;
-    right: 0.25em;
-}
-
-.ruler li:before {
-    content: '';
-    position: absolute;
-    border-left: 1px solid #ccc;
-    height: 30%;
-    right: 55%;
-}
-
-#side-ruler li:after {
-	border-left: 0px;
-    border-top: 3px solid #ccc;
-    width: 0.5em;
-    bottom: unset;
-    left: 0.3em;
-}
-
-#side-ruler li:before {
-	border-left: 0px;
-    border-bottom: 1px solid #ccc;
-    width: 30%;
-    right: 10%;
-    bottom: 0em;
-}
