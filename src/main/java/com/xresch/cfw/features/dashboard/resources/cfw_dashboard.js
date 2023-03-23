@@ -1177,8 +1177,6 @@ function cfw_dashboard_widget_handlePaste() {
  ******************************************************************************/
 function cfw_dashboard_widget_save_defaultSettings(widgetGUID){
 	
-
-	
 	var widget = $('#'+widgetGUID);
 	var widgetObject = widget.data("widgetObject");
 	var settingsForm = $('#form-edit-'+widgetGUID);
@@ -2164,7 +2162,9 @@ function cfw_dashboard_drawEveryWidget(data){
 
 	// -----------------------------
 	// Disable resize & move
-	cfw_dashboard_getGrid().disable();
+	if(!CFW_DASHBOARD_EDIT_MODE){
+		cfw_dashboard_getGrid().disable();
+	}
 }
 /*******************************************************************************
  * Main method for building the view.
