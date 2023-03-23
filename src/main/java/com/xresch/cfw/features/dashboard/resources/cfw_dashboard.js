@@ -1799,9 +1799,13 @@ function cfw_dashboard_toggleFullscreenMode(){
 		CFW_DASHBOARD_FULLSCREEN_MODE = false;
 
 		$('.hideOnFullScreen').css('display', '');
+		$('.cfw-content').css('padding-top', '');
 		$('.navbar').css('display', '');
+		
 		$('#cfw-dashboard-control-panel').css('padding', '');
 		$('#cfw-dashboard-control-panel').css('margin', '');
+		$('#cfw-dashboard-control-panel').css('top', '');
+		
 		$('#fullscreenButton')
 			.removeClass('fullscreened-button')
 			.addClass('fullscreenButton');
@@ -1813,9 +1817,13 @@ function cfw_dashboard_toggleFullscreenMode(){
 	}else{
 		CFW_DASHBOARD_FULLSCREEN_MODE = true;
 		$('.hideOnFullScreen').css('display', 'none');
+		$('.cfw-content').css('padding-top', '0px');
 		$('.navbar').css('display', 'none');
+		
 		$('#cfw-dashboard-control-panel').css('padding', '0px');
 		$('#cfw-dashboard-control-panel').css('margin', '0px');
+		$('#cfw-dashboard-control-panel').css('top', '0px');
+		
 		$('#fullscreenButton')
 			.removeClass('fullscreenButton')
 			.addClass('fullscreened-button');
@@ -1841,9 +1849,11 @@ function cfw_dashboard_toggleEditMode(){
 		$('#addWidget').addClass('d-none');
 		$('#parametersButton').addClass('d-none');
 		$('#doneButton').addClass('d-none');
-		$('#top-ruler').addClass('d-none');
-		$('#bottom-ruler').addClass('d-none');
 		$('#editButton').removeClass('d-none');
+		
+		$('#top-ruler').addClass('d-none');
+		$('#side-ruler').addClass('d-none');
+		$('#bottom-ruler').addClass('d-none');
 		
 		
 		grid.disable();
@@ -1855,9 +1865,11 @@ function cfw_dashboard_toggleEditMode(){
 		$('#addWidget').removeClass('d-none');
 		$('#parametersButton').removeClass('d-none');
 		$('#doneButton').removeClass('d-none');
-		$('#top-ruler').removeClass('d-none');
-		$('#bottom-ruler').removeClass('d-none');
 		$('#editButton').addClass('d-none');
+		
+		$('#top-ruler').removeClass('d-none');
+		$('#side-ruler').removeClass('d-none');
+		$('#bottom-ruler').removeClass('d-none');
 		
 		grid.enable();
 	}

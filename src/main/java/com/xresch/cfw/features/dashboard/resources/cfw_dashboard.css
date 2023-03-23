@@ -331,7 +331,7 @@
  * Dashboard styling
  **************************************************************/
 #cfw-dashboard-control-panel {
-    padding: 10px 0px 5px 15px;
+    padding: 0px 0px 0px 7px;
     margin-bottom: 10px;
     position: sticky;
     top: 40px;
@@ -383,13 +383,14 @@
 
 .fullscreenButton{
     position: absolute;
-    right: 30px;
+    right: 10px;
+    z-index: 1024;
 }
 
 .fullscreened-button{
 	position: absolute;
     z-index: 1024;
-    top: -40px;
+    top: -16px;
     right: 5px;
     padding: 2px;
     line-height: 4px;
@@ -432,11 +433,23 @@
 /**************************************************************
  * Dashboard styling
  **************************************************************/
- #bottom-ruler {
+#bottom-ruler {
  	position: fixed;
  	bottom: 0px;
  	margin-left: 0; /*correcting offset from position fixed*/
- }
+}
+
+#side-ruler {
+ 	position: fixed;
+ 	flex-direction: column;
+ 	right: 0px;
+ 	height: 98vh;
+ 	width: 23px;
+ 	margin-left: 0;
+ 	margin-top: -24px;
+ 	padding-right: 2px;
+}
+
 .ruler {
    /*  background-color: var(--cfw-red); */
     list-style: none;
@@ -445,9 +458,10 @@
     align-content: space-evenly;
     flex-direction: row;
     height: 23px;
-    width: 98vw;
+    width: 100vw;
     padding: 0;
     padding-top: 3px;
+    padding-right: 2vw;
     margin: 0;
     white-space: nowrap;
     font-size: x-small;
@@ -480,4 +494,20 @@
     border-left: 1px solid #ccc;
     height: 30%;
     right: 55%;
+}
+
+#side-ruler li:after {
+	border-left: 0px;
+    border-top: 3px solid #ccc;
+    width: 0.5em;
+    bottom: unset;
+    left: 0.3em;
+}
+
+#side-ruler li:before {
+	border-left: 0px;
+    border-bottom: 1px solid #ccc;
+    width: 30%;
+    right: 10%;
+    bottom: 0em;
 }
