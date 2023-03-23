@@ -143,6 +143,7 @@ public class ServletDashboardViewMethods
 				Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
 				html.setPageTitle(dashboard.name());
 				html.addJavascriptData("dashboardName",  dashboard.name());
+				html.addJavascriptData("startFullscreen", dashboard.startFullscreen() );
 				html.addJavascriptData("canEdit", CFW.DB.Dashboards.checkCanEdit(request.getParameter("id")) );
 				html.addJavascriptCode("cfw_dashboard_initialDraw();");
 				

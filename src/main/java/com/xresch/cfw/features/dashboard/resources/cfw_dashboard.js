@@ -1587,6 +1587,7 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 					.html('<button class="btn btn-sm btn-primary cfw-centered" onclick="cfw_dashboard_widget_rerender(\''+originalWidgetObject.guid+'\', true)">Click to Load</button>');
 				return;
 			}
+			
 			// ---------------------------------------
 			// Create Instance by Widget Definition
 			widgetDefinition.createWidgetInstance(widgetCloneParameterized, finalParams,
@@ -2045,6 +2046,12 @@ function cfw_dashboard_initialDraw(){
 			cfw_dashboard_timeframe_setOffset("30-m");
 			
 		}
+	}
+		
+	// -----------------------------------------------
+	// Merge URL Params with Custom Parameter Values
+	if(JSDATA.startFullscreen){
+		cfw_dashboard_toggleFullscreenMode();
 	}
 	
 	// -----------------------------------------------

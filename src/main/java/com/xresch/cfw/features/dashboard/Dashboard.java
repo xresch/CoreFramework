@@ -49,6 +49,7 @@ public class Dashboard extends CFWObject {
 		JSON_EDITOR_GROUPS,
 		TIME_CREATED,
 		IS_PUBLIC,
+		START_FULLSCREEN,
 		IS_DELETABLE,
 		IS_RENAMABLE, 
 	}
@@ -162,11 +163,20 @@ public class Dashboard extends CFWObject {
 			.apiFieldType(FormFieldType.TEXT)
 			.setColumnDefinition("BOOLEAN DEFAULT FALSE")
 			.setDescription("Make the dashboard accessible through a public URL without the need for sign-in or having an account. This is unrelated to any other sharing options.")
-			.setValue(false);
+			.setValue(false)
+			;
+	
+	private CFWField<Boolean> startFullscreen = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.START_FULLSCREEN)
+			.apiFieldType(FormFieldType.TEXT)
+			.setColumnDefinition("BOOLEAN DEFAULT FALSE")
+			.setDescription("Make the dashboard start in fullscreen mode.")
+			.setValue(false)
+			;
 	
 	private CFWField<Boolean> isDeletable = CFWField.newBoolean(FormFieldType.NONE, DashboardFields.IS_DELETABLE.toString())
 			.setDescription("Flag to define if the dashboard can be deleted or not.")
-			.setValue(true);
+			.setValue(true)
+			;
 	
 	private CFWField<Boolean> isRenamable = CFWField.newBoolean(FormFieldType.NONE, DashboardFields.IS_RENAMABLE.toString())
 			.setColumnDefinition("BOOLEAN DEFAULT TRUE")
@@ -209,6 +219,7 @@ public class Dashboard extends CFWObject {
 				, editorGroups
 				, timeCreated
 				, isPublic
+				, startFullscreen
 				, isDeletable
 				, isRenamable
 			);
@@ -266,6 +277,7 @@ public class Dashboard extends CFWObject {
 						DashboardFields.JSON_EDITOR_GROUPS.toString(),
 						DashboardFields.TIME_CREATED.toString(),
 						DashboardFields.IS_PUBLIC.toString(),
+						DashboardFields.START_FULLSCREEN.toString(),
 						DashboardFields.IS_DELETABLE.toString(),
 						DashboardFields.IS_RENAMABLE.toString(),		
 				};
@@ -397,6 +409,14 @@ public class Dashboard extends CFWObject {
 	
 	public Dashboard isPublic(boolean value) {
 		this.isPublic.setValue(value);
+		return this;
+	}
+	public boolean startFullscreen() {
+		return startFullscreen.getValue();
+	}
+	
+	public Dashboard startFullscreen(boolean value) {
+		this.startFullscreen.setValue(value);
 		return this;
 	}
 	

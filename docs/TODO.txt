@@ -144,22 +144,23 @@ DONE
 - Database: Added Feature 'Reindex Fulltext Search' to DB Analytics page
 - Database: Added Alias CFW_ARRAY_DISTINCT
 - CFWField: Added flag SERVER_SIDE_ONLY
-- Dashboard: Widgets settings marked with SERVER_SIDE_ONLY are not sent to the browser
-- Dashboard: Widget Standard Settings - Make widgets invisible when outside of edit mode
-- Dashboard: Widget Standard Settings - Added Settings to make widget loading manual
+- Dashboard: Settings - Added setting to start Dashboard in fullscreen mode.
 - Dashboard: Added Favorite Feature
-- Dashboard: Added Bottom Ruler in Edit Mode
+- Dashboard: Added Bottom and Side Ruler in Edit Mode
 - Dashboard: Complete rework of undo/redo functionality because of introduction of SERVER_SIDE_ONLY
 - Dashboard: Copy widgets to clipboard does not copy task settings (Reason: Avoiding unintentional spamming of the jobs system)
-- Dashboard: Added Time Created for dashboards.
-- Dashboard: Made list full with of window 
-- Dashboard: Parameter Widget supports password verification before update
-- Dashboard: Parameter Widget supports custom button labels 
-- Dashboard: Parameter Widget supports choosing the widgets which are affected on update
-- Dashboard: Parameter Widget supports Chart Settings Field 
+- Dashboard: Added Time Created for dashboards
+- Dashboard: Made list full with of window
+- Widget: Parameter Widget supports password verification before update
+- Widget: Parameter Widget supports custom button labels 
+- Widget: Parameter Widget supports choosing the widgets which are affected on update
+- Widget: Parameter Widget supports Chart Settings Field  
+- Widget: Settings marked with SERVER_SIDE_ONLY are not sent to the browser
+- Widget: Standard Settings - Make widgets invisible when outside of edit mode
+- Widget: Standard Settings - Added Settings to make widget loading manual
 - API: Added possibility to provide data in request body
 - API: Endpoints sorted by name
-- API Tokens: Added field "Permissions of User" to make sure security can be kept for certain endpoints like Query.execute
+- API: Tokens - Added field "Permissions of User" to make sure security can be kept for certain endpoints like Query.execute
 - Caching: Added Caches for user roles and permissions
 - CFWChartSettings: Added FormFieldType and DataObject Class to manage Chart Settings
 - JS Components: ToogleButton supports favorite style
