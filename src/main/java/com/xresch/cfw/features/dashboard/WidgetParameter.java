@@ -116,6 +116,8 @@ public class WidgetParameter extends WidgetDefinition {
 			.addField(CFWField.newString(FormFieldType.PASSWORD, FIELDNAME_PASSWORD)
 					.setLabel("{!cfw_widget_parameter_password!}")
 					.setDescription("{!cfw_widget_parameter_password_desc!}")
+					.disableSanitization()
+					.enableEncryption("param_widget_PW_Salt")
 					.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
 					.setValue("")
 				)
