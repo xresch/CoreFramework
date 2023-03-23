@@ -444,12 +444,11 @@
     color: #ccc;
     align-content: space-evenly;
     flex-direction: row;
-    margin: 7px;
-    height: 30px;
+    height: 23px;
     width: 98vw;
     padding: 0;
-    padding-right: 5px;
-    padding-left: 10px;
+    padding-top: 3px;
+    margin: 0;
     white-space: nowrap;
     font-size: x-small;
 }
@@ -470,7 +469,7 @@
     content: '';
     position: absolute;
     border-left: 3px solid #ccc;
-    height: 1em;
+    height: 0.5em;
     bottom: -.45em;
     right: 0.25em;
 }
