@@ -11,7 +11,7 @@
 	 ******************************************************************/
 	CFW.dashboard.registerWidget("cfw_widget_queryresults",
 		{
-			category: "Standard Widgets",
+			category: CFW.dashboard.global.categoryAdvanced,
 			menuicon: "fas fa-terminal",
 			menulabel: CFWL('cfw_widget_queryresults', "Display Query Results"),
 			description: CFWL('cfw_widget_queryresults_desc', "Executes a CFWQL query and display its results."), 

@@ -183,6 +183,10 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Widgets.add(new WidgetQueryResults());
 		
 		//----------------------------------
+		// Register Dashboard Parameters
+		CFW.Registry.Parameters.add(new DashboardParameterQueryResult());
+		
+		//----------------------------------
 		// Register Job Tasks
 		//CFW.Registry.Jobs.registerTask(new CFWJobTaskSendMail());
 

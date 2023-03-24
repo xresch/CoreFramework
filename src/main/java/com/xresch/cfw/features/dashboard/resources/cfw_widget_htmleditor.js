@@ -2,7 +2,7 @@
 
 	CFW.dashboard.registerWidget("cfw_htmleditor",
 		{
-			category: "Standard Widgets",
+			category: CFW.dashboard.global.categoryDefault,
 			menuicon: "fas fa-code",
 			menulabel: CFWL('cfw_widget_cfwhtmleditor', 'HTML Editor'),
 			description: CFWL('cfw_widget_cfwhtmleditor_desc', 'Display static text. Can be used to create labels and descriptions.'),

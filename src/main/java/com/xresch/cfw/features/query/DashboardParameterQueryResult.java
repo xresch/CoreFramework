@@ -50,10 +50,10 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 			String query = fieldValue.toString();
 			
 			System.out.println("query:"+query);
+			System.out.println("params:"+CFW.JSON.toJSON(request.getParameterMap()) );
 			
-			LinkedHashMap<String, String> options = CFW.JSON.fromJsonLinkedHashMap(fieldValue.toString());
-			settingsField.setOptions(options);
 			
+
 			CFWQueryExecutor executor = new CFWQueryExecutor().checkPermissions(false);
 			
 			//JsonArray resultArray = executor.parseAndExecuteAll(query, earliest, latest, timezoneOffsetMinutes);

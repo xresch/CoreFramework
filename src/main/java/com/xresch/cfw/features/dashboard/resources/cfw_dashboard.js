@@ -208,7 +208,7 @@ function cfw_dashboard_registerWidget(widgetUniqueType, widgetObject){
 	
 	var defaultObject = {
 			// The category the widget should be added to
-			category: "Standard Widgets",
+			category: CFW.dashboard.global.categoryDefault,
 			// The icon of the widget shown in the menu
 			menuicon: "fas fa-th-large",
 			// the label of the widget
@@ -1378,16 +1378,18 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 	
 	// ----------------------------
 	// Check has Timeframe
+	urlParams.timeframe = $("#"+CFW_DASHBOARD_TIME_FIELD_ID).val();
 	if(definition.usetimeframe){
 		if(!CFW_DASHBOARD_TIME_ENABLED){
 			$('#timeframePickerHidder').removeClass('d-none');
 			CFW_DASHBOARD_TIME_ENABLED = true;
 		}
 		settings = _.cloneDeep(settings);
-		urlParams.timeframe_earliest = CFW_DASHBOARD_TIME_EARLIEST_EPOCH;
-		urlParams.timeframe_latest = CFW_DASHBOARD_TIME_LATEST_EPOCH;
+		
+		//urlParams.timeframe_earliest = CFW_DASHBOARD_TIME_EARLIEST_EPOCH;
+		//urlParams.timeframe_latest = CFW_DASHBOARD_TIME_LATEST_EPOCH;
 	}
-	
+		
 	//--------------------------------------
 	// Add timeZoneOffset
 	var timeZoneOffset = new Date().getTimezoneOffset();
@@ -1395,6 +1397,8 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 	
 	//----------------------------
 	// Fetch Data
+	console.log("yay!!")
+	console.log(urlParams)
 	
 	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, urlParams, function(data){
 		callback(data);
@@ -1662,13 +1666,17 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
  * 
  ******************************************************************************/
 CFW.dashboard = {
-		registerWidget: 		cfw_dashboard_registerWidget,
-		getWidgetDefinition: 	cfw_dashboard_getWidgetDefinition,
-		registerCategory: 		cfw_dashboard_registerCategory,
-		getSettingsForm:		cfw_dashboard_widget_getSettingsFormWidget,
-		getSettingsFormDefault:	cfw_dashboard_widget_getSettingsFormDefault,
-		fetchWidgetData: 		cfw_dashboard_widget_fetchData,
-		createStatusWidgetRendererSettings: cfw_dashboard_createStatusWidgetRendererSettings,
+		global: {
+			  categoryDefault: "Default"
+			, categoryAdvanced: "Advanced"
+		}
+		, registerWidget: 		cfw_dashboard_registerWidget
+		, getWidgetDefinition: 	cfw_dashboard_getWidgetDefinition
+		, registerCategory: 		cfw_dashboard_registerCategory
+		, getSettingsForm:		cfw_dashboard_widget_getSettingsFormWidget
+		, getSettingsFormDefault:	cfw_dashboard_widget_getSettingsFormDefault
+		, fetchWidgetData: 		cfw_dashboard_widget_fetchData
+		, createStatusWidgetRendererSettings: cfw_dashboard_createStatusWidgetRendererSettings
 };
 
 
@@ -2134,4 +2142,15 @@ function cfw_dashboard_draw(manualLoad){
 /*******************************************************************************
  * Initialize Localization has to be done before widgets are registered
  ******************************************************************************/
-CFW.dashboard.registerCategory("fas fa-th-large", "Standard Widgets", CFWL('cfw_dashboard_category_static'));
+
+CFW.dashboard.registerCategory(
+					  "fas fa-th-large"
+					, CFW.dashboard.global.categoryDefault
+					, CFWL('cfw_dashboard_category_default', 'Default')
+				);
+				
+CFW.dashboard.registerCategory(
+					  "fas fa-rocket"
+					, CFW.dashboard.global.categoryAdvanced
+					, CFWL('cfw_dashboard_category_advanced', 'Advanced')
+				);

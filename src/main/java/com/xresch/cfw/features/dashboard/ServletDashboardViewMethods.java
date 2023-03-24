@@ -802,18 +802,22 @@ public class ServletDashboardViewMethods
 		// Get Values
 		String widgetID = request.getParameter("widgetid");
 		String dashboardParams = request.getParameter("params");
-		String timeframepreset = request.getParameter("timeframepreset");
+		//String timeframepreset = request.getParameter("timeframepreset");
 		
-		String earliestString = request.getParameter("timeframe_earliest");
-		String latestString = request.getParameter("timeframe_latest");
-		int timezoneOffsetMinutes = Integer.parseInt(request.getParameter("timezoneOffsetMinutes"));
+		String timeframeString = request.getParameter("timeframe");
+		CFWTimeframe timeframe = new CFWTimeframe(timeframeString);
 
 		//-----------------------------------
 		// Prepare Widget Settings
-		long earliest = -1;
-		long latest = -1;
-		if(!Strings.isNullOrEmpty(earliestString)) { earliest = Long.parseLong(earliestString); }
-		if(!Strings.isNullOrEmpty(latestString)) { latest = Long.parseLong(latestString); }
+		long earliest = timeframe.getEarliest();
+		long latest = timeframe.getLatest();
+		int timezoneOffsetMinutes = timeframe.getClientTimezoneOffset();
+		System.out.println("====================");
+		System.out.println("earliest: "+earliest);
+		System.out.println("latest: "+latest);
+		System.out.println("timezoneOffsetMinutes: "+timezoneOffsetMinutes);
+//		if(!Strings.isNullOrEmpty(earliestString)) { earliest = Long.parseLong(earliestString); }
+//		if(!Strings.isNullOrEmpty(latestString)) { latest = Long.parseLong(latestString); }
 		
 		DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
 		
@@ -841,7 +845,7 @@ public class ServletDashboardViewMethods
 				if(cachePolicy == WidgetDataCachePolicy.OFF
 				|| (
 					cachePolicy == WidgetDataCachePolicy.TIME_BASED 
-					&& Strings.isNullOrEmpty(timeframepreset) 
+					&& !timeframe.isOffsetDefined() 
 					) 
 				) {
 					//----------------------------
@@ -852,7 +856,7 @@ public class ServletDashboardViewMethods
 					// Create Cache ID
 					String cacheID = widgetID;
 					if(cachePolicy == WidgetDataCachePolicy.TIME_BASED) {
-						cacheID += "_"+timeframepreset;
+						cacheID += "_"+timeframe.getOffsetString();
 					}
 					
 					cacheID += "_"+dashboardParams.hashCode()+"_"+jsonSettings.hashCode();

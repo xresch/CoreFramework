@@ -132,6 +132,19 @@ public class CFWTimeframe {
 		return false;
 			
 	}
+	
+	/***************************************************************************************
+	 * Returns the offset string, or null if not defined.
+	 ***************************************************************************************/
+	public String getOffsetString() {
+		
+		if( isOffsetDefined() ) {
+			return timeframeData.get(MEMBER_OFFSET).getAsString();
+		}
+		
+		return null;
+		
+	}
 	/***************************************************************************************
 	 * Returns true if custom time is set
 	 ***************************************************************************************/

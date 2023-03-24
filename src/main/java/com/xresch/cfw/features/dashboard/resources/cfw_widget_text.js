@@ -2,7 +2,7 @@
 
 	CFW.dashboard.registerWidget("cfw_text",
 		{
-			category: "Standard Widgets",
+			category: CFW.dashboard.global.categoryDefault,
 			menuicon: "fas fa-font",
 			menulabel: CFWL('cfw_widget_cfwtext', 'Text'),
 			description: CFWL('cfw_widget_cfwtext_desc', 'Display static text. Can be used to create labels and descriptions.'),

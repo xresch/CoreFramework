@@ -4,7 +4,7 @@
 	 ******************************************************************/
 	CFW.dashboard.registerWidget("cfw_youtubevideo",
 		{
-			category: "Standard Widgets",
+			category: CFW.dashboard.global.categoryDefault,
 			menuicon: "fab fa-youtube",
 			menulabel: CFWL('cfw_widget_cfwyoutubevideo', "Youtube Video"),
 			description: CFWL('cfw_widget_cfwyoutubevideo_desc', "Adds a Youtube video to the dashboard."),

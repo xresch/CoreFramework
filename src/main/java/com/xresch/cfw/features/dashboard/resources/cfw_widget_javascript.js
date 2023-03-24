@@ -2,7 +2,7 @@
 
 	CFW.dashboard.registerWidget("cfw_javascript",
 		{
-			category: "Standard Widgets",
+			category: CFW.dashboard.global.categoryAdvanced,
 			menuicon: "fab fa-js-square",
 			menulabel: CFWL('cfw_widget_cfwjavascript', 'Javascript'),
 			description: CFWL('cfw_widget_cfwjavascript_desc', 'Can be used to add custom javascript to the dashboard.'),

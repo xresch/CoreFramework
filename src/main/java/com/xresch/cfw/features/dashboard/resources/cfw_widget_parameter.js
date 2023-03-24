@@ -1,10 +1,9 @@
 
-
 (function (){
 
 	CFW.dashboard.registerWidget("cfw_parameter",
 		{
-			category: "Standard Widgets",
+			category: "Advanced",
 			menuicon: "fas fa-sliders-h",
 			menulabel: CFWL('cfw_widget_parameter', 'Parameter'),
 			description: CFWL('cfw_widget_parameter_desc', 'Displays a widget with parameters that the viewer of the dashboard can adjust to customize the dashboard. User choices will be saved in the browser.'),

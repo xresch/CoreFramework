@@ -151,13 +151,14 @@ DONE
 - Dashboard: Copy widgets to clipboard does not copy task settings (Reason: Avoiding unintentional spamming of the jobs system)
 - Dashboard: Added Time Created for dashboards
 - Dashboard: Made list full with of window
-- Widget: Parameter Widget supports password verification before update
-- Widget: Parameter Widget supports custom button labels 
-- Widget: Parameter Widget supports choosing the widgets which are affected on update
-- Widget: Parameter Widget supports Chart Settings Field  
-- Widget: Settings marked with SERVER_SIDE_ONLY are not sent to the browser
-- Widget: Standard Settings - Make widgets invisible when outside of edit mode
-- Widget: Standard Settings - Added Settings to make widget loading manual
+- Widgets: Parameter Widget supports password verification before update
+- Widgets: Parameter Widget supports custom button labels 
+- Widgets: Parameter Widget supports choosing the widgets which are affected on update
+- Widgets: Parameter Widget supports Chart Settings Field  
+- Widgets: Settings marked with SERVER_SIDE_ONLY are not sent to the browser
+- Widgets: Standard Settings - Make widgets invisible when outside of edit mode
+- Widgets: Standard Settings - Added Settings to make widget loading manual
+- Widgets: Created ned Category 'Advanced'
 - API: Added possibility to provide data in request body
 - API: Endpoints sorted by name
 - API: Tokens - Added field "Permissions of User" to make sure security can be kept for certain endpoints like Query.execute
@@ -165,10 +166,10 @@ DONE
 - CFWChartSettings: Added FormFieldType and DataObject Class to manage Chart Settings
 - JS Components: ToogleButton supports favorite style
 - JS Renderer: Tiles - fixed issue with removing alertstyle fields
-- JS Renderer: StatusMap - fixed high CPU consumption issue
+- JS Renderer: Status Map - fixed high CPU consumption issue
+- JS Renderer: Status Map - removed renderer options with specific ratios
 - JS Renderer: Upgrade ChartJS from v2.93 to v4.0.1
 - JS Renderer: Added Tile and Status Bar Renderer(tileandbar)
-- JS Renderer: Removed Status Map renderer options with specific ratios
 - Utils: Added Undo/Redo Manager 
 - Validator: Added ExcludeStringsValidator
 - Query: Editor - Fixed issues with html characters like "<" or ">"
