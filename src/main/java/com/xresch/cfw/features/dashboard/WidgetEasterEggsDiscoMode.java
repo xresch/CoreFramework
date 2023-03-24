@@ -13,6 +13,7 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.validation.NumberRangeValidator;
 
@@ -40,7 +41,7 @@ public class WidgetEasterEggsDiscoMode extends WidgetDefinition {
 	}
 
 	@Override
-	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, long earliest, long latest, int timezoneOffsetMinutes) {
+	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, CFWTimeframe timeframe) {
 		// nothing to do
 	}
 

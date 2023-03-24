@@ -151,6 +151,7 @@ DONE
 - Dashboard: Copy widgets to clipboard does not copy task settings (Reason: Avoiding unintentional spamming of the jobs system)
 - Dashboard: Added Time Created for dashboards
 - Dashboard: Made list full with of window
+- Dashboard: Send CFWTimeframe JsonObject in requests instead of multiple parameters
 - Widgets: Parameter Widget supports password verification before update
 - Widgets: Parameter Widget supports custom button labels 
 - Widgets: Parameter Widget supports choosing the widgets which are affected on update

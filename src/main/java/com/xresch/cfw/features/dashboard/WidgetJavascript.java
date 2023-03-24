@@ -16,6 +16,7 @@ import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.response.JSONResponse;
 
 public class WidgetJavascript extends WidgetDefinition {
@@ -43,7 +44,7 @@ public class WidgetJavascript extends WidgetDefinition {
 	}
 
 	@Override
-	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, long earliest, long latest, int timezoneOffsetMinutes) {
+	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, CFWTimeframe timeframe) {
 		// nothing to do
 	}
 

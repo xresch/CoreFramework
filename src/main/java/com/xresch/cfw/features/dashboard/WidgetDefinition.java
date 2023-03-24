@@ -46,14 +46,10 @@ public abstract class WidgetDefinition {
 	 * @param response add your response data here.
 	 * @param settings the settings of your widget
 	 * @param jsonSettings the settings of your widget as Json
-	 * @param earliest time of selected timeframe
-	 * @param latest time of selected timeframe
-	 * @param timezoneOffsetMinutes offset for the clients time zone.
-	 * You can use the following in javascript to get this:
-	 * 		var timeZoneOffset = new Date().getTimezoneOffset();
+	 * @param timeframe TODO
 	 * 	
 	 ************************************************************/
-	public abstract void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, long earliest, long latest, int timezoneOffsetMinutes);
+	public abstract void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, CFWTimeframe timeframe);
 
 	/************************************************************
 	 * Return the file definitions of the javascript part of the 

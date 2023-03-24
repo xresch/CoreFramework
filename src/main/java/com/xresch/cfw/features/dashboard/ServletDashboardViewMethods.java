@@ -812,10 +812,7 @@ public class ServletDashboardViewMethods
 		long earliest = timeframe.getEarliest();
 		long latest = timeframe.getLatest();
 		int timezoneOffsetMinutes = timeframe.getClientTimezoneOffset();
-		System.out.println("====================");
-		System.out.println("earliest: "+earliest);
-		System.out.println("latest: "+latest);
-		System.out.println("timezoneOffsetMinutes: "+timezoneOffsetMinutes);
+
 //		if(!Strings.isNullOrEmpty(earliestString)) { earliest = Long.parseLong(earliestString); }
 //		if(!Strings.isNullOrEmpty(latestString)) { latest = Long.parseLong(latestString); }
 		
@@ -850,7 +847,7 @@ public class ServletDashboardViewMethods
 				) {
 					//----------------------------
 					// Do Not Cache
-					definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), earliest, latest, timezoneOffsetMinutes);
+					definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), timeframe);
 				}else {
 					//----------------------------
 					// Create Cache ID
@@ -874,7 +871,7 @@ public class ServletDashboardViewMethods
 									
 									try {
 										//Hack: update and return existing jsonResponse to not overwrite it by creating a new instance.
-										definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), finalEarliest, finalLatest, timezoneOffsetMinutes);
+										definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), timeframe);
 									}catch(Throwable e){
 										new CFWLog(logger).severe("Unexpected Error Occured: "+e.getMessage(), e);
 									}

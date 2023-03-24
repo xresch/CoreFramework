@@ -10,6 +10,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
@@ -32,6 +33,30 @@ public class CFWQueryExecutor {
 		return this;
 	}
 	
+	/****************************************************************
+	 * Parses the query string and executes all queries.
+	 * Returns a Json Array containing the Query Results, or null in
+	 * case of errors. 
+	 * Takes the max execution time from the in-app configuration for
+	 * limiting query execution time.
+	 * 
+	 * @params queryString the query to execute
+	 * @param earliest time in epoch millis
+	 * @param latest time in epoch millis
+	 * @param timezoneOffsetMinutes TODO
+	 * @param timezoneOffsetMinutes offset for the clients time zone.
+	 * You can use the following in javascript to get this:
+	 * 		var timeZoneOffset = new Date().getTimezoneOffset();
+	 * 
+	 ****************************************************************/
+	public JsonArray parseAndExecuteAll(String queryString, CFWTimeframe timeframe) {
+		return this.parseAndExecuteAll(
+				  queryString
+				, timeframe.getEarliest()
+				, timeframe.getLatest()
+				, timeframe.getClientTimezoneOffset()
+				);
+	}
 	/****************************************************************
 	 * Parses the query string and executes all queries.
 	 * Returns a Json Array containing the Query Results, or null in

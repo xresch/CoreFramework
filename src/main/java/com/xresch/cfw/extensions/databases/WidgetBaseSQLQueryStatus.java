@@ -123,7 +123,7 @@ public abstract class WidgetBaseSQLQueryStatus extends WidgetDefinition {
 	 * 
 	 *********************************************************************/
 	@Override
-	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, long earliest, long latest, int timezoneOffsetMinutes) { 
+	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, CFWTimeframe timeframe) { 
 		//---------------------------------
 		// Example Data
 		Boolean isSampleData = (Boolean)settings.getField(WidgetSettingsFactory.FIELDNAME_SAMPLEDATA).getValue();

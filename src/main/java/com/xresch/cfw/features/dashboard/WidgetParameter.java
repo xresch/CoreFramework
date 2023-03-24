@@ -21,6 +21,7 @@ import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
@@ -141,7 +142,7 @@ public class WidgetParameter extends WidgetDefinition {
 	 ******************************************************************/
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, long earliest, long latest, int timezoneOffsetMinutes) {
+	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, CFWTimeframe timeframe) {
 		
 		//---------------------------------
 		// Get ID
