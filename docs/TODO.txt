@@ -165,6 +165,7 @@ DONE
 - CFWChartSettings: Added FormFieldType and DataObject Class to manage Chart Settings
 - JS Components: ToogleButton supports favorite style
 - JS Renderer: Tiles - fixed issue with removing alertstyle fields
+- JS Renderer: StatusMap - fixed high CPU consumption issue
 - JS Renderer: Upgrade ChartJS from v2.93 to v4.0.1
 - JS Renderer: Added Tile and Status Bar Renderer(tileandbar)
 - JS Renderer: Removed Status Map renderer options with specific ratios

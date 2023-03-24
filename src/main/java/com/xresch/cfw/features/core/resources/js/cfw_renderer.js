@@ -949,6 +949,8 @@ CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSBAR_REVERSE, new CFWRenderer(c
 /******************************************************************
  * 
  ******************************************************************/
+CFW.global.statusmapElements = [];
+
 function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 	
 	//-----------------------------------
@@ -991,58 +993,90 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 	// portrait example:  1 / 2 = 0.5
 		
 	//===================================================
-	// Create Tiles for Map
+	// Create Tile Wrapper
 	//===================================================
 	var allTiles = $('<div class="d-flex flex-column flex-grow-1 h-100"></div>');
+	allTiles.attr('id',  'statusmap-'+CFW.utils.randomString(16))
+	allTiles.data('settings',  settings);
+	allTiles.data('renderDef',  renderDef);
 	allTiles.css("font-size", "0px");
+	
 	// avoid aspect ratio being Infinity by setting a min size
 	allTiles.css("min-height", "10px");
 	allTiles.css("min-width", "10px");	
-	//===================================================
-	// Add Resize Observer
-	//===================================================
-	if(!listenOnResize){
-		cfw_renderer_statusmap_createTiles(renderDef, settings, allTiles, aspectRatio);
-	}else{
-		let timerID = 'redrawthrottle'+CFW.utils.randomString(12);
-		var resizeObserver = new ResizeObserver(function(e){
-			
-			//-------------------------------------
-			// Throttle: Check 100ms passed since last redraw
-			var currentMillis = Date.now();
-			
-			var lastMillis = CFW.cache.data[timerID];
 	
-			if(lastMillis != null && (currentMillis - lastMillis) < 1000){
-				
-				return;
-			}
-			CFW.cache.data[timerID] = currentMillis;
-			
-			//-------------------------------------
-			// Redraw
-			var width = allTiles.width();
-			var height = allTiles.height();
-			var newAspectRatio = width/height;
-			
-			if(newAspectRatio == Infinity){
-				newAspectRatio = 1;
-			}
-			allTiles.html('');
-			
-			resizeObserver.disconnect();
-			   
-				cfw_renderer_statusmap_createTiles(renderDef, settings, allTiles, newAspectRatio);
-			
-			resizeObserver.observe(allTiles.get(0));
-		});
-		
-		resizeObserver.observe(allTiles.get(0));
-	}
+	//===================================================
+	// Render Tiles and push to map
+	//===================================================
+	cfw_renderer_statusmap_createTiles(renderDef, settings, allTiles, aspectRatio);
+	CFW.global.statusmapElements.push(allTiles);
 
 	return allTiles;
 
 }
+
+/******************************************************************
+ * Custom Resize Handler, because ResizeObserver somethimes causes 
+ * infinite loops and causes high CPU consumption.
+ ******************************************************************/
+function cfw_renderer_statusmap_resizeHandler(){
+			
+	window.requestAnimationFrame(() => {
+		
+		var statusmapArray = CFW.global.statusmapElements;
+
+		for(var i = 0; i < statusmapArray.length; i++){
+			
+			var statusmapDiv = statusmapArray[i];
+			var statusmapDivID = statusmapDiv.attr('id');
+			
+			//-------------------------------------
+			// Cleanup if removed
+			if( !document.contains(statusmapDiv[0]) ){
+				statusmapArray.splice(i, 1);
+				i--;
+				continue;
+			}
+						
+			//-------------------------------------
+			// Throttle: Only redraw when change is at least 10%
+			var width = statusmapDiv.width();
+			var height = statusmapDiv.height();
+			var lastwidth = CFW.cache.data[statusmapDivID+"lastwidth"];
+			var lastheight = CFW.cache.data[statusmapDivID+"lastheight"];
+	
+			
+			if(lastwidth != null){
+				var changeWidth = Math.abs(1.0 - (lastwidth / width));
+				var changeHeight = Math.abs(1.0 - (lastheight / height));
+
+				if(changeWidth < 0.10 && changeHeight < 0.10 ){
+					continue;
+				}
+			}
+			
+			CFW.cache.data[statusmapDivID+"lastwidth"] = width;
+			CFW.cache.data[statusmapDivID+"lastheight"] = height;
+			
+			//-------------------------------------
+			// Redraw
+			var newAspectRatio = width/height;
+			renderDef = statusmapDiv.data('renderDef');
+			settings = statusmapDiv.data('settings');
+			
+			if(newAspectRatio == Infinity){
+				newAspectRatio = 1;
+			}
+	
+			statusmapDiv.html('');
+			cfw_renderer_statusmap_createTiles(renderDef, settings, statusmapDiv, newAspectRatio);
+		}
+		
+	});
+}
+
+CFW.global.statusmapResizeInterval = window.setInterval(cfw_renderer_statusmap_resizeHandler, 500);
+
 
 /******************************************************************
  * 
