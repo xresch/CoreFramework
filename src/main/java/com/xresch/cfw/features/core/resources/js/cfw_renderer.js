@@ -10,13 +10,6 @@ CFW_RENDER_NAME_STATUSBAR = 'statusbar';
 CFW_RENDER_NAME_STATUSBAR_REVERSE = 'statusbarreverse';
 
 CFW_RENDER_NAME_STATUSMAP = 'statusmap';
-CFW_RENDER_NAME_STATUSMAP_1to1 = 'statusmap_1to1';
-CFW_RENDER_NAME_STATUSMAP_2to1 = 'statusmap_2to1';
-CFW_RENDER_NAME_STATUSMAP_4to1 = 'statusmap_4to1';
-CFW_RENDER_NAME_STATUSMAP_8to1 = 'statusmap_8to1';
-CFW_RENDER_NAME_STATUSMAP_1to2 = 'statusmap_1to2';
-CFW_RENDER_NAME_STATUSMAP_1to4 = 'statusmap_1to4';
-CFW_RENDER_NAME_STATUSMAP_1to8 = 'statusmap_1to8';
 
 CFW_RENDER_NAME_STATUSLIST = 'statuslist';
 CFW_RENDER_NAME_CARDS = 'cards';
@@ -1133,22 +1126,8 @@ function cfw_renderer_statusmap_createTiles(renderDef, settings, target, aspectR
 }
 
 function cfw_renderer_statusmap_auto(renderDef){ return cfw_renderer_statusmap(renderDef, -1, -1); }
-function cfw_renderer_statusmap_1to1(renderDef){ return cfw_renderer_statusmap(renderDef, 1, 1); }
-function cfw_renderer_statusmap_2to1(renderDef){ return cfw_renderer_statusmap(renderDef, 2, 1); }
-function cfw_renderer_statusmap_4to1(renderDef){ return cfw_renderer_statusmap(renderDef, 4, 1); }
-function cfw_renderer_statusmap_8to1(renderDef){ return cfw_renderer_statusmap(renderDef, 8, 1); }
-function cfw_renderer_statusmap_1to2(renderDef){ return cfw_renderer_statusmap(renderDef, 1, 2); }
-function cfw_renderer_statusmap_1to4(renderDef){ return cfw_renderer_statusmap(renderDef, 1, 4); }
-function cfw_renderer_statusmap_1to8(renderDef){ return cfw_renderer_statusmap(renderDef, 1, 8); }
 
 CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP, new CFWRenderer(cfw_renderer_statusmap_auto));
-CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_1to1, new CFWRenderer(cfw_renderer_statusmap_1to1));
-CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_2to1, new CFWRenderer(cfw_renderer_statusmap_2to1));
-CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_4to1, new CFWRenderer(cfw_renderer_statusmap_4to1));
-CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_8to1, new CFWRenderer(cfw_renderer_statusmap_8to1));
-CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_1to2, new CFWRenderer(cfw_renderer_statusmap_1to2));
-CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_1to4, new CFWRenderer(cfw_renderer_statusmap_1to4));
-CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSMAP_1to8, new CFWRenderer(cfw_renderer_statusmap_1to8));
 
 /******************************************************************
  * 

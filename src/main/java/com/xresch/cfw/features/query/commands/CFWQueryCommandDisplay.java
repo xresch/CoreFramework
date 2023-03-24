@@ -79,13 +79,6 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 					+"<li>statusbarreverse</li>"
 					
 					+"<li>statusmap</li>"
-					+"<li>statusmap_1to1</li>"
-					+"<li>statusmap_2to1</li>"
-					+"<li>statusmap_4to1</li>"
-					+"<li>statusmap_8to1</li>"
-					+"<li>statusmap_1to2</li>"
-					+"<li>statusmap_1to4</li>"
-					+"<li>statusmap_1to8</li>"
 					
 					+"<li>title</li>"
 					+"<li>csv</li>"

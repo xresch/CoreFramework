@@ -22,18 +22,11 @@ function cfw_query_getRendererIndex(queryResult){
 			case 'statusbarreverse':	rendererIndex = 7; break;
 			
 			case 'statusmap':			rendererIndex = 8; break;
-			case 'statusmap_1to1':		rendererIndex = 9; break;
-			case 'statusmap_2to1':		rendererIndex = 10; break;
-			case 'statusmap_4to1':		rendererIndex = 11; break;
-			case 'statusmap_8to1':		rendererIndex = 12; break;
-			case 'statusmap_1to2':		rendererIndex = 13; break;
-			case 'statusmap_1to4':		rendererIndex = 14; break;
-			case 'statusmap_1to8':		rendererIndex = 15; break;
 			
-			case 'title':			rendererIndex = 16; break;	
-			case 'csv':				rendererIndex = 17; break;	
-			case 'json':			rendererIndex = 18; break;	
-			case 'xml':				rendererIndex = 19; break;	
+			case 'title':			rendererIndex = 9; break;	
+			case 'csv':				rendererIndex = 10; break;	
+			case 'json':			rendererIndex = 11; break;	
+			case 'xml':				rendererIndex = 12; break;	
 			
 		}
 	}
@@ -886,36 +879,8 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 							name: 'statusbarreverse',
 							renderdef: {}
 						},
-						{	label: 'Status Map(Auto)',
+						{	label: 'Status Map',
 							name: 'statusmap',
-							renderdef: {}
-						},
-						{	label: 'Status Map(1:1)',
-							name: 'statusmap_1to1',
-							renderdef: {}
-						},
-						{	label: 'Status Map(2:1)',
-							name: 'statusmap_2to1',
-							renderdef: {}
-						},
-						{	label: 'Status Map(4:1)',
-							name: 'statusmap_4to1',
-							renderdef: {}
-						},
-						{	label: 'Status Map(8:1)',
-							name: 'statusmap_8to1',
-							renderdef: {}
-						},
-						{	label: 'Status Map(1:2)',
-							name: 'statusmap_1to2',
-							renderdef: {}
-						},
-						{	label: 'Status Map(1:4)',
-							name: 'statusmap_1to4',
-							renderdef: {}
-						},
-						{	label: 'Status Map(1:8)',
-							name: 'statusmap_1to8',
 							renderdef: {}
 						},
 						{	label: 'Title',

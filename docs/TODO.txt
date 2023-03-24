@@ -144,7 +144,7 @@ DONE
 - Database: Added Feature 'Reindex Fulltext Search' to DB Analytics page
 - Database: Added Alias CFW_ARRAY_DISTINCT
 - CFWField: Added flag SERVER_SIDE_ONLY
-- Dashboard: Settings - Added setting to start Dashboard in fullscreen mode.
+- Dashboard: Settings - Added setting to start Dashboard in Fullscreen Mode
 - Dashboard: Added Favorite Feature
 - Dashboard: Added Bottom and Side Ruler in Edit Mode
 - Dashboard: Complete rework of undo/redo functionality because of introduction of SERVER_SIDE_ONLY
@@ -167,6 +167,7 @@ DONE
 - JS Renderer: Tiles - fixed issue with removing alertstyle fields
 - JS Renderer: Upgrade ChartJS from v2.93 to v4.0.1
 - JS Renderer: Added Tile and Status Bar Renderer(tileandbar)
+- JS Renderer: Removed Status Map renderer options with specific ratios
 - Utils: Added Undo/Redo Manager 
 - Validator: Added ExcludeStringsValidator
 - Query: Editor - Fixed issues with html characters like "<" or ">"

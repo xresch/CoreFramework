@@ -103,16 +103,8 @@ public class WidgetSettingsFactory {
 		rendererOptions.put("statusbar", "Status Bar");
 		rendererOptions.put("statusbarreverse", "Status Bar Reversed");
 		
-		rendererOptions.put("statusmap", "Status Map(Auto)");
-		rendererOptions.put("statusmap_1to1", "Status Map(1:1)");
-		rendererOptions.put("statusmap_2to1", "Status Map(2:1)");
-		rendererOptions.put("statusmap_4to1", "Status Map(4:1)");
-		rendererOptions.put("statusmap_8to1", "Status Map(8:1)");
-		rendererOptions.put("statusmap_1to2", "Status Map(1:2)");
-		rendererOptions.put("statusmap_1to4", "Status Map(1:4)");
-		rendererOptions.put("statusmap_1to8", "Status Map(1:8)");
+		rendererOptions.put("statusmap", "Status Map");
 		
-
 		rendererOptions.put("csv", "CSV");
 		rendererOptions.put("json", "JSON");
 		
