@@ -152,6 +152,7 @@ DONE
 - Dashboard: Added Time Created for dashboards
 - Dashboard: Made list full with of window
 - Dashboard: Send CFWTimeframe JsonObject in requests instead of multiple parameters
+- Dashboard: Parameter - New Parameter type Query Select
 - Widgets: Parameter Widget supports password verification before update
 - Widgets: Parameter Widget supports custom button labels 
 - Widgets: Parameter Widget supports choosing the widgets which are affected on update

@@ -740,6 +740,13 @@ function cfw_dashboard_parameters_getFinalParams(){
 		var paramName = currentParam.NAME;
 		var viewerCustomValue = storedViewerParams[paramName];
 		
+		//----------------------------------------
+		// Remove value if dynamic
+		// will use viewerCustomValue if available
+		if(currentParam.IS_DYNAMIC){
+			currentParam.VALUE = "";
+		}
+		
 		if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
 			
 			//---------------------------------------------

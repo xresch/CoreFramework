@@ -12,6 +12,7 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
@@ -63,6 +64,7 @@ public class DashboardParameter extends CFWObject {
 		VALUE,
 		MODE,
 		IS_MODE_CHANGE_ALLOWED,
+		IS_DYNAMIC,
 	}
 
 	private static Logger logger = CFWLog.getLogger(DashboardParameter.class.getName());
@@ -116,13 +118,13 @@ public class DashboardParameter extends CFWObject {
 	
 	// As the type of the value will be defined by the setting it is associated with, this is stored as JSON.
 	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, DashboardParameterFields.VALUE)
-			.setDescription("The value of the parameter.")
+			.setDescription("The value of the parameter as entered in the parameter editor. This might not be the final value(e.g. could also be a query for dynamic loading).")
 			.disableSanitization();
 	
 	private CFWField<String> mode = CFWField.newString(FormFieldType.SELECT, DashboardParameterFields.MODE)
 			.setDescription("The mode of the widget.")
 			.setOptions(modeOptions);
-	
+		
 	private CFWField<Boolean> isModeChangeAllowed = CFWField.newBoolean(FormFieldType.NONE, DashboardParameterFields.IS_MODE_CHANGE_ALLOWED)
 			.setDescription("Define if the mode can be changed or not.")
 			.setValue(true)
@@ -140,13 +142,19 @@ public class DashboardParameter extends CFWObject {
 				}
 			});
 	
+	private CFWField<Boolean> isDynamic = CFWField.newBoolean(FormFieldType.NONE, DashboardParameterFields.IS_DYNAMIC)
+			.setDescription("Defines if the parameter loads values dynamically or is static.")
+			.setColumnDefinition("BOOLEAN DEFAULT FALSE");
+	
+	
+	
 	public DashboardParameter() {
 		initializeFields();
 	}
 		
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyDashboard, widgetType, paramLabel, paramType, name, value, mode, isModeChangeAllowed);
+		this.addFields(id, foreignKeyDashboard, widgetType, paramLabel, paramType, name, value, mode, isModeChangeAllowed, isDynamic);
 	}
 
 	
@@ -173,6 +181,7 @@ public class DashboardParameter extends CFWObject {
 					DashboardParameterFields.PARAM_TYPE.toString(),
 					DashboardParameterFields.NAME.toString(),
 					DashboardParameterFields.VALUE.toString(),
+					DashboardParameterFields.IS_DYNAMIC.toString(),
 					DashboardParameterFields.MODE.toString(),
 					DashboardParameterFields.IS_MODE_CHANGE_ALLOWED.toString(),
 				};
@@ -274,6 +283,15 @@ public class DashboardParameter extends CFWObject {
 		this.isModeChangeAllowed.setValue(value);
 		return this;
 	}
+	
+	public Boolean isDynamic() {
+		return isDynamic.getValue();
+	}
+	
+	public DashboardParameter isDynamic(Boolean value) {
+		this.isDynamic.setValue(value);
+		return this;
+	}
 
 	/*****************************************************************
 	 * Add the defined parameters to autocomplete results and selects.
@@ -313,7 +331,7 @@ public class DashboardParameter extends CFWObject {
 	 *
 	 *****************************************************************/
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static void prepareParamObjectsForForm(HttpServletRequest request, ArrayList<CFWObject> parameterList, boolean doForWidget) {
+	public static void prepareParamObjectsForForm(HttpServletRequest request, ArrayList<CFWObject> parameterList, CFWTimeframe timeframe, boolean doForWidget) {
 		
 		String dashboardID = request.getParameter("dashboardid");
 		
@@ -350,7 +368,7 @@ public class DashboardParameter extends CFWObject {
 				ParameterDefinition def = CFW.Registry.Parameters.getDefinition(param.paramSettingsLabel());
 				if(def != null) {
 					if(doForWidget) {
-						newValueField = def.getFieldForWidget(request, dashboardID, currentValueField.getValue());
+						newValueField = def.getFieldForWidget(request, dashboardID, currentValueField.getValue(), timeframe);
 					}else {
 						newValueField = def.getFieldForSettings(request, dashboardID, currentValueField.getValue());
 					}

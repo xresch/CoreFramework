@@ -22,11 +22,11 @@ public class CFWRegistryDashboardParameters {
 	 * @param definition
 	 ***********************************************************************/
 	public static void add(ParameterDefinition definition)  {
-		if(!definitionArray.containsKey(definition.getParamLabel())) {
-			definitionArray.put(definition.getParamLabel(),definition);
+		if(!definitionArray.containsKey(definition.getParamUniqueName())) {
+			definitionArray.put(definition.getParamUniqueName(),definition);
 		}else {
 			new CFWLog(logger)
-				.severe("A parameter definition with name'"+definition.getParamLabel()+"' was already defined. Could not add the definition to the registry.", new Throwable());
+				.severe("A parameter definition with name'"+definition.getParamUniqueName()+"' was already defined. Could not add the definition to the registry.", new Throwable());
 		}
 	}
 	
@@ -47,7 +47,7 @@ public class CFWRegistryDashboardParameters {
 	 * @param definition
 	 ***********************************************************************/
 	public static void remove(ParameterDefinition definition)  {
-		definitionArray.remove(definition.getParamLabel());
+		definitionArray.remove(definition.getParamUniqueName());
 	}
 	
 	/***********************************************************************

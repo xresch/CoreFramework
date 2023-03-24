@@ -19,6 +19,14 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWQueryExecutor {
 	
+	public static final String RESULTFIELDS_RESULTS 			= "results";
+	public static final String RESULTFIELDS_DISPLAY_SETTINGS 	= "displaySettings";
+	public static final String RESULTFIELDS_METADATA 			= "metadata";
+	public static final String RESULTFIELDS_DETECTED_FIELDS 	= "detectedFields";
+	public static final String RESULTFIELDS_GLOBALS 			= "globals";
+	public static final String RESULTFIELDS_EXEC_TIME_MILLIS 	= "execTimeMillis";
+	public static final String RESULTFIELDS_RESULT_COUNT 		= "resultCount";
+
 	private static Logger logger = CFWLog.getLogger(CFWQueryExecutor.class.getName());
 	
 	private int resultCount = 0;
@@ -175,14 +183,14 @@ public class CFWQueryExecutor {
 			
 			//--------------------------------
 			// Create Response
-			queryResults.addProperty("resultCount", resultCount);
-			queryResults.addProperty("execTimeMillis", execMillis);
+			queryResults.addProperty(RESULTFIELDS_RESULT_COUNT, resultCount);
+			queryResults.addProperty(RESULTFIELDS_EXEC_TIME_MILLIS, execMillis);
 			
-			queryResults.add("globals", queryContext.getGlobals());
-			queryResults.add("detectedFields", queryContext.getFieldnamesAsJsonArray() );
-			queryResults.add("metadata", query.getContext().getMetadata());
-			queryResults.add("displaySettings", query.getContext().getDisplaySettings());
-			queryResults.add("results", results);
+			queryResults.add(RESULTFIELDS_GLOBALS, queryContext.getGlobals());
+			queryResults.add(RESULTFIELDS_DETECTED_FIELDS, queryContext.getFieldnamesAsJsonArray() );
+			queryResults.add(RESULTFIELDS_METADATA, query.getContext().getMetadata());
+			queryResults.add(RESULTFIELDS_DISPLAY_SETTINGS, query.getContext().getDisplaySettings());
+			queryResults.add(RESULTFIELDS_RESULTS, results);
 			
 			returnValue.add(queryResults);
 

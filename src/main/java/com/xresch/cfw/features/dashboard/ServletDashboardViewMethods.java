@@ -802,7 +802,6 @@ public class ServletDashboardViewMethods
 		// Get Values
 		String widgetID = request.getParameter("widgetid");
 		String dashboardParams = request.getParameter("params");
-		//String timeframepreset = request.getParameter("timeframepreset");
 		
 		String timeframeString = request.getParameter("timeframe");
 		CFWTimeframe timeframe = new CFWTimeframe(timeframeString);
@@ -1040,7 +1039,7 @@ public class ServletDashboardViewMethods
 					JsonObject paramObject = new JsonObject();
 					paramObject.add("widgetType", null);
 					paramObject.add("widgetSetting", null);
-					paramObject.addProperty("label", def.getParamLabel());
+					paramObject.addProperty("label", def.getParamUniqueName());
 					
 					parameterDefArray.add(paramObject);
 				}
@@ -1090,10 +1089,11 @@ public class ServletDashboardViewMethods
 				if(def != null) {
 					CFWField paramField = def.getFieldForSettings(request, dashboardID, null);
 					param.paramType(paramField.fieldType());
-					param.paramSettingsLabel(def.getParamLabel());
+					param.paramSettingsLabel(def.getParamUniqueName());
 					param.name(label.toLowerCase().replace(" ", "_")+"_"+CFW.Random.randomStringAlphaNumerical(6));
 					param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
 					param.isModeChangeAllowed(false);
+					param.isDynamic(def.isDynamic());
 					
 //					if(paramField.fieldType().equals(FormFieldType.SELECT)) {
 //						param.isModeChangeAllowed(true);
@@ -1189,7 +1189,8 @@ public class ServletDashboardViewMethods
 		String dashboardID = request.getParameter("dashboardid");
 		ArrayList<CFWObject> parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(dashboardID);
 		
-		DashboardParameter.prepareParamObjectsForForm(request, parameterList, false);
+		CFWTimeframe notNeeded = null;
+		DashboardParameter.prepareParamObjectsForForm(request, parameterList, notNeeded, false);
 		
 		//===========================================
 		// Create Form

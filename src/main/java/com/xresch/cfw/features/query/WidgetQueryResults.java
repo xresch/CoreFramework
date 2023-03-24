@@ -112,9 +112,8 @@ public class WidgetQueryResults extends WidgetDefinition {
 		// to allow dashboard viewers to see data
 		
 		CFWQueryExecutor executor = new CFWQueryExecutor().checkPermissions(false);
-		
 		JsonArray resultArray = executor.parseAndExecuteAll(query, timeframe);
-		
+				
 		response.setPayLoad(resultArray);	
 	}
 	

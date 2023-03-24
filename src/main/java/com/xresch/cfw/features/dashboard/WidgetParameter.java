@@ -173,7 +173,7 @@ public class WidgetParameter extends WidgetDefinition {
 				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.LABEL.toString())
 				.getAsObjectList();
 		
-		DashboardParameter.prepareParamObjectsForForm(request, paramsResultArray, true);
+		DashboardParameter.prepareParamObjectsForForm(request, paramsResultArray, timeframe, true);
 
 		//---------------------------------
 		// Resolve Parameters
