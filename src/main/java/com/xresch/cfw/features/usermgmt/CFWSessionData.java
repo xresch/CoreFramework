@@ -173,9 +173,9 @@ public class CFWSessionData implements Serializable {
 			user.id(userID);
 		}
 		// use putAll() to not clear the HashMaps which are cached in classes CFWDBUserRoleMap/CFWDBRolePermissionMap
-		this.userRoles.clear();
+		this.userRoles = new HashMap<>();
 		this.userRoles.putAll( CFW.DB.Users.selectRolesForUser(userID) );
-		this.userPermissions.clear();
+		this.userPermissions = new HashMap<>();
 		this.userPermissions.putAll( CFW.DB.Users.selectPermissionsForUser(userID) );
 		loadMenu(true);
 	}
