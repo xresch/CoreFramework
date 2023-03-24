@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -89,14 +90,19 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 			String secondFieldname = (fieldCount == 1) ? null : detectedFields.get(1).getAsString();
 			
 			for(JsonElement result : results) {
+				
 				JsonObject object = result.getAsJsonObject();
+				JsonElement firstValue = object.get(firstFieldname);
+				if(firstValue.isJsonNull()) { firstValue = new JsonPrimitive("");}
+				
 				if(fieldCount == 1) {
-					settingsField.addOption(object.get(firstFieldname).getAsString());
+					
+					settingsField.addOption(firstValue);
 				}else {
-					settingsField.addOption(
-							  object.get(firstFieldname).getAsString()
-							, object.get(secondFieldname).getAsString()
-						);
+					
+					JsonElement secondValue = object.get(firstFieldname);
+					if(secondValue.isJsonNull()) { secondValue = new JsonPrimitive("");}
+					settingsField.addOption(firstValue, secondValue);
 				}
 			}
 
