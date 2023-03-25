@@ -1081,12 +1081,17 @@ function cfw_dashboard_widget_save_defaultSettings(widgetID){
 	delete settingsObject[CFW.global.formID];
 	
 	Object.assign(widgetObject, settingsObject);
-
+	
+	
 	//---------------------------
 	// Rerender
 	cfw_dashboard_history_startOperationsBundle();
-	
+		
 		$.ajaxSetup({async: false});
+			// Make sure to save state before rerender
+			cfw_dashboard_widget_save_state(widgetObject, true, true);
+			
+			// TODO: A bit ugly, might trigger another save
 			cfw_dashboard_widget_rerender(widgetGUID, false);
 		$.ajaxSetup({async: true});
 	
@@ -1119,7 +1124,7 @@ function cfw_dashboard_widget_save_widgetSettings(formButton, widgetGUID){
 			// Make sure to save state before rerender
 			cfw_dashboard_widget_save_state(widgetObject, true, false);
 
-			// TODO: A bit ugly, triggers another save
+			// TODO: A bit ugly, might trigger another save
 			cfw_dashboard_widget_rerender(widgetGUID, false);
 		
 		$.ajaxSetup({async: true});
@@ -1590,8 +1595,14 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 			cfw_dashboard_widget_createLoadingPlaceholder(widgetCloneParameterized, doAutoposition);
 
 			// ---------------------------------------
-			// Handle Manual Load
+			// Handle Parameter Widget Load & Manual Load
 			var placeholderWidget = $('#'+originalWidgetObject.guid);
+			
+			if(!manualLoad && widgetCloneParameterized.PARAM_WIDGET_LOAD == true){
+				placeholderWidget.find('.cfw-dashboard-widget-body')
+					.html('&nbsp;');
+				return;
+			}
 			
 			if(!manualLoad && widgetCloneParameterized.MANUAL_LOAD == true){
 				placeholderWidget.find('.cfw-dashboard-widget-body')

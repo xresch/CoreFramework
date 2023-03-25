@@ -51,8 +51,9 @@ public class DashboardWidget extends CFWObject {
 		FOOTER,
 		BGCOLOR,
 		FGCOLOR,
-		MANUAL_LOAD,
 		INVISIBLE,
+		MANUAL_LOAD,
+		PARAM_WIDGET_LOAD,
 		JSON_SETTINGS,
 		JSON_TASK_PARAMETERS,
 	}
@@ -167,17 +168,25 @@ public class DashboardWidget extends CFWObject {
 			.setValue("")
 			;
 	
+	private CFWField<Boolean> invisible = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardWidgetFields.INVISIBLE)
+			.setDescription("Makes the widget invisible when not in edit mode. It's still there and still executes whatever it executes when visible. So basically it's a ninja, but don't tell anyone!")
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			.setValue(false)
+			;
+	
 	private CFWField<Boolean> manualLoad = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardWidgetFields.MANUAL_LOAD)
 			.setDescription("Makes the widget loading on a button press. Shows a button instead of the widget content. Will also load on button press of parameter widgets.")
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
 			.setValue(false)
 			;
 	
-	private CFWField<Boolean> invisible = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardWidgetFields.INVISIBLE)
-			.setDescription("Makes the widget invisible when not in edit mode. It's still there and still executes whatever it executes when visible. So basically it's a ninja, but don't tell anyone!")
+	private CFWField<Boolean> paramWidgetLoad = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardWidgetFields.PARAM_WIDGET_LOAD)
+			.setLabel("Parameter Widget Load")
+			.setDescription("Makes the widget load only when a parameter widgets update button is pressed. Manual load setting is ignored. This can be useful to add password protection to widget content.")
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
 			.setValue(false)
 			;
+	
 	
 	/** Settings are coming from the fields defined by {@link WidgetDefinition#getSettings()}. Security can be disabled here. */
 	private CFWField<String> settings = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.JSON_SETTINGS)
@@ -207,7 +216,7 @@ public class DashboardWidget extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titlelink, titleFontsize, titleposition, contentFontsize, footer, bgcolor, fgcolor, manualLoad, invisible, settings, taskParameters);
+		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titlelink, titleFontsize, titleposition, contentFontsize, footer, bgcolor, fgcolor, invisible, manualLoad, paramWidgetLoad, settings, taskParameters);
 	}
 
 	/**************************************************************************************
