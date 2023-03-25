@@ -66,7 +66,7 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 			//---------------------------------
 			// Validate Detected Fields
 			JsonObject firstResult = resultArray.get(0).getAsJsonObject();
-			JsonArray detectedFields = firstResult.get(CFWQueryExecutor.RESULTFIELDS_DETECTED_FIELDS).getAsJsonArray();
+			JsonArray detectedFields = firstResult.get(CFWQueryResult.RESULTFIELDS_DETECTED_FIELDS).getAsJsonArray();
 			
 			int fieldCount = detectedFields.size();
 			if(fieldCount == 0) {
@@ -79,7 +79,7 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 			
 			//---------------------------------
 			// Validate Has Results
-			JsonArray results = firstResult.get(CFWQueryExecutor.RESULTFIELDS_RESULTS).getAsJsonArray();
+			JsonArray results = firstResult.get(CFWQueryResult.RESULTFIELDS_RESULTS).getAsJsonArray();
 			if(results.size() == 0) {
 				return settingsField;
 			}

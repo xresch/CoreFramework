@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Stack;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -902,6 +903,71 @@ public class CFWQueryParser {
 		if(part == null) { throw new ParseException(message, -1); }
 		
 		throw new ParseException(message+"(position: "+part.position()+", type: "+part.getClass().getSimpleName()+" )", part.position());
+	}
+	
+	/***********************************************************************************************
+	 * Returns a JsonArray with the current state of the Parser. 
+	 * Used for debugging
+	 ***********************************************************************************************/
+	public JsonArray getParserState() {
+		
+		JsonArray resultArray = new JsonArray();
+		
+		CFWQueryToken lastToken = this.lookat(-2);
+		CFWQueryToken currentToken = this.lookat(-1);
+		CFWQueryToken nextToken = this.lookahead();
+		
+		//-------------------------
+		JsonObject object = new JsonObject();
+		object.addProperty("KEY", "Description");
+		object.addProperty("VALUE", "This result contains debug information to analyze the error which occured while parsing of the query.");
+		resultArray.add(object);
+				
+		//-------------------------
+		object = new JsonObject();
+		object.addProperty("KEY", "Query");
+		object.addProperty("VALUE", this.query);
+		resultArray.add(object);
+		
+		
+		//-------------------------
+		object = new JsonObject();
+		object.addProperty("KEY", "Last Token");
+		object.add("VALUE", (lastToken == null) ? JsonNull.INSTANCE : lastToken.toJson());
+		resultArray.add(object);
+		
+		//-------------------------
+		object = new JsonObject();
+		object.addProperty("KEY", "Next Token");
+		object.add("VALUE", (nextToken == null) ? JsonNull.INSTANCE : nextToken.toJson());
+		resultArray.add(object);
+		
+		//-------------------------
+		object = new JsonObject();
+		object.addProperty("KEY", "Current Token");
+		object.add("VALUE", (currentToken == null) ? JsonNull.INSTANCE : currentToken.toJson());
+		resultArray.add(object);
+		
+		//-------------------------
+		object = new JsonObject();
+		object.addProperty("KEY", "Current Token Index");
+		object.addProperty("VALUE", cursor-1);
+		resultArray.add(object);
+
+		//-------------------------
+		object = new JsonObject();
+		object.addProperty("KEY", "Query Before Issue");
+		object.addProperty("VALUE", this.query.substring(0,lastToken.position()) );
+		resultArray.add(object);
+		
+		//-------------------------
+		object = new JsonObject();
+		object.addProperty("KEY", "Query After Issue");
+		object.addProperty("VALUE", this.query.substring(currentToken.position()) );
+		resultArray.add(object);
+		
+		
+		return resultArray;
 	}
 	
 

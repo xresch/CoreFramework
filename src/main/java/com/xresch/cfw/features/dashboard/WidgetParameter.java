@@ -170,7 +170,6 @@ public class WidgetParameter extends WidgetDefinition {
 				.select()
 				.whereIn(DashboardParameterFields.NAME, paramNames)
 				.and(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.LABEL.toString())
 				.getAsObjectList();
 		
 		DashboardParameter.prepareParamObjectsForForm(request, paramsResultArray, timeframe, true);

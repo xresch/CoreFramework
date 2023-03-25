@@ -2,6 +2,8 @@ package com.xresch.cfw.features.query.parse;
 
 import java.math.BigDecimal;
 
+import com.google.gson.JsonObject;
+
 /**************************************************************************************************************
  * Simple class holding token, token type and position of the token in the string.
  * 
@@ -219,6 +221,18 @@ public class CFWQueryToken{
 	}
 
 	
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public JsonObject toJson() { 
+		JsonObject object = new JsonObject();
+		object.addProperty("type", this.type.name());
+		object.addProperty("value", this.value);
+		object.addProperty("position", this.position);
+		
+		return object;
+	};
 	
 	/***********************************************************************************************
 	 * 

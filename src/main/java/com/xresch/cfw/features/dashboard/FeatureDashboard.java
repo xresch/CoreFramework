@@ -8,6 +8,7 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionBoolean;
+import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionNumber;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionSelect;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionText;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionTextarea;
@@ -101,6 +102,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Parameters.add(new ParameterDefinitionTextarea());
 		CFW.Registry.Parameters.add(new ParameterDefinitionSelect());
 		CFW.Registry.Parameters.add(new ParameterDefinitionBoolean());
+		CFW.Registry.Parameters.add(new ParameterDefinitionNumber());
 		
 		//----------------------------------
     	// Register Audit

@@ -19,14 +19,6 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWQueryExecutor {
 	
-	public static final String RESULTFIELDS_RESULTS 			= "results";
-	public static final String RESULTFIELDS_DISPLAY_SETTINGS 	= "displaySettings";
-	public static final String RESULTFIELDS_METADATA 			= "metadata";
-	public static final String RESULTFIELDS_DETECTED_FIELDS 	= "detectedFields";
-	public static final String RESULTFIELDS_GLOBALS 			= "globals";
-	public static final String RESULTFIELDS_EXEC_TIME_MILLIS 	= "execTimeMillis";
-	public static final String RESULTFIELDS_RESULT_COUNT 		= "resultCount";
-
 	private static Logger logger = CFWLog.getLogger(CFWQueryExecutor.class.getName());
 	
 	private int resultCount = 0;
@@ -83,6 +75,8 @@ public class CFWQueryExecutor {
 	 ****************************************************************/
 	public JsonArray parseAndExecuteAll(String queryString, long earliest, long latest, int timezoneOffsetMinutes) {
 		
+		JsonArray resultArray = new JsonArray();
+		
 		//------------------------
 		// Parse The Query
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
@@ -95,26 +89,26 @@ public class CFWQueryExecutor {
 
 		}catch (NumberFormatException e) {
 			new CFWLog(logger).severe("Error Parsing a number:"+e.getMessage(), e);
-			return null;
+			return parserDebugState(resultArray, parser);
 		} catch (ParseException e) {
 			CFW.Messages.addErrorMessage(e.getMessage());
 			return null;
 		}  catch (OutOfMemoryError e) {
-			new CFWLog(logger).severe("Not enough memory to complete query. Try reducing the amount of data processed.", e);
-			return null;
+			new CFWLog(logger).severe("Out of memory while parsing query. Please check your syntax.", e);
+			return parserDebugState(resultArray, parser);
 		} catch (IndexOutOfBoundsException e) {
 			new CFWLog(logger).severe("Query Parsing: "+e.getMessage(), e);
-			return null;
+			return parserDebugState(resultArray, parser);
 		}catch (Exception e) {
 			new CFWLog(logger).severe("Unexpected error when parsing the query: "+e.getMessage(), e);
-			return null;
+			return parserDebugState(resultArray, parser);
 		}finally {
-			//System.out.println(parser.getTraceResults());
+
 		}
 		
 		//------------------------
 		// Iterate All Queries
-		JsonArray returnValue = new JsonArray();
+
 		
 		for(CFWQuery query : queryList) {
 			
@@ -134,7 +128,7 @@ public class CFWQueryExecutor {
 			//--------------------------------
 			// Add Result Sink
 			resultCount = 0;
-			JsonObject queryResults = new JsonObject();
+			CFWQueryResult queryResult = new CFWQueryResult();
 			JsonArray results = new JsonArray();
 			
 			query.add(new PipelineAction<EnhancedJsonObject, EnhancedJsonObject>() {
@@ -180,23 +174,37 @@ public class CFWQueryExecutor {
 //			for(Entry<String, JsonElement> entry : queryGlobals.entrySet()){
 //				multiQueryGlobals.add(entry.getKey(), entry.getValue());
 //			}
-			
+
 			//--------------------------------
 			// Create Response
-			queryResults.addProperty(RESULTFIELDS_RESULT_COUNT, resultCount);
-			queryResults.addProperty(RESULTFIELDS_EXEC_TIME_MILLIS, execMillis);
-			
-			queryResults.add(RESULTFIELDS_GLOBALS, queryContext.getGlobals());
-			queryResults.add(RESULTFIELDS_DETECTED_FIELDS, queryContext.getFieldnamesAsJsonArray() );
-			queryResults.add(RESULTFIELDS_METADATA, query.getContext().getMetadata());
-			queryResults.add(RESULTFIELDS_DISPLAY_SETTINGS, query.getContext().getDisplaySettings());
-			queryResults.add(RESULTFIELDS_RESULTS, results);
-			
-			returnValue.add(queryResults);
+			queryResult.setExecTimeMillis(execMillis);
+			queryResult.setGlobals(queryContext.getGlobals());
+			queryResult.setMetadata(query.getContext().getMetadata());
+			queryResult.setDisplaySettings(query.getContext().getDisplaySettings());
+			queryResult.setDetectedFields(queryContext.getFieldnamesAsJsonArray());
+			queryResult.setResults(results);
+						
+			resultArray.add(queryResult.toJson());
 
 		}
 		
-		return returnValue;
+		return resultArray;
+	}
+
+	private JsonArray parserDebugState(JsonArray resultArray, CFWQueryParser parser) {
+		
+		JsonArray detectedFields = new JsonArray();
+		detectedFields.add("KEY");
+		detectedFields.add("VALUE");
+		
+		JsonObject debugState = new CFWQueryResult()
+					.setResults(parser.getParserState())
+					.setDetectedFields(detectedFields)
+					.toJson();
+		
+		resultArray.add(debugState);
+		
+		return resultArray;
 	}
 
 }

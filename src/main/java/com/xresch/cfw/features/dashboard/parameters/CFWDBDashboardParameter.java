@@ -108,7 +108,6 @@ public class CFWDBDashboardParameter {
 				.queryCache()
 				.select()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.LABEL.toString())
 				.getAsJSON();
 		
 	}
@@ -124,7 +123,6 @@ public class CFWDBDashboardParameter {
 				.queryCache()
 				.select()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-				.orderby(DashboardParameterFields.WIDGET_TYPE.toString(), DashboardParameterFields.LABEL.toString())
 				.getAsObjectList();
 		
 	}
