@@ -187,6 +187,7 @@ public class CFWQueryTokenizer {
 			case '^':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_POWER, startPos, cursor);
 			case '!':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_NOT, startPos, cursor); 
 			case '.':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_DOT, startPos, cursor); 
+			case '%':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_MODULO, startPos, cursor); 
 			case '&':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_AND, startPos, cursor);
 			case '|':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_OR, startPos, cursor);
 			case '>':	return createToken(CFWQueryToken.CFWQueryTokenType.OPERATOR_GREATERTHEN, startPos, cursor);

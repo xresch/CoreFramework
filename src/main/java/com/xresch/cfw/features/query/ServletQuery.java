@@ -22,7 +22,8 @@ import com.xresch.cfw.response.JSONResponse;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2022
+ * @author Reto Scheiwiller, (c) Copyright 2023
+ * @license MIT-License
  **************************************************************************************************************/
 public class ServletQuery extends HttpServlet
 {
@@ -173,10 +174,10 @@ public class ServletQuery extends HttpServlet
 		String latest = request.getParameter("latest");
 		int timezoneOffsetMinutes = Integer.parseInt(request.getParameter("timezoneOffsetMinutes"));
 
-		JsonArray array = new CFWQueryExecutor().parseAndExecuteAll(query, Long.parseLong(earliest), Long.parseLong(latest), timezoneOffsetMinutes);
+		CFWQueryResultList resultList = new CFWQueryExecutor().parseAndExecuteAll(query, Long.parseLong(earliest), Long.parseLong(latest), timezoneOffsetMinutes);
 		
-		if(array != null) {
-			jsonResponse.setPayLoad(array);
+		if(resultList != null) {
+			jsonResponse.setPayLoad(resultList.toJson());
 			jsonResponse.setSuccess(true);
 		}else {
 			jsonResponse.setSuccess(false);

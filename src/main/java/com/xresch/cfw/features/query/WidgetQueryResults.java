@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -24,7 +23,11 @@ import com.xresch.cfw.features.dashboard.WidgetSettingsFactory;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
-
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2023
+ * @license MIT-License
+ **************************************************************************************************************/
 public class WidgetQueryResults extends WidgetDefinition {
 
 	private static Logger logger = CFWLog.getLogger(WidgetQueryResults.class.getName());
@@ -112,9 +115,9 @@ public class WidgetQueryResults extends WidgetDefinition {
 		// to allow dashboard viewers to see data
 		
 		CFWQueryExecutor executor = new CFWQueryExecutor().checkPermissions(false);
-		JsonArray resultArray = executor.parseAndExecuteAll(query, timeframe);
+		CFWQueryResultList resultList = executor.parseAndExecuteAll(query, timeframe);
 				
-		response.setPayLoad(resultArray);	
+		response.setPayLoad(resultList.toJson());	
 	}
 	
 	public void createSampleData(JSONResponse response) { 

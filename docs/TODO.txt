@@ -178,9 +178,12 @@ DONE
 - Validator: Added ExcludeStringsValidator
 - Query: Editor - Fixed issues with html characters like "<" or ">"
 - Query: Editor - Fixed issues Ctrl+Alt+Arrow not copying last character of row & missing newline on first row
+- Query: Parsing - Return Debug info in case of  errors
+- Query: Parsing: Added detection of endless looping and prevention of OutOfMemoryError
 - Query: Fixed Comma after Binary Expression breaks query by creating array in the wrong place
 - Query: Loader does not block query editor
 - Query: URL is updated on each execution, even if the query fails
+- Query: Modulo operator('%') iis now supported by the CFWQL syntax
 - Query: Added API endpoint "Query >> execute"
 - Query: Added sources:
 	- empty

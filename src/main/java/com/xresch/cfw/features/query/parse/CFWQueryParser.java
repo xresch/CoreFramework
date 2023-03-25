@@ -57,8 +57,11 @@ public class CFWQueryParser {
 	private static CFWQueryCommandSource sourceCommand = new CFWQueryCommandSource(new CFWQuery());
 	private static String[] sourceCommandNames = sourceCommand.uniqueNameAndAliases();
 	
-	private int cursor;
 	
+	private int cursor;
+	private int lastCursor;
+	// counts how often the same cursor was detected, used to prevent endless looping
+	private int endlessLoopPreventionCounter = 0;
 	public static final String KEYWORD_AND = "AND";
 	public static final String KEYWORD_OR = "OR";
 	public static final String KEYWORD_NOT = "NOT";
@@ -429,10 +432,26 @@ public class CFWQueryParser {
 	public QueryPart parseQueryPart(CFWQueryParserContext context) throws ParseException {
 		
 		QueryPart secondPart = null;
-
+		
+		//------------------------------------------
+		// Prevent endless loops and OutOfMemoryErrors
+		if(cursor != lastCursor) {
+			endlessLoopPreventionCounter = 0;
+			lastCursor = cursor;
+		}else {
+			endlessLoopPreventionCounter++;
+			
+			if(endlessLoopPreventionCounter >= 10 ) {
+				throw new ParseException("Query Parser got stuck at a single cursor position and looped endlessly.", cursor);
+			}
+		}
+		
+		//------------------------------------------
+		// Check Unexpected end of Query
 		if(!this.hasMoreTokens()) {
 			throw new ParseException("Unexpected end of query.", cursor);
 		}
+		
 		//------------------------------------------
 		// FIRST TOKEN: Expect anything that can
 		// be part of an expression.
@@ -805,6 +824,7 @@ public class CFWQueryParser {
 			case OPERATOR_MULTIPLY:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_MULTIPLY, true ); break;	
 			case OPERATOR_DIVIDE:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_DIVIDE, true ); break;	
 			case OPERATOR_POWER:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_POWER, true ); break;	
+			case OPERATOR_MODULO:			resultPart = createBinaryExpressionPart(context, firstPart, CFWQueryTokenType.OPERATOR_MODULO, true ); break;	
 			case OPERATOR_NOT:
 				break;
 	

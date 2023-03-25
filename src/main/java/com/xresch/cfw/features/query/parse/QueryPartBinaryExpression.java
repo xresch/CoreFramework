@@ -161,6 +161,9 @@ public class QueryPartBinaryExpression extends QueryPart {
 			
 		JsonElement evalResult = null;
 		
+		BigDecimal rightDeci;
+		BigDecimal leftDeci;
+		
 		switch(type) {
 			case OPERATOR_AND:	
 				if(bothBooleans(leftValue, rightValue)) {
@@ -296,11 +299,11 @@ public class QueryPartBinaryExpression extends QueryPart {
 					evalResult = new JsonPrimitive(leftValue.getAsBigDecimal().multiply(rightValue.getAsBigDecimal()));
 				}
 			break;
-			
+						
 			case OPERATOR_DIVIDE:
 				nullToZero(leftValue, rightValue);
-				BigDecimal rightDeci = rightValue.getAsBigDecimal();
-				BigDecimal leftDeci = leftValue.getAsBigDecimal();
+				leftDeci = leftValue.getAsBigDecimal();
+				rightDeci = rightValue.getAsBigDecimal();
 				if(rightDeci.compareTo(BIG_ZERO) == 0) {   
 					
 					evalResult = JsonNull.INSTANCE;
@@ -314,6 +317,24 @@ public class QueryPartBinaryExpression extends QueryPart {
 					}
 				}
 			break;
+			
+			case OPERATOR_MODULO:
+				nullToZero(leftValue, rightValue);
+				leftDeci = leftValue.getAsBigDecimal();
+				rightDeci = rightValue.getAsBigDecimal();
+				if(rightDeci.compareTo(BIG_ZERO) == 0) {   
+					
+					evalResult = JsonNull.INSTANCE;
+				}else {
+					if(bothNumbers(leftValue, rightValue)) {
+						try {
+							evalResult = new JsonPrimitive(leftDeci.remainder(rightDeci));
+						}catch(Exception e) {
+							context.addMessage(MessageType.ERROR, e.getMessage());
+						}
+					}
+				}
+				break;
 			
 			case OPERATOR_POWER: 
 				nullToZero(leftValue, rightValue);

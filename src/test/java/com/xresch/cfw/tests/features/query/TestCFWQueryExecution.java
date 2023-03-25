@@ -1,9 +1,6 @@
 package com.xresch.cfw.tests.features.query;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.joda.time.Instant;
 import org.junit.jupiter.api.Assertions;
@@ -13,21 +10,11 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.query.CFWQuery;
-import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
-import com.xresch.cfw.features.query.EnhancedJsonObject;
+import com.xresch.cfw.features.query.CFWQueryResult;
+import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.query.FeatureQuery;
-import com.xresch.cfw.features.query.parse.CFWQueryParser;
-import com.xresch.cfw.features.query.parse.CFWQueryParser.CFWQueryParserContext;
-import com.xresch.cfw.features.query.parse.CFWQueryToken;
-import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
-import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.features.query.parse.QueryPartArray;
-import com.xresch.cfw.features.query.parse.QueryPartBinaryExpression;
-import com.xresch.cfw.features.query.parse.QueryPartGroup;
-import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.tests._master.DBTestMaster;
 
 public class TestCFWQueryExecution extends DBTestMaster{
@@ -65,14 +52,14 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				+ "		(null - 10)	== -10 	\r\n"
 				+ "	AND (null + 10)	== 10";
 		
-		JsonArray resultArray = new CFWQueryExecutor()
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
 		// No filtering occurs as both are true
-		JsonObject queryResults = resultArray.get(0).getAsJsonObject();
-		Assertions.assertEquals(100, queryResults.get("results").getAsJsonArray().size());
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(100, queryResults.getResultCount());
 
 	}
 	
@@ -85,14 +72,14 @@ public class TestCFWQueryExecution extends DBTestMaster{
 		
 		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFilterNullValues.txt");
 		
-		JsonArray resultArray = new CFWQueryExecutor()
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
 		// No filtering occurs as all filter conditions are true
-		JsonObject queryResults = resultArray.get(0).getAsJsonObject();
-		Assertions.assertEquals(10000, queryResults.get("results").getAsJsonArray().size());
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(10000, queryResults.getResultCount());
 
 	}
 	
@@ -106,14 +93,14 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				+ "			   # filter LIKES_TIRAMISU==null\r\n"
 				+ "			| comment filter LIKES_TIRAMISU==true | tail 100 | off filter LIKES_TIRAMISU==false | top 100 #filter LIKES_TIRAMISU==true";
 		
-		JsonArray resultArray = new CFWQueryExecutor()
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
 		
 		// No filtering occurs as all filter are commented out
-		JsonObject queryResults = resultArray.get(0).getAsJsonObject();
-		Assertions.assertEquals(100, queryResults.get("results").getAsJsonArray().size());
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(100, queryResults.getResultCount());
 
 	}
 	
@@ -129,23 +116,23 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				+ ";| source random records=1000 | uniq LIKES_TIRAMISU"
 				;
 		
-		JsonArray resultArray = new CFWQueryExecutor()
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 3 results for distinct, dedup and uniq
 		Assertions.assertEquals(3, resultArray.size());
 		
 		// Distinct by LIKES_TIRAMISU results in 3 rows with true, false and null
-		JsonObject queryResults = resultArray.get(0).getAsJsonObject();
-		Assertions.assertEquals(3, queryResults.get("results").getAsJsonArray().size());
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(3, queryResults.getResultCount());
 		
 		// Same for alias dedup
-		queryResults = resultArray.get(1).getAsJsonObject();
-		Assertions.assertEquals(3, queryResults.get("results").getAsJsonArray().size());
+		queryResults = resultArray.get(1);
+		Assertions.assertEquals(3, queryResults.getResultCount());
 		
 		// Same for alias uniq
-		queryResults = resultArray.get(2).getAsJsonObject();
-		Assertions.assertEquals(3, queryResults.get("results").getAsJsonArray().size());
+		queryResults = resultArray.get(2);
+		Assertions.assertEquals(3, queryResults.getResultCount());
 	}
 	
 	
@@ -167,7 +154,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				;
 		
 		
-		JsonArray resultArray = new CFWQueryExecutor()
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
@@ -191,8 +178,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 //		    "titleformat": "{0}: {2} {1} (Location: {3})"
 //		}
 
-		JsonObject displaySettings = resultArray.get(0).getAsJsonObject()
-												.get("displaySettings").getAsJsonObject();
+		JsonObject displaySettings = resultArray.get(0).getDisplaySettings();
 
 		Assertions.assertEquals("panels", displaySettings.get("as").getAsString());
 		Assertions.assertEquals("{0}: {2} {1} (Location: {3})", displaySettings.get("titleformat").getAsString());
@@ -223,22 +209,22 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				+ ";| source random records=1000 | top 321"
 				;
 		
-		JsonArray resultArray = new CFWQueryExecutor()
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 2 results for first and top
 		Assertions.assertEquals(2, resultArray.size());
 		
 		// First returns 123 results
-		JsonObject queryResults = resultArray.get(0).getAsJsonObject();
-		JsonArray queryResultsArray = queryResults.get("results").getAsJsonArray();
+		CFWQueryResult queryResults = resultArray.get(0);
+		JsonArray queryResultsArray = queryResults.getResults();
 		Assertions.assertEquals(123, queryResultsArray.size());
 		Assertions.assertEquals(0, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(122, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
 		
 		// top returns 321 results
-		queryResults = resultArray.get(1).getAsJsonObject();
-		queryResultsArray = queryResults.get("results").getAsJsonArray();
+		queryResults = resultArray.get(1);
+		queryResultsArray = queryResults.getResults();
 		Assertions.assertEquals(321, queryResultsArray.size());
 		Assertions.assertEquals(0, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(320, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
@@ -255,22 +241,22 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				+ ";| source random records=1000 | tail 321"
 				;
 		
-		JsonArray resultArray = new CFWQueryExecutor()
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 2 results for last and tail
 		Assertions.assertEquals(2, resultArray.size());
 		
 		// last returns 123 results
-		JsonObject queryResults = resultArray.get(0).getAsJsonObject();
-		JsonArray queryResultsArray = queryResults.get("results").getAsJsonArray();
+		CFWQueryResult queryResults = resultArray.get(0);
+		JsonArray queryResultsArray = queryResults.getResults();
 		Assertions.assertEquals(123, queryResultsArray.size());
 		Assertions.assertEquals(999-122, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(999, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
 		
 		// tail returns 321 results 
-		queryResults = resultArray.get(1).getAsJsonObject();
-		queryResultsArray = queryResults.get("results").getAsJsonArray();
+		queryResults = resultArray.get(1);
+		queryResultsArray = queryResults.getResults();
 		Assertions.assertEquals(321, queryResultsArray.size());
 		Assertions.assertEquals(999-320, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(999, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
@@ -287,7 +273,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 		String queryString = "| source random | formatfield VALUE=[postfix,' $']"
 				;
 		
-		JsonArray resultArray = new CFWQueryExecutor()
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 1 query results
@@ -305,8 +291,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 
 		
 		// 
-		JsonObject displaySettings = resultArray.get(0).getAsJsonObject()
-												.get("displaySettings").getAsJsonObject();
+		JsonObject displaySettings = resultArray.get(0).getDisplaySettings();
 		JsonObject fieldFormats = displaySettings.get("fieldFormats").getAsJsonObject();
 		
 		Assertions.assertEquals(1, fieldFormats.get("VALUE").getAsJsonArray().size());
@@ -327,7 +312,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				+ "	VALUE=[prefix,'Mighty Balance: ']  VALUE=[postfix,' $']  VALUE=[threshold,0,10,20,30,40]  VALUE=uppercase"
 				;
 		
-		JsonArray resultArray = new CFWQueryExecutor()
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 1 query results
@@ -349,8 +334,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 
 		
 		// 
-		JsonObject displaySettings = resultArray.get(0).getAsJsonObject()
-												.get("displaySettings").getAsJsonObject();
+		JsonObject displaySettings = resultArray.get(0).getDisplaySettings();
 		JsonObject fieldFormats = displaySettings.get("fieldFormats").getAsJsonObject();
 		
 		Assertions.assertEquals(1, fieldFormats.get("INDEX").getAsJsonArray().size());
@@ -380,7 +364,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				+ "		]"
 				;
 		
-		JsonArray resultArray = new CFWQueryExecutor()
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 1 query results
@@ -405,8 +389,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 
 		
 		// 
-		JsonObject displaySettings = resultArray.get(0).getAsJsonObject()
-												.get("displaySettings").getAsJsonObject();
+		JsonObject displaySettings = resultArray.get(0).getDisplaySettings();
 		JsonObject fieldFormats = displaySettings.get("fieldFormats").getAsJsonObject();
 		
 		Assertions.assertEquals(2, fieldFormats.get("THOUSANDS").getAsJsonArray().size());
@@ -453,7 +436,7 @@ public class TestCFWQueryExecution extends DBTestMaster{
 				+ "| metadata name='Bigger Number Table' secondQueryProp='world' | source random type=numbers records=5 | display as=biggertable "
 				;
 		
-		JsonArray resultArray = new CFWQueryExecutor()
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		// 2 query results
@@ -471,8 +454,8 @@ public class TestCFWQueryExecution extends DBTestMaster{
 
 		//------------------------------
 		// Check First Query Result
-		JsonObject globals  = resultArray.get(0).getAsJsonObject().get("globals").getAsJsonObject();
-		JsonObject metadata = resultArray.get(0).getAsJsonObject().get("metadata").getAsJsonObject();
+		JsonObject globals  = resultArray.get(0).getGlobals();
+		JsonObject metadata = resultArray.get(0).getMetadata();
 		
 		//Assertions.assertTrue(globals.get("earliest").isJsonPrimitive());
 		//Assertions.assertTrue(globals.get("latest").isJsonPrimitive());
@@ -482,8 +465,8 @@ public class TestCFWQueryExecution extends DBTestMaster{
 		
 		//------------------------------
 		// Check Second Query Result
-		globals  = resultArray.get(1).getAsJsonObject().get("globals").getAsJsonObject();
-		metadata = resultArray.get(1).getAsJsonObject().get("metadata").getAsJsonObject();
+		globals  =  resultArray.get(1).getGlobals();
+		metadata = resultArray.get(1).getMetadata();
 		
 		//Assertions.assertTrue(globals.get("earliest").isJsonPrimitive());
 		//Assertions.assertTrue(globals.get("latest").isJsonPrimitive());

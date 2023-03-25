@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
-import com.google.gson.JsonArray;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIRequestHandler;
 import com.xresch.cfw.response.JSONResponse;
@@ -64,9 +63,9 @@ public class APIQueryExecute extends APIDefinition{
 				
 				CFWQueryExecutor executor = new CFWQueryExecutor().checkPermissions(true);
 				
-				JsonArray resultArray = executor.parseAndExecuteAll(query, earliest, latest, timezoneOffsetMinutes);
+				CFWQueryResultList resultArray = executor.parseAndExecuteAll(query, earliest, latest, timezoneOffsetMinutes);
 				
-				json.setPayLoad(resultArray);
+				json.setPayLoad(resultArray.toJson());
 				json.setSuccess(true);
 
 			}

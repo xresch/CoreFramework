@@ -525,9 +525,9 @@ public class CFWDBDashboard {
 					// Create Parameters
 					JsonArray paramsArray = dashboardObject.get("parameters").getAsJsonArray();
 					for(JsonElement paramsElement : paramsArray) {
-						System.out.println("AAAAA");
+						
 						if(paramsElement.isJsonObject()) {
-							System.out.println("BBBBBB");
+							
 							JsonObject paramsObject = paramsElement.getAsJsonObject();
 							//-----------------------------
 							// Map values

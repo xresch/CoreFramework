@@ -15,6 +15,11 @@ import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterFields;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinition;
 
+/**************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2023 
+ * @license MIT-License
+ **************************************************************************************************************/
 public class DashboardParameterQueryResult extends ParameterDefinition {
 
 	public static final String UNIQUE_NAME = "Query Select";
@@ -58,15 +63,15 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 
 			//---------------------------------
 			// Execute Query
-			JsonArray resultArray = executor.parseAndExecuteAll(query, timeframe);
+			CFWQueryResultList resultArray = executor.parseAndExecuteAll(query, timeframe);
 			if(resultArray.size() == 0) {
 				return settingsField;
 			}
 			
 			//---------------------------------
 			// Validate Detected Fields
-			JsonObject firstResult = resultArray.get(0).getAsJsonObject();
-			JsonArray detectedFields = firstResult.get(CFWQueryResult.RESULTFIELDS_DETECTED_FIELDS).getAsJsonArray();
+			CFWQueryResult firstResult = resultArray.getResultList().get(0);
+			JsonArray detectedFields = firstResult.getDetectedFields();
 			
 			int fieldCount = detectedFields.size();
 			if(fieldCount == 0) {
@@ -79,7 +84,7 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 			
 			//---------------------------------
 			// Validate Has Results
-			JsonArray results = firstResult.get(CFWQueryResult.RESULTFIELDS_RESULTS).getAsJsonArray();
+			JsonArray results = firstResult.getResults();
 			if(results.size() == 0) {
 				return settingsField;
 			}

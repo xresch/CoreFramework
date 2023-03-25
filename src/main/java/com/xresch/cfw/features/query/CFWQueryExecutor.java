@@ -2,12 +2,10 @@ package com.xresch.cfw.features.query;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Map.Entry;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWTimeframe;
@@ -16,12 +14,16 @@ import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
-
+/**************************************************************************************************************
+ * The Class used to execute CFWQL queries.
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2023 
+ * @license MIT-License
+ **************************************************************************************************************/
 public class CFWQueryExecutor {
 	
 	private static Logger logger = CFWLog.getLogger(CFWQueryExecutor.class.getName());
 	
-	private int resultCount = 0;
 	private boolean checkPermissions = true;
 	
 	/****************************************************************
@@ -49,7 +51,7 @@ public class CFWQueryExecutor {
 	 * 		var timeZoneOffset = new Date().getTimezoneOffset();
 	 * 
 	 ****************************************************************/
-	public JsonArray parseAndExecuteAll(String queryString, CFWTimeframe timeframe) {
+	public CFWQueryResultList parseAndExecuteAll(String queryString, CFWTimeframe timeframe) {
 		return this.parseAndExecuteAll(
 				  queryString
 				, timeframe.getEarliest()
@@ -73,9 +75,9 @@ public class CFWQueryExecutor {
 	 * 		var timeZoneOffset = new Date().getTimezoneOffset();
 	 * 
 	 ****************************************************************/
-	public JsonArray parseAndExecuteAll(String queryString, long earliest, long latest, int timezoneOffsetMinutes) {
+	public CFWQueryResultList parseAndExecuteAll(String queryString, long earliest, long latest, int timezoneOffsetMinutes) {
 		
-		JsonArray resultArray = new JsonArray();
+		CFWQueryResultList resultArray = new CFWQueryResultList();
 		
 		//------------------------
 		// Parse The Query
@@ -92,8 +94,9 @@ public class CFWQueryExecutor {
 			return parserDebugState(resultArray, parser);
 		} catch (ParseException e) {
 			CFW.Messages.addErrorMessage(e.getMessage());
-			return null;
+			return parserDebugState(resultArray, parser);
 		}  catch (OutOfMemoryError e) {
+			// should not happen again
 			new CFWLog(logger).severe("Out of memory while parsing query. Please check your syntax.", e);
 			return parserDebugState(resultArray, parser);
 		} catch (IndexOutOfBoundsException e) {
@@ -127,7 +130,6 @@ public class CFWQueryExecutor {
 				
 			//--------------------------------
 			// Add Result Sink
-			resultCount = 0;
 			CFWQueryResult queryResult = new CFWQueryResult();
 			JsonArray results = new JsonArray();
 			
@@ -138,7 +140,6 @@ public class CFWQueryExecutor {
 					LinkedBlockingQueue<EnhancedJsonObject> inQueue = getInQueue();
 					
 					while(!inQueue.isEmpty()) {
-						resultCount++;
 
 						JsonObject object = inQueue.poll().getWrappedObject();
 						if(object != null) {
@@ -184,25 +185,25 @@ public class CFWQueryExecutor {
 			queryResult.setDetectedFields(queryContext.getFieldnamesAsJsonArray());
 			queryResult.setResults(results);
 						
-			resultArray.add(queryResult.toJson());
+			resultArray.addResult(queryResult);
 
 		}
 		
 		return resultArray;
 	}
 
-	private JsonArray parserDebugState(JsonArray resultArray, CFWQueryParser parser) {
+	private CFWQueryResultList parserDebugState(CFWQueryResultList resultArray, CFWQueryParser parser) {
 		
 		JsonArray detectedFields = new JsonArray();
 		detectedFields.add("KEY");
 		detectedFields.add("VALUE");
 		
-		JsonObject debugState = new CFWQueryResult()
+		CFWQueryResult debugState = new CFWQueryResult()
 					.setResults(parser.getParserState())
 					.setDetectedFields(detectedFields)
-					.toJson();
+					;
 		
-		resultArray.add(debugState);
+		resultArray.addResult(debugState);
 		
 		return resultArray;
 	}

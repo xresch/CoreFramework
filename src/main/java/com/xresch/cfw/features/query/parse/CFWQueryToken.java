@@ -64,6 +64,7 @@ public class CFWQueryToken{
 	  , /** The character '*' */ OPERATOR_MULTIPLY
 	  , /** The character '/' */ OPERATOR_DIVIDE
 	  , /** The character '^' */ OPERATOR_POWER
+	  , /** The character '%' */ OPERATOR_MODULO
 	  , /** The character '&' */ OPERATOR_AND
 	  , /** The character '|' */ OPERATOR_OR
 	  , /** The character '!' */ OPERATOR_NOT
