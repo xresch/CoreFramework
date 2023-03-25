@@ -96,13 +96,12 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 				if(firstValue.isJsonNull()) { firstValue = new JsonPrimitive("");}
 				
 				if(fieldCount == 1) {
-					
-					settingsField.addOption(firstValue);
+					settingsField.addOption(firstValue.getAsString());
 				}else {
 					
-					JsonElement secondValue = object.get(firstFieldname);
+					JsonElement secondValue = object.get(secondFieldname);
 					if(secondValue.isJsonNull()) { secondValue = new JsonPrimitive("");}
-					settingsField.addOption(firstValue, secondValue);
+					settingsField.addOption(firstValue.getAsString(), secondValue.getAsString());
 				}
 			}
 

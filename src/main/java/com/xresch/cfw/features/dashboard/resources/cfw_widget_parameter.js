@@ -51,6 +51,7 @@
 						//--------------------
 						// Do others
 						var viewerCustomValue = storedViewerParams[name];
+								
 						if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
 							if(type == 'radio'){
 								//$('input[name="'+name+'"]').prop("checked", false);
@@ -82,7 +83,8 @@
 								var wrapper = inputField.closest('.cfw-chartsettings-field-wrapper');
 								 cfw_internal_applyChartSettings(inputField.attr('id'), wrapper, chartsettingsValues);
 							}else{
-								inputField.val(viewerCustomValue);
+								// stringify value, else it won't work with properly with booleans
+								inputField.val(""+viewerCustomValue);
 							}
 						}
 					});
