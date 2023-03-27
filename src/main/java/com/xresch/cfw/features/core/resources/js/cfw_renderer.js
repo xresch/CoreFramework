@@ -2049,7 +2049,9 @@ function cfw_renderer_chart(renderDef) {
 		// if multichart is true, each series is drawn in it's own chart.
 		multichart: true,
 		// toogle if multicharts have a title
-		multicharttitle: false
+		multicharttitle: false,
+		// toogle if multicharts have a title
+		multichartcolumns: 1
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
@@ -2305,7 +2307,7 @@ function cfw_renderer_chart(renderDef) {
 		// Initialize
 		var currentData = dataArray[index];
 		var chartCanvas = $('<canvas class="chartJSCanvas" width="100%">');
-		var wrapper = $('<div class="w-100">');
+		var wrapper = $('<div style="width:'+(100/settings.multichartcolumns)+'%">');
 		wrapper.append(chartCanvas);
 		allChartsDiv.append(wrapper);
 		
@@ -2316,7 +2318,6 @@ function cfw_renderer_chart(renderDef) {
 			chartOptionsClone.plugins.title.display =  true;
 			chartOptionsClone.plugins.title.text = currentData.datasets[0].label;
 		}
-		
 		
 		var chartCtx = chartCanvas.get(0).getContext("2d");
 		//var chartCtx = chartCanvas.get(0);

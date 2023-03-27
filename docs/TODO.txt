@@ -170,7 +170,7 @@ DONE
 - CFWChartSettings: Added FormFieldType and DataObject Class to manage Chart Settings
 - JS Components: ToogleButton supports favorite style
 - JS Renderer: Tiles - fixed issue with removing alertstyle fields
-- JS Renderer: Chart - Added options multichart/multicharttitle to render each series in it's own chart.
+- JS Renderer: Chart - Added options multichart/-title/-columns to render each series in it's own chart.
 - JS Renderer: Status Map - fixed high CPU consumption issue
 - JS Renderer: Status Map - removed renderer options with specific ratios
 - JS Renderer: Upgrade ChartJS from v2.93 to v4.0.1

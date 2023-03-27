@@ -27,6 +27,7 @@ public class CFWChartSettings {
 	private static final String POINTRADIUS 	= "pointradius";
 	private static final String MULTICHART 		= "multichart";
 	private static final String MULTICHARTTITLE = "multicharttitle";
+	private static final String MULTICHARTCOLUMNS = "multichartcolumns";
 	
 	
 //	chartSettings.charttype 	= $(selector+'-CHARTTYPE').val();
@@ -99,6 +100,7 @@ public class CFWChartSettings {
 		defaults.addProperty(POINTRADIUS, 2);
 		defaults.addProperty(MULTICHART, false);
 		defaults.addProperty(MULTICHARTTITLE, false);
+		defaults.addProperty(MULTICHARTCOLUMNS, 1);
 		
 		return defaults;
 	}
@@ -324,6 +326,23 @@ public class CFWChartSettings {
 	 ***************************************************************************************/
 	public CFWChartSettings multicharttitle(boolean value) {
 		chartSettingsData.addProperty(MULTICHARTTITLE, value);
+		return this;
+	}
+	
+	/***************************************************************************************
+	 * @ return number of columns, 1 as default
+	 ***************************************************************************************/
+	public int multichartcolumns() {
+		if(chartSettingsData == null || chartSettingsData.get(MULTICHARTCOLUMNS).isJsonNull()) return 1;
+		
+		return chartSettingsData.get(MULTICHARTCOLUMNS).getAsInt();
+	}
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/
+	public CFWChartSettings multichartcolumns(int value) {
+		chartSettingsData.addProperty(MULTICHARTCOLUMNS, value);
 		return this;
 	}
 

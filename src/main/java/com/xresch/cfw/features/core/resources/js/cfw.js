@@ -1080,6 +1080,15 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 					</div>
 				</div>
 			</div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-MULTICHARTCOLUMNS">
+					Columns:
+				</label>   
+				<div class="col-sm-9">
+					<input id="${fieldID}-MULTICHARTCOLUMNS" type="number" class="form-control-inline form-control-sm col-md-12" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')">
+				</div>
+			</div>
 															
 		</div>
 	</div>`);
@@ -1115,7 +1124,9 @@ function cfw_internal_applyChartSettings(fieldID, wrapper, chartSettings){
 	
 	wrapper.find(selector+"-MULTICHART[value='" + chartSettings.multichart + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-MULTICHARTTITLE[value='" + chartSettings.multicharttitle + "']").attr("checked", "checked");  
-			
+	wrapper.find(selector+"-MULTICHARTCOLUMNS").val(chartSettings.multichartcolumns );
+		
+	
 }
 
 /**************************************************************************************
@@ -1141,14 +1152,17 @@ function cfw_internal_updateChartSettings(elementID){
 	chartSettings.showaxes			= $(selector+"-SHOWAXES:checked").val();  
 	chartSettings.spangaps			= $(selector+"-SPANGAPS:checked").val();  
 	chartSettings.pointradius		= $(selector+"-POINTRADIUS").val();  
+	
 	chartSettings.multichart		= $(selector+"-MULTICHART:checked").val();  
 	chartSettings.multicharttitle 	= $(selector+"-MULTICHARTTITLE:checked").val();  
+	chartSettings.multichartcolumns	= $(selector+'-MULTICHARTCOLUMNS').val();
 	
 	//--------------------------------------
 	// Convert Numbers and Booleans
 	chartSettings.pointradius 		= !isNaN(chartSettings.pointradius) ? parseFloat(chartSettings.pointradius) : 0;
 	chartSettings.ymin 				= !isNaN(chartSettings.ymin) ? parseFloat(chartSettings.ymin) : 0;
 	chartSettings.ymax 				= !isNaN(chartSettings.ymax) ? parseFloat(chartSettings.ymax) : null;
+	chartSettings.multichartcolumns = !isNaN(chartSettings.multichartcolumns) ? parseInt(chartSettings.multichartcolumns) : null;
 	
 	chartSettings.stacked  			= (chartSettings.stacked.trim().toLowerCase() == "true") ? true : false;  
 	chartSettings.showlegend  		= (chartSettings.showlegend.trim().toLowerCase() == "true") ? true : false;  
