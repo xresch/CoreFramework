@@ -973,7 +973,9 @@ function cfw_query_renderAsChart(resultTarget, queryResult){
 	};
 	
 	var finalSettings = Object.assign({}, defaultSettings, settings);
-	
+	if(settings.type != null){
+		finalSettings.charttype = settings.type;
+	}
 	//---------------------------
 	// Render Settings
 	var dataToRender = {

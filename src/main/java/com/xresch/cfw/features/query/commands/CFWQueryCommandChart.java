@@ -59,10 +59,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "chart [type=<typeOptions>] [groupby=<groupFieldnames>] [x=<xFieldname>] [y=<yFieldname>]"
-			 + " [xtype=<xAxisType>] [ytype=<yAxisType>] [stacked=<isStacked>] [legend=<showLegend>]"
-			 + " [axes=<showAxes>] [pointradius=<pointRadius>] [ymin=<yAxisMinimum>] [ymax=<yAxisMaximum>]"
-			 + " [spangaps=<spanGaps>]";
+		return "chart [type=<typeOptions>] [<otherParamName>=<value> ...]";
 	}
 	
 	/***********************************************************************************************
@@ -103,6 +100,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 				+"<p><b>multichart:&nbsp;</b>Set to true to display each series in it's own chart.</p>"	
 				+"<p><b>multicharttitle:&nbsp;</b>Set to true to display title for charts.</p>"	
 				+"<p><b>multichartcolumns:&nbsp;</b> Number of columns for multi chart display.</p>"	
+				+"<p><b>minheight:&nbsp;</b> The minimum height of the chart(e.g. 200px, 20vh etc..).</p>"	
 				;
 	}
 

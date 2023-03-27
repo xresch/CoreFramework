@@ -1089,6 +1089,15 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 					<input id="${fieldID}-MULTICHARTCOLUMNS" type="number" class="form-control-inline form-control-sm col-md-12" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')">
 				</div>
 			</div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-HEIGHT">
+					Chart Height:
+				</label>   
+				<div class="col-sm-9">
+					<input id="${fieldID}-HEIGHT" type="text" class="form-control-inline form-control-sm col-md-12" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')">
+				</div>
+			</div>
 															
 		</div>
 	</div>`);
@@ -1125,6 +1134,7 @@ function cfw_internal_applyChartSettings(fieldID, wrapper, chartSettings){
 	wrapper.find(selector+"-MULTICHART[value='" + chartSettings.multichart + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-MULTICHARTTITLE[value='" + chartSettings.multicharttitle + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-MULTICHARTCOLUMNS").val(chartSettings.multichartcolumns );
+	wrapper.find(selector+"-HEIGHT").val(chartSettings.height );
 		
 	
 }
@@ -1156,6 +1166,7 @@ function cfw_internal_updateChartSettings(elementID){
 	chartSettings.multichart		= $(selector+"-MULTICHART:checked").val();  
 	chartSettings.multicharttitle 	= $(selector+"-MULTICHARTTITLE:checked").val();  
 	chartSettings.multichartcolumns	= $(selector+'-MULTICHARTCOLUMNS').val();
+	chartSettings.height			= $(selector+'-HEIGHT').val();
 	
 	//--------------------------------------
 	// Convert Numbers and Booleans

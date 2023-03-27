@@ -28,6 +28,7 @@ public class CFWChartSettings {
 	private static final String MULTICHART 		= "multichart";
 	private static final String MULTICHARTTITLE = "multicharttitle";
 	private static final String MULTICHARTCOLUMNS = "multichartcolumns";
+	private static final String HEIGHT 		= "height";
 	
 	
 //	chartSettings.charttype 	= $(selector+'-CHARTTYPE').val();
@@ -92,6 +93,7 @@ public class CFWChartSettings {
 		defaults.addProperty(YAXIS_TYPE, AxisType.linear.toString());
 		defaults.addProperty(YAXIS_MIN, 0);
 		defaults.add(YAXIS_MAX, null);
+		defaults.add(HEIGHT, null);
 		
 		defaults.addProperty(STACKED, false);
 		defaults.addProperty(SHOWLEGEND, false);
@@ -343,6 +345,23 @@ public class CFWChartSettings {
 	 ***************************************************************************************/
 	public CFWChartSettings multichartcolumns(int value) {
 		chartSettingsData.addProperty(MULTICHARTCOLUMNS, value);
+		return this;
+	}
+	
+	/***************************************************************************************
+	 * can return null
+	 ***************************************************************************************/
+	public String height() {
+		if(chartSettingsData == null || chartSettingsData.get(HEIGHT).isJsonNull()) return null;
+		
+		return chartSettingsData.get(HEIGHT).getAsString();
+	}
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/
+	public CFWChartSettings String(Float value) {
+		chartSettingsData.addProperty(HEIGHT, value);
 		return this;
 	}
 
