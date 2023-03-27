@@ -23,7 +23,6 @@
 					// Add script
 					var script = $('<script id="'+jsid+'">'+widgetObject.JSON_SETTINGS.script+"</script>")
 					$('#javascripts').append(script);
-					callback(widgetObject, '');
 				}
 				
 				callback(widgetObject, '');
