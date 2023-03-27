@@ -61,7 +61,8 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	public String descriptionSyntax() {
 		return "chart [type=<typeOptions>] [groupby=<groupFieldnames>] [x=<xFieldname>] [y=<yFieldname>]"
 			 + " [xtype=<xAxisType>] [ytype=<yAxisType>] [stacked=<isStacked>] [legend=<showLegend>]"
-			 + " [axes=<showAxes>] [pointradius=<pointRadius>] [ymin=<yAxisMinimum>] [ymax=<yAxisMaximum>]  [spangaps=<spanGaps>]";
+			 + " [axes=<showAxes>] [pointradius=<pointRadius>] [ymin=<yAxisMinimum>] [ymax=<yAxisMaximum>]"
+			 + " [spangaps=<spanGaps>]";
 	}
 	
 	/***********************************************************************************************
@@ -69,7 +70,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>typeOptions:&nbsp;</b>One of the following(Default:area):</p>"
+		return "<p><b>type:&nbsp;</b>One of the following(Default:area):</p>"
 					+"<ul>"
 						+"<li>area</li>"
 						+"<li>line</li>"
@@ -78,27 +79,30 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 						+"<li>steppedarea</li>"
 						+"<li>steppedline</li>"
 					+"</ul>"
-				+"<p><b>groupFieldnames:&nbsp;</b>Array of fieldnames to group by. This determines the series for the chart.</p>"	
-				+"<p><b>xFieldname:&nbsp;</b>Name of the field containing the values for the x-axis.</p>"	
-				+"<p><b>yFieldname:&nbsp;</b>Name of the field containing the values for the y-axis.</p>"	
-				+"<p><b>xAxisType:&nbsp;</b>Type of the x-axis:</p>"	
+				+"<p><b>groupby:&nbsp;</b>Array of fieldnames to group by. This determines the series for the chart.</p>"	
+				+"<p><b>x:&nbsp;</b>Name of the field containing the values for the x-axis.</p>"	
+				+"<p><b>y:&nbsp;</b>Name of the field containing the values for the y-axis.</p>"	
+				+"<p><b>xtype:&nbsp;</b>Type of the x-axis:</p>"	
 					+"<ul>"
 						+"<li>time</li>"
 						+"<li>linear</li>"
 						+"<li>logarithmic</li>"
 					+"</ul>"
-				+"<p><b>yAxisType:&nbsp;</b>Type of the y-axis:</p>"	
+				+"<p><b>ytype:&nbsp;</b>Type of the y-axis:</p>"	
 					+"<ul>"
 						+"<li>linear</li>"
 						+"<li>logarithmic</li>"
 					+"</ul>"
-				+"<p><b>isStacked:&nbsp;</b>Toogle if the series should be stacked. (Default:false)</p>"	
-				+"<p><b>showLegend:&nbsp;</b>Toogle if the legend should be displayed. (Default:false)</p>"	
-				+"<p><b>showAxes:&nbsp;</b>Toogle if the axes should be displayed. (Default:true)</p>"	
-				+"<p><b>pointRadius:&nbsp;</b>Radius of the points drawn in charts. (Default: 1)</p>"	
-				+"<p><b>yAxisMinimum:&nbsp;</b>Suggest a minimum value for the y-axis.</p>"	
-				+"<p><b>yAxisMaximum:&nbsp;</b>Suggest a maximum value for the y-axis.</p>"	
-				+"<p><b>spanGaps:&nbsp;</b>Set to true to connect lines if there is a gap in the data.</p>"	
+				+"<p><b>stacked:&nbsp;</b>Toogle if the series should be stacked. (Default:false)</p>"	
+				+"<p><b>showlegend:&nbsp;</b>Toogle if the legend should be displayed. (Default:false)</p>"	
+				+"<p><b>showaxes:&nbsp;</b>Toogle if the axes should be displayed. (Default:true)</p>"	
+				+"<p><b>pointradius:&nbsp;</b>Radius of the points drawn in charts. (Default: 1)</p>"	
+				+"<p><b>ymin:&nbsp;</b>Suggest a minimum value for the y-axis.</p>"	
+				+"<p><b>ymax:&nbsp;</b>Suggest a maximum value for the y-axis.</p>"	
+				+"<p><b>spangaps:&nbsp;</b>Set to true to connect lines if there is a gap in the data.</p>"	
+				+"<p><b>multichart:&nbsp;</b>Set to true to display each series in it's own chart.</p>"	
+				+"<p><b>multicharttitle:&nbsp;</b>Set to true to display title for charts.</p>"	
+				+"<p><b>multichartcolumns:&nbsp;</b> Number of columns for multi chart display.</p>"	
 				;
 	}
 
@@ -160,6 +164,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 		result.setHTMLDescription(
 				"<b>Hint:&nbsp;</b>Specify what should be desplayed in the chart, define 'x', 'y' and 'groupby' parameter.<br>"
 				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
+				+"<b>Parameters:&nbsp;</b>"+descriptionSyntaxDetailsHTML()
 			);
 
 	}

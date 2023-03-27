@@ -941,7 +941,6 @@ function cfw_query_renderAsChart(resultTarget, queryResult){
 		var xColumn = settings.x.trim();
 	}
 	
-	
 	//---------------------------------
 	// Use last Column if not specified
 	var yColumn;
@@ -955,6 +954,11 @@ function cfw_query_renderAsChart(resultTarget, queryResult){
 	//---------------------------------
 	// Fallback to Defaults if undefined
 	var defaultSettings = {
+		charttype: "line",
+		// How should the input data be handled groupbytitle|arrays 
+		datamode: 'groupbytitle',
+		xfield: xColumn,
+		yfield: yColumn,
 		type: "line",
 		xtype: "time",
 		ytype: "linear",
@@ -964,10 +968,11 @@ function cfw_query_renderAsChart(resultTarget, queryResult){
 		ymin: 0,
 		ymax: null,
 		pointradius: 1,
-		spangaps: false
+		spangaps: false,
+		padding: 2
 	};
 	
-	var settings = Object.assign({}, defaultSettings, settings);
+	var finalSettings = Object.assign({}, defaultSettings, settings);
 	
 	//---------------------------
 	// Render Settings
@@ -978,25 +983,7 @@ function cfw_query_renderAsChart(resultTarget, queryResult){
 		labels: {},
 		customizers: {},
 		rendererSettings:{
-			chart: {
-				charttype: settings.type,
-				// How should the input data be handled groupbytitle|arrays 
-				datamode: 'groupbytitle',
-				xfield: xColumn,
-				yfield: yColumn,
-				//the type of the x axis: linear|logarithmic|category|time
-				xtype: 			settings.xtype,
-				//the type of the y axis: linear|logarithmic|category|time
-				ytype: 			settings.ytype,
-				stacked: 		settings.stacked,
-				showlegend: 	settings.legend,
-				showaxes: 		settings.axes,
-				ymin: 			settings.ymin,
-				ymax: 			settings.ymax,
-				pointradius: 	settings.pointradius,
-				spangaps: 		settings.spangaps,
-				padding: 2
-			}
+			chart: finalSettings
 		}
 	};
 									

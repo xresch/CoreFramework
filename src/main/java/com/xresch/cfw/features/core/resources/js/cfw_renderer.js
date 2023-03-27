@@ -2047,7 +2047,7 @@ function cfw_renderer_chart(renderDef) {
 		// the momentjs format used to parse the time, or a function(value) that returns a value that can be parsed by moment
 		timeformat: null, 
 		// if multichart is true, each series is drawn in it's own chart.
-		multichart: true,
+		multichart: false,
 		// toogle if multicharts have a title
 		multicharttitle: false,
 		// toogle if multicharts have a title
