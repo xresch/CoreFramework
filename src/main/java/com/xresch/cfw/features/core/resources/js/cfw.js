@@ -1046,6 +1046,40 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 					<input id="${fieldID}-YAXIS_MAX" type="number" class="form-control-inline form-control-sm col-md-12" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')">
 				</div>
 			</div>
+			
+			<div class="row m-1"><strong>Multi Chart Display</strong></div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-MULTICHART">
+					Multiple Charts:
+				</label>   
+				<div class="col-sm-9">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="${fieldID}-MULTICHART" name="${fieldID}-MULTICHART" value="true"  checked="checked" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')"> 
+						<label class="form-check-label" for="inlineRadio1">true</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="${fieldID}-MULTICHART" name="${fieldID}-MULTICHART" value="false" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')"> 
+						<label class="form-check-label" for="inlineRadio1">false</label>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row m-1">  
+				<label class="col-sm-3" for="${fieldID}-MULTICHARTTITLE">
+					Show Title:
+				</label>   
+				<div class="col-sm-9">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="${fieldID}-MULTICHARTTITLE" name="${fieldID}-MULTICHARTTITLE" value="true"  checked="checked" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')"> 
+						<label class="form-check-label" for="inlineRadio1">true</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="radio" id="${fieldID}-MULTICHARTTITLE" name="${fieldID}-MULTICHARTTITLE" value="false" onchange="cfw_internal_updateChartSettings(\'${fieldID}\')"> 
+						<label class="form-check-label" for="inlineRadio1">false</label>
+					</div>
+				</div>
+			</div>
 															
 		</div>
 	</div>`);
@@ -1077,7 +1111,10 @@ function cfw_internal_applyChartSettings(fieldID, wrapper, chartSettings){
 	wrapper.find(selector+"-STACKED[value='" + chartSettings.stacked + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-SHOWLEGEND[value='" + chartSettings.showlegend + "']").attr("checked", "checked");  
 	wrapper.find(selector+"-SHOWAXES[value='" + chartSettings.showaxes + "']").attr("checked", "checked");  
-	wrapper.find(selector+"-SPANGAPS[value='" + chartSettings.spangaps + "']").attr("checked", "checked");  
+	wrapper.find(selector+"-SPANGAPS[value='" + chartSettings.spangaps + "']").attr("checked", "checked");
+	
+	wrapper.find(selector+"-MULTICHART[value='" + chartSettings.multichart + "']").attr("checked", "checked");  
+	wrapper.find(selector+"-MULTICHARTTITLE[value='" + chartSettings.multicharttitle + "']").attr("checked", "checked");  
 			
 }
 
@@ -1094,26 +1131,30 @@ function cfw_internal_updateChartSettings(elementID){
 	// Create Data Structure
 	var chartSettings = {};
 	
-	chartSettings.charttype 	= $(selector+'-CHARTTYPE').val();
-	chartSettings.xtype 		= $(selector+'-XAXIS_TYPE').val();
-	chartSettings.ytype 		= $(selector+'-YAXIS_TYPE').val();
-	chartSettings.ymin 			= $(selector+'-YAXIS_MIN').val();
-	chartSettings.ymax			= $(selector+'-YAXIS_MAX').val();
-	chartSettings.stacked  		= $(selector+"-STACKED:checked").val();  
-	chartSettings.showlegend	= $(selector+"-SHOWLEGEND:checked").val();  
-	chartSettings.showaxes		= $(selector+"-SHOWAXES:checked").val();  
-	chartSettings.spangaps		= $(selector+"-SPANGAPS:checked").val();  
-	chartSettings.pointradius	= $(selector+"-POINTRADIUS").val();  
+	chartSettings.charttype 		= $(selector+'-CHARTTYPE').val();
+	chartSettings.xtype 			= $(selector+'-XAXIS_TYPE').val();
+	chartSettings.ytype 			= $(selector+'-YAXIS_TYPE').val();
+	chartSettings.ymin 				= $(selector+'-YAXIS_MIN').val();
+	chartSettings.ymax				= $(selector+'-YAXIS_MAX').val();
+	chartSettings.stacked  			= $(selector+"-STACKED:checked").val();  
+	chartSettings.showlegend		= $(selector+"-SHOWLEGEND:checked").val();  
+	chartSettings.showaxes			= $(selector+"-SHOWAXES:checked").val();  
+	chartSettings.spangaps			= $(selector+"-SPANGAPS:checked").val();  
+	chartSettings.pointradius		= $(selector+"-POINTRADIUS").val();  
+	chartSettings.multichart		= $(selector+"-MULTICHART:checked").val();  
+	chartSettings.multicharttitle 	= $(selector+"-MULTICHARTTITLE:checked").val();  
 	
 	//--------------------------------------
 	// Convert Numbers and Booleans
-	chartSettings.pointradius 	= !isNaN(chartSettings.pointradius) ? parseFloat(chartSettings.pointradius) : 0;
-	chartSettings.ymin 			= !isNaN(chartSettings.ymin) ? parseFloat(chartSettings.ymin) : 0;
-	chartSettings.ymax 			= !isNaN(chartSettings.ymax) ? parseFloat(chartSettings.ymax) : null;
+	chartSettings.pointradius 		= !isNaN(chartSettings.pointradius) ? parseFloat(chartSettings.pointradius) : 0;
+	chartSettings.ymin 				= !isNaN(chartSettings.ymin) ? parseFloat(chartSettings.ymin) : 0;
+	chartSettings.ymax 				= !isNaN(chartSettings.ymax) ? parseFloat(chartSettings.ymax) : null;
 	
-	chartSettings.stacked  		= (chartSettings.stacked.trim().toLowerCase() == "true") ? true : false;  
-	chartSettings.showlegend  	= (chartSettings.showlegend.trim().toLowerCase() == "true") ? true : false;  
-	chartSettings.showaxes  	= (chartSettings.showaxes.trim().toLowerCase() == "true") ? true : false;  
+	chartSettings.stacked  			= (chartSettings.stacked.trim().toLowerCase() == "true") ? true : false;  
+	chartSettings.showlegend  		= (chartSettings.showlegend.trim().toLowerCase() == "true") ? true : false;  
+	chartSettings.showaxes  		= (chartSettings.showaxes.trim().toLowerCase() == "true") ? true : false;  
+	chartSettings.multichart  		= (chartSettings.multichart.trim().toLowerCase() == "true") ? true : false;  
+	chartSettings.multicharttitle  	= (chartSettings.multicharttitle.trim().toLowerCase() == "true") ? true : false;  
 	
 	//--------------------------------------
 	// Set ChartSettings

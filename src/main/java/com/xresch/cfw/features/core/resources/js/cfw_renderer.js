@@ -2045,7 +2045,11 @@ function cfw_renderer_chart(renderDef) {
 		// the minimum unit used to display time: millisecond|second|minute|hour|day|week|month|quarter|year
 		xminunit: 'millisecond',
 		// the momentjs format used to parse the time, or a function(value) that returns a value that can be parsed by moment
-		timeformat: null
+		timeformat: null, 
+		// if multichart is true, each series is drawn in it's own chart.
+		multichart: true,
+		// toogle if multicharts have a title
+		multicharttitle: false
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
@@ -2124,12 +2128,28 @@ function cfw_renderer_chart(renderDef) {
 	
 	//========================================
 	// Create ChartJS Data Object
-	var data = {};
+	var dataArray = [];
+	var data;
 	if(settings.charttype != 'radar'){
-		data.datasets = [];
+		data = {datasets: []};
+		dataArray.push(data);
 		
+		isFirst = true;
 		for(label in datasets){
-			data.datasets.push(datasets[label]);
+			if(!settings.multichart){
+				// Show all datasets in a single chart
+				data.datasets.push(datasets[label]);
+			}else{
+				// Show every dataset in it's own chart
+				data.datasets.push(datasets[label]);
+				if(!isFirst){
+					dataArray.push(data);
+				}else{
+					isFirst = false;
+				}
+				
+				data = {datasets: []};
+			}
 		}
 	}
 	/*else{
@@ -2247,6 +2267,7 @@ function cfw_renderer_chart(renderDef) {
 				legend: {
 		    		display: settings.showlegend,
 		    	},
+		    	title: {}, // placeholder
 				tooltip: {
 					intersect: false,
 					enabled: false,
@@ -2274,22 +2295,40 @@ function cfw_renderer_chart(renderDef) {
 
 	//========================================
 	// Create Chart
-	var chartCanvas = $('<canvas class="chartJSCanvas" width="100%">');
-	var wrapper = $('<div class="cfw-chartjs-wrapper">');
-	wrapper.append(chartCanvas);
 	
-	workspace.append(wrapper);
+	var allChartsDiv = $('<div class="cfw-chartjs-wrapper d-flex flex-row flex-grow-1 flex-wrap h-100 w-100">');
 	workspace.css("display", "block");
-	var chartCtx = chartCanvas.get(0).getContext("2d");
-	//var chartCtx = chartCanvas.get(0);
+	workspace.append(allChartsDiv);
+	for(var index in dataArray){
+
+		//--------------------------------
+		// Initialize
+		var currentData = dataArray[index];
+		var chartCanvas = $('<canvas class="chartJSCanvas" width="100%">');
+		var wrapper = $('<div class="w-100">');
+		wrapper.append(chartCanvas);
+		allChartsDiv.append(wrapper);
+		
+		//--------------------------------
+		// Set Title
+		var chartOptionsClone = _.cloneDeep(chartOptions);
+		if(settings.multichart && settings.multicharttitle){
+			chartOptionsClone.plugins.title.display =  true;
+			chartOptionsClone.plugins.title.text = currentData.datasets[0].label;
+		}
+		
+		
+		var chartCtx = chartCanvas.get(0).getContext("2d");
+		//var chartCtx = chartCanvas.get(0);
+		
+		new Chart(chartCtx, {
+		    type: settings.charttype,
+		    data: currentData,
+		    options: chartOptionsClone
+		});
+	}
 	
-	new Chart(chartCtx, {
-	    type: settings.charttype,
-	    data: data,
-	    options: chartOptions
-	});
-	
-	return wrapper;
+	return allChartsDiv;
 }
 
 /*window.addEventListener('beforeprint', () => {

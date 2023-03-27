@@ -25,6 +25,9 @@ public class CFWChartSettings {
 	private static final String SHOWAXES 		= "showaxes";
 	private static final String SPANGAPS 		= "spangaps";
 	private static final String POINTRADIUS 	= "pointradius";
+	private static final String MULTICHART 		= "multichart";
+	private static final String MULTICHARTTITLE = "multicharttitle";
+	
 	
 //	chartSettings.charttype 	= $(selector+'-CHARTTYPE').val();
 //	chartSettings.xtype 		= $(selector+'-XAXIS_TYPE').val();
@@ -94,6 +97,8 @@ public class CFWChartSettings {
 		defaults.addProperty(SHOWAXES, true);
 		defaults.addProperty(SPANGAPS, false);
 		defaults.addProperty(POINTRADIUS, 2);
+		defaults.addProperty(MULTICHART, false);
+		defaults.addProperty(MULTICHARTTITLE, false);
 		
 		return defaults;
 	}
@@ -288,7 +293,43 @@ public class CFWChartSettings {
 	}
 	
 	/***************************************************************************************
-	 * Returns true if schedule is valid, false otherview
+	 * 
+	 ***************************************************************************************/
+	public Boolean multichart() {
+		if(chartSettingsData == null || chartSettingsData.get(MULTICHART).isJsonNull()) return null;
+
+		return chartSettingsData.get(MULTICHART).getAsBoolean();
+	}
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/
+	public CFWChartSettings multichart(boolean value) {
+		chartSettingsData.addProperty(MULTICHART, value);
+		return this;
+	}
+
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/
+	public Boolean multicharttitle() {
+		if(chartSettingsData == null || chartSettingsData.get(MULTICHARTTITLE).isJsonNull()) return null;
+
+		return chartSettingsData.get(MULTICHARTTITLE).getAsBoolean();
+	}
+	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/
+	public CFWChartSettings multicharttitle(boolean value) {
+		chartSettingsData.addProperty(MULTICHARTTITLE, value);
+		return this;
+	}
+
+	
+	/***************************************************************************************
+	 * Returns true if schedule is valid, false otherwise
 	 ***************************************************************************************/
 //	public boolean validate() {
 //		
