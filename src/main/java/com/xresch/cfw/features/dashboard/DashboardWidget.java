@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWChartSettings;
@@ -322,7 +323,12 @@ public class DashboardWidget extends CFWObject {
 			
 			//------------------------------------
 			// Grab Existing Settings
-			ChartType charttype = ChartType.valueOf(settingsObject.get("chart_type").getAsString().toLowerCase().trim()); 	
+			JsonElement chartTypeElement = settingsObject.get("chart_type");
+			if(chartTypeElement == null || chartTypeElement.isJsonNull()) {
+				// chart_type member not in widget settings, so not an old chart settings definition
+				continue;
+			}
+			ChartType charttype = ChartType.valueOf(chartTypeElement.getAsString().toLowerCase().trim()); 	
 			
 			Boolean stacked = 
 					! (settingsObject.get("stacked") == null || settingsObject.get("stacked").isJsonNull() )
