@@ -95,11 +95,12 @@
 					
 					//----------------------------------
 					// Hack overflow on widget for autocomplete lists
+
 					window.setTimeout(function(){
 						parentDiv.closest('.cfw-dashboard-widget-body')
-								 .css('overflow-x', 'visible')
-								 .css('overflow-y', 'visible');
-					}, 1000)
+								 .css('padding', '0.2rem')
+								 .css('padding-right', '0.5rem');
+					}, 500)
 				});
 			},
 		}
