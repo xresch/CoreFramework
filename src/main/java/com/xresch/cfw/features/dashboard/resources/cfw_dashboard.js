@@ -628,8 +628,8 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
 	var FIELDNAME_AFFECTED_WIDGETS = "cfw-affectedwidgets";
 	var paramField = $(paramElement);
 	var paramValue = paramField.val();
-	var paramForms = $('.cfw-parameter-widget-parent form');
 	var widgetElement = paramField.closest('.grid-stack-item');
+	var paramForms = widgetElement.find('.cfw-parameter-widget-parent form');
 	var widgetID = widgetElement.data('id');
 	
 	//----------------------------------
@@ -700,7 +700,7 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
 			}
 		});
 	}else{
-		var modalBody = '<input id="widget-param-password" name="credentialKey" class="w-100" type="password" autocomplete="off">';
+		var modalBody = '<input id="widget-param-password" name="credentialKey" class="w-100" type="password" onkeyup="if(event.keyCode == 13){$(\'#cfw-small-modal-closebutton\').click();}" autocomplete="off">';
 		CFW.ui.showModalSmall("Password", modalBody, function(){
 
 			var givenPassword = $('#widget-param-password').val();
