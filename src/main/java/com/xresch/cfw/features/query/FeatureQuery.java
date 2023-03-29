@@ -327,23 +327,7 @@ public class FeatureQuery extends CFWAppFeature {
 				.faicon("fas fa-code")
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "020_query_api.html")
 			);
-				
-		//----------------------------------
-		// Available TimeZones
-		String htmlString = "<p>Some of the query sources might provide the possibility to specify a time zone to manage time offsets."
-				+ "The following is a list of available time zones.</p>";
-				
-		for(String zone : TimeZone.getAvailableIDs()) {
-			htmlString += "<li>"+zone+"</li>";
-		}
-		htmlString += "</ul>";
-		
-		ManualPage timezonePage = new ManualPage("Available Time Zones")
-				.faicon("fas fa-clock")
-				.content(htmlString);
-		
-		ROOT_MANUAL_PAGE.addChild(timezonePage);
-		
+						
 		//----------------------------------
 		// Source Main Page
 		ManualPage sourcePage = new ManualPage("Sources")

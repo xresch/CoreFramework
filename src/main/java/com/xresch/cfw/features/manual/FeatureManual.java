@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.manual;
 
+import java.util.TimeZone;
+
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
@@ -15,6 +17,7 @@ import com.xresch.cfw.spi.CFWAppFeature;
  **************************************************************************************************************/
 public class FeatureManual extends CFWAppFeature {
 
+	private Object object;
 	public static final String PERMISSION_MANUAL = "Manual";
 	public static final String PERMISSION_ADMIN_MANUAL = "Manual for Admins";
 
@@ -30,6 +33,11 @@ public class FeatureManual extends CFWAppFeature {
 			new ManualPage("Development")
 				.faicon("fa fa-code")
 				.addPermission(PERMISSION_ADMIN_MANUAL)
+			);
+	
+	public static final ManualPage TOP_PAGE_GENERAL = CFW.Registry.Manual.addManualPage(null, 
+			new ManualPage("General")
+				.faicon("fa fa-star")
 			);
 	
 	@Override
@@ -53,6 +61,7 @@ public class FeatureManual extends CFWAppFeature {
 		// Register Manuals
 		registerAdminManual();
 		registerDeveloperManual();
+		registerGeneral();
 	}
 
 	@Override
@@ -381,6 +390,42 @@ public class FeatureManual extends CFWAppFeature {
 				.addPermission(PERMISSION_ADMIN_MANUAL)
 				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".dev.dashboard", "manual_dev_dashboard_parameters.html")
 			);
+		
+	}
+	
+	/*****************************************************************
+	 * 
+	 *****************************************************************/
+	private void registerGeneral() {
+		
+		//----------------------------------
+		// Available Time Zones
+		String htmlString = 
+				  "<p>Functionalities like dashboard widgets and queries support the use of time parameters. "
+				+ "Following the list of available placeholders that are inserted into your strings like '$earliest$':</p>"
+				+ CFW.Files.readPackageResource(RESOURCE_PACKAGE+".general", "manual_general_params_time.html");
+		
+		TOP_PAGE_GENERAL.addChild(new ManualPage("Time Parameters")
+				.faicon("fas fa-clock")
+				.addPermission(PERMISSION_ADMIN_MANUAL)
+				.content(htmlString)
+			);
+		
+		//----------------------------------
+		// Available Time Zones
+		htmlString = "<p>Some of the query sources might provide the possibility to specify a time zone to manage time offsets."
+				+ "The following is a list of available time zones.</p>";
+				
+		for(String zone : TimeZone.getAvailableIDs()) {
+			htmlString += "<li>"+zone+"</li>";
+		}
+		htmlString += "</ul>";
+		
+		ManualPage timezonePage = new ManualPage("Available Time Zones")
+				.faicon("fas fa-clock")
+				.content(htmlString);
+		
+		TOP_PAGE_GENERAL.addChild(timezonePage);
 		
 	}
 

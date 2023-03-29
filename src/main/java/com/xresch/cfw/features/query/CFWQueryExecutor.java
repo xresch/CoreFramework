@@ -71,7 +71,8 @@ public class CFWQueryExecutor {
 	 * @param latest time in epoch millis
 	 * @param timezoneOffsetMinutes TODO
 	 * @param timezoneOffsetMinutes offset for the clients time zone.
-	 * You can use the following in javascript to get this:
+	 * You can use CFWTimeframe with data from browser, or the following 
+	 * in javascript to get this value:
 	 * 		var timeZoneOffset = new Date().getTimezoneOffset();
 	 * 
 	 ****************************************************************/

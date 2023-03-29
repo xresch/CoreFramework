@@ -183,6 +183,7 @@ DONE
 - Query: Parsing: Added detection of endless looping and prevention of OutOfMemoryError
 - Query: Fixed Comma after Binary Expression breaks query by creating array in the wrong place
 - Query: Loader does not block query editor
+- Query: Support time parameters ($earliest$ ...) in query editor
 - Query: URL is updated on each execution, even if the query fails
 - Query: Modulo operator('%') iis now supported by the CFWQL syntax
 - Query: Added API endpoint "Query >> execute"

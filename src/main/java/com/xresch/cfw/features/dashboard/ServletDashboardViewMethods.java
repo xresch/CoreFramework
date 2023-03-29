@@ -810,7 +810,6 @@ public class ServletDashboardViewMethods
 		// Prepare Widget Settings
 		long earliest = timeframe.getEarliest();
 		long latest = timeframe.getLatest();
-		int timezoneOffsetMinutes = timeframe.getClientTimezoneOffset();
 
 //		if(!Strings.isNullOrEmpty(earliestString)) { earliest = Long.parseLong(earliestString); }
 //		if(!Strings.isNullOrEmpty(latestString)) { latest = Long.parseLong(latestString); }
@@ -823,7 +822,7 @@ public class ServletDashboardViewMethods
 		String JSON_SETTINGS = widget.settings();
 		
 		//apply Parameters to JSONSettings
-		JSON_SETTINGS = CFW.Utils.Time.replaceTimeframePlaceholders(JSON_SETTINGS, earliest, latest);
+		JSON_SETTINGS = CFW.Utils.Time.replaceTimeframePlaceholders(JSON_SETTINGS, timeframe);
 		JsonElement jsonSettings = replaceParamsInSettings(JSON_SETTINGS, dashboardParams, widgetType);
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 		CFWObject settingsObject = definition.getSettings();
@@ -859,8 +858,6 @@ public class ServletDashboardViewMethods
 					
 					//----------------------------
 					// Do Cached
-					final long finalEarliest = earliest;
-					final long finalLatest = latest;
 					
 					JSONResponse responseFromCache = WidgetDataCache.CACHE.get(cacheID,
 							new Callable<JSONResponse>() {

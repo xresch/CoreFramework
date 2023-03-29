@@ -170,11 +170,13 @@ public class ServletQuery extends HttpServlet
 	 ******************************************************************/
 	private void executeQuery(HttpServletRequest request, JSONResponse jsonResponse) {
 		String query = request.getParameter("query");
-		String earliest = request.getParameter("earliest");
-		String latest = request.getParameter("latest");
+		Long earliest = Long.parseLong(request.getParameter("earliest"));
+		Long latest = Long.parseLong(request.getParameter("latest"));
 		int timezoneOffsetMinutes = Integer.parseInt(request.getParameter("timezoneOffsetMinutes"));
 
-		CFWQueryResultList resultList = new CFWQueryExecutor().parseAndExecuteAll(query, Long.parseLong(earliest), Long.parseLong(latest), timezoneOffsetMinutes);
+		query = CFW.Utils.Time.replaceTimeframePlaceholders(query, earliest, latest, timezoneOffsetMinutes);
+		
+		CFWQueryResultList resultList = new CFWQueryExecutor().parseAndExecuteAll(query, earliest, latest, timezoneOffsetMinutes);
 		
 		if(resultList != null) {
 			jsonResponse.setPayLoad(resultList.toJson());
@@ -182,7 +184,6 @@ public class ServletQuery extends HttpServlet
 		}else {
 			jsonResponse.setSuccess(false);
 		}
-
 
 		//PersonDBMethods.deleteByID(Integer.parseInt(ID));
 	}

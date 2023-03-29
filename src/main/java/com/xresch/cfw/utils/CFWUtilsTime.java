@@ -4,6 +4,10 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -11,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW.Utils;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 
 /**************************************************************************************************************
  * 
@@ -35,7 +40,7 @@ public class CFWUtilsTime {
 		if(!Strings.isNullOrEmpty(value) && offsetMinutes != null) {
 			long latest = System.currentTimeMillis();
 			long earliest = latest - (offsetMinutes * 60l * 1000l); 
-			value = replaceTimeframePlaceholders(value, earliest, latest);
+			value = replaceTimeframePlaceholders(value, earliest, latest, 0);
 		}
 		
 		return value;
@@ -44,15 +49,108 @@ public class CFWUtilsTime {
 	
 	/********************************************************************************************
 	 * Replaces timeframe placeholders.
+	 * If you are working with CFWField.FormFieldType.TIMEZONEPICKER, here an example on how to get a 
+	 * timezone with timezone name:
+	 * <pre><code>
+	 * //-----------------------------
+	 * // Resolve Timezone Offsets
+	 * TimeZone timezone;
+	 * String timezoneParam = (String)parameters.getField(FIELDNAME_TIMEZONE).getValue();
+	 * if(!Strings.isNullOrEmpty(timezoneParam)) {
+	 * 	timezone = TimeZone.getTimeZone(timezoneParam);
+	 * 	
+	 * }else {
+	 * 	// default value
+	 * }
+
+	 * </code></pre>
 	 ********************************************************************************************/
-	public static String replaceTimeframePlaceholders(String value, long earliest, long latest) {
+	public static String replaceTimeframePlaceholders(String value, long earliest, long latest, TimeZone timezone) {
+		
+		earliest +=  timezone.getOffset(earliest);
+		latest +=  timezone.getOffset(latest);
+		
+		return replaceTimeframePlaceholders(
+				value
+				, earliest
+				, latest
+				, 0
+				);
+	}
+	
+	/********************************************************************************************
+	 * Replaces timeframe placeholders.
+	 * @param clientTimezoneOffset TODO
+	 ********************************************************************************************/
+	public static String replaceTimeframePlaceholders(String value, CFWTimeframe timeframe) {
+		return replaceTimeframePlaceholders(
+				  value
+				, timeframe.getEarliest()
+				, timeframe.getLatest()
+				, timeframe.getClientTimezoneOffset()
+			);
+	}
+		
+	/********************************************************************************************
+	 * Replaces timeframe placeholders in strings.
+	 * 
+	 * @param timezoneOffsetMinutes offset for the clients time zone.
+	 * You can use CFWTimeframe with data from browser, or the following 
+	 * in javascript to get this value:
+	 * 		var timeZoneOffset = new Date().getTimezoneOffset();
+	 * 
+	 ********************************************************************************************/
+	public static String replaceTimeframePlaceholders(String value, long earliest, long latest, int timezoneOffsetMinutes) {
 				
+		Calendar calendarEarliest = Calendar.getInstance();
+		calendarEarliest.setTimeZone( TimeZone.getTimeZone("UTC") );
+		calendarEarliest.setTimeInMillis(earliest);	
+		calendarEarliest.add(Calendar.MINUTE, (-1*timezoneOffsetMinutes) );
+		
+		Calendar calendarLatest = Calendar.getInstance();
+		calendarLatest.setTimeZone( TimeZone.getTimeZone("UTC") );
+		calendarLatest.setTimeInMillis(latest);	
+		calendarLatest.add(Calendar.MINUTE, (-1*timezoneOffsetMinutes) );
+		
+		
 		if(!Strings.isNullOrEmpty(value)){
 			if(value.contains("$")) {
+				
+				//--------------------------------
+				// Replace Epoch millis
 				value = value
 							.replace("$earliest$", ""+earliest)
 							.replace("$latest$", ""+latest)
-						;
+							;
+				
+				//--------------------------------
+				// Replace Earliest 
+				if(value.contains("$earliest_")) {
+					value = value
+							.replace("$earliest_Y$", ""+calendarEarliest.get(Calendar.YEAR))
+							.replace("$earliest_M$", ""+(calendarEarliest.get(Calendar.MONTH)+1) )
+							.replace("$earliest_D$", ""+calendarEarliest.get(Calendar.DAY_OF_MONTH))
+							.replace("$earliest_h$", ""+calendarEarliest.get(Calendar.HOUR))
+							.replace("$earliest_m$", ""+calendarEarliest.get(Calendar.MINUTE))
+							.replace("$earliest_s$", ""+calendarEarliest.get(Calendar.SECOND))
+							.replace("$earliest_ms$", ""+calendarEarliest.get(Calendar.MILLISECOND))
+							;
+				}
+				
+				//--------------------------------
+				// Replace Latest 
+				if(value.contains("$latest_")) {
+					value = value
+							.replace("$latest_Y$", ""+calendarLatest.get(Calendar.YEAR))
+							.replace("$latest_M$", ""+(calendarLatest.get(Calendar.MONTH)+1) )
+							.replace("$latest_D$", ""+calendarLatest.get(Calendar.DAY_OF_MONTH))
+							.replace("$latest_h$", ""+calendarLatest.get(Calendar.HOUR))
+							.replace("$latest_m$", ""+calendarLatest.get(Calendar.MINUTE))
+							.replace("$latest_s$", ""+calendarLatest.get(Calendar.SECOND))
+							.replace("$latest_ms$", ""+calendarLatest.get(Calendar.MILLISECOND))
+							;
+				}
+
 			}
 		}
 		
@@ -223,7 +321,7 @@ public class CFWUtilsTime {
 	}
 	
 	/********************************************************************************************
-	 * Return time with an offset starting from the given time.
+	 * Return time in millis with an offset starting from the given time.
 	 * Use positive values to go to the future, use negative values to go to the past.
 	 * @return time in epoch milliseconds
 	 ********************************************************************************************/

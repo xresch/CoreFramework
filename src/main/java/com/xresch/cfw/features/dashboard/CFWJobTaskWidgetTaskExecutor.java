@@ -146,7 +146,7 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 				CFW.Utils.Time.replaceTimeframePlaceholders(
 						widget.settings(), 
 						offset.getEarliest(), 
-						offset.getLatest());
+						offset.getLatest(), 0);
 		
 		widgetSettings.mapJsonFields(placeholdersReplaced, true, true);
 		
