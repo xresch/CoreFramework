@@ -7,23 +7,29 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.StringJoiner;
 import java.util.logging.Logger;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Joiner.MapJoiner;
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
+import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.api.APIDefinitionSQL;
 import com.xresch.cfw.features.api.APISQLExecutor;
+import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.features.usermgmt.UserRoleMap.UserRoleMapFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.EmailValidator;
 import com.xresch.cfw.validation.LengthValidator;
+import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 /**************************************************************************************************************
  * 
@@ -109,7 +115,7 @@ public class User extends CFWObject {
 	private CFWField<String> status = CFWField.newString(FormFieldType.SELECT, UserFields.STATUS)
 			.setColumnDefinition("VARCHAR(15)")
 			.setOptions(new String[] {"Active", "Inactive"})
-			.setDescription("Active users can login, inactive users are prohibited to login.")
+			.setDescription("The status of the user, either 'Active' or 'Inactive', Active users can login, inactive users are prohibited to login.")
 			.addValidator(new LengthValidator(-1, 15))
 			.setValue("Active");
 				
@@ -329,9 +335,123 @@ public class User extends CFWObject {
 				);
 		
 		apis.add(fetchDataAPI);
+		apis.add(createAPIAddRole());
+		apis.add(createAPICreateUser());
+		apis.add(createAPIGetUserPermissions());
+		apis.add(createAPIGetUserPermissionsOverview());
+		apis.add(createAPISetStatus());
 		
+		return apis;
+	}
+	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	private APIDefinitionSQL createAPIGetUserPermissionsOverview() {
+		APIDefinitionSQL getUserPermissionsOverview = 
+				new APIDefinitionSQL(
+						this.getClass(),
+						"User",
+						"getPermissionOverview",
+						new String[] {}
+				);
+		getUserPermissionsOverview.setDescription("Returns the permission for the specified userID.");
+		
+		APISQLExecutor overviewExecutor = new APISQLExecutor() {
+			@Override
+			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
+							
+				return CFW.DB.RolePermissionMap.getPermissionOverview();
+			}
+		};
+			
+		getUserPermissionsOverview.setSQLExecutor(overviewExecutor);
+		return getUserPermissionsOverview;
+	}
+	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	private APIDefinitionSQL createAPIGetUserPermissions() {
+		APIDefinitionSQL getUserPermissionsAPI = 
+				new APIDefinitionSQL(
+						this.getClass(),
+						"User",
+						"getUserPermissions",
+						new String[] {UserFields.PK_ID.toString()}
+				);
+		getUserPermissionsAPI.setDescription("Returns the permission for the specified userID."
+				+ " The standard return format is JSON if the parameter APIFORMAT is not specified.");
+		
+		APISQLExecutor executor = new APISQLExecutor() {
+			@Override
+			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
+				
+				return CFW.DB.RolePermissionMap.selectPermissionsForUserResultSet((User)object);
+			}
+		};
+			
+		getUserPermissionsAPI.setSQLExecutor(executor);
+		return getUserPermissionsAPI;
+	}
+	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	private APIDefinitionSQL createAPICreateUser() {
+		APIDefinitionSQL apiCreateUser = 
+				new APIDefinitionSQL(
+						APICreateUserObject.class,
+						"User",
+						"create",
+						new String[] {
+								  UserFields.USERNAME.toString()   
+								, UserFields.FIRSTNAME.toString()   
+								, UserFields.LASTNAME.toString()   
+								, UserFields.EMAIL.toString()        
+								, UserFields.IS_FOREIGN.toString()
+								, APICreateUserObject.INITIAL_PASSWORD
+						}
+						);
+		
+		apiCreateUser.setDescription("Creates a new user. Username and password are mandatory fields."
+				+ " If IS_FOREIGN is set to true, given password is ignored and replaced with a random, unretrievable password(as PW check is done on foreign system)."
+				+ " The password has to match the systems password rules.");
+		
+		APISQLExecutor createUserExecutor = new APISQLExecutor() {
+			@Override
+			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
+				APICreateUserObject createUserObject = (APICreateUserObject)object;	
+				User newUser = createUserObject.getUserWithPassword();
+
+				boolean isSuccess = CFW.DB.Users.create(newUser);
+				
+				if(!isSuccess) {
+					definition.setStatus(isSuccess, HttpURLConnection.HTTP_INTERNAL_ERROR );
+					return null;
+				}
+				
+				return new CFWSQL(new User())
+						.selectWithout(
+							  UserFields.PASSWORD_HASH.toString()
+							, UserFields.PASSWORD_SALT.toString()
+						)
+						.where(UserFields.USERNAME.toString(), newUser.username())
+						.getResultSet()
+						;
+			}
+		};
+		
+		apiCreateUser.setSQLExecutor(createUserExecutor);
+		return apiCreateUser;
+	}
+	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	private APIDefinitionSQL createAPIAddRole() {
 		//----------------------------------
-		// getPermissionOverview
+		// addRole
 		APIDefinitionSQL apiAddRole = 
 				new APIDefinitionSQL(
 						UserRoleMap.class,
@@ -368,58 +488,103 @@ public class User extends CFWObject {
 		};
 			
 		apiAddRole.setSQLExecutor(addRoleExecutor);
-		
-		apis.add(apiAddRole);
-		
+		return apiAddRole;
+	}
+	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	private APIDefinitionSQL createAPISetStatus() {
 		//----------------------------------
-		// getUserPermissionsAPI
-		APIDefinitionSQL getUserPermissionsAPI = 
+		// addRole
+		APIDefinitionSQL definition = 
 				new APIDefinitionSQL(
-						this.getClass(),
+						User.class,
 						"User",
-						"getUserPermissions",
-						new String[] {UserFields.PK_ID.toString()}
+						"setStatus",
+						new String[] {
+							  UserFields.PK_ID.toString()
+							,  UserFields.USERNAME.toString()
+							,  UserFields.EMAIL.toString()
+							, UserFields.STATUS.toString()
+						}
 				);
-		getUserPermissionsAPI.setDescription("Returns the permission for the specified userID."
-				+ " The standard return format is JSON if the parameter APIFORMAT is not specified.");
 		
-		APISQLExecutor executor = new APISQLExecutor() {
+		definition.setDescription("Sets the status of the specified user. Provide either PK_ID, USERNAME or EMAIL to select the user. "
+				+ "If multiple are provided, the priority will be in the order as given in the last sentence.");
+		
+		APISQLExecutor addRoleExecutor = new APISQLExecutor() {
 			@Override
 			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
+				User inputData = (User)object;	
+				Integer userID = inputData.id();
+				String username = inputData.username();
+				String email = inputData.email();
+				String status = inputData.status();
 				
-				return CFW.DB.RolePermissionMap.selectPermissionsForUserResultSet((User)object);
+				//--------------------------------------
+				// Check Status
+				HashMap availableOptions = inputData.getField(UserFields.STATUS.toString()).getOptions();
+				if(!availableOptions.containsKey(status)) {
+					CFW.Messages.addErrorMessage("The value provided for STATUS is invalid.");
+					definition.setStatus(false, HttpURLConnection.HTTP_BAD_REQUEST);
+					return null;
+				}
+				
+				//--------------------------------------
+				// Fetch User to Update
+				User userFromDB = null;
+				if(userID != null) {
+					userFromDB = CFW.DB.Users.selectByID(userID);
+				}else if(username != null) {
+					userFromDB = CFW.DB.Users.selectByUsernameOrMail(username);
+				}else if(email != null) {
+					userFromDB = CFW.DB.Users.selectByUsernameOrMail(email);
+				}else {
+					CFW.Messages.addErrorMessage("Please specify either PK_ID, USERNAME or EMAIL to select the user .");
+					definition.setStatus(false, HttpURLConnection.HTTP_BAD_REQUEST);
+					return null;
+				}
+
+				//--------------------------------------
+				// Check is not null
+				if(userFromDB == null) {
+					CFW.Messages.addErrorMessage("The user could not be found in the database.");
+					definition.setStatus(false, HttpURLConnection.HTTP_BAD_REQUEST);
+					return null;
+				}
+				
+				//--------------------------------------
+				// Check is not admin
+				if(userFromDB.username().equalsIgnoreCase("admin")) {
+					CFW.Messages.addErrorMessage("The admin user cannot be changed.");
+					definition.setStatus(false, HttpURLConnection.HTTP_BAD_REQUEST);
+					return null;
+				}
+				
+				//--------------------------------------
+				// Update user
+				userFromDB.status(status);
+				boolean isSuccess = new CFWSQL(userFromDB)
+						.update(UserFields.STATUS)
+						;
+				
+				if(isSuccess) {
+					CFW.Messages.addSuccessMessage("User status updated.");
+					definition.setStatus(isSuccess, HttpURLConnection.HTTP_OK);
+					return null;
+				}
+				
+				
+				//--------------------------------------
+				// Error Case
+				definition.setStatus(isSuccess, HttpURLConnection.HTTP_INTERNAL_ERROR);
+				return null;
 			}
 		};
 			
-		getUserPermissionsAPI.setSQLExecutor(executor);
-		
-		apis.add(getUserPermissionsAPI);
-		
-		//----------------------------------
-		// getPermissionOverview
-		APIDefinitionSQL getUserPermissionsOverview = 
-				new APIDefinitionSQL(
-						this.getClass(),
-						"User",
-						"getPermissionOverview",
-						new String[] {}
-				);
-		getUserPermissionsOverview.setDescription("Returns the permission for the specified userID.");
-		
-		APISQLExecutor overviewExecutor = new APISQLExecutor() {
-			@Override
-			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
-							
-				return CFW.DB.RolePermissionMap.getPermissionOverview();
-			}
-		};
-			
-		getUserPermissionsOverview.setSQLExecutor(overviewExecutor);
-		
-		apis.add(getUserPermissionsOverview);
-		
-		
-		return apis;
+		definition.setSQLExecutor(addRoleExecutor);
+		return definition;
 	}
 	
 	/**************************************************************************************

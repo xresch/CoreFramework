@@ -170,8 +170,14 @@ DONE
 - Widgets: Standard Settings - Added Settings to make widget load only omn parameter widget button press
 - Widgets: Created ned Category 'Advanced'
 - API: Added possibility to provide data in request body
+- API: Improved examples generated on API UI 
 - API: Endpoints sorted by name
 - API: Tokens - Added field "Permissions of User" to make sure security can be kept for certain endpoints like Query.execute
+- API: Added Endpoints:
+    - Query.execute
+    - User.addRole
+    - User.create
+    - User.setStatus
 - Caching: Added Caches for user roles and permissions
 - CFWChartSettings: Added FormFieldType and DataObject Class to manage Chart Settings
 - JS Components: ToogleButton supports favorite style

@@ -316,7 +316,7 @@ public class DashboardParameter extends CFWObject {
 				String fieldname = field.getName();
 				if(field.fieldType() == FormFieldType.SELECT) {
 					ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.getAvailableParamsForDashboard(dashboardID, widgetType, fieldname, true);
-					HashMap options = field.getValueLabelOptions();
+					HashMap options = field.getOptions();
 					for(CFWObject object : availableParams) {
 						String param = "$"+((DashboardParameter)object).name()+"$";
 						options.put(param, param);

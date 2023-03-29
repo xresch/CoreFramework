@@ -79,28 +79,33 @@ function cfw_apioverview_formResult(data, status, xhr){
 	//-------------------------------
 	// Sample CURL POST
 	var curlPost = $('#cfw-apioverview-samplecurlpost');
-	if(curlPost.length > 0){
-		var bodyParamName = curlPost.attr('data-bodyParamName');
-		var bodyContents = form.find('#'+bodyParamName).val();
-		if(bodyContents != null){
-			bodyContents = bodyContents.replaceAll('"', '\\"');
-		}
-		var regex = new RegExp("&"+bodyParamName+"=[^&]*");
-		var postURL = urlEncoded.replace(regex, '');
-		console.log("bodyParamName: "+bodyParamName)
-		console.log("postURL: "+postURL)
 
-		var postContentTypeEncoded   = ' \\\r\n -H "Content-Type: application/x-www-form-urlencoded"';
-		var postContentTypePlaintext = ' \\\r\n -H "Content-Type: text/plain"';
-		
-		curlPost.text(
+	var bodyParamName = curlPost.attr('data-bodyParamName');
+	var bodyContents = form.find('#'+bodyParamName).val();
+	if(bodyContents != null){
+		bodyContents = bodyContents.replaceAll('"', '\\"');
+	}
+	var regex = new RegExp("&"+bodyParamName+"=[^&]*");
+	var postURL = urlEncoded.replace(regex, '');
+	console.log("bodyParamName: "+bodyParamName)
+	console.log("postURL: "+postURL)
+
+	var postContentTypeEncoded   = ' \\\r\n -H "Content-Type: application/x-www-form-urlencoded"';
+	var postContentTypePlaintext = ' \\\r\n -H "Content-Type: text/plain"';
+	
+	curlPost.text(
+		(
+			(bodyContents != null) ?
 			"# CURL with encoded URL and content type text/plain \r\n"
 			+ baseCurlString + postContentTypePlaintext +'\\\r\n -X POST "'+ postURL +'" \\\r\n -d "'+bodyContents+'" \r\n'
-			+ "# CURL using --data-urlencode and content type application/x-www-form-urlencoded \r\n"
-			+ baseCurlString + postContentTypeEncoded +'\\\r\n -X POST "'+ baseURL +'" '+curlDataURLEncode
-		);
-		hljs.highlightElement(curlPost.get(0));
-	}
+			:
+			"" 
+		)
+		+ "# CURL using --data-urlencode and content type application/x-www-form-urlencoded \r\n"
+		+ baseCurlString + postContentTypeEncoded +'\\\r\n -X POST "'+ baseURL +'" '+curlDataURLEncode
+	);
+	hljs.highlightElement(curlPost.get(0));
+	
 	
 	//-------------------------------
 	// Sample Response
@@ -155,10 +160,8 @@ function cfw_apioverview_createExample(domElement){
 	allDiv.append('<h4>CURL GET:</h4>');
 	allDiv.append('<pre class="m-3"><code id="cfw-apioverview-samplecurl"></code></pre>');
 	
-	if(bodyParamName != null){
-		allDiv.append('<h4>CURL POST:</h4>');
-		allDiv.append('<pre class="m-3"><code id="cfw-apioverview-samplecurlpost" data-bodyParamName="'+bodyParamName+'"></code></pre>');
-	}
+	allDiv.append('<h4>CURL POST:</h4>');
+	allDiv.append('<pre class="m-3"><code id="cfw-apioverview-samplecurlpost" data-bodyParamName="'+bodyParamName+'"></code></pre>');
 	
 	allDiv.append('<h4>Response:</h4>');
 	allDiv.append('<pre class="m-3" style="max-height: 400px; display:block; white-space:pre-wrap" ><code id="cfw-apioverview-response"></code></pre>');

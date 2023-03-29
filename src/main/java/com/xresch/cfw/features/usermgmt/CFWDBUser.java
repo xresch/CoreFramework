@@ -123,7 +123,6 @@ public class CFWDBUser {
 	 ****************************************************************/
 	public static User selectByID(int id) {
 			
-		
 		return (User)new CFWSQL(new User())
 				.queryCache()
 				.select()

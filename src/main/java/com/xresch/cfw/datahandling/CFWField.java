@@ -1137,7 +1137,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		html.append("<input id=\""+name+"\" type=\"text\" data-role=\"checkboxes\" class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+"/>");
 		
 		if(this.parent instanceof CFWForm) {
-			String optionsJSON = CFW.JSON.toJSON(this.getValueLabelOptions());
+			String optionsJSON = CFW.JSON.toJSON(this.getOptions());
 			String valuesJSON = CFW.JSON.toJSON(value);
 			((CFWForm)this.parent).javascript.append("cfw_initializeCheckboxesField('"+name+"',"+optionsJSON+", "+valuesJSON+");\r\n");
 		}
@@ -1478,7 +1478,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	}
 		
 	@SuppressWarnings("rawtypes")
-	public HashMap getValueLabelOptions() {
+	public HashMap getOptions() {
 		return valueLabelOptions;
 	}
 	

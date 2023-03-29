@@ -149,10 +149,12 @@ public class ServletUserManagement extends HttpServlet
 				.addValidator(new LengthValidator(1, 255));
 		
 		protected CFWField<String> password = CFWField.newString(FormFieldType.PASSWORD, "Password")
+				.disableSanitization()
 				.addValidator(new LengthValidator(1, 255))
 				.addValidator(new PasswordValidator());
 		
 		protected CFWField<String> repeatedPassword = CFWField.newString(FormFieldType.PASSWORD, "Repeat Password")
+				.disableSanitization()
 				.addValidator(new NotNullOrEmptyValidator());
 		
 		private CFWField<String> status = CFWField.newString(FormFieldType.SELECT, "Status")
