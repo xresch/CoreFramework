@@ -38,7 +38,7 @@
 						replicatedWidgetObject.HEIGHT 	= widgetObject.HEIGHT;
 						replicatedWidgetObject.WIDTH 	= widgetObject.WIDTH;
 						replicatedWidgetObject.TITLE 	= widgetObject.TITLE;
-						
+
 						var replicatedDefinition = CFW.dashboard.getWidgetDefinition(replicatedWidgetObject.TYPE);
 						
 						var finalParams = cfw_dashboard_parameters_getFinalParams();
@@ -85,6 +85,13 @@
 								    	grid.movable('#'+subWidgetObject.guid, false);
 								    	grid.resizable('#'+subWidgetObject.guid, false);
 								    }
+
+									// ----------------------------
+								    // Check Visibility
+									if(widgetObject.INVISIBLE != null && widgetObject.INVISIBLE){
+										$('#'+subWidgetObject.guid).addClass('show-on-edit');
+									}
+									
 								    //----------------------------
 								    // Update Data
 								    subWidgetObject.WIDTH	= widgetInstance.attr("gs-w");

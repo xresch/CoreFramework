@@ -1587,9 +1587,24 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 		let widgetCloneParameterized = _.cloneDeep(originalWidgetObject);
 		widgetCloneParameterized.JSON_SETTINGS = parameterizedSettings;
 		
-		// ---------------------------------------
+		//---------------------------------------
 		// Create Instance
 		try{
+			/* 
+				#########################################################################
+				!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				#########################################################################
+				
+								         !!!AAAATTENION!!!
+				If you change anything in this method, make sure to check the javascript
+				of the replica widget. Changes might have to be done there as well.
+				Testing replica widget highly recommended.
+				
+				#########################################################################
+				!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				#########################################################################
+			
+			*/
 			// ---------------------------------------
 			// Add Placeholder
 			cfw_dashboard_widget_createLoadingPlaceholder(widgetCloneParameterized, doAutoposition);
