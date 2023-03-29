@@ -438,11 +438,21 @@ function cfw_filterItems(context, searchField, itemSelector){
 	var filter = input.val().toUpperCase();
 	
 	filterContext.find(itemSelector).each(function( index ) {
-		  
-		  if ($(this).html().toUpperCase().indexOf(filter) > -1) {
-			  $(this).css("display", "");
+		  var current = $(this);
+
+		  if (current.html().toUpperCase().indexOf(filter) > -1) {
+			  current.css("display", "");
+			  current.parents()
+					 .css("display", "")
+					 .filter(".collapse")
+					 .removeClass('hide')
+					 .addClass('show');
+
 		  } else {
-			  $(this).css("display", "none");
+			  current.css("display", "none")
+					 .filter(".collapse")
+					 .removeClass('show')
+					 .addClass('hide');
 		  }
 	});
 }
@@ -4870,6 +4880,7 @@ var CFW = {
 	},
 	utils: {
 		executeCodeOrFunction: cfw_utils_executeCodeOrFunction,
+		filterItems: cfw_filterItems,
 		randomString: cfw_utils_randomString,
 		chainedOnload: cfw_utils_chainedOnload,
 		isNullOrEmpty: cfw_utils_isNullOrEmpty,

@@ -1,0 +1,55 @@
+
+<p>
+	This page gives you an overview how to work with time in queries.
+</p>
+
+<h2>Time Formatting</h2>
+<p>For formatting time, you can use the command <a href="#" onclick="cfw_manual_loadPage('Query|Commands|formatfield');">formatfield</a>. 
+There are two formatters called 'date' and 'timestamp' to specify time formats, here a small example:
+</p>
+<pre><code class="language-cfwquery">| source random 
+| set
+	LOGIN_TIME = LAST_LOGIN
+| formatfield 
+	LAST_LOGIN=date
+	LOGIN_TIME =[timestamp, "HH:mm:ss"]
+	TIME=timestamp
+| keep FIRSTNAME, LAST_LOGIN, LOGIN_TIME, TIME
+</code></pre>
+
+
+<h2>Time Frame Parameters</h2>
+<p>The time that has been selected with the timeframe picker can be accessed through parameter placeholders.
+The list of parameters can be found on the page <a href="#" onclick="cfw_manual_loadPage('General|Time Frame Parameters');">Time Frame Parameters</a> 
+</p>
+<p>Following a query that is using the parameter placeholders:</p>
+<pre><code class="language-cfwquery">| source empty
+| set
+	earliest = $earliest$
+	e_year = $earliest_Y$
+	e_month = $earliest_M$
+	e_day = $earliest_D$
+	e_hour = $earliest_h$
+	e_min = $earliest_m$
+	e_sec = $earliest_s$
+	
+	latest = $latest$
+	l_year = $latest_Y$
+	l_month = $latest_M$
+	l_day = $latest_D$
+	l_hour = $latest_h$
+	l_min = $latest_m$
+	l_sec = $latest_s$
+	
+| formatfield
+	[earliest, latest] = timestamp
+</code></pre>
+
+
+<h2>Time Functions</h2>
+<p>The following functions are available to work with time:
+</p>
+<ul>
+<li><b><a href="#" onclick="cfw_manual_loadPage('Query|Functions|now');">now</a></b>: Returns current time and offsets from current time.</li>
+</ul>
+

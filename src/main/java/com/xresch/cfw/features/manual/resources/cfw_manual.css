@@ -20,6 +20,10 @@ p{
 	padding: 0px;
 }
 
+#menu-filter{
+	display:flex;
+}
+
 #cfw-manual-page-title {
     padding-left: 20px;
 }

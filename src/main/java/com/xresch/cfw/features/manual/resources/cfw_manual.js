@@ -19,6 +19,30 @@ var CFW_MANUAL_HOST_URL = CFW.http.getHostURL();
 var CFW_MANUAL_PRINTVIEW_PAGEPATH_ANCHOR_MAP = {};
 
 
+/******************************************************************
+ * Main method for building the view.
+ * 
+ ******************************************************************/
+function cfw_manual_filterMenu(inputField){
+	
+	CFW.utils.filterItems('#menu-content', inputField, '.filterable');
+	
+
+	//---------------------------------------------
+	// Open all parent elements and highlight
+	if( CFW.utils.isNullOrEmpty($(inputField).val()) ){
+		console.log("HIT")
+		$('#menu-content')
+			.find('.collapse')
+			.removeClass('show')
+			.addClass('hide')
+			;
+		$('.cfw-manual-selected').parents().filter('.collapse').collapse('show');
+	}
+
+
+}
+	
 
 /*********************************************************************************
 * Creates a printView by opening a new window and returns a divElement where you 
@@ -361,7 +385,7 @@ function cfw_manual_createMenuItem(pageData){
 	
 	//-------------------------
 	// Put everything together
-	var htmlString = '<li>';
+	var htmlString = '<li class="filterable">';
 	htmlString += arrow+'<a id="'+CFW_MANUAL_COUNTER+'" data-path="'+pageData.path+'" '+onclick+' '+dataToggle+'>'+faicon+' <span>'+pageData.title+'</span> </a>';
 	htmlString += '</li>';
 	
