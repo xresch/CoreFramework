@@ -327,12 +327,18 @@ public class FeatureQuery extends CFWAppFeature {
 				.faicon("fas fa-code")
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "020_query_api.html")
 			);
-						
+		
+		//----------------------------------
+		// Working with Time
+		ROOT_MANUAL_PAGE.addChild(new ManualPage("Working with Time")
+				.faicon("fas fa-clock")
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "015_query_time.html")
+			);
 		//----------------------------------
 		// Source Main Page
 		ManualPage sourcePage = new ManualPage("Sources")
 				.faicon("fas fa-star-of-life")
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_01_sources.html");
+				.content("&nbsp;");
 		
 		ROOT_MANUAL_PAGE.addChild(sourcePage);
 		
@@ -355,7 +361,7 @@ public class FeatureQuery extends CFWAppFeature {
 		// Commands Main Page
 		ManualPage commandsPage = new ManualPage("Commands")
 				.faicon("fas fa-cogs")
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_02_commands.html");
+				.content("&nbsp;");
 		
 		ROOT_MANUAL_PAGE.addChild(commandsPage);
 		
@@ -376,7 +382,8 @@ public class FeatureQuery extends CFWAppFeature {
 		// Functions Main Page
 		ManualPage functionsMainPage = new ManualPage("Functions")
 				.faicon("fas fa-cog")
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_03_functions.html");
+				.content("&nbsp;")
+				;
 		
 		ROOT_MANUAL_PAGE.addChild(functionsMainPage);
 		

@@ -405,7 +405,7 @@ public class FeatureManual extends CFWAppFeature {
 				+ "Following the list of available placeholders that are inserted into your strings like '$earliest$':</p>"
 				+ CFW.Files.readPackageResource(RESOURCE_PACKAGE+".general", "manual_general_params_time.html");
 		
-		TOP_PAGE_GENERAL.addChild(new ManualPage("Time Parameters")
+		TOP_PAGE_GENERAL.addChild(new ManualPage("Time Frame Parameters")
 				.faicon("fas fa-clock")
 				.addPermission(PERMISSION_ADMIN_MANUAL)
 				.content(htmlString)
