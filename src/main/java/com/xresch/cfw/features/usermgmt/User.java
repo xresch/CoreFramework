@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.usermgmt;
 
+import java.net.HttpURLConnection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -14,11 +15,12 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.api.APIDefinitionSQL;
 import com.xresch.cfw.features.api.APISQLExecutor;
-import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.usermgmt.UserRoleMap.UserRoleMapFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.EmailValidator;
 import com.xresch.cfw.validation.LengthValidator;
@@ -320,7 +322,7 @@ public class User extends CFWObject {
 		APIDefinitionFetch fetchDataAPI = 
 				new APIDefinitionFetch(
 						this.getClass(),
-						this.getClass().getSimpleName(),
+						"User",
 						"fetchData",
 						inputFields,
 						outputFields
@@ -328,13 +330,53 @@ public class User extends CFWObject {
 		
 		apis.add(fetchDataAPI);
 		
+		//----------------------------------
+		// getPermissionOverview
+		APIDefinitionSQL apiAddRole = 
+				new APIDefinitionSQL(
+						UserRoleMap.class,
+						"User",
+						"addRole",
+						new String[] {
+							UserRoleMapFields.FK_ID_USER.toString()
+							, UserRoleMapFields.FK_ID_ROLE.toString()
+						}
+				);
+		
+		apiAddRole.setDescription("Adds a role to a user. If successful, returns the created mapping in the database.");
+		
+		APISQLExecutor addRoleExecutor = new APISQLExecutor() {
+			@Override
+			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
+				UserRoleMap map = (UserRoleMap)object;	
+				int userID = map.foreignKeyUser();
+				int roleID = map.foreignKeyRole();
+				
+				boolean isSuccess = CFW.DB.UserRoleMap.addRoleToUser(userID, roleID, true);
+
+				if(!isSuccess) {
+					definition.setStatus(isSuccess, HttpURLConnection.HTTP_INTERNAL_ERROR );
+				}
+				
+				return new CFWSQL(new UserRoleMap())
+							.select()
+							.where(UserRoleMapFields.FK_ID_USER.toString(), userID)
+							.and(UserRoleMapFields.FK_ID_ROLE.toString(), roleID)
+							.getResultSet()
+							;
+			}
+		};
+			
+		apiAddRole.setSQLExecutor(addRoleExecutor);
+		
+		apis.add(apiAddRole);
 		
 		//----------------------------------
 		// getUserPermissionsAPI
 		APIDefinitionSQL getUserPermissionsAPI = 
 				new APIDefinitionSQL(
 						this.getClass(),
-						this.getClass().getSimpleName(),
+						"User",
 						"getUserPermissions",
 						new String[] {UserFields.PK_ID.toString()}
 				);
@@ -358,7 +400,7 @@ public class User extends CFWObject {
 		APIDefinitionSQL getUserPermissionsOverview = 
 				new APIDefinitionSQL(
 						this.getClass(),
-						this.getClass().getSimpleName(),
+						"User",
 						"getPermissionOverview",
 						new String[] {}
 				);

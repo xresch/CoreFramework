@@ -12,9 +12,13 @@ import com.xresch.cfw.datahandling.CFWObject;
 public abstract class APISQLExecutor {
 	/***********************************************************
 	 * Execute an SQL statement
-	 * @param definition
-	 * @param instance
-	 * @return the ResultSet of the SQL
+	 * @param definition the instance of APIDefinitionSQL that
+	 * calls this method. Call setStatus() on this to set a 
+	 * status.
+	 * @param instance of the class given to the constructor of 
+	 * 		  APIDefinitionSQL, contains the values given to the 
+	 * 		  API by parameters
+	 * @return the ResultSet of the SQL, or null on error.
 	 ***********************************************************/
 	public abstract ResultSet execute(APIDefinitionSQL definition, CFWObject instance);
 }

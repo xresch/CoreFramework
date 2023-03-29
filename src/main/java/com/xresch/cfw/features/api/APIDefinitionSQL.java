@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.api;
 
+import java.net.HttpURLConnection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -7,6 +8,8 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.asynchttpclient.util.HttpConstants.ResponseStatusCodes;
 
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
@@ -28,7 +31,10 @@ public class APIDefinitionSQL extends APIDefinition{
 	private static final Logger logger = CFWLog.getLogger(APIDefinitionSQL.class.getName());
 	
 	private static final String APIFORMAT = "APIFORMAT";
+	
 	private APISQLExecutor executor;
+	private boolean isSuccess = true;
+	private int httpStatusCode = HttpURLConnection.HTTP_OK;
 		
 	public APIDefinitionSQL(Class<? extends CFWObject> clazz,
 							  String apiName, 
@@ -107,8 +113,8 @@ public class APIDefinitionSQL extends APIDefinition{
 				}
 
 				
-				json.setSuccess(true);
-
+				json.setSuccess(isSuccess);
+				response.setStatus(httpStatusCode);
 			}
 		});		
 	}
@@ -117,6 +123,15 @@ public class APIDefinitionSQL extends APIDefinition{
 
 	public void setSQLExecutor(APISQLExecutor executor) {
 		this.executor = executor;
+	}
+	
+	/*****************************************************************
+	 * Set the status of the response.
+	 * 
+	 *****************************************************************/
+	public void setStatus(boolean success, int httpStatusCode) {
+		this.isSuccess = success;
+		this.httpStatusCode = httpStatusCode;
 	}
 	
 	/*****************************************************************

@@ -83,6 +83,11 @@ Potential TODOs
 - Widget: Collaboration: Chat
 - Widget: Collaboration: Logbook
 
+- Query: Write Developers Manual
+- Query: Improve Autocomplete
+- Query: Add Autocomplete for functions
+-
+
 - Charts Renderer: Add description to manual page "working with render".
 
 - cfw.js: Create Value-Renderer, only show value in tile.
@@ -90,13 +95,14 @@ Potential TODOs
 - cfw.js: Add Tic Tac Toe Loader for Long running requests
 - cfw.js: Progress Bar Loader
 
+- Security: SSO With ADFS
 - Security: Enable Decryption for ResultSet to JSON on CFWSQL
 - Security: Change login to two steps, first username, then password field 
 
 - Manual: Functionality - Multi language pages
 - Manual: Fulltext Search
 
-- DB: Reindex Fulltext-Search
+- DB: Extensions - Periodic Report Tasks 
 - DB: Add Feature to change connection pool limits for managed connection pools
 - DB: Prometheus DB Pool statistics
 
