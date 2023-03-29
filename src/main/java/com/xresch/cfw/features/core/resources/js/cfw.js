@@ -450,7 +450,7 @@ function cfw_filterItems(context, searchField, itemSelector){
 
 		  } else {
 			  current.css("display", "none")
-					 .filter(".collapse")
+					 .find(".collapse")
 					 .removeClass('show')
 					 .addClass('hide');
 		  }
