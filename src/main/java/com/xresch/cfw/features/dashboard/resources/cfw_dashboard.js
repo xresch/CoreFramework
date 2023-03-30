@@ -8,6 +8,9 @@ var CFW_DASHBOARD_FULLSCREEN_MODE = false;
 var CFW_DASHBOARD_REFRESH_INTERVAL_ID = null;
 var CFW_DASHBOARD_WIDGET_REGISTRY = {};
 
+// ignore server-side-caching when true
+var CFW_DASHBOARD_FORCE_REFRESH = false;
+
 // saved with guid
 var CFW_DASHBOARD_WIDGET_DATA = {};
 var CFW_DASHBOARD_WIDGET_GUID = 0;
@@ -20,6 +23,7 @@ var CFW_DASHBOARDVIEW_URL = CFW.http.getURLPath();
 // -------------------------------------
 // Array of Command Bundles
 var CFW_DASHBOARD_COMMAND_HISTORY = [];
+
 // Position in the History
 var CFW_DASHBOARD_HISTORY_POSITION = 0;
 var CFW_DASHBOARD_HISTORY_BUNDLE_STARTED = false;
@@ -28,6 +32,9 @@ var CFW_DASHBOARD_HISTORY_IS_UPDATING = false;
 // Bundle of commands to redo/undo
 var CFW_DASHBOARD_COMMAND_BUNDLE = null;
 
+// -------------------------------------
+// TIMEFRAME
+// -------------------------------------
 var CFW_DASHBOARD_TIME_ENABLED = false;
 var CFW_DASHBOARD_TIME_FIELD_ID = "timeframePicker";
 var CFW_DASHBOARD_TIME_EARLIEST_EPOCH = moment().utc().subtract(30, 'm').utc().valueOf();
@@ -87,7 +94,7 @@ function cfw_dashboard_timeframeChangeCallback(fieldID, pickerData){
 		CFW.http.removeURLParam('timeframepreset');
 	}
 
-	cfw_dashboard_draw(false);
+	cfw_dashboard_draw(false, false);
 	
 }
 /*******************************************************************************
@@ -376,7 +383,7 @@ function cfw_dashboard_parameters_save(){
 	// paramListDiv.find('button').click();
 	cfw_internal_postForm('/cfw/formhandler', '#'+formID, function(data){
 		if(data.success){
-			cfw_dashboard_draw(false);
+			cfw_dashboard_draw(false, false);
 		}
 	});
 	
@@ -677,7 +684,7 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
 	var updateFunction = function(affectedWidgetsArray){
 		
 		if(affectedWidgetsArray.length == 0){ 
-			cfw_dashboard_draw(true);
+			cfw_dashboard_draw(true, false);
 		}else{
 			for(var i in affectedWidgetsArray){
 				var widgetID = affectedWidgetsArray[i];
@@ -1381,8 +1388,10 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 					, item: 'widgetdata'
 					, dashboardid: CFW_DASHBOARD_URLPARAMS.id
 					, timeframepreset: CFW.http.getURLParams()['timeframepreset']
-					, widgetid: widgetObject.PK_ID, 
-					params: JSON.stringify(dashboardParams)}; 
+					, widgetid: widgetObject.PK_ID
+					, params: JSON.stringify(dashboardParams)
+					, forcerefresh: CFW_DASHBOARD_FORCE_REFRESH
+					}; 
 	
 	var definition = CFW.dashboard.getWidgetDefinition(widgetObject.TYPE);
 	
@@ -1844,7 +1853,7 @@ function cfw_dashboard_setReloadInterval(selector) {
 			// on reload
     		// $('.grid-stack').html('');
     		
-	    	cfw_dashboard_draw(false);
+	    	cfw_dashboard_draw(false, false);
 	    };
     }, refreshInterval);
 	
@@ -2151,8 +2160,10 @@ function cfw_dashboard_drawEveryWidget(data, manualLoad){
  * Main method for building the view.
  * 
  ******************************************************************************/
-function cfw_dashboard_draw(manualLoad){
+function cfw_dashboard_draw(manualLoad, forceRefresh){
 		
+
+	
 	CFW.ui.toggleLoader(true);
 	
 	window.setTimeout( 
@@ -2165,7 +2176,9 @@ function cfw_dashboard_draw(manualLoad){
 		
 		CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "widgetsandparams", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
 			
-			 cfw_dashboard_drawEveryWidget(data, manualLoad);
+			 CFW_DASHBOARD_FORCE_REFRESH = forceRefresh;
+			 	cfw_dashboard_drawEveryWidget(data, manualLoad);
+			 CFW_DASHBOARD_FORCE_REFRESH = false;
 		});
 		
 		CFW.ui.toggleLoader(false);

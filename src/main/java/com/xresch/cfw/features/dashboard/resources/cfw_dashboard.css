@@ -61,6 +61,7 @@
 	top: -12.5px;
     right: -8px;
     display: flex;
+    z-index: 12; /* widget dropdown is 16, so must be lower than that */
 }
 .cfw-dashboard-widget-actionicons div{
 	padding-left: 6px;

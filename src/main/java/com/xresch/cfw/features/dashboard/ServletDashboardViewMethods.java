@@ -802,6 +802,7 @@ public class ServletDashboardViewMethods
 		// Get Values
 		String widgetID = request.getParameter("widgetid");
 		String dashboardParams = request.getParameter("params");
+		String forceRefresh = request.getParameter("forcerefresh");
 		
 		String timeframeString = request.getParameter("timeframe");
 		CFWTimeframe timeframe = new CFWTimeframe(timeframeString);
@@ -837,7 +838,7 @@ public class ServletDashboardViewMethods
 				// Do that Cache Thingy
 				
 				WidgetDataCachePolicy cachePolicy = definition.getCachePolicy();
-				if(cachePolicy == WidgetDataCachePolicy.OFF
+				if( cachePolicy == WidgetDataCachePolicy.OFF
 				|| (
 					cachePolicy == WidgetDataCachePolicy.TIME_BASED 
 					&& !timeframe.isOffsetDefined() 
@@ -856,6 +857,12 @@ public class ServletDashboardViewMethods
 					
 					cacheID += "_"+dashboardParams.hashCode()+"_"+jsonSettings.hashCode();
 					
+					//----------------------------
+					// Force Cache Refresh
+					if(forceRefresh.trim().equalsIgnoreCase("true")) {
+						WidgetDataCache.CACHE.invalidate(cacheID);
+					}
+					 
 					//----------------------------
 					// Do Cached
 					
