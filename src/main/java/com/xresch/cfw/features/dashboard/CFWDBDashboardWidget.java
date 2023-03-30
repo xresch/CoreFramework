@@ -87,8 +87,7 @@ public class CFWDBDashboardWidget {
 	//####################################################################################################
 	// CACHING
 	//####################################################################################################
-	private static void removeFromCache(int id) { removeFromCache(id+""); }
-	private static void removeFromCache(String id) { widgetCache.invalidate(id); }
+	private static void removeFromCache(int id) { widgetCache.invalidate(id);  }
 	
 	//####################################################################################################
 	// CREATE
@@ -174,15 +173,20 @@ public class CFWDBDashboardWidget {
 	public static DashboardWidget selectByID(int id) {
 		
 		try {
-			return widgetCache.get(id, new Callable<DashboardWidget>() {
+			// cache to avoid overloading backend systems.
+			DashboardWidget widget = widgetCache.get(id, new Callable<DashboardWidget>() {
 				@Override
 				public DashboardWidget call() throws Exception {
 					return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id);
 				}
 			});
+			// clone to avoid editing errors
+			return widget.cloneObject(DashboardWidget.class);
+			
 		} catch (ExecutionException e) {
 			new CFWLog(logger).severe("Error while loading widget from DB or Cache: "+e.getMessage(), e);
 		}
+		
 		
 		return null;
 		

@@ -21,6 +21,7 @@ import com.xresch.cfw.db.CFWSQL.CFWSQLReferentialAction;
 import com.xresch.cfw.db.CFWSQL.ForeignKeyDefinition;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.ResultSetUtils;
 import com.xresch.cfw.utils.json.SerializerCFWObject;
 
 /**************************************************************************************************************
@@ -849,6 +850,27 @@ public class CFWObject {
 		return CFW.JSON.toJSONElementEncrypted(this);
 	}
 	
+	/****************************************************************
+	 * Creates a clone of the object with the data of the fields.
+	 * All other settings and children are ignored.
+	 * @param clazz the class of the cloned object
+	 ****************************************************************/
+	public <T extends CFWObject> T cloneObject(Class<T> clazz) {
+		
+		T clone = null;
+		try {
+			clone = clazz.newInstance();
+			
+			clone.mapJsonFields(this.toJSON(), false, false);
+			
+		} catch (Exception e) {
+			new CFWLog(logger)
+				.severe("Error cloning object.", e);
+		} 
+
+		return clone;
+		
+	}
 	
 	
 	/****************************************************************
