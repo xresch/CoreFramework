@@ -1160,14 +1160,19 @@ function cfw_dashboard_widget_save_state(widgetObject, forceSave, defaultSetting
 
 		// ----------------------------------
 		// Update Object
-		var params = Object.assign({action: 'update', item: itemToUpdate}, widgetObject); 
+		var params = {
+			  action: 'update'
+			, item: itemToUpdate
+			, dashboardid: CFW_DASHBOARD_URLPARAMS.id
+			, params: JSON.stringify(cfw_dashboard_parameters_getFinalParams())
+			, widget: JSON.stringify(widgetObject)
+		}; 
 		
-		delete params.content;
-		delete params.guid;
-		delete params.JSON_SETTINGS;
+		//delete params.widget.JSON_SETTINGS;
 		
-		params.JSON_SETTINGS = JSON.stringify(widgetObject.JSON_SETTINGS);
-				
+		//params.JSON_SETTINGS = JSON.stringify(widgetObject.JSON_SETTINGS);
+		console.log("params")
+		console.log(params)		
 		// ----------------------------------
 		// Update in Database
 		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){});
@@ -1418,8 +1423,6 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 	
 	//----------------------------
 	// Fetch Data
-	console.log("yay!!")
-	console.log(urlParams)
 	
 	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, urlParams, function(data){
 		callback(data);

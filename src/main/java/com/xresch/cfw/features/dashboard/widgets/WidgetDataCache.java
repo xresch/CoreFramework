@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.dashboard;
+package com.xresch.cfw.features.dashboard.widgets;
 
 import java.util.concurrent.TimeUnit;
 

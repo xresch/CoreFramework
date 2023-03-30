@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.dashboard;
+package com.xresch.cfw.features.dashboard.widgets.standard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,18 +11,18 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
-import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
-import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.response.JSONResponse;
 
-public class WidgetJavascript extends WidgetDefinition {
+public class WidgetText extends WidgetDefinition {
 
 	@Override
-	public String getWidgetType() {return "cfw_javascript";}
+	public String getWidgetType() {return "cfw_text";}
 	
 	@Override
 	public WidgetDataCachePolicy getCachePolicy() {
@@ -32,13 +32,8 @@ public class WidgetJavascript extends WidgetDefinition {
 	@Override
 	public CFWObject getSettings() {
 		return new CFWObject()
-				.addField(CFWField.newString(FormFieldType.TEXTAREA, "script")
-						.setValue(
-							"//Sample script on how to register function with interval\r\n" + 
-							"//function myAction(){ console.log('executed'); }\r\n" + 
-							"//myAction();\r\n" + 
-							"//if(INTERVAL_xxx != undefined){ window.clearInterval(INTERVAL_xxx); }\r\n" + 
-							"//var INTERVAL_xxx = window.setInterval(myAction, 3000);")
+				.addField(CFWField.newString(FormFieldType.TEXTAREA, "content")
+						.setValue("")
 						)
 		;
 	}
@@ -48,13 +43,9 @@ public class WidgetJavascript extends WidgetDefinition {
 		// nothing to do
 	}
 
-	public boolean hasPermission(User user) {
-		return user.hasPermission(FeatureCore.PERMISSION_ALLOW_JAVASCRIPT);
-	}
-
 	@Override
 	public ArrayList<FileDefinition> getJavascriptFiles() {
-		FileDefinition js = new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_widget_javascript.js");
+		FileDefinition js = new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_widget_text.js");
 		ArrayList<FileDefinition> array = new ArrayList<FileDefinition>();
 		array.add(js);
 		return array;

@@ -160,6 +160,7 @@ DONE
 - Dashboard: Send CFWTimeframe JsonObject in requests instead of multiple parameters
 - Dashboard: Parameter - New Parameter type Query Select
 - Dashboard: Parameter - New Parameter type Number
+- Widgets: Created new Category 'Advanced'
 - Widgets: Added Widget Advanced >> Force Refresh
 - Widgets: Reduced margin of widgets to use space more efficiently
 - Widgets: Parameter Widget supports password verification before update
@@ -170,7 +171,6 @@ DONE
 - Widgets: Standard Settings - Make widgets invisible when outside of edit mode
 - Widgets: Standard Settings - Added Settings to make widget loading manual
 - Widgets: Standard Settings - Added Settings to make widget load only omn parameter widget button press
-- Widgets: Created new Category 'Advanced'
 - API: Added possibility to provide data in request body
 - API: Improved examples generated on API UI 
 - API: Endpoints sorted by name

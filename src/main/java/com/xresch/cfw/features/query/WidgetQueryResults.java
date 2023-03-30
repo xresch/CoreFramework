@@ -17,9 +17,9 @@ import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
-import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
-import com.xresch.cfw.features.dashboard.WidgetDefinition;
-import com.xresch.cfw.features.dashboard.WidgetSettingsFactory;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
+import com.xresch.cfw.features.dashboard.widgets.WidgetSettingsFactory;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
@@ -31,14 +31,24 @@ import com.xresch.cfw.response.JSONResponse;
 public class WidgetQueryResults extends WidgetDefinition {
 
 	private static Logger logger = CFWLog.getLogger(WidgetQueryResults.class.getName());
+	
+	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	@Override
 	public String getWidgetType() {return "cfw_widget_queryresults";}
 	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	@Override
 	public WidgetDataCachePolicy getCachePolicy() {
 		return WidgetDataCachePolicy.TIME_BASED;
 	}
-	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	@SuppressWarnings("rawtypes")
 	@Override
 	public CFWObject getSettings() {
@@ -84,7 +94,18 @@ public class WidgetQueryResults extends WidgetDefinition {
 				.addField(WidgetSettingsFactory.createSampleDataField())
 		;
 	}
+	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
+	@Override
+	public boolean canSave(HttpServletRequest request, JSONResponse response, CFWObject settings, CFWObject settingsWithParams) {
+		return true;
+	}
 
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	@Override
 	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings
 			, CFWTimeframe timeframe) { 
@@ -120,12 +141,18 @@ public class WidgetQueryResults extends WidgetDefinition {
 		response.setPayLoad(resultList.toJson());	
 	}
 	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	public void createSampleData(JSONResponse response) { 
 
 		response.getContent().append(CFW.Files.readPackageResource(FeatureQuery.PACKAGE_RESOURCES, "cfw_widget_queryresults_sample.json") );
 		
 	}
 	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	@Override
 	public ArrayList<FileDefinition> getJavascriptFiles() {
 		ArrayList<FileDefinition> array = new ArrayList<FileDefinition>();
@@ -134,6 +161,9 @@ public class WidgetQueryResults extends WidgetDefinition {
 		return array;
 	}
 
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	@Override
 	public ArrayList<FileDefinition> getCSSFiles() {
 		ArrayList<FileDefinition> array = new ArrayList<FileDefinition>();
@@ -141,6 +171,9 @@ public class WidgetQueryResults extends WidgetDefinition {
 		return null;
 	}
 
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	@Override
 	public HashMap<Locale, FileDefinition> getLocalizationFiles() {
 		HashMap<Locale, FileDefinition> map = new HashMap<Locale, FileDefinition>();
@@ -148,6 +181,9 @@ public class WidgetQueryResults extends WidgetDefinition {
 		return map;
 	}
 	
+	/******************************************************************************
+	 * 
+	 ******************************************************************************/
 	@Override
 	public boolean hasPermission(User user) {
 		return user.hasPermission(FeatureQuery.PERMISSION_QUERY_USER) ||  user.hasPermission(FeatureQuery.PERMISSION_QUERY_ADMIN);

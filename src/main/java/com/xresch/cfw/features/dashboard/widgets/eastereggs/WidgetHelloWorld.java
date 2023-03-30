@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.dashboard;
+package com.xresch.cfw.features.dashboard.widgets.eastereggs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +21,11 @@ import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
+import com.xresch.cfw.features.dashboard.DashboardWidget;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;

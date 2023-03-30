@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.dashboard;
+package com.xresch.cfw.features.dashboard.widgets.advanced;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +17,10 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.response.JSONResponse;
 
 public class WidgetReplica extends WidgetDefinition {

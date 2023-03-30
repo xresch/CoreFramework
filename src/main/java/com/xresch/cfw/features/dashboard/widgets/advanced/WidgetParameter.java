@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.dashboard;
+package com.xresch.cfw.features.dashboard.widgets.advanced;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,10 +25,14 @@ import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.dashboard.DashboardWidget;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
-import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterFields;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.utils.CFWUtilsText;
 import com.xresch.cfw.validation.CustomValidator;

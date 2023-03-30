@@ -21,6 +21,7 @@ import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -42,7 +43,7 @@ public class CFWDBDashboardWidget {
 	private static final Logger logger = CFWLog.getLogger(CFWDBDashboardWidget.class.getName());
 
 	// WidgetID and DashboardWidget
-	private static Cache<String, DashboardWidget> widgetCache = CFW.Caching.addCache("CFW Widget", 
+	private static Cache<Integer, DashboardWidget> widgetCache = CFW.Caching.addCache("CFW Widget", 
 			CacheBuilder.newBuilder()
 				.initialCapacity(100)
 				.maximumSize(10000)
@@ -164,6 +165,13 @@ public class CFWDBDashboardWidget {
 	//####################################################################################################
 	
 	public static DashboardWidget selectByID(String id) {
+		return selectByID(Integer.parseInt(id));
+	}
+	
+	//####################################################################################################
+	// SELECT
+	//####################################################################################################
+	public static DashboardWidget selectByID(int id) {
 		
 		try {
 			return widgetCache.get(id, new Callable<DashboardWidget>() {

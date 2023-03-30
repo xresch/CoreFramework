@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.dashboard;
+package com.xresch.cfw.features.dashboard.widgets;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,8 @@ import com.google.gson.JsonObject;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
-import com.xresch.cfw.features.dashboard.WidgetDataCache.WidgetDataCachePolicy;
+import com.xresch.cfw.features.dashboard.DashboardWidget;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.JSONResponse;
 
@@ -38,6 +39,34 @@ public abstract class WidgetDefinition {
 	 * @return String name
 	 ************************************************************/
 	public abstract WidgetDataCachePolicy getCachePolicy();
+	
+	
+	/************************************************************
+	 * This method returns true by default.Override this to 
+	 * verify if the user can save the specified settings.
+	 * This can be used to check permissions of the user and 
+	 * deny him to save in certain cases.
+	 * It can also be used to validate that the settings are 
+	 * valid before saving them.
+	 * 
+	 * This method is also responsible to create error messages
+	 * using CFW.Messages, in case saving is not allowed.
+	 * 
+	 * This is for example needed in case of the query feature.
+	 * In most cases you will just return true.
+	 * 
+	 * @param request 
+	 * @param response add your response data here.
+	 * @param settings the settings of the widget, without
+	 *        parameter values applied
+	 * @param settingsWithParams the settings of the widget, 
+	 * 		  with parameter values applied
+	 * 	
+	 ************************************************************/
+	public boolean canSave(HttpServletRequest request, JSONResponse response, CFWObject settings, CFWObject settingsWithParams) {
+		return true;
+	}
+
 	
 	/************************************************************
 	 * Create a json response containing the data you need for 

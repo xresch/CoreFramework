@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.AbstractHTMLResponse;
 
