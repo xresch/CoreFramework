@@ -30,13 +30,20 @@ function cfw_apioverview_formResult(data, status, xhr){
 		' \\\r\n --data-urlencode "apiName='+MODAL_CURRENT_ACTION.name+'"'+
 		' \\\r\n --data-urlencode "actionName='+MODAL_CURRENT_ACTION.action+'"'
 		;
-	for(index in paramNameArray){
-		var paramName = paramNameArray[index];
-		var paramValue = form.find("#"+paramName).val();
+	for(paramName in filteredParams){
+		//var paramName = paramNameArray[index];
+		//var paramValue = form.find("#"+paramName).val();
+		var paramValue = filteredParams[paramName];
 		if(!CFW.utils.isNullOrEmpty(paramValue)){
 			rawQueryPart += "&"+paramName+"="+paramValue;
 			encodedQueryPart += "&"+paramName+"="+encodeURIComponent(paramValue);
-			curlDataURLEncode += ' \\\r\n --data-urlencode "'+paramName+'='+paramValue.replaceAll('"', '\\"')+'" ';
+			var preparedParam;
+			if(typeof paramValue == "object" ){ 
+				preparedParam = JSON.stringify(paramValue).replaceAll('"', '\\"'); 
+			} else{
+				preparedParam = (""+paramValue).replaceAll('"', '\\"'); 
+			} 
+			curlDataURLEncode += ' \\\r\n --data-urlencode "'+paramName+'='+preparedParam+'" ';
 		}
 	}
 	
