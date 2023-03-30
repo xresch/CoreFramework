@@ -2038,8 +2038,8 @@ function cfw_renderer_chart(renderDef) {
 		pointradius: 0,
 		// the padding in pixels of the chart
 		padding: 10,
-		// the minimum height of the chart(s), as a css value like 100px, 20vw etc...
-		height: null,
+		// the minimum height of the chart(s), as a css value like 100px, 20vw etc... (default: 100%)
+		height: '100%',
 		// the color of the x-axes grid lines
 		xaxescolor: 'rgba(128,128,128, 0.1)',
 		// the color of the y-axes grid lines
