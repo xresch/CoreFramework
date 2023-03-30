@@ -430,18 +430,13 @@ public class ServletDashboardViewMethods
 		}
 		
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			
 			//----------------------------
 			// Get Values
 			String widgetDataString = request.getParameter("widget");
 			JsonObject widgetDataJson = CFW.JSON.fromJson(widgetDataString).getAsJsonObject();
 			String widgetType = widgetDataJson.get(DashboardWidgetFields.TYPE.toString()).getAsString();
 			String dashboardParams = request.getParameter("params");
-			
-			System.out.println("updateWidget");
-			System.out.println("widgetDataString: "+widgetDataString);
-			System.out.println("widgetDataJson: "+widgetDataJson);
-			System.out.println("dashboardParams: "+dashboardParams);
-			System.out.println("widgetType: "+widgetType);
 			
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 			
@@ -454,7 +449,7 @@ public class ServletDashboardViewMethods
 				DashboardWidget tempWidget = new DashboardWidget();
 				boolean isValid = tempWidget.mapJsonFields(widgetDataString, true, true);
 				if(!isValid) {
-					CFW.Messages.addErrorMessage("Validation of Widget data failed.");
+					CFW.Messages.addErrorMessage("Validation of Widget Data failed.");
 					return;
 				}
 				
@@ -466,7 +461,7 @@ public class ServletDashboardViewMethods
 				}
 				
 				//----------------------------
-				// Validate
+				// Validate canSave()
 				
 				CFWObject settingsWithParams = definition.getSettings();
 				JsonElement settingsWithParamsElement = replaceParamsInSettings(tempWidget.settings(), dashboardParams, widgetType);
@@ -480,16 +475,16 @@ public class ServletDashboardViewMethods
 				//----------------------------
 				// Save to Database
 				int widgetID = tempWidget.id();
-				DashboardWidget widgetToUpdate = CFW.DB.DashboardWidgets.selectByID(widgetID);
+				DashboardWidget widgetFromDB = CFW.DB.DashboardWidgets.selectByID(widgetID);
 
 				// check if default settings are valid
-				if(widgetToUpdate.mapJsonFields(widgetDataJson, true, true)) {
+				if(widgetFromDB.mapJsonFields(widgetDataJson, true, true)) {
 					//Use sanitized values
-					widgetToUpdate.settings(settings.toJSONEncrypted());
+					widgetFromDB.settings(settings.toJSONEncrypted());
 					if(!defaultSettingsOnly) {
-						CFW.DB.DashboardWidgets.update(widgetToUpdate);
+						CFW.DB.DashboardWidgets.update(widgetFromDB);
 					}else {
-						CFW.DB.DashboardWidgets.updateWithout(widgetToUpdate, DashboardWidgetFields.JSON_SETTINGS.toString());
+						CFW.DB.DashboardWidgets.updateWithout(widgetFromDB, DashboardWidgetFields.JSON_SETTINGS.toString());
 					}
 				}
 			}else {
@@ -537,17 +532,7 @@ public class ServletDashboardViewMethods
 		String dashboardID = request.getParameter("FK_ID_DASHBOARD");
 
 		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
-			
-			//----------------------------
-			// Get Values
-//			String widgetType = request.getParameter("TYPE");
-//			String JSON_SETTINGS = request.getParameter("JSON_SETTINGS");
-//			JsonElement jsonElement = CFW.JSON.fromJson(JSON_SETTINGS);
-//			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
-//			User currentUser = CFW.Context.Request.getUser();
-//			
-//			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
-			
+						
 			//-----------------------------------
 			// Prepare Widget Settings
 
