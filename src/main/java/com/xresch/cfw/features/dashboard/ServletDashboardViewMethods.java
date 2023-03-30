@@ -468,7 +468,7 @@ public class ServletDashboardViewMethods
 				settingsWithParams.mapJsonFields(settingsWithParamsElement, false, false);
 				
 				if(!definition.canSave(request, json, settings, settingsWithParams)) {
-					CFW.Messages.addErrorMessage("Saving widget not allowed.");
+					CFW.Messages.addErrorMessage("Widget cannot be saved.");
 					return;
 				}
 

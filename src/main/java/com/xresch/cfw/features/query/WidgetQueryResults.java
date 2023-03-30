@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -7,6 +8,7 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -20,6 +22,7 @@ import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.WidgetSettingsFactory;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
+import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
@@ -30,6 +33,7 @@ import com.xresch.cfw.response.JSONResponse;
  **************************************************************************************************************/
 public class WidgetQueryResults extends WidgetDefinition {
 
+	private static final String FIELDNAME_QUERY = "query";
 	private static Logger logger = CFWLog.getLogger(WidgetQueryResults.class.getName());
 	
 	
@@ -56,40 +60,14 @@ public class WidgetQueryResults extends WidgetDefinition {
 								
 				// Disable Security to not mess up Queries
 				.addField(
-						(CFWField)CFWField.newString(FormFieldType.TEXTAREA, "query")
+						(CFWField)CFWField.newString(FormFieldType.TEXTAREA, FIELDNAME_QUERY)
 						.setLabel("{!cfw_widget_queryresults_query!}")
 						.setDescription("{!cfw_widget_queryresults_query_desc!}")
 						.disableSanitization()
 						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-
-						// does not work when using dashboard parameters, will not properly parse the query
-//						.addValidator(new CustomValidator() {
-//							
-//							@Override
-//							public boolean validate(Object value) {
-
-//								String stringValue = (String)value;
-//								
-//								if(Strings.isNullOrEmpty(stringValue)) {
-//									return true;
-//									
-//								}
-//								try {
-//									//--------------------------
-//									// Make sure query is parsable
-//									// and User has the appropriate rights.
-//									CFWQueryParser parser = new CFWQueryParser((String)value, true);
-//									parser.parse();
-//									
-//								}catch (Error | Exception e) {
-//									CFW.Messages.addErrorMessage(e.getMessage());
-//									return false;
-//								}
-//								return true;
-//							}
-//						})
 						.addCssClass("textarea-nowrap")	
-						
+						// validation is done using canSave() method in this class
+						//.addValidator()
 				)
 				.addField(WidgetSettingsFactory.createSampleDataField())
 		;
@@ -100,7 +78,39 @@ public class WidgetQueryResults extends WidgetDefinition {
 	 ******************************************************************************/
 	@Override
 	public boolean canSave(HttpServletRequest request, JSONResponse response, CFWObject settings, CFWObject settingsWithParams) {
-		return true;
+
+		String queryString = (String)settingsWithParams.getField(FIELDNAME_QUERY).getValue();
+		
+		//----------------------------
+		// Check isEmpty
+		if(Strings.isNullOrEmpty(queryString)) {
+			return true;
+		}
+		
+		//----------------------------
+		// Check is Parsable & Permissions
+		CFWQueryParser parser = new CFWQueryParser(queryString, true);
+		boolean canSave = true;
+		try {
+			parser.parse();
+		}catch (NumberFormatException e) {
+			new CFWLog(logger).severe("Error Parsing a number:"+e.getMessage(), e);
+			canSave = false;
+		} catch (ParseException e) {
+			CFW.Messages.addErrorMessage(e.getMessage());
+			canSave = false;
+		}  catch (OutOfMemoryError e) {
+			new CFWLog(logger).severe("Out of memory while parsing query. Please check your syntax.", e);
+			canSave = false;
+		} catch (IndexOutOfBoundsException e) {
+			new CFWLog(logger).severe("Query Parsing: "+e.getMessage(), e);
+			canSave = false;
+		}catch (Exception e) {
+			new CFWLog(logger).severe("Error when parsing the query: "+e.getMessage(), e);
+			canSave = false;
+		}
+		
+		return canSave;
 	}
 
 	/******************************************************************************
@@ -123,7 +133,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 		
 		//---------------------------------
 		// Resolve Query
-		JsonElement queryElement = jsonSettings.get("query");
+		JsonElement queryElement = jsonSettings.get(FIELDNAME_QUERY);
 		if(queryElement == null || queryElement.isJsonNull()) {
 			return;
 		}
@@ -186,7 +196,9 @@ public class WidgetQueryResults extends WidgetDefinition {
 	 ******************************************************************************/
 	@Override
 	public boolean hasPermission(User user) {
-		return user.hasPermission(FeatureQuery.PERMISSION_QUERY_USER) ||  user.hasPermission(FeatureQuery.PERMISSION_QUERY_ADMIN);
+		return 
+			user.hasPermission(FeatureQuery.PERMISSION_QUERY_USER) 
+		||  user.hasPermission(FeatureQuery.PERMISSION_QUERY_ADMIN);
 	}
 
 }
