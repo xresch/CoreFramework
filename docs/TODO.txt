@@ -160,6 +160,7 @@ DONE
 - Dashboard: Send CFWTimeframe JsonObject in requests instead of multiple parameters
 - Dashboard: Parameter - New Parameter type Query Select
 - Dashboard: Parameter - New Parameter type Number
+- Widgets: Reduced margin of widgets to use space more efficiently
 - Widgets: Parameter Widget supports password verification before update
 - Widgets: Parameter Widget supports custom button labels 
 - Widgets: Parameter Widget supports choosing the widgets which are affected on update

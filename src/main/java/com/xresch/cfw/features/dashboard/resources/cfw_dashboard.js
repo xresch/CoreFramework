@@ -2010,10 +2010,10 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 		// no animation, widgets get "seizures" sometimes
 		animate: false,
 		float: true,
-		marginTop: 10,
+		marginTop: 6,
 		marginBottom: 0,
-		marginLeft: 5,
-		marginRight: 5,
+		marginLeft: 3,
+		marginRight: 3,
 		// needed to avoid destroying dashboard layout when resizing window in edit mode.
 		disableOneColumnMode: true,
 
