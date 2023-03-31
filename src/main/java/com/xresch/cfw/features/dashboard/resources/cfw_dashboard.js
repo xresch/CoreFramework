@@ -1576,6 +1576,12 @@ function cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposit
     			, autoPosition: doAutoposition
     		}
     	);
+
+	// ----------------------------
+    // Check Visibility
+	if(widgetObject.INVISIBLE != null && widgetObject.INVISIBLE){
+		$('#'+widgetObject.guid).addClass('show-on-edit');
+	}
     
 }
 /*******************************************************************************
