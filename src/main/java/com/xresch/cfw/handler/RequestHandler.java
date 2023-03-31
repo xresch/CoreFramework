@@ -189,7 +189,7 @@ public class RequestHandler extends HandlerWrapper
 		
 		builder.append("<h1>Error Details</h1>");
 		builder.append("<ul>");
-		builder.append(		"<li><b>System Time:&nbsp;</b>"+CFW.Utils.Time.currentTimestamp()+"</li>");
+		builder.append(		"<li><b>System Time:&nbsp;</b>"+CFW.Time.currentTimestamp()+"</li>");
 		builder.append(		"<li><b>Method:&nbsp;</b>"+request.getMethod()+"</li>");
 		builder.append(		"<li><b>URL:&nbsp;</b>"+request.getRequestURL()+"</li>");
 		builder.append(		"<li><b>Query:&nbsp;</b>"+request.getQueryString()+"</li>");

@@ -78,7 +78,7 @@ import com.xresch.cfw.utils.CFWState;
 import com.xresch.cfw.utils.CFWUtilsAnalysis;
 import com.xresch.cfw.utils.CFWUtilsArray;
 import com.xresch.cfw.utils.CFWUtilsText;
-import com.xresch.cfw.utils.CFWUtilsTime;
+import com.xresch.cfw.utils.CFWTime;
 import com.xresch.cfw.utils.json.CFWJson;
 import com.xresch.cfw.validation.CFWValidation;
 
@@ -164,11 +164,13 @@ public class CFW {
 		public static class Analysis extends CFWUtilsAnalysis {}
 		public static class Array extends CFWUtilsArray {}
 		public static class Text extends CFWUtilsText {}
-		public static class Time extends CFWUtilsTime {}
 	}
 	public static class Validation extends CFWValidation {}
 	
 	
+	public static class Time extends CFWTime {}
+
+
 	//##############################################################################
 	// GLOBALS
 	//##############################################################################
@@ -320,7 +322,7 @@ public class CFW {
 		//---------------------------------------
     	// Set JVM TimeZone, needed for H2 database to 
 		// properly handle epoch times
-		CFW.Utils.Time.setMachineTimeZone(TimeZone.getDefault());
+		CFW.Time.setMachineTimeZone(TimeZone.getDefault());
 		TimeZone.setDefault(TimeZone.getTimeZone(CFWProperties.JVM_TIMEZONE));
 
 		//---------------------------

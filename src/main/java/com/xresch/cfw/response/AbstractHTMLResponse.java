@@ -48,7 +48,7 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 
 		this.addJavascriptData("localeIdentifier", CFW.Localization.getLocaleIdentifierForRequest() );
 		this.addJavascriptData(CFW.REQUEST_ATTR_ID, requestID );
-		this.addJavascriptData("time", CFW.Utils.Time.currentTimestamp());
+		this.addJavascriptData("time", CFW.Time.currentTimestamp());
 				
 	}
 	

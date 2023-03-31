@@ -59,7 +59,7 @@ public class CFWQueryContext{
 	/***********************************************************************************************
 	 * Get the timezoneoffsetMinutes time for this query.
 	 ***********************************************************************************************/
-	public long getTimezoneOffsetMinutes() {
+	public int getTimezoneOffsetMinutes() {
 		return timezoneOffsetMinutes;
 	}
 	

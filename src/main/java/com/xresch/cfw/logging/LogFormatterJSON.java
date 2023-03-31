@@ -7,7 +7,6 @@ import java.util.logging.LogRecord;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.Utils;
 
 /**************************************************************************************************************
  * 
@@ -33,7 +32,11 @@ public class LogFormatterJSON extends Formatter {
 			//-------------------------
 			// Timestamp
 			buf.append("\"time\":\"");
-			buf.append(Utils.Time.formatDateAsTimestamp(new Date(rec.getMillis())));
+			buf.append(
+					CFW.Time.formatDateAsTimestamp(
+							CFW.Time.zonedTimeFromEpoch(rec.getMillis())
+					)
+				);
 			buf.append("\"");
 						
 			//-------------------------

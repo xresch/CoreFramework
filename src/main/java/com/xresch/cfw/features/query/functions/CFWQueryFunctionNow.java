@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.sql.Timestamp;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -168,11 +169,13 @@ public class CFWQueryFunctionNow extends CFWQueryFunction {
 			return QueryPartValue.newNumber(timeOffset);
 		}else {
 			// Add timeframe offset
-			offsetMin -= this.context.getTimezoneOffsetMinutes();
+			//offsetMin -= this.context.getTimezoneOffsetMinutes();
 			long timeOffset = CFW.Utils.Time.offsetTime(new Date().getTime()
 					, offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS);
 			
-			String dateFormatted = CFW.Utils.Time.formatDate(new Date(timeOffset), dateformat);
+			ZonedDateTime zonedTime = CFW.Utils.Time.zonedTimeFromEpoch(timeOffset);
+			//String dateFormatted = CFW.Utils.Time.formatDate(zonedTime, dateformat);
+			String dateFormatted = CFW.Utils.Time.formatDate(zonedTime, dateformat, this.context.getTimezoneOffsetMinutes());
 			return QueryPartValue.newString(dateFormatted);
 		}
 				

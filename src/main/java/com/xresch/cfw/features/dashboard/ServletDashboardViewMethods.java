@@ -837,7 +837,7 @@ public class ServletDashboardViewMethods
 		String JSON_SETTINGS = widget.settings();
 		
 		//apply Parameters to JSONSettings
-		JSON_SETTINGS = CFW.Utils.Time.replaceTimeframePlaceholders(JSON_SETTINGS, timeframe);
+		JSON_SETTINGS = CFW.Time.replaceTimeframePlaceholders(JSON_SETTINGS, timeframe);
 		JsonElement jsonSettings = replaceParamsInSettings(JSON_SETTINGS, dashboardParams, widgetType);
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
 		CFWObject settingsObject = definition.getSettings();

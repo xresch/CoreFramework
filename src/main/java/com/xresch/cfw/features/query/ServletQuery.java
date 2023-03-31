@@ -174,7 +174,7 @@ public class ServletQuery extends HttpServlet
 		Long latest = Long.parseLong(request.getParameter("latest"));
 		int timezoneOffsetMinutes = Integer.parseInt(request.getParameter("timezoneOffsetMinutes"));
 
-		query = CFW.Utils.Time.replaceTimeframePlaceholders(query, earliest, latest, timezoneOffsetMinutes);
+		query = CFW.Time.replaceTimeframePlaceholders(query, earliest, latest, timezoneOffsetMinutes);
 		
 		CFWQueryResultList resultList = new CFWQueryExecutor().parseAndExecuteAll(query, earliest, latest, timezoneOffsetMinutes);
 		

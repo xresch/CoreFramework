@@ -144,7 +144,7 @@ public class CFWJobTaskWidgetTaskExecutor extends CFWJobTask {
 		CFWObject widgetSettings = widgetDef.getSettings();
 		
 		String placeholdersReplaced = 
-				CFW.Utils.Time.replaceTimeframePlaceholders(
+				CFW.Time.replaceTimeframePlaceholders(
 						widget.settings(), 
 						offset.getEarliest(), 
 						offset.getLatest(), 0);

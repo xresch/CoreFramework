@@ -133,9 +133,9 @@ public class CFWQuerySourceApplog extends CFWQuerySource {
 		// Preparations
 		String scope = (String)parameters.getField("scope").getValue();
 
-		TimeZone machineZone = CFW.Utils.Time.getMachineTimeZone();
+		TimeZone machineZone = CFW.Time.getMachineTimeZone();
 		JsonTimerangeChecker timerangeChecker = 
-				new JsonTimerangeChecker("time", CFW.Utils.Time.FORMAT_TIMESTAMP, machineZone, earliestMillis, latestMillis)
+				new JsonTimerangeChecker("time", CFW.Time.FORMAT_TIMESTAMP, machineZone, earliestMillis, latestMillis)
 					.epochAsNewField("_epoch");
 		
 		

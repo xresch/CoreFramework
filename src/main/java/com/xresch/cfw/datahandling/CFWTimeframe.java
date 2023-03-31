@@ -169,22 +169,22 @@ public class CFWTimeframe {
 			Timestamp offsetTimestamp;
 			switch(unit) {
 				// Minutes
-				case "m":  	offsetTimestamp = CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, offsetCount);
+				case "m":  	offsetTimestamp = CFW.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, offsetCount);
 							break;
 				// Hours
-				case "h":  	offsetTimestamp = CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, offsetCount, 0);
+				case "h":  	offsetTimestamp = CFW.Time.getCurrentTimestampWithOffset(0, 0, 0, offsetCount, 0);
 							break;
 							
 				//Days
-				case "d":  	offsetTimestamp = CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, offsetCount, 0, 0);
+				case "d":  	offsetTimestamp = CFW.Time.getCurrentTimestampWithOffset(0, 0, offsetCount, 0, 0);
 							break;
 							
 				//Months
-				case "M":  	offsetTimestamp = CFW.Utils.Time.getCurrentTimestampWithOffset(0, offsetCount, 0, 0, 0);
+				case "M":  	offsetTimestamp = CFW.Time.getCurrentTimestampWithOffset(0, offsetCount, 0, 0, 0);
 							break;
 				
 				//Unknown, fallback to 30 minutes and warn
-				default:    offsetTimestamp = CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, -30);
+				default:    offsetTimestamp = CFW.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, -30);
 							CFW.Messages.addWarningMessage("Unrecognized timeframe preset '"+offsetString.getAsString()+"', use last 30 minutes.");
 							break;
 			}
@@ -195,7 +195,7 @@ public class CFWTimeframe {
 			return timeframeData.get(MEMBER_EARLIEST).getAsLong();
 		}else {
 			CFW.Messages.addWarningMessage("Unrecognized timeframe settings, use last 30 minutes.");
-			return CFW.Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, -30).getTime();
+			return CFW.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, -30).getTime();
 		}
 		
 	}

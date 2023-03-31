@@ -1,9 +1,9 @@
 package com.xresch.cfw.utils;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -14,7 +14,7 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Strings;
-import com.xresch.cfw._main.CFW.Utils;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 
 /**************************************************************************************************************
@@ -22,16 +22,36 @@ import com.xresch.cfw.datahandling.CFWTimeframe;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWUtilsTime {
+public class CFWTime {
 	
 	public static final String FORMAT_TIMESTAMP = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 	public static final String FORMAT_ISO8601_DATE = "yyyy-MM-dd";
 	
 	private static TimeZone machineTimezone = TimeZone.getDefault();
 			
-	private static SimpleDateFormat formatterTimestamp = new SimpleDateFormat(CFWUtilsTime.FORMAT_TIMESTAMP);
-	private static SimpleDateFormat formatterISODate = new SimpleDateFormat(CFWUtilsTime.FORMAT_ISO8601_DATE);
-
+	private static DateTimeFormatter formatterTimestamp = DateTimeFormatter.ofPattern(CFWTime.FORMAT_TIMESTAMP).withZone(machineTimezone.toZoneId());
+	private static DateTimeFormatter formatterISODate = DateTimeFormatter.ofPattern(CFWTime.FORMAT_ISO8601_DATE).withZone(machineTimezone.toZoneId());
+	static {
+	}
+	/********************************************************************************************
+	 * Returns a local date from epoch milliseconds with system default timezone.
+	 ********************************************************************************************/
+	public static ZonedDateTime zonedTimeFromEpoch(long epochMilliseconds) {
+		Instant instant = Instant.ofEpochMilli(epochMilliseconds);
+		ZonedDateTime zonedDateTime = instant.atZone(machineTimezone.toZoneId());
+		return zonedDateTime;
+		
+	}
+	
+	/********************************************************************************************
+	 * Returns a local date from epoch milliseconds with system default timezone.
+	 ********************************************************************************************/
+	public static ZonedDateTime zonedTimeFromEpochUTC(long epochMilliseconds) {
+		Instant instant = Instant.ofEpochMilli(epochMilliseconds);
+		ZonedDateTime zonedDateTime = instant.atZone(ZoneOffset.UTC);
+		return zonedDateTime;
+		
+	}
 	/********************************************************************************************
 	 * Replaces timeframe placeholders with earliest as "now - offset" and latest as "now".
 	 ********************************************************************************************/
@@ -46,6 +66,7 @@ public class CFWUtilsTime {
 		return value;
 		
 	}
+	
 	
 	/********************************************************************************************
 	 * Replaces timeframe placeholders.
@@ -190,29 +211,46 @@ public class CFWUtilsTime {
 	 ********************************************************************************************/
 	public static String currentTimestamp(){
 		
-		return CFWUtilsTime.formatDateAsTimestamp(new Date());
+		return CFWTime.formatDateAsTimestamp(ZonedDateTime.now());
 	}
 	
 	
 	/********************************************************************************************
 	 * Get a string representation of the date in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
 	 ********************************************************************************************/
-	public static String formatDateAsTimestamp(Date date){
+	public static String formatDateAsTimestamp(ZonedDateTime date){
 		return formatterTimestamp.format(date);
 	}
 	
 	/********************************************************************************************
 	 * Get a string representation of the date in the format  "YYYY-MM-dd".
 	 ********************************************************************************************/
-	public static String formatDateAsISO(Date date){
+	public static String formatDateAsISO(LocalDate date){
 		return formatterISODate.format(date);
 	}
 	
 	/********************************************************************************************
 	 * Get a string representation of the date in the given format
 	 ********************************************************************************************/
-	public static String formatDate(Date date, String timeFormat){
-		SimpleDateFormat formatter = new SimpleDateFormat(timeFormat);
+	public static String formatDate(ZonedDateTime date, String timeFormat, int timezoneOffsetMinutes){
+		
+		ZoneOffset offset = ZoneOffset.ofTotalSeconds(timezoneOffsetMinutes*-60);
+		return formatDate(date, timeFormat, offset);
+	}
+	
+	/********************************************************************************************
+	 * Get a string representation of the date in the given format
+	 ********************************************************************************************/
+	public static String formatDate(ZonedDateTime date, String timeFormat){
+		return formatDate(date, timeFormat, machineTimezone.toZoneId());
+	}
+	
+	/********************************************************************************************
+	 * Get a string representation of the date in the given format
+	 ********************************************************************************************/
+	public static String formatDate(ZonedDateTime date, String timeFormat, ZoneId zone){
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(timeFormat).withZone(zone);
+		
 		return formatter.format(date);
 	}
 	
@@ -355,13 +393,13 @@ public class CFWUtilsTime {
 	public static Timestamp getDefaultAgeOutTime(int granularityMinutes) {
 		Timestamp ageOutOffset = null;
 		
-		if		(granularityMinutes <= 3) 		{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, -30); }
-		else if (granularityMinutes <= 15) 		{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, 0, -1, 0); }
-		else if (granularityMinutes <= 60) 		{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, -1, 0, 0); }
-		else if (granularityMinutes <= 240) 	{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, -7, 0, 0); }
-		else if (granularityMinutes <= 720) 	{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, -14, 0, 0); }
-		else if (granularityMinutes <= 1440) 	{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, -30, 0, 0); }
-		else  									{ ageOutOffset = Utils.Time.getCurrentTimestampWithOffset(0, 0, -90, 0, 0); }
+		if		(granularityMinutes <= 3) 		{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, 0, 0, 0, -30); }
+		else if (granularityMinutes <= 15) 		{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, 0, 0, -1, 0); }
+		else if (granularityMinutes <= 60) 		{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, 0, -1, 0, 0); }
+		else if (granularityMinutes <= 240) 	{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, 0, -7, 0, 0); }
+		else if (granularityMinutes <= 720) 	{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, 0, -14, 0, 0); }
+		else if (granularityMinutes <= 1440) 	{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, 0, -30, 0, 0); }
+		else  									{ ageOutOffset = CFW.Time.getCurrentTimestampWithOffset(0, 0, -90, 0, 0); }
 
 		return ageOutOffset;
 	}
