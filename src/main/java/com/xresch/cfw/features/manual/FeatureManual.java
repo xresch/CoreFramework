@@ -399,7 +399,16 @@ public class FeatureManual extends CFWAppFeature {
 	private void registerGeneral() {
 		
 		//----------------------------------
-		// Available Time Zones
+		// Time Frame Parameters
+
+		TOP_PAGE_GENERAL.addChild(new ManualPage("Date Time Formats")
+				.faicon("fas fa-clock")
+				.addPermission(PERMISSION_ADMIN_MANUAL)
+				.content(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE+".general", "manual_general_datetimeformatting.html")
+			);
+		
+		//----------------------------------
+		// Time Frame Parameters
 		String htmlString = 
 				  "<p>Functionalities like dashboard widgets and queries support the use of time parameters. "
 				+ "Following the list of available placeholders that are inserted into your strings like '$earliest$':</p>"

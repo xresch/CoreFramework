@@ -38,7 +38,7 @@ public class CFWQueryFunctionNow extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns time based on present time and an optional offset.";
+		return "Returns time based on present time and an optional offset. ";
 	}
 	
 	/***********************************************************************************************
@@ -46,7 +46,7 @@ public class CFWQueryFunctionNow extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>format:&nbsp;</b>(Optional)The format the returned time should have. Default is null, what returns epoch time in milliseconds.</p>"
+		return "<p><b>format:&nbsp;</b>(Optional)The format the returned time should have. Default is null, what returns epoch time in milliseconds. (Example: YYYY-MM-dd'T'HH:mm:ss.SSSZ)</p>"
 			  +"<p><b>offsetY:&nbsp;</b>(Optional)Offset in years from present time.</p>"
 			  +"<p><b>offsetM:&nbsp;</b>(Optional)Offset in months from present time.</p>"
 			  +"<p><b>offsetD:&nbsp;</b>(Optional)Offset in days from present time.</p>"

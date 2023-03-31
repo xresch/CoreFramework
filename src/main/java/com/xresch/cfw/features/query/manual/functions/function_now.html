@@ -10,7 +10,7 @@
 	LastYearEpoch=now(null, -1) # return milliseconds when format is null, offset by 1 year into the past
 	LastYearFormatted=now(globals(format), -1)
 	ThreeMonthsInFuture=now("YYYY-MM-dd", 0, 3)
-	Yesterday=now("YYYY-MM-dd", 0, -3)
+	Yesterday=now("YYYY-MM-dd", 0, 0, -1)
 	Milliseconds=now("SSS")			# placeholders for milliseconds
 	DayName=now("E / EEEE")         # placeholders for day names >> "Fri / Friday"
 	MonthName=now("MMM / MMMMM")    # placeholders for month names >> "Nov / November"
