@@ -31,27 +31,39 @@ public class CFWTime {
 			
 	private static DateTimeFormatter formatterTimestamp = DateTimeFormatter.ofPattern(CFWTime.FORMAT_TIMESTAMP).withZone(machineTimezone.toZoneId());
 	private static DateTimeFormatter formatterISODate = DateTimeFormatter.ofPattern(CFWTime.FORMAT_ISO8601_DATE).withZone(machineTimezone.toZoneId());
-	static {
-	}
+	
 	/********************************************************************************************
 	 * Returns a local date from epoch milliseconds with system default timezone.
 	 ********************************************************************************************/
-	public static ZonedDateTime zonedTimeFromEpoch(long epochMilliseconds) {
+	public static ZonedDateTime zonedTimeFromEpoch(long epochMilliseconds, ZoneId zoneID) {
 		Instant instant = Instant.ofEpochMilli(epochMilliseconds);
-		ZonedDateTime zonedDateTime = instant.atZone(machineTimezone.toZoneId());
+		ZonedDateTime zonedDateTime = instant.atZone(zoneID);
 		return zonedDateTime;
 		
 	}
 	
 	/********************************************************************************************
+	 * Returns a local date from epoch milliseconds with the specified timezoneOffset.
+	 ********************************************************************************************/
+	public static ZonedDateTime zonedTimeFromEpoch(long epochMilliseconds, int timezoneOffsetMinutes) {
+		ZoneOffset offset = ZoneOffset.ofTotalSeconds(timezoneOffsetMinutes*-60);
+		return zonedTimeFromEpoch(epochMilliseconds, offset);
+	}
+	/********************************************************************************************
 	 * Returns a local date from epoch milliseconds with system default timezone.
 	 ********************************************************************************************/
-	public static ZonedDateTime zonedTimeFromEpochUTC(long epochMilliseconds) {
-		Instant instant = Instant.ofEpochMilli(epochMilliseconds);
-		ZonedDateTime zonedDateTime = instant.atZone(ZoneOffset.UTC);
-		return zonedDateTime;
+	public static ZonedDateTime zonedTimeFromEpoch(long epochMilliseconds) {
+		return zonedTimeFromEpoch(epochMilliseconds, machineTimezone.toZoneId());
 		
 	}
+	
+	/********************************************************************************************
+	 * Returns a local date from epoch milliseconds with time zone UTC.
+	 ********************************************************************************************/
+	public static ZonedDateTime zonedTimeFromEpochUTC(long epochMilliseconds) {
+		return zonedTimeFromEpoch(epochMilliseconds, ZoneOffset.UTC);
+	}
+
 	/********************************************************************************************
 	 * Replaces timeframe placeholders with earliest as "now - offset" and latest as "now".
 	 ********************************************************************************************/
@@ -123,16 +135,8 @@ public class CFWTime {
 	 ********************************************************************************************/
 	public static String replaceTimeframePlaceholders(String value, long earliest, long latest, int timezoneOffsetMinutes) {
 				
-		Calendar calendarEarliest = Calendar.getInstance();
-		calendarEarliest.setTimeZone( TimeZone.getTimeZone("UTC") );
-		calendarEarliest.setTimeInMillis(earliest);	
-		calendarEarliest.add(Calendar.MINUTE, (-1*timezoneOffsetMinutes) );
-		
-		Calendar calendarLatest = Calendar.getInstance();
-		calendarLatest.setTimeZone( TimeZone.getTimeZone("UTC") );
-		calendarLatest.setTimeInMillis(latest);	
-		calendarLatest.add(Calendar.MINUTE, (-1*timezoneOffsetMinutes) );
-		
+		ZonedDateTime earliestZoned = zonedTimeFromEpoch(earliest, timezoneOffsetMinutes);
+		ZonedDateTime latestZoned = zonedTimeFromEpoch(latest, timezoneOffsetMinutes);
 		
 		if(!Strings.isNullOrEmpty(value)){
 			if(value.contains("$")) {
@@ -148,13 +152,13 @@ public class CFWTime {
 				// Replace Earliest 
 				if(value.contains("$earliest_")) {
 					value = value
-							.replace("$earliest_Y$", ""+calendarEarliest.get(Calendar.YEAR))
-							.replace("$earliest_M$", ""+(calendarEarliest.get(Calendar.MONTH)+1) )
-							.replace("$earliest_D$", ""+calendarEarliest.get(Calendar.DAY_OF_MONTH))
-							.replace("$earliest_h$", ""+calendarEarliest.get(Calendar.HOUR))
-							.replace("$earliest_m$", ""+calendarEarliest.get(Calendar.MINUTE))
-							.replace("$earliest_s$", ""+calendarEarliest.get(Calendar.SECOND))
-							.replace("$earliest_ms$", ""+calendarEarliest.get(Calendar.MILLISECOND))
+							.replace("$earliest_Y$", ""+earliestZoned.getYear())
+							.replace("$earliest_M$", ""+earliestZoned.getMonthValue() )
+							.replace("$earliest_D$", ""+earliestZoned.getDayOfMonth())
+							.replace("$earliest_h$", ""+earliestZoned.getHour())
+							.replace("$earliest_m$", ""+earliestZoned.getMinute())
+							.replace("$earliest_s$", ""+earliestZoned.getSecond())
+							.replace("$earliest_ms$", ""+(earliestZoned.getNano() / 1000000))
 							;
 				}
 				
@@ -162,13 +166,13 @@ public class CFWTime {
 				// Replace Latest 
 				if(value.contains("$latest_")) {
 					value = value
-							.replace("$latest_Y$", ""+calendarLatest.get(Calendar.YEAR))
-							.replace("$latest_M$", ""+(calendarLatest.get(Calendar.MONTH)+1) )
-							.replace("$latest_D$", ""+calendarLatest.get(Calendar.DAY_OF_MONTH))
-							.replace("$latest_h$", ""+calendarLatest.get(Calendar.HOUR))
-							.replace("$latest_m$", ""+calendarLatest.get(Calendar.MINUTE))
-							.replace("$latest_s$", ""+calendarLatest.get(Calendar.SECOND))
-							.replace("$latest_ms$", ""+calendarLatest.get(Calendar.MILLISECOND))
+							.replace("$latest_Y$", ""+latestZoned.getYear())
+							.replace("$latest_M$", ""+latestZoned.getMonthValue() )
+							.replace("$latest_D$", ""+latestZoned.getDayOfMonth())
+							.replace("$latest_h$", ""+latestZoned.getHour())
+							.replace("$latest_m$", ""+latestZoned.getMinute())
+							.replace("$latest_s$", ""+latestZoned.getSecond())
+							.replace("$latest_ms$", ""+(latestZoned.getNano() / 1000000))
 							;
 				}
 

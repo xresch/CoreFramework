@@ -1,11 +1,9 @@
 package com.xresch.cfw.features.query.functions;
 
-import java.sql.Timestamp;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -164,18 +162,15 @@ public class CFWQueryFunctionNow extends CFWQueryFunction {
 		//----------------------------------
 		// Create Time and Format
 		if(dateformat == null) {
-			long timeOffset = CFW.Utils.Time.offsetTime(new Date().getTime()
+			long timeOffset = CFW.Time.offsetTime(new Date().getTime()
 					, offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS);
 			return QueryPartValue.newNumber(timeOffset);
 		}else {
-			// Add timeframe offset
-			//offsetMin -= this.context.getTimezoneOffsetMinutes();
-			long timeOffset = CFW.Utils.Time.offsetTime(new Date().getTime()
+			long timeOffset = CFW.Time.offsetTime(new Date().getTime()
 					, offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS);
 			
-			ZonedDateTime zonedTime = CFW.Utils.Time.zonedTimeFromEpoch(timeOffset);
-			//String dateFormatted = CFW.Utils.Time.formatDate(zonedTime, dateformat);
-			String dateFormatted = CFW.Utils.Time.formatDate(zonedTime, dateformat, this.context.getTimezoneOffsetMinutes());
+			ZonedDateTime zonedTime = CFW.Time.zonedTimeFromEpoch(timeOffset);
+			String dateFormatted = CFW.Time.formatDate(zonedTime, dateformat, this.context.getTimezoneOffsetMinutes());
 			return QueryPartValue.newString(dateFormatted);
 		}
 				
