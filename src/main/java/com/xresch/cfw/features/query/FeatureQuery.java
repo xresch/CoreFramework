@@ -1,6 +1,5 @@
 package com.xresch.cfw.features.query;
 
-import java.util.TimeZone;
 import java.util.TreeMap;
 
 import com.xresch.cfw._main.CFW;
@@ -20,7 +19,6 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatRecord;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandGlobals;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandKeep;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandMetadata;
-import com.xresch.cfw.features.query.commands.CFWQueryCommandNoMessage;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandRemove;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandRename;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSet;
@@ -54,6 +52,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionReplace;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRound;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionSubstring;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionSum;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeOffset;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionToJSON;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTrim;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionType;
@@ -163,6 +162,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRound(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSubstring(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSum(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTimeOffset(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionToJSON(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTrim(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionType(null));

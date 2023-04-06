@@ -366,7 +366,8 @@ public class QueryPartValue extends QueryPart {
 	
 	
 	/******************************************************************************************************
-	 * It is recommended to use isInteger() first to make sure number value is really a Integer.
+	 * It is recommended to use isNumber()/isNumberString() first to make 
+	 * sure number value is really a Number.
 	 ******************************************************************************************************/
 	public Float getAsFloat() {
 			
@@ -379,7 +380,22 @@ public class QueryPartValue extends QueryPart {
 	}
 	
 	/******************************************************************************************************
-	 * It is recommended to use isInteger() first to make sure number value is really a Integer.
+	 * It is recommended to use isNumber()/isNumberString() first to make 
+	 * sure number value is really a Number.
+	 ******************************************************************************************************/
+	public Long getAsLong() {
+			
+		Number number = this.getAsNumber();
+		
+		if(number == null) return null;
+		
+		return number.longValue();
+
+	}
+	
+	/******************************************************************************************************
+	 * It is recommended to use isNumber()/isNumberString() first to make 
+	 * sure number value is really a Number.
 	 ******************************************************************************************************/
 	public Double getAsDouble() {
 			

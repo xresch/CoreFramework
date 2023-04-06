@@ -213,6 +213,7 @@ DONE
 	- decode
 	- now
 	- replace
+	- timeoffset
 	- tojson
 	- type
 	
