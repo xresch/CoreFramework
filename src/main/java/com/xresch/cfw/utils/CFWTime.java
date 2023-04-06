@@ -229,7 +229,7 @@ public class CFWTime {
 	/********************************************************************************************
 	 * Get a string representation of the date in the format  "YYYY-MM-dd".
 	 ********************************************************************************************/
-	public static String formatDateAsISO(LocalDate date){
+	public static String formatDateAsISO(ZonedDateTime date){
 		return formatterISODate.format(date);
 	}
 	
