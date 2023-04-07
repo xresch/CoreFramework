@@ -206,6 +206,7 @@ DONE
 - Query: Added API endpoint "Query >> execute"
 - Query: Added sources:
 	- empty
+	- text
 	- web 
 - Query: Added commands: 
 	- unbox
