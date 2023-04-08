@@ -1,0 +1,44 @@
+
+<p>
+	The text source takes plain text input and converts it into records.
+	By default it splits the text by the newline character '\n'.
+</p>
+
+<p>An example query that makes every line of a query into a record:</p>
+<pre><code class="language-cfwquery">| source text 
+	text="
+This will be a record.
+And this another record.
+Because it was so fantastic, makes this third line into a third record.
+	"</code></pre>
+
+<p>Here a more sophisticated example, with custom separator '\s' that splits by white spaces, removes special characters and creates a count by word:</p>
+<pre><code class="language-cfwquery">| source text 
+	separator="\s"
+	text="
+This sentence contains an apple.
+This sentence contains another apple.
+This sentence should consider containing an apple.
+Why the hell is there no tiramisu!?
+	"
+| set
+	part=replace(part, ".", "")
+	part=replace(part, "?", "")
+	part=replace(part, "!", "")
+| stats
+	by=part
+	count=count()
+| sort count reverse=true</code></pre>
+
+
+<p>Following query splits by newline, keeps empty lines an uses the count parameter to count number of T's n each line:</p>
+<pre><code class="language-cfwquery">| source text 
+	count="[T|t]"
+	empty=true
+	text="
+	This is a Test.
+Will it split?
+Also lets count T!
+Count those T's and t's: TtTtTtTt
+	"</code></pre>
+

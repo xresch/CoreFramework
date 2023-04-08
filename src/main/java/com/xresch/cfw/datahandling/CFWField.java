@@ -1893,9 +1893,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//-------------------------------------------------
 		// prevent Strings from being empty. Might lead to 
 		// unique constraint violation on DB when not using 
-		// null values.
+		// null values. Do not trim to allow blank strings.
 		if(value == null 
-		|| ( valueClass == String.class && (value.toString().trim().equals(""))) ) {
+		|| ( valueClass == String.class && (value.toString().equals(""))) ) {
 			return this.changeValue(null);
 		}
 		

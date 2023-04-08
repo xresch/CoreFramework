@@ -1,12 +1,14 @@
 package com.xresch.cfw.features.query;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw.features.core.AutocompleteItem;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
+import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
 
 /**************************************************************************************************************
@@ -19,11 +21,11 @@ public class CFWQueryAutocompleteHelper {
 	private	String searchValue;
 	private	int cursorPosition;
 	
-	private	String currentQuery = "";
-	private String commandPart = "";
+	private	List<CFWQueryToken> currentQuery;
+	//private List<CFWQueryToken> commandPart;
 	private String signBeforeCursor = "";
 	
-	private ArrayList<CFWQueryToken> commandTokens;
+	private List<CFWQueryToken> commandTokens;
 	
 	/******************************************************************
 	 *
@@ -33,15 +35,19 @@ public class CFWQueryAutocompleteHelper {
 		this.searchValue    = Strings.nullToEmpty(fullQueryString);
 		this.cursorPosition = cursorPosition;
 		
+		ArrayList<CFWQueryToken> tokens = new CFWQueryTokenizer(fullQueryString, false, true)
+				.keywords("AND", "OR", "NOT")
+				.getAllTokens();
+		
 		//------------------------------------------
 		//Extract Current Query from Full Query String
-		currentQuery = Strings.nullToEmpty(extractCurrentQueryPart(fullQueryString, cursorPosition));
-
+		currentQuery = extractCurrentQueryPart(tokens, cursorPosition);
+		
 		//------------------------------------------
 		//Extract Current Command
-		commandPart = Strings.nullToEmpty(extractCommandPart(currentQuery, cursorPosition));
+		commandTokens = extractCommandPart(currentQuery, cursorPosition);
 		
-		if(Strings.isNullOrEmpty(commandPart)) {
+		if(commandTokens.size() == 0) {
 			return ;
 		}
 		
@@ -49,69 +55,75 @@ public class CFWQueryAutocompleteHelper {
 			signBeforeCursor = fullQueryString.substring(cursorPosition-1, cursorPosition);
 		}
 		
-		
-		commandTokens = new CFWQueryTokenizer(commandPart, false, true)
-				.keywords("AND", "OR", "NOT")
-				.getAllTokens();
-		
-		
-		
 	}
 
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private String extractCurrentQueryPart(String searchValue, int cursorPosition) {
+	private List<CFWQueryToken> extractCurrentQueryPart(List<CFWQueryToken> allTokens, int cursorPosition) {
 		
-		if(Strings.isNullOrEmpty(searchValue.trim()) ) {
-			return "";
+		int queryStart = 0;
+		int queryEnd = 0;
+		for(int i = 0; i < allTokens.size(); i++) {
+			CFWQueryToken current = allTokens.get(i);
+			boolean isQuerySeparator = (current.type() == CFWQueryTokenType.SIGN_SEMICOLON);
+			
+			if(isQuerySeparator
+			&& current.position() < cursorPosition){
+				queryStart = i+1;
+			}
+			
+			queryEnd = i+1;
+			if(isQuerySeparator
+			&& current.position() >= cursorPosition){
+				break;
+			}
 		}
 		
-		int queryStart = searchValue.lastIndexOf(";", cursorPosition-1);
-		int queryEnd = searchValue.indexOf(";", cursorPosition);
-				
-		if(queryEnd <= -1) { queryEnd = searchValue.length();};
-		
-		// Return empty if query is empty
-		if(queryStart == queryEnd) { return ""; }
-		
-		return searchValue.substring(queryStart+1, queryEnd);
+		return allTokens.subList(queryStart, queryEnd);
+	
 	}
 	
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private String extractCommandPart(String currentQuery, int cursorPosition) {
+	private List<CFWQueryToken> extractCommandPart(List<CFWQueryToken> commandTokens, int cursorPosition) {
 		
-		if(Strings.isNullOrEmpty(currentQuery) ) {
-			return "";
+		int startIndex = 0;
+		int endIndex = 0;
+		for(int i = 0; i < commandTokens.size(); i++) {
+			CFWQueryToken current = commandTokens.get(i);
+			boolean isCommandSeparator = (current.type() == CFWQueryTokenType.OPERATOR_OR);
+			
+			if(isCommandSeparator
+			&& current.position() < cursorPosition){
+				startIndex = i+1;
+			}
+			
+			endIndex = i+1;
+			if(isCommandSeparator
+			&& current.position() >= cursorPosition){
+				break;
+			}
 		}
 		
-		int commandStart = currentQuery.lastIndexOf("|", cursorPosition-1);
-		int commandEnd = currentQuery.indexOf("|", cursorPosition);
-				
-		if(commandEnd == -1) { commandEnd = currentQuery.length();};
-		
-		// Return empty if query is empty
-		if(commandStart == commandEnd) { return ""; }
-				
-		return currentQuery.substring(commandStart+1, commandEnd);
+		return commandTokens.subList(startIndex, endIndex);
+	
 	}
-		
 
 	
 	/******************************************************************
 	 *
 	 ******************************************************************/
 	public boolean isEmptyQuery() {
-		return currentQuery.trim().isEmpty();
+		return currentQuery.size() == 0;
 	}
 	
 	/******************************************************************
 	 *
 	 ******************************************************************/
 	public boolean isEmptyCommand() {
-		return commandPart.trim().isEmpty();
+		return commandTokens.size() == 0;
 	}
 	
 	/******************************************************************

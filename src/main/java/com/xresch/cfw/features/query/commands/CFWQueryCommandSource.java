@@ -195,7 +195,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				
 				//------------------------------------
 				// Other params for the chosen source
-				assignment.assignToJsonObject(parameters);				
+				assignment.assignToJsonObject(parameters);		
 			}else {
 				parser.throwParseException("source: Only source name and parameters(key=value) are allowed)", currentPart);
 			}

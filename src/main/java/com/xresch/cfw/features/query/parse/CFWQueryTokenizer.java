@@ -269,7 +269,9 @@ public class CFWQueryTokenizer {
 		if( base.charAt(cursor) == '"' ) {
 			if(!isCurrentCharEscaped()) {
 				this.advancetoQuotedTextEndPosition('"');	
-				
+				System.out.println("base:"+base);
+				System.out.println("startPos:"+startPos);
+				System.out.println("cursor:"+cursor);
 				// do not use createToken(), will not work if quoted text is at the end of the string
 				String textValue = base.substring(startPos+1, cursor-1);
 				
