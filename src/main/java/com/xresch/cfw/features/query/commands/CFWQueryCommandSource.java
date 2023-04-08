@@ -21,6 +21,7 @@ import com.xresch.cfw.features.query.CFWQueryFieldnameManager;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query.FeatureQuery.CFWQueryComponentType;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
@@ -257,6 +258,11 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			if(getCachedSources().containsKey(sourceName)) {
 				// propagate autocomplete
 				CFWQuerySource source = getCachedSources().get(sourceName);
+				
+				description = CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.SOURCE, sourceName) 
+							  +"<br>" 
+							  + description;
+				
 				description += "<br><b>Parameters of "+sourceName+":&nbsp</b>"+source.getParameterListHTML();
 				source.autocomplete(result, helper);
 			}else {

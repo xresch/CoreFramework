@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw.features.core.AutocompleteItem;
+import com.xresch.cfw.features.query.FeatureQuery.CFWQueryComponentType;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
@@ -180,6 +181,18 @@ public class CFWQueryAutocompleteHelper {
 	 ******************************************************************/
 	public int getCursorPosition() {
 		return cursorPosition;
+	}
+
+	/********************************************************
+	 * Creates s html string, representing a button opening
+	 * the manual page on the query editor.
+	 *  
+	 ********************************************************/
+	public static String createManualButton(CFWQueryComponentType type, String componentName) {
+		return "<span class=\"badge badge-primary cursor-pointer\""
+				+ " onclick=\"cfw_query_getManualPage('"
+						+ type
+						+ "', '"+componentName+"' )\">Open Manual</span>";
 	}
 	
 	

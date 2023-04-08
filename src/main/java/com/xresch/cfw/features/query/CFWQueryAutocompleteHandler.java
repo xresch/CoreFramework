@@ -10,6 +10,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.query.FeatureQuery.CFWQueryComponentType;
 import com.xresch.cfw.features.query.parse.CFWQueryToken;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 
@@ -107,8 +108,10 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 					// Full Command Name already entered
 					CFWQueryCommand command = commandMap.get(partialOrFullCommandName);
 					result.setHTMLDescription(
-							"<b>Description:&nbsp</b>"+command.descriptionShort()
-							+"<br><b>Syntax:&nbsp</b>"+CFW.Security.escapeHTMLEntities(command.descriptionSyntax())
+						CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.COMMAND, command.getUniqueName())
+						+ "<br><b>Description:&nbsp</b>"+command.descriptionShort()
+						+ "<br><b>Syntax:&nbsp</b>"+CFW.Security.escapeHTMLEntities(command.descriptionSyntax())
+						+ CFW.Security.escapeHTMLEntities(command.descriptionSyntaxDetailsHTML())
 					);
 					
 					command.autocomplete(result, helper);

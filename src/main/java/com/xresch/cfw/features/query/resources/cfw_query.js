@@ -10,6 +10,40 @@ var $QUERYCODE;
 var IS_EXECUTING = false;
 
 /*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_getManualPage(type, componentName){
+	
+	//-----------------------------------
+	// Do Execution
+	
+	params = {action: "fetch"
+		, item: "manualpage"
+		, type: type
+		, name: componentName
+	};
+	
+	CFW.http.postJSON(CFW_QUERY_URL, params, 
+		function(data) {
+		
+			if(data.success){													
+				CFW.ui.showModalLarge(
+						"Manual of "+componentName
+						, data.payload
+					);
+				
+				$('#cfw-large-modal').find('pre code').each(function(index, element){
+					hljs.highlightElement(element);
+				})
+			}
+			
+	});
+	
+	
+	
+	
+}
+/*******************************************************************************
  * Execute the query and fetch data from the server
  * 
  ******************************************************************************/

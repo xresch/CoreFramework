@@ -16,6 +16,7 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.query.FeatureQuery.CFWQueryComponentType;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -102,7 +103,7 @@ public class ServletQuery extends HttpServlet
 		
 			case "fetch": 			
 				switch(item.toLowerCase()) {
-					case "personlist": 		//jsonResponse.getContent().append(PersonDBMethods.getPersonListAsJSON());
+					case "manualpage": 		getManualPage(request, jsonResponse);
 	  										break;
 	  										
 					default: 				CFW.Messages.itemNotSupported(item);
@@ -110,33 +111,33 @@ public class ServletQuery extends HttpServlet
 				}
 				break;
 			
-			case "fetchpartial": 			
-				switch(item.toLowerCase()) {
-					case "personlist": 		String pagesize = request.getParameter("pagesize");
-											String pagenumber = request.getParameter("pagenumber");
-											String filterquery = request.getParameter("filterquery");
-											String sortby = request.getParameter("sortby");
-											String isAscendingString = request.getParameter("isascending");
-											boolean isAscending = (isAscendingString == null || isAscendingString.equals("true")) ? true : false;
-											
-											//jsonResponse.getContent().append(PersonDBMethods.getPartialPersonListAsJSON(pagesize, pagenumber, filterquery, sortby, isAscending));
-	  										break;
-	  										
-					default: 				CFW.Messages.itemNotSupported(item);
-											break;
-				}
-				break;	
+//			case "fetchpartial": 			
+//				switch(item.toLowerCase()) {
+//					case "personlist": 		String pagesize = request.getParameter("pagesize");
+//											String pagenumber = request.getParameter("pagenumber");
+//											String filterquery = request.getParameter("filterquery");
+//											String sortby = request.getParameter("sortby");
+//											String isAscendingString = request.getParameter("isascending");
+//											boolean isAscending = (isAscendingString == null || isAscendingString.equals("true")) ? true : false;
+//											
+//											//jsonResponse.getContent().append(PersonDBMethods.getPartialPersonListAsJSON(pagesize, pagenumber, filterquery, sortby, isAscending));
+//	  										break;
+//	  										
+//					default: 				CFW.Messages.itemNotSupported(item);
+//											break;
+//				}
+//				break;	
 			
-			case "delete": 			
-				switch(item.toLowerCase()) {
-
-					case "person": 		//deletePerson(jsonResponse, ID);
-										break;  
-										
-					default: 			CFW.Messages.itemNotSupported(item);
-										break;
-				}
-				break;	
+//			case "delete": 			
+//				switch(item.toLowerCase()) {
+//
+//					case "person": 		//deletePerson(jsonResponse, ID);
+//										break;  
+//										
+//					default: 			CFW.Messages.itemNotSupported(item);
+//										break;
+//				}
+//				break;	
 				
 			case "execute": 			
 				switch(item.toLowerCase()) {
@@ -149,15 +150,15 @@ public class ServletQuery extends HttpServlet
 				}
 				break;	
 				
-			case "getform": 			
-				switch(item.toLowerCase()) {
-					case "editperson": 	createEditForm(jsonResponse, ID);
-										break;
-					
-					default: 			CFW.Messages.itemNotSupported(item);
-										break;
-				}
-				break;
+//			case "getform": 			
+//				switch(item.toLowerCase()) {
+//					case "editperson": 	createEditForm(jsonResponse, ID);
+//										break;
+//					
+//					default: 			CFW.Messages.itemNotSupported(item);
+//										break;
+//				}
+//				break;
 						
 			default: 			CFW.Messages.actionNotSupported(action);
 								break;
@@ -165,6 +166,41 @@ public class ServletQuery extends HttpServlet
 		}
 	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void getManualPage(HttpServletRequest request, JSONResponse jsonResponse) {
+		String componentType = request.getParameter("type");
+		String componentName = request.getParameter("name");
+		
+		CFWQuery pseudoQuery = new CFWQuery();
+		
+		CFWQueryComponentType type = CFWQueryComponentType.valueOf(componentType);
+		switch(type) {
+			case COMMAND:
+				CFWQueryCommand command = CFW.Registry.Query.createCommandInstance(pseudoQuery, componentName);
+				CFWQueryManualPageCommand commandPage = new CFWQueryManualPageCommand(componentName, command);
+				jsonResponse.setPayLoad(commandPage.content().readContents());
+			break;
+				
+			case FUNCTION:
+				CFWQueryFunction current = CFW.Registry.Query.createFunctionInstance(pseudoQuery.getContext(), componentName);
+				CFWQueryManualPageFunction functionPage = new CFWQueryManualPageFunction(componentName, current);
+				jsonResponse.setPayLoad(functionPage.content().readContents());
+			break;
+				
+			case SOURCE:
+				CFWQuerySource source = CFW.Registry.Query.createSourceInstance(pseudoQuery, componentName);
+				CFWQueryManualPageSource sourcePage = new CFWQueryManualPageSource(componentName, source);
+				jsonResponse.setPayLoad(sourcePage.content().readContents());
+			break;
+			
+			default:
+				//do nothing
+			break;
+		}
+		
+	}
 	/******************************************************************
 	 *
 	 ******************************************************************/

@@ -560,10 +560,6 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		result.setHTMLDescription(
-				"<b>Hint:&nbsp;</b>Specify how a field should be formatted.<br>"
-				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
-			);
 		
 		AutocompleteList list = new AutocompleteList();
 		result.addList(list);

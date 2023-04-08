@@ -147,12 +147,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		result.setHTMLDescription(
-				"<b>Hint:&nbsp;</b>Specify how the data should be displayed.<br>"
-				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
-				+ descriptionSyntaxDetailsHTML()
-			);
-
+		// keep default
 	}
 
 	

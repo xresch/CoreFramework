@@ -96,6 +96,12 @@ public class FeatureQuery extends CFWAppFeature {
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "000_query.html"))
 			;
 	
+	public enum CFWQueryComponentType{
+		  SOURCE
+		, COMMAND
+		, FUNCTION
+	}
+	
 	@Override
 	public void register() {
 		//----------------------------------
