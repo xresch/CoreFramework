@@ -189,6 +189,7 @@ DONE
 - JS Renderer: Status Map - removed renderer options with specific ratios
 - JS Renderer: Upgrade ChartJS from v2.93 to v4.0.1
 - JS Renderer: Added Tile and Status Bar Renderer(tileandbar)
+- JS Renderer: Added Status Tiles Renderer, as a shorthand option to get empty tiles (statustiles)
 - Utils: Added Undo/Redo Manager 
 - Validator: Added ExcludeStringsValidator
 - Manual: Added Filter for Menu
@@ -205,6 +206,7 @@ DONE
 - Query: Modulo operator('%') iis now supported by the CFWQL syntax
 - Query: Added API endpoint "Query >> execute"
 - Query: Autocomplete - Added Open Manual Button 
+- Query: Autocomplete - Added "f()" to get list of functions
 - Query: Added sources:
 	- empty
 	- text

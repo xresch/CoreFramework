@@ -96,8 +96,15 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 		}
 		
 		//----------------------------------------
+		// Handle Function Autocomplete "f()"
+		if( helper.isBeforeCursor("f()") ) {
+			this.addListOfFunctions(result, helper, null);
+			return result;
+		}
+		
+		//----------------------------------------
 		// Handle Command with or without params
-		if( helper.getTokenCount() >= 1 ) {
+		if( helper.getCommandTokenCount() >= 1 ) {
 			CFWQueryToken commandNameToken = helper.getToken(0);
 			
 			if(commandNameToken.type() == CFWQueryTokenType.LITERAL_STRING) {
@@ -116,34 +123,12 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 					
 					command.autocomplete(result, helper);
 					
-					return result;
 				}else {
 					//--------------------------------
 					// Partial Command name Entered
-					AutocompleteList list = new AutocompleteList();
-					int i = 0;
-					for (String currentName : commandMap.keySet() ) {
-						
-						if(currentName.contains(partialOrFullCommandName)) {
-							
-							CFWQueryCommand command = commandMap.get(currentName);
-							
-							list.addItem(
-								helper.createAutocompleteItem(
-									partialOrFullCommandName
-								  , currentName
-								  , currentName
-								  , command.descriptionShort()
-								)
-							);
-							
-							i++;
-							if(i == 10) { break; }
-						}
-					}
+					AutocompleteList list = createListOfCommands(helper, commandMap, partialOrFullCommandName);
 					
 					result.addList(list);
-					return result;
 				}	
 				
 			}else {
@@ -153,7 +138,81 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 			
 		}
 		
+		
 		return result;
+	}
+	
+	/********************************************************
+	 * 
+	 ********************************************************/
+	private AutocompleteList createListOfCommands(CFWQueryAutocompleteHelper helper,
+			TreeMap<String, CFWQueryCommand> commandMap, String partialOrFullCommandName) {
+		AutocompleteList list = new AutocompleteList();
+		int i = 0;
+		for (String currentName : commandMap.keySet() ) {
+			
+			if(currentName.contains(partialOrFullCommandName)) {
+				
+				CFWQueryCommand command = commandMap.get(currentName);
+				
+				list.addItem(
+					helper.createAutocompleteItem(
+						partialOrFullCommandName
+					  , currentName
+					  , currentName
+					  , command.descriptionShort()
+					)
+				);
+				
+				i++;
+				if(i == 10) { break; }
+			}
+		}
+		return list;
+	}
+	
+	/********************************************************
+	 * 
+	 ********************************************************/
+	private void addListOfFunctions(AutocompleteResult result,
+				CFWQueryAutocompleteHelper helper,
+				String filter) {
+		
+		boolean isFullList = (filter == null); 
+		AutocompleteList list = new AutocompleteList();
+		result.addList(list);
+		int i = 0;
+		TreeMap<String, Class<? extends CFWQueryFunction>> functionMap = CFW.Registry.Query.getFunctionList();
+
+		for (String currentName : functionMap.keySet() ) {
+			
+			if(isFullList || currentName.contains(filter)) {
+				
+				CFWQueryFunction command = 
+						CFW.Registry.Query.createFunctionInstance(new CFWQueryContext(), currentName);
+				
+				String replaceThis = (isFullList) ? "f()" : filter;
+				
+				list.addItem(
+						helper.createAutocompleteItem(
+								replaceThis
+								, currentName+"("
+								, currentName+"()"
+								, command.descriptionShort()
+								)
+						);
+				
+				i++;
+				
+				if((i % 10) == 0) {
+					if(!isFullList) { break; }
+					list = new AutocompleteList();
+					result.addList(list);
+				}
+				if(i == 50) { break; }
+			}
+		}
+
 	}
 	
 }

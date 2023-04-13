@@ -19,12 +19,13 @@ import com.xresch.cfw.features.query.parse.CFWQueryTokenizer;
 public class CFWQueryAutocompleteHelper {
 	
 	private HttpServletRequest request;
-	private	String searchValue;
 	private	int cursorPosition;
+	private	String fullQueryString;
+	private	String queryBeforeCursor;
+	private String signBeforeCursor = "";
 	
 	private	List<CFWQueryToken> currentQuery;
 	//private List<CFWQueryToken> commandPart;
-	private String signBeforeCursor = "";
 	
 	private List<CFWQueryToken> commandTokens;
 	
@@ -33,8 +34,9 @@ public class CFWQueryAutocompleteHelper {
 	 ******************************************************************/
 	public CFWQueryAutocompleteHelper(HttpServletRequest request, String fullQueryString, int cursorPosition) {
 		this.request        = request;
-		this.searchValue    = Strings.nullToEmpty(fullQueryString);
+		this.fullQueryString    = Strings.nullToEmpty(fullQueryString);
 		this.cursorPosition = cursorPosition;
+		this.queryBeforeCursor = Strings.nullToEmpty(fullQueryString.substring(0, cursorPosition));
 		
 		ArrayList<CFWQueryToken> tokens = new CFWQueryTokenizer(fullQueryString, false, true)
 				.keywords("AND", "OR", "NOT")
@@ -130,7 +132,15 @@ public class CFWQueryAutocompleteHelper {
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	public int getTokenCount() {
+	public boolean isBeforeCursor(String value) {
+		return queryBeforeCursor.endsWith(value);
+	}
+	
+	/******************************************************************
+	 * Returns the amount of tokens the current command has.
+	 * 
+	 ******************************************************************/
+	public int getCommandTokenCount() {
 		return commandTokens.size();
 	}
 	
@@ -173,7 +183,7 @@ public class CFWQueryAutocompleteHelper {
 	 *
 	 ******************************************************************/
 	public String getFullSearchValue() {
-		return searchValue;
+		return fullQueryString;
 	}
 
 	/******************************************************************

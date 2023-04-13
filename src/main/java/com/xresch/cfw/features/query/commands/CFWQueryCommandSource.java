@@ -247,12 +247,12 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 
 		//-------------------------------------
 		// Create Autocomplete List
-		if( helper.getTokenCount() == 1 ) {
+		if( helper.getCommandTokenCount() == 1 ) {
 			
 			// Unfiltered list of up to 50 sources
 			autocompleteAddSources(result, helper, null);
 			
-		}else if( helper.getTokenCount() == 2 ) {
+		}else if( helper.getCommandTokenCount() == 2 ) {
 			
 			String sourceName = helper.getToken(1).value();
 			if(getCachedSources().containsKey(sourceName)) {
