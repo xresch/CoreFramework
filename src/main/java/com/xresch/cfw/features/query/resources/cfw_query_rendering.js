@@ -17,16 +17,17 @@ function cfw_query_getRendererIndex(queryResult){
 			case 'cards':				rendererIndex = 2; break;	
 			case 'tiles':				rendererIndex = 3; break;
 			case 'tileandbar':			rendererIndex = 4; break;
-			case 'statuslist':			rendererIndex = 5; break;
-			case 'statusbar':			rendererIndex = 6; break;
-			case 'statusbarreverse':	rendererIndex = 7; break;
+			case 'statustiles':			rendererIndex = 5; break;
+			case 'statuslist':			rendererIndex = 6; break;
+			case 'statusbar':			rendererIndex = 7; break;
+			case 'statusbarreverse':	rendererIndex = 8; break;
 			
-			case 'statusmap':			rendererIndex = 8; break;
+			case 'statusmap':			rendererIndex = 9; break;
 			
-			case 'title':			rendererIndex = 9; break;	
-			case 'csv':				rendererIndex = 10; break;	
-			case 'json':			rendererIndex = 11; break;	
-			case 'xml':				rendererIndex = 12; break;	
+			case 'title':			rendererIndex = 10; break;	
+			case 'csv':				rendererIndex = 11; break;	
+			case 'json':			rendererIndex = 12; break;	
+			case 'xml':				rendererIndex = 13; break;	
 			
 		}
 	}
@@ -866,6 +867,10 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 						{	label: 'Tile and Bar',
 							name: 'tileandbar',
 							renderdef: { }
+						},
+						{	label: 'Status Tiles',
+							name: 'statustiles',
+							renderdef: {}
 						},
 						{	label: 'Status List',
 							name: 'statuslist',

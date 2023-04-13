@@ -6,6 +6,7 @@ CFW_RENDER_NAME_TITLE = 'title';
 CFW_RENDER_NAME_TABLE = 'table';
 CFW_RENDER_NAME_TILES = 'tiles';
 CFW_RENDER_NAME_TILEANDBAR = 'tileandbar';
+CFW_RENDER_NAME_STATUSTILES = 'statustiles';
 CFW_RENDER_NAME_STATUSBAR = 'statusbar';
 CFW_RENDER_NAME_STATUSBAR_REVERSE = 'statusbarreverse';
 
@@ -757,6 +758,32 @@ function cfw_renderer_tiles(renderDef) {
 }
 
 CFW.render.registerRenderer(CFW_RENDER_NAME_TILES, new CFWRenderer(cfw_renderer_tiles));
+
+/******************************************************************
+ * Shorthand for getting tiles without labels.
+ ******************************************************************/
+function cfw_renderer_statustiles(renderDef){
+	var clonedDef = Object.assign({}, renderDef);
+	
+	if(clonedDef.rendererSettings.statustiles == undefined){
+		if(clonedDef.rendererSettings == undefined){
+			clonedDef.rendererSettings = {};
+		}
+		clonedDef.rendererSettings.statustiles = {};
+	} 
+	
+	clonedDef.rendererSettings.statustiles.showlabels = false;
+	clonedDef.rendererSettings.statustiles.popover = true;
+	
+	Object.assign(
+			clonedDef.rendererSettings.tiles, 
+			clonedDef.rendererSettings.statustiles
+		);
+	
+	return cfw_renderer_tiles(clonedDef); 
+}
+
+CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSTILES, new CFWRenderer(cfw_renderer_statustiles));
 
 
 /******************************************************************

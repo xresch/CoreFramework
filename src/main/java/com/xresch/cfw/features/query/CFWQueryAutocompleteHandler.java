@@ -96,8 +96,8 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 		}
 		
 		//----------------------------------------
-		// Handle Command Only
-		if( helper.getTokenCount() == 1 ) {
+		// Handle Command with or without params
+		if( helper.getTokenCount() >= 1 ) {
 			CFWQueryToken commandNameToken = helper.getToken(0);
 			
 			if(commandNameToken.type() == CFWQueryTokenType.LITERAL_STRING) {
@@ -151,24 +151,6 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 				return result;
 			}
 			
-		}
-		
-		//----------------------------------------
-		// Handle Command with params
-		if( helper.getTokenCount() > 1 ) {
-			CFWQueryToken commandNameToken = helper.getToken(0);
-			
-			if(commandNameToken.type() == CFWQueryTokenType.LITERAL_STRING) {
-				String partialOrFullCommandName = commandNameToken.value();
-				
-				if(commandMap.containsKey(partialOrFullCommandName)) {
-					CFWQueryCommand command = commandMap.get(partialOrFullCommandName);
-					
-					command.autocomplete(result, helper);
-					
-					return result;
-				}
-			}
 		}
 		
 		return result;

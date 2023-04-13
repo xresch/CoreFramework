@@ -74,6 +74,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 					+"<li>panels</li>"
 					+"<li>cards</li>"
 					+"<li>tiles</li>"
+					+"<li>statustiles</li>"
 					+"<li>statuslist</li>"
 					+"<li>statusbar</li>"
 					+"<li>statusbarreverse</li>"
