@@ -95,10 +95,7 @@ public class CFWQueryCommandComment extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		result.setHTMLDescription(
-				"<b>Hint:&nbsp;</b>Specify your comment.<br>"
-				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
-			);
+		// keep default
 
 	}
 

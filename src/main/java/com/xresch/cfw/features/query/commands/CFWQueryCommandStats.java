@@ -183,10 +183,7 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		result.setHTMLDescription(
-				"<b>Hint:&nbsp;</b>Use aggregate functions to create statistics.<br>"
-				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
-			);
+		// keep default
 	}
 	
 	/***********************************************************************************************

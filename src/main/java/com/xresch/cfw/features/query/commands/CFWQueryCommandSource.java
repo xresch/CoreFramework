@@ -265,6 +265,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				
 				description += "<br><b>Parameters of "+sourceName+":&nbsp</b>"+source.getParameterListHTML();
 				source.autocomplete(result, helper);
+				
 			}else {
 				//return filtered source list
 				autocompleteAddSources(result, helper,  sourceName);
@@ -276,7 +277,13 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			if(getCachedSources().containsKey(sourceName)) {
 				// propagate autocomplete
 				CFWQuerySource source = getCachedSources().get(sourceName);
-				description += "<br><b>Parameters of "+sourceName+":&nbsp</b>"+source.getParameterListHTML();
+				description = 
+						CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.SOURCE, sourceName) 
+						+"<br>" 
+						+ description 
+						+"<br><b>Parameters of "+sourceName+":&nbsp</b>"+source.getParameterListHTML()
+						;
+				
 				source.autocomplete(result, helper);
 			}else {
 				CFW.Messages.addWarningMessage("Unknown source: "+sourceName);

@@ -126,10 +126,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		result.setHTMLDescription(
-				"<b>Hint:&nbsp;</b>Filter by fields by using binary operators(== != >= <= > <).<br>"
-				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
-			);
+		// keep default
 	}
 	
 	

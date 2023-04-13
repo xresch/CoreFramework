@@ -111,7 +111,7 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 						CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.COMMAND, command.getUniqueName())
 						+ "<br><b>Description:&nbsp</b>"+command.descriptionShort()
 						+ "<br><b>Syntax:&nbsp</b>"+CFW.Security.escapeHTMLEntities(command.descriptionSyntax())
-						+ CFW.Security.escapeHTMLEntities(command.descriptionSyntaxDetailsHTML())
+						+ command.descriptionSyntaxDetailsHTML()
 					);
 					
 					command.autocomplete(result, helper);

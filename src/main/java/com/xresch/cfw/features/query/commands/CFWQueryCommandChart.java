@@ -159,12 +159,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		result.setHTMLDescription(
-				"<b>Hint:&nbsp;</b>Specify what should be desplayed in the chart, define 'x', 'y' and 'groupby' parameter.<br>"
-				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
-				+"<b>Parameters:&nbsp;</b>"+descriptionSyntaxDetailsHTML()
-			);
-
+		// keep default
 	}
 
 	

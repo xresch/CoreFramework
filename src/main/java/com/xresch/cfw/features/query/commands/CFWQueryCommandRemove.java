@@ -123,11 +123,7 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		
-		result.setHTMLDescription(
-				"<b>Hint:&nbsp;</b>Specify the fields that should be removed.<br>"
-				+"<b>Syntax:&nbsp;</b>"+CFW.Security.escapeHTMLEntities(this.descriptionSyntax())
-			);
+		// keep default
 	}
 	
 	/***********************************************************************************************
