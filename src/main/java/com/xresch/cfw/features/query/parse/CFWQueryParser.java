@@ -46,7 +46,7 @@ public class CFWQueryParser {
 	
 	private String query = null;
 	private boolean checkSourcePermissions = true;
-	
+	private CFWQueryContext initialContext;
 	private ArrayList<CFWQueryToken> tokenlist;
 	CFWQuery currentQuery;
 	private CFWQueryContext currentContext;
@@ -89,11 +89,17 @@ public class CFWQueryParser {
 	
 	/***********************************************************************************************
 	 * 
+	 * @param initialContext with earliest, latest, timezoneOffset and checkPermission values.
 	 ***********************************************************************************************/
-	public CFWQueryParser(String inputQuery, boolean checkSourcePermissions) {
+	public CFWQueryParser(String inputQuery, boolean checkSourcePermissions, CFWQueryContext initialContext) {
+		
+		if(initialContext == null) {
+			initialContext = new CFWQueryContext();
+		}
 		
 		this.query = inputQuery;
-		this.checkSourcePermissions = checkSourcePermissions;
+		this.initialContext = initialContext;
+		this.checkSourcePermissions = initialContext.checkPermissions();
 		this.cursor = 0;
 		
 		tokenlist = new CFWQueryTokenizer(this.query, false, true)
@@ -280,7 +286,10 @@ public class CFWQueryParser {
 		
 		currentQuery = new CFWQuery();
 		currentContext = currentQuery.getContext();
-		currentContext.checkPermissions(checkSourcePermissions);
+		currentContext.checkPermissions(initialContext.checkPermissions());
+		currentContext.setEarliest(initialContext.getEarliestMillis());
+		currentContext.setLatest(initialContext.getLatestMillis());
+		currentContext.setTimezoneOffsetMinutes(initialContext.getTimezoneOffsetMinutes());
 		currentContext.setGlobals(sharedGlobalsObject);
 		
 		while(this.hasMoreTokens() && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {

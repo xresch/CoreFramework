@@ -87,9 +87,15 @@ public class WidgetQueryResults extends WidgetDefinition {
 			return true;
 		}
 		
+		CFWQueryContext baseQueryContext = new CFWQueryContext();
+		//baseQueryContext.setEarliest(earliest);
+		//baseQueryContext.setLatest(latest);
+		//baseQueryContext.setTimezoneOffsetMinutes(timezoneOffsetMinutes);
+		baseQueryContext.checkPermissions(true);
+		
 		//----------------------------
 		// Check is Parsable & Permissions
-		CFWQueryParser parser = new CFWQueryParser(queryString, true);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true, baseQueryContext);
 		boolean canSave = true;
 		try {
 			parser.parse();

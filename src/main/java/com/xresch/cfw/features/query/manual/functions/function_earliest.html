@@ -1,0 +1,32 @@
+
+<p>Following query creates example records and does various sample operations with the earliest function:</p>
+
+<pre><code class="language-cfwquery">| source empty records=10
+| globals format="YYYY-MM-dd'T'HH:mm:ss" # use globals or metadata to store formats and reuse them
+| set
+	epoch=earliest() # returns epoch milliseconds 
+	epochNull=earliest(null) # return epoch milliseconds
+	formatted=earliest(globals(format)) # format on server side, uses UTC time zone
+	yearDayMonth=earliest("YYYY-MM-dd")
+	utcTime=earliest("HH:mm:ss", false)   # use UTC as time zone for formatting(default)
+	clientTime=earliest("HH:mm:ss", true) # use time zone obtained from client(browser) for formatting
+	Milliseconds=earliest("SSS")		 # placeholder for milliseconds
+	DayName=earliest("E / EEEE")         # placeholders for day names >> "Fri / Friday"
+	MonthName=earliest("MMM / MMMM")     # placeholders for month names >> "Nov / November"
+	Timezones=earliest("z / Z / ZZZZ", true)   # placeholders for time zones "+01:00 / +0100 / GMT+01:00"
+| formatfield 
+	LastYearEpoch=['date', "YYYY-MM-DDTHH:mm:ss"] # formatted on client-side by javascript </code></pre>
+
+
+<p>This command is useful to insert time for filtering in database queries:</p>
+
+<pre><code class="language-cfwquery">| source jdbc 
+	environment={"id":1234,"name":"Acme Database"} 
+	query="
+		SELECT DISTINCT TIME, FROM CFW_STATS_CPUSAMPLE 
+		WHERE TIME &gt;= TIMESTAMP '"+earliest("YYYY-MM-dd HH:mm:ss", true)+"'
+		  AND TIME &lt;= TIMESTAMP '"+latest("YYYY-MM-dd HH:mm:ss", true)+"'
+		LIMIT 100"</code></pre>
+
+
+

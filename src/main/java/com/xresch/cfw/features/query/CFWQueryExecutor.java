@@ -80,11 +80,17 @@ public class CFWQueryExecutor {
 		
 		CFWQueryResultList resultArray = new CFWQueryResultList();
 		
+		CFWQueryContext baseQueryContext = new CFWQueryContext();
+		baseQueryContext.setEarliest(earliest);
+		baseQueryContext.setLatest(latest);
+		baseQueryContext.setTimezoneOffsetMinutes(timezoneOffsetMinutes);
+		baseQueryContext.checkPermissions(checkPermissions);
+		
 		//------------------------
 		// Parse The Query
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString, checkPermissions);
+		CFWQueryParser parser = new CFWQueryParser(queryString, checkPermissions, baseQueryContext);
 		try {
 			//tracing is experimental, might lead to errors
 			//parser.enableTracing();
@@ -151,7 +157,6 @@ public class CFWQueryExecutor {
 					}
 						
 					this.setDoneIfPreviousDone();
-					
 					
 				}
 			});
