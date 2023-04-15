@@ -28,6 +28,7 @@ public class CFWQueryAutocompleteHelper {
 	//private List<CFWQueryToken> commandPart;
 	
 	private List<CFWQueryToken> commandTokens;
+	private List<CFWQueryToken> commandTokensBeforeCursor;
 	
 	/******************************************************************
 	 *
@@ -57,6 +58,18 @@ public class CFWQueryAutocompleteHelper {
 		if(cursorPosition > 0) {
 			signBeforeCursor = fullQueryString.substring(cursorPosition-1, cursorPosition);
 		}
+		
+		//------------------------------------------
+		//Extract Current Command
+		commandTokensBeforeCursor = new ArrayList<CFWQueryToken>();
+		for(CFWQueryToken token : commandTokens) {
+			if(token.position() < cursorPosition) {
+				commandTokensBeforeCursor.add(token);
+			}else {
+				break;
+			}
+		}
+		
 		
 	}
 
@@ -133,7 +146,7 @@ public class CFWQueryAutocompleteHelper {
 	 *
 	 ******************************************************************/
 	public boolean isBeforeCursor(String value) {
-		return queryBeforeCursor.endsWith(value);
+		return queryBeforeCursor.trim().endsWith(value);
 	}
 	
 	/******************************************************************
@@ -149,6 +162,26 @@ public class CFWQueryAutocompleteHelper {
 	 ******************************************************************/
 	public CFWQueryToken getToken(int index) {
 		return commandTokens.get(index);
+	}
+	
+	/******************************************************************
+	 * 
+	 * @param offset 0 will give the token immediately before cursor.
+	 *        1/-1 will give the second token before cursor etc...
+	 * @return token or null if not available
+	 ******************************************************************/
+	public CFWQueryToken getTokenBeforeCursor(int offset) {
+		int tokenCount = commandTokensBeforeCursor.size();
+		if(commandTokensBeforeCursor.size() == 0) {
+			return null;
+		}
+		
+		int tokenIndex = tokenCount - 1 - Math.abs(offset);
+		if(tokenIndex < 0) {
+			return null;
+		}
+		
+		return commandTokensBeforeCursor.get(tokenIndex);
 	}
 	
 	

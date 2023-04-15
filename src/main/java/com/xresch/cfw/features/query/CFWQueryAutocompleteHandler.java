@@ -96,10 +96,49 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 		}
 		
 		//----------------------------------------
-		// Handle Function Autocomplete "f()"
-		if( helper.isBeforeCursor("f()") ) {
+		// Handle Function Autocomplete "f:"
+		if( helper.isBeforeCursor("f:") ) {
 			this.addListOfFunctions(result, helper, null);
 			return result;
+		}
+		
+		//----------------------------------------
+		// Handle Function "f:xxx"
+		CFWQueryToken checkIsColon = helper.getTokenBeforeCursor(-1);
+		CFWQueryToken checkIsCharF = helper.getTokenBeforeCursor(-2);
+
+		if( checkIsColon != null && checkIsColon.type() == CFWQueryTokenType.SIGN_COLON
+		&& checkIsCharF != null && checkIsCharF.value().equalsIgnoreCase("f") ) {
+			CFWQueryToken partialFunctionNameToken = helper.getTokenBeforeCursor(0);
+
+			this.addListOfFunctions(result, helper, partialFunctionNameToken.value());
+			return result;
+		}
+		
+		//----------------------------------------
+		// Handle Function "xxx("
+		CFWQueryToken checkIsBrace = helper.getTokenBeforeCursor(0);
+
+		if( checkIsBrace != null 
+		&& checkIsBrace.type() == CFWQueryTokenType.SIGN_BRACE_ROUND_OPEN) {
+			CFWQueryToken partialFunctionNameToken = helper.getTokenBeforeCursor(-1);
+			
+			if(partialFunctionNameToken != null) {
+				String functionName = partialFunctionNameToken.value();
+				if(CFW.Registry.Query.functionExists(functionName)) {
+					CFWQueryFunction function = CFW.Registry.Query.createFunctionInstance(new CFWQueryContext(), functionName);
+					result.setHTMLDescription(
+							CFWQueryAutocompleteHelper.createManualButton(CFWQueryComponentType.FUNCTION, function.uniqueName())
+							+ "<br><b>Description:&nbsp</b>"+function.descriptionShort()
+							+ "<br><b>Syntax:&nbsp</b>"+CFW.Security.escapeHTMLEntities(function.descriptionSyntax())
+							+ function.descriptionSyntaxDetailsHTML()
+						);
+					return result;
+				}else {
+					// do nothing, not a function, so try other autocompletes below
+				}
+			}
+
 		}
 		
 		//----------------------------------------
@@ -137,7 +176,6 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 			}
 			
 		}
-		
 		
 		return result;
 	}
@@ -191,7 +229,7 @@ final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 				CFWQueryFunction command = 
 						CFW.Registry.Query.createFunctionInstance(new CFWQueryContext(), currentName);
 				
-				String replaceThis = (isFullList) ? "f()" : filter;
+				String replaceThis = (isFullList) ? "f:" : "f:"+filter;
 				
 				list.addItem(
 						helper.createAutocompleteItem(
