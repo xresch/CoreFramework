@@ -1,0 +1,19 @@
+
+<p>Following query uses the function to create random float numbers:</p>
+
+<pre><code class="language-cfwquery">| source empty records= 100
+| set
+  index = count()
+  zeroToOne= randomFloat()
+  specialRange= randomFloat(0.55, 0.75)
+  zeroToThousand = randomFloat(0, 1000)
+  ThirtyPercentNull = randomFloat(50, 100, 30)
+  A_or_B = if(randomFloat() &lt;= 0.5, "A", "B")
+  X_Y_Z = if(randomFloat() &lt;= 0.1
+  				, "X"
+  				, if(randomFloat() &lt;= 0.3
+  					, "Y"
+  					, "Z")
+  			)
+</code></pre>
+

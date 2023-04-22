@@ -289,7 +289,8 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
-	 * Creates a random integer between 0 and the given number(inclusive).
+	 * Creates a random integer between the given numbers(inclusive).
+	 * Returns nulls for a certain percentage
 	 * 
 	 ******************************************************************************/
 	public static Integer randomIntegerInRange(int lowerInclusive, int upperInclusive, int nullRatioPercent) {
@@ -298,7 +299,7 @@ public class CFWRandom {
 		return randomIntegerInRange(lowerInclusive, upperInclusive);
 	}
 	/******************************************************************************
-	 * Creates a random integer between 0 and the given number(inclusive).
+	 * Creates a random integer between the given numbers(inclusive).
 	 * 
 	 ******************************************************************************/
 	public static Integer randomIntegerInRange(int lowerInclusive, int upperInclusive) {
@@ -328,10 +329,23 @@ public class CFWRandom {
 	 * Creates a random float between 0 and the given number(inclusive).
 	 * 
 	 ******************************************************************************/
-	public static Float randomFloatInRange(int lowerInclusive, int upperInclusive) {
+	public static Float randomFloatInRange(float lowerInclusive, float upperInclusive, int nullRatioPercent) {
+		
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		
+		return randomFloatInRange(lowerInclusive, upperInclusive);
+	}
+	
+	/******************************************************************************
+	 * Creates a random float between 0 and the given number(inclusive).
+	 * 
+	 ******************************************************************************/
+	public static Float randomFloatInRange(float lowerInclusive, float upperInclusive) {
 		
 		float randomFloat = ThreadLocalRandom.current().nextFloat();
-		return (randomFloat * upperInclusive) + lowerInclusive;
+		float diff = upperInclusive - lowerInclusive;
+		return (randomFloat * diff) + lowerInclusive;
+		
 	}
 	
 	/******************************************************************************

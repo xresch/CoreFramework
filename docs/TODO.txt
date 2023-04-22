@@ -221,6 +221,7 @@ DONE
 	- latest
 	- now
 	- random
+	- randomfloat
 	- replace
 	- timeoffset
 	- timeparse
