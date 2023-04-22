@@ -222,6 +222,7 @@ DONE
 	- now
 	- random
 	- randomfloat
+	- randomfrom
 	- replace
 	- timeoffset
 	- timeparse

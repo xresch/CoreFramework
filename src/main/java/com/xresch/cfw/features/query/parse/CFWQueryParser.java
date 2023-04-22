@@ -787,12 +787,21 @@ public class CFWQueryParser {
 
 				QueryPartJsonMemberAccess memberAccessPart = null;
 				while(this.hasMoreTokens()) {
-					
-					if(this.lookahead().isStringOrText()) {
+					CFWQueryToken lookahead = this.lookahead();
+					if(lookahead.isStringOrText()
+					|| lookahead.type() == CFWQueryTokenType.SIGN_BRACE_SQUARE_OPEN) {
 						//-------------------------------
 						// Create Access Part
-						CFWQueryToken nextToken = this.consumeToken();
-						QueryPart memberAccessValue = QueryPartValue.newString(nextToken.value());
+						QueryPart memberAccessValue = null;
+						if(lookahead.isStringOrText()) {
+							// Handle String Value
+							CFWQueryToken nextToken = this.consumeToken();
+							memberAccessValue = QueryPartValue.newString(nextToken.value());
+						}else {
+							// Handle Array Part Value
+							memberAccessValue = this.parseQueryPart(context);
+						}
+						
 						if(memberAccessPart == null) {
 							memberAccessPart = new QueryPartJsonMemberAccess(currentContext, firstPart, memberAccessValue);
 						}else {
@@ -809,7 +818,7 @@ public class CFWQueryParser {
 						}
 						
 					}else {
-						this.throwParseException("Expected string after dot operator '.'. ", this.cursor()-1);
+						this.throwParseException("Expected string or '[fieldname]' after dot operator '.'. ", this.cursor()-1);
 					}
 					
 				}
@@ -868,7 +877,7 @@ public class CFWQueryParser {
 		addTrace("Proceed with Array", "Comma encountered", "");
 		
 		QueryPart firstArrayElement = firstPart;
-		QueryPart secondArrayElement = firstPart;
+		QueryPart secondArrayElement = null;
 		while(this.lookahead() != null && this.lookahead().type() == CFWQueryTokenType.SIGN_COMMA) {
 			this.consumeToken();
 			secondArrayElement = this.parseQueryPart(context);

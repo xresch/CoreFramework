@@ -1,9 +1,12 @@
 package com.xresch.cfw.features.query.parse;
 
+import java.util.ArrayList;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryMemoryException;
@@ -112,20 +115,24 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 			QueryPartJsonMemberAccess accessExpression = (QueryPartJsonMemberAccess)leftside;
 			nextElement = accessExpression.accessMemberRecursively(rootObject, currentElement);
 		}
+		
+		//--------------------------
+		// Handle JsonArray
 		else if(currentElement.isJsonArray() && (leftside instanceof QueryPartArray) ){
-			//--------------------------
-			// Handle JsonArray
+			
 			QueryPartArray arrayExpression = (QueryPartArray)leftside;
 			nextElement = arrayExpression.getElementOfJsonArray(
 				currentElement.getAsJsonArray()
 			);
 		}
 		
+		//--------------------------
+		// JsonObject: access with object.fieldname
 		else if(currentElement.isJsonObject() && !(leftside instanceof QueryPartArray) ) {
-			//--------------------------
-			// Handle JsonObject
+			
 			JsonObject jsonObject = currentElement.getAsJsonObject();
 			String memberName = ((QueryPart)leftside).determineValue(rootObject).getAsString();
+			
 			if(jsonObject.has(memberName)) {
 
 				nextElement = jsonObject.get(memberName);
@@ -133,6 +140,12 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 				return JsonNull.INSTANCE;
 			}
 			
+		}
+		//--------------------------
+		// JsonObject: access member with object.[fieldname]...
+		else if(currentElement.isJsonObject() && (leftside instanceof QueryPartArray) ) {
+			ArrayList<QueryPart> partsArray = ((QueryPartArray)leftside).getAsParts();
+			nextElement = getMemberByFieldnameInArray(rootObject, currentElement, partsArray);
 		}
 		
 		//--------------------------
@@ -162,16 +175,53 @@ public class QueryPartJsonMemberAccess extends QueryPart {
 						);
 
 					return valueOfMember;
-					
+				
+				//--------------------------
+				// JsonObject: access member with object.membername
 				}else if(nextElement.isJsonObject() && !(rightside instanceof QueryPartArray) ) {
 					JsonElement valueOfMember = nextElement.getAsJsonObject().get(rightside.determineValue(rootObject).getAsString());
 					return valueOfMember;
 				}
+				//--------------------------
+				// JsonObject: access member with object.[fieldname]
+				else if(nextElement.isJsonObject() && (rightside instanceof QueryPartArray) ) {
+					ArrayList<QueryPart> partsArray = ((QueryPartArray)rightside).getAsParts();
+					return getMemberByFieldnameInArray(rootObject, nextElement, partsArray);
+					
+				}
 			}
 		}
 		
+		
 		//maybe change or add warning?
 		return null;
+	}
+
+	private JsonElement getMemberByFieldnameInArray(EnhancedJsonObject rootObject, JsonElement theElement, ArrayList<QueryPart> partsArray) {
+		JsonObject jsonObject = theElement.getAsJsonObject();
+		
+		if(partsArray.isEmpty()) {
+			return JsonNull.INSTANCE;
+		}else {
+			QueryPart memberNamePart = partsArray.get(0);
+			
+			if(memberNamePart instanceof QueryPartValue) {
+				
+				QueryPartValue memberNameValue = ((QueryPartValue)memberNamePart).convertFieldnameToFieldvalue(rootObject);
+				String memberName = memberNameValue.getAsString();
+
+				if(memberName != null && jsonObject.has(memberName)) {
+					theElement = jsonObject.get(memberName);
+					return theElement;
+				}else {
+					return JsonNull.INSTANCE;
+				}
+			}else {
+				return JsonNull.INSTANCE;
+			}
+			
+			
+		}
 	}
 	
 	

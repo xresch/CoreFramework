@@ -1,0 +1,45 @@
+
+<p>Following query uses the function to pick random values from an array:</p>
+
+<pre><code class="language-cfwquery">| source empty records= 100
+| set
+  index = count()
+  alwaysNull = randomFrom() # returns null
+  char = randomFrom(["A", "B", "C"]) # returns A, B or C
+  twentyPercentNull = randomFrom([true,false], 20) # returns true or false, with 20% chance to get null
+  # basically you can pick anything from an array, even the values of other fields
+  chaos = randomFrom(
+ 		[
+  			42
+  			, "test"
+  			, true
+  			, null
+  			, "char:"+char
+  			, "index:"+index
+  			, ['a','b', 'c']
+  			, {a: "AAAH!!"}
+  		]
+  	)</code></pre>
+
+
+
+
+<p>You can as well retrieve random member names and their values from objects:</p>
+
+<pre><code class="language-cfwquery">| source empty records= 100
+| set
+  index = count()
+  #########################################
+  # Preparing Objects
+  #########################################
+  object = {}
+  object.percent = random()
+  object.float = randomFloat()
+  object.category = randomFrom(['X', 'Y', 'Z'])
+  object.subobject.value = randomFrom([111, 222, 333])
+  #########################################
+  # Random from Object
+  #########################################
+  randomMember = randomFrom(object) # get a random member name from the object
+  memberValue = object.[randomMember] # get the value of the random member
+  memberSubValue = object.[randomMember].value # access a value of a sub object</code></pre>

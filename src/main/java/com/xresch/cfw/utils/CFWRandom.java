@@ -157,9 +157,9 @@ public class CFWRandom {
 	/******************************************************************************
 	 * 
 	 ******************************************************************************/
-	private static boolean checkReturnNull(int nullRatioPercent) {
+	public static boolean checkReturnNull(int nullRatioPercent) {
 		
-		if(nullRatioPercent > randomIntegerInRange(0, 100) ) {
+		if(nullRatioPercent >= randomIntegerInRange(1, 100) ) {
 			return true;
 		}
 		
