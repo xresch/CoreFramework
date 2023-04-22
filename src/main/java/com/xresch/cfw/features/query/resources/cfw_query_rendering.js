@@ -397,7 +397,7 @@ function cfw_query_formatDate(span, value, format){
 		
 	// set defaults
 	if(format == null ){
-		format = "YYYY-MM-DD";
+		format = "yyyy-MM-dd";
 	}
 	
 		
@@ -434,27 +434,12 @@ function cfw_query_formatDecimals(span, value, precision){
  * 
  ******************************************************************************/
 function cfw_query_formatDuration(span, value, durationUnit){
-		// set defaults
-	if(durationUnit == null ){
-		durationUnit = "ms";
-	}
-	var millisValue = value;
-	
-	switch(durationUnit){
-		case 'ns':	millisValue = value / 1000000; break
-		case 'us':	millisValue = value / 1000; break
-		case 's':	millisValue = value * 1000;
-		case 'm':	millisValue = value * 1000 * 60;
-		case 'h':	millisValue = value * 1000 * 60 * 60;
-	}
-	
-	
 	
 	span.addClass('text-right');
 	
 	if(value != null){
 		if(!isNaN(value)){
-			span.text(CFW.format.millisToDuration(millisValue));
+			span.text(CFW.format.timeToDuration(value, durationUnit));
 		}else{
 			span.text(value);
 		}
@@ -633,7 +618,7 @@ function cfw_query_formatThreshold(span, value, excellent, good, warning, emerge
  ******************************************************************************/
 function cfw_query_formatTimestamp(span, value, format){
 	
-	if(format == null )	{ format = "YYYY-MM-DD HH:mm:ss"; }
+	if(format == null )	{ format = "yyyy-MM-dd HH:mm:ss"; }
 		
 	if(value != null){
 		span.text(new  moment(value).format(format));

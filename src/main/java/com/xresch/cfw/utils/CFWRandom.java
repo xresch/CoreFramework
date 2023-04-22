@@ -159,7 +159,7 @@ public class CFWRandom {
 	 ******************************************************************************/
 	private static boolean checkReturnNull(int nullRatioPercent) {
 		
-		if(nullRatioPercent >= randomIntegerInRange(1, 100) ) {
+		if(nullRatioPercent > randomIntegerInRange(0, 100) ) {
 			return true;
 		}
 		
@@ -288,6 +288,15 @@ public class CFWRandom {
 		return ThreadLocalRandom.current().nextInt(upperInclusive+1);
 	}
 	
+	/******************************************************************************
+	 * Creates a random integer between 0 and the given number(inclusive).
+	 * 
+	 ******************************************************************************/
+	public static Integer randomIntegerInRange(int lowerInclusive, int upperInclusive, int nullRatioPercent) {
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		
+		return randomIntegerInRange(lowerInclusive, upperInclusive);
+	}
 	/******************************************************************************
 	 * Creates a random integer between 0 and the given number(inclusive).
 	 * 

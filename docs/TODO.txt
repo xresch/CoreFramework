@@ -220,8 +220,10 @@ DONE
 	- earliest
 	- latest
 	- now
+	- random
 	- replace
 	- timeoffset
+	- timeparse
 	- tojson
 	- type
 	

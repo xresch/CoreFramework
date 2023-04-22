@@ -147,7 +147,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				"date", 
 				"Formats epoch milliseconds as date.",
 				new Object[][] {
-					 new Object[] {"format", "YYYY-MM-DD", "The format of the date, google moment.js for details."}
+					 new Object[] {"format", "yyyy-MM-dd", "The format of the date, google moment.js for details."}
 				}
 			).example(
 				 "#Formats the LAST_LOGIN epoch milliseconds as a date."
@@ -361,7 +361,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				"timestamp", 
 				"Formats epoch milliseconds as a timestamp.",
 				new Object[][] {
-					 new Object[] {"format", "YYYY-MM-DD HH:mm:ss", "The format of the timestamp, google moment.js for details."}
+					 new Object[] {"format", "yyyy-MM-dd HH:mm:ss", "The format of the timestamp, google moment.js for details."}
 				}
 			).example(
 				 "#Formats the LAST_LOGIN epoch milliseconds as a timestamp."

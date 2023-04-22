@@ -1,7 +1,9 @@
 package com.xresch.cfw.features.query.functions;
 
+import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
@@ -10,10 +12,10 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
-public class CFWQueryFunctionLatest extends CFWQueryFunction {
+public class CFWQueryFunctionTimeParse extends CFWQueryFunction {
 
 	
-	public CFWQueryFunctionLatest(CFWQueryContext context) {
+	public CFWQueryFunctionTimeParse(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -22,7 +24,7 @@ public class CFWQueryFunctionLatest extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "latest";
+		return "timeparse";
 	}
 	
 	/***********************************************************************************************
@@ -30,14 +32,14 @@ public class CFWQueryFunctionLatest extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "latest(format)";
+		return "timeparse(format, timeString)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns latest time as epoch time or in a specific format. ";
+		return "Parses time from a string representation and returns it as epoch milliseconds.";
 	}
 	
 	/***********************************************************************************************
@@ -45,9 +47,12 @@ public class CFWQueryFunctionLatest extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>format:&nbsp;</b>(Optional)The format the returned time should have. Default is null, what returns epoch time in milliseconds. (Example: yyyy-MM-dd'T'HH:mm:ss.SSSZ)</p>"
-				 + "<p><b>useClientTimezone:&nbsp;</b>(Optional). Default is false, UTC format will be used. If set to true, the time zone of the client will be used."
-				;
+		return 
+				"<ul>"
+				+"<li><b>format:&nbsp;</b>(Optional)The The format of the input string. (Example: yyyy-MM-dd'T'HH:mm:ss.SSSZ)</li>"
+				+"<li><b>timeString:&nbsp;</b>(Optional). A string containing a time in the defined format.</li>"
+			+ "</ul>"
+			;
 	}
 
 	/***********************************************************************************************
@@ -55,7 +60,7 @@ public class CFWQueryFunctionLatest extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_latest.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_timeparse.html");
 	}
 
 
@@ -86,37 +91,49 @@ public class CFWQueryFunctionLatest extends CFWQueryFunction {
 		int size = parameters.size(); 
 		
 		//----------------------------------
-		// Get Format
-		String dateformat = null;
-		
-		if(size > 0) {
-			QueryPartValue formatValue = parameters.get(0);
-			if(formatValue.isString()) { dateformat = formatValue.getAsString(); };
+		// Check has Params
+		if(size < 2) {
+			return QueryPartValue.newNull();
 		}
+
 		
 		//----------------------------------
-		// Get useClientTimezone
-		boolean useClientTimezone = false;
-		if(size > 1) {
-			QueryPartValue useClientTimezoneValue = parameters.get(1);
-			if(useClientTimezoneValue.isBoolOrBoolString()) { useClientTimezone = useClientTimezoneValue.getAsBoolean(); };
+		// Get Format
+		String dateformat = null;
+
+		QueryPartValue formatValue = parameters.get(0);
+		if(formatValue.isString()) { 
+			dateformat = formatValue.getAsString(); 
+		};
+		
+		
+		//----------------------------------
+		// Get time String
+		String timeString = "";
+
+		QueryPartValue timeStringValue = parameters.get(1);
+		if(!timeStringValue.isNullOrEmptyString() && timeStringValue.isString()) { 
+			timeString = timeStringValue.getAsString(); 
+		}else {
+			return QueryPartValue.newNull();
 		}
+		
 						
 		//----------------------------------
 		// Create Time and Format
-		long millis = this.context.getLatestMillis();
+		long millis = this.context.getEarliestMillis();
 		if(dateformat == null) {
 			return QueryPartValue.newNumber(millis);
 		}else {
-			ZonedDateTime zonedTime = CFW.Time.zonedTimeFromEpoch(millis);
+			long epochMillis;
 			
-			int offset = 0;
-			if(useClientTimezone) {
-				offset = this.context.getTimezoneOffsetMinutes();
+			try {
+				epochMillis = CFW.Time.parseTime(dateformat, timeString);
+				return QueryPartValue.newNumber(epochMillis);
+			} catch (ParseException e) {
+				return QueryPartValue.newBoolean(false);
 			}
 			
-			String dateFormatted = CFW.Time.formatDate(zonedTime, dateformat, offset);
-			return QueryPartValue.newString(dateFormatted);
 		}
 				
 	}

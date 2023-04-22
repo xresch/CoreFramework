@@ -13,7 +13,7 @@
 	fiftyMilli = timeoffset($earliest$, 0, 0, 0, 0, 0, 0, -50) #takes earliest time and and offsets it by -1 millisecond
 | formatfield
 	# just some formatters
-	[now] = ['timestamp', "YYYY-MM-DD HH:mm:ss"]
+	[now] = ['timestamp', "yyyy-MM-dd HH:mm:ss"]
 	[oneYear, oneMonth, oneDay] = ['date']
 	[oneHour, oneMinute, oneSecond, fiftyMilli] = ['timestamp', "HH:mm:ss.SSS"]</code></pre>
 

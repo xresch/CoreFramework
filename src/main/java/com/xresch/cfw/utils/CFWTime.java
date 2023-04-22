@@ -1,9 +1,10 @@
 package com.xresch.cfw.utils;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -62,6 +63,20 @@ public class CFWTime {
 	 ********************************************************************************************/
 	public static ZonedDateTime zonedTimeFromEpochUTC(long epochMilliseconds) {
 		return zonedTimeFromEpoch(epochMilliseconds, ZoneOffset.UTC);
+	}
+	
+	/********************************************************************************************
+	 * Parses a time string as UTC time and returns epoch milliseconds.
+	 * @throws ParseException 
+	 ********************************************************************************************/
+	public static long parseTime(String formatPattern, String parseThis) throws ParseException {
+		
+		// Using SimpleDateFormat because DateTimeFormatter is implemented so that it is hard to 
+		// to work with variable patterns
+		SimpleDateFormat sdf = new SimpleDateFormat(formatPattern);
+		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		return sdf.parse(parseThis).getTime();
+
 	}
 
 	/********************************************************************************************
@@ -184,7 +199,7 @@ public class CFWTime {
 	}
 
 	/********************************************************************************************
-	 * Get a timestamp string of the current time in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
+	 * Get a timestamp string of the current time in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
 	 * 
 	 ********************************************************************************************/
 	public static TimeZone getMachineTimeZone(){
@@ -192,7 +207,7 @@ public class CFWTime {
 	}
 	
 	/********************************************************************************************
-	 * Get a timestamp string of the current time in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
+	 * Get a timestamp string of the current time in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
 	 * 
 	 ********************************************************************************************/
 	public static void setMachineTimeZone(TimeZone timezone){
@@ -201,7 +216,7 @@ public class CFWTime {
 	
 
 	/********************************************************************************************
-	 * Get a timestamp string of the current time in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
+	 * Get a timestamp string of the current time in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
 	 * 
 	 ********************************************************************************************/
 	public static long machineTimeMillis(){
@@ -210,7 +225,7 @@ public class CFWTime {
 	}
 	
 	/********************************************************************************************
-	 * Get a timestamp string of the current time in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
+	 * Get a timestamp string of the current time in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
 	 * 
 	 ********************************************************************************************/
 	public static String currentTimestamp(){
@@ -220,14 +235,14 @@ public class CFWTime {
 	
 	
 	/********************************************************************************************
-	 * Get a string representation of the date in the format  "YYYY-MM-dd'T'HH:mm:ss.SSS".
+	 * Get a string representation of the date in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
 	 ********************************************************************************************/
 	public static String formatDateAsTimestamp(ZonedDateTime date){
 		return formatterTimestamp.format(date);
 	}
 	
 	/********************************************************************************************
-	 * Get a string representation of the date in the format  "YYYY-MM-dd".
+	 * Get a string representation of the date in the format  "yyyy-MM-dd".
 	 ********************************************************************************************/
 	public static String formatDateAsISO(ZonedDateTime date){
 		return formatterISODate.format(date);

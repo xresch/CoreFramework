@@ -24,7 +24,7 @@
                 "LAST_LOGIN": [
                     [
                         "timestamp",
-                        "YYYY-MM-DD HH:mm:ss"
+                        "yyyy-MM-dd HH:mm:ss"
                     ]
                 ],
                 "VALUE": [

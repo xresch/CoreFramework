@@ -2483,13 +2483,40 @@ function cfw_format_millisToClock(millis){
   return "";
 }
 
+
 /**************************************************************************************
- * Create a clock string in the format HH:mm:ss
+ * Create a duration string in the format # d ##h ##m ##.#s 
+ * @param timeValue amount of time
+ * @param timeUnit unit of time, one of: ns | us | ms | s | m | h (Default: ms)
+ * @return clock string
+ *************************************************************************************/
+function cfw_format_timeToDuration(timeValue, timeUnit){
+	var millisValue = timeValue;
+	
+	//--------------------------------
+	// If null, assume is milliseconds
+	if(timeUnit != null ){
+		switch(timeUnit){
+			case 'ns':	millisValue = timeValue / 1000000; break
+			case 'us':	millisValue = timeValue / 1000; break
+			//case 'ms':	millisValue = timeValue; break
+			case 's':	millisValue = timeValue * 1000; break
+			case 'm':	millisValue = timeValue * 1000 * 60; break
+			case 'h':	millisValue = timeValue * 1000 * 60 * 60; break
+			default: 	millisValue = timeValue; 
+		}
+	}
+	
+	
+	return cfw_format_millisToDuration(millisValue);
+}
+/**************************************************************************************
+ * Create a duration string in the format # d ##h ##m ##.#s 
  * @param millis milliseconds
  * @return clock string
  *************************************************************************************/
 function cfw_format_millisToDuration(millis){
-
+	
 	if(millis != null){
 		var milliseconds = parseInt((millis % 1000) / 100);
 		var seconds = Math.floor((millis / 1000) % 60);
@@ -4826,6 +4853,7 @@ var CFW = {
 		epochToDate: 		cfw_format_epochToDate,
 		fieldNameToLabel: 	cfw_format_fieldNameToLabel,
 		millisToClock: 		cfw_format_millisToClock,
+		timeToDuration: 	cfw_format_timeToDuration,
 		millisToDuration: 	cfw_format_millisToDuration,
 		cfwSchedule: 		cfw_format_cfwSchedule,
 		splitCFWSchedule: 	cfw_format_splitCFWSchedule,

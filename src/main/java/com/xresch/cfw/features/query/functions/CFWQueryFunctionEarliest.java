@@ -46,7 +46,7 @@ public class CFWQueryFunctionEarliest extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>format:&nbsp;</b>(Optional)The format the returned time should have. Default is null, what returns epoch time in milliseconds. (Example: YYYY-MM-dd'T'HH:mm:ss.SSSZ)</p>"
+		return "<p><b>format:&nbsp;</b>(Optional)The format the returned time should have. Default is null, what returns epoch time in milliseconds. (Example: yyyy-MM-dd'T'HH:mm:ss.SSSZ)</p>"
 			 + "<p><b>useClientTimezone:&nbsp;</b>(Optional). Default is false, UTC format will be used. If set to true, the time zone of the client will be used."
 			;
 	}

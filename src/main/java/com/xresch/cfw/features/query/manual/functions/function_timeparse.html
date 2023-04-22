@@ -1,0 +1,23 @@
+
+<p>Following query uses the function to execute various parsing actions:</p>
+
+<pre><code class="language-cfwquery">source empty records=100
+| metadata name="Test"
+| set
+	A=timeparse("yyyy-MM-dd HH:mm:ss", "2023-04-20 18:50:52") # returns  epoch milliseconds
+	B=timeparse("yyyy/dd/MM", "2023/20/04") # 
+	C=timeparse("HH:mm:ss.SSS", "05:22:44.567") # will return milliseconds for time
+	CF=C # will be formatted based on client time zone, e.g:  06:22:44
+	CDuration=C
+	D=timeparse("yyyy-MM-dd HH:mm:ssZ", "2023-04-20 18:50:52+0500") # parsed as UTC with offset +0500
+	EVariable = if( random() <= 50, "05:22:44 2024-04-14", "2002-02-22") # create variable example with variable format
+	E=timeparse("yyyy-MM-dd", EVariable) # returns false if not parsable
+	EE=if(E == false, timeparse("HH:mm:ss yyyy-MM-dd", EVariable), E) # example retry with differnt format, you can assign to "E" instead of "EE" to overwrite
+
+| formatfield # formatting 
+	[A, D] = ['timestamp', "yyyy-MM-DD HH:mm:ss"]
+	[B, EE] = ['date', "YYYY-MM-DD"]
+	C = ['timestamp', "HH:mm:ss"] 
+	CDuration = ['duration', "ms"]
+</code></pre>
+

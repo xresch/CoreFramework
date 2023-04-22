@@ -1,0 +1,19 @@
+
+<p>Following query uses the function to create random integers:</p>
+
+<pre><code class="language-cfwquery">| source empty records= 100
+| set
+  index = count()
+  percent = random()
+  fiftyToHundred = random(50)
+  zeroToMillion = random(0, 1000000)
+  ThirtyPercentNull = random(0, 100, 30)
+  A_or_B = if(random() <= 50, "A", "B")
+  X_Y_Z = if(random() <= 10
+  				, "X"
+  				, if(random() <= 30
+  					, "Y"
+  					, "Z")
+  			)
+</code></pre>
+
