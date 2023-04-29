@@ -214,6 +214,7 @@ DONE
 	- text
 	- web 
 - Query: Added commands: 
+	- merge
 	- unbox
 - Query: Added functions: 
 	- decode

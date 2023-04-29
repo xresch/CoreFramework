@@ -153,10 +153,10 @@ public class CFWQueryCommandMerge extends CFWQueryCommand {
 		ArrayList<CFWQueryResult> mergedResults = new ArrayList<>();
 		
 		if(isPreviousDone() && inQueue.isEmpty()) {
-			System.out.println("A");
+			
 			CFWQueryResultList previousResults = this.parent.getContext().getResultList();
 			for(int i = 0; i < previousResults.size(); i++) {
-				System.out.println("B");
+				
 				CFWQueryResult current = previousResults.get(i);
 				JsonElement name = current.getMetadata().get("name");
 				String nameString = (name != null && !name.isJsonNull()) ? name.getAsString() : null;
@@ -168,16 +168,15 @@ public class CFWQueryCommandMerge extends CFWQueryCommand {
 				) {
 					//----------------------------
 					// Handle Detected Fields
-					System.out.println("C");
 					this.fieldnameAddAll(current.getDetectedFields());		
 					mergedResults.add(current);
+					
 					//----------------------------
 					// Iterate Results
 					current.getResults().forEach(new Consumer<JsonElement>() {
 
 						@Override
 						public void accept(JsonElement e) {
-							System.out.print("D");
 							outQueue.add(
 									new EnhancedJsonObject(e.getAsJsonObject())
 								);
