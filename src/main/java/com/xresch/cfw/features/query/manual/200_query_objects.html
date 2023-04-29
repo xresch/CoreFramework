@@ -1,0 +1,89 @@
+
+<p>
+	The query language supports the creation and use of objects.
+	This can be helpful in use cases like  fetching data from sources returning JSON structures, 
+	or when using the API to execute queries and structuring the returned result.
+</p>
+
+<h2>Creating Objects</h2>
+<p>You can create your own objects for every record using curly braces'{}'.
+Here an example on how to do that:
+</p>
+<pre><code class="language-cfwquery">| source random records= 10
+| keep INDEX, ID, FIRSTNAME
+| set
+  #########################################
+  # Static Objects
+  #########################################
+  # Following will parse everything inside {...} as string and converts it to an object.
+  # functions and fields will not be resolved, e.g. 'index' will be string "INDEX", not the value of the field before 
+  staticobject = {id: 0, name: "Tereza", makes_tiramisu: true, index: INDEX}
+  #########################################
+  # Dynamic Objects
+  #########################################
+  # create an empty object, afterwards you can add data using the dot-operator
+  object = {}
+  object.index = INDEX # will take value from index
+  object.url = "https://www.clickme4tiramisu.com/id="+ID+"&amp;firstname="+encode(FIRSTNAME)
+  object.percent = random()
+  object.float = randomFloat()
+  object.category = randomFrom(['X', 'Y', 'Z'])
+  object.isIsness = randomFrom([true, false, null])
+  object.subobject.value = randomFrom([111, 222, 333])
+| remove INDEX, ID, FIRSTNAME</code></pre>
+
+
+<h2>Accessing Object Members</h2>
+<p>To access or overwrite the value of an object member, you can use the dot-operator:</p>
+<pre><code class="language-cfwquery">| source random type=various records=10
+| keep GRAPH_DATA
+| set
+	X=GRAPH_DATA.x # assign value of member "GRAPH_DATA.x" to "X"
+	Y=GRAPH_DATA.y # assign value of member "GRAPH_DATA.y" to "Y"
+	MULTIPLIED = (GRAPH_DATA.x * GRAPH_DATA.y) # use in math
+	GRAPH_DATA_REF = GRAPH_DATA # creates a reference to the object(affected by changes to original)
+	GRAPH_DATA_CLONE = clone(GRAPH_DATA) # create a clone of the object(not affected by changes to original)
+	GRAPH_DATA.rounded.x = round(GRAPH_DATA.x, 2) # physically forms the number so it rolls down a hill
+	GRAPH_DATA.rounded.y = round(GRAPH_DATA.y, 2) # might make a circle around the number, or just makes a circle and ignores the number
+| filter 
+	(GRAPH_DATA.rounded.x &lt;= 5) # use with operators
+| formatfield
+	[Y, MULTIPLIED] = ['decimals', 2] # just some formatting
+	# [GRAPH_DATA.y] = ['decimals', 2] # this does not work</code></pre>
+
+
+
+<p>In case you want to read the member name of the object from a record field, use '.[fieldname]' to access the member.
+Following query gets a random member name and accesses its value with the '.[randomName]' operator:</p>
+<pre><code class="language-cfwquery">| source empty records= 100
+| set
+  index = count()
+  #########################################
+  # Prepare Object
+  #########################################
+  object = {}
+  object.percent = random()
+  object.float = randomFloat()
+  object.category = randomFrom(['X', 'Y', 'Z'])
+  object.subobject.value = randomFrom([111, 222, 333])
+  #########################################
+  # Random from Object
+  #########################################
+  randomName = randomFrom(object) # get a random member name from the object (either: percent | float | category | subobject)
+  memberValue = object.[randomName] # get the value of the random member
+  memberSubValue = object.[randomName].value # access a value of a sub object</code></pre>
+
+
+<h2>Unboxing Objects</h2>
+<p>To convert all the members of an object into fields, use the <a href="#" onclick="cfw_manual_loadPage('Query|Commands|unbox');">unbox</a> command:</p>
+<pre><code class="language-cfwquery">| source empty records =100
+| set
+  index = count()
+  object = {}
+  object.X = randomFloat() 
+  object.Y = randomFloat()
+  object.Z = randomFloat()
+| unbox object replace=false</code></pre>
+
+
+

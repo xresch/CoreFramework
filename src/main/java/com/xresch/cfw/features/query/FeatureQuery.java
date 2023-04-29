@@ -338,22 +338,31 @@ public class FeatureQuery extends CFWAppFeature {
 		// Cheat Sheet
 		ROOT_MANUAL_PAGE.addChild(new ManualPage("Cheat Sheet")
 				.faicon("fas fa-star")
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "010_query_cheatsheet.html")
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "100_query_cheatsheet.html")
 			);
 		
 		//----------------------------------
-		// Query API
-		ROOT_MANUAL_PAGE.addChild(new ManualPage("Query API")
-				.faicon("fas fa-code")
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "020_query_api.html")
+		// Working with Time
+		ROOT_MANUAL_PAGE.addChild(new ManualPage("Using Objects")
+				.faicon("fas fa-grip-horizontal")
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "200_query_objects.html")
 			);
 		
 		//----------------------------------
 		// Working with Time
 		ROOT_MANUAL_PAGE.addChild(new ManualPage("Working with Time")
 				.faicon("fas fa-clock")
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "015_query_time.html")
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "300_query_time.html")
 			);
+		
+		//----------------------------------
+		// Query API
+		ROOT_MANUAL_PAGE.addChild(new ManualPage("Query API")
+				.faicon("fas fa-code")
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "900_query_api.html")
+			);
+		
+		
 		//----------------------------------
 		// Source Main Page
 		ManualPage sourcePage = new ManualPage("Sources")
@@ -361,6 +370,7 @@ public class FeatureQuery extends CFWAppFeature {
 				.content("&nbsp;");
 		
 		ROOT_MANUAL_PAGE.addChild(sourcePage);
+		
 		
 		//----------------------------------
 		// Pages for each Source
