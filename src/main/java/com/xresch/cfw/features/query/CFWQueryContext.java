@@ -16,16 +16,51 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class CFWQueryContext{
 	
+	
 	private long earliest = 0;
 	private long latest = 0;
 	private int timezoneOffsetMinutes = 0;
 	private boolean checkPermissions = true;
+	private CFWQueryResultList resultArray;
 	
 	private JsonObject metadata = new JsonObject();
 	private JsonObject globals = new JsonObject();
 	private JsonObject displaySettings = new JsonObject();
 	
 	protected CFWQueryFieldnameManager contextFieldnameManager = new CFWQueryFieldnameManager();
+	
+	/***********************************************************************************************
+	 * Constructs a Context with a new CFWQueryResultList.
+	 * This is mainly used for testing.
+	 ***********************************************************************************************/
+	public CFWQueryContext() {
+		resultArray = new CFWQueryResultList();
+	}
+	
+	/***********************************************************************************************
+	 * Constructs a Context with a shared CFWQueryResultList.
+	 * This is needed for commands which operate on existing results.
+	 ***********************************************************************************************/
+	public CFWQueryContext(CFWQueryResultList sharedResults) {
+		resultArray = sharedResults;
+	}
+	
+	/***********************************************************************************************
+	 * Clones the context to make a new base context that can be shared between multiple queries.
+	 * (queries split up by ';')
+	 ***********************************************************************************************/
+	public CFWQueryContext clone() {
+		
+		CFWQueryContext clonedContext = new CFWQueryContext(this.resultArray);
+		clonedContext.checkPermissions(this.checkPermissions());
+		clonedContext.setEarliest(this.getEarliestMillis());
+		clonedContext.setLatest(this.getLatestMillis());
+		clonedContext.setTimezoneOffsetMinutes(this.getTimezoneOffsetMinutes());
+		clonedContext.setGlobals(this.getGlobals());
+		clonedContext.setFieldnames(contextFieldnameManager);
+		
+		return clonedContext;
+	}
 	
 	/***********************************************************************************************
 	 * Get the earliest time for this query.
@@ -88,6 +123,13 @@ public class CFWQueryContext{
 	}
 	
 	/***********************************************************************************************
+	 * Returns the array containing all the results of already completed queries(splitted by ';').
+	 ***********************************************************************************************/
+	public CFWQueryResultList getResultList() {
+		return resultArray;
+	}
+	
+	/***********************************************************************************************
 	 * Returns the object containing the metadata of the query.
 	 ***********************************************************************************************/
 	public JsonObject getMetadata() {
@@ -121,6 +163,7 @@ public class CFWQueryContext{
 	public void setGlobals(JsonObject globalsObject) {
 		globals = globalsObject;
 	}
+	
 	
 	/***********************************************************************************************
 	 * Returns the object containing the metadata of the query.

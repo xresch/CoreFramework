@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
@@ -205,7 +207,7 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		
 		CFWQueryCommandSource localPreviousSource = this.getPreviousSourceCommand();
 
-		if(localPreviousSource == null) { return null;} 
+		if(localPreviousSource == null) { return this.parent.getContext().contextFieldnameManager;} 
 		
 		return localPreviousSource.getFieldManager();
 	}
@@ -223,6 +225,28 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		if(sourceFieldmanager != null) {
 			sourceFieldmanager.add(fieldname);
 		}
+	}
+	
+	/***********************************************************************************************
+	 * Add all fieldnames, except for fieldnames that start with an underscore.
+	 ***********************************************************************************************/
+	protected void fieldnameAddAll(JsonArray array) {
+		
+		//-----------------------------------
+		// Add Change to Source fieldmanager
+		CFWQueryFieldnameManager sourceFieldmanager = this.getSourceFieldmanager();
+			
+		if(sourceFieldmanager != null) {
+			for(JsonElement e : array) {
+				if(e != null 
+				&& e.isJsonPrimitive()
+				&& e.getAsJsonPrimitive().isString()
+				) {
+					sourceFieldmanager.add(e.getAsString());
+				}
+			}
+		}
+		
 	}
 	
 	/***********************************************************************************************

@@ -122,7 +122,7 @@ public class CFWQueryFieldnameManager {
 	 ***********************************************************************************************/
 	public CFWQueryFieldnameManager addall(Set<String> names) {
 		
-		if(modifications.size()>0) {
+		if(modifications.size() > 0) {
 			FieldModification previous = modifications.get(modifications.size()-1);
 			
 			if(previous.type == ModificationType.ADDALL && previous.fieldnames.equals(names)) {

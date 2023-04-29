@@ -78,13 +78,14 @@ public class CFWQueryExecutor {
 	 ****************************************************************/
 	public CFWQueryResultList parseAndExecuteAll(String queryString, long earliest, long latest, int timezoneOffsetMinutes) {
 		
-		CFWQueryResultList resultArray = new CFWQueryResultList();
-		
+
 		CFWQueryContext baseQueryContext = new CFWQueryContext();
 		baseQueryContext.setEarliest(earliest);
 		baseQueryContext.setLatest(latest);
 		baseQueryContext.setTimezoneOffsetMinutes(timezoneOffsetMinutes);
 		baseQueryContext.checkPermissions(checkPermissions);
+		
+		CFWQueryResultList resultArray = baseQueryContext.getResultList();
 		
 		//------------------------
 		// Parse The Query

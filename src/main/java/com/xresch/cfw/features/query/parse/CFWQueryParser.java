@@ -46,11 +46,10 @@ public class CFWQueryParser {
 	
 	private String query = null;
 	private boolean checkSourcePermissions = true;
-	private CFWQueryContext initialContext;
+	private CFWQueryContext initialContextToBeCloned;
 	private ArrayList<CFWQueryToken> tokenlist;
 	CFWQuery currentQuery;
 	private CFWQueryContext currentContext;
-	private JsonObject sharedGlobalsObject;
 	ArrayList<QueryPart> currentQueryParts = new ArrayList<>(); //initialized here so test cases don't run into nullpointer
 	
 	// cached instance
@@ -98,7 +97,7 @@ public class CFWQueryParser {
 		}
 		
 		this.query = inputQuery;
-		this.initialContext = initialContext;
+		this.initialContextToBeCloned = initialContext;
 		this.checkSourcePermissions = initialContext.checkPermissions();
 		this.cursor = 0;
 		
@@ -247,10 +246,7 @@ public class CFWQueryParser {
 	 * 
 	 ***********************************************************************************************/
 	public ArrayList<CFWQuery> parse() throws ParseException {
-		
-		// create shared global object
-		sharedGlobalsObject = new JsonObject();
-		
+
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
 		//-----------------------------------
 		// Skip preceding semicolons
@@ -284,13 +280,7 @@ public class CFWQueryParser {
 		
 		addTrace("Parse", "Query", "[START]");
 		
-		currentQuery = new CFWQuery();
-		currentContext = currentQuery.getContext();
-		currentContext.checkPermissions(initialContext.checkPermissions());
-		currentContext.setEarliest(initialContext.getEarliestMillis());
-		currentContext.setLatest(initialContext.getLatestMillis());
-		currentContext.setTimezoneOffsetMinutes(initialContext.getTimezoneOffsetMinutes());
-		currentContext.setGlobals(sharedGlobalsObject);
+		currentQuery = new CFWQuery(initialContextToBeCloned);
 		
 		while(this.hasMoreTokens() && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
 			

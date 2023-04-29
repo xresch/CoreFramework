@@ -23,6 +23,21 @@ public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 	private CFWQueryContext context = new CFWQueryContext();
 	
 	/***********************************************************************************************
+	 * Create a new query with a new Context.
+	 ***********************************************************************************************/
+	public  CFWQuery(){
+		this(new CFWQueryContext());
+	}
+	
+	/***********************************************************************************************
+	 * Add a query command to the query.
+	 ***********************************************************************************************/
+	public  CFWQuery(CFWQueryContext cloneThis){
+		context = cloneThis.clone();
+	}
+	
+	
+	/***********************************************************************************************
 	 * Add a query command to the query.
 	 ***********************************************************************************************/
 	public void addCommand(CFWQueryCommand command){
