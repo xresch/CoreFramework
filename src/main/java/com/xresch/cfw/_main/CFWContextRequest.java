@@ -148,10 +148,11 @@ public class CFWContextRequest {
 	
 	
 	/**************************************************************************
-	 * 
+	 * Returns null if there is no user logged in.
 	 **************************************************************************/
 	public static Integer getUserID() {
-		if(getContext().sessionData != null) {
+		if(getContext().sessionData != null
+		&& getContext().sessionData.getUser() != null) {
 			return getContext().sessionData.getUser().id();
 		}
 		return null;
