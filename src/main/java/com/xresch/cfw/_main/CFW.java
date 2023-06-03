@@ -36,6 +36,8 @@ import com.xresch.cfw.features.dashboard.CFWRegistryWidgets;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.parameters.CFWDBDashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.CFWRegistryDashboardParameters;
+import com.xresch.cfw.features.datetime.CFWDBDate;
+import com.xresch.cfw.features.datetime.FeatureDateTime;
 import com.xresch.cfw.features.jobs.CFWDBJob;
 import com.xresch.cfw.features.jobs.CFWJobsAlerting;
 import com.xresch.cfw.features.jobs.CFWRegistryJobs;
@@ -75,10 +77,10 @@ import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.utils.CFWScripting;
 import com.xresch.cfw.utils.CFWSecurity;
 import com.xresch.cfw.utils.CFWState;
+import com.xresch.cfw.utils.CFWTime;
 import com.xresch.cfw.utils.CFWUtilsAnalysis;
 import com.xresch.cfw.utils.CFWUtilsArray;
 import com.xresch.cfw.utils.CFWUtilsText;
-import com.xresch.cfw.utils.CFWTime;
 import com.xresch.cfw.utils.json.CFWJson;
 import com.xresch.cfw.validation.CFWValidation;
 
@@ -110,6 +112,7 @@ public class CFW {
 		public static class Config extends CFWDBConfig{};
 		public static class ContextSettings extends CFWDBContextSettings{};
 		public static class Dashboards extends CFWDBDashboard{};
+		public static class Date extends CFWDBDate{};
 		public static class DashboardWidgets extends CFWDBDashboardWidget{};
 		public static class DashboardParameters extends CFWDBDashboardParameter{};
 		public static class DashboardFavorites extends CFWDBDashboardFavoriteMap{};
@@ -428,13 +431,13 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureConfiguration.class);
 		CFW.Registry.Features.addFeature(FeatureKeyValuePairs.class);
 		CFW.Registry.Features.addFeature(FeatureCore.class);	
+		CFW.Registry.Features.addFeature(FeatureDateTime.class);	
 				
 		CFW.Registry.Features.addFeature(FeatureUserManagement.class);	
 		
 		if(CFW.AppSettings.isContextSettingsEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureContextSettings.class);	
 		}
-		
 		
 		CFW.Registry.Features.addFeature(FeatureAPI.class);	
 		CFW.Registry.Features.addFeature(FeatureSystemAnalytics.class);		
