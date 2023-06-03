@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.query;
 
+import java.util.Set;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -123,6 +125,18 @@ public class CFWQueryResult {
 	 ****************************************************/
 	public CFWQueryResult setDetectedFields(JsonArray value) {
 		object.add(RESULTFIELDS_DETECTED_FIELDS, value);
+		return this;
+	}
+	
+	/****************************************************
+	 * 
+	 ****************************************************/
+	public CFWQueryResult setDetectedFields(Set<String> set) {
+		JsonArray detectedFieldsArray = new JsonArray();
+		for(String entry : set) {
+			detectedFieldsArray.add(entry);
+		}
+		object.add(RESULTFIELDS_DETECTED_FIELDS, detectedFieldsArray);
 		return this;
 	}
 	
