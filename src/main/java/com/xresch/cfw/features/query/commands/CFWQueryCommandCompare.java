@@ -163,7 +163,7 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 			
 			ArrayList<String> idFields = new ArrayList<>();
 			idFields.add("FIRSTNAME");
-			idFields.add("LASTSTNAME");
+			idFields.add("LASTNAME");
 			
 			CFWQueryResult compared = 
 					new CFWQueryCommandCompareMethods()

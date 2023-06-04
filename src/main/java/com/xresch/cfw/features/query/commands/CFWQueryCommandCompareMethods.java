@@ -13,6 +13,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
@@ -462,11 +463,14 @@ public class CFWQueryCommandCompareMethods {
 					//---------------------------------
 					// If Identifier just add without compare
 					if(identifierFields.contains(fieldname)) {
-						String indexBraces = "";
-						if(i > 0) {
-							indexBraces = "["+(i+1)+"]";
+						if(i == 0) {
+							resultObject.add(fieldname, youngValue);
+						}else {
+							String indexed = (!youngValue.isJsonNull()) ? youngValue.getAsString() : "null";
+							indexed += "["+(i+1)+"]";
+							resultObject.addProperty(fieldname, indexed);
 						}
-						resultObject.addProperty(fieldname, youngValue.toString()+indexBraces);
+						
 						continue;
 					}
 					
@@ -477,12 +481,18 @@ public class CFWQueryCommandCompareMethods {
 					
 					//---------------------------------
 					// Check Nulls
-					if(youngValue.isJsonNull() && oldValue.isJsonNull()) {
+					if( (youngValue == null || youngValue.isJsonNull())
+					&&  (oldValue == null || oldValue.isJsonNull())
+					) {
 						resultObject.addProperty(fieldname+diffBraces, true);
 						continue;
 					}
 					
-					if(youngValue.isJsonNull() || oldValue.isJsonNull()) {
+					if(youngValue == null
+					|| youngValue.isJsonNull()	
+					|| oldValue == null 
+					|| oldValue.isJsonNull()
+					) {
 						resultObject.addProperty(fieldname+diffBraces, false);
 						continue;
 					}
@@ -526,14 +536,10 @@ public class CFWQueryCommandCompareMethods {
 						
 						//--------------------
 						// Compare As Strings
-						if(oldPart.isBoolOrBoolString()
-						&& youngPart.isBoolOrBoolString()) {
-			
-							String old = oldPart.getAsString();
-							String young = oldPart.getAsString();
-							resultObject.addProperty(fieldname+diffBraces, old.equals(young));
-							continue;
-						}
+						String old = oldPart.getAsString();
+						String young = youngPart.getAsString();
+						resultObject.addProperty(fieldname+diffBraces, old.equals(young));
+						continue;
 					}
 					
 					//---------------------------------
@@ -632,7 +638,7 @@ public class CFWQueryCommandCompareMethods {
 		String recordID = "";
 		for(String idfield : idFieldnames) {
 			if(object.has(idfield)) {
-				recordID += object.get(idfield).getAsString()+"_";
+				recordID += CFW.JSON.toJSON(object.get(idfield))+"_";
 			}
 		}
 		
