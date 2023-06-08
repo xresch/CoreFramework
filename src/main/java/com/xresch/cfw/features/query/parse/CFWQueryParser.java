@@ -281,6 +281,7 @@ public class CFWQueryParser {
 		addTrace("Parse", "Query", "[START]");
 		
 		currentQuery = new CFWQuery(initialContextToBeCloned);
+		currentContext = currentQuery.getContext();
 		
 		while(this.hasMoreTokens() && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
 			

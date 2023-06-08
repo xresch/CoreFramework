@@ -1,9 +1,9 @@
 package com.xresch.cfw.features.query.commands;
 
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -30,13 +30,13 @@ public class CFWQueryCommandCompareMethods {
 	
 	private ArrayList<String> identifierFields = null;
 	private String toplevelField = null;
-	private String oldLabel = "1st";
-	private String youngLabel = "2nd";
-	private String diffLabel = "Diff";
-	private String diffPercentLabel = "%";
+	private String oldLabel = "_A";
+	private String youngLabel = "_B";
+	private String diffLabel = "_Diff";
+	private String diffPercentLabel = "_%";
 	
 	private LinkedHashSet<String> detectedFields = new LinkedHashSet<>();
-	
+	private HashSet<String> fieldHasPercentage = new HashSet<>();
 	private boolean makeIdentifierUnique = true;
 	
 	boolean compareNumbersAbsolute = false;
@@ -437,17 +437,13 @@ public class CFWQueryCommandCompareMethods {
 		 **************************************************/
 		public void compareAddToResult(JsonArray resultArray) {
 			
-			String oldBraces = "("+oldLabel+")";
-			String youngBraces = "("+youngLabel+")";
-			String diffBraces = "("+diffLabel+")";
-			String diffPercentBraces = "("+diffPercentLabel+")";
-			
 			int size = this.size(); // slight performance improvement
 			for(int i = 0; i < size ; i++) {
 				
 				//---------------------------------
 				// Younger Data
 				JsonObject resultObject = new JsonObject();
+				
 				JsonObject youngerObject = this.getYounger(i);
 				JsonObject olderObject = this.getOlder(i);
 				JsonObject iteratorObject = (youngerObject != null) ? youngerObject : olderObject;
@@ -476,15 +472,16 @@ public class CFWQueryCommandCompareMethods {
 					
 					//---------------------------------
 					// Add Original Values
-					resultObject.add(fieldname+oldBraces, oldValue);
-					resultObject.add(fieldname+youngBraces, youngValue);
+					resultObject.add(fieldname+oldLabel, oldValue);
+					resultObject.add(fieldname+youngLabel, youngValue);
 					
 					//---------------------------------
 					// Check Nulls
+					String nullLabel = (fieldHasPercentage.contains(fieldname))	? diffPercentLabel : diffLabel;
 					if( (youngValue == null || youngValue.isJsonNull())
 					&&  (oldValue == null || oldValue.isJsonNull())
 					) {
-						resultObject.addProperty(fieldname+diffBraces, true);
+						resultObject.addProperty(fieldname+nullLabel, true);
 						continue;
 					}
 					
@@ -493,7 +490,7 @@ public class CFWQueryCommandCompareMethods {
 					|| oldValue == null 
 					|| oldValue.isJsonNull()
 					) {
-						resultObject.addProperty(fieldname+diffBraces, false);
+						resultObject.addProperty(fieldname+nullLabel, false);
 						continue;
 					}
 					
@@ -509,15 +506,16 @@ public class CFWQueryCommandCompareMethods {
 						&& youngPart.isNumberOrNumberString()) {
 							if(compareNumbersAbsolute) {
 								BigDecimal diff = oldPart.getAsBigDecimal().subtract(youngPart.getAsBigDecimal());
-								resultObject.addProperty(fieldname+diffBraces, diff);
+								resultObject.addProperty(fieldname+diffLabel, diff);
 							}
 							if(compareNumbersDiffPercent) {
+								fieldHasPercentage.add(fieldname);
 								if(oldPart.getAsFloat() == 0f) {
-									resultObject.addProperty(fieldname+diffPercentBraces, "undefined");
+									resultObject.addProperty(fieldname+diffPercentLabel, "undefined");
 								}else {
 									BigDecimal diff = youngPart.getAsBigDecimal().subtract(oldPart.getAsBigDecimal());
 									BigDecimal diffPerc = diff.divide(oldPart.getAsBigDecimal(), 6, RoundingMode.HALF_UP);
-									resultObject.addProperty(fieldname+diffPercentBraces, diffPerc);
+									resultObject.addProperty(fieldname+diffPercentLabel, diffPerc);
 								}
 							}
 							continue;
@@ -530,7 +528,7 @@ public class CFWQueryCommandCompareMethods {
 	
 							boolean oldBool = oldPart.getAsBoolean();
 							boolean youngBool = oldPart.getAsBoolean();
-							resultObject.addProperty(fieldname+diffBraces, oldBool == youngBool);
+							resultObject.addProperty(fieldname+diffLabel, oldBool == youngBool);
 							continue;
 						}
 						
@@ -538,7 +536,7 @@ public class CFWQueryCommandCompareMethods {
 						// Compare As Strings
 						String old = oldPart.getAsString();
 						String young = youngPart.getAsString();
-						resultObject.addProperty(fieldname+diffBraces, old.equals(young));
+						resultObject.addProperty(fieldname+diffLabel, old.equals(young));
 						continue;
 					}
 					
@@ -550,14 +548,14 @@ public class CFWQueryCommandCompareMethods {
 					|| oldValue.isJsonArray()
 					) {
 						boolean equals = youngValue.toString().equals(oldValue.toString());
-						resultObject.addProperty(fieldname+diffBraces, equals);
+						resultObject.addProperty(fieldname+diffLabel, equals);
 						continue;
 					}
 					
 					//---------------------------------
-					// Check Objects/Arrays
-					resultObject.add(fieldname+diffBraces, JsonNull.INSTANCE);
-					
+					// Fallback: Anything Else not comparable
+					// Probably unreachable with GSON version at implementation time
+					resultObject.add(fieldname+diffLabel, JsonNull.INSTANCE);
 					
 				}
 			
