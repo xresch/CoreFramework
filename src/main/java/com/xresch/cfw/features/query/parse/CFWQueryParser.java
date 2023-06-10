@@ -17,31 +17,64 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 import com.xresch.cfw.logging.SysoutInterceptor;
 
 /**************************************************************************************************************
+ * QUERY SYNTAX DOCUMENTATION
+ * ==========================
+ * Given in more or less Backus–Naur form with regular expressions:
+ *   - "*" stands for 0 to any number of repetitions
+ *   - "+" stands for 1 to any number of repetitions
+ *   - "?" stands for optional, or sometimes not neccessary(e.g. semicolon between repetitions when there is no repetition)
  * 
- * <CFWQuery> ::= <CFWQueryCommand>+ 
+ * Query
+ * -----
+ * A query string can contain one or multiple <CFWQuery> separated by semicolon.
  * 
- * Commands are splitted by '|'
- * <QueryPartCommand>			::= <commandName> (<QueryPart>)*
+ * <QUERY_STRING> ::= (<CFWQuery> (";")? )+
+ * <CFWQuery> ::= (<CFWQueryCommand>)+ 
+ * 
+ * Commands
+ * --------
+ * Commands are splitted by the operator '|'
+ * Commands define which QueryParts they accept in which order.
+ * 
+ * <QueryPartCommand>			::= "|" <commandName> (<QueryPart>)*
  * 
  * 		<commandName> 			::= <LITERAL_STRING>
  * 		
- * 		<QueryPart> 			::= (<QueryPartValue>|<QueryPartList>|<QueryPartFunction>|<QueryPartAssignment>)+
- * 			<QueryPartValue>	::= (<LITERAL>|<GROUP_EXPRESSION>)
- * 			<QueryPartList>		::= <QueryPart> <SIGN_COMMA> <QueryPart> <SIGN_COMMA> ... <QueryPart>
+ * 		<QueryPart> 			::= (<QueryPartValue>|<QueryPartList> | <QueryPartFunction> | <QueryPartAssignment> 
+ * 									  | <QueryPartBinaryExpression> | <QueryPartBinaryExpression> | <QueryPartGroup> 
+ * 									)+
+ * QueryParts
+ * ----------		
+ * <QueryPartValue>		::= Actual values: (<STRING> | <NUMBER> | <BOOLEAN> | <NULL> | <JSON_OBJECT> | <JSON_ARRAY>)
+ * 		<STRING>		::= <LITERAL_STRING> or quoted with single quotes, double quotes or back ticks
+ *		<NUMBER>		::= positive or negative numbers
+ *		<BOOLEAN>		::= ("true" | "false")
+ *		<NULL>			::= "null"
+ * 		<JSON_OBJECT>	::= Object as JSON string, like {"a": 1, "b": 22}
+ *		<JSON_ARRAY>	::= represented by <QueryPartList>
  * 
- * 		<KEYWORD> ::= <customized LITERAL_STRING defined by CFWQueryTokenizer.keywords() >
+ * <QueryPartList>		::= ("[")? (<QueryPart> (",")? )+ ("]")?
  * 
- * 		<EXPRESSION> ::= <EXPRESSION_GROUP> | <EXPRESSION_ASSIGNMENT> | <EXPRESSION_ACCESSMEMBER> |<EXPRESSION_BINARY> | <EXPRESSION_FUNCTION> 
+ * <QueryPartFunction> 	::= <functionName> "(" (<QueryPart> (",")? )* ")"
  * 
- * 			<EXPRESSION_GROUP> ::= <ANY>*
- * 			
- * 			<EXPRESSION_ASSIGNMENT> ::= (<LITERAL>|<TEXT>) <OPERATOR_EQUAL> (<EXPRESSION>|<LITERAL>)
+ * <QueryPartAssignment> ::=  <QueryPart> "=" <QueryPart>
  * 
- * 			<EXPRESSION_ACCESSMEMBER> ::= (<LITERAL>|<TEXT>) <OPERATOR_DOT>  (<LITERAL>|<TEXT>) 
+ * <QueryPartBinaryExpression> ::= (<QueryPart> <OPERATOR> <QueryPart>) 
+ * 		<OPERATOR>		::= (<KEYWORD> | | "="  | ">=" | "<=" | "==" | "!=" | "~=" | ">"  | "<"  | "+" | "-" | "*" | "/" | "^" | "%" | "&" | "!")
+ * 		<KEYWORD>		::= ("AND" | "OR" | "NOT" )
+ * 
+ * <QueryPartGroup> 	::=  "(" <QueryPart>+ ")"
+ * 
+ * <QueryPartJsonMemberAccess> ::=  <FIELDNAME> "." <ACCESS>
+ * 		<FIELDNAME>		::= <LITERAL_STRING>, name of the field containing an object or asrray.
+ * 		<ACCESS>		::= (<MEMBER_NAME> | "[" <nameOrNumber> "]")
+ * 		
  * 
  * @author Reto Scheiwiller, (c) Copyright 2022 
  * @license MIT-License
  **************************************************************************************************************/
+
+
 public class CFWQueryParser {
 	
 	private String query = null;
