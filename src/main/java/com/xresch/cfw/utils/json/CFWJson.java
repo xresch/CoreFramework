@@ -385,6 +385,15 @@ public class CFWJson {
 	/*************************************************************************************
 	 * 
 	 *************************************************************************************/
+	public static ArrayList<String> jsonToStringArrayList(JsonArray jsonArray) {
+		Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+		 
+		return gsonInstance.fromJson(jsonArray, listType);  
+	}
+	
+	/*************************************************************************************
+	 * 
+	 *************************************************************************************/
 	public static void addObject(JsonObject target, String propertyName, Object object) {
 		if(object instanceof String) 			{	target.addProperty(propertyName, (String)object); }
 		else if(object instanceof JsonElement) 	{	target.add(propertyName, (JsonElement)object); }

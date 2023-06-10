@@ -94,7 +94,6 @@ public class CFWQueryFunctionGlobals extends CFWQueryFunction {
 
 			//----------------------------------
 			// Set Global Value
-			System.out.println("Context: "+this.getContext());
 			JsonObject globalsObject = this.getContext().getGlobals();
 			
 			if(parameters.size() > 1) {

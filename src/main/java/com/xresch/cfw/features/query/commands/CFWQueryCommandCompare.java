@@ -3,7 +3,6 @@ package com.xresch.cfw.features.query.commands;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonElement;
@@ -33,6 +32,9 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 	ArrayList<String> resultnames = new ArrayList<>();
 		
 	HashSet<String> encounters = new HashSet<>();
+	
+	ArrayList<String> groupByFieldnames = new ArrayList<>();
+	ArrayList<String> detectedFieldnames = new ArrayList<>();
 	
 	/***********************************************************************************************
 	 * 
@@ -90,28 +92,37 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
 		
 		//------------------------------------------
-		// Get Fieldnames
-		for(QueryPart part : parts) {
+		// Get Parameters
+		
+		for(int i = 0; i < parts.size(); i++) {
 			
-			if(part instanceof QueryPartAssignment) {
+			QueryPart currentPart = parts.get(i);
+			
+			if(currentPart instanceof QueryPartAssignment) {
+				//--------------------------------------------------
+				// Resolve Fieldname=Function
+				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
+				String assignmentName = assignment.getLeftSideAsString(null);
+				QueryPartValue assignmentValue = ((QueryPartAssignment) currentPart).determineValue(null);
 				
-				QueryPartAssignment parameter = (QueryPartAssignment)part;
-				String paramName = parameter.getLeftSide().determineValue(null).getAsString();
-				
-			}else if(part instanceof QueryPartArray) {
-				QueryPartArray array = (QueryPartArray)part;
-
-				for(JsonElement element : array.getAsJsonArray(null, true)) {
-					
-					if(!element.isJsonNull() && element.isJsonPrimitive()) {
-						resultnames.add(element.getAsString());
+				if(assignmentName != null) {
+					//--------------------------------------------------
+					// By Parameter
+					if(assignmentName.trim().equals("by")) {
+						groupByFieldnames.addAll( assignmentValue.getAsStringArray() );
 					}
+					
+					//--------------------------------------------------
+					// Any other parameter
+					else {
+						parser.throwParseException("compare: Unsupported argument.", currentPart);
+					
+					}
+					
 				}
+				
 			}else {
-				QueryPartValue value = part.determineValue(null);
-				if(!value.isNull()) {
-					resultnames.add(value.getAsString());
-				}
+				parser.throwParseException("stats: Only assignment expressions(key=value) allowed.", currentPart);
 			}
 		}
 			
@@ -149,8 +160,6 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 		
 		//------------------------------
 		// Read Records of current Query
-		ArrayList<CFWQueryResult> mergedResults = new ArrayList<>();
-		
 		if(isPreviousDone() && inQueue.isEmpty()) {
 			
 			CFWQueryResultList previousResults = this.parent.getContext().getResultList();
@@ -161,18 +170,29 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 			previousResults.removeResult(last);
 			previousResults.removeResult(secondLast);
 			
-			ArrayList<String> idFields = new ArrayList<>();
-			idFields.add("FIRSTNAME");
-			idFields.add("LASTNAME");
-			
 			CFWQueryResult compared = 
 					new CFWQueryCommandCompareMethods()
-						.identifierFields(idFields)
+						.identifierFields(groupByFieldnames)
 						.compareQueryResults(secondLast, last);
 						;
-						
-			previousResults.addResult(compared);
 			
+			//----------------------------
+			// Set Detected Fields
+			this.fieldnameClearAll();
+			this.fieldnameAddAll(compared.getDetectedFields());
+			
+			//----------------------------
+			// Set Detected Fields
+			//definition.manifestTheMightyFormatterArray(displaySettingsFieldFormats, fieldname, currentArray);
+			
+			
+			//----------------------------
+			// Add to Queue
+			for(JsonElement record : compared.getResults()) {
+				outQueue.add(new EnhancedJsonObject(record.getAsJsonObject()));
+			}
+			
+
 			this.setDone();
 		}
 		

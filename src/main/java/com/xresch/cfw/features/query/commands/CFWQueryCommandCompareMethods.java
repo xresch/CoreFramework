@@ -515,7 +515,7 @@ public class CFWQueryCommandCompareMethods {
 								}else {
 									BigDecimal diff = youngPart.getAsBigDecimal().subtract(oldPart.getAsBigDecimal());
 									BigDecimal diffPerc = diff.divide(oldPart.getAsBigDecimal(), 6, RoundingMode.HALF_UP);
-									resultObject.addProperty(fieldname+diffPercentLabel, diffPerc);
+									resultObject.addProperty(fieldname+diffPercentLabel, diffPerc.multiply(BigDecimal.valueOf(100)));
 								}
 							}
 							continue;

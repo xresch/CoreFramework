@@ -107,30 +107,16 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 				// Resolve Fieldname=Function
 				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
 				String assignmentName = assignment.getLeftSideAsString(null);
-				QueryPart assignmentValue = ((QueryPartAssignment) currentPart).getRightSide();
+				QueryPart assignmentValuePart = ((QueryPartAssignment) currentPart).getRightSide();
 				
 				if(assignmentName != null) {
 					//--------------------------------------------------
 					// By Parameter
 					if(assignmentName.trim().equals("by")) {
-						
-						if(assignmentValue instanceof QueryPartArray) {
-							ArrayList<String> fieldnames = ((QueryPartArray)assignmentValue).getAsStringArray(null, false);
-							groupByFieldnames.addAll(fieldnames);
-							detectedFieldnames.addAll(fieldnames);
-						}else if(assignmentValue instanceof QueryPartValue) {
-							String fieldname = ((QueryPartValue)assignmentValue).getAsString();
-							
-							if(fieldname != null) {
-								groupByFieldnames.add(fieldname);
-								detectedFieldnames.add(fieldname);
-							}else {
-								parser.throwParseException("stats: value for by-parameter cannot be null.", currentPart);
-							}
-							
-						}else {
-							parser.throwParseException("stats: value for by-parameter must be a string or array.", currentPart);
-						}
+						QueryPartValue assignmentValue = currentPart.determineValue(null);
+						ArrayList<String> fieldnames = assignmentValue.getAsStringArray();
+						groupByFieldnames.addAll(fieldnames);
+						detectedFieldnames.addAll(fieldnames);
 					}
 					//--------------------------------------------------
 					// Any other parameter
@@ -138,8 +124,8 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 						
 						detectedFieldnames.add(assignmentName);
 						
-						if(assignmentValue instanceof QueryPartFunction) {
-							QueryPartFunction function = ((QueryPartFunction)assignmentValue);
+						if(assignmentValuePart instanceof QueryPartFunction) {
+							QueryPartFunction function = ((QueryPartFunction)assignmentValuePart);
 							CFWQueryFunction functionInstance = function.getFunctionInstance();
 							if(functionInstance.supportsAggregation()) {
 								functionMap.put(assignmentName, function);

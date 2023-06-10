@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.parse;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -12,7 +13,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
  * 
@@ -548,6 +548,15 @@ public class QueryPartValue extends QueryPart {
 
 		}
 
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	public ArrayList<String> getAsStringArray() {
+		 return CFW.JSON.jsonToStringArrayList(
+				 getAsJsonArray() 
+			);
 	}
 	
 	/******************************************************************************************************

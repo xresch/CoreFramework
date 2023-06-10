@@ -14,7 +14,6 @@ import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
-import com.xresch.cfw.logging.SysoutInterceptor;
 
 /**************************************************************************************************************
  * QUERY SYNTAX DOCUMENTATION

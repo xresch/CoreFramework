@@ -26,6 +26,7 @@ public class CFWQueryContext{
 	private JsonObject metadata = new JsonObject();
 	private JsonObject globals = new JsonObject();
 	private JsonObject displaySettings = new JsonObject();
+	private JsonObject fieldFormats = new JsonObject();
 	
 	protected CFWQueryFieldnameManager contextFieldnameManager = new CFWQueryFieldnameManager();
 	
@@ -34,7 +35,7 @@ public class CFWQueryContext{
 	 * This is mainly used for testing.
 	 ***********************************************************************************************/
 	public CFWQueryContext() {
-		resultArray = new CFWQueryResultList();
+		this(new CFWQueryResultList());
 	}
 	
 	/***********************************************************************************************
@@ -43,6 +44,7 @@ public class CFWQueryContext{
 	 ***********************************************************************************************/
 	public CFWQueryContext(CFWQueryResultList sharedResults) {
 		resultArray = sharedResults;
+		displaySettings.add("fieldFormats", fieldFormats);
 	}
 	
 	/***********************************************************************************************
