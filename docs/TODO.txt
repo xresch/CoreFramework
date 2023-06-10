@@ -205,6 +205,7 @@ DONE
 - Query: URL is updated on each execution, even if the query fails
 - Query: Modulo operator('%') iis now supported by the CFWQL syntax
 - Query: Added API endpoint "Query >> execute"
+- Query: Command: formatfield - added percent formatter
 - Query: Autocomplete - Added Open Manual Button 
 - Query: Autocomplete - Added "f:" to get list of functions
 - Query: Autocomplete - Added "f:xxx" to get list of filtered functions

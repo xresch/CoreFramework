@@ -4,8 +4,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -25,7 +23,6 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
@@ -37,7 +34,29 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	ArrayList<String> fieldnames = new ArrayList<>();
 		
 	int recordCounter = 0;
-	
+	 
+	public enum FieldFormatterName {
+		  ALIGN
+		, BOOLEAN
+		, CSS
+		, CASE
+		, DATE
+		, DECIMALS
+		, DURATION
+		, LINK
+		, LOWERCASE
+		, NONE
+		, PERCENT
+		, POSTFIX
+		, PREFIX
+		, SEPARATORS
+		, SHOWNULLS
+		, THOUSANDS
+		, THRESHOLD
+		, TIMESTAMP
+		, UPPERCASE
+		
+	}
 	// Key: FormatterName Value: FormatterDefinition
 	private static TreeMap<String, FormatterDefinition> formatterDefinitionArray = new TreeMap<>();
 	
@@ -65,9 +84,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Align 
 		//------------------------------------------------
-		formatterDefinitionArray.put("align",
+		formatterDefinitionArray.put(FieldFormatterName.ALIGN.toString(),
 			instance.new FormatterDefinition(
-				"align", 
+				FieldFormatterName.ALIGN.toString(), 
 				"Choose how the text is aligned.",
 				new Object[][] {
 					 new Object[] {"position", "center", "The alignment of the text, either left, right or center."}
@@ -81,9 +100,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Boolean 
 		//------------------------------------------------
-		formatterDefinitionArray.put("boolean",
+		formatterDefinitionArray.put(FieldFormatterName.BOOLEAN.toString(),
 			instance.new FormatterDefinition(
-				"boolean", 
+				FieldFormatterName.BOOLEAN.toString(), 
 				"Formats the value as a badge and adds two different colors for true/false.",
 				new Object[][] {
 					 new Object[] {"trueColor", "cfw-green", "The background color used for values that are true."}
@@ -104,9 +123,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// css 
 		//------------------------------------------------
-		formatterDefinitionArray.put("css",
+		formatterDefinitionArray.put(FieldFormatterName.CSS.toString(),
 			instance.new FormatterDefinition(
-				"css", 
+				FieldFormatterName.CSS.toString(), 
 				"Adds a custom CSS property to the formatting of the value. Adds font-weight bold by default.",
 				new Object[][] {
 					 new Object[] {"propertyName", "font-weight", "The name of the css property."}
@@ -125,9 +144,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		// Case
 		//------------------------------------------------
 		
-		formatterDefinitionArray.put("case",
+		formatterDefinitionArray.put(FieldFormatterName.CASE.toString(),
 			instance.new FormatterDefinition(
-				"case", 
+				FieldFormatterName.CASE.toString(), 
 				"Formats based on one or multiple cases. See manual of formatfield command for detailed instructions.",
 				new Object[][] {
 					 new Object[] {"conditions", "<100", "Either a single condition or an array of conditions."}
@@ -142,9 +161,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Date
 		//------------------------------------------------
-		formatterDefinitionArray.put("date",
+		formatterDefinitionArray.put(FieldFormatterName.DATE.toString(),
 			instance.new FormatterDefinition(
-				"date", 
+				FieldFormatterName.DATE.toString(),
 				"Formats epoch milliseconds as date.",
 				new Object[][] {
 					 new Object[] {"format", "yyyy-MM-dd", "The format of the date, google moment.js for details."}
@@ -158,9 +177,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Decimals
 		//------------------------------------------------
-		formatterDefinitionArray.put("decimals",
+		formatterDefinitionArray.put(FieldFormatterName.DECIMALS.toString(),
 			instance.new FormatterDefinition(
-				"decimals", 
+				FieldFormatterName.DECIMALS.toString(),
 				"Sets the decimal precision to a fixed number",
 				new Object[][] {
 					 new Object[] {"precision", 2, "The number of decimal places."}
@@ -174,9 +193,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Duration
 		//------------------------------------------------
-		formatterDefinitionArray.put("duration",
+		formatterDefinitionArray.put(FieldFormatterName.DURATION.toString(),
 			instance.new FormatterDefinition(
-				"duration", 
+				FieldFormatterName.DURATION.toString(),
 				"Formats a duration as seconds, minutes, hours and days.",
 				new Object[][] {
 					 new Object[] {"durationUnit", "ms", "The unit of the duration, either of 'ns', 'us', 'ms', 's', 'm', 'h'."}
@@ -190,9 +209,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Link 
 		//------------------------------------------------
-		formatterDefinitionArray.put("link",
+		formatterDefinitionArray.put(FieldFormatterName.LINK.toString(),
 			instance.new FormatterDefinition(
-				"link", 
+				FieldFormatterName.LINK.toString(),
 				"Used to format URLs as links, either as text or as button.",
 				new Object[][] {
 					 new Object[] {"linkText", "Open Link", "The text for displaying the link."}
@@ -209,9 +228,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Lowercase 
 		//------------------------------------------------
-		formatterDefinitionArray.put("lowercase",
+		formatterDefinitionArray.put(FieldFormatterName.LOWERCASE.toString(),
 			instance.new FormatterDefinition(
-				"lowercase", 
+				FieldFormatterName.LOWERCASE.toString(), 
 				"Displays the value as lowercase.",
 				new Object[][] {
 				}
@@ -224,9 +243,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// None 
 		//------------------------------------------------
-		formatterDefinitionArray.put("none",
+		formatterDefinitionArray.put(FieldFormatterName.NONE.toString(),
 			instance.new FormatterDefinition(
-				"none", 
+				FieldFormatterName.NONE.toString(), 
 				"Disables any formatting and displays the plain value.",
 				new Object[][] {
 				}
@@ -237,11 +256,30 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		);
 
 		//------------------------------------------------
+		// Percent
+		//------------------------------------------------
+		formatterDefinitionArray.put(FieldFormatterName.PERCENT.toString(),
+				instance.new FormatterDefinition(
+						FieldFormatterName.PERCENT.toString(), 
+						"Formats values as percent and formats it green/blue/red depending on thresholds.",
+						new Object[][] {
+							  new Object[] {"greenThreshold", "0", "Values reaching the threshold will be marked green."}
+							, new Object[] {"redThreshold", "0", "Values reaching the threashold will be marked red."}
+							, new Object[] {"type", "bg", "Either 'bg' or 'text'."}
+							, new Object[] {"neutralColor", "cfw-blue", "Values between the thresholds will be marked with the specified color."}
+						}
+						).example(
+								"#Formats value as percent, all values above 10 / below -10 are colored."
+										+"\r\n| source random | formatfield VALUE=[percent, -10, 10]"
+								)
+				);
+		
+		//------------------------------------------------
 		// Postfix 
 		//------------------------------------------------
-		formatterDefinitionArray.put("postfix",
+		formatterDefinitionArray.put(FieldFormatterName.POSTFIX.toString(),
 			instance.new FormatterDefinition(
-				"postfix", 
+				FieldFormatterName.POSTFIX.toString(), 
 				"Appends a postfix to the value.",
 				new Object[][] {
 					 new Object[] {"postfix", "", "The postfix that should be added to the value."}
@@ -255,9 +293,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Prefix 
 		//------------------------------------------------
-		formatterDefinitionArray.put("prefix",
+		formatterDefinitionArray.put(FieldFormatterName.PREFIX.toString(),
 			instance.new FormatterDefinition(
-				"prefix", 
+				FieldFormatterName.PREFIX.toString(), 
 				"Prepends a prefix to the value.",
 				new Object[][] {
 					 new Object[] {"prefix", "", "The prefix that should be added to the value."}
@@ -271,9 +309,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Separators
 		//------------------------------------------------
-		formatterDefinitionArray.put("separators",
+		formatterDefinitionArray.put(FieldFormatterName.SEPARATORS.toString(),
 			instance.new FormatterDefinition(
-				"separators", 
+				FieldFormatterName.SEPARATORS.toString(), 
 				"Adds thousand separators to numbers.",
 				new Object[][] {
 					   new Object[] {"separator", "'", "The separator to add to the number."}
@@ -290,9 +328,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Shownulls 
 		//------------------------------------------------
-		formatterDefinitionArray.put("shownulls",
+		formatterDefinitionArray.put(FieldFormatterName.SHOWNULLS.toString(),
 			instance.new FormatterDefinition(
-				"shownulls", 
+				FieldFormatterName.SHOWNULLS.toString(), 
 				"Show or hide null values.",
 				new Object[][] {
 					 new Object[] {"isVisible", true, "If true, shows nulls, if false make them blank."}
@@ -309,9 +347,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Thousands
 		//------------------------------------------------
-		formatterDefinitionArray.put("thousands",
+		formatterDefinitionArray.put(FieldFormatterName.THOUSANDS.toString(),
 			instance.new FormatterDefinition(
-				"thousands", 
+				FieldFormatterName.THOUSANDS.toString(), 
 				"Displays numbers in kilos, megas, gigas and terras.",
 				new Object[][] {
 					  new Object[] {"isBytes", false, "If true, appends a 'B' to the formatted string."}
@@ -329,9 +367,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Threshhold 
 		//------------------------------------------------
-		formatterDefinitionArray.put("threshold",
+		formatterDefinitionArray.put(FieldFormatterName.THRESHOLD.toString(),
 			instance.new FormatterDefinition(
-				"threshold", 
+				FieldFormatterName.THRESHOLD.toString(), 
 				"Colors the value based on a threshold.",
 				new Object[][] {
 					 new Object[] {"excellent", 0, "The threshold for status excellent."}
@@ -356,9 +394,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Timestamp
 		//------------------------------------------------
-		formatterDefinitionArray.put("timestamp",
+		formatterDefinitionArray.put(FieldFormatterName.TIMESTAMP.toString(),
 			instance.new FormatterDefinition(
-				"timestamp", 
+				FieldFormatterName.TIMESTAMP.toString(), 
 				"Formats epoch milliseconds as a timestamp.",
 				new Object[][] {
 					 new Object[] {"format", "yyyy-MM-dd HH:mm:ss", "The format of the timestamp, google moment.js for details."}
@@ -372,9 +410,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		//------------------------------------------------
 		// Uppercase 
 		//------------------------------------------------
-		formatterDefinitionArray.put("uppercase",
+		formatterDefinitionArray.put(FieldFormatterName.UPPERCASE.toString(),
 			instance.new FormatterDefinition(
-				"uppercase", 
+				FieldFormatterName.UPPERCASE.toString(), 
 				"Displays the value as uppercase.",
 				new Object[][] {
 				}
@@ -460,10 +498,6 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		JsonObject displaySettings = this.getParent().getContext().getDisplaySettings();
 		
 		JsonElement fieldFormatsElement = displaySettings.get("fieldFormats");
-		if(fieldFormatsElement == null || fieldFormatsElement.isJsonNull()) {
-			fieldFormatsElement = new JsonObject();
-			displaySettings.add("fieldFormats", fieldFormatsElement);
-		}
 		
 		JsonObject displaySettingsFieldFormats = fieldFormatsElement.getAsJsonObject();
 		
@@ -487,7 +521,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 
 				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
 				if(valuePart.isString()) {
-					addFormatterByName(parser, displaySettingsFieldFormats, fieldnames, valuePart.getAsString());
+					addFormatterByName(parser, displaySettingsFieldFormats, fieldnames, valuePart.getAsString().toUpperCase());
 				}if(valuePart.isJsonArray()) {
 					//--------------------------------------
 					// Add Formatter By Array
@@ -517,14 +551,15 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 						}
 						
 						// Add As JsonArray
-						JsonArray currentArray = currentElement.getAsJsonArray();
-						FormatterDefinition definition = formatterDefinitionArray.get(currentArray.get(0).getAsString());
+						JsonArray currentFormatterArray = currentElement.getAsJsonArray();
+						String formatterName = currentFormatterArray.get(0).getAsString().toUpperCase();
+						FormatterDefinition definition = formatterDefinitionArray.get(formatterName);
 						if(definition != null) {
 							for(String fieldname : fieldnames) {
-								definition.manifestTheMightyFormatterArray(displaySettingsFieldFormats, fieldname, currentArray);
+								definition.manifestTheMightyFormatterArray(displaySettingsFieldFormats, fieldname, currentFormatterArray);
 							}
 						}else {
-							parser.throwParseException("formatfield: Unknown formatter '"+currentArray.get(0).getAsString()+"'.", currentPart);
+							parser.throwParseException("formatfield: Unknown formatter '"+currentFormatterArray.get(0).getAsString()+"'.", currentPart);
 						}
 					}
 					
@@ -543,9 +578,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	private void addFormatterByName(CFWQueryParser parser, JsonObject fieldFormats, ArrayList<String> fieldnames, String formatterName) throws ParseException {
 		//--------------------------------------
 		// Add Formatter By Name
-		formatterName = formatterName.trim().toLowerCase();
+		formatterName = formatterName.trim();
 		
-		FormatterDefinition definition = formatterDefinitionArray.get(formatterName);
+		FormatterDefinition definition = formatterDefinitionArray.get(formatterName.toUpperCase());
 		if(definition != null) {
 			for(String fieldname : fieldnames) {
 				definition.manifestTheMightyFormatterArray(fieldFormats, fieldname);
@@ -635,17 +670,26 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		// ]
 		private Object[][] formatterParameters;
 		
+		/****************************************
+		 * 
+		 ****************************************/
 		public FormatterDefinition(String formatName, String description, Object[][] formatterParameters) {
-			this.formatName = formatName;
+			this.formatName = formatName.toLowerCase();
 			this.description = description;
 			this.formatterParameters = formatterParameters;
 		}
 		
+		/****************************************
+		 * 
+		 ****************************************/
 		public FormatterDefinition example(String example) {
 			this.example = example;
 			return this;
 		}
 		
+		/****************************************
+		 * 
+		 ****************************************/
 		public String getSyntax() {
 			StringBuilder builder = new StringBuilder();
 			builder.append("['"+formatName+"'");
@@ -657,6 +701,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			return builder.toString();		
 		}
 		
+		/****************************************
+		 * 
+		 ****************************************/
 		public String getAutocompleteDefaultValues() {
 			StringBuilder builder = new StringBuilder();
 			builder.append("['"+formatName+"'");
@@ -673,6 +720,9 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			return builder.toString();		
 		}
 		
+		/****************************************
+		 * 
+		 ****************************************/
 		public String getHTMLDocumentation() {
 			
 			StringBuilder builder = new StringBuilder();
@@ -706,13 +756,18 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			return builder.toString();
 		}
 		
-		
+		/****************************************
+		 * 
+		 ****************************************/
 		public void manifestTheMightyFormatterArray(JsonObject fieldFormats, String fieldname) throws ParseException {
 			
 			manifestTheMightyFormatterArray(fieldFormats, fieldname, null);
 		}
-
-		public void manifestTheMightyFormatterArray(JsonObject fieldFormats, String fieldname, JsonArray array) throws ParseException {
+		
+		/****************************************
+		 * 
+		 ****************************************/
+		public void manifestTheMightyFormatterArray(JsonObject fieldFormats, String fieldname, JsonArray formatterArray) throws ParseException {
 			
 			//-----------------------------------------
 			// Prepare Array of Arrays
@@ -727,37 +782,37 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			
 			//-----------------------------------------
 			// Prepare Array
-			if(array == null) {  	array = new JsonArray(); }
+			if(formatterArray == null) {  	formatterArray = new JsonArray(); }
 			
-			if(array.isEmpty()) {	array.add(this.formatName); }
+			if(formatterArray.isEmpty()) {	formatterArray.add(this.formatName); }
 			
-			JsonElement firstElement = array.get(0);
+			JsonElement firstElement = formatterArray.get(0);
 			
 			if(!firstElement.isJsonPrimitive()
 			|| !firstElement.getAsJsonPrimitive().isString()
-			|| !firstElement.getAsString().equals(this.formatName)
+			|| !firstElement.getAsString().toLowerCase().equals(this.formatName)
 			) {
 				throw new ParseException("Unknown value for formatter: "+firstElement.getAsString(), -1);
 			}
 			//-----------------------------------------
 			//Add default values for missing parameters
-			for(int i = array.size(); i <= formatterParameters.length;i++) {
+			for(int i = formatterArray.size(); i <= formatterParameters.length;i++) {
 				Object defaultValue = formatterParameters[i-1][1];
 				
 				if(defaultValue == null) {
-					array.add(JsonNull.INSTANCE);
+					formatterArray.add(JsonNull.INSTANCE);
 				}else if(defaultValue instanceof String) {
-					array.add((String)defaultValue);
+					formatterArray.add((String)defaultValue);
 				}else if(defaultValue instanceof Number) {
-					array.add((Number)defaultValue);
+					formatterArray.add((Number)defaultValue);
 				}else if(defaultValue instanceof Boolean) {
-					array.add((Boolean)defaultValue);
+					formatterArray.add((Boolean)defaultValue);
 				}else {
 					throw new ParseException("Dear Developer, the type is not supported for formatter parameters default value.", -1);
 				}
 			}
 			
-			arrayOfFormatterDefinitions.add(array);
+			arrayOfFormatterDefinitions.add(formatterArray);
 
 		}
 		

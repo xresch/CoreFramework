@@ -355,8 +355,18 @@ function cfw_colors_getThresholdWorse(thresholdClassOne, thresholdClassTwo ) {
  * @param tEmergency the threshold for emergency
  * @param tDanger the threshold for danger
  * @param isDisabled define if the thresholding is disabled
+ * @param evaluateLower if true, values below the lowest threshold are evaluated as the lowest color.
+ *        If false, values are not evaluated
  ************************************************************************************************/
-function cfw_colors_getThresholdStyle(value, tExellent, tGood, tWarning, tEmergency, tDanger, isDisabled) {
+function cfw_colors_getThresholdStyle(
+		  value
+		, tExellent
+		, tGood
+		, tWarning
+		, tEmergency
+		, tDanger
+		, isDisabled
+		, evaluateLower) {
 
 	//---------------------------
 	// Initial Checks
@@ -405,20 +415,97 @@ function cfw_colors_getThresholdStyle(value, tExellent, tGood, tWarning, tEmerge
 		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value >= tWarning) 	{ styleString = CFW.style.yellow; } 
 		else if (!CFW.utils.isNullOrEmpty(tEmergency) 	&& value >= tEmergency) { styleString = CFW.style.orange; } 
 		else if (!CFW.utils.isNullOrEmpty(tDanger) 		&& value >= tDanger)  	{ styleString = CFW.style.red; } 
-		else																	{ styleString = CFW.style.notevaluated; } 
+		else{ 
+			if(evaluateLower){
+				styleString = CFW.style.red; 
+			}else{
+				styleString = CFW.style.notevaluated; 
+			}
+		} 
 	}else{
 		if 		(!CFW.utils.isNullOrEmpty(tDanger) 		&& value>= tDanger)  	{ styleString = CFW.style.red; } 
 		else if (!CFW.utils.isNullOrEmpty(tEmergency) 	&& value>= tEmergency) 	{ styleString = CFW.style.orange; } 
 		else if (!CFW.utils.isNullOrEmpty(tWarning) 	&& value>= tWarning) 	{ styleString = CFW.style.yellow; } 
 		else if (!CFW.utils.isNullOrEmpty(tGood) 		&& value>= tGood) 		{ styleString = CFW.style.limegreen; } 
 		else if (!CFW.utils.isNullOrEmpty(tExellent) 	&& value>= tExellent) 	{ styleString = CFW.style.green; } 	
-		else																	{ styleString = CFW.style.notevaluated; } 
+		else{ 
+			if(evaluateLower){
+				styleString = CFW.style.green; 
+			}else{
+				styleString = CFW.style.notevaluated; 
+			}
+		}
 	}
 	
 	return styleString;
 }
 
+/************************************************************************************************
+ * Evaluates two threshholds going in opposite directions, for example:
+ *   - tGreen is 10, everything >=10 will be green
+ *   - tRed is -10, everything <=-10 will be red
+ *   - 
+ * 
+ * Returns a cfw style string for the value based on the defined thresholds e.g CFW.style.green.
+ * You can use the string for creating a class like: 
+ *   "bg-cfw-green"
+ *   "text-cfw-green"
+ *   "border-cfw-green"
+ *   "table-cfw-green"
+ *   
+ * If all the thresholds are null/undefined or the value is NaN returns an CFW.style.none.
+ * You can define thresholds values increasing from tGreen to tRed, or from tRed to tGreen.
+ * 
+ * If isDisabled is set to "true", returns CFW.style.disabled.
+ * 
+ * @param value the value that should be thresholded
+ * @param tGreen the threshold for excellent
+ * @param tRed the threshold for danger
+ * @param isDisabled define if the thresholding is disabled
+ ************************************************************************************************/
+function cfw_colors_getSplitThresholdStyle(
+		  value
+		, tGreen
+		, tRed
+		, isDisabled
+		) {
 
+	//---------------------------
+	// Initial Checks
+	if(isDisabled) { return CFW.style.disabled; }
+	
+	if(isNaN(value)
+	|| (
+		CFW.utils.isNullOrEmpty(tGreen)
+	   && CFW.utils.isNullOrEmpty(tRed)
+	   )
+	){
+		return CFW.style.none;
+	}
+
+	//---------------------------
+	// Find Threshold direction
+	var direction = 'HIGH_TO_LOW';
+	var thresholds = [tGreen, tRed];
+	
+	if(tGreen < tRed){
+		direction = 'LOW_TO_HIGH';
+	}
+
+	//---------------------------
+	// Set Colors for Thresholds
+	var styleString = CFW.style.notevaluated;
+	
+	if(direction == 'HIGH_TO_LOW'){
+		if 		(!CFW.utils.isNullOrEmpty(tGreen) 	&& value >= tGreen) 	{ styleString = CFW.style.green; } 
+		else if (!CFW.utils.isNullOrEmpty(tRed) 		&& value <= tRed)  	{ styleString = CFW.style.red; } 
+	}else{
+		if 		(!CFW.utils.isNullOrEmpty(tRed) 		&& value >= tRed)  	{ styleString = CFW.style.red; } 
+		else if (!CFW.utils.isNullOrEmpty(tGreen) 	&& value <= tGreen) 	{ styleString = CFW.style.green; } 	
+	}
+	
+	return styleString;
+}
 
 
 /**************************************************************************************
@@ -456,6 +543,7 @@ function cfw_filterItems(context, searchField, itemSelector){
 		  }
 	});
 }
+
 
 /**************************************************************************************
  * Filter the rows of a table by the value of the search field.
@@ -4823,6 +4911,7 @@ var CFW = {
 		randomHSL: cfw_colors_randomHSL,
 		randomSL: cfw_colors_randomSL,
 		getThresholdStyle: cfw_colors_getThresholdStyle,
+		getSplitThresholdStyle: cfw_colors_getSplitThresholdStyle,
 		getThresholdWorse: cfw_colors_getThresholdWorse,
 	},
 	config: {

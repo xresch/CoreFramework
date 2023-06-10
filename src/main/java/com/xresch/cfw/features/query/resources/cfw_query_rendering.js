@@ -165,6 +165,7 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
 				case 'link': 				cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'lowercase': 			cfw_query_formatLowercase(resultSpan); break;
 				case 'none': 				return $('<span class="">').text(value); break;
+				case 'percent': 			cfw_query_formatPercent(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'prefix': 				cfw_query_formatPrefix(resultSpan, value, current[1]); break;
 				case 'postfix': 			cfw_query_formatPostfix(resultSpan, value, current[1]); break;
 				case 'separators':			cfw_query_formatSeparators(resultSpan, value, current[1], current[2]); break;
@@ -419,11 +420,11 @@ function cfw_query_formatDecimals(span, value, precision){
 	var valueToProcess = value;
 	
 	var stringValue = span.text();
+	
 	if(stringValue != null && !isNaN(stringValue)){
 		valueToProcess = parseFloat(stringValue);
 	}
 	
-
 	if(valueToProcess != null && !isNaN(valueToProcess)){
 		span.text(valueToProcess.toFixed(precision));
 	}
@@ -504,7 +505,32 @@ function cfw_query_formatLowercase(span){
 
 }
 
-
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatPercent(span, value, greenThreshold, redThreshold, type, neutralColor){
+	
+	// set defaults
+	if(redThreshold === undefined )		{ redThreshold = 0; }
+	if(redThreshold === undefined )		{ greenThreshold = 0; }
+	if(type 		=== undefined )		{ type = 'bg'; }
+	if(neutralColor === undefined )		{ neutralColor = null; }
+	
+	span.addClass('w-100 text-right font-weight-bold');
+		
+	var style = CFW.colors.getSplitThresholdStyle(value, greenThreshold, redThreshold, false);
+	style = (style == CFW.style.notevaluated && neutralColor != null) ? neutralColor : style;
+	
+	if(type == 'bg'){
+		CFW.colors.colorizeElement(span, "white", "text");
+	}
+	
+	CFW.colors.colorizeElement(span, style, type, "2px");
+	
+	cfw_query_formatDecimals(span, value, 1);
+	cfw_query_formatPostfix(span, value, " %");
+	cfw_query_formatShowNulls(span, value, true);
+}
 
 /*******************************************************************************
  * 
@@ -522,6 +548,7 @@ function cfw_query_formatPostfix(span, value, postfix){
 	
 	value = span.text();
 	span.text(value+postfix);
+	
 	
 }
 
