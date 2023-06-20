@@ -1,12 +1,10 @@
 package com.xresch.cfw.features.query;
 
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.response.bootstrap.AlertMessage;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
@@ -174,12 +172,21 @@ public class CFWQueryContext{
 		return displaySettings;
 	}
 	
+	
 	/***********************************************************************************************
 	 * Returns the object containing the metadata of the query.
 	 ***********************************************************************************************/
 	public void addDisplaySetting(String propertyName, String value) {
 		displaySettings.addProperty(propertyName, value);
 	}
+	
+	/***********************************************************************************************
+	 * Returns the object containing the metadata of the query.
+	 ***********************************************************************************************/
+	public JsonObject getFieldFormats() {
+		return fieldFormats;
+	}
+	
 	
 	/***********************************************************************************************
 	 * Returns the detected Fieldnames

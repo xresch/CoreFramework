@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
@@ -16,9 +17,9 @@ import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField.FieldFormatterName;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
@@ -36,11 +37,17 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 	ArrayList<String> groupByFieldnames = new ArrayList<>();
 	ArrayList<String> detectedFieldnames = new ArrayList<>();
 	
+	JsonArray percentColumnsFormatter = new JsonArray();
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	public CFWQueryCommandCompare(CFWQuery parent) {
 		super(parent);
+		
+		//--------------------------------
+		// Default Percent Column Formatter
+		percentColumnsFormatter.add("percent");
 	}
 
 	/***********************************************************************************************
@@ -106,10 +113,24 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 				QueryPartValue assignmentValue = ((QueryPartAssignment) currentPart).determineValue(null);
 				
 				if(assignmentName != null) {
+					assignmentName = assignmentName.trim().toLowerCase();
 					//--------------------------------------------------
 					// By Parameter
-					if(assignmentName.trim().equals("by")) {
+					if(assignmentName.equals("by")) {
 						groupByFieldnames.addAll( assignmentValue.getAsStringArray() );
+					}
+					
+					//--------------------------------------------------
+					// percentformat Parameter
+					else if(assignmentName.startsWith("percentformat")) {
+						if(assignmentValue.isJsonArray()) {
+							percentColumnsFormatter =  assignmentValue.getAsJsonArray();
+						} else if(assignmentValue.isString()) {
+							percentColumnsFormatter = new JsonArray();
+							percentColumnsFormatter.add(assignmentValue.getAsString());
+						} else {
+							parser.throwParseException("compare: Parameter 'percentformat' must be a string or array(as used in command 'formatfield').", currentPart);
+						}
 					}
 					
 					//--------------------------------------------------
@@ -182,9 +203,13 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 			this.fieldnameAddAll(compared.getDetectedFields());
 			
 			//----------------------------
-			// Set Detected Fields
-			//definition.manifestTheMightyFormatterArray(displaySettingsFieldFormats, fieldname, currentArray);
-			
+			// Set Field Formats
+			for(JsonElement element : compared.getDetectedFields()) {
+				String fieldname = element.getAsString();
+				if(fieldname.endsWith("_%")) {
+					CFWQueryCommandFormatField.addFormatter(this.parent.getContext(), fieldname, percentColumnsFormatter);
+				}
+			}
 			
 			//----------------------------
 			// Add to Queue

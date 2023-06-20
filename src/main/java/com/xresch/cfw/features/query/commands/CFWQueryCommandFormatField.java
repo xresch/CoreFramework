@@ -15,6 +15,7 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
+import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
@@ -266,7 +267,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 							  new Object[] {"greenThreshold", "0", "Values reaching the threshold will be marked green."}
 							, new Object[] {"redThreshold", "0", "Values reaching the threashold will be marked red."}
 							, new Object[] {"type", "bg", "Either 'bg' or 'text'."}
-							, new Object[] {"neutralColor", "cfw-blue", "Values between the thresholds will be marked with the specified color."}
+							, new Object[] {"neutralColor", "", "Values between the thresholds will be marked with the specified color."}
 						}
 						).example(
 								"#Formats value as percent, all values above 10 / below -10 are colored."
@@ -570,6 +571,66 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			}
 		}
 			
+	}
+	
+	/***********************************************************************************************
+	 * Adds a formatter to the specified fields.
+	 * @param context of the query
+	 * @param fieldnames the fields to add the formatter to
+	 * @param formatterValueArray the definition of the formatter e.g: ["formatterName", true, "text"]
+	 ***********************************************************************************************/
+	public static void addFormatter(CFWQueryContext context, ArrayList<String> fieldnames, JsonArray formatterValueArray) throws ParseException {
+		// Add As JsonArray
+		String formatterName = formatterValueArray.get(0).getAsString().toUpperCase();
+		FormatterDefinition definition = formatterDefinitionArray.get(formatterName);
+		if(definition != null) {
+			for(String fieldname : fieldnames) {
+				definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname, formatterValueArray);
+			}
+		}
+	}
+	
+	/***********************************************************************************************
+	 * Adds a formatter to the specified fields.
+	 * @param context of the query
+	 * @param fieldnames the fields to add the formatter to
+	 * @param formatterValueArray the definition of the formatter e.g: ["formatterName", true, "text"]
+	 ***********************************************************************************************/
+	public static void addFormatter(CFWQueryContext context, String fieldname, JsonArray formatterValueArray) throws ParseException {
+		// Add As JsonArray
+		String formatterName = formatterValueArray.get(0).getAsString().toUpperCase();
+		FormatterDefinition definition = formatterDefinitionArray.get(formatterName);
+		if(definition != null) {
+			definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname, formatterValueArray);
+		}
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public static void addFormatterByName(CFWQueryContext context, ArrayList<String> fieldnames, FieldFormatterName formatterName) throws ParseException {
+		//--------------------------------------
+		// Add Formatter By Name
+		
+		FormatterDefinition definition = formatterDefinitionArray.get(formatterName.toString());
+		if(definition != null) {
+			for(String fieldname : fieldnames) {
+				definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname);
+			}
+		}
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public static void addFormatterByName(CFWQueryContext context, String fieldname, FieldFormatterName formatterName) throws ParseException {
+		//--------------------------------------
+		// Add Formatter By Name
+		
+		FormatterDefinition definition = formatterDefinitionArray.get(formatterName.toString());
+		if(definition != null) {
+			definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname);
+		}
 	}
 	
 	/***********************************************************************************************
