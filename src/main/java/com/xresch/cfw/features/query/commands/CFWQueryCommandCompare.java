@@ -17,7 +17,6 @@ import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
-import com.xresch.cfw.features.query.commands.CFWQueryCommandFormatField.FieldFormatterName;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
@@ -37,17 +36,13 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 	ArrayList<String> groupByFieldnames = new ArrayList<>();
 	ArrayList<String> detectedFieldnames = new ArrayList<>();
 	
-	JsonArray percentColumnsFormatter = new JsonArray();
+	QueryPartValue percentColumnsFormatter = QueryPartValue.newString("percent");
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	public CFWQueryCommandCompare(CFWQuery parent) {
 		super(parent);
-		
-		//--------------------------------
-		// Default Percent Column Formatter
-		percentColumnsFormatter.add("percent");
 	}
 
 	/***********************************************************************************************
@@ -123,14 +118,7 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 					//--------------------------------------------------
 					// percentformat Parameter
 					else if(assignmentName.startsWith("percentformat")) {
-						if(assignmentValue.isJsonArray()) {
-							percentColumnsFormatter =  assignmentValue.getAsJsonArray();
-						} else if(assignmentValue.isString()) {
-							percentColumnsFormatter = new JsonArray();
-							percentColumnsFormatter.add(assignmentValue.getAsString());
-						} else {
-							parser.throwParseException("compare: Parameter 'percentformat' must be a string or array(as used in command 'formatfield').", currentPart);
-						}
+						percentColumnsFormatter =  assignmentValue;
 					}
 					
 					//--------------------------------------------------

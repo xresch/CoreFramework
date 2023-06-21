@@ -498,10 +498,6 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		
 		JsonObject displaySettings = this.getParent().getContext().getDisplaySettings();
 		
-		JsonElement fieldFormatsElement = displaySettings.get("fieldFormats");
-		
-		JsonObject displaySettingsFieldFormats = fieldFormatsElement.getAsJsonObject();
-		
 		for(int i = 0; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
@@ -521,50 +517,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				}
 
 				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
-				if(valuePart.isString()) {
-					addFormatterByName(parser, displaySettingsFieldFormats, fieldnames, valuePart.getAsString().toUpperCase());
-				}if(valuePart.isJsonArray()) {
-					//--------------------------------------
-					// Add Formatter By Array
-					JsonArray formatterArray = valuePart.getAsJsonArray();
-					if(formatterArray.isEmpty()) {
-						parser.throwParseException("formatfield: The array was empty, please provide at least a name for the formatter.", currentPart);
-					}
-					
-					//--------------------------------------
-					// Convert Single Formatter Array to Array
-					JsonArray arrayOfFormatterArrays = formatterArray;
-					if(formatterArray.get(0).isJsonPrimitive()) {
-						arrayOfFormatterArrays = new JsonArray();
-						arrayOfFormatterArrays.add(formatterArray);
-					}
-					
-					
-					//--------------------------------------
-					// iterate arrayOfFormatterArrays
-
-					for(JsonElement currentElement : arrayOfFormatterArrays) {
-						
-						// Add by Name if not JsonArray
-						if(!currentElement.isJsonArray()) {
-							addFormatterByName(parser, displaySettingsFieldFormats, fieldnames, currentElement.getAsString());
-							continue;
-						}
-						
-						// Add As JsonArray
-						JsonArray currentFormatterArray = currentElement.getAsJsonArray();
-						String formatterName = currentFormatterArray.get(0).getAsString().toUpperCase();
-						FormatterDefinition definition = formatterDefinitionArray.get(formatterName);
-						if(definition != null) {
-							for(String fieldname : fieldnames) {
-								definition.manifestTheMightyFormatterArray(displaySettingsFieldFormats, fieldname, currentFormatterArray);
-							}
-						}else {
-							parser.throwParseException("formatfield: Unknown formatter '"+currentFormatterArray.get(0).getAsString()+"'.", currentPart);
-						}
-					}
-					
-				}
+				addFormatter(this.parent.getContext(), fieldnames, valuePart);
 			
 			}else {
 				parser.throwParseException("formatfield: Only parameters(key=value) are allowed.", currentPart);
@@ -572,71 +525,73 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		}
 			
 	}
-	
 	/***********************************************************************************************
-	 * Adds a formatter to the specified fields.
-	 * @param context of the query
-	 * @param fieldnames the fields to add the formatter to
-	 * @param formatterValueArray the definition of the formatter e.g: ["formatterName", true, "text"]
+	 * 
 	 ***********************************************************************************************/
-	public static void addFormatter(CFWQueryContext context, ArrayList<String> fieldnames, JsonArray formatterValueArray) throws ParseException {
-		// Add As JsonArray
-		String formatterName = formatterValueArray.get(0).getAsString().toUpperCase();
-		FormatterDefinition definition = formatterDefinitionArray.get(formatterName);
-		if(definition != null) {
-			for(String fieldname : fieldnames) {
-				definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname, formatterValueArray);
+	public static void addFormatter(
+			CFWQueryContext context,
+			String fieldname, 
+			QueryPartValue valuePart) throws ParseException {
+		
+		ArrayList<String> fieldnameArray = new ArrayList();
+		fieldnameArray.add(fieldname);
+		addFormatter(context, fieldnameArray, valuePart);
+	}
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public static void addFormatter(CFWQueryContext context,
+			ArrayList<String> fieldnames, QueryPartValue valuePart) throws ParseException {
+		
+		if(valuePart.isString()) {
+			addFormatterByName(context, fieldnames, valuePart.getAsString().toUpperCase());
+		}else if(valuePart.isJsonArray()) {
+			//--------------------------------------
+			// Add Formatter By Array
+			JsonArray formatterArray = valuePart.getAsJsonArray();
+			if(formatterArray.isEmpty()) {
+				throw new ParseException("formatfield: The array was empty, please provide at least a name for the formatter.", -1);
+			}
+			
+			//--------------------------------------
+			// Convert Single Formatter Array to Array
+			JsonArray arrayOfFormatterArrays = formatterArray;
+			if(formatterArray.get(0).isJsonPrimitive()) {
+				arrayOfFormatterArrays = new JsonArray();
+				arrayOfFormatterArrays.add(formatterArray);
+			}
+			
+			
+			//--------------------------------------
+			// iterate arrayOfFormatterArrays
+
+			for(JsonElement currentElement : arrayOfFormatterArrays) {
+				
+				// Add by Name if not JsonArray
+				if(!currentElement.isJsonArray()) {
+					addFormatterByName(context, fieldnames, currentElement.getAsString());
+					continue;
+				}
+				
+				// Add As JsonArray
+				JsonArray currentFormatterArray = currentElement.getAsJsonArray();
+				String formatterName = currentFormatterArray.get(0).getAsString().toUpperCase();
+				FormatterDefinition definition = formatterDefinitionArray.get(formatterName);
+				if(definition != null) {
+					for(String fieldname : fieldnames) {
+						definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname, currentFormatterArray);
+					}
+				}else {
+					throw new ParseException("formatfield: Unknown formatter '"+currentFormatterArray.get(0).getAsString()+"'.", -1);
+				}
 			}
 		}
 	}
 	
 	/***********************************************************************************************
-	 * Adds a formatter to the specified fields.
-	 * @param context of the query
-	 * @param fieldnames the fields to add the formatter to
-	 * @param formatterValueArray the definition of the formatter e.g: ["formatterName", true, "text"]
-	 ***********************************************************************************************/
-	public static void addFormatter(CFWQueryContext context, String fieldname, JsonArray formatterValueArray) throws ParseException {
-		// Add As JsonArray
-		String formatterName = formatterValueArray.get(0).getAsString().toUpperCase();
-		FormatterDefinition definition = formatterDefinitionArray.get(formatterName);
-		if(definition != null) {
-			definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname, formatterValueArray);
-		}
-	}
-	
-	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public static void addFormatterByName(CFWQueryContext context, ArrayList<String> fieldnames, FieldFormatterName formatterName) throws ParseException {
-		//--------------------------------------
-		// Add Formatter By Name
-		
-		FormatterDefinition definition = formatterDefinitionArray.get(formatterName.toString());
-		if(definition != null) {
-			for(String fieldname : fieldnames) {
-				definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname);
-			}
-		}
-	}
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	public static void addFormatterByName(CFWQueryContext context, String fieldname, FieldFormatterName formatterName) throws ParseException {
-		//--------------------------------------
-		// Add Formatter By Name
-		
-		FormatterDefinition definition = formatterDefinitionArray.get(formatterName.toString());
-		if(definition != null) {
-			definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname);
-		}
-	}
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	private void addFormatterByName(CFWQueryParser parser, JsonObject fieldFormats, ArrayList<String> fieldnames, String formatterName) throws ParseException {
+	public static void addFormatterByName(CFWQueryContext context, ArrayList<String> fieldnames, String formatterName) throws ParseException {
 		//--------------------------------------
 		// Add Formatter By Name
 		formatterName = formatterName.trim();
@@ -644,10 +599,10 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		FormatterDefinition definition = formatterDefinitionArray.get(formatterName.toUpperCase());
 		if(definition != null) {
 			for(String fieldname : fieldnames) {
-				definition.manifestTheMightyFormatterArray(fieldFormats, fieldname);
+				definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname);
 			}
 		}else {
-			parser.throwParseException("formatfield: Unknown formatter '"+formatterName+"'.", -1);
+			throw new ParseException("formatfield: Unknown formatter '"+formatterName+"'.", -1);
 		}
 	}
 	
