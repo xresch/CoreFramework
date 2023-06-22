@@ -30,10 +30,10 @@ public class CFWQueryCommandCompareMethods {
 	
 	private ArrayList<String> identifierFields = null;
 	private String toplevelField = null;
-	private String oldLabel = "_A";
-	private String youngLabel = "_B";
-	private String diffLabel = "_Diff";
-	private String diffPercentLabel = "_%";
+	private String labelOld = "_A";
+	private String labelYoung = "_B";
+	private String labelDiff = "_Diff";
+	private String labelDiffPercent = "_%";
 	
 	private LinkedHashSet<String> detectedFields = new LinkedHashSet<>();
 	private HashSet<String> fieldHasPercentage = new HashSet<>();
@@ -63,6 +63,41 @@ public class CFWQueryCommandCompareMethods {
 	 ***********************************************************************************************/
 	public CFWQueryCommandCompareMethods makeIdentifierUnique(boolean makeIdentifierUnique) {
 		this.makeIdentifierUnique = makeIdentifierUnique;
+		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Set the label used as a postfix for the columns of the older data.
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryCommandCompareMethods labelOld(String labelOld) {
+		this.labelOld = labelOld;
+		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Set the label used as a postfix for the columns of the younger data.
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryCommandCompareMethods labelYoung(String labelYoung) {
+		this.labelYoung = labelYoung;
+		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Set the label used as a postfix for the columns of difference.
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryCommandCompareMethods labelDiff(String labelDiff) {
+		this.labelDiff = labelDiff;
+		return this;
+	}
+	/***********************************************************************************************
+	 * Set the label used as a postfix for the columns of percent difference.
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryCommandCompareMethods labelDiffPercent(String labelDiffPercent) {
+		this.labelDiffPercent = labelDiffPercent;
 		return this;
 	}
 	
@@ -472,12 +507,12 @@ public class CFWQueryCommandCompareMethods {
 					
 					//---------------------------------
 					// Add Original Values
-					resultObject.add(fieldname+oldLabel, oldValue);
-					resultObject.add(fieldname+youngLabel, youngValue);
+					resultObject.add(fieldname+labelOld, oldValue);
+					resultObject.add(fieldname+labelYoung, youngValue);
 					
 					//---------------------------------
 					// Check Nulls
-					String nullLabel = (fieldHasPercentage.contains(fieldname))	? diffPercentLabel : diffLabel;
+					String nullLabel = (fieldHasPercentage.contains(fieldname))	? labelDiffPercent : labelDiff;
 					if( (youngValue == null || youngValue.isJsonNull())
 					&&  (oldValue == null || oldValue.isJsonNull())
 					) {
@@ -506,16 +541,16 @@ public class CFWQueryCommandCompareMethods {
 						&& youngPart.isNumberOrNumberString()) {
 							if(compareNumbersAbsolute) {
 								BigDecimal diff = oldPart.getAsBigDecimal().subtract(youngPart.getAsBigDecimal());
-								resultObject.addProperty(fieldname+diffLabel, diff);
+								resultObject.addProperty(fieldname+labelDiff, diff);
 							}
 							if(compareNumbersDiffPercent) {
 								fieldHasPercentage.add(fieldname);
 								if(oldPart.getAsFloat() == 0f) {
-									resultObject.addProperty(fieldname+diffPercentLabel, "undefined");
+									resultObject.addProperty(fieldname+labelDiffPercent, "undefined");
 								}else {
 									BigDecimal diff = youngPart.getAsBigDecimal().subtract(oldPart.getAsBigDecimal());
 									BigDecimal diffPerc = diff.divide(oldPart.getAsBigDecimal(), 6, RoundingMode.HALF_UP);
-									resultObject.addProperty(fieldname+diffPercentLabel, diffPerc.multiply(BigDecimal.valueOf(100)));
+									resultObject.addProperty(fieldname+labelDiffPercent, diffPerc.multiply(BigDecimal.valueOf(100)));
 								}
 							}
 							continue;
@@ -528,7 +563,7 @@ public class CFWQueryCommandCompareMethods {
 	
 							boolean oldBool = oldPart.getAsBoolean();
 							boolean youngBool = oldPart.getAsBoolean();
-							resultObject.addProperty(fieldname+diffLabel, oldBool == youngBool);
+							resultObject.addProperty(fieldname+labelDiff, oldBool == youngBool);
 							continue;
 						}
 						
@@ -536,7 +571,7 @@ public class CFWQueryCommandCompareMethods {
 						// Compare As Strings
 						String old = oldPart.getAsString();
 						String young = youngPart.getAsString();
-						resultObject.addProperty(fieldname+diffLabel, old.equals(young));
+						resultObject.addProperty(fieldname+labelDiff, old.equals(young));
 						continue;
 					}
 					
@@ -548,14 +583,14 @@ public class CFWQueryCommandCompareMethods {
 					|| oldValue.isJsonArray()
 					) {
 						boolean equals = youngValue.toString().equals(oldValue.toString());
-						resultObject.addProperty(fieldname+diffLabel, equals);
+						resultObject.addProperty(fieldname+labelDiff, equals);
 						continue;
 					}
 					
 					//---------------------------------
 					// Fallback: Anything Else not comparable
 					// Probably unreachable with GSON version at implementation time
-					resultObject.add(fieldname+diffLabel, JsonNull.INSTANCE);
+					resultObject.add(fieldname+labelDiff, JsonNull.INSTANCE);
 					
 				}
 			

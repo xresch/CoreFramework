@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Logger;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
@@ -37,6 +36,10 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 	ArrayList<String> detectedFieldnames = new ArrayList<>();
 	
 	QueryPartValue percentColumnsFormatter = QueryPartValue.newString("percent");
+	String labelOld = "_A";
+	String labelYoung = "_B";
+	String labelDiff = "_Diff";
+	String labelDiffPercent = "_%";
 	
 	/***********************************************************************************************
 	 * 
@@ -109,23 +112,14 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 				
 				if(assignmentName != null) {
 					assignmentName = assignmentName.trim().toLowerCase();
-					//--------------------------------------------------
-					// By Parameter
-					if(assignmentName.equals("by")) {
-						groupByFieldnames.addAll( assignmentValue.getAsStringArray() );
-					}
-					
-					//--------------------------------------------------
-					// percentformat Parameter
-					else if(assignmentName.startsWith("percentformat")) {
-						percentColumnsFormatter =  assignmentValue;
-					}
-					
-					//--------------------------------------------------
-					// Any other parameter
+					if		 (assignmentName.equals("by")) {				groupByFieldnames.addAll( assignmentValue.getAsStringArray() ); }
+					else if	 (assignmentName.equals("labelold")) {			labelOld =  assignmentValue.getAsString(); }
+					else if	 (assignmentName.equals("labelyoung")) {		labelYoung =  assignmentValue.getAsString(); }
+					else if	 (assignmentName.equals("labeldiff")) {			labelDiff =  assignmentValue.getAsString(); }
+					else if	 (assignmentName.equals("labeldiffpercent")) {	labelDiffPercent =  assignmentValue.getAsString(); }
+					else if	 (assignmentName.startsWith("percentformat")) { percentColumnsFormatter =  assignmentValue; }
 					else {
 						parser.throwParseException("compare: Unsupported argument.", currentPart);
-					
 					}
 					
 				}
@@ -182,6 +176,10 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 			CFWQueryResult compared = 
 					new CFWQueryCommandCompareMethods()
 						.identifierFields(groupByFieldnames)
+						.labelOld(labelOld)
+						.labelYoung(labelYoung)
+						.labelDiff(labelDiff)
+						.labelDiffPercent(labelDiffPercent)
 						.compareQueryResults(secondLast, last);
 						;
 			
@@ -194,7 +192,7 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 			// Set Field Formats
 			for(JsonElement element : compared.getDetectedFields()) {
 				String fieldname = element.getAsString();
-				if(fieldname.endsWith("_%")) {
+				if(fieldname.endsWith(labelDiffPercent)) {
 					CFWQueryCommandFormatField.addFormatter(this.parent.getContext(), fieldname, percentColumnsFormatter);
 				}
 			}
