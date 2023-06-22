@@ -2,9 +2,8 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -14,19 +13,15 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.features.query.parse.QueryPartArray;
-import com.xresch.cfw.features.query.parse.QueryPartAssignment;
-import com.xresch.cfw.features.query.parse.QueryPartBinaryExpression;
 import com.xresch.cfw.features.query.parse.QueryPartFunction;
-import com.xresch.cfw.features.query.parse.QueryPartGroup;
-import com.xresch.cfw.features.query.parse.QueryPartValue;
+import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
-import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWQueryCommandExecute extends CFWQueryCommand {
 	
 
-	ArrayList<QueryPartFunction> functions = new ArrayList<>();
+	private ArrayList<QueryPartFunction> functions = new ArrayList<>();
+	private boolean isExecuted = false;
 	
 	/***********************************************************************************************
 	 * 
@@ -48,7 +43,7 @@ public class CFWQueryCommandExecute extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Executes one or multiple functions.";
+		return "Executes one or multiple functions exactly once. This command does not have access to any data of any records. ";
 	}
 
 	/***********************************************************************************************
@@ -109,32 +104,43 @@ public class CFWQueryCommandExecute extends CFWQueryCommand {
 		// keep default
 	}
 	
+	/****************************************************************************
+	 * Override to make the inQueue the outQueue
+	 ****************************************************************************/
+	@Override
+	public PipelineAction<EnhancedJsonObject, EnhancedJsonObject> setOutQueue(LinkedBlockingQueue<EnhancedJsonObject> out) {
+
+		this.inQueue = out;
+		
+		if(previousAction != null) {
+			previousAction.setOutQueue(out);
+		}
+		
+		return this;
+	}
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
+		//-------------------------------
+		//execute functions only once
+		if(isExecuted) {
+			this.setDoneIfPreviousDone();
+			return;
+		}
 		
 		//-------------------------------
-		// Executed Functions once
+		// Executed Functions
 		EnhancedJsonObject tempobject = new EnhancedJsonObject();
 		
 		for(QueryPartFunction function : functions) {
-			System.out.println("execute function: "+function.determineValue(tempobject));
 			function.determineValue(tempobject);
 		}
 		
-		//execute once only
 		functions.clear();
-		
-		//-------------------------------
-		// Pass through incoming records
-		while(keepPolling()) {
-			outQueue.add(inQueue.poll());
-		}
-		
-		this.setDoneIfPreviousDone();
+		isExecuted = true;
 	
 	}
 

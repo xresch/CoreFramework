@@ -1,0 +1,12 @@
+
+<p>Following query uses the function to offset the timeframe for a second query:</p>
+
+<pre><code class="language-cfwquery">| globals multidisplay=2
+| source random records = 10
+| keep TIME
+;
+# offset earliest/latest by -11/-10 days, alternatively you can use timeframeOffset()
+| execute earliestSet(null, 0,0,-11) latestSet(null, 0,0,-10)
+| source random records = 10
+| keep TIME</code></pre>
+

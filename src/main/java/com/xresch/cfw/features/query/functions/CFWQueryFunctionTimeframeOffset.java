@@ -9,10 +9,10 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
-public class CFWQueryFunctionTimeOffset extends CFWQueryFunction {
+public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 
 	
-	public CFWQueryFunctionTimeOffset(CFWQueryContext context) {
+	public CFWQueryFunctionTimeframeOffset(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -21,7 +21,7 @@ public class CFWQueryFunctionTimeOffset extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "timeoffset";
+		return "timeframeOffset";
 	}
 	
 	/***********************************************************************************************
@@ -29,14 +29,14 @@ public class CFWQueryFunctionTimeOffset extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "timeoffset(timeInMillis, offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS)";
+		return "timeframeOffset(offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Takes epoch milliseconds and offsets it by the specified amount. ";
+		return "Offsets the earliest and latest time by the specified amount.";
 	}
 	
 	/***********************************************************************************************
@@ -44,14 +44,14 @@ public class CFWQueryFunctionTimeOffset extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>timeInMillis:&nbsp;</b>(Optional)The time in epoch milliseconds. If null, present time is used.</p>"
-			  +"<p><b>offsetY:&nbsp;</b>(Optional)Offset in years from present time.</p>"
-			  +"<p><b>offsetM:&nbsp;</b>(Optional)Offset in months from present time.</p>"
-			  +"<p><b>offsetD:&nbsp;</b>(Optional)Offset in days from present time.</p>"
-			  +"<p><b>offsetH:&nbsp;</b>(Optional)Offset in hours from present time.</p>"
-			  +"<p><b>offsetMin:&nbsp;</b>(Optional)Offset in minutes from present time.</p>"
-			  +"<p><b>offsetS:&nbsp;</b>(Optional)Offset in seconds from present time.</p>"
-			  +"<p><b>offsetMS:&nbsp;</b>(Optional)Offset in milliseconds from present time.</p>"
+		return 
+			  "<p><b>offsetY:&nbsp;</b>(Optional)Offset in years.</p>"
+			  +"<p><b>offsetM:&nbsp;</b>(Optional)Offset in months.</p>"
+			  +"<p><b>offsetD:&nbsp;</b>(Optional)Offset in days.</p>"
+			  +"<p><b>offsetH:&nbsp;</b>(Optional)Offset in hours.</p>"
+			  +"<p><b>offsetMin:&nbsp;</b>(Optional)Offset in minutes.</p>"
+			  +"<p><b>offsetS:&nbsp;</b>(Optional)Offset in seconds.</p>"
+			  +"<p><b>offsetMS:&nbsp;</b>(Optional)Offset in milliseconds.</p>"
 			;
 	}
 
@@ -60,7 +60,7 @@ public class CFWQueryFunctionTimeOffset extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_timeoffset.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_timeframeoffset.html");
 	}
 
 
@@ -88,7 +88,6 @@ public class CFWQueryFunctionTimeOffset extends CFWQueryFunction {
 		
 		//----------------------------------
 		// Default Params
-		Long epochMillis = null;
 		int offsetY = 0;
 		int offsetM = 0;
 		int offsetD = 0;
@@ -101,54 +100,49 @@ public class CFWQueryFunctionTimeOffset extends CFWQueryFunction {
 		// Get Parameters
 		int size = parameters.size(); 
 		int index = 0;
-		if(size > index) {
-			QueryPartValue millisValue = parameters.get(index);
-			if(millisValue.isNumberOrNumberString()) { epochMillis = millisValue.getAsLong(); };
-			index++;
 
+		//----------------------------------
+		// offsetY
+		if(size > index) {
+			QueryPartValue offsetYValue = parameters.get(index);
+			if(offsetYValue.isNumberOrNumberString()) { offsetY = offsetYValue.getAsInteger(); };
+			index++;
 			//----------------------------------
-			// offsetY
+			// offsetM
 			if(size > index) {
-				QueryPartValue offsetYValue = parameters.get(index);
-				if(offsetYValue.isNumberOrNumberString()) { offsetY = offsetYValue.getAsInteger(); };
+				QueryPartValue offsetMValue = parameters.get(index);
+				if(offsetMValue.isNumberOrNumberString()) { offsetM = offsetMValue.getAsInteger(); };
 				index++;
 				//----------------------------------
-				// offsetM
+				// offsetD
 				if(size > index) {
-					QueryPartValue offsetMValue = parameters.get(index);
-					if(offsetMValue.isNumberOrNumberString()) { offsetM = offsetMValue.getAsInteger(); };
+					QueryPartValue offsetDValue = parameters.get(index);
+					if(offsetDValue.isNumberOrNumberString()) { offsetD = offsetDValue.getAsInteger(); };
 					index++;
 					//----------------------------------
-					// offsetD
+					// offsetH
 					if(size > index) {
-						QueryPartValue offsetDValue = parameters.get(index);
-						if(offsetDValue.isNumberOrNumberString()) { offsetD = offsetDValue.getAsInteger(); };
+						QueryPartValue offsetHValue = parameters.get(index);
+						if(offsetHValue.isNumberOrNumberString()) { offsetH = offsetHValue.getAsInteger(); };
 						index++;
 						//----------------------------------
-						// offsetH
+						// offsetMin
 						if(size > index) {
-							QueryPartValue offsetHValue = parameters.get(index);
-							if(offsetHValue.isNumberOrNumberString()) { offsetH = offsetHValue.getAsInteger(); };
+							QueryPartValue offsetMinValue = parameters.get(index);
+							if(offsetMinValue.isNumberOrNumberString()) { offsetMin = offsetMinValue.getAsInteger(); };
 							index++;
 							//----------------------------------
-							// offsetMin
+							// offsetS
 							if(size > index) {
-								QueryPartValue offsetMinValue = parameters.get(index);
-								if(offsetMinValue.isNumberOrNumberString()) { offsetMin = offsetMinValue.getAsInteger(); };
+								QueryPartValue offsetSValue = parameters.get(index);
+								if(offsetSValue.isNumberOrNumberString()) { offsetS = offsetSValue.getAsInteger(); };
 								index++;
 								//----------------------------------
-								// offsetS
+								// offsetMS
 								if(size > index) {
-									QueryPartValue offsetSValue = parameters.get(index);
-									if(offsetSValue.isNumberOrNumberString()) { offsetS = offsetSValue.getAsInteger(); };
+									QueryPartValue offsetMSValue = parameters.get(index);
+									if(offsetMSValue.isNumberOrNumberString()) { offsetMS = offsetMSValue.getAsInteger(); };
 									index++;
-									//----------------------------------
-									// offsetMS
-									if(size > index) {
-										QueryPartValue offsetMSValue = parameters.get(index);
-										if(offsetMSValue.isNumberOrNumberString()) { offsetMS = offsetMSValue.getAsInteger(); };
-										index++;
-									}
 								}
 							}
 						}
@@ -156,17 +150,25 @@ public class CFWQueryFunctionTimeOffset extends CFWQueryFunction {
 				}
 			}
 		}
+		
 						
 		//----------------------------------
 		// Create Time and Format
 
-		if(epochMillis == null) {
-			epochMillis = System.currentTimeMillis();
-		}
-
-		long timeOffset = CFW.Time.offsetTime(epochMillis
-				, offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS);
-		return QueryPartValue.newNumber(timeOffset);
+		long currentEarliest = this.context.getEarliestMillis();
+		long currentLatest = this.context.getLatestMillis();
+		
+		long newLatest = CFW.Time.offsetTime(
+				currentLatest, offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS
+			);
+		
+		long newEarliest = CFW.Time.offsetTime(
+				currentEarliest, offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS
+				);
+		
+		this.context.setEarliest(newEarliest);
+		this.context.setLatest(newLatest);
+		return QueryPartValue.newNumber(newLatest);
 
 				
 	}

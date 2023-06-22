@@ -215,17 +215,22 @@ DONE
 	- text
 	- web 
 - Query: Added commands: 
+	- compare
+	- execute
 	- merge
 	- unbox
 - Query: Added functions: 
 	- decode
 	- earliest
+	- earliestSet
 	- latest
+	- latestSet
 	- now
 	- random
 	- randomfloat
 	- randomfrom
 	- replace
+	- timeframeoffset
 	- timeoffset
 	- timeparse
 	- tojson
