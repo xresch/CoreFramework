@@ -78,16 +78,40 @@ public class CFWQueryExecutor {
 	 ****************************************************************/
 	public CFWQueryResultList parseAndExecuteAll(String queryString, long earliest, long latest, int timezoneOffsetMinutes) {
 		
-
 		CFWQueryContext baseQueryContext = new CFWQueryContext();
 		baseQueryContext.setEarliest(earliest);
 		baseQueryContext.setLatest(latest);
 		baseQueryContext.setTimezoneOffsetMinutes(timezoneOffsetMinutes);
 		baseQueryContext.checkPermissions(checkPermissions);
 		
+		return this.parseAndExecuteAll(baseQueryContext, queryString, null, null);
+	}
+	/****************************************************************************************
+	 * Parses the query string and executes all queries.
+	 * Returns a Json Array containing the Query Results, or null in
+	 * case of errors. 
+	 * Takes the max execution time from the in-app configuration for
+	 * limiting query execution time.
+	 * If both initialQueue and resultQueue are defined, modifications of baseQueryContext will be
+	 * written to the original context, not to a clone(needed for command 'mimic'). 
+	 * 
+	 * @params baseQueryContext the context used for executing the query
+	 * @params queryString the query to execute
+	 * @params initialQueue (optional) the initial queue that should be passed to the first command of the query
+	 * @params resultQueue (optional) the queue where the results should be written to.
+	 * 		   If this is null, the results are written to the returned CFWQueryResultList.
+	 * 		   If this is set, results will be written to the resultQueue.
+	 ****************************************************************************************/
+	public CFWQueryResultList parseAndExecuteAll(
+			  CFWQueryContext baseQueryContext
+			, String queryString
+			, LinkedBlockingQueue<EnhancedJsonObject> initialQueue
+			, LinkedBlockingQueue<EnhancedJsonObject> resultQueue
+			) {
+		
 		CFWQueryResultList resultArray = baseQueryContext.getResultList();
 		
-		//------------------------
+		//======================================
 		// Parse The Query
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
 		
@@ -117,10 +141,19 @@ public class CFWQueryExecutor {
 
 		}
 		
-		//------------------------
-		// Iterate All Queries
-
+		//======================================
+		// Set initial Queue
+		if(initialQueue != null && !queryList.isEmpty()) {
+			CFWQuery firstQuery = queryList.get(0);
+			ArrayList<CFWQueryCommand> commands = firstQuery.getCommandList();
+			if(!commands.isEmpty()) {
+				CFWQueryCommand firstCommand = commands.get(0);
+				firstCommand.setInQueue(initialQueue);
+			}
+		}
 		
+		//======================================
+		// Iterate All Queries
 		for(CFWQuery query : queryList) {
 			
 			//--------------------------------
@@ -129,18 +162,16 @@ public class CFWQueryExecutor {
 			if(query.isCommandLimitReached()) { continue; }
 			
 			//--------------------------------
-			// Prepare Context
-			CFWQueryContext queryContext = query.getContext();
-			queryContext.setEarliest(earliest);
-			queryContext.setLatest(latest);
-			queryContext.setTimezoneOffsetMinutes(timezoneOffsetMinutes);
-			queryContext.checkPermissions(checkPermissions);
-				
+			// Define Context
+			if(initialQueue != null && resultQueue != null) {
+				query.setContext(baseQueryContext);
+			}
+			
 			//--------------------------------
 			// Add Result Sink
-			CFWQueryResult queryResult = new CFWQueryResult();
 			JsonArray results = new JsonArray();
-			
+			CFWQueryContext queryContext = query.getContext();
+
 			query.add(new PipelineAction<EnhancedJsonObject, EnhancedJsonObject>() {
 							
 				@Override
@@ -148,10 +179,14 @@ public class CFWQueryExecutor {
 					LinkedBlockingQueue<EnhancedJsonObject> inQueue = getInQueue();
 					
 					while(!inQueue.isEmpty()) {
-
-						JsonObject object = inQueue.poll().getWrappedObject();
+						EnhancedJsonObject enhancedObject = inQueue.poll();
+						JsonObject object = enhancedObject.getWrappedObject();
 						if(object != null) {
-							results.add(object);
+							if(resultQueue == null) {
+								results.add(object);
+							}else {
+								resultQueue.add(enhancedObject);
+							}
 						}else {
 							queryContext.addMessage(MessageType.WARNING, "Data might be incomplete due to reached limits.");
 						}
@@ -185,17 +220,16 @@ public class CFWQueryExecutor {
 
 			//--------------------------------
 			// Create Response
-			queryResult.setExecTimeMillis(execMillis);
-			queryResult.setGlobals(queryContext.getGlobals());
-			queryResult.setMetadata(query.getContext().getMetadata());
-			queryResult.setDisplaySettings(query.getContext().getDisplaySettings());
-			queryResult.setDetectedFields(queryContext.getFieldnamesAsJsonArray());
-			queryResult.setResults(results);
-						
-			resultArray.addResult(queryResult);
+			if(resultQueue == null) {
+				
+				CFWQueryResult queryResult = new CFWQueryResult(queryContext);
+				queryResult.setExecTimeMillis(execMillis);
+				queryResult.setResults(results);
+				
+				resultArray.addResult(queryResult);
+			}
 
 		}
-		
 		return resultArray;
 	}
 
@@ -205,7 +239,7 @@ public class CFWQueryExecutor {
 		detectedFields.add("KEY");
 		detectedFields.add("VALUE");
 		
-		CFWQueryResult debugState = new CFWQueryResult()
+		CFWQueryResult debugState = new CFWQueryResult(new CFWQueryContext())
 					.setResults(parser.getParserState())
 					.setDetectedFields(detectedFields)
 					;

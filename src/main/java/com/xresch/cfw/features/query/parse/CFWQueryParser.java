@@ -65,7 +65,7 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
  * <QueryPartGroup> 	::=  "(" <QueryPart>+ ")"
  * 
  * <QueryPartJsonMemberAccess> ::=  <FIELDNAME> "." <ACCESS>
- * 		<FIELDNAME>		::= <LITERAL_STRING>, name of the field containing an object or asrray.
+ * 		<FIELDNAME>		::= <LITERAL_STRING>, name of the field containing an object or array.
  * 		<ACCESS>		::= (<MEMBER_NAME> | "[" <nameOrNumber> "]")
  * 		
  * 
@@ -76,23 +76,42 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 
 public class CFWQueryParser {
 	
+	// contains the original query string
 	private String query = null;
+	
+	// used to extract the queryString of the query under parsing
+	private int lastSemicolonIndex = 0;
+	
+	// set to true to check if user has permissions to access the specified sources
 	private boolean checkSourcePermissions = true;
+	
+	// the initial context to be copied to each instance of CFWQuery
 	private CFWQueryContext initialContextToBeCloned;
+	
+	// the list of tokens after tokenizing the query string
 	private ArrayList<CFWQueryToken> tokenlist;
+	
+	// the current Query instance under parsing
 	CFWQuery currentQuery;
+	
+	// the context of currentQuery
 	private CFWQueryContext currentContext;
+	
+	// the parts of the currentQuery
 	ArrayList<QueryPart> currentQueryParts = new ArrayList<>(); //initialized here so test cases don't run into nullpointer
 	
 	// cached instance
 	private static CFWQueryCommandSource sourceCommand = new CFWQueryCommandSource(new CFWQuery());
 	private static String[] sourceCommandNames = sourceCommand.uniqueNameAndAliases();
 	
-	
+	// cursors
 	private int cursor;
 	private int lastCursor;
+	
 	// counts how often the same cursor was detected, used to prevent endless looping
 	private int endlessLoopPreventionCounter = 0;
+	
+	
 	public static final String KEYWORD_AND = "AND";
 	public static final String KEYWORD_OR = "OR";
 	public static final String KEYWORD_NOT = "NOT";
@@ -315,6 +334,18 @@ public class CFWQueryParser {
 		currentQuery = new CFWQuery(initialContextToBeCloned);
 		currentContext = currentQuery.getContext();
 		
+		//-----------------------------------
+		// Extract Current Query String
+		if(this.hasMoreTokens()) {
+			int startIndex = (lastSemicolonIndex == 0 ) ? 0 : lastSemicolonIndex+1;
+			lastSemicolonIndex = query.indexOf(";", startIndex);
+			lastSemicolonIndex = (lastSemicolonIndex != -1) ? lastSemicolonIndex : query.length();
+			String currentQueryString = query.substring(startIndex, lastSemicolonIndex);
+			//System.out.println("======= currentQueryString ========\n"+currentQueryString);
+			currentContext.setOriginalQueryString(currentQueryString);
+		}
+		//-----------------------------------
+		// Parse All Commands until Semicolon
 		while(this.hasMoreTokens() && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {
 			
 			CFWQueryCommand command = parseQueryCommand(currentQuery);
@@ -322,7 +353,8 @@ public class CFWQueryParser {
 				currentQuery.addCommand(command);
 			}
 		}
-
+		
+		//-----------------------------------
 		//Skip successive Semicolons
 		while(this.hasMoreTokens() && this.lookahead().type() == CFWQueryTokenType.SIGN_SEMICOLON) {
 			this.consumeToken();

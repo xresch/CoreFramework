@@ -14,6 +14,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
@@ -124,7 +125,7 @@ public class CFWQueryCommandCompareMethods {
 		JsonArray youngerArray = youngerResult.getResults();
 		JsonArray comparison = compareJsonObjectArrays(olderArray, youngerArray);
 		CFWQueryResult comparedResult = 
-				new CFWQueryResult()
+				new CFWQueryResult(youngerResult.getQueryContext())
 					.setResults(comparison)
 					.setDetectedFields(detectedFields)
 					;

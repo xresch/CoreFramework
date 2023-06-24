@@ -7,8 +7,6 @@ import com.google.gson.JsonObject;
 
 public class CFWQueryResult {
 	
-
-	
 	public static final String RESULTFIELDS_RESULTS 			= "results";
 	public static final String RESULTFIELDS_DISPLAY_SETTINGS 	= "displaySettings";
 	public static final String RESULTFIELDS_METADATA 			= "metadata";
@@ -18,22 +16,30 @@ public class CFWQueryResult {
 	public static final String RESULTFIELDS_RESULT_COUNT 		= "resultCount";
 	
 	
+	private  CFWQueryContext context;
 	private JsonObject object = new JsonObject();
-	
 	
 	/****************************************************
 	 * 
 	 ****************************************************/
-	public CFWQueryResult() {
+	public CFWQueryResult(CFWQueryContext context) {
+		
+		//------------------------
+		// Set Values from Context
+		this.context = context;
+		this.setGlobals(context.getGlobals());
+		this.setMetadata(context.getMetadata());
+		this.setDisplaySettings(context.getDisplaySettings());
+		this.setDetectedFields(context.getFieldnamesAsJsonArray());
 		
 		//------------------------
 		// Set Default Values
 		this.setExecTimeMillis(-1);
-		this.setGlobals(new JsonObject());
-		this.setMetadata(new JsonObject());
-		this.setDisplaySettings(new JsonObject());
-		this.setDetectedFields(new JsonArray());
 		this.setResults(new JsonArray());
+		
+		
+		
+		
 	}
 	
 	/****************************************************
@@ -57,6 +63,13 @@ public class CFWQueryResult {
 	 ****************************************************/
 	public int getResultCount() {
 		return this.getResults().size();
+	}
+	
+	/****************************************************
+	 * 
+	 ****************************************************/
+	public CFWQueryContext getQueryContext() {
+		return context;
 	}
 	
 	/****************************************************

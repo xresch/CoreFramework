@@ -1,8 +1,10 @@
 package com.xresch.cfw.features.query;
 
 import java.util.HashSet;
+import java.util.function.Consumer;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -14,6 +16,8 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class CFWQueryContext{
 	
+	// used for mimicry command
+	private String originalQueryString = "";
 	
 	private long earliest = 0;
 	private long latest = 0;
@@ -76,6 +80,20 @@ public class CFWQueryContext{
 		this.earliest = earliest;
 		return this;
 	}
+	/***********************************************************************************************
+	 * Get the earliest time for this query.
+	 ***********************************************************************************************/
+	public String getOriginalQueryString() {
+		return originalQueryString;
+	}
+	
+	/***********************************************************************************************
+	 * Set the earliest time for this query.
+	 ***********************************************************************************************/
+	public CFWQueryContext setOriginalQueryString(String originalQueryString) {
+		this.originalQueryString = originalQueryString;
+		return this;
+	}
 
 	/***********************************************************************************************
 	 * Get the latest time for this query.
@@ -127,6 +145,32 @@ public class CFWQueryContext{
 	 ***********************************************************************************************/
 	public CFWQueryResultList getResultList() {
 		return resultArray;
+	}
+	
+	/***********************************************************************************************
+	 * Returns the result with the given name, or null.
+	 ***********************************************************************************************/
+	public CFWQueryResult getResultByName(String resultName) {
+		
+		if(resultName == null) {
+			return null;
+		}
+				
+		for(int i = 0; i < resultArray.size(); i++) {
+			
+			CFWQueryResult current = resultArray.get(i);
+			JsonElement name = current.getMetadata().get("name");
+			String nameString = (name != null && !name.isJsonNull()) ? name.getAsString() : null;
+			
+			//----------------------------
+			// Add Result
+			if(nameString != null && resultName.equals(nameString)
+			) {
+				return current;
+			}
+		}
+		
+		return null;
 	}
 	
 	/***********************************************************************************************
