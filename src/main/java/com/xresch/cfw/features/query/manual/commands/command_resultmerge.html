@@ -9,7 +9,7 @@
 ;
 | source random records=4
 ; 
-| merge</code></pre>
+| resultmerge</code></pre>
 
 <p>You can as well name the results using the metadata command, and only merge specific results:
 </p>
@@ -23,7 +23,7 @@
 | source random records=30
 ;
 | metadata name = "Merged 1&amp;3"
-| merge "Result One", "Result Three"</code></pre>
+| resultmerge "Result One", "Result Three"</code></pre>
 
 
 <p>You can use merge inside another query to append results.
@@ -37,4 +37,4 @@ Following executes two queries, then executes a third one and appends the result
 ;
 | metadata name = "Result One and Three"
 | source random records=30
-| merge "Result One"</code></pre>
+| resultmerge "Result One"</code></pre>

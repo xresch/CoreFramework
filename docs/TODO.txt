@@ -213,10 +213,10 @@ DONE
 	- text
 	- web 
 - Query: Added commands: 
-	- compare
 	- execute
-	- merge
 	- mimic
+	- resultcompare
+	- resultmerge
 	- unbox
 - Query: Added functions: 
 	- decode

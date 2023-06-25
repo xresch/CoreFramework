@@ -4,23 +4,38 @@
 <p>The following query creates random series data and displays them as a line chart: </p>
 <pre><code class="language-cfwquery">| source random records=100 type=series
 | chart 
+	by=[WAREHOUSE, ITEM]
 	x=TIME 
-	y=COUNT 
-	groupby=[WAREHOUSE, ITEM]</code></pre>
+	y=COUNT </code></pre>
 	
 
 <p>You can change the look and feel of your chart using various options. </p>
 <pre><code class="language-cfwquery">| source random records=100 type=series
 | chart 
+	by=[WAREHOUSE, ITEM] 
 	type=area
 	x=TIME 
 	y=COUNT 
-	groupby=[WAREHOUSE, ITEM] 
+	height='250px'
 	stacked=true
 	axes=true
 	legend=false 
+	spangaps=true
 	xtype=time 
 	ytype=linear
-	ymin=-100
-	ymax=400
+	ymin=-10
+	ymax=200
 	pointradius=0</code></pre>
+	
+<p>If you have multiple series you would like to show in separate charts, you can use the multichart options to split them up into separate charts. </p>
+<pre><code class="language-cfwquery">| source random records=300 type=series
+| chart
+	by=[WAREHOUSE, ITEM, CLASS] 
+	type=area
+	x=TIME 
+	y=COUNT 
+	multichart=true
+	multicharttitle=true
+	multichartcolumns=3
+	height='150px' # cannot be a percentage value when multichart=true
+	showlegend=false</code></pre>

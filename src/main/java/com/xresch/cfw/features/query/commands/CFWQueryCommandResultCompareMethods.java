@@ -25,9 +25,9 @@ import com.xresch.cfw.logging.CFWLog;
  * @author Reto Scheiwiller, 2023
  *************************************************************************/
 
-public class CFWQueryCommandCompareMethods {
+public class CFWQueryCommandResultCompareMethods {
 	
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandCompareMethods.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandResultCompareMethods.class.getName());
 	
 	private ArrayList<String> identifierFields = null;
 	private String toplevelField = null;
@@ -45,7 +45,7 @@ public class CFWQueryCommandCompareMethods {
 	boolean compareStrings = true;
 	boolean doSort = false;
 	
-	public CFWQueryCommandCompareMethods() {
+	public CFWQueryCommandResultCompareMethods() {
 		
 	}
 	
@@ -53,7 +53,7 @@ public class CFWQueryCommandCompareMethods {
 	 * Set the fields used for identifying a record in the older record.
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandCompareMethods identifierFields(ArrayList<String> identifierFields) {
+	public CFWQueryCommandResultCompareMethods identifierFields(ArrayList<String> identifierFields) {
 		this.identifierFields = identifierFields;
 		return this;
 	}
@@ -62,7 +62,7 @@ public class CFWQueryCommandCompareMethods {
 	 * Set the fields used for identifying a record.
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandCompareMethods makeIdentifierUnique(boolean makeIdentifierUnique) {
+	public CFWQueryCommandResultCompareMethods makeIdentifierUnique(boolean makeIdentifierUnique) {
 		this.makeIdentifierUnique = makeIdentifierUnique;
 		return this;
 	}
@@ -71,7 +71,7 @@ public class CFWQueryCommandCompareMethods {
 	 * Set the label used as a postfix for the columns of the older data.
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandCompareMethods labelOld(String labelOld) {
+	public CFWQueryCommandResultCompareMethods labelOld(String labelOld) {
 		this.labelOld = labelOld;
 		return this;
 	}
@@ -80,7 +80,7 @@ public class CFWQueryCommandCompareMethods {
 	 * Set the label used as a postfix for the columns of the younger data.
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandCompareMethods labelYoung(String labelYoung) {
+	public CFWQueryCommandResultCompareMethods labelYoung(String labelYoung) {
 		this.labelYoung = labelYoung;
 		return this;
 	}
@@ -89,7 +89,7 @@ public class CFWQueryCommandCompareMethods {
 	 * Set the label used as a postfix for the columns of difference.
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandCompareMethods labelDiff(String labelDiff) {
+	public CFWQueryCommandResultCompareMethods labelDiff(String labelDiff) {
 		this.labelDiff = labelDiff;
 		return this;
 	}
@@ -97,7 +97,7 @@ public class CFWQueryCommandCompareMethods {
 	 * Set the label used as a postfix for the columns of percent difference.
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandCompareMethods labelDiffPercent(String labelDiffPercent) {
+	public CFWQueryCommandResultCompareMethods labelDiffPercent(String labelDiffPercent) {
 		this.labelDiffPercent = labelDiffPercent;
 		return this;
 	}
@@ -106,7 +106,7 @@ public class CFWQueryCommandCompareMethods {
 	 * Set the fields used for identifying a record.
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandCompareMethods toplevelFieldField(String toplevelField) {
+	public CFWQueryCommandResultCompareMethods toplevelFieldField(String toplevelField) {
 		this.toplevelField = toplevelField;
 		return this;
 	}

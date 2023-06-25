@@ -24,11 +24,14 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandChart extends CFWQueryCommand {
 	
+	public static final String COMMAND_NAME = "chart";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandChart.class.getName());
 	
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
-		
+	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
+	
 	int recordCounter = 0;
 	
 	/***********************************************************************************************
@@ -43,7 +46,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"chart"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -59,7 +62,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "chart [type=<typeOptions>] [<otherParamName>=<value> ...]";
+		return COMMAND_NAME+" [by=<fieldnames>] [type=<typeOptions>] [<otherParamName>=<value> ...]";
 	}
 	
 	/***********************************************************************************************
@@ -76,7 +79,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 						+"<li>steppedarea</li>"
 						+"<li>steppedline</li>"
 					+"</ul>"
-				+"<p><b>groupby:&nbsp;</b>Array of fieldnames to group by. This determines the series for the chart.</p>"	
+				+"<p><b>by:&nbsp;</b>Array of fieldnames to group by. This determines the series for the chart.</p>"	
 				+"<p><b>x:&nbsp;</b>Name of the field containing the values for the x-axis.</p>"	
 				+"<p><b>y:&nbsp;</b>Name of the field containing the values for the y-axis.</p>"	
 				+"<p><b>xtype:&nbsp;</b>Type of the x-axis:</p>"	
@@ -110,7 +113,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_chart.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -121,34 +124,15 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Get Parameters
-		
-		JsonObject displaySettings = this.getParent().getContext().getDisplaySettings();
-		displaySettings.addProperty("as", "chart");
-		
+	
 		for(int i = 0; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
 			
 			if(currentPart instanceof QueryPartAssignment) {
-				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-				
-				String propertyName = assignment.getLeftSideAsString(null);
-
-				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
-				if(valuePart.isString()) {
-					String value = valuePart.getAsString();
-					value = CFW.Security.sanitizeHTML(value);
-					displaySettings.addProperty(propertyName, value);
-				}else if(valuePart.isBoolean()) {
-					displaySettings.addProperty(propertyName, valuePart.getAsBoolean());
-				}else if(valuePart.isNumber()) {
-					displaySettings.addProperty(propertyName, valuePart.getAsNumber());
-				}else if(valuePart.isJsonArray()) {
-					displaySettings.add(propertyName, valuePart.getAsJsonArray());
-				}
-			
+				assignmentParts.add((QueryPartAssignment)currentPart);
 			}else {
-				parser.throwParseException("display: Only parameters(key=value) are allowed.", currentPart);
+				parser.throwParseException(COMMAND_NAME+": Only parameters(key=value) are allowed.", currentPart);
 			}
 		}
 			
@@ -176,6 +160,34 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 		}
 		
 		return this;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception {
+		
+		//--------------------------------------
+		// Do this here to make the command removable for command 'mimic'
+		JsonObject displaySettings = this.getParent().getContext().getDisplaySettings();
+		displaySettings.addProperty("as", "chart");
+		
+		for(QueryPartAssignment assignment : assignmentParts) {
+				
+			String propertyName = assignment.getLeftSideAsString(null);
+
+			QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
+			
+			if(valuePart.isString()) {
+				String value = valuePart.getAsString();
+				value = CFW.Security.sanitizeHTML(value);
+				displaySettings.addProperty(propertyName, value);
+			}else {
+				valuePart.addToJsonObject(propertyName, displaySettings);
+			}
+		}
+		
 	}
 	
 	/***********************************************************************************************

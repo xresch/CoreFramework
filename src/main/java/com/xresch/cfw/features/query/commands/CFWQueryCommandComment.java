@@ -21,6 +21,8 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandComment extends CFWQueryCommand {
 	
+	public static final String COMMAND_NAME = "comment";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandComment.class.getName());
 	
 	CFWQuerySource source = null;
@@ -42,7 +44,7 @@ public class CFWQueryCommandComment extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"comment", "off"};
+		return new String[] {COMMAND_NAME, "off"};
 	}
 
 	/***********************************************************************************************
@@ -58,7 +60,7 @@ public class CFWQueryCommandComment extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "comment <your comment>";
+		return COMMAND_NAME+" <your comment>";
 	}
 	
 	/***********************************************************************************************
@@ -66,7 +68,7 @@ public class CFWQueryCommandComment extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>your comment:&nbsp;</b>Whatever you have to say or a command you want to turn off</p>";
+		return "<p><b>your comment:&nbsp;</b>Whatever you have to say or a command you want to turn off.</p>";
 	}
 
 	/***********************************************************************************************
@@ -75,7 +77,7 @@ public class CFWQueryCommandComment extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_comment.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************

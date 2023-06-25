@@ -24,6 +24,8 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	
+	public static final String COMMAND_NAME = "display";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandDisplay.class.getName());
 	
 	CFWQuerySource source = null;
@@ -43,7 +45,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"display"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -59,7 +61,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "display as=<asOption> [visiblefields=<arrayOfFieldnames>] [titlefields=<arrayOfFieldnames>]"
+		return COMMAND_NAME+" as=<asOption> [visiblefields=<arrayOfFieldnames>] [titlefields=<arrayOfFieldnames>]"
 				+"\n[titleformat=<titleformat>] [menu=<showMenu>] [zoom=<zoomNumber>]";
 	}
 	

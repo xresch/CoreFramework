@@ -63,7 +63,7 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "mimic <selector>";
+		return "mimic name=<queryName> remove=<commandNames>";
 	}
 	
 	/***********************************************************************************************
@@ -71,7 +71,10 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>selector:&nbsp;</b>(Optional) Name of the query to be mimicked. Names are set with metadata command. If none is given, the query preceeding this one is used.</p>";
+		return 
+			  "<p><b>queryName:&nbsp;</b>(Optional) Name of the query to be mimicked. Names are set with metadata command. If none is given, the query preceeding this one is used.</p>"
+			+ "<p><b>commandNames:&nbsp;</b>(Optional) String or array of command names to be removed. (Default='metadata')</p>"
+				;
 	}
 
 	/***********************************************************************************************
@@ -108,7 +111,7 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 							else if	 (assignmentName.equals("remove")) {	commandsToRemove = assignmentValue.getAsStringArray(); }
 			
 							else {
-								parser.throwParseException("compare: Unsupported argument.", currentPart);
+								parser.throwParseException("mimic: Unsupported argument.", currentPart);
 							}
 							
 						}

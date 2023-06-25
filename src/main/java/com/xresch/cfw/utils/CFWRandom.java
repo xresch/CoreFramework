@@ -515,6 +515,8 @@ public class CFWRandom {
 		long timerange = latest - earliest;
 		long timestep = timerange / valuesCount;
 		
+		String[] classesArray = new String[] {"A", "B", "C", "D", "E", "F", "G"};
+		Integer[] boxsizeArray = new Integer[] {6,10,12,16,20,24,36,64,100,144};
 		
 		for(int i = 0; i < seriesCount; i++) {
 			String warehouse = randomColorName()+" "+randomStringAlphaNumerical(1).toUpperCase()+randomIntegerInRange(1, 9);
@@ -523,9 +525,16 @@ public class CFWRandom {
 			for(int j = 0; j < valuesCount; j++) {
 				JsonObject currentItem = new JsonObject();
 				currentItem.addProperty("TIME", earliest+(timestep*j));
-				currentItem.addProperty("ITEM", item);
 				currentItem.addProperty("WAREHOUSE", warehouse);
+				currentItem.addProperty("ITEM", item);
+				currentItem.addProperty("CLASS", randomFromArray(classesArray));
 				currentItem.addProperty("COUNT", randomIntegerInRange(0, 100));
+				currentItem.addProperty("PRICE", randomFloatInRange(0.5f, 5.6f));
+				currentItem.addProperty("BOX_SIZE", randomFromArray(boxsizeArray));
+				
+				double multiplier = Math.pow(1000, randomIntegerInRange(0, 4));
+				double thousands = randomIntegerInRange(0, 1000) * multiplier;
+				currentItem.addProperty("TOTAL", thousands);
 				
 				array.add(currentItem);
 			}

@@ -3,11 +3,9 @@ package com.xresch.cfw.features.query.commands;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -20,25 +18,35 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
-public class CFWQueryCommandMerge extends CFWQueryCommand {
+public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 	
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandMerge.class.getName());
+	public static final String COMMAND_NAME = "resultcompare";
+
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandResultCompare.class.getName());
 	
 	CFWQuerySource source = null;
 	ArrayList<String> resultnames = new ArrayList<>();
 		
 	HashSet<String> encounters = new HashSet<>();
 	
+	ArrayList<String> groupByFieldnames = new ArrayList<>();
+	ArrayList<String> detectedFieldnames = new ArrayList<>();
+	
+	QueryPartValue percentColumnsFormatter = QueryPartValue.newString("percent");
+	String labelOld = "_A";
+	String labelYoung = "_B";
+	String labelDiff = "_Diff";
+	String labelDiffPercent = "_%";
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandMerge(CFWQuery parent) {
+	public CFWQueryCommandResultCompare(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -49,7 +57,7 @@ public class CFWQueryCommandMerge extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"merge"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -57,7 +65,7 @@ public class CFWQueryCommandMerge extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Merges completed result of previous queries into one.";
+		return "Compares completed results of previous queries.";
 	}
 
 	/***********************************************************************************************
@@ -65,7 +73,7 @@ public class CFWQueryCommandMerge extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "merge <resultname> [, <resultname>, <resultname>...]";
+		return COMMAND_NAME+" [results=resultnamesArray]";
 	}
 	
 	/***********************************************************************************************
@@ -73,7 +81,7 @@ public class CFWQueryCommandMerge extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>resultname:&nbsp;</b>(Optional) Names of the results  to be merged. Names are set with metadata command. If none is given, all are merged.</p>";
+		return "<p><b>resultnamesArray:&nbsp;</b>(Optional) Names of the results that should be compared.</p>";
 	}
 
 	/***********************************************************************************************
@@ -81,7 +89,7 @@ public class CFWQueryCommandMerge extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_merge.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -91,28 +99,35 @@ public class CFWQueryCommandMerge extends CFWQueryCommand {
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
 		
 		//------------------------------------------
-		// Get Fieldnames
-		for(QueryPart part : parts) {
+		// Get Parameters
+		
+		for(int i = 0; i < parts.size(); i++) {
 			
-			if(part instanceof QueryPartAssignment) {
+			QueryPart currentPart = parts.get(i);
+			
+			if(currentPart instanceof QueryPartAssignment) {
+				//--------------------------------------------------
+				// Resolve Fieldname=Function
+				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
+				String assignmentName = assignment.getLeftSideAsString(null);
+				QueryPartValue assignmentValue = ((QueryPartAssignment) currentPart).determineValue(null);
 				
-				QueryPartAssignment parameter = (QueryPartAssignment)part;
-				String paramName = parameter.getLeftSide().determineValue(null).getAsString();
-				
-			}else if(part instanceof QueryPartArray) {
-				QueryPartArray array = (QueryPartArray)part;
-
-				for(JsonElement element : array.getAsJsonArray(null, true)) {
-					
-					if(!element.isJsonNull() && element.isJsonPrimitive()) {
-						resultnames.add(element.getAsString());
+				if(assignmentName != null) {
+					assignmentName = assignmentName.trim().toLowerCase();
+					if		 (assignmentName.equals("by")) {				groupByFieldnames.addAll( assignmentValue.getAsStringArray() ); }
+					else if	 (assignmentName.equals("labelold")) {			labelOld =  assignmentValue.getAsString(); }
+					else if	 (assignmentName.equals("labelyoung")) {		labelYoung =  assignmentValue.getAsString(); }
+					else if	 (assignmentName.equals("labeldiff")) {			labelDiff =  assignmentValue.getAsString(); }
+					else if	 (assignmentName.equals("labeldiffpercent")) {	labelDiffPercent =  assignmentValue.getAsString(); }
+					else if	 (assignmentName.startsWith("percentformat")) { percentColumnsFormatter =  assignmentValue; }
+					else {
+						parser.throwParseException("compare: Unsupported argument.", currentPart);
 					}
+					
 				}
+				
 			}else {
-				QueryPartValue value = part.determineValue(null);
-				if(!value.isNull()) {
-					resultnames.add(value.getAsString());
-				}
+				parser.throwParseException("compare: Only assignment expressions(key=value) allowed.", currentPart);
 			}
 		}
 			
@@ -150,50 +165,47 @@ public class CFWQueryCommandMerge extends CFWQueryCommand {
 		
 		//------------------------------
 		// Read Records of current Query
-		ArrayList<CFWQueryResult> mergedResults = new ArrayList<>();
-		
 		if(isPreviousDone() && inQueue.isEmpty()) {
 			
 			CFWQueryResultList previousResults = this.parent.getContext().getResultList();
-			for(int i = 0; i < previousResults.size(); i++) {
-				
-				CFWQueryResult current = previousResults.get(i);
-				JsonElement name = current.getMetadata().get("name");
-				String nameString = (name != null && !name.isJsonNull()) ? name.getAsString() : null;
-				
-				//----------------------------
-				// Add Result
-				if(resultnames.isEmpty()
-				|| (nameString != null && resultnames.contains(nameString))
-				) {
-					//----------------------------
-					// Handle Detected Fields
-					this.fieldnameAddAll(current.getDetectedFields());		
-					mergedResults.add(current);
-					
-					//----------------------------
-					// Iterate Results
-					current.getResults().forEach(new Consumer<JsonElement>() {
-
-						@Override
-						public void accept(JsonElement e) {
-							outQueue.add(
-									new EnhancedJsonObject(e.getAsJsonObject())
-								);
-						}
-					});
-					
-					
+			
+			CFWQueryResult last = previousResults.get(previousResults.size()-1);
+			CFWQueryResult secondLast = previousResults.get(previousResults.size()-2);
+			
+			previousResults.removeResult(last);
+			previousResults.removeResult(secondLast);
+			
+			CFWQueryResult compared = 
+					new CFWQueryCommandResultCompareMethods()
+						.identifierFields(groupByFieldnames)
+						.labelOld(labelOld)
+						.labelYoung(labelYoung)
+						.labelDiff(labelDiff)
+						.labelDiffPercent(labelDiffPercent)
+						.compareQueryResults(secondLast, last);
+						;
+			
+			//----------------------------
+			// Set Detected Fields
+			this.fieldnameClearAll();
+			this.fieldnameAddAll(compared.getDetectedFields());
+			
+			//----------------------------
+			// Set Field Formats
+			for(JsonElement element : compared.getDetectedFields()) {
+				String fieldname = element.getAsString();
+				if(fieldname.endsWith(labelDiffPercent)) {
+					CFWQueryCommandFormatField.addFormatter(this.parent.getContext(), fieldname, percentColumnsFormatter);
 				}
-				
 			}
 			
 			//----------------------------
-			// Remove Merged Results
-			for(CFWQueryResult result : mergedResults) {
-				 previousResults.removeResult(result);
+			// Add to Queue
+			for(JsonElement record : compared.getResults()) {
+				outQueue.add(new EnhancedJsonObject(record.getAsJsonObject()));
 			}
 			
+
 			this.setDone();
 		}
 		

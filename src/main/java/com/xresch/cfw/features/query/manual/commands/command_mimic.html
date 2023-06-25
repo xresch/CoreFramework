@@ -1,0 +1,56 @@
+
+<p>This command is used to mimic the behavior of a previous query.
+It is useful to copy a query that you want to execute with different parameters(specified with command 'metadata' or 'globals') without having to write the 
+whole query twice. 
+The mimicked query will be inserted at the place where mimic is used.
+</p>
+
+<p>Following example executes 3 queries and then merges the result into one:
+</p>
+<pre><code class="language-cfwquery">| globals multidisplay=3 # display 3 results in one row
+| source random records = 5
+| keep TIME, LOCATION
+; # End of First Query
+| source random records = 10
+| keep TIME, VALUE
+; # End of Second Query
+| mimic # copies and executes the query right before this one</code></pre>
+
+
+
+<p>You can use the parameter 'name' to select the query to mimic.
+Use the command 'metadata' to set the name. By default, 'metadata' commands are removed when mimicked:
+</p>
+<pre><code class="language-cfwquery">| globals multidisplay=3 # display 3 results in one row
+| metadata name="mimicThis"
+| source random records = 5
+| keep TIME, LOCATION
+; # End of First Query
+| source random records = 10
+| keep TIME, VALUE
+; # End of Second Query
+| mimic name="mimicThis" # copies and executes the first query named 'mimicThis'</code></pre>
+
+
+
+<p>You can select the commands which should be removed using the parameter 'remove'.
+This allows you to remove commands at wish. Notice that this will override the default behavior of 
+removing 'metadata' commands, so you have to include it manually if you want to keep this behavior.
+Additionally you can override metadata and therefore parameterize your query.
+</p>
+<pre><code class="language-cfwquery">| globals multidisplay=3 # display 3 results in one row
+| metadata 
+	name="test" # set name of this query
+	custom=["A","B","C"] # a custom parameter
+| source random records = 15
+| set CUSTOM = randomFrom(meta(custom)) # use custom parameter
+| keep TIME, LOCATION, CUSTOM
+; # End of First Query
+| source random records = 10
+| keep TIME, VALUE
+; # End of Second Query
+| metadata 
+	custom=["X","Y","Z"] # set metadata for this query
+| mimic name="test" remove=[metadata, keep]  # select query "test" and remove commands "metadata" and "keep"
+| keep CUSTOM, VALUE # define keep for this query</code></pre>
+

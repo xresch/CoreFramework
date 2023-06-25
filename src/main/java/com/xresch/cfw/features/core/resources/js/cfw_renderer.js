@@ -2106,6 +2106,12 @@ function cfw_renderer_chart(renderDef) {
 			settings.pointradius = 2;
 		}
 	}
+	
+	//========================================
+	// Fix Multichart Endless Size Bug
+	if(settings.multichart == true && settings.height.endsWith('%')){
+		settings.height = "200px";
+	}
 		
 	//========================================
 	// Create Workspace
