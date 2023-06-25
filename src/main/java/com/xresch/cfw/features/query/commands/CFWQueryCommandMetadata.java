@@ -11,7 +11,6 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
-import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
@@ -28,11 +27,7 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandMetadata.class.getName());
 	
-	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
-	
-	CFWQuerySource source = null;
-	ArrayList<String> fieldnames = new ArrayList<>();
-	int recordCounter = 0;
+	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 	
 	/***********************************************************************************************
 	 * 
@@ -147,6 +142,7 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 			valuePart.addToJsonObject(propertyName, metaObject);
 		}
 	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

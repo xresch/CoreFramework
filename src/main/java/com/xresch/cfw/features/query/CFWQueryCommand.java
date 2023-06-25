@@ -358,6 +358,13 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	
 	
 	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
+	public void handleException(Throwable e) {
+		this.parent.getContext().addMessage(MessageType.ERROR, e.getMessage());
+		new CFWLog(logger).silent(true).severe("Unexpected error: "+e);
+	} 
 	
 	/****************************************************************************
 	 * Override Run method to add handling for Memory issues

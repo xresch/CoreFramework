@@ -28,11 +28,8 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandChart.class.getName());
 	
-	CFWQuerySource source = null;
-	ArrayList<String> fieldnames = new ArrayList<>();
-	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
-	
-	int recordCounter = 0;
+	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
+
 	
 	/***********************************************************************************************
 	 * 

@@ -30,6 +30,8 @@ public class CFWQueryCommandResultMerge extends CFWQueryCommand {
 	
 	public static final String COMMAND_NAME = "resultmerge";
 
+	private ArrayList<QueryPart> parts;
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandResultMerge.class.getName());
 	
 	CFWQuerySource source = null;
@@ -93,31 +95,8 @@ public class CFWQueryCommandResultMerge extends CFWQueryCommand {
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
 		
 		//------------------------------------------
-		// Get Fieldnames
-		for(QueryPart part : parts) {
-			
-			if(part instanceof QueryPartAssignment) {
-				
-				QueryPartAssignment parameter = (QueryPartAssignment)part;
-				String paramName = parameter.getLeftSide().determineValue(null).getAsString();
-				
-			}else if(part instanceof QueryPartArray) {
-				QueryPartArray array = (QueryPartArray)part;
-
-				for(JsonElement element : array.getAsJsonArray(null, true)) {
-					
-					if(!element.isJsonNull() && element.isJsonPrimitive()) {
-						resultnames.add(element.getAsString());
-					}
-				}
-			}else {
-				QueryPartValue value = part.determineValue(null);
-				if(!value.isNull()) {
-					resultnames.add(value.getAsString());
-				}
-			}
-		}
-			
+		// Get Parameters
+		this.parts = parts;		
 	}
 	
 	/***********************************************************************************************
@@ -134,7 +113,28 @@ public class CFWQueryCommandResultMerge extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void initializeAction() {
-		// nothing todo
+		//------------------------------------------
+		// Get Fieldnames
+		for(QueryPart part : parts) {
+			
+			if(part instanceof QueryPartAssignment) {
+				// unsupported
+			}else if(part instanceof QueryPartArray) {
+				QueryPartArray array = (QueryPartArray)part;
+
+				for(JsonElement element : array.getAsJsonArray(null, true)) {
+					
+					if(!element.isJsonNull() && element.isJsonPrimitive()) {
+						resultnames.add(element.getAsString());
+					}
+				}
+			}else {
+				QueryPartValue value = part.determineValue(null);
+				if(!value.isNull()) {
+					resultnames.add(value.getAsString());
+				}
+			}
+		}
 	}
 	
 	/***********************************************************************************************

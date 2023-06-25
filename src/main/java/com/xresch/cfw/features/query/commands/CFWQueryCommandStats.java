@@ -17,7 +17,6 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartFunction;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
@@ -25,15 +24,18 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandStats extends CFWQueryCommand {
 	
-	ArrayList<String> groupByFieldnames = new ArrayList<>();
-	LinkedHashMap<String, QueryPartFunction> functionMap = new LinkedHashMap<>();
+	public static final String COMMAND_NAME = "stats";
+	
+	private ArrayList<QueryPart> parts;
+	
+	private ArrayList<String> groupByFieldnames = new ArrayList<>();
+	private LinkedHashMap<String, QueryPartFunction> functionMap = new LinkedHashMap<>();
 	
 	// contains groupID and aggregationGroup
-	LinkedHashMap<String, AggregationGroup> groupMap = new LinkedHashMap<>();
+	private LinkedHashMap<String, AggregationGroup> groupMap = new LinkedHashMap<>();
 	
-	
-	ArrayList<String> detectedFieldnames = new ArrayList<>();
-	ArrayList<QueryPartAssignment> assignments = new ArrayList<>();
+	private ArrayList<String> detectedFieldnames = new ArrayList<>();
+	private ArrayList<QueryPartAssignment> assignments = new ArrayList<>();
 
 	
 	/***********************************************************************************************
@@ -48,7 +50,7 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"stats", "aggregate"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -64,7 +66,7 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "stats by=<arrayOfFieldnames> <targetFieldname>=function(params) [<targetFieldname>=function(params) ...]";
+		return COMMAND_NAME+" by=<arrayOfFieldnames> <targetFieldname>=function(params) [<targetFieldname>=function(params) ...]";
 	}
 	
 	/***********************************************************************************************
@@ -85,7 +87,7 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_stats.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -96,11 +98,27 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Get Parameters
+		this.parts = parts;
+		
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+		// keep default
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception{
 		
 		for(int i = 0; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
-			
 			
 			if(currentPart instanceof QueryPartAssignment) {
 				//--------------------------------------------------
@@ -130,15 +148,15 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 							if(functionInstance.supportsAggregation()) {
 								functionMap.put(assignmentName, function);
 							}else {
-								parser.throwParseException("stats: Function '"+functionInstance.uniqueName()+"' does not support aggregations.", currentPart);
+								throw new ParseException(COMMAND_NAME+": Function '"+functionInstance.uniqueName()+"' does not support aggregations.", -1);
 							}
 						}else {
-							parser.throwParseException("stats: Value must be an aggregation function.", currentPart);
+							throw new ParseException(COMMAND_NAME+": Value must be an aggregation function.", -1);
 						}
 					}
 					
 				}else {
-					parser.throwParseException("stats: left side of an assignment cannot be null.", currentPart);
+					throw new ParseException(COMMAND_NAME+": left side of an assignment cannot be null.", -1);
 				}
 				
 				assignments.add((QueryPartAssignment)currentPart);
@@ -154,31 +172,16 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 				if(functionInstance.supportsAggregation()) {
 					functionMap.put(fieldname, function);
 				}else {
-					parser.throwParseException("stats: Function '"+functionInstance.uniqueName()+"' does not support aggregations.", currentPart);
+					throw new ParseException(COMMAND_NAME+": Function '"+functionInstance.uniqueName()+"' does not support aggregations.", -1);
 				}
 
 			}else {
-				parser.throwParseException("stats: Only assignment expressions(key=value) allowed.", currentPart);
+				throw new ParseException(COMMAND_NAME+": Only assignment expressions(key=value) allowed.", -1);
 			}
 		}
 		
-	}
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	@Override
-	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		// keep default
-	}
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	@Override
-	public void initializeAction() {
+		
 		this.fieldnameKeep(detectedFieldnames.toArray(new String[]{}));
-
 	}
 	
 	/***********************************************************************************************

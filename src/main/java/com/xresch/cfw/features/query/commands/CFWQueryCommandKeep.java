@@ -29,11 +29,9 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandKeep.class.getName());
 	
-	ArrayList<QueryPart> parts;
-	CFWQuerySource source = null;
-	ArrayList<String> fieldnames = new ArrayList<>();
-		
-	HashSet<String> encounters = new HashSet<>();
+	private ArrayList<QueryPart> parts;
+
+	private ArrayList<String> fieldnames = new ArrayList<>();
 	
 	/***********************************************************************************************
 	 * 

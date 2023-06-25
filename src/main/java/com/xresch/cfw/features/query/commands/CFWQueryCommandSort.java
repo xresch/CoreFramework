@@ -2,19 +2,15 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.TreeSet;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Ordering;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
-import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
@@ -26,13 +22,15 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandSort extends CFWQueryCommand {
 	
-	CFWQuerySource source = null;
-	ArrayList<String> fieldnames = new ArrayList<>();
+	public static final String COMMAND_NAME = "sort";
+
+	private ArrayList<String> fieldnames = new ArrayList<>();
 	
 	private boolean isReverseOrder = false;
 	private boolean isReverseNulls = false;
 	
-	ArrayList<EnhancedJsonObject> objectListToSort = new ArrayList<>();
+	private ArrayList<EnhancedJsonObject> objectListToSort = new ArrayList<>();
+	private ArrayList<QueryPart> parts;
 	
 	/***********************************************************************************************
 	 * 
@@ -48,7 +46,7 @@ public class CFWQueryCommandSort extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"sort"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -64,7 +62,7 @@ public class CFWQueryCommandSort extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "sort <fieldname> [, <fieldname> ...] [reverse=false] [reversenulls=false]";
+		return COMMAND_NAME+" <fieldname> [, <fieldname> ...] [reverse=false] [reversenulls=false]";
 	}
 	
 	/***********************************************************************************************
@@ -83,7 +81,7 @@ public class CFWQueryCommandSort extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_sort.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -91,9 +89,23 @@ public class CFWQueryCommandSort extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
+		this.parts = parts;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+		// keep default
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception {
 		
-		//------------------------------------------
-		// Get Fieldnames and params
 		for(QueryPart part : parts) {
 			
 			if(part instanceof QueryPartAssignment) {
@@ -132,22 +144,15 @@ public class CFWQueryCommandSort extends CFWQueryCommand {
 				}
 			}else {
 				QueryPartValue value = part.determineValue(null);
-				if(!value.isNull()) {
+				if(value.isJsonArray()) {
+					fieldnames.addAll(value.getAsStringArray());
+				}else if(!value.isNull()) {
 					fieldnames.add(value.getAsString());
 				}
 			}
 		}
-			
+		
 	}
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	@Override
-	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		// keep default
-	}
-
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

@@ -21,17 +21,16 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandTail extends CFWQueryCommand {
 	
+	private static final String COMMAND_NAME = "tail";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandTail.class.getName());
 	
-	CFWQuerySource source = null;
-	ArrayList<String> fieldnames = new ArrayList<>();
+	private int numberOfRecords = 100;
 	
-	int numberOfRecords = 100;
-	
-	EvictingQueue<EnhancedJsonObject> sizedQueue;
+	private EvictingQueue<EnhancedJsonObject> sizedQueue;
 
-	
-	int recordCounter = 0;
+	private int recordCounter = 0;
+	private ArrayList<QueryPart> parts;
 	
 	/***********************************************************************************************
 	 * 
@@ -45,7 +44,7 @@ public class CFWQueryCommandTail extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"tail", "last"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -61,7 +60,7 @@ public class CFWQueryCommandTail extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "tail [<number>]";
+		return COMMAND_NAME+" [<number>]";
 	}
 	
 	/***********************************************************************************************
@@ -78,7 +77,7 @@ public class CFWQueryCommandTail extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_tail.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -87,6 +86,24 @@ public class CFWQueryCommandTail extends CFWQueryCommand {
 	@Override
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
 		
+		this.parts = parts;
+			
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+		// keep default
+
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception {
 		//------------------------------------------
 		// Get Fieldnames
 		for(QueryPart part : parts) {
@@ -103,21 +120,14 @@ public class CFWQueryCommandTail extends CFWQueryCommand {
 				}
 				
 			}else {
-				throw new ParseException("tail: parameter must be an integer value.", part.position());
-			}
-			
-				
+				QueryPartValue value = part.determineValue(null);
+				if(value.isNumberOrNumberString()) {
+					numberOfRecords = value.getAsInteger();
+				}else if(!value.isNull()) {
+					throw new ParseException(COMMAND_NAME+": parameter must be an integer value.", part.position());
+				}
+			}	
 		}
-			
-	}
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	@Override
-	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		// keep default
-
 	}
 
 	/***********************************************************************************************
@@ -130,21 +140,14 @@ public class CFWQueryCommandTail extends CFWQueryCommand {
 			sizedQueue = EvictingQueue.create(numberOfRecords);
 		}
 		
-		
 		while(keepPolling()) {
-			
 			recordCounter++;
-			
 			sizedQueue.add(inQueue.poll());
-			
 		}
-		
-		
 		
 		if(isPreviousDone() && inQueue.isEmpty()) {
 			
 			while(!sizedQueue.isEmpty()) {
-				
 				outQueue.add(sizedQueue.poll());
 			}
 			

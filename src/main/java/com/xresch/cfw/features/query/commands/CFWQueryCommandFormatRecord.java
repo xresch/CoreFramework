@@ -27,9 +27,7 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 	private static final String FIELDNAME_TEXT_STYLE = "_textcolor";
 	private static final String FIELDNAME_BG_STYLE = "_bgcolor";
 
-	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
-	
-	ArrayList<ArrayList<QueryPart>> conditions = new ArrayList<>();
+	private ArrayList<ArrayList<QueryPart>> conditions = new ArrayList<>();
 	
 	/***********************************************************************************************
 	 * 

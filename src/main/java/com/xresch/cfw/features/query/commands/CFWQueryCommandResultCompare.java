@@ -29,19 +29,15 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandResultCompare.class.getName());
 	
-	CFWQuerySource source = null;
-	ArrayList<String> resultnames = new ArrayList<>();
-		
-	HashSet<String> encounters = new HashSet<>();
+	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
+
+	private ArrayList<String> groupByFieldnames = new ArrayList<>();
 	
-	ArrayList<String> groupByFieldnames = new ArrayList<>();
-	ArrayList<String> detectedFieldnames = new ArrayList<>();
-	
-	QueryPartValue percentColumnsFormatter = QueryPartValue.newString("percent");
-	String labelOld = "_A";
-	String labelYoung = "_B";
-	String labelDiff = "_Diff";
-	String labelDiffPercent = "_%";
+	private QueryPartValue percentColumnsFormatter = QueryPartValue.newString("percent");
+	private String labelOld = "_A";
+	private String labelYoung = "_B";
+	private String labelDiff = "_Diff";
+	private String labelDiffPercent = "_%";
 	
 	/***********************************************************************************************
 	 * 
@@ -97,39 +93,20 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
-		
 		//------------------------------------------
 		// Get Parameters
-		
 		for(int i = 0; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
 			
 			if(currentPart instanceof QueryPartAssignment) {
-				//--------------------------------------------------
-				// Resolve Fieldname=Function
-				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-				String assignmentName = assignment.getLeftSideAsString(null);
-				QueryPartValue assignmentValue = ((QueryPartAssignment) currentPart).determineValue(null);
-				
-				if(assignmentName != null) {
-					assignmentName = assignmentName.trim().toLowerCase();
-					if		 (assignmentName.equals("by")) {				groupByFieldnames.addAll( assignmentValue.getAsStringArray() ); }
-					else if	 (assignmentName.equals("labelold")) {			labelOld =  assignmentValue.getAsString(); }
-					else if	 (assignmentName.equals("labelyoung")) {		labelYoung =  assignmentValue.getAsString(); }
-					else if	 (assignmentName.equals("labeldiff")) {			labelDiff =  assignmentValue.getAsString(); }
-					else if	 (assignmentName.equals("labeldiffpercent")) {	labelDiffPercent =  assignmentValue.getAsString(); }
-					else if	 (assignmentName.startsWith("percentformat")) { percentColumnsFormatter =  assignmentValue; }
-					else {
-						parser.throwParseException("compare: Unsupported argument.", currentPart);
-					}
-					
-				}
-				
+				assignmentParts.add((QueryPartAssignment)currentPart);
+
 			}else {
-				parser.throwParseException("compare: Only assignment expressions(key=value) allowed.", currentPart);
+				parser.throwParseException(COMMAND_NAME+": Only parameters(key=value) are allowed.", currentPart);
 			}
 		}
+				
 			
 	}
 	
@@ -146,8 +123,28 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public void initializeAction() {
-		// nothing todo
+	public void initializeAction() throws Exception {
+		//------------------------------------------
+		// Get Parameters
+		for(QueryPartAssignment assignment : assignmentParts) {
+			//--------------------------------------------------
+			// Resolve Fieldname=Function
+			String assignmentName = assignment.getLeftSideAsString(null);
+			QueryPartValue assignmentValue = assignment.determineValue(null);
+			
+			if(assignmentName != null) {
+				assignmentName = assignmentName.trim().toLowerCase();
+				if		 (assignmentName.equals("by")) {				groupByFieldnames.addAll( assignmentValue.getAsStringArray() ); }
+				else if	 (assignmentName.equals("labelold")) {			labelOld =  assignmentValue.getAsString(); }
+				else if	 (assignmentName.equals("labelyoung")) {		labelYoung =  assignmentValue.getAsString(); }
+				else if	 (assignmentName.equals("labeldiff")) {			labelDiff =  assignmentValue.getAsString(); }
+				else if	 (assignmentName.equals("labeldiffpercent")) {	labelDiffPercent =  assignmentValue.getAsString(); }
+				else if	 (assignmentName.startsWith("percentformat")) { percentColumnsFormatter =  assignmentValue; }
+				else {
+					throw new ParseException(COMMAND_NAME+": Unsupported argument.", -1);
+				}
+			}
+		}
 	}
 	
 	/***********************************************************************************************
@@ -160,7 +157,6 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 		// Read Records of current Query
 		while(keepPolling()) {
 			outQueue.add(inQueue.poll());
-			
 		}
 		
 		//------------------------------

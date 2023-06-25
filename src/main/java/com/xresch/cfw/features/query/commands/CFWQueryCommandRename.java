@@ -28,14 +28,11 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandRename.class.getName());
 	
-	ArrayList<QueryPart> parts;
-	CFWQuerySource source = null;
+	private ArrayList<QueryPart> parts;
 	
 	// key:oldname / value: newname
-	JsonObject fieldnameMap = new JsonObject();
+	private JsonObject fieldnameMap = new JsonObject();
 		
-	int recordCounter = 0;
-	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

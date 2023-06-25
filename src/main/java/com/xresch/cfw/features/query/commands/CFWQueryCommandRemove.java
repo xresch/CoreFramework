@@ -30,11 +30,8 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 	
 	private ArrayList<QueryPart> parts;
 	
-	CFWQuerySource source = null;
-	ArrayList<String> fieldnames = new ArrayList<>();
+	private ArrayList<String> fieldnames = new ArrayList<>();
 		
-	HashSet<String> encounters = new HashSet<>();
-	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

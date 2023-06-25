@@ -24,12 +24,7 @@ public class CFWQueryCommandComment extends CFWQueryCommand {
 	public static final String COMMAND_NAME = "comment";
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandComment.class.getName());
-	
-	CFWQuerySource source = null;
-	ArrayList<String> fieldnames = new ArrayList<>();
 		
-	int recordCounter = 0;
-	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

@@ -202,10 +202,10 @@ public class TestCFWQueryExecution extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testFirst_Top() throws IOException {
+	public void test_Top() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source random records=1000 | first 123"
+		String queryString = "| source random records=1000 | top 123"
 				+ ";| source random records=1000 | top 321"
 				;
 		
@@ -234,10 +234,10 @@ public class TestCFWQueryExecution extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testLast_Tail() throws IOException {
+	public void test_Tail() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source random records=1000 | last 123"
+		String queryString = "| source random records=1000 | tail 123"
 				+ ";| source random records=1000 | tail 321"
 				;
 		

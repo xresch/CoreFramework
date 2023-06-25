@@ -61,6 +61,11 @@ public abstract class PipelineAction<I, O> extends Thread {
 	public void terminateAction() throws Exception { }
 
 	/****************************************************************************
+	 * Handle exceptions that occured during pipeline execution 
+	 ****************************************************************************/
+	public void handleException(Throwable e){ }
+
+	/****************************************************************************
 	 * 
 	 ****************************************************************************/
 	@Override
@@ -93,6 +98,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 		} catch (InterruptedException e) { 
 			// do nothing, expected exception caused by commands like top
 		} catch (Throwable e) {
+			this.handleException(e);
 			new CFWLog(logger).severe("Unexpected exception occured: "+e.getMessage(), e);
 			parent.cancelExecution();
 		}  finally {

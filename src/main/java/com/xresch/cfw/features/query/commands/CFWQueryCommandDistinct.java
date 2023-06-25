@@ -28,12 +28,9 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandDistinct.class.getName());
 	
-	CFWQuerySource source = null;
-	ArrayList<String> fieldnames = new ArrayList<>();
-	
+	private ArrayList<String> fieldnames = new ArrayList<>();
 	private boolean dotrimValues = true;
-	
-	HashSet<String> encounters = new HashSet<>();
+	private HashSet<String> encounters = new HashSet<>();
 	
 	/***********************************************************************************************
 	 * 

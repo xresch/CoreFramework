@@ -34,6 +34,8 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWQueryCommandSource extends CFWQueryCommand {
 	
+	public static final String COMMAND_NAME = "source";
+
 	public static final String MESSAGE_LIMIT_REACHED = "One or more sources have reached their fetch limit.";
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandSource.class.getName());
@@ -48,12 +50,12 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	// Cache Source instances 
 	private static TreeMap<String, CFWQuerySource> sourceMapCached;
 
-	CFWQuerySource source = null;
-	CFWObject paramsForSource = null;
+	private CFWQuerySource source = null;
+	private CFWObject paramsForSource = null;
 	
-	CFWContextAwareExecutor sourceExecutor = CFWContextAwareExecutor.createExecutor("QuerySource", 1, 2, 500, TimeUnit.MILLISECONDS);
+	private CFWContextAwareExecutor sourceExecutor = CFWContextAwareExecutor.createExecutor("QuerySource", 1, 2, 500, TimeUnit.MILLISECONDS);
 	
-	
+	private ArrayList<QueryPart> parts;
 
 	/***********************************************************************************************
 	 * 
@@ -67,7 +69,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"source", "src"};
+		return new String[] {COMMAND_NAME, "src"};
 	}
 
 	/***********************************************************************************************
@@ -83,7 +85,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "source <sourcename> [limit=<integer>] [param1=abc param2=xyz ...]";
+		return COMMAND_NAME+" <sourcename> [limit=<integer>] [param1=abc param2=xyz ...]";
 	}
 	
 	/***********************************************************************************************
@@ -104,7 +106,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_source.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 	
 	/***********************************************************************************************
@@ -139,90 +141,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
-		
-		//------------------------------------------
-		// Default Values
-		fetchLimit = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_FETCH_LIMIT_DEFAULT);
-		
-		//------------------------------------------
-		// Get Name
-		QueryPart namePart = parts.get(0);
-		QueryPartValue nameValue = namePart.determineValue(null);
-		
-		if( nameValue.isNull() || !nameValue.isString()) {
-			parser.throwParseException("source: expected source name.", namePart);
-		}
-		
-		String sourceName = nameValue.getAsString().trim();
-		
-		//------------------------------------------
-		// Get Source
-		if(!CFW.Registry.Query.sourceExists(sourceName)) {
-			parser.throwParseException("source: the source does not exist: '"+sourceName+"'", namePart);
-		}
-		
-		this.source = CFW.Registry.Query.createSourceInstance(this.parent, sourceName);
-
-		//------------------------------------------
-		// Get Parameters
-		
-
-		EnhancedJsonObject parameters = new EnhancedJsonObject();
-		
-		for(int i = 1; i < parts.size(); i++) {
-			
-			QueryPart currentPart = parts.get(i);
-			
-			if(currentPart instanceof QueryPartAssignment) {
-				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-				
-				String paramName = assignment.getLeftSideAsString(null);
-				
-				//------------------------------------
-				// Handle parameters for this command
-				if(paramName != null && paramName.equals("limit")) {
-					QueryPartValue limitValue = assignment.getRightSide().determineValue(null);
-					if(limitValue.isInteger()) {
-						int newLimit = limitValue.getAsInteger();
-						int maxLimit = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_FETCH_LIMIT_MAX);
-						if(newLimit <= maxLimit) {
-							this.fetchLimit = newLimit;
-						}else {
-							throw new ParseException("The value chosen for limit exceeds the maximum of "+maxLimit+".", assignment.position());
-						}
-					}
-					continue;
-				}
-				
-				//------------------------------------
-				// Other params for the chosen source
-				assignment.assignToJsonObject(parameters);		
-			}else {
-				parser.throwParseException("source: Only source name and parameters(key=value) are allowed)", currentPart);
-			}
-		}
-			
-		//------------------------------------------
-		// Map to Parameters Object
-		this.paramsForSource = source.getParameters();
-		if(!paramsForSource.mapJsonFields(parameters.getWrappedObject(), true, true)) {
-			
-			for(CFWField field : paramsForSource.getFields().values()) {
-				ArrayList<String> invalidMessages = field.getInvalidationMessages();
-				if(!invalidMessages.isEmpty()) {
-					throw new ParseException(invalidMessages.get(0), -1);
-				}
-			}
-			
-			throw new ParseException("Unknown error for source command '"+this.uniqueNameAndAliases()+"'", -1);
-		}
-		
-		
-		//------------------------------------------
-		// Check User can use parameter values
-		if(this.parent.getContext().checkPermissions()) {
-			this.source.parametersPermissionCheck(paramsForSource);
-		}
+		this.parts = parts;
 	}
 	
 	/********************************************************
@@ -295,7 +214,10 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		result.setHTMLDescription(description);
 
 	}
-
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
 	private void autocompleteAddSources(AutocompleteResult result, CFWQueryAutocompleteHelper helper, String filter) {
 		
 		TreeMap<String, CFWQuerySource> sourceMap = getCachedSources();
@@ -347,6 +269,88 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	@Override
 	public void initializeAction() throws Exception {
 		
+		//------------------------------------------
+		// Default Values
+		fetchLimit = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_FETCH_LIMIT_DEFAULT);
+		
+		//------------------------------------------
+		// Get Name
+		QueryPart namePart = parts.get(0);
+		QueryPartValue nameValue = namePart.determineValue(null);
+		
+		if( nameValue.isNull() || !nameValue.isString()) {
+			throw new ParseException(COMMAND_NAME+": expected source name.", -1);
+		}
+		
+		String sourceName = nameValue.getAsString().trim();
+		
+		//------------------------------------------
+		// Get Source
+		if(!CFW.Registry.Query.sourceExists(sourceName)) {
+			throw new ParseException(COMMAND_NAME+": the source does not exist: '"+sourceName+"'", -1);
+		}
+		
+		this.source = CFW.Registry.Query.createSourceInstance(this.parent, sourceName);
+
+		//------------------------------------------
+		// Get Parameters
+		EnhancedJsonObject parameters = new EnhancedJsonObject();
+		
+		for(int i = 1; i < parts.size(); i++) {
+			
+			QueryPart currentPart = parts.get(i);
+			
+			if(currentPart instanceof QueryPartAssignment) {
+				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
+				
+				String paramName = assignment.getLeftSideAsString(null);
+				
+				//------------------------------------
+				// Handle parameters for this command
+				if(paramName != null && paramName.equals("limit")) {
+					QueryPartValue limitValue = assignment.getRightSide().determineValue(null);
+					if(limitValue.isInteger()) {
+						int newLimit = limitValue.getAsInteger();
+						int maxLimit = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_FETCH_LIMIT_MAX);
+						if(newLimit <= maxLimit) {
+							this.fetchLimit = newLimit;
+						}else {
+							throw new ParseException("The value chosen for limit exceeds the maximum of "+maxLimit+".", assignment.position());
+						}
+					}
+					continue;
+				}
+				
+				//------------------------------------
+				// Other params for the chosen source
+				assignment.assignToJsonObject(parameters);		
+			}else {
+				throw new ParseException(COMMAND_NAME+": Only source name and parameters(key=value) are allowed)", -1);
+			}
+		}
+			
+		//------------------------------------------
+		// Map to Parameters Object
+		this.paramsForSource = source.getParameters();
+		if(!paramsForSource.mapJsonFields(parameters.getWrappedObject(), true, true)) {
+			
+			for(CFWField field : paramsForSource.getFields().values()) {
+				ArrayList<String> invalidMessages = field.getInvalidationMessages();
+				if(!invalidMessages.isEmpty()) {
+					throw new ParseException(invalidMessages.get(0), -1);
+				}
+			}
+			
+			throw new ParseException("Unknown error for source command '"+this.uniqueNameAndAliases()+"'", -1);
+		}
+		
+		
+		//------------------------------------------
+		// Check User can use parameter values
+		if(this.parent.getContext().checkPermissions()) {
+			this.source.parametersPermissionCheck(paramsForSource);
+		}
+				
 		//-------------------------------------------------
 		// Add listener either to the next Source, the 
 		// last command or to self.

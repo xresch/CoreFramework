@@ -2,8 +2,6 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonElement;
@@ -13,13 +11,13 @@ import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
-import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
+import com.xresch.cfw.features.query.parse.QueryPartFunction;
 import com.xresch.cfw.features.query.parse.QueryPartJsonMemberAccess;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
@@ -27,15 +25,14 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandUnbox extends CFWQueryCommand {
 	
+	private static final String COMMAND_NAME = "unbox";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandUnbox.class.getName());
 	
-	CFWQuerySource source = null;
-	QueryPartArray unboxFields;
+	private QueryPartArray unboxFields;
 	
 	private boolean doReplaceOriginal = true;
-	
-	HashSet<String> newFieldnames = new HashSet<>();
-	
+	private ArrayList<QueryPart> parts;
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -50,7 +47,7 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"unbox", "unwrap"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -66,7 +63,7 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "unbox <fieldnameOrPath> [, <fieldnameOrPath> ...] [replace=<boolean>]";
+		return COMMAND_NAME+" <fieldnameOrPath> [, <fieldnameOrPath> ...] [replace=<boolean>]";
 	}
 	
 	/***********************************************************************************************
@@ -83,7 +80,7 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_unbox.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -91,6 +88,24 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
+		
+		this.parts = parts;
+					
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+		// keep default
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() {
 		
 		CFWQueryContext queryContext = this.parent.getContext();
 		unboxFields = new QueryPartArray(queryContext);
@@ -124,22 +139,16 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 			}else if(part instanceof QueryPartValue
 				  || part instanceof QueryPartJsonMemberAccess) {
 				unboxFields.add(part);
-
+			}else if(part instanceof QueryPartFunction) {
+				unboxFields.add(part.determineValue(null));
+				
 			}else { 
 				/* ignore */
 			}
 		}
-			
+		
 	}
 	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	@Override
-	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		// keep default
-	}
-
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -165,8 +174,6 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 			
 			// if array >> add new records
 			// if other add value by name
-			
-			
 			
 			for(QueryPart part : unboxFields.getAsParts()) {
 				

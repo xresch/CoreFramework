@@ -2,7 +2,6 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -14,7 +13,6 @@ import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.CFWQueryResultList;
-import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
@@ -29,12 +27,10 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandMimic.class.getName());
 	
-	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
+	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 	
-	CFWQuerySource source = null;
-	String queryName = null;
-	ArrayList<String> commandsToRemove = new  ArrayList<String>();
-	HashSet<String> encounters = new HashSet<>();
+	private String queryName = null;
+	private ArrayList<String> commandsToRemove = new  ArrayList<String>();
 	
 	/***********************************************************************************************
 	 * 

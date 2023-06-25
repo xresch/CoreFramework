@@ -19,14 +19,14 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandTop extends CFWQueryCommand {
 	
+	public static final String COMMAND_NAME = "top";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandTop.class.getName());
 	
-	CFWQuerySource source = null;
-	ArrayList<String> fieldnames = new ArrayList<>();
+	private int numberOfRecords = 100;
 	
-	int numberOfRecords = 100;
-	
-	int recordCounter = 0;
+	private int recordCounter = 0;
+	private ArrayList<QueryPart> parts;
 	
 	/***********************************************************************************************
 	 * 
@@ -42,7 +42,7 @@ public class CFWQueryCommandTop extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"top", "first"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -58,7 +58,7 @@ public class CFWQueryCommandTop extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "top [<number>]";
+		return COMMAND_NAME+" [<number>]";
 	}
 	
 	/***********************************************************************************************
@@ -75,7 +75,7 @@ public class CFWQueryCommandTop extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_top.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -83,7 +83,22 @@ public class CFWQueryCommandTop extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
-		
+		this.parts = parts;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
+		// keep default
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception {
 		//------------------------------------------
 		// Get Fieldnames
 		for(QueryPart part : parts) {
@@ -100,19 +115,14 @@ public class CFWQueryCommandTop extends CFWQueryCommand {
 				}
 				
 			}else {
-				throw new ParseException("top: parameter must be an integer value.", part.position());
-			}
-				
+				QueryPartValue value = part.determineValue(null);
+				if(value.isNumberOrNumberString()) {
+					numberOfRecords = value.getAsInteger();
+				}else if(!value.isNull()) {
+					throw new ParseException(COMMAND_NAME+": parameter must be an integer value.", part.position());
+				}
+			}	
 		}
-			
-	}
-	
-	/***********************************************************************************************
-	 * 
-	 ***********************************************************************************************/
-	@Override
-	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		// keep default
 	}
 
 	/***********************************************************************************************

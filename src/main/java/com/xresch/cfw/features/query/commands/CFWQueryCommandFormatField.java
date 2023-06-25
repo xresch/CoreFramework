@@ -33,12 +33,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 
 	private static final String FORMATTER_NAME_EA_STERE_GGS = "ea"+"stere"+"ggs";
 
-	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
-	
-	CFWQuerySource source = null;
-	ArrayList<String> fieldnames = new ArrayList<>();
-		
-	int recordCounter = 0;
+	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 	 
 	public enum FieldFormatterName {
 		  ALIGN
