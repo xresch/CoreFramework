@@ -24,8 +24,11 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandRename extends CFWQueryCommand {
 	
+	private static final String COMMAND_NAME = "rename";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandRename.class.getName());
 	
+	ArrayList<QueryPart> parts;
 	CFWQuerySource source = null;
 	
 	// key:oldname / value: newname
@@ -45,7 +48,7 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"rename"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -61,7 +64,7 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "rename <fieldname>=<newname> [, <fieldname>=<newname> ...]";
+		return COMMAND_NAME+" <fieldname>=<newname> [, <fieldname>=<newname> ...]";
 	}
 	
 	/***********************************************************************************************
@@ -80,7 +83,7 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_rename.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -91,32 +94,9 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Get Parameters
+		//------------------------------------------
+		this.parts = parts;
 		
-		for(int i = 0; i < parts.size(); i++) {
-			
-			QueryPart currentPart = parts.get(i);
-			
-			if(currentPart instanceof QueryPartAssignment) {
-				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-				
-				String oldName = assignment.getLeftSideAsString(null);
-				QueryPartValue newNamePart = assignment.getRightSide().determineValue(null);
-				if(newNamePart.isString()) {
-					String newName = newNamePart.getAsString();
-					
-					if(newName == null) {
-						throw new ParseException("rename: New name cannot be null.", assignment.position());
-					}
-					if(CFW.Security.containsSequence(newName, "<", ">", "\"", "&")) {
-						throw new ParseException("rename: New name cannot contain the following characters: < > \" &", assignment.position());
-					}
-					fieldnameMap.addProperty(oldName, newName);
-				}
-								
-			}else {
-				parser.throwParseException("rename: Only key value pairs are allowed.", currentPart);
-			}
-		}
 			
 	}
 	
@@ -133,7 +113,32 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public void initializeAction() {
+	public void initializeAction() throws Exception {
+		
+		for(QueryPart currentPart : parts) {
+
+			if(currentPart instanceof QueryPartAssignment) {
+				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
+				
+				String oldName = assignment.getLeftSideAsString(null);
+				QueryPartValue newNamePart = assignment.getRightSide().determineValue(null);
+				if(newNamePart.isString()) {
+					String newName = newNamePart.getAsString();
+					
+					if(newName == null) {
+						throw new ParseException(COMMAND_NAME+": New name cannot be null.", assignment.position());
+					}
+					if(CFW.Security.containsSequence(newName, "<", ">", "\"", "&")) {
+						throw new ParseException(COMMAND_NAME+": New name cannot contain the following characters: < > \" &", assignment.position());
+					}
+					fieldnameMap.addProperty(oldName, newName);
+				}
+								
+			}else {
+				throw new ParseException(COMMAND_NAME+": Only key value pairs are allowed.", -1);
+			}
+		}
+		
 		for(Entry<String, JsonElement> entry : fieldnameMap.entrySet()) {
 			this.fieldnameRename(entry.getKey(), entry.getValue().getAsString());
 		}
@@ -144,7 +149,6 @@ public class CFWQueryCommandRename extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
-		
 		
 		while(keepPolling()) {
 			EnhancedJsonObject record = inQueue.poll();
