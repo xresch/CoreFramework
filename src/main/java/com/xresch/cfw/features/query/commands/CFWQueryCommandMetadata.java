@@ -28,9 +28,10 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandMetadata.class.getName());
 	
+	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
+	
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
-	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 	int recordCounter = 0;
 	
 	/***********************************************************************************************
@@ -91,7 +92,6 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Get Parameters
-	
 		for(int i = 0; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
@@ -100,7 +100,7 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 				assignmentParts.add((QueryPartAssignment)currentPart);
 
 			}else {
-				parser.throwParseException("metadata: Only parameters(key=value) are allowed.", currentPart);
+				parser.throwParseException(COMMAND_NAME+": Only parameters(key=value) are allowed.", currentPart);
 			}
 		}
 			

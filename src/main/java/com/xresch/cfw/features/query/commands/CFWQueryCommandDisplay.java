@@ -28,6 +28,8 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandDisplay.class.getName());
 	
+	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
+
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
 		
@@ -102,7 +104,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_display.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -113,36 +115,18 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Get Parameters
-		
-		JsonObject displaySettings = this.getParent().getContext().getDisplaySettings();
-		
+	
 		for(int i = 0; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
 			
 			if(currentPart instanceof QueryPartAssignment) {
-				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-				
-				String propertyName = assignment.getLeftSideAsString(null);
+				assignmentParts.add((QueryPartAssignment)currentPart);
 
-				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
-				if(valuePart.isString()) {
-					String value = valuePart.getAsString();
-					value = CFW.Security.sanitizeHTML(value);
-					displaySettings.addProperty(propertyName, value);
-				}else if(valuePart.isBoolean()) {
-					displaySettings.addProperty(propertyName, valuePart.getAsBoolean());
-				}else if(valuePart.isNumber()) {
-					displaySettings.addProperty(propertyName, valuePart.getAsNumber());
-				}else if(valuePart.isJsonArray()) {
-					displaySettings.add(propertyName, valuePart.getAsJsonArray());
-				}
-			
 			}else {
-				parser.throwParseException("display: Only parameters(key=value) are allowed.", currentPart);
+				parser.throwParseException(COMMAND_NAME+": Only parameters(key=value) are allowed.", currentPart);
 			}
 		}
-			
 	}
 	
 	/***********************************************************************************************
@@ -169,6 +153,31 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 		return this;
 	}
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception {
+		
+		//--------------------------------------
+		// Do this here to make the command removable for command 'mimic'
+		JsonObject displaySettings = this.getParent().getContext().getDisplaySettings();
+	
+		for(QueryPartAssignment assignment : assignmentParts) {
+
+			String propertyName = assignment.getLeftSideAsString(null);
+
+			QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
+			if(valuePart.isString()) {
+				String value = valuePart.getAsString();
+				value = CFW.Security.sanitizeHTML(value);
+				displaySettings.addProperty(propertyName, value);
+			}else {
+				valuePart.addToJsonObject(propertyName, displaySettings);
+			}
+		}
+				
+	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

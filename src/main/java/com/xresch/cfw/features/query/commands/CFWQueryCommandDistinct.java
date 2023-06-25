@@ -24,6 +24,8 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	
+	public static final String COMMAND_NAME = "distinct";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandDistinct.class.getName());
 	
 	CFWQuerySource source = null;
@@ -47,7 +49,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"distinct", "uniq", "dedup"};
+		return new String[] {COMMAND_NAME, "uniq", "dedup"};
 	}
 
 	/***********************************************************************************************
@@ -63,7 +65,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "distinct <fieldname> [, <fieldname> ...] [trim=<boolean>]";
+		return COMMAND_NAME+" <fieldname> [, <fieldname> ...] [trim=<boolean>]";
 	}
 	
 	/***********************************************************************************************
@@ -80,7 +82,7 @@ public class CFWQueryCommandDistinct extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_distinct.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************

@@ -1,0 +1,46 @@
+
+<p>You can add a permission to the application by creating a new permission object and add it to the database. </p>
+
+<h2>Implementing a new Command</h2>
+
+<h3>Skip Records Processing</h3>
+<p>If a command does not access or change any records, you can push the data directly to the next command by doing the following:</p>
+<pre><code>@Override
+public PipelineAction&lt;EnhancedJsonObject, EnhancedJsonObject> setOutQueue(LinkedBlockingQueue&lt;EnhancedJsonObject> out) {
+
+	// everything that will be written to queue by previous command 
+	// will be send directly to the outQueue instead of inQueue.
+	if(previousAction != null) {
+		previousAction.setOutQueue(out);
+	}
+	
+	this.inQueue = out;
+	
+	return this;
+}
+
+@Override
+public void execute(PipelineActionContext context) throws Exception {
+	
+	// Do nothing, inQueue is the same as outQueue
+	this.setDoneIfPreviousDone();
+
+}</code></pre>
+
+
+<h3>Checklist: Command Implementation</h3>
+<p>the following items should be checked after implementing a new command:</p>
+<ul>
+	<li><b>setAndValidateQueryParts() vs. globals() and meta()</b>
+		<ul>
+			<li><b>Condition:&nbsp;</b>  Do not make any calls to QueryPart.determineValue().</li>
+			<li><b>Reason:&nbsp;</b> Functions globals()/meta() would not work properly within the implemented command.</li>
+			<li><b>Handling:&nbsp;</b> Save QueryParts in a field and do calls in overridden method initializeAction(). </li>
+		</ul>
+	<li><b>setAndValidateQueryParts() vs. Command mimic</b>
+		<ul>
+			<li><b>Condition:&nbsp;</b> Do not modify any value in CFWQueryContext.</li>
+			<li><b>Reason:&nbsp;</b> When commands are removed using command 'mimic', they would still cause changes during parsing.</li>
+			<li><b>Handling:&nbsp;</b> Save QueryParts in a field and do ContextChanges in overridden method initializeAction(). </li>
+		</ul>
+</ul>

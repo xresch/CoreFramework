@@ -23,6 +23,8 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWQueryCommandFilter extends CFWQueryCommand {
 	
+	public static final String COMMAND_NAME = "filter";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandFilter.class.getName());
 	
 	private QueryPartGroup evaluationGroup;
@@ -39,7 +41,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"filter", "grep"};
+		return new String[] {COMMAND_NAME, "grep"};
 	}
 
 	/***********************************************************************************************
@@ -55,7 +57,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "filter <fieldname><operator><value> [<fieldname><operator><value> ...]";
+		return COMMAND_NAME+" <fieldname><operator><value> [<fieldname><operator><value> ...]";
 	}
 	
 	/***********************************************************************************************
@@ -87,7 +89,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_filter.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -113,9 +115,9 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 			}else if(currentPart instanceof QueryPartArray) {
 				setAndValidateQueryParts(parser, ((QueryPartArray)currentPart).getAsParts());
 			}else if(currentPart instanceof QueryPartAssignment) { 
-				parser.throwParseException("filter: Single equal '=' is not supported. Please use '==' instead.", currentPart);
+				parser.throwParseException(COMMAND_NAME+": Single equal '=' is not supported. Please use '==' instead.", currentPart);
 			}else {
-				parser.throwParseException("filter: Only binary expressions allowed.", currentPart);
+				parser.throwParseException(COMMAND_NAME+": Only binary expressions allowed.", currentPart);
 			}
 		}
 		
@@ -157,9 +159,6 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 					}
 				}
 			}
-		
-			
-			
 		}
 		
 		this.setDoneIfPreviousDone();

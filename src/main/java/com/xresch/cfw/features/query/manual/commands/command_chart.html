@@ -27,7 +27,7 @@
 	ymax=200
 	pointradius=0</code></pre>
 	
-<p>If you have multiple series you would like to show in separate charts, you can use the multichart options to split them up into separate charts. </p>
+<p>If you have multiple series you would like to show in separate charts, you can use the multichart options to split them up. </p>
 <pre><code class="language-cfwquery">| source random records=300 type=series
 | chart
 	by=[WAREHOUSE, ITEM, CLASS] 

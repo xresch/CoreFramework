@@ -24,7 +24,11 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandGlobals extends CFWQueryCommand {
 	
+	private static final String COMMAND_NAME = "globals";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandGlobals.class.getName());
+	
+	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 	
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
@@ -43,7 +47,7 @@ public class CFWQueryCommandGlobals extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"globals", "global"};
+		return new String[] {COMMAND_NAME, "global"};
 	}
 
 	/***********************************************************************************************
@@ -59,7 +63,7 @@ public class CFWQueryCommandGlobals extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "globals <key>=<value> [, <key>=<value> ...]";
+		return COMMAND_NAME+" <key>=<value> [, <key>=<value> ...]";
 	}
 	
 	/***********************************************************************************************
@@ -78,7 +82,7 @@ public class CFWQueryCommandGlobals extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_globals.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -89,30 +93,18 @@ public class CFWQueryCommandGlobals extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Get Parameters
-		
-		JsonObject globalsObject = this.getParent().getContext().getGlobals();
-		
 		for(int i = 0; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
 			
-			
 			if(currentPart instanceof QueryPartAssignment) {
-				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-				
-				String propertyName = assignment.getLeftSideAsString(null);
-				if(propertyName.equals("earliest")
-				|| propertyName.equals("latest")) {
-					parser.throwParseException("globals: property name cannot be any of the following: earliest, latest", currentPart);
-				}
-				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
-				valuePart.addToJsonObject(propertyName, globalsObject);
-			
+				assignmentParts.add((QueryPartAssignment)currentPart);
+
 			}else {
-				parser.throwParseException("globals: Only parameters(key=value) are allowed.", currentPart);
+				parser.throwParseException(COMMAND_NAME+": Only parameters(key=value) are allowed.", currentPart);
 			}
 		}
-			
+					
 	}
 	
 	/***********************************************************************************************
@@ -137,6 +129,24 @@ public class CFWQueryCommandGlobals extends CFWQueryCommand {
 		}
 		
 		return this;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception {
+		
+		//--------------------------------------
+		// Do this here to make the command removable for command 'mimic'
+		JsonObject globalsObject = this.getParent().getContext().getGlobals();
+		
+		for(QueryPartAssignment assignment : assignmentParts) {
+			String propertyName = assignment.getLeftSideAsString(null);
+			QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
+			valuePart.addToJsonObject(propertyName, globalsObject);
+
+		}
 	}
 	
 	/***********************************************************************************************

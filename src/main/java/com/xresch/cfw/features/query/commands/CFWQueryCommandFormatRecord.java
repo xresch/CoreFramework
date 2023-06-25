@@ -14,6 +14,7 @@ import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartArray;
+import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartBinaryExpression;
 import com.xresch.cfw.features.query.parse.QueryPartGroup;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
@@ -22,10 +23,12 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 	
+	public static final String COMMAND_NAME = "formatrecord";
 	private static final String FIELDNAME_TEXT_STYLE = "_textcolor";
-
 	private static final String FIELDNAME_BG_STYLE = "_bgcolor";
 
+	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
+	
 	ArrayList<ArrayList<QueryPart>> conditions = new ArrayList<>();
 	
 	/***********************************************************************************************
@@ -40,7 +43,7 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"formatrecord", "recordformat"};
+		return new String[] {COMMAND_NAME, "recordformat"};
 	}
 
 	/***********************************************************************************************
@@ -56,7 +59,7 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "formatrecord [<condition>, <bgcolor>, <textcolor>] ...";
+		return COMMAND_NAME+" [<condition>, <bgcolor>, <textcolor>] ...";
 	}
 	
 	/***********************************************************************************************
@@ -76,7 +79,7 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_formatrecord.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -84,17 +87,9 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
-		
-		//------------------------------------------
-		// set Style fields
-		JsonObject displaySettings = this.getParent().getContext().getDisplaySettings();
-		displaySettings.addProperty("bgstylefield", FIELDNAME_BG_STYLE);
-		displaySettings.addProperty("textstylefield", FIELDNAME_TEXT_STYLE);
-		
-	
+
 		//------------------------------------------
 		// Get Parameters
-		
 		for(int i = 0; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
@@ -105,9 +100,8 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 					conditions.add(conditionDefinition);
 				}
 				
-				
 			}else {
-				parser.throwParseException("formatrecord: Only array expression allowed.", currentPart);
+				parser.throwParseException(COMMAND_NAME+": Only array expression allowed.", currentPart);
 			}
 		}
 		
@@ -121,6 +115,19 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 		// keep default
 	}
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception {
+		
+		//--------------------------------------
+		// Do this here to make the command removable for command 'mimic'
+		JsonObject displaySettings = this.getParent().getContext().getDisplaySettings();
+		displaySettings.addProperty("bgstylefield", FIELDNAME_BG_STYLE);
+		displaySettings.addProperty("textstylefield", FIELDNAME_TEXT_STYLE);
+				
+	}
 	
 	/***********************************************************************************************
 	 * 

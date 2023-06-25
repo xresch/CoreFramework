@@ -20,6 +20,7 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 public class CFWQueryCommandExecute extends CFWQueryCommand {
 	
 
+	private static final String COMMAND_NAME = "execute";
 	private ArrayList<QueryPartFunction> functions = new ArrayList<>();
 	private boolean isExecuted = false;
 	
@@ -35,7 +36,7 @@ public class CFWQueryCommandExecute extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"execute", "exec"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -51,7 +52,7 @@ public class CFWQueryCommandExecute extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "execute function(params...) [function(params...) ...]";
+		return COMMAND_NAME+" function(params...) [function(params...) ...]";
 	}
 	
 	/***********************************************************************************************
@@ -71,7 +72,7 @@ public class CFWQueryCommandExecute extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_execute.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -90,7 +91,7 @@ public class CFWQueryCommandExecute extends CFWQueryCommand {
 			if(currentPart instanceof QueryPartFunction) {
 				functions.add((QueryPartFunction)currentPart);
 			}else {
-				parser.throwParseException("execute: Only functions calls are allowed.", currentPart);
+				parser.throwParseException(COMMAND_NAME+": Only functions calls are allowed.", currentPart);
 			}
 		}
 		

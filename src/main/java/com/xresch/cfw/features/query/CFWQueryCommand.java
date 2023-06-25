@@ -92,45 +92,18 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	 * are of the QueryPart Subclasses that are supported by your command.
 	 * If you encounter anything you cannot work with you can either ignore it or throw an exception
 	 * using parser.throwException().
-	 * To make this method work properly when using the command "mimic", the query context should
-	 * not be changed in this method. If you need to do so you can override the method initializeAction(). 
+	 * 
+	 * IMPORTANT:
+	 *   - To make this method work properly when using the command "mimic", the query context should
+	 * not be changed in this method.
+	 *   - To make this method work properly with function globals() and meta(), no calls to 
+	 *     QueryPart.determineValue() should be made.
+	 *   - If you need to do any of the above you can store the QueryParts in a field and override 
+	 *     the method initializeAction(). 
 	 * 
 	 * Following is an example implementation that finds fieldnames and the parameter "customParam":
-	 * 
-	 	<pre><code>for(QueryPart part : parts) {
-			
-	if(part instanceof QueryPartAssignment) {
-		
-		QueryPartAssignment parameter = (QueryPartAssignment)part;
-		String paramName = parameter.getLeftSide().determineValue(null).getAsString();
-		if(paramName != null && paramName.equals("customParam")) {
-			QueryPartValue paramValue = parameter.getRightSide().determineValue(null);
-			if(paramValue.isBoolOrBoolString()) {
-				this.myParam = paramValue.getAsBoolean();
-			}else {
-				parser.throwParseException("customCommand: Expected a boolean value for parameter 'customParam'.", part);
-			}
-		}
-		
-	}else if(part instanceof QueryPartArray) {
-		//check for Arrays in case values have been comma separated
-		QueryPartArray array = (QueryPartArray)part;
-
-		for(JsonElement element : array.getAsJsonArray(null, true)) {
-			
-			if(!element.isJsonNull() && element.isJsonPrimitive()) {
-				fieldnames.add(element.getAsString());
-			}
-		}
-	}else {
-		QueryPartValue value = part.determineValue(null);
-		if(!value.isNull()) {
-			fieldnames.add(value.getAsString());
-		}
-	}
-}
+	 * <pre><code>
 	 </code></pre>
-	 
 	 * 
 	 ***********************************************************************************************/
 	public abstract void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts)  throws ParseException;

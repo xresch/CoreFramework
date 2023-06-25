@@ -29,8 +29,12 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	
+	public static final String COMMAND_NAME = "formatfield";
+
 	private static final String FORMATTER_NAME_EA_STERE_GGS = "ea"+"stere"+"ggs";
 
+	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
+	
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
 		
@@ -439,7 +443,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"formatfield", "fieldformat"};
+		return new String[] {COMMAND_NAME, "fieldformat"};
 	}
 
 	/***********************************************************************************************
@@ -455,7 +459,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "formatfield <fieldname>=<stringOrArray> [<fieldname>=<stringOrArray> ...]";
+		return COMMAND_NAME+" <fieldname>=<stringOrArray> [<fieldname>=<stringOrArray> ...]";
 	}
 	
 	/***********************************************************************************************
@@ -475,7 +479,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	public String descriptionHTML() {
 		
 		StringBuilder builder = new StringBuilder();
-		builder.append(CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_formatfield.html"));
+		builder.append(CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html"));
 		builder.append("<h2 class=\"toc-hidden\">Available Formatters</h3>");
 		
 		for(FormatterDefinition definition : formatterDefinitionArray.values()) {
@@ -495,35 +499,17 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Get Parameters
-		
-		JsonObject displaySettings = this.getParent().getContext().getDisplaySettings();
-		
 		for(int i = 0; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
 			
 			if(currentPart instanceof QueryPartAssignment) {
-				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-				
-				ArrayList<String> fieldnames = new ArrayList<>();
-				QueryPart leftside = assignment.getLeftSide();
-				
-				if(leftside instanceof QueryPartArray) {
-					fieldnames = ((QueryPartArray)leftside).getAsStringArray(null, true);
-					
-				}else {
-					// add as String
-					fieldnames.add(assignment.getLeftSideAsString(null));
-				}
+				assignmentParts.add((QueryPartAssignment)currentPart);
 
-				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
-				addFormatter(this.parent.getContext(), fieldnames, valuePart);
-			
 			}else {
-				parser.throwParseException("formatfield: Only parameters(key=value) are allowed.", currentPart);
+				parser.throwParseException(COMMAND_NAME+": Only parameters(key=value) are allowed.", currentPart);
 			}
-		}
-			
+		}			
 	}
 	/***********************************************************************************************
 	 * 
@@ -550,7 +536,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 			// Add Formatter By Array
 			JsonArray formatterArray = valuePart.getAsJsonArray();
 			if(formatterArray.isEmpty()) {
-				throw new ParseException("formatfield: The array was empty, please provide at least a name for the formatter.", -1);
+				throw new ParseException(COMMAND_NAME+": The array was empty, please provide at least a name for the formatter.", -1);
 			}
 			
 			//--------------------------------------
@@ -582,7 +568,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 						definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname, currentFormatterArray);
 					}
 				}else {
-					throw new ParseException("formatfield: Unknown formatter '"+currentFormatterArray.get(0).getAsString()+"'.", -1);
+					throw new ParseException(COMMAND_NAME+": Unknown formatter '"+currentFormatterArray.get(0).getAsString()+"'.", -1);
 				}
 			}
 		}
@@ -602,7 +588,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				definition.manifestTheMightyFormatterArray(context.getFieldFormats(), fieldname);
 			}
 		}else {
-			throw new ParseException("formatfield: Unknown formatter '"+formatterName+"'.", -1);
+			throw new ParseException(COMMAND_NAME+": Unknown formatter '"+formatterName+"'.", -1);
 		}
 	}
 	
@@ -657,6 +643,33 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		}
 		
 		return this;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception {
+		
+		//--------------------------------------
+		// Do this here to make the command removable for command 'mimic'
+		for(QueryPartAssignment assignment : assignmentParts) {
+			
+			ArrayList<String> fieldnames = new ArrayList<>();
+			QueryPart leftside = assignment.getLeftSide();
+			
+			if(leftside instanceof QueryPartArray) {
+				fieldnames = ((QueryPartArray)leftside).getAsStringArray(null, true);
+				
+			}else {
+				// add as String
+				fieldnames.add(assignment.getLeftSideAsString(null));
+			}
+
+			QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
+			addFormatter(this.parent.getContext(), fieldnames, valuePart);
+			
+		}
 	}
 	
 	/***********************************************************************************************

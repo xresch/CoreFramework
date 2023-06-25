@@ -25,8 +25,11 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandKeep extends CFWQueryCommand {
 	
+	public static final String COMMAND_NAME = "keep";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandKeep.class.getName());
 	
+	ArrayList<QueryPart> parts;
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
 		
@@ -46,7 +49,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"keep", "reorder"};
+		return new String[] {COMMAND_NAME, "reorder"};
 	}
 
 	/***********************************************************************************************
@@ -62,7 +65,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "keep <fieldname> [, <fieldname>, <fieldname>...]";
+		return COMMAND_NAME+" <fieldname> [, <fieldname>, <fieldname>...]";
 	}
 	
 	/***********************************************************************************************
@@ -78,7 +81,7 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_keep.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -89,33 +92,11 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Get Fieldnames
-		
 		if(parts.size() == 0) {
-			throw new ParseException("keep: please specify at least one fieldname.", -1);
+			throw new ParseException(COMMAND_NAME+": please specify at least one fieldname.", -1);
 		}
-		for(QueryPart part : parts) {
-			
-			if(part instanceof QueryPartAssignment) {
-				
-				QueryPartAssignment parameter = (QueryPartAssignment)part;
-				String paramName = parameter.getLeftSide().determineValue(null).getAsString();
-				
-			}else if(part instanceof QueryPartArray) {
-				QueryPartArray array = (QueryPartArray)part;
-
-				for(JsonElement element : array.getAsJsonArray(null, true)) {
-					
-					if(!element.isJsonNull() && element.isJsonPrimitive()) {
-						fieldnames.add(element.getAsString());
-					}
-				}
-			}else {
-				QueryPartValue value = part.determineValue(null);
-				if(!value.isNull()) {
-					fieldnames.add(value.getAsString());
-				}
-			}
-		}
+		
+		this.parts = parts;
 			
 	}
 	
@@ -133,6 +114,31 @@ public class CFWQueryCommandKeep extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void initializeAction() {
+		
+		for(QueryPart part : parts) {
+			
+			if(part instanceof QueryPartAssignment) {
+				QueryPartAssignment parameter = (QueryPartAssignment)part;
+				String paramName = parameter.getLeftSide().determineValue(null).getAsString();
+				
+			}else if(part instanceof QueryPartArray) {
+				QueryPartArray array = (QueryPartArray)part;
+				for(JsonElement element : array.getAsJsonArray(null, true)) {
+					
+					if(!element.isJsonNull() && element.isJsonPrimitive()) {
+						fieldnames.add(element.getAsString());
+					}
+				}
+			}else {
+				QueryPartValue value = part.determineValue(null);
+				if(value.isJsonArray()) {
+					fieldnames.addAll(value.getAsStringArray());
+				}else if(!value.isNull()) {
+					fieldnames.add(value.getAsString());
+				}
+			}
+		}
+		
 		this.fieldnameKeep(fieldnames.toArray(new String[] {}));
 	}
 	
