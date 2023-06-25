@@ -10,6 +10,8 @@ import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
+import com.xresch.cfw.features.query.parse.QueryPartAssignment;
+import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -103,6 +105,42 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	 * 
 	 * Following is an example implementation that finds fieldnames and the parameter "customParam":
 	 * <pre><code>
+	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
+		//------------------------------------------
+		// Get Parameters
+		for(int i = 0; i < parts.size(); i++) {
+			
+			QueryPart currentPart = parts.get(i);
+			
+			if(currentPart instanceof QueryPartAssignment) {
+				assignmentParts.add((QueryPartAssignment)currentPart);
+
+			}else {
+				parser.throwParseException(COMMAND_NAME+": Only parameters(key=value) are allowed.", currentPart);
+			}
+		}	
+	}
+	
+	public void initializeAction()  throws Exception {
+		//------------------------------------------
+		// Get Parameters
+		for(QueryPartAssignment assignment : assignmentParts) {
+			
+			String assignmentName = assignment.getLeftSideAsString(null);
+			QueryPartValue assignmentValue = assignment.determineValue(null);
+			
+			if(assignmentName != null) {
+				assignmentName = assignmentName.trim().toLowerCase();
+				if		 (assignmentName.equals("name")) {		queryName = assignmentValue.getAsString(); }
+				else if	 (assignmentName.equals("remove")) {	commandsToRemove = assignmentValue.getAsStringArray(); }
+
+				else {
+					throw new ParseException(COMMAND_NAME+": Unsupported argument.", -1);
+				}
+				
+			}
+		}
+	}
 	 </code></pre>
 	 * 
 	 ***********************************************************************************************/

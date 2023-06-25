@@ -62,7 +62,7 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "metadata <key>=<value> [, <key>=<value> ...]";
+		return COMMAND_NAME+" <key>=<value> [, <key>=<value> ...]";
 	}
 	
 	/***********************************************************************************************
@@ -81,7 +81,7 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 	@Override
 	public String descriptionHTML() {
 		
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_metadata.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************

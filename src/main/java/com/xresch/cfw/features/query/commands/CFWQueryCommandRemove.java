@@ -24,7 +24,11 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandRemove extends CFWQueryCommand {
 	
+	private static final String COMMAND_NAME = "remove";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandRemove.class.getName());
+	
+	private ArrayList<QueryPart> parts;
 	
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
@@ -45,7 +49,7 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"remove"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -61,7 +65,7 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "remove <fieldname> [, <fieldname>, <fieldname>...]";
+		return COMMAND_NAME+" <fieldname> [, <fieldname>, <fieldname>...]";
 	}
 	
 	/***********************************************************************************************
@@ -77,7 +81,7 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_remove.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -90,31 +94,10 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 		// Get Fieldnames
 		
 		if(parts.size() == 0) {
-			throw new ParseException("remove: please specify at least one fieldname.", -1);
+			throw new ParseException(COMMAND_NAME+": please specify at least one fieldname.", -1);
 		}
-		for(QueryPart part : parts) {
-			
-			if(part instanceof QueryPartAssignment) {
-				
-				QueryPartAssignment parameter = (QueryPartAssignment)part;
-				String paramName = parameter.getLeftSide().determineValue(null).getAsString();
-				
-			}else if(part instanceof QueryPartArray) {
-				QueryPartArray array = (QueryPartArray)part;
-
-				for(JsonElement element : array.getAsJsonArray(null, true)) {
-					
-					if(!element.isJsonNull() && element.isJsonPrimitive()) {
-						fieldnames.add(element.getAsString());
-					}
-				}
-			}else {
-				QueryPartValue value = part.determineValue(null);
-				if(!value.isNull()) {
-					fieldnames.add(value.getAsString());
-				}
-			}
-		}
+		
+		this.parts = parts;
 			
 	}
 	
@@ -131,6 +114,34 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void initializeAction() {
+		
+		for(QueryPart part : parts) {
+			
+			if(part instanceof QueryPartAssignment) {
+				
+				QueryPartAssignment parameter = (QueryPartAssignment)part;
+				String paramName = parameter.getLeftSide().determineValue(null).getAsString();
+				
+			}else if(part instanceof QueryPartArray) {
+				QueryPartArray array = (QueryPartArray)part;
+
+				for(JsonElement element : array.getAsJsonArray(null, true)) {
+					
+					if(!element.isJsonNull() && element.isJsonPrimitive()) {
+						fieldnames.add(element.getAsString());
+					}
+				}
+				
+			}else {
+				QueryPartValue value = part.determineValue(null);
+				if(value.isJsonArray()) {
+					fieldnames.addAll(value.getAsStringArray());
+				}else if(!value.isNull()) {
+					fieldnames.add(value.getAsString());
+				}
+			}
+		}
+		
 		for(String fieldname : fieldnames) {
 			this.fieldnameRemove(fieldname);
 		}
@@ -150,7 +161,6 @@ public class CFWQueryCommandRemove extends CFWQueryCommand {
 			}
 			
 			outQueue.add(record);
-			
 		}
 		
 		this.setDoneIfPreviousDone();

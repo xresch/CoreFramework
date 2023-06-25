@@ -25,7 +25,11 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandMimic extends CFWQueryCommand {
 	
+	private static final String COMMAND_NAME = "mimic";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandMimic.class.getName());
+	
+	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 	
 	CFWQuerySource source = null;
 	String queryName = null;
@@ -47,7 +51,7 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"mimic"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -63,7 +67,7 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "mimic name=<queryName> remove=<commandNames>";
+		return COMMAND_NAME+" name=<queryName> remove=<commandNames>";
 	}
 	
 	/***********************************************************************************************
@@ -82,7 +86,7 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_mimic.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".commands", "command_"+COMMAND_NAME+".html");
 	}
 
 	/***********************************************************************************************
@@ -90,36 +94,19 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
-		
 		//------------------------------------------
-				// Get Parameters
-				
-				for(int i = 0; i < parts.size(); i++) {
-					
-					QueryPart currentPart = parts.get(i);
-					
-					if(currentPart instanceof QueryPartAssignment) {
-						//--------------------------------------------------
-						// Resolve Fieldname=Function
-						QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-						String assignmentName = assignment.getLeftSideAsString(null);
-						QueryPartValue assignmentValue = ((QueryPartAssignment) currentPart).determineValue(null);
-						
-						if(assignmentName != null) {
-							assignmentName = assignmentName.trim().toLowerCase();
-							if		 (assignmentName.equals("name")) {			queryName = assignmentValue.getAsString(); }
-							else if	 (assignmentName.equals("remove")) {	commandsToRemove = assignmentValue.getAsStringArray(); }
+		// Get Parameters
+		for(int i = 0; i < parts.size(); i++) {
 			
-							else {
-								parser.throwParseException("mimic: Unsupported argument.", currentPart);
-							}
-							
-						}
-						
-					}else {
-						parser.throwParseException("mimic: Only assignment expressions(key=value) allowed.", currentPart);
-					}
-				}
+			QueryPart currentPart = parts.get(i);
+			
+			if(currentPart instanceof QueryPartAssignment) {
+				assignmentParts.add((QueryPartAssignment)currentPart);
+
+			}else {
+				parser.throwParseException(COMMAND_NAME+": Only parameters(key=value) are allowed.", currentPart);
+			}
+		}
 			
 	}
 	
@@ -136,8 +123,25 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	 * 
 	 ***********************************************************************************************/
 	@Override
-	public void initializeAction() {
-		// nothing todo
+	public void initializeAction()  throws Exception {
+		//------------------------------------------
+		// Get Parameters
+		for(QueryPartAssignment assignment : assignmentParts) {
+			
+			String assignmentName = assignment.getLeftSideAsString(null);
+			QueryPartValue assignmentValue = assignment.determineValue(null);
+			
+			if(assignmentName != null) {
+				assignmentName = assignmentName.trim().toLowerCase();
+				if		 (assignmentName.equals("name")) {		queryName = assignmentValue.getAsString(); }
+				else if	 (assignmentName.equals("remove")) {	commandsToRemove = assignmentValue.getAsStringArray(); }
+
+				else {
+					throw new ParseException(COMMAND_NAME+": Unsupported argument.", -1);
+				}
+				
+			}
+		}
 	}
 	
 	/***********************************************************************************************
