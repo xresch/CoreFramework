@@ -86,6 +86,7 @@ public class CFWQueryExecutor {
 		
 		return this.parseAndExecuteAll(baseQueryContext, queryString, null, null);
 	}
+	
 	/****************************************************************************************
 	 * Parses the query string and executes all queries.
 	 * Returns a Json Array containing the Query Results, or null in
@@ -111,41 +112,57 @@ public class CFWQueryExecutor {
 		
 		CFWQueryResultList resultArray = baseQueryContext.getResultList();
 		
-		//======================================
-		// Parse The Query
-		ArrayList<CFWQuery> queryList = new ArrayList<>();
-		
-		CFWQueryParser parser = new CFWQueryParser(queryString, checkPermissions, baseQueryContext);
-		try {
-			//tracing is experimental, might lead to errors
-			//parser.enableTracing();
-			queryList = parser.parse();
-
-		}catch (NumberFormatException e) {
-			new CFWLog(logger).severe("Error Parsing a number:"+e.getMessage(), e);
-			return parserDebugState(resultArray, parser);
-		} catch (ParseException e) {
-			CFW.Messages.addErrorMessage(e.getMessage());
-			return parserDebugState(resultArray, parser);
-		}  catch (OutOfMemoryError e) {
-			// should not happen again
-			new CFWLog(logger).severe("Out of memory while parsing query. Please check your syntax.", e);
-			return parserDebugState(resultArray, parser);
-		} catch (IndexOutOfBoundsException e) {
-			new CFWLog(logger).severe("Query Parsing: "+e.getMessage(), e);
-			return parserDebugState(resultArray, parser);
-		}catch (Exception e) {
-			new CFWLog(logger).severe("Unexpected error when parsing the query: "+e.getMessage(), e);
-			return parserDebugState(resultArray, parser);
-		}finally {
-
+		//--------------------------------
+		// Define Context
+		boolean cloneContext = true;
+		if(initialQueue != null && resultQueue != null) {
+			cloneContext = false;
 		}
 		
+		ArrayList<CFWQuery> queryList = parseQuery(queryString, baseQueryContext, cloneContext);
+		if(queryList == null) {
+			return baseQueryContext.getResultList();
+		}else {
+			return this.executeAll(queryList, initialQueue, resultQueue);
+		}
+	}
+	/****************************************************************************************
+	 * Parses the query string and executes all queries.
+	 * Returns a Json Array containing the Query Results, or null in
+	 * case of errors. 
+	 * Takes the max execution time from the in-app configuration for
+	 * limiting query execution time.
+	 * If both initialQueue and resultQueue are defined, modifications of baseQueryContext will be
+	 * written to the original context, not to a clone(needed for command 'mimic'). 
+	 * 
+	 * @params queryList the queries to execute in order.
+	 * @params initialQueue (optional) the initial queue that should be passed to the first command of the query
+	 * @params resultQueue (optional) the queue where the results should be written to.
+	 * 		   If this is null, the results are written to the returned CFWQueryResultList.
+	 * 		   If this is set, results will be written to the resultQueue.
+	 ****************************************************************************************/
+	public CFWQueryResultList executeAll(
+			  ArrayList<CFWQuery> queryList
+			, LinkedBlockingQueue<EnhancedJsonObject> initialQueue
+			, LinkedBlockingQueue<EnhancedJsonObject> resultQueue
+			) {
+		
+		//--------------------------------
+		// Handle Empty List
+		if(queryList.isEmpty()) {
+			return new CFWQueryResultList();
+		}
+		
+		//--------------------------------
+		// Get Result List
+		CFWQueryResultList resultArray = queryList.get(0).getContext().getResultList();
+		
+
 		//======================================
 		// Set initial Queue
 		if(initialQueue != null && !queryList.isEmpty()) {
 			CFWQuery firstQuery = queryList.get(0);
-			ArrayList<CFWQueryCommand> commands = firstQuery.getCommandList();
+			ArrayList<CFWQueryCommand> commands = firstQuery.getCopyOfCommandList();
 			if(!commands.isEmpty()) {
 				CFWQueryCommand firstCommand = commands.get(0);
 				firstCommand.setInQueue(initialQueue);
@@ -160,12 +177,6 @@ public class CFWQueryExecutor {
 			// Check Limits
 			if(query.isSourceLimitReached()) { continue; }
 			if(query.isCommandLimitReached()) { continue; }
-			
-			//--------------------------------
-			// Define Context
-			if(initialQueue != null && resultQueue != null) {
-				query.setContext(baseQueryContext);
-			}
 			
 			//--------------------------------
 			// Add Result Sink
@@ -233,6 +244,56 @@ public class CFWQueryExecutor {
 		return resultArray;
 	}
 
+	/****************************************************************************************
+	 * Parses the query string and handles exceptions.
+	 * If an exception occurs, this method returns null and writes a debug result to the 
+	 * given CFWQueryContext.
+	 * Use the following in case you want to access the debug result: 
+	 * <pre><code>	if(queryList == null) {
+		return baseQueryContext.getResultList();
+	}
+	 * </code></pre>
+	 ****************************************************************************************/
+	public ArrayList<CFWQuery> parseQuery(String queryString, CFWQueryContext baseQueryContext, boolean cloneContext) {
+		//======================================
+		// Parse The Query
+		ArrayList<CFWQuery> queryList = new ArrayList<>();
+		CFWQueryResultList resultArray = baseQueryContext.getResultList();
+		
+		CFWQueryParser parser = new CFWQueryParser(queryString, checkPermissions, baseQueryContext, cloneContext);
+		try {
+			//tracing is experimental, might lead to errors
+			//parser.enableTracing();
+			queryList = parser.parse();
+
+		}catch (NumberFormatException e) {
+			new CFWLog(logger).severe("Error Parsing a number:"+e.getMessage(), e);
+			parserDebugState(resultArray, parser);
+			return null;
+		} catch (ParseException e) {
+			CFW.Messages.addErrorMessage(e.getMessage());
+			parserDebugState(resultArray, parser);
+			return null;
+		}  catch (OutOfMemoryError e) {
+			// should not happen again
+			new CFWLog(logger).severe("Out of memory while parsing query. Please check your syntax.", e);
+			parserDebugState(resultArray, parser);
+			return null;
+		} catch (IndexOutOfBoundsException e) {
+			new CFWLog(logger).severe("Query Parsing: "+e.getMessage(), e);
+			parserDebugState(resultArray, parser);
+			return null;
+		}catch (Exception e) {
+			new CFWLog(logger).severe("Unexpected error when parsing the query: "+e.getMessage(), e);
+			parserDebugState(resultArray, parser);
+			return null;
+		}finally {
+
+		}
+		return queryList;
+	}
+
+	
 	private CFWQueryResultList parserDebugState(CFWQueryResultList resultArray, CFWQueryParser parser) {
 		
 		JsonArray detectedFields = new JsonArray();

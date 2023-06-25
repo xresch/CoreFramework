@@ -26,14 +26,19 @@ public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 	 * Create a new query with a new Context.
 	 ***********************************************************************************************/
 	public  CFWQuery(){
-		this(new CFWQueryContext());
+		this(new CFWQueryContext(), false);
 	}
 	
 	/***********************************************************************************************
 	 * Add a query command to the query.
+	 * @param doCloneContext if true, creates a clone of the original, if false uses as is
 	 ***********************************************************************************************/
-	public  CFWQuery(CFWQueryContext cloneThis){
-		context = cloneThis.clone();
+	public  CFWQuery(CFWQueryContext contextToUse, boolean doCloneContext){
+		if(doCloneContext) {
+			context = contextToUse.clone();
+		}else {
+			context = contextToUse;
+		}
 	}
 	
 	
@@ -44,6 +49,28 @@ public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 		commandList.add(command);
 		
 		this.add(command);
+	}
+	
+	/***********************************************************************************************
+	 * Removes commands by name.
+	 ***********************************************************************************************/
+	public void removeCommandsByName(String commandName){
+		
+		// avoid java.util.ConcurrentModificationException
+		ArrayList<CFWQueryCommand> removeList = new ArrayList<>();
+		
+		for(CFWQueryCommand command : commandList) {
+			
+			if(command.isCommandName(commandName)) {
+				removeList.add(command);
+			}
+		}
+		
+		for(CFWQueryCommand command : removeList) {
+			this.remove(command);
+			commandList.remove(command);
+		}
+		
 	}
 	
 	/***********************************************************************************************
@@ -109,10 +136,15 @@ public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 	}
 	
 	/***********************************************************************************************
-	 * Get the commands of this query
+	 * Returns a copy of the list of commands of this query.
+	 * Copy is returned to prevent modifications to the original list.
+	 * Us the methods addCommand() and removeCommand() to manipulate the list.
+	 * The instances of the commands are originals and not copies and can be modified.
 	 ***********************************************************************************************/
-	public ArrayList<CFWQueryCommand> getCommandList() {
-		return commandList;
+	public ArrayList<CFWQueryCommand> getCopyOfCommandList() {
+		ArrayList<CFWQueryCommand> copy = new ArrayList<CFWQueryCommand>();
+		copy.addAll(commandList);
+		return copy;
 	}
 
 

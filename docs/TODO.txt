@@ -85,8 +85,6 @@ Potential TODOs
 
 - Query: Write Developers Manual
 - Query: Improve Autocomplete
-- Query: Command - mimicry / copycat
-
 
 - Charts Renderer: Add description to manual page "working with render".
 
@@ -218,6 +216,7 @@ DONE
 	- compare
 	- execute
 	- merge
+	- mimic
 	- unbox
 - Query: Added functions: 
 	- decode

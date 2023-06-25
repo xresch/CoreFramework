@@ -95,7 +95,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 		
 		//----------------------------
 		// Check is Parsable & Permissions
-		CFWQueryParser parser = new CFWQueryParser(queryString, true, baseQueryContext);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true, baseQueryContext, true);
 		boolean canSave = true;
 		try {
 			parser.parse();

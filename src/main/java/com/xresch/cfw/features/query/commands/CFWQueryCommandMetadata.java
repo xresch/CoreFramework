@@ -24,11 +24,13 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandMetadata extends CFWQueryCommand {
 	
+	public static final String COMMAND_NAME = "metadata";
+
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandMetadata.class.getName());
 	
 	CFWQuerySource source = null;
 	ArrayList<String> fieldnames = new ArrayList<>();
-		
+	ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 	int recordCounter = 0;
 	
 	/***********************************************************************************************
@@ -43,7 +45,7 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {"metadata", "meta"};
+		return new String[] {COMMAND_NAME, "meta"};
 	}
 
 	/***********************************************************************************************
@@ -89,21 +91,14 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Get Parameters
-		
-		JsonObject metaObject = this.getParent().getContext().getMetadata();
-		
+	
 		for(int i = 0; i < parts.size(); i++) {
 			
 			QueryPart currentPart = parts.get(i);
 			
-			
 			if(currentPart instanceof QueryPartAssignment) {
-				QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
-				
-				String propertyName = assignment.getLeftSideAsString(null);
-				QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
-				valuePart.addToJsonObject(propertyName, metaObject);
-			
+				assignmentParts.add((QueryPartAssignment)currentPart);
+
 			}else {
 				parser.throwParseException("metadata: Only parameters(key=value) are allowed.", currentPart);
 			}
@@ -136,6 +131,22 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 		return this;
 	}
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception {
+		
+		//--------------------------------------
+		// Do this here to make the command removable for command 'mimic'
+		JsonObject metaObject = this.getParent().getContext().getMetadata();
+		
+		for(QueryPartAssignment assignment : assignmentParts) {
+			String propertyName = assignment.getLeftSideAsString(null);
+			QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
+			valuePart.addToJsonObject(propertyName, metaObject);
+		}
+	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

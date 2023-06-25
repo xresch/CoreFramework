@@ -46,6 +46,22 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	}
 	
 	/***********************************************************************************************
+	 * Returns true if the parameter is a name or alias of this command(case insensitive).
+	 ***********************************************************************************************/
+	public boolean isCommandName(String commandName) {
+		String[] names = this.uniqueNameAndAliases();
+		commandName = commandName.trim().toLowerCase();
+		for(String name : names) {
+			if(name.trim().toLowerCase().equals(commandName)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	
+	/***********************************************************************************************
 	 * Return a short description that can be shown in content assist and will be used as intro text
 	 * in the manual. Do not use newlines in this description.
 	 ***********************************************************************************************/
@@ -76,6 +92,9 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	 * are of the QueryPart Subclasses that are supported by your command.
 	 * If you encounter anything you cannot work with you can either ignore it or throw an exception
 	 * using parser.throwException().
+	 * To make this method work properly when using the command "mimic", the query context should
+	 * not be changed in this method. If you need to do so you can override the method initializeAction(). 
+	 * 
 	 * Following is an example implementation that finds fieldnames and the parameter "customParam":
 	 * 
 	 	<pre><code>for(QueryPart part : parts) {

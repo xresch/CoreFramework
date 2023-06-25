@@ -125,7 +125,7 @@ public class CFWQueryCommandCompare extends CFWQueryCommand {
 				}
 				
 			}else {
-				parser.throwParseException("stats: Only assignment expressions(key=value) allowed.", currentPart);
+				parser.throwParseException("compare: Only assignment expressions(key=value) allowed.", currentPart);
 			}
 		}
 			

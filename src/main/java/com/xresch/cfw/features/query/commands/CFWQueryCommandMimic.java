@@ -18,6 +18,7 @@ import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
+import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
@@ -28,7 +29,7 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	
 	CFWQuerySource source = null;
 	String queryName = null;
-		
+	ArrayList<String> commandsToRemove = new  ArrayList<String>();
 	HashSet<String> encounters = new HashSet<>();
 	
 	/***********************************************************************************************
@@ -36,6 +37,7 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	public CFWQueryCommandMimic(CFWQuery parent) {
 		super(parent);
+		commandsToRemove.add(CFWQueryCommandMetadata.COMMAND_NAME);
 	}
 
 	/***********************************************************************************************
@@ -87,14 +89,34 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
 		
 		//------------------------------------------
-		// Get Parameters
-		for(QueryPart part : parts) {
+				// Get Parameters
+				
+				for(int i = 0; i < parts.size(); i++) {
+					
+					QueryPart currentPart = parts.get(i);
+					
+					if(currentPart instanceof QueryPartAssignment) {
+						//--------------------------------------------------
+						// Resolve Fieldname=Function
+						QueryPartAssignment assignment = (QueryPartAssignment)currentPart;
+						String assignmentName = assignment.getLeftSideAsString(null);
+						QueryPartValue assignmentValue = ((QueryPartAssignment) currentPart).determineValue(null);
+						
+						if(assignmentName != null) {
+							assignmentName = assignmentName.trim().toLowerCase();
+							if		 (assignmentName.equals("name")) {			queryName = assignmentValue.getAsString(); }
+							else if	 (assignmentName.equals("remove")) {	commandsToRemove = assignmentValue.getAsStringArray(); }
 			
-			QueryPartValue value = part.determineValue(null);
-			if(!value.isNull()) {
-				queryName = value.getAsString();
-			}
-		}
+							else {
+								parser.throwParseException("compare: Unsupported argument.", currentPart);
+							}
+							
+						}
+						
+					}else {
+						parser.throwParseException("mimic: Only assignment expressions(key=value) allowed.", currentPart);
+					}
+				}
 			
 	}
 	
@@ -145,7 +167,22 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 			String queryString = resultToMimic.getQueryContext().getOriginalQueryString();
 			CFWQueryExecutor executor = new CFWQueryExecutor();
 			
-			executor.parseAndExecuteAll(this.parent.getContext(), queryString, this.inQueue, this.outQueue);
+			ArrayList<CFWQuery> queryList = executor.parseQuery(queryString, this.parent.getContext(), false);
+			if(queryList == null) {
+				this.parent.cancelExecution();
+			}else {
+				//--------------------------
+				// Filter Commands
+				for(CFWQuery query : queryList) {
+					for(String commandName : commandsToRemove) {
+						query.removeCommandsByName(commandName);
+					}
+				}
+				//--------------------------
+				// Execute
+				executor.executeAll(queryList, this.inQueue, this.outQueue);
+			}
+			
 			this.setDone();
 		}
 		

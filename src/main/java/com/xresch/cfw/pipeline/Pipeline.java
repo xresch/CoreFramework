@@ -18,10 +18,9 @@ public class Pipeline<I, O> {
 	
 	@SuppressWarnings("rawtypes")
 	protected ArrayList<PipelineAction> actionArray = new ArrayList<PipelineAction>();
-	protected ArrayList<LinkedBlockingQueue<?>> queues = new ArrayList<LinkedBlockingQueue<?>>();
+	//protected ArrayList<LinkedBlockingQueue<?>> queues = new ArrayList<LinkedBlockingQueue<?>>();
 	protected CountDownLatch latch;
 	
-	protected LinkedBlockingQueue<I> firstQueue = null;
 	protected LinkedBlockingQueue<O> lastQueue = new LinkedBlockingQueue<O>();
 
 	protected ThreadPoolExecutor defaultThreadPoolExecutor = 
@@ -154,7 +153,7 @@ public class Pipeline<I, O> {
 	}
 	
 	/*************************************************************************************
-	 * Start all the actions as separate threads.
+	 * Add an action to the pipeline.
 	 * @param args
 	 * @return
 	 *************************************************************************************/
@@ -168,14 +167,53 @@ public class Pipeline<I, O> {
 			
 			nextAction.setPreviousAction(previousAction);
 			
-		}else {
-			this.firstQueue = nextAction.getInQueue();
 		}
 		
 		nextAction.setParent(this);
 		actionArray.add(nextAction);
-		queues.add(nextAction.getInQueue());
+		//queues.add(nextAction.getInQueue());
 				
+	}
+	
+	/*************************************************************************************
+	 * Start all the actions as separate threads.
+	 * @param args
+	 * @return
+	 *************************************************************************************/
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void remove(PipelineAction actionToRemove) {
+		
+		//------------------------------
+		// Do nothing if not in Array
+		if(actionArray.isEmpty() || !actionArray.contains(actionToRemove)) {
+			return;
+		}
+		
+		//------------------------------
+		// Remove Action
+		int index = actionArray.indexOf(actionToRemove);
+		
+		if(index == 0) {
+			//---------------------------------
+			// Reset  if first Action
+			actionArray.remove(actionToRemove);
+		}else {
+			//---------------------------------
+			// Stitch Actions together if not last action
+			if(actionArray.size() > index+1) {
+				PipelineAction previousAction = actionArray.get(index-1);
+				PipelineAction nextAction = actionArray.get(index+1);
+				previousAction.setOutQueue(nextAction.getInQueue());
+				previousAction.setNextAction(nextAction);
+				nextAction.setPreviousAction(previousAction);
+			}
+				
+			actionArray.remove(actionToRemove);
+			
+		}
+		
+		//queues.remove(actionToRemove.getInQueue());
+		
 	}
 	
 	
@@ -183,8 +221,8 @@ public class Pipeline<I, O> {
 	 * 
 	 *************************************************************************************/
 	public  Pipeline<I, O> data(I[] data) {
-		if(firstQueue != null) {
-			firstQueue.addAll(Arrays.asList(data));
+		if(!actionArray.isEmpty()) {
+			actionArray.get(0).getInQueue().addAll(Arrays.asList(data));
 		}
 		return this;
 	}

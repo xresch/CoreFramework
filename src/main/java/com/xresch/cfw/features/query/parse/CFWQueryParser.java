@@ -86,7 +86,8 @@ public class CFWQueryParser {
 	private boolean checkSourcePermissions = true;
 	
 	// the initial context to be copied to each instance of CFWQuery
-	private CFWQueryContext initialContextToBeCloned;
+	private CFWQueryContext initialContext;
+	private boolean doCloneContext;
 	
 	// the list of tokens after tokenizing the query string
 	private ArrayList<CFWQueryToken> tokenlist;
@@ -140,15 +141,21 @@ public class CFWQueryParser {
 	/***********************************************************************************************
 	 * 
 	 * @param initialContext with earliest, latest, timezoneOffset and checkPermission values.
+	 * @param doCloneContext TODO
 	 ***********************************************************************************************/
-	public CFWQueryParser(String inputQuery, boolean checkSourcePermissions, CFWQueryContext initialContext) {
+	public CFWQueryParser(
+			String inputQuery
+			, boolean checkSourcePermissions
+			, CFWQueryContext initialContext
+			, boolean doCloneContext) {
 		
 		if(initialContext == null) {
 			initialContext = new CFWQueryContext();
 		}
 		
 		this.query = inputQuery;
-		this.initialContextToBeCloned = initialContext;
+		this.initialContext = initialContext;
+		this.doCloneContext = doCloneContext;
 		this.checkSourcePermissions = initialContext.checkPermissions();
 		this.cursor = 0;
 		
@@ -313,7 +320,7 @@ public class CFWQueryParser {
 			
 			CFWQuery query = parseQuery();
 			
-			if( query != null && query.getCommandList().size() > 0) {
+			if( query != null && query.getCopyOfCommandList().size() > 0) {
 				
 				queryList.add(query);
 			}
@@ -331,7 +338,7 @@ public class CFWQueryParser {
 		
 		addTrace("Parse", "Query", "[START]");
 		
-		currentQuery = new CFWQuery(initialContextToBeCloned);
+		currentQuery = new CFWQuery(initialContext, doCloneContext);
 		currentContext = currentQuery.getContext();
 		
 		//-----------------------------------
@@ -344,6 +351,7 @@ public class CFWQueryParser {
 			//System.out.println("======= currentQueryString ========\n"+currentQueryString);
 			currentContext.setOriginalQueryString(currentQueryString);
 		}
+		
 		//-----------------------------------
 		// Parse All Commands until Semicolon
 		while(this.hasMoreTokens() && this.lookahead().type() != CFWQueryTokenType.SIGN_SEMICOLON) {

@@ -80,7 +80,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testSimpleSourceQuery", results);
 		
-		CFWQueryParser parser = new CFWQueryParser(sourceString, true, queryContext);
+		CFWQueryParser parser = new CFWQueryParser(sourceString, true, queryContext, true);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
 		
@@ -128,7 +128,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testPipedCommands", results);
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext, true);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
 		
@@ -140,7 +140,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		CFWQuery query = queryList.get(0);
 		query.setContext(queryContext);
 		
-		ArrayList<CFWQueryCommand> commandList = query.getCommandList();
+		ArrayList<CFWQueryCommand> commandList = query.getCopyOfCommandList();
 		
 		Assertions.assertEquals(2, commandList.size());
 		
@@ -181,7 +181,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testMultipleQueries", results);
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext, true);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
 		
@@ -196,7 +196,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 			query.setContext(queryContext);
 			
 			System.out.println("-------- Query "+index+" ----------");
-			ArrayList<CFWQueryCommand> commandList = query.getCommandList();
+			ArrayList<CFWQueryCommand> commandList = query.getCopyOfCommandList();
 			
 			Assertions.assertEquals(2, commandList.size());
 			
@@ -242,7 +242,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testArray", results);
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext, true);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
 		
@@ -253,7 +253,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		CFWQuery query = queryList.get(0);
 		query.setContext(queryContext);
-		ArrayList<CFWQueryCommand> commandList = query.getCommandList();
+		ArrayList<CFWQueryCommand> commandList = query.getCopyOfCommandList();
 		
 		Assertions.assertEquals(2, commandList.size());
 		
@@ -294,7 +294,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testArray", results);
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext, true);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
 		
@@ -305,7 +305,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		CFWQuery query = queryList.get(0);
 		query.setContext(queryContext);
-		ArrayList<CFWQueryCommand> commandList = query.getCommandList();
+		ArrayList<CFWQueryCommand> commandList = query.getCopyOfCommandList();
 		
 		Assertions.assertEquals(2, commandList.size());
 		
@@ -346,7 +346,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		ArrayList<CFWQueryToken> results = tokenizer.getAllTokens();
 		printResults("testArrayAccess", results);
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext, true);
 		
 		ArrayList<CFWQuery> queryList = parser.parse();
 		Assertions.assertEquals(1, queryList.size());
@@ -356,7 +356,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		
 		CFWQuery query = queryList.get(0);
 		query.setContext(queryContext);
-		ArrayList<CFWQueryCommand> commandList = query.getCommandList();
+		ArrayList<CFWQueryCommand> commandList = query.getCopyOfCommandList();
 		
 		Assertions.assertEquals(2, commandList.size());
 		
@@ -404,7 +404,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		// Test Parsing Expressions
 		String queryString = "[ 42, myString == 'testString', myNumber < 999, 3 * myNumber  ] ";
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext, true);
 		
 		parsedParts = parser.parseQueryParts();
 		Assertions.assertEquals(1, parsedParts.size());
@@ -450,7 +450,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		// Test Parsing Expressions
 		String queryString = "[[], [1] ,[1,2], 42 , [3,\"3\", '3']] ";
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext, true);
 		
 		parsedParts = parser.parseQueryParts();
 		Assertions.assertEquals(1, parsedParts.size());
@@ -501,7 +501,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		// Test Parsing Expressions
 		String queryString = "myString==testString   myString!='testString'  22>=myNumber   myNumber<='44'   3 * myNumber   10^5 ";
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext, true);
 		
 		parsedParts = parser.parseQueryParts();
 		//System.out.println("============= testBinaryExpression parsedPart ===============");
@@ -594,7 +594,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		// Test Parsing OR Expressions
 		queryString = "myString==notEqualString OR myNumber>22 ";
 		
-		parser = new CFWQueryParser(queryString, true, queryContext)
+		parser = new CFWQueryParser(queryString, true, queryContext, true)
 				.enableTracing();
 		
 		parsedParts = parser.parseQueryParts();
@@ -624,7 +624,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		// Test Parsing AND Expressions
 		queryString = "myString==notEqualString and myNumber>22 ";
 		
-		parser = new CFWQueryParser(queryString, true, queryContext)
+		parser = new CFWQueryParser(queryString, true, queryContext, true)
 				.enableTracing();
 		
 		parsedParts = parser.parseQueryParts();
@@ -653,7 +653,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		// Test Parsing AND Expressions
 		queryString = "not myNumber<22 ";
 		
-		parser = new CFWQueryParser(queryString, true, queryContext)
+		parser = new CFWQueryParser(queryString, true, queryContext, true)
 				.enableTracing();
 		
 		parsedParts = parser.parseQueryParts();
@@ -699,7 +699,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		// Test Parsing Expressions
 		String queryString = " ( myString == 'testString' ( myNumber < 999 OR myString=='not my string') ) ";
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext, true);
 		
 		parsedParts = parser.parseQueryParts();
 		Assertions.assertEquals(1, parsedParts.size());
@@ -738,7 +738,7 @@ public class TestCFWQueryParsing extends DBTestMaster{
 		// Test Parsing Expressions
 		String queryString = " ( ( myNumber < 999 OR myString=='not my string') myString == 'testString' ) ";
 		
-		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext);
+		CFWQueryParser parser = new CFWQueryParser(queryString, true, queryContext, true);
 		
 		parsedParts = parser.parseQueryParts();
 		Assertions.assertEquals(1, parsedParts.size());
