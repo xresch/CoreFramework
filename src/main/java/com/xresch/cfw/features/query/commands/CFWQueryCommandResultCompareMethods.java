@@ -40,9 +40,10 @@ public class CFWQueryCommandResultCompareMethods {
 	private HashSet<String> fieldHasPercentage = new HashSet<>();
 	private boolean makeIdentifierUnique = true;
 	
-	boolean compareNumbersAbsolute = false;
+	boolean compareNumbersAbsolute = true;
 	boolean compareNumbersDiffPercent = true;
 	boolean compareStrings = true;
+	boolean compareBooleans = true;
 	boolean doSort = false;
 	
 	public CFWQueryCommandResultCompareMethods() {
@@ -99,6 +100,41 @@ public class CFWQueryCommandResultCompareMethods {
 	 ***********************************************************************************************/
 	public CFWQueryCommandResultCompareMethods labelDiffPercent(String labelDiffPercent) {
 		this.labelDiffPercent = labelDiffPercent;
+		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Set if numbers values should have absolute comparison.
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryCommandResultCompareMethods doCompareNumbersAbsolute(boolean value) {
+		this.compareNumbersAbsolute = value;
+		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Set if numbers values should have percent difference comparison.
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryCommandResultCompareMethods doCompareNumbersDiffPercent(boolean value) {
+		this.compareNumbersDiffPercent = value;
+		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Set if strings / objects / array values should be compared.
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryCommandResultCompareMethods doCompareBooleans(boolean value) {
+		this.compareBooleans = value;
+		return this;
+	}
+	/***********************************************************************************************
+	 * Set if strings / objects / array values should be compared.
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryCommandResultCompareMethods doCompareStrings(boolean value) {
+		this.compareStrings = value;
 		return this;
 	}
 	
@@ -541,7 +577,7 @@ public class CFWQueryCommandResultCompareMethods {
 						if(oldPart.isNumberOrNumberString()
 						&& youngPart.isNumberOrNumberString()) {
 							if(compareNumbersAbsolute) {
-								BigDecimal diff = oldPart.getAsBigDecimal().subtract(youngPart.getAsBigDecimal());
+								BigDecimal diff = youngPart.getAsBigDecimal().subtract(oldPart.getAsBigDecimal());
 								resultObject.addProperty(fieldname+labelDiff, diff);
 							}
 							if(compareNumbersDiffPercent) {
@@ -554,6 +590,7 @@ public class CFWQueryCommandResultCompareMethods {
 									resultObject.addProperty(fieldname+labelDiffPercent, diffPerc.multiply(BigDecimal.valueOf(100)));
 								}
 							}
+							
 							continue;
 						}
 						
@@ -561,35 +598,45 @@ public class CFWQueryCommandResultCompareMethods {
 						// Booleans
 						if(oldPart.isBoolOrBoolString()
 						&& youngPart.isBoolOrBoolString()) {
-	
-							boolean oldBool = oldPart.getAsBoolean();
-							boolean youngBool = oldPart.getAsBoolean();
-							resultObject.addProperty(fieldname+labelDiff, oldBool == youngBool);
+							if(compareBooleans) {
+								boolean oldBool = oldPart.getAsBoolean();
+								boolean youngBool = oldPart.getAsBoolean();
+								resultObject.addProperty(fieldname+labelDiff, oldBool == youngBool);
+							}
+							resultObject.add(fieldname+labelDiff, JsonNull.INSTANCE);
 							continue;
+							
 						}
 						
 						//--------------------
 						// Compare As Strings
-						String old = oldPart.getAsString();
-						String young = youngPart.getAsString();
-						resultObject.addProperty(fieldname+labelDiff, old.equals(young));
-						continue;
+						if(compareStrings) {
+							String old = oldPart.getAsString();
+							String young = youngPart.getAsString();
+							resultObject.addProperty(fieldname+labelDiff, old.equals(young));
+							continue;
+							
+						}
 					}
 					
 					//---------------------------------
 					// Check Objects/Arrays
-					if(youngValue.isJsonObject() 
-					|| oldValue.isJsonObject()
-					|| youngValue.isJsonArray()
-					|| oldValue.isJsonArray()
-					) {
-						boolean equals = youngValue.toString().equals(oldValue.toString());
-						resultObject.addProperty(fieldname+labelDiff, equals);
-						continue;
+					if(compareStrings) {
+						if(youngValue.isJsonObject() 
+						|| oldValue.isJsonObject()
+						|| youngValue.isJsonArray()
+						|| oldValue.isJsonArray()
+						) {
+							
+							boolean equals = youngValue.toString().equals(oldValue.toString());
+							resultObject.addProperty(fieldname+labelDiff, equals);
+							continue;
+							
+						}
 					}
 					
 					//---------------------------------
-					// Fallback: Anything Else not comparable
+					// Fallback: Anything Else not compared
 					// Probably unreachable with GSON version at implementation time
 					resultObject.add(fieldname+labelDiff, JsonNull.INSTANCE);
 					
@@ -1043,25 +1090,25 @@ public class CFWQueryCommandResultCompareMethods {
 	 * Calculate the difference between two values as double.
 	 * 
 	 ************************************************************/
-	public double calcDiffAsDouble(Object olderValue, Object youngerValue) throws Exception{
-		
-		String valString1 = olderValue.toString();
-		String valString2 = youngerValue.toString();
-		Double d1;
-		Double d2;
-		Double compared;
-		
-		try{
-			d1 = Double.parseDouble(valString1);
-			d2 = Double.parseDouble(valString2);
-			
-			compared = d2 - d1; 
-		}catch (NumberFormatException e) {
-			throw new Exception("Could not parse as double: "+valString1+","+valString2);
-		}
-	
-		return compared;
-	}
+//	private double calcDiffAsDouble(Object olderValue, Object youngerValue) throws Exception{
+//		
+//		String valString1 = olderValue.toString();
+//		String valString2 = youngerValue.toString();
+//		Double d1;
+//		Double d2;
+//		Double compared;
+//		
+//		try{
+//			d1 = Double.parseDouble(valString1);
+//			d2 = Double.parseDouble(valString2);
+//			
+//			compared = d2 - d1; 
+//		}catch (NumberFormatException e) {
+//			throw new Exception("Could not parse as double: "+valString1+","+valString2);
+//		}
+//	
+//		return compared;
+//	}
 	
 	/************************************************************
 	 * Calculate the difference in percentage between two values 
@@ -1071,25 +1118,25 @@ public class CFWQueryCommandResultCompareMethods {
 	 * @param youngerValue the younger value
 	 * 
 	 ************************************************************/
-	public double calcDiffPercentageAsDouble(Object olderValue, Object youngerValue) throws Exception{
-		
-		String valStringOlder = olderValue.toString();
-		String valStringYounger = youngerValue.toString();
-		Double doubleOlder;
-		Double doubleYounger;
-		Double compared;
-		
-		try{
-			doubleOlder = Double.parseDouble(valStringOlder);
-			doubleYounger = Double.parseDouble(valStringYounger);
-			
-			compared = doubleYounger/doubleOlder-1; 
-		}catch (NumberFormatException e) {
-			throw new Exception("Could not parse as double: "+valStringOlder+","+valStringYounger);
-		}
-	
-		return compared;
-	}
+//	private double calcDiffPercentageAsDouble(Object olderValue, Object youngerValue) throws Exception{
+//		
+//		String valStringOlder = olderValue.toString();
+//		String valStringYounger = youngerValue.toString();
+//		Double doubleOlder;
+//		Double doubleYounger;
+//		Double compared;
+//		
+//		try{
+//			doubleOlder = Double.parseDouble(valStringOlder);
+//			doubleYounger = Double.parseDouble(valStringYounger);
+//			
+//			compared = doubleYounger/doubleOlder-1; 
+//		}catch (NumberFormatException e) {
+//			throw new Exception("Could not parse as double: "+valStringOlder+","+valStringYounger);
+//		}
+//	
+//		return compared;
+//	}
 	
 	/************************************************************
 	 * Compare two Strings.<br>
@@ -1099,17 +1146,17 @@ public class CFWQueryCommandResultCompareMethods {
 	 * @return if(equals) --> "EQ"<br>
 	 *         if(!equals) --> "NOTEQ"
 	 ************************************************************/
-	public String compareAsString(Object olderValue, Object youngerValue) throws Exception{
-		
-		String valString1 = olderValue.toString();
-		String valString2 = youngerValue.toString();
-		String result = "NOTEQ";
-	
-		if(valString1.equals(valString2)){
-			result="EQ";
-		}
-		
-		return result;
-	}
+//	private String compareAsString(Object olderValue, Object youngerValue) throws Exception{
+//		
+//		String valString1 = olderValue.toString();
+//		String valString2 = youngerValue.toString();
+//		String result = "NOTEQ";
+//	
+//		if(valString1.equals(valString2)){
+//			result="EQ";
+//		}
+//		
+//		return result;
+//	}
 
 }

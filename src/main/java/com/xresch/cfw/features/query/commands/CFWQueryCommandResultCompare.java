@@ -2,7 +2,6 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonElement;
@@ -13,7 +12,6 @@ import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.CFWQueryResultList;
-import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
@@ -38,6 +36,10 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 	private String labelYoung = "_B";
 	private String labelDiff = "_Diff";
 	private String labelDiffPercent = "_%";
+	private boolean compareAbsolutes = true;
+	private boolean comparePercent = true;
+	private boolean compareStrings = true;
+	private boolean compareBooleans = true;
 	
 	/***********************************************************************************************
 	 * 
@@ -140,6 +142,10 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 				else if	 (assignmentName.equals("labeldiff")) {			labelDiff =  assignmentValue.getAsString(); }
 				else if	 (assignmentName.equals("labeldiffpercent")) {	labelDiffPercent =  assignmentValue.getAsString(); }
 				else if	 (assignmentName.startsWith("percentformat")) { percentColumnsFormatter =  assignmentValue; }
+				else if	 (assignmentName.startsWith("absolute")) { 			compareAbsolutes =  assignmentValue.getAsBoolean(); }
+				else if	 (assignmentName.startsWith("percent")) { 			comparePercent =  assignmentValue.getAsBoolean(); }
+				else if	 (assignmentName.startsWith("strings")) { 			compareStrings =  assignmentValue.getAsBoolean(); }
+				else if	 (assignmentName.startsWith("booleans")) { 			compareBooleans =  assignmentValue.getAsBoolean(); }
 				else {
 					throw new ParseException(COMMAND_NAME+": Unsupported argument.", -1);
 				}
@@ -178,6 +184,10 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 						.labelYoung(labelYoung)
 						.labelDiff(labelDiff)
 						.labelDiffPercent(labelDiffPercent)
+						.doCompareNumbersAbsolute(compareAbsolutes)
+						.doCompareNumbersDiffPercent(comparePercent)
+						.doCompareStrings(compareStrings)
+						.doCompareBooleans(compareBooleans)
 						.compareQueryResults(secondLast, last);
 						;
 			

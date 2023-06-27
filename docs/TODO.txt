@@ -83,8 +83,14 @@ Potential TODOs
 - Widget: Collaboration: Chat
 - Widget: Collaboration: Logbook
 
-- Query: Write Developers Manual
+- Query: Write Developers Manual dev_query.html
 - Query: Improve Autocomplete
+- Query: first() and last() stats functions
+- Query: math functions ceil/floor/abs etc...
+- Query: Compare documentation
+- Query: Command resultcopy
+- Query: Command template
+- Query: subquery function
 
 - Charts Renderer: Add description to manual page "working with render".
 
