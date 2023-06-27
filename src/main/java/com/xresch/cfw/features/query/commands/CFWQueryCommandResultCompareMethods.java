@@ -591,6 +591,9 @@ public class CFWQueryCommandResultCompareMethods {
 								}
 							}
 							
+							if(!compareNumbersAbsolute && !compareNumbersDiffPercent) {
+								resultObject.add(fieldname+labelDiff, JsonNull.INSTANCE);
+							}
 							continue;
 						}
 						
@@ -600,10 +603,11 @@ public class CFWQueryCommandResultCompareMethods {
 						&& youngPart.isBoolOrBoolString()) {
 							if(compareBooleans) {
 								boolean oldBool = oldPart.getAsBoolean();
-								boolean youngBool = oldPart.getAsBoolean();
+								boolean youngBool = youngPart.getAsBoolean();
 								resultObject.addProperty(fieldname+labelDiff, oldBool == youngBool);
+							}else {
+								resultObject.add(fieldname+labelDiff, JsonNull.INSTANCE);
 							}
-							resultObject.add(fieldname+labelDiff, JsonNull.INSTANCE);
 							continue;
 							
 						}
@@ -615,28 +619,33 @@ public class CFWQueryCommandResultCompareMethods {
 							String young = youngPart.getAsString();
 							resultObject.addProperty(fieldname+labelDiff, old.equals(young));
 							continue;
-							
 						}
+						
+						//--------------------
+						// Anything Else uncomparable
+						resultObject.add(fieldname+labelDiff, JsonNull.INSTANCE);
+						continue;
 					}
 					
 					//---------------------------------
 					// Check Objects/Arrays
-					if(compareStrings) {
-						if(youngValue.isJsonObject() 
-						|| oldValue.isJsonObject()
-						|| youngValue.isJsonArray()
-						|| oldValue.isJsonArray()
-						) {
-							
+					
+					if(youngValue.isJsonObject() 
+					|| oldValue.isJsonObject()
+					|| youngValue.isJsonArray()
+					|| oldValue.isJsonArray()
+					) {
+						if(compareStrings) {	
 							boolean equals = youngValue.toString().equals(oldValue.toString());
 							resultObject.addProperty(fieldname+labelDiff, equals);
-							continue;
-							
+						}else {
+							resultObject.add(fieldname+labelDiff, JsonNull.INSTANCE);
 						}
+						continue;
 					}
 					
 					//---------------------------------
-					// Fallback: Anything Else not compared
+					// Fallback: Anything Else not comparable
 					// Probably unreachable with GSON version at implementation time
 					resultObject.add(fieldname+labelDiff, JsonNull.INSTANCE);
 					
