@@ -1,0 +1,41 @@
+
+<p>This function is used to get the last value. It supports aggregation and can be used in aggregation commands.</p>
+
+<p>Following query uses some json example data to demonstrate the last-function:</p>
+<pre><code class="language-cfwquery">| source json data=`
+[
+	 {index: 0, array: [1,2,3], object: {a: 0, b: 1, c: 3 } }
+	,{index: 1, array: [1,null,4], object: {a: 11, b: 22, c: null} }
+	,{index: 2, array: [null,null,null], object: {x: null, y: 22, z: null} }
+	,{index: 3, array: [null,6,null], object: {AB: null, CD: null, EF: null} }
+	,{index: 3, array: [1,2,3, "null"], object: {a: 11, b: 22, c: 33, string: "ignored"} }
+]
+`
+| set 
+	# return the last element in the array that is not null, or null if all entries are null
+	LAST_ARRAY=last(array)
+	# return the last element in the array, also if it is null
+	LAST_ARRAY_NULLS=last(array,true)
+	# returns the last members name of the object
+	LAST_OBJECT=last(object)
+	# if input is a single value, returns that value
+	LAST_NUMBER=last(index)
+	LAST_BOOL=last(true)
+	LAST_STRING=last("some_string")
+	# following will return null
+	LAST_ZERO=last()
+	LAST_NULL=last(null)</code></pre>
+
+<p>Following is an example on how to use this function in aggregation commands:</p>
+<pre><code class="language-cfwquery">| source random records=10000
+| set NULLS=if(random() < 20, true, null) # 80% null values
+| stats by=[LIKES_TIRAMISU] 
+	"last:index"=last(INDEX) 	
+	"last:value"=last(VALUE)
+	"last:firstname"=last(FIRSTNAME)
+	"last:nulls"=last(NULLS) # will return last value which is not null
+	"last:include_nulls"=last(NULLS, true) # will return null if null is last (80% chance in this example)
+| sort "last:index" reverse=true</code></pre>
+
+
+

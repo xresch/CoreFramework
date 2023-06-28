@@ -229,6 +229,7 @@ DONE
 	- decode
 	- earliest
 	- earliestSet
+	- last
 	- latest
 	- latestSet
 	- now
