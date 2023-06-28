@@ -221,6 +221,7 @@ DONE
 - Query: Added commands: 
 	- execute
 	- mimic
+	- nullto
 	- resultcompare
 	- resultmerge
 	- unbox

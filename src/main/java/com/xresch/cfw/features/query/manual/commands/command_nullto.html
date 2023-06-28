@@ -1,0 +1,19 @@
+
+<p>The nullto command is used to replace nulls with another value. This is useful to handle situations where nulls would lead to problems.
+You can specify the new value and also the fields which you want to replace null values in.
+</p>
+
+<p>Following code replaces nulls with 'n/a' in all fields:</p>
+
+<pre><code class="language-cfwquery">| source random type=various
+| set UUID=if(random(0,100) > 50, UUID, null )  # add some null values
+| nullto value="n/a"</code></pre>
+
+
+<p>You can use the parameter 'fields' to limit the fields where the replacement is done.
+Following will only replace null values in the field 'UUID':</p>
+
+<pre><code class="language-cfwquery">| source random type=various
+| set UUID=if(random(0,100) > 50, UUID, null ) # add some null values 
+| nullto value="n/a" fields=[UUID]</code></pre>
+
