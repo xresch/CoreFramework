@@ -158,14 +158,15 @@ public class CFWQueryCommandSort extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
-		
+	
 		//-------------------------------------
 		// Create Sorted List
 		while(keepPolling()) {
 			objectListToSort.add(inQueue.poll());
 		}
-		
+
 		if(isPreviousDone()) {
+
 			//-------------------------------------
 			// Sort the List List
 			
@@ -216,10 +217,11 @@ public class CFWQueryCommandSort extends CFWQueryCommand {
 			//-------------------------------------
 			// Push Sorted List to outQueue
 			for(EnhancedJsonObject object : objectListToSort) {
+				
 				//System.out.println("out: "+object.get(fieldnames.get(0)));
 				outQueue.add(object);
 			}
-			
+
 			this.setDone();
 		}
 				

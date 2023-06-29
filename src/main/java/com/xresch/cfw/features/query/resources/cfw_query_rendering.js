@@ -425,8 +425,12 @@ function cfw_query_formatDecimals(span, value, precision){
 		valueToProcess = parseFloat(stringValue);
 	}
 	
-	if(valueToProcess != null && !isNaN(valueToProcess)){
-		span.text(valueToProcess.toFixed(precision));
+	if(valueToProcess != null){
+		if(typeof valueToProcess === "number"){
+			span.text(valueToProcess.toFixed(precision));
+		}else if(typeof valueToProcess === "string" && !Number.isNaN(valueToProcess)){
+			span.text(parseFloat(valueToProcess).toFixed(precision));
+		}
 	}
 
 }
@@ -510,12 +514,27 @@ function cfw_query_formatLowercase(span){
  ******************************************************************************/
 function cfw_query_formatPercent(span, value, greenThreshold, redThreshold, type, neutralColor){
 	
-	// set defaults
+	//------------------------------
+	// Handle non number values
+	if(value == null){
+		cfw_query_formatShowNulls(span, value, true);
+		return;
+	}else if(typeof value === "boolean"){
+		cfw_query_formatBoolean(span, value);
+		return;
+	}else if(typeof value !== "number"){
+		return;
+	}
+	
+	//------------------------------
+	// Set Defaults
 	if(redThreshold === undefined )		{ redThreshold = 0; }
 	if(redThreshold === undefined )		{ greenThreshold = 0; }
 	if(type 		=== undefined )		{ type = 'bg'; }
 	if(neutralColor === undefined )		{ neutralColor = null; }
 	
+	//------------------------------
+	// Add Styles
 	span.addClass('w-100 text-right font-weight-bold');
 		
 	var style = CFW.colors.getSplitThresholdStyle(value, greenThreshold, redThreshold, false);
@@ -527,9 +546,11 @@ function cfw_query_formatPercent(span, value, greenThreshold, redThreshold, type
 	
 	CFW.colors.colorizeElement(span, style, type, "2px");
 	
+	//------------------------------
+	// Call Other Formatters
 	cfw_query_formatDecimals(span, value, 1);
 	cfw_query_formatPostfix(span, value, " %");
-	cfw_query_formatShowNulls(span, value, true);
+
 }
 
 /*******************************************************************************

@@ -161,13 +161,13 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 		
 		//------------------------------
 		// Read Records of current Query
-		while(keepPolling()) {
-			outQueue.add(inQueue.poll());
-		}
+//		while(keepPolling()) {
+//			outQueue.add(inQueue.poll());
+//		}
 		
 		//------------------------------
 		// Read Records of current Query
-		if(isPreviousDone() && inQueue.isEmpty()) {
+		if(isPreviousDone()) {
 			
 			CFWQueryResultList previousResults = this.parent.getContext().getResultList();
 			
@@ -211,7 +211,6 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 				outQueue.add(new EnhancedJsonObject(record.getAsJsonObject()));
 			}
 			
-
 			this.setDone();
 		}
 		

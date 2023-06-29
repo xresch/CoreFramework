@@ -89,6 +89,7 @@ Potential TODOs
 - Query: Compare documentation
 - Query: Command resultcopy
 - Query: Command template
+- Query: Command record
 - Query: subquery function
 
 - Charts Renderer: Add description to manual page "working with render".
