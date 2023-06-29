@@ -13,13 +13,14 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
-public class CFWQueryFunctionLast extends CFWQueryFunction {
+public class CFWQueryFunctionFirst extends CFWQueryFunction {
 
-	public static final String FUNCTION_NAME = "last";
-	private QueryPartValue lastValue = QueryPartValue.newNull(); 
+	public static final String FUNCTION_NAME = "first";
+	private boolean isFirstFound = false;
+	private QueryPartValue firstValue = QueryPartValue.newNull(); 
 	private boolean isAggregated = false;
 	
-	public CFWQueryFunctionLast(CFWQueryContext context) {
+	public CFWQueryFunctionFirst(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -43,7 +44,7 @@ public class CFWQueryFunctionLast extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Aggregation function to get the last value.";
+		return "Aggregation function to get the first value.";
 	}
 	
 	/***********************************************************************************************
@@ -81,8 +82,12 @@ public class CFWQueryFunctionLast extends CFWQueryFunction {
 	 * 
 	 ***********************************************************************************************/
 	private void addValueToAggregation(QueryPartValue value, boolean includeNulls) {
-		if(!value.isNull() || includeNulls) {
-			lastValue = value;
+		
+		if(isFirstFound) {
+			return;
+		}else if(!value.isNull() || includeNulls) {
+			firstValue = value;
+			isFirstFound = true;
 		}
 	}
 	
@@ -118,8 +123,11 @@ public class CFWQueryFunctionLast extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
+		// reset
+		isFirstFound = false;
+		
 		if(isAggregated) {			
-			return lastValue;
+			return firstValue;
 		}else if(parameters.size() == 0) {
 			return QueryPartValue.newNull();
 		}else {
@@ -134,7 +142,7 @@ public class CFWQueryFunctionLast extends CFWQueryFunction {
 				
 				JsonArray array = param.getAsJsonArray();
 				
-				for(int i = array.size()-1; i >= 0; i--) {
+				for(int i = 0; i < array.size(); i++) {
 					
 					if(!array.get(i).isJsonNull() || includeNulls) {
 						return QueryPartValue.newFromJsonElement(array.get(i));
@@ -144,11 +152,9 @@ public class CFWQueryFunctionLast extends CFWQueryFunction {
 				return QueryPartValue.newNull();
 				
 			}else if(param.isJsonObject()) {
-				String lastMemberName = "";
 				for(Entry<String, JsonElement> entry : param.getAsJsonObject().entrySet()){
-					lastMemberName = entry.getKey();
+					return QueryPartValue.newString(entry.getKey());
 				}
-				return QueryPartValue.newString(lastMemberName);
 
 			}else {
 				// just return the value
@@ -158,7 +164,7 @@ public class CFWQueryFunctionLast extends CFWQueryFunction {
 		}
 		
 		//reset and return null in all other cases
-		//return QueryPartValue.newNull();
+		return QueryPartValue.newNull();
 	}
 
 }

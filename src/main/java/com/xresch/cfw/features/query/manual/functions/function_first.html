@@ -1,0 +1,41 @@
+
+<p>This function is used to get the first value. It supports aggregation and can be used in aggregation commands.</p>
+
+<p>Following query uses some json example data to demonstrate the first-function:</p>
+<pre><code class="language-cfwquery">| source json data=`
+[
+	 {index: 0, array: [1,2,3], object: {a: 0, b: 1, c: 3 } }
+	,{index: 1, array: [1,null,4], object: {a: 11, b: 22, c: null} }
+	,{index: 2, array: [null,null,null], object: {x: null, y: 22, z: null} }
+	,{index: 3, array: [null,6,null], object: {AB: null, CD: null, EF: null} }
+	,{index: 3, array: [1,2,3, "null"], object: {a: 11, b: 22, c: 33, string: "ignored"} }
+]
+`
+| set 
+	# return the first element in the array that is not null, or null if all entries are null
+	FIRST_ARRAY=first(array)
+	# return the first element in the array, also if it is null
+	FIRST_ARRAY_NULLS=first(array,true)
+	# returns the first members name of the object
+	FIRST_OBJECT=first(object)
+	# if input is a single value, returns that value
+	FIRST_NUMBER=first(index)
+	FIRST_BOOL=first(true)
+	FIRST_STRING=first("some_string")
+	# following will return null
+	FIRST_ZERO=first()
+	FIRST_NULL=first(null)</code></pre>
+
+<p>Following is an example on how to use this function in aggregation commands:</p>
+<pre><code class="language-cfwquery">| source random records=10000
+| set NULLS=if(random() < 20, true, null) # 80% null values
+| stats by=[LIKES_TIRAMISU] 
+	"first:index"=first(INDEX) 	
+	"first:value"=first(VALUE)
+	"first:firstname"=first(FIRSTNAME)
+	"first:nulls"=first(NULLS) # will return first value which is not null
+	"first:include_nulls"=first(NULLS, true) # will return null if null is first (80% chance in this example)
+| sort "first:index" reverse=true</code></pre>
+
+
+

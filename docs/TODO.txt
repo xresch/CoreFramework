@@ -85,7 +85,6 @@ Potential TODOs
 
 - Query: Write Developers Manual dev_query.html
 - Query: Improve Autocomplete
-- Query: first() and last() stats functions
 - Query: math functions ceil/floor/abs etc...
 - Query: Compare documentation
 - Query: Command resultcopy
@@ -229,6 +228,7 @@ DONE
 	- decode
 	- earliest
 	- earliestSet
+	- first
 	- last
 	- latest
 	- latestSet

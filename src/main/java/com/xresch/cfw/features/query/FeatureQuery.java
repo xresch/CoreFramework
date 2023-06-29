@@ -43,6 +43,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionEarliest;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionEarliestSet;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionEncode;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionExtract;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionFirst;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionGlobals;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionIf;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionIndexOf;
@@ -173,6 +174,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionEarliest(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionEarliestSet(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionExtract(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFirst(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionGlobals(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionIf(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionIndexOf(null));
