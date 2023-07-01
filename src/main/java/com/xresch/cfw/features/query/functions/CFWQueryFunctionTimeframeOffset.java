@@ -29,7 +29,7 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "timeframeOffset(offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS)";
+		return "timeframeOffset(shiftMultiplier, offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS)";
 	}
 	/***********************************************************************************************
 	 * 
@@ -45,7 +45,8 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return 
-			  "<p><b>offsetY:&nbsp;</b>(Optional)Offset in years.</p>"
+			   "<p><b>shiftMultiplier:&nbsp;</b>(Optional)Shifts the timeframe N-times by this multiplier(positive values: into future, Negative Values: into past).</p>"
+			  +"<p><b>offsetY:&nbsp;</b>(Optional)Offset in years.</p>"
 			  +"<p><b>offsetM:&nbsp;</b>(Optional)Offset in months.</p>"
 			  +"<p><b>offsetD:&nbsp;</b>(Optional)Offset in days.</p>"
 			  +"<p><b>offsetH:&nbsp;</b>(Optional)Offset in hours.</p>"
@@ -88,6 +89,7 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 		
 		//----------------------------------
 		// Default Params
+		int shiftMultiplier = 0;
 		int offsetY = 0;
 		int offsetM = 0;
 		int offsetD = 0;
@@ -99,10 +101,17 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 		//----------------------------------
 		// Get Parameters
 		int size = parameters.size(); 
-		int index = 0;
+		
+		if(size > 0) {
+			QueryPartValue shiftMultiplierValue = parameters.get(0);
+			if(shiftMultiplierValue.isNumberOrNumberString()) {
+				shiftMultiplier = shiftMultiplierValue.getAsInteger(); 
+			};
+		}
 
 		//----------------------------------
 		// offsetY
+		int index = 1;
 		if(size > index) {
 			QueryPartValue offsetYValue = parameters.get(index);
 			if(offsetYValue.isNumberOrNumberString()) { offsetY = offsetYValue.getAsInteger(); };
@@ -157,13 +166,15 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 
 		long currentEarliest = this.context.getEarliestMillis();
 		long currentLatest = this.context.getLatestMillis();
+		long shiftByMillis = shiftMultiplier*(currentLatest-currentEarliest);
+		
 		
 		long newLatest = CFW.Time.offsetTime(
-				currentLatest, offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS
+				(currentLatest+shiftByMillis), offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS
 			);
 		
 		long newEarliest = CFW.Time.offsetTime(
-				currentEarliest, offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS
+				(currentEarliest+shiftByMillis), offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS
 				);
 		
 		this.context.setEarliest(newEarliest);

@@ -1,12 +1,29 @@
 
+<p>This function manipulates the selected earliest and later time. 
+It's main use is to select a second timeframe based on the current timeframe to get data for comparison purposes:</p>
+
 <p>Following query uses the function to offset the timeframe for a second query:</p>
 
 <pre><code class="language-cfwquery">| globals multidisplay=2
 | source random records = 10
 | keep TIME
 ;
+# offset the selected timeframe earliest/latest into the past one time
+# e.g. if the selected timeframe is 2 days, will shift the previous two days
+| execute timeframeoffset(-1) 
+| source random records = 10
+| keep TIME</code></pre>
+
+
+<p>You can use further offset parameters to specify the amounts to offset the timeframe.
+Following will offset the timeframe by one day:</p>
+
+<pre><code class="language-cfwquery">| globals multidisplay=2
+| source random records = 10
+| keep TIME
+;
 # offset earliest/latest by one day, alternatively you can use earliestSet() or latestSet()
-| execute timeframeoffset(0,0,-1) 
+| execute timeframeoffset(0,0,0,-1) 
 | source random records = 10
 | keep TIME</code></pre>
 
