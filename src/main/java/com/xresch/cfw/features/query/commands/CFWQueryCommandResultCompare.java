@@ -4,12 +4,14 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
+import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -29,6 +31,7 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 	
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 
+	private ArrayList<String> resultNames = new ArrayList<>();
 	private ArrayList<String> groupByFieldnames = new ArrayList<>();
 	
 	private QueryPartValue percentColumnsFormatter = QueryPartValue.newString("percent");
@@ -136,7 +139,8 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 			
 			if(assignmentName != null) {
 				assignmentName = assignmentName.trim().toLowerCase();
-				if		 (assignmentName.equals("by")) {				groupByFieldnames.addAll( assignmentValue.getAsStringArray() ); }
+				if		 (assignmentName.equals("results")) {			resultNames.addAll( assignmentValue.getAsStringArray() ); }
+				else if	 (assignmentName.equals("by")) {				groupByFieldnames.addAll( assignmentValue.getAsStringArray() ); }
 				else if	 (assignmentName.equals("labelold")) {			labelOld =  assignmentValue.getAsString(); }
 				else if	 (assignmentName.equals("labelyoung")) {		labelYoung =  assignmentValue.getAsString(); }
 				else if	 (assignmentName.equals("labeldiff")) {			labelDiff =  assignmentValue.getAsString(); }
@@ -169,14 +173,53 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 		// Read Records of current Query
 		if(isPreviousDone()) {
 			
-			CFWQueryResultList previousResults = this.parent.getContext().getResultList();
+			//------------------------------
+			// Find Results to Compare
+			CFWQueryContext queryContext = this.parent.getContext();
+			CFWQueryResultList previousResults = queryContext.getResultList();
 			
-			CFWQueryResult last = previousResults.get(previousResults.size()-1);
-			CFWQueryResult secondLast = previousResults.get(previousResults.size()-2);
+			CFWQueryResult youngerResult = null;
+			CFWQueryResult olderResult = null;
+			if(resultNames.isEmpty() 
+			&& inQueue.isEmpty()
+			&& previousResults.size() >= 2) {
+				olderResult = previousResults.get(previousResults.size()-2);
+				youngerResult = previousResults.get(previousResults.size()-1);
+			}else if(resultNames.size() >= 2
+				  && previousResults.size() >= 2) {
+				olderResult = queryContext.getResultByName(resultNames.get(0));
+				youngerResult = queryContext.getResultByName(resultNames.get(1));
+			}else if(!inQueue.isEmpty()
+				&& previousResults.size() >= 1) {
+				
+				if(resultNames.size() >= 1) {	
+					olderResult = queryContext.getResultByName(resultNames.get(0));
+				}else {
+					olderResult = previousResults.get(previousResults.size()-1);
+				}
+				
+				JsonArray queueResultArray = new JsonArray();
+				for (EnhancedJsonObject object : inQueue) {
+					queueResultArray.add(object.getWrappedObject());
+				}
+				
+				youngerResult = new CFWQueryResult(queryContext);
+				youngerResult.setResults(queueResultArray);
+			}
 			
-			previousResults.removeResult(last);
-			previousResults.removeResult(secondLast);
+			//------------------------------
+			// Check if any is null
+			if(youngerResult == null || olderResult == null) {
+				throw new IllegalArgumentException(COMMAND_NAME+": Please provide at least 2 results to compare.");
+			}
 			
+			//------------------------------
+			// Remove from ResultList
+			previousResults.removeResult(olderResult);
+			previousResults.removeResult(youngerResult);
+			
+			//------------------------------
+			// Compare
 			CFWQueryResult compared = 
 					new CFWQueryCommandResultCompareMethods()
 						.identifierFields(groupByFieldnames)
@@ -188,7 +231,7 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 						.doCompareNumbersDiffPercent(comparePercent)
 						.doCompareStrings(compareStrings)
 						.doCompareBooleans(compareBooleans)
-						.compareQueryResults(secondLast, last);
+						.compareQueryResults(olderResult, youngerResult);
 						;
 			
 			//----------------------------

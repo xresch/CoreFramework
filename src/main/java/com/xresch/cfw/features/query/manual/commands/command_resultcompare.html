@@ -1,0 +1,78 @@
+
+<p>This compare the records of two results with each other.
+The comparison follows the following rules:</p>
+<ul>
+	<li><b>Both Values Null&nbsp;:</b> The compare result is 'true'.</li>
+	<li><b>One Value Null&nbsp;:</b> The compare result is 'false'.</li>
+	<li><b>Both Values Numbers&nbsp;: The compare result is absolute difference and/or percent difference(depending on parameters)</b></li>
+	<li><b>Both Values Booleans&nbsp;:</b> The compare result is 'true' or 'false'.</li>
+	<li><b>Both Values Strings&nbsp;:</b> The compare result is 'true' or 'false'.</li>
+	<li><b>Both Values Objects&nbsp;:</b> The compare result is 'true' or 'false'.</li>
+	<li><b>Both Values Arrays&nbsp;:</b> The compare result is 'true' or 'false'.</li>
+	<li><b>Anything Else&nbsp;:</b> The compare result will return null if the values are not compared.</li>
+</ul>
+
+<p>Following example executes one query, then executes the same query using the mimic-command and compares the results:
+</p>
+<pre><code class="language-cfwquery">| source random records=10000	# create random records  			
+| keep FIRSTNAME, VALUE			# keep only specified fields
+| stats	by=FIRSTNAME			# Create Statistics
+		COUNT=count(VALUE)
+		VALUE=avg(VALUE)
+; # ==== Start Second Query =====
+# copies the commands from the first query to create another result
+| mimic
+; # ==== Start Third Query =====															
+| resultcompare 				# compare the two previous results 
+	by=FIRSTNAME
+| sort "VALUE_%" reverse=true</code></pre>
+
+
+
+
+<p>You can as well directly compare the records of the current query with the previous query :
+</p>
+<pre><code class="language-cfwquery">| source random records=10000	# create random records  			
+| keep FIRSTNAME, VALUE			# keep only specified fields
+| stats	by=FIRSTNAME			# Create Statistics
+		COUNT=count(VALUE)
+		VALUE=avg(VALUE)
+; # ==== Start Second Query =====
+| mimic															
+| resultcompare 				# compare the two previous results 
+	by=FIRSTNAME
+| sort "VALUE_%" reverse=true</code></pre>
+
+
+
+
+<p>Following is an advanced example that uses globals for easier grouping,
+ metadata as a parameter for mimic, ads some arrays/objects and uses more parameters of the resultcompare command:
+</p>
+<pre><code class="language-cfwquery">| globals G_GROUP=[FIRSTNAME]		# use a global parameter for easy change of grouping
+| metadata name="queryOne"			# give the query a name 
+ 		   ROWS=1000				# Use a parameter for mimic 
+| source random records=meta("ROWS") # create random records		
+| keep globals(G_GROUP) VALUE		# keep only specified fields
+| stats	by=globals(G_GROUP)			# Create Statistics
+		COUNT=count(VALUE)
+		VALUE=avg(VALUE)
+| set
+	ARRAY=randomFrom([ ["A"], ["B"], ["C"] ])
+	OBJECT=randomFrom([ {a: 1}, {b: 2}, {c: 3} ])
+;
+| metadata ROWS=9000				# Change parameter 
+| mimic								# copy commnands from the previous query (ignore metadata)															
+| resultcompare 					# compare the two results by name
+	results=["queryOne"] 
+	by=globals(G_GROUP)
+	labelOld="(Old)"
+	labelYoung="(Young)"
+	labelDiff="(Diff)"
+	labelDiffPercent="(%)"
+	percentformat = [['percent', 1, -1, "bg", ""], [align, center]]
+	percent=true
+	absolute=false
+	strings=true
+	booleans=true
+| sort "COUNT_%" reverse=true</code></pre>

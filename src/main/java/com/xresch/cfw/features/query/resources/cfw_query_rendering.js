@@ -550,6 +550,9 @@ function cfw_query_formatPercent(span, value, greenThreshold, redThreshold, type
 	// Call Other Formatters
 	cfw_query_formatDecimals(span, value, 1);
 	cfw_query_formatPostfix(span, value, " %");
+	if(value > 0){
+		cfw_query_formatPrefix(span, value, "+");
+	}
 
 }
 

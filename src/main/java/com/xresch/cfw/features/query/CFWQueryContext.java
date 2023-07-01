@@ -162,8 +162,6 @@ public class CFWQueryContext{
 			JsonElement name = current.getMetadata().get("name");
 			String nameString = (name != null && !name.isJsonNull()) ? name.getAsString() : null;
 			
-			//----------------------------
-			// Add Result
 			if(nameString != null && resultName.equals(nameString)
 			) {
 				return current;
