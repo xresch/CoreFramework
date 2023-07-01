@@ -2606,6 +2606,9 @@ function cfw_format_timeToDuration(timeValue, timeUnit){
 function cfw_format_millisToDuration(millis){
 	
 	if(millis != null){
+		var isNegative = (millis < 0);
+		millis = Math.abs(millis);
+		
 		var milliseconds = parseInt((millis % 1000) / 100);
 		var seconds = Math.floor((millis / 1000) % 60);
 		var minutes = Math.floor((millis / (1000 * 60)) % 60);
@@ -2638,6 +2641,9 @@ function cfw_format_millisToDuration(millis){
 			clockString = days + "d " +clockString;
 		}
 		
+		if(isNegative){
+			clockString = "-" +clockString;
+		}
 		return clockString;
 	}
 	    

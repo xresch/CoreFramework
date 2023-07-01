@@ -151,7 +151,6 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 		
 		// Do nothing, inQueue is the same as outQueue
 		this.setDoneIfPreviousDone();
-	
 	}
 
 }

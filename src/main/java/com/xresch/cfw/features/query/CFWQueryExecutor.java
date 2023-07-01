@@ -157,7 +157,6 @@ public class CFWQueryExecutor {
 		// Get Result List
 		CFWQueryResultList resultArray = queryList.get(0).getContext().getResultList();
 		
-
 		//======================================
 		// Set initial Queue
 		if(initialQueue != null && !queryList.isEmpty()) {
@@ -172,7 +171,7 @@ public class CFWQueryExecutor {
 		//======================================
 		// Iterate All Queries
 		for(CFWQuery query : queryList) {
-			
+
 			//--------------------------------
 			// Check Limits
 			if(query.isSourceLimitReached()) { continue; }
@@ -207,7 +206,7 @@ public class CFWQueryExecutor {
 					
 				}
 			});
-			
+
 			//--------------------------------
 			// Execute query and Wait for Complete
 			long startMillis;
@@ -218,10 +217,10 @@ public class CFWQueryExecutor {
 				query.execute(maxExecTime, true);
 				
 				execMillis = System.currentTimeMillis() - startMillis;
-			}catch(NullPointerException e) {
-				queryContext.addMessage(MessageType.ERROR, "Query ran into an issue: NullpointerException.");
+			}catch(Exception e) {
+				queryContext.addMessage(MessageType.ERROR, "Query ran into an issue:"+e.getMessage());
 			}
-			
+
 			//--------------------------------
 			// Handle Globals
 //			JsonObject queryGlobals = queryContext.getGlobals();

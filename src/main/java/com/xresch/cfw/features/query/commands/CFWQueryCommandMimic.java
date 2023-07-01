@@ -184,6 +184,7 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 				//--------------------------
 				// Execute
 				executor.executeAll(queryList, this.inQueue, this.outQueue);
+
 			}
 			
 			this.setDone();

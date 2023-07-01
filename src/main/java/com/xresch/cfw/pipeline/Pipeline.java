@@ -195,8 +195,10 @@ public class Pipeline<I, O> {
 		
 		if(index == 0) {
 			//---------------------------------
-			// Reset  if first Action
+			// Reset if first Action
 			actionArray.remove(actionToRemove);
+			PipelineAction nextAction = actionArray.get(0);
+			nextAction.setPreviousAction(null);
 		}else {
 			//---------------------------------
 			// Stitch Actions together if not last action

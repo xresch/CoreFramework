@@ -29,7 +29,6 @@ The comparison follows the following rules:</p>
 
 
 
-
 <p>You can as well directly compare the records of the current query with the previous query :
 </p>
 <pre><code class="language-cfwquery">| source random records=10000	# create random records  			
@@ -45,9 +44,31 @@ The comparison follows the following rules:</p>
 
 
 
+<p>To compare two different timeframes, you can use the timeframeoffset()-function and the metadata-command to offset the time:
+</p>
+<pre><code class="language-cfwquery">| metadata shiftBy=-1    # shift by one timeframe range into the past
+| execute timeframeoffset(meta(shiftBy))
+| source random records=10000
+| keep FIRSTNAME, VALUE, TIME		
+| stats	by=FIRSTNAME
+		TIME=first(TIME)			
+		COUNT=count(VALUE)
+		VALUE=avg(VALUE)
+;
+| metadata shiftBy=0 # do not shift
+| mimic	
+;											
+| resultcompare 
+	by=FIRSTNAME
+| sort "TIME_Diff" reverse=true
+| formatfield
+	[TIME_A, TIME_B]=['timestamp', "yyyy-MM-DD HH:mm:ss"] 
+	TIME_Diff=['duration', "ms"]</code></pre>
+
+
 
 <p>Following is an advanced example that uses globals for easier grouping,
- metadata as a parameter for mimic, ads some arrays/objects and uses more parameters of the resultcompare command:
+ metadata as a parameter for mimic, adds some arrays/objects and uses more parameters of the resultcompare command:
 </p>
 <pre><code class="language-cfwquery">| globals G_GROUP=[FIRSTNAME]		# use a global parameter for easy change of grouping
 | metadata name="queryOne"			# give the query a name 
