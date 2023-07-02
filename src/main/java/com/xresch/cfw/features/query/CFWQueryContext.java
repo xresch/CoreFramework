@@ -1,13 +1,14 @@
 package com.xresch.cfw.features.query;
 
 import java.util.HashSet;
-import java.util.function.Consumer;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+
 
 /**************************************************************************************************************
  * 
@@ -88,10 +89,16 @@ public class CFWQueryContext{
 	}
 	
 	/***********************************************************************************************
-	 * Set the earliest time for this query.
+	 * Set the original query string if not already set.
 	 ***********************************************************************************************/
 	public CFWQueryContext setOriginalQueryString(String originalQueryString) {
-		this.originalQueryString = originalQueryString;
+		
+		// !!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!
+		// Only set the original query string if not already set.
+		// If query string is overridden, CFWQueryCommandMimic will not work when calling itself.
+		if(Strings.isNullOrEmpty(this.originalQueryString)) {
+			this.originalQueryString = originalQueryString;
+		}
 		return this;
 	}
 

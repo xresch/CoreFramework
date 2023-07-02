@@ -24,7 +24,7 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandGlobals extends CFWQueryCommand {
 	
-	private static final String COMMAND_NAME = "globals";
+	public static final String COMMAND_NAME = "globals";
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandGlobals.class.getName());
 	
@@ -36,6 +36,7 @@ public class CFWQueryCommandGlobals extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	public CFWQueryCommandGlobals(CFWQuery parent) {
 		super(parent);
+		this.isManipulativeCommand(false);
 	}
 
 	/***********************************************************************************************
@@ -109,22 +110,6 @@ public class CFWQueryCommandGlobals extends CFWQueryCommand {
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
 		// keep default
-	}
-
-	
-	/****************************************************************************
-	 * Override to make the inQueue the outQueue
-	 ****************************************************************************/
-	@Override
-	public PipelineAction<EnhancedJsonObject, EnhancedJsonObject> setOutQueue(LinkedBlockingQueue<EnhancedJsonObject> out) {
-
-		this.inQueue = out;
-		
-		if(previousAction != null) {
-			previousAction.setOutQueue(out);
-		}
-		
-		return this;
 	}
 	
 	/***********************************************************************************************

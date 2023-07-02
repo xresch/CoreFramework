@@ -23,6 +23,9 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 
 public class CFWQueryCommandMetadata extends CFWQueryCommand {
 	
+	public static final String META_PROPERTY_NAME = "name";
+	public static final String META_PROPERTY_TEMPLATE = "template";
+
 	public static final String COMMAND_NAME = "metadata";
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandMetadata.class.getName());
@@ -34,6 +37,7 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	public CFWQueryCommandMetadata(CFWQuery parent) {
 		super(parent);
+		this.isManipulativeCommand(false);
 	}
 
 	/***********************************************************************************************
@@ -109,22 +113,6 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 		// keep default
 
 	}
-
-	
-	/****************************************************************************
-	 * Override to make the inQueue the outQueue
-	 ****************************************************************************/
-	@Override
-	public PipelineAction<EnhancedJsonObject, EnhancedJsonObject> setOutQueue(LinkedBlockingQueue<EnhancedJsonObject> out) {
-
-		this.inQueue = out;
-		
-		if(previousAction != null) {
-			previousAction.setOutQueue(out);
-		}
-		
-		return this;
-	}
 	
 	/***********************************************************************************************
 	 * 
@@ -140,7 +128,16 @@ public class CFWQueryCommandMetadata extends CFWQueryCommand {
 			String propertyName = assignment.getLeftSideAsString(null);
 			QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
 			valuePart.addToJsonObject(propertyName, metaObject);
+			
+			//--------------------------------------
+			// Cancel Execution if Template
+			if(propertyName.equals(META_PROPERTY_TEMPLATE)
+			&& valuePart.isBoolOrBoolString()
+			&& valuePart.getAsBoolean() == true) {
+				this.getParent().cancelExecution();
+			}
 		}
+		
 	}
 	
 	/***********************************************************************************************

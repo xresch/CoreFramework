@@ -431,6 +431,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	public CFWQueryCommandFormatField(CFWQuery parent) {
 		super(parent);
+		this.isManipulativeCommand(false);
 	}
 
 	/***********************************************************************************************
@@ -624,21 +625,6 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 
 	}
 
-	
-	/****************************************************************************
-	 * Override to make the inQueue the outQueue
-	 ****************************************************************************/
-	@Override
-	public PipelineAction<EnhancedJsonObject, EnhancedJsonObject> setOutQueue(LinkedBlockingQueue<EnhancedJsonObject> out) {
-
-		this.inQueue = out;
-		
-		if(previousAction != null) {
-			previousAction.setOutQueue(out);
-		}
-		
-		return this;
-	}
 	
 	/***********************************************************************************************
 	 * 

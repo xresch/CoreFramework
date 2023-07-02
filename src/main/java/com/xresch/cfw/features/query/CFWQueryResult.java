@@ -3,7 +3,9 @@ package com.xresch.cfw.features.query;
 import java.util.Set;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 public class CFWQueryResult {
 	
@@ -14,7 +16,6 @@ public class CFWQueryResult {
 	public static final String RESULTFIELDS_GLOBALS 			= "globals";
 	public static final String RESULTFIELDS_EXEC_TIME_MILLIS 	= "execTimeMillis";
 	public static final String RESULTFIELDS_RESULT_COUNT 		= "resultCount";
-	
 	
 	private  CFWQueryContext context;
 	private JsonObject object = new JsonObject();
@@ -36,9 +37,6 @@ public class CFWQueryResult {
 		// Set Default Values
 		this.setExecTimeMillis(-1);
 		this.setResults(new JsonArray());
-		
-		
-		
 		
 	}
 	
@@ -112,10 +110,32 @@ public class CFWQueryResult {
 	}
 	
 	/****************************************************
-	 * 
+	 * Returns the metadata object
 	 ****************************************************/
 	public JsonObject getMetadata() {
 		return object.get(RESULTFIELDS_METADATA).getAsJsonObject();
+	}
+	
+	/****************************************************
+	 * Returns the metadata property by the given name.
+	 ****************************************************/
+	public JsonElement getMetadata(String memberName) {
+		return object.get(RESULTFIELDS_METADATA).getAsJsonObject().get(memberName);
+	}
+	
+	/****************************************************
+	 * Returns the metadata property by the given name.
+	 ****************************************************/
+	public boolean isMetadataValueTrue(String memberName) {
+		JsonObject metadata = object.get(RESULTFIELDS_METADATA).getAsJsonObject();
+		JsonPrimitive member = metadata.getAsJsonPrimitive(memberName);
+		if(member != null
+		&& member.isBoolean()
+		&& member.getAsBoolean()) {
+			return true;
+		}
+		
+		return false;
 	}
 	
 	/****************************************************

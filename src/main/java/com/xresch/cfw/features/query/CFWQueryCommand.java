@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
@@ -26,6 +27,8 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommand.class.getName());
 	
+	private boolean isManipulativeCommand = true;
+	
 	private CFWQueryCommandSource previousSource = null;
 	private boolean isPreviousSourceInitialized = false;
 	
@@ -47,6 +50,7 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		return this.uniqueNameAndAliases()[0];
 	}
 	
+
 	/***********************************************************************************************
 	 * Returns true if the parameter is a name or alias of this command(case insensitive).
 	 ***********************************************************************************************/
@@ -62,6 +66,15 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		return false;
 	}
 	
+	/***********************************************************************************************
+	 * Returns true if the parameter is a name or alias of this command(case insensitive).
+	 ***********************************************************************************************/
+	public CFWQueryContext getQueryContext() {
+		if(parent != null) {
+			return parent.getContext();
+		}
+		return null;
+	}
 	
 	/***********************************************************************************************
 	 * Return a short description that can be shown in content assist and will be used as intro text
@@ -356,7 +369,72 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	}
 	
 	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
+	public boolean isManipulativeCommand() {
+		return isManipulativeCommand;
+	}
 	
+	/****************************************************************************
+	 * If a command does not manipulate any data in the queue, set this 
+	 * flag to false in the constructor. 
+	 * In this case the inQueue and outQueue of the command will be set 
+	 * the same, what will pass the data directly from the previous command
+	 * to the next command.
+	 * 
+	 ****************************************************************************/
+	public void isManipulativeCommand(boolean value) {
+		this.isManipulativeCommand = value;
+	}
+	
+	/****************************************************************************
+	 * Overridden as this command does not manipulate any data.
+	 * Make the InQueue the same as the out Queue to directly give the input
+	 * from the previous command to the next command.
+	 ****************************************************************************/
+	@Override
+	public PipelineAction<EnhancedJsonObject, EnhancedJsonObject> setInQueue(LinkedBlockingQueue<EnhancedJsonObject> in) {
+		
+		if(isManipulativeCommand){
+			this.inQueue = in;
+		}else{
+			this.setOutQueue(in);
+		}
+		return this;
+	}
+	
+	/****************************************************************************
+	 * Overridden as this command does not manipulate any data.
+	 * Make the InQueue the same as the out Queue to directly give the input
+	 * from the previous command to the next command.
+	 * 
+	 ****************************************************************************/
+	@Override
+	public PipelineAction<EnhancedJsonObject, EnhancedJsonObject> setOutQueue(LinkedBlockingQueue<EnhancedJsonObject> out) {
+
+		if(isManipulativeCommand){
+			this.outQueue = out;
+		}else{
+			this.inQueue = out;
+			
+			if(previousAction != null
+			&& (previousAction.getOutQueue() == null 
+			   || !previousAction.getOutQueue().equals(out)) // prevent StackOverflow
+		    ){ 
+				previousAction.setOutQueue(out); 
+			}
+			
+			if(nextAction != null
+			&& ( nextAction.getInQueue() == null
+			    || !nextAction.getInQueue().equals(out)) // prevent StackOverflow
+			){ 
+				nextAction.setInQueue(out); 
+			}
+		}
+		
+		return this;
+	}
 	
 	/****************************************************************************
 	 * 

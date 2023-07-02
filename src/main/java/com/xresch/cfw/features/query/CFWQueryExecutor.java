@@ -7,8 +7,10 @@ import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWTimeframe;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandMetadata;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
@@ -220,13 +222,6 @@ public class CFWQueryExecutor {
 			}
 
 			//--------------------------------
-			// Handle Globals
-//			JsonObject queryGlobals = queryContext.getGlobals();
-//			for(Entry<String, JsonElement> entry : queryGlobals.entrySet()){
-//				multiQueryGlobals.add(entry.getKey(), entry.getValue());
-//			}
-
-			//--------------------------------
 			// Create Response
 			if(resultQueue == null) {
 				
@@ -235,9 +230,32 @@ public class CFWQueryExecutor {
 				queryResult.setResults(results);
 				
 				resultArray.addResult(queryResult);
+	
 			}
 
 		}
+		
+		//============================================
+		// Remove Unwanted Results
+		if(resultQueue == null) {
+			ArrayList<CFWQueryResult> noConcurrentModificationClone = new ArrayList<>();
+			noConcurrentModificationClone.addAll(resultArray.getResultList());
+			for(CFWQueryResult result : noConcurrentModificationClone) {
+				
+				boolean keepResult = true;
+				//----------------------------------
+				// Check is Template
+				JsonObject metadata = result.getMetadata();
+				if(result.isMetadataValueTrue(CFWQueryCommandMetadata.META_PROPERTY_TEMPLATE)){
+					 keepResult = false;
+				}
+				
+				if(!keepResult) {
+					resultArray.removeResult(result);
+				}
+			}
+		}
+		
 		return resultArray;
 	}
 

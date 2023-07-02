@@ -164,10 +164,8 @@ public class Pipeline<I, O> {
 		
 		if(actionArray.size() > 0) {
 			PipelineAction previousAction = actionArray.get(actionArray.size()-1);
-			previousAction.setOutQueue(nextAction.getInQueue());
-			previousAction.setNextAction(nextAction);
-			
 			nextAction.setPreviousAction(previousAction);
+			previousAction.setNextAction(nextAction);
 			
 		}
 		
@@ -207,9 +205,9 @@ public class Pipeline<I, O> {
 			if(actionArray.size() > index+1) {
 				PipelineAction previousAction = actionArray.get(index-1);
 				PipelineAction nextAction = actionArray.get(index+1);
-				previousAction.setOutQueue(nextAction.getInQueue());
-				previousAction.setNextAction(nextAction);
 				nextAction.setPreviousAction(previousAction);
+				previousAction.setNextAction(nextAction);
+				
 			}
 				
 			actionArray.remove(actionToRemove);

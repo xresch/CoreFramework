@@ -38,6 +38,7 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	public CFWQueryCommandMimic(CFWQuery parent) {
 		super(parent);
 		commandsToRemove.add(CFWQueryCommandMetadata.COMMAND_NAME);
+		commandsToRemove.add(CFWQueryCommandGlobals.COMMAND_NAME);
 	}
 
 	/***********************************************************************************************
@@ -73,7 +74,7 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	public String descriptionSyntaxDetailsHTML() {
 		return 
 			  "<p><b>queryName:&nbsp;</b>(Optional) Name of the query to be mimicked. Names are set with metadata command. If none is given, the query preceeding this one is used.</p>"
-			+ "<p><b>commandNames:&nbsp;</b>(Optional) String or array of command names to be removed. (Default='metadata')</p>"
+			+ "<p><b>commandNames:&nbsp;</b>(Optional) String or array of command names to be removed. (Default=['metadata', 'globals'])</p>"
 				;
 	}
 
@@ -145,7 +146,12 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
-				
+		
+		System.out.println("===========");
+		System.out.println("mimic: "+queryName);
+		System.out.println("numResults:"+this.getQueryContext().getResultList().size());
+		System.out.println("this.queryString:"+this.getQueryContext().getOriginalQueryString());
+
 		if(this.isPreviousDone()) {
 			
 			//=====================================
@@ -165,6 +171,8 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 				}
 			}
 			
+			System.out.println("resultToMimic.queryString:"+resultToMimic.getQueryContext().getOriginalQueryString());
+			
 			//=====================================
 			// Execute Mimicry
 			String queryString = resultToMimic.getQueryContext().getOriginalQueryString();
@@ -174,9 +182,13 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 			if(queryList == null) {
 				this.parent.cancelExecution();
 			}else {
+				
 				//--------------------------
 				// Filter Commands
 				for(CFWQuery query : queryList) {
+					for(CFWQueryCommand command : query.getCopyOfCommandList()) {
+						System.out.println("command: "+command.getUniqueName());
+					}
 					for(String commandName : commandsToRemove) {
 						query.removeCommandsByName(commandName);
 					}

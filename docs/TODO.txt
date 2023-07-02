@@ -88,11 +88,18 @@ Potential TODOs
 - Query: add shift param to function timeframeoffset
 - Query: function: math ceil/floor/abs etc...
 - Query: function: array() aggregation
-- Query: Compare documentation
 - Query: Command resultcopy
 - Query: Command template
 - Query: Command record
+- Query: Command resultmerge (merge columns by identifiers)
 - Query: subquery function
+- Query: Test cases
+	- mimic remove first command
+	- mimic remove last command
+	- mimic remove command somewhere
+	- metadata template
+	- mimic calling mimic
+	
 
 - Charts Renderer: Add description to manual page "working with render".
 
@@ -125,7 +132,7 @@ Potential TODOs
 - CFWMail: Add default CSS to eMails(e.g. displaying borders for tables) 
 - CFWField: Add initFormField(method)
 - CFWField: Form errors add to field.
-  
+ 
 - Image Upload for Summernote Editor
 - Truncate too long toasts.
 - Create Record Requests / Replay for Performance Tests
@@ -212,6 +219,7 @@ DONE
 - Query: Modulo operator('%') iis now supported by the CFWQL syntax
 - Query: Added API endpoint "Query >> execute"
 - Query: Command: formatfield - added percent formatter
+- Query: Command: metadata - added special property "template"
 - Query: Autocomplete - Added Open Manual Button 
 - Query: Autocomplete - Added "f:" to get list of functions
 - Query: Autocomplete - Added "f:xxx" to get list of filtered functions
@@ -225,7 +233,7 @@ DONE
 	- mimic
 	- nullto
 	- resultcompare
-	- resultmerge
+	- resultconcat
 	- unbox
 - Query: Added functions: 
 	- decode

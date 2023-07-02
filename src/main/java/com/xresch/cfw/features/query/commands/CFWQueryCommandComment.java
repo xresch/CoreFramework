@@ -30,6 +30,7 @@ public class CFWQueryCommandComment extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	public CFWQueryCommandComment(CFWQuery parent) {
 		super(parent);
+		this.isManipulativeCommand(false);
 	}
 
 	/***********************************************************************************************
@@ -94,22 +95,6 @@ public class CFWQueryCommandComment extends CFWQueryCommand {
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
 		// keep default
 
-	}
-
-	
-	/****************************************************************************
-	 * Override to make the inQueue the outQueue
-	 ****************************************************************************/
-	@Override
-	public PipelineAction<EnhancedJsonObject, EnhancedJsonObject> setOutQueue(LinkedBlockingQueue<EnhancedJsonObject> out) {
-
-		this.inQueue = out;
-		
-		if(previousAction != null) {
-			previousAction.setOutQueue(out);
-		}
-		
-		return this;
 	}
 	
 	/***********************************************************************************************

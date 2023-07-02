@@ -25,7 +25,8 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandNullTo;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandRemove;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandRename;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandResultCompare;
-import com.xresch.cfw.features.query.commands.CFWQueryCommandResultMerge;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandResultConcat;
+import com.xresch.cfw.features.query.commands.CFWQueryCommandResultCopy;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSet;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSort;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
@@ -139,7 +140,6 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandChart(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandComment(null));
-		CFW.Registry.Query.registerCommand(new CFWQueryCommandResultCompare(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDisplay(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandDistinct(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandExecute(null));
@@ -148,7 +148,9 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandFormatRecord(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandGlobals(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandKeep(null));
-		CFW.Registry.Query.registerCommand(new CFWQueryCommandResultMerge(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandResultCompare(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandResultConcat(null));
+		CFW.Registry.Query.registerCommand(new CFWQueryCommandResultCopy(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandMetadata(null));
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandMimic(null));
 		//CFW.Registry.Query.registerCommand(new CFWQueryCommandNoMessage(null));

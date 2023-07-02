@@ -26,13 +26,13 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
-public class CFWQueryCommandResultMerge extends CFWQueryCommand {
+public class CFWQueryCommandResultConcat extends CFWQueryCommand {
 	
-	public static final String COMMAND_NAME = "resultmerge";
+	public static final String COMMAND_NAME = "resultconcat";
 
 	private ArrayList<QueryPart> parts;
 
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandResultMerge.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandResultConcat.class.getName());
 	
 	CFWQuerySource source = null;
 	ArrayList<String> resultnames = new ArrayList<>();
@@ -42,7 +42,7 @@ public class CFWQueryCommandResultMerge extends CFWQueryCommand {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandResultMerge(CFWQuery parent) {
+	public CFWQueryCommandResultConcat(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -61,7 +61,7 @@ public class CFWQueryCommandResultMerge extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Merges completed result of previous queries into one.";
+		return "Concatenates completed result of previous queries into one. Removes the original results.";
 	}
 
 	/***********************************************************************************************
@@ -77,7 +77,7 @@ public class CFWQueryCommandResultMerge extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>resultname:&nbsp;</b>(Optional) Names of the results  to be merged. Names are set with metadata command. If none is given, all are merged.</p>";
+		return "<p><b>resultname:&nbsp;</b>(Optional) Names of the results  to be concatenated. Names are set with metadata command. If none is given, all are merged.</p>";
 	}
 
 	/***********************************************************************************************
@@ -152,7 +152,7 @@ public class CFWQueryCommandResultMerge extends CFWQueryCommand {
 		
 		//------------------------------
 		// Read Records of current Query
-		ArrayList<CFWQueryResult> mergedResults = new ArrayList<>();
+		ArrayList<CFWQueryResult> concatenateddResults = new ArrayList<>();
 		
 		if(isPreviousDone() && inQueue.isEmpty()) {
 			
@@ -171,7 +171,7 @@ public class CFWQueryCommandResultMerge extends CFWQueryCommand {
 					//----------------------------
 					// Handle Detected Fields
 					this.fieldnameAddAll(current.getDetectedFields());		
-					mergedResults.add(current);
+					concatenateddResults.add(current);
 					
 					//----------------------------
 					// Iterate Results
@@ -192,7 +192,7 @@ public class CFWQueryCommandResultMerge extends CFWQueryCommand {
 			
 			//----------------------------
 			// Remove Merged Results
-			for(CFWQueryResult result : mergedResults) {
+			for(CFWQueryResult result : concatenateddResults) {
 				 previousResults.removeResult(result);
 			}
 			

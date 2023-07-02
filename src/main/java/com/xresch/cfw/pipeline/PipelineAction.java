@@ -17,7 +17,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 	private static final Logger logger = CFWLog.getLogger(PipelineAction.class.getName());
 	
 	protected boolean isInitialized = false;
-	
+
 	protected Object synchLock = new Object();
 	protected Pipeline<O, ?> parent = null;
 	protected PipelineAction<?, I> previousAction = null;
@@ -119,6 +119,9 @@ public abstract class PipelineAction<I, O> extends Thread {
 	 ****************************************************************************/
 	public PipelineAction<I, O> setPreviousAction(PipelineAction<?, I> previousAction) {
 		this.previousAction = previousAction;
+		if(previousAction != null) {
+			previousAction.setOutQueue(this.getInQueue());
+		}
 		return this;
 	}
 
@@ -142,6 +145,9 @@ public abstract class PipelineAction<I, O> extends Thread {
 	 ****************************************************************************/
 	public PipelineAction<I, O> setNextAction(PipelineAction<O, ?> nextAction) {
 		this.nextAction = nextAction;
+		if(nextAction != null) {
+			this.setOutQueue(nextAction.getInQueue());
+		}
 		return this;
 	}
 
@@ -167,10 +173,12 @@ public abstract class PipelineAction<I, O> extends Thread {
 		return outQueue;
 	}
 
+	
 	/****************************************************************************
 	 * 
 	 ****************************************************************************/
 	public PipelineAction<I, O> setOutQueue(LinkedBlockingQueue<O> out) {
+		
 		this.outQueue = out;
 		return this;
 	}
@@ -185,18 +193,18 @@ public abstract class PipelineAction<I, O> extends Thread {
 			throw new InterruptedException();
 		}
 		
-		
-		if(previousAction == null){
-			return false; 
-		}
-		
 		if(!inQueue.isEmpty()
 		) {
 			return true; 
 		}
 		
+		if(previousAction == null){
+			return false; 
+		}
+		
 		return false;
 	}
+		
 	/****************************************************************************
 	 * 
 	 ****************************************************************************/
