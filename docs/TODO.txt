@@ -86,7 +86,8 @@ Potential TODOs
 - Query: Write Developers Manual dev_query.html
 - Query: Improve Autocomplete
 - Query: add shift param to function timeframeoffset
-- Query: math functions ceil/floor/abs etc...
+- Query: function: math ceil/floor/abs etc...
+- Query: function: array() aggregation
 - Query: Compare documentation
 - Query: Command resultcopy
 - Query: Command template

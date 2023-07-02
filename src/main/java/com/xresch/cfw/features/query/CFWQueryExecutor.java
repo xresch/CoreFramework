@@ -110,8 +110,6 @@ public class CFWQueryExecutor {
 			, LinkedBlockingQueue<EnhancedJsonObject> resultQueue
 			) {
 		
-		CFWQueryResultList resultArray = baseQueryContext.getResultList();
-		
 		//--------------------------------
 		// Define Context
 		boolean cloneContext = true;
@@ -257,9 +255,8 @@ public class CFWQueryExecutor {
 		//======================================
 		// Parse The Query
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
-		CFWQueryResultList resultArray = baseQueryContext.getResultList();
-		
 		CFWQueryParser parser = new CFWQueryParser(queryString, checkPermissions, baseQueryContext, cloneContext);
+		
 		try {
 			//tracing is experimental, might lead to errors
 			//parser.enableTracing();
@@ -267,24 +264,24 @@ public class CFWQueryExecutor {
 
 		}catch (NumberFormatException e) {
 			new CFWLog(logger).severe("Error Parsing a number:"+e.getMessage(), e);
-			parserDebugState(resultArray, parser);
+			parserDebugState(baseQueryContext, parser);
 			return null;
 		} catch (ParseException e) {
 			CFW.Messages.addErrorMessage(e.getMessage());
-			parserDebugState(resultArray, parser);
+			parserDebugState(baseQueryContext, parser);
 			return null;
 		}  catch (OutOfMemoryError e) {
 			// should not happen again
 			new CFWLog(logger).severe("Out of memory while parsing query. Please check your syntax.", e);
-			parserDebugState(resultArray, parser);
+			parserDebugState(baseQueryContext, parser);
 			return null;
 		} catch (IndexOutOfBoundsException e) {
 			new CFWLog(logger).severe("Query Parsing: "+e.getMessage(), e);
-			parserDebugState(resultArray, parser);
+			parserDebugState(baseQueryContext, parser);
 			return null;
 		}catch (Exception e) {
 			new CFWLog(logger).severe("Unexpected error when parsing the query: "+e.getMessage(), e);
-			parserDebugState(resultArray, parser);
+			parserDebugState(baseQueryContext, parser);
 			return null;
 		}finally {
 
@@ -293,7 +290,9 @@ public class CFWQueryExecutor {
 	}
 
 	
-	private CFWQueryResultList parserDebugState(CFWQueryResultList resultArray, CFWQueryParser parser) {
+	private CFWQueryResultList parserDebugState(CFWQueryContext baseQueryContext, CFWQueryParser parser) {
+		
+		CFWQueryResultList resultArray = baseQueryContext.getResultList();
 		
 		JsonArray detectedFields = new JsonArray();
 		detectedFields.add("KEY");

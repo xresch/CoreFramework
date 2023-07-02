@@ -362,8 +362,7 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 	 * 
 	 ****************************************************************************/
 	public void handleException(Throwable e) {
-		this.parent.getContext().addMessage(MessageType.ERROR, e.getMessage());
-		new CFWLog(logger).silent(true).severe("Unexpected error: "+e);
+		new CFWLog(logger).severe(e.getMessage(), e);
 	} 
 	
 	/****************************************************************************
@@ -375,14 +374,14 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 			super.run();
 			
 		} catch (CFWQueryMemoryException e) { 
-			this.parent.getContext().addMessage(MessageType.ERROR, "Query did not complete. Seems the memory limit was reached.");
-			new CFWLog(logger).silent(true).severe("Query ran into a memory exception.");
+			//this.parent.getContext().addMessage(MessageType.ERROR, "Query did not complete. Seems the memory limit was reached.");
+			new CFWLog(logger).severe("Query ran into a memory exception.", e);
 		} catch (NullPointerException e) { 
-			this.parent.getContext().addMessage(MessageType.ERROR, "A Null pointer exception occured..");
-			new CFWLog(logger).silent(true).severe("Query ran into a null pointer exception.");
+			//this.parent.getContext().addMessage(MessageType.ERROR, "A Null pointer exception occured.");
+			new CFWLog(logger).severe("Query ran into a null pointer exception.", e);
 		} catch (Exception e) { 
-			this.parent.getContext().addMessage(MessageType.ERROR, "An unexpected error occured: "+e.getMessage());
-			new CFWLog(logger).silent(true).severe("Query ran into an unexpected error.", e);
+			//this.parent.getContext().addMessage(MessageType.ERROR, "An unexpected error occured: "+e.getMessage());
+			new CFWLog(logger).silent(true).severe(e.getMessage(), e);
 		}
 		
 	}

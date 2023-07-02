@@ -42,6 +42,8 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 	private boolean compareAbsolutes = true;
 	private boolean comparePercent = true;
 	private boolean compareStrings = true;
+	private boolean compareArrays = true;
+	private boolean compareObjects = true;
 	private boolean compareBooleans = true;
 	
 	/***********************************************************************************************
@@ -74,7 +76,7 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" [results=resultnamesArray]";
+		return COMMAND_NAME+" by=<identifierFields> results=<resultnamesArray> [otherParam=<value> ...]";
 	}
 	
 	/***********************************************************************************************
@@ -82,8 +84,25 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>resultnamesArray:&nbsp;</b>(Optional) Names of the results that should be compared.</p>";
+		return 
+			  "<ul>"
+			+ "<li><b>byFieldnames:&nbsp;</b>(Optional) Names of the fields which are used to identify a record. Records with same identifier will be compared with each other. (Default: First fieldname of first record)</li>"
+			+ "<li><b>resultnamesArray:&nbsp;</b>(Optional) Names of the results that should be compared. (Default: 2 preceeding query results, or if current query has records use those plus preceeding result)</li>"
+			+ "<li><b>labelOld:&nbsp;</b>(Optional) A string used as a postfix to label columns of the older/first result in the comparison.(Default: '"+labelOld+"')</li>"
+			+ "<li><b>labelYoung:&nbsp;</b>(Optional) A string used as a postfix to label columns of the younger/second result in the comparison.(Default: '"+labelYoung+"')</li>"
+			+ "<li><b>labelDiff:&nbsp;</b>(Optional) A string used as a postfix to label columns containing the result of comparison.(Default: '"+labelDiff+"')</li>"
+			+ "<li><b>labelDiffPercent:&nbsp;</b>(Optional) A string used as a postfix to label columns containing the result of percentage comparison.(Default: '"+labelDiffPercent+"')</li>"
+			+ "<li><b>percentFormat:&nbsp;</b>(Optional) A name of a formatter or an array of formatters, see command 'formatfield' to find a list of formatters.(Default: 'percent')</li>"
+			+ "<li><b>absolute:&nbsp;</b>(Optional) Toogle if comparison should include absolute difference for number values.(Default: '"+compareAbsolutes+"')</li>"
+			+ "<li><b>percent:&nbsp;</b>(Optional) Toogle if comparison should include percentage difference for number values. This will be added in a separate field.(Default: '"+comparePercent+"')</li>"
+			+ "<li><b>booleans:&nbsp;</b>(Optional) Toogle if booleans should be compared.(Default: '"+compareBooleans+"')</li>"
+			+ "<li><b>strings:&nbsp;</b>(Optional) Toogle if strings should be compared.(Default: '"+compareStrings+"')</li>"
+			+ "<li><b>arrays:&nbsp;</b>(Optional) Toogle if arrays should be compared.(Default: '"+compareArrays+"')</li>"
+			+ "<li><b>objects:&nbsp;</b>(Optional) Toogle if objects should be compared.(Default: '"+compareObjects+"')</li>"
+			+ "</ul>"
+			;
 	}
+	
 
 	/***********************************************************************************************
 	 * 
@@ -146,10 +165,12 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 				else if	 (assignmentName.equals("labeldiff")) {			labelDiff =  assignmentValue.getAsString(); }
 				else if	 (assignmentName.equals("labeldiffpercent")) {	labelDiffPercent =  assignmentValue.getAsString(); }
 				else if	 (assignmentName.startsWith("percentformat")) { percentColumnsFormatter =  assignmentValue; }
-				else if	 (assignmentName.startsWith("absolute")) { 			compareAbsolutes =  assignmentValue.getAsBoolean(); }
-				else if	 (assignmentName.startsWith("percent")) { 			comparePercent =  assignmentValue.getAsBoolean(); }
-				else if	 (assignmentName.startsWith("strings")) { 			compareStrings =  assignmentValue.getAsBoolean(); }
-				else if	 (assignmentName.startsWith("booleans")) { 			compareBooleans =  assignmentValue.getAsBoolean(); }
+				else if	 (assignmentName.startsWith("absolute")) { 		compareAbsolutes =  assignmentValue.getAsBoolean(); }
+				else if	 (assignmentName.startsWith("percent")) { 		comparePercent =  assignmentValue.getAsBoolean(); }
+				else if	 (assignmentName.startsWith("strings")) { 		compareStrings =  assignmentValue.getAsBoolean(); }
+				else if	 (assignmentName.startsWith("booleans")) { 		compareBooleans =  assignmentValue.getAsBoolean(); }
+				else if	 (assignmentName.startsWith("arrays")) { 		compareArrays =  assignmentValue.getAsBoolean(); }
+				else if	 (assignmentName.startsWith("objects")) { 		compareObjects =  assignmentValue.getAsBoolean(); }
 				else {
 					throw new ParseException(COMMAND_NAME+": Unsupported parameter: "+assignmentName, -1);
 				}
@@ -229,8 +250,10 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 						.labelDiffPercent(labelDiffPercent)
 						.doCompareNumbersAbsolute(compareAbsolutes)
 						.doCompareNumbersDiffPercent(comparePercent)
-						.doCompareStrings(compareStrings)
 						.doCompareBooleans(compareBooleans)
+						.doCompareStrings(compareStrings)
+						.doCompareArrays(compareArrays)
+						.doCompareObjects(compareObjects)
 						.compareQueryResults(olderResult, youngerResult);
 						;
 			

@@ -42,8 +42,10 @@ public class CFWQueryCommandResultCompareMethods {
 	
 	boolean compareNumbersAbsolute = true;
 	boolean compareNumbersDiffPercent = true;
-	boolean compareStrings = true;
 	boolean compareBooleans = true;
+	boolean compareStrings = true;
+	boolean compareArrays = true;
+	boolean compareObjects = true;
 	boolean doSort = false;
 	
 	public CFWQueryCommandResultCompareMethods() {
@@ -129,12 +131,31 @@ public class CFWQueryCommandResultCompareMethods {
 		this.compareBooleans = value;
 		return this;
 	}
+	
 	/***********************************************************************************************
 	 * Set if strings / objects / array values should be compared.
 	 * 
 	 ***********************************************************************************************/
 	public CFWQueryCommandResultCompareMethods doCompareStrings(boolean value) {
 		this.compareStrings = value;
+		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Set if strings / objects / array values should be compared.
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryCommandResultCompareMethods doCompareArrays(boolean value) {
+		this.compareArrays = value;
+		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Set if strings / objects / array values should be compared.
+	 * 
+	 ***********************************************************************************************/
+	public CFWQueryCommandResultCompareMethods doCompareObjects(boolean value) {
+		this.compareObjects = value;
 		return this;
 	}
 	
@@ -222,7 +243,7 @@ public class CFWQueryCommandResultCompareMethods {
 	}
 	
 	/***********************************************************************************************
-	 * Finds the first member name from the given JsonArray and adds it to the fieldnameArray.
+	 * If the fieldnameArray is empty, finds the first member name from the given JsonArray and adds it to the fieldnameArray.
 	 * 
 	 * @param fieldnameArray Array containing field names
 	 * @param objectArray array containing JsonObjects
@@ -614,10 +635,15 @@ public class CFWQueryCommandResultCompareMethods {
 						
 						//--------------------
 						// Compare As Strings
-						if(compareStrings) {
-							String old = oldPart.getAsString();
-							String young = youngPart.getAsString();
-							resultObject.addProperty(fieldname+labelDiff, old.equals(young));
+						if(oldPart.isString()
+						&& youngPart.isString()) {
+							if(compareStrings) {
+								String old = oldPart.getAsString();
+								String young = youngPart.getAsString();
+								resultObject.addProperty(fieldname+labelDiff, old.equals(young));
+							}else {
+								resultObject.add(fieldname+labelDiff, JsonNull.INSTANCE);
+							}
 							continue;
 						}
 						
@@ -628,14 +654,26 @@ public class CFWQueryCommandResultCompareMethods {
 					}
 					
 					//---------------------------------
-					// Check Objects/Arrays
+					// Check Arrays
 					
 					if(youngValue.isJsonObject() 
 					|| oldValue.isJsonObject()
-					|| youngValue.isJsonArray()
+					) {
+						if(compareObjects) {	
+							boolean equals = youngValue.toString().equals(oldValue.toString());
+							resultObject.addProperty(fieldname+labelDiff, equals);
+						}else {
+							resultObject.add(fieldname+labelDiff, JsonNull.INSTANCE);
+						}
+						continue;
+					}
+					
+					//---------------------------------
+					// Check Arrays
+					if(youngValue.isJsonArray()
 					|| oldValue.isJsonArray()
 					) {
-						if(compareStrings) {	
+						if(compareArrays) {	
 							boolean equals = youngValue.toString().equals(oldValue.toString());
 							resultObject.addProperty(fieldname+labelDiff, equals);
 						}else {

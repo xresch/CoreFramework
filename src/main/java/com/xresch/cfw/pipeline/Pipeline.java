@@ -26,6 +26,7 @@ public class Pipeline<I, O> {
 	protected ThreadPoolExecutor defaultThreadPoolExecutor = 
 			CFWContextAwareExecutor.createExecutor("PipelineDefaultPool", 1, 20, 500, TimeUnit.MILLISECONDS);
 	
+	private boolean isCancelled = false;
 	
 	/*************************************************************************************
 	 * Constructor
@@ -70,14 +71,14 @@ public class Pipeline<I, O> {
 			
 			//------------------------------
 			// Wait until initialized
-			while (!action.isInitialized) {
+			while (!action.isInitialized && !this.isCancelled) {
 				try {
 					Thread.sleep(10);
 				}catch (InterruptedException e) {
 					new CFWLog(logger).warn("Pipeline execution was interupted.", e);
 					Thread.currentThread().interrupt();
 					return null;
-				}	
+				}
 			}
 		}
 		
@@ -95,14 +96,15 @@ public class Pipeline<I, O> {
 	 * Cancel the execution of this pipeline and all associated actions.
 	 *************************************************************************************/
 	public void cancelExecution() {
-				
+		
 		for(PipelineAction<I,O> action : actionArray) {
 			action.setDone();
-			action.inQueue.clear();
-			action.outQueue.clear();
+			if(action.inQueue != null) { action.inQueue.clear(); }
+			if(action.outQueue != null) { action.outQueue.clear(); }
 			action.interrupt();
 		}
 		
+		isCancelled = true;
 		Thread.currentThread().interrupt();
 			
 	}
