@@ -169,35 +169,31 @@ public class CFWQueryCommandResultConcat extends CFWQueryCommand {
 				}
 			}
 			
+			//----------------------------
+			// Concat Results
 			for(int i = 0; i < resultsToCopy.size(); i++) {
 				
 				CFWQueryResult current = resultsToCopy.get(i);
-				JsonElement name = current.getMetadata().get("name");
-				String nameString = (name != null && !name.isJsonNull()) ? name.getAsString() : null;
-				
-				//----------------------------
-				// Add Result
-				if(resultnames.isEmpty()
-				|| (nameString != null && resultnames.contains(nameString))
-				) {
-					//----------------------------
-					// Handle Detected Fields
-					this.fieldnameAddAll(current.getDetectedFields());		
-
-					//----------------------------
-					// Iterate Results
-					current.getResults().forEach(new Consumer<JsonElement>() {
-
-						@Override
-						public void accept(JsonElement e) {
-							outQueue.add(
-									new EnhancedJsonObject(e.getAsJsonObject())
-								);
-						}
-					});
-					
-					
+				if( current.isMetadataValueTrue(CFWQueryCommandMetadata.META_PROPERTY_TEMPLATE) ) {
+					continue;
 				}
+
+				//----------------------------
+				// Handle Detected Fields
+				this.fieldnameAddAll(current.getDetectedFields());		
+
+				//----------------------------
+				// Iterate Results
+				current.getResults().forEach(new Consumer<JsonElement>() {
+
+					@Override
+					public void accept(JsonElement e) {
+						outQueue.add(
+								new EnhancedJsonObject(e.getAsJsonObject())
+							);
+					}
+				});
+
 				
 			}
 			
