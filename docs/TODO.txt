@@ -94,6 +94,7 @@ Potential TODOs
 - Query: Command resultmerge (merge columns by identifiers)
 - Query: subquery function
 - Query: Mimic calling mimic working with meta()
+- Query: Chart - Show data table option
 - Query: Test cases
 	- mimic remove first command
 	- mimic remove last command

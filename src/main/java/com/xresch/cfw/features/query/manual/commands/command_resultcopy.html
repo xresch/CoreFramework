@@ -1,0 +1,43 @@
+
+<p>This command is used to copy the results of one or more previous queries.
+This is useful in case the same data should be displayed in different ways.</p>
+
+<p>Following example executes one query, copies its data and shows it as panels:
+</p>
+<pre><code class="language-cfwquery">| globals multidisplay=2
+| metadata name = "Original" 
+| source random records=4
+| keep FIRSTNAME, LIKES_TIRAMISU, VALUE
+| display menu=false 
+;
+| metadata name = "Copy"
+| resultcopy  #copy data of all previous queries
+| display as=panels menu=false</code></pre>
+
+
+<p>Following an advanced query using a template for formatting and copying in reverse order:
+</p>
+<pre><code class="language-cfwquery">| globals multidisplay=3
+| metadata name="format" template=true # this query will not execute unless when mimicked
+| execute
+| display menu=false 
+| formatrecord 
+	[(VALUE >= 80), "cfw-red"]
+	[(VALUE >= 40), "cfw-yellow"] 
+	[(VALUE >= 0), "cfw-green"] 
+;
+| metadata name = "Original" 
+| source random records=4
+| keep FIRSTNAME, LIKES_TIRAMISU, VALUE
+| display menu=false 
+| mimic name="format"
+;
+| metadata name = "CopyOne"
+| resultcopy name = "Original" # copy the original
+| mimic name="format"
+;
+| metadata name = "Copy"
+| resultcopy "Original", "CopyOne" # copy in reverse order
+| mimic name="format"
+| display as=tiles</code></pre>
+

@@ -147,11 +147,6 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
-		System.out.println("===========");
-		System.out.println("mimic: "+queryName);
-		System.out.println("numResults:"+this.getQueryContext().getResultList().size());
-		System.out.println("this.queryString:"+this.getQueryContext().getOriginalQueryString());
-
 		if(this.isPreviousDone()) {
 			
 			//=====================================
@@ -171,8 +166,6 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 				}
 			}
 			
-			System.out.println("resultToMimic.queryString:"+resultToMimic.getQueryContext().getOriginalQueryString());
-			
 			//=====================================
 			// Execute Mimicry
 			String queryString = resultToMimic.getQueryContext().getOriginalQueryString();
@@ -186,9 +179,6 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 				//--------------------------
 				// Filter Commands
 				for(CFWQuery query : queryList) {
-					for(CFWQueryCommand command : query.getCopyOfCommandList()) {
-						System.out.println("command: "+command.getUniqueName());
-					}
 					for(String commandName : commandsToRemove) {
 						query.removeCommandsByName(commandName);
 					}
