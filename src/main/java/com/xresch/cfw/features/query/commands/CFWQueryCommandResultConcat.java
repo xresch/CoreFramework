@@ -152,14 +152,26 @@ public class CFWQueryCommandResultConcat extends CFWQueryCommand {
 		
 		//------------------------------
 		// Read Records of current Query
-		ArrayList<CFWQueryResult> concatenateddResults = new ArrayList<>();
 		
 		if(isPreviousDone() && inQueue.isEmpty()) {
+			CFWQueryResultList resultsToCopy;
+
+			//------------------------------
+			// Get Results To Copy		
+			if(resultnames.isEmpty()) {
+				resultsToCopy = this.getQueryContext().getResultList();
+			}else {
+				resultsToCopy = new CFWQueryResultList();
+				for(String name : resultnames) {
+					resultsToCopy.addResult(
+							this.getQueryContext().getResultByName(name)
+						);
+				}
+			}
 			
-			CFWQueryResultList previousResults = this.parent.getContext().getResultList();
-			for(int i = 0; i < previousResults.size(); i++) {
+			for(int i = 0; i < resultsToCopy.size(); i++) {
 				
-				CFWQueryResult current = previousResults.get(i);
+				CFWQueryResult current = resultsToCopy.get(i);
 				JsonElement name = current.getMetadata().get("name");
 				String nameString = (name != null && !name.isJsonNull()) ? name.getAsString() : null;
 				
@@ -171,8 +183,7 @@ public class CFWQueryCommandResultConcat extends CFWQueryCommand {
 					//----------------------------
 					// Handle Detected Fields
 					this.fieldnameAddAll(current.getDetectedFields());		
-					concatenateddResults.add(current);
-					
+
 					//----------------------------
 					// Iterate Results
 					current.getResults().forEach(new Consumer<JsonElement>() {
@@ -192,7 +203,8 @@ public class CFWQueryCommandResultConcat extends CFWQueryCommand {
 			
 			//----------------------------
 			// Remove Merged Results
-			for(CFWQueryResult result : concatenateddResults) {
+			CFWQueryResultList previousResults = this.getQueryContext().getResultList();
+			for(CFWQueryResult result : resultsToCopy.getResultList()) {
 				 previousResults.removeResult(result);
 			}
 			

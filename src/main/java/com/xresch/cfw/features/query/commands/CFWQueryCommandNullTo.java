@@ -16,7 +16,6 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
@@ -27,7 +26,6 @@ public class CFWQueryCommandNullTo extends CFWQueryCommand {
 	public static final String COMMAND_NAME = "nullto";
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandNullTo.class.getName());
-	
 	
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 

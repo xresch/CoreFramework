@@ -311,7 +311,7 @@ class CFWFormField{
 		 if(this.settings.hover){		this.table.addClass('table-hover'); }
 		 if(this.settings.narrow){		this.table.addClass('table-sm'); }
 		 
-		 var wrapper = $('<div class="flex-grow-1">');
+		 var wrapper = $('<div class="flex-grow-1 w-100">');
 		 if(this.settings.filterable){
 			 var filter = $('<input id="'+this.id+'-filter" type="text" class="form-control form-control-sm tablefilter-marker" onkeyup="cfw_filterTable(this)" placeholder="Filter Table...">');
 			 wrapper.append(filter);
