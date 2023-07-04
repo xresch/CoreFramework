@@ -88,13 +88,12 @@ Potential TODOs
 - Query: add shift param to function timeframeoffset
 - Query: function: math ceil/floor/abs etc...
 - Query: function: array() aggregation
-- Query: Command resultcopy
-- Query: Command template
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
 - Query: subquery function
 - Query: Mimic calling mimic working with meta()
 - Query: Chart - Show data table option
+- Query: Autocomplete - fix "F:" replace issue
 - Query: Test cases
 	- mimic remove first command
 	- mimic remove last command
@@ -236,6 +235,7 @@ DONE
 	- nullto
 	- resultcompare
 	- resultconcat
+	- resultcopy
 	- unbox
 - Query: Added functions: 
 	- decode

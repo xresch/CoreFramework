@@ -12,6 +12,8 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 public class CFWQueryFunctionRandom extends CFWQueryFunction {
 
 	
+	public static final String FUNCTION_NAME = "random";
+
 	public CFWQueryFunctionRandom(CFWQueryContext context) {
 		super(context);
 	}
@@ -21,7 +23,7 @@ public class CFWQueryFunctionRandom extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "random";
+		return FUNCTION_NAME;
 	}
 	
 	/***********************************************************************************************
@@ -29,7 +31,7 @@ public class CFWQueryFunctionRandom extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "random(min, max, nullPercentage)";
+		return FUNCTION_NAME+"(min, max, nullPercentage)";
 	}
 	/***********************************************************************************************
 	 * 
@@ -58,7 +60,7 @@ public class CFWQueryFunctionRandom extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_random.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_"+FUNCTION_NAME+".html");
 	}
 
 

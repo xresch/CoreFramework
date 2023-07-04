@@ -35,7 +35,7 @@ public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 	 ***********************************************************************************************/
 	public  CFWQuery(CFWQueryContext contextToUse, boolean doCloneContext){
 		if(doCloneContext) {
-			context = contextToUse.clone();
+			context = contextToUse.createClone(true);
 		}else {
 			context = contextToUse;
 		}

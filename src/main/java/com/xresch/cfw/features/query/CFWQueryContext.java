@@ -53,16 +53,26 @@ public class CFWQueryContext{
 	/***********************************************************************************************
 	 * Clones the context to make a new base context that can be shared between multiple queries.
 	 * (queries split up by ';')
+	 * @param isSharedContext if set to false gets it's own result list. (used for subquery function)
 	 ***********************************************************************************************/
-	public CFWQueryContext clone() {
+	public CFWQueryContext createClone(boolean isSharedContext) {
 		
-		CFWQueryContext clonedContext = new CFWQueryContext(this.resultArray);
+		//-----------------------------
+		// ResultList to user
+		CFWQueryResultList resultList = this.resultArray;
+		if(!isSharedContext) {
+			resultList = new CFWQueryResultList();
+		}
+		
+		//-----------------------------
+		// Clone
+		CFWQueryContext clonedContext = new CFWQueryContext(resultList);
 		clonedContext.checkPermissions(this.checkPermissions());
 		clonedContext.setEarliest(this.getEarliestMillis());
 		clonedContext.setLatest(this.getLatestMillis());
 		clonedContext.setTimezoneOffsetMinutes(this.getTimezoneOffsetMinutes());
 		clonedContext.setGlobals(this.getGlobals());
-		clonedContext.setFieldnames(contextFieldnameManager);
+		//clonedContext.setFieldnames(contextFieldnameManager);
 		
 		return clonedContext;
 	}
