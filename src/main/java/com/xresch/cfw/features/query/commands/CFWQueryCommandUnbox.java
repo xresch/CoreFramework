@@ -31,7 +31,7 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 	
 	private QueryPartArray unboxFields;
 	
-	private boolean doReplaceOriginal = true;
+	private boolean doReplaceOriginal = false;
 	private ArrayList<QueryPart> parts;
 	/***********************************************************************************************
 	 * 
@@ -72,7 +72,7 @@ public class CFWQueryCommandUnbox extends CFWQueryCommand {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return "<p><b>fieldnameOrPath:&nbsp;</b> Fieldnames or JSON paths that should be used as replacement.</p>"
-		 	  +"<p><b>replace:&nbsp;</b> Toogle if the original fields should be replaced.(Default: true)</p>";
+		 	  +"<p><b>replace:&nbsp;</b> Toogle if the original fields should be replaced.(Default: false)</p>";
 	}
 
 	/***********************************************************************************************

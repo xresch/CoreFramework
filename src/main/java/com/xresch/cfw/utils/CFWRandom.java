@@ -542,8 +542,7 @@ public class CFWRandom {
 		
 		return array;
 	}
-
-
+	
 	
 	/******************************************************************************
 	 * Creates a random json array of people with various properties.
@@ -634,6 +633,7 @@ public class CFWRandom {
 		object.addProperty("BOOLEAN_STRING", ""+CFW.Random.randomBoolean(nullRatioPercent));
 		object.add("ALWAYS_NULL", JsonNull.INSTANCE);
 		object.addProperty("COLOR", randomColorName(nullRatioPercent));
+		object.addProperty("FRUIT", randomFruitName(nullRatioPercent));
 		object.addProperty("STATUS", randomFromArray(new String[] {"Excellent", "Good", "Warning", "Emergency", "Danger"}));
 
 		return object;

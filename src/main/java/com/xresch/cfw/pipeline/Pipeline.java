@@ -24,7 +24,7 @@ public class Pipeline<I, O> {
 	protected LinkedBlockingQueue<O> lastQueue = new LinkedBlockingQueue<O>();
 
 	protected ThreadPoolExecutor threadPoolExecutor = 
-			CFWContextAwareExecutor.createExecutor("PipelineDefaultPool", 1, 20, 500, TimeUnit.MILLISECONDS);
+			CFWContextAwareExecutor.createExecutor("PipelineDefaultPool", 1, 20, 100, TimeUnit.MILLISECONDS);
 	
 	private boolean isCancelled = false;
 	
