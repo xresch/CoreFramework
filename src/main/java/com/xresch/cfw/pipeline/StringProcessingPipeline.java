@@ -72,6 +72,7 @@ public class StringProcessingPipeline extends Pipeline<String, String> {
 			@Override
 			public void execute(PipelineActionContext context) throws Exception {
 				
+				PipelineAction<?, String> previousAction = this.getPreviousAction();
 				while(true) {
 					if(previousAction == null || previousAction.isDone()) {
 						while(!inQueue.isEmpty()) {

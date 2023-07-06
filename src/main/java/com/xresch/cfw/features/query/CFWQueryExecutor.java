@@ -123,7 +123,8 @@ public class CFWQueryExecutor {
 		if(queryList == null) {
 			return baseQueryContext.getResultList();
 		}else {
-			return this.executeAll(queryList, initialQueue, resultQueue);
+			CFWQueryResultList result = this.executeAll(queryList, initialQueue, resultQueue);
+			return  result;
 		}
 	}
 	/****************************************************************************************

@@ -16,12 +16,12 @@ public abstract class PipelineAction<I, O> extends Thread {
 	
 	private static final Logger logger = CFWLog.getLogger(PipelineAction.class.getName());
 	
-	protected boolean isInitialized = false;
+	private boolean isInitialized = false;
 
 	protected Object synchLock = new Object();
 	protected Pipeline<O, ?> parent = null;
-	protected PipelineAction<?, I> previousAction = null;
-	protected PipelineAction<O, ?> nextAction = null;
+	private PipelineAction<?, I> previousAction = null;
+	private PipelineAction<O, ?> nextAction = null;
 	
 	protected LinkedBlockingQueue<I> inQueue = new LinkedBlockingQueue<I>();
 	protected LinkedBlockingQueue<O> outQueue;
@@ -73,10 +73,28 @@ public abstract class PipelineAction<I, O> extends Thread {
 	@Override
 	public void run() {
 		try {
+			//------------------------------
+			// Wait until previous initialized
+			while ( this.getPreviousAction() != null
+			&& !this.getPreviousAction().isInitialized()
+			&& !this.parent.isCancelled()) {
+				try {
+					Thread.sleep(1);
+				}catch (InterruptedException e) {
+					new CFWLog(logger).warn("Pipeline execution was interupted.", e);
+					Thread.currentThread().interrupt();
+					return;
+				}
+			}
+			
+			//------------------------------
+			// Initialize this
 			this.initializeAction();
 			this.isInitialized = true;
 			
-				while (!done && !this.isInterrupted()) {
+			//------------------------------
+			// RUUUUUUUUNNNN!!!!
+			while (!done && !this.isInterrupted()) {
 					
 					//---------------------------
 					// Execute
@@ -92,7 +110,7 @@ public abstract class PipelineAction<I, O> extends Thread {
 					
 					//---------------------------
 					// Wait for more input
-					this.waitForInput(100);
+					this.waitForInput(10);
 				}
 				
 			this.terminateAction();
@@ -181,6 +199,13 @@ public abstract class PipelineAction<I, O> extends Thread {
 		
 		this.outQueue = out;
 		return this;
+	}
+	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
+	public boolean isInitialized() {
+		return isInitialized;
 	}
 
 	/****************************************************************************

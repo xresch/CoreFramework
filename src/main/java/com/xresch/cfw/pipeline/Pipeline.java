@@ -23,7 +23,7 @@ public class Pipeline<I, O> {
 	
 	protected LinkedBlockingQueue<O> lastQueue = new LinkedBlockingQueue<O>();
 
-	protected ThreadPoolExecutor defaultThreadPoolExecutor = 
+	protected ThreadPoolExecutor threadPoolExecutor = 
 			CFWContextAwareExecutor.createExecutor("PipelineDefaultPool", 1, 20, 500, TimeUnit.MILLISECONDS);
 	
 	private boolean isCancelled = false;
@@ -33,6 +33,13 @@ public class Pipeline<I, O> {
 	 *************************************************************************************/
 	protected Pipeline() {
 		
+	}
+	
+	/*************************************************************************************
+	 * Constructor
+	 *************************************************************************************/
+	protected Pipeline(ThreadPoolExecutor threadPoolExecutor) {
+		this.threadPoolExecutor = threadPoolExecutor;
 	}
 	
 
@@ -65,21 +72,9 @@ public class Pipeline<I, O> {
 		// Initialize
 		for (PipelineAction action : actionArray) {
 			action.setLatch(latch);
-			
-			defaultThreadPoolExecutor.submit(action);
+			threadPoolExecutor.submit(action);
 			//action.start();
 			
-			//------------------------------
-			// Wait until initialized
-			while (!action.isInitialized && !this.isCancelled) {
-				try {
-					Thread.sleep(10);
-				}catch (InterruptedException e) {
-					new CFWLog(logger).warn("Pipeline execution was interupted.", e);
-					Thread.currentThread().interrupt();
-					return null;
-				}
-			}
 		}
 		
 		//-----------------------------------
@@ -142,6 +137,14 @@ public class Pipeline<I, O> {
 	 *************************************************************************************/
 	public boolean isComplete() {
 		return latch.getCount() == 0;
+	}
+	
+	/*************************************************************************************
+	 * Returns true if this action is cancelled.
+	 * 
+	 *************************************************************************************/
+	public boolean isCancelled() {
+		return isCancelled;
 	}
 	
 	/*************************************************************************************

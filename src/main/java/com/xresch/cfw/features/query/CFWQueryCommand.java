@@ -418,6 +418,7 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		}else{
 			this.inQueue = out;
 			
+			PipelineAction<?, EnhancedJsonObject> previousAction = this.getPreviousAction();
 			if(previousAction != null
 			&& (previousAction.getOutQueue() == null 
 			   || !previousAction.getOutQueue().equals(out)) // prevent StackOverflow
@@ -425,6 +426,7 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 				previousAction.setOutQueue(out); 
 			}
 			
+			PipelineAction<EnhancedJsonObject, ?> nextAction = this.getNextAction();
 			if(nextAction != null
 			&& ( nextAction.getInQueue() == null
 			    || !nextAction.getInQueue().equals(out)) // prevent StackOverflow

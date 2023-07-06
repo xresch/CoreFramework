@@ -36,6 +36,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	public CFWQueryCommandChart(CFWQuery parent) {
 		super(parent);
+		this.isManipulativeCommand(false);
 	}
 
 	/***********************************************************************************************
@@ -143,29 +144,6 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 		// keep default
 	}
 
-	
-	/****************************************************************************
-	 * Override to make the inQueue the outQueue
-	 ****************************************************************************/
-	@Override
-	public PipelineAction<EnhancedJsonObject, EnhancedJsonObject> setInQueue(LinkedBlockingQueue<EnhancedJsonObject> in) {
-		this.setOutQueue(in);
-		return this;
-	}
-	
-	/****************************************************************************
-	 * Override to make the inQueue the outQueue
-	 ****************************************************************************/
-	@Override
-	public PipelineAction<EnhancedJsonObject, EnhancedJsonObject> setOutQueue(LinkedBlockingQueue<EnhancedJsonObject> out) {
-
-		this.inQueue = out;
-		
-		if(previousAction != null) { previousAction.setOutQueue(out); }
-		if(nextAction != null) 	   { nextAction.setInQueue(out); }
-		
-		return this;
-	}
 	
 	/***********************************************************************************************
 	 * 
