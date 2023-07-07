@@ -69,7 +69,7 @@ Potential TODOs
 - Dashboard: Fix Replica Ctrl+Z on Duplicate
 - Dashboard: Timeframe Picker - show Timeframe instead of "Custom Time"
 - Dashboard: Timeframe Picker - List of Recent
-
+- Dashboard: Compare option
 - Dashboard Parameters: Form initialization: filter as well by form or formID to not mess with params with same name/ID
 
 - Widget: CSV Chart
@@ -85,13 +85,12 @@ Potential TODOs
 
 - Query: Write Developers Manual dev_query.html
 - Query: Improve Autocomplete
-- Query: add shift param to function timeframeoffset
 - Query: function: math ceil/floor/abs etc...
 - Query: function: array() aggregation
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
 - Query: Command pivot
-- Query: subquery function
+- Query: arrayify
 - Query: Mimic calling mimic working with meta()
 - Query: Chart - Show data table option
 - Query: Autocomplete - fix "F:" replace issue
@@ -252,6 +251,7 @@ DONE
 	- randomfloat
 	- randomfrom
 	- replace
+	- subquery
 	- timeframeoffset
 	- timeoffset
 	- timeparse

@@ -2065,7 +2065,7 @@ function cfw_renderer_chart(renderDef) {
 		pointradius: 0,
 		// the padding in pixels of the chart
 		padding: 10,
-		// the minimum height of the chart(s), as a css value like 100px, 20vw etc... (default: 100%)
+		// the minimum height of the chart(s), as percent or pixel value like 100px, 50% etc... (default: 100%)
 		height: '100%',
 		// the color of the x-axes grid lines
 		xaxescolor: 'rgba(128,128,128, 0.1)',
@@ -2075,16 +2075,22 @@ function cfw_renderer_chart(renderDef) {
 		xminunit: 'millisecond',
 		// the momentjs format used to parse the time, or a function(value) that returns a value that can be parsed by moment
 		timeformat: null, 
+		// if true show a table with the data below the chart
+		table: false,
+		// size as number in percent of taken up area
+		tablesize: 50,
+		// position of the table, either one of: bottom | right | left (default: bottom)
+		tableposition: "bottom",
 		// if multichart is true, each series is drawn in it's own chart.
 		multichart: false,
 		// toogle if multicharts have a title
 		multicharttitle: false,
 		// toogle if multicharts have a title
 		multichartcolumns: 1
+		
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
-	
 	
 	//========================================
 	// Initialize
@@ -2107,10 +2113,28 @@ function cfw_renderer_chart(renderDef) {
 		}
 	}
 	
+	
 	//========================================
 	// Fix Multichart Endless Size Bug
 	if(settings.multichart == true && settings.height.endsWith('%')){
 		settings.height = "200px";
+	}
+	
+	//========================================
+	// Recalculate Size for Table
+	settings.tablesize = (settings.tablesize <= 100 && settings.tablesize > 0) ? settings.tablesize : 50; 
+	var chartPlusTableHeight = settings.height;
+	if(settings.table == true){
+		if(settings.tableposition == "bottom"){
+			var metric = "%";
+			if(settings.height.endsWith("px")){
+				metric = "px";
+			}
+			var heightValue = settings.height.replace(metric, "");
+			var percentMultiplier = (100-settings.tablesize)/100
+			settings.height = (heightValue * percentMultiplier) +metric;
+			
+		}
 	}
 		
 	//========================================
@@ -2332,22 +2356,25 @@ function cfw_renderer_chart(renderDef) {
 
 	//========================================
 	// Create Chart
-	
 	var allChartsDiv = $('<div class="cfw-chartjs-wrapper d-flex flex-row flex-grow-1 flex-wrap h-100 w-100">');
 	workspace.css("display", "block");
 	workspace.append(allChartsDiv);
+	
 	for(var index in dataArray){
 
 		//--------------------------------
 		// Initialize
 		var currentData = dataArray[index];
 		var chartCanvas = $('<canvas class="chartJSCanvas" width="100%">');
-		var wrapper = $('<div style="width:'+(100/settings.multichartcolumns)+'%">');
+		var chartPlusTableWrapper = $('<div style="width:'+(100/settings.multichartcolumns)+'%">');
+		chartPlusTableWrapper.css("height", chartPlusTableHeight);
+		var chartWrapper = $('<div style="width: 100%">');
 		if(settings.height != null){
-			wrapper.css('height', settings.height);
+			chartWrapper.css('height', settings.height);
 		}
-		wrapper.append(chartCanvas);
-		allChartsDiv.append(wrapper);
+		chartWrapper.append(chartCanvas);
+		chartPlusTableWrapper.append(chartWrapper);
+		allChartsDiv.append(chartPlusTableWrapper);
 		
 		//--------------------------------
 		// Set Title
@@ -2365,6 +2392,36 @@ function cfw_renderer_chart(renderDef) {
 		    data: currentData,
 		    options: chartOptionsClone
 		});
+		
+		//--------------------------------
+		// Add Table
+		if(settings.table == true){
+			var cloneRenderDef = {
+				rendererSettings: {
+					table: {
+						filterable: false,
+						responsive: false,
+						hover: true,
+						striped: true,
+						narrow: true
+					}
+				}
+			};
+			cloneRenderDef = Object.assign({}, renderDef, cloneRenderDef);
+			console.log(currentData)
+			
+			if(settings.multichart == true){
+				cloneRenderDef.data = currentData.datasets[0].tableData;
+			}
+			
+			var tableDiv = CFW.render.getRenderer('table').render(cloneRenderDef);
+			
+			tableDiv.css("height", settings.tablesize+"%");
+			chartCanvas.css("height", (100-settings.tablesize)+"%");
+			tableDiv.css("overflow", "scroll");
+			chartPlusTableWrapper.append(tableDiv);
+			
+		}
 	}
 	
 	return allChartsDiv;
@@ -2503,7 +2560,8 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 			var bgColor = borderColor.replace('1.0)', '0.65)');
 			datasets[label] = {
 					label: label, 
-					data: [], 
+					data: [], //data used by chartjs
+					tableData: [], // original data used for table
 					backgroundColor: bgColor,
 					fill: settings.doFill,
 		            borderColor: borderColor,
@@ -2517,7 +2575,10 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 			
 		}
 		
+		//----------------------------
+		// Add Values
 		var value = currentRecord[settings.yfield];
+		datasets[label].tableData.push(currentRecord);
 		
 		if(settings.xfield == null){
 			datasets[label].data.push(value);
@@ -2559,7 +2620,8 @@ function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 			var bgColor = borderColor.replace('1.0)', '0.65)');
 			datasets[label] = {
 					label: label, 
-					data: [], 
+					data: [], //data used by chartjs
+					tableData: [], // original data used for table
 					backgroundColor: bgColor,
 					fill: settings.doFill,
 		            borderColor: borderColor,
@@ -2574,6 +2636,7 @@ function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 		}
 		
 		var yArray = currentRecord[settings.yfield];
+		datasets[label].tableData.push(currentRecord);
 		
 		if(settings.xfield == null){
 			datasets[label].data = yArray;
@@ -2611,11 +2674,14 @@ function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
 		var borderColor = CFW.colors.randomSL(hue,65,100,55,70);
 		var bgColor = borderColor.replace('1.0)', '0.65)');
 		
-		if( CFW.utils.isNullOrEmpty(currentDataset.label) ){			currentDataset.label = renderDef.getTitleString(currentRecord); }
+		if( CFW.utils.isNullOrEmpty(currentDataset.label) ){			
+			currentDataset.label = renderDef.getTitleString(currentRecord); 
+		}
 		
 		currentDataset.backgroundColor = bgColor; 
 		currentDataset.borderColor = borderColor; 
 		currentDataset.borderWidth = 1;
+		currentDataset.tableData = currentDataset; // data for data table
 		
 		currentDataset.spanGaps = settings.spangaps;
 		currentDataset.steppedLine = settings.isSteppedline;

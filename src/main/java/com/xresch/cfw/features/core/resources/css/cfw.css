@@ -141,6 +141,9 @@ pre {
  * Bootstrap overwrite & extensions
  *************************************************************************/
 
+.table-sm thead th {
+    line-height: 0.75rem;
+}
 
 .btn-xs {
     padding: 0.0rem 0.3em;
