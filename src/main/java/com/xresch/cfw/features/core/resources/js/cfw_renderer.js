@@ -2119,23 +2119,11 @@ function cfw_renderer_chart(renderDef) {
 	if(settings.multichart == true && settings.height.endsWith('%')){
 		settings.height = "200px";
 	}
-	
+		
 	//========================================
 	// Recalculate Size for Table
 	settings.tablesize = (settings.tablesize <= 100 && settings.tablesize > 0) ? settings.tablesize : 50; 
-	settings.chartPlusTableHeight = settings.height;
-	if(settings.table == true){
-		if(settings.tableposition == "bottom"){
-			var metric = "%";
-			if(settings.height.endsWith("px")){
-				metric = "px";
-			}
-			var heightValue = settings.height.replace(metric, "");
-			var percentMultiplier = (100-settings.tablesize)/100
-			settings.height = (heightValue * percentMultiplier) +metric;
-		}
-	}
-		
+	
 	//========================================
 	// Create Workspace
 	// ChartJS needs a DOM element to use
@@ -2229,7 +2217,6 @@ function cfw_renderer_chart(renderDef) {
 	    	responsive: settings.responsive,
 	    	maintainAspectRatio: false,
 	    	resizeDelay: 300,
-	    	onResize: function (chartjsInstance, newSize) { console.log("AAAA")},  
 			scales: {
 				x: {
 					display: settings.showaxes,
@@ -2360,7 +2347,7 @@ function cfw_renderer_chart(renderDef) {
 	var allChartsDiv = $('<div class="cfw-chartjs-wrapper d-flex flex-row flex-grow-1 flex-wrap h-100 w-100">');
 	allChartsDiv.css("max-height", "100%");
 	workspace.css("display", "block");
-	//workspace.append(allChartsDiv);
+	workspace.append(allChartsDiv);
 	
 	for(var index in dataArray){
 
@@ -2369,13 +2356,11 @@ function cfw_renderer_chart(renderDef) {
 		var currentData = dataArray[index];
 		var chartCanvas = $('<canvas class="chartJSCanvas" width="100%">');
 		var chartPlusTableWrapper = $('<div style="width:'+(100/settings.multichartcolumns)+'%">');
-		chartPlusTableWrapper.css("height", settings.chartPlusTableHeight);
+		chartPlusTableWrapper.css("height", settings.height);
 		var chartWrapper = $('<div class="w-100">');
 		chartWrapper.css("position", "relative");
-		chartWrapper.css("max-height", "50vh"); // prevent infinite Height loop
+		chartWrapper.css("max-height", "100vh"); // prevent infinite Height loop
 		chartWrapper.css("max-width", "100vw"); // prevent chart bigger then screen
-		//chartWrapper.css("display", "table");
-		//chartCanvas.css("display", "table-cell");
 		
 		if(settings.height != null){
 			chartWrapper.css('height', settings.height);
@@ -2393,19 +2378,9 @@ function cfw_renderer_chart(renderDef) {
 		}
 		
 		//--------------------------------
-		// Draw Chart
-		var chartCtx = chartCanvas.get(0).getContext("2d");
-		//var chartCtx = chartCanvas.get(0);
-		
-		new Chart(chartCtx, {
-		    type: settings.charttype,
-		    data: currentData,
-		    options: chartOptionsClone
-		});
-		
-		//--------------------------------
 		// Add Table
 		if(settings.table == true){
+						
 			var cloneRenderDef = {
 				rendererSettings: {
 					table: {
@@ -2426,27 +2401,55 @@ function cfw_renderer_chart(renderDef) {
 			
 			var tableDiv = CFW.render.getRenderer('table').render(cloneRenderDef);
 			tableDiv.css("overflow", "auto");
+			chartPlusTableWrapper.addClass("d-flex");
 			
 			if(settings.tableposition == "bottom"){
-				allChartsDiv.removeClass("d-flex");
-				tableDiv.css("height", (settings.tablesize)+"%");
-				chartWrapper.css("height", (100-settings.tablesize)+"%");
+				//--------------------------------
+				// Table Bottom
+				var heightValue = settings.height;
+				if(heightValue.endsWith('%')){
+					heightValue = "200px";
+				}
+				chartPlusTableWrapper.addClass("flex-column");
+				//chartPlusTableWrapper.css("height", "100%");;
+				heightValue = heightValue.replace("px", "");
+				var percentMultiplier = (100-settings.tablesize)/100;
+				var chartHeight = (heightValue * percentMultiplier) +"px";
+				tableDiv.addClass("flex-grow-1 flex-shrink-1");
+				chartWrapper.css("height", chartHeight);
+				chartWrapper.css("flex-shrink", "0");
 				chartPlusTableWrapper.append(tableDiv);
 			}else{
-				chartPlusTableWrapper.addClass("d-flex");
-				tableDiv.addClass("d-flex");
-				tableDiv.removeClass("w-100");
+				
+				
+				tableDiv.removeClass("w-100 flex-grow-1");
 				tableDiv.css("height", "100%");
-				tableDiv.css("width", settings.tablesize+"%");
-				chartWrapper.css("width", (100-settings.tablesize)+"%");
+				tableDiv.css("flex-grow", settings.tablesize/100);
+				chartWrapper.css("flex-grow", (100-settings.tablesize)/100);
+				
+				//tableDiv.css("width", settings.tablesize+"%");
+				//chartWrapper.css("width", (100-settings.tablesize)+"%");
 				
 				if(settings.tableposition == "right"){
-					chartPlusTableWrapper.prepend(tableDiv);
-				}else{
 					chartPlusTableWrapper.append(tableDiv);
+				}else{
+					chartPlusTableWrapper.prepend(tableDiv);
 				}
 			}
 		}
+		
+		//--------------------------------
+		// Draw Chart
+		var chartCtx = chartCanvas.get(0).getContext("2d");
+		//var chartCtx = chartCanvas.get(0);
+		
+		new Chart(chartCtx, {
+		    type: settings.charttype,
+		    data: currentData,
+		    options: chartOptionsClone
+		});
+		
+		
 	}
 	
 	return allChartsDiv;
