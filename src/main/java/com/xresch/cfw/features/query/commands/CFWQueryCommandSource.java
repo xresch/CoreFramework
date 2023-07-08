@@ -120,7 +120,6 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	 * 
 	 ***********************************************************************************************/
 	private void setSourceFetchingDone() {
-		
 		isSourceFetchingDone = true;
 	}
 	

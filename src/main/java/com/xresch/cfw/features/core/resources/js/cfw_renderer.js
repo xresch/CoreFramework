@@ -2075,7 +2075,7 @@ function cfw_renderer_chart(renderDef) {
 		xminunit: 'millisecond',
 		// the momentjs format used to parse the time, or a function(value) that returns a value that can be parsed by moment
 		timeformat: null, 
-		// if true show a table with the data below the chart
+		// if true show a table with the data of the series
 		table: false,
 		// size as number in percent of taken up area
 		tablesize: 50,
@@ -2123,7 +2123,7 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// Recalculate Size for Table
 	settings.tablesize = (settings.tablesize <= 100 && settings.tablesize > 0) ? settings.tablesize : 50; 
-	var chartPlusTableHeight = settings.height;
+	settings.chartPlusTableHeight = settings.height;
 	if(settings.table == true){
 		if(settings.tableposition == "bottom"){
 			var metric = "%";
@@ -2133,7 +2133,6 @@ function cfw_renderer_chart(renderDef) {
 			var heightValue = settings.height.replace(metric, "");
 			var percentMultiplier = (100-settings.tablesize)/100
 			settings.height = (heightValue * percentMultiplier) +metric;
-			
 		}
 	}
 		
@@ -2183,7 +2182,6 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// sort by x to avoid displaying issues
 	for(i in datasets){
-		
 		datasets[i].data = _.sortBy(datasets[i].data, ['x']);
 	}
 	
@@ -2229,6 +2227,9 @@ function cfw_renderer_chart(renderDef) {
 	// Create Options
 	var chartOptions =  {
 	    	responsive: settings.responsive,
+	    	maintainAspectRatio: false,
+	    	resizeDelay: 300,
+	    	onResize: function (chartjsInstance, newSize) { console.log("AAAA")},  
 			scales: {
 				x: {
 					display: settings.showaxes,
@@ -2357,8 +2358,9 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// Create Chart
 	var allChartsDiv = $('<div class="cfw-chartjs-wrapper d-flex flex-row flex-grow-1 flex-wrap h-100 w-100">');
+	allChartsDiv.css("max-height", "100%");
 	workspace.css("display", "block");
-	workspace.append(allChartsDiv);
+	//workspace.append(allChartsDiv);
 	
 	for(var index in dataArray){
 
@@ -2367,8 +2369,14 @@ function cfw_renderer_chart(renderDef) {
 		var currentData = dataArray[index];
 		var chartCanvas = $('<canvas class="chartJSCanvas" width="100%">');
 		var chartPlusTableWrapper = $('<div style="width:'+(100/settings.multichartcolumns)+'%">');
-		chartPlusTableWrapper.css("height", chartPlusTableHeight);
-		var chartWrapper = $('<div style="width: 100%">');
+		chartPlusTableWrapper.css("height", settings.chartPlusTableHeight);
+		var chartWrapper = $('<div class="w-100">');
+		chartWrapper.css("position", "relative");
+		chartWrapper.css("max-height", "50vh"); // prevent infinite Height loop
+		chartWrapper.css("max-width", "100vw"); // prevent chart bigger then screen
+		//chartWrapper.css("display", "table");
+		//chartCanvas.css("display", "table-cell");
+		
 		if(settings.height != null){
 			chartWrapper.css('height', settings.height);
 		}
@@ -2384,6 +2392,8 @@ function cfw_renderer_chart(renderDef) {
 			chartOptionsClone.plugins.title.text = currentData.datasets[0].label;
 		}
 		
+		//--------------------------------
+		// Draw Chart
 		var chartCtx = chartCanvas.get(0).getContext("2d");
 		//var chartCtx = chartCanvas.get(0);
 		
@@ -2415,12 +2425,27 @@ function cfw_renderer_chart(renderDef) {
 			}
 			
 			var tableDiv = CFW.render.getRenderer('table').render(cloneRenderDef);
+			tableDiv.css("overflow", "auto");
 			
-			tableDiv.css("height", settings.tablesize+"%");
-			chartCanvas.css("height", (100-settings.tablesize)+"%");
-			tableDiv.css("overflow", "scroll");
-			chartPlusTableWrapper.append(tableDiv);
-			
+			if(settings.tableposition == "bottom"){
+				allChartsDiv.removeClass("d-flex");
+				tableDiv.css("height", (settings.tablesize)+"%");
+				chartWrapper.css("height", (100-settings.tablesize)+"%");
+				chartPlusTableWrapper.append(tableDiv);
+			}else{
+				chartPlusTableWrapper.addClass("d-flex");
+				tableDiv.addClass("d-flex");
+				tableDiv.removeClass("w-100");
+				tableDiv.css("height", "100%");
+				tableDiv.css("width", settings.tablesize+"%");
+				chartWrapper.css("width", (100-settings.tablesize)+"%");
+				
+				if(settings.tableposition == "right"){
+					chartPlusTableWrapper.prepend(tableDiv);
+				}else{
+					chartPlusTableWrapper.append(tableDiv);
+				}
+			}
 		}
 	}
 	

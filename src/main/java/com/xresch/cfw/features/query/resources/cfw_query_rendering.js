@@ -753,6 +753,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	targetDiv = $(resultTarget);
 	targetDiv.html(""); 
 	
+	var options = {};
 	//-----------------------------------
 	// Create Title				
 	if(queryResult.metadata.name != null){
@@ -783,14 +784,14 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	
 	//-----------------------------------
 	// Get StyleFields
-	var bgstylefield = null;
+	options.bgstylefield = null;
 	if(queryResult.displaySettings.bgstylefield != undefined){
-		bgstylefield = queryResult.displaySettings.bgstylefield;
+		options.bgstylefield = queryResult.displaySettings.bgstylefield;
 	}
 	
-	var textstylefield = null;
+	options.textstylefield = null;
 	if(queryResult.displaySettings.textstylefield != undefined){
-		textstylefield = queryResult.displaySettings.textstylefield;
+		options.textstylefield = queryResult.displaySettings.textstylefield;
 	}
 	//-----------------------------------
 	// Zoom
@@ -800,11 +801,23 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 		targetDiv.css('zoom', zoomString);
 	}
 	
+	//-----------------------------------
+	// Customizers
+	options.customizers = cfw_query_createCustomizers(queryResult, queryResult.detectedFields);	
+	
+	rendererIndex = cfw_query_getRendererIndex(queryResult);		
+	options.labels = cfw_query_createLables(queryResult);	
+	
+	options.visibleFields = ((queryResult.displaySettings.visiblefields != null)) ? queryResult.displaySettings.visiblefields : queryResult.detectedFields;
+	options.visibleFields = _.without(options.visibleFields, options.bgstylefield, options.textstylefield);
+	
+	options.titleFields = ((queryResult.displaySettings.titlefields != null)) ? queryResult.displaySettings.titlefields : null;
+	options.titleFormat = ((queryResult.displaySettings.titleformat != null)) ? queryResult.displaySettings.titleformat : null;
 	
 	//-----------------------------------
 	// Do chart if it is Chart
 	if(queryResult.displaySettings.as == 'chart'){
-		cfw_query_renderAsChart(targetDiv, queryResult);
+		cfw_query_renderAsChart(targetDiv, queryResult, options);
 		return;
 	}
 	
@@ -819,31 +832,18 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 			rendererName = "table";
 		}
 	}
-	
-	rendererIndex = cfw_query_getRendererIndex(queryResult);		
-	labels = cfw_query_createLables(queryResult);	
-	
-	visibleFields = ((queryResult.displaySettings.visiblefields != null)) ? queryResult.displaySettings.visiblefields : queryResult.detectedFields;
-	visibleFields = _.without(visibleFields, bgstylefield, textstylefield);
-	
-	titleFields = ((queryResult.displaySettings.titlefields != null)) ? queryResult.displaySettings.titlefields : null;
-	titleFormat = ((queryResult.displaySettings.titleformat != null)) ? queryResult.displaySettings.titleformat : null;
-	
-
-	customizers = cfw_query_createCustomizers(queryResult, queryResult.detectedFields);
-	
 	//-----------------------------------
 	// Render Results
 	var rendererSettings = {
 			data: queryResult.results,
 		 	//idfield: 'PK_ID',
-		 	bgstylefield: bgstylefield,
-		 	textstylefield: textstylefield,
-		 	titlefields: titleFields,
-		 	titleformat: titleFormat,
-		 	visiblefields: visibleFields,
-		 	labels: labels,
-		 	customizers: customizers,
+		 	bgstylefield: options.bgstylefield,
+		 	textstylefield: options.textstylefield,
+		 	titlefields: options.titleFields,
+		 	titleformat: options.titleFormat,
+		 	visiblefields: options.visibleFields,
+		 	labels: options.labels,
+		 	customizers: options.customizers,
 
 			rendererSettings: {
 				table: { filterable: false, narrow: true},
@@ -958,7 +958,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
  * @param queryResultPayload the payload received from the server holding one or
  *        multiple query results.
  ******************************************************************************/
-function cfw_query_renderAsChart(resultTarget, queryResult){
+function cfw_query_renderAsChart(resultTarget, queryResult, options){
 
 	var settings = queryResult.displaySettings;
 	console.log("queryResult.displaySettings: "+queryResult.displaySettings)
@@ -1018,14 +1018,19 @@ function cfw_query_renderAsChart(resultTarget, queryResult){
 	if(settings.type != null){
 		finalSettings.charttype = settings.type;
 	}
+	
 	//---------------------------
 	// Render Settings
 	var dataToRender = {
 		data: queryResult.results,
-		titlefields: titlefields, 
-		titleformat: null, 
-		labels: {},
-		customizers: {},
+		titlefields: titlefields,
+		bgstylefield: options.bgstylefield,
+	 	textstylefield: options.textstylefield,
+	 	titleformat: options.titleFormat,
+	 	visiblefields: options.visibleFields,
+	 	labels: options.labels,
+	 	customizers: options.customizers,
+		titleformat: options.titleFormat, 
 		rendererSettings:{
 			chart: finalSettings
 		}

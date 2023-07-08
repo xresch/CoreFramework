@@ -166,7 +166,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				FieldFormatterName.DATE.toString(),
 				"Formats epoch milliseconds as date.",
 				new Object[][] {
-					 new Object[] {"format", "yyyy-MM-dd", "The format of the date, google moment.js for details."}
+					 new Object[] {"format", "yyyy-MM-DD", "The format of the date, google moment.js for details."}
 				}
 			).example(
 				 "#Formats the LAST_LOGIN epoch milliseconds as a date."
@@ -399,7 +399,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				FieldFormatterName.TIMESTAMP.toString(), 
 				"Formats epoch milliseconds as a timestamp.",
 				new Object[][] {
-					 new Object[] {"format", "yyyy-MM-dd HH:mm:ss", "The format of the timestamp, google moment.js for details."}
+					 new Object[] {"format", "yyyy-MM-DD HH:mm:ss", "The format of the timestamp, google moment.js for details."}
 				}
 			).example(
 				 "#Formats the LAST_LOGIN epoch milliseconds as a timestamp."
@@ -607,7 +607,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				helper.createAutocompleteItem(
 					""
 				  , formatter.getAutocompleteDefaultValues()
-				  , currentName
+				  , currentName.toLowerCase()
 				  , formatter.description+"<br><n>Syntax:&nbsp;</b>"+formatter.getSyntax()
 				)
 			);

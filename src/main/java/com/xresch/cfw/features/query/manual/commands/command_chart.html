@@ -9,6 +9,7 @@
 	y=COUNT </code></pre>
 	
 
+<h2>Display Options</h2>
 <p>You can change the look and feel of your chart using various options. </p>
 <pre><code class="language-cfwquery">| source random records=100 type=series
 | chart 
@@ -27,6 +28,7 @@
 	ymax=200
 	pointradius=0</code></pre>
 	
+<h2>Multiple Charts</h2>	
 <p>If you have multiple series you would like to show in separate charts, you can use the multichart options to split them up. </p>
 <pre><code class="language-cfwquery">| source random records=300 type=series
 | chart
@@ -39,3 +41,18 @@
 	multichartcolumns=3
 	height='150px' # cannot be a percentage value when multichart=true
 	showlegend=false</code></pre>
+
+
+<h2>Data Tables</h2>
+<p>Use the table parameters to display the chart data in a table. </p>
+<pre><code class="language-cfwquery">| source random records=300 type=series
+| chart
+	by=[WAREHOUSE, ITEM, CLASS] 
+	type=area
+	x=TIME 
+	y=COUNT 
+	multichart=true
+	multicharttitle=true
+	multichartcolumns=3
+	height='150px' # cannot be a percentage value when multichart=true
+	showlegend=false</code></pre>	

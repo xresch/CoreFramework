@@ -41,7 +41,14 @@
  
 /*************************************************************************
  * HTML Tags
- *************************************************************************/ 
+ *************************************************************************/
+ 
+html, body{
+    height: 100%;
+} 
+
+
+
 h1, h2 {
     margin-top: 35px;
 }
@@ -498,15 +505,17 @@ pre {
 }
 
 #cfw-content {
-	min-height: 90%;
+	min-height: 100%;
 	padding: 40px 20px 20px 20px;
 }
 
 #cfw-container  {
+	height: 100%;
 	padding: 5px;
 }
 
 #cfw-footer {
+	bottom: 0px;
 	padding: 20px;
 	min-height: 10%;
 	max-height: 200px;
@@ -967,7 +976,7 @@ pre {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: lightgray;
+  background: #e4e4e4;
 }
 
 /* Handle */
@@ -977,7 +986,7 @@ pre {
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #4e4e4e;
+	background: var(--primary);
 }
 
 /*************************************************************************

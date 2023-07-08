@@ -98,6 +98,10 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 				+"<p><b>ymin:&nbsp;</b>Suggest a minimum value for the y-axis.</p>"	
 				+"<p><b>ymax:&nbsp;</b>Suggest a maximum value for the y-axis.</p>"	
 				+"<p><b>spangaps:&nbsp;</b>Set to true to connect lines if there is a gap in the data.</p>"	
+				
+				+"<p><b>table:&nbsp;</b>If true show a table with the data of the series. (Default: false)</p>"	
+				+"<p><b>tablesize:&nbsp;</b>Size as number in percent of taken up area by the table.(Default: 50)</p>"	
+				+"<p><b>tableposition:&nbsp;</b>Position of the table, either one of: bottom | right | left (Default: bottom).</p>"	
 				+"<p><b>multichart:&nbsp;</b>Set to true to display each series in it's own chart.</p>"	
 				+"<p><b>multicharttitle:&nbsp;</b>Set to true to display title for charts.</p>"	
 				+"<p><b>multichartcolumns:&nbsp;</b> Number of columns for multi chart display.</p>"	
