@@ -2422,12 +2422,15 @@ function cfw_renderer_chart(renderDef) {
 					heightValue = "200px";
 				}
 				chartPlusTableWrapper.addClass("flex-column");
-				//chartPlusTableWrapper.css("height", "100%");;
+				if(dataArray.length == 1){
+					chartPlusTableWrapper.css("height", "100%");
+				}
 				heightValue = heightValue.replace("px", "");
 				var percentMultiplier = (100-settings.tablesize)/100;
 				var chartHeight = (heightValue * percentMultiplier) +"px";
 				tableDiv.addClass("flex-grow-1 flex-shrink-1");
 				chartWrapper.css("height", chartHeight);
+				
 				chartWrapper.css("flex-shrink", "0");
 				chartPlusTableWrapper.append(tableDiv);
 			}else{
