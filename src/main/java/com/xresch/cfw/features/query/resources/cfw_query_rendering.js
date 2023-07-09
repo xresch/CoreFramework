@@ -720,12 +720,12 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 	
 	//-----------------------------------
 	// Iterate all Query results
-	
-	var currentRow = $('<div class="row m-0 flex-grow-1">');
+	var maxheightClass = (queryResultsPayload.length == 1) ? "mh-100" : "" ;
+	var currentRow = $('<div class="row m-0 flex-grow-1 '+maxheightClass+'">');
 	resultTarget.append(currentRow);
 	
 	for(var i = 0; i < queryResultsPayload.length; i++){
-		var currentColumn = $('<div class="col-percent '+colClass+'">');
+		var currentColumn = $('<div class="col-percent mh-100 '+colClass+'">');
 		
 		var currentResults = queryResultsPayload[i];
 			

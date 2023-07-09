@@ -1043,7 +1043,7 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 }
 
 /******************************************************************
- * Custom Resize Handler, because ResizeObserver somethimes causes 
+ * Custom Resize Handler, because ResizeObserver sometimes causes 
  * infinite loops and causes high CPU consumption.
  ******************************************************************/
 function cfw_renderer_statusmap_resizeHandler(){
@@ -2343,27 +2343,39 @@ function cfw_renderer_chart(renderDef) {
 	if(settings.ymax != null){ chartOptions.scales.y.suggestedMax = settings.ymax; }
 
 	//========================================
-	// Create Chart
+	// Create Chart Wrapper
 	var allChartsDiv = $('<div class="cfw-chartjs-wrapper d-flex flex-row flex-grow-1 flex-wrap h-100 w-100">');
+	allChartsDiv.attr('id',  'cfw-chart-'+CFW.utils.randomString(8));
 	allChartsDiv.css("max-height", "100%");
+	
+	if(CFW.global.chartWrapperDivs == null){
+		CFW.global.chartWrapperDivs = [];
+	}
+	CFW.global.chartWrapperDivs.push(allChartsDiv);
+	
 	workspace.css("display", "block");
 	workspace.append(allChartsDiv);
 	
+	//========================================
+	// Create Chart(s)
 	for(var index in dataArray){
 
 		//--------------------------------
 		// Initialize
 		var currentData = dataArray[index];
-		var chartCanvas = $('<canvas class="chartJSCanvas" width="100%">');
-		var chartPlusTableWrapper = $('<div style="width:'+(100/settings.multichartcolumns)+'%">');
+		var chartCanvas = $('<canvas class="chartJSCanvas" height="100% !important" width="100%">');
+		chartCanvas.attr('id',  'cfw-chart-'+CFW.utils.randomString(8));
+		
+		var chartPlusTableWrapper = $('<div class="d-flex" style="width:'+(100/settings.multichartcolumns)+'%">');
 		chartPlusTableWrapper.css("height", settings.height);
 		var chartWrapper = $('<div class="w-100">');
 		chartWrapper.css("position", "relative");
+		chartWrapper.css('height', "100%");
 		chartWrapper.css("max-height", "100vh"); // prevent infinite Height loop
 		chartWrapper.css("max-width", "100vw"); // prevent chart bigger then screen
 		
 		if(settings.height != null){
-			chartWrapper.css('height', settings.height);
+			chartWrapper.css('height', settings.height +" !important");
 		}
 		chartWrapper.append(chartCanvas);
 		chartPlusTableWrapper.append(chartWrapper);
@@ -2401,8 +2413,7 @@ function cfw_renderer_chart(renderDef) {
 			
 			var tableDiv = CFW.render.getRenderer('table').render(cloneRenderDef);
 			tableDiv.css("overflow", "auto");
-			chartPlusTableWrapper.addClass("d-flex");
-			
+
 			if(settings.tableposition == "bottom"){
 				//--------------------------------
 				// Table Bottom
@@ -2420,8 +2431,6 @@ function cfw_renderer_chart(renderDef) {
 				chartWrapper.css("flex-shrink", "0");
 				chartPlusTableWrapper.append(tableDiv);
 			}else{
-				
-				
 				tableDiv.removeClass("w-100 flex-grow-1");
 				tableDiv.css("height", "100%");
 				tableDiv.css("flex-grow", settings.tablesize/100);
@@ -2463,10 +2472,85 @@ function cfw_renderer_chart(renderDef) {
 
 CFW.render.registerRenderer("chart", new CFWRenderer(cfw_renderer_chart) );
 
+///******************************************************************
+// * Custom Resize Handler, because ResizeObserver sometimes causes 
+// * infinite loops and causes high CPU consumption.
+// ******************************************************************/
+//function cfw_renderer_chart_resizeHandler(){
+//		
+//	window.requestAnimationFrame(() => {
+//		
+//		var chartWrapperArray = CFW.global.chartWrapperDivs;
+//
+//		for(var i = 0; i < chartWrapperArray.length; i++){
+//			
+//			
+//			var chartWrapperDiv = chartWrapperArray[i];
+//			var parent = chartWrapperDiv
+//			var chartWrapperDivID = chartWrapperDiv.attr('id');
+//			
+//			//-------------------------------------
+//			// Cleanup if removed
+//			if( !document.contains(chartWrapperDiv[0]) ){
+//				statusmapArray.splice(i, 1);
+//				i--;
+//				continue;
+//			}
+//						
+//			//-------------------------------------
+//			// Throttle: Only redraw when change is at least 10%
+//			var width = parent.width();
+//			var height = parent.height();
+//			var lastwidth = CFW.cache.data[chartWrapperDivID+"-lastwidth"];
+//			var lastheight = CFW.cache.data[chartWrapperDivID+"-lastheight"];
+//	
+//			if(lastwidth != null){
+//				var changeWidth = Math.abs(1.0 - (lastwidth / width));
+//				var changeHeight = Math.abs(1.0 - (lastheight / height));
+//
+//				if(changeWidth < 0.10 && changeHeight < 0.10 ){
+//					continue;
+//				}
+//			}
+//			
+//			CFW.cache.data[chartWrapperDivID+"-lastwidth"] = width;
+//			CFW.cache.data[chartWrapperDivID+"-lastheight"] = height;
+//			
+//			//-------------------------------------
+//			// Redraw
+//			chartWrapperDiv.find('canvas').each(function(){
+//				
+//				var chart = Chart.getChart(this);
+//				console.log("chart");
+//				console.log(chart);
+//				
+//				//chart.reset();
+//				//chart.update();
+//				//chart.draw();
+//				
+//				// chartInstance.update();
+//				// myLineChart.resize(width, height);
+//			});
+//			console.log("chart-resize");
+//			console.log({
+//				 id: chartWrapperDivID
+//				, width: width
+//				, height:height
+//				, lastwidth: lastwidth
+//				, lastheight: lastheight
+//				});
+//	
+//			
+//		}
+//		
+//	});
+//}
+//
+//CFW.global.chartResizeInterval = window.setInterval(cfw_renderer_chart_resizeHandler, 500);
+
 /******************************************************************
  * 
  ******************************************************************/
-
 function cfw_renderer_chart_setGlobals() {
 	
 	
@@ -2490,7 +2574,9 @@ function cfw_renderer_chart_setGlobals() {
         }
     }
 }
+
 cfw_renderer_chart_setGlobals();
+
 /******************************************************************
  * 
  ******************************************************************/
