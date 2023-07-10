@@ -2434,13 +2434,14 @@ function cfw_renderer_chart(renderDef) {
 				chartWrapper.css("flex-shrink", "0");
 				chartPlusTableWrapper.append(tableDiv);
 			}else{
+				//--------------------------------
+				// Table Left or Right
 				tableDiv.removeClass("w-100 flex-grow-1");
 				tableDiv.css("height", "100%");
-				tableDiv.css("flex-grow", settings.tablesize/100);
-				chartWrapper.css("flex-grow", (100-settings.tablesize)/100);
+				tableDiv.css("width", settings.tablesize+"%");
 				
-				//tableDiv.css("width", settings.tablesize+"%");
-				//chartWrapper.css("width", (100-settings.tablesize)+"%");
+				chartWrapper.css("width", (100-settings.tablesize)+"%");
+				chartWrapper.removeClass("w-100");
 				
 				if(settings.tableposition == "right"){
 					chartPlusTableWrapper.append(tableDiv);

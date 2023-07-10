@@ -720,7 +720,7 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 	
 	//-----------------------------------
 	// Iterate all Query results
-	var maxheightClass = (queryResultsPayload.length == 1) ? "mh-100" : "" ;
+	var maxheightClass = (queryResultsPayload.length == 1) ? "mh-100" : "" ; // needed to prevent overflow (e.g. charts)
 	var currentRow = $('<div class="row m-0 flex-grow-1 '+maxheightClass+'">');
 	resultTarget.append(currentRow);
 	
