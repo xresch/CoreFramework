@@ -791,7 +791,6 @@ CFW.render.registerRenderer(CFW_RENDER_NAME_STATUSTILES, new CFWRenderer(cfw_ren
  ******************************************************************/
 function cfw_renderer_tileandbar(renderDef) {
 	
-	console.log(renderDef);
 	//-----------------------------------
 	// Check Data
 	if(renderDef.datatype != "array"){
@@ -2035,7 +2034,9 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// Render Specific settings
 	var defaultSettings = {
-		// The type of the chart: line|steppedline|area|steppedarea|bar|scatter (to be done radar|pie|doughnut|polarArea|bubble)
+		// The type of the chart: 	line|steppedline|area|steppedarea|bar|scatter
+		//							radar|radaravg|radarcount			
+		//							(to be done pie|doughnut|polarArea|bubble)
 		charttype: 'line',
 		// How should the input data be handled groupbytitle|arrays 
 		datamode: 'groupbytitle',
@@ -2096,23 +2097,39 @@ function cfw_renderer_chart(renderDef) {
 	// Initialize
 	settings.doFill = false;
 	settings.isSteppedline = false;
+	settings.categoryAggregation = "sum"; // sum, avg or count (Default: sum )
 	
-	if(settings.charttype == 'area'){
-		settings.charttype = 'line';
-		settings.doFill = true;
-	}else if(settings.charttype == 'steppedline'){
-		settings.charttype = 'line';
-		settings.isSteppedline = true;
-	}else if(settings.charttype == 'steppedarea'){
-		settings.charttype = 'line';
-		settings.doFill = true;
-		settings.isSteppedline = true;
-	}else if(settings.charttype == 'scatter'){
-		if(settings.pointradius == 0){
-			settings.pointradius = 2;
-		}
+	switch(settings.charttype){
+		case 'area':
+			settings.charttype = 'line';
+			settings.doFill = true;
+			break;
+		case 'steppedline':
+			settings.charttype = 'line';
+			settings.isSteppedline = true;
+			break;
+		case 'steppedarea':
+			settings.charttype = 'line';
+			settings.doFill = true;
+			settings.isSteppedline = true;
+			break;
+		case 'scatter':
+			if(settings.pointradius == 0){
+				settings.pointradius = 2;
+			}
+			break;
+		case 'radaravg':
+			settings.charttype = 'radar';
+			settings.categoryAggregation = "avg";
+			break;
+		case 'radarcount':
+			settings.charttype = 'radar';
+			settings.categoryAggregation = "count";
+			break;
+		
 	}
 	
+	settings.isCategoryChart = ['radar'].includes(settings.charttype);
 	
 	//========================================
 	// Fix Multichart Endless Size Bug
@@ -2171,15 +2188,20 @@ function cfw_renderer_chart(renderDef) {
 	
 	//========================================
 	// sort by x to avoid displaying issues
-	for(i in datasets){
-		datasets[i].data = _.sortBy(datasets[i].data, ['x']);
+	if(!settings.isCategoryChart){
+		for(i in datasets){
+			datasets[i].data = _.sortBy(datasets[i].data, ['x']);
+		}
 	}
 	
 	//========================================
 	// Create ChartJS Data Object
 	var dataArray = [];
 	var data;
-	if(settings.charttype != 'radar'){
+
+	if(!settings.isCategoryChart){
+		//--------------------------------
+		// Regular Charts
 		data = {datasets: []};
 		dataArray.push(data);
 		
@@ -2200,26 +2222,42 @@ function cfw_renderer_chart(renderDef) {
 				data = {datasets: []};
 			}
 		}
-	}
-	/*else{
-		data.labels = []
-		data.datasets = [{data: []}];
+	}else{
+		//--------------------------------
+		// Category Charts
+		data = { labels: [], datasets: []};
+		dataArray.push(data);
 		
-		for(label in datasets){
-			data.labels.push(label)
-			data.datasets[0].data.push(datasets[label].cfwSum / datasets[label].cfwCount);
-		}
+		var i = 0;
+		for(var label in datasets){
+			let current = datasets[label];
+			var value;
+			switch(settings.categoryAggregation){
+				case "sum":		value = current.cfwSum; break;
+				case "avg":		value = current.cfwSum / current.cfwCount; break;
+				case "count":	value = current.cfwCount; break;
+				default:		value = current.cfwSum; break;
+			}
 
-	}*/
+			data.labels.push(label);
+			if(data.datasets.length == 0){
+				data.datasets.push(current);
+				data.datasets[0].data = [];
+				data.datasets[0].label = settings.categoryAggregation;
+				data.datasets[0].fill = true;
+			}
+			
+			data.datasets[0].data.push(value);
+			//data.datasets[0].data.push(datasets[label].cfwSum / datasets[label].cfwCount);
+			i++;
+		}
+		console.log('xxxx');
+		console.log(dataArray);
+	}
 	
 	//========================================
 	// Create Options
 	var chartOptions = cfw_renderer_chart_createChartOptions(settings);
-
-	//========================================
-	// Set Min Max
-	if(settings.ymin != null){ chartOptions.scales.y.suggestedMin = settings.ymin; }
-	if(settings.ymax != null){ chartOptions.scales.y.suggestedMax = settings.ymax; }
 
 	//========================================
 	// Create Chart Wrapper
@@ -2341,11 +2379,31 @@ cfw_renderer_chart_setGlobals();
  * 
  ******************************************************************/
 function cfw_renderer_chart_createChartOptions(settings) {
+	
+	//========================================
+	// Get Final Y Min Max
+	var yminFinal = 0;
+	var ymaxFinal = 100
+	if(settings.ymin != null){ yminFinal = settings.ymin; }
+	if(settings.ymax != null){ ymaxFinal = settings.ymax; }
+	
+	//========================================
+	// Return Options
 	return chartOptions =  {
 	    	responsive: settings.responsive,
 	    	maintainAspectRatio: false,
 	    	resizeDelay: 300,
 			scales: {
+				r: { // for radial charts like radar or polar
+					suggestedMin: yminFinal,
+					suggestedMax: ymaxFinal,
+					grid: { color: settings.xaxescolor },
+					angleLines: { color: settings.yaxescolor },
+			        ticks: {
+			        	beginAtZero: true,
+			        	showLabelBackdrop: false
+			        }
+			      },
 				x: {
 					display: settings.showaxes,
 					type: settings.xtype,
@@ -2381,6 +2439,8 @@ function cfw_renderer_chart_createChartOptions(settings) {
 					display: settings.showaxes,
 					stacked: settings.stacked,
 					type: settings.ytype,
+					suggestedMin: yminFinal,
+					suggestedMax: ymaxFinal,
 					grid: {
 						display: true,
 						color: settings.yaxescolor
@@ -2428,7 +2488,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 			elements: {
                 point:{
                     radius: settings.pointradius
-                }
+                },
             },
             
             layout: {
@@ -2483,7 +2543,6 @@ function cfw_renderer_chart_addTable(renderDef, settings, currentData, chartPlus
 		};
 	
 	cloneRenderDef = Object.assign({}, renderDef, cloneRenderDef);
-	console.log(currentData)
 	
 	if(settings.multichart == true){
 		cloneRenderDef.data = currentData.datasets[0].tableData;
@@ -2648,8 +2707,8 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 		
 		if(settings.xfield == null){
 			datasets[label].data.push(value);
-			//datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
-			//datasets[label].cfwCount += 1;
+			datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
+			datasets[label].cfwCount += 1;
 		}else{
 			
 			if(currentRecord[settings.xfield] != null){
@@ -2658,8 +2717,8 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 					y: value
 				});
 			}
-			//datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
-			//datasets[label].cfwCount += 1;
+			datasets[label].cfwSum += isNaN(value) ? 0 : parseFloat(value);
+			datasets[label].cfwCount += 1;
 		}
 	}
 	
@@ -2776,6 +2835,7 @@ function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
  * 
  ******************************************************************/
 function cfw_renderer_dataviewer(renderDef) {
+	
 	
 	//========================================
 	// Render Specific settings
