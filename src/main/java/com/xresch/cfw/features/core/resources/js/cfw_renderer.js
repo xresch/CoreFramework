@@ -2035,11 +2035,13 @@ function cfw_renderer_chart(renderDef) {
 	// Render Specific settings
 	var defaultSettings = {
 		// The type of the chart: 	line|steppedline|area|steppedarea|bar|scatter
-		//							radar|radaravg|radarcount			
-		//							(to be done pie|doughnut|polarArea|bubble)
+		//							pie|doughnut|radar|polar			
+		//							(to be done: bubble)
 		charttype: 'line',
 		// How should the input data be handled groupbytitle|arrays 
 		datamode: 'groupbytitle',
+		// How the data should be aggregated for category charts(pie|doughnut|radar|polar), either: sum|avg|count
+		aggregation: 'sum',
 		// stack the bars, lines etc...
 		stacked: false,
 		// show or hide the legend
@@ -2097,8 +2099,7 @@ function cfw_renderer_chart(renderDef) {
 	// Initialize
 	settings.doFill = false;
 	settings.isSteppedline = false;
-	settings.categoryAggregation = "sum"; // sum, avg or count (Default: sum )
-	
+
 	switch(settings.charttype){
 		case 'area':
 			settings.charttype = 'line';
@@ -2118,18 +2119,13 @@ function cfw_renderer_chart(renderDef) {
 				settings.pointradius = 2;
 			}
 			break;
-		case 'radaravg':
-			settings.charttype = 'radar';
-			settings.categoryAggregation = "avg";
-			break;
-		case 'radarcount':
-			settings.charttype = 'radar';
-			settings.categoryAggregation = "count";
+		case 'polar':
+			settings.charttype = 'polarArea';
 			break;
 		
 	}
 	
-	settings.isCategoryChart = ['radar', 'pie', 'doughnut'].includes(settings.charttype);
+	settings.isCategoryChart = ['radar', 'polarArea', 'pie', 'doughnut'].includes(settings.charttype);
 	
 	//========================================
 	// Fix Multichart Endless Size Bug
@@ -2235,7 +2231,7 @@ function cfw_renderer_chart(renderDef) {
 			var bgColor = current.backgroundColor;
 			var borderColor = current.borderColor;
 			var value;
-			switch(settings.categoryAggregation){
+			switch(settings.aggregation){
 				case "sum":		value = current.cfwSum; break;
 				case "avg":		value = current.cfwSum / current.cfwCount; break;
 				case "count":	value = current.cfwCount; break;
@@ -2246,7 +2242,7 @@ function cfw_renderer_chart(renderDef) {
 			if(data.datasets.length == 0){
 				data.datasets.push(current);
 				data.datasets[0].data = [];
-				data.datasets[0].label = settings.categoryAggregation;
+				data.datasets[0].label = settings.aggregation;
 				data.datasets[0].fill = true;
 				data.datasets[0].backgroundColor = [];
 				data.datasets[0].borderColor = [];
@@ -2389,7 +2385,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 	//========================================
 	// Get Final Y Min Max
 	var yminFinal = 0;
-	var ymaxFinal = 100
+	var ymaxFinal = null;
 	if(settings.ymin != null){ yminFinal = settings.ymin; }
 	if(settings.ymax != null){ ymaxFinal = settings.ymax; }
 	
