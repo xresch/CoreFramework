@@ -2129,7 +2129,7 @@ function cfw_renderer_chart(renderDef) {
 		
 	}
 	
-	settings.isCategoryChart = ['radar'].includes(settings.charttype);
+	settings.isCategoryChart = ['radar', 'pie', 'doughnut'].includes(settings.charttype);
 	
 	//========================================
 	// Fix Multichart Endless Size Bug
@@ -2225,12 +2225,15 @@ function cfw_renderer_chart(renderDef) {
 	}else{
 		//--------------------------------
 		// Category Charts
+		// Put everything into a single data set
 		data = { labels: [], datasets: []};
 		dataArray.push(data);
 		
 		var i = 0;
 		for(var label in datasets){
 			let current = datasets[label];
+			var bgColor = current.backgroundColor;
+			var borderColor = current.borderColor;
 			var value;
 			switch(settings.categoryAggregation){
 				case "sum":		value = current.cfwSum; break;
@@ -2245,14 +2248,17 @@ function cfw_renderer_chart(renderDef) {
 				data.datasets[0].data = [];
 				data.datasets[0].label = settings.categoryAggregation;
 				data.datasets[0].fill = true;
+				data.datasets[0].backgroundColor = [];
+				data.datasets[0].borderColor = [];
+				data.datasets[0].hoverOffset = 5;
 			}
 			
 			data.datasets[0].data.push(value);
-			//data.datasets[0].data.push(datasets[label].cfwSum / datasets[label].cfwCount);
+			data.datasets[0].backgroundColor.push(bgColor);
+			data.datasets[0].borderColor.push(bgColor);
 			i++;
 		}
-		console.log('xxxx');
-		console.log(dataArray);
+
 	}
 	
 	//========================================
@@ -2389,7 +2395,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 	
 	//========================================
 	// Return Options
-	return chartOptions =  {
+	var chartOptions = {
 	    	responsive: settings.responsive,
 	    	maintainAspectRatio: false,
 	    	resizeDelay: 300,
@@ -2524,6 +2530,14 @@ function cfw_renderer_chart_createChartOptions(settings) {
 				},
 			}
 	    };
+	
+	// workaround to avoid TypeError for tick generation
+	if(settings.charttype == 'pie'
+	|| settings.charttype == 'doughnut'){
+		delete chartOptions.scales;
+	}
+	
+	return chartOptions;
 }
 /******************************************************************
  * 

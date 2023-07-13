@@ -31,7 +31,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	
 	public static final String COMMAND_NAME = "formatfield";
 
-	private static final String FORMATTER_NAME_EA_STERE_GGS = "ea"+"stere"+"ggs";
+	private static final String FORMATTER_NAME_EA_STERE_GGS = "EA"+"STERE"+"GGS";
 
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 	 
