@@ -2127,6 +2127,9 @@ function cfw_renderer_chart(renderDef) {
 	
 	settings.isCategoryChart = ['radar', 'polarArea', 'pie', 'doughnut'].includes(settings.charttype);
 	
+	if(settings.isCategoryChart){
+		settings.showaxes = false;
+	}
 	//========================================
 	// Fix Multichart Endless Size Bug
 	if(settings.multichart == true && settings.height.endsWith('%')){

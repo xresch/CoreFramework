@@ -48,6 +48,10 @@ public class CFWChartSettings {
 		, scatter
 		, steppedarea
 		, steppedline
+		, pie
+		, doughnut
+		, radar
+		, polar
 	}
 	
 	public enum AxisType{

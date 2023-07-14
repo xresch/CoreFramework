@@ -1023,6 +1023,10 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 						<option value="scatter">Scatter</option>
 						<option value="steppedarea">Stepped Area</option>
 						<option value="steppedline">Stepped Line</option>
+						<option value="pie">Pie</option>
+						<option value="doughnut">Doughnut</option>
+						<option value="radar">Radar</option>
+						<option value="polar">Polar</option>
 					</select>
 				</div>
 			</div>
