@@ -48,6 +48,8 @@ public class CFWChartSettings {
 		, scatter
 		, steppedarea
 		, steppedline
+		, sparkline
+		, sparkbar
 		, pie
 		, doughnut
 		, radar

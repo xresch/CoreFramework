@@ -2035,6 +2035,7 @@ function cfw_renderer_chart(renderDef) {
 	// Render Specific settings
 	var defaultSettings = {
 		// The type of the chart: 	line|steppedline|area|steppedarea|bar|scatter
+		//							sparkline|sparkbar
 		//							pie|doughnut|radar|polar			
 		//							(to be done: bubble)
 		charttype: 'line',
@@ -2101,9 +2102,18 @@ function cfw_renderer_chart(renderDef) {
 	settings.isSteppedline = false;
 
 	switch(settings.charttype){
+		case 'sparkline':
+			settings.showaxes = false;
+			settings.showlegend = false;
+			//fallthrough to case "area"
 		case 'area':
 			settings.charttype = 'line';
 			settings.doFill = true;
+			break;
+		case 'sparkbar':
+			settings.showaxes = false;
+			settings.showlegend = false;
+			settings.charttype = 'bar';
 			break;
 		case 'steppedline':
 			settings.charttype = 'line';
@@ -2119,6 +2129,7 @@ function cfw_renderer_chart(renderDef) {
 				settings.pointradius = 2;
 			}
 			break;
+
 		case 'polar':
 			settings.charttype = 'polarArea';
 			break;
@@ -2535,6 +2546,11 @@ function cfw_renderer_chart_createChartOptions(settings) {
 	|| settings.charttype == 'doughnut'){
 		delete chartOptions.scales;
 	}
+	// workaround to avoid Error with scatter charts
+	if(settings.charttype == 'scatter'){
+			delete chartOptions.scales.r;
+		}
+	
 	
 	return chartOptions;
 }

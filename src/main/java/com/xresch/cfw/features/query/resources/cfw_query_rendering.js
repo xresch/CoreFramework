@@ -480,7 +480,8 @@ function cfw_query_formatLink(span, value, linkText, displayAs, icon, target){
 	if(icon == null )		{icon = "fa-external-link-square-alt";}
 	if(target == null )		{target = "blank";}
 	
-	var linkElement = $('<a>'+linkText+'</a>');
+	var nbsp = (!CFW.utils.isNullOrEmpty(linkText)) ? "&nbsp;" : "";
+	var linkElement = $('<a>'+nbsp+linkText+'</a>');
 	linkElement.attr('href', value)
 			   .attr('target', value)
 			   .css('color', 'unset');
@@ -491,7 +492,7 @@ function cfw_query_formatLink(span, value, linkText, displayAs, icon, target){
 	}	
 	
 	if(icon != null){
-		linkElement.prepend('<i class="fas '+icon+'"></i>&nbsp;');
+		linkElement.prepend('<i class="fas '+icon+'"></i>');
 	}
 	
 	span.html('');

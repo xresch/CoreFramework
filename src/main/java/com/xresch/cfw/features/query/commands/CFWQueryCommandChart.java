@@ -76,6 +76,8 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 						+"<li>scatter</li>"
 						+"<li>steppedarea</li>"
 						+"<li>steppedline</li>"
+						+"<li>sparkline</li>"
+						+"<li>sparkbar</li>"
 						+"<li>pie</li>"
 						+"<li>doughnut</li>"
 						+"<li>radar</li>"
