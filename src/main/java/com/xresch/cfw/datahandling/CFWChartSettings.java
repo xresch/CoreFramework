@@ -49,6 +49,7 @@ public class CFWChartSettings {
 		, steppedarea
 		, steppedline
 		, sparkline
+		, sparkarea
 		, sparkbar
 		, pie
 		, doughnut

@@ -1024,6 +1024,7 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 						<option value="steppedarea">Stepped Area</option>
 						<option value="steppedline">Stepped Line</option>
 						<option value="sparkline">Spark Line</option>
+						<option value="sparkarea">Spark Area</option>
 						<option value="sparkbar">Spark Bar</option>
 						<option value="pie">Pie</option>
 						<option value="doughnut">Doughnut</option>

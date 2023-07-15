@@ -2102,13 +2102,19 @@ function cfw_renderer_chart(renderDef) {
 	settings.isSteppedline = false;
 
 	switch(settings.charttype){
-		case 'sparkline':
+		case 'sparkarea':
 			settings.showaxes = false;
 			settings.showlegend = false;
 			//fallthrough to case "area"
 		case 'area':
 			settings.charttype = 'line';
 			settings.doFill = true;
+			break;
+		case 'sparkline':
+			settings.showaxes = false;
+			settings.showlegend = false;
+			settings.charttype = 'line';
+			settings.doFill = false;
 			break;
 		case 'sparkbar':
 			settings.showaxes = false;
