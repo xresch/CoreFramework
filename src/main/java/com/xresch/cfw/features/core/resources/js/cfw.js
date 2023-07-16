@@ -175,8 +175,36 @@ function cfw_colors_colorizeElement(element, color, type, borderSize){
 
 	if(type == 'bg'){
 		
+		//--------------------------------
+		// Use shorthand-classes for 
+		// common colors to reduce dom size
+		switch(color){
+			case "cfw-green": 	
+			case "green":	
+				$element.addClass("bgg");  return; break;
+				
+			case "cfw-limegreen": 				
+			case "limegreen": 				
+				$element.addClass("bglg"); return; break;
+				
+			case "cfw-yellow": 					
+			case "yellow": 					
+				$element.addClass("bgy"); return; break;
+				
+			case "cfw-orange": 		
+			case "orange": 		
+				$element.addClass("bgo"); return; break;
+				
+			case "cfw-red": 		
+			case "red": 		
+				$element.addClass("bgr"); return; break;
+				
+			default: 	
+				/* keep null */;
+		}
+			
 		if(color.startsWith("cfw-")){
-			$element.addClass("bg-"+color);
+			$element.addClass("bg-"+color)
 		}else{
 			$element.css("background-color", color);
 		}

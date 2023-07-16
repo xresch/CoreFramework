@@ -205,6 +205,8 @@ DONE
 - JS Renderer: Chart - Added support for chart types: pie, doughnut, radar, polar, sparkline, sparkarea, sparkbar
 - JS Renderer: Status Map - fixed high CPU consumption issue
 - JS Renderer: Status Map - removed renderer options with specific ratios
+- JS Renderer: Status Map - improved performance by changing from flex to grid system
+- JS Renderer: Improved performance by not pre-rendering popover contents (improved renderers: tiles, statusbar, statusmap, statuslist)
 - JS Renderer: Upgrade ChartJS from v2.93 to v4.0.1
 - JS Renderer: Added Tile and Status Bar Renderer(tileandbar)
 - JS Renderer: Added Status Tiles Renderer, as a shorthand option to get empty tiles (statustiles)

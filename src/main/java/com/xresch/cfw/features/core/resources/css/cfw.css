@@ -65,11 +65,12 @@ pre {
 /*************************************************************************
  * Bootstrap Theme extensions
  *************************************************************************/
-.bg-cfw-green{ 		background-color: var(--cfw-green); }
-.bg-cfw-limegreen{ 			background-color: var(--cfw-limegreen); }
-.bg-cfw-yellow{ 		background-color: var(--cfw-yellow); }
-.bg-cfw-orange{ 		background-color: var(--cfw-orange); }
-.bg-cfw-red{ 		background-color: var(--cfw-red); }
+.bg-cfw-green, .bgg{ 		background-color: var(--cfw-green); }
+.bg-cfw-limegreen, .bglg { 	background-color: var(--cfw-limegreen); }
+.bg-cfw-yellow, .bgy{ 		background-color: var(--cfw-yellow); }
+.bg-cfw-orange, .bgo{ 		background-color: var(--cfw-orange); }
+.bg-cfw-red, .bgr{ 			background-color: var(--cfw-red); }
+
 .bg-cfw-blue {			background-color: var(--cfw-blue); }
 .bg-cfw-indigo {		background-color: var(--cfw-indigo); }
 .bg-cfw-purple {		background-color: var(--cfw-purple); }
@@ -676,6 +677,14 @@ pre {
 	border: 3px var(--primary) dashed;
 }
 
+/*************************************************************************
+ * Status Map
+ *************************************************************************/
+.smap-cell{
+	padding: 0;
+	border: 1px rgba(0,0,0,0.2) solid; 
+	
+}
 /*************************************************************************
  * Tags Input
  *************************************************************************/

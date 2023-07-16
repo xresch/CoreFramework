@@ -299,8 +299,11 @@ class CFWRenderer{
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_common_createDefaultPopupTable(entry, renderDef){
+function cfw_renderer_common_createDefaultPopupTable(){
 	
+	var entry = $(this).data('record');
+	var renderDef = $(this).data('renderDef');
+
 	//-------------------------
 	// Create render definition
 	var definition = Object.assign({}, renderDef);
@@ -689,23 +692,21 @@ function cfw_renderer_tiles(renderDef) {
 		//=====================================
 		// Add Details Click
 		currentTile.data('record', currentRecord);
+		currentTile.data('renderDef', renderDef);
 		currentTile.bind('click', function(e) {
-			//e.stopPropagation();
-			// make sure popover gets closed
-			$(this).popover("hide");
-		
+			e.stopPropagation();
 			recordData = $(this).data('record');
 			cfw_ui_showModal(
-					CFWL('cfw_core_details', 'Details'),
-					settings.popoverFunction(recordData, renderDef)
-				);
+					CFWL('cfw_core_details', 'Details'), 
+					settings.popoverFunction.call(this) )
+			;
 		})
 		
 		//=====================================
 		// Add Details Popover
 		if(settings.popover){
 			var popoverSettings = Object.assign({}, CFW_RENDER_POPOVER_DEFAULTS);
-			popoverSettings.content = settings.popoverFunction(currentRecord, renderDef);
+			popoverSettings.content = settings.popoverFunction;
 			currentTile.popover(popoverSettings);
 		}
 		
@@ -938,16 +939,14 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 		
 		//=====================================
 		// Add Details Click
-		currentTile.data('record', currentRecord)
+		currentTile.data('record', currentRecord);
+		currentTile.data('renderDef', renderDef);
 		currentTile.bind('click', function(e) {
-			//e.stopPropagation();		
-			// make sure to hide popovers
-			$(this).popover('hide');
-			
+			e.stopPropagation();
 			recordData = $(this).data('record');
 			cfw_ui_showModal(
 					CFWL('cfw_core_details', 'Details'), 
-					settings.popoverFunction(recordData, renderDef))
+					settings.popoverFunction.call(this) )
 			;
 		})
 		
@@ -955,7 +954,7 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 		// Add Details Popover
 		if(settings.popover){
 			var popoverSettings = Object.assign({}, CFW_RENDER_POPOVER_DEFAULTS);
-			popoverSettings.content = settings.popoverFunction(currentRecord, renderDef);
+			popoverSettings.content = settings.popoverFunction;
 			currentTile.popover(popoverSettings);
 		}
 
@@ -1007,26 +1006,21 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.statusmap);
 	
 	//===================================================
-	// Calculate Aspect Ratio
-	//===================================================
-	var aspectRatio = settings.widthfactor / settings.heightfactor;
-	var listenOnResize = false;
-
-	if(settings.widthfactor == -1 || settings.heightfactor == -1){
-		aspectRatio = 1;
-		listenOnResize = true;
-	}
-	// landscape example: 2 / 1 = 2.0
-	// portrait example:  1 / 2 = 0.5
-		
+	// Calculate SizeFactors
+	//===================================================	
+	var sizeFactors = cfw_renderer_statusmap_calculateSizeFactors(widthfactor, heightfactor, renderDef.data.length);
+	
 	//===================================================
 	// Create Tile Wrapper
 	//===================================================
-	var allTiles = $('<div class="d-flex flex-column flex-grow-1 h-100"></div>');
+	var allTiles = $('<div class="w-100 h-100"></div>');
 	allTiles.attr('id',  'statusmap-'+CFW.utils.randomString(16))
 	allTiles.data('settings',  settings);
 	allTiles.data('renderDef',  renderDef);
 	allTiles.css("font-size", "0px");
+	allTiles.css("display", "grid");
+	allTiles.css("grid-template-columns", "repeat("+sizeFactors.columnCount+", 1fr)");
+	allTiles.css("grid-template-rows", "repeat("+sizeFactors.rowCount+", 1fr)");
 	
 	// avoid aspect ratio being Infinity by setting a min size
 	allTiles.css("min-height", "10px");
@@ -1035,13 +1029,69 @@ function cfw_renderer_statusmap(renderDef, widthfactor, heightfactor) {
 	//===================================================
 	// Render Tiles and push to map
 	//===================================================
-	cfw_renderer_statusmap_createTiles(renderDef, settings, allTiles, aspectRatio);
+	cfw_renderer_statusmap_createTiles(renderDef, settings, allTiles);
 	CFW.global.statusmapElements.push(allTiles);
 
 	return allTiles;
 
 }
 
+/******************************************************************
+ * Returns an element
+ ******************************************************************/
+function cfw_renderer_statusmap_calculateSizeFactors(widthfactor, heightfactor, itemCount){
+	
+	// landscape example: 2 / 1 = 2.0
+	// portrait example:  1 / 2 = 0.5
+	var sizeFactors = {
+		  inputWidthFactor: widthfactor
+		, inputHeightFactor: heightfactor
+		, inputAspectRatio: widthfactor / heightfactor
+		, finalAspectRatio: 1
+		, itemCount: itemCount
+		, columnCount: 1
+		, rowCount: 1
+		, listenOnResize: false
+	}
+	//===================================================
+	// Calculate Aspect Ratio
+	//===================================================
+
+	if(widthfactor == -1 || heightfactor == -1){
+		sizeFactors.inputAspectRatio = 1;
+		sizeFactors.listenOnResize = true;
+	}
+	
+	if(sizeFactors.inputAspectRatio == Infinity){
+		sizeFactors.inputAspectRatio = 1;
+	}
+	
+	
+	//===================================================
+	// Calculate Number of Columns/Rows
+	//===================================================
+
+	var numberColumns = 1;
+	var currentRatio = 0;
+	for(;currentRatio < sizeFactors.inputAspectRatio; numberColumns++ ){
+		currentRatio = numberColumns / (sizeFactors.itemCount / numberColumns);
+	}
+	
+	sizeFactors.finalAspectRatio = currentRatio;
+	var columnCount = Math.floor(numberColumns--);
+	var rowCount = Math.floor(columnCount / currentRatio);
+
+	while((columnCount * rowCount) < sizeFactors.itemCount ){
+		columnCount++;
+		if( (columnCount * rowCount) < sizeFactors.itemCount ){
+			rowCount++;
+		}
+	}
+	sizeFactors.columnCount = columnCount;
+	sizeFactors.rowCount = rowCount;
+	
+	return sizeFactors;
+}
 /******************************************************************
  * Custom Resize Handler, because ResizeObserver sometimes causes 
  * infinite loops and causes high CPU consumption.
@@ -1064,7 +1114,7 @@ function cfw_renderer_statusmap_resizeHandler(){
 				i--;
 				continue;
 			}
-						
+			
 			//-------------------------------------
 			// Throttle: Only redraw when change is at least 10%
 			var width = statusmapDiv.width();
@@ -1085,18 +1135,21 @@ function cfw_renderer_statusmap_resizeHandler(){
 			CFW.cache.data[statusmapDivID+"lastwidth"] = width;
 			CFW.cache.data[statusmapDivID+"lastheight"] = height;
 			
-			//-------------------------------------
-			// Redraw
-			var newAspectRatio = width/height;
+			//===================================================
+			// Calculate SizeFactors
+			//===================================================
 			renderDef = statusmapDiv.data('renderDef');
 			settings = statusmapDiv.data('settings');
+
+			var sizeFactors = cfw_renderer_statusmap_calculateSizeFactors(width, height, renderDef.data.length);
 			
-			if(newAspectRatio == Infinity){
-				newAspectRatio = 1;
-			}
+			//===================================================
+			// Update CSS 
+			//===================================================
 	
-			statusmapDiv.html('');
-			cfw_renderer_statusmap_createTiles(renderDef, settings, statusmapDiv, newAspectRatio);
+			statusmapDiv.css("grid-template-columns", "repeat("+sizeFactors.columnCount+", 1fr)");
+			statusmapDiv.css("grid-template-rows", "repeat("+sizeFactors.rowCount+", 1fr)");
+
 		}
 		
 	});
@@ -1108,65 +1161,45 @@ CFW.global.statusmapResizeInterval = window.setInterval(cfw_renderer_statusmap_r
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_statusmap_createTiles(renderDef, settings, target, aspectRatio) {
+function cfw_renderer_statusmap_createTiles(renderDef, settings, target) {
 	
-	
-	//===================================================
-	// Precheck: NaN would cause OutOfMemory
-	//===================================================
-	if(isNaN(aspectRatio) || aspectRatio <= 0){
-		return;
-	}
 	//===================================================
 	// Calculate Number of Columns
 	//===================================================
 	var itemCount = renderDef.data.length;
 	
-	var numberColumns = 1;
-	var currentRatio = 0;
-	for(;currentRatio < aspectRatio; numberColumns++ ){
-		currentRatio = numberColumns / (itemCount / numberColumns);
-	}
-	numberColumns--;
-	
 	//===================================================
 	// Create Tiles
 	//===================================================
-	var currentRow = $('<div class="d-flex flex-row flex-grow-1 w-100"></div>');
 
-	target.append(currentRow);
-	
-	for(var i = 1; i <= itemCount || ((i-1) % numberColumns) != 0 ; i++ ){
+	for(var i = 0; i < itemCount; i++ ){
 
-		var currentTile = $('<div class="p-0 flex-fill">&nbsp;</div>');
-		currentTile.css('height', "100%");
-		currentRow.append(currentTile);
-
+		var currentTile = $('<div>');
+		currentTile.addClass("smap-cell");
+		currentTile.text("&nbsp;");
 		//=====================================
 		// Check has more records, else empty tile
 		if(i > renderDef.data.length){
-			//make same size to have proper alignment
-			currentTile.addClass("border-cfw-invisible");
-			
 			continue;
 		}
 		
-		var currentRecord = renderDef.data[i-1];
+		target.append(currentTile);
+		var currentRecord = renderDef.data[i];
 		
 		//=====================================
 		// Add Styles
 		renderDef.colorizeElement(currentRecord, currentTile, "bg");
-		currentTile.addClass("border-cfw-overlay");
 		
 		//=====================================
 		// Add Details Click
-		currentTile.data('record', currentRecord)
+		currentTile.data('record', currentRecord);
+		currentTile.data('renderDef', renderDef);
 		currentTile.bind('click', function(e) {
 			e.stopPropagation();
 			recordData = $(this).data('record');
 			cfw_ui_showModal(
 					CFWL('cfw_core_details', 'Details'), 
-					settings.popoverFunction(recordData, renderDef))
+					settings.popoverFunction.call(this) )
 			;
 		})
 		
@@ -1174,15 +1207,10 @@ function cfw_renderer_statusmap_createTiles(renderDef, settings, target, aspectR
 		// Add Details Popover
 		if(settings.popover){
 			var popoverSettings = Object.assign({}, CFW_RENDER_POPOVER_DEFAULTS);
-			popoverSettings.content = settings.popoverFunction(currentRecord, renderDef);
+			popoverSettings.content = settings.popoverFunction;
 			currentTile.popover(popoverSettings);
 		}
 	
-		//if current row has reached numberColumns create new row, except if it was the last item
-		if( (i % numberColumns) == 0 && i < itemCount){
-			currentRow = $('<div class="d-flex flex-row flex-grow-1 w-100"></div>');
-			target.append(currentRow);
-		}
 	}
 }
 
@@ -1281,12 +1309,13 @@ function cfw_renderer_statuslist(renderDef) {
 		//=====================================
 		// Add Details Click
 		currentTile.data('record', currentRecord);
+		currentTile.data('renderDef', renderDef);
 		currentTile.bind('click', function(e) {
 			e.stopPropagation();
 			recordData = $(this).data('record');
 			cfw_ui_showModal(
 					CFWL('cfw_core_details', 'Details'), 
-					settings.popoverFunction(recordData, renderDef))
+					settings.popoverFunction.call(this) )
 			;
 		})
 		
@@ -1294,7 +1323,7 @@ function cfw_renderer_statuslist(renderDef) {
 		// Add Details Popover
 		if(settings.popover){
 			var popoverSettings = Object.assign({}, CFW_RENDER_POPOVER_DEFAULTS);
-			popoverSettings.content = settings.popoverFunction(currentRecord, renderDef);
+			popoverSettings.content = settings.popoverFunction;
 			currentTile.popover(popoverSettings);
 		}
 		
