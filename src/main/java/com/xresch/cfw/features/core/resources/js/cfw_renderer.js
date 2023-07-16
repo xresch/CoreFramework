@@ -2142,6 +2142,9 @@ function cfw_renderer_chart(renderDef) {
 			settings.charttype = 'line';
 			settings.doFill = true;
 			break;
+		case 'bar':
+			settings.doFill = true;
+			break;
 		case 'sparkline':
 			settings.charttype = 'line';
 			settings.showaxes = false;
@@ -2472,6 +2475,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 						color: settings.xaxescolor
 					},
 					ticks: {
+						min: 0,
 						major: {
 							enabled: true,
 							//fontStyle: 'bold'
@@ -2503,6 +2507,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 						//text: 'Closing price ($)'
 					},
 					ticks: {
+						min: 0,
 						source: 'data',
 						autoSkip: true,
 						autoSkipPadding: 15,

@@ -1,0 +1,15 @@
+
+<p>Use this function returns the absolute(positive) value of a number.</p>
+
+<p>Following query creates random records and uses the abs-function:</p>
+
+<pre><code class="language-cfwquery">| source empty records=10
+| set
+	NAMBA=random(-88, -44)
+	# round down to integer value
+	POZITIF_NAMBA=abs(NAMBA) 
+	# all following return 0
+	NOTHING_RETURNS_ZERO=abs() 
+	RETURNS_ZERO_AGAIN=abs(null)
+	STRING_ZERO=abs('returns0')
+	BOOL_ZERO=abs(true)</code></pre>

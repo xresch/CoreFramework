@@ -10,12 +10,12 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
-public class CFWQueryFunctionRound extends CFWQueryFunction {
+public class CFWQueryFunctionAbs extends CFWQueryFunction {
 
 	
-	public static final String FUNCTION_NAME = "round";
+	public static final String FUNCTION_NAME = "abs";
 
-	public CFWQueryFunctionRound(CFWQueryContext context) {
+	public CFWQueryFunctionAbs(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -32,14 +32,14 @@ public class CFWQueryFunctionRound extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(number, precision)";
+		return FUNCTION_NAME+"(number)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns the rounded representation for a number.";
+		return "Returns the absolute value of a number.";
 	}
 	
 	/***********************************************************************************************
@@ -47,8 +47,10 @@ public class CFWQueryFunctionRound extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>number:&nbsp;</b>The value that should be rounded.</p>"
-			 + "<p><b>precision:&nbsp;</b>Number of decimal places.</p>"
+		return 
+			 "<ul>"
+			+"<li><b>number:&nbsp;</b>The number you want the absolute value for.</li>"
+			+"</ul>"
 			;
 	}
 
@@ -90,15 +92,10 @@ public class CFWQueryFunctionRound extends CFWQueryFunction {
 
 		QueryPartValue initialValue = parameters.get(0);
 		
-		
 		if(initialValue.isNumberOrNumberString()) {
-			int precision = 0;
-			if(paramCount > 1 && parameters.get(0).isNumberOrNumberString()) {
-				precision = parameters.get(1).getAsInteger();
-			}
 			
 			return QueryPartValue.newNumber(
-					initialValue.getAsBigDecimal().setScale(precision, RoundingMode.HALF_UP)
+					initialValue.getAsBigDecimal().abs()
 				);
 		}
 		

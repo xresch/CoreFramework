@@ -1,0 +1,13 @@
+
+<p>Use this function to round a number up to the next integer.</p>
+
+<p>Following query create random records and uses the ceil-function:</p>
+
+<pre><code class="language-cfwquery">| source random records=123 type=numbers
+| keep BIG_DECIMAL
+| set
+	# round up to integer value
+	CEILED=ceil(BIG_DECIMAL) 
+	# returns 0
+	NOTHING_RETURNS_ZERO=ceil() 
+	RETURNS_ZERO_AGAIN=ceil(null)</code></pre>

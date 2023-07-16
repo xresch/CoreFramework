@@ -1,0 +1,15 @@
+
+<p>Use this function to round a number down to the next integer.</p>
+
+<p>Following query create random records and uses the floor-function:</p>
+
+<pre><code class="language-cfwquery">| source random records=123 type=numbers
+| keep BIG_DECIMAL
+| set
+	# round down to integer value
+	FLOORED=floor(BIG_DECIMAL) 
+	# all following return 0
+	NOTHING_RETURNS_ZERO=floor() 
+	RETURNS_ZERO_AGAIN=floor(null)
+	STRING_ZERO=floor('returns0')
+	BOOL_ZERO=floor(true)</code></pre>

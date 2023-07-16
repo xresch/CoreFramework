@@ -34,7 +34,9 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandStats;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTail;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTop;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandUnbox;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionAbs;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionAvg;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionCeil;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionClone;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionContains;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionCount;
@@ -45,6 +47,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionEarliestSet;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionEncode;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionExtract;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionFirst;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionFloor;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionGlobals;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionIf;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionIndexOf;
@@ -65,6 +68,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandomFloat;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRandomFrom;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionReplace;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionRound;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionSin;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionSubquery;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionSubstring;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionSum;
@@ -167,7 +171,9 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		//----------------------------------
 		// Register Functions
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionAbs(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionAvg(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionCeil(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionClone(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionContains(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionCount(null));
@@ -178,6 +184,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionEarliestSet(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionExtract(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFirst(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionFloor(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionGlobals(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionIf(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionIndexOf(null));
@@ -198,6 +205,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRandomFrom(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionReplace(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionRound(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSin(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSubstring(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSubquery(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSum(null));

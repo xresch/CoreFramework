@@ -483,6 +483,7 @@ function cfw_query_editor_initialize(){
  ******************************************************************************/
 function cfw_query_initialDraw(){
 	
+	$('#cfw-content').css('padding', "10px 20px 20px 20px");
 	//-----------------------------------
 	// Prepare HTML Base
 	var parent = $('#cfw-container');

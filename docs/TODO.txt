@@ -244,7 +244,8 @@ DONE
 	- resultconcat
 	- resultcopy
 	- unbox
-- Query: Added functions: 
+- Query: Added functions:
+	- ceil 
 	- decode
 	- earliest
 	- earliestSet
