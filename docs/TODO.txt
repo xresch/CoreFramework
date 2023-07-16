@@ -90,7 +90,9 @@ Potential TODOs
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
 - Query: Command pivot
-- Query: arrayify
+- Query: Command formatfield - sparkline format (or new command)
+- Query: arrayify (for subquery results)
+- Query: Manual Page - How to create charts 
 - Query: Mimic calling mimic working with meta()
 - Query: Chart - Show data table option
 - Query: Autocomplete - fix "F:" replace issue
@@ -199,7 +201,7 @@ DONE
 - JS Components: ToogleButton supports favorite style
 - JS Renderer: Tiles - fixed issue with removing alertstyle fields
 - JS Renderer: Chart - Added options multichart/-title/-columns and height to render each series in it's own chart.
-- JS Renderer: Chart - Added options table/-size/-position to display the data of the chart.
+- JS Renderer: Chart - Added options details/-renderer/-size/-position to display the data of the chart.
 - JS Renderer: Chart - Added support for chart types: pie, doughnut, radar, polar, sparkline, sparkarea, sparkbar
 - JS Renderer: Status Map - fixed high CPU consumption issue
 - JS Renderer: Status Map - removed renderer options with specific ratios

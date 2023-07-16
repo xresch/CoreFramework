@@ -4803,11 +4803,11 @@ function cfw_render_createDataviewerDefaults(){
 				},
 			}
 		},
-		{	label: 'Smaller Table',
+		{	label: 'Bigger Table',
 			name: 'table',
 			renderdef: {
 				rendererSettings: {
-					table: {filterable: false, narrow: true},
+					table: {filterable: false, narrow: false},
 				},
 			}
 		},
@@ -4815,11 +4815,11 @@ function cfw_render_createDataviewerDefaults(){
 			name: 'panels',
 			renderdef: {}
 		},
-		{	label: 'Smaller Panels',
+		{	label: 'Bigger Panels',
 			name: 'panels',
 			renderdef: {
 				rendererSettings: {
-					panels: {narrow: true},
+					panels: {narrow: false},
 				},
 			}
 		},

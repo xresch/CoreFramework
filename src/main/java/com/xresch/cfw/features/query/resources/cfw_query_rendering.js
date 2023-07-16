@@ -1012,7 +1012,7 @@ function cfw_query_renderAsChart(resultTarget, queryResult, options){
 		ymax: null,
 		pointradius: 1,
 		spangaps: false,
-		padding: 2
+		padding: '2px'
 	};
 	
 	var finalSettings = Object.assign({}, defaultSettings, settings);

@@ -43,16 +43,29 @@
 	showlegend=false</code></pre>
 
 
-<h2>Data Tables</h2>
-<p>Use the table parameters to display the chart data in a table. </p>
+<h2>Display Details</h2>
+<p>Use the details parameters to display the chart details with another renderer. </p>
 <pre><code class="language-cfwquery">| source random records=300 type=series
-| chart
-	by=[WAREHOUSE, ITEM, CLASS] 
+| remove TOTAL
+| formatfield TIME=['timestamp', "yyyy-MM-dd HH:mm:ss"]
+| formatrecord # formats will be applied to details
+	[(COUNT >= 90), "cfw-red"]  
+	[(COUNT >= 80), "cfw-orange"] 
+	[(COUNT >= 70), "cfw-yellow"]  
+	[(COUNT >= 60), "cfw-limegreen"]   
+	[true, "cfw-green"]  
+| chart 
+	by=[WAREHOUSE, ITEM, CLASS]
 	type=area
 	x=TIME 
 	y=COUNT 
 	multichart=true
-	multicharttitle=true
+	multicharttitle=false
 	multichartcolumns=3
-	height='150px' # cannot be a percentage value when multichart=true
-	showlegend=false</code></pre>	
+	padding='10px 2px'
+	height='250px' # cannot be a percentage value when multichart=true
+	showlegend=false
+	details=true
+	detailsrenderer='table'
+	detailssize=50 # number representing percentage
+	detailsposition=bottom</code></pre>	

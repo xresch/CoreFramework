@@ -112,9 +112,10 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 				+"<p><b>ymax:&nbsp;</b>Suggest a maximum value for the y-axis.</p>"	
 				+"<p><b>spangaps:&nbsp;</b>Set to true to connect lines if there is a gap in the data.</p>"	
 				
-				+"<p><b>table:&nbsp;</b>If true show a table with the data of the series. (Default: false)</p>"	
-				+"<p><b>tablesize:&nbsp;</b>Size as number in percent of taken up area by the table.(Default: 50)</p>"	
-				+"<p><b>tableposition:&nbsp;</b>Position of the table, either one of: bottom | right | left (Default: bottom).</p>"	
+				+"<p><b>details:&nbsp;</b>If true show display the details of the chart data. (Default: false)</p>"	
+				+"<p><b>detailsrenderer:&nbsp;</b>The renderer used for the data. (Default: table, see command 'display' parameter 'as' for list of values)</p>"	
+				+"<p><b>detailssize:&nbsp;</b>Size as number in percent of taken up area by the details.(Default: 50)</p>"	
+				+"<p><b>detailsposition:&nbsp;</b>Position of the details in relation to the chart, either one of: bottom | right | left (Default: bottom).</p>"	
 				+"<p><b>multichart:&nbsp;</b>Set to true to display each series in it's own chart.</p>"	
 				+"<p><b>multicharttitle:&nbsp;</b>Set to true to display title for charts.</p>"	
 				+"<p><b>multichartcolumns:&nbsp;</b> Number of columns for multi chart display.</p>"	

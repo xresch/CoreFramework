@@ -775,7 +775,7 @@ function cfw_renderer_statustiles(renderDef){
 	clonedDef.rendererSettings.statustiles.showlabels = false;
 	clonedDef.rendererSettings.statustiles.popover = true;
 	
-	Object.assign(
+	clonedDef.rendererSettings.tiles = Object.assign({},
 			clonedDef.rendererSettings.tiles, 
 			clonedDef.rendererSettings.statustiles
 		);
@@ -920,6 +920,7 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 	if(settings.reverse){
 		reverseSuffix = "-reverse";
 	}
+	
 	var allTiles = $('<div class="d-flex flex-row'+reverseSuffix+' flex-grow-1 align-items-start"></div>');
 	//allTiles.addClass('h-100');
 	allTiles.css('height', settings.height);
@@ -1325,7 +1326,7 @@ function cfw_renderer_table(renderDef) {
 			responsive: true,
 			hover: true,
 			striped: true,
-			narrow: false,
+			narrow: true,
 			stickyheader: false, 
 			// define if single element arrays should be converted into vertical table (convert columns to rows)
 			verticalize: false,
@@ -1624,7 +1625,7 @@ function cfw_renderer_panels (renderDef) {
 	// Render Specific settings
 	var defaultSettings = {
 		//set to true to make the header smaller
-		narrow: false,
+		narrow: true,
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.panels);
@@ -1801,8 +1802,8 @@ function cfw_renderer_cards (renderDef) {
 	var defaultSettings = {
 		// the number of columns the cards should be displayed in
 		maxcolumns: 3,
-		//set to true to make the header smaller
-		narrow: false,
+		//set to false to make the header bigger
+		narrow: true,
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.cards);
@@ -2067,8 +2068,8 @@ function cfw_renderer_chart(renderDef) {
 		ytype: 'linear',
 		//the radius for the points shown on line and area charts
 		pointradius: 0,
-		// the padding in pixels of the chart
-		padding: 10,
+		// the padding of the chart
+		padding: '10px',
 		// the minimum height of the chart(s), as percent or pixel value like 100px, 50% etc... (default: 100%)
 		height: '100%',
 		// the color of the x-axes grid lines
@@ -2079,19 +2080,20 @@ function cfw_renderer_chart(renderDef) {
 		xminunit: 'millisecond',
 		// the momentjs format used to parse the time, or a function(value) that returns a value that can be parsed by moment
 		timeformat: null, 
-		// if true show a table with the data of the series
-		table: false,
+		// if true show a details with the data of the series
+		details: false,
+		// the name of the renderer used for the details
+		detailsrenderer: 'table',
 		// size as number in percent of taken up area
-		tablesize: 50,
+		detailssize: 50,
 		// position of the table, either one of: bottom | right | left (default: bottom)
-		tableposition: "bottom",
+		detailsposition: "bottom",
 		// if multichart is true, each series is drawn in it's own chart.
 		multichart: false,
 		// toogle if multicharts have a title
 		multicharttitle: false,
 		// toogle if multicharts have a title
-		multichartcolumns: 1
-		
+		multichartcolumns: 1,
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
@@ -2105,21 +2107,24 @@ function cfw_renderer_chart(renderDef) {
 		case 'sparkarea':
 			settings.showaxes = false;
 			settings.showlegend = false;
+			settings.padding = "2px";
 			//fallthrough to case "area"
 		case 'area':
 			settings.charttype = 'line';
 			settings.doFill = true;
 			break;
 		case 'sparkline':
+			settings.charttype = 'line';
 			settings.showaxes = false;
 			settings.showlegend = false;
-			settings.charttype = 'line';
+			settings.padding = "2px";
 			settings.doFill = false;
 			break;
 		case 'sparkbar':
+			settings.charttype = 'bar';
 			settings.showaxes = false;
 			settings.showlegend = false;
-			settings.charttype = 'bar';
+			settings.padding = "2px";
 			break;
 		case 'steppedline':
 			settings.charttype = 'line';
@@ -2155,8 +2160,8 @@ function cfw_renderer_chart(renderDef) {
 		
 	//========================================
 	// Recalculate Size for Table
-	if(settings.tablesize > 100 || settings.tablesize < 0){
-		settings.tablesize = 50; 
+	if(settings.detailssize > 100 || settings.detailssize < 0){
+		settings.detailssize = 50; 
 	}
 	
 	//========================================
@@ -2290,7 +2295,7 @@ function cfw_renderer_chart(renderDef) {
 	if(CFW.global.chartWrapperDivs == null){
 		CFW.global.chartWrapperDivs = [];
 	}
-	CFW.global.chartWrapperDivs.push(allChartsDiv);
+	//CFW.global.chartWrapperDivs.push(allChartsDiv);
 	
 	workspace.css("display", "block");
 	workspace.append(allChartsDiv);
@@ -2305,8 +2310,10 @@ function cfw_renderer_chart(renderDef) {
 		var chartCanvas = $('<canvas class="chartJSCanvas" height="100% !important" width="100%">');
 		chartCanvas.attr('id',  'cfw-chart-'+CFW.utils.randomString(8));
 		
-		var chartPlusTableWrapper = $('<div class="d-flex" style="width:'+(100/settings.multichartcolumns)+'%">');
-		chartPlusTableWrapper.css("height", settings.height);
+		var chartPlusDetailsWrapper = $('<div class="d-flex" style="width:'+(100/settings.multichartcolumns)+'%">');
+		chartPlusDetailsWrapper.css("height", settings.height);
+		chartPlusDetailsWrapper.css("padding", settings.padding);
+		
 		var chartWrapper = $('<div class="w-100">');
 		chartWrapper.css("position", "relative");
 		chartWrapper.css('height', "100%");
@@ -2317,8 +2324,8 @@ function cfw_renderer_chart(renderDef) {
 			chartWrapper.css('height', settings.height +" !important");
 		}
 		chartWrapper.append(chartCanvas);
-		chartPlusTableWrapper.append(chartWrapper);
-		allChartsDiv.append(chartPlusTableWrapper);
+		chartPlusDetailsWrapper.append(chartWrapper);
+		allChartsDiv.append(chartPlusDetailsWrapper);
 		
 		//--------------------------------
 		// Set Title
@@ -2330,13 +2337,13 @@ function cfw_renderer_chart(renderDef) {
 		
 		//--------------------------------
 		// Add Table
-		if(settings.table == true){
+		if(settings.details == true){
 			var isSingleChart = (dataArray.length == 1);
-			cfw_renderer_chart_addTable(
+			cfw_renderer_chart_addDetails(
 					  renderDef
 					, settings
 					, currentData
-					, chartPlusTableWrapper
+					, chartPlusDetailsWrapper
 					, chartWrapper
 					, isSingleChart
 					);	
@@ -2386,11 +2393,12 @@ function cfw_renderer_chart_setGlobals() {
 	//Chart.defaults.datasets.line.showLine = false;
 		
 	Chart.defaults.layout = {
+		// padding will be done by wrapper
         padding: {
-            left: 10,
-            right: 10,
-            top: 10,
-            bottom: 10
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0
         }
     }
 }
@@ -2416,16 +2424,6 @@ function cfw_renderer_chart_createChartOptions(settings) {
 	    	maintainAspectRatio: false,
 	    	resizeDelay: 300,
 			scales: {
-				r: { // for radial charts like radar or polar
-					suggestedMin: yminFinal,
-					suggestedMax: ymaxFinal,
-					grid: { color: settings.xaxescolor },
-					angleLines: { color: settings.yaxescolor },
-			        ticks: {
-			        	beginAtZero: true,
-			        	showLabelBackdrop: false
-			        }
-			      },
 				x: {
 					display: settings.showaxes,
 					type: settings.xtype,
@@ -2512,15 +2510,15 @@ function cfw_renderer_chart_createChartOptions(settings) {
                     radius: settings.pointradius
                 },
             },
-            
-            layout: {
-                padding: {
-                    left: settings.padding,
-                    right: settings.padding,
-                    top: settings.padding,
-                    bottom: settings.padding
-                }
-            },
+            // padding will be done by wrapper
+//            layout: {
+//                padding: {
+//                    left: settings.padding,
+//                    right: settings.padding,
+//                    top: settings.padding,
+//                    bottom: settings.padding
+//                }
+//            },
             
 			plugins:  {
 				legend: {
@@ -2547,15 +2545,27 @@ function cfw_renderer_chart_createChartOptions(settings) {
 			}
 	    };
 	
+	// for radial charts
+	if(settings.charttype == 'radar'
+	|| settings.charttype == 'polarArea'){
+		chartOptions.scales.r = { 
+			suggestedMin: yminFinal,
+			suggestedMax: ymaxFinal,
+			grid: { color: settings.xaxescolor },
+			angleLines: { color: settings.yaxescolor },
+	        ticks: {
+	        	beginAtZero: true,
+	        	showLabelBackdrop: false
+	        }
+	      };
+	}
+	
 	// workaround to avoid TypeError for tick generation
 	if(settings.charttype == 'pie'
 	|| settings.charttype == 'doughnut'){
 		delete chartOptions.scales;
 	}
-	// workaround to avoid Error with scatter charts
-	if(settings.charttype == 'scatter'){
-			delete chartOptions.scales.r;
-		}
+
 	
 	
 	return chartOptions;
@@ -2563,17 +2573,12 @@ function cfw_renderer_chart_createChartOptions(settings) {
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_chart_addTable(renderDef, settings, currentData, chartPlusTableWrapper, chartWrapper, isSingleChart) {
+function cfw_renderer_chart_addDetails(renderDef, settings, currentData, chartPlusDetailsWrapper, chartWrapper, isSingleChart) {
 	
 	var cloneRenderDef = {
 			rendererSettings: {
-				table: {
-					filterable: false,
-					responsive: false,
-					hover: true,
-					striped: true,
-					narrow: true
-				}
+				table: { filterable: false, responsive: false, hover: true, striped: true, narrow: true }
+				
 			}
 		};
 	
@@ -2583,42 +2588,44 @@ function cfw_renderer_chart_addTable(renderDef, settings, currentData, chartPlus
 		cloneRenderDef.data = currentData.datasets[0].tableData;
 	}
 	
-	var tableDiv = CFW.render.getRenderer('table').render(cloneRenderDef);
-	tableDiv.css("overflow", "auto");
+	var detailsDiv = CFW.render.getRenderer(settings.detailsrenderer).render(cloneRenderDef);
+	if(! ['statusbar', 'statusbarreverse', 'statusmap'].includes(settings.detailsrenderer)){
+	detailsDiv.css("overflow", "auto");
+	}
 
-	if(settings.tableposition == "bottom"){
+	if(settings.detailsposition == "bottom"){
 		//--------------------------------
 		// Table Bottom
 		var heightValue = settings.height;
 		if(heightValue.endsWith('%')){
 			heightValue = "200px";
 		}
-		chartPlusTableWrapper.addClass("flex-column");
+		chartPlusDetailsWrapper.addClass("flex-column");
 		if(isSingleChart){
-			chartPlusTableWrapper.css("height", "100%");
+			chartPlusDetailsWrapper.css("height", "100%");
 		}
 		heightValue = heightValue.replace("px", "");
-		var percentMultiplier = (100-settings.tablesize)/100;
+		var percentMultiplier = (100-settings.detailssize)/100;
 		var chartHeight = (heightValue * percentMultiplier) +"px";
-		tableDiv.addClass("flex-grow-1 flex-shrink-1");
+		detailsDiv.addClass("flex-grow-1 flex-shrink-1");
 		chartWrapper.css("height", chartHeight);
 		
 		chartWrapper.css("flex-shrink", "0");
-		chartPlusTableWrapper.append(tableDiv);
+		chartPlusDetailsWrapper.append(detailsDiv);
 	}else{
 		//--------------------------------
 		// Table Left or Right
-		tableDiv.removeClass("w-100 flex-grow-1");
-		tableDiv.css("height", "100%");
-		tableDiv.css("width", settings.tablesize+"%");
+		detailsDiv.removeClass("w-100 flex-grow-1");
+		detailsDiv.css("height", "100%");
+		detailsDiv.css("width", settings.detailssize+"%");
 		
-		chartWrapper.css("width", (100-settings.tablesize)+"%");
+		chartWrapper.css("width", (100-settings.detailssize)+"%");
 		chartWrapper.removeClass("w-100");
 		
-		if(settings.tableposition == "right"){
-			chartPlusTableWrapper.append(tableDiv);
+		if(settings.detailsposition == "right"){
+			chartPlusDetailsWrapper.append(detailsDiv);
 		}else{
-			chartPlusTableWrapper.prepend(tableDiv);
+			chartPlusDetailsWrapper.prepend(detailsDiv);
 		}
 	}
 }
