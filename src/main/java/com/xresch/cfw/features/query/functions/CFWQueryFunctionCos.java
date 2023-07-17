@@ -9,11 +9,11 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
-public class CFWQueryFunctionSin extends CFWQueryFunction {
+public class CFWQueryFunctionCos extends CFWQueryFunction {
 
-	public static final String FUNCTION_NAME = "sin";
+	public static final String FUNCTION_NAME = "cos";
 
-	public CFWQueryFunctionSin(CFWQueryContext context) {
+	public CFWQueryFunctionCos(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -37,7 +37,7 @@ public class CFWQueryFunctionSin extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns the sine value of a number.";
+		return "Returns the cosine value of a number.";
 	}
 	
 	/***********************************************************************************************
@@ -47,7 +47,7 @@ public class CFWQueryFunctionSin extends CFWQueryFunction {
 	public String descriptionSyntaxDetailsHTML() {
 		return 
 			 "<ul>"
-			+"<li><b>number:&nbsp;</b>The number you want the sine value for.</li>"
+			+"<li><b>number:&nbsp;</b>The number you want the cosine value for.</li>"
 			+"</ul>"
 			;
 	}
@@ -93,7 +93,7 @@ public class CFWQueryFunctionSin extends CFWQueryFunction {
 		if(initialValue.isNumberOrNumberString()) {
 			
 			return QueryPartValue.newNumber(
-					Math.sin( initialValue.getAsDouble() )
+					Math.cos( initialValue.getAsDouble() )
 				);
 		}
 		

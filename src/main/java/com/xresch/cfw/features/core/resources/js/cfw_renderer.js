@@ -2391,8 +2391,6 @@ function cfw_renderer_chart(renderDef) {
 		    data: currentData,
 		    options: chartOptionsClone
 		});
-		
-		
 	}
 	
 	return allChartsDiv;

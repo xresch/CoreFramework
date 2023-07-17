@@ -1,0 +1,29 @@
+
+<p>Use this function to get the cosine value of a number.</p>
+
+<p>Following query creates random records and uses the cos-function:</p>
+
+<pre><code class="language-cfwquery">| source empty records=10
+| set
+	NUMBA=random(-88, 900)
+	COS_NUMBA=cos(NUMBA) 
+	# all following return 0
+	NOTHING_RETURNS_ZERO=cos() 
+	RETURNS_ZERO_AGAIN=cos(null)
+	STRING_ZERO=cos('returns-0')
+	BOOL_ZERO=cos(true)</code></pre>
+	
+<p>Just for fun lets use some math-magic to create a cosine-wavey chart:</p>
+
+<pre><code class="language-cfwquery">| source empty records=100
+| set # do some math-magic to create a cosine-wave
+	NAME="WAVE"
+	INDEX=count()+1
+	TIME= now(null, 0, 0, 0, INDEX)
+	COSINE=cos(INDEX*0.3) 
+	VALUE=(COSINE*100)*INDEX
+| chart # display as a chart
+	by=[NAME]
+	type=bar
+	x=TIME
+	y=VALUE</code></pre>

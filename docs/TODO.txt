@@ -246,6 +246,7 @@ DONE
 	- unbox
 - Query: Added functions:
 	- ceil 
+	- cos
 	- decode
 	- earliest
 	- earliestSet
