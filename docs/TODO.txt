@@ -245,12 +245,14 @@ DONE
 	- resultcopy
 	- unbox
 - Query: Added functions:
+	- abs
 	- ceil 
 	- cos
 	- decode
 	- earliest
 	- earliestSet
 	- first
+	- floor
 	- last
 	- latest
 	- latestSet
@@ -259,6 +261,7 @@ DONE
 	- randomfloat
 	- randomfrom
 	- replace
+	- sin
 	- subquery
 	- timeframeoffset
 	- timeoffset
