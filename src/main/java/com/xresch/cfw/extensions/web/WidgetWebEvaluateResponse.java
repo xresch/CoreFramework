@@ -20,6 +20,7 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.WidgetSettingsFactory;
@@ -48,6 +49,7 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 	private static final String PARAM_URLS = "URLS";
 	private static final String PARAM_LABELS = "LABELS";
 	private static final String PARAM_HEADERS = "JSON_HEADERS";
+	private static final String PARAM_BODY = "BODY";
 	private static final String PARAM_USERNAME = "USERNAME";
 	private static final String PARAM_PASSWORD = "PASSWORD";
 	
@@ -101,8 +103,7 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 				.addField(CFWField.newString(CFWField.FormFieldType.SELECT, PARAM_METHOD)
 						.setLabel("{!cfw_widget_webextensions_method!}")
 						.setDescription("{!cfw_widget_webextensions_method_desc!}")
-						.addOption("GET")
-						.addOption("POST")
+						.addOptions("GET", "POST")
 						.setValue("GET")
 						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
 					)
@@ -124,6 +125,12 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 				.addField(CFWField.newValueLabel(PARAM_HEADERS)
 						.setLabel("{!cfw_widget_webextensions_headers!}")
 						.setDescription("{!cfw_widget_webextensions_headers_desc!}")
+						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
+						)
+				
+				.addField(CFWField.newString(FormFieldType.TEXTAREA, PARAM_BODY)
+						.setLabel("{!cfw_widget_webextensions_body!}")
+						.setDescription("{!cfw_widget_webextensions_body_desc!}")
 						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
 						)
 
@@ -185,35 +192,47 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 	public void fetchData(HttpServletRequest httpServletRequest, JSONResponse jsonResponse, CFWObject cfwObject, JsonObject jsonObject, CFWTimeframe timeframe) {
 
 		//------------------------------------
-		// Get Parameters
+		// Get Method
 		String method = (String) cfwObject.getField(PARAM_METHOD).getValue();
 		if(Strings.isNullOrEmpty(method)){
 			method = "GET";
 		}
 		
+		//------------------------------------
+		// Get IRLS
 		String urls = (String) cfwObject.getField(PARAM_URLS).getValue();
 		if (Strings.isNullOrEmpty(urls)) {
 			return;
 		}
 		String[] splittedURLs = urls.trim().split("\\r\\n|\\n");
 		
-		
+		//------------------------------------
+		// Get Labels
 		String labels = (String) cfwObject.getField(PARAM_LABELS).getValue();
 		String[] splittedLabels = new String[] {};
 		if (!Strings.isNullOrEmpty(labels)) {
 			splittedLabels = labels.trim().split("\\r\\n|\\n");
 		}
-		
+
+		//------------------------------------
+		// Get Credentials
 		String username = (String) cfwObject.getField(PARAM_USERNAME).getValue();
 		String password = (String) cfwObject.getField(PARAM_PASSWORD).getValue();
-		
+
+		//------------------------------------
+		// Get Headers and Body
 		LinkedHashMap<String, String> headers = (LinkedHashMap<String, String>) cfwObject.getField(PARAM_HEADERS).getValue();
-		
+		String bodyContents = (String) cfwObject.getField(PARAM_BODY).getValue();
+
+		//------------------------------------
+		// Get Checks
 		String checkType = (String) cfwObject.getField(PARAM_CHECK_TYPE).getValue();
 		String checkFor = (String) cfwObject.getField(PARAM_CHECK_FOR).getValue();
 
 		Integer expectedResponseCode = (Integer) cfwObject.getField(PARAM_STATUS_CODE).getValue();
-		
+
+		//------------------------------------
+		// Get Debug Mode
 		boolean debugMode = (Boolean) cfwObject.getField(PARAM_DEBUG_MODE).getValue();
 		
 		//------------------------------------
@@ -231,7 +250,6 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 			}
 			//----------------------------------------
 			// Build Request and Call URL
-
 			CFWHttpRequestBuilder requestBuilder = CFW.HTTP.newRequestBuilder(splittedURL);
 			
 			if(method.trim().toUpperCase().equals("POST")) {
@@ -246,6 +264,9 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 			
 			requestBuilder.headers(headers);
 			
+			if(!Strings.isNullOrEmpty(bodyContents)) {
+				requestBuilder.body(bodyContents);
+			}
 
 			CFWHttpResponse response = requestBuilder.send();
 

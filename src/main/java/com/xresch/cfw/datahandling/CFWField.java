@@ -1560,6 +1560,21 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		this.valueLabelOptions.putAll(valueLabelPairs);
 		return this;
 	}
+	
+	/******************************************************************************************************
+	 * Adds options for selection fields. The string representations of the provided parameters will be used 
+	 * for both the value and the label.
+	 * 
+	 * @param String array with options
+	 * @return instance for chaining
+	 ******************************************************************************************************/
+	public CFWField<T> addOptions(String ...options) {
+
+		for(String option : options) {
+			this.addOption(option, option);
+		}
+		return this;
+	}
 
 	/******************************************************************************************************
 	 * Set values for selection fields. The string representations of the provided elements will be used. 

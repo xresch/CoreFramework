@@ -37,10 +37,10 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	private static final String PARAM_METHOD 	= "method";
 	private static final String PARAM_URL 		= "url";
 	private static final String PARAM_HEADERS 	= "headers";
+	private static final String PARAM_BODY 		= "body";
 	private static final String PARAM_USERNAME 	= "username";
 	private static final String PARAM_PASSWORD 	= "password";
 	
-
 	private static final String PARAM_TIMEFIELD = "timefield";
 	private static final String PARAM_TIMEFORMAT = "timeformat";
 
@@ -83,7 +83,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".sources", "source_web.html");
+		return CFW.Files.readPackageResource(FeatureWebExtensions.PACKAGE_RESOURCES, "source_web.html");
 	}
 	/******************************************************************
 	 *
@@ -159,6 +159,10 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 							.setDescription("(Optional)The HTTP headers for the request.")
 							.addValidator(new NotNullOrEmptyValidator())
 					)
+				.addField(
+						CFWField.newString(FormFieldType.TEXTAREA, PARAM_BODY)
+						.setDescription("(Optional)The body contents of the request. Setting the header 'Content-Type' might be needed(e.g. 'application/json; charset=UTF-8').")
+						)
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_USERNAME)
@@ -201,18 +205,23 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 		
 		//------------------------------------
-		// Get Parameters
+		// Get Method
 		String method = (String) parameters.getField(PARAM_METHOD).getValue();	
 		
+		//------------------------------------
+		// Get URL
 		String url = (String) parameters.getField(PARAM_URL).getValue();
 		if(!url.contains("://")) {
 			url = "https://"+url;
 		}
 
+		//------------------------------------
+		// Get Credentials
 		String username = (String) parameters.getField(PARAM_USERNAME).getValue();
 		String password = (String) parameters.getField(PARAM_PASSWORD).getValue();
 		
-		
+		//------------------------------------
+		// Get Headers
 		String headersString = (String) parameters.getField(PARAM_HEADERS).getValue();
 		
 		HashMap<String, String> headersMap = new HashMap<>();
@@ -224,11 +233,13 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 				headersMap.put(entry.getKey(), entry.getValue().getAsString());
 			}
 		}
-
+		
+		//------------------------------------
+		// Get Body
+		String bodyString = (String) parameters.getField(PARAM_BODY).getValue();
 		
 		//----------------------------------------
 		// Build Request
-
 		CFWHttpRequestBuilder requestBuilder = CFW.HTTP.newRequestBuilder(url);
 		
 		if(method.trim().toUpperCase().equals("GET")) {
@@ -243,6 +254,9 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 		
 		requestBuilder.headers(headersMap);
 
+		if(!Strings.isNullOrEmpty(bodyString)) {
+			requestBuilder.body(bodyString);
+		}
 		
 		//----------------------------------------
 		// Send Request and Fetch Data

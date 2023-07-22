@@ -162,6 +162,7 @@ DONE
 - New Feature: Page Tutorials
 - New Feature: Single-Sign-On with SAML and OpenID Connect
 - New Feature: Database Extensions, moved over from EMP
+- New Feature: Web Extensions, moved over from EMP
 - User Management: Added names of user/roles/group in delete confirmation popup
 - Database: Added Feature 'Reindex Fulltext Search' to DB Analytics page
 - Database: Added Alias CFW_ARRAY_DISTINCT

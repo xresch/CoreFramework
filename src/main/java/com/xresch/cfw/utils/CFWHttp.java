@@ -824,6 +824,13 @@ public class CFWHttp {
 		/***********************************************
 		 * Add a request Body
 		 ***********************************************/
+		public CFWHttpRequestBuilder body(String content) {
+			this.requestBody = content;
+			return this;
+		}
+		/***********************************************
+		 * Add a request Body
+		 ***********************************************/
 		public CFWHttpRequestBuilder body(String contentType, String content) {
 			this.requestBodyContentType = contentType;
 			this.header("Content-Type", contentType);
