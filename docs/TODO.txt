@@ -87,6 +87,7 @@ Potential TODOs
 - Query: Improve Autocomplete
 - Query: function: math ceil/floor/abs etc...
 - Query: function: array() aggregation
+- Query: function: stdev() aggregation
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
 - Query: Command pivot
@@ -216,6 +217,7 @@ DONE
 - Validator: Added ExcludeStringsValidator
 - Manual: Added Filter for Menu
 - Manual: Added General section and more manual pages
+- Query: Added Job Task "Alerting: CFWQL Query"
 - Query: Dramatic improvement in performance (to make subqueries execute way faster)
 - Query: Editor - Fixed issues with html characters like "<" or ">"
 - Query: Editor - Fixed issues Ctrl+Alt+Arrow not copying last character of row & missing newline on first row
@@ -235,7 +237,7 @@ DONE
 - Query: Autocomplete - Added "f:" to get list of functions
 - Query: Autocomplete - Added "f:xxx" to get list of filtered functions
 - Query: Autocomplete - Added "xxx(" to get description of function
-- Query: Added sources:
+- Query: Added Sources:
 	- empty
 	- text
 	- web 

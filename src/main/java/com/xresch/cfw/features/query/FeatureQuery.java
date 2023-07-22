@@ -238,9 +238,8 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		//----------------------------------
 		// Register Job Tasks
-		//CFW.Registry.Jobs.registerTask(new CFWJobTaskSendMail());
+		CFW.Registry.Jobs.registerTask(new CFWJobTaskAlertingCFWQLQuery());
 
-		
 		//----------------------------------
     	// Register Menu				
 		CFW.Registry.Components.addToolsMenuItem(

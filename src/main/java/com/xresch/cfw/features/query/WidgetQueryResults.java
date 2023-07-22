@@ -254,23 +254,23 @@ public class WidgetQueryResults extends WidgetDefinition {
 		
 		return new CFWJobsAlertObject()
 				.addField(CFWField.newString(FormFieldType.TEXT, FIELDNAME_VALUEFIELD)
-						.setLabel("{!emp_widget_database_valuecolumn!}")
-						.setDescription("{!emp_widget_database_valuecolumn_desc!}")
+						.setLabel("{!cfw_widget_jobtask_valuefield!}")
+						.setDescription("{!cfw_widget_jobtask_valuefield_desc!}")
 				)
 				
 				.addField(CFWField.newString(FormFieldType.TEXT, FIELDNAME_LABELFIELDS)
-						.setLabel("{!emp_widget_database_labelcolumns!}")
-						.setDescription("{!emp_widget_database_labelcolumns_desc!}")
+						.setLabel("{!cfw_widget_jobtask_labelfields!}")
+						.setDescription("{!cfw_widget_jobtask_labelfields_desc!}")
 				)
 				
 				.addField(CFWField.newString(FormFieldType.TEXT, FIELDNAME_DETAILFIELDS)
-						.setLabel("{!emp_widget_database_detailcolumns!}")
-						.setDescription("{!emp_widget_database_detailcolumns_desc!}")
+						.setLabel("{!cfw_widget_jobtask_detailfields!}")
+						.setDescription("{!cfw_widget_jobtask_detailfields_desc!}")
 				)
 
 				.addField(CFWField.newString(FormFieldType.TEXT, FIELDNAME_URLFIELD)
-						.setLabel("{!emp_widget_database_urlcolumn!}")
-						.setDescription("{!emp_widget_database_urlcolumn_desc!}")
+						.setLabel("{!cfw_widget_jobtask_urlfield!}")
+						.setDescription("{!cfw_widget_jobtask_urlfield_desc!}")
 				)
 				
 				//.addField(CFWJobTaskWidgetTaskExecutor.createOffsetMinutesField())
@@ -298,9 +298,11 @@ public class WidgetQueryResults extends WidgetDefinition {
 						  , CFWObject widgetSettings
 						  , CFWTimeframe offset) throws JobExecutionException {
 		
-		String valueColumn = (String)taskParams.getField(FIELDNAME_VALUEFIELD).getValue();
-		String labelColumns = (String)taskParams.getField(FIELDNAME_LABELFIELDS).getValue();
-		String detailColumns = valueColumn+", "+(String)taskParams.getField(FIELDNAME_DETAILFIELDS).getValue();
+		//----------------------------------------
+		// Get Params
+		String valueField = (String)taskParams.getField(FIELDNAME_VALUEFIELD).getValue();
+		String labelFields = (String)taskParams.getField(FIELDNAME_LABELFIELDS).getValue();
+		String detailFields = (String)taskParams.getField(FIELDNAME_DETAILFIELDS).getValue();
 		String urlColumn = (String)taskParams.getField(FIELDNAME_URLFIELD).getValue();
 		
 		CFWTimeframe timeframe = CFWJobTaskWidgetTaskExecutor.getOffsetFromJobSettings(taskParams);
@@ -331,24 +333,42 @@ public class WidgetQueryResults extends WidgetDefinition {
 		// Set Column default settings 
 		JsonObject object = resultArray.get(0).getAsJsonObject();
 		Set<String> fields = object.keySet();
+		boolean detailsEmpty = Strings.isNullOrEmpty(detailFields);
+		detailFields = (detailsEmpty) ? "" : detailFields;
 		int i=0;
 		for(String fieldname : fields) {
 			
 			//Set first column as default for label Column
 			if(i == 0
-			&& Strings.isNullOrEmpty(labelColumns)) {
-				labelColumns = fieldname;
+			&& Strings.isNullOrEmpty(labelFields)) {
+				labelFields = fieldname;
+			}
+			
+			// Set all columns if details are empty
+			if (detailsEmpty) {
+				// ignore hidden fields with underscore
+				if(!fieldname.startsWith("_")) {
+					detailFields += fieldname +", ";
+				}
 			}
 			
 			//Set last column as default for value
 			if(i == fields.size()-1
-			&& Strings.isNullOrEmpty(valueColumn)) {
-				valueColumn = fieldname;
+			&& Strings.isNullOrEmpty(valueField)) {
+				valueField = fieldname;
 			}
 			
 			i++;
 		}
 		
+		// Add Value Field if missing
+		if(!detailFields.contains(valueField)) {
+			detailFields = valueField+", "+detailFields;
+		}
+		
+		if(detailFields.endsWith(", ")) {
+			detailFields = detailFields.substring(0, detailFields.length()-2);
+		}
 		
 		//----------------------------------------
 		// Get alertThreshhold
@@ -368,7 +388,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 		for(JsonElement element : resultArray) {
 			
 			JsonObject current = element.getAsJsonObject();
-			Float value = current.get(valueColumn).getAsFloat();
+			Float value = current.get(valueField).getAsFloat();
 
 			CFWStateOption condition = CFW.Conditions.getConditionForValue(value, taskParams);
 			if(condition != null 
@@ -402,7 +422,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 				String messageHTML = "<p>"+message+"</p>"+widgetLinkHTML;
 				
 				CFW.Messages.addSuccessMessage("Issue has resolved.");
-				alertObject.doSendAlert(context, MessageType.SUCCESS, "EMP: Resolved - Database record(s) below threshold", message, messageHTML);
+				alertObject.doSendAlert(context, MessageType.SUCCESS, "Resolved - Query record(s) below threshold", message, messageHTML);
 			}
 			
 			//----------------------------------------
@@ -413,7 +433,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 				// Create Table Header
 				String tableHeader = "<tr>";
 				tableHeader = "<td>Item</td>";
-				for (String fieldname : detailColumns.split(",")) {
+				for (String fieldname : detailFields.split(",")) {
 					tableHeader += "<td>"+fieldname+"</td>";
 				}
 				tableHeader += "</tr>";
@@ -429,9 +449,9 @@ public class WidgetQueryResults extends WidgetDefinition {
 					// Create Label String
 					String labelString = "";
 					
-					for (String fieldname : labelColumns.split(" *, *")) {
+					for (String fieldname : labelFields.split(" *, *")) {
 						JsonElement labelField = current.get(fieldname.trim());
-						if(!labelField.isJsonNull()) {
+						if(labelField != null && !labelField.isJsonNull()) {
 							labelString += current.get(fieldname.trim()).getAsString() + " ";
 						}else {
 							labelString += " ";
@@ -457,14 +477,16 @@ public class WidgetQueryResults extends WidgetDefinition {
 					
 					//-----------------------------
 					// Create Details
-					if(!Strings.isNullOrEmpty(detailColumns)) {
+					if(!Strings.isNullOrEmpty(detailFields)) {
 						String detailsString = "";
-						for (String fieldname : detailColumns.split(",")) {
+						for (String fieldname : detailFields.split(",")) {
 							if(fieldname != null && (urlColumn == null || !fieldname.trim().equals(urlColumn.trim())) ) {
 								JsonElement detailsField = current.get(fieldname.trim());
-								if(!detailsField.isJsonNull()) {
+								if(detailsField != null && !detailsField.isJsonNull()) {
 									detailsString += fieldname+"=\""+current.get(fieldname.trim()).getAsString() + "\" ";
-									metricTableHTML += "<td>"+current.get(fieldname.trim()).getAsString()+"</td>";
+									metricTableHTML += "<td>"
+											+CFW.Security.escapeHTMLEntities(detailsField.getAsString())
+									+"</td>";
 								}else {
 									metricTableHTML += "<td>&nbsp;</td>";
 								}
@@ -492,7 +514,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 				
 				alertObject.addTextData("data", "csv", CFW.JSON.formatJsonArrayToCSV(instantExceedingThreshold, ";") );
 				alertObject.addTextData("data", "json", CFW.JSON.toJSONPretty(instantExceedingThreshold) );
-				alertObject.doSendAlert(context, MessageType.ERROR, "EMP: Alert - Database record(s) reached threshold", messagePlaintext, messageHTML);
+				alertObject.doSendAlert(context, MessageType.ERROR, "Alert - Query record(s) reached threshold", messagePlaintext, messageHTML);
 				
 			}
 			
