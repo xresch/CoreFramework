@@ -252,7 +252,7 @@ public abstract class WidgetBaseSQLQueryStatus extends WidgetDefinition {
 	@Override
 	public HashMap<Locale, FileDefinition> getLocalizationFiles() {
 		HashMap<Locale, FileDefinition> map = new HashMap<Locale, FileDefinition>();
-		// doesn'twork, get's overriden
+		// doesn'twork, get's overridden
 		//map.put(Locale.ENGLISH, new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDatabases.PACKAGE_RESOURCE, "lang_en_dbextensions.properties"));
 		return map;
 	}

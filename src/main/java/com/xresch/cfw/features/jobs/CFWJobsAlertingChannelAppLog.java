@@ -53,5 +53,10 @@ public class CFWJobsAlertingChannelAppLog extends CFWJobsAlertingChannel {
 	public boolean hasPermission(User user) {
 		return user.hasPermission(FeatureJobs.PERMISSION_JOBS_USER) || user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN);
 	}
+	
+	@Override
+	public void addTextData(String name, String filetype, String data) {
+		// do nothing
+	}
 
 }

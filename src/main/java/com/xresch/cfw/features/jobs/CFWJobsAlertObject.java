@@ -33,6 +33,12 @@ public class CFWJobsAlertObject extends CFWObject {
 	private String jobID;
 	private String taskName;
 
+	private ArrayList<TextData> textDataArray = new ArrayList<>();
+	private class TextData{
+		public String name ="";
+		public String filetype = "";
+		public String data = "";
+	}
 	public enum AlertObjectFields{
 		ALERTING_OCCURENCES_TO_RAISE, 
 		ALERTING_OCCURENCES_TO_RESOLVE, 
@@ -150,6 +156,18 @@ public class CFWJobsAlertObject extends CFWObject {
 	
 	private void initialize() {
 		this.addFields(occurencesToRaise, occurencesToResolve, alertDelayMinutes, resendDelayMinutes, usersToAlert, groupsToAlert, alertChannels, customNotes);
+	}
+	
+	/**************************************************************************
+	 * 
+	 **************************************************************************/
+	public void  addTextData(String name, String filetype, String data) {
+		TextData textData = this.new TextData();
+		textData.name = name;
+		textData.filetype = filetype;
+		textData.data = data;
+		
+		textDataArray.add(textData);
 	}
 	
 	/**************************************************************************
@@ -274,6 +292,9 @@ public class CFWJobsAlertObject extends CFWObject {
 		ArrayList<CFWJobsAlertingChannel> channelsToAlert = this.doSendAlert_getListOfAlertChannels();
 		
 		for(CFWJobsAlertingChannel channel : channelsToAlert) {
+			for(TextData textData : textDataArray) {
+				channel.addTextData(textData.name, textData.filetype, textData.data);
+			}
 			channel.sendAlerts(context, messageType, this, uniqueUsers, subject, content, contentHTML);
 		}
 		

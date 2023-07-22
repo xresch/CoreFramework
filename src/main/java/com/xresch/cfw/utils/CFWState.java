@@ -1,12 +1,13 @@
 package com.xresch.cfw.utils;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 
 public class CFWState {
 	
@@ -189,11 +190,11 @@ public class CFWState {
 	public static CFWStateOption getConditionForValue(Number valueToEvaluate, CFWObject objectWithThresholdFields) {
 
 		return getConditionForValue(valueToEvaluate
-				, (Float)objectWithThresholdFields.getField(CFWState.FIELDNAME_THRESHOLD_GREEN).getValue()
-				, (Float)objectWithThresholdFields.getField(FIELDNAME_THRESHOLD_LIMEGREEN).getValue()
-				, (Float)objectWithThresholdFields.getField(FIELDNAME_THRESHOLD_YELLOW).getValue()
-				, (Float)objectWithThresholdFields.getField(FIELDNAME_THRESHOLD_ORANGE).getValue()
-				, (Float)objectWithThresholdFields.getField(FIELDNAME_THRESHOLD_RED).getValue()
+				, (Number)objectWithThresholdFields.getField(CFWState.FIELDNAME_THRESHOLD_GREEN).getValue()
+				, (Number)objectWithThresholdFields.getField(FIELDNAME_THRESHOLD_LIMEGREEN).getValue()
+				, (Number)objectWithThresholdFields.getField(FIELDNAME_THRESHOLD_YELLOW).getValue()
+				, (Number)objectWithThresholdFields.getField(FIELDNAME_THRESHOLD_ORANGE).getValue()
+				, (Number)objectWithThresholdFields.getField(FIELDNAME_THRESHOLD_RED).getValue()
 				, (Boolean)objectWithThresholdFields.getField(FIELDNAME_THRESHOLD_DISABLE).getValue()
 				);
 	}
@@ -217,6 +218,7 @@ public class CFWState {
 	 ************************************************************************************************/
 	public static CFWStateOption getConditionForValue(Number valueToEvaluate, Number tExellent, Number tGood, Number tWarning, Number tEmergency, Number tDanger, boolean isDisabled) {
 
+		
 		//---------------------------
 		// Initial Checks
 		if(isDisabled) { return CFWStateOption.DISABLED; }

@@ -222,11 +222,10 @@ public class CFWMailBuilder {
 	 * Add text as an attachment with the specified attachment name.
 	 * You might want to include ".txt" in the filename.
 	 ***************************************************************/
-	public CFWMailBuilder addAttachment(String attachmentName, String textContent) {
+	public CFWMailBuilder addAttachment(String attachmentName, String utf8TextContent) {
 
 		try {
-
-			DataSource attachmentSource = new ByteArrayDataSource(textContent, "text/plain");
+			DataSource attachmentSource = new ByteArrayDataSource(utf8TextContent, "text/plain; charset=UTF-8");
 			addAttachment(attachmentName, attachmentSource);
 		} catch (IOException e) {
 			new CFWLog(logger).severe("Error creating eMail: "+e.getMessage(), e);

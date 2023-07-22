@@ -98,6 +98,8 @@ public abstract class CFWQuerySource{
 	
 	/*************************************************************************
 	 * Return if the user is able to fetch from this source.
+	 * The Permission FeatureQuery.PERMISSION_QUERY_ADMIN is checked implicitly 
+	 * by the method calling this function.
 	 *************************************************************************/
 	public abstract boolean hasPermission(User user);
 	

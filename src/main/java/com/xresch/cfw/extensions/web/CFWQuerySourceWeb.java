@@ -98,7 +98,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public boolean hasPermission(User user) {
-		return true;
+		return CFW.Context.Request.hasPermission(FeatureWebExtensions.PERMISSION_WEB_EXTENSIONS);
 	}
 	
 	/***********************************************************************************************

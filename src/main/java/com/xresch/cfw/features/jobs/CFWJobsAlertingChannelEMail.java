@@ -1,6 +1,8 @@
 package com.xresch.cfw.features.jobs;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 
 import org.quartz.JobExecutionContext;
 
@@ -12,6 +14,8 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 public class CFWJobsAlertingChannelEMail extends CFWJobsAlertingChannel {
 
+	LinkedHashMap<String,String> attachments = new LinkedHashMap<>();
+	
 	@Override
 	public String uniqueName() {
 		return "eMail";
@@ -47,12 +51,17 @@ public class CFWJobsAlertingChannelEMail extends CFWJobsAlertingChannel {
 		
 		//----------------------------------------
 		// Create and Send Mail 
-		new CFWMailBuilder(subject)
+		CFWMailBuilder builder = new CFWMailBuilder(subject)
 				.addMessage(mailContent, true)
 				.fromNoReply()
 				.recipientsBCC(usersToAlert)
-				.addAttachment("jobdetails.json", CFW.JSON.toJSONPretty(job))
-				.send();
+				.addAttachment("jobdetails.json", CFW.JSON.toJSONPretty(job));
+		
+		for(Entry<String, String> entry : attachments.entrySet()) {
+			builder.addAttachment(entry.getKey(), entry.getValue());
+		}
+		
+		builder.send();
 		
 	}
 
@@ -60,6 +69,11 @@ public class CFWJobsAlertingChannelEMail extends CFWJobsAlertingChannel {
 	public boolean hasPermission(User user) {
 		
 		return user.hasPermission(FeatureJobs.PERMISSION_JOBS_USER) || user.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN);
+	}
+	
+	@Override
+	public void addTextData(String name, String filetype, String data) {
+		attachments.put(name+"."+filetype, data);
 	}
 
 }

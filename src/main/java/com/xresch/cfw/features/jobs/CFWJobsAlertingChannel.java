@@ -22,6 +22,14 @@ public abstract class CFWJobsAlertingChannel {
 	 *************************************************************************/
 	public abstract String channelDescription();
 	
+	/*************************************************************************
+	 * Optional: Data will be given to this method if available, use the data
+	 * if useful or ignore it.
+	 * @param name the name for the data
+	 * @param filetype like "txt" or "json" in case it is converted into a file 
+	 * @param data the data to be added
+	 *************************************************************************/
+	public abstract void addTextData(String name, String filetype, String data);
 	
 	/*************************************************************************
 	 * Send the alerts.

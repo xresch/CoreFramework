@@ -147,7 +147,7 @@ public abstract class WidgetDefinition {
 	 * more details on how to implement this method.
 	 * @param offset TODO
 	 *************************************************************************/
-	public void executeTask(JobExecutionContext context, CFWObject taskParams, DashboardWidget widget, CFWObject settings, CFWTimeframe offset) throws JobExecutionException {
+	public void executeTask(JobExecutionContext context, CFWObject taskParams, DashboardWidget widget, CFWObject widgetSettings, CFWTimeframe offset) throws JobExecutionException {
 		/* do nothing by default */
 	}
 	

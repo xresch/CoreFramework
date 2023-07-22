@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -70,6 +71,9 @@ public class CFWQueryRegistry {
 		
 		CFWQuerySource sourceToCheck = sourceInstanceCache.get(sourceName);
 		
+		if(CFW.Context.Request.hasPermission(FeatureQuery.PERMISSION_QUERY_ADMIN)) {
+			return true;
+		}
 		return sourceToCheck.hasPermission(user);
 	}
 	

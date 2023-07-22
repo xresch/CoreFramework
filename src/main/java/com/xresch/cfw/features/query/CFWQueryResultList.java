@@ -23,7 +23,9 @@ public class CFWQueryResultList {
 	}
 	
 	/****************************************************
-	 * 
+	 * Returns an array of resultObjects.
+	 * Use toJsonRecords() to get all records of all 
+	 * results in a single array.
 	 ****************************************************/
 	public JsonArray toJson() {
 		
@@ -31,6 +33,19 @@ public class CFWQueryResultList {
 		
 		for(CFWQueryResult result : resultList) {
 			array.add(result.toJson());
+		}
+		return array;
+	}
+	
+	/****************************************************
+	 * 
+	 ****************************************************/
+	public JsonArray toJsonRecords() {
+		
+		JsonArray array = new JsonArray();
+		
+		for(CFWQueryResult result : resultList) {
+			array.addAll(result.getResults());
 		}
 		return array;
 	}

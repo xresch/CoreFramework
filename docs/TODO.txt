@@ -212,6 +212,7 @@ DONE
 - JS Renderer: Added Tile and Status Bar Renderer(tileandbar)
 - JS Renderer: Added Status Tiles Renderer, as a shorthand option to get empty tiles (statustiles)
 - Utils: Added Undo/Redo Manager 
+- Alert Channel: added method to support adding of additional text Data
 - Validator: Added ExcludeStringsValidator
 - Manual: Added Filter for Menu
 - Manual: Added General section and more manual pages
@@ -221,6 +222,7 @@ DONE
 - Query: Parsing - Return Debug info in case of  errors
 - Query: Parsing - Added detection of endless looping and prevention of OutOfMemoryError
 - Query: Widget Display Query Results: Prevent saving queries with parsing issues and when permissions are missing.
+- Query: Widget Display Query Results: Added Task Support for alerting.
 - Query: Fixed Comma after Binary Expression breaks query by creating array in the wrong place
 - Query: Loader does not block query editor
 - Query: Support time parameters ($earliest$ ...) in query editor
