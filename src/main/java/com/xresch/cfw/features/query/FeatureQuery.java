@@ -7,6 +7,7 @@ import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.extensions.web.CFWQuerySourceWeb;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandChart;
@@ -86,7 +87,6 @@ import com.xresch.cfw.features.query.sources.CFWQuerySourceJson;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceRandom;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceText;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceThreaddump;
-import com.xresch.cfw.features.query.sources.CFWQuerySourceWeb;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
@@ -227,8 +227,6 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerSource(new CFWQuerySourceRandom(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceText(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceThreaddump(null));
-		CFW.Registry.Query.registerSource(new CFWQuerySourceWeb(null));
-		
 		
 		//----------------------------------
 		// Register Widgets

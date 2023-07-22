@@ -27,7 +27,7 @@ public class Permission extends CFWObject{
 	public static final String CFW_USER_MANAGEMENT = "User Management";
 	
 
-	enum PermissionFields{
+	public enum PermissionFields{
 		PK_ID, 
 		CATEGORY,
 		NAME,

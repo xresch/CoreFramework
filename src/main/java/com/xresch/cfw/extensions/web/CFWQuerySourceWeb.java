@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.query.sources;
+package com.xresch.cfw.extensions.web;
 
 import java.text.ParseException;
 import java.util.HashMap;
