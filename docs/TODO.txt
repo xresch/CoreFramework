@@ -44,6 +44,8 @@ Potential TODOs
   - Send Mails
   - Cleanup Actions
 
+- Features: EAV Table plus API | Source | Widget | Dashboard Stats
+
 - Features: Spaces
   - HTML Selector
   - SpacePermissions in SessionData
@@ -90,7 +92,7 @@ Potential TODOs
 - Query: function: length() should support arrays and objects
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
-- Query: Command pivot
+- Query: Command statsx (pivot)
 - Query: Command formatfield - sparkline format (or new command)
 - Query: arrayify (for subquery results)
 - Query: Manual Page - How to create charts 
@@ -104,7 +106,6 @@ Potential TODOs
 	- metadata template
 	- mimic calling mimic
 	
-
 - Charts Renderer: Add description to manual page "working with render".
 
 - cfw.js: Create Value-Renderer, only show value in tile.
@@ -250,6 +251,7 @@ DONE
 	- resultcompare
 	- resultconcat
 	- resultcopy
+	- statsmatrix
 	- unbox
 - Query: Added functions:
 	- abs

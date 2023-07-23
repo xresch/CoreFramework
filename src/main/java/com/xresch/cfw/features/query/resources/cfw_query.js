@@ -508,7 +508,7 @@ function cfw_query_initialDraw(){
 						<div class="scroll-fix" style="position: relative; height: auto; ">
 							<form id="${formID}">
 								<input id="cfw-formID" name="cfw-formID" type="hidden" value="${formID}">
-								<textarea id="query" name="query" class="query-text-format" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
+								<textarea id="query" name="query" class="query-text-format" spellcheck="false" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
 								<pre id="query-pre-element"><code id="query-highlighting" class="preview language-cfwquery query-text-format"></code></pre>
 							</form>
 						</div>
