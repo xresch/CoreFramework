@@ -364,6 +364,9 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 			}
 		}
 		
+		// Note: experimental, solved some issues but might also messed up.
+		parent.getContext().setFieldnames(fieldnameManager);
+		
 		commandToListen.addListener(new PipelineActionListener() {
 			
 			@Override
@@ -375,9 +378,6 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 				Set<String> namesFromContext = parent.getContext().getFinalFieldnames();
 
 				fieldnameManager.addSourceFieldnames(namesFromContext);
-
-				parent.getContext().setFieldnames(fieldnameManager);
-				
 				
 			}
 		});		

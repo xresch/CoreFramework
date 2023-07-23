@@ -503,12 +503,14 @@ function cfw_query_formatLink(span, value, linkText, displayAs, icon, target){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_query_formatList(span, value, bulletType){
-	
-	if(bulletType == null )	{ bulletType = "bullets";}
+function cfw_query_formatList(span, value, bulletType, paddingLeft){
 	
 	span.html('');
-	span.append(cfw_format_objectToHTMLList(value, bulletType));
+	if(typeof value == "object"){
+		span.append(CFW.format.objectToHTMLList(value, bulletType, paddingLeft));
+	}else{
+		span.append(value);
+	}
 }
 
 

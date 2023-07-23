@@ -263,6 +263,7 @@ DONE
 	- decode
 	- earliest
 	- earliestSet
+	- fields
 	- first
 	- floor
 	- last

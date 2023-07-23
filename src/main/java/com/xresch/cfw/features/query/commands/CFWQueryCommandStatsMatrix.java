@@ -171,8 +171,6 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 			}
 		}
 		
-		
-		this.fieldnameKeep(detectedFieldnames.toArray(new String[]{}));
 	}
 	
 	/***********************************************************************************************
@@ -247,6 +245,7 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 			}
 			
 			this.fieldnameKeep(detectedFieldnames.toArray(new String[]{}));
+
 			this.setDone();
 		}
 		

@@ -251,7 +251,9 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		CFWQueryCommandSource localPreviousSource = this.getPreviousSourceCommand();
 
 		if(localPreviousSource == null) { return this.parent.getContext().contextFieldnameManager;} 
-		
+//		}else {
+//			this.parent.getContext()localPreviousSource.contextField
+//		}
 		return localPreviousSource.getFieldManager();
 	}
 	

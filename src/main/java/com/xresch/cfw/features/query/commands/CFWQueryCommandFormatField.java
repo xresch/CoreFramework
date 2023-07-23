@@ -235,6 +235,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 						"Used to format an object as a list.",
 						new Object[][] {
 							new Object[] {"type", "bullets", "Type of the bullet points either: bullets|numbers|none."}
+							,new Object[] {"paddingLeft", "0px", "The indendation of the list."}
 						}
 						).example(
 								"#Displays the list without bullets."
@@ -648,26 +649,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void initializeAction() throws Exception {
-		
-		//--------------------------------------
-		// Do this here to make the command removable for command 'mimic'
-		for(QueryPartAssignment assignment : assignmentParts) {
-			
-			ArrayList<String> fieldnames = new ArrayList<>();
-			QueryPart leftside = assignment.getLeftSide();
-			
-			if(leftside instanceof QueryPartArray) {
-				fieldnames = ((QueryPartArray)leftside).getAsStringArray(null, true);
-				
-			}else {
-				// add as String
-				fieldnames.add(assignment.getLeftSideAsString(null));
-			}
-
-			QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
-			addFormatter(this.parent.getContext(), fieldnames, valuePart);
-			
-		}
+		//do nothing
 	}
 	
 	/***********************************************************************************************
@@ -676,6 +658,29 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
+		//--------------------------------------
+		// Do this here to allow the functions
+		// like fields() being used in the command 
+		if(!this.isPreviousDone()) {
+			return;
+		}
+		
+		//--------------------------------------
+		// Do this here to allow the functions
+		// like fields() being used in the command 
+		for(QueryPartAssignment assignment : assignmentParts) {
+			
+			ArrayList<String> fieldnames = new ArrayList<>();
+			QueryPart leftside = assignment.getLeftSide();
+			QueryPartValue leftValue = leftside.determineValue(null);
+			
+			fieldnames.addAll(leftValue.getAsStringArray());
+
+			QueryPartValue valuePart = assignment.getRightSide().determineValue(null);
+			addFormatter(this.parent.getContext(), fieldnames, valuePart);
+			
+		}
+
 		// Do nothing, inQueue is the same as outQueue
 		this.setDoneIfPreviousDone();
 	
