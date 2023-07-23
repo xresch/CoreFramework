@@ -44,6 +44,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		, DECIMALS
 		, DURATION
 		, LINK
+		, LIST
 		, LOWERCASE
 		, NONE
 		, PERCENT
@@ -224,6 +225,22 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield URL=link,\"Open\",button"
 			)
 		);
+		
+		//------------------------------------------------
+		// List
+		//------------------------------------------------
+		formatterDefinitionArray.put(FieldFormatterName.LIST.toString(),
+				instance.new FormatterDefinition(
+						FieldFormatterName.LIST.toString(),
+						"Used to format an object as a list.",
+						new Object[][] {
+							new Object[] {"type", "bullets", "Type of the bullet points either: bullets|numbers|none."}
+						}
+						).example(
+								"#Displays the list without bullets."
+										+"\r\n| source random | formatfield OBJECTS=[list,\"none\",]"
+								)
+				);
 		
 		//------------------------------------------------
 		// Lowercase 

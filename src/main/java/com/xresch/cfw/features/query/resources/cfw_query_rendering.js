@@ -163,6 +163,7 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
 				case 'duration': 			cfw_query_formatDuration(resultSpan, value, current[1]); break;
 				case 'ea'+'stere'+'ggs': 	cfw_query_formatEa_sterE_ggs(resultSpan, value); break;
 				case 'link': 				cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
+				case 'list': 				cfw_query_formatList(resultSpan, value, current[1]); break;
 				case 'lowercase': 			cfw_query_formatLowercase(resultSpan); break;
 				case 'none': 				return $('<span class="">').text(value); break;
 				case 'percent': 			cfw_query_formatPercent(resultSpan, value, current[1], current[2], current[3], current[4]); break;
@@ -498,6 +499,18 @@ function cfw_query_formatLink(span, value, linkText, displayAs, icon, target){
 	span.html('');
 	span.append(linkElement);
 }
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatList(span, value, bulletType){
+	
+	if(bulletType == null )	{ bulletType = "bullets";}
+	
+	span.html('');
+	span.append(cfw_format_objectToHTMLList(value, bulletType));
+}
+
 
 
 /*******************************************************************************

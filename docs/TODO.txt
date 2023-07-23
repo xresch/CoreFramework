@@ -90,6 +90,8 @@ Potential TODOs
 - Query: function: math ceil/floor/abs etc...
 - Query: function: array() aggregation
 - Query: function: length() should support arrays and objects
+- Query: function: fields() - returning a list of all fields
+- Query: function: fieldshidden()
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
 - Query: Command statsx (pivot)
@@ -235,6 +237,7 @@ DONE
 - Query: Modulo operator('%') is now supported by the CFWQL syntax
 - Query: Added API endpoint "Query >> execute"
 - Query: Command: formatfield - added percent formatter
+- Query: Command: formatfield - added list formatter
 - Query: Command: metadata - added special property "template"
 - Query: Autocomplete - Added Open Manual Button 
 - Query: Autocomplete - Added "f:" to get list of functions

@@ -3102,15 +3102,25 @@ function cfw_format_formToArray(formOrID, numbersAsStrings){
  * @param convert a json object to html
  * @return html string
  *************************************************************************************/
-function cfw_format_objectToHTMLList(object){
+function cfw_format_objectToHTMLList(object, style){
+	
+	if(style == null){
+		style = "bullets";
+	}
+	
 	
 	var htmlString = '<ul>';
+	if(style == "numbers"){
+		htmlString = '<ol>';
+	}else if(style == "none"){
+		htmlString = '<ul style="list-style-type: none;">';
+	}
 	
 	if(Array.isArray(object)){
 		for(var i = 0; i < object.length; i++ ){
 			var currentItem = object[i];
 			if(typeof currentItem == "object"){
-				htmlString += '<li><strong>Object:&nbsp;</strong>'
+				htmlString += '<li><b>Object:&nbsp;</b>'
 					+ cfw_format_objectToHTMLList(currentItem)
 				+'</li>';
 			}else{
