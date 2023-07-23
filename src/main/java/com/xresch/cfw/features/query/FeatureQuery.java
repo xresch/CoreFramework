@@ -440,12 +440,10 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		//----------------------------------
 		// Functions Main Page
-		ManualPage functionsMainPage = new ManualPage("Functions")
-				.faicon("fas fa-cog")
-				.content("&nbsp;")
-				;
 		
-		ROOT_MANUAL_PAGE.addChild(functionsMainPage);
+		ManualPage functionsMainPage = new CFWQueryManualPageRootForFunctions(ROOT_MANUAL_PAGE, "Functions")
+				.faicon("fas fa-cog")
+			;
 		
 		//----------------------------------
 		// Pages for each Function

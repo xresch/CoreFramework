@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
@@ -23,6 +24,16 @@ public class CFWQueryFunctionLastIndexOf extends CFWQueryFunction {
 	@Override
 	public String uniqueName() {
 		return "lastindexof";
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_STRINGS);
+		return tags;
 	}
 	
 	/***********************************************************************************************

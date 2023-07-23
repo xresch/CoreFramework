@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.functions;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 
 import com.google.gson.JsonArray;
@@ -28,6 +29,16 @@ public class CFWQueryFunctionMax extends CFWQueryFunction {
 	@Override
 	public String uniqueName() {
 		return "max";
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_AGGREGATION);
+		return tags;
 	}
 	
 	/***********************************************************************************************

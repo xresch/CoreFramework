@@ -1,16 +1,14 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
-import com.google.common.base.Strings;
-import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.logging.CFWLog;
 
 public class CFWQueryFunctionType extends CFWQueryFunction {
 
@@ -26,6 +24,18 @@ public class CFWQueryFunctionType extends CFWQueryFunction {
 	public String uniqueName() {
 		return "type";
 	}
+	
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_CODING);
+		return tags;
+	}
+	
 	
 	/***********************************************************************************************
 	 * 

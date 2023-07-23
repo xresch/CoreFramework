@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -26,6 +27,16 @@ public class CFWQueryFunctionRandomFrom extends CFWQueryFunction {
 		return "randomFrom";
 	}
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_CODING);
+		return tags;
+	}
+		
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/

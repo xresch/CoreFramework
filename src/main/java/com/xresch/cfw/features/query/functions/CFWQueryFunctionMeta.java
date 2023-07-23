@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -23,6 +24,16 @@ public class CFWQueryFunctionMeta extends CFWQueryFunction {
 	@Override
 	public String uniqueName() {
 		return "meta";
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_CODING);
+		return tags;
 	}
 	
 	/***********************************************************************************************

@@ -1,6 +1,5 @@
 package com.xresch.cfw.features.query.functions;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import com.xresch.cfw._main.CFW;
@@ -9,6 +8,11 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
+											//!!!!!!!!!!!!!!!!!!!!!!!
+											//!!!!!!!!!!!!!!!!!!!!!!!
+											// Beware of the mighty
+											// extension!
+											// vvvvvvvvvvvvvvvvvvvvvv
 public class CFWQueryFunctionMedian extends CFWQueryFunctionPerc {
 	
 	public CFWQueryFunctionMedian(CFWQueryContext context) {

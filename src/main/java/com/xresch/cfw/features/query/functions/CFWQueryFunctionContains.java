@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -26,6 +27,17 @@ public class CFWQueryFunctionContains extends CFWQueryFunction {
 	@Override
 	public String uniqueName() {
 		return "contains";
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_ARRAYS);
+		tags.add(CFWQueryFunction.TAG_OBJECTS);
+		return tags;
 	}
 	
 	/***********************************************************************************************

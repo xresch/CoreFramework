@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
@@ -23,6 +24,18 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 	public String uniqueName() {
 		return "timeframeOffset";
 	}
+	
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_TIME);
+		return tags;
+	}
+	
 	
 	/***********************************************************************************************
 	 * 

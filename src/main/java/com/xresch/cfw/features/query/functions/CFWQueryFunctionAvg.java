@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -32,6 +33,17 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	@Override
 	public String uniqueName() {
 		return "avg";
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_MATH);
+		tags.add(CFWQueryFunction.TAG_AGGREGATION);
+		return tags;
 	}
 	
 	/***********************************************************************************************

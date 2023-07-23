@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.functions;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TreeSet;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
@@ -24,6 +25,16 @@ public class CFWQueryFunctionNow extends CFWQueryFunction {
 	@Override
 	public String uniqueName() {
 		return "now";
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_TIME);
+		return tags;
 	}
 	
 	/***********************************************************************************************

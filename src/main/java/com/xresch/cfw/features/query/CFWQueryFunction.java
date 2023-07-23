@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
@@ -16,6 +17,15 @@ public abstract class CFWQueryFunction{
 
 	protected CFWQueryContext context;
 	
+	public static final String TAG_AGGREGATION = "aggregation";
+	public static final String TAG_ARRAYS = "arrays";
+	public static final String TAG_GENERAL = "general";
+	public static final String TAG_CODING = "coding";
+	public static final String TAG_MATH = "math";
+	public static final String TAG_OBJECTS = "objects";
+	public static final String TAG_STRINGS = "strings";
+	public static final String TAG_TIME = "time";
+	
 	public CFWQueryFunction(CFWQueryContext context) {
 		this.context = context;
 	}
@@ -24,6 +34,11 @@ public abstract class CFWQueryFunction{
 	 * 
 	 ***********************************************************************************************/
 	public abstract String uniqueName();
+	
+	/***********************************************************************************************
+	 * Return an arrayList with Tags
+	 ***********************************************************************************************/
+	public abstract TreeSet<String> getTags();
 	
 	/***********************************************************************************************
 	 * Return a short description that can be shown in content assist and will be used as intro text

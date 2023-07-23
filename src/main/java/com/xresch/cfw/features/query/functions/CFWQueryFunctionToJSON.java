@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
@@ -26,6 +27,21 @@ public class CFWQueryFunctionToJSON extends CFWQueryFunction {
 	public String uniqueName() {
 		return "tojson";
 	}
+	
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_CODING);
+		tags.add(CFWQueryFunction.TAG_STRINGS);
+		tags.add(CFWQueryFunction.TAG_OBJECTS);
+		tags.add(CFWQueryFunction.TAG_ARRAYS);
+		return tags;
+	}
+	
 	
 	/***********************************************************************************************
 	 * 

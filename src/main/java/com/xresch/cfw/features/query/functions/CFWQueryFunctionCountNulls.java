@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -28,6 +29,17 @@ public class CFWQueryFunctionCountNulls extends CFWQueryFunction {
 	@Override
 	public String uniqueName() {
 		return "countnulls";
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_MATH);
+		tags.add(CFWQueryFunction.TAG_AGGREGATION);
+		return tags;
 	}
 	
 	/***********************************************************************************************

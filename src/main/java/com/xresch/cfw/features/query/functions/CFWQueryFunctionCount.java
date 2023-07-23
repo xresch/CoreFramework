@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
@@ -24,6 +25,17 @@ public class CFWQueryFunctionCount extends CFWQueryFunction {
 	@Override
 	public String uniqueName() {
 		return "count";
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_MATH);
+		tags.add(CFWQueryFunction.TAG_AGGREGATION);
+		return tags;
 	}
 	
 	/***********************************************************************************************

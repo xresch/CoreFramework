@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.TreeSet;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
@@ -26,6 +27,18 @@ public class CFWQueryFunctionTimeParse extends CFWQueryFunction {
 	public String uniqueName() {
 		return "timeparse";
 	}
+	
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public TreeSet<String> getTags(){
+		TreeSet<String> tags = new TreeSet<>();
+		tags.add(CFWQueryFunction.TAG_TIME);
+		return tags;
+	}
+	
 	
 	/***********************************************************************************************
 	 * 

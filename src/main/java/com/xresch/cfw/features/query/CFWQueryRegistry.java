@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query;
 import java.util.ArrayList;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
@@ -275,11 +276,33 @@ public class CFWQueryRegistry {
 	}
 	
 	/***********************************************************************
-	 * Removes a CFWQueryFunction class to the registry.
+	 * Returns the map of function names and function classes.
 	 * @param objectClass
 	 ***********************************************************************/
 	public static TreeMap<String, Class<? extends CFWQueryFunction>> getFunctionList()  {
 		return queryFunctionMap;
+	}
+	
+	/***********************************************************************
+	 * 
+	 * @param objectClass
+	 ***********************************************************************/
+	public static TreeMap<String, ArrayList<CFWQueryFunction>> getFunctionsByTags()  {
+		TreeMap<String, ArrayList<CFWQueryFunction>> functionsByTags = new TreeMap<>();
+		CFWQuery pseudoQuery = new CFWQuery();
+		
+		for(Entry<String, Class<? extends CFWQueryFunction>> entry : queryFunctionMap.entrySet()) {
+			CFWQueryFunction current = createFunctionInstance(pseudoQuery.getContext(), entry.getKey());
+			
+			for(String tag : current.getTags()) {
+				if( !functionsByTags.containsKey(tag) ){
+					functionsByTags.put(tag, new ArrayList<CFWQueryFunction>() );
+				}
+				functionsByTags.get(tag).add(current);
+			}
+		}
+		
+		return functionsByTags;
 	}
 	
 	/***********************************************************************
