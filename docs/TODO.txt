@@ -87,7 +87,6 @@ Potential TODOs
 - Query: Improve Autocomplete
 - Query: function: math ceil/floor/abs etc...
 - Query: function: array() aggregation
-- Query: function: stdev() aggregation
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
 - Query: Command pivot
@@ -336,6 +335,7 @@ DONE
 	- nullto
 	- perc
 	- round
+	- stdev
 	- substring
 	- sum
 	- trim

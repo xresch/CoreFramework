@@ -1,7 +1,7 @@
 
-<p>This function is used to calculate averages. It supports aggregation and can be used in aggregation commands.</p>
+<p>This function is used to calculate standar deviations. It supports aggregation and can be used in aggregation commands.</p>
 
-<p>Following query uses some json example data to demonstrate the average-function:</p>
+<p>Following query uses some json example data to demonstrate the stdev-function:</p>
 <pre><code class="language-cfwquery">| source json data=`
 [
 	 {index: 0, array: [1,2,3], object: {a: 0, b: 1, c: 3 } }
@@ -13,33 +13,33 @@
 `
 | set 
 	# return number of items in array that are null
-	AVG_ARRAY=avg(array)
+	STDEV_ARRAY=stdev(array)
 	# treat nulls as zero in the statistics
-	AVG_ARRAY_NULLS=avg(array,true)
+	STDEV_ARRAY_NULLS=stdev(array,true)
 	# returns the average of all numbers of all fields
-	AVG_OBJECT=avg(object)
+	STDEV_OBJECT=stdev(object)
 	# treat nulls as zero in the statistics
-	AVG_OBJECT_NULLS=avg(object,true)
+	STDEV_OBJECT_NULLS=stdev(object,true)
 	# if input is a single number, returns that number
-	AVG_NUMBER=avg(index)
+	STDEV_NUMBER=stdev(index)
 	# following will return null
-	AVG_ZERO=avg()
-	AVG_NULL=avg(null)
-	UNSUPPORTED_A=avg(true)
-	UNSUPPORTED_B=avg("some_string")</code></pre>
+	STDEV_ZERO=stdev()
+	STDEV_NULL=stdev(null)
+	UNSUPPORTED_A=stdev(true)
+	UNSUPPORTED_B=stdev("some_string")</code></pre>
 
 <p>Following is an example on how to use this function in aggregation commands:</p>
 <pre><code class="language-cfwquery">| source random records=10000
 | set VALUE=if(random()>30, VALUE, null) # add some nulls
 | stats by=[LIKES_TIRAMISU] 	
-	"AVG"=avg(VALUE) # ignore nulls, 3 decimal precision
-	"AVG2DEC"=avg(VALUE, true, 2) # count nulls as 0, 2 decimals
-	"AVG_ZERO_DEC"=avg(VALUE, false, 0) # ignore nulls, no decimals
+	"STDEV"=stdev(VALUE) # ignore nulls, 3 decimal precision
+	"STDEV2DEC"=stdev(VALUE, true, 2) # count nulls as 0, 2 decimals
+	"STDEV_ZERO_DEC"=stdev(VALUE, false, 0) # ignore nulls, no decimals
 | formatfield # keep stuff aligned with decimal point
-	["AVG", "AVG2DEC", "AVG_ZERO_DEC"] = [ 
+	["STDEV", "STDEV2DEC", "STDEV_ZERO_DEC"] = [ 
 		  ['decimals', 3]
 		, ['align', "right"] 
-	]</code></pre>
+	] </code></pre>
 
 
 

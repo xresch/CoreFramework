@@ -506,9 +506,9 @@ public class WidgetQueryResults extends WidgetDefinition {
 				// Create Message
 				String baseMessage = "The following record(s) have reached the threshold "+alertThreshholdString+":";
 				String messagePlaintext = baseMessage+" "+metricListText;
-				String messageHTML = "<p>"+baseMessage+"</p>";
+				String messageHTML = widgetLinkHTML;
+				messageHTML += "<p>"+baseMessage+"</p>";
 				messageHTML += metricTableHTML;
-				messageHTML += widgetLinkHTML;
 
 				CFW.Messages.addErrorMessage(messagePlaintext);
 				

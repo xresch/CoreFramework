@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Map.Entry;
@@ -14,15 +15,16 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
-public class CFWQueryFunctionAvg extends CFWQueryFunction {
+public class CFWQueryFunctionStdev extends CFWQueryFunction {
 
-	private int count = 0; 
+	public static final String FUNCTION_NAME = "stdev";
+	private ArrayList<BigDecimal> values = new ArrayList<BigDecimal>(); 
 	private BigDecimal sum = new BigDecimal(0); 
 	
 	private boolean isAggregated = false;
 	private int precision = 3;
 	
-	public CFWQueryFunctionAvg(CFWQueryContext context) {
+	public CFWQueryFunctionStdev(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -31,7 +33,7 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "avg";
+		return FUNCTION_NAME;
 	}
 	
 	/***********************************************************************************************
@@ -39,14 +41,14 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "avg(valueOrFieldname, includeNulls, precision)";
+		return FUNCTION_NAME+"(valueOrFieldname, includeNulls, precision)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Aggregation function to create average.";
+		return "Aggregation function to calculate standard deviation.";
 	}
 	
 	/***********************************************************************************************
@@ -57,7 +59,7 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 		return "<p><b>valueOrFieldname:&nbsp;</b>The value or fieldname used for the average.</p>"
 			 + "<p><b>includeNulls:&nbsp;</b>(Optional)Toggle if null values should be included in the average(Default:false).</p>"
 			 + "<p><b>precision:&nbsp;</b>(Optional)Decimal precision of the result.(Default:3)</p>"
-			 ;
+			;
 	}
 
 	/***********************************************************************************************
@@ -65,7 +67,7 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_avg.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_"+FUNCTION_NAME+".html");
 	}
 
 
@@ -84,29 +86,60 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	private void addValueToAggregation(QueryPartValue value, boolean countNulls) {
 		
 		if(value.isNumberOrNumberString()) {
-			count++;
+			values.add(value.getAsBigDecimal());
 			sum = sum.add(value.getAsBigDecimal());
 		}else if(countNulls && value.isNull()) {
-			count++;
-			// sum + 0
+			values.add(BigDecimal.ZERO);
 		}
 	}
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	private QueryPartValue calculateAverage() {
+	private QueryPartValue calculateStandardDeviation() {
 		
-		if(count == 0) {
+		if(values.size() == 0) {
 			return QueryPartValue.newNumber(0);
 		}
+	
+//		How to calculate standard deviation:
+//		Step 1: Find the mean/average.
+//		Step 2: For each data point, find the square of its distance to the mean.
+//		Step 3: Sum the values from Step 2.
+//		Step 4: Divide by the number of data points.
+//		Step 5: Take the square root.
 		
-		BigDecimal average = sum.divide(new BigDecimal(count), precision, RoundingMode.HALF_UP);
+		//-----------------------------------------
+		// STEP 1: Find Average
+		BigDecimal count = new BigDecimal(values.size());
+		BigDecimal average = sum.divide(count, RoundingMode.HALF_UP);
+		
+		BigDecimal sumDistanceSquared = BigDecimal.ZERO;
+		for(BigDecimal value : values) {
+			//-----------------------------------------
+			// STEP 2: For each data point, find the 
+			// square of its distance to the mean.
+			BigDecimal distance = value.subtract(average).abs();
+			//-----------------------------------------
+			// STEP 3: Sum the values from Step 2.
+			sumDistanceSquared = sumDistanceSquared.add(distance.pow(2));
+		}
+		
+		//-----------------------------------------
+		// STEP 4 & 5: Divide and take square root
+		BigDecimal divided = sumDistanceSquared.divide(count, RoundingMode.HALF_UP);
+		
+		// TODO JDK8 Migration: should work with JDK 9
+		// MathContext mc = new MathContext(6, RoundingMode.HALF_UP);
+		// BigDecimal standardDeviation = divided.sqrt(mc);
+		BigDecimal standardDeviation = 
+				new BigDecimal(Math.sqrt(divided.doubleValue()))
+				.setScale(precision, RoundingMode.HALF_UP);
 		
 		//reset values when calculation is done
-		count = 0;
+		values.clear();
 		sum = new BigDecimal(0);
-		return QueryPartValue.newNumber(average);
+		return QueryPartValue.newNumber(standardDeviation);
 	}
 	
 	/***********************************************************************************************
@@ -139,9 +172,8 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-	
 		if(isAggregated) {			
-			return calculateAverage();
+			return calculateStandardDeviation();
 		}else if(parameters.size() == 0) {
 			return QueryPartValue.newNull();
 		}else {
@@ -162,7 +194,7 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 					QueryPartValue value = QueryPartValue.newFromJsonElement(array.get(i));
 					addValueToAggregation(value, countNulls);
 				}
-				return calculateAverage();
+				return calculateStandardDeviation();
 				
 			}else if(param.isJsonObject()) {
 				
@@ -170,13 +202,12 @@ public class CFWQueryFunctionAvg extends CFWQueryFunction {
 					QueryPartValue value = QueryPartValue.newFromJsonElement(entry.getValue());
 					addValueToAggregation(value, countNulls);
 				}
-				return calculateAverage();
+				return calculateStandardDeviation();
 			}else if(param.isNumberOrNumberString()) {
 				
 				addValueToAggregation(param, countNulls);
-				return calculateAverage();
+				return calculateStandardDeviation();
 			}
-			
 			
 		}
 		
