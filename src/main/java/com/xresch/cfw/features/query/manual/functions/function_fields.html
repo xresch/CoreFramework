@@ -1,0 +1,20 @@
+
+<p>The fields-function returns a array containing all the fieldnames available at that point of time.</p>
+
+<p>This command is useful in cases the fieldnames are dynamic like when using statsmatrix command:</p>
+
+<pre><code class="language-cfwquery">| source random records=100 type=series
+| keep COUNT, CLASS ITEM
+| source random records=100 type=series
+| sort CLASS
+| statsmatrix 
+	column=CLASS
+	row=ITEM
+	count=count(COUNT) 
+	AVG=avg(COUNT) 
+	SUM=sum(COUNT)
+| formatfield
+	fields()=['list', "none"]</code></pre>
+
+
+

@@ -163,9 +163,9 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
 				case 'duration': 			cfw_query_formatDuration(resultSpan, value, current[1]); break;
 				case 'ea'+'stere'+'ggs': 	cfw_query_formatEa_sterE_ggs(resultSpan, value); break;
 				case 'link': 				cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
-				case 'list': 				cfw_query_formatList(resultSpan, value, current[1]); break;
+				case 'list': 				cfw_query_formatList(resultSpan, value, current[1], current[2]); break;
 				case 'lowercase': 			cfw_query_formatLowercase(resultSpan); break;
-				case 'none': 				return $('<span class="">').text(value); break;
+				case 'none': 				cfw_query_formatNone(resultSpan, value); break;
 				case 'percent': 			cfw_query_formatPercent(resultSpan, value, current[1], current[2], current[3], current[4]); break;
 				case 'prefix': 				cfw_query_formatPrefix(resultSpan, value, current[1]); break;
 				case 'postfix': 			cfw_query_formatPostfix(resultSpan, value, current[1]); break;
@@ -522,6 +522,21 @@ function cfw_query_formatLowercase(span){
 	
 	span.addClass('text-lowercase');
 	span.removeClass('text-uppercase');
+
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatNone(span, value){
+	
+	span.html('');
+
+	if(typeof value === 'object'){
+		span.text(JSON.stringify(value).replaceAll(',',', ') );
+	}else{
+		span.text(value);
+	}
 
 }
 
