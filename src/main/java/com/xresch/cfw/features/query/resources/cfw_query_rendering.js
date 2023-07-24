@@ -530,8 +530,15 @@ function cfw_query_formatLowercase(span){
  ******************************************************************************/
 function cfw_query_formatNone(span, value){
 	
+	//-----------------------
+	// Reset All Styles
 	span.html('');
+	span.removeAttr('style');
+	span.removeClass();
+	span.addClass('format-base');
 
+	//-----------------------
+	// Set Value
 	if(typeof value === 'object'){
 		span.text(JSON.stringify(value).replaceAll(',',', ') );
 	}else{

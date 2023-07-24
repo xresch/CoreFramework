@@ -34,7 +34,7 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 	private LinkedHashMap<String, QueryPartFunction> functionMap = new LinkedHashMap<>();
 	
 	// contains row plus columnMaps
-	private TreeMap<String, TreeMap<String, AggregationGroup>> rowMap = new TreeMap<>();
+	private TreeMap<String, TreeMap<String, AggregationGroup>> rowMap = new TreeMap<>(CFW.Utils.Text.getAlphanumericComparator());
 	
 	private String columnFieldname = null;
 	private String rowFieldname = null;

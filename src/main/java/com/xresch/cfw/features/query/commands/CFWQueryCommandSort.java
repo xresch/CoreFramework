@@ -196,7 +196,7 @@ public class CFWQueryCommandSort extends CFWQueryCommand {
 							}else if(value2.isNull()) {
 								 compareResult = nullsBigger; 
 							}else {
-								compareResult = value1.getAsString().compareTo(value2.getAsString());
+								compareResult = CFW.Utils.Text.compareStringsAlphanum(value1.getAsString(), value2.getAsString());
 							}
 						}
 						
