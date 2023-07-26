@@ -75,7 +75,7 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" column=<columnFieldname> row=<rowFieldname> values=<function(params)>";
+		return COMMAND_NAME+" column=<columnFieldname> row=<rowFieldname> <targetFieldname>=<function(params)> [<targetFieldname>=<function(params)> ...]";
 	}
 	
 	/***********************************************************************************************
@@ -86,6 +86,7 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 		return 
 			   "<p><b>columnFieldname:&nbsp;</b>The name of the field used as the identifier for the columns.</p>" 
 			  +"<p><b>rowFieldname:&nbsp;</b>The name of the field used as the identifier for the rows.</p>" 
+			  +"<p><b>targetFieldname:&nbsp;</b>Name of the field to assign the resulting aggregation value.</p>"
 			  +"<p><b>function(params):&nbsp;</b>Call of an aggregation function.</p>"
 			  +"</p>"
 				;

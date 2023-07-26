@@ -16,5 +16,23 @@
 | formatfield
 	fields()=['list', "none"]</code></pre>
 
+<p>You can exclude fields by adding an array of strings you want to exclude:</p>
+
+<pre><code class="language-cfwquery">| meta BY = [ITEM, BOX_SIZE, CLASS]
+| source random records=100 type=series
+| statsmatrix 
+	column=CLASS
+	row=meta(BY)
+	count=count(COUNT) 
+	AVG=avg(COUNT) 
+	SUM=sum(COUNT)
+| sort meta(BY)
+| formatfield
+	fields(meta(BY))=['list', "none"] # for all fields except BY-fields
+	meta(BY)=[
+		 ['align', "center"]
+		,['css','color', "white"]
+	]</code></pre>
+
 
 

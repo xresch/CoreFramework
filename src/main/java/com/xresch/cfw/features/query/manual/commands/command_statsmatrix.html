@@ -1,0 +1,22 @@
+
+<p>Used to create statistical matrix using the values of one field as columns and one or more fields for grouping the rows.
+</p>
+
+<p>The following statsmatrix example uses the values of CLASS for the columns and 3 other fields for grouping the rows:
+</p>
+<pre><code class="language-cfwquery">| meta BY = [ITEM, BOX_SIZE, CLASS]
+| source random records=100 type=series
+| statsmatrix 
+	column=CLASS
+	row=meta(BY)
+	count=count(COUNT) 
+	AVG=avg(COUNT) 
+	SUM=sum(COUNT)
+| sort meta(BY)
+| formatfield
+	fields(meta(BY))=['list', "none"] # for all fields except BY-fields
+	meta(BY)=[
+		 ['align', "center"]
+		,['css','color', "white"]
+	]</code></pre>
+

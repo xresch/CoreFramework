@@ -1,8 +1,10 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.TreeSet;
 
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -49,8 +51,9 @@ public class CFWQueryFunctionFields extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"()";
+		return FUNCTION_NAME+"(excludeFieldsArray)";
 	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -64,7 +67,10 @@ public class CFWQueryFunctionFields extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return ""
+		return 
+			"<ul>"
+				+"<li><b>excludeFieldsArray:&nbsp;</b>(Optional) Array of fieldnames to exclude.</li>"
+			+"</ul>"
 			;
 	}
 
@@ -98,9 +104,22 @@ public class CFWQueryFunctionFields extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
-		return QueryPartValue.newJson(
-				this.context.getFieldnamesAsJsonArray()
-			);
+		
+		HashSet<String> detectedFieldnames = this.context.getFinalFieldnames();
+		if(parameters.size() > 0) {
+			QueryPartValue withoutFields = parameters.get(0);
+			
+			for( String fieldname : withoutFields.getAsStringArray()){
+				detectedFieldnames.remove(fieldname);
+			}
+		}
+		
+		JsonArray array = new JsonArray();
+		for(String fieldname : detectedFieldnames) {
+			array.add(fieldname);
+		}
+		
+		return QueryPartValue.newJson(array);
 	}
 
 }
