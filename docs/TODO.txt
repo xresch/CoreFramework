@@ -239,6 +239,7 @@ DONE
 - Query: Command: formatfield - added percent formatter
 - Query: Command: formatfield - added list formatter
 - Query: Command: metadata - added special property "template"
+- Query: Command: sort - improved to sort alpha-numerical
 - Query: Autocomplete - Added Open Manual Button 
 - Query: Autocomplete - Added "f:" to get list of functions
 - Query: Autocomplete - Added "f:xxx" to get list of filtered functions

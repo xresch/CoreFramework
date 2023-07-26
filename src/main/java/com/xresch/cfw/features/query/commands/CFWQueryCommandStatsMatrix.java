@@ -30,14 +30,13 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 	
 	private ArrayList<QueryPart> parts;
 	
-	private ArrayList<String> groupByFieldnames = new ArrayList<>();
+	private ArrayList<String> rowFieldnames = new ArrayList<>();
 	private LinkedHashMap<String, QueryPartFunction> functionMap = new LinkedHashMap<>();
 	
 	// contains row plus columnMaps
 	private TreeMap<String, TreeMap<String, AggregationGroup>> rowMap = new TreeMap<>(CFW.Utils.Text.getAlphanumericComparator());
 	
 	private String columnFieldname = null;
-	private String rowFieldname = null;
 	
 	private LinkedHashSet<String> detectedFieldnames = new LinkedHashSet<>();
 	private ArrayList<QueryPartAssignment> assignments = new ArrayList<>();
@@ -142,8 +141,9 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 						columnFieldname = assignmentValue.getAsString();
 					} else if(assignmentName.toLowerCase().equals("row")) {
 						QueryPartValue assignmentValue = currentPart.determineValue(null);
-						rowFieldname = assignmentValue.getAsString();
-						detectedFieldnames.add(rowFieldname);
+						rowFieldnames = assignmentValue.getAsStringArray();
+						detectedFieldnames.addAll(rowFieldnames);
+						
 					//--------------------------------------------------
 					// Any other parameter
 					} else {
@@ -185,7 +185,6 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 			
 			//----------------------------
 			// Create Group String
-			String groupID = "";
 			String columnValue = 
 					QueryPartValue.newFromJsonElement(
 							record.get(columnFieldname)
@@ -193,24 +192,38 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 			columnValue = (columnValue == null) ? "null" : columnValue;
 			detectedFieldnames.add(columnValue);
 			
-			String rowValue = 
-					QueryPartValue.newFromJsonElement(
-							record.get(rowFieldname)
-							).getAsString();
-			columnValue = (columnValue == null) ? "null" : columnValue;
-			
 			//----------------------------
-			// Create and Get Group
-			if(!rowMap.containsKey(rowValue)) {
-				TreeMap<String, AggregationGroup> newColumnMap = new TreeMap<>();
-				rowMap.put(rowValue, newColumnMap);
+			// Create Row Group String
+			String rowID = "";
+			
+			for(String fieldname : rowFieldnames) {
+				JsonElement element = record.get(fieldname);
+				if(element == null || element.isJsonNull()) {
+					rowID += "-cfwNullPlaceholder";
+				}else {
+					rowID += record.get(fieldname).toString();
+				}
 			}
 			
-			TreeMap<String, AggregationGroup> columnMap = rowMap.get(rowValue);
+
+			//----------------------------
+			// Create and Get Group
+			if(!rowMap.containsKey(rowID)) {
+				TreeMap<String, AggregationGroup> newColumnMap = new TreeMap<>();
+				rowMap.put(rowID, newColumnMap);
+			}
+			
+			TreeMap<String, AggregationGroup> columnMap = rowMap.get(rowID);
 			
 			if(!columnMap.containsKey(columnValue)) {
-				AggregationGroup newGroup = new AggregationGroup();
-
+				
+				JsonObject objectWithValues = new JsonObject();
+				for(String fieldname : rowFieldnames) {
+					
+					JsonElement element = record.get(fieldname);
+					objectWithValues.add(fieldname, element);
+				}
+				AggregationGroup newGroup = new AggregationGroup(new JsonObject(), objectWithValues);
 				newGroup.addFunctions(functionMap);
 				columnMap.put(columnValue, newGroup);
 			}
@@ -228,8 +241,13 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 		if(isPreviousDone() && getInQueue().isEmpty()) {
 			for(Entry<String, TreeMap<String, AggregationGroup>> rowEntry : rowMap.entrySet()) {
 				EnhancedJsonObject newRecord = new EnhancedJsonObject();
-				newRecord.addProperty(rowFieldname, rowEntry.getKey());
+				boolean isGroupAdded = false;
 				for(Entry<String, AggregationGroup> columnsEntry : rowEntry.getValue().entrySet()) {
+					
+					if(!isGroupAdded) {
+						newRecord.addAll(columnsEntry.getValue().getGroupValues());
+						isGroupAdded = true;
+					}
 					
 					EnhancedJsonObject value = columnsEntry.getValue().toRecord();
 					if(value.size() == 1) {
@@ -253,13 +271,20 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 	}
 	
 	public class AggregationGroup {
-	
+		
+		private JsonObject initialResultObject;
+		private JsonObject groupValues;
 		private ArrayList<String> targetFieldnames = new ArrayList<>();
 		private LinkedHashMap<String, QueryPartFunction> functionMap = new LinkedHashMap<>();
 		
-		public AggregationGroup() {
+		public AggregationGroup(JsonObject initialResultObject, JsonObject groupValues) {
+			this.initialResultObject = initialResultObject;
+			this.groupValues = groupValues;
 		}
 		
+		public JsonObject getGroupValues() {
+			return this.groupValues;
+		}
 		public void addFunctions(LinkedHashMap<String, QueryPartFunction> functions) {
 			
 			for(Entry<String, QueryPartFunction> entry : functions.entrySet()) {
@@ -284,8 +309,6 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 		
 		public EnhancedJsonObject toRecord() {
 			
-			JsonObject groupValues = new JsonObject();
-			
 			int index = 0;
 			for(Entry<String, QueryPartFunction> entry : functionMap.entrySet()) {
 				String propertyName = targetFieldnames.get(index);
@@ -294,11 +317,11 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 				QueryPartFunction functionPart = entry.getValue();
 				QueryPartValue aggregationValue = functionPart.executeFunctionInstance(instanceID, null);
 				
-				aggregationValue.addToJsonObject(propertyName, groupValues);
+				aggregationValue.addToJsonObject(propertyName, initialResultObject);
 				index++;
 			}
 			
-			return new EnhancedJsonObject(groupValues);
+			return new EnhancedJsonObject(initialResultObject);
 		}
 		
 	}
