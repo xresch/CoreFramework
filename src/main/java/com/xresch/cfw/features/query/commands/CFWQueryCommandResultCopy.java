@@ -25,6 +25,11 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
+/************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2023 
+ * @license MIT-License
+ ************************************************************************************************************/
 public class CFWQueryCommandResultCopy extends CFWQueryCommand {
 	
 	public static final String COMMAND_NAME = "resultcopy";

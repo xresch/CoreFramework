@@ -3,7 +3,6 @@ package com.xresch.cfw.features.query.commands;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Map.Entry;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -22,6 +21,11 @@ import com.xresch.cfw.features.query.parse.QueryPartFunction;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
+/************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2023 
+ * @license MIT-License
+ ************************************************************************************************************/
 public class CFWQueryCommandStats extends CFWQueryCommand {
 	
 	public static final String COMMAND_NAME = "stats";
@@ -218,7 +222,7 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 					object.add(fieldname, element);
 				}
 				
-				AggregationGroup newGroup = new AggregationGroup(object);
+				AggregationGroup newGroup = new AggregationGroup(object, null);
 
 				newGroup.addFunctions(functionMap);
 				groupMap.put(groupID, newGroup);
@@ -239,58 +243,6 @@ public class CFWQueryCommandStats extends CFWQueryCommand {
 				outQueue.add(group.toRecord());
 			}
 			this.setDone();
-		}
-		
-	
-	}
-	
-	public class AggregationGroup {
-	
-		private JsonObject groupValues;
-		private ArrayList<String> targetFieldnames = new ArrayList<>();
-		private LinkedHashMap<String, QueryPartFunction> functionMap = new LinkedHashMap<>();
-		
-		public AggregationGroup(JsonObject groupValues) {
-			this.groupValues = groupValues;
-		}
-		
-		public void addFunctions(LinkedHashMap<String, QueryPartFunction> functions) {
-			
-			for(Entry<String, QueryPartFunction> entry : functions.entrySet()) {
-				this.addFunction(entry.getKey(), entry.getValue());
-			}
-			
-		}
-
-		public void addFunction(String targetFieldname, QueryPartFunction functionPart) {
-			
-			targetFieldnames.add(targetFieldname);
-			String instanceID = functionPart.createManagedInstance();
-			functionMap.put(instanceID, functionPart);
-		}
-		
-		public void doAggregation(EnhancedJsonObject object) {
-			
-			for(Entry<String, QueryPartFunction> entry : functionMap.entrySet()) {
-				entry.getValue().aggregateFunctionInstance(entry.getKey(), object);
-			}
-		}
-		
-		public EnhancedJsonObject toRecord() {
-			
-			int index = 0;
-			for(Entry<String, QueryPartFunction> entry : functionMap.entrySet()) {
-				String propertyName = targetFieldnames.get(index);
-
-				String instanceID = entry.getKey();
-				QueryPartFunction functionPart = entry.getValue();
-				QueryPartValue aggregationValue = functionPart.executeFunctionInstance(instanceID, null);
-				
-				aggregationValue.addToJsonObject(propertyName, groupValues);
-				index++;
-			}
-			
-			return new EnhancedJsonObject(groupValues);
 		}
 		
 	}

@@ -3,7 +3,6 @@ package com.xresch.cfw.features.query.commands;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.TreeMap;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -16,17 +15,18 @@ import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
-import com.xresch.cfw.features.query.CFWQuerySource;
-import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.features.query.parse.QueryPartArray;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
+/************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2023 
+ * @license MIT-License
+ ************************************************************************************************************/
 public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	
 	public static final String COMMAND_NAME = "formatfield";

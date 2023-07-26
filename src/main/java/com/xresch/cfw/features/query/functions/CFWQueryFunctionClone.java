@@ -3,7 +3,6 @@ package com.xresch.cfw.features.query.functions;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
-import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -11,6 +10,11 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
+/************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2023 
+ * @license MIT-License
+ ************************************************************************************************************/
 public class CFWQueryFunctionClone extends CFWQueryFunction {
 
 	

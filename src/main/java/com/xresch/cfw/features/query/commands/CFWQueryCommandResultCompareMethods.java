@@ -14,17 +14,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.logging.CFWLog;
 
-/*************************************************************************
- * This class provides the methods which are used to compare two CSV-Files.
- * 
- * @author Reto Scheiwiller, 2023
- *************************************************************************/
 
+/************************************************************************************************************
+ * This class provides the methods which are used to compare two CSV-Files.
+ * @author Reto Scheiwiller, (c) Copyright 2023 
+ * @license MIT-License
+ ************************************************************************************************************/
 public class CFWQueryCommandResultCompareMethods {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandResultCompareMethods.class.getName());

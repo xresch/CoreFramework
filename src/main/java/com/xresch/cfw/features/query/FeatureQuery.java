@@ -94,11 +94,11 @@ import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
-/**************************************************************************************************************
+/************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2021 
+ * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
- **************************************************************************************************************/
+ ************************************************************************************************************/
 public class FeatureQuery extends CFWAppFeature {
 	
 	private static final String URI_QUERY = "/app/query";

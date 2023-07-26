@@ -32,6 +32,11 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
 import com.xresch.cfw.pipeline.PipelineActionListener;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
+/************************************************************************************************************
+ * 
+ * @author Reto Scheiwiller, (c) Copyright 2023 
+ * @license MIT-License
+ ************************************************************************************************************/
 public class CFWQueryCommandSource extends CFWQueryCommand {
 	
 	public static final String COMMAND_NAME = "source";
