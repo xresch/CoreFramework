@@ -65,8 +65,8 @@ public class CFWUtilsText {
             //------------------------------
             // Compare As Digits if both digits
             if(isDigit(c1) && isDigit(c2)) {
-        		int digits1 = 0;
-        		int digits2 = 0;
+        		long digits1 = 0;
+        		long digits2 = 0;
         		
         		int k1;
         		for(k1 = i+1; k1 < len1 && isDigit(c1); k1++ ) {
@@ -80,7 +80,12 @@ public class CFWUtilsText {
         		}
         		
         		if(digits1 != digits2) {
-            		return digits1 - digits2;
+        			if(digits1 < digits2) {
+        				return -1;
+        			}else {
+        				return 1;
+        			}
+            		
         		}else {
         			//
         			i = (k1 < k2) ? k1 : k2;
