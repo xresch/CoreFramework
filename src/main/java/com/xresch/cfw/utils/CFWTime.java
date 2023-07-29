@@ -169,23 +169,12 @@ public class CFWTime {
 				}else {
 					diff = amount - modulo;
 				}
-								
-				System.out.println("===========");
-				System.out.println("amount: "+amount);
-				System.out.println("valueToRound: "+valueToRound);
-				System.out.println("diff: "+diff);
-				
+												
 				calendar.add(this.calendarUnit, diff);
 
 			}
 			truncate(calendar);
-			
-			
-			
-			System.out.println("Truncated: "+CFW.Time.formatDateAsTimestamp(
-					zonedTimeFromEpoch(calendar.getTimeInMillis()))
-			);
-			
+						
 			return calendar.getTimeInMillis();
 		}
 		
