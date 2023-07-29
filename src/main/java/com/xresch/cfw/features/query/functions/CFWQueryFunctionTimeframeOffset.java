@@ -9,6 +9,7 @@ import com.xresch.cfw.features.query.CFWQueryFunction;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 /************************************************************************************************************
  * 
@@ -18,6 +19,8 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 
 	
+	public static final String FUNCTION_NAME = "timeframeOffset";
+
 	public CFWQueryFunctionTimeframeOffset(CFWQueryContext context) {
 		super(context);
 	}
@@ -27,7 +30,7 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "timeframeOffset";
+		return FUNCTION_NAME;
 	}
 	
 	
@@ -47,7 +50,7 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "timeframeOffset(shiftMultiplier, offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS)";
+		return FUNCTION_NAME+"(shiftMultiplier, offsetAmount, offsetUnit)";
 	}
 	/***********************************************************************************************
 	 * 
@@ -62,15 +65,13 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return 
-			   "<p><b>shiftMultiplier:&nbsp;</b>(Optional)Shifts the timeframe N-times by this multiplier(positive values: into future, Negative Values: into past).</p>"
-			  +"<p><b>offsetY:&nbsp;</b>(Optional)Offset in years.</p>"
-			  +"<p><b>offsetM:&nbsp;</b>(Optional)Offset in months.</p>"
-			  +"<p><b>offsetD:&nbsp;</b>(Optional)Offset in days.</p>"
-			  +"<p><b>offsetH:&nbsp;</b>(Optional)Offset in hours.</p>"
-			  +"<p><b>offsetMin:&nbsp;</b>(Optional)Offset in minutes.</p>"
-			  +"<p><b>offsetS:&nbsp;</b>(Optional)Offset in seconds.</p>"
-			  +"<p><b>offsetMS:&nbsp;</b>(Optional)Offset in milliseconds.</p>"
+		return "<ul>"
+				  +"<li><b>shiftMultiplier:&nbsp;</b>(Optional)Shifts the timeframe N-times by this multiplier(Positive Values: into future, Negative Values: into past).</li>"
+				  +"<li><b>offsetAmount:&nbsp;</b>(Optional) The amount to offset from present time.(Default: 0)</li>"
+				  +"<li><b>offsetUnit:&nbsp;</b>(Optional) The unit used to offset the time. One of the following(Default: 'm'):"
+				  + CFWTimeUnit.getOptionsHTMLList()
+				  + "</li>"
+			  + "</ul>"  
 			;
 	}
 
@@ -79,7 +80,7 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_timeframeoffset.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_"+FUNCTION_NAME+".html");
 	}
 
 
@@ -108,92 +109,51 @@ public class CFWQueryFunctionTimeframeOffset extends CFWQueryFunction {
 		//----------------------------------
 		// Default Params
 		int shiftMultiplier = 0;
-		int offsetY = 0;
-		int offsetM = 0;
-		int offsetD = 0;
-		int offsetH = 0;
-		int offsetMin = 0;
-		int offsetS = 0;
-		int offsetMS = 0;
-	
+		int offsetAmount = 0;
+		String offsetUnit = "m";
+			
 		//----------------------------------
 		// Get Parameters
 		int size = parameters.size(); 
-		
-		if(size > 0) {
-			QueryPartValue shiftMultiplierValue = parameters.get(0);
+		int index = 0;
+		if(size >index) {
+			
+			QueryPartValue shiftMultiplierValue = parameters.get(index);
 			if(shiftMultiplierValue.isNumberOrNumberString()) {
 				shiftMultiplier = shiftMultiplierValue.getAsInteger(); 
 			};
-		}
-
-		//----------------------------------
-		// offsetY
-		int index = 1;
-		if(size > index) {
-			QueryPartValue offsetYValue = parameters.get(index);
-			if(offsetYValue.isNumberOrNumberString()) { offsetY = offsetYValue.getAsInteger(); };
 			index++;
+
 			//----------------------------------
-			// offsetM
+			// Offset Amount
 			if(size > index) {
-				QueryPartValue offsetMValue = parameters.get(index);
-				if(offsetMValue.isNumberOrNumberString()) { offsetM = offsetMValue.getAsInteger(); };
+				QueryPartValue offsetAmmountValue = parameters.get(index);
+				if(offsetAmmountValue.isNumberOrNumberString()) { offsetAmount = offsetAmmountValue.getAsInteger(); };
 				index++;
 				//----------------------------------
-				// offsetD
+				// offset Unit
 				if(size > index) {
-					QueryPartValue offsetDValue = parameters.get(index);
-					if(offsetDValue.isNumberOrNumberString()) { offsetD = offsetDValue.getAsInteger(); };
+					QueryPartValue offsetUnitValue = parameters.get(index);
+					if(offsetUnitValue.isString()) { offsetUnit = offsetUnitValue.getAsString(); };
 					index++;
-					//----------------------------------
-					// offsetH
-					if(size > index) {
-						QueryPartValue offsetHValue = parameters.get(index);
-						if(offsetHValue.isNumberOrNumberString()) { offsetH = offsetHValue.getAsInteger(); };
-						index++;
-						//----------------------------------
-						// offsetMin
-						if(size > index) {
-							QueryPartValue offsetMinValue = parameters.get(index);
-							if(offsetMinValue.isNumberOrNumberString()) { offsetMin = offsetMinValue.getAsInteger(); };
-							index++;
-							//----------------------------------
-							// offsetS
-							if(size > index) {
-								QueryPartValue offsetSValue = parameters.get(index);
-								if(offsetSValue.isNumberOrNumberString()) { offsetS = offsetSValue.getAsInteger(); };
-								index++;
-								//----------------------------------
-								// offsetMS
-								if(size > index) {
-									QueryPartValue offsetMSValue = parameters.get(index);
-									if(offsetMSValue.isNumberOrNumberString()) { offsetMS = offsetMSValue.getAsInteger(); };
-									index++;
-								}
-							}
-						}
-					}
 				}
 			}
 		}
 		
-						
 		//----------------------------------
 		// Create Time and Format
-
 		long currentEarliest = this.context.getEarliestMillis();
 		long currentLatest = this.context.getLatestMillis();
 		long shiftByMillis = shiftMultiplier*(currentLatest-currentEarliest);
 		
+		long newEarliest = (currentEarliest+shiftByMillis);
+		long newLatest = (currentLatest+shiftByMillis);
 		
-		long newLatest = CFW.Time.offsetTime(
-				(currentLatest+shiftByMillis), offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS
-			);
-		
-		long newEarliest = CFW.Time.offsetTime(
-				(currentEarliest+shiftByMillis), offsetY, offsetM, offsetD, offsetH, offsetMin, offsetS, offsetMS
-				);
+		if(offsetAmount != 0 && CFWTimeUnit.has(offsetUnit)) {
+			CFWTimeUnit unit =CFWTimeUnit.valueOf(offsetUnit);
+			newEarliest = unit.offset(newEarliest, offsetAmount);
+			newLatest = unit.offset(newLatest, offsetAmount);
+		}
 		
 		this.context.setEarliest(newEarliest);
 		this.context.setLatest(newLatest);

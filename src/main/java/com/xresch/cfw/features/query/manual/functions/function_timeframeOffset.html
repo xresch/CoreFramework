@@ -10,7 +10,7 @@ It's main use is to select a second timeframe based on the current timeframe to 
 ;
 # offset the selected timeframe earliest/latest into the past one time
 # e.g. if the selected timeframe is 2 days, will shift the previous two days
-| execute timeframeoffset(-1) 
+| execute timeframeOffset(-1) 
 | source random records = 10
 | keep TIME</code></pre>
 
@@ -23,14 +23,14 @@ Following will offset the timeframe by one day:</p>
 | keep TIME
 ;
 # offset earliest/latest by one day, alternatively you can use earliestSet() or latestSet()
-| execute timeframeoffset(0,0,0,-1) 
+| execute timeframeOffset(0,-1,'d') 
 | source random records = 10
 | keep TIME</code></pre>
 
 <p>Here a slightly more advanced example using metadata as a parameter and the mimic command to execute the same query with different timeframes:</p>
 <pre><code class="language-cfwquery">| globals multidisplay=2
 | metadata shiftBy=0
-| execute timeframeoffset(meta(shiftBy))
+| execute timeframeOffset(meta(shiftBy))
 | source random records=10000
 | keep FIRSTNAME, VALUE, TIME		
 | stats	by=FIRSTNAME			

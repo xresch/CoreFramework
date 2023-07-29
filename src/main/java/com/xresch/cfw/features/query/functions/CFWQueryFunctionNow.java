@@ -21,6 +21,8 @@ import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 public class CFWQueryFunctionNow extends CFWQueryFunction {
 
 	
+	public static final String FUNCTION_NAME = "now";
+
 	public CFWQueryFunctionNow(CFWQueryContext context) {
 		super(context);
 	}
@@ -30,7 +32,7 @@ public class CFWQueryFunctionNow extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "now";
+		return FUNCTION_NAME;
 	}
 	
 	/***********************************************************************************************
@@ -48,14 +50,15 @@ public class CFWQueryFunctionNow extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "now(format, offsetAmount, offsetUnit)";
+		return FUNCTION_NAME+"(format, offsetAmount, offsetUnit)";
 	}
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns time based on present time and an optional offset. ";
+		return "Returns the current time with an optional offset. ";
 	}
 	
 	/***********************************************************************************************
@@ -78,7 +81,7 @@ public class CFWQueryFunctionNow extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_now.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_"+FUNCTION_NAME+".html");
 	}
 
 

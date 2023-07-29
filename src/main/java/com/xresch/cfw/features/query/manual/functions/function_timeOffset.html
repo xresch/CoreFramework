@@ -1,0 +1,19 @@
+
+<p>Following query uses the function to do various offsets of time:</p>
+
+<pre><code class="language-cfwquery">| source empty
+| set
+	now =timeoffset() # returns epoch milliseconds of present time 
+	oneYear = timeoffset(null, 1, 'y') #takes current time and offsets it by +1 year
+	oneMonth = timeoffset(now(),  -1, 'M') #takes current time and and offsets it by -1 month
+	oneDay = timeoffset(latest(),  -1, 'd') #takes latest time and and offsets it by -1 day
+	oneHour = timeoffset(latest(), -1, 'h') #takes latest time and and offsets it by -1 hour
+	oneMinute = timeoffset(latest(), -1, 'm') #takes latest time and and offsets it by -1 minute
+	oneSecond = timeoffset(latest(), -1, 's') #takes latest time and and offsets it by -1 second
+	fiftyMillis = timeoffset(latest(), -50, 'ms') #takes latest time and and offsets it by -50 millisecond
+| formatfield
+	# just some formatters
+	[now] = ['timestamp', "yyyy-MM-DD HH:mm:ss"]
+	[oneYear, oneMonth, oneDay] = ['date']
+	[oneHour, oneMinute, oneSecond, fiftyMillis] = ['timestamp', "HH:mm:ss.SSS"]</code></pre>
+
