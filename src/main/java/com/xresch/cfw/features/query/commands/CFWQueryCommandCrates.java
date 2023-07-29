@@ -17,6 +17,7 @@ import com.xresch.cfw.features.query.parse.QueryPart;
 import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 import com.xresch.cfw.pipeline.PipelineActionContext;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 
 /************************************************************************************************************
@@ -33,9 +34,10 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 	
 	private String type = "number";
 	private String byFieldname = null;
-	private String name = "Crate";
+	private String name = "CRATE";
 	private BigDecimal step = BigDecimal.TEN;
 	private BigDecimal multiplier = BigDecimal.ONE;
+	private String timeunit = "m";
 	private Integer maxgroups = 1000;
 	
 	/***********************************************************************************************
@@ -130,7 +132,6 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 		// target=GROUP
 		// step=10
 		// multiplier=1
-		// timeformat=null
 		// timeunit=ms
 		
 		//------------------------------------------
@@ -147,6 +148,7 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 				else if	 (assignmentName.equals("name")) {			name = assignmentValue.getAsString(); }
 				else if	 (assignmentName.equals("step")) {			step = assignmentValue.getAsBigDecimal(); }
 				else if	 (assignmentName.equals("multiplier")) {	multiplier = assignmentValue.getAsBigDecimal(); }
+				else if	 (assignmentName.equals("timeunit")) {		timeunit = assignmentValue.getAsString(); }
 				else if	 (assignmentName.equals("maxgroups")) {		maxgroups = assignmentValue.getAsInteger(); }
 
 				else {
@@ -164,6 +166,7 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 		if(name == null) { name = "Group";}
 		if(step == null) { step = BigDecimal.TEN;}
 		if(multiplier == null) { multiplier = BigDecimal.ZERO;}
+		if(timeunit == null || !CFWTimeUnit.has(timeunit)) { timeunit = "m";}
 		
 		//------------------------------------------
 		// Add Detected Fields
@@ -186,15 +189,13 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 				
 				QueryPartValue value = QueryPartValue.newFromJsonElement(record.get(byFieldname));
 				
-				String crateName = null;
 				switch(type) {
 					
-					case "number": 		crateName = evaluateNumber(value);	break;
-					case "alpha": 		crateName = evaluateAlpha(value);	break;
+					case "number": 		record.addProperty(name, evaluateNumber(value));	break;
+					case "alpha": 		record.addProperty(name, evaluateAlpha(value));	break;
+					case "time": 		record.addProperty(name,evaluateTime(value));	break;
 						
 				}
-				
-				record.addProperty(name, crateName);
 				
 				outQueue.add(record);
 			}
@@ -301,41 +302,17 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public String evaluateTime(QueryPartValue value) {
+	public Long evaluateTime(QueryPartValue value) {
 		
-		String crateName = null;
+		Long crateValue = null;
 		if(value.isNumberOrNumberString()) {
 
 			long timeMillis = value.getAsLong();
 			
-			
-			int rangeStart = 0;
-			int rangeEnd = step.intValue()-1;
-			
-//			while(true) {
-//
-//				if(rangeStart >= alpha.length()) { crateName = "Other"; break; }
-//				if(rangeEnd >= alpha.length()) { break; }
-//				
-//				if( 
-//					Character.compare(firstChar, alpha.charAt(rangeStart)) >= 0  
-//				 && Character.compare(firstChar, alpha.charAt(rangeEnd)) <= 0
-//				) {
-//					break;
-//				}
-//				
-//				rangeStart = rangeEnd+1;
-//				rangeEnd = rangeEnd+step.intValue();
-//				
-//			}
-//			
-//			if(crateName == null) {
-//				if(rangeEnd >= alpha.length()) { rangeEnd = alpha.length()-1; }
-//				crateName = alpha.charAt(rangeStart) + " - " + alpha.charAt(rangeEnd);
-//			}
+			crateValue = CFWTimeUnit.valueOf(timeunit).round(timeMillis, step.intValue());
 		}
 		
-		return crateName;
+		return crateValue;
 	}
 
 

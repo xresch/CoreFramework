@@ -49,7 +49,6 @@ public class CFWTime {
 		, d("days", 		TimeUnit.DAYS, 			ChronoUnit.DAYS, 	Calendar.DAY_OF_YEAR)
 		, M("months", 		null, 					ChronoUnit.MONTHS, 	Calendar.MONTH)
 		, y("years", 		null, 					ChronoUnit.YEARS, 	Calendar.YEAR)
-		, Y("years", 		null, 					ChronoUnit.YEARS, 	Calendar.YEAR)
 		;
 		
 		//==============================
@@ -137,17 +136,91 @@ public class CFWTime {
 		 * @return offset time in epoch milliseconds
 		 ********************************************************************************************/
 		public long offset(long epochMillis, int amount) { 
-			
-			if(this.calendarUnit == null){
-				return epochMillis;
-			}
-			
+						
 			Calendar calendar = Calendar.getInstance();
 			
 			calendar.setTimeInMillis(epochMillis);
 			calendar.add(this.calendarUnit, amount);
 			
 			return calendar.getTimeInMillis();
+		}
+		
+		/********************************************************************************************
+		 * Return time with an offset starting from the given time.
+		 * Use positive values to go to the future, use negative values to go to the past.
+		 * @param epochMillis the time in milliseconds which should be offset.
+		 * @param amount to offset for the selected time unit.
+		 * @return offset time in epoch milliseconds
+		 ********************************************************************************************/
+		public long round(long epochMillis, int amount) { 
+						
+			Calendar calendar = Calendar.getInstance();
+			
+			calendar.setTimeInMillis(epochMillis);
+			int valueToRound = calendar.get(this.calendarUnit);
+			
+			int modulo = (valueToRound % amount);
+			
+			if(modulo != 0) {
+				
+				int diff = 0;
+				if(modulo < (amount / 2)) {
+					diff = modulo*-1;
+				}else {
+					diff = amount - modulo;
+				}
+								
+				System.out.println("===========");
+				System.out.println("amount: "+amount);
+				System.out.println("valueToRound: "+valueToRound);
+				System.out.println("diff: "+diff);
+				
+				calendar.add(this.calendarUnit, diff);
+
+			}
+			truncate(calendar);
+			
+			
+			
+			System.out.println("Truncated: "+CFW.Time.formatDateAsTimestamp(
+					zonedTimeFromEpoch(calendar.getTimeInMillis()))
+			);
+			
+			return calendar.getTimeInMillis();
+		}
+		
+		/********************************************************************************************
+		 * Return time with an offset starting from the given time.
+		 * Use positive values to go to the future, use negative values to go to the past.
+		 * @param epochMillis the time in milliseconds which should be offset.
+		 * @return truncated time in epoch milliseconds
+		 ********************************************************************************************/
+		public long truncate(long epochMillis) { 
+						
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(epochMillis);
+			truncate(calendar);
+			
+			return calendar.getTimeInMillis();
+		}
+		
+		/********************************************************************************************
+		 * Truncates every time unit which is lower than this time unit.
+		 * For Example, if time unit is minute, it will truncate seconds and below.
+		 * @param calendar which time should be truncated
+		 * @return nothing
+		 ********************************************************************************************/
+		public void truncate(Calendar calendar) { 
+			switch(this) {
+				case y:	 calendar.set(Calendar.MONTH, 0);
+				case M:	 calendar.set(Calendar.DAY_OF_MONTH, 0);
+				case d:	 calendar.set(Calendar.HOUR, 0);
+				case h:	 calendar.set(Calendar.MINUTE, 0);
+				case m:	 calendar.set(Calendar.SECOND, 0);
+				case s:	 calendar.set(Calendar.MILLISECOND, 0);
+				default: break;
+						
+			}
 		}
 		
 	}
