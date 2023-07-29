@@ -164,7 +164,7 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 		type = type.trim().toLowerCase();
 		
 		if(name == null) { name = "Group";}
-		if(step == null) { step = BigDecimal.TEN;}
+		if(step == null || step.compareTo(BigDecimal.ZERO) == 0 ) { step = BigDecimal.TEN;}
 		if(multiplier == null) { multiplier = BigDecimal.ZERO;}
 		if(timeunit == null || !CFWTimeUnit.has(timeunit)) { timeunit = "m";}
 		
