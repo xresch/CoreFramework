@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -46,12 +47,17 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 	private LinkedHashSet<String> detectedFieldnames = new LinkedHashSet<>();
 	private ArrayList<QueryPartAssignment> assignments = new ArrayList<>();
 
+	private QueryPartValue listFormatter = null;
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	public CFWQueryCommandStatsMatrix(CFWQuery parent) {
 		super(parent);
+		JsonArray listFormatterParams = new JsonArray();
+		listFormatterParams.add("list");
+		listFormatterParams.add("none");
+		listFormatter = QueryPartValue.newJson(listFormatterParams);
 	}
 
 	/***********************************************************************************************
@@ -268,6 +274,12 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 				outQueue.add(newRecord);
 			}
 			
+			
+			//----------------------------
+			// Handle Fields
+			for(String fieldname : detectedFieldnames) {
+				CFWQueryCommandFormatField.addFormatter(this.parent.getContext(), fieldname, listFormatter);
+			}
 			this.fieldnameKeep(detectedFieldnames.toArray(new String[]{}));
 
 			this.setDone();

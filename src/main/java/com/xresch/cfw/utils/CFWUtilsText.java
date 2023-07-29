@@ -65,6 +65,7 @@ public class CFWUtilsText {
             //------------------------------
             // Compare As Digits if both digits
             if(isDigit(c1) && isDigit(c2)) {
+            	
         		long digits1 = 0;
         		long digits2 = 0;
         		
@@ -87,7 +88,7 @@ public class CFWUtilsText {
         			}
             		
         		}else {
-        			//
+        			// set i to lower digit end
         			i = (k1 < k2) ? k1 : k2;
         		}
         		

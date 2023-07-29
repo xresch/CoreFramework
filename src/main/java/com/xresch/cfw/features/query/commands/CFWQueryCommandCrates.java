@@ -24,16 +24,16 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryCommandGroup extends CFWQueryCommand {
+public class CFWQueryCommandCrates extends CFWQueryCommand {
 	
-	private static final String COMMAND_NAME = "group";
+	private static final String COMMAND_NAME = "crates";
 	private static final BigDecimal MINUS_ONE = new BigDecimal(-1);
 	
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<QueryPartAssignment>();
 	
 	private String type = "number";
 	private String byFieldname = null;
-	private String name = "Group";
+	private String name = "Crate";
 	private BigDecimal step = BigDecimal.TEN;
 	private BigDecimal multiplier = BigDecimal.ONE;
 	private Integer maxgroups = 1000;
@@ -41,7 +41,7 @@ public class CFWQueryCommandGroup extends CFWQueryCommand {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandGroup(CFWQuery parent) {
+	public CFWQueryCommandCrates(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -50,7 +50,7 @@ public class CFWQueryCommandGroup extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {COMMAND_NAME};
+		return new String[] {COMMAND_NAME, "bin"};
 	}
 
 	/***********************************************************************************************
@@ -58,7 +58,7 @@ public class CFWQueryCommandGroup extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Adds a group field based on another field value.";
+		return "Adds a field to sort a record into a certain 'crate' or 'bin', which contains items with a similar values.";
 	}
 
 	/***********************************************************************************************
@@ -125,7 +125,7 @@ public class CFWQueryCommandGroup extends CFWQueryCommand {
 	@Override
 	public void initializeAction() throws Exception {
 				
-		// type=number|time|string
+		// type=number|time|alpha
 		// by=<fieldname>
 		// target=GROUP
 		// step=10
@@ -186,11 +186,15 @@ public class CFWQueryCommandGroup extends CFWQueryCommand {
 				
 				QueryPartValue value = QueryPartValue.newFromJsonElement(record.get(byFieldname));
 				
-				if(type.equals("number") ) {
+				String crateName = null;
+				switch(type) {
 					
-					String groupName = evaluateNumber(value);
-					record.addProperty(name, groupName);
+					case "number": 		crateName = evaluateNumber(value);	break;
+					case "alpha": 		crateName = evaluateAlpha(value);	break;
+						
 				}
+				
+				record.addProperty(name, crateName);
 				
 				outQueue.add(record);
 			}
@@ -200,12 +204,14 @@ public class CFWQueryCommandGroup extends CFWQueryCommand {
 	
 	}
 
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
 	public String evaluateNumber(QueryPartValue value) {
 		
-		String groupName = null;
+		String crateName = null;
 		if(value.isNumberOrNumberString()) {
 		
-			
 			BigDecimal number = value.getAsBigDecimal();
 			boolean isPositive = number.compareTo(BigDecimal.ZERO) != -1;
 			BigDecimal rangeStart = BigDecimal.ZERO;
@@ -218,7 +224,8 @@ public class CFWQueryCommandGroup extends CFWQueryCommand {
 			
 			BigDecimal rangeEnd = finalStep;
 			
-			for(int i = 0; i < maxgroups; i++  ) {
+			int i = 0;
+			while(true) {
 				
 				if( 
 					(isPositive && number.compareTo(rangeStart) >= 0 && number.compareTo(rangeEnd) <= 0) 
@@ -226,18 +233,72 @@ public class CFWQueryCommandGroup extends CFWQueryCommand {
 				) {
 					break;
 				}
-				
+
 				rangeStart = (isPositive) ? rangeEnd.add(BigDecimal.ONE) : rangeEnd.subtract(BigDecimal.ONE);
 				if(multiplier.compareTo(BigDecimal.ONE) == 0) {
 					rangeEnd = rangeEnd.add(finalStep);
 				}else {
 					rangeEnd = rangeEnd.multiply(multiplier);
 				}
+				
+				if(i >= maxgroups) {
+					crateName = ">= " + rangeStart;
+					break;
+				}
+				
+				i++;
 			}
 			
-			groupName = rangeStart + " - " + rangeEnd;
+			if(crateName == null) {
+				crateName = rangeStart + " - " + rangeEnd;
+			}
 		}
-		return groupName;
+		
+		return crateName;
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public String evaluateAlpha(QueryPartValue value) {
+		
+		System.out.println("alpha");
+		String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		String crateName = null;
+		if(!value.isNullOrEmptyString()) {
+			System.out.println("A");
+			String stringValue = value.getAsString().toUpperCase();
+			char firstChar = stringValue.charAt(0);
+			
+			int rangeStart = 0;
+			int rangeEnd = step.intValue()-1;
+			
+			while(true) {
+
+				if(rangeStart >= alpha.length()) { crateName = "Other"; break; }
+				if(rangeEnd >= alpha.length()) { break; }
+				
+				if( 
+					Character.compare(firstChar, alpha.charAt(rangeStart)) >= 0  
+				 && Character.compare(firstChar, alpha.charAt(rangeEnd)) <= 0
+				) {
+					break;
+				}
+				
+				rangeStart = rangeEnd+1;
+				rangeEnd = rangeEnd+step.intValue();
+				
+				
+				
+			}
+			
+			if(crateName == null) {
+				if(rangeEnd >= alpha.length()) { rangeEnd = alpha.length()-1; }
+				crateName = alpha.charAt(rangeStart) + " - " + alpha.charAt(rangeEnd);
+			}
+		}
+		
+		return crateName;
 	}
 
 }

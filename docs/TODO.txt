@@ -249,8 +249,8 @@ DONE
 	- text
 	- web 
 - Query: Added commands: 
+	- crates
 	- execute
-	- group
 	- mimic
 	- nullto
 	- resultcompare
