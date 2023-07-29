@@ -163,6 +163,7 @@ DONE
 ------- current -------
 - BREAKING CODE CHANGE: Renaming of Threshold Fields and CSS-Classes
 - BREAKING CODE CHANGE: refactoring of mapJsonToFields() to toggle sanitation
+- BREAKING CODE CHANGE: Query function parameters changed - now()
 - New Feature: Page Tutorials
 - New Feature: Single-Sign-On with SAML and OpenID Connect
 - New Feature: Database Extensions, moved over from EMP

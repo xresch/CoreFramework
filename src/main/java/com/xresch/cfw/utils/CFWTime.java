@@ -9,9 +9,12 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.base.Strings;
@@ -32,6 +35,122 @@ public class CFWTime {
 			
 	private static DateTimeFormatter formatterTimestamp = DateTimeFormatter.ofPattern(CFWTime.FORMAT_TIMESTAMP).withZone(machineTimezone.toZoneId());
 	private static DateTimeFormatter formatterISODate = DateTimeFormatter.ofPattern(CFWTime.FORMAT_ISO8601_DATE).withZone(machineTimezone.toZoneId());
+	
+	/********************************************************************************************
+	 * The mother of all time enumerations! :-P
+	 ********************************************************************************************/
+	public enum CFWTimeUnit {
+		//  ns("nanosecond", 	TimeUnit.NANOSECONDS, 	ChronoUnit.NANOS, 	null)
+		//, us("microsecond", TimeUnit.MICROSECONDS, 	ChronoUnit.MICROS, 	null)
+		 ms("milliseconds", TimeUnit.MILLISECONDS, 	ChronoUnit.MILLIS, 	Calendar.MILLISECOND)
+		, s("seconds", 		TimeUnit.SECONDS, 		ChronoUnit.SECONDS, Calendar.SECOND)
+		, m("minutes", 		TimeUnit.MINUTES,		ChronoUnit.MINUTES, Calendar.MINUTE)
+		, h("hours", 		TimeUnit.HOURS, 		ChronoUnit.HOURS, 	Calendar.HOUR)
+		, d("days", 		TimeUnit.DAYS, 			ChronoUnit.DAYS, 	Calendar.DAY_OF_YEAR)
+		, M("months", 		null, 					ChronoUnit.MONTHS, 	Calendar.MONTH)
+		, y("years", 		null, 					ChronoUnit.YEARS, 	Calendar.YEAR)
+		, Y("years", 		null, 					ChronoUnit.YEARS, 	Calendar.YEAR)
+		;
+		
+		//==============================
+		// Caches
+		private static TreeSet<String> enumNames = null;
+		private static String optionsString = null;
+		private static String optionsHTMLList = null;
+		
+		//==============================
+		// Fields
+		private String longName;
+		private TimeUnit timeUnit;
+		private ChronoUnit chronoUnit;
+		private Integer calendarUnit;
+		
+		private CFWTimeUnit(String longName, TimeUnit timeUnit, ChronoUnit chronoUnit,  Integer calendarUnit) {
+			this.longName = longName;
+			this.timeUnit = timeUnit;
+			this.chronoUnit = chronoUnit;
+			this.calendarUnit = calendarUnit;
+		}
+				
+		public String longName() { return this.longName; }
+		public TimeUnit timeUnit() { return this.timeUnit; }
+		public ChronoUnit chronoUnit() { return this.chronoUnit; }
+		public Integer calendarUnit() { return this.calendarUnit; }
+		
+		public long toMillis() { return chronoUnit.getDuration().toMillis(); }
+		public long toMillis(int amount) { return amount * chronoUnit.getDuration().toMillis(); }
+		public Duration toDuration() { return chronoUnit.getDuration(); }
+		
+		/********************************************************************************************
+		 * Returns a set with all names
+		 ********************************************************************************************/
+		public static TreeSet<String> getNames() {
+			if(enumNames == null) {
+				enumNames = new TreeSet<>();
+				
+				for(CFWTimeUnit unit : CFWTimeUnit.values()) {
+					enumNames.add(unit.name());
+				}
+			}
+			return enumNames;
+		}
+		
+		/********************************************************************************************
+		 * Returns a set with all names
+		 ********************************************************************************************/
+		public static String getOptionsString() {
+			if(optionsString == null) {
+				return String.join(" | ", getNames());
+			}
+			return optionsString;
+		}
+		
+		/********************************************************************************************
+		 * Returns a set with all names
+		 ********************************************************************************************/
+		public static String getOptionsHTMLList() {
+			if(optionsHTMLList == null) {
+				optionsHTMLList = "<ul>";
+				for(CFWTimeUnit unit : CFWTimeUnit.values()) {
+					optionsHTMLList += "<li><b>"+unit.name()+":&nbsp</b>"+unit.longName()+"</li>";
+				}
+				optionsHTMLList += "</ul>";
+			}
+			return optionsHTMLList;
+		}
+		/********************************************************************************************
+		 * Return time with an offset starting from the given time.
+		 * Use positive values to go to the future, use negative values to go to the past.
+		 * @param epochMillis the time in milliseconds which should be offset.
+		 * @param amount to offset for the selected time unit.
+		 * @return offset time in epoch milliseconds
+		 ********************************************************************************************/
+		public static boolean has(String enumName) {
+			return getNames().contains(enumName);
+		}
+		
+		/********************************************************************************************
+		 * Return time with an offset starting from the given time.
+		 * Use positive values to go to the future, use negative values to go to the past.
+		 * @param epochMillis the time in milliseconds which should be offset.
+		 * @param amount to offset for the selected time unit.
+		 * @return offset time in epoch milliseconds
+		 ********************************************************************************************/
+		public long offset(long epochMillis, int amount) { 
+			
+			if(this.calendarUnit == null){
+				return epochMillis;
+			}
+			
+			Calendar calendar = Calendar.getInstance();
+			
+			calendar.setTimeInMillis(epochMillis);
+			calendar.add(this.calendarUnit, amount);
+			
+			return calendar.getTimeInMillis();
+		}
+		
+	}
 	
 	/********************************************************************************************
 	 * Returns a local date from epoch milliseconds with system default timezone.

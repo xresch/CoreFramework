@@ -274,7 +274,6 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 				outQueue.add(newRecord);
 			}
 			
-			
 			//----------------------------
 			// Handle Fields
 			for(String fieldname : detectedFieldnames) {

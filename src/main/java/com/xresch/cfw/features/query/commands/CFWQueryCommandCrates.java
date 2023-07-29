@@ -262,11 +262,10 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	public String evaluateAlpha(QueryPartValue value) {
 		
-		System.out.println("alpha");
 		String alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		String crateName = null;
 		if(!value.isNullOrEmptyString()) {
-			System.out.println("A");
+
 			String stringValue = value.getAsString().toUpperCase();
 			char firstChar = stringValue.charAt(0);
 			
@@ -288,8 +287,6 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 				rangeStart = rangeEnd+1;
 				rangeEnd = rangeEnd+step.intValue();
 				
-				
-				
 			}
 			
 			if(crateName == null) {
@@ -300,5 +297,46 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 		
 		return crateName;
 	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public String evaluateTime(QueryPartValue value) {
+		
+		String crateName = null;
+		if(value.isNumberOrNumberString()) {
+
+			long timeMillis = value.getAsLong();
+			
+			
+			int rangeStart = 0;
+			int rangeEnd = step.intValue()-1;
+			
+//			while(true) {
+//
+//				if(rangeStart >= alpha.length()) { crateName = "Other"; break; }
+//				if(rangeEnd >= alpha.length()) { break; }
+//				
+//				if( 
+//					Character.compare(firstChar, alpha.charAt(rangeStart)) >= 0  
+//				 && Character.compare(firstChar, alpha.charAt(rangeEnd)) <= 0
+//				) {
+//					break;
+//				}
+//				
+//				rangeStart = rangeEnd+1;
+//				rangeEnd = rangeEnd+step.intValue();
+//				
+//			}
+//			
+//			if(crateName == null) {
+//				if(rangeEnd >= alpha.length()) { rangeEnd = alpha.length()-1; }
+//				crateName = alpha.charAt(rangeStart) + " - " + alpha.charAt(rangeEnd);
+//			}
+		}
+		
+		return crateName;
+	}
+
 
 }
