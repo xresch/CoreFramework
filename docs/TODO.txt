@@ -92,6 +92,8 @@ Potential TODOs
 - Query: function: length() should support arrays and objects
 - Query: function: fields() - returning a list of all fields
 - Query: function: fieldshidden()
+- Query: function: timeround()
+- Query: function: timetruncate()
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
 - Query: Command statsx (pivot)

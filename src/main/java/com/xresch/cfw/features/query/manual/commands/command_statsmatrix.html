@@ -20,3 +20,25 @@
 		,['css','color', "white"]
 	]</code></pre>
 
+
+
+<h2>Compacting with Crates-Command</h2>
+<p>The crates command can be very useful to make the results of statsmatrix more compact.
+Following creates a matrix based on alphabet and value ranges:
+</p>
+<pre><code class="language-cfwquery">| source random records=1000
+| crates by=FIRSTNAME 
+		 type=alpha
+		 step=3
+		 name=ALPHA
+| crates by=VALUE
+		 type=number
+		 step=5
+		 maxgroups=10
+| sort ALPHA
+| statsmatrix
+		 column=ALPHA
+		 row=CRATE
+		 MIN=min(VALUE)
+		 AVG=avg(VALUE)
+		 SUM=sum(VALUE)</code></pre>	

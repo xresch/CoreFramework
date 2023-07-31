@@ -1,0 +1,64 @@
+
+<p>The crates command is used to group records into 'crates'. Records with similar values will get the same create value added in a new field.
+This command is especially useful to make groups for statistical purposes and rounding time values for making time based statistics. 
+</p>
+
+
+<h2>Type: number</h2>
+<p>Below query creates example records and uses the crates-command to add a RANGE-field to each record:</p>
+<pre><code class="language-cfwquery">| source random records=1000
+| crates
+	by=VALUE # Use the values of field 'VALUE'
+	type=number # evaluate as numbers
+	step=5 # make one range 5 wide
+	maxgroups=10 # limit groups to 10
+	name=RANGE # custom name for the new field</code></pre>
+
+
+<p>Following example works with negative values and reduces the number of groups using the multiplier-parameter:</p>
+<pre><code class="language-cfwquery">| source random records=1000 type=numbers
+# make some negative values for demo purposes
+| set THOUSANDS = if(random()&gt;10, THOUSANDS, (THOUSANDS*-1) )
+| crates 
+	by=THOUSANDS # make crates based on values in field THOUSANDS
+	step=10 # one number range is 10 wide
+	multiplier=2 # multipli end of range by 2 to reduce groups
+| stats # make statistics based on crates
+	by=CRATE
+	COUNT=count()
+	MIN=min(THOUSANDS)
+	AVG=avg(THOUSANDS)
+	MAX=max(THOUSANDS)
+| sort MIN # sort by MIN to make minus values be in order</code></pre>
+
+
+
+<h2>Type: alpha</h2>
+<p>Below query creates example records and uses the crates-command to add a ALPHA-field to each record:</p>
+<pre><code class="language-cfwquery">| source random records=1000
+| crates
+	by=FIRSTNAME # Use the values of field 'FIRSTNAME'
+	type=alpha # evaluate first characters of strings using alphabet
+	step=3 # make one range 3 wide >> A-C / D-F / G-I ...
+	name=ALPHA # name the new field ALPHA</code></pre>
+
+	
+<h2>Type: time</h2>
+<p>Below query creates example records and uses the crates- and stats-command to make time-based statistics:</p>
+<pre><code class="language-cfwquery">| source random records=1000
+| crates
+	by=TIME # use values of the field 'TIME'
+	type=time # evaluate time in epoch milliseconds
+	step=5 # round to 5 timeunits
+	timeunit='m' # minutes, so rounds to 5 minutes
+	# crate value will be set to new field 'CRATE' (default name) 
+| stats
+	by=CRATE # make stats based on CRATE
+	EARLIEST=min(TIME)
+	LATEST=max(TIME)
+	COUNT=count()
+	VALUE=avg(VALUE)
+| sort MIN
+| formatfield
+	[CRATE, EARLIEST, LATEST] = ['timestamp', "yyyy-MM-DD HH:mm:ss"]</code></pre>
+	
