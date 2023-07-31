@@ -52,7 +52,7 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {COMMAND_NAME, "bin"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -68,7 +68,7 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" <fieldname>=<expression> [<fieldname>=<expression> ...]";
+		return COMMAND_NAME+" <param>=<value> [<param>=<value> ...]";
 	}
 	
 	/***********************************************************************************************
@@ -76,9 +76,29 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>fieldname:&nbsp;</b>Name of the field to assign the value to.</p>"
-			  +"<p><b>expression:&nbsp;</b>Expression to evaluate.</p>"
-			  +"</p>"
+		return "<ul>"
+			  +"<li><b>by:&nbsp;</b>Name of the field which should be used for determining the crate.</li>"
+			  +"<li><b>type:&nbsp;</b>(Optional)The type of the evaluation, one of the following(Default: number):"
+				  +"<ul>"
+				  +"<li><b>number:&nbsp;</b>Make crates based on number values. Create will be a number range.</li>"
+				  +"<li><b>time:&nbsp;</b>Make crates based on time values. Results in epoch milliseconds, not a range.</li>"
+				  +"<li><b>alpha:&nbsp;</b>Make creates based on values from A-Z. Crates will be a range in the alphabet(e.g. A-C, D-F etc...)</li>"
+				  +"</ul>"
+			  +"</li>"
+			  +"<li><b>step:&nbsp;</b>(Optional)The steps used for the range of the crate, effect depends on type(Default: 10):"
+				  +"<ul>"
+					  +"<li><b>number:&nbsp;</b>Step will be the span of consecutive number ranges, e.g. 0-10 / 11-20 / 21-30 / (...).</li>"
+					  +"<li><b>time:&nbsp;</b>Step will be the number of units of time which the crate should be rounded too(see also timeunit parameter).</li>"
+					  +"<li><b>alpha:&nbsp;</b>Step will be the span in the alphabet, e.g step&eq;4 will result in A-C / D-F / G-I / (...).</li>"
+					  +"</ul>"
+				  +"</li>"
+			  +"<li><b>multiplier:&nbsp;</b>(Optional) When type is number, the end of the range will be multiplied for each successive crate. E.g. step&eq;10 and multiplier&eq;2 will result in creates: 0-10 / 11-20 / 21 - 40 / 41 -80 / ... .</li>"
+			  +"<li><b>timeunit:&nbsp;</b>(Optional) The time unit used for type 'time'. Defines the unit for the steps parameter, one of the following(Default: 'm'):"
+			  	+ CFWTimeUnit.getOptionsHTMLList()
+			  + "</li>"
+			  +"<li><b>name:&nbsp;</b>The name of the target field to put the crate value(Default: 'CRATE').</li>"
+			  +"<li><b>maxgroups:&nbsp;</b>The Maximum number of crates for the type 'number'(Default: 1000).</li>"
+			  +"</ul>"
 				;
 	}
 
@@ -163,8 +183,8 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 		if(type == null) { type = "number";}
 		type = type.trim().toLowerCase();
 		
-		if(name == null) { name = "Group";}
-		if(step == null || step.compareTo(BigDecimal.ZERO) == 0 ) { step = BigDecimal.TEN;}
+		if(name == null) { name = "CRATE";}
+		if(step == null || step.compareTo(BigDecimal.ZERO) == 0 ) { step = BigDecimal.TEN; }
 		if(multiplier == null) { multiplier = BigDecimal.ZERO;}
 		if(timeunit == null || !CFWTimeUnit.has(timeunit)) { timeunit = "m";}
 		
@@ -242,7 +262,7 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 					rangeEnd = rangeEnd.multiply(multiplier);
 				}
 				
-				if(i >= maxgroups) {
+				if(i >= (maxgroups-2) ) {
 					crateName = ">= " + rangeStart;
 					break;
 				}
