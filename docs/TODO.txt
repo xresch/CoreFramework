@@ -96,8 +96,7 @@ Potential TODOs
 - Query: function: timetruncate()
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
-- Query: Command statsx (pivot)
-- Query: Command formatfield - sparkline format (or new command)
+- Query: Command statsx (pivot)- Query: Command formatfield - sparkline format (or new command)
 - Query: arrayify (for subquery results)
 - Query: Manual Page - How to create charts 
 - Query: Mimic calling mimic working with meta()

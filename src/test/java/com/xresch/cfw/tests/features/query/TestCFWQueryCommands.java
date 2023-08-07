@@ -17,7 +17,7 @@ import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.tests._master.DBTestMaster;
 
-public class TestCFWQueryExecution extends DBTestMaster{
+public class TestCFWQueryCommands extends DBTestMaster{
 	
 	/****************************************************************
 	 * 
@@ -81,6 +81,60 @@ public class TestCFWQueryExecution extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(10000, queryResults.getResultCount());
 
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testChart() throws IOException {
+		
+		String queryString = "| source random records=10 type=series\r\n" + 
+				"| chart \r\n" + 
+				"	by=[WAREHOUSE, ITEM]\r\n" + 
+				"	x=TIME \r\n" + 
+				"	y=COUNT";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		// No filtering occurs as all filter are commented out
+		CFWQueryResult queryResults = resultArray.get(0);
+		JsonObject displaySettings = queryResults.getDisplaySettings();
+		
+		Assertions.assertTrue(displaySettings.has("as"));
+		Assertions.assertEquals("chart", displaySettings.get("as").getAsString());
+		
+		Assertions.assertTrue(displaySettings.has("by"));
+		Assertions.assertEquals("[\"WAREHOUSE\",\"ITEM\"]", displaySettings.get("by").toString());
+		
+		Assertions.assertTrue(displaySettings.has("x"));
+		Assertions.assertEquals("TIME", displaySettings.get("x").getAsString());
+		
+		Assertions.assertTrue(displaySettings.has("y"));
+		Assertions.assertEquals("COUNT", displaySettings.get("y").getAsString());
+		
+//		displaySettings
+//		: 
+//		{fieldFormats: {}, as: "chart", by: ["WAREHOUSE", "ITEM"], x: "TIME", y: "COUNT"}
+//		as
+//		: 
+//		"chart"
+//		by
+//		: 
+//		["WAREHOUSE", "ITEM"]
+//		fieldFormats
+//		: 
+//		{}
+//		x
+//		: 
+//		"TIME"
+//		y
+//		: 
+//		"COUNT"
+		
 	}
 	
 	/****************************************************************
