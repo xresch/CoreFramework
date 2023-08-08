@@ -698,6 +698,68 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testRemove() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				  "| source random records=1\r\n" + 
+				  "| remove INDEX, TIME, FIRSTNAME"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getResultCount());
+		
+		JsonObject result = queryResults.getResult(0);
+		
+		Assertions.assertEquals(8, result.size(), "Record has only tree fields");
+		Assertions.assertFalse(result.has("INDEX"), "Record has field INDEX");
+		Assertions.assertFalse(result.has("TIME"), "Record has field TIME");
+		Assertions.assertFalse(result.has("FIRSTNAME"), "Record has field FIRSTNAME");
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testRename() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				  "| source random records=1\r\n" + 
+				  "| rename INDEX=ROW"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getResultCount());
+		
+		JsonObject result = queryResults.getResult(0);
+		
+		Assertions.assertEquals(11, result.size(), "Record has only tree fields");
+		Assertions.assertFalse(result.has("INDEX"), "Record has field INDEX");
+		Assertions.assertTrue(result.has("ROW"), "Record has field TIME");
+
+	}
 	
 	/****************************************************************
 	 * 
