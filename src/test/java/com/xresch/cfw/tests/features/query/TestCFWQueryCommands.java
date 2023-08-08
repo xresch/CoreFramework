@@ -1008,7 +1008,37 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertEquals(firstRecord.get("COUNT").getAsInt(), FIELDVAL , "FIELDVAL is present and equals COUNT");
 		Assertions.assertEquals( (FIELDVAL * FIELDVAL) , firstRecord.get("EXPRESSION").getAsInt() , "EXPRESSION is present");
 		Assertions.assertEquals( 0 , firstRecord.get("FUNCTION").getAsInt() , "FUNCTION is present and count() returned 0.");
-
+		
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testSort() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				"| source json data ='[\r\n" + 
+				"	{val: 4444} ,{val: 22} ,{val: 333} ,{val: 1}\r\n" + 
+				"]'\r\n" + 
+				"| sort val"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(4, queryResults.getRecordCount());
+		
+		int i=-1;
+		Assertions.assertEquals(1, queryResults.getRecord(++i).get("val").getAsInt());
+		Assertions.assertEquals(22, queryResults.getRecord(++i).get("val").getAsInt());
+		Assertions.assertEquals(333, queryResults.getRecord(++i).get("val").getAsInt());
+		Assertions.assertEquals(4444, queryResults.getRecord(++i).get("val").getAsInt());
 		
 	}
 	
