@@ -6,7 +6,7 @@
 | keep TIME
 ;
 # offset earliest/latest by one day, alternatively you can use earliestSet() or latestSet()
-| execute timeframeoffset(0,0,-1) 
+| execute timeframeoffset(0,-1, "d")
 | source random records = 10
 | keep TIME</code></pre>
 

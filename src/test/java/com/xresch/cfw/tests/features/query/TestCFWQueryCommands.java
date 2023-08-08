@@ -17,6 +17,7 @@ import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.tests._master.DBTestMaster;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 public class TestCFWQueryCommands extends DBTestMaster{
 	
@@ -230,38 +231,6 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
-	public void testDistinct_Dedup_Uniq() throws IOException {
-		
-		//---------------------------------
-		String queryString = "| source random records=1000 | distinct LIKES_TIRAMISU"
-				+ ";| source random records=1000 | dedup LIKES_TIRAMISU"
-				+ ";| source random records=1000 | uniq LIKES_TIRAMISU"
-				;
-		
-		CFWQueryResultList resultArray = new CFWQueryExecutor()
-				.parseAndExecuteAll(queryString, earliest, latest, 0);
-		
-		// 3 results for distinct, dedup and uniq
-		Assertions.assertEquals(3, resultArray.size());
-		
-		// Distinct by LIKES_TIRAMISU results in 3 rows with true, false and null
-		CFWQueryResult queryResults = resultArray.get(0);
-		Assertions.assertEquals(3, queryResults.getResultCount());
-		
-		// Same for alias dedup
-		queryResults = resultArray.get(1);
-		Assertions.assertEquals(3, queryResults.getResultCount());
-		
-		// Same for alias uniq
-		queryResults = resultArray.get(2);
-		Assertions.assertEquals(3, queryResults.getResultCount());
-	}
-	
-	
-	/****************************************************************
-	 * 
-	 ****************************************************************/
-	@Test
 	public void testDisplayAs() throws IOException {
 		
 		//---------------------------------
@@ -320,6 +289,82 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	
 
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testDistinct_Dedup_Uniq() throws IOException {
+		
+		//---------------------------------
+		String queryString = "| source random records=1000 | distinct LIKES_TIRAMISU"
+				+ ";| source random records=1000 | dedup LIKES_TIRAMISU"
+				+ ";| source random records=1000 | uniq LIKES_TIRAMISU"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		// 3 results for distinct, dedup and uniq
+		Assertions.assertEquals(3, resultArray.size());
+		
+		// Distinct by LIKES_TIRAMISU results in 3 rows with true, false and null
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(3, queryResults.getResultCount());
+		
+		// Same for alias dedup
+		queryResults = resultArray.get(1);
+		Assertions.assertEquals(3, queryResults.getResultCount());
+		
+		// Same for alias uniq
+		queryResults = resultArray.get(2);
+		Assertions.assertEquals(3, queryResults.getResultCount());
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testExecute() throws IOException {
+		
+		//---------------------------------
+		String queryString = "| globals multidisplay=2\r\n" + 
+				"| source random records = 10\r\n" + 
+				"| keep TIME\r\n" + 
+				";\r\n" + 
+				"# offset earliest/latest by one day, alternatively you can use earliestSet() or latestSet()\r\n" + 
+				"| execute timeframeoffset(0,-1, \"d\") \r\n" + 
+				"| source random records = 10\r\n" + 
+				"| keep TIME"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		// 2 results for 
+		Assertions.assertEquals(2, resultArray.size());
+		
+		//-----------------------------
+		// result with offset
+		CFWQueryResult queryResults = resultArray.get(0);
+		long noOffsetMillis = queryResults.getQueryContext().getEarliestMillis();
+		
+		//-----------------------------
+		// result with offset
+		CFWQueryResult offsetQueryResults = resultArray.get(1);
+		long offsetMillis = offsetQueryResults.getQueryContext().getEarliestMillis();
+		
+		float diffDays = CFWTimeUnit.d.difference(offsetMillis, noOffsetMillis);
+		float diffRounded = Math.round(diffDays);
+
+		//-----------------------------
+		// Check result
+		Assertions.assertEquals(1, diffRounded, "Offset should be one day.");
+	
+	}
+	
+	
+
+
 	/****************************************************************
 	 * 
 	 ****************************************************************/

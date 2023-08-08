@@ -81,6 +81,25 @@ public class CFWTime {
 		public Duration toDuration() { return chronoUnit.getDuration(); }
 		
 		/********************************************************************************************
+		 * Returns the calendar unit lower than the specified unit.
+		 * Returns Milliseconds if the unit is milliseconds.
+		 * @param calendar which time should be truncated
+		 * @return nothing
+		 ********************************************************************************************/
+		public CFWTimeUnit calendarUnitLower() { 
+			switch(this) {
+				case y:	 return CFWTimeUnit.M;
+				case M:	 return CFWTimeUnit.d;
+				case d:	 return CFWTimeUnit.h;
+				case h:	 return CFWTimeUnit.m;
+				case m:	 return CFWTimeUnit.s;
+				case s:	 return CFWTimeUnit.ms;
+				case ms: return CFWTimeUnit.ms;
+				default: return CFWTimeUnit.ms;
+						
+			}
+		}
+		/********************************************************************************************
 		 * Returns a set with all names
 		 ********************************************************************************************/
 		public static TreeSet<String> getNames() {
@@ -146,10 +165,9 @@ public class CFWTime {
 		}
 		
 		/********************************************************************************************
-		 * Return time with an offset starting from the given time.
-		 * Use positive values to go to the future, use negative values to go to the past.
-		 * @param epochMillis the time in milliseconds which should be offset.
-		 * @param amount to offset for the selected time unit.
+		 * Return time rounded to certain values.
+		 * @param epochMillis the time in milliseconds which should be rounded.
+		 * @param amount to round to.
 		 * @return offset time in epoch milliseconds
 		 ********************************************************************************************/
 		public long round(long epochMillis, int amount) { 
@@ -211,6 +229,47 @@ public class CFWTime {
 						
 			}
 		}
+		
+		/********************************************************************************************
+		 * Return the difference of two times.
+		 * The returned time will be the difference of the two times in the selected time unit.
+		 * @param earlier the time in milliseconds of the earlier time
+		 * @param later the time in milliseconds of the later time
+		 * @return truncated time in epoch milliseconds
+		 ********************************************************************************************/
+		public float difference(Calendar earlier, Calendar later) { 		
+			return difference(earlier.getTimeInMillis(), later.getTimeInMillis());
+		}
+		
+		
+		/********************************************************************************************
+		 * Return the difference of two times.
+		 * The returned time will be the difference of the two times in the selected time unit.
+		 * @param earlier the time in milliseconds of the earlier time
+		 * @param later the time in milliseconds of the later time
+		 * @return truncated time in epoch milliseconds
+		 ********************************************************************************************/
+		public float difference(long earlier, long later) { 
+			
+			if(earlier == later) {
+				return 0;
+			}
+			
+			long diff = later - earlier;
+
+			return convert(diff);
+		}
+		
+		/********************************************************************************************
+		 * Converts the given milliseconds to a representation of the selected time unit.
+		 * @param millis the time in milliseconds of the earlier time
+		 * @return float value representing milliseconds
+		 ********************************************************************************************/
+		public float convert(long millis) { 
+			
+			return millis / ((float)this.toMillis());
+		}
+		
 		
 	}
 	
