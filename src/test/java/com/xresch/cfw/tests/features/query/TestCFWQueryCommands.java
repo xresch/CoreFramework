@@ -730,6 +730,36 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testNullTo() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				  "| source random records=10 type=various\r\n" + 
+				  "| set UUID=null \r\n" + 
+				  "| nullto value=\"n/a\" fields=[ALWAYS_NULL]"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(10, queryResults.getRecordCount());
+		
+		JsonObject firstRecord = queryResults.getRecord(0);
+		
+		Assertions.assertTrue(firstRecord.get("UUID").isJsonNull(), "Field UUID is null");
+		Assertions.assertEquals("n/a", firstRecord.get("ALWAYS_NULL").getAsString(), "Field ALWAYS_NULL is n/a");
+
+	}
 	
 	/****************************************************************
 	 * 
@@ -792,6 +822,149 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertFalse(result.has("INDEX"), "Record has field INDEX");
 		Assertions.assertTrue(result.has("ROW"), "Record has field TIME");
 
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testResultCompare() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				  "| source random records=1000 	\r\n" + 
+				  "| filter FIRSTNAME == \"Aurora\"		\r\n" + 
+				  "| keep FIRSTNAME, VALUE		\r\n" + 
+				  "| stats	by=FIRSTNAME	COUNT=count(VALUE)		VALUE=avg(VALUE)\r\n" + 
+				  "; \r\n" + 
+				  "| mimic\r\n" + 
+				  "; \r\n" + 
+				  "| resultcompare by=FIRSTNAME"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject firstRecord = queryResults.getRecord(0);
+		
+		Assertions.assertTrue(firstRecord.has("FIRSTNAME"));
+		Assertions.assertTrue(firstRecord.has("COUNT_A"));
+		Assertions.assertTrue(firstRecord.has("COUNT_B"));
+		Assertions.assertTrue(firstRecord.has("COUNT_Diff"));
+		Assertions.assertTrue(firstRecord.has("COUNT_%"));
+		Assertions.assertTrue(firstRecord.has("VALUE_A"));
+		Assertions.assertTrue(firstRecord.has("VALUE_B"));
+		Assertions.assertTrue(firstRecord.has("VALUE_Diff"));
+		Assertions.assertTrue(firstRecord.has("VALUE_%"));
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testResultConcat() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				"| metadata name = \"Result One\"\r\n" + 
+				"| source random records=10\r\n" + 
+				";\r\n" + 
+				"| metadata name = \"Result Two\"\r\n" + 
+				"| source random records=20\r\n" + 
+				";\r\n" + 
+				"| metadata name = \"Result Three\"\r\n" + 
+				"| source random records=40\r\n" + 
+				";\r\n" + 
+				"| metadata name = \"Concatenated 1&3\"\r\n" + 
+				"| resultconcat \"Result One\", \"Result Three\""
+						;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(2, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult firstQueryResults = resultArray.get(0);
+		Assertions.assertEquals("Result Two", firstQueryResults.getMetadata("name").getAsString(), "Name of first result is 'Result Two', as 'Result One' was merged with 'Result Three'.");
+		Assertions.assertEquals(20, firstQueryResults.getRecordCount());
+		
+		//------------------------------
+		// Check Second Query Result
+		CFWQueryResult secondQueryResults = resultArray.get(1);
+		Assertions.assertEquals("Concatenated 1&3", secondQueryResults.getMetadata("name").getAsString(), "Name of second result is 'Concatenated 1&3'.");
+		Assertions.assertEquals(50, secondQueryResults.getRecordCount());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testResultCopy() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				"| globals multidisplay=2\r\n" + 
+				"| metadata name = \"Original\" \r\n" + 
+				"| source random records=4\r\n" + 
+				"| keep FIRSTNAME, LIKES_TIRAMISU, VALUE\r\n" + 
+				"| display menu=false \r\n" + 
+				";\r\n" + 
+				"| metadata name = \"Copy\"\r\n" + 
+				"| resultcopy  #copy data of all previous queries\r\n" + 
+				"| display as=panels menu=false"
+						;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(2, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult firstQueryResults = resultArray.get(0);
+		Assertions.assertEquals("Original", firstQueryResults.getMetadata("name").getAsString(), "Name of first result is 'Result Two', as 'Result One' was merged with 'Result Three'.");
+		Assertions.assertEquals(4, firstQueryResults.getRecordCount());
+		
+		//------------------------------
+		// Check Second Query Result
+		CFWQueryResult secondQueryResults = resultArray.get(1);
+		Assertions.assertEquals("Copy", secondQueryResults.getMetadata("name").getAsString(), "Name of second result is 'Concatenated 1&3'.");
+		Assertions.assertEquals(4, secondQueryResults.getRecordCount());
+		
+		//------------------------------
+		// Compare
+		JsonObject firstObject = firstQueryResults.getRecord(0);
+		JsonObject secondObject = secondQueryResults.getRecord(0);
+		Assertions.assertEquals(
+				firstObject.get("FIRSTNAME").getAsString(), 
+				secondObject.get("FIRSTNAME").getAsString(),
+				"FIRSTNAME is equal"
+			);
+		Assertions.assertEquals(
+				firstObject.get("LIKES_TIRAMISU").getAsBoolean(), 
+				secondObject.get("LIKES_TIRAMISU").getAsBoolean(),
+				"LIKES_TIRAMISU is equal"
+			);
+		Assertions.assertEquals(
+				firstObject.get("VALUE").getAsBoolean(), 
+				secondObject.get("VALUE").getAsBoolean(),
+				"VALUE is equal"
+			);
+		
 	}
 	
 	/****************************************************************
