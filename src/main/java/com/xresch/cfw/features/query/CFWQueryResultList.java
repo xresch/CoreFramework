@@ -45,7 +45,7 @@ public class CFWQueryResultList {
 		JsonArray array = new JsonArray();
 		
 		for(CFWQueryResult result : resultList) {
-			array.addAll(result.getResults());
+			array.addAll(result.getRecords());
 		}
 		return array;
 	}

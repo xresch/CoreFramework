@@ -36,7 +36,7 @@ public class CFWQueryResult {
 		//------------------------
 		// Set Default Values
 		this.setExecTimeMillis(-1);
-		this.setResults(new JsonArray());
+		this.setRecords(new JsonArray());
 		
 	}
 	
@@ -52,15 +52,15 @@ public class CFWQueryResult {
 	 * 
 	 ****************************************************/
 	private CFWQueryResult updateResultCount() {
-		object.addProperty(RESULTFIELDS_RESULT_COUNT, this.getResults().size());
+		object.addProperty(RESULTFIELDS_RESULT_COUNT, this.getRecords().size());
 		return this;
 	}
 	
 	/****************************************************
 	 * 
 	 ****************************************************/
-	public int getResultCount() {
-		return this.getResults().size();
+	public int getRecordCount() {
+		return this.getRecords().size();
 	}
 	
 	/****************************************************
@@ -183,7 +183,7 @@ public class CFWQueryResult {
 	/****************************************************
 	 * 
 	 ****************************************************/
-	public CFWQueryResult setResults(JsonArray value) {
+	public CFWQueryResult setRecords(JsonArray value) {
 		if(value == null) {
 			return this;
 		}
@@ -196,13 +196,13 @@ public class CFWQueryResult {
 	/****************************************************
 	 * 
 	 ****************************************************/
-	public JsonArray getResults() {
+	public JsonArray getRecords() {
 		return object.get(RESULTFIELDS_RESULTS).getAsJsonArray();
 	}
 	/****************************************************
 	 * 
 	 ****************************************************/
-	public JsonObject getResult(int index) {
+	public JsonObject getRecord(int index) {
 		return object.get(RESULTFIELDS_RESULTS).getAsJsonArray().get(index).getAsJsonObject();
 	}
 

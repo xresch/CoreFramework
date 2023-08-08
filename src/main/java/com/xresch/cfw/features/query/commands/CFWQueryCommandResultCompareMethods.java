@@ -177,12 +177,12 @@ public class CFWQueryCommandResultCompareMethods {
 	 *                       the comparison
 	 ***********************************************************************************************/
 	public CFWQueryResult compareQueryResults(CFWQueryResult olderResult, CFWQueryResult youngerResult){
-		JsonArray olderArray = olderResult.getResults();
-		JsonArray youngerArray = youngerResult.getResults();
+		JsonArray olderArray = olderResult.getRecords();
+		JsonArray youngerArray = youngerResult.getRecords();
 		JsonArray comparison = compareJsonObjectArrays(olderArray, youngerArray);
 		CFWQueryResult comparedResult = 
 				new CFWQueryResult(youngerResult.getQueryContext())
-					.setResults(comparison)
+					.setRecords(comparison)
 					.setDetectedFields(detectedFields)
 					;
 		

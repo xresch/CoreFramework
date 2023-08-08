@@ -154,7 +154,7 @@ public class CFWQueryFunctionSubquery extends CFWQueryFunction {
 		// Convert Results
 		JsonArray allResults = new JsonArray();
 		for(int i = 0; i < resultList.size(); i++) {
-			allResults.addAll(resultList.get(i).getResults());
+			allResults.addAll(resultList.get(i).getRecords());
 		}
 		
 		if(allResults.size() == 0) {

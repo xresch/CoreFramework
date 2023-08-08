@@ -61,7 +61,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		// No filtering occurs as both are true
 		CFWQueryResult queryResults = resultArray.get(0);
-		Assertions.assertEquals(100, queryResults.getResultCount());
+		Assertions.assertEquals(100, queryResults.getRecordCount());
 
 	}
 	
@@ -118,7 +118,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		// No filtering occurs as all filter are commented out
 		CFWQueryResult queryResults = resultArray.get(0);
-		Assertions.assertEquals(100, queryResults.getResultCount());
+		Assertions.assertEquals(100, queryResults.getRecordCount());
 
 	}
 	
@@ -146,8 +146,8 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertEquals(1, resultArray.size());
 		
 		CFWQueryResult queryResults = resultArray.get(0);
-		Assertions.assertEquals(1000, queryResults.getResultCount());
-		Assertions.assertEquals("0 - 10", queryResults.getResult(0).get("NUM").getAsString());
+		Assertions.assertEquals(1000, queryResults.getRecordCount());
+		Assertions.assertEquals("0 - 10", queryResults.getRecord(0).get("NUM").getAsString());
 				
 		//--------------------------------
 		// Test type=alpha
@@ -159,8 +159,8 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertEquals(1, resultArray.size());
 		
 		queryResults = resultArray.get(0);
-		Assertions.assertEquals(1000, queryResults.getResultCount());
-		Assertions.assertEquals("A - C", queryResults.getResult(0).get("ALPHA").getAsString());
+		Assertions.assertEquals(1000, queryResults.getRecordCount());
+		Assertions.assertEquals("A - C", queryResults.getRecord(0).get("ALPHA").getAsString());
 		
 		//--------------------------------
 		// Test type=time
@@ -172,9 +172,9 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertEquals(1, resultArray.size());
 		
 		queryResults = resultArray.get(0);
-		Assertions.assertEquals(1000, queryResults.getResultCount());
-		for(int i = 0; i < 100 && i < queryResults.getResultCount(); i++) {
-			long roundedTime = queryResults.getResult(0).get("TIMEROUNDED").getAsLong();
+		Assertions.assertEquals(1000, queryResults.getRecordCount());
+		for(int i = 0; i < 100 && i < queryResults.getRecordCount(); i++) {
+			long roundedTime = queryResults.getRecord(0).get("TIMEROUNDED").getAsLong();
 			
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(roundedTime);
@@ -199,12 +199,12 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertEquals(1, resultArray.size());
 		
 		queryResults = resultArray.get(0);
-		Assertions.assertEquals(5, queryResults.getResultCount());
-		Assertions.assertEquals("0 - 10", queryResults.getResult(0).get("CRATE").getAsString());
-		Assertions.assertEquals("11 - 20", queryResults.getResult(1).get("CRATE").getAsString());
-		Assertions.assertEquals("21 - 40", queryResults.getResult(2).get("CRATE").getAsString());
-		Assertions.assertEquals("41 - 80", queryResults.getResult(3).get("CRATE").getAsString());
-		Assertions.assertEquals("81 - 160", queryResults.getResult(4).get("CRATE").getAsString());
+		Assertions.assertEquals(5, queryResults.getRecordCount());
+		Assertions.assertEquals("0 - 10", queryResults.getRecord(0).get("CRATE").getAsString());
+		Assertions.assertEquals("11 - 20", queryResults.getRecord(1).get("CRATE").getAsString());
+		Assertions.assertEquals("21 - 40", queryResults.getRecord(2).get("CRATE").getAsString());
+		Assertions.assertEquals("41 - 80", queryResults.getRecord(3).get("CRATE").getAsString());
+		Assertions.assertEquals("81 - 160", queryResults.getRecord(4).get("CRATE").getAsString());
 			
 	}
 	
@@ -290,15 +290,15 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		// Distinct by LIKES_TIRAMISU results in 3 rows with true, false and null
 		CFWQueryResult queryResults = resultArray.get(0);
-		Assertions.assertEquals(3, queryResults.getResultCount());
+		Assertions.assertEquals(3, queryResults.getRecordCount());
 		
 		// Same for alias dedup
 		queryResults = resultArray.get(1);
-		Assertions.assertEquals(3, queryResults.getResultCount());
+		Assertions.assertEquals(3, queryResults.getRecordCount());
 		
 		// Same for alias uniq
 		queryResults = resultArray.get(2);
-		Assertions.assertEquals(3, queryResults.getResultCount());
+		Assertions.assertEquals(3, queryResults.getRecordCount());
 	}
 	
 	/****************************************************************
@@ -361,7 +361,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		// No filtering occurs as all filter conditions are true
 		CFWQueryResult queryResults = resultArray.get(0);
-		Assertions.assertEquals(10000, queryResults.getResultCount());
+		Assertions.assertEquals(10000, queryResults.getRecordCount());
 	
 	}
 
@@ -551,9 +551,9 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		//-----------------------------------
 		// Iterate Results Check has correct format
 		CFWQueryResult queryResults = resultArray.get(0);
-		Assertions.assertEquals(100, queryResults.getResultCount());
-		for(int i = 0; i < 100 && i < queryResults.getResultCount(); i++) {
-			JsonObject current = queryResults.getResult(i);
+		Assertions.assertEquals(100, queryResults.getRecordCount());
+		for(int i = 0; i < 100 && i < queryResults.getRecordCount(); i++) {
+			JsonObject current = queryResults.getRecord(i);
 			
 			if(!current.get("FIRSTNAME").isJsonNull()
 			&& current.get("FIRSTNAME").getAsString().startsWith("He")) {
@@ -641,9 +641,9 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		//------------------------------
 		// Check First Query Result
 		CFWQueryResult queryResults = resultArray.get(0);
-		Assertions.assertEquals(1, queryResults.getResultCount());
+		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject result = queryResults.getResult(0);
+		JsonObject result = queryResults.getRecord(0);
 		
 		Assertions.assertEquals(3, result.size(), "Record has only tree fields");
 		Assertions.assertTrue(result.has("INDEX"), "Record has field INDEX");
@@ -702,6 +702,39 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testMimic() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				  "| globals multidisplay=3 # display 3 results in one row\r\n" + 
+				  "| metadata name=\"mimicThis\"\r\n" + 
+				  "| source random records = 1\r\n" + 
+				  "; # End of First Query\r\n" + 
+				  "| source random records = 2\r\n" + 
+				  "; # End of Second Query\r\n" + 
+				  "| source random records = 4\r\n" + 
+				  "| mimic name=\"mimicThis\" # copies and executes the first query named 'mimicThis'\r\n" + 
+				  "| source random records = 8"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(3, resultArray.size());
+
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(2);
+		Assertions.assertEquals(13, queryResults.getRecordCount(), "Has 13 records from records = 1 + 4 + 8 = 13");
+		
+	}
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testRemove() throws IOException {
 		
 		//---------------------------------
@@ -719,9 +752,9 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		//------------------------------
 		// Check First Query Result
 		CFWQueryResult queryResults = resultArray.get(0);
-		Assertions.assertEquals(1, queryResults.getResultCount());
+		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject result = queryResults.getResult(0);
+		JsonObject result = queryResults.getRecord(0);
 		
 		Assertions.assertEquals(8, result.size(), "Record has only tree fields");
 		Assertions.assertFalse(result.has("INDEX"), "Record has field INDEX");
@@ -751,9 +784,9 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		//------------------------------
 		// Check First Query Result
 		CFWQueryResult queryResults = resultArray.get(0);
-		Assertions.assertEquals(1, queryResults.getResultCount());
+		Assertions.assertEquals(1, queryResults.getRecordCount());
 		
-		JsonObject result = queryResults.getResult(0);
+		JsonObject result = queryResults.getRecord(0);
 		
 		Assertions.assertEquals(11, result.size(), "Record has only tree fields");
 		Assertions.assertFalse(result.has("INDEX"), "Record has field INDEX");
@@ -780,14 +813,14 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		// last returns 123 results
 		CFWQueryResult queryResults = resultArray.get(0);
-		JsonArray queryResultsArray = queryResults.getResults();
+		JsonArray queryResultsArray = queryResults.getRecords();
 		Assertions.assertEquals(123, queryResultsArray.size());
 		Assertions.assertEquals(999-122, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(999, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
 		
 		// tail returns 321 results 
 		queryResults = resultArray.get(1);
-		queryResultsArray = queryResults.getResults();
+		queryResultsArray = queryResults.getRecords();
 		Assertions.assertEquals(321, queryResultsArray.size());
 		Assertions.assertEquals(999-320, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(999, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
@@ -812,14 +845,14 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		// First returns 123 results
 		CFWQueryResult queryResults = resultArray.get(0);
-		JsonArray queryResultsArray = queryResults.getResults();
+		JsonArray queryResultsArray = queryResults.getRecords();
 		Assertions.assertEquals(123, queryResultsArray.size());
 		Assertions.assertEquals(0, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(122, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());
 		
 		// top returns 321 results
 		queryResults = resultArray.get(1);
-		queryResultsArray = queryResults.getResults();
+		queryResultsArray = queryResults.getRecords();
 		Assertions.assertEquals(321, queryResultsArray.size());
 		Assertions.assertEquals(0, queryResultsArray.get(0).getAsJsonObject().get("INDEX").getAsInt());
 		Assertions.assertEquals(320, queryResultsArray.get(queryResultsArray.size()-1).getAsJsonObject().get("INDEX").getAsInt());

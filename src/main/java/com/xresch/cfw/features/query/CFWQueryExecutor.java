@@ -228,7 +228,7 @@ public class CFWQueryExecutor {
 				
 				CFWQueryResult queryResult = new CFWQueryResult(queryContext);
 				queryResult.setExecTimeMillis(execMillis);
-				queryResult.setResults(results);
+				queryResult.setRecords(results);
 				
 				resultArray.addResult(queryResult);
 	
@@ -318,7 +318,7 @@ public class CFWQueryExecutor {
 		detectedFields.add("VALUE");
 		
 		CFWQueryResult debugState = new CFWQueryResult(new CFWQueryContext())
-					.setResults(parser.getParserState())
+					.setRecords(parser.getParserState())
 					.setDetectedFields(detectedFields)
 					;
 		

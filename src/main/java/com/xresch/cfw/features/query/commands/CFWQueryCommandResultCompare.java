@@ -230,7 +230,7 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 				}
 				
 				youngerResult = new CFWQueryResult(queryContext);
-				youngerResult.setResults(queueResultArray);
+				youngerResult.setRecords(queueResultArray);
 			}
 			
 			//------------------------------
@@ -278,7 +278,7 @@ public class CFWQueryCommandResultCompare extends CFWQueryCommand {
 			
 			//----------------------------
 			// Add to Queue
-			for(JsonElement record : compared.getResults()) {
+			for(JsonElement record : compared.getRecords()) {
 				outQueue.add(new EnhancedJsonObject(record.getAsJsonObject()));
 			}
 			
