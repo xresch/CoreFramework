@@ -619,6 +619,38 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertEquals("MyCustomValue", globals.get("myCustomProperty").getAsString());
 
 	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testKeep() throws IOException {
+			
+		//---------------------------------
+		String queryString = 
+				  "| source random records=1\r\n" + 
+				  "| keep INDEX, TIME, FIRSTNAME"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getResultCount());
+		
+		JsonObject result = queryResults.getResult(0);
+		
+		Assertions.assertEquals(3, result.size(), "Record has only tree fields");
+		Assertions.assertTrue(result.has("INDEX"), "Record has field INDEX");
+		Assertions.assertTrue(result.has("TIME"), "Record has field TIME");
+		Assertions.assertTrue(result.has("FIRSTNAME"), "Record has field FIRSTNAME");
+
+	}
 
 	/****************************************************************
 	 * 
@@ -665,6 +697,8 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertEquals("world", metadata.get("secondQueryProp").getAsString());
 		
 	}
+	
+	
 	/****************************************************************
 	 * 
 	 ****************************************************************/
