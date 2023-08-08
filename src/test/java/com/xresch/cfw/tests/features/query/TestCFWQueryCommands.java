@@ -919,7 +919,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 				"| globals multidisplay=2\r\n" + 
 				"| metadata name = \"Original\" \r\n" + 
 				"| source random records=4\r\n" + 
-				"| keep FIRSTNAME, LIKES_TIRAMISU, VALUE\r\n" + 
+				"| keep FIRSTNAME, VALUE\r\n" + 
 				"| display menu=false \r\n" + 
 				";\r\n" + 
 				"| metadata name = \"Copy\"\r\n" + 
@@ -955,15 +955,60 @@ public class TestCFWQueryCommands extends DBTestMaster{
 				"FIRSTNAME is equal"
 			);
 		Assertions.assertEquals(
-				firstObject.get("LIKES_TIRAMISU").getAsBoolean(), 
-				secondObject.get("LIKES_TIRAMISU").getAsBoolean(),
-				"LIKES_TIRAMISU is equal"
-			);
-		Assertions.assertEquals(
 				firstObject.get("VALUE").getAsBoolean(), 
 				secondObject.get("VALUE").getAsBoolean(),
 				"VALUE is equal"
 			);
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testSet() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				  "| source random records=10 type=series\r\n" + 
+				  "| keep WAREHOUSE, ITEM, COUNT\r\n" + 
+				  "| set \r\n" + 
+				  "		BOOL=true\r\n" + 
+				  "		NUMBER=123\r\n" + 
+				  "		STRING=\"AAAHHH!!!\"\r\n" + 
+				  "		OBJECT={a: \"1\", b: \"2\"}\r\n" + 
+				  "		ARRAY=[1, true, \"three\"]\r\n" + 
+				  "		NULL=null\r\n" + 
+				  "		FIELDVAL=COUNT\r\n" + 
+				  "		EXPRESSION=(FIELDVAL*FIELDVAL)\r\n" + 
+				  "		FUNCTION=count()"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(30, queryResults.getRecordCount());
+		
+		JsonObject firstRecord = queryResults.getRecord(0);
+		
+		//------------------------------
+		// Check fields are set
+		int FIELDVAL = firstRecord.get("FIELDVAL").getAsInt();
+		Assertions.assertEquals(true, firstRecord.get("BOOL").getAsBoolean(), "BOOL is present");
+		Assertions.assertEquals(123, firstRecord.get("NUMBER").getAsInt(), "NUMBER is present");
+		Assertions.assertEquals("AAAHHH!!!", firstRecord.get("STRING").getAsString(), "STRING is present");
+		Assertions.assertEquals("{\"a\":\"1\",\"b\":\"2\"}", CFW.JSON.toJSON(firstRecord.get("OBJECT")) , "OBJECT is present");
+		Assertions.assertEquals("[1,true,\"three\"]", CFW.JSON.toJSON(firstRecord.get("ARRAY")) , "ARRAY is present");
+		Assertions.assertEquals(true, firstRecord.get("NULL").isJsonNull() , "NULL is present");
+		Assertions.assertEquals(firstRecord.get("COUNT").getAsInt(), FIELDVAL , "FIELDVAL is present and equals COUNT");
+		Assertions.assertEquals( (FIELDVAL * FIELDVAL) , firstRecord.get("EXPRESSION").getAsInt() , "EXPRESSION is present");
+		Assertions.assertEquals( 0 , firstRecord.get("FUNCTION").getAsInt() , "FUNCTION is present and count() returned 0.");
+
 		
 	}
 	

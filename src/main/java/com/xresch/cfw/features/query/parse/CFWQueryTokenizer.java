@@ -197,8 +197,7 @@ public class CFWQueryTokenizer {
 
 		//-----------------------------------
 		// NULL
-		//if(slice.toLowerCase().matches("^null[^a-zA-Z].*|^null$")) {
-		if(slice.toLowerCase().startsWith("null")) {
+		if(slice.startsWith("null")) {
 			
 			//if EOF or next char is not a character
 			if(cursor+4 >= base.length()

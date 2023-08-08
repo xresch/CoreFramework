@@ -71,7 +71,7 @@ Potential TODOs
 - Dashboard: Fix Replica Ctrl+Z on Duplicate
 - Dashboard: Timeframe Picker - show Timeframe instead of "Custom Time"
 - Dashboard: Timeframe Picker - List of Recent
-- Dashboard: Compare option
+- Dashboard: Compare Option
 - Dashboard Parameters: Form initialization: filter as well by form or formID to not mess with params with same name/ID
 
 - Widget: CSV Chart
@@ -86,14 +86,15 @@ Potential TODOs
 - Widget: Collaboration: Logbook
 
 - Query: Write Developers Manual dev_query.html
+- Query: Widget - Option to open query in Editor if user has permission
 - Query: Improve Autocomplete
 - Query: function: math ceil/floor/abs etc...
 - Query: function: array() aggregation
 - Query: function: length() should support arrays and objects
-- Query: function: fields() - returning a list of all fields
 - Query: function: fieldshidden()
 - Query: function: timeround()
 - Query: function: timetruncate()
+- Query: function: timediff()
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
 - Query: Command statsx (pivot)- Query: Command formatfield - sparkline format (or new command)
