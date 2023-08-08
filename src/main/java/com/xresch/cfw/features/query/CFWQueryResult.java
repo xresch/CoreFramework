@@ -9,7 +9,7 @@ import com.google.gson.JsonPrimitive;
 
 public class CFWQueryResult {
 	
-	public static final String RESULTFIELDS_RESULTS 			= "results";
+	public static final String RESULTFIELDS_RESULTS 			= "records";
 	public static final String RESULTFIELDS_DISPLAY_SETTINGS 	= "displaySettings";
 	public static final String RESULTFIELDS_METADATA 			= "metadata";
 	public static final String RESULTFIELDS_DETECTED_FIELDS 	= "detectedFields";

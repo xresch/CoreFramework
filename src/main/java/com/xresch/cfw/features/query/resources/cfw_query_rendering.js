@@ -815,7 +815,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	
 	//-----------------------------------
 	// Check is result empty
-	if(queryResult.results.length == 0 ){
+	if(queryResult.records.length == 0 ){
 		targetDiv.append('<p>The result is empty.</p>')
 		return;
 	}
@@ -873,7 +873,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	//-----------------------------------
 	// Render Results
 	var rendererSettings = {
-			data: queryResult.results,
+			data: queryResult.records,
 		 	//idfield: 'PK_ID',
 		 	bgstylefield: options.bgstylefield,
 		 	textstylefield: options.textstylefield,
@@ -1007,7 +1007,7 @@ function cfw_query_renderAsChart(resultTarget, queryResult, options){
 	var titlefields = seriesColumns;
 	if(seriesColumns == null || seriesColumns.length == 0){
 		// use second as default
-		let keys = Object.keys(queryResult.results[0]);
+		let keys = Object.keys(queryResult.records[0]);
 		titlefields = [keys[1]];
 	}
 	
@@ -1015,7 +1015,7 @@ function cfw_query_renderAsChart(resultTarget, queryResult, options){
 	// Use first Column if not specified
 	var xColumn;
 	if(CFW.utils.isNullOrEmpty(settings.x)){
-		let keys = Object.keys(queryResult.results[0]);
+		let keys = Object.keys(queryResult.records[0]);
 		xColumn = keys[0];
 	}else{
 		var xColumn = settings.x.trim();
@@ -1025,7 +1025,7 @@ function cfw_query_renderAsChart(resultTarget, queryResult, options){
 	// Use last Column if not specified
 	var yColumn;
 	if(CFW.utils.isNullOrEmpty(settings.y)){
-		let keys = Object.keys(queryResult.results[0]);
+		let keys = Object.keys(queryResult.records[0]);
 		yColumn = keys[keys.length-1];
 	}else{
 		var yColumn = settings.y.trim();
@@ -1060,7 +1060,7 @@ function cfw_query_renderAsChart(resultTarget, queryResult, options){
 	//---------------------------
 	// Render Settings
 	var dataToRender = {
-		data: queryResult.results,
+		data: queryResult.records,
 		titlefields: titlefields,
 		bgstylefield: options.bgstylefield,
 	 	textstylefield: options.textstylefield,
