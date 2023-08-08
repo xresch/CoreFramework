@@ -199,6 +199,12 @@ public class CFWQueryResult {
 	public JsonArray getResults() {
 		return object.get(RESULTFIELDS_RESULTS).getAsJsonArray();
 	}
+	/****************************************************
+	 * 
+	 ****************************************************/
+	public JsonObject getResult(int index) {
+		return object.get(RESULTFIELDS_RESULTS).getAsJsonArray().get(index).getAsJsonObject();
+	}
 
 
 }

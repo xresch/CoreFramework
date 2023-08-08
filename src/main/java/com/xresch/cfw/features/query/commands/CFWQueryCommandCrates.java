@@ -52,7 +52,7 @@ public class CFWQueryCommandCrates extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {COMMAND_NAME};
+		return new String[] {COMMAND_NAME, "bin"};
 	}
 
 	/***********************************************************************************************

@@ -1,6 +1,7 @@
 package com.xresch.cfw.tests.features.query;
 
 import java.io.IOException;
+import java.util.Calendar;
 
 import org.joda.time.Instant;
 import org.junit.jupiter.api.Assertions;
@@ -116,25 +117,6 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertTrue(displaySettings.has("y"));
 		Assertions.assertEquals("COUNT", displaySettings.get("y").getAsString());
 		
-//		displaySettings
-//		: 
-//		{fieldFormats: {}, as: "chart", by: ["WAREHOUSE", "ITEM"], x: "TIME", y: "COUNT"}
-//		as
-//		: 
-//		"chart"
-//		by
-//		: 
-//		["WAREHOUSE", "ITEM"]
-//		fieldFormats
-//		: 
-//		{}
-//		x
-//		: 
-//		"TIME"
-//		y
-//		: 
-//		"COUNT"
-		
 	}
 	
 	/****************************************************************
@@ -156,6 +138,92 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(0);
 		Assertions.assertEquals(100, queryResults.getResultCount());
 
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testCrates() throws IOException {
+		
+		int minuteRounding = 4;
+		String queryString = "| source random records=1000\r\n" + 
+				"| crates by=VALUE 		type=number		step=10		name=NUM\r\n" + 
+				"| crates by=FIRSTNAME 	type=alpha 		step=3		name=ALPHA\r\n" + 
+				"| crates by=TIME		type=time		step="+minuteRounding+"	name=TIMEROUNDED\r\n"  
+			;
+		
+		
+		//--------------------------------
+		// Test type=number
+		String queryStringNum = queryString+"| sort NUM";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryStringNum, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1000, queryResults.getResultCount());
+		Assertions.assertEquals("0 - 10", queryResults.getResult(0).get("NUM").getAsString());
+				
+		//--------------------------------
+		// Test type=alpha
+		String queryStringAlpha = queryString+"| sort ALPHA";
+		
+		resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryStringAlpha, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		queryResults = resultArray.get(0);
+		Assertions.assertEquals(1000, queryResults.getResultCount());
+		Assertions.assertEquals("A - C", queryResults.getResult(0).get("ALPHA").getAsString());
+		
+		//--------------------------------
+		// Test type=time
+		String queryStringTime = queryString+"| sort TIMEROUNDED";
+		
+		resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryStringTime, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		queryResults = resultArray.get(0);
+		Assertions.assertEquals(1000, queryResults.getResultCount());
+		for(int i = 0; i < 100 && i < queryResults.getResultCount(); i++) {
+			long roundedTime = queryResults.getResult(0).get("TIMEROUNDED").getAsLong();
+			
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(roundedTime);
+			int roundedMinutes = calendar.get(Calendar.MINUTE);
+			int truncatedSeconds  = calendar.get(Calendar.SECOND);
+			int truncatedMillis  = calendar.get(Calendar.MILLISECOND);
+			Assertions.assertEquals(0, roundedMinutes % 4, "Minutes rounded to 4 minutes");
+			Assertions.assertEquals(0, truncatedSeconds, "Seconds are truncated");
+			Assertions.assertEquals(0, truncatedMillis, "Milliseconds are truncated");
+		}
+		
+		//--------------------------------
+		// Test multiplier=2
+		String queryStringMultiplier = "| source random records=1000\r\n" + 
+				"| crates by=VALUE 		type=number		step=10		multiplier=2\r\n" + 
+				"| uniq CRATE | sort CRATE"  
+			;
+		
+		resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryStringMultiplier, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		queryResults = resultArray.get(0);
+		Assertions.assertEquals(5, queryResults.getResultCount());
+		Assertions.assertEquals("0 - 10", queryResults.getResult(0).get("CRATE").getAsString());
+		Assertions.assertEquals("11 - 20", queryResults.getResult(1).get("CRATE").getAsString());
+		Assertions.assertEquals("21 - 40", queryResults.getResult(2).get("CRATE").getAsString());
+		Assertions.assertEquals("41 - 80", queryResults.getResult(3).get("CRATE").getAsString());
+		Assertions.assertEquals("81 - 160", queryResults.getResult(4).get("CRATE").getAsString());
+			
 	}
 	
 	/****************************************************************
