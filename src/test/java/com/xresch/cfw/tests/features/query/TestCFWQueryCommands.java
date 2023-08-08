@@ -1046,6 +1046,36 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testSource_Random() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				  "| source random records=1"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertTrue(record.has("ID"), "Record has field ID");
+		Assertions.assertTrue(record.has("TIME"), "Record has field TIME");
+		Assertions.assertTrue(record.has("FIRSTNAME"), "Record has field FIRSTNAME");
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void test_Tail() throws IOException {
 		
 		//---------------------------------
