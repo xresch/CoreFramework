@@ -1072,6 +1072,49 @@ public class TestCFWQueryCommands extends DBTestMaster{
 
 	}
 	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testStats() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testStats.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(4, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertTrue(record.has("ITEM"), "Record has field");
+		Assertions.assertTrue(record.has("CLASS"), "Record has field");
+		Assertions.assertTrue(record.has("count()"), "Record has field");
+		Assertions.assertTrue(record.has("min(VALUE)"), "Record has field");
+		Assertions.assertTrue(record.has("AVG"), "Record has field");
+		Assertions.assertTrue(record.has("MAX"), "Record has field");
+		Assertions.assertTrue(record.has("SUM"), "Record has field");
+		Assertions.assertTrue(record.has("MEDIAN"), "Record has field");
+		Assertions.assertTrue(record.has("90th"), "Record has field");
+		
+		Assertions.assertEquals(3, record.get("count()").getAsInt(), "Record has field");
+		Assertions.assertEquals(1, record.get("min(VALUE)").getAsInt(), "Record has field");
+		Assertions.assertEquals(119, Math.round( record.get("AVG").getAsFloat() ), "Record has field");
+		Assertions.assertEquals(333, record.get("MAX").getAsInt(), "Record has field");
+		Assertions.assertEquals(356, record.get("SUM").getAsInt(), "Record has field");
+		Assertions.assertEquals(22, record.get("MEDIAN").getAsInt(), "Record has field");
+		Assertions.assertEquals(333, record.get("90th").getAsInt(), "Record has field");
+		
+	}
+	
 	/****************************************************************
 	 * 
 	 ****************************************************************/
