@@ -265,7 +265,7 @@ To unbox the data objects in such a structure you would need to call unbox twice
 <p>Below query is a more advanced example using the unbox command. It shows you:</p>
 <ul>
 	<li><b>Using Member Access:&nbsp;</b>You can access elements deeper in the json structure using member access expressions like "properties.legs.count".</li>
-	<li><b>Keep Existing:&nbsp;</b> By default only fields specified in the unbox command are kept. You can keep existing fields by specifying 'replace=false'. </li>
+	<li><b>Remove Existing:&nbsp;</b> By default existing fields are kept. You can remove existing fields by specifying 'replace=true'. </li>
 	<li><b>Unboxing Arrays of Objects:&nbsp;</b> Unbox the array first. Then do another unbox on the objects to get the fields of the objects unboxed as well.  </li>
 	<li><b>Post Processing:&nbsp;</b> Using the unboxed values to calculate total cost and format the costs based on a threshold. </li>
 </ul>
@@ -291,13 +291,13 @@ To unbox the data objects in such a structure you would need to call unbox twice
 }}
 ]`
 | unbox 
+	replace=true 		   # remove existing fields
 	product                # keep product field
 	properties.legs.count  # unboxed to count 
 	properties.legs.length # unboxed to length
 	costs.dollaresPerCM    # unboxed to dollaresPerCM
 	costs.sellerFees       # unbox array of objects
 | unbox
-	replace=false # keep all existing fields
 	sellerFees # unbox the previously unboxed objects
 | remove sellerFees
 | set totalCostUSD = (count * length * dollaresPerCM) + feeUSD

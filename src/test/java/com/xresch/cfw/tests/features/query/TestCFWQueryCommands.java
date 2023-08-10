@@ -1,6 +1,7 @@
 package com.xresch.cfw.tests.features.query;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Calendar;
 
 import org.joda.time.Instant;
@@ -1105,13 +1106,53 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertTrue(record.has("MEDIAN"), "Record has field");
 		Assertions.assertTrue(record.has("90th"), "Record has field");
 		
-		Assertions.assertEquals(3, record.get("count()").getAsInt(), "Record has field");
-		Assertions.assertEquals(1, record.get("min(VALUE)").getAsInt(), "Record has field");
-		Assertions.assertEquals(119, Math.round( record.get("AVG").getAsFloat() ), "Record has field");
-		Assertions.assertEquals(333, record.get("MAX").getAsInt(), "Record has field");
-		Assertions.assertEquals(356, record.get("SUM").getAsInt(), "Record has field");
-		Assertions.assertEquals(22, record.get("MEDIAN").getAsInt(), "Record has field");
-		Assertions.assertEquals(333, record.get("90th").getAsInt(), "Record has field");
+		Assertions.assertEquals(3, record.get("count()").getAsInt());
+		Assertions.assertEquals(1, record.get("min(VALUE)").getAsInt());
+		Assertions.assertEquals(119, Math.round( record.get("AVG").getAsFloat() ));
+		Assertions.assertEquals(333, record.get("MAX").getAsInt());
+		Assertions.assertEquals(356, record.get("SUM").getAsInt());
+		Assertions.assertEquals(22, record.get("MEDIAN").getAsInt());
+		Assertions.assertEquals(333, record.get("90th").getAsInt());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testUnbox() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testUnbox.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(6, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		System.out.println(record.toString());
+		Assertions.assertTrue(record.has("product"), "Record has field");
+		Assertions.assertTrue(record.has("count"), "Record has field");
+		Assertions.assertTrue(record.has("length"), "Record has field");
+		Assertions.assertTrue(record.has("dollaresPerCM"), "Record has field");
+		Assertions.assertTrue(record.has("seller"), "Record has field");
+		Assertions.assertTrue(record.has("feeUSD"), "Record has field");
+		Assertions.assertTrue(record.has("totalCostUSD"), "Record has field");
+		
+		Assertions.assertEquals("Table", record.get("product").getAsString());
+		Assertions.assertEquals(4, record.get("count").getAsInt());
+		Assertions.assertEquals(80, record.get("length").getAsInt());
+		Assertions.assertEquals("0.2", record.get("dollaresPerCM").toString());
+		Assertions.assertEquals("Super Market", record.get("seller").getAsString());
+		Assertions.assertEquals(30, record.get("feeUSD").getAsInt());
+		Assertions.assertEquals(94, record.get("totalCostUSD").getAsInt());
 		
 	}
 	
