@@ -179,6 +179,7 @@ public class CFWRegistryJobs {
 			props.put("org.quartz.jobStore.driverDelegateClass", "org.quartz.impl.jdbcjobstore.StdJDBCDelegate"); // For H2
 			props.put("org.quartz.jobStore.dataSource", datasourceName);
 			props.put("org.quartz.jobStore.tablePrefix", "CFW_QUARTZ_");
+			props.put("org.quartz.jobStore.isClustered", "true");
 
 			props.put("org.quartz.dataSource."+datasourceName+".connectionProvider.class", "com.xresch.cfw.features.jobs.QuartzConnectionProvider");
 

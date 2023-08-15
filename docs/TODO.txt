@@ -135,7 +135,6 @@ Potential TODOs
 - CFW: Locales - Handle Global Locales separately
 - CFW: Locales - Create System Analytics page showing all locale properties
 - CFW: Config - Age Out Configuration
-- CFW: API - Enable Post Body Inputs
 - CFW: Improve CFWHTTP.getClientIP()
 
 - CFWMail: Add default CSS to eMails(e.g. displaying borders for tables) 
