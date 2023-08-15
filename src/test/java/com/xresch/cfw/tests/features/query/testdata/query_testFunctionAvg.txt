@@ -1,0 +1,24 @@
+| source json data=`
+[
+	 {index: 77
+	 , array: [1,2,3,4, null, true, "string"]
+	 , object: {a: 1, b: 2, c: 3, d: 4, e: null, f: true, string: "ignored"} }
+
+]
+`
+| set 
+	# return average of numbers
+	AVG_ARRAY=avg(array)
+	# treat nulls as zero in the statistics, ignore other types
+	AVG_ARRAY_NULLS=avg(array,true)
+	# returns the average of all numbers of all fields
+	AVG_OBJECT=avg(object)
+	# treat nulls as zero in the statistics
+	AVG_OBJECT_NULLS=avg(object,true)
+	# if input is a single number, returns that number
+	AVG_NUMBER=avg(index)
+	# following will return null
+	AVG_ZERO=avg()
+	AVG_NULL=avg(null)
+	UNSUPPORTED_A=avg(true)
+	UNSUPPORTED_B=avg("some_string")
