@@ -1,0 +1,14 @@
+| source json data=`
+[
+	  {count: 1, value: 1, float: 1.33333333}
+	 ,{count: 2, value: 2, float: 7.12345678}
+	 ,{count: 3, value: 3, float: 99.123456}
+	 ,{count: 4, value: null, float: 22}
+
+]
+`
+| stats 
+	AVG=avg(count)
+	AVG_NONULL=avg(value)
+	AVG_NULLS=avg(value,true)
+	AVG_FLOAT=avg(float,true,5)

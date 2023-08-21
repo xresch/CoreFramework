@@ -79,6 +79,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals(0, record.get("BOOL_ZERO").getAsInt());
 		
 	}
+	
 	/****************************************************************
 	 * 
 	 ****************************************************************/
@@ -92,31 +93,6 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
 		Assertions.assertEquals(1, resultArray.size());
-		
-//		| source json data=`
-//				[
-//					 {index: 77
-//					 , array: [1,2,3,4, null, true, "string"]
-//					 , object: {a: 1, b: 2, c: 3, d: 4, e: null, f: true, string: "ignored"} }
-//
-//				]
-//				`
-//				| set 
-//					# return average of numbers
-//					AVG_ARRAY=avg(array)
-//					# treat nulls as zero in the statistics, ignore other types
-//					AVG_ARRAY_NULLS=avg(array,true)
-//					# returns the average of all numbers of all fields
-//					AVG_OBJECT=avg(object)
-//					# treat nulls as zero in the statistics
-//					AVG_OBJECT_NULLS=avg(object,true)
-//					# if input is a single number, returns that number
-//					AVG_NUMBER=avg(index)
-//					# following will return null
-//					AVG_ZERO=avg()
-//					AVG_NULL=avg(null)
-//					UNSUPPORTED_A=avg(true)
-//					UNSUPPORTED_B=avg("some_string")
 					
 		//------------------------------
 		// Check First Query Result
@@ -133,6 +109,61 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertTrue(record.get("AVG_NULL").isJsonNull());
 		Assertions.assertTrue(record.get("UNSUPPORTED_A").isJsonNull());
 		Assertions.assertTrue(record.get("UNSUPPORTED_B").isJsonNull());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testAvg_Aggr() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionAvg_Aggr.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("2.500", record.get("AVG").toString());
+		Assertions.assertEquals(2, record.get("AVG_NONULL").getAsInt());
+		Assertions.assertEquals("1.500", record.get("AVG_NULLS").toString());
+		Assertions.assertEquals("32.39506", record.get("AVG_FLOAT").toString());
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testCeil() throws IOException {
+		
+		//---------------------------------
+		String queryString = "| source empty records=1\r\n" + 
+				"| set\r\n" + 
+				"	POSITIVE=ceil(124.34567)\r\n" + 
+				"	NEGATIVE=ceil(-42.34567)\r\n"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(125, record.get("POSITIVE").getAsInt());
+		Assertions.assertEquals(-42, record.get("NEGATIVE").getAsInt());
 		
 	}
 	
