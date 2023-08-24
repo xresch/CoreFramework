@@ -1,0 +1,20 @@
+| source empty records=1
+| set
+	NULL_FIELD=null
+| set
+	# following returns null, as one or both of the required arguments are null
+	'A1' = contains()
+	'A2' = contains(NULL_FIELD)
+	
+	# following are true if value is either null or "null"(string)
+	'B1' = contains(NULL_FIELD, null)
+	'B2' = contains(NULL_FIELD, "null")
+	
+	# nulls compared
+	'C1' = contains(null, null) # true
+	'C2' = contains("contains null", null) # true
+	'C3' = contains(null, "ll") # true, "null" contains "ll"
+	'C4' = contains("NULL and Null are false", null) # false, only "null" is considered real null
+	'C5' = contains("ll", null) # false, "ll" does not contain "null"
+	'C6' = contains(null, true) # false on any boolean
+	'C7' = contains(null, 0) # false on any number

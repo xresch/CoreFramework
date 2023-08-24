@@ -1,0 +1,27 @@
+| source empty records=1
+| set
+	# Objects with Strings
+	'S1' = contains({"x": 1, "y": 2}, "x") # true, object contains field "x"
+	'S2' = contains({"abc_xyz": 123}, "abc_") # false, only matches on full member names
+	'S3' = contains({"1": "test", "2": "b"}, "test") # false, only checks member names, not values
+	'SX' = '||' # separator for table
+	
+	# Objects with Booleans
+	'B1' = contains({"true":  4242}, true) # true, object contains field "true"
+	'B2' = contains({"false": 2424}, false) # true
+	'B3' = contains({"TRUE":  4444}, true) # true, case insensitive
+	'B4' = contains({"eurt":  2222}, true) # false
+	'BX' = '||' # separator for table
+	
+	# Objects with Numbers
+	'N1' = contains({"1":   'a'}, 1) # true
+	'N2' = contains({"2":   'a'}, "2") # true
+	'N3' = contains({"3.3": 'a'}, 3.3) # true
+	'N4' = contains({"-4.4": 'a'}, -4.4) # true
+	'N5' = contains({"-5.55":'a'}, -5.5) # false
+	'N6' = contains({}, -0.99) # false
+	'NX' = '||' # separator for table
+	
+	# Objects with Null values
+	'Z1' = contains({"null":   'a'}, null) # true
+	'Z2' = contains({"Null":   'a'}, null) # false, case sensitive

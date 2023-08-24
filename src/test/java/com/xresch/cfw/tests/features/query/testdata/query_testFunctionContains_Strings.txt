@@ -1,0 +1,21 @@
+| source empty records=1
+| set FIRSTNAME="Aurora"
+| set
+	# Strings with Strings
+	'S1' = contains(FIRSTNAME, "er") #false
+	'S2' = contains("Her name is Aurora.", FIRSTNAME) # true
+	
+	# Strings with Booleans
+	'B1' = contains("this is true", true) # true
+	'B2' = contains("this is TRUE too", true) # true, as booleans are compared case insensitive
+	'B3' = contains("this is not false, so it must be true", false) # true, as it contains false
+	'B4' = contains("this is false", true) # false, "true" is not found
+	
+	# Strings with Numbers
+	'N1' = contains("tiramisu counter: 42", 42) # true, string contains "42"	
+	'N2' = contains("abc_123456_xyz", 5) # true, string contains "5"	
+	'N3' = contains("we need 5.4 tiramisu", 5.4) # true
+	'N4' = contains("Nightmare: -99999.9 Tiramisu", -99999.9) # true
+	'N5' = contains("Nightmare: -99999.9 Tiramisu", -999) # true as well
+	'N6' = contains("Nightmare: -99999.9 Tiramisu", 0.99) # false, "0.99" not found
+	'N7' = contains("Reality: 1 Tiramisu", 12) # "12" is not found

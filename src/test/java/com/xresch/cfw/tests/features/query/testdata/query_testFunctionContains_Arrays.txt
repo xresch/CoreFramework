@@ -1,0 +1,33 @@
+| source empty records=1
+| set
+	# Arrays with Strings
+	'S1' = contains(["a", "b", "c"], "a") # true
+	'S2' = contains([true, "test", 123], "test") # true
+	'S3' = contains(["a", "b", "c"], "A") # false, case sensitive
+	'S4' = contains([false, "Hello World", 88], "Hello") # false, partial string
+	'SX' = '||' # separator for table
+	
+	# Arrays with Booleans
+	'B1' = contains([true, false], false) # true, array contains false
+	'B2' = contains([1, true, "3"], true) # true, array contains true
+	'B3' = contains([true, "false", 123], false) # true, string 'false' is considered boolean
+	'B4' = contains([false, "TRUE", 123], true) # true, case insensitive
+	'B5' = contains([true, true, true], false) # false, array dies not contain false
+	'B6' = contains([], true) # false, array is empty
+	'BX' = '||' # separator for table
+	
+	# Arrays with Numbers
+	'N1' = contains([1, 2, 3], 2) # true
+	'N2' = contains([4, 5, 6], "5") # true, ignores types
+	'N3' = contains(["7", "8", "9"], 8) # true
+	'N4' = contains([-2.2, -1.1, 0.01], -1.1) # true
+	'N5' = contains([1 ,2 ,3], 0) # false
+	'N6' = contains([-99.9, -88.8, 7.7], -9.9) # false
+	'N7' = contains([], 0.99) # false
+	'NX' = '||' # separator for table
+	
+	# Arrays with Null values
+	'Z1' = contains([1, null, 3], null) # true
+	'Z2' = contains([9, "null", 99], null) # true, ignores types
+	'Z3' = contains(["a", null, "c"], "null") # true
+	'Z4' = contains([], null) # false
