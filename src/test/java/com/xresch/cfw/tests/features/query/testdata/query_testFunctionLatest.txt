@@ -1,0 +1,14 @@
+| source empty records=1
+| globals format="yyyy-MM-dd'T'HH:mm:ss" # use globals or metadata to store formats and reuse them
+| execute latestSet(1651212296155)
+| set
+	epoch=latest() # 1651212296155
+	epochNull=latest(null) # 1651212296155
+	formatted=latest(globals(format)) # 2022-04-29T06:04:56
+	yearDayMonth=latest("yyyy-MM-dd") # 2022-04-29
+	utcTime=latest("HH:mm:ss", false)   # 06:04:56
+	clientTime=latest("HH:mm:ss", true) # 07:04:56
+	Milliseconds=latest("SSS")		   # 155
+	DayName=latest("E / EEEE")         # Fri / Friday
+	MonthName=latest("MMM / MMMM")     # Apr / April
+	Timezones=latest("z / Z / ZZZZ", true)   # +01:00 / +0100 / GMT+01:00

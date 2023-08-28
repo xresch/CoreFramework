@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.CFWQueryResult;
@@ -640,6 +641,40 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testEarliest_and_EarliestSet() throws IOException {
+		
+		//---------------------------------
+		// Initialize
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionEarliest.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, -60);
+		
+		Assertions.assertEquals(1, resultArray.size());
+									
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("1693223296188", record.get("epoch").getAsString());
+		Assertions.assertEquals("1693223296188", record.get("epochNull").getAsString());
+		Assertions.assertEquals("2023-08-28T11:48:16", record.get("formatted").getAsString());
+		Assertions.assertEquals("2023-08-28", record.get("yearDayMonth").getAsString());
+		Assertions.assertEquals("11:48:16", record.get("utcTime").getAsString());
+		Assertions.assertEquals("12:48:16", record.get("clientTime").getAsString());
+		Assertions.assertEquals("188", record.get("Milliseconds").getAsString());
+		Assertions.assertEquals("Mon / Monday", record.get("DayName").getAsString());
+		Assertions.assertEquals("Aug / August", record.get("MonthName").getAsString());
+		Assertions.assertEquals("+01:00 / +0100 / GMT+01:00", record.get("Timezones").getAsString());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testEncode() throws IOException {
 		
 		//---------------------------------
@@ -695,6 +730,40 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		JsonObject record = queryResults.getRecord(0);
 		Assertions.assertEquals(124, record.get("POSITIVE").getAsInt());
 		Assertions.assertEquals(-43, record.get("NEGATIVE").getAsInt());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testLatest_and_LatestSet() throws IOException {
+		
+		//---------------------------------
+		// Initialize
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionLatest.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, -120);
+		
+		Assertions.assertEquals(1, resultArray.size());
+									
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+					
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("1651212296155", record.get("epoch").getAsString());
+		Assertions.assertEquals("1651212296155", record.get("epochNull").getAsString());
+		Assertions.assertEquals("2022-04-29T06:04:56", record.get("formatted").getAsString());
+		Assertions.assertEquals("2022-04-29", record.get("yearDayMonth").getAsString());
+		Assertions.assertEquals("06:04:56", record.get("utcTime").getAsString());
+		Assertions.assertEquals("08:04:56", record.get("clientTime").getAsString());
+		Assertions.assertEquals("155", record.get("Milliseconds").getAsString());
+		Assertions.assertEquals("Fri / Friday", record.get("DayName").getAsString());
+		Assertions.assertEquals("Apr / April", record.get("MonthName").getAsString());
+		Assertions.assertEquals("+02:00 / +0200 / GMT+02:00", record.get("Timezones").getAsString());
 		
 	}
 	

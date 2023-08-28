@@ -1,0 +1,14 @@
+| source empty records=1
+| globals format="yyyy-MM-dd'T'HH:mm:ss" # use globals or metadata to store formats and reuse them
+| execute earliestSet(1693223296188)
+| set
+	epoch=earliest() # 1693223296188
+	epochNull=earliest(null) # 1693223296188
+	formatted=earliest(globals(format)) # 2023-08-28T11:48:16
+	yearDayMonth=earliest("yyyy-MM-dd") #2023-08-28
+	utcTime=earliest("HH:mm:ss", false)   # 11:48:16
+	clientTime=earliest("HH:mm:ss", true) # 12:48:16
+	Milliseconds=earliest("SSS")		 # 	188
+	DayName=earliest("E / EEEE")         # Mon / Monday
+	MonthName=earliest("MMM / MMMM")     # 	Aug / August
+	Timezones=earliest("z / Z / ZZZZ", true)   # +01:00 / +0100 / GMT+01:00
