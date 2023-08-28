@@ -10,18 +10,19 @@
 	SIN_RADIANS=round(sin(RADIANS),3) 
 	SIN_DEGREES=round(sin(DEGREES,true),3) 
 	# all following return 0
-	NOTHING_RETURNS_ZERO=cos() 
-	RETURNS_ZERO_AGAIN=cos(null)
-	STRING_ZERO=cos('returns-0')
-	BOOL_ZERO=cos(true)</code></pre>
+	NOTHING_RETURNS_ZERO=sin() 
+	RETURNS_ZERO_AGAIN=sin(null)
+	STRING_ZERO=sin('returns-0')
+	BOOL_ZERO=sin(true)</code></pre>
 	
 <p>Just for fun lets use some math-magic to create a sine-wavey chart:</p>
 
 <pre><code class="language-cfwquery">| source empty records=100
+| meta START=now()
 | set # do some math-magic to create a sine-wave
 	NAME="WAVE"
 	INDEX=count()+1
-	TIME= now(null, 0, 0, 0, INDEX)
+	TIME=timeoffset(START, INDEX, "h")
 	SINE=sin(INDEX*0.3) 
 	VALUE=(SINE*100)*INDEX
 | chart # display as a chart

@@ -18,10 +18,11 @@
 <p>Just for fun lets use some math-magic to create a cosine-wavey chart:</p>
 
 <pre><code class="language-cfwquery">| source empty records=100
-| set # do some math-magic to create a cosine-wave
+| meta START=now()
+| set # do some math-magic to create a sine-wave
 	NAME="WAVE"
 	INDEX=count()+1
-	TIME= now(null, 0, 0, 0, INDEX)
+	TIME=timeoffset(START, INDEX, "h")
 	COSINE=cos(INDEX*0.3) 
 	VALUE=(COSINE*100)*INDEX
 | chart # display as a chart
