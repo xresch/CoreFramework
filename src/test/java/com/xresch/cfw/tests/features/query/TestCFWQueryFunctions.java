@@ -502,6 +502,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals(0, record.get("BOOL_ZERO").getAsInt());
 		
 	}
+	
 	/****************************************************************
 	 * 
 	 ****************************************************************/
@@ -545,6 +546,61 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		// Check 2nd Query Result
 		JsonObject secondRecord = queryResults.getRecord(1);
 		Assertions.assertEquals(1, secondRecord.get("INDEX").getAsInt());
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testCountnulls() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				"| source json data=`[\r\n" + 
+				"	 {index: 0, array: [1,2,3], object: {a: 0, b: 1, c: 3 } }\r\n" + 
+				"	,{index: 1, array: [null,null,3, null,5, null], object: {a: null, b: 22, c: null} }\r\n" + 
+				"]`\r\n" + 
+				"| set \r\n" + 
+				"	COUNT_IS_ONE=countnulls(null) # returns 1\r\n" + 
+				"	NULLS_IN_ARRAY=countnulls(array) # returns 0/4\r\n" + 
+				"	NULLS_IN_OBJECT=countnulls(object) # returns 0/2\r\n" + 
+				"	# every other value will result in count 0\r\n" + 
+				"	NUMBER=countnulls(index)\r\n" + 
+				"	BOOLEAN=countnulls(true)\r\n" + 
+				"	STRING=countnulls(\"some_string\")\r\n" + 
+				"	# no params will result in returning null\r\n" + 
+				"	UNCOUNTABLE=countnulls()"
+						;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(2, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(1, record.get("COUNT_IS_ONE").getAsInt());
+		Assertions.assertEquals(0, record.get("NULLS_IN_ARRAY").getAsInt());
+		Assertions.assertEquals(0, record.get("NULLS_IN_OBJECT").getAsInt());
+		Assertions.assertEquals(0, record.get("NUMBER").getAsInt());
+		Assertions.assertEquals(0, record.get("BOOLEAN").getAsInt());
+		Assertions.assertEquals(0, record.get("STRING").getAsInt());
+		Assertions.assertEquals(true, record.get("UNCOUNTABLE").isJsonNull());
+		
+		//------------------------------
+		// Check 2nd Query Result
+		JsonObject secondRecord = queryResults.getRecord(1);
+		Assertions.assertEquals(1, secondRecord.get("COUNT_IS_ONE").getAsInt());
+		Assertions.assertEquals(4, secondRecord.get("NULLS_IN_ARRAY").getAsInt());
+		Assertions.assertEquals(2, secondRecord.get("NULLS_IN_OBJECT").getAsInt());
+		Assertions.assertEquals(0, secondRecord.get("NUMBER").getAsInt());
+		Assertions.assertEquals(0, secondRecord.get("BOOLEAN").getAsInt());
+		Assertions.assertEquals(0, secondRecord.get("STRING").getAsInt());
+		Assertions.assertEquals(true, secondRecord.get("UNCOUNTABLE").isJsonNull());
 	}
 	
 	
