@@ -1,0 +1,32 @@
+
+<p>Use this function to get the tangent value of a radians or degree value.</p>
+
+<p>Following query creates random records and uses the tan-function:</p>
+
+<pre><code class="language-cfwquery">| source empty records=1
+| set
+	RADIANS=0.872665 # radians for 50 degress
+	DEGREES=50
+	TAN_RADIANS=round(tan(RADIANS),3) 
+	TAN_DEGREES=round(tan(DEGREES,true),3) 
+	# all following return 0
+	NOTHING_RETURNS_ZERO=tan() 
+	RETURNS_ZERO_AGAIN=tan(null)
+	STRING_ZERO=tan('returns-0')
+	BOOL_ZERO=tan(true)</code></pre>
+	
+<p>Just for fun lets use some math-magic to create a tan-wavey chart:</p>
+
+<pre><code class="language-cfwquery">| source empty records=100
+| meta START=now()
+| set # do some math-magic to create a sine-wave
+	NAME="WAVE"
+	INDEX=count()+1
+	TIME=timeoffset(START, INDEX, "h")
+	TANGENT=tan(INDEX*0.1) 
+	VALUE=(TANGENT*100*INDEX
+| chart # display as a chart
+	by=[NAME]
+	type=bar
+	x=TIME
+	y=VALUE</code></pre>

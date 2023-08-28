@@ -280,6 +280,7 @@ DONE
 	- replace
 	- sin
 	- subquery
+	- tan
 	- timeframeoffset
 	- timeoffset
 	- timeparse

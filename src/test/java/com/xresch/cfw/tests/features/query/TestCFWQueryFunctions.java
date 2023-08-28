@@ -502,6 +502,50 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals(0, record.get("BOOL_ZERO").getAsInt());
 		
 	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testCount() throws IOException {
+		
+		//---------------------------------
+		String queryString = 
+				"| source empty records=10\r\n" + 
+				"| set \r\n" + 
+				"	#return a number that increases by 1 every call\r\n" + 
+				"	INDEX=count()\r\n" + 
+				"	COUNT_ARRAY=count([null, 1, true, \"three\"])\r\n" + 
+				"	COUNT_OBJECT=count({a: null, b: 1, c: true, d: \"three\"})\r\n" + 
+				"	COUNT_STRING=count(\"test\")\r\n" + 
+				"	COUNT_NUMBER=count(5)\r\n" + 
+				"	COUNT_BOOL=count(true)\r\n" + 
+				"	COUNT_NULL=count(null)"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(10, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(0, record.get("INDEX").getAsInt());
+		Assertions.assertEquals(4, record.get("COUNT_ARRAY").getAsInt());
+		Assertions.assertEquals(4, record.get("COUNT_OBJECT").getAsInt());
+		Assertions.assertEquals(1, record.get("COUNT_STRING").getAsInt());
+		Assertions.assertEquals(1, record.get("COUNT_NUMBER").getAsInt());
+		Assertions.assertEquals(1, record.get("COUNT_BOOL").getAsInt());
+		Assertions.assertEquals(true, record.get("COUNT_NULL").isJsonNull());
+		
+		//------------------------------
+		// Check 2nd Query Result
+		JsonObject secondRecord = queryResults.getRecord(1);
+		Assertions.assertEquals(1, secondRecord.get("INDEX").getAsInt());
+	}
 	
 	
 	/****************************************************************
