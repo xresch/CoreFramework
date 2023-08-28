@@ -1,12 +1,14 @@
 
-<p>Use this function to get the cosine value of a number.</p>
+<p>Use this function to get the cosine value of a radians or degrees value.</p>
 
-<p>Following query creates random records and uses the cos-function:</p>
+<p>Following query creates a random record and uses the cos-function:</p>
 
-<pre><code class="language-cfwquery">| source empty records=10
+<pre><code class="language-cfwquery">| source empty records=1
 | set
-	NUMBA=random(-88, 900)
-	COS_NUMBA=cos(NUMBA) 
+	RADIANS=0.872665 # radians for 50 degrees
+	DEGREES=50
+	COS_RADIANS=round(cos(RADIANS),3) 
+	COS_DEGREES=round(cos(DEGREES,true),3) 
 	# all following return 0
 	NOTHING_RETURNS_ZERO=cos() 
 	RETURNS_ZERO_AGAIN=cos(null)

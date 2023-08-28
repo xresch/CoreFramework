@@ -48,14 +48,14 @@ public class CFWQueryFunctionSin extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(number)";
+		return FUNCTION_NAME+"(number, useDegrees)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns the sine value of a number.";
+		return "Returns the sine value of a radians or degree value..";
 	}
 	
 	/***********************************************************************************************
@@ -64,8 +64,9 @@ public class CFWQueryFunctionSin extends CFWQueryFunction {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return 
-			 "<ul>"
-			+"<li><b>number:&nbsp;</b>The number you want the sine value for.</li>"
+		 	"<ul>"
+			+"<li><b>number:&nbsp;</b>The value you want the sine value for.</li>"
+			+"<li><b>useDegrees:&nbsp;</b>(Optional)Set to true to use degrees instead of radians for first parameter.</li>"
 			+"</ul>"
 			;
 	}
@@ -101,22 +102,49 @@ public class CFWQueryFunctionSin extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		int paramCount = parameters.size();
-		if(paramCount == 0) {
-			return QueryPartValue.newNumber(0);
-		}
+		//-----------------------------
+			// Handle empty params
+			int paramCount = parameters.size();
+			if(paramCount == 0) {
+				return QueryPartValue.newNumber(0);
+			}
 
-		QueryPartValue initialValue = parameters.get(0);
-		
-		if(initialValue.isNumberOrNumberString()) {
+			//-----------------------------
+			// Get Value to Calculate
+			QueryPartValue initialValue = parameters.get(0);
 			
-			return QueryPartValue.newNumber(
-					Math.sin( initialValue.getAsDouble() )
-				);
-		}
-		
-		// return empty in other cases
-		return QueryPartValue.newNumber(0);
+			
+			//-----------------------------
+			// Calculate
+			if(initialValue.isNumberOrNumberString()) {
+				
+				//-----------------------------
+				// Get useDegrees
+				boolean useDegrees = false;
+				if(paramCount >= 2) {
+					QueryPartValue booleanValue = parameters.get(1);
+					if(booleanValue.isBoolOrBoolString()) {
+						useDegrees = booleanValue.getAsBoolean();
+					}
+				}
+				
+				//-----------------------------
+				// Calculate Value
+				double doubleValue = initialValue.getAsDouble();
+				
+				if(useDegrees) {
+					doubleValue = Math.toRadians(doubleValue);
+				}
+				
+				return QueryPartValue.newNumber(
+						Math.sin( doubleValue )
+					);
+				
+				
+			}
+			
+			// return empty in other cases
+			return QueryPartValue.newNumber(0);
 	}
 
 }

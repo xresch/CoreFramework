@@ -464,6 +464,50 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testCos() throws IOException {
+		
+		//---------------------------------
+		String queryString = "| source empty records=1\r\n" + 
+				"| set\r\n" + 
+				"	RADIANS=0.872665 # radians for 50 degress\r\n" + 
+				"	DEGREES=50\r\n" + 
+				"	COS_RADIANS=round(cos(RADIANS),3) \r\n" + 
+				"	COS_DEGREES=round(cos(DEGREES,true),3) \r\n" + 
+				"	# all following return 0\r\n" + 
+				"	NOTHING_RETURNS_ZERO=cos() \r\n" + 
+				"	RETURNS_ZERO_AGAIN=cos(null)\r\n" + 
+				"	STRING_ZERO=cos('returns-0')\r\n" + 
+				"	BOOL_ZERO=cos(true)\r\n" + 
+				""
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("0.872665", record.get("RADIANS").getAsString());
+		Assertions.assertEquals(50, record.get("DEGREES").getAsInt());
+		Assertions.assertEquals("0.643", record.get("COS_RADIANS").getAsString());
+		Assertions.assertEquals("0.643", record.get("COS_DEGREES").getAsString());
+		Assertions.assertEquals(0, record.get("NOTHING_RETURNS_ZERO").getAsInt());
+		Assertions.assertEquals(0, record.get("RETURNS_ZERO_AGAIN").getAsInt());
+		Assertions.assertEquals(0, record.get("STRING_ZERO").getAsInt());
+		Assertions.assertEquals(0, record.get("BOOL_ZERO").getAsInt());
+		
+	}
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testFloor() throws IOException {
 		
 		//---------------------------------
@@ -486,6 +530,49 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		JsonObject record = queryResults.getRecord(0);
 		Assertions.assertEquals(124, record.get("POSITIVE").getAsInt());
 		Assertions.assertEquals(-43, record.get("NEGATIVE").getAsInt());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testSin() throws IOException {
+		
+		//---------------------------------
+		String queryString = "| source empty records=1\r\n" + 
+				"| set\r\n" + 
+				"	RADIANS=0.872665 # radians for 50 degress\r\n" + 
+				"	DEGREES=50\r\n" + 
+				"	SIN_RADIANS=round(sin(RADIANS),3) \r\n" + 
+				"	SIN_DEGREES=round(sin(DEGREES,true),3) \r\n" + 
+				"	# all following return 0\r\n" + 
+				"	NOTHING_RETURNS_ZERO=cos() \r\n" + 
+				"	RETURNS_ZERO_AGAIN=cos(null)\r\n" + 
+				"	STRING_ZERO=cos('returns-0')\r\n" + 
+				"	BOOL_ZERO=cos(true)\r\n" + 
+				""
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("0.872665", record.get("RADIANS").getAsString());
+		Assertions.assertEquals(50, record.get("DEGREES").getAsInt());
+		Assertions.assertEquals("0.766", record.get("SIN_RADIANS").getAsString());
+		Assertions.assertEquals("0.766", record.get("SIN_DEGREES").getAsString());
+		Assertions.assertEquals(0, record.get("NOTHING_RETURNS_ZERO").getAsInt());
+		Assertions.assertEquals(0, record.get("RETURNS_ZERO_AGAIN").getAsInt());
+		Assertions.assertEquals(0, record.get("STRING_ZERO").getAsInt());
+		Assertions.assertEquals(0, record.get("BOOL_ZERO").getAsInt());
 		
 	}
 	
