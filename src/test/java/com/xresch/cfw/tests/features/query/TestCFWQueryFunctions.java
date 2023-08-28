@@ -603,6 +603,71 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals(true, secondRecord.get("UNCOUNTABLE").isJsonNull());
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testDecode() throws IOException {
+		
+		//---------------------------------
+		String original = "Space Lodash_ Equals= Other<>äÖü!?";
+		String encoded = CFW.HTTP.encode(original);
+		
+		String queryString = 
+				"| source empty records=1 \r\n" + 
+				"| set \r\n" + 
+				"	# encode a string\r\n" + 
+				"	ENCODED=encode('"+original+"')\r\n" + 
+				"	DECODED=decode(ENCODED)"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(original, record.get("DECODED").getAsString());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testEncode() throws IOException {
+		
+		//---------------------------------
+		String original = "Space Lodash_ Equals= Other<>äÖü!?";
+		String encoded = CFW.HTTP.encode(original);
+		
+		String queryString = 
+				"| source empty records=1 \r\n" + 
+				"| set \r\n" + 
+				"	# encode a string\r\n" + 
+				"	ENCODED=encode('"+original+"')\r\n" + 
+				"	DECODED=decode(ENCODED)"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(encoded, record.get("ENCODED").getAsString());
+		
+	}
 	
 	/****************************************************************
 	 * 
