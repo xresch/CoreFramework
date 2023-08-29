@@ -21,6 +21,8 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  ************************************************************************************************************/
 public class CFWQueryFunctionMax extends CFWQueryFunction {
 
+	public static final String FUNCTION_NAME = "max";
+	
 	private BigDecimal max = null; 
 	private boolean isAggregated = false;
 	
@@ -33,7 +35,7 @@ public class CFWQueryFunctionMax extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "max";
+		return FUNCTION_NAME;
 	}
 	
 	/***********************************************************************************************
@@ -51,7 +53,7 @@ public class CFWQueryFunctionMax extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "max(valueOrFieldname)";
+		return FUNCTION_NAME+"(valueOrFieldname)";
 	}
 	/***********************************************************************************************
 	 * 
@@ -75,7 +77,7 @@ public class CFWQueryFunctionMax extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_max.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_"+FUNCTION_NAME+".html");
 	}
 
 
