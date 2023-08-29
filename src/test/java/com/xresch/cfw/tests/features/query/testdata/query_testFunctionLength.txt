@@ -1,0 +1,12 @@
+| source empty records=1
+| set 
+	LENGTH_NOPARAM=length() # returns 0
+	LENGTH_NULL=length(null) # returns null
+	LENGTH_ARRAY=length([1, true, "three"]) # returns array size = 3
+	LENGTH_OBJECT=length({one: 1, two: true, three: "three", four: 4}) # returns object member count = 4
+	# all following return length of the string represenation of the value
+	LENGTH_STRING=length("string") # returns 6
+	LENGTH_BOOL=length(false) # returns 5
+	LENGTH_INT=length(1234) # returns 4
+	LENGTH_NEGATIVE=length(-1234) # returns 5
+	LENGTH_FLOAT=length(1234.56) # returns 7

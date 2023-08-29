@@ -18,6 +18,8 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 public class CFWQueryFunctionLength extends CFWQueryFunction {
 
 	
+	public static final String FUNCTION_NAME = "length";
+
 	public CFWQueryFunctionLength(CFWQueryContext context) {
 		super(context);
 	}
@@ -27,7 +29,7 @@ public class CFWQueryFunctionLength extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "length";
+		return FUNCTION_NAME;
 	}
 	
 	/***********************************************************************************************
@@ -37,6 +39,8 @@ public class CFWQueryFunctionLength extends CFWQueryFunction {
 	public TreeSet<String> getTags(){
 		TreeSet<String> tags = new TreeSet<>();
 		tags.add(CFWQueryFunction.TAG_STRINGS);
+		tags.add(CFWQueryFunction.TAG_ARRAYS);
+		tags.add(CFWQueryFunction.TAG_OBJECTS);
 		return tags;
 	}
 	
@@ -45,14 +49,14 @@ public class CFWQueryFunctionLength extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "length(valueOrFieldname)";
+		return FUNCTION_NAME+"(valueOrFieldname)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns the length of the string representation of the value.";
+		return "Returns the length of an array, object or string representation of a value.";
 	}
 	
 	/***********************************************************************************************
@@ -60,7 +64,7 @@ public class CFWQueryFunctionLength extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>valueOrFieldname:&nbsp;</b>The value to get the length from.</p>"
+		return "<p><b>valueOrFieldname:&nbsp;</b>The value to get the length for.</p>"
 			;
 	}
 
@@ -69,7 +73,7 @@ public class CFWQueryFunctionLength extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_length.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_"+FUNCTION_NAME+".html");
 	}
 
 
@@ -95,19 +99,35 @@ public class CFWQueryFunctionLength extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
+		//-----------------------------
+		// Handle no Param
 		int paramCount = parameters.size();
 		if(paramCount == 0) {
 			return QueryPartValue.newNumber(0);
 		}
-
-		String initialValue = parameters.get(0).getAsString();
 		
-		if(initialValue != null) {
-			return QueryPartValue.newNumber(initialValue.length());
+		//-----------------------------
+		// Handle value is null
+		QueryPartValue initialValue = parameters.get(0);
+		if(initialValue.isNull()) {
+			return QueryPartValue.newNull();
 		}
 		
-		// return empty in other cases
-		return QueryPartValue.newNumber(0);
+		//-----------------------------
+		// Handle Array and Object
+		if(initialValue.isJson()) {
+			if(initialValue.isJsonArray()) {
+				return QueryPartValue.newNumber(initialValue.getAsJsonArray().size());
+			}else {
+				return QueryPartValue.newNumber(initialValue.getAsJsonObject().size());
+			}
+		}
+		
+		//-----------------------------
+		// Handle others
+		return QueryPartValue.newNumber(initialValue.getAsString().length());
+
+
 	}
 
 }

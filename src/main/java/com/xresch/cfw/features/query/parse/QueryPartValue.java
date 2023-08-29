@@ -419,6 +419,16 @@ public class QueryPartValue extends QueryPart {
 		Number number = this.getAsNumber();
 		if(number == null) return null;
 		
+		// this check is needed for proper conversion to string values
+		if(number instanceof BigDecimal){
+			return (BigDecimal) number;
+		}else if(  number instanceof Integer 
+				|| number instanceof Long
+				|| number instanceof Short
+				) {
+			new BigDecimal(number.longValue());
+		}
+		
 		return new BigDecimal(number.doubleValue());
 
 	}
@@ -592,6 +602,11 @@ public class QueryPartValue extends QueryPart {
 	 ******************************************************************************************************/
 	public String getAsString() {
 		if(value == null) return null;
+		
+		// convert numbers to string without scientific notation
+		if(type == QueryPartValueType.NUMBER) {
+			return this.getAsBigDecimal().stripTrailingZeros().toPlainString();
+		}
 		
 		return value.toString();
 	}

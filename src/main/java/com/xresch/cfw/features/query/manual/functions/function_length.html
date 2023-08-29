@@ -1,28 +1,17 @@
 
-<p>Returns the length of a string.</p>
+<p>Returns the length of an array, object or string representation of other values.</p>
 
-<p>Following query create random records and gets the length of certain values:</p>
+<p>Following query create an empty record and gets the length of various values:</p>
 
-<pre><code class="language-cfwquery">| source random records=42
+<pre><code class="language-cfwquery">| source empty records=1
 | set 
-	LENGTH_ID=length(ID)
-	LENGTH_LIKES_TIRAMISU=length(LIKES_TIRAMISU)
-	LENGTH_FIRSTNAME=length(FIRSTNAME)
-| keep 
-		ID
-		, LENGTH_ID
-		, FIRSTNAME
-		, LENGTH_FIRSTNAME
-		, LIKES_TIRAMISU
-		, LENGTH_LIKES_TIRAMISU</code></pre>
-
-
-<p>This function can lead to incorrect result when used with number values:</p>
-
-<pre><code class="language-cfwquery">| source random records=9 type=numbers
-| set 
-	# string representation might be scientific notation 
-	LENGTH_BIGDEC=length(BIG_DECIMAL)
-	LENGTH_FLOAT=length(FLOAT)
-	# string representation might have decimals
-	LENGTH_THOUSANDS=length(THOUSANDS)</code></pre>
+	LENGTH_NOPARAM=length() # returns 0
+	LENGTH_NULL=length(null) # returns null
+	LENGTH_ARRAY=length([1, true, "three"]) # returns array size = 3
+	LENGTH_OBJECT=length({one: 1, two: true, three: "three", four: 4}) # returns object member count = 4
+	# all following return length of the string representation of the value
+	LENGTH_STRING=length("string") # returns 6
+	LENGTH_BOOL=length(false) # returns 5
+	LENGTH_INT=length(1234) # returns 4
+	LENGTH_NEGATIVE=length(-1234) # returns 5
+	LENGTH_FLOAT=length(1234.56) # returns 7(BigDecimal), might be unpredicable if number type is float or double</code></pre>

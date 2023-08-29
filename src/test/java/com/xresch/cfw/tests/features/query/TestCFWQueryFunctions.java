@@ -771,6 +771,40 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testLength() throws IOException {
+		
+		//---------------------------------
+		// Initialize
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionLength.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, -0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(0, record.get("LENGTH_NOPARAM").getAsInt());
+		Assertions.assertEquals(true, record.get("LENGTH_NULL").isJsonNull());
+		Assertions.assertEquals(3, record.get("LENGTH_ARRAY").getAsInt());
+		Assertions.assertEquals(4, record.get("LENGTH_OBJECT").getAsInt());
+		Assertions.assertEquals(6, record.get("LENGTH_STRING").getAsInt());
+		Assertions.assertEquals(5, record.get("LENGTH_BOOL").getAsInt());
+		Assertions.assertEquals(4, record.get("LENGTH_INT").getAsInt());
+		Assertions.assertEquals(5, record.get("LENGTH_NEGATIVE").getAsInt());
+		Assertions.assertEquals(7, record.get("LENGTH_FLOAT").getAsInt());
+
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testSin() throws IOException {
 		
 		//---------------------------------
