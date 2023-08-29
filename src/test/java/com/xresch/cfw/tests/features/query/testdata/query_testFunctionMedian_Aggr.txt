@@ -1,0 +1,16 @@
+| source json data=`
+[
+	  {count: 1, value: 9, float: 1.23}
+	 ,{count: 2, value: 8, float: 2.34}
+	 ,{count: 3, value: 7, float: 3.44}
+	 ,{count: 4, value: 6, float: 4.55}
+	 ,{count: 5, value: null, float: 6.77}
+	 ,{count: null, value: null, float: 7.88}
+
+]
+`
+| stats 
+	MEDIAN=median(count)
+	MEDIAN_NONULL=median(value)
+	MEDIAN_NULLS=median(value,true)
+	MEDIAN_FLOAT=median(float,true,5)

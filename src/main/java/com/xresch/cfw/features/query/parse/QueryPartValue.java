@@ -52,6 +52,46 @@ public class QueryPartValue extends QueryPart {
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
+	// Overload method to improve performance of getAsBigDecimal()
+	public static QueryPartValue newNumber(Integer value){
+		return new QueryPartValue(QueryPartValueType.NUMBER, new BigDecimal(value));
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	// Overload method to improve performance of getAsBigDecimal()
+	public static QueryPartValue newNumber(Long value){
+		return new QueryPartValue(QueryPartValueType.NUMBER, new BigDecimal(value));
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	// Overload method to improve performance of getAsBigDecimal()
+	public static QueryPartValue newNumber(Short value){
+		return new QueryPartValue(QueryPartValueType.NUMBER, new BigDecimal(value));
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	// Overload method to improve performance of getAsBigDecimal()
+	public static QueryPartValue newNumber(Float value){
+		return new QueryPartValue(QueryPartValueType.NUMBER, new BigDecimal(value));
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	// Overload method to improve performance of getAsBigDecimal()
+	public static QueryPartValue newNumber(Double value){
+		return new QueryPartValue(QueryPartValueType.NUMBER, new BigDecimal(value));
+	}
+	
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
 	public static QueryPartValue newNumber(Number value){
 		return new QueryPartValue(QueryPartValueType.NUMBER, value);
 	}
@@ -412,10 +452,21 @@ public class QueryPartValue extends QueryPart {
 	 ******************************************************************************************************/
 	public BigDecimal getAsBigDecimal() {
 		
+		//--------------------------------
+		// Most numbers are be stored as BigDecimal
+		// to improve performance of this method
+		if(value instanceof BigDecimal) {
+			return (BigDecimal)value;
+		}
+		
+		//--------------------------------
+		// Handle Number Strings
 		if(this.isNumberString()) {
 			return new BigDecimal(this.getAsString());
 		}
 		
+		//--------------------------------
+		// Any Other Value
 		Number number = this.getAsNumber();
 		if(number == null) return null;
 		

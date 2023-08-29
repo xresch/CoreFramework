@@ -25,7 +25,7 @@ public class CFWQueryFunctionPerc extends CFWQueryFunction {
 	protected ArrayList<BigDecimal> values = new ArrayList<>();
 	
 	protected Integer percentile = null;
-	private boolean isAggregated = false;
+	protected boolean isAggregated = false;
 	
 	public CFWQueryFunctionPerc(CFWQueryContext context) {
 		super(context);
@@ -96,7 +96,7 @@ public class CFWQueryFunctionPerc extends CFWQueryFunction {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	private void addValueToAggregation(QueryPartValue value, boolean countNulls) {
+	protected void addValueToAggregation(QueryPartValue value, boolean countNulls) {
 		
 		//---------------------------------
 		// Store values
@@ -111,7 +111,7 @@ public class CFWQueryFunctionPerc extends CFWQueryFunction {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	private QueryPartValue calculatePercentile() {
+	protected QueryPartValue calculatePercentile() {
 		
 		int count = values.size();
 		
@@ -177,7 +177,7 @@ public class CFWQueryFunctionPerc extends CFWQueryFunction {
 	/***********************************************************************************************
 	 * If percentile was not yet resolved, get it from parameters.
 	 ***********************************************************************************************/
-	private void resolvePercentile(ArrayList<QueryPartValue> parameters) {
+	protected void resolvePercentile(ArrayList<QueryPartValue> parameters) {
 		//---------------------------------
 		// Resolve Percentile
 		if(percentile == null && parameters.size() > 1) {

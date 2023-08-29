@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query.functions;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import com.xresch.cfw._main.CFW;
@@ -99,8 +100,22 @@ public class CFWQueryFunctionMedian extends CFWQueryFunctionPerc {
 	
 	}
 	
-	/**
-	 * @return *********************************************************************************************
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	protected QueryPartValue calculatePercentile() {
+		
+		BigDecimal medianValue = CFW.Math.bigMedian(values);
+		
+		//reset values
+		values = new ArrayList<>();
+		percentile = null;
+		
+		return QueryPartValue.newNumber(medianValue);
+	}
+	
+	
+	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override

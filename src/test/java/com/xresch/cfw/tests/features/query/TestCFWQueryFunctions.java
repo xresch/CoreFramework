@@ -859,6 +859,65 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testMedian() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionMedian.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("2.5", record.get("MEDIAN_ARRAY").toString());
+		Assertions.assertEquals(2, record.get("MEDIAN_ARRAY_NULLS").getAsInt());
+		Assertions.assertEquals("3", record.get("MEDIAN_OBJECT").toString());
+		Assertions.assertEquals(2, record.get("MEDIAN_OBJECT_NULLS").getAsInt());
+		Assertions.assertEquals(77, record.get("MEDIAN_NUMBER").getAsInt());
+		Assertions.assertTrue(record.get("MEDIAN_ZERO").isJsonNull());
+		Assertions.assertTrue(record.get("MEDIAN_NULL").isJsonNull());
+		Assertions.assertTrue(record.get("UNSUPPORTED_A").isJsonNull());
+		Assertions.assertTrue(record.get("UNSUPPORTED_B").isJsonNull());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testMedian_Aggr() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionMedian_Aggr.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("3", record.get("MEDIAN").toString());
+		Assertions.assertEquals("7.5", record.get("MEDIAN_NONULL").toString());
+		Assertions.assertEquals("6.5", record.get("MEDIAN_NULLS").toString());
+		Assertions.assertEquals("3.995", record.get("MEDIAN_FLOAT").toString());
+	}
+
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testSin() throws IOException {
 		
 		//---------------------------------

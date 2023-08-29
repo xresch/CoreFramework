@@ -74,6 +74,7 @@ import com.xresch.cfw.spi.CFWAppInterface;
 import com.xresch.cfw.utils.CFWDump;
 import com.xresch.cfw.utils.CFWFiles;
 import com.xresch.cfw.utils.CFWHttp;
+import com.xresch.cfw.utils.CFWMath;
 import com.xresch.cfw.utils.CFWRandom;
 import com.xresch.cfw.utils.CFWScripting;
 import com.xresch.cfw.utils.CFWSecurity;
@@ -144,6 +145,7 @@ public class CFW {
 	public static class HTTP extends CFWHttp {}
 	public static class JSON extends CFWJson {}
 	public static class Localization extends CFWLocalization {}
+	public static class Math extends CFWMath {}
 	public static class Messages extends CFWMessages {}
 	public static class Properties extends CFWProperties {}
 	public static class Random extends CFWRandom {}
