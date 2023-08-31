@@ -912,6 +912,88 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals("6.5", record.get("MEDIAN_NULLS").toString());
 		Assertions.assertEquals("3.995", record.get("MEDIAN_FLOAT").toString());
 	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testPerc() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionPerc.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+			
+		
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(3, queryResults.getRecordCount());
+		
+		//------------------------------
+		// Check First Query Result
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(5, record.get("50Perc").getAsInt());
+		Assertions.assertEquals(9, record.get("90Perc").getAsInt());
+		Assertions.assertEquals(9, record.get("90PercNulls").getAsInt());
+		Assertions.assertEquals(77, record.get("70PercObject").getAsInt());
+		Assertions.assertEquals(77, record.get("70PercObjectNulls").getAsInt());
+		Assertions.assertEquals(0, record.get("PERC_NUMBER").getAsInt());
+		
+		Assertions.assertTrue(record.get("PERC_NONE").isJsonNull());
+		Assertions.assertTrue(record.get("PERC_NULL").isJsonNull());
+		Assertions.assertTrue(record.get("UNSUPPORTED_A").isJsonNull());
+		Assertions.assertTrue(record.get("UNSUPPORTED_B").isJsonNull());
+		
+		//------------------------------
+		// Check Second Query Result
+		record = queryResults.getRecord(1);
+		Assertions.assertEquals(5, record.get("50Perc").getAsInt());
+		Assertions.assertEquals(9, record.get("90Perc").getAsInt());
+		Assertions.assertEquals(8, record.get("90PercNulls").getAsInt());
+		Assertions.assertEquals(77, record.get("70PercObject").getAsInt());
+		Assertions.assertEquals(44, record.get("70PercObjectNulls").getAsInt());
+		Assertions.assertEquals(1, record.get("PERC_NUMBER").getAsInt());
+		
+		//------------------------------
+		// Check Third Query Result
+		record = queryResults.getRecord(2);
+		Assertions.assertEquals(5, record.get("50Perc").getAsInt());
+		Assertions.assertEquals(9, record.get("90Perc").getAsInt());
+		Assertions.assertEquals(9, record.get("90PercNulls").getAsInt());
+		Assertions.assertEquals(33, record.get("70PercObject").getAsInt());
+		Assertions.assertEquals(33, record.get("70PercObjectNulls").getAsInt());
+		Assertions.assertEquals(3, record.get("PERC_NUMBER").getAsInt());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testPerc_Aggr() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionPerc_Aggr.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(8, record.get("PERC").getAsInt());
+		Assertions.assertEquals(4, record.get("PERC_NONULL").getAsInt());
+		Assertions.assertEquals(3, record.get("PERC_NULLS").getAsInt());
+		Assertions.assertEquals("8.5653", record.get("PERC_FLOAT").toString());
+		
+	}
 
 	
 	/****************************************************************

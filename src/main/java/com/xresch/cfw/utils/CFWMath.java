@@ -39,4 +39,31 @@ public class CFWMath {
 		
 	}
 	
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	public static BigDecimal bigPercentile(ArrayList<BigDecimal> values, int percentile) {
+		
+		int count = values.size();
+		
+		if(count == 0) {
+			return null;
+		}
+				
+		int percentilePosition = (int)Math.ceil( count * (percentile / 100f) );
+		
+		//---------------------------
+		// Retrieve number
+		values.sort(null);
+		
+		if(percentilePosition > 0) {
+			// one-based position, minus 1 to get index
+			return values.get(percentilePosition-1);
+		}else {
+			return values.get(0);
+		}
+		
+	}
+	
 }

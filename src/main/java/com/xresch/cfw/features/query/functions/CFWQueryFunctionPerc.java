@@ -1,10 +1,9 @@
 package com.xresch.cfw.features.query.functions;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -112,36 +111,18 @@ public class CFWQueryFunctionPerc extends CFWQueryFunction {
 	 * 
 	 ***********************************************************************************************/
 	protected QueryPartValue calculatePercentile() {
-		
-		int count = values.size();
-		
-		if(count == 0) {
-			return QueryPartValue.newNull();
-		}
-		
+			
 		if(percentile == null) {
 			percentile = 50;
 		}
 		
-		int percentilePosition = (int)Math.ceil( count * (percentile / 100f) );
-		
-		//---------------------------
-		// Retrieve number
-		values.sort(null);
-		
-		QueryPartValue result;
-		if(percentilePosition > 0) {
-			result = QueryPartValue.newNumber(values.get(percentilePosition-1));
-		}else {
-			result = QueryPartValue.newNumber(values.get(0));
-				
-		}
+		BigDecimal percentileValue = CFW.Math.bigPercentile(values, percentile);
 		
 		//reset values
 		values = new ArrayList<>();
 		percentile = null;
 		
-		return result;
+		return QueryPartValue.newNumber(percentileValue);
 	}
 	
 	/***********************************************************************************************
