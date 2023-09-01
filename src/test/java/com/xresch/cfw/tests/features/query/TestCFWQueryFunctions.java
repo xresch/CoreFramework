@@ -917,6 +917,36 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testMeta() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionMeta.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(true, record.get("LIGHTS_ON").getAsBoolean());
+		Assertions.assertEquals("Jane", record.get("LOVELY_PERSON").getAsString());
+		Assertions.assertEquals(42, record.get("THE_WINNER_IS").getAsInt());
+		Assertions.assertEquals(true, record.get("MOTHING_HERE").isJsonNull());
+		Assertions.assertEquals("[\"throw\",\"the\",\"ball\",\"woof!\"]", record.get("REQUIRED_ACTION").toString());
+		Assertions.assertEquals("{\"I\":\"am\",\"your\":\"god\",\"pet\":\"and worship me already so that this example stops getting utterly long!\"}", record.get("REQUEST_FOR_OBEDIENCE").toString());
+		Assertions.assertEquals(87, record.get("OBEDIENCE_SCORE").getAsInt());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testPerc() throws IOException {
 		
 		//---------------------------------

@@ -9,18 +9,18 @@ Provide a second parameter to change the metadata property to that value.</p>
 	mySwitch=true
 	herName='Jane'
 	hisNumber=42
-	yourNumber=420
-| source random records=10
-| keep INDEX
+	yourNull=null
+	theDogsArray=["throw", "the", "ball", "woof!"]
+	theCatsObject={'I': 'am', 'your': 'god', 'pet': 'and worship me already so that this example stops getting utterly long!'}
+| source empty records=1
 | set
 	LIGHTS_ON=meta(mySwitch)
 	LOVELY_PERSON=meta(herName)
 	THE_WINNER_IS=meta(hisNumber)
-	SUM=meta(yourNumber) + meta(hisNumber)
-	SUBTRACT=meta(yourNumber) - meta(hisNumber)
-	MULTIPLY=meta(yourNumber) * meta(hisNumber)
-	DIVIDE=meta(yourNumber) / meta(hisNumber)
-	POWER=meta(yourNumber) ^ meta(hisNumber)
+	MOTHING_HERE=meta(yourNull)
+	REQUIRED_ACTION=meta(theDogsArray)
+	REQUEST_FOR_OBEDIENCE=meta(theCatsObject)
+	OBEDIENCE_SCORE=meta(hisNumber) + 45 * sin(45.45)
 </code></pre>
 	
 <p>Following is a more advanced example, it changes the values of the metadata by providing a second argument to the function:</p>

@@ -51,14 +51,14 @@ public class CFWQueryFunctionTimeFormat extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(format, epochMillis, timezoneOffset)";
+		return FUNCTION_NAME+"(format, epochMillis, useClientTimezone)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns time based on present time and an optional offset.";
+		return "Returns time formatted as a string.";
 	}
 	
 	/***********************************************************************************************

@@ -1,0 +1,16 @@
+| metadata
+	mySwitch=true
+	herName='Jane'
+	hisNumber=42
+	yourNull=null
+	theDogsArray=['throw', 'the', 'ball', 'woof!']
+	theCatsObject={'I': 'am', 'your': 'god', 'pet': 'and worship me already so that this example stops getting utterly long!'}
+| source empty records=1
+| set
+	LIGHTS_ON=meta(mySwitch) 
+	LOVELY_PERSON=meta(herName)
+	THE_WINNER_IS=meta(hisNumber)
+	MOTHING_HERE=meta(yourNull)
+	REQUIRED_ACTION=meta(theDogsArray)
+	REQUEST_FOR_OBEDIENCE=meta(theCatsObject)
+	OBEDIENCE_SCORE=meta(hisNumber) + 45 
