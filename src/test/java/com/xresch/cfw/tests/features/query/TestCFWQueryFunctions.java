@@ -1086,6 +1086,41 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testTimeformat() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionTimeformat.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, -120);
+		
+		Assertions.assertEquals(1, resultArray.size());
+							
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("2023-09-04T12:15:01", record.get("formatted").getAsString());
+		Assertions.assertEquals("2023-09-04", record.get("yearDayMonth").getAsString());
+		Assertions.assertEquals("12:15:01", record.get("utcTime").getAsString());
+		Assertions.assertEquals("14:15:01", record.get("clientTime").getAsString());
+		Assertions.assertEquals("889", record.get("millis").getAsString());
+		Assertions.assertEquals("Mon / Monday", record.get("DayName").getAsString());
+		Assertions.assertEquals("Sep / September", record.get("MonthName").getAsString());
+		Assertions.assertEquals("+02:00 / +0200 / GMT+02:00", record.get("Timezones").getAsString());
+		Assertions.assertEquals(true, record.get("epochNoParams").isJsonNull());
+		Assertions.assertEquals(true, record.get("epochFormatOnly").isJsonNull());
+		Assertions.assertEquals(true, record.get("epochFormatNull").isJsonNull());
+		Assertions.assertEquals(true, record.get("epochTimeNull").isJsonNull());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testTimeframeOffset() throws IOException {
 		
 		//---------------------------------

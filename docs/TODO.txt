@@ -281,6 +281,7 @@ DONE
 	- sin
 	- subquery
 	- tan
+	- timeformat
 	- timeframeoffset
 	- timeoffset
 	- timeparse

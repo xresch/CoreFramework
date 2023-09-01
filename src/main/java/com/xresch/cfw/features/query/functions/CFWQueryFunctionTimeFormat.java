@@ -1,9 +1,13 @@
 package com.xresch.cfw.features.query.functions;
 
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.TreeSet;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -11,15 +15,16 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
 
-/************************************************************************************************************
- * 
- * @author Reto Scheiwiller, (c) Copyright 2023 
- * @license MIT-License
- ************************************************************************************************************/
-public class CFWQueryFunctionEarliest extends CFWQueryFunction {
+public class CFWQueryFunctionTimeFormat extends CFWQueryFunction {
 
+	public static final String FUNCTION_NAME = "timeformat";
 	
-	public CFWQueryFunctionEarliest(CFWQueryContext context) {
+	LocalDate now = LocalDate.now();
+	DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	String formattedDate = now.format(formatter);
+	LocalDate parsedDate = LocalDate.parse(formattedDate, formatter);
+	
+	public CFWQueryFunctionTimeFormat(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -28,7 +33,7 @@ public class CFWQueryFunctionEarliest extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "earliest";
+		return FUNCTION_NAME;
 	}
 	
 	/***********************************************************************************************
@@ -46,14 +51,14 @@ public class CFWQueryFunctionEarliest extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "earliest(format, useClientTimezone)";
+		return FUNCTION_NAME+"(format, epochMillis, timezoneOffset)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Returns earliest time as epoch time or in a specific format. ";
+		return "Returns time based on present time and an optional offset.";
 	}
 	
 	/***********************************************************************************************
@@ -61,8 +66,9 @@ public class CFWQueryFunctionEarliest extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>format:&nbsp;</b>(Optional)The format the returned time should have. Default is null, what returns epoch time in milliseconds. (Example: yyyy-MM-dd'T'HH:mm:ss.SSSZ)</p>"
-			 + "<p><b>useClientTimezone:&nbsp;</b>(Optional). Default is false, UTC format will be used. If set to true, the time zone of the client will be used."
+		return "<p><b>format:&nbsp;</b>(Optional)The format the returned time should have.</p>"
+			  +"<p><b>epochMillis:&nbsp;</b>(Optional)The time to be formatted in epoch milliseconds.</p>"
+			  +"<p><b>useClientTimezone:&nbsp;</b>(Optional). Default is false, UTC format will be used. If set to true, the time zone of the client will be used."
 			;
 	}
 
@@ -71,7 +77,7 @@ public class CFWQueryFunctionEarliest extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_earliest.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_"+FUNCTION_NAME+".html");
 	}
 
 
@@ -98,42 +104,58 @@ public class CFWQueryFunctionEarliest extends CFWQueryFunction {
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
 		//----------------------------------
-		// Default Params
-		int size = parameters.size(); 
+		// Initialize
+		int paramCount = parameters.size(); 
+		if(paramCount < 2) {
+			return QueryPartValue.newNull();
+		}
 		
 		String dateformat = null;
+		long epochMillis = -1;
 		boolean useClientTimezone = false;
-		
+
 		//----------------------------------
-		// Get Format
-		if(size > 0) {
-			QueryPartValue formatValue = parameters.get(0);
-			if(formatValue.isString()) { dateformat = formatValue.getAsString(); };
-			
+		// Get dateformat
+		QueryPartValue formatValue = parameters.get(0);
+		if(formatValue.isString()) { 
+			dateformat = formatValue.getAsString(); 
+		} else {
+			return QueryPartValue.newNull();
+		}
+		
+
+		//----------------------------------
+		// Get epochMillis
+		
+		if(paramCount >= 2) {
+			QueryPartValue epochValue = parameters.get(1);
+			if(epochValue.isNumberOrNumberString()) { 
+				epochMillis = epochValue.getAsLong(); 
+			} else {
+				return QueryPartValue.newNull();
+			}
+
 			//----------------------------------
-			// Get Format
-			if(size > 1) {
-				QueryPartValue useClientTimezoneValue = parameters.get(1);
-				if(useClientTimezoneValue.isBoolOrBoolString()) { useClientTimezone = useClientTimezoneValue.getAsBoolean(); };
+			// Get useClientTimezone
+			if(paramCount >= 3) {
+				QueryPartValue timezoneValue = parameters.get(2);
+				if(timezoneValue.isBoolOrBoolString()) { 
+					useClientTimezone = timezoneValue.getAsBoolean(); 
+				}
 			}
 		}
-					
+			
 		//----------------------------------
 		// Create Time and Format
-		long millis = this.context.getEarliestMillis();
-		if(dateformat == null) {
-			return QueryPartValue.newNumber(millis);
-		}else {
-			ZonedDateTime zonedTime = CFW.Time.zonedTimeFromEpoch(millis);
-			
-			int offset = 0;
-			if(useClientTimezone) {
-				offset = this.context.getTimezoneOffsetMinutes();
-			}
-			
-			String dateFormatted = CFW.Time.formatDate(zonedTime, dateformat, offset);
-			return QueryPartValue.newString(dateFormatted);
+		ZonedDateTime zonedTime = CFW.Time.zonedTimeFromEpoch(epochMillis);
+		
+		int offset = 0;
+		if(useClientTimezone) {
+			offset = this.context.getTimezoneOffsetMinutes();
 		}
+		
+		String dateFormatted = CFW.Time.formatDate(zonedTime, dateformat, offset);
+		return QueryPartValue.newString(dateFormatted);
 				
 	}
 
