@@ -947,6 +947,61 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testMin() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionMin.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+							
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(1, record.get("MIN_ARRAY").getAsInt());
+		Assertions.assertEquals(0, record.get("MIN_OBJECT").getAsInt());
+		Assertions.assertEquals(77, record.get("MIN_NUMBER").getAsInt());
+		Assertions.assertTrue(record.get("MIN_ZERO").isJsonNull());
+		Assertions.assertTrue(record.get("MIN_NULL").isJsonNull());
+		Assertions.assertTrue(record.get("UNSUPPORTED_A").isJsonNull());
+		Assertions.assertTrue(record.get("UNSUPPORTED_B").isJsonNull());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testMin_Aggr() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionMin_Aggr.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(1, record.get("MIN").getAsInt());
+		Assertions.assertEquals(4, record.get("MIN_VALUE").getAsInt());
+		Assertions.assertEquals("1.33333333", record.get("MIN_FLOAT").toString());
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testPerc() throws IOException {
 		
 		//---------------------------------

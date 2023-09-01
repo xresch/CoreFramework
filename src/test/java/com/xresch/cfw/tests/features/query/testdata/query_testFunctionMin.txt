@@ -1,0 +1,17 @@
+| source json data=`
+[
+	 {index: 77
+	 , array: [2,3,4,1, null, true, "string"]
+	 , object: {a: 4, b: 2, c: 33, d: 0, e: null, f: true, string: "ignored"} }
+
+]
+`
+| set 
+	MIN_ARRAY=min(array) # returns 1
+	MIN_OBJECT=min(object) # returns 0
+	MIN_NUMBER=min(index) # returns same number = 77
+	# all other return null
+	MIN_ZERO=min()
+	MIN_NULL=min(null)
+	UNSUPPORTED_A=min(true)
+	UNSUPPORTED_B=min("some_string")
