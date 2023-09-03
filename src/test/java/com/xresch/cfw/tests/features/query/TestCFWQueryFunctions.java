@@ -1,7 +1,9 @@
 package com.xresch.cfw.tests.features.query;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.Date;
 
 import org.joda.time.Instant;
 import org.junit.jupiter.api.Assertions;
@@ -996,6 +998,47 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals(1, record.get("MIN").getAsInt());
 		Assertions.assertEquals(4, record.get("MIN_VALUE").getAsInt());
 		Assertions.assertEquals("1.33333333", record.get("MIN_FLOAT").toString());
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testNow() throws IOException {
+		
+		//---------------------------------
+		String queryString =
+				  "| source empty records=1\r\n"
+				+ "| set \r\n"
+				+ "	NOW = now()\r\n"
+				+ "	NOW_OFFSET = now(null, -1, \"h\")\r\n"
+				+ "	NOW_FORMAT = now(\"YYYY-MM-dd\")"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		// truncate to minutes to make this test work, except in cases when the minute changes.
+		long presentTime = CFWTimeUnit.m.truncate(new Date().getTime());
+		long presentTimeOffset = CFWTimeUnit.h.offset(presentTime, -1);
+		
+		ZonedDateTime zonedTime = CFW.Time.zonedTimeFromEpoch(presentTime);
+
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		String dateFormatted = CFW.Time.formatDate(zonedTime, "YYYY-MM-dd", queryResults.getQueryContext().getTimezoneOffsetMinutes());
+		String message = "If the assertion failed, the test might have executed exactly on the minute.";
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(presentTime, CFWTimeUnit.m.truncate( record.get("NOW").getAsLong()), message );
+		Assertions.assertEquals(presentTimeOffset, CFWTimeUnit.m.truncate( record.get("NOW_OFFSET").getAsLong()), message);
+		Assertions.assertEquals(dateFormatted, record.get("NOW_FORMAT").getAsString(), message);
+		
 	}
 	
 	/****************************************************************

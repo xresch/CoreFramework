@@ -197,9 +197,9 @@ public class CFWTime {
 		}
 		
 		/********************************************************************************************
-		 * Return time with an offset starting from the given time.
-		 * Use positive values to go to the future, use negative values to go to the past.
-		 * @param epochMillis the time in milliseconds which should be offset.
+		 * Truncates every time unit which is lower than this time unit.
+		 * For Example, if time unit is minute, it will truncate seconds and below.
+		 * @param epochMillis the time in milliseconds which should be truncated.
 		 * @return truncated time in epoch milliseconds
 		 ********************************************************************************************/
 		public long truncate(long epochMillis) { 
