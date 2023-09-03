@@ -1045,6 +1045,46 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testNullto() throws IOException {
+		
+		//---------------------------------
+		String dangerZone = "!!! Danger Zone(Bio Hazard) - do not enter!!!";
+		String theQueriesID = "This query identifies as a killer virus. It's pronouns are Ah/choo!!!";
+		String queryString =
+				"| source empty records=1\r\n"
+				+ "| set \r\n"
+				+ "	EMPTY = null\r\n"
+				+ "	THE_QUERIES_ID = \""+theQueriesID+"\"\r\n"
+				+ "	NULL_AGAIN = null\r\n"
+				+ "	NULL_STRING = 'null'\r\n"
+				+ "	STAYS_NULL = null	\r\n"
+				+ "| nullto \r\n"
+				+ "	   fields=[EMPTY, THE_QUERIES_ID , NULL_AGAIN, NULL_STRING ] # exclude STAYS_NULL \r\n"
+				+ "	   value=\""+dangerZone+"\""
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(dangerZone, record.get("EMPTY").getAsString() );
+		Assertions.assertEquals(theQueriesID, record.get("THE_QUERIES_ID").getAsString() );
+		Assertions.assertEquals(dangerZone, record.get("NULL_AGAIN").getAsString() );
+		Assertions.assertEquals("null", record.get("NULL_STRING").getAsString() );
+		Assertions.assertEquals(true, record.get("STAYS_NULL").isJsonNull() );
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testPerc() throws IOException {
 		
 		//---------------------------------
