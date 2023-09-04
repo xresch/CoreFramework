@@ -484,7 +484,13 @@ public class ServletDashboardViewMethods
 					if(!defaultSettingsOnly) {
 						CFW.DB.DashboardWidgets.update(widgetFromDB);
 					}else {
-						CFW.DB.DashboardWidgets.updateWithout(widgetFromDB, DashboardWidgetFields.JSON_SETTINGS.toString());
+						// needed to not override these settings
+						// needed also for security reasons (user cannot override task params when not having permissions)
+						CFW.DB.DashboardWidgets.updateWithout(
+										widgetFromDB
+										, DashboardWidgetFields.JSON_SETTINGS.toString()
+										, DashboardWidgetFields.JSON_TASK_PARAMETERS.toString()
+									);
 					}
 				}
 			}else {
