@@ -20,6 +20,7 @@ import com.xresch.cfw.features.query.CFWQueryResult;
 import com.xresch.cfw.features.query.CFWQueryResultList;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.tests._master.DBTestMaster;
+import com.xresch.cfw.tests.assets.CFWTestUtils;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 public class TestCFWQueryFunctions extends DBTestMaster{
@@ -1061,7 +1062,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 				+ "| nullto \r\n"
 				+ "	   fields=[EMPTY, THE_QUERIES_ID , NULL_AGAIN, NULL_STRING ] # exclude STAYS_NULL \r\n"
 				+ "	   value=\""+dangerZone+"\""
-				;
+			;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1163,6 +1164,124 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		
 	}
 
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testRandom() throws IOException {
+		
+		//---------------------------------
+		String queryString =
+				"| source empty records= 100\r\n"
+				+ "| set\r\n"
+				+ "  PERCENT = random()\r\n"
+				+ "  ZERO_ONE = random(0,1)\r\n"
+				+ "  ONE = random(1,1)\r\n"
+				+ "  HUNDRED = random(100) #second param is default 100 \r\n"
+				+ "  MINUS = random(-10, 10)\r\n"
+				+ "  HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Iterate all Query Results
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(100, queryResults.getRecordCount());
+		
+		for(int i = 0; i < queryResults.getRecordCount(); i++) {
+			JsonObject record = queryResults.getRecord(0);
+			CFWTestUtils.assertIsBetween(0, 100, record.get("PERCENT").getAsInt() );
+			CFWTestUtils.assertIsBetween(0, 1, record.get("ZERO_ONE").getAsInt() );
+			Assertions.assertEquals(1, record.get("ONE").getAsInt() );
+			Assertions.assertEquals(100, record.get("HUNDRED").getAsInt() );
+			CFWTestUtils.assertIsBetween(-10, 10, record.get("MINUS").getAsInt() );
+			CFWTestUtils.assertIsBetween(500000, 1000000, record.get("HALF_TO_FULL_MILLION").getAsInt() );
+		}
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testRandomFloat() throws IOException {
+		
+		//---------------------------------
+		String queryString =
+				"| source empty records= 100\r\n"
+				+ "| set\r\n"
+				+ "  PERCENT= randomFloat() # zero to 1\r\n"
+				+ "  ZERO_FIFTY = randomFloat(0,50)\r\n"
+				+ "  ONE = randomFloat(1) #second param is default 1\r\n"
+				+ "  NINTY_NINE= randomFloat(99, 99) \r\n"
+				+ "  MINUS = randomFloat(-10, 10)\r\n"
+				+ "  HALF_TO_FULL_MILLION = randomFloat((10^6)/2, 10^6)"
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Iterate all Query Results
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(100, queryResults.getRecordCount());
+		
+		for(int i = 0; i < queryResults.getRecordCount(); i++) {
+			JsonObject record = queryResults.getRecord(0);
+			CFWTestUtils.assertIsBetween(0, 1, record.get("PERCENT").getAsInt() );
+			CFWTestUtils.assertIsBetween(0, 55, record.get("ZERO_FIFTY").getAsInt() );
+			Assertions.assertEquals(1, record.get("ONE").getAsInt() );
+			Assertions.assertEquals(99, record.get("NINTY_NINE").getAsInt() );
+			CFWTestUtils.assertIsBetween(-10, 10, record.get("MINUS").getAsInt() );
+			CFWTestUtils.assertIsBetween(500000, 1000000, record.get("HALF_TO_FULL_MILLION").getAsInt() );
+		}
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testRandomFrom() throws IOException {
+		
+		//---------------------------------
+		String queryString =
+				  "| source empty records= 100\r\n"
+				+ "| set\r\n"
+				+ "  NULL = randomFrom() # null\r\n"
+				+ "  A_OR_B= randomFrom([\"A\", \"B\"])\r\n"
+				+ "  ONE = randomFrom(1) # return same value\r\n"
+				+ "  A_OR_B_OR_ONE = randomFrom([A_OR_B, ONE]) "
+				+ "  X_OR_Y = randomFrom({X: 22, Y: 33}) "
+				;
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Iterate all Query Results
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(100, queryResults.getRecordCount());
+		
+		for(int i = 0; i < queryResults.getRecordCount(); i++) {
+			JsonObject record = queryResults.getRecord(0);
+			Assertions.assertEquals(true, record.get("NULL").isJsonNull() );
+			CFWTestUtils.assertIsEither(record.get("A_OR_B").getAsString(), "A", "B" );
+			Assertions.assertEquals(1, record.get("ONE").getAsInt() );
+			CFWTestUtils.assertIsEither(record.get("A_OR_B_OR_ONE").getAsString(), "A", "B", "1" );
+			CFWTestUtils.assertIsEither(record.get("X_OR_Y").getAsString(), "X", "Y");
+		}
+		
+	}
+	
 	
 	/****************************************************************
 	 * 
