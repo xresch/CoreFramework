@@ -737,6 +737,34 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testFields() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionFields.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		// ALL_FIELDS = fields() #["A","B","C","ALL_FIELDS","FILTERED_FIELDS"] - contains all as command detects fieldnames before executing 
+		// FILTERED_FIELDS = fields([FILTERED_FIELDS, ALL_FIELDS, B]) #["A","C"]
+						
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("[\"A\",\"B\",\"C\",\"ALL_FIELDS\",\"FILTERED_FIELDS\"]", record.get("ALL_FIELDS").toString());
+		Assertions.assertEquals("[\"A\",\"C\"]", record.get("FILTERED_FIELDS").toString());
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testFloor() throws IOException {
 		
 		//---------------------------------
