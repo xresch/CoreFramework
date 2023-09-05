@@ -1,0 +1,8 @@
+| source empty records=1
+| set
+	ID = '282c65a0-8b7b-437c-904' 
+	URL = 'http://www.double-u-double-u-double-u.com/wewewe?id='+ID
+| set
+	MIDDLE=extract(ID, ".*?-(.*?-.*?)-.*") # returns 8b7b-437c
+	HOST=extract(URL, ".*?www.(.*?).com.*") # returns double-u-double-u-double-u
+	ID_FROM_URL=extract(URL, ".*?www.(.*?).com/.*?id=(.*)", 1) # returns 282c65a0-8b7b-437c-904

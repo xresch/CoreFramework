@@ -711,6 +711,32 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testExtract() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionExtract.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+					
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("8b7b-437c", record.get("MIDDLE").getAsString());
+		Assertions.assertEquals("double-u-double-u-double-u", record.get("HOST").getAsString());
+		Assertions.assertEquals("282c65a0-8b7b-437c-904", record.get("ID_FROM_URL").getAsString());
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testFloor() throws IOException {
 		
 		//---------------------------------
