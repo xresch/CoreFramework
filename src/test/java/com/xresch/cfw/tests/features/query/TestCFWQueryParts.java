@@ -1,6 +1,7 @@
 package com.xresch.cfw.tests.features.query;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Assertions;
@@ -56,7 +57,7 @@ public class TestCFWQueryParts {
 		//-------------------------------
 		// Number
 		//-------------------------------
-		part = QueryPartValue.newNumber(12.1);
+		part = QueryPartValue.newNumber(new BigDecimal("12.1"));
 
 		Assertions.assertFalse(part.isNull());
 		Assertions.assertFalse(part.isBoolean());

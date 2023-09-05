@@ -1282,6 +1282,36 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testReplace() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionReplace.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+				
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(true, record.get("NULL").isJsonNull());
+		Assertions.assertEquals("Alejandra 1234 #!<>?=() 1234", record.get("SAME").getAsString());
+		Assertions.assertEquals("Alejandra #!<>?=()", record.get("REMOVE").getAsString());
+		Assertions.assertEquals("Alejandro Sanchez !<>?=() 1234", record.get("REPLACE").getAsString());
+		Assertions.assertEquals("Alejandra 42 #!<>?=() 42", record.get("REPLACE_MULTI").getAsString());
+		Assertions.assertEquals("maybe", record.get("BOOL").getAsString());
+		Assertions.assertEquals("1-eight-1-eight-1-eight-", record.get("NUMBER").getAsString());
+		
+	}
+	
 	
 	/****************************************************************
 	 * 
