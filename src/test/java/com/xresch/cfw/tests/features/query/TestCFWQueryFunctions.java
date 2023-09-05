@@ -1311,6 +1311,33 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals("1-eight-1-eight-1-eight-", record.get("NUMBER").getAsString());
 		
 	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testRound() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionRound.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+					
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("0", record.get("ZERO").getAsString());
+		Assertions.assertEquals("42", record.get("INT_DOWN").getAsString());
+		Assertions.assertEquals("43", record.get("INT_UP").getAsString());
+		Assertions.assertEquals("55.56", record.get("PRECISION_TWO").getAsString());
+		Assertions.assertEquals("44.444", record.get("PRECISION_THREE").getAsString());
+		
+	}
 	
 	
 	/****************************************************************
