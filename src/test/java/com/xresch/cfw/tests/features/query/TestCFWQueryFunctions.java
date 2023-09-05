@@ -794,6 +794,73 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testGlobals() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionGlobals.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(2, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(22, record.get("ID").getAsInt());
+		Assertions.assertEquals("Jane", record.get("NAME").getAsString());
+		
+		//------------------------------
+		// Check 2nd Query Result
+		queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		record = queryResults.getRecord(0);
+		Assertions.assertEquals(22, record.get("ID").getAsInt());
+		Assertions.assertEquals("Jane", record.get("NAME").getAsString());
+		
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testIf() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIf.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+
+		Assertions.assertEquals("Tiramisu", record.get("SERVE").getAsString());
+		Assertions.assertEquals("", record.get("EMPTY_STRING").getAsString());
+		Assertions.assertEquals(false, record.get("FALSE").getAsBoolean());
+		Assertions.assertEquals(true, record.get("NULL").isJsonNull());
+		Assertions.assertEquals(true, record.get("NULL_B").isJsonNull());
+		Assertions.assertEquals(true, record.get("STRING_ONE").isJsonNull());
+		Assertions.assertEquals(2, record.get("STRING_TWO").getAsInt());
+		Assertions.assertEquals(false, record.get("ZERO_IS_FALSE").getAsBoolean());
+		Assertions.assertEquals(true, record.get("ONE_IS_TRUE").getAsBoolean());
+		Assertions.assertEquals(true, record.get("OTHERNUM_IS_TRUE").getAsBoolean());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testLatest_and_LatestSet() throws IOException {
 		
 		//---------------------------------

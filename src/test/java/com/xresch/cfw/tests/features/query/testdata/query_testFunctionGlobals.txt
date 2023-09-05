@@ -1,0 +1,12 @@
+| globals 
+	id=22
+	name="Jane" 
+| source empty records=1
+| set
+	ID   = globals(id)
+	NAME = globals(name)
+;
+| source empty records=1
+| set
+	ID   = globals(id)
+	NAME = globals(name)

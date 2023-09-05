@@ -1,0 +1,14 @@
+| source empty records=1
+| set 
+	LIKES_TIRAMISU = true
+| set 
+	SERVE = if(LIKES_TIRAMISU,"Tiramisu", "Ice Cream") # returns Tiramisu
+	EMPTY_STRING = if(false,"Yes") # returns ""
+	FALSE =if((1 == 2), true, false) # returns false
+	NULL=if()  # returns null
+	NULL_B=if(null)  # returns null if only one argument
+	STRING_ONE=if("not a boolean") # returns null if only one argument
+	STRING_TWO=if("not a boolean", 1, 2) # returns 2 as first param not boolean true
+	ZERO_IS_FALSE=if(0, true, false) # returns false
+	ONE_IS_TRUE=if(1, true, false) # returns true
+	OTHERNUM_IS_TRUE=if(2, true, false) # returns true
