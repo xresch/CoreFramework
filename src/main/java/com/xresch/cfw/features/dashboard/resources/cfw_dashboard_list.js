@@ -580,7 +580,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 	var parent = $("#tab-content");
 	
 	//--------------------------------
-	// Button
+	// Tab Desciption
 
 	switch(type){
 		case "mydashboards":		parent.append('<p>This tab shows all dashboards where you are the owner.</p>')
@@ -597,8 +597,9 @@ function cfw_dashboardlist_printDashboards(data, type){
 														
 		default:					break;
 	}
+	
 	//--------------------------------
-	//  Button
+	//  Create Button
 	if(type == 'mydashboards'){
 		var createButton = $('<button id="button-add-dashboard" class="btn btn-sm btn-success m-1" onclick="cfw_dashboardlist_createDashboard()">'
 							+ '<i class="fas fa-plus-circle"></i> '+ CFWL('cfw_dashboardlist_createDashboard')
@@ -643,9 +644,6 @@ function cfw_dashboardlist_printDashboards(data, type){
 		var actionButtons = [ ];
 		//-------------------------
 		// Public Link Button
-		if(type == 'mydashboards'
-		|| type == 'admindashboards'){
-
 		actionButtons.push(
 			function (record, id){ 
 				var htmlString = '';
@@ -659,7 +657,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 				}
 				return htmlString;
 			});
-		}
+		
 		
 		//-------------------------
 		// View Button

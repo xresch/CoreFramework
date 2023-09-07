@@ -259,7 +259,11 @@ public class CFWDBDashboard {
 		query.union()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, userID)
-			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION, DashboardFields.TAGS)
+			.select(DashboardFields.PK_ID
+				  , DashboardFields.NAME
+				  , DashboardFields.DESCRIPTION
+				  , DashboardFields.TAGS
+				  , DashboardFields.IS_PUBLIC)
 			.where(DashboardFields.IS_SHARED, true)
 			.and().custom("(");
 		
@@ -279,7 +283,11 @@ public class CFWDBDashboard {
 		query.union()
 			.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 			.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, userID)
-			.select(DashboardFields.PK_ID, DashboardFields.NAME, DashboardFields.DESCRIPTION, DashboardFields.TAGS)
+			.select(DashboardFields.PK_ID
+					, DashboardFields.NAME
+					, DashboardFields.DESCRIPTION
+					, DashboardFields.TAGS
+					, DashboardFields.IS_PUBLIC)
 			.where().custom("(");
 		
 		for(int i = 0 ; i < roleArray.length; i++ ) {
