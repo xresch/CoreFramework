@@ -7,14 +7,14 @@
 | set
 	epoch=now() # returns epoch milliseconds 
 	formatted=now(globals(format)) # format on server side, uses time zone offset of client 
-	LastYearEpoch=now(null, -1) # return milliseconds when format is null, offset by 1 year into the past
-	LastYearFormatted=now(globals(format), -1)
-	ThreeMonthsInFuture=now("yyyy-MM-dd", 0, 3)
-	Yesterday=now("yyyy-MM-dd", 0, 0, -1)
+	LastYearEpoch=now(null, -1, 'y') # return milliseconds when format is null, offset by 1 year into the past
+	LastYearFormatted=now(globals(format), -1, 'y')
+	ThreeMonthsInFuture=now("yyyy-MM-dd", 3, 'm')
+	Yesterday=now("yyyy-MM-dd", -1, 'd')
 	Milliseconds=now("SSS")			# placeholders for milliseconds
 	DayName=now("E / EEEE")         # placeholders for day names >> "Fri / Friday"
 	MonthName=now("MMM / MMMMM")    # placeholders for month names >> "Nov / November"
 	Timezones=now("z / Z / zzzz")   # placeholders for time zones will always return UTC >> "UTC / +0000 / Coordinated Universal Time"
 | formatfield 
-	LastYearEpoch=['date', "yyyy-MM-ddTHH:mm:ss"] # formatted on client-side by javascript </code></pre>
+	LastYearEpoch=['date', "yyyy-MM-ddTHH:mm:ss"] # formatted on client-side by javascript</code></pre>
 
