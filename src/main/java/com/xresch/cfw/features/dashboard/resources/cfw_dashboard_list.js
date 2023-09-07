@@ -790,6 +790,10 @@ function cfw_dashboardlist_printDashboards(data, type){
 						},
 					}
 				};
+			
+			if(type == 'admindashboards'){
+				sharingDetailsView.renderdef.visiblefields.unshift("OWNER");
+			}
 		}
 
 		//-----------------------------------
