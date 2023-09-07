@@ -4,6 +4,7 @@ import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -16,6 +17,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -40,7 +43,7 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class CFWDBDashboard {
 	
-	private static final String SQL_SUBQUERY_OWNER = "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER";
+	private static final String SQL_SUBQUERY_OWNER = "SELECT USERNAME FROM CFW_USER U WHERE U.PK_ID = T.FK_ID_USER";
 	private static final String SQL_SUBQUERY_ISFAVED = "(SELECT COUNT(*) FROM CFW_DASHBOARD_FAVORITE_MAP M WHERE M.FK_ID_USER = ? AND M.FK_ID_DASHBOARD = T.PK_ID) > 0";
 
 	private static Class<Dashboard> cfwObjectClass = Dashboard.class;
@@ -263,7 +266,9 @@ public class CFWDBDashboard {
 				  , DashboardFields.NAME
 				  , DashboardFields.DESCRIPTION
 				  , DashboardFields.TAGS
-				  , DashboardFields.IS_PUBLIC)
+				  , DashboardFields.IS_PUBLIC
+				  , DashboardFields.ALLOW_EDIT_SETTINGS
+				  )
 			.where(DashboardFields.IS_SHARED, true)
 			.and().custom("(");
 		
@@ -287,7 +292,9 @@ public class CFWDBDashboard {
 					, DashboardFields.NAME
 					, DashboardFields.DESCRIPTION
 					, DashboardFields.TAGS
-					, DashboardFields.IS_PUBLIC)
+					, DashboardFields.IS_PUBLIC
+					, DashboardFields.ALLOW_EDIT_SETTINGS
+					)
 			.where().custom("(");
 		
 		for(int i = 0 ; i < roleArray.length; i++ ) {
@@ -300,9 +307,27 @@ public class CFWDBDashboard {
 		
 		query.custom(")");
 	
-		return query
+		//-------------------------
+		// Grab Results
+		ArrayList<Dashboard> sharedBoards = query
 			.custom("ORDER BY NAME")
-			.getAsJSON();
+			.getAsObjectListConvert(Dashboard.class);
+		
+		//-------------------------
+		// Add IS_EDITOR
+		
+		// TODO a bit of a hack, need to be done with SQL after database structure change
+		for(Dashboard board : sharedBoards) {
+			board.addField(
+					CFWField.newBoolean(FormFieldType.BOOLEAN, "IS_EDITOR")
+					.setValue(checkCanEdit(board.id()))
+				);
+			
+		}
+	
+		//-------------------------
+		// Add IS_EDITOR
+		return CFW.JSON.toJSON(sharedBoards);
 	}
 	
 	

@@ -183,6 +183,9 @@ DONE
 - Dashboard: Send CFWTimeframe JsonObject in requests instead of multiple parameters
 - Dashboard: Parameter - New Parameter type Query Select
 - Dashboard: Parameter - New Parameter type Number
+- Dashboard : Added option to allow dashboard editors to edit settings 
+- Dashboard List: Added owner to admin shared details view
+- Dashboard List: Added public link to shared and faved dashboards
 - Widgets: Created new Category 'Advanced'
 - Widgets: Added Widget Advanced >> Force Refresh
 - Widgets: Reduced margin of widgets to use space more efficiently

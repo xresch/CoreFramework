@@ -671,24 +671,22 @@ function cfw_dashboardlist_printDashboards(data, type){
 
 		//-------------------------
 		// Edit Button
-		if(type == 'mydashboards'
-		|| type == 'admindashboards'
-		|| type == 'faveddashboards'){
-
-			actionButtons.push(
-				function (record, id){ 
-					var htmlString = '';
-					if(JSDATA.userid == record.FK_ID_USER || type == 'admindashboards'){
-						htmlString += '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
-							+'onclick="cfw_dashboardlist_editDashboard('+id+');">'
-							+ '<i class="fa fa-pen"></i>'
-							+ '</button>';
-					}else{
-						htmlString += '&nbsp;';
-					}
-					return htmlString;
-				});
-		}
+		actionButtons.push(
+			function (record, id){ 
+				var htmlString = '';
+				if(JSDATA.userid == record.FK_ID_USER 
+				|| type == 'admindashboards'
+				|| (record.IS_EDITOR && record.ALLOW_EDIT_SETTINGS) ){
+					htmlString += '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
+						+'onclick="cfw_dashboardlist_editDashboard('+id+');">'
+						+ '<i class="fa fa-pen"></i>'
+						+ '</button>';
+				}else{
+					htmlString += '&nbsp;';
+				}
+				return htmlString;
+			});
+		
 		
 		//-------------------------
 		// Change Owner Button

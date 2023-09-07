@@ -22,6 +22,7 @@ import com.xresch.cfw.features.contextsettings.ContextSettings.ContextSettingsFi
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
@@ -47,6 +48,7 @@ public class Dashboard extends CFWObject {
 		JSON_SHARE_WITH_GROUPS,
 		JSON_EDITORS,
 		JSON_EDITOR_GROUPS,
+		ALLOW_EDIT_SETTINGS,
 		TIME_CREATED,
 		IS_PUBLIC,
 		START_FULLSCREEN,
@@ -155,6 +157,14 @@ public class Dashboard extends CFWObject {
 				}
 			});
 	
+	
+	private CFWField<Boolean> alloweEditSettings = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.ALLOW_EDIT_SETTINGS)
+			.apiFieldType(FormFieldType.TEXT)
+			.setColumnDefinition("BOOLEAN DEFAULT TRUE")
+			.setDescription("Allow editors of the dashboard to change the settings of the dashboard.")
+			.setValue(true)
+			;
+	
 	private CFWField<Timestamp> timeCreated = CFWField.newTimestamp(FormFieldType.NONE, DashboardFields.TIME_CREATED)
 			.setDescription("The date and time the dashboard was created.")
 			.setValue(new Timestamp(new Date().getTime()));
@@ -217,6 +227,7 @@ public class Dashboard extends CFWObject {
 				, shareWithGroups
 				, editors
 				, editorGroups
+				, alloweEditSettings
 				, timeCreated
 				, isPublic
 				, startFullscreen
@@ -232,6 +243,7 @@ public class Dashboard extends CFWObject {
 	public void migrateTable() {
 		//----------------------------------------
 		// Migration from v3.0.0 to next version
+		new CFWLog(logger).off("Migration: Rename Columns of DB table CFW_DASHBOARD.");
 		new CFWSQL(null).renameColumn(TABLE_NAME, "JSON_SHARE_WITH_ROLES", DashboardFields.JSON_SHARE_WITH_GROUPS.toString());
 		new CFWSQL(null).renameColumn(TABLE_NAME, "JSON_EDITOR_ROLES", DashboardFields.JSON_EDITOR_GROUPS.toString());
 	}
@@ -244,6 +256,7 @@ public class Dashboard extends CFWObject {
 								
 		//---------------------------
 		// Change Description Data Type
+		new CFWLog(logger).off("Migration: Change type of database column CFW_DASHBOARD.NAME to VARCHAR_IGNORECASE.");
 		new CFWSQL(this)
 			.custom("ALTER TABLE IF EXISTS CFW_DASHBOARD ALTER COLUMN IF EXISTS NAME SET DATA TYPE VARCHAR_IGNORECASE;")
 			.execute();
@@ -275,6 +288,7 @@ public class Dashboard extends CFWObject {
 						DashboardFields.JSON_SHARE_WITH_GROUPS.toString(),
 						DashboardFields.JSON_EDITORS.toString(),
 						DashboardFields.JSON_EDITOR_GROUPS.toString(),
+						DashboardFields.ALLOW_EDIT_SETTINGS.toString(),
 						DashboardFields.TIME_CREATED.toString(),
 						DashboardFields.IS_PUBLIC.toString(),
 						DashboardFields.START_FULLSCREEN.toString(),
@@ -358,7 +372,7 @@ public class Dashboard extends CFWObject {
 		this.isShared.setValue(isShared);
 		return this;
 	}
-	
+		
 	public LinkedHashMap<String,String> sharedWithUsers() {
 		return shareWithUsers.getValue();
 	}
@@ -391,6 +405,15 @@ public class Dashboard extends CFWObject {
 	
 	public Dashboard editorGroups(LinkedHashMap<String,String> value) {
 		this.editorGroups.setValue(value);
+		return this;
+	}
+	
+	public boolean alloweEditSettings() {
+		return alloweEditSettings.getValue();
+	}
+	
+	public Dashboard alloweEditSettings(boolean isShared) {
+		this.alloweEditSettings.setValue(isShared);
 		return this;
 	}
 	
