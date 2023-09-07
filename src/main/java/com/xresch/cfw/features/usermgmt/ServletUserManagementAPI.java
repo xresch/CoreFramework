@@ -73,21 +73,14 @@ public class ServletUserManagementAPI extends HttpServlet {
 							case "usersforrole": 	content.append(CFW.DB.Roles.getUsersForRoleAsJSON(ID));
 													break;						
 					  								
-							case "userrolemap": 	content.append(CFW.DB.UserRoleMap.getUserRoleMapForUserAsJSON(ID));
-					  								break;	
-					  								
-							case "usergroupmap": 	content.append(CFW.DB.UserRoleMap.getUserGroupMapForUserAsJSON(ID));
-													break;	
+							
 													
 							case "roles": 			content.append(CFW.DB.Roles.getUserRoleListAsJSON());
 							  			   			break;
 
 							case "role": 			content.append(CFW.DB.Roles.getUserRolesAsJSON(ID));
 													break;	
-													
-							case "rolepermissionmap": 	content.append(CFW.DB.RolePermissionMap.getPermissionMapForRoleAsJSON(ID));
-														break;	
-							
+																				
 							case "groups": 			content.append(CFW.DB.Roles.getGroupListAsJSON());
 													break;	
 													
@@ -105,6 +98,27 @@ public class ServletUserManagementAPI extends HttpServlet {
 						}
 						break;
 					
+					case "fetchpartial": 
+						String pagesize = request.getParameter("pagesize");
+						String pagenumber = request.getParameter("pagenumber");
+						String filterquery = request.getParameter("filterquery");
+						String sortby = request.getParameter("sortby");
+						String isAscendingString = request.getParameter("isascending");
+						String userOrRoleID = request.getParameter("id");
+						
+						boolean isAscending = (isAscendingString == null || isAscendingString.equals("true")) ? true : false;
+						
+						switch(item.toLowerCase()) {
+							case "userrolemap": 	content.append(CFW.DB.UserRoleMap.getUserRoleMapForUserAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
+							break;	
+							
+							case "usergroupmap": 	content.append(CFW.DB.UserRoleMap.getUserGroupMapForUserAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
+							break;	
+							
+							case "rolepermissionmap": 	content.append(CFW.DB.RolePermissionMap.getPermissionMapForRoleAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
+							break;	
+						}
+						break;
 					case "delete": 			
 						switch(item.toLowerCase()) {
 							case "users": 		jsonResponse.setSuccess(CFW.DB.Users.deleteMultipleByID(IDs));

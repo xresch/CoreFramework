@@ -117,99 +117,66 @@ function cfw_usermgmt_FullAuditPrintView(){
  ******************************************************************/
 function cfw_usermgmt_createToggleTable(parent, mapName, itemID){
 
-	CFW.http.getJSON(CFW_USRMGMT_URL, {action: "fetch", item: mapName, id: itemID}, 
-		function(data) {
-			if(data.payload != null){
-				
-				//-----------------------------------
-				// Render Data
-				var rendererSettings = {
-						data: data.payload,
-					 	idfield: 'PK_ID',
-					 	bgstylefield: null,
-					 	textstylefield: null,
-					 	titlefields: ['NAME'],
-					 	titleformat: '{0}',
-					 	visiblefields: ['PK_ID', 'NAME', 'DESCRIPTION'],
-					 	labels: {
-					 		PK_ID: "&nbsp;",
-					 	},
-					 	customizers: {
-					 		PK_ID: function(record, value) { 
-								//Toggle Button
-								var params = {action: "update", item: mapName, itemid: itemID, listitemid: record.PK_ID};
-								var cfwToggleButton = CFW.ui.createToggleButton(CFW_USRMGMT_URL, params, (record.ITEM_ID == itemID));
-								
-								if(record.IS_DELETABLE != null && !record.IS_DELETABLE){
-									cfwToggleButton.setLocked();
-								}
-								
-								return cfwToggleButton.getButton();
-					 		},
+	//-----------------------------------
+	// Render Data
+	var rendererSettings = {
+			data: null,
+		 	idfield: 'PK_ID',
+		 	bgstylefield: null,
+		 	textstylefield: null,
+		 	titlefields: ['NAME'],
+		 	titleformat: '{0}',
+		 	visiblefields: ['PK_ID', 'NAME', 'DESCRIPTION'],
+		 	labels: {
+		 		PK_ID: "&nbsp;",
+		 	},
+		 	customizers: {
+		 		PK_ID: function(record, value) { 
+					//Toggle Button
+					var params = {action: "update"
+								, item: mapName
+								, itemid: itemID
+								, listitemid: record.PK_ID
+								};
+					var cfwToggleButton = CFW.ui.createToggleButton(CFW_USRMGMT_URL, params, (record.ITEM_ID == itemID));
+					
+					if(record.IS_DELETABLE != null && !record.IS_DELETABLE){
+						cfwToggleButton.setLocked();
+					}
+					
+					return cfwToggleButton.getButton();
+		 		},
 
-					 	},
-						rendererSettings: {
-							dataviewer: {
-								defaultsize: 25,
-								sortfields: ['NAME', 'DESCRIPTION'],
-								storeid: 'usermgmtToggleTable'+mapName+itemID,
-								renderers: [
-									{	label: 'Table',
-										name: 'table',
-										renderdef: {
-											rendererSettings: {
-												table: {narrow: true },
-											},
-										}
-									}
-									]
-							},
-						},
-					};
-				
-				var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
-				parent.append(renderResult);
-				
-//				var htmlString = "";
-//				var cfwTable = new CFWTable({narrow: true});
-//				
-//				cfwTable.addHeaders(['&nbsp;',
-//					CFWL('cfw_usermgmt_name'),
-//					CFWL('cfw_usermgmt_description')]);
-//				var resultCount = data.payload.length;
-//				if(resultCount == 0){
-//					CFW.ui.addAlert("info", "Hmm... seems there aren't any roles in the list.");
-//				}
-//
-//				for(var i = 0; i < resultCount; i++){
-//					var current = data.payload[i];
-//					var row = $('<tr>');
-//					
-//					//Toggle Button
-//					var params = {action: "update", item: mapName, itemid: itemID, listitemid: current.PK_ID};
-//					var cfwToggleButton = CFW.ui.createToggleButton(CFW_USRMGMT_URL, params, (current.ITEM_ID == itemID));
-//					
-//					if(current.IS_DELETABLE != null && !current.IS_DELETABLE){
-//						cfwToggleButton.setLocked();
-//					}
-//					var buttonCell = $("<td>");
-//					cfwToggleButton.appendTo(buttonCell);
-//					row.append(buttonCell);
-//					
-//					row.append('<td>'+current.NAME+'</td>'
-//							  +'<td>'+CFW.utils.nullTo(current.DESCRIPTION, '')+'</td>');
-//					
-//					cfwTable.addRow(row);
-//				}
-//				
-//				
-//				cfwTable.appendTo(parent);
-				
-			}else{
-				CFW.ui.addAlert('error', '<span>The '+mapName+' data for the id '+itemID+' could not be loaded.</span>');
-			}	
-		}
-	);
+		 	},
+			rendererSettings: {
+				dataviewer: {
+					defaultsize: 25,
+					sortfields: ['NAME', 'DESCRIPTION'],
+					storeid: 'usermgmtToggleTable'+mapName+itemID,
+					datainterface: {
+						url: CFW_USRMGMT_URL,
+						item: mapName,
+						customparams: {
+							id: itemID
+						}
+					},
+					renderers: [
+						{	label: 'Table',
+							name: 'table',
+							renderdef: {
+								rendererSettings: {
+									table: {narrow: true },
+								},
+							}
+						}
+						]
+				},
+			},
+		};
+	
+	var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
+	parent.append(renderResult);
+								
 }
 
 /******************************************************************

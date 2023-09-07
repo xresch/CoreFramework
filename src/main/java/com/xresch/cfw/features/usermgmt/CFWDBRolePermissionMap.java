@@ -8,15 +8,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
+import com.xresch.cfw.features.usermgmt.Permission.PermissionFields;
+import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.features.usermgmt.RolePermissionMap.RolePermissionMapFields;
-import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
@@ -398,15 +401,30 @@ public class CFWDBRolePermissionMap {
 				.getAsJSONArray();
 		
 	}
-	
-	
+		
 	/***************************************************************
-	 * Returns a list of all roles and if the user is part of them 
+	 * Returns a list of roles without groups and if the user is part of them 
 	 * as a json array.
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
 	 ****************************************************************/
-	public static String getPermissionMapForRoleAsJSON(String roleID) {
+	public static String getPermissionMapForRoleAsJSON(String roleID, String pageSize, String pageNumber, String filterquery, String sortby, boolean sortAscending) {
+		return getPermissionMapForRoleAsJSON(roleID, Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery, sortby, sortAscending);
+	}
+	
+	/***************************************************************
+	 * Returns a list of roles without groups and if the user is part of them 
+	 * as a json array.
+	 * @param role
+	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
+	 ****************************************************************/
+	public static String getPermissionMapForRoleAsJSON(
+			  String roleID
+			, int pageSize
+			, int pageNumber
+			, String filterquery
+			, String sortby
+			, boolean sortAscending) {	
 		
 		//----------------------------------
 		// Check input format
@@ -415,20 +433,54 @@ public class CFWDBRolePermissionMap {
 			.severe("The roleID '"+roleID+"' is not a number.");
 			return "[]";
 		}
+				
 		
-		String sqlString = "SELECT P.PK_ID, P.NAME, P.DESCRIPTION, M.FK_ID_ROLE AS ITEM_ID, M.IS_DELETABLE FROM "+Permission.TABLE_NAME+" P "
+		//----------------------------------
+		// Create Base Query
+		String baseQueryPartial = 
+				 "SELECT T.PK_ID, T.NAME, T.DESCRIPTION, M.FK_ID_ROLE AS ITEM_ID, M.IS_DELETABLE "
+				 + ", COUNT(*) OVER() AS TOTAL_RECORDS "
+				+ " FROM "+Permission.TABLE_NAME+" T "
 				+ " LEFT JOIN "+CFWDBRolePermissionMap.TABLE_NAME+" M "
-				+ " ON M.FK_ID_PERMISSION = P.PK_ID"
+				+ " ON M.FK_ID_PERMISSION = T.PK_ID"
 				+ " AND M.FK_ID_ROLE = ?"
-				+ " ORDER BY LOWER(P.NAME)";;
+				;
+				
+		CFWSQL finalQuery = new CFWSQL(null)
+			//.queryCache() cannot cache as query string is dynamic
+			.custom(baseQueryPartial
+					, roleID);
 		
-		ResultSet result = CFWDB.preparedExecuteQuery(sqlString, 
-				roleID);
+		//----------------------------------
+		// Filter 
+		if(!Strings.isNullOrEmpty(filterquery)) {
+			finalQuery
+				.where()
+				.like(PermissionFields.NAME, "%"+filterquery+"%")
+				.or()
+				.like(PermissionFields.DESCRIPTION, "%"+filterquery+"%")
+				;
+		}
 		
-		String json = ResultSetUtils.toJSON(result);
-		CFWDB.close(result);	
-		return json;
+		//--------------------------------
+		// Order By
+		if( !Strings.isNullOrEmpty(sortby) ) {
+			if(sortAscending) {
+				finalQuery.orderby(sortby);
+			}else {
+				finalQuery.orderbyDesc(sortby);
+			}
 
+		}else {
+			finalQuery.orderby(PermissionFields.NAME);
+		}
+		
+		//--------------------------------
+		// Fetch data
+		return finalQuery.limit(pageSize)
+			.offset(pageSize*(pageNumber-1))
+			.getAsJSON();
+		
 	}
 	/***************************************************************
 	 * Remove the user from the role if it is a member of the role, 

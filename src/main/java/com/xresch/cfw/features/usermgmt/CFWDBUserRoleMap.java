@@ -1,6 +1,5 @@
 package com.xresch.cfw.features.usermgmt;
 
-import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -9,16 +8,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.common.base.Strings;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWSQL;
+import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.features.usermgmt.UserRoleMap.UserRoleMapFields;
-import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
-import com.xresch.cfw.utils.CFWFiles;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
@@ -313,6 +313,15 @@ public class CFWDBUserRoleMap {
 		
 		return result;
 	}
+	/***************************************************************
+	 * Returns a list of roles without groups and if the user is part of them 
+	 * as a json array.
+	 * @param role
+	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
+	 ****************************************************************/
+	public static String getUserRoleMapForUserAsJSON(String userID, String pageSize, String pageNumber, String filterquery, String sortby, boolean sortAscending) {
+		return getUserRoleOrGroupMapForUserAsJSON(userID, false, Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery, sortby, sortAscending);
+	}
 	
 	/***************************************************************
 	 * Returns a list of roles without groups and if the user is part of them 
@@ -320,41 +329,24 @@ public class CFWDBUserRoleMap {
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
 	 ****************************************************************/
-	public static String getUserRoleMapForUserAsJSON(String userID) {
-		
-		//----------------------------------
-		// Check input format
-		if(userID == null ^ !userID.matches("\\d+")) {
-			new CFWLog(logger)
-			.severe("The userID '"+userID+"' is not a number.");
-			return "[]";
-		}
-		
-		String selectRolesForUser = "SELECT * FROM ("
-				+"SELECT G.PK_ID, G.NAME, G.DESCRIPTION, G.IS_GROUP AS IS_GROUP, M.FK_ID_USER AS ITEM_ID, M.IS_DELETABLE FROM "+Role.TABLE_NAME+" G "
-				+ " LEFT JOIN "+CFWDBUserRoleMap.TABLE_NAME+" M "
-				+ " ON M.FK_ID_ROLE = G.PK_ID "
-				+ " AND G.CATEGORY = ?"
-				+ " AND M.FK_ID_USER = ?"
-				+ " ORDER BY LOWER(G.NAME)"
-				+ ") WHERE IS_GROUP = FALSE OR IS_GROUP IS NULL";
-		
-		ResultSet result = CFWDB.preparedExecuteQuery(selectRolesForUser, 
-				FeatureUserManagement.CATEGORY_USER,
-				userID);
-		String json = ResultSetUtils.toJSON(result);
-		CFWDB.close(result);	
-		return json;
-
+	public static String getUserGroupMapForUserAsJSON(String userID, String pageSize, String pageNumber, String filterquery, String sortby, boolean sortAscending) {
+		return getUserRoleOrGroupMapForUserAsJSON(userID, true, Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery, sortby, sortAscending);
 	}
 	
 	/***************************************************************
-	 * Returns a list of group and if the user is part of them 
+	 * Returns a list of roles without groups and if the user is part of them 
 	 * as a json array.
 	 * @param role
 	 * @return Hashmap with roles(key=role name, value=role object), or null on exception
 	 ****************************************************************/
-	public static String getUserGroupMapForUserAsJSON(String userID) {
+	public static String getUserRoleOrGroupMapForUserAsJSON(
+			  String userID
+			, boolean isGroup
+			, int pageSize
+			, int pageNumber
+			, String filterquery
+			, String sortby
+			, boolean sortAscending) {	
 		
 		//----------------------------------
 		// Check input format
@@ -364,24 +356,63 @@ public class CFWDBUserRoleMap {
 			return "[]";
 		}
 		
-		String selectGroupsForUser = "SELECT * FROM ("
-				+"SELECT G.PK_ID, G.NAME, G.DESCRIPTION, G.IS_GROUP AS IS_GROUP, M.FK_ID_USER AS ITEM_ID, M.IS_DELETABLE FROM "+Role.TABLE_NAME+" G "
+		
+		//----------------------------------
+		// Create Base Query
+		String baseQueryPartial = "SELECT *, COUNT(*) OVER() AS TOTAL_RECORDS FROM ("
+				+"SELECT G.PK_ID, G.NAME, G.DESCRIPTION, G.IS_GROUP AS IS_GROUP"
+				+ ", M.FK_ID_USER AS ITEM_ID, M.IS_DELETABLE "
+				+ " FROM "+Role.TABLE_NAME+" G "
 				+ " LEFT JOIN "+CFWDBUserRoleMap.TABLE_NAME+" M "
 				+ " ON M.FK_ID_ROLE = G.PK_ID "
 				+ " AND G.CATEGORY = ?"
 				+ " AND M.FK_ID_USER = ?"
-				+ " ORDER BY LOWER(G.NAME)"
-				+ ") WHERE IS_GROUP = TRUE";
+				+ " ORDER BY LOWER(G.NAME)";
+				
+		if(!isGroup) {		
+			baseQueryPartial += ") AS T WHERE (T.IS_GROUP = FALSE OR T.IS_GROUP IS NULL) ";
+		}else {
+			baseQueryPartial += ") AS T WHERE (T.IS_GROUP = TRUE) ";
+		}
 		
-		ResultSet result = CFWDB.preparedExecuteQuery(selectGroupsForUser, 
-				FeatureUserManagement.CATEGORY_USER,
-				userID);
-		String json = ResultSetUtils.toJSON(result);
-		CFWDB.close(result);	
-		return json;
+		CFWSQL finalQuery = new CFWSQL(null)
+			//.queryCache() cannot cache as query string is dynamic
+			.custom(baseQueryPartial
+					, FeatureUserManagement.CATEGORY_USER
+					, userID);
+		
+		//----------------------------------
+		// Filter 
+		if(!Strings.isNullOrEmpty(filterquery)) {
+			finalQuery
+				.and()
+				.custom("(")
+					.like(RoleFields.NAME, "%"+filterquery+"%")
+					.or()
+					.like(RoleFields.DESCRIPTION, "%"+filterquery+"%")
+				.custom(")")
+				;
+		}
+		
+		//--------------------------------
+		// Order By
+		if( !Strings.isNullOrEmpty(sortby) ) {
+			if(sortAscending) {
+				finalQuery.orderby(sortby);
+			}else {
+				finalQuery.orderbyDesc(sortby);
+			}
 
+		}
+		
+		//--------------------------------
+		// Fetch data
+		return finalQuery.limit(pageSize)
+			.offset(pageSize*(pageNumber-1))
+			.getAsJSON();
+		
 	}
-	
+
 	/***************************************************************
 	 * Retrieve the permission overview for the specified user.
 	 ****************************************************************/
