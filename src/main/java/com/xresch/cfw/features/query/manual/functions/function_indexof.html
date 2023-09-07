@@ -1,5 +1,11 @@
 
-<p>Returns the index of the first occurrence of a substring, or -1 if not found.</p>
+<p>The indexof-function can be used with any data type. The return values depend on the input type:</p>
+<ul>
+	<li><b>String, Number, Boolean:&nbsp;</b> Will all be handled as strings. Numbers and booleans are converted to strings. Returns the index of the searched value, -1 if not found. </li>
+	<li><b>Array:&nbsp;</b> Returns the array index of the searched value, -1 if not found.</li>
+	<li><b>Object:&nbsp;</b> Returns the name of the first field that contains the searched value, null if not found.</li>
+	<li><b>Null, Empty String:&nbsp;</b> Returns -1.</li>
+</ul>
 
 <p>Following query creates example records and does various sample indexof operations:</p>
 
@@ -23,4 +29,72 @@
 	  UUID  , UUID_INDEXOF_TWO
 	, COLOR , COLOR_INDEXOF_E
 	, STATUS, STATUS_SUBSTRING, STATUS_SUBSTRING_NULLS </code></pre>
+	
+	
+<p>Following query shows who to use this function with different input types:</p>
+
+<pre><code class="language-cfwquery">| source empty
+| set
+	FUN_FACT ='The unicorn is the national animal of Scotland.'
+| set
+	############## SEARCH IN STRINGS  ###############
+	'SX'  = "|S|" ## visual separator
+	'S0'  = indexof('not found', "hiding in the hiding hole") ## returns -1
+	'S1'  = indexof(FUN_FACT , "e") # returns 2
+	'S2'  = indexof(FUN_FACT , "e", 2) # returns 2
+	'S3'  = indexof(FUN_FACT , "e", 3) # returns 17
+	'S4'  = indexof('1234567890.6536', 45) ## returns 3
+	'S5'  = indexof('34567890.6536', 90.65) ## returns 6
+	'S6'  = indexof("test special... $?!% ...characters", "$?!% .") # returns 16
+	'S7'  = indexof('object... {"x":1,"y":2}', {x:1, y:2}) ## returns 10
+	'S8'  = indexof('array... [null,1,true,"three"]', [null, 1, true, "three"]) ## returns 9
+	'S9'  = indexof('Null... null ', null) ## returns 8
+	'S10'  = indexof(null, 'll') ## returns -1
+
+	############## SEARCH IN NUMBERS ###############
+	# numbers will be converted to strings
+	'NX'  = "|N|" ## visual separator
+	'N0'  = indexof(12345, 7) ## returns -1
+	'N1'  = indexof(123456789, 45) # returns 3
+	'N2'  = indexof(987.6543 , 7.0) # returns 2
+	'N3'  = indexof(78787878.78 , 78, 3) # returns 4
+	'N4'  = indexof(5605605605.6056, ".") ## returns 10
+	'N5'  = indexof(123012301.230, ".2") ## returns 9
+	'N6'  = indexof(0, null) # returns -1
+	
+
+	############## SEARCH IN BOOLEANS ###############
+	# booleans will be converted to strings
+	'BX'  = "|B|" ## visual separator
+	'B0'  = indexof(true, false) ## returns -1
+	'B1'  = indexof(true, true) # returns 0
+	'B2'  = indexof(true, 'true') # returns 0
+	'B3'  = indexof(false, 'false') # returns 0
+	'B4'  = indexof(false, "lse") ## returns 2
+	'B5'  = indexof(false, "not found") ## returns -1
+	'B6'  = indexof(true, null) # returns -1
+	
+	############## SEARCH IN ARRAYS ###############
+	# the search is type-sensitive when searching in arrays (for performance reasons)
+	'AX'  = "|A|" ## visual separator
+	'A0'  = indexof([1,2,3], 9) ## returns -1
+	'A1'  = indexof([5,6,7], 6) # returns 1
+	'A2'  = indexof([null, 1, true, "three"], true) # returns 2
+	'A3'  = indexof([null, 1, true, "three"], 'true') # returns -1
+	'A4'  = indexof([null, 1, true, "three"], null) # returns 0
+	'A5'  = indexof([null, 1, true, "three"], 'null') # returns -1
+| remove FUN_FACT
+;
+| source empty
+| set
+	############## SEARCH IN OBJECTS ###############
+	# the search is type-sensitive when searching in object(for performance reasons)
+	# return value is either the name of the fields containing the value, or null if not found
+	'JX'  = "|J|" ## visual separator
+	'J0'  = indexof({x: 1, y:2, z:3}, 9) ## returns null
+	'J1'  = indexof({x: 5, y:6, z:7}, 6) # returns 'y'
+	'J2'  = indexof({'zero':'a', 'one':'b', 'two':'c', 'three':'d'}, 'c') # returns 'two'
+	'J3'  = indexof({'zero':'a', 'one':'b', 'two':'c', 'three':'d'}, 'x') # returns null
+	'J4'  = indexof({'zero': null, 'one':'b', 'two':'c'}, null) # returns 'zero'
+	'J5'  = indexof({'zero': null, 'one':'b', 'two':'c'}, 'null') # returns null</code></pre>
 

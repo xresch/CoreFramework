@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -968,16 +969,18 @@ public class ServletDashboardViewMethods
 					
 				//--------------------------------------
 				// Do Substitute
-				// Double escape because Java regex is a bitch.
-				String doubleEscaped = CFW.JSON.escapeString(
-											CFW.JSON.escapeString(paramObject.value())
-										);
+				// Escape because Java regex is a bitch.
 				
-				if(doubleEscaped == null) {
-					doubleEscaped = "";
+				//String escaped = Matcher.quoteReplacement(paramObject.value());
+				String escaped = CFW.JSON.escapeString(
+								CFW.JSON.escapeString(paramObject.value())
+							);
+				
+				if(escaped == null) {
+					escaped = "";
 				}
 				
-				jsonSettings = jsonSettings.replaceAll("\\$"+paramObject.name()+"\\$", doubleEscaped);
+				jsonSettings = jsonSettings.replaceAll("\\$"+paramObject.name()+"\\$", escaped);
 				
 				
 			}
