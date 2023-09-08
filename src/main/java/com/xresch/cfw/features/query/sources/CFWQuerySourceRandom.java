@@ -101,7 +101,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 			)
 			.addField(
 					CFWField.newString(FormFieldType.TEXT, "type")
-						.setDescription("The type of data to generate, one of: 'default' | 'numbers' | 'arrays' | 'series' | 'various' ")
+						.setDescription("The type of data to generate, one of: 'default' | 'numbers' | 'arrays' | 'series' | 'tickets' | 'various' ")
 						.setValue("default")
 				)
 		;
@@ -163,6 +163,17 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 		}else if(type.equals("series")) {
 			
 			JsonArray array = CFW.Random.randomJSONArrayOfSeriesData(3, records, earliest, latest);
+			
+			for(int i = 0; i < array.size(); i++) {
+				
+				EnhancedJsonObject object = new EnhancedJsonObject(array.get(i).getAsJsonObject());
+				outQueue.add(object);
+				
+				if( isLimitReached(limit, i)) { break; }
+			}
+		}else if(type.equals("tickets")) {
+			
+			JsonArray array = CFW.Random.randomJSONArrayOfSupportTickets(records);
 			
 			for(int i = 0; i < array.size(); i++) {
 				

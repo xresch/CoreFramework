@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.ibm.icu.math.BigDecimal;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 /**************************************************************************************************************
  * 
@@ -24,7 +25,7 @@ public class CFWRandom {
 	public static final String ALPHAS 	  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	public static final String ALPHA_NUMS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12345678901234567890";
 	public static final String ALPHA_NUMS_SPECIALS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12345678901234567890+*%&/()=?!{}[]><:;.,-_+*%&/()=?!{}[]><:;.,-_";
-
+		
 	private static final String[] firstnameGods = new String[] {"Zeus", "Hera", "Poseidon", "Cronus", "Aphrodite", "Hades", "Hephaestus", "Apollo", "Athena", "Artemis", "Ares", "Hermes", "Dionysus", "Persephone", "Eros", "Gaia", "Hypnos", "Rhea", "Uranus", "Nike", "Eos", "Pan", "Selene", "Helios", "Heracles", "Odysseus", "Jupiter", "Juno", "Neptune", "Saturn", "Venus", "Pluto", "Vulcan", "Ceres", "Apollo", "Minerva", "Diana", "Mars", "Mercury", "Bacchus", "Proserpine", "Cupid", "Terra", "Somnus", "Ops", "Uranus", "Victoria", "Aurora", "Faunus", "Luna", "Sol", "Hercules", "Ulysses"};
 	private static final String[] lastnameSweden = new String[] {"Andersson", "Johansson", "Karlsson", "Nilsson", "Eriksson", "Larsson", "Olsson", "Persson", "Svensson", "Gustafsson", "Pettersson", "Jonsson", "Jansson", "Hansson", "Bengtsson", "Joensson", "Lindberg", "Jakobsson", "Magnusson", "Olofsson", "Lindstroem", "Lindqvist", "Lindgren", "Axelsson", "Berg", "Bergstroem", "Lundberg", "Lind", "Lundgren", "Lundqvist", "Mattsson", "Berglund", "Fredriksson", "Sandberg", "Henriksson", "Forsberg", "Sjoeberg", "Wallin", "Engstroem", "Eklund", "Danielsson", "Lundin", "Hakansson", "Bjoerk", "Bergman", "Gunnarsson", "Holm", "Wikstroem", "Samuelsson", "Isaksson", "Fransson", "Bergqvist", "Nystroem", "Holmberg", "Arvidsson", "Loefgren", "Soederberg", "Nyberg", "Blomqvist", "Claesson", "Nordstroem", "Martensson", "Lundstroem", "Viklund", "Bjoerklund", "Eliasson"};
 	private static final String[] mythicalLocations = new String[] {"Agartha", "Alfheim", "Alomkik", "Annwn", "Amaravati", "Arcadia", "Asgard", "Asphodel Meadows", "Atlantis", "Avalon", "Axis Mundi", "Ayotha Amirtha Gangai", "Aztlan", "Baltia", "Biarmaland", "Biringan City", "Brahmapura", "Brittia", "Camelot", "City of the Caesars", "Cloud cuckoo land", "Cockaigne", "Dinas Affaraon", "Ffaraon", "Diyu", "El Dorado", "Elysian Fields", "Feather Mountain", "Garden of Eden", "Garden of the Hesperides", "Finias", "Hawaiki", "Heaven", "Hell", "Hyperborea", "Irkalla", "Islands of the Blessed", "Jabulqa", "Jambudvīpa", "Jotunheim", "Ketumati", "Kingdom of Reynes", "Kingdom of Saguenay", "Kitezh", "Kolob", "Kunlun Mountain", "Kvenland", "Kyoepelinvuori", "La Ciudad Blanca", "Laestrygon", "Lake Parime", "Land of Manu", "Lemuria", "Lintukoto", "Lyonesse", "Mag Mell", "Meropis", "Mictlan", "Mount Penglai", "Mu", "Muspelheim", "Naraka", "New Jerusalem", "Nibiru", "Niflheim", "Niflhel", "Nirvana", "Norumbega", "Nysa", "Olympus", "Paititi", "Panchaia", "Pangaia", "Pandaemonium", "Pleroma", "Pohjola", "Purgatory", "Quivira", "Cíbola", "Ram Setu", "Samavasarana", "Scholomance", "Sierra de la Plata", "Shambhala", "Shangri-La", "Suddene", "Summerland", "Svarga", "Svartalfaheimr", "Takama-ga-hara", "Tartarus", "Themiscyra", "Thule", "Thuvaraiyam Pathi", "Tir na nag", "Vaikuntha", "Valhalla", "Vanaheimr", "Westernesse", "Xanadu", "Shangdu", "Xibalba", "Yomi", "Ys", "Zarahemla", "Zerzura", "Zion"};
@@ -32,6 +33,45 @@ public class CFWRandom {
 	private static final String[] fruitNames = new String[] { "Apple", "Pear", "Orange", "Banana", "Pineapple", "Watermelon", "Grapefruit", "Papaya", "Mango", "Pomegranate", "Lemon", "Cherry", "Apricot", "Peach", "Strawberry", "Plum"};
 	private static final String[] italianDesserts = new String[] { "Tiramisu", "Panna Cotta", "Gelato", "Panettone", "Biscotti", "Bombolone", "Colomba di Pasqua", "Confetti", "Frutta Martorana", "Gianduiotto", "Mustacciuoli", "Nutella", "Pandoro", "Pasticciotto", "Ricciarelli", "Semifreddo", "Sanguinaccio Dolce", "Sfogliatella", "Struffoli", "Tartufo", "Torrone", "Torta alla Monferrina", "Torta Tre Monti", "Taralli", "Uovo sbattuto", "Zabaione", "Zuccotto"};
 	private static final String[] exaggeratingAdjectives = new String[] { "utterly arduous", "superfluous", "chocolate-addicted", "super-sneaky", "ultra cuddly", "mega religious", "totally angry", "absolutely arrogant", "totally-at-the-ready", "bat-sh*t-crazy", "bull-headed", "100% confused", "fully-cruel-hearted", "over-demanding", "fiercely loyal", "endlessly flirting", "free-loading", "frisky", "god-mode-greedy", "devil-like hateful", "house-broken", "above hyperactive", "high-end", "idiotic", "infuriating", "awfully insecure", "hilariously maniacal", "ultra narrow-minded", "out-of-control", "rebellious", "self-absorbed", "shaky", "shivering", "slippery", "stubborn", "territorial", "tripping", "twisted", "underhanded", "vengeful", "vile", "yapping", "zippy", "zombie-like" };
+	private static final String[] ultimateServiceNames = new String[] { "OmniKoore", "Ultima-X", "Zepress-3000", "Hachijuhachi-88", "Samnizt-V8", "Oversharp V3", "Megalytics v2.9", "Korrasoft", "Softikrom P55", "Bro-Jekt 3.0", "OverApp Z", "Extremia 8008", "TX-ULTRA", "PlusQuam-Defect 8.7", "Expandor Type B", "Webator X2", "TotalKoondrol C55"};
+	
+	private static final String[] firstWorldProblemTitles = 
+			new String[] {
+				  "User cannot start Session - Cannot find Login Page"
+				, "!!! URGENT !!! Antivirus got infected by Virus"
+				, "Chat Issue - People do not reply"
+				, "User tries to modify an object without a Browser"
+				, "Request for Replacement: Computer combusted while camping"
+				, "Cannot connect to Netflix from Office Network"
+				, "Need exterminator: Mice and cockroaches in Room 36"
+				, "COMPLAINT! Friendly Reminders are NOT friendly!!!"
+				, "New Employee refuses too use Windows"
+				, "Superstitious User wants IDs containing '666' banned"
+				, "User u47654 cannot install private Mandala application"
+				, "Hardware issue: Monitors to far apart, request assistance"
+				, "Can't find letter A on keyboard"
+				, "Leakage Issue: Used DVD tray as coffee cup holder"
+				, "Co-Worker replied on mail he didn't receive it, what now?"
+				, "Cannot receive eMails from Hamburg, normal eMails work!"
+				, "Chat Messages get lost after about 700 miles on network"
+				, "Don't know how to do my job, please help"
+				, "Mouse does not connect when switch is in 'OFF' position"
+				, "Nobody showing up when I press F1(help button)"
+				, "Made copy of floppy disk, where to store the photocopy?"
+				, "Can’t remember email password. Please email new password."
+				, "Made copy of floppy disk, where to store the photocopy?"
+				, "Cannot boot computer during power outage"
+				, "Unplugging/replugging all cables for reboot, easier way?"
+				, "User requests to be rolled back to Google from Chrome"
+				, "myspacebardoesnotwork-iwouldlikesomespacessoicanwork!"
+				, "Help! My internet is shrinking!"
+				, "Terrorists entered my computer"
+				, "Help! I deleted the internet!"
+				, "Domain has trust issue - how to get more trust"
+				, "Coffee machine not working, team about to die"
+				, "When typing password only stars are filled in"
+				, "Can you reboot the Internet? It seems to be pretty slow."
+			};
 	
 	private static final String[] messagesOfObedience = 
 			new String[] {
@@ -235,6 +275,7 @@ public class CFWRandom {
 	public static String randomFirstnameOfGod(int nullRatioPercent) { return randomFromArray(nullRatioPercent, firstnameGods); }
 	public static String randomLastnameSweden(int nullRatioPercent) { return randomFromArray(nullRatioPercent, lastnameSweden); }
 	public static String randomMythicalLocation(int nullRatioPercent) { return randomFromArray(nullRatioPercent, mythicalLocations); }
+	public static String randomUltimateServiceName(int nullRatioPercent) { return randomFromArray(nullRatioPercent, ultimateServiceNames); }
 	public static String randomColorName(int nullRatioPercent) { return randomFromArray(nullRatioPercent, colorNames); }
 	public static String randomFruitName(int nullRatioPercent) { return randomFromArray(nullRatioPercent, fruitNames); }
 	public static String randomItalianDessert(int nullRatioPercent) { return randomFromArray(nullRatioPercent, italianDesserts); }
@@ -249,6 +290,7 @@ public class CFWRandom {
 	public static String randomFirstnameOfGod() { return randomFirstnameOfGod(0); }
 	public static String randomLastnameSweden() { return randomLastnameSweden(0); }
 	public static String randomMythicalLocation() { return randomMythicalLocation(0); }
+	public static String randomUltimateServiceName() { return randomUltimateServiceName(0); }
 	public static String randomColorName() { return randomColorName(0); }
 	public static String randomFruitName() { return randomFruitName(0); }
 	public static String randomItalianDessert() { return randomItalianDessert(0); }
@@ -505,6 +547,21 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
+	 * Creates a random json array of support tickets.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	public static JsonArray randomJSONArrayOfSupportTickets(int count) { 
+		JsonArray array = new JsonArray();
+				
+		for(int i = 0; i < count; i++) {
+			array.add(randomJSONObjectSupportTickets());
+		}
+		
+		return array;
+	}
+	
+	/******************************************************************************
 	 * Creates a random json array of people with various properties.
 	 * 
 	 * @param valuesCount
@@ -580,6 +637,42 @@ public class CFWRandom {
 		return object;
 	}
 	
+	/******************************************************************************
+	 * Creates a random json array of people with various properties.
+	 * 
+	 * @param count
+	 ******************************************************************************/
+	private static final String[] ticketStatus = new String[] { "New", "New", "Open", "Open", "Open", "Open", "Blocked", "In Progress", "Rejected", "Closed"};
+	public static JsonObject randomJSONObjectSupportTickets() { 
+		long currentTime = new Date().getTime();
+		
+		JsonObject object = new JsonObject();
+		
+		String id = UUID.randomUUID().toString().substring(0, 22);
+		object.addProperty("LINK", "http://serviceportal.example.url/ticket?id="+id);
+		object.addProperty("TICKET_ID",  "TKT-00"+randomIntegerInRange(10000, 99999));
+		object.addProperty("PRIORITY",  randomIntegerInRange(1, 9));
+		object.addProperty("TITLE",  randomFromArray(firstWorldProblemTitles));
+		object.addProperty("SERVICE",  randomUltimateServiceName());
+		object.addProperty("USER_ID", "u"+randomIntegerInRange(10000, 99999) );
+		object.addProperty("USERNAME", CFW.Random.randomLastnameSweden().toUpperCase()+" "+CFW.Random.randomFirstnameOfGod());
+		object.addProperty("ASSIGNEE_ID", "u"+randomIntegerInRange(10000, 99999) );
+		object.addProperty("ASSIGNEE_NAME", CFW.Random.randomLastnameSweden().toUpperCase()+" "+CFW.Random.randomFirstnameOfGod());
+
+		int createdOffsetMinutes = CFW.Random.randomIntegerInRange(200, 10000);
+		long createdMillis = CFWTimeUnit.m.offset(currentTime, createdOffsetMinutes);
+		int updatedOffsetMinutes = CFW.Random.randomIntegerInRange(10, createdOffsetMinutes-(createdOffsetMinutes/6));
+		long updatedMillis = CFWTimeUnit.m.offset(currentTime, updatedOffsetMinutes);
+		
+		object.addProperty("TIME_CREATED", createdMillis );
+		object.addProperty("LAST_UPDATED", updatedMillis );
+		object.addProperty("STATUS", randomFromArray(ticketStatus) );
+
+		object.addProperty("VALUE", CFW.Random.randomIntegerInRange(1, 100));
+
+		
+		return object;
+	}
 	/******************************************************************************
 	 * Creates a random json array of various random number data.
 	 * 

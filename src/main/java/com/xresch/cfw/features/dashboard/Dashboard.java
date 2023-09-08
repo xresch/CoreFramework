@@ -113,7 +113,7 @@ public class Dashboard extends CFWObject {
 	private CFWField<Boolean> isShared = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.IS_SHARED)
 			.apiFieldType(FormFieldType.TEXT)
 			.setDescription("Make the dashboard shared with other people or keep it private. If no shared users or shared groups are specified(defined editors have no impact), the dashboard is shared with all users having access to the dashboard features.")
-			.setValue(false);
+			.setValue(CFW.DB.Config.getConfigAsBoolean(FeatureDashboard.CONFIG_DEFAULT_IS_SHARED));
 	
 	private CFWField<LinkedHashMap<String,String>> shareWithUsers = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_USERS)
 			.setLabel("Share with Users")

@@ -860,19 +860,8 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	}
 	
 	//-----------------------------------
-	// Get Renderer Settings
-	var rendererName = "dataviewer";
-	if(queryResult.displaySettings.menu == false){
-		if(queryResult.displaySettings.as != null){
-			rendererName = queryResult.displaySettings.as.trim().toLowerCase();
-		}else{
-			// default to table
-			rendererName = "table";
-		}
-	}
-	//-----------------------------------
-	// Render Results
-	var rendererSettings = {
+	// Render Definition 
+	var renderDefinition = {
 			data: queryResult.records,
 		 	//idfield: 'PK_ID',
 		 	bgstylefield: options.bgstylefield,
@@ -891,11 +880,18 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 					popover: false,
 					//border: '2px solid black'
 				},
+				statustiles: { 
+					popover: false,
+					//border: '2px solid black'
+				},
+				statuslist: {},
 				tileandbar: {},
+				tileandbarreverse: {},
+				statusmap: {},
+				title: {},
 				csv: {},
 				json: {},
 				xml: {},
-				title: {},
 				dataviewer: {
 					//storeid: 'cfw-query',
 					rendererIndex: rendererIndex,
@@ -982,8 +978,27 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 				},
 			},
 		};
-
-	var renderResult = CFW.render.getRenderer(rendererName).render(rendererSettings);	
+		
+	//-----------------------------------
+	// Get Renderer and update Settings
+	var rendererName = "dataviewer";
+	
+	if(queryResult.displaySettings.menu == false){
+		if(queryResult.displaySettings.as != null){
+			rendererName = queryResult.displaySettings.as.trim().toLowerCase();
+			// Merge custom settings into default settings for selected renderer
+			var customSettings = queryResult.displaySettings.settings;
+			var currentSettings = renderDefinition.rendererSettings[rendererName]
+			Object.assign(currentSettings, customSettings);
+		}else{
+			// default to table
+			rendererName = "table";
+		}
+	}
+	
+	//-----------------------------------
+	// Render!!!
+	var renderResult = CFW.render.getRenderer(rendererName).render(renderDefinition);	
 	
 	targetDiv.append(renderResult);
 }

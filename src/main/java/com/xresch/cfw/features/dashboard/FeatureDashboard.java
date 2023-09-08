@@ -6,6 +6,8 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
+import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionBoolean;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionNumber;
@@ -56,6 +58,9 @@ public class FeatureDashboard extends CFWAppFeature {
 	public static final String PERMISSION_DASHBOARD_ADMIN = "Dashboard Admin";
 	public static final String PERMISSION_DASHBOARD_TASKS = "Dashboard Tasks";
 	public static final String PERMISSION_DASHBOARD_FAST_RELOAD = "Dashboard Fast Reload";
+	
+	public static final String CONFIG_CATEGORY = "Dashboard";
+	public static final String CONFIG_DEFAULT_IS_SHARED = "Default Is Shared";
 	
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.dashboard.resources";
 	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.dashboard.manual";
@@ -161,8 +166,10 @@ public class FeatureDashboard extends CFWAppFeature {
 
 	@Override
 	public void initializeDB() {
-		//-----------------------------------
-		// 
+
+		//============================================================
+		// PERMISSIONS
+		//============================================================
 		CFW.DB.Permissions.oneTimeCreate(
 				new Permission(PERMISSION_DASHBOARD_VIEWER, FeatureUserManagement.CATEGORY_USER)
 					.description("Can view dashboards that other users have shared. Cannot create dashboards, but might edit when allowed by a dashboard creator."),
@@ -204,6 +211,20 @@ public class FeatureDashboard extends CFWAppFeature {
 				true,
 				false
 				);
+		
+		//============================================================
+		// CONFIGURATION
+		//============================================================
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration(CONFIG_CATEGORY, CONFIG_DEFAULT_IS_SHARED)
+				.description("The default value for the dashboard setting 'Is Shared'.")
+				.type(FormFieldType.BOOLEAN)
+				.value("false")
+		);
 	}
 
 	@Override

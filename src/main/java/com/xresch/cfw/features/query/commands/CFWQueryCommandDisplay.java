@@ -91,6 +91,7 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 				+"<p><b>titleformat:&nbsp;</b>(Optional) Format of the title. Use '{0}', '{1}'... as placeholders for field values.</p>"	
 				+"<p><b>showMenu:&nbsp;</b>(Optional) True or false to toggle the menu and pagination.</p>"	
 				+"<p><b>zoomNumber:&nbsp;</b>(Optional) Integer value, zoom in percent to resize the displayed data.</p>"	
+				+"<p><b>settings:&nbsp;</b>(Optional) Json Object containing more options for the selected display type.</p>"	
 				;
 		
 	}
