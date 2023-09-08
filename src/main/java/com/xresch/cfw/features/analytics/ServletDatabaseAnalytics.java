@@ -71,19 +71,46 @@ public class ServletDatabaseAnalytics extends HttpServlet
 		JSONResponse jsonResponse = new JSONResponse();
 		
 		switch(action.toLowerCase()) {
-			case "dbsnapshot":		new CFWLog(logger).audit(CFWAuditLogAction.CREATE, "DatabaseSnapshot", "Request manual database snapshot.");
-									boolean isSuccess = CFW.DB.backupDatabaseFile("./snapshot", "h2_database_snapshot");
-									if(isSuccess) {
-										CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Snapshot created on hard disk under {APP_ROOT}/snapshot.");
-									}else {
-										CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while creating snapshot.");
-									}
-									break;
+			case "dbsnapshot":		
+					new CFWLog(logger).audit(CFWAuditLogAction.CREATE, "DatabaseSnapshot", "Request manual database snapshot.");
+					boolean isSuccess = CFW.DB.backupDatabaseFile("./snapshot", "h2_database_snapshot");
+					if(isSuccess) {
+						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Snapshot created on hard disk under {APP_RUN_DIR}/snapshot.");
+					}else {
+						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while creating snapshot.");
+					}
+				break;
+					
+				
+					
+			case "exportscript":	
+					new CFWLog(logger).audit(CFWAuditLogAction.EXPORT, "DatabaseScript", "Request export of database data to script.");
+					boolean isExportSuccess = CFW.DB.exportScript("./snapshot", "h2database_exported_script");
+					if(isExportSuccess) {
+						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Snapshot created on hard disk under {APP_RUN_DIR}/snapshot.");
+					}else {
+						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while creating snapshot.");
+					}
+				break;
+				
+				
+			case "importscript":	
+				new CFWLog(logger).audit(CFWAuditLogAction.IMPORT, "DatabaseScript", "Import database script.");
+				String scriptFilePath = request.getParameter("filepath");
+				boolean isImportSuccess = CFW.DB.importScript(scriptFilePath);
+				if(isImportSuccess) {
+					CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Import successful!");
+				}else {
+					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error occured while importing script.");
+				}
+				break;
 									
-									
-			case "reindexfulltextsearch":	new CFWLog(logger).audit(CFWAuditLogAction.RESET, "FulltextSearch", "Fulltext search will be reindexed. Existing indexes are dropped and newly created.");
-											this.reindexFulltextSearch();
-											break;
+				
+				
+			case "reindexfulltextsearch":	
+					new CFWLog(logger).audit(CFWAuditLogAction.RESET, "FulltextSearch", "Fulltext search will be reindexed. Existing indexes are dropped and newly created.");
+					this.reindexFulltextSearch();
+				break;
 											
 											
 			case "fetch": 			

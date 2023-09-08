@@ -402,7 +402,7 @@ function cfw_dashboardlist_createDashboard(){
 }
 
 /******************************************************************
- * Edit Dashboard
+ * 
  ******************************************************************/
 function cfw_dashboardlist_importDashboard(){
 	
@@ -421,7 +421,7 @@ function cfw_dashboardlist_importDashboard(){
 }
 
 /******************************************************************
- * Edit Dashboard
+ * 
  ******************************************************************/
 function cfw_dashboardlist_importDashboardExecute(){
 	

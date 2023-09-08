@@ -648,17 +648,31 @@ public class CFWRandom {
 		
 		JsonObject object = new JsonObject();
 		
+		//--------------------------------------
+		// Base Values
 		String id = UUID.randomUUID().toString().substring(0, 22);
 		object.addProperty("LINK", "http://serviceportal.example.url/ticket?id="+id);
 		object.addProperty("TICKET_ID",  "TKT-00"+randomIntegerInRange(10000, 99999));
+		String status = randomFromArray(ticketStatus);
+		object.addProperty("STATUS",  status);
 		object.addProperty("PRIORITY",  randomIntegerInRange(1, 9));
 		object.addProperty("TITLE",  randomFromArray(firstWorldProblemTitles));
 		object.addProperty("SERVICE",  randomUltimateServiceName());
 		object.addProperty("USER_ID", "u"+randomIntegerInRange(10000, 99999) );
 		object.addProperty("USERNAME", CFW.Random.randomLastnameSweden().toUpperCase()+" "+CFW.Random.randomFirstnameOfGod());
-		object.addProperty("ASSIGNEE_ID", "u"+randomIntegerInRange(10000, 99999) );
-		object.addProperty("ASSIGNEE_NAME", CFW.Random.randomLastnameSweden().toUpperCase()+" "+CFW.Random.randomFirstnameOfGod());
-
+		
+		//--------------------------------------
+		// Assignee: 50% Unassigned when Status == New
+		if(status.equals("New") && randomIntegerInRange(0, 100) > 50) { 
+			object.add("ASSIGNEE_ID", JsonNull.INSTANCE );
+			object.add("ASSIGNEE_NAME", JsonNull.INSTANCE); 
+		}else {
+			object.addProperty("ASSIGNEE_ID", "u"+randomIntegerInRange(10000, 99999) );
+			object.addProperty("ASSIGNEE_NAME", CFW.Random.randomLastnameSweden().toUpperCase()+" "+CFW.Random.randomFirstnameOfGod());
+		}
+		
+		//--------------------------------------
+		// Times
 		int createdOffsetMinutes = CFW.Random.randomIntegerInRange(200, 10000);
 		long createdMillis = CFWTimeUnit.m.offset(currentTime, createdOffsetMinutes);
 		int updatedOffsetMinutes = CFW.Random.randomIntegerInRange(10, createdOffsetMinutes-(createdOffsetMinutes/6));
@@ -666,9 +680,10 @@ public class CFWRandom {
 		
 		object.addProperty("TIME_CREATED", createdMillis );
 		object.addProperty("LAST_UPDATED", updatedMillis );
-		object.addProperty("STATUS", randomFromArray(ticketStatus) );
-
-		object.addProperty("VALUE", CFW.Random.randomIntegerInRange(1, 100));
+		
+		//--------------------------------------
+		// Health
+		object.addProperty("HEALTH", CFW.Random.randomIntegerInRange(1, 100));
 
 		
 		return object;

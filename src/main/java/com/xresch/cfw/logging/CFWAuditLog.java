@@ -48,6 +48,8 @@ public class CFWAuditLog extends CFWObject {
 		TRANSFER,
 		TRANSFORM,
 		MIGRATE,
+		EXPORT,
+		IMPORT,
 		MOVE,
 		RESIZE,
 		INCREASE,

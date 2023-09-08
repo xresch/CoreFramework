@@ -13,7 +13,6 @@ import org.h2.tools.Server;
 
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.Properties;
 import com.xresch.cfw._main.CFWProperties;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.usermgmt.User;
@@ -57,7 +56,6 @@ public class CFWDB {
 
 		//---------------------------------------
     	// Create Folder  
-
 		File datastoreFolder = new File(storePath);
     	if(!datastoreFolder.isDirectory()) {
     		datastoreFolder.mkdir();
@@ -66,7 +64,10 @@ public class CFWDB {
     	//---------------------------------------
     	// Create File
 		File datastoreFile = new File(storePath+"/"+databaseName+".mv.db");
+		
+		boolean dbFileExisted = true;
     	if(!datastoreFile.isFile()) {
+    		dbFileExisted = false;
     		try {
 				if(!datastoreFile.createNewFile()) {
 					new CFWLog(logger)
@@ -78,12 +79,34 @@ public class CFWDB {
 				
 			}
     	}
-		
-		
-		
+    	
+    	//---------------------------------------
+    	// Upgrade DB File if necessary
+    	
+    	// this does not really work
+    	
+//		if(dbFileExisted) {
+//	    	int oldVersion = 212;
+//	    	
+//	    	String urlPart = server+":"+port+"/"+storePath+"/"+databaseName;
+//			String connectionURL = "jdbc:h2:tcp://"+urlPart+";MODE=MYSQL;IGNORECASE=TRUE";
+//			Properties connectionInfo = new Properties();
+//			connectionInfo.put("user", username);
+//			connectionInfo.put("password", password);
+//	
+//	    	try {
+//				Upgrade.upgrade(connectionURL, connectionInfo, oldVersion);
+//			} catch (Exception e) {
+//				new CFWLog(logger).warn("Exception encountered while upgrading database file: ", e);
+//				;
+//			}
+//		}
+//    	
+    	//---------------------------------------
+    	// Start Database
 		if(doStartDBServer) {
 			//---------------------------------------
-	    	// Start as DB Server
+	    	// Standalone DB Server
 			try {
 				CFWDB.server = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "" +port).start();
 				db = DBInterface.createDBInterfaceH2(server, port, storePath, databaseName, username, password);
@@ -106,6 +129,7 @@ public class CFWDB {
 			
 			CFWDB.isInitialized = true;
 		}
+		
 	}
 		
 	/********************************************************************************************
@@ -161,13 +185,57 @@ public class CFWDB {
 		
 	}
 	
+	/********************************************************************************************
+	 *
+	 ********************************************************************************************/
+	public static boolean exportScript(String folderPath, String filename) {
+		
+
+		if(Strings.isNullOrEmpty(folderPath)) {
+			folderPath = "./backup/";
+		}
+		
+		if(!folderPath.endsWith("/") && !folderPath.endsWith("\\") ) {
+			folderPath = folderPath + "/";
+		}
+		
+		File folder = new File(folderPath);
+		folder.mkdirs();
+		if(folder.isDirectory()
+		&& folder.canWrite()) {
+
+			String filePath = folderPath+filename+"_"+CFW.Time.formatDate(ZonedDateTime.now(),"YYYY-MM-dd_HH-mm")+".sql";
+			new CFWSQL(null).custom("SCRIPT DROP TO '"+filePath+"';")
+				.execute();
+			
+			return true;
+			
+		}else {
+			new CFWLog(logger)
+				.severe("Exported script file could not be created, folder is not accessible: "+folderPath);
+		}
+		
+		return false;
+		
+	}
+	
+	/********************************************************************************************
+	 *
+	 ********************************************************************************************/
+	public static boolean importScript(String fullScriptFilePath) {
+		
+		return new CFWSQL(null).custom("RUNSCRIPT FROM '"+fullScriptFilePath+"';")
+				.execute();
+			
+	}
+	
 	
 	/********************************************************************************************
 	 *
 	 ********************************************************************************************/
 	public static void resetAdminPW() {
 		
-		if(Properties.RESET_ADMIN_PW) {
+		if(CFW.Properties.RESET_ADMIN_PW) {
 			User admin = CFW.DB.Users.selectByUsernameOrMail("admin");
 			admin.setNewPassword("admin", "admin");
 			

@@ -14,12 +14,53 @@ function cfw_dbanalytics_createDatabaseSnapshot(){
 	CFW.http.getJSON(CFW_DBANALYTICS_URL, {action: "dbsnapshot"});
 }
 
+
+
 /******************************************************************
  * 
  ******************************************************************/
 function cfw_dbanalytics_reindexFulltextSearch(){
 	CFW.http.getJSON(CFW_DBANALYTICS_URL, {action: "reindexfulltextsearch"});
 }
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_dbanalytics_createExportedScript(){
+	CFW.http.getJSON(CFW_DBANALYTICS_URL, {action: "exportscript"});
+}
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_dbanalytics_importScript(){
+	
+	var importHTML = 
+		'<p class="bg-cfw-red"><b>IMPORTANT:</b>This import is intended for migration purposes with empty databases.' 
+		+' Make sure to create a backup copy of your database files before executing an import.</p>'
+		+'<p>Select a previously exported SQL script file.</p>'
+		+'<div class="form-group">'
+			+'<label for="importFile">Path to SQL File:</label>'
+			+'<input type="text" class="form-control" name="scriptFilePath" id="scriptFilePath" />'
+		+'</div>'
+		+'<button class="form-control btn btn-primary" onclick="cfw_dbanalytics_importScriptExecute()">'+CFWL('cfw_core_import', 'Import')+'</button>';
+	
+	CFW.ui.showModalMedium(
+			"Import Script", 
+			importHTML);
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_dbanalytics_importScriptExecute(){
+	
+	var filepath = $('#scriptFilePath').val();
+
+	CFW.http.getJSON(CFW_DBANALYTICS_URL, {action: "importscript", filepath: filepath});
+
+
+}
+
 
 /******************************************************************
  * 
@@ -150,8 +191,10 @@ function cfw_dbanalytics_draw(){
 		var confirmMessage = "'This may take a while and could severely degrade performance. It is recommended to do this outside office hours.'";
 		parent.append(
 			'<p>'
-				+ '<a href="#" class="btn btn-sm btn-primary mr-1" onclick="cfw_ui_confirmExecute('+confirmMessage+', \'Do it!\', cfw_dbanalytics_createDatabaseSnapshot);"><i class="fas fa-camera-retro mr-2"></i>Create Database Snapshot</a>'
 				+ '<a href="#" class="btn btn-sm btn-primary mr-1" onclick="cfw_ui_confirmExecute('+confirmMessage+', \'Do it!\', cfw_dbanalytics_reindexFulltextSearch);"><i class="fas fa-flask mr-2"></i>Reindex Fulltext Search</a>'
+				+ '<a href="#" class="btn btn-sm btn-primary mr-1" onclick="cfw_ui_confirmExecute('+confirmMessage+', \'Do it!\', cfw_dbanalytics_createDatabaseSnapshot);"><i class="fas fa-camera-retro mr-2"></i>Create Database Snapshot</a>'
+				+ '<a href="#" class="btn btn-sm btn-primary mr-1" onclick="cfw_ui_confirmExecute('+confirmMessage+', \'Do it!\', cfw_dbanalytics_createExportedScript);"><i class="fas fa-download mr-2"></i>Export Script</a>'
+				+ '<a href="#" class="btn btn-sm btn-primary mr-1" onclick="cfw_dbanalytics_importScript()"><i class="fas fa-upload mr-2"></i>Import Script</a>'
 			+'</p>'
 		);
 		
