@@ -575,19 +575,102 @@ public class CFWRandom {
 		String[] classesArray = new String[] {"A", "B", "C", "D", "E", "F", "G"};
 		Integer[] boxsizeArray = new Integer[] {6,10,12,16,20,24,36,64,100,144};
 		
+		//--------------------------------------
+		// Create Series 
 		for(int i = 0; i < seriesCount; i++) {
 			String warehouse = randomColorName()+" "+randomStringAlphaNumerical(1).toUpperCase()+randomIntegerInRange(1, 9);
 			String item = randomFruitName();
-					
+			
+			//--------------------------------------
+			// Series Type Variables
+			int seriesType = randomIntegerInRange(0, 7);
+			float jumpPosition1 = randomFloatInRange(0.3f, 5f);
+			float jumpPosition2 = randomFloatInRange(0.3f, 5f);
+			float smallerJump = Math.min(jumpPosition1, jumpPosition2);
+			float biggerJump = Math.max(jumpPosition1, jumpPosition2);
+			
+			//--------------------------------------
+			// Create Values for Series
 			for(int j = 0; j < valuesCount; j++) {
 				JsonObject currentItem = new JsonObject();
 				currentItem.addProperty("TIME", earliest+(timestep*j));
 				currentItem.addProperty("WAREHOUSE", warehouse);
 				currentItem.addProperty("ITEM", item);
 				currentItem.addProperty("CLASS", randomFromArray(classesArray));
-				currentItem.addProperty("COUNT", randomIntegerInRange(0, 100));
+				
+				//--------------------------------------
+				// Create Series Type in COUNT
+				switch(seriesType) {
+					case 0: // random
+						currentItem.addProperty("COUNT", randomIntegerInRange(0, 100));
+					break;
+					
+					case 1: // increase
+						currentItem.addProperty("COUNT", ((Math.abs(Math.sin(j)) * 30) + randomIntegerInRange(5, 15)) * (j / 10));
+					break;
+					
+					case 2: // decrease
+						float divisor = valuesCount / ((valuesCount - j) / 1.1f);
+						currentItem.addProperty("COUNT", ((Math.abs(Math.sin(j)) * 30) + randomIntegerInRange(5, 15)) / divisor);
+						break;
+					
+					case 3: //jump up
+						if((valuesCount / (float)(j+1)) > jumpPosition1) {
+							currentItem.addProperty("COUNT", randomIntegerInRange(10, 30));
+						}else {
+							currentItem.addProperty("COUNT", 70+randomIntegerInRange(0, 30));
+						}
+						break;
+					
+					case 4: //jump down
+						if((valuesCount / (float)(j+1)) > jumpPosition2) {
+							currentItem.addProperty("COUNT", randomIntegerInRange(60, 100));
+						}else {
+							currentItem.addProperty("COUNT", randomIntegerInRange(5, 30));
+						}
+						break;
+					
+					case 5: //jump up & down
+						if((valuesCount / (float)(j+1)) > biggerJump) {
+							currentItem.addProperty("COUNT", randomIntegerInRange(15, 25));
+						}else if ( (valuesCount / (float)(j+1)) > smallerJump) {
+							currentItem.addProperty("COUNT", 70+randomIntegerInRange(0, 30));
+						}else {
+							currentItem.addProperty("COUNT", randomIntegerInRange(15, 25));
+						}
+						break;
+
+
+					case 6: //jump down & up
+						if((valuesCount / (float)(j+1)) > biggerJump) {
+							currentItem.addProperty("COUNT", randomIntegerInRange(70, 90));
+						}else if ( (valuesCount / (float)(j+1)) > smallerJump) {
+							currentItem.addProperty("COUNT", randomIntegerInRange(10, 25));
+						}else {
+							currentItem.addProperty("COUNT", randomIntegerInRange(70, 90));
+						}
+						break;
+					
+					case 7: // Sinus
+						currentItem.addProperty("COUNT", 50+(Math.abs(Math.sin(j/4)) * 30) 
+														  + randomIntegerInRange(0, 5) );
+						break;
+					case 8: // Sinus + Cos Increasing
+						currentItem.addProperty("COUNT", 
+								(
+									(Math.abs(Math.cos((j)/6)) * 10) 
+									+ (Math.abs(Math.sin(j/4)) * 30) 
+									+ randomIntegerInRange(0, 5)
+								) * (j / 10)
+								);
+						break;
+				}
+				
+				//--------------------------------------
+				// Additional Values
 				currentItem.addProperty("PRICE", randomFloatInRange(0.5f, 5.6f));
 				currentItem.addProperty("BOX_SIZE", randomFromArray(boxsizeArray));
+				currentItem.addProperty("PERCENT", randomIntegerInRange(1, 100));
 				
 				double multiplier = Math.pow(1000, randomIntegerInRange(0, 4));
 				double thousands = randomIntegerInRange(0, 1000) * multiplier;

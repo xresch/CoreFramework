@@ -122,6 +122,8 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 	public void execute(CFWObject parameters, LinkedBlockingQueue<EnhancedJsonObject> outQueue, long earliestMillis, long latestMillis, int limit) throws Exception {
 		
 		int records = (int)parameters.getField("records").getValue();
+		if(records <= 0) { records = 1; }
+		
 		String type = (String)parameters.getField("type").getValue();
 
 		long earliest = this.getParent().getContext().getEarliestMillis();
@@ -161,8 +163,8 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				if( isLimitReached(limit, i)) { break; }
 			}
 		}else if(type.equals("series")) {
-			
-			JsonArray array = CFW.Random.randomJSONArrayOfSeriesData(3, records, earliest, latest);
+			int seriesCount = CFW.Random.randomIntegerInRange(2,5);
+			JsonArray array = CFW.Random.randomJSONArrayOfSeriesData(seriesCount, records, earliest, latest);
 			
 			for(int i = 0; i < array.size(); i++) {
 				
