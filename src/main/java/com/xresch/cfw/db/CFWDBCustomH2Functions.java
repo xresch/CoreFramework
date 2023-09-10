@@ -10,6 +10,8 @@ import java.util.TreeSet;
 
 import org.h2.tools.SimpleResultSet;
 
+import com.xresch.cfw._main.CFW;
+
 public class CFWDBCustomH2Functions {
 	
 	/************************************************************************
@@ -22,6 +24,7 @@ public class CFWDBCustomH2Functions {
 		String[] functionNames = new String[] {
 				  "COUNT_ROWS"
 				, "CFW_ARRAY_DISTINCT"
+				, "CFW_ARRAY_CONTAINS_ANY_INT"
 			};
 		
 		for(String name : functionNames ) {
@@ -37,6 +40,44 @@ public class CFWDBCustomH2Functions {
 		    executeQuery("select count(*) from " + tableName);
 		rs.next();
 		return rs.getLong(1); 
+	}
+	
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	public static boolean CFW_ARRAY_CONTAINS_ANY_INT(Connection conn, Array arrayToSearchIn, Array arrayWithValues) throws SQLException {
+		
+		
+		ResultSet resultToSearch = arrayToSearchIn.getResultSet();
+		ResultSet resultWithValues = arrayWithValues.getResultSet();
+		System.out.println("============");
+		while(resultToSearch.next()) {
+			
+			Integer currentInt = resultToSearch.getInt("VALUE");
+			System.out.println("currentInt:"+currentInt);
+			resultWithValues.beforeFirst();
+			while(resultWithValues.next()) {
+				Integer currentValue = resultWithValues.getInt("VALUE");
+				System.out.println("currentValue:"+currentValue);
+				//---------------------------
+				// Handle Null Values
+				if(currentInt == null || currentValue == null ) {
+					if(currentInt == currentValue) {
+						return true;
+					}else {
+						continue;
+					}
+				}
+				
+				//---------------------------
+				// Handle Int Values
+				if(currentInt.intValue() == currentValue.intValue()) {
+					return true;
+				}
+			}
+		}
+		
+		return false; 
 	}
 	
 	/************************************************************************
