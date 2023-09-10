@@ -104,6 +104,11 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 						.setDescription("The type of data to generate, one of: 'default' | 'numbers' | 'arrays' | 'series' | 'tickets' | 'various' ")
 						.setValue("default")
 				)
+			.addField(
+					CFWField.newInteger(FormFieldType.NUMBER, "seriesCount")
+					.setDescription("Max number of series to generate for type 'series'.")
+					.setValue(6)
+					)
 		;
 	}
 	
@@ -125,6 +130,7 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 		if(records <= 0) { records = 1; }
 		
 		String type = (String)parameters.getField("type").getValue();
+		int seriesCount = (Integer)parameters.getField("seriesCount").getValue();
 
 		long earliest = this.getParent().getContext().getEarliestMillis();
 		long latest = this.getParent().getContext().getLatestMillis();
@@ -163,7 +169,6 @@ public class CFWQuerySourceRandom extends CFWQuerySource {
 				if( isLimitReached(limit, i)) { break; }
 			}
 		}else if(type.equals("series")) {
-			int seriesCount = CFW.Random.randomIntegerInRange(2,5);
 			JsonArray array = CFW.Random.randomJSONArrayOfSeriesData(seriesCount, records, earliest, latest);
 			
 			for(int i = 0; i < array.size(); i++) {
