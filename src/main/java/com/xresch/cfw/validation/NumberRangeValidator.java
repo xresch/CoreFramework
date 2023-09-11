@@ -1,5 +1,8 @@
 package com.xresch.cfw.validation;
 
+import java.math.BigDecimal;
+
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.utils.Ternary;
 
 
@@ -12,24 +15,32 @@ import com.xresch.cfw.utils.Ternary;
  **************************************************************************************************************/
 public class NumberRangeValidator extends AbstractValidator {
 
-	private int minValue;
-	private int maxValue;
+	private BigDecimal minValue;
+	private BigDecimal maxValue;
 
-	public NumberRangeValidator(IValidatable<?> validatable, int minValue, int maxValue) {
+	public NumberRangeValidator(IValidatable<?> validatable, Number minValue, Number maxValue) {
 		super(validatable);
-		this.minValue = minValue;
-		this.maxValue = maxValue;
+		this.minValue = new BigDecimal(minValue.doubleValue()).stripTrailingZeros();
+		this.maxValue = new BigDecimal(maxValue.doubleValue()).stripTrailingZeros();
 		
-		if(minValue > 0) {
+		if(minValue.doubleValue() > 0) {
 			this.setNullAllowed(false);
 		}
 	}
 	
 	public NumberRangeValidator(int minValue, int maxValue) {
-		this.minValue = minValue;
-		this.maxValue = maxValue;
+		this.minValue = new BigDecimal(minValue).stripTrailingZeros();
+		this.maxValue = new BigDecimal(maxValue).stripTrailingZeros();
 		
 		if(minValue > 0) {
+			this.setNullAllowed(false);
+		}
+	}
+	public NumberRangeValidator(Number minValue, Number maxValue) {
+		this.minValue = new BigDecimal(minValue.doubleValue()).stripTrailingZeros();
+		this.maxValue = new BigDecimal(maxValue.doubleValue()).stripTrailingZeros();
+		
+		if(minValue.doubleValue() > 0) {
 			this.setNullAllowed(false);
 		}
 	}
@@ -40,26 +51,34 @@ public class NumberRangeValidator extends AbstractValidator {
 		Ternary result = validateNullEmptyAllowed(value);
 		if(result != Ternary.DONTCARE ) return result.toBoolean();
 		
-		Double number = 0d;
-		if (value instanceof String) {
-			number = Double.parseDouble((String)value);
-		}else if (value instanceof Number) {
-			number = ((Number)value).doubleValue();
-		}
+		//--------------------------------------
+		// Get Value to Compare
 		
-		if(   (number >= minValue || minValue == -1) 
-		   && (number <= maxValue || maxValue == -1) ){
+		
+		BigDecimal number = BigDecimal.ZERO;
+		if(value instanceof BigDecimal) { 		number = (BigDecimal)value; }
+		else if (value instanceof String) {		number = new BigDecimal((String)value); }
+		else if (value instanceof Integer) { number = new BigDecimal((Integer)value);}
+		else if (value instanceof Long) { number = new BigDecimal((Long)value);}
+		else if (value instanceof Number) { number = new BigDecimal( ((Number)value).doubleValue() ); }
+				
+		if(   (number.compareTo(minValue) >= 0 || minValue.compareTo(CFW.Math.BIGDEC_NEG_ONE) == 0) 
+		   && (number.compareTo(maxValue) <= 0 || maxValue.compareTo(CFW.Math.BIGDEC_NEG_ONE) == 0) ){
 			return true;
 		}else{
-			if(minValue == -1){
+			if(minValue.compareTo(CFW.Math.BIGDEC_NEG_ONE) == 0){
 				this.setInvalidMessage("The value of "+validateable.getLabel()+
 						" can have a maximum value of "+maxValue+".");
-			}else if(maxValue == -1){
+			}else if(maxValue.compareTo(CFW.Math.BIGDEC_NEG_ONE) == 0){
 				this.setInvalidMessage("The value of "+validateable.getLabel()+
 						" should be at least "+minValue+".");
 			}else {
 				this.setInvalidMessage("The value of "+validateable.getLabel()+
-						" should be between "+minValue+" and "+maxValue+".");
+						" should be between "
+							+String.format("%.2f", minValue.doubleValue())
+						+" and "
+							+String.format( "%.2f", maxValue.doubleValue() )
+						+".(value = '"+String.format( "%.2f", number.doubleValue() )+"')");
 			}
 			
 			return false;

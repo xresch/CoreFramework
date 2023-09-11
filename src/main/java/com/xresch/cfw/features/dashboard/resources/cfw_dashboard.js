@@ -1482,7 +1482,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	}
 		
 	var advancedDisplayClass = 'd-none';
-	if(CFW_DASHBOARD_EDIT_MODE_ADVANCED){
+	if(widgetObject.WIDTH >= 3 && CFW_DASHBOARD_EDIT_MODE_ADVANCED){
 		advancedDisplayClass = '';
 	}
 	
@@ -1571,8 +1571,8 @@ function cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposit
     			, y: widgetObject.Y
     			, w: widgetObject.WIDTH
     			, h: widgetObject.HEIGHT
-    			, minH: 1
-    			, minW: 3
+    			, minH: 2
+    			, minW: 1
     			, autoPosition: doAutoposition
     		}
     	);
@@ -1666,8 +1666,8 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 				    			, y: widgetAdjustedByWidgetDef.Y
 				    			, w: widgetAdjustedByWidgetDef.WIDTH
 				    			, h: widgetAdjustedByWidgetDef.HEIGHT
-				    			, minH: 1
-				    			, minW: 3
+				    			, minH: 2
+				    			, minW: 1
 				    			, autoPosition: doAutoposition
 				    		}
 				    		);
@@ -2053,14 +2053,25 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			
 				var widgetInstance = $(currentItem);
 				var widgetObject 	 = widgetInstance.data("widgetObject");
-				var undoData = _.cloneDeep(widgetObject);
-				
+
 				widgetObject.X		= widgetInstance.attr("gs-x");
 				widgetObject.Y		= widgetInstance.attr("gs-y");
 				widgetObject.WIDTH	= widgetInstance.attr("gs-w");
 				widgetObject.HEIGHT	= widgetInstance.attr("gs-h");
 				
-				var redoData = _.cloneDeep(widgetObject);
+				//---------------------------------
+				// Show or hide Action Icons
+				if(widgetObject.WIDTH >= 3 && CFW_DASHBOARD_EDIT_MODE_ADVANCED){
+					//var widgetSelector = '#'+widgetObject.guid+' ';
+					widgetInstance.find('.actionicon-delete').removeClass('d-none');
+					widgetInstance.find('.actionicon-duplicate').removeClass('d-none');
+					widgetInstance.find('.actionicon-edit').removeClass('d-none');
+				}else{
+					widgetInstance.find('.actionicon-delete').addClass('d-none');
+					widgetInstance.find('.actionicon-duplicate').addClass('d-none');
+					widgetInstance.find('.actionicon-edit').addClass('d-none');
+				}
+				
 				cfw_dashboard_widget_save_state(widgetObject, false, true);
 				
 			}

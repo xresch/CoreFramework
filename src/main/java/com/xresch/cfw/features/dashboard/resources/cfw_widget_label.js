@@ -14,18 +14,22 @@
 				if(settings.label != null){
 					var rotationClass = '';
 					
-					if(widgetObject.JSON_SETTINGS.direction == "Top to Bottom"){
+					if(settings.direction == "Top to Bottom"){
 						rotationClass = 'rotate-90';
-					}else if(widgetObject.JSON_SETTINGS.direction == "Bottom to Top"){
+					}else if(settings.direction == "Bottom to Top"){
 						rotationClass = 'rotate-270';
-					}else if(widgetObject.JSON_SETTINGS.direction == "Upside Down"){
+					}else if(settings.direction == "Upside Down"){
 						rotationClass = 'rotate-180';
 					}
 					
-					var labelHTML = '<div class="label-box"><span class="text-center '+rotationClass+'" style="white-space: nowrap; font-size: '+20*settings.sizefactor+'px;"">';
+					var labelHTML = '<div class="label-box"><span class="text-center '+rotationClass+'" style="zoom: '+100*settings.sizefactor+'%;">';
 					
+					var target = 'target="_blank"';
+					if(settings.newwindow != null && !settings.newwindow){
+						target = "" ;
+					}
 					if(widgetObject.JSON_SETTINGS.link != null && widgetObject.JSON_SETTINGS.link != ''){
-						labelHTML += '<a target="_blank" class="text-'+widgetObject.FGCOLOR+'" href="'+widgetObject.JSON_SETTINGS.link+'">'+widgetObject.JSON_SETTINGS.label+'</a>'
+						labelHTML += '<a '+target+' class="text-'+widgetObject.FGCOLOR+'" href="'+widgetObject.JSON_SETTINGS.link+'">'+widgetObject.JSON_SETTINGS.label+'</a>'
 						+'</span></div>'; 
 					}else{
 						labelHTML += widgetObject.JSON_SETTINGS.label

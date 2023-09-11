@@ -55,6 +55,9 @@
     background: inherit;
 }
 
+.widget-w-xs .cfw-dashboard-widget-actionicons{
+	display: none;
+}
 .cfw-dashboard-widget-actionicons{
 	cursor: pointer;
 	position: absolute;
@@ -63,6 +66,7 @@
     display: flex;
     z-index: 12; /* widget dropdown is 16, so must be lower than that */
 }
+
 .cfw-dashboard-widget-actionicons div{
 	padding-left: 6px;
 }

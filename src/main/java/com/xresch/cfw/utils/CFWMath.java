@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public class CFWMath {
 
 	public static final BigDecimal BIGDEC_TWO = new BigDecimal(2);
+	public static final BigDecimal BIGDEC_NEG_ONE = new BigDecimal(-1);
 	
 	/***********************************************************************************************
 	 * 

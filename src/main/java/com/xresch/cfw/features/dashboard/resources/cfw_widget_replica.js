@@ -69,8 +69,8 @@
 								    			, y: subWidgetObject.Y
 								    			, w: subWidgetObject.WIDTH
 								    			, h: subWidgetObject.HEIGHT
-								    			, minH: 1
-								    			, minW: 3
+								    			, minH: 2
+								    			, minW: 1
 								    			, autoPosition: false
 								    		}
 								    	);

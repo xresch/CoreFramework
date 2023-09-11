@@ -18,6 +18,7 @@ import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCache
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.response.JSONResponse;
+import com.xresch.cfw.validation.NumberRangeValidator;
 
 public class WidgetLabel extends WidgetDefinition {
 
@@ -37,21 +38,27 @@ public class WidgetLabel extends WidgetDefinition {
 						.setDescription("{!cfw_widget_cfwlabel_label_desc!}")
 						.setValue("Label")
 						)
-				.addField(CFWField.newString(FormFieldType.TEXT, "link")
-						.setLabel("{!cfw_widget_cfwlabel_link!}")
-						.setDescription("{!cfw_widget_cfwlabel_link_desc!}")
-						.setValue("")
-						)
 				.addField(CFWField.newString(FormFieldType.SELECT, "direction")
 						.setLabel("{!cfw_widget_cfwlabel_direction!}")
 						.setDescription("{!cfw_widget_cfwlabel_direction_desc!}")
 						.setOptions(new String[] {"Left to Right", "Bottom to Top", "Top to Bottom", "Upside Down"})
 						.setValue("Left to Right")
 						)
-				.addField(CFWField.newString(FormFieldType.SELECT, "sizefactor")
+				.addField(CFWField.newString(FormFieldType.TEXT, "link")
+						.setLabel("{!cfw_widget_cfwlabel_link!}")
+						.setDescription("{!cfw_widget_cfwlabel_link_desc!}")
+						.setValue("")
+						)
+				.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, "newwindow")
+						.setLabel("{!cfw_widget_cfwlabel_newwindow!}")
+						.setDescription("{!cfw_widget_cfwlabel_newwindow_desc!}")
+						.setValue(true)
+						)
+				.addField(CFWField.newString(FormFieldType.NUMBER, "sizefactor")
 						.setLabel("{!cfw_dashboard_sizefactor!}")
 						.setDescription("{!cfw_dashboard_sizefactor_desc!}")
-						.setOptions(new String[]{"0.5", "1", "1.25", "1.5", "1.75", "2.0", "2.5", "3.0", "4.0"})
+						.addValidator(new NumberRangeValidator(0.1f, 10.0f))
+						//.setOptions(new String[]{"0.5", "1", "1.25", "1.5", "1.75", "2.0", "2.5", "3.0", "4.0"})
 						.setValue("1")
 				)
 		;
