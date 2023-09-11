@@ -10,6 +10,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionBoolean;
+import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionDashboardID;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionNumber;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionSelect;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionText;
@@ -136,6 +137,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Parameters.add(new ParameterDefinitionSelect());
 		CFW.Registry.Parameters.add(new ParameterDefinitionBoolean());
 		CFW.Registry.Parameters.add(new ParameterDefinitionNumber());
+		CFW.Registry.Parameters.add(new ParameterDefinitionDashboardID());
 		
 		//----------------------------------
     	// Register Audit
