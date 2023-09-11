@@ -189,6 +189,7 @@ DONE
 - Dashboard: Added configuration to "Admin >> Configuration" to set default value for 'Is Shared' setting 
 - Dashboard List: Added owner to admin shared details view
 - Dashboard List: Added public link to shared and faved dashboards
+- Dashboard List: Added shared global/not shared message when dashboard is created.
 - Widgets: Created new Category 'Advanced'
 - Widgets: Added Widget Advanced >> Force Refresh
 - Widgets: Reduced margin of widgets to use space more efficiently

@@ -41,6 +41,10 @@ import com.xresch.cfw.validation.NotNullOrEmptyValidator;
 public class ServletDashboardList extends HttpServlet
 {
 
+	private static final String MESSAGE_SHARED_GLOBAL = "All dashboard users will see this dashboard. The dashboard was saved as shared and no specific shared users or roles. ";
+
+	private static final String MESSAGE_NOT_SHARED = "Users won't be able to access your dashboard until you set shared to true. The dashboard was saved as not shared and with at least one shared users or roles. ";
+
 	private static final long serialVersionUID = 1L;
 	
 	private static final Logger logger = CFWLog.getLogger(ServletDashboardList.class.getName());
@@ -309,6 +313,7 @@ public class ServletDashboardList extends HttpServlet
 						dashboard.foreignKeyOwner(CFW.Context.Request.getUser().id());
 						if( CFW.DB.Dashboards.create(dashboard) ) {
 							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Dashboard created successfully!");
+							generateSharedMessages(dashboard);
 						}
 					}
 					
@@ -347,34 +352,11 @@ public class ServletDashboardList extends HttpServlet
 							
 							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
 							
-							if(!dashboard.isShared()
-							&& (dashboard.sharedWithUsers().size() > 0
-							   || dashboard.sharedWithGroups().size() > 0
-							   || dashboard.editors().size() > 0
-							   || dashboard.editorGroups().size() > 0
-								)
-							) {
-								
-								CFW.Context.Request.addAlertMessage(
-										MessageType.INFO, 
-										"Users won't be able to access your dashboard until you set shared to true. The dashboard was saved as not shared and with at least one shared users or roles. "
-									);
-							}
-							
-							if(dashboard.isShared()
-							&& dashboard.sharedWithUsers().size() == 0
-							&& dashboard.sharedWithGroups().size() == 0
-							&& dashboard.editors().size() == 0
-							&& dashboard.editorGroups().size() == 0) {
-										
-								CFW.Context.Request.addAlertMessage(
-										MessageType.INFO, 
-										"All dashboard users will see this dashboard. The dashboard was saved as shared and no specific shared users or roles. "
-									);
-							}
+							generateSharedMessages(dashboard);
 						}
 						
 					}
+
 				});
 				
 				editDashboardForm.appendToPayload(json);
@@ -465,6 +447,37 @@ public class ServletDashboardList extends HttpServlet
 			}
 		}else {
 			CFWMessages.noPermission();
+		}
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void generateSharedMessages(Dashboard dashboard) {
+		if(!dashboard.isShared()
+		&& (dashboard.sharedWithUsers().size() > 0
+		   || dashboard.sharedWithGroups().size() > 0
+		   || dashboard.editors().size() > 0
+		   || dashboard.editorGroups().size() > 0
+			)
+		) {
+			
+			CFW.Context.Request.addAlertMessage(
+					MessageType.INFO, 
+					MESSAGE_NOT_SHARED
+				);
+		}
+		
+		if(dashboard.isShared()
+		&& dashboard.sharedWithUsers().size() == 0
+		&& dashboard.sharedWithGroups().size() == 0
+		&& dashboard.editors().size() == 0
+		&& dashboard.editorGroups().size() == 0) {
+					
+			CFW.Context.Request.addAlertMessage(
+					MessageType.INFO, 
+					MESSAGE_SHARED_GLOBAL
+				);
 		}
 	}
 }

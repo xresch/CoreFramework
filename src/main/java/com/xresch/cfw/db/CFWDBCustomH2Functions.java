@@ -54,11 +54,9 @@ public class CFWDBCustomH2Functions {
 		while(resultToSearch.next()) {
 			
 			Integer currentInt = resultToSearch.getInt("VALUE");
-			System.out.println("currentInt:"+currentInt);
 			resultWithValues.beforeFirst();
 			while(resultWithValues.next()) {
 				Integer currentValue = resultWithValues.getInt("VALUE");
-				System.out.println("currentValue:"+currentValue);
 				//---------------------------
 				// Handle Null Values
 				if(currentInt == null || currentValue == null ) {
