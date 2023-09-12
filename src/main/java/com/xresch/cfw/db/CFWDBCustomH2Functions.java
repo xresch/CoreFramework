@@ -50,7 +50,7 @@ public class CFWDBCustomH2Functions {
 		
 		ResultSet resultToSearch = arrayToSearchIn.getResultSet();
 		ResultSet resultWithValues = arrayWithValues.getResultSet();
-		System.out.println("============");
+		
 		while(resultToSearch.next()) {
 			
 			Integer currentInt = resultToSearch.getInt("VALUE");
