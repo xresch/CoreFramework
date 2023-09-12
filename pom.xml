@@ -528,7 +528,7 @@
 						            <fileset dir="${basedir}/scripts" includes="stop.bat" />
 						        </copy>
 						        
-						        <copy tofile="${binariesFolder}/CFW-License.txt" file="${basedir}/LICENSE"></copy>
+						        <copy tofile="${binariesFolder}/LICENSE" file="${basedir}/LICENSE"></copy>
 						        <!-- 
 							        <copy tofile="${basedir}/target/licenses/CFW-MIT-License.txt" file="${basedir}/LICENSE"></copy>
 							        <move todir="${binariesFolder}" file="${basedir}/target/licenses"></move>
