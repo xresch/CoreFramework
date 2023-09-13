@@ -15,6 +15,8 @@ CFW_RENDER_NAME_STATUSMAP = 'statusmap';
 CFW_RENDER_NAME_STATUSLIST = 'statuslist';
 CFW_RENDER_NAME_CARDS = 'cards';
 CFW_RENDER_NAME_PANELS = 'panels';
+CFW_RENDER_NAME_CHART = 'chart';
+CFW_RENDER_NAME_DATAVIEWER = 'dataviewer';
 
 CFW_RENDER_POPOVER_DEFAULTS = {
 				trigger: 'hover',
@@ -90,6 +92,21 @@ class CFWRenderer{
 					}else{
 						var customizer = this.customizers[fieldname];
 						return customizer(record, value, rendererName, fieldname);
+					}
+			 	},
+			
+			/*************************************************************
+			 * Customize The Value
+			 *************************************************************/
+		 	getLabel: function(fieldname, rendererName){
+		 		
+			 		if(this.labels[fieldname] == null){
+						return fieldname;
+					}else if(typeof this.labels[fieldname] == 'string'){
+						return this.labels[fieldname];
+					}else if(typeof this.labels[fieldname] == 'function'){
+						var getLabelFunction = this.labels[fieldname];
+						return getLabelFunction(fieldname, rendererName);
 					}
 			 	},
 			
@@ -430,7 +447,7 @@ function cfw_renderer_csv(renderDef) {
 	for(var key in renderDef.visiblefields){
 		var fieldname = renderDef.visiblefields[key];
 		
-		headers += '"' +renderDef.labels[fieldname] + '"' + settings.delimiter;
+		headers += '"' +renderDef.getLabel(fieldname, CFW_RENDER_NAME_CSV) + '"' + settings.delimiter;
 	}
 	// remove last semicolon
 	headers = headers.substring(0, headers.length-1);
@@ -728,14 +745,14 @@ function cfw_renderer_tiles(renderDef) {
 
 				if(renderDef.customizers[fieldname] == null){
 					if(value != null){
-						currentTile.append('<span style="font-size: '+10*settings.sizefactor+'px;"><strong>'+renderDef.labels[fieldname]+':&nbsp;</strong>'+value+'</span>');
+						currentTile.append('<span style="font-size: '+10*settings.sizefactor+'px;"><strong>'+renderDef.getLabel(fieldname, CFW_RENDER_NAME_TILES)+':&nbsp;</strong>'+value+'</span>');
 					}
 				}else{
 					var customizer = renderDef.customizers[fieldname];
 					var customizedValue = customizer(currentRecord, value, CFW_RENDER_NAME_TILES, fieldname);
 					if(customizedValue != null){
 				
-						var span = $('<span style="font-size: '+10*settings.sizefactor+'px;"><strong>'+renderDef.labels[fieldname]+':&nbsp;</strong></span>');
+						var span = $('<span style="font-size: '+10*settings.sizefactor+'px;"><strong>'+renderDef.getLabel(fieldname, CFW_RENDER_NAME_TILES)+':&nbsp;</strong></span>');
 						span.append(customizedValue);
 						currentTile.append(span);
 					}
@@ -1384,7 +1401,7 @@ function cfw_renderer_table(renderDef) {
 			let fieldname = renderDef.visiblefields[i];
 			let label = fieldname;
 			if(settings.verticalizelabelize){
-				label = renderDef.labels[fieldname];
+				label = renderDef.getLabel(fieldname, CFW_RENDER_NAME_TABLE);
 			}
 			let finalValue = singleRecord[fieldname];
 			
@@ -1447,7 +1464,7 @@ function cfw_renderer_table(renderDef) {
 	for(let i = 0; i < renderDef.visiblefields.length; i++){
 		let fieldname = renderDef.visiblefields[i];
 		cfwTable.addHeader(
-				renderDef.labels[fieldname], 
+				renderDef.getLabel(fieldname, CFW_RENDER_NAME_TABLE), 
 				(i <= settings.headerclasses.length-1 ? settings.headerclasses[i] : null)
 		);
 	}
@@ -1790,7 +1807,7 @@ function cfw_renderer_panels_addPanel(targetElement, currentRecord, renderDef, s
 		let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PANELS);
 		
 		if(!CFW.utils.isNullOrEmpty(value)){
-			item = $('<li><strong>' + renderDef.labels[fieldname] + ':&nbsp;</strong></li>');
+			item = $('<li><strong>' + renderDef.getLabel(fieldname, CFW_RENDER_NAME_PANELS) + ':&nbsp;</strong></li>');
 			item.append(value);
 			list.append(item);
 		}
@@ -1908,7 +1925,7 @@ function cfw_renderer_cards (renderDef) {
 			let value = renderDef.getCustomizedValue(currentRecord,fieldname, CFW_RENDER_NAME_PANELS);
 						
 			if(!CFW.utils.isNullOrEmpty(value)){
-				item = $('<li><strong>' + renderDef.labels[fieldname] + ':&nbsp;</strong></li>');
+				item = $('<li><strong>' + renderDef.getLabel(fieldname, CFW_RENDER_NAME_CARDS) + ':&nbsp;</strong></li>');
 				item.append(value);
 				list.append(item);
 			}
@@ -2211,7 +2228,7 @@ function cfw_renderer_chart(renderDef) {
 		if(renderDef.titlefields != null){
 			for(let index in renderDef.titlefields){
 				let titlefield = renderDef.titlefields[index];
-				let label = renderDef.labels[titlefield];
+				let label = renderDef.getLabel(titlefield, CFW_RENDER_NAME_CHART);
 				renderDef.titleformat += label+'="{'+index+'}" / ';
 				index++;
 			}
@@ -2219,7 +2236,7 @@ function cfw_renderer_chart(renderDef) {
 			let index = 0;
 			for(let key in firstRecord){
 				if(key == settings.xfield || key == settings.yfield) { continue; }
-				let label = renderDef.labels[key];
+				let label = renderDef.getLabel(key, CFW_RENDER_NAME_CHART);
 				renderDef.titleformat += label+'="{'+index+'}" / ';
 				index++;
 			}
@@ -2402,7 +2419,7 @@ function cfw_renderer_chart(renderDef) {
     }
 });*/
 
-CFW.render.registerRenderer("chart", new CFWRenderer(cfw_renderer_chart) );
+CFW.render.registerRenderer(CFW_RENDER_NAME_CHART, new CFWRenderer(cfw_renderer_chart) );
 
 
 /******************************************************************
@@ -3335,7 +3352,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 			let descendingHTML = ""; 
 			for(index in sortfields){
 				var fieldName = sortfields[index];
-				var fielLabel = renderDef.labels[fieldName];
+				var fielLabel = renderDef.getLabel(fieldName, CFW_RENDER_NAME_DATAVIEWER);
 				
 				
 				var selectedAsc = '';
