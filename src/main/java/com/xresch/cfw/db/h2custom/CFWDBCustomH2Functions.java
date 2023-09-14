@@ -1,4 +1,4 @@
-package com.xresch.cfw.db;
+package com.xresch.cfw.db.h2custom;
 
 import java.sql.Array;
 import java.sql.Connection;
@@ -6,11 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.TreeSet;
 
+import org.h2.api.AggregateFunction;
 import org.h2.tools.SimpleResultSet;
 
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.db.DBInterface;
 
 public class CFWDBCustomH2Functions {
 	
@@ -19,6 +23,14 @@ public class CFWDBCustomH2Functions {
 	 ************************************************************************/
 	public static void initialize(DBInterface db) {
 		
+		registerRegularFunctions(db);
+		registerAggregateFunctions(db);
+	}
+	
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	private static void registerRegularFunctions(DBInterface db) {
 		String clazz = CFWDBCustomH2Functions.class.getName();
 		
 		String[] functionNames = new String[] {
@@ -29,6 +41,21 @@ public class CFWDBCustomH2Functions {
 		
 		for(String name : functionNames ) {
 			db.preparedExecuteBatch("DROP ALIAS IF EXISTS "+name+"; CREATE ALIAS "+name+" for \""+clazz+"."+name+"\""); 
+		}
+	}
+	
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	private static void registerAggregateFunctions(DBInterface db) {
+
+		// Function name & Class Name
+		LinkedHashMap<String, String > classMap = new LinkedHashMap<>(); 
+		classMap.put(CFW_ARRAY_MERGE.class.getSimpleName(), CFW_ARRAY_MERGE.class.getName() );
+		
+		for(Entry<String, String> entry : classMap.entrySet() ) {
+			db.preparedExecuteBatch("DROP AGGREGATE IF EXISTS "+entry.getKey()+"; CREATE AGGREGATE "+entry.getKey()+" FOR \""+entry.getValue()+"\" ");
+			//db.preparedExecuteBatch("DROP AGGREGATE IF EXISTS "+entry.getKey()+"; CREATE AGGREGATE "+entry.getKey()+" FOR \""+entry.getValue()+"\" ");
 		}
 	}
 	
@@ -119,4 +146,5 @@ public class CFWDBCustomH2Functions {
 
 		return rs;
 	}
+	
 }

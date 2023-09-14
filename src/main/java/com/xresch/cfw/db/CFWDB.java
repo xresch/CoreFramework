@@ -14,6 +14,7 @@ import org.h2.tools.Server;
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
+import com.xresch.cfw.db.h2custom.CFWDBCustomH2Functions;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;

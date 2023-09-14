@@ -837,7 +837,7 @@ public class DBInterface {
 		
 		DBInterface db = new DBInterface(uniquepoolName, datasource);
 
-		new CFWLog(logger).info("Created DBInteface: "+ url);
+		new CFWLog(logger).off("Created DBInteface: "+ url);
 		return db;
 	}
 	
