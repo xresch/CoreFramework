@@ -216,6 +216,7 @@ DONE
 - Caching: Added Caches for user roles and permissions
 - CFWChartSettings: Added FormFieldType and DataObject Class to manage Chart Settings
 - JS Components: ToogleButton supports favorite style
+- JS Renderer: field labels can now be defined with functions
 - JS Renderer: Tiles - fixed issue with removing alertstyle fields
 - JS Renderer: Chart - Added options multichart/-title/-columns and height to render each series in it's own chart.
 - JS Renderer: Chart - Added options details/-renderer/-size/-position to display the data of the chart.
