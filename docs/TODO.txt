@@ -10,31 +10,11 @@ ALWAYS ON
 - Test with cache enabled
 
 
-IMPORTANT FIXES / NEXT TODOS
+IMPORTANT FIXES / TODOS
 =============================
-- Dashboard: Fix Undo/Redo
+- Dashboard: Check and fix Undo/Redo
 - Query: Save and Manage queries
 
-
-H2 Database Migration v1.4.2 to v2.0.206
-=========================================
-Before migrating
-1. Make a copy of the database and connect to the copy.
-2. Delete CFW_CPUSAMPLE* Tables, also if not important for you CFW_NOTIFICATION
-3. Execute SQL command "SCRIPT" to create statements.
-4. Save the results as to a file.
-5. Cleanup file format, in case of DBeaver text export:
-   - Regex Replace "; *?\|\r\n\|" with "; \r\n"
-   - Replace "¶" with " "  
-   - Regex Replace "(?<=CREATE CACHED TABLE)(.*) ARRAY" with "\1VARCHAR ARRAY"
-6. Array Format: On create table statements, replace "ARRAY" with "VARCHAR ARRAY"
-7. This file is your SQL Batch File to setup the new database
-
-Migrate your Application, afterwards:
-1. Connect to the new database
-2. Delete all existing Tables.
-3. Execute your SQL Batch file, check if the errors are an issue.
-4. Restart the Application, check log file for errors
 
 Potential TODOs
 ===============
@@ -55,23 +35,25 @@ Potential TODOs
 - Jobs: Log Job Executions to DB, plus age out.
 - Jobs: Define max number of instances.
 
+- UserMgmt: Give users a list of groups.
+
 - Dashboard: Check Settings - Provide a bulk action to show all settings of all widgets as an overview. 
 - Dashboard: Text Alignment
 - Dashboard: Merge forms, only one button.
 - Dashboard: Widget Fullscreen
-- Dashboard: Favorites
 - Dashboard: Fit Squeeze
 - Dashboard: Filter Widgets
 - Dashboard: Check if resizing/dragging is possible on mobile.
 - Dashboard: Default Error / No Access Tile
 - Dashboard: Default No Data Tile
 - Dashboard: Add Anchor Chooser to Image Widget
-- Dashboard: Add format to reload time widget
 - Dashboard: Console with Logs
 - Dashboard: Fix Replica Ctrl+Z on Duplicate
 - Dashboard: Timeframe Picker - show Timeframe instead of "Custom Time"
 - Dashboard: Timeframe Picker - List of Recent
+- Dashboard: Presets like - Today, Yesterday - This Week, Last Week, This Month, Last Month etc...
 - Dashboard: Compare Option
+- Dashboard: List of all Shared dashboards with Request access button (send by notification)
 - Dashboard Parameters: Form initialization: filter as well by form or formID to not mess with params with same name/ID
 
 - Widget: CSV Chart
@@ -79,13 +61,16 @@ Potential TODOs
 - Widget: Panels
 - Widget: Website Checker HTMLUnit
 - Widget: Partial HTML Extractor
-- Widget: Nest other Dashboard
-- Widget: Fontawesome Icon 
+- Widget: Nest other Dashboards
+- Widget: Fontawesome Icons
 - Widget: Current Time Widget
+- Widget: Last Refresh as MM:SS Ago, with threshhold colorizing when longer then x seconds or so
+- Widget: Next Refresh as MM:SS
 - Widget: Collaboration: Chat
 - Widget: Collaboration: Logbook
 
-- Query: Write Developers Manual dev_query.html
+- Query: Docs - Write Developers Manual dev_query.html
+- Query: Docs - mimic template mechanism
 - Query: Widget - Option to open query in Editor if user has permission
 - Query: Improve Autocomplete
 - Query: function: math ceil/floor/abs etc...
@@ -97,8 +82,10 @@ Potential TODOs
 - Query: function: timediff()
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
-- Query: Command statsx (pivot)- Query: Command formatfield - sparkline format (or new command)
-- Query: arrayify (for subquery results)
+- Query: Command resultdelete (delete by name)
+- Query: Command statsx (pivot)
+- Query: Command formatfield - sparkline format (or new command)
+- Query: arrayify (needed for subquery results)
 - Query: Manual Page - How to create charts 
 - Query: Mimic calling mimic working with meta()
 - Query: Chart - Show data table option
@@ -144,8 +131,6 @@ Potential TODOs
 - Image Upload for Summernote Editor
 - Truncate too long toasts.
 - Create Record Requests / Replay for Performance Tests
-
-- Custom Error page CFW.App.createErrorHandler();
 
 - Test: Jobs & Tasks
 - Test: Dashboard Parameters
