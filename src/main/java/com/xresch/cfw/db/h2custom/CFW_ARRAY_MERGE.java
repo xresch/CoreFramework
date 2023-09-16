@@ -1,7 +1,13 @@
 package com.xresch.cfw.db.h2custom;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.TreeSet;
+
+import org.h2.value.Value;
+import org.h2.value.ValueNumeric;
 
 /************************************************************************
  * Merges integer Arrays into a single array
@@ -9,6 +15,9 @@ import java.util.TreeSet;
 public class CFW_ARRAY_MERGE implements org.h2.api.Aggregate{
     
 	public static final String FUNCTION_NAME = "CFW_INT_ARRAY_MERGE";
+	
+	private static BigDecimal[] EMPTY_BIGDEC_ARRAY = new BigDecimal[0];
+	
 	TreeSet<Object> values = new TreeSet<>();
 	int i = 0;
     @Override
@@ -44,6 +53,18 @@ public class CFW_ARRAY_MERGE implements org.h2.api.Aggregate{
 
     @Override
     public Object getResult() throws java.sql.SQLException {
-        return values.toArray();
+    	if (values == null) {
+            return null;
+        }
+    	
+        return values.toArray(EMPTY_BIGDEC_ARRAY);
+        
+//    	Collection<Value> valuesInt = new ArrayList<>();
+//    	
+//    	for(Object value : values) {
+//    		valuesInt.add(ValueNumeric.get((BigDecimal)value));
+//    	}
+//        
+//        return valuesInt.toArray(Value.EMPTY_VALUES);
     }
 }
