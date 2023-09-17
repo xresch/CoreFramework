@@ -18,7 +18,7 @@ public  class CFWDBDefaultOperations {
 	private static final Logger logger = CFWLog.getLogger(CFWDBDefaultOperations.class.getName());
 	
 	/********************************************************************************************
-	 * Creates multiple items in the DB.
+	 * Creates multiple items in the DB and sets the primary key on the object.
 	 * @param Roles with the values that should be inserted. ID will be set by the Database.
 	 * @return true if all created successful
 	 * 
@@ -27,7 +27,7 @@ public  class CFWDBDefaultOperations {
 		return create(precheck, null, cfwObjects);
 	}
 	/********************************************************************************************
-	 * Creates multiple items in the DB.
+	 * Creates multiple items in the DB and sets the primary key on the object.
 	 * @param Roles with the values that should be inserted. ID will be set by the Database.
 	 * @return true if all created successful
 	 * 
@@ -43,7 +43,7 @@ public  class CFWDBDefaultOperations {
 	}
 	
 	/********************************************************************************************
-	 * Creates a new item in the DB.
+	 * Creates a new item in the DB and sets the primary key on the object.
 	 * @param Object with the values that should be inserted. ID will be set by the Database.
 	 * @return true if successful, false otherwise
 	 * 
@@ -55,7 +55,7 @@ public  class CFWDBDefaultOperations {
 	}
 	
 	/********************************************************************************************
-	 * Creates a new item in the DB.
+	 * Creates a new item in the DB and sets the primary key on the object.
 	 * @param Object with the values that should be inserted. ID will be set by the Database.
 	 * @return true if successful, false otherwise
 	 * 
@@ -74,14 +74,22 @@ public  class CFWDBDefaultOperations {
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.CREATE, object, auditLogFieldnames);
 		
-		return object
+		Integer id = object
 			.queryCache(object.getClass(), "CFWDBDefaultOperations.create")
-			.insert();
+			.insertGetPrimaryKey();
+		
+		if(id == null) {
+			 return false;
+		}else if( object.getPrimaryKeyValue() == null) {
+			object.getPrimaryKeyField().setValue(id);
+		}
+		
+		return true;
 
 	}
 	
 	/********************************************************************************************
-	 * Creates a new item in the DB.
+	 * Creates a new item in the DB and sets the primary key on the object.
 	 * @param Object with the values that should be inserted. ID will be set by the Database.
 	 * @return primary key or null if not successful
 	 * 
@@ -90,7 +98,7 @@ public  class CFWDBDefaultOperations {
 		return createGetPrimaryKey(precheck, null, object);
 	}
 	/********************************************************************************************
-	 * Creates a new item in the DB.
+	 * Creates a new item in the DB and sets the primary key on the object.
 	 * @param Object with the values that should be inserted. ID will be set by the Database.
 	 * @return primary key or null if not successful
 	 * 
@@ -109,14 +117,20 @@ public  class CFWDBDefaultOperations {
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.CREATE, object, auditLogFieldnames);
 		
-		return object
-			.queryCache(object.getClass(), "CFWDBDefaultOperations.insertGetPrimaryKey")
-			.insertGetPrimaryKey();
+		Integer id = object
+				.queryCache(object.getClass(), "CFWDBDefaultOperations.createGetPrimaryKey")
+				.insertGetPrimaryKey();
+				 
+		if(id != null && object.getPrimaryKeyValue() == null) {
+			object.getPrimaryKeyField().setValue(id);
+		}
+		
+		return id;
 
 	}
 	
 	/********************************************************************************************
-	 * Creates a new item in the DB.
+	 * Creates a new item in the DB and sets the primary key on the object.
 	 * @param Object with the values that should be inserted. ID will be set by the Database.
 	 * @return primary key or null if not successful
 	 * 
@@ -125,7 +139,7 @@ public  class CFWDBDefaultOperations {
 		return createGetPrimaryKeyWithout(precheck, null, object, fieldnamesToExclude);
 	}
 	/********************************************************************************************
-	 * Creates a new item in the DB.
+	 * Creates a new item in the DB and sets the primary key on the object.
 	 * @param Object with the values that should be inserted. ID will be set by the Database.
 	 * @return primary key or null if not successful
 	 * 
@@ -144,9 +158,15 @@ public  class CFWDBDefaultOperations {
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.CREATE, object, auditLogFieldnames);
 		
-		return new CFWSQL(object)
-			//.queryCache(object.getClass(), "CFWDBDefaultOperations.createGetPrimaryKeyWithout")
-			.insertGetPrimaryKeyWithout(fieldnamesToExclude);
+		Integer id =  new CFWSQL(object)
+				//.queryCache(object.getClass(), "CFWDBDefaultOperations.createGetPrimaryKeyWithout")
+				.insertGetPrimaryKeyWithout(fieldnamesToExclude);
+				 
+		if(id != null && object.getPrimaryKeyValue() == null) {
+			object.getPrimaryKeyField().setValue(id);
+		}
+		
+		return id;
 
 	}
 	

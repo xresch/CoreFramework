@@ -177,6 +177,7 @@ public class CFWHierarchy<T extends CFWObject> {
 	 * 
 	 * @return id of the created element if successful, null otherwise.
 	 *****************************************************************************/
+	@SuppressWarnings("unchecked")
 	public static Integer create(Integer parentID, CFWObject elementToCreate, Object... fieldnamesToExclude) {
 		
 		//-----------------------------------
@@ -207,9 +208,18 @@ public class CFWHierarchy<T extends CFWObject> {
 		}
 
 		//-----------------------------------
-		// Check ParentID not Null
+		// Set H_ROOT = PK_ID if Root Element
+		elementToCreate.getPrimaryKeyField().setValue(createdElementID);
 		if(parentID == null) {
-			CFW.DB.transactionCommit();
+			((CFWField<Integer>)elementToCreate.getField(H_ROOT)).setValue(createdElementID);
+			boolean setRootSuccess = elementToCreate.update(H_ROOT);
+			if(setRootSuccess) {
+				System.out.println("success!");
+				CFW.DB.transactionCommit();
+			}else {
+				System.out.println("rollback!");
+				CFW.DB.transactionRollback();
+			}
 			return createdElementID;
 		}
 		
@@ -373,7 +383,7 @@ public class CFWHierarchy<T extends CFWObject> {
 			childWithHierarchy.getField(H_PARENT).setValue(null);
 			((CFWField<ArrayList<Number>>)childWithHierarchy.getField(H_LINEAGE)).setValue(new ArrayList<>());
 			((CFWField<Integer>)childWithHierarchy.getField(H_DEPTH)).setValue(0);
-			childWithHierarchy.getField(H_ROOT).setValue(null);
+			childWithHierarchy.getField(H_ROOT).setValue(childWithHierarchy.getPrimaryKeyValue());
 			
 			int rootItemsCount = CFWHierarchy.getLastChildPosition(childWithHierarchy.getHierarchyConfig(), null);
 			((CFWField<Integer>)childWithHierarchy.getField(H_POS)).setValue(rootItemsCount+1);
@@ -731,11 +741,11 @@ public class CFWHierarchy<T extends CFWObject> {
 		
 		if(object != null 
 		&& object.isHierarchical() 
-		&& object.getFields().containsKey(H_LINEAGE) ) {
+		&& object.getFields().containsKey(H_ROOT) ) {
 			
-			ArrayList<Number> lineage = (ArrayList<Number>)object.getField(H_LINEAGE).getValue();
-			if(lineage != null && lineage.size() > 0) {
-				return lineage.get(0).intValue();
+			Integer rootID = ( (CFWField<Integer>)object.getField(H_ROOT)).getValue();
+			if(rootID != null && rootID > 0) {
+				return rootID;
 			}else {
 				return object.getPrimaryKeyValue();
 			}
