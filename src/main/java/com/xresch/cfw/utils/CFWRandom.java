@@ -40,6 +40,10 @@ public class CFWRandom {
 	private static final String[] jobTitleRole = new String[] { "Secretary", "Director", "Officer", "Deputy", "In-Charge", "Manager", "Expert", "Engineer", "Executive", "Architect", "Communicator", "Observer", "Neglector", "Slave", "Expeditor", "Locator", "Searcher", "Researcher", "Enabler", "Administrator", "Commander", "Leader", "Minister", "Ambassador", "Magician", "Accelerator", "Soldier", "Wizard", "Cleaner", "Creator", "Maker", "Slacker", "Idler", "Loafer", "Cruncher", "God", "Demi-God", "Editor", "Destroyer", "Collector", "Educator", "Representative", "Handshaker", "Hero", "Generalist", "Genius", "Organizator", "Whisperer", "Emperor", "Registrar", "Supervisor", "Ninja", "Inventor", "Listener", "Troublemaker", "Maestro", "Virtuoso", "Alchemist", "Designer", "Technician", "Commander", "Practitioner" };
 
 	
+	private static final String[] statisticsTitleAdjective = new String[] { "Heavy", "Low", "lovely", "Tasty", "Strong", "Weak", "Enslaved", "Holy", "Spiritual", "Technical", "Digital", "Online", "Virtual", "Real", "Invented", "Shocked", "Cute", "Perfect", "Arduous", "Magical", "Annoying", "Beautiful", "Enraged", "Fallen", "Married", "Dissappointed", "Lost", "Fierce", "Idle", "Heavenly", "Hellish", "Horrifying" };
+	private static final String[] statisticsTitleObject = new String[] { "Letters", "People", "Apples", "Tiramisus", "Pillows", "Pens", "Contracts", "Customers", "Patients", "Chairs", "Castles", "Dragons", "Fairies", "Gnomes", "Chemicals", "Elves", "Horses", "Magicians", "Spirits", "Trees", "Books", "Backpacks", "Angels", "Gods", "Devils", "Demons", "Heros", "Soldiers", "Papers", "Games", "Rooms", "Liquids", "Materials" };
+	private static final String[] statisticsTitleVerb = new String[] { "Sent", "Written", "Glued", "Woreshipped", "Banned", "Cuddled", "Destroyed", "Hidden", "Stolen", "Horrified", "Made", "Created", "Impressed", "Fortified", "Mixed", "Hunted", "Befriended", "Educated", "Bewitched", "Cursed", "Enchanted", "Backed", "Sold", "Combusted", "Briefed", "Registered", "Educated", "Eradicated", "Engaged", "Divorced", "Played", "Tested", "Documented" };
+	
 	private static final String[] firstWorldProblemTitles = 
 			new String[] {
 				  "User cannot start Session - Cannot find Login Page"
@@ -288,9 +292,22 @@ public class CFWRandom {
 	public static String randomIssueResolvedMessage(int nullRatioPercent) { return randomFromArray(nullRatioPercent, issueResolvedMessages); }
 	public static String randomMessageOfObedience(int nullRatioPercent) { return randomFromArray(nullRatioPercent, messagesOfObedience); }
 	public static String randomJobTitle(int nullRatioPercent) { 
-		return randomFromArray(nullRatioPercent, jobTitleAdjective)
-		+ " " +randomFromArray(nullRatioPercent, jobTitleTopic)
-		+ " " +randomFromArray(nullRatioPercent, jobTitleRole)
+		
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		
+		return randomFromArray(jobTitleAdjective)
+		+ " " +randomFromArray(jobTitleTopic)
+		+ " " +randomFromArray(jobTitleRole)
+			; 
+	}
+	
+	public static String randomStatisticsTitle(int nullRatioPercent) { 
+		
+		if( checkReturnNull(nullRatioPercent) ) { return null; }
+		
+		return randomFromArray(statisticsTitleAdjective)
+		+ " " +randomFromArray(statisticsTitleObject)
+		+ " " +randomFromArray(statisticsTitleVerb)
 			; 
 	}
 	
@@ -309,6 +326,7 @@ public class CFWRandom {
 	public static String randomIssueResolvedMessage() { return randomIssueResolvedMessage(0); }
 	public static String randomMessageOfObedience() { return randomMessageOfObedience(0); }
 	public static String randomJobTitle() { return randomJobTitle(0); }
+	public static String randomStatisticsTitle() { return randomStatisticsTitle(0); }
 	
 
 	/******************************************************************************

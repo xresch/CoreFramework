@@ -8,12 +8,14 @@ import java.util.logging.Logger;
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
+import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
-import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
+import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * 
@@ -27,6 +29,58 @@ public class CFWDBUser {
 	/* Query to select the Username for the ID specified by column FK_ID_USER*/
 	public static final String USERNAME_SUBQUERY = "SELECT USERNAME FROM CFW_USER WHERE PK_ID = FK_ID_USER";
 	
+	private static final String[] auditLogFieldnames = new String[] { 
+			UserFields.PK_ID.toString()
+		  , UserFields.USERNAME.toString()
+		};
+	
+	//####################################################################################################
+	// Preckeck Initialization
+	//####################################################################################################
+	private static PrecheckHandler prechecksCreateUpdate =  new PrecheckHandler() {
+		public boolean doCheck(CFWObject object) {
+			
+			User user = (User)object;
+			
+			if( user == null) {
+				new CFWLog(logger)
+					.severe("The user cannot be null");
+				return false;
+			}
+			
+			if( user.username() == null || user.username().isEmpty() ) {
+				new CFWLog(logger)
+					.severe("Please provide at least one character for the username.");
+				return false;
+			}
+			
+			if( checkUsernameExists(user.username())) {
+				new CFWLog(logger)
+					.warn("The user '"+user.username()+"' cannot be created as a user with this name already exists.");
+				return false;
+			}
+			
+			if( user.email() != null
+			&& !user.email().isEmpty()
+			&& checkEmailExists(user.email())) {
+				
+				new CFWLog(logger)
+					.warn("The user '"+user.username()+"' cannot be created as the email '"+user.email()+"' is already used by another account.");
+				return false;
+			}
+			
+			return true;
+		}
+	};
+	
+	//####################################################################################################
+	// CREATE
+	//####################################################################################################
+	public static boolean 	create(User item) 		{ return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, item);}
+	public static Integer 	createGetPrimaryKey(User item) {  return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, auditLogFieldnames, item);}
+	public static Integer 	createGetPrimaryKeyWithout(User item, Object... excludeFields) { return CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item, excludeFields);}
+		
+		
 	/********************************************************************************************
 	 * Creates multiple users in the DB.
 	 * @param Users with the values that should be inserted. ID will be set by the Database.
@@ -40,47 +94,7 @@ public class CFWDBUser {
 		}
 	}
 	
-	/********************************************************************************************
-	 * Creates a new user in the DB.
-	 * @param user with the values that should be inserted. ID will be set by the Database.
-	 * @return return true if successful, false otherwise
-	 * 
-	 ********************************************************************************************/
-	public static boolean create(User user) {
-		
-		if( user == null) {
-			new CFWLog(logger)
-				.severe("The user cannot be null");
-			return false;
-		}
-		
-		if( user.username() == null || user.username().isEmpty() ) {
-			new CFWLog(logger)
-				.severe("Please provide at least one character for the username.");
-			return false;
-		}
-		
-		if( checkUsernameExists(user.username())) {
-			new CFWLog(logger)
-				.warn("The user '"+user.username()+"' cannot be created as a user with this name already exists.");
-			return false;
-		}
-		
-		if( user.email() != null
-		&& !user.email().isEmpty()
-		&& checkEmailExists(user.email())) {
-			
-			new CFWLog(logger)
-				.warn("The user '"+user.username()+"' cannot be created as the email '"+user.email()+"' is already used by another account.");
-			return false;
-		}
-		
-		new CFWLog(logger).audit(CFWAuditLogAction.CREATE, "User", "Username: "+user.username());
-		return user
-				.queryCache(CFWDBUser.class, "create")
-				.insert();
-	}
-	
+
 	/***************************************************************
 	 * Select a user by it's username or email address.
 	 * This method is useful for login forms.
