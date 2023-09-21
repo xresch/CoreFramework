@@ -56,6 +56,13 @@
 									var placeholderWidget = $('#'+subWidgetObject.guid);
 									cfw_dashboard_widget_removeFromGrid(placeholderWidget);
 									
+									// this should not matter for replica widget... hopefully 
+									
+									/*console.log('CFW_DASHBOARD_FULLREDRAW_COUNTER:'+CFW_DASHBOARD_FULLREDRAW_COUNTER);
+									if(fullRedrawCounter != CFW_DASHBOARD_FULLREDRAW_COUNTER){
+										console.log('hit!');
+										return;
+									}*/
 									//---------------------------------------
 									// Add Widget
 									subWidgetObject.content = widgetContent;

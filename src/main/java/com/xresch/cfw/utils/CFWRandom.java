@@ -80,6 +80,10 @@ public class CFWRandom {
 				, "Coffee machine not working, team about to die"
 				, "When typing password only stars are filled in"
 				, "Can you reboot the Internet? It seems to be pretty slow."
+				, "Accepted Cookies but they were never sent to me."
+				, "Cannot open Excel file in Word"
+				, "Boss said to buy a mouse, where to get food for it?"
+				, "Need offline version of the internet"
 			};
 	
 	private static final String[] messagesOfObedience = 

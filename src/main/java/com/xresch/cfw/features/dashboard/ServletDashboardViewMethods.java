@@ -187,7 +187,7 @@ public class ServletDashboardViewMethods
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
 		String dashboardID = request.getParameter("dashboardid");
-		Integer userID = CFW.Context.Request.getUser().id();
+		Integer userID = CFW.Context.Request.getUserID();
 		
 		JSONResponse jsonResponse = new JSONResponse();
 
@@ -1350,8 +1350,10 @@ public class ServletDashboardViewMethods
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private static UndoRedoHistory<ArrayList<DashboardWidget>> undoredo_clearHistory(int userID, String dashboardID) {
-		
+	private static UndoRedoHistory<ArrayList<DashboardWidget>> undoredo_clearHistory(Integer userID, String dashboardID) {
+		if(userID == null) {
+			return null;
+		}
 		undoredo_getHistory(userID, dashboardID).clear();
 		
 		return null;

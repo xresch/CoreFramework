@@ -8,6 +8,10 @@ var CFW_DASHBOARD_FULLSCREEN_MODE = false;
 var CFW_DASHBOARD_REFRESH_INTERVAL_ID = null;
 var CFW_DASHBOARD_WIDGET_REGISTRY = {};
 
+// used to avoid collision of multiple refreshes
+// drawing at the same time
+var CFW_DASHBOARD_FULLREDRAW_COUNTER = 0;
+
 // ignore server-side-caching when true
 var CFW_DASHBOARD_FORCE_REFRESH = false;
 
@@ -1586,9 +1590,14 @@ function cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposit
 }
 /*******************************************************************************
  * 
+ * @param originalWidgetObject the widget object 
+ * @param doAutoposition true if the widget is a new widget and should be auto-positioned
+ * @param manualLoad true if the widget is loaded manually
+ * @param callback that should be called after the widget was fully added to the grid
+ * @param fullRedrawCounter used to avoid collision of refreshes
  ******************************************************************************/
-function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutoposition, manualLoad, callback) {
-	
+function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutoposition, manualLoad, callback, fullRedrawCounter) {
+						
 	if(originalWidgetObject.guid == null){
 		CFW_DASHBOARD_WIDGET_GUID++;
 		originalWidgetObject.guid = "widget-"+CFW_DASHBOARD_WIDGET_GUID ;
@@ -1651,6 +1660,12 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 					// ---------------------------------------
 					// Remove Placeholder
 					cfw_dashboard_widget_removeFromGrid(placeholderWidget);
+					
+					// ---------------------------------------
+					// Check Collision Placeholder
+					if(fullRedrawCounter != CFW_DASHBOARD_FULLREDRAW_COUNTER){
+						return;
+					}
 					
 					// ---------------------------------------
 					// Add Widget
@@ -1839,7 +1854,7 @@ function cfw_dashboard_setReloadInterval(selector) {
 	// Disable Old Interval
 	if(refreshInterval == null 
 	|| (refreshInterval == 'stop' && CFW_DASHBOARD_REFRESH_INTERVAL_ID != null) ){
-		clearInterval(CFW_DASHBOARD_REFRESH_INTERVAL_ID);
+		window.clearInterval(CFW_DASHBOARD_REFRESH_INTERVAL_ID);
 		window.localStorage.setItem("dashboard-reload-interval-id"+CFW_DASHBOARD_URLPARAMS.id, 'stop');
 		return;
 	}
@@ -1853,10 +1868,10 @@ function cfw_dashboard_setReloadInterval(selector) {
 	// ------------------------
 	// Disable Old Interval
 	if(CFW_DASHBOARD_REFRESH_INTERVAL_ID != null){
-		clearInterval(CFW_DASHBOARD_REFRESH_INTERVAL_ID);
+		window.clearInterval(CFW_DASHBOARD_REFRESH_INTERVAL_ID);
 	}
 	
-	CFW_DASHBOARD_REFRESH_INTERVAL_ID = setInterval(function(){
+	CFW_DASHBOARD_REFRESH_INTERVAL_ID = window.setInterval(function(){
     	if(!CFW_DASHBOARD_EDIT_MODE){
     		// Use gridstack.removeAll() to prevent widgets from jumping around
 			// on reload
@@ -2160,6 +2175,8 @@ function cfw_dashboard_initialDraw(){
  * 
  ******************************************************************************/
 function cfw_dashboard_drawEveryWidget(data, manualLoad){
+	CFW_DASHBOARD_FULLREDRAW_COUNTER++;
+	
 	var widgetArray = data.payload.widgets;
 	CFW_DASHBOARD_PARAMS =  data.payload.params;
 	
@@ -2167,7 +2184,7 @@ function cfw_dashboard_drawEveryWidget(data, manualLoad){
 	grid.removeAll();
 		
 	for(var i = 0;i < widgetArray.length ;i++){
-		cfw_dashboard_widget_createInstance(widgetArray[i], false, manualLoad);
+		cfw_dashboard_widget_createInstance(widgetArray[i], false, manualLoad, null, CFW_DASHBOARD_FULLREDRAW_COUNTER);
 	}
 
 	// -----------------------------
