@@ -11,6 +11,7 @@ var CFW_DASHBOARD_WIDGET_REGISTRY = {};
 // used to avoid collision of multiple refreshes
 // drawing at the same time
 var CFW_DASHBOARD_FULLREDRAW_COUNTER = 0;
+var CFW_DASHBOARD_APPLYING_URLPARAMS = false;
 
 // ignore server-side-caching when true
 var CFW_DASHBOARD_FORCE_REFRESH = false;
@@ -44,6 +45,18 @@ var CFW_DASHBOARD_TIME_FIELD_ID = "timeframePicker";
 var CFW_DASHBOARD_TIME_EARLIEST_EPOCH = moment().utc().subtract(30, 'm').utc().valueOf();
 var CFW_DASHBOARD_TIME_LATEST_EPOCH = moment().utc().valueOf();
 
+
+/*******************************************************************************
+ * Create default renderer settings for status widgets.
+ ******************************************************************************/
+function cfw_dashboard_setURLParams(params){
+	
+	var doPushHistoryState = !CFW_DASHBOARD_APPLYING_URLPARAMS;
+
+	CFW.http.setURLParams(params, doPushHistoryState);
+	CFW_DASHBOARD_URLPARAMS = CFW.http.getURLParamsDecoded();
+}
+		
 /*******************************************************************************
  * Create default renderer settings for status widgets.
  ******************************************************************************/
@@ -89,13 +102,17 @@ function cfw_dashboard_timeframeChangeCallback(fieldID, pickerData){
 	
 	if(pickerData.offset != null){
 		window.localStorage.setItem("dashboard-timeframe-preset-"+CFW_DASHBOARD_URLPARAMS.id, pickerData.offset);
-		CFW.http.removeURLParam('earliest');
-		CFW.http.removeURLParam('latest');
-		CFW.http.setURLParam('timeframepreset', pickerData.offset);
+		cfw_dashboard_setURLParams({
+				"timeframepreset": pickerData.offset
+				,"earliest": null
+				,"latest": null
+			});
 	}else{
-		CFW.http.setURLParam('earliest', pickerData.earliest);
-		CFW.http.setURLParam('latest', pickerData.latest);
-		CFW.http.removeURLParam('timeframepreset');
+		cfw_dashboard_setURLParams({
+				"timeframepreset": null
+				,"earliest": pickerData.earliest
+				,"latest": pickerData.latest
+			});
 	}
 
 	cfw_dashboard_draw(false, false);
@@ -648,15 +665,17 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
 	var mergedParams = {}; 
 	paramForms.each(function(){
 		var userParamsForWidget = CFW.format.formToParams($(this), true);
+		var preparedParams = {};
 		// add to URL
 		for(key in userParamsForWidget){
 			if(key != CFW.global.formID 
 			&& key != FIELDNAME_PROMPT_PW
 			&& key != FIELDNAME_AFFECTED_WIDGETS
 			){
-				CFW.http.setURLParam(key, userParamsForWidget[key]);
+				preparedParams[key] = userParamsForWidget[key];
 			}
 		}
+		cfw_dashboard_setURLParams(preparedParams);
 		Object.assign(mergedParams, userParamsForWidget); 
 	});
 	
@@ -2096,17 +2115,23 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 		}
 	});
 	
+	
+	// -----------------------------
+	// Handle back button
+	window.onpopstate= function() {
+		CFW_DASHBOARD_URLPARAMS = CFW.http.getURLParamsDecoded();
+		cfw_dashboard_applyParamsFromURLAndDraw();
+	}
+	
 }
 
 /*******************************************************************************
  * Main method for building the view.
  * 
  ******************************************************************************/
-function cfw_dashboard_initialDraw(){
-		
-	cfw_dashboard_initialize('.grid-stack');
+function cfw_dashboard_applyParamsFromURLAndDraw(){
 	
-	cfw_initializeTimeframePicker(CFW_DASHBOARD_TIME_FIELD_ID, null, cfw_dashboard_timeframeChangeCallback)
+	CFW_DASHBOARD_APPLYING_URLPARAMS = true;
 	
 	if(	CFW_DASHBOARD_URLPARAMS.earliest != null && CFW_DASHBOARD_URLPARAMS.latest != null){
 		// -----------------------------
@@ -2132,13 +2157,7 @@ function cfw_dashboard_initialDraw(){
 			
 		}
 	}
-		
-	// -----------------------------------------------
-	// Merge URL Params with Custom Parameter Values
-	if(JSDATA.startFullscreen){
-		cfw_dashboard_toggleFullscreenMode();
-	}
-	
+			
 	// -----------------------------------------------
 	// Merge URL Params with Custom Parameter Values
 	var storedViewerParams = cfw_dashboard_parameters_getStoredViewerParams();
@@ -2164,9 +2183,26 @@ function cfw_dashboard_initialDraw(){
 		}
 	}
 	
-	
+	CFW_DASHBOARD_APPLYING_URLPARAMS = false;
+}
 
+/*******************************************************************************
+ * Main method for building the view.
+ * 
+ ******************************************************************************/
+function cfw_dashboard_initialDraw(){
+		
+	cfw_dashboard_initialize('.grid-stack');
 	
+	cfw_initializeTimeframePicker(CFW_DASHBOARD_TIME_FIELD_ID, null, cfw_dashboard_timeframeChangeCallback)
+	
+	cfw_dashboard_applyParamsFromURLAndDraw();
+	
+	//-----------------------------------------------
+	// Set Fullscreen
+	if(JSDATA.startFullscreen){
+		cfw_dashboard_toggleFullscreenMode();
+	}
 	
 }
 

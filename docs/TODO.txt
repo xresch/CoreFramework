@@ -173,6 +173,7 @@ DONE
 - Dashboard: Parameter - New Parameter type Dashboard IDs
 - Dashboard: Added option to allow dashboard editors to edit settings 
 - Dashboard: Added configuration to "Admin >> Configuration" to set default value for 'Is Shared' setting 
+- Dashboard: Fixed Browser Back Button (Better History States) 
 - Dashboard List: Added owner to admin shared details view
 - Dashboard List: Added public link to shared and faved dashboards
 - Dashboard List: Added shared global/not shared message when dashboard is created.
@@ -218,6 +219,7 @@ DONE
 - Validator: Added ExcludeStringsValidator
 - Manual: Added Filter for Menu
 - Manual: Added General section and more manual pages
+- Query: Fixed Browser Back Button (Better History States) 
 - Query: Performance - Dramatic improvement by removing throttling of threads (to make subqueries execute way faster)
 - Query: Functions - Added tags to functions
 - Query: Manual - Added list of functions by tags to page Query >> Functions 

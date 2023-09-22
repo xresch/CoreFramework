@@ -3988,12 +3988,43 @@ function cfw_http_getURLParams()
 }
 
 /******************************************************************
+ * Sets additional URL params or removes them if the value is 
+ * set to null.
+ * @param paramsObject containing paramName / Value pairs, like:  
+ *               {param: value, param2: value2}
+ * @param pushHistoryState define if history state should be updated (default: true)
+ * @return nothing
+ ******************************************************************/
+function cfw_http_setURLParams(paramsObject, pushHistoryState){
+	
+
+	if(paramsObject == null){
+		return;
+	}
+	
+	var params = cfw_http_getURLParams();
+	for(var paramName in paramsObject){
+
+		var value = paramsObject[paramName];
+		if(value != null){
+			params[paramName] = encodeURIComponent(value);
+		}else{
+			delete params[paramName];
+		}
+		
+	}
+	
+	cfw_http_changeURLQuery(params,pushHistoryState);
+
+}
+
+/******************************************************************
  * Reads the parameters from the URL and returns an object containing
  * name/value pairs like {"name": "value", "name2": "value2" ...}.
  * @param 
  * @return object
  ******************************************************************/
-function cfw_http_setURLParam(name, value){
+/*function cfw_http_setURLParam(name, value){
 
 	//------------------------------
 	// Set or replace param value
@@ -4003,7 +4034,7 @@ function cfw_http_setURLParam(name, value){
 	    
 	    cfw_http_changeURLQuery(params);
 	}
-}
+}*/
 
 /******************************************************************
  * Reads the parameters from the URL and returns an object containing
@@ -4024,8 +4055,13 @@ function cfw_http_removeURLParam(name, value){
 
 /******************************************************************
  * 
+ * @param pushHistoryState define if history state should be updated (default: true)
  ******************************************************************/
-function cfw_http_changeURLQuery(params){
+function cfw_http_changeURLQuery(params, pushHistoryState){
+	
+	if(pushHistoryState === undefined){
+		pushHistoryState = true;
+	}
 
 	//------------------------------
 	// Create Query String
@@ -4042,7 +4078,12 @@ function cfw_http_changeURLQuery(params){
 	//------------------------------
 	// Recreate URL
     var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?'+queryString;
-    window.history.pushState({ path: newurl }, '', newurl);
+
+	if(pushHistoryState && newurl != window.location.href){
+		window.history.pushState({}, '', newurl);
+		//use {}, do not use for param changes >> window.history.pushState({ path: newurl }, '', newurl);
+	}
+    
 
 }
 
@@ -5014,7 +5055,7 @@ var CFW = {
 		readCookie: cfw_http_readCookie,
 		getURLParams: cfw_http_getURLParams,
 		getURLParamsDecoded: cfw_http_getURLParamsDecoded,
-		setURLParam: cfw_http_setURLParam,
+		setURLParams: cfw_http_setURLParams,
 		removeURLParam: cfw_http_removeURLParam,
 		getHostURL: cfw_http_getHostURL,
 		getURLPath: cfw_http_getURLPath,

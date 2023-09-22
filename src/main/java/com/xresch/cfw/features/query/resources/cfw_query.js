@@ -7,7 +7,7 @@ var $QUERYAREA;
 //The code element that contains the highlighted syntax
 var $QUERYCODE;
 
-var IS_EXECUTING = false;
+var CFW_QUERY_IS_EXECUTING = false;
 
 /*******************************************************************************
  * 
@@ -44,14 +44,15 @@ function cfw_query_getManualPage(type, componentName){
 	
 }
 /*******************************************************************************
- * Execute the query and fetch data from the server
+ * Execute the query and fetch data from the server.
  * 
+ * @param isPageLoad if the execution is caused by a page load 
  ******************************************************************************/
-function cfw_query_execute(){
+function cfw_query_execute(isPageLoad){
 	
 	//-----------------------------------
 	// Check is already Executing
-	if(IS_EXECUTING){
+	if(CFW_QUERY_IS_EXECUTING){
 		return;
 	}
 	
@@ -74,17 +75,14 @@ function cfw_query_execute(){
 		
 	//-----------------------------------
 	// Update Params in URL
-	CFW.http.removeURLParam('query');
-	CFW.http.removeURLParam('earliest');
-	CFW.http.removeURLParam('latest');
-	CFW.http.removeURLParam('offset');
 	
-	if(timeframe.offset != null){
+	
+	/*if(timeframe.offset != null){
 		CFW.http.setURLParam('offset', timeframe.offset);
 	}else{
 		CFW.http.setURLParam('earliest', timeframe.earliest);
 		CFW.http.setURLParam('latest', timeframe.latest);
-	}
+	}*/
 	
 	queryLength = encodeURIComponent(query).length;
 	var finalLength = queryLength + CFW.http.getHostURL().length + CFW.http.getURLPath().length ;
@@ -92,7 +90,16 @@ function cfw_query_execute(){
 	if(finalLength+300 > JSDATA.requestHeaderMaxSize){
 		CFW.ui.addToastInfo("The query is quite long and the URL might not work. Make sure to save a copy of your query.");
 	}
-	CFW.http.setURLParam('query', query);
+	
+	var doPushHistoryState = !isPageLoad;
+	CFW.http.setURLParams({
+				  "query": query
+				, "offset": timeframe.offset
+				, "earliest": timeframe.earliest
+				, "latest": timeframe.latest
+			}, doPushHistoryState);
+			
+	CFW_QUERY_URLPARAMS = CFW.http.getURLParamsDecoded();
 	
 	//-----------------------------------			
 	// hide existing messages to not confuse user
@@ -124,7 +131,7 @@ function cfw_query_execute(){
  ******************************************************************************/
 function cfw_query_toggleLoading(isLoading) {
 	
-	IS_EXECUTING = isLoading;
+	CFW_QUERY_IS_EXECUTING = isLoading;
 	CFW.ui.toggleLoader(isLoading, 'query-button-menu');	
 	CFW.ui.toggleLoader(isLoading, 'cfw-query-results');	
 		
@@ -376,7 +383,8 @@ function cfw_query_highlightExecuteButton(enableHighlighting){
  * 
  ******************************************************************************/
 function cfw_query_editor_initialize(){
-		//-----------------------------------
+	
+	//-----------------------------------
 	// Query Field Event Handler
 	$QUERYAREA.on("keydown", function(e){
 		
@@ -416,7 +424,7 @@ function cfw_query_editor_initialize(){
 		//---------------------------
 		// Ctrl + Enter
 		if (e.ctrlKey && e.keyCode == 13) {
-			cfw_query_execute();
+			cfw_query_execute(false);
 			return;
 		}
 		
@@ -475,8 +483,59 @@ function cfw_query_editor_initialize(){
 	    }, 1000);
 	});
 	
+	
+	
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_loadQueryFromURLAndExecute(){
+	
+	CFW_QUERY_URLPARAMS = CFW.http.getURLParamsDecoded();
+	
+	//-----------------------------------
+	// Load Query from URL
+	if( !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.query) ){
+
+		$QUERYAREA.val(CFW_QUERY_URLPARAMS.query);
+
+		cfw_query_editor_resizeToFitQuery();
+		cfw_query_editor_refreshHighlighting();
+		cfw_query_execute(true);
+
+	}else{
+		//cfw_query_editor_resizeToFitQuery();
+		cfw_query_editor_refreshHighlighting();
+	}
 }
 	
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_applyParamsFromURLAndExecute(){
+	
+	//-----------------------------------
+	// Load Timeframe from URL or set default
+	if($('div[data-id="timeframePicker"]').length == 0){
+		if(!CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.offset)){
+			cfw_initializeTimeframePicker('timeframePicker'
+							, {offset: CFW_QUERY_URLPARAMS.offset}
+							, function(){ cfw_query_highlightExecuteButton(true); } );
+		}else{
+			if(!CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.earliest)
+			&& !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.latest) ){
+				cfw_initializeTimeframePicker('timeframePicker', {earliest: CFW_QUERY_URLPARAMS.earliest, latest: CFW_QUERY_URLPARAMS.latest}, null);
+			}else{
+				cfw_initializeTimeframePicker('timeframePicker', {offset: '1-h'}, null);
+			}
+		}
+	}
+	
+	cfw_query_loadQueryFromURLAndExecute();
+
+}
+
 /*******************************************************************************
  * Main method for building the view.
  * 
@@ -498,7 +557,7 @@ function cfw_query_initialDraw(){
 					<!-- a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></a>
 					<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></a>
 					<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></a -->
-					<a id="executeButton" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute();"><b>Execute</b></a>
+					<a id="executeButton" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute(false);"><b>Execute</b></a>
 				</div>
 				
 			</div>
@@ -526,40 +585,20 @@ function cfw_query_initialDraw(){
 	$QUERYAREA = $('#query');
 	$QUERYCODE = $('#query-highlighting');
 	
+	// -----------------------------
+	// Handle back button
+	window.onpopstate= function() {
+		cfw_query_loadQueryFromURLAndExecute();
+	}
+	
+	// -----------------------------
+	// Apply Params
+	cfw_query_applyParamsFromURLAndExecute();
+	
 	//-------------------------------------------------
 	// Initialize Autocomplete, trigger with Ctrl+Space
 	cfw_autocompleteInitialize(formID,'query',0,10, null, true, $('#query-autocomplete-results'));
-	
-	//-----------------------------------
-	// Load Timeframe from URL or set default
-	if(!CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.offset)){
-		cfw_initializeTimeframePicker('timeframePicker'
-						, {offset: CFW_QUERY_URLPARAMS.offset}
-						, function(){ cfw_query_highlightExecuteButton(true); } );
-	}else{
-		if(!CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.earliest)
-		&& !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.latest) ){
-			cfw_initializeTimeframePicker('timeframePicker', {earliest: CFW_QUERY_URLPARAMS.earliest, latest: CFW_QUERY_URLPARAMS.latest}, null);
-		}else{
-			cfw_initializeTimeframePicker('timeframePicker', {offset: '1-h'}, null);
-		}
-	}
-	
-	//-----------------------------------
-	// Load Query from URL
-	if( !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.query) ){
-
-		$QUERYAREA.val(CFW_QUERY_URLPARAMS.query);
-
-		cfw_query_editor_resizeToFitQuery();
-		cfw_query_editor_refreshHighlighting();
-		cfw_query_execute();
-
-	}else{
-		//cfw_query_editor_resizeToFitQuery();
-		cfw_query_editor_refreshHighlighting();
-	}
-	
+		
 	//-----------------------------------
 	// Initialize Editor
 	cfw_query_editor_initialize();
