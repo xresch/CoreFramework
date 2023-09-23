@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.dashboard;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import com.xresch.cfw._main.CFW;
@@ -39,6 +40,9 @@ import com.xresch.cfw.features.dashboard.widgets.standard.WidgetYoutubeVideo;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
+import com.xresch.cfw.response.bootstrap.DynamicItemCreator;
+import com.xresch.cfw.response.bootstrap.HTMLItemCustom;
+import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
@@ -161,6 +165,42 @@ public class FeatureDashboard extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuTools-Dashboards")
 				, null);
 		
+			//----------------------------------
+	    	// Register Menus
+			MenuItem favoritesMenu = (MenuItem)new MenuItem("Favorites")
+				.addAttribute("id", "cfwMenuButtons-Favorites")
+				.setDynamicCreator(new DynamicItemCreator() {		
+		
+					@Override
+					public ArrayList<HierarchicalHTMLItem> createDynamicItems() {
+						
+						ArrayList<HierarchicalHTMLItem> childitems = new ArrayList<HierarchicalHTMLItem>();
+						ArrayList<Dashboard> dashboardList = CFW.DB.Dashboards.getFavedDashboardList();
+						
+						//-------------------------
+						// Handle no Faves
+						if(dashboardList.isEmpty()) {
+							childitems.add(
+									new MenuItem("No Favorites")
+								);
+							return childitems;
+						}
+						
+						for(Dashboard current : dashboardList) {
+
+							childitems.add(
+								(MenuItem)new MenuItem(current.name())
+									.noIconSpace(true)
+									.href(URI_DASHBOARD_VIEW+ "?id="+current.id()) 	
+							);
+						}
+						return childitems;
+					}
+				});
+			
+			favoritesMenu.faicon("fas fa-star");
+		
+		CFW.Registry.Components.addButtonsMenuItem(favoritesMenu, null);
 		//----------------------------------
     	// Register Manual
 		registerDashboardManual();

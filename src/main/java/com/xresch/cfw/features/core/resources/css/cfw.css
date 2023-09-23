@@ -252,12 +252,22 @@ pre {
 	      position: absolute;
 	}
 	
+	/* Make button menu popup to the left, so it won't vanish out of the screen*/
+	.cfw-button-menuitem .dropdown-menu {
+		  right: 0;
+		  left: unset;
+	}
+	
+	.cfw-button-menuitem .dropdown-toggle::after {
+		  display: none;
+	}
+	
 	.cfw-button-menuitem > .dropdown-item{
 		height: 100%;
 		padding: 0.25rem 0.25rem;
 	}
 			
-	.cfw-button-menuitem .cfw-menuitem-label {
+	.cfw-button-menuitem > a > .cfw-menuitem-label {
 		display: none;
 		
 	}

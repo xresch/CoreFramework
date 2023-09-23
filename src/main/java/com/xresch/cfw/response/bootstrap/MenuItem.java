@@ -20,6 +20,8 @@ public class MenuItem extends HierarchicalHTMLItem {
 	private String faiconClasses = "";
 	private String alignRightClass = "";
 	
+	private boolean noIconSpace = false;
+	
 	// if any permissions match item will be rendered
 	// if null item will be rendered
 	private HashSet<String> permissions = new HashSet<String>();
@@ -102,12 +104,18 @@ public class MenuItem extends HierarchicalHTMLItem {
 		if(this.menuName.isEmpty()) {
 			this.addCssClass("menu-item-icon-only");
 		}
+		
+		// add class to li-element and not to the link-element
 		String cssClass = this.popAttributeValue("class");
 		
+		String iconString = "";
+		if(!noIconSpace) {
+			iconString = "<div class=\"cfw-fa-box\"><i class=\""+faiconClasses+"\"></i></div>";
+		}
 		if(!this.hasChildren() && !this.hasOneTimeChildren()) {
 			html.append("\n<li class=\""+cssClass+"\">")
 				.append("<a class=\"dropdown-item\" "+this.getAttributesString()+">")
-					.append("<div class=\"cfw-fa-box\"><i class=\""+faiconClasses+"\"></i></div>")
+					.append(iconString)
 					.append("<span class=\"cfw-menuitem-label\">")
 						.append(label)
 					.append("</span>")
@@ -138,6 +146,10 @@ public class MenuItem extends HierarchicalHTMLItem {
 			}
 			html.append("\n</ul></li>");
 		}
+		
+		//-------------------------------------
+		// add class back in case of rerendering
+		this.addAttribute("class", cssClass);
 		
 	}
 	
@@ -207,6 +219,14 @@ public class MenuItem extends HierarchicalHTMLItem {
 	 *****************************************************************************/
 	public HierarchicalHTMLItem href(String href) {
 		return addAttribute("href", href);
+	}
+	
+	/*****************************************************************************
+	 *  
+	 *****************************************************************************/
+	public MenuItem noIconSpace(boolean noIconSpace) {
+		this.noIconSpace = noIconSpace;
+		return this;
 	}
 	
 	/*****************************************************************************

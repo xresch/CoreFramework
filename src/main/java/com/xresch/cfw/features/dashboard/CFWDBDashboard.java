@@ -199,10 +199,25 @@ public class CFWDBDashboard {
 				.getAsJSON();
 	}
 	
+	
 	/***************************************************************
-	 * Return a list of all user dashboards as json string.
+	 * Return a list of all dashboards the user has faved.
 	 * 
-	 * @return Returns a result set with all users or null.
+	 * @return ArrayList<Dashboard>
+	 ****************************************************************/
+	public static ArrayList<Dashboard> getFavedDashboardList() {
+		
+		return new CFWSQL(new Dashboard())
+				.queryCache()
+				.loadSQLResource(FeatureDashboard.PACKAGE_RESOURCES, "SQL_getFavedDashboardListAsJSON.sql", 
+						CFW.Context.Request.getUserID()
+					)
+				.getAsObjectListConvert(Dashboard.class);
+	}
+	/***************************************************************
+	 * Return a list of all dashboards the user has faved.
+	 * 
+	 * @return json string
 	 ****************************************************************/
 	public static String getFavedDashboardListAsJSON() {
 		
