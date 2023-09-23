@@ -1682,7 +1682,7 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 					
 					// ---------------------------------------
 					// Check Collision Placeholder
-					if(fullRedrawCounter != CFW_DASHBOARD_FULLREDRAW_COUNTER){
+					if(fullRedrawCounter != undefined && fullRedrawCounter != CFW_DASHBOARD_FULLREDRAW_COUNTER){
 						return;
 					}
 					
