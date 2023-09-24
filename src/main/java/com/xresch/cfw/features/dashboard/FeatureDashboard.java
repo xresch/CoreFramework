@@ -168,6 +168,9 @@ public class FeatureDashboard extends CFWAppFeature {
 			//----------------------------------
 	    	// Register Menus
 			MenuItem favoritesMenu = (MenuItem)new MenuItem("Favorites")
+				.addPermission(PERMISSION_DASHBOARD_VIEWER)
+				.addPermission(PERMISSION_DASHBOARD_CREATOR)
+				.addPermission(PERMISSION_DASHBOARD_ADMIN)
 				.addAttribute("id", "cfwMenuButtons-Favorites")
 				.setDynamicCreator(new DynamicItemCreator() {		
 		
