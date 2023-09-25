@@ -971,8 +971,8 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//---------------------------------
 		String queryString = 
-				  "| source random records=10 type=series\r\n" + 
-				  "| keep WAREHOUSE, ITEM, COUNT\r\n" + 
+				  "| source random records=10\r\n" + 
+				  "| keep VALUE\r\n" + 
 				  "| set \r\n" + 
 				  "		BOOL=true\r\n" + 
 				  "		NUMBER=123\r\n" + 
@@ -980,7 +980,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 				  "		OBJECT={a: \"1\", b: \"2\"}\r\n" + 
 				  "		ARRAY=[1, true, \"three\"]\r\n" + 
 				  "		NULL=null\r\n" + 
-				  "		FIELDVAL=COUNT\r\n" + 
+				  "		FIELDVAL=VALUE\r\n" + 
 				  "		EXPRESSION=(FIELDVAL*FIELDVAL)\r\n" + 
 				  "		FUNCTION=count()"
 				;
@@ -993,7 +993,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		//------------------------------
 		// Check First Query Result
 		CFWQueryResult queryResults = resultArray.get(0);
-		Assertions.assertEquals(30, queryResults.getRecordCount());
+		Assertions.assertEquals(10, queryResults.getRecordCount());
 		
 		JsonObject firstRecord = queryResults.getRecord(0);
 		
@@ -1006,7 +1006,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		Assertions.assertEquals("{\"a\":\"1\",\"b\":\"2\"}", CFW.JSON.toJSON(firstRecord.get("OBJECT")) , "OBJECT is present");
 		Assertions.assertEquals("[1,true,\"three\"]", CFW.JSON.toJSON(firstRecord.get("ARRAY")) , "ARRAY is present");
 		Assertions.assertEquals(true, firstRecord.get("NULL").isJsonNull() , "NULL is present");
-		Assertions.assertEquals(firstRecord.get("COUNT").getAsInt(), FIELDVAL , "FIELDVAL is present and equals COUNT");
+		Assertions.assertEquals(firstRecord.get("VALUE").getAsInt(), FIELDVAL , "FIELDVAL is present and equals VALUE");
 		Assertions.assertEquals( (FIELDVAL * FIELDVAL) , firstRecord.get("EXPRESSION").getAsInt() , "EXPRESSION is present");
 		Assertions.assertEquals( 0 , firstRecord.get("FUNCTION").getAsInt() , "FUNCTION is present and count() returned 0.");
 		

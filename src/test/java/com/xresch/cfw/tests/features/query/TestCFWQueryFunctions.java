@@ -861,6 +861,166 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testIndexOf_Strings() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIndexOf_Strings.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals("The unicorn is the national animal of Scotland.", record.get("FUN_FACT").getAsString());
+		Assertions.assertEquals(-1, record.get("S0").getAsInt());
+		Assertions.assertEquals(2, record.get("S1").getAsInt());
+		Assertions.assertEquals(2, record.get("S2").getAsInt());
+		Assertions.assertEquals(17, record.get("S3").getAsInt());
+		Assertions.assertEquals(3, record.get("S4").getAsInt());
+		Assertions.assertEquals(6, record.get("S5").getAsInt());
+		Assertions.assertEquals(16, record.get("S6").getAsInt());
+		Assertions.assertEquals(10, record.get("S7").getAsInt());
+		Assertions.assertEquals(9, record.get("S8").getAsInt());
+		Assertions.assertEquals(8, record.get("S9").getAsInt());
+		Assertions.assertEquals(-1, record.get("S10").getAsInt());
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testIndexOf_Numbers() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIndexOf_Numbers.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals(-1, record.get("N0").getAsInt());
+		Assertions.assertEquals(3, record.get("N1").getAsInt());
+		Assertions.assertEquals(2, record.get("N2").getAsInt());
+		Assertions.assertEquals(4, record.get("N3").getAsInt());
+		Assertions.assertEquals(10, record.get("N4").getAsInt());
+		Assertions.assertEquals(9, record.get("N5").getAsInt());
+		Assertions.assertEquals(-1, record.get("N6").getAsInt());
+		
+	}
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testIndexOf_Booleans() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIndexOf_Booleans.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals(-1, 	record.get("B0").getAsInt());
+		Assertions.assertEquals(0, 		record.get("B1").getAsInt());
+		Assertions.assertEquals(0, 		record.get("B2").getAsInt());
+		Assertions.assertEquals(0, 		record.get("B3").getAsInt());
+		Assertions.assertEquals(2, 		record.get("B4").getAsInt());
+		Assertions.assertEquals(-1, 	record.get("B5").getAsInt());
+		Assertions.assertEquals(-1, 	record.get("B6").getAsInt());
+
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testIndexOf_Arrays() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIndexOf_Arrays.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals(-1, 	record.get("A0").getAsInt());
+		Assertions.assertEquals(1, 		record.get("A1").getAsInt());
+		Assertions.assertEquals(2, 		record.get("A2").getAsInt());
+		Assertions.assertEquals(-1, 	record.get("A3").getAsInt());
+		Assertions.assertEquals(0, 		record.get("A4").getAsInt());
+		Assertions.assertEquals(-1, 	record.get("A5").getAsInt());
+		Assertions.assertEquals(3, 		record.get("A6").getAsInt());
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testIndexOf_Objects() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIndexOf_Objects.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals(true, 	record.get("J0").isJsonNull());
+		Assertions.assertEquals("y", 	record.get("J1").getAsString());
+		Assertions.assertEquals("two", 	record.get("J2").getAsString());
+		Assertions.assertEquals(true, 	record.get("J3").isJsonNull());
+		Assertions.assertEquals("zero", record.get("J4").getAsString());
+		Assertions.assertEquals(true, 	record.get("J5").isJsonNull());
+				
+	}
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testLatest_and_LatestSet() throws IOException {
 		
 		//---------------------------------

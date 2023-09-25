@@ -1,0 +1,16 @@
+| source empty
+| set
+	FUN_FACT ='The unicorn is the national animal of Scotland.'
+| set
+	############## SEARCH IN STRINGS  ###############
+	'S0'  = indexof('not found', "hiding in the hiding hole") ## returns -1
+	'S1'  = indexof(FUN_FACT , "e") # returns 2
+	'S2'  = indexof(FUN_FACT , "e", 2) # returns 2
+	'S3'  = indexof(FUN_FACT , "e", 3) # returns 17
+	'S4'  = indexof('1234567890.6536', 45) ## returns 3
+	'S5'  = indexof('34567890.6536', 90.65) ## returns 6
+	'S6'  = indexof("test special... $?!% ...characters", "$?!% .") # returns 16
+	'S7'  = indexof('object... {"x":1,"y":2}', {x:1, y:2}) ## returns 10
+	'S8'  = indexof('array... [null,1,true,"three"]', [null, 1, true, "three"]) ## returns 9
+	'S9'  = indexof('Null... null ', null) ## returns 8
+	'S10'  = indexof(null, 'll') ## returns -1
