@@ -2,6 +2,16 @@
  * Common CSS classes for the Standard CFW Widgets
  *************************************************/
 
+/* hide pyscript splash screen*/
+#pyscript_loading_splash{
+	display: none;
+}
+
+/* hide pyscript divs*/
+.cfw-py-script, .cfw-py-config {
+	display: none;
+}
+
 .cfw-easteregg-lightswitch-on{
 	background-color: white;
 	color: #202020;

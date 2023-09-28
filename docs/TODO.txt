@@ -161,8 +161,9 @@ DONE
 - Database: Added Alias CFW_ARRAY_DISTINCT
 - CFWField: Added flag SERVER_SIDE_ONLY
 - Dashboard: Settings - Added setting to start Dashboard in Fullscreen Mode
-- Dashboard: Added Favorite Feature
-- Dashboard: Added Favorite Icon in Navbar
+- Dashboard: Added favorite feature
+- Dashboard: Added favorite icon in navbar
+- Dashboard: Added favorite icon to dashboard title
 - Dashboard: Added Bottom and Side Ruler in Edit Mode
 - Dashboard: Complete rework of undo/redo functionality because of introduction of SERVER_SIDE_ONLY
 - Dashboard: Copy widgets to clipboard does not copy task settings (Reason: Avoiding unintentional spamming of the jobs system)
@@ -178,6 +179,7 @@ DONE
 - Dashboard List: Added owner to admin shared details view
 - Dashboard List: Added public link to shared and faved dashboards
 - Dashboard List: Added shared global/not shared message when dashboard is created.
+- Widgets: Added Py Script and Py Config Widgets
 - Widgets: Created new Category 'Advanced'
 - Widgets: Minimum width decreased 3 to 1, min height increased 1 to 2, action icons vanish when width < 3 
 - Widgets: Added Widget Advanced >> Force Refresh

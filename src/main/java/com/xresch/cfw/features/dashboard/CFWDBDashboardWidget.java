@@ -209,7 +209,7 @@ public class CFWDBDashboardWidget {
 			WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widget.type());
 			if(definition == null) {
 				new CFWLog(logger).warn("Widget Type seems not to exist or is unavailable: "+widget.type() );
-				return "[]";
+				continue;
 			}
 			CFWObject settingsObject = definition.getSettings();
 			//do not sanitize to not mess up values from DB

@@ -20,6 +20,8 @@ import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetForceRefresh;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetJavascript;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
+import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetPyConfig;
+import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetPyScript;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetReplica;
 import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsDiscoMode;
 import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsFireworks;
@@ -41,7 +43,6 @@ import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.DynamicItemCreator;
-import com.xresch.cfw.response.bootstrap.HTMLItemCustom;
 import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
@@ -125,6 +126,8 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Widgets.add(new WidgetParameter());
 		CFW.Registry.Widgets.add(new WidgetReplica());
 		CFW.Registry.Widgets.add(new WidgetJavascript());
+		CFW.Registry.Widgets.add(new WidgetPyConfig());
+		CFW.Registry.Widgets.add(new WidgetPyScript());
 		
     	//----------------------------------
     	// Register Easteregg Widgets
