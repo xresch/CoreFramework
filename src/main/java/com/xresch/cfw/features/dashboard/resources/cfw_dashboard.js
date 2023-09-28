@@ -1,4 +1,8 @@
 
+//works with public and user-based access
+var CFW_DASHBOARDVIEW_URL = CFW.http.getURLPath();
+var CFW_DASHBOARDLIST_URL = "./list";
+
 var CFW_DASHBOARD_URLPARAMS = CFW.http.getURLParamsDecoded();
 var CFW_DASHBOARD_PARAMS = null;
 	
@@ -19,9 +23,6 @@ var CFW_DASHBOARD_FORCE_REFRESH = false;
 // saved with guid
 var CFW_DASHBOARD_WIDGET_DATA = {};
 var CFW_DASHBOARD_WIDGET_GUID = 0;
-
-//works with public and user-based access
-var CFW_DASHBOARDVIEW_URL = CFW.http.getURLPath();
 
 // -------------------------------------
 // Globals needed for UNDO and REDO
@@ -1910,8 +1911,20 @@ function cfw_dashboard_setReloadInterval(selector) {
  ******************************************************************************/
 function cfw_dashboard_initialize(gridStackElementSelector){
 	
+	// -----------------------------
+	// Create Title
+	var titleSpan = $('<span>'+JSDATA.dashboardName+'</span>');
 	
-	$('#dashboardName').text(JSDATA.dashboardName);
+	if(JSDATA.userid != null){
+		var params = {action: "update", item: 'favorite', listitemid: CFW_DASHBOARD_URLPARAMS.id};
+		var cfwToggleButton = CFW.ui.createToggleButton(CFW_DASHBOARDLIST_URL, params, JSDATA.dashboardIsFaved, "fave");
+		var button = cfwToggleButton.getButton();
+		button.addClass('mb-1');
+		button.find('i').addClass('fa-lg');
+		titleSpan.prepend(button  );
+	}
+	
+	$('#dashboardName').append(titleSpan);
 	
 	// -----------------------------
 	// Toggle Edit Button

@@ -207,6 +207,10 @@ public class CFWDBDashboardWidget {
 		// Iterate Array and filter settings
 		for(DashboardWidget widget : widgetList) {
 			WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widget.type());
+			if(definition == null) {
+				new CFWLog(logger).warn("Widget Type seems not to exist or is unavailable: "+widget.type() );
+				return "[]";
+			}
 			CFWObject settingsObject = definition.getSettings();
 			//do not sanitize to not mess up values from DB
 			settingsObject.mapJsonFields(widget.settings(), false, false);

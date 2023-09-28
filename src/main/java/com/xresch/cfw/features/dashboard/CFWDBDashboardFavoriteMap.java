@@ -175,7 +175,7 @@ public class CFWDBDashboardFavoriteMap {
 			return checkIsDashboardInUserFavs(dashboard.id(), user.id());
 		}else {
 			new CFWLog(logger)
-				.severe("The user and user cannot be null. User: '"+dashboard+"', User: '"+user+"'");
+				.severe("The dashboard and user cannot be null. User: '"+dashboard+"', User: '"+user+"'");
 			
 		}
 		return false;

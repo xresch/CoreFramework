@@ -99,8 +99,12 @@ public class ServletDashboardViewMethods
 			String dashboardID = request.getParameter("id");
 			String action = request.getParameter("action");
 			
+			// null if not logged in
+			User currentUser = CFW.Context.Request.getUser();
+			
 			if(action == null) {
 				HTMLResponse html = new HTMLResponse("Dashboard");
+				
 				StringBuilder content = html.getContent();
 				
 				//---------------------------
@@ -147,6 +151,11 @@ public class ServletDashboardViewMethods
 				Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
 				html.setPageTitle(dashboard.name());
 				html.addJavascriptData("dashboardName",  dashboard.name());
+				
+				if(currentUser != null) {
+					html.addJavascriptData("dashboardIsFaved",  CFW.DB.DashboardFavorites.checkIsDashboardFavedByUser(dashboard, currentUser));
+				}
+				
 				html.addJavascriptData("startFullscreen", dashboard.startFullscreen() );
 				html.addJavascriptData("canEdit", CFW.DB.Dashboards.checkCanEdit(request.getParameter("id")) );
 				html.addJavascriptCode("cfw_dashboard_initialDraw();");
