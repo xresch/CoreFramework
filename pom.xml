@@ -289,6 +289,14 @@
 		<!-- ============================ SCOPE: TESTING ============================== -->
 		<!-- ========================================================================== -->
 
+		<!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher -->
+		<dependency>
+		    <groupId>org.junit.platform</groupId>
+		    <artifactId>junit-platform-launcher</artifactId>
+		    <version>1.8.2</version>
+		    <scope>provided</scope>
+		</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -330,12 +338,12 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-suite-commons -->
-		<dependency>
+		<!-- dependency>
 		    <groupId>org.junit.platform</groupId>
 		    <artifactId>junit-platform-suite-commons</artifactId>
 		    <version>1.8.2</version>
 		    <scope>runtime</scope>
-		</dependency>
+		</dependency -->
 
 		
 		<!--dependency>
