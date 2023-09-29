@@ -73,7 +73,7 @@ public class CFWRegistryManual {
 				parentItem = parentItem.getSubManualPages().get(currentToken);
 			}else {
 				//Create non-existing page
-				ManualPage createdPage = new ManualPage(currentToken);
+				ManualPage createdPage = new ManualPage(currentToken).content("&nbsp;");
 				parentItem.addChild( createdPage );
 				parentItem = createdPage;
 			}
