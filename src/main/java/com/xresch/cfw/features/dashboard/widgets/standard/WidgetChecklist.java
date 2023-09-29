@@ -56,7 +56,7 @@ public class WidgetChecklist extends WidgetDefinition {
 	 * 
 	 ************************************************************/
 	@Override
-	public String widgetName() { return "Check List"; }
+	public String widgetName() { return "Checklist"; }
 	
 	/************************************************************
 	 * 

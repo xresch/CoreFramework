@@ -52,7 +52,8 @@ public class WidgetOracleQueryChart extends WidgetBaseSQLQueryChart {
 	 ************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureDBExtensionsOracle.PACKAGE_RESOURCE, "widget_"+getWidgetType()+".html");
+		//return CFW.Files.readPackageResource(FeatureDBExtensionsOracle.PACKAGE_RESOURCE, "widget_"+getWidgetType()+".html");
+		return CFW.Files.readPackageResource(FeatureDBExtensions.PACKAGE_RESOURCE, "z_manual_widgets_database.html");
 	}	
 	
 	/************************************************************

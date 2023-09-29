@@ -72,6 +72,8 @@ public abstract class WidgetBaseSQLQueryStatus extends WidgetDefinition {
 		return WidgetDataCachePolicy.TIME_BASED;
 	}
 	
+	
+	
 	@Override
 	public CFWObject getSettings() {
 		

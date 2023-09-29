@@ -47,7 +47,8 @@ public class WidgetMySQLQueryStatus extends WidgetBaseSQLQueryStatus {
 	 ************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureDBExtensionsMySQL.PACKAGE_RESOURCE, "widget_"+getWidgetType()+".html");
+		//return CFW.Files.readPackageResource(FeatureDBExtensionsMySQL.PACKAGE_RESOURCE, "widget_"+getWidgetType()+".html");
+		return CFW.Files.readPackageResource(FeatureDBExtensions.PACKAGE_RESOURCE, "z_manual_widgets_database.html");
 	}
 	
 	/************************************************************

@@ -312,6 +312,7 @@ public class FeatureDashboard extends CFWAppFeature {
     	//----------------------------------
     	// Manual
 		createDashboardManual();
+		
 	}
 
 	@Override

@@ -48,7 +48,7 @@ public class WidgetTable extends WidgetDefinition {
 	 * 
 	 ************************************************************/
 	@Override
-	public String widgetName() { return "Table"; }
+	public String widgetName() { return "CSV Table"; }
 	
 	/************************************************************
 	 * 
