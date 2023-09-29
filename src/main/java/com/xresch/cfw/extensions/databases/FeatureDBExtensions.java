@@ -21,6 +21,8 @@ public class FeatureDBExtensions extends CFWAppFeature {
 	
 	public static final String PACKAGE_RESOURCE = "com.xresch.cfw.extensions.databases.resources";
 	
+	public static final String WIDGET_CATEGORY_DATABASE = "Database";
+	
 	@Override
 	public void register() {
 		//----------------------------------

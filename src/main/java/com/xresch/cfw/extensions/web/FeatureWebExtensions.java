@@ -35,6 +35,7 @@ public class FeatureWebExtensions extends CFWAppFeature {
 	public static final String FEATURE_NAME = "Web Extensions";
 	public static final String PERMISSION_WEB_EXTENSIONS = FEATURE_NAME;
 	public static final String WIDGET_PREFIX = "cfw_webextensions";
+	public static final String WIDGET_CATEGORY_WEB = "Web";
 	
 	/************************************************************************************
 	 * Override to make it managed and return something else then null.
@@ -83,7 +84,7 @@ public class FeatureWebExtensions extends CFWAppFeature {
 				new ManualPage(FEATURE_NAME)
 					.faicon("fas fa-code")
 					.addPermission(FeatureWebExtensions.PERMISSION_WEB_EXTENSIONS)
-					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "manual_webextensions.html")
+					.content(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "widget_cfw_webextensions_evaluateresponse.html")
 			);
 	}
 

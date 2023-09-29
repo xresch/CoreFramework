@@ -10,7 +10,9 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.db.DBInterface;
+import com.xresch.cfw.extensions.databases.FeatureDBExtensions;
 import com.xresch.cfw.extensions.databases.WidgetBaseSQLQueryStatus;
+import com.xresch.cfw.extensions.databases.oracle.FeatureDBExtensionsOracle;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -20,14 +22,45 @@ public class WidgetMySQLQueryStatus extends WidgetBaseSQLQueryStatus {
 	
 	private static Logger logger = CFWLog.getLogger(WidgetMySQLQueryStatus.class.getName());
 	
+	/************************************************************
+	 * 
+	 ************************************************************/	
 	@Override
 	public String getWidgetType() {return "emp_mysqlquerystatus";}
 	
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String widgetCategory() {
+		return FeatureDBExtensions.WIDGET_CATEGORY_DATABASE;
+	}
+
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String widgetName() { return "MySQL Query Status"; }
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return CFW.Files.readPackageResource(FeatureDBExtensionsMySQL.PACKAGE_RESOURCE, "widget_"+getWidgetType()+".html");
+	}
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public CFWField createEnvironmentSelectorField() {
 		return MySQLSettingsFactory.createEnvironmentSelectorField();
 	}
-
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public DBInterface getDatabaseInterface(String environmentID) {
 
@@ -45,6 +78,9 @@ public class WidgetMySQLQueryStatus extends WidgetBaseSQLQueryStatus {
 
 	}
 	
+	/************************************************************
+	 * 
+	 ************************************************************/	
 	@Override
 	public ArrayList<FileDefinition> getJavascriptFiles() {
 		ArrayList<FileDefinition> array = super.getJavascriptFiles();
@@ -52,6 +88,9 @@ public class WidgetMySQLQueryStatus extends WidgetBaseSQLQueryStatus {
 		return array;
 	}
 	
+	/************************************************************
+	 * 
+	 ************************************************************/	
 	@Override
 	public HashMap<Locale, FileDefinition> getLocalizationFiles() {
 		HashMap<Locale, FileDefinition> map = super.getLocalizationFiles();
@@ -60,6 +99,9 @@ public class WidgetMySQLQueryStatus extends WidgetBaseSQLQueryStatus {
 	}
 	
 	
+	/************************************************************
+	 * 
+	 ************************************************************/	
 	@Override
 	public boolean hasPermission(User user) {
 		return user.hasPermission(FeatureDBExtensionsMySQL.PERMISSION_MYSQL);

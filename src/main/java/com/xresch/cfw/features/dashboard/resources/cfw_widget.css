@@ -2,6 +2,10 @@
  * Common CSS classes for the Standard CFW Widgets
  *************************************************/
 
+.legend-box {
+	padding-left: 15px;
+}
+
 /* hide pyscript splash screen*/
 #pyscript_loading_splash{
 	display: none;

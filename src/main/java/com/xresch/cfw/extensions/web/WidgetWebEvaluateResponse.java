@@ -21,6 +21,7 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.WidgetSettingsFactory;
@@ -87,12 +88,34 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 	// Returns the unique name of the widget. Has to be the same unique name as used in the javascript part.
 	@Override
 	public String getWidgetType() {
-		return FeatureWebExtensions.WIDGET_PREFIX+"_evaluateresponse";
+		return FeatureWebExtensions.WIDGET_PREFIX+"_evaluateresponse"; 
 	}
 	
 	@Override
 	public WidgetDataCache.WidgetDataCachePolicy getCachePolicy() {
 		return WidgetDataCache.WidgetDataCachePolicy.ALWAYS;
+	}
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String widgetCategory() {
+		return FeatureWebExtensions.WIDGET_CATEGORY_WEB;
+	}
+
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String widgetName() { return "Evaluate Response"; }
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return CFW.Files.readPackageResource(FeatureWebExtensions.PACKAGE_RESOURCES, "widget_"+getWidgetType()+".html");
 	}
 
 	// Creates an object with fields that will be used as the settings for this particular widget.

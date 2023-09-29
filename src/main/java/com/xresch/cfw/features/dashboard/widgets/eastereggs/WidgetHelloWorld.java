@@ -39,15 +39,46 @@ public class WidgetHelloWorld extends WidgetDefinition {
 	private static final String LIKES_TIRAMISU = "LIKES_TIRAMISU";
 	private static final String MESSAGE = "MESSAGE";
 	private static final Logger logger = CFWLog.getLogger(WidgetHelloWorld.class.getName());
-	
+
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public String getWidgetType() {return "cfw_helloworld";}
 
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public WidgetDataCachePolicy getCachePolicy() {
 		return WidgetDataCachePolicy.ALWAYS;
 	}
 	
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String widgetCategory() {
+		return FeatureDashboard.WIDGET_CATEGORY_EASTEREGGS;
+	}
+
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String widgetName() { return "Hello World"; }
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return CFW.Files.readPackageResource(FeatureDashboard.PACKAGE_MANUAL, "widget_"+getWidgetType()+".html");
+	}
+
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public CFWObject getSettings() {
 		return new CFWObject()
@@ -91,6 +122,9 @@ public class WidgetHelloWorld extends WidgetDefinition {
 		;
 	}
 
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings, CFWTimeframe timeframe) { 
 		//int number = settings.get("number").getAsInt();
@@ -99,6 +133,9 @@ public class WidgetHelloWorld extends WidgetDefinition {
 		response.getContent().append("\"{!cfw_widget_helloworld_serverside!} "+number+". Your favorite food is: "+favoriteFood+"\"");
 	}
 
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public ArrayList<FileDefinition> getJavascriptFiles() {
 		ArrayList<FileDefinition> array = new ArrayList<FileDefinition>();
@@ -107,12 +144,18 @@ public class WidgetHelloWorld extends WidgetDefinition {
 		return array;
 	}
 
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public ArrayList<FileDefinition> getCSSFiles() {
 		// no CCS files for this widget
 		return null;
 	}
 
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public HashMap<Locale, FileDefinition> getLocalizationFiles() {
 		HashMap<Locale, FileDefinition> map = new HashMap<Locale, FileDefinition>();
@@ -121,6 +164,9 @@ public class WidgetHelloWorld extends WidgetDefinition {
 		return map;
 	}
 
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public boolean hasPermission(User user) {
 		// just an example, replace with your own permission checks
@@ -132,11 +178,17 @@ public class WidgetHelloWorld extends WidgetDefinition {
 	}
 	
 
+	/************************************************************
+	 * 
+	 ************************************************************/
 	public boolean supportsTask() {
 		return true;
 	}
 	
 
+	/************************************************************
+	 * 
+	 ************************************************************/
 	public CFWObject getTasksParameters() {
 		return new CFWObject()
 				.addField(
@@ -156,10 +208,16 @@ public class WidgetHelloWorld extends WidgetDefinition {
 	}
 	
 
+	/************************************************************
+	 * 
+	 ************************************************************/
 	public String getTaskDescription() {
 		return "The task of this widget writes a message to the log file.";
 	}
 
+	/************************************************************
+	 * 
+	 ************************************************************/
 	public void executeTask(JobExecutionContext context, CFWObject taskParams, DashboardWidget widget, CFWObject widgetSettings, CFWTimeframe offset) throws JobExecutionException {
 		
 		new CFWLog(logger)

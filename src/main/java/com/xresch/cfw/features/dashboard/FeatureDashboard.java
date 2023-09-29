@@ -17,6 +17,7 @@ import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionSelect;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionText;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionTextarea;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
+import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetThresholdLegend;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetForceRefresh;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetJavascript;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
@@ -24,9 +25,9 @@ import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetPyConfig;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetPyScript;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetReplica;
 import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsDiscoMode;
-import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsFireworks;
-import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsLightSwitch;
 import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsSnow;
+import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsLightSwitch;
+import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsFireworks;
 import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetHelloWorld;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetChecklist;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetHTMLEditor;
@@ -70,6 +71,12 @@ public class FeatureDashboard extends CFWAppFeature {
 	
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.dashboard.resources";
 	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.dashboard.manual";
+	
+	
+	public static final String WIDGET_CATEGORY_ADVANCED = "Advanced";
+	public static final String WIDGET_CATEGORY_EASTEREGGS = "Eastereggs";
+	public static final String WIDGET_CATEGORY_STANDARD = "Standard";
+	
 	
 	public static final ManualPage ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
 					new ManualPage("Dashboard")
@@ -128,13 +135,15 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Widgets.add(new WidgetJavascript());
 		CFW.Registry.Widgets.add(new WidgetPyConfig());
 		CFW.Registry.Widgets.add(new WidgetPyScript());
+		CFW.Registry.Widgets.add(new WidgetThresholdLegend());
+		
 		
     	//----------------------------------
     	// Register Easteregg Widgets
 		CFW.Registry.Widgets.add(new WidgetHelloWorld());
 		CFW.Registry.Widgets.add(new WidgetEasterEggsDiscoMode());
-		CFW.Registry.Widgets.add(new WidgetEasterEggsSnow());
 		CFW.Registry.Widgets.add(new WidgetEasterEggsFireworks());
+		CFW.Registry.Widgets.add(new WidgetEasterEggsSnow());
 		CFW.Registry.Widgets.add(new WidgetEasterEggsLightSwitch());
 		
     	//----------------------------------

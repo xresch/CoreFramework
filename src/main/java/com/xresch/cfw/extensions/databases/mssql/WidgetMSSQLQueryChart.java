@@ -10,7 +10,9 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.db.DBInterface;
+import com.xresch.cfw.extensions.databases.FeatureDBExtensions;
 import com.xresch.cfw.extensions.databases.WidgetBaseSQLQueryChart;
+import com.xresch.cfw.extensions.databases.mysql.FeatureDBExtensionsMySQL;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -23,15 +25,47 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public class WidgetMSSQLQueryChart extends WidgetBaseSQLQueryChart {
 
 	private static Logger logger = CFWLog.getLogger(WidgetMSSQLQueryChart.class.getName());
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public String getWidgetType() {return "emp_mssqlquerychart";}
 		
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String widgetCategory() {
+		return FeatureDBExtensions.WIDGET_CATEGORY_DATABASE;
+	}
+
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String widgetName() { return "MSSQL Query Chart"; }
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return CFW.Files.readPackageResource(FeatureDBExtensionsMSSQL.PACKAGE_RESOURCE, "widget_"+getWidgetType()+".html");
+	}	
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@SuppressWarnings("rawtypes")
 	@Override
 	public CFWField createEnvironmentSelectorField() {
 		return MSSQLSettingsFactory.createEnvironmentSelectorField();
 	}
-
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public DBInterface getDatabaseInterface(String environmentID) {
 
@@ -49,6 +83,9 @@ public class WidgetMSSQLQueryChart extends WidgetBaseSQLQueryChart {
 
 	}
 	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public ArrayList<FileDefinition> getJavascriptFiles() {
 		ArrayList<FileDefinition> array = super.getJavascriptFiles();
@@ -56,13 +93,19 @@ public class WidgetMSSQLQueryChart extends WidgetBaseSQLQueryChart {
 		return array;
 	}
 	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public HashMap<Locale, FileDefinition> getLocalizationFiles() {
 		HashMap<Locale, FileDefinition> map = super.getLocalizationFiles();
 		map.put(Locale.ENGLISH, new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDBExtensionsMSSQL.PACKAGE_RESOURCE, "lang_en_emp_mssql.properties"));
 		return map;
 	}
-
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public boolean hasPermission(User user) {
 		return user.hasPermission(FeatureDBExtensionsMSSQL.PERMISSION_MSSQL);

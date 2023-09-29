@@ -14,6 +14,7 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.dashboard.DashboardWidget;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.JSONResponse;
@@ -32,6 +33,27 @@ public abstract class WidgetDefinition {
 	 * @return CFWObject
 	 ************************************************************/
 	public abstract CFWObject getSettings();
+	
+	/***********************************************************************************************
+	 * Return the category of the widget.
+	 * This is used for the manual pages.
+	 * If this returns FeatureDashboard.WIDGET_CATEGORY_EASTEREGGS, no manual page will be added.
+	 ***********************************************************************************************/
+	public abstract String widgetCategory();
+	
+	/***********************************************************************************************
+	 * Return the name of the widget.
+	 * This is used for the manual pages.
+	 ***********************************************************************************************/
+	public abstract String widgetName();
+	
+	/***********************************************************************************************
+	 * Return the description for the manual page.
+	 * This description will be shown on the manual under the header " <h2>Usage</h2>".
+	 * If you add headers to your description it is recommended to use <h3> or lower headers.
+	 * If this returns null, no entry will be added to the manual.
+	 ***********************************************************************************************/
+	public abstract String descriptionHTML();
 	
 	/************************************************************
 	 * Return the cache policy of this widget for the default

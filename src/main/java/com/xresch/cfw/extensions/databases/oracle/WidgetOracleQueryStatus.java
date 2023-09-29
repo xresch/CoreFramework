@@ -10,6 +10,7 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.db.DBInterface;
+import com.xresch.cfw.extensions.databases.FeatureDBExtensions;
 import com.xresch.cfw.extensions.databases.WidgetBaseSQLQueryStatus;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
@@ -18,14 +19,46 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 public class WidgetOracleQueryStatus extends WidgetBaseSQLQueryStatus {
 
 	private static Logger logger = CFWLog.getLogger(WidgetOracleQueryStatus.class.getName());
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public String getWidgetType() {return "emp_oraclequerystatus";}
 	
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String widgetCategory() {
+		return FeatureDBExtensions.WIDGET_CATEGORY_DATABASE;
+	}
+
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String widgetName() { return "Oracle Query Status"; }
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return CFW.Files.readPackageResource(FeatureDBExtensionsOracle.PACKAGE_RESOURCE, "widget_"+getWidgetType()+".html");
+	}	
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public CFWField createEnvironmentSelectorField() {
 		return OracleSettingsFactory.createEnvironmentSelectorField();
 	}
-
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public DBInterface getDatabaseInterface(String environmentID) {
 
@@ -43,6 +76,9 @@ public class WidgetOracleQueryStatus extends WidgetBaseSQLQueryStatus {
 
 	}
 	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public ArrayList<FileDefinition> getJavascriptFiles() {
 		ArrayList<FileDefinition> array = super.getJavascriptFiles();
@@ -50,6 +86,9 @@ public class WidgetOracleQueryStatus extends WidgetBaseSQLQueryStatus {
 		return array;
 	}
 	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public HashMap<Locale, FileDefinition> getLocalizationFiles() {
 		HashMap<Locale, FileDefinition> map = super.getLocalizationFiles();
@@ -58,6 +97,9 @@ public class WidgetOracleQueryStatus extends WidgetBaseSQLQueryStatus {
 	}
 	
 	
+	/************************************************************
+	 * 
+	 ************************************************************/
 	@Override
 	public boolean hasPermission(User user) {
 		return user.hasPermission(FeatureDBExtensionsOracle.PERMISSION_ORACLE);

@@ -53,15 +53,38 @@ public class WidgetParameter extends WidgetDefinition {
 	 *
 	 ******************************************************************/
 	@Override
-	public WidgetDataCachePolicy getCachePolicy() {
-		return WidgetDataCachePolicy.OFF;
-	}
+	public String getWidgetType() {return WIDGET_TYPE;}
+	
 	
 	/******************************************************************
 	 *
 	 ******************************************************************/
 	@Override
-	public String getWidgetType() {return WIDGET_TYPE;}
+	public WidgetDataCachePolicy getCachePolicy() {
+		return WidgetDataCachePolicy.OFF;
+	}
+
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String widgetCategory() {
+		return FeatureDashboard.WIDGET_CATEGORY_ADVANCED;
+	}
+
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String widgetName() { return "Parameter"; }
+	
+	/************************************************************
+	 * 
+	 ************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return CFW.Files.readPackageResource(FeatureDashboard.PACKAGE_MANUAL, "widget_"+getWidgetType()+".html");
+	}
 	
 	/******************************************************************
 	 *
