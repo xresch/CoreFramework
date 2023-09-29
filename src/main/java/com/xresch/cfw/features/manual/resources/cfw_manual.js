@@ -430,7 +430,7 @@ function cfw_manual_printContent(domElement, callback){
 		if(data.payload != undefined){
 			var pageData = data.payload;
 			
-			CFW.http.setURLParam("page", pageData.path);
+			CFW.http.setURLParams({"page": pageData.path});
 			
 			titleTarget.append('<h1>'+pageData.title+'<a class="btn btn-primary btn-sm ml-2" onclick="cfw_manual_createPrintView('+id+')"><i class="fas fa-print"></i></a></h1>');
 			

@@ -62,14 +62,24 @@ public class CFWRegistryManual {
 			//---------------------------
 			// Handle Parent
 			if(parentItem == null) {
+				// Grab first page
 				parentItem = targetPageList.get(currentToken);
 				if(parentItem == null) {
 					parentItem = new ManualPage(currentToken);
 					targetPageList.put(currentToken, parentItem);
 				}
 			}else if(parentItem.getSubManualPages().containsKey(currentToken)) {
+				// Grab child page
 				parentItem = parentItem.getSubManualPages().get(currentToken);
+			}else {
+				//Create non-existing page
+				ManualPage createdPage = new ManualPage(currentToken);
+				parentItem.addChild( createdPage );
+				parentItem = createdPage;
 			}
+			
+			//---------------------------
+			// Add page if last token
 			if(i == pathTokens.length-1) {
 				parentItem.addChild(itemToAdd);
 			}
@@ -77,6 +87,7 @@ public class CFWRegistryManual {
 	}
 	/***********************************************************************
 	 * Returns the manual pages the user has permissions for.
+	 * Returns null if page is not found.
 	 ***********************************************************************/
 	public static ManualPage getPageByPath(String pagePath)  {
 		//-----------------------

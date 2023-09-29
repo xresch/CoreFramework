@@ -1,7 +1,9 @@
 package com.xresch.cfw.features.dashboard;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.TreeMap;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
@@ -16,7 +18,9 @@ import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionNumber;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionSelect;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionText;
 import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionTextarea;
+import com.xresch.cfw.features.dashboard.widgets.ManualPageWidget;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetThresholdLegend;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetForceRefresh;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetJavascript;
@@ -41,6 +45,8 @@ import com.xresch.cfw.features.dashboard.widgets.standard.WidgetText;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetWebsite;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetYoutubeVideo;
 import com.xresch.cfw.features.manual.ManualPage;
+import com.xresch.cfw.features.query.CFWQueryManualPageSource;
+import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.DynamicItemCreator;
@@ -77,14 +83,26 @@ public class FeatureDashboard extends CFWAppFeature {
 	public static final String WIDGET_CATEGORY_EASTEREGGS = "Eastereggs";
 	public static final String WIDGET_CATEGORY_STANDARD = "Standard";
 	
+	public static final String MANUAL_NAME_DASHBOARD = "Dashboard";
+	public static final String MANUAL_NAME_WIDGETS = "Widgets";
+	public static final String MANUAL_PATH_WIDGETS = MANUAL_NAME_DASHBOARD+"|"+MANUAL_NAME_WIDGETS;
 	
-	public static final ManualPage ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
-					new ManualPage("Dashboard")
+	public static final ManualPage MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
+					new ManualPage(MANUAL_NAME_DASHBOARD)
 						.faicon("fas fa-tachometer-alt")
 						.addPermission(PERMISSION_DASHBOARD_VIEWER)
 						.addPermission(PERMISSION_DASHBOARD_CREATOR)
 						.addPermission(PERMISSION_DASHBOARD_ADMIN)
 				);
+	
+	public static final ManualPage MANUAL_PAGE_WIDGETS = MANUAL_PAGE_ROOT.addChild( 
+			new ManualPage(MANUAL_NAME_WIDGETS)
+				.faicon("fas fa-th")
+				.addPermission(PERMISSION_DASHBOARD_VIEWER)
+				.addPermission(PERMISSION_DASHBOARD_CREATOR)
+				.addPermission(PERMISSION_DASHBOARD_ADMIN)
+				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "&nbsp;"))
+			;
 	
 	@Override
 	public void register() {
@@ -216,9 +234,7 @@ public class FeatureDashboard extends CFWAppFeature {
 			favoritesMenu.faicon("fas fa-star");
 		
 		CFW.Registry.Components.addButtonsMenuItem(favoritesMenu, null);
-		//----------------------------------
-    	// Register Manual
-		registerDashboardManual();
+		
 	}
 
 	@Override
@@ -285,10 +301,17 @@ public class FeatureDashboard extends CFWAppFeature {
 	}
 
 	@Override
-	public void addFeature(CFWApplicationExecutor app) {	
+	public void addFeature(CFWApplicationExecutor app) {
+		
+		//----------------------------------
+    	// Servlets
     	app.addAppServlet(ServletDashboardList.class,  URI_DASHBOARD_LIST);
     	app.addAppServlet(ServletDashboardView.class,  URI_DASHBOARD_VIEW);
     	app.addUnsecureServlet(ServletDashboardViewPublic.class,  URI_DASHBOARD_VIEW_PUBLIC);
+    	
+    	//----------------------------------
+    	// Manual
+		createDashboardManual();
 	}
 
 	@Override
@@ -302,11 +325,11 @@ public class FeatureDashboard extends CFWAppFeature {
 		
 	}
 	
-	private void registerDashboardManual() {
+	private void createDashboardManual() {
 
 		//----------------------------------
 		//
-		ROOT_MANUAL_PAGE.addChild(
+		MANUAL_PAGE_ROOT.addChild(
 				new ManualPage("Introduction")
 					.faicon("fas fa-star")
 					.addPermission(PERMISSION_DASHBOARD_VIEWER)
@@ -317,7 +340,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		
 		//----------------------------------
 		//
-		ROOT_MANUAL_PAGE.addChild(
+		MANUAL_PAGE_ROOT.addChild(
 				new ManualPage("Creating Dashboards")
 					.faicon("fas fa-plus-circle")
 					.addPermission(PERMISSION_DASHBOARD_VIEWER)
@@ -328,7 +351,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		
 		//----------------------------------
 		//
-		ROOT_MANUAL_PAGE.addChild(
+		MANUAL_PAGE_ROOT.addChild(
 				new ManualPage("Keyboard Shortcuts")
 					.faicon("fas fa-keyboard")
 					.addPermission(PERMISSION_DASHBOARD_VIEWER)
@@ -338,38 +361,63 @@ public class FeatureDashboard extends CFWAppFeature {
 			);
 		
 		//----------------------------------
-		//
-		ManualPage widgets = 
-			new ManualPage("Widgets")
-				.faicon("fas fa-th")
-				.addPermission(PERMISSION_DASHBOARD_VIEWER)
-				.addPermission(PERMISSION_DASHBOARD_CREATOR)
-				.addPermission(PERMISSION_DASHBOARD_ADMIN)
-				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_widgets_00.html");
+		// Pages for each Widget
+		LinkedHashMap<String, WidgetDefinition> sourcelist = CFW.Registry.Widgets.getWidgetDefinitions();
 		
-		ROOT_MANUAL_PAGE.addChild(widgets );
 		
-		widgets.addChild(
-				new ManualPage("Standard Widgets")
-					.faicon("fas fa-th-large")
-					.addPermission(PERMISSION_DASHBOARD_VIEWER)
-					.addPermission(PERMISSION_DASHBOARD_CREATOR)
-					.addPermission(PERMISSION_DASHBOARD_ADMIN)
-					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_widgets_staticwidgets.html")
-			);
-		
-		widgets.addChild(
-				new ManualPage("Timeframe Widgets")
-					.faicon("fas fa-clock")
-					.addPermission(PERMISSION_DASHBOARD_VIEWER)
-					.addPermission(PERMISSION_DASHBOARD_CREATOR)
-					.addPermission(PERMISSION_DASHBOARD_ADMIN)
-					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_widgets_timeframe.html")
-			);
+		for(WidgetDefinition current : sourcelist.values()) {
+			
+			ManualPageWidget widgetPage = new ManualPageWidget(current);
+			String path = MANUAL_PATH_WIDGETS;
+			String category = current.widgetCategory();
+			
+			if(category == FeatureDashboard.WIDGET_CATEGORY_EASTEREGGS) {
+				// skip these bastards
+				continue;
+			}
+			
+			if(category != null) {
+				path += "|" + category;
+			}
+			
+			CFW.Registry.Manual.addManualPage(path, widgetPage);
+			
+		}
 		
 		//----------------------------------
 		//
-		ROOT_MANUAL_PAGE.addChild(
+//		ManualPage widgets = 
+//			new ManualPage("Widgets")
+//				.faicon("fas fa-th")
+//				.addPermission(PERMISSION_DASHBOARD_VIEWER)
+//				.addPermission(PERMISSION_DASHBOARD_CREATOR)
+//				.addPermission(PERMISSION_DASHBOARD_ADMIN)
+//				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_widgets_00.html");
+//		
+//		MANUAL_PAGE_ROOT.addChild(widgets );
+//		
+//		widgets.addChild(
+//				new ManualPage("Standard Widgets")
+//					.faicon("fas fa-th-large")
+//					.addPermission(PERMISSION_DASHBOARD_VIEWER)
+//					.addPermission(PERMISSION_DASHBOARD_CREATOR)
+//					.addPermission(PERMISSION_DASHBOARD_ADMIN)
+//					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_widgets_staticwidgets.html")
+//			);
+//		
+//		widgets.addChild(
+//				new ManualPage("Timeframe Widgets")
+//					.faicon("fas fa-clock")
+//					.addPermission(PERMISSION_DASHBOARD_VIEWER)
+//					.addPermission(PERMISSION_DASHBOARD_CREATOR)
+//					.addPermission(PERMISSION_DASHBOARD_ADMIN)
+//					.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "manual_widgets_timeframe.html")
+//			);
+//		
+		
+		//----------------------------------
+		//
+		MANUAL_PAGE_ROOT.addChild(
 				new ManualPage("Parameters")
 					.faicon("fas fa-sliders-h")
 					.addPermission(PERMISSION_DASHBOARD_VIEWER)
@@ -380,7 +428,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		
 		//----------------------------------
 		//
-		ROOT_MANUAL_PAGE.addChild(
+		MANUAL_PAGE_ROOT.addChild(
 				new ManualPage("Tips and Tricks")
 					.faicon("fas fa-asterisk")
 					.addPermission(PERMISSION_DASHBOARD_VIEWER)
