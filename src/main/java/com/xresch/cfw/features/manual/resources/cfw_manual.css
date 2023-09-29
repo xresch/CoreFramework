@@ -33,7 +33,7 @@ p{
 
 .cfw-manual-fa-box {
 	height: 16px;
-    width: 16px;
+    min-width: 16px;
     float: left;
     margin-right: 0px; 
     line-height: 2.0em;

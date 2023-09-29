@@ -366,15 +366,17 @@ function cfw_manual_createMenuItem(pageData){
 	if(pageData.children != null && pageData.children.length > 0){
 		dataToggle = ' data-toggle="collapse" data-target="#'+collapseID+'" aria-expanded=false'
 		arrow += '<i class="arrow" '+dataToggle+'></i>';
+	}else{
+		arrow += "&nbsp;";
 	}
 	arrow += '</div>';
 	
 	//-------------------------
 	// faicon
 	var faicon = "";
-	if(pageData.faiconClasses != null){
+	/*if(pageData.faiconClasses != null){
 		faicon = '<i class="'+pageData.faiconClasses+'"></i>';
-	}
+	}*/
 	
 	//-------------------------
 	// Title
