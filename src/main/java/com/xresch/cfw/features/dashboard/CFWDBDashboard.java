@@ -557,7 +557,9 @@ public class CFWDBDashboard {
 						.severe("Dashboard '"+dashboard.name()+"' could not be imported.");
 					continue;
 				}
-
+				
+				dashboard.saveSelectorFields();
+				
 				//-----------------------------
 				// Create Parameters
 				HashMap<Integer, Integer> oldNewParamIDs = new HashMap<>();
