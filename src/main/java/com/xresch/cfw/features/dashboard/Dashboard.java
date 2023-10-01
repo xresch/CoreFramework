@@ -55,10 +55,16 @@ public class Dashboard extends CFWObject {
 		DESCRIPTION,
 		TAGS,
 		IS_SHARED,
+		
+		// About these fields:
+		// First they have been only stored in this objects table CFW_DASHBOARD as JSON.
+		// Now the primary data is stored in the respective tables >> CFW_DASHBOARD_*_MAP.
+		// Data in CFW_DASHBOARD is secondary but still updated, as it is used for access management.
 		JSON_SHARE_WITH_USERS,
 		JSON_SHARE_WITH_GROUPS,
 		JSON_EDITORS,
 		JSON_EDITOR_GROUPS,
+		
 		ALLOW_EDIT_SETTINGS,
 		TIME_CREATED,
 		IS_PUBLIC,
@@ -243,10 +249,10 @@ public class Dashboard extends CFWObject {
 				, description
 				, tags
 				, isShared
-				//, shareWithUsers
-				//, shareWithGroups
-				//, editors
-				//, editorGroups
+				, shareWithUsers
+				, shareWithGroups
+				, editors
+				, editorGroups
 				, alloweEditSettings
 				, timeCreated
 				, isPublic
@@ -339,9 +345,9 @@ public class Dashboard extends CFWObject {
 						DashboardFields.DESCRIPTION.toString(),
 						DashboardFields.TAGS.toString(),
 						DashboardFields.IS_SHARED.toString(),
-						//DashboardFields.JSON_SHARE_WITH_USERS.toString(),
-						//DashboardFields.JSON_SHARE_WITH_GROUPS.toString(),
-						//DashboardFields.JSON_EDITORS.toString(),
+						DashboardFields.JSON_SHARE_WITH_USERS.toString(),
+						DashboardFields.JSON_SHARE_WITH_GROUPS.toString(),
+						DashboardFields.JSON_EDITORS.toString(),
 						DashboardFields.JSON_EDITOR_GROUPS.toString(),
 						DashboardFields.ALLOW_EDIT_SETTINGS.toString(),
 						DashboardFields.TIME_CREATED.toString(),
@@ -486,7 +492,7 @@ public class Dashboard extends CFWObject {
 		// Initialize Variables
 		LinkedHashMap<String,String> selectedValue = new LinkedHashMap<>();
 		 if(boardID != null ) {
-				selectedValue = CFW.DB.DashboardSharedUsers
+				selectedValue = CFW.DB.DashboardEditors
 								.selectUsersForDashboardAsKeyLabel(boardID);
 		}
 		 
@@ -515,7 +521,7 @@ public class Dashboard extends CFWObject {
 		// Initialize Variables
 		LinkedHashMap<String,String> selectedValue = new LinkedHashMap<>();
 		if(boardID != null ) {
-			selectedValue = CFW.DB.DashboardSharedGroups
+			selectedValue = CFW.DB.DashboardEditorGroups
 								.selectGroupsForDashboardAsKeyLabel(boardID);
 		}
 		
@@ -544,6 +550,7 @@ public class Dashboard extends CFWObject {
 			isSuccess &= saveSelectorField(FIELDNAME_SHARE_WITH_USERS);
 			isSuccess &= saveSelectorField(FIELDNAME_SHARE_WITH_GROUPS);
 			isSuccess &= saveSelectorField(FIELDNAME_EDITORS);
+			isSuccess &= saveSelectorField(FIELDNAME_EDITOR_GROUPS);
 		
 		return isSuccess;
 		
@@ -577,7 +584,7 @@ public class Dashboard extends CFWObject {
 					break;
 					
 				case FIELDNAME_EDITOR_GROUPS:
-					CFW.DB.DashboardEditors.updateUserDashboardAssignments(this, selectedValues);
+					CFW.DB.DashboardEditorGroups.updateGroupDashboardAssignments(this, selectedValues);
 					break;
 				
 				default: new CFWLog(logger).severe("Development Error: unsupported value.");

@@ -95,13 +95,13 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	public static Integer 	createGetPrimaryKey(Dashboard item) { 
 		updateTags(item); 
-		return CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item, Dashboard.SELECTOR_FIELDS);
+		return CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item);
 	}
 	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(Dashboard item) 		{ updateTags(item); return CFWDBDefaultOperations.updateWithout(prechecksCreateUpdate, auditLogFieldnames, item, Dashboard.SELECTOR_FIELDS); }
+	public static boolean 	update(Dashboard item) 		{ updateTags(item); return CFWDBDefaultOperations.updateWithout(prechecksCreateUpdate, auditLogFieldnames, item); }
 	
 	//####################################################################################################
 	// DELETE
