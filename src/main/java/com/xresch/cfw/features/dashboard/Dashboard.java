@@ -18,11 +18,10 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
-import com.xresch.cfw.features.contextsettings.ContextSettings.ContextSettingsFields;
 import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
+import com.xresch.cfw.features.keyvaluepairs.KeyValuePair;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
@@ -36,6 +35,18 @@ import com.xresch.cfw.validation.LengthValidator;
 public class Dashboard extends CFWObject {
 	
 	public static final String TABLE_NAME = "CFW_DASHBOARD";
+	
+	public static final String FIELDNAME_SHARE_WITH_USERS = "JSON_SHARE_WITH_USERS";
+	public static final String FIELDNAME_SHARE_WITH_GROUPS = "JSON_SHARE_WITH_GROUPS";
+	public static final String FIELDNAME_EDITORS = "JSON_EDITORS";
+	public static final String FIELDNAME_EDITOR_GROUPS = "JSON_EDITOR_GROUPS";
+	
+	public static final String[] SELECTOR_FIELDS = new String[] {
+			FIELDNAME_SHARE_WITH_USERS
+			, FIELDNAME_SHARE_WITH_GROUPS
+			, FIELDNAME_EDITORS
+			, FIELDNAME_EDITOR_GROUPS
+		};
 	
 	public enum DashboardFields{
 		PK_ID,
@@ -61,7 +72,8 @@ public class Dashboard extends CFWObject {
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.PK_ID.toString())
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the dashboard.")
-			.apiFieldType(FormFieldType.NUMBER);
+			.apiFieldType(FormFieldType.NUMBER)
+			;
 	
 	private CFWField<Integer> foreignKeyOwner = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.FK_ID_USER)
 			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
@@ -115,47 +127,55 @@ public class Dashboard extends CFWObject {
 			.setDescription("Make the dashboard shared with other people or keep it private. If no shared users or shared groups are specified(defined editors have no impact), the dashboard is shared with all users having access to the dashboard features.")
 			.setValue(CFW.DB.Config.getConfigAsBoolean(FeatureDashboard.CONFIG_DEFAULT_IS_SHARED));
 	
-	private CFWField<LinkedHashMap<String,String>> shareWithUsers = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_USERS)
-			.setLabel("Share with Users")
-			.setDescription("Share this dashboard with specific users.")
-			.setValue(null)
-			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
-				}
-			});
+	private CFWField<LinkedHashMap<String,String>> shareWithUsers = this.createSelectorFieldSharedUser(null);
 	
-	private CFWField<LinkedHashMap<String,String>> shareWithGroups = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_GROUPS)
-			.setLabel("Share with Groups")
-			.setDescription("Share this dashboard with specific groups.")
-			.setValue(null)
-			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
-				}
-			});
+//	private CFWField<LinkedHashMap<String,String>> shareWithUsers = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_USERS)
+//			.setLabel("Share with Users")
+//			.setDescription("Share this dashboard with specific users.")
+//			.setValue(null)
+//			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+//				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+//					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+//				}
+//			});
 	
-	private CFWField<LinkedHashMap<String,String>> editors = CFWField.newTagsSelector(DashboardFields.JSON_EDITORS)
-			.setLabel("Editors")
-			.setDescription("Allow the specified users to view and edit the dashboard, even when the dashboard is not shared.")
-			.setValue(null)
-			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());
-				}
-			});
+	private CFWField<LinkedHashMap<String,String>> shareWithGroups = this.createSelectorFieldSharedGroups(null);
 	
-	private CFWField<LinkedHashMap<String,String>> editorGroups = CFWField.newTagsSelector(DashboardFields.JSON_EDITOR_GROUPS)
-			.setLabel("Editor Groups")
-			.setDescription("Allow users having at least one of the specified groups to view and edit the dashboard, even when the dashboard is not shared.")
-			.setValue(null)
-			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-				
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());
-				}
-			});
+//	private CFWField<LinkedHashMap<String,String>> shareWithGroups = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_GROUPS)
+//			.setLabel("Share with Groups")
+//			.setDescription("Share this dashboard with specific groups.")
+//			.setValue(null)
+//			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+//				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+//					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
+//				}
+//			});
+//	
+	private CFWField<LinkedHashMap<String,String>> editors = this.createSelectorFieldEditors(null);
+			
+//	private CFWField<LinkedHashMap<String,String>> editors = CFWField.newTagsSelector(DashboardFields.JSON_EDITORS)
+//			.setLabel("Editors")
+//			.setDescription("Allow the specified users to view and edit the dashboard, even when the dashboard is not shared.")
+//			.setValue(null)
+//			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+//				
+//				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+//					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());
+//				}
+//			});
+		
+	private CFWField<LinkedHashMap<String,String>> editorGroups = this.createSelectorFieldEditorGroups(null);
+	
+//	private CFWField<LinkedHashMap<String,String>> editorGroups = CFWField.newTagsSelector(DashboardFields.JSON_EDITOR_GROUPS)
+//			.setLabel("Editor Groups")
+//			.setDescription("Allow users having at least one of the specified groups to view and edit the dashboard, even when the dashboard is not shared.")
+//			.setValue(null)
+//			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+//				
+//				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+//					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());
+//				}
+//			});
 	
 	
 	private CFWField<Boolean> alloweEditSettings = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.ALLOW_EDIT_SETTINGS)
@@ -223,10 +243,10 @@ public class Dashboard extends CFWObject {
 				, description
 				, tags
 				, isShared
-				, shareWithUsers
-				, shareWithGroups
-				, editors
-				, editorGroups
+				//, shareWithUsers
+				//, shareWithGroups
+				//, editors
+				//, editorGroups
 				, alloweEditSettings
 				, timeCreated
 				, isPublic
@@ -243,9 +263,10 @@ public class Dashboard extends CFWObject {
 	public void migrateTable() {
 		//----------------------------------------
 		// Migration from v3.0.0 to next version
-		new CFWLog(logger).off("Migration: Rename Columns of DB table CFW_DASHBOARD.");
-		new CFWSQL(null).renameColumn(TABLE_NAME, "JSON_SHARE_WITH_ROLES", DashboardFields.JSON_SHARE_WITH_GROUPS.toString());
-		new CFWSQL(null).renameColumn(TABLE_NAME, "JSON_EDITOR_ROLES", DashboardFields.JSON_EDITOR_GROUPS.toString());
+		//new CFWLog(logger).off("Migration: Rename Columns of DB table CFW_DASHBOARD.");
+		//new CFWSQL(null).renameColumn(TABLE_NAME, "JSON_SHARE_WITH_ROLES", DashboardFields.JSON_SHARE_WITH_GROUPS.toString());
+		//new CFWSQL(null).renameColumn(TABLE_NAME, "JSON_EDITOR_ROLES", DashboardFields.JSON_EDITOR_GROUPS.toString());
+	
 	}
 	
 	/**************************************************************************************
@@ -260,6 +281,41 @@ public class Dashboard extends CFWObject {
 		new CFWSQL(this)
 			.custom("ALTER TABLE IF EXISTS CFW_DASHBOARD ALTER COLUMN IF EXISTS NAME SET DATA TYPE VARCHAR_IGNORECASE;")
 			.execute();
+		
+		//----------------------------------------
+		// Migration from v7.0.0 to next version
+		String MIGRATION_KEY = "CFW-Migration-SharedEditors_isMigrated";
+		
+		Boolean isMigrated = CFW.DB.KeyValuePairs.getValueAsBoolean(MIGRATION_KEY);
+
+		if(isMigrated == null || !isMigrated) {
+		
+			new CFWLog(logger).off("Migration: CFW_DASHBOARD - Move sharing columns to separate tables.");
+			
+			ArrayList<Dashboard> dashboardList = new CFWSQL(new Dashboard())
+				.select()
+				.getAsObjectListConvert(Dashboard.class);
+		
+			CFW.DB.transactionStart();
+			
+				boolean isSuccess = true;
+				for(Dashboard board : dashboardList) {
+					isSuccess &= CFWDBDashboardSharedUserMap.migrateOldStructure(board);
+					isSuccess &= CFWDBDashboardSharedGroupsMap.migrateOldStructure(board);
+					isSuccess &= CFWDBDashboardEditorsMap.migrateOldStructure(board);
+					isSuccess &= CFWDBDashboardEditorGroupsMap.migrateOldStructure(board);
+				}
+			
+				new CFWLog(logger).off("Migration Result: "+isSuccess);
+				
+			CFW.DB.transactionEnd(isSuccess);
+			
+			CFW.DB.KeyValuePairs.setValue(
+					KeyValuePair.CATEGORY_MIGRATION
+					, MIGRATION_KEY
+					, ""+isSuccess
+				);
+		}
 	}
 	/**************************************************************************************
 	 * 
@@ -267,7 +323,6 @@ public class Dashboard extends CFWObject {
 	@Override
 	public ArrayList<APIDefinition> getAPIDefinitions() {
 		ArrayList<APIDefinition> apis = new ArrayList<APIDefinition>();
-		
 		
 		String[] inputFields = 
 				new String[] {
@@ -284,9 +339,9 @@ public class Dashboard extends CFWObject {
 						DashboardFields.DESCRIPTION.toString(),
 						DashboardFields.TAGS.toString(),
 						DashboardFields.IS_SHARED.toString(),
-						DashboardFields.JSON_SHARE_WITH_USERS.toString(),
-						DashboardFields.JSON_SHARE_WITH_GROUPS.toString(),
-						DashboardFields.JSON_EDITORS.toString(),
+						//DashboardFields.JSON_SHARE_WITH_USERS.toString(),
+						//DashboardFields.JSON_SHARE_WITH_GROUPS.toString(),
+						//DashboardFields.JSON_EDITORS.toString(),
 						DashboardFields.JSON_EDITOR_GROUPS.toString(),
 						DashboardFields.ALLOW_EDIT_SETTINGS.toString(),
 						DashboardFields.TIME_CREATED.toString(),
@@ -318,6 +373,224 @@ public class Dashboard extends CFWObject {
 		apis.add(new APIDashboardImport(this.getClass().getSimpleName(), "import"));
 		return apis;
 	}
+	
+	/******************************************************************
+	 *
+	 *@param type either "shareuser" or "admin"
+	 ******************************************************************/
+	public void updateSelectorFields() {
+		updateSelectorFields(this.id());
+	}
+	
+	/******************************************************************
+	 *
+	 *@param type either "shareuser" or "admin"
+	 ******************************************************************/
+	private void updateSelectorFields(Integer boardID) {
+		//--------------------------------------
+		// Shared Users
+		CFWField<LinkedHashMap<String, String>> sharedUserSelector = this.createSelectorFieldSharedUser(boardID);
+		this.removeField(FIELDNAME_SHARE_WITH_USERS);
+		shareWithUsers = sharedUserSelector;
+		this.addFieldAfter(sharedUserSelector, DashboardFields.IS_SHARED);
+		
+		//--------------------------------------
+		// Shared Groups
+		CFWField<LinkedHashMap<String, String>> sharedGroupsSelector = this.createSelectorFieldSharedGroups(boardID);
+		this.removeField(FIELDNAME_EDITORS);
+		shareWithGroups = sharedGroupsSelector;
+		this.addFieldAfter(sharedGroupsSelector, FIELDNAME_SHARE_WITH_USERS);
+		
+		//--------------------------------------
+		// Editors 
+		CFWField<LinkedHashMap<String, String>> editorsSelector = this.createSelectorFieldEditors(boardID);
+		this.removeField(FIELDNAME_EDITORS);
+		editors = editorsSelector;
+		this.addFieldAfter(editorsSelector, FIELDNAME_SHARE_WITH_GROUPS);
+		
+		//--------------------------------------
+		// Editor Groups
+		CFWField<LinkedHashMap<String, String>> editorGroupsSelector = this.createSelectorFieldEditorGroups(boardID);
+		this.removeField(FIELDNAME_EDITOR_GROUPS);
+		editors = editorGroupsSelector;
+		this.addFieldAfter(editorGroupsSelector, FIELDNAME_EDITORS);
+		
+	}
+	
+	/******************************************************************
+	 *
+	 *@param fieldname is either of the FIELDNAME_* constants
+	 ******************************************************************/
+	private CFWField<LinkedHashMap<String,String>> createSelectorFieldSharedUser(Integer boardID) {
+			
+		//--------------------------------------
+		// Initialize Variables
+		LinkedHashMap<String,String> selectedValue = new LinkedHashMap<>();
+		 if(boardID != null ) {
+				selectedValue = CFW.DB.DashboardSharedUsers
+								.selectUsersForDashboardAsKeyLabel(boardID);
+		 }
+		 
+		//--------------------------------------
+		// Create Field
+		return CFWField.newTagsSelector(FIELDNAME_SHARE_WITH_USERS)
+						.setDescription("Share this dashboard with specific users.")
+						.setLabel("Shared with Users")
+						.addAttribute("maxTags", "256")
+						.setValue(selectedValue)
+						.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
+							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+								return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+							}
+						});
+
+	}
+	
+	/******************************************************************
+	 *
+	 *@param fieldname is either of the FIELDNAME_* constants
+	 ******************************************************************/
+	private CFWField<LinkedHashMap<String,String>> createSelectorFieldSharedGroups(Integer boardID) {
+		
+		//--------------------------------------
+		// Initialize Variables
+		LinkedHashMap<String,String> selectedValue = new LinkedHashMap<>();
+		if(boardID != null ) {
+			selectedValue = CFW.DB.DashboardSharedGroups
+								.selectGroupsForDashboardAsKeyLabel(boardID);
+		}
+		
+		//--------------------------------------
+		// Create Field
+		return CFWField.newTagsSelector(FIELDNAME_SHARE_WITH_GROUPS)
+				.setLabel("Share with Groups")
+				.setDescription("Share this dashboard with specific groups.")
+				.addAttribute("maxTags", "256")
+				.setValue(selectedValue)
+				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+						return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
+					}
+				});
+		
+	}
+	
+	
+	/******************************************************************
+	 *
+	 *@param fieldname is either of the FIELDNAME_* constants
+	 ******************************************************************/
+	private CFWField<LinkedHashMap<String,String>> createSelectorFieldEditors(Integer boardID) {
+			
+		//--------------------------------------
+		// Initialize Variables
+		LinkedHashMap<String,String> selectedValue = new LinkedHashMap<>();
+		 if(boardID != null ) {
+				selectedValue = CFW.DB.DashboardSharedUsers
+								.selectUsersForDashboardAsKeyLabel(boardID);
+		}
+		 
+		//--------------------------------------
+		// Create Field
+		return CFWField.newTagsSelector(FIELDNAME_EDITORS)
+				.setLabel("Editors")
+				.setDescription("Allow the specified users to view and edit the dashboard, even when the dashboard is not shared.")
+				.addAttribute("maxTags", "256")
+				.setValue(selectedValue)
+				.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
+					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+						return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+					}
+				});
+
+	}
+	
+	/******************************************************************
+	 *
+	 *@param fieldname is either of the FIELDNAME_* constants
+	 ******************************************************************/
+	private CFWField<LinkedHashMap<String,String>> createSelectorFieldEditorGroups(Integer boardID) {
+		
+		//--------------------------------------
+		// Initialize Variables
+		LinkedHashMap<String,String> selectedValue = new LinkedHashMap<>();
+		if(boardID != null ) {
+			selectedValue = CFW.DB.DashboardSharedGroups
+								.selectGroupsForDashboardAsKeyLabel(boardID);
+		}
+		
+		//--------------------------------------
+		// Create Field
+		return CFWField.newTagsSelector(FIELDNAME_EDITOR_GROUPS)
+				.setLabel("Editor Groups")
+				.setDescription("Allow users having at least one of the specified groups to view and edit the dashboard, even when the dashboard is not shared.")
+				.addAttribute("maxTags", "256")
+				.setValue(selectedValue)
+				.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+						return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
+					}
+				});
+		
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public boolean saveSelectorFields() {
+		
+		boolean isSuccess = true;
+		
+			isSuccess &= saveSelectorField(FIELDNAME_SHARE_WITH_USERS);
+			isSuccess &= saveSelectorField(FIELDNAME_SHARE_WITH_GROUPS);
+			isSuccess &= saveSelectorField(FIELDNAME_EDITORS);
+		
+		return isSuccess;
+		
+	}
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private boolean saveSelectorField(String fieldname) {
+		boolean success = true;
+				
+		//--------------------------
+		// Update Selected Users
+		if(this.getFields().containsKey(fieldname)) {
+			CFWField<LinkedHashMap<String,String>> selector = this.getField(fieldname);
+			
+			LinkedHashMap<String,String> selectedValues = selector.getValue();
+			
+			boolean isSuccess = true;
+			
+			switch(fieldname) {
+				case FIELDNAME_SHARE_WITH_USERS:
+					CFW.DB.DashboardSharedUsers.updateUserDashboardAssignments(this, selectedValues);
+					break;
+					
+				case FIELDNAME_SHARE_WITH_GROUPS:
+					CFW.DB.DashboardSharedGroups.updateGroupDashboardAssignments(this, selectedValues);
+					break;
+					
+				case FIELDNAME_EDITORS:
+					CFW.DB.DashboardEditors.updateUserDashboardAssignments(this, selectedValues);
+					break;
+					
+				case FIELDNAME_EDITOR_GROUPS:
+					CFW.DB.DashboardEditors.updateUserDashboardAssignments(this, selectedValues);
+					break;
+				
+				default: new CFWLog(logger).severe("Development Error: unsupported value.");
+			}
+			if( !isSuccess ){
+				success = false;
+				CFW.Messages.addErrorMessage("Error while saving user assignments for field: "+fieldname);
+			}
+		}
+		
+		return success;
+	}
+	
 
 	public Integer id() {
 		return id.getValue();

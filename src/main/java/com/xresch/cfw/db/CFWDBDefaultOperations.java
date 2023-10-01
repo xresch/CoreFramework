@@ -118,7 +118,8 @@ public  class CFWDBDefaultOperations {
 		new CFWLog(logger).audit(CFWAuditLogAction.CREATE, object, auditLogFieldnames);
 		
 		Integer id = object
-				.queryCache(object.getClass(), "CFWDBDefaultOperations.createGetPrimaryKey")
+				// somehow messes stuff up, only god knows why... okay maybe not even he knows
+				// .queryCache(object.getClass(), "CFWDBDefaultOperations.createGetPrimaryKey")
 				.insertGetPrimaryKey();
 				 
 		if(id != null && object.getPrimaryKeyValue() == null) {
@@ -138,6 +139,7 @@ public  class CFWDBDefaultOperations {
 	public static Integer createGetPrimaryKeyWithout(PrecheckHandler precheck, CFWObject object, Object... fieldnamesToExclude) {
 		return createGetPrimaryKeyWithout(precheck, null, object, fieldnamesToExclude);
 	}
+	
 	/********************************************************************************************
 	 * Creates a new item in the DB and sets the primary key on the object.
 	 * @param Object with the values that should be inserted. ID will be set by the Database.

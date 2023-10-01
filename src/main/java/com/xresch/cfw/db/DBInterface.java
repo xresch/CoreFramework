@@ -220,6 +220,18 @@ public class DBInterface {
 	}
 	
 	/********************************************************************************************
+	 * Commits a new transaction.
+	 * 
+	 * @throws SQLException 
+	 ********************************************************************************************/
+	public void transactionEnd(boolean isSuccess) {
+		if(isSuccess) {
+			transactionCommit();
+		}else {
+			transactionRollback();
+		}
+	}
+	/********************************************************************************************
 	 * Commits the transaction started with transactionStart.
 	 * 
 	 * @throws SQLException 

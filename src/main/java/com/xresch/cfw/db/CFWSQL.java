@@ -1101,7 +1101,7 @@ public class CFWSQL {
 	public CFWSQL and(Object fieldname, Object value, boolean isCaseSensitive) {
 		if(!isQueryCached()) {
 			if(isCaseSensitive) {
-				query.append(" AND ").append(ALIAS+"."+fieldname).append(" = ?");	
+				query.append(" AND ").append(ALIAS+".\""+fieldname+"\" = ?");	
 			}else {
 				query.append(" AND LOWER(").append(ALIAS+"."+fieldname).append(") = LOWER(?)");	
 			}

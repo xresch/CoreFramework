@@ -3,7 +3,6 @@ package com.xresch.cfw.features.dashboard;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
-import java.util.TreeMap;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
@@ -21,17 +20,17 @@ import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionTextarea;
 import com.xresch.cfw.features.dashboard.widgets.ManualPageWidget;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
-import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetThresholdLegend;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetForceRefresh;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetJavascript;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetPyConfig;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetPyScript;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetReplica;
+import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetThresholdLegend;
 import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsDiscoMode;
-import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsSnow;
-import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsLightSwitch;
 import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsFireworks;
+import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsLightSwitch;
+import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetEasterEggsSnow;
 import com.xresch.cfw.features.dashboard.widgets.eastereggs.WidgetHelloWorld;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetChecklist;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetHTMLEditor;
@@ -45,8 +44,6 @@ import com.xresch.cfw.features.dashboard.widgets.standard.WidgetText;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetWebsite;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetYoutubeVideo;
 import com.xresch.cfw.features.manual.ManualPage;
-import com.xresch.cfw.features.query.CFWQueryManualPageSource;
-import com.xresch.cfw.features.query.CFWQuerySource;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.DynamicItemCreator;
@@ -125,6 +122,10 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Objects.addCFWObject(DashboardWidget.class);
 		CFW.Registry.Objects.addCFWObject(DashboardParameter.class);
 		CFW.Registry.Objects.addCFWObject(DashboardFavoritesMap.class);
+		CFW.Registry.Objects.addCFWObject(DashboardSharedGroupsMap.class);
+		CFW.Registry.Objects.addCFWObject(DashboardSharedUserMap.class);
+		CFW.Registry.Objects.addCFWObject(DashboardEditorsMap.class);
+		CFW.Registry.Objects.addCFWObject(DashboardEditorGroupsMap.class);
     	
 		//----------------------------------
     	// Initialize Cache
@@ -236,7 +237,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Components.addButtonsMenuItem(favoritesMenu, null);
 		
 	}
-
+	
 	@Override
 	public void initializeDB() {
 

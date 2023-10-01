@@ -114,8 +114,33 @@ public class CFWDBKeyValuePairs {
 		
 		
 	}
+	
+	/***************************************************************
+	 * Updates or creates the Value in the database.
+	 * @param keyVal
+	 * @return true or false
+	 ****************************************************************/
+	public static boolean setValue(String category, String key, String value) {
+		
+		if(key == null) {
+			new CFWLog(logger)
+				.warn("The key that should be updated cannot be null");
+			return false;
+		}
+		
+		if(checkKeyInCategoryExists(category, key)) {
+			KeyValuePair pair = selectByKey(key);
+			pair.value(value);
+			return update(pair);
+		}else {
+			KeyValuePair newPair = new KeyValuePair(category, key);
+			newPair.value(value);
+			return create(newPair);
+		}
+		
+	}
 	/********************************************************************************************
-	 * Returns a keyVal value from cache as String
+	 * Returns a keyVal value from cache as String, null if not exists.
 	 * 
 	 ********************************************************************************************/
 	public static String getValueAsString(String key) {
@@ -123,7 +148,7 @@ public class CFWDBKeyValuePairs {
 	}
 	
 	/********************************************************************************************
-	 * Returns a keyVal value from cache as boolean
+	 * Returns a keyVal value from cache as boolean, null if not exists.
 	 * 
 	 ********************************************************************************************/
 	public static boolean getValueAsBoolean(String key) {
@@ -131,7 +156,7 @@ public class CFWDBKeyValuePairs {
 	}
 	
 	/********************************************************************************************
-	 * Returns a keyVal value from cache as integer.
+	 * Returns a keyVal value from cache as integer, null if not exists.
 	 * 
 	 ********************************************************************************************/
 	public static int getValueAsInt(String key) {
@@ -139,7 +164,7 @@ public class CFWDBKeyValuePairs {
 	}
 	
 	/********************************************************************************************
-	 * Returns a keyVal value from cache as long.
+	 * Returns a keyVal value from cache as long, null if not exists.
 	 * 
 	 ********************************************************************************************/
 	public static long getValueAsLong(String key) {
@@ -221,6 +246,22 @@ public class CFWDBKeyValuePairs {
 				.where(KeyValuePairFields.KEY.toString(), name)
 				.getFirstAsObject();
 
+	}
+	
+	/***************************************************************
+	 * Select a keyVal by it's key.
+	 * @param id of the keyVal
+	 * @return Returns a keyVal or null if not found or in case of exception.
+	 ****************************************************************/
+	public static KeyValuePair selectByCategoryAndKey(String category, String key) {
+		
+		return (KeyValuePair)new CFWSQL(new KeyValuePair())
+				.queryCache()
+				.select()
+				.where(KeyValuePairFields.CATEGORY, category)
+				.and(KeyValuePairFields.KEY, key)
+				.getFirstAsObject();
+		
 	}
 	
 	/***************************************************************
@@ -471,6 +512,25 @@ public class CFWDBKeyValuePairs {
 				.queryCache(CFWDBKeyValuePairs.class, "checkConfigExists")
 				.selectCount()
 				.where(KeyValuePairFields.KEY.toString(), keyValName)
+				.executeCount();
+		
+		return (count > 0);
+		
+	}
+	
+	/****************************************************************
+	 * Check if the keyVal exists by name and category.
+	 * 
+	 * @param keyValname to check
+	 * @return true if exists, false otherwise or in case of exception.
+	 ****************************************************************/
+	public static boolean checkKeyInCategoryExists(String category, String key) {
+		
+		int count = new CFWSQL(new KeyValuePair())
+				.queryCache()
+				.selectCount()
+				.where(KeyValuePairFields.CATEGORY, category)
+				.and(KeyValuePairFields.KEY.toString(), key)
 				.executeCount();
 		
 		return (count > 0);

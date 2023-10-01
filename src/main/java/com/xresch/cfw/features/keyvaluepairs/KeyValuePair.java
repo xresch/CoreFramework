@@ -20,6 +20,8 @@ public class KeyValuePair extends CFWObject {
 	
 	public static final String TABLE_NAME = "CFW_KEY_VALUE_PAIRS";
 	
+	public static final String CATEGORY_MIGRATION = "Migration";
+	
 	public enum KeyValuePairFields{
 		PK_ID,
 		CATEGORY,

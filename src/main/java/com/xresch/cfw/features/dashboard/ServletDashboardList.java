@@ -231,6 +231,7 @@ public class ServletDashboardList extends HttpServlet
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 			Dashboard duplicate = CFW.DB.Dashboards.selectByID(dashboardID);
+			
 			duplicate.id(null);
 			duplicate.timeCreated( new Timestamp(new Date().getTime()) );
 			duplicate.foreignKeyOwner(CFW.Context.Request.getUser().id());
@@ -299,7 +300,11 @@ public class ServletDashboardList extends HttpServlet
 		// Create Dashboard Form
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
 		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
-			CFWForm createDashboardForm = new Dashboard().toForm("cfwCreateDashboardForm", "{!cfw_dashboard_create!}");
+			
+			Dashboard newBoard = new Dashboard();
+			newBoard.updateSelectorFields();
+			
+			CFWForm createDashboardForm = newBoard.toForm("cfwCreateDashboardForm", "{!cfw_dashboard_create!}");
 			
 			createDashboardForm.setFormHandler(new CFWFormHandler() {
 				
@@ -311,9 +316,15 @@ public class ServletDashboardList extends HttpServlet
 						origin.mapRequestParameters(request);
 						Dashboard dashboard = (Dashboard)origin;
 						dashboard.foreignKeyOwner(CFW.Context.Request.getUser().id());
-						if( CFW.DB.Dashboards.create(dashboard) ) {
+						
+						Integer newID = CFW.DB.Dashboards.createGetPrimaryKey(dashboard);
+						
+						if( newID != null ) {
+							dashboard.id(newID);
 							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Dashboard created successfully!");
 							generateSharedMessages(dashboard);
+							
+							dashboard.saveSelectorFields();
 						}
 					}
 					
@@ -333,13 +344,15 @@ public class ServletDashboardList extends HttpServlet
 			
 			if(dashboard != null) {
 				
+				dashboard.updateSelectorFields();
+				
 				if(!CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR_PUBLIC)
 				&& !CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 					dashboard.getField(DashboardFields.IS_PUBLIC.toString()).isDisabled(true);
 				}
 				
 				CFWForm editDashboardForm = dashboard.toForm("cfwEditDashboardForm"+ID, "Update Dashboard");
-				
+
 				editDashboardForm.setFormHandler(new CFWFormHandler() {
 					
 					@Override
@@ -347,12 +360,15 @@ public class ServletDashboardList extends HttpServlet
 						
 						Dashboard dashboard = (Dashboard)origin;
 						if(origin.mapRequestParameters(request) 
-						&& CFW.DB.Dashboards.update((Dashboard)origin)) {
+						&& CFW.DB.Dashboards.update(dashboard)) {
 							
 							
 							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
 							
 							generateSharedMessages(dashboard);
+							
+							dashboard.saveSelectorFields();
+							
 						}
 						
 					}

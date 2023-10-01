@@ -125,7 +125,7 @@ public class TestDashboard extends DBTestMaster {
 		//----------------------------------------
 		// Create Dashboard
 		String boardName = "testDashboardAllHaveAccess";
-		CFW.DB.Dashboards.create(
+		CFW.DB.Dashboards.createGetPrimaryKey(
 			new Dashboard()
 				.name(boardName)
 				.foreignKeyOwner(userCreator.getPrimaryKeyValue())
@@ -144,7 +144,7 @@ public class TestDashboard extends DBTestMaster {
 		//----------------------------------------
 		// Create Dashboard
 		boardName = "testDashboardSharedWithAll";
-		CFW.DB.Dashboards.create(
+		CFW.DB.Dashboards.createGetPrimaryKey(
 			new Dashboard()
 				.name(boardName)
 				.foreignKeyOwner(userCreator.getPrimaryKeyValue())
@@ -157,7 +157,7 @@ public class TestDashboard extends DBTestMaster {
 		//----------------------------------------
 		// Create Dashboard
 		boardName = "testDashboardMinimalAccess";
-		CFW.DB.Dashboards.create(
+		CFW.DB.Dashboards.createGetPrimaryKey(
 			new Dashboard()
 				.name(boardName)
 				.foreignKeyOwner(userCreator.getPrimaryKeyValue())
@@ -170,7 +170,7 @@ public class TestDashboard extends DBTestMaster {
 		//----------------------------------------
 		// Create  Dashboard
 		boardName = "testDashboardOtherCreator";
-		CFW.DB.Dashboards.create(
+		CFW.DB.Dashboards.createGetPrimaryKey(
 			new Dashboard()
 				.name(boardName)
 				.foreignKeyOwner(userCreatorTwo.getPrimaryKeyValue())

@@ -299,6 +299,15 @@ public class CFWDB {
 	}
 	
 	/********************************************************************************************
+	 * Commits the transaction if isSuccess is true, else rolls back.
+	 * 
+	 * @throws SQLException 
+	 ********************************************************************************************/
+	public static void transactionEnd(boolean isSuccess) {
+		db.transactionEnd(isSuccess);
+	}
+	
+	/********************************************************************************************
 	 * Rollbacks the transaction.
 	 * 
 	 * @throws SQLException 

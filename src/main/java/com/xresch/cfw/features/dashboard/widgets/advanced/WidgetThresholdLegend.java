@@ -128,7 +128,7 @@ public class WidgetThresholdLegend extends WidgetDefinition {
 	@Override
 	public ArrayList<FileDefinition> getCSSFiles() { 
 		
-		FileDefinition css = new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_widgets.css");
+		FileDefinition css = new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_widget.css");
 		ArrayList<FileDefinition> array = new ArrayList<FileDefinition>();
 		array.add(css);
 		return array; 

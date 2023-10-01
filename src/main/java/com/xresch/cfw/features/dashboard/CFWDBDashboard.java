@@ -93,15 +93,15 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(Dashboard... items) 	{ updateTags(items); return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, items); }
-	public static boolean 	create(Dashboard item) 		{ updateTags(item); return CFWDBDefaultOperations.create(prechecksCreateUpdate, auditLogFieldnames, item);}
-	public static Integer 	createGetPrimaryKey(Dashboard item) { updateTags(item); return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, auditLogFieldnames, item);}
+	public static Integer 	createGetPrimaryKey(Dashboard item) { 
+		updateTags(item); 
+		return CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item, Dashboard.SELECTOR_FIELDS);
+	}
 	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(Dashboard... items) 	{ updateTags(items); return CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, items); }
-	public static boolean 	update(Dashboard item) 		{ updateTags(item); return CFWDBDefaultOperations.update(prechecksCreateUpdate, auditLogFieldnames, item); }
+	public static boolean 	update(Dashboard item) 		{ updateTags(item); return CFWDBDefaultOperations.updateWithout(prechecksCreateUpdate, auditLogFieldnames, item, Dashboard.SELECTOR_FIELDS); }
 	
 	//####################################################################################################
 	// DELETE
