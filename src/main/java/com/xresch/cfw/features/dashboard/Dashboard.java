@@ -654,6 +654,7 @@ public class Dashboard extends CFWObject {
 	}
 		
 	public LinkedHashMap<String,String> sharedWithUsers() {
+		if(shareWithUsers.getValue() == null) { return new LinkedHashMap<>(); }
 		return shareWithUsers.getValue();
 	}
 	
@@ -663,6 +664,7 @@ public class Dashboard extends CFWObject {
 	}
 	
 	public LinkedHashMap<String,String> sharedWithGroups() {
+		if(shareWithGroups.getValue() == null) { return new LinkedHashMap<>(); }
 		return shareWithGroups.getValue();
 	}
 	
@@ -671,6 +673,7 @@ public class Dashboard extends CFWObject {
 		return this;
 	}
 	public LinkedHashMap<String,String> editors() {
+		if(editors.getValue() == null) { return new LinkedHashMap<>(); }
 		return editors.getValue();
 	}
 	
@@ -680,6 +683,7 @@ public class Dashboard extends CFWObject {
 	}
 	
 	public LinkedHashMap<String,String> editorGroups() {
+		if(editorGroups.getValue() == null) { return new LinkedHashMap<>(); }
 		return editorGroups.getValue();
 	}
 	
