@@ -663,6 +663,8 @@ pre {
 	text-align: center !important;
 }
 
+
+
 /*
   .cfw-draggable{}
   .cfw-droptarget{} 
@@ -820,6 +822,16 @@ pre {
     flex-flow: row wrap;
     align-items: center;
     margin-bottom: 10px;
+}
+
+.cfw-dataviewer-settings-button {
+	z-index: 24;
+	position: absolute;
+    right: 28px;
+}
+.cfw-dataviewer-settings-button > .btn-xs {
+	position: relative;
+    top: 37px;
 }
 
 

@@ -2927,7 +2927,6 @@ function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
  ******************************************************************/
 function cfw_renderer_dataviewer(renderDef) {
 	
-	
 	//========================================
 	// Render Specific settings
 	var defaultSettings = {
@@ -2992,7 +2991,6 @@ function cfw_renderer_dataviewer(renderDef) {
 	//var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.dataviewer);
 	var settings = _.merge({}, defaultSettings, renderDef.rendererSettings.dataviewer);	
 	
-	console.log(renderDef);
 	//-----------------------------------
 	// Create DataviewerDiv
 	let dataviewerID = "dataviewer-"+CFW.utils.randomString(12);
@@ -3136,6 +3134,7 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	var renderDef = params.renderDef ;
 	var settings = params.settings ;
 	var filterquery = params.filterquery ;
+	var sortbyField = params.sortbyField ;
 	var sortbyDirection = params.sortbyDirection ;
 	var offset = params.offset ;
 	var pageSize = params.pageSize;
@@ -3144,8 +3143,16 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	// Handle Filter Highlight
 	if(CFW.utils.isNullOrEmpty(filterquery)){
 		settingsDiv.find('input[name="filterquery"]').removeClass('bg-cfw-yellow');
+		settingsDiv.find('input[name="filterquery"]')
+					.closest('.dropleft')
+					.find('.btn-primary')
+					.removeClass('bg-cfw-yellow');
 	}else{
 		settingsDiv.find('input[name="filterquery"]').addClass('bg-cfw-yellow');
+		settingsDiv.find('input[name="filterquery"]')
+					.closest('.dropleft')
+					.find('.btn-primary')
+		.addClass('bg-cfw-yellow');
 	}
 	
 	//=====================================================
@@ -3361,7 +3368,7 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	if(initialRendererIndex != null && initialRendererIndex > -1){
 		selectedRendererIndex = initialRendererIndex;
 	}
-	
+		
 	//--------------------------------------
 	// Display As
 	if(dataviewerSettings.renderers.length > 1){
@@ -3455,6 +3462,24 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	
 	html += '</div>';
 	
+	//--------------------------------------
+	// Toogle Button
+	if(dataviewerSettings.menu == 'toggle'){
+		var dropDownID = 'dropdownMenuButton'+CFW.utils.randomString(12);
+		var dropdownHTML = '<div class="dropleft d-inline pl-1 cfw-dataviewer-settings-button">'
+			+ '<button class="btn btn-xs btn-primary mb-2 '+filterHighlightClass+'" type="button" id="'+dropDownID+'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
+			+ '  <i class="fas fa-sliders-h"></i> '
+			+ '</button>'
+			+ '  <div class="dropdown-menu p-2" onclick="event.stopPropagation()"  aria-labelledby="'+dropDownID+'">'
+			     + html
+			+'   </div> '
+			+'</div>';
+			
+		return dropdownHTML;
+		
+	}
+	
+	// default
 	return html;
 }
 
