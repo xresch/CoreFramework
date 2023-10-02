@@ -2946,6 +2946,8 @@ function cfw_renderer_dataviewer(renderDef) {
 			],
 			// The index of the initial renderer. Default is -1, takes first one in the list or last selected by user if storeid is specified. 
 			rendererIndex: -1,
+			// Defines how the menu should be rendered
+			menu: 'default', // either 'default' | 'button' | 'none' | true | false 
 			// The initial page to be drawn.
 			initialpage: 1,
 			// The number of items options for the page size selector. 
@@ -2990,12 +2992,30 @@ function cfw_renderer_dataviewer(renderDef) {
 	//var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.dataviewer);
 	var settings = _.merge({}, defaultSettings, renderDef.rendererSettings.dataviewer);	
 	
+	console.log(renderDef);
+	//-----------------------------------
+	// Create DataviewerDiv
 	let dataviewerID = "dataviewer-"+CFW.utils.randomString(12);
 	let dataviewerDiv = $('<div class="cfw-dataviewer" id="'+dataviewerID+'">');
 	
 	dataviewerDiv.data('renderDef', renderDef);
 	dataviewerDiv.data('settings', settings);
 	
+	//-----------------------------------
+	// Render without Dataviewer if menu=none
+	if(settings.menu == 'none' || settings.menu == false){
+		var params = cfw_renderer_dataviewer_createParams(dataviewerDiv, settings.initialpage);
+		rendererName = params.rendererName.trim().toLowerCase();
+		
+		//customSettings = queryResult.displaySettings.settings;
+		//currentSettings = renderDefinition.rendererSettings[rendererName]
+		//Object.assign(currentSettings, customSettings);
+			
+		return CFW.render.getRenderer(rendererName).render(params.finalRenderDef);	
+	}
+	
+	//-----------------------------------
+	// Render Dataviewer	
 	
 	dataviewerDiv.append(cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, settings, settings.rendererIndex) );
 	
@@ -3009,13 +3029,13 @@ function cfw_renderer_dataviewer(renderDef) {
 
 CFW.render.registerRenderer("dataviewer", new CFWRenderer(cfw_renderer_dataviewer) );
 
+
 /******************************************************************
  * 
  * @param dataviewerIDOrJQuery cssSelector string like '#dataviewer-6a5b39ai' or a JQuery object
  * @param pageToRender page number
  ******************************************************************/
-function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) {
-	
+function cfw_renderer_dataviewer_createParams(dataviewerIDOrJQuery, pageToRender) {
 	
 	//=====================================================
 	// Initialize
@@ -3094,6 +3114,31 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 	params.sortbyField = sortbyField;
 	params.sortbyDirection = sortbyDirection;
 	params.offset = offset;
+	
+	return params;
+}
+
+/******************************************************************
+ * 
+ * @param dataviewerIDOrJQuery cssSelector string like '#dataviewer-6a5b39ai' or a JQuery object
+ * @param pageToRender page number
+ ******************************************************************/
+function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) {
+	
+	//=====================================================
+	// Initialize
+	var params = cfw_renderer_dataviewer_createParams(dataviewerIDOrJQuery, pageToRender);
+	
+	//var dataviewerDiv = params.dataviewerDiv ;
+	//var targetDiv = params.targetDiv ;
+	//var dataviewerID = params.dataviewerID ;
+	var settingsDiv = params.settingsDiv ;
+	var renderDef = params.renderDef ;
+	var settings = params.settings ;
+	var filterquery = params.filterquery ;
+	var sortbyDirection = params.sortbyDirection ;
+	var offset = params.offset ;
+	var pageSize = params.pageSize;
 	
 	//=====================================================
 	// Handle Filter Highlight
@@ -3274,6 +3319,8 @@ function cfw_renderer_dataviewer_resolveSelectedRendererDetails(params) {
 	let rendererName = dataviewerSettings.renderers[0].name;
 	if(dataviewerSettings.renderers.length > 1){
 		var rendererIndex = settingsDiv.find('select[name="displayas"]').val();
+		// in case of no menu
+		if(rendererIndex == null){ rendererIndex = dataviewerSettings.rendererIndex; }
 		renderDefOverrides = dataviewerSettings.renderers[rendererIndex].renderdef;
 		rendererName = dataviewerSettings.renderers[rendererIndex].name;
 	}

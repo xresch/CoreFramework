@@ -895,6 +895,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 				dataviewer: {
 					//storeid: 'cfw-query',
 					rendererIndex: rendererIndex,
+					menu: queryResult.displaySettings.menu,
 					sortable: false,
 					renderers: [
 						{	label: 'Table',
@@ -982,19 +983,11 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	//-----------------------------------
 	// Get Renderer and update Settings
 	var rendererName = "dataviewer";
-	
-	if(queryResult.displaySettings.menu == false){
-		if(queryResult.displaySettings.as != null){
-			rendererName = queryResult.displaySettings.as.trim().toLowerCase();
-			// Merge custom settings into default settings for selected renderer
-			var customSettings = queryResult.displaySettings.settings;
-			var currentSettings = renderDefinition.rendererSettings[rendererName]
-			Object.assign(currentSettings, customSettings);
-		}else{
-			// default to table
+	/*if(rendererDefinition.menu.type == false || rendererDefinition.menu.type == 'none'){
+		if(queryResult.displaySettings.as == null){
 			rendererName = "table";
 		}
-	}
+	}*/
 	
 	//-----------------------------------
 	// Render!!!
