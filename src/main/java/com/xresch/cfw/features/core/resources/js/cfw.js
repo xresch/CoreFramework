@@ -670,6 +670,45 @@ function cfw_initializeSummernote(formID, editorID){
 }
 
 /**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_initializeExpandableTextareaField(fieldID){
+	var id = '#'+fieldID;
+
+	var textarea = $(id);
+
+	var wrapper = $('<div class="cfw-expandable-textarea-wrapper w-100">');
+	wrapper.append('<i class="fas fa-expand" onclick="cfw_initializeExpandableTextareaField_toggle(this)" ></i>');
+	textarea.before(wrapper);
+	wrapper.append(textarea);	
+
+}
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_initializeExpandableTextareaField_toggle(buttonElement){
+
+	var button = $(buttonElement);
+	var wrapper = $(buttonElement).closest(".cfw-expandable-textarea-wrapper");
+
+	if(wrapper.hasClass('expanded')){
+		wrapper.removeClass('expanded');
+		button.removeClass('fa-compress');
+		button.addClass('fa-expand');
+		
+	}else{
+		wrapper.addClass('expanded');
+		button.addClass('fa-compress');
+		button.removeClass('fa-expand');
+	}
+	
+	
+
+}
+
+
+/**************************************************************************************
  * Initialize a TagField created with the Java object CFWField.
  * @param fieldID the name of the field
  * @return nothing
@@ -793,9 +832,6 @@ function cfw_initializeCheckboxesField(fieldID, options, values){
 		var checked = (values != null && values[key] == "true") ? "checked" : "";
 		wrapper.append('<label><input type="checkbox" class="cfw-checkbox" id="'+fieldID+'-'+key+'" name="'+key+'" onchange="cfw_internal_updateCheckboxesField(this)" '+checked+' />'+label+'</label>');
 	}
-	
-	//----------------------------------
-	// Add Create Button
 	
 }
 

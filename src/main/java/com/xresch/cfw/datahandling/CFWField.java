@@ -1118,7 +1118,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		if(this.parent instanceof CFWForm) {
 			((CFWForm)this.parent).javascript.append("cfw_initializeCustomListField('"+name+"', "+stringValue+");\r\n");
 		}
-				
+					
 	}
 	
 	/***********************************************************************************
@@ -1158,6 +1158,10 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			inputValue = this.value.toString();
 		}
 		html.append("<textarea class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+">"+inputValue+"</textarea>");
+		
+		if(this.parent instanceof CFWForm) {
+			((CFWForm)this.parent).javascript.append("cfw_initializeExpandableTextareaField('"+name+"');\r\n");
+		}
 	}
 	
 	/***********************************************************************************

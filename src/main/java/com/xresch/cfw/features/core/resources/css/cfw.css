@@ -618,10 +618,32 @@ pre {
 	width: 100%;
     height: 100%;
 }
+
 .cfw-field-wrapper {
 	display: flex;
 	flex-grow: 1;
 	width: 100%;
+}
+
+.cfw-expandable-textarea-wrapper.expanded {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1050;
+    height: 100%!important;
+    width: 100%!important;
+}
+
+.cfw-expandable-textarea-wrapper.expanded textarea {
+	height: 100%!important;
+}
+
+.cfw-expandable-textarea-wrapper > i {
+	color: rgba(0,0,0, 0.5);
+    position: absolute;
+    right: 7px;
+    top: 2px;
+    cursor: pointer;
 }
 
 .cfw-decorator-area {
