@@ -163,6 +163,7 @@ function cfw_hljs_register_CFWQuery(hljs) {
     contains: [
 	  COMMENTS,
       hljs.HASH_COMMENT_MODE,
+      hljs.C_BLOCK_COMMENT_MODE,
 	  SOURCE,
 	  COMMANDS,
 	  NUMBERS,

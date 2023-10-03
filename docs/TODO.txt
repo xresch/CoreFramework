@@ -233,14 +233,15 @@ DONE
 - Query: Editor - Fixed issues Ctrl+Alt+Arrow not copying last character of row & missing newline on first row
 - Query: Parsing - Return Debug info in case of  errors
 - Query: Parsing - Added detection of endless looping and prevention of OutOfMemoryError
-- Query: Widget Query Results - Prevent saving queries with parsing issues and when permissions are missing.
-- Query: Widget Query Results - Added Task Support for alerting.
 - Query: Fixed Comma after Binary Expression breaks query by creating array in the wrong place
 - Query: Loader does not block query editor
 - Query: Support time parameters ($earliest$ ...) in query editor
 - Query: URL is updated on each execution, even if the query fails
 - Query: Modulo operator('%') is now supported by the CFWQL syntax
+- Query: "/* */" Multiline comments are now supported by the CFWQL syntax
 - Query: Added API endpoint "Query >> execute"
+- Query: Widget Query Results - Prevent saving queries with parsing issues and when permissions are missing.
+- Query: Widget Query Results - Added Task Support for alerting.
 - Query: Command: formatfield - added percent formatter
 - Query: Command: formatfield - added list formatter
 - Query: Command: metadata - added special property "template"

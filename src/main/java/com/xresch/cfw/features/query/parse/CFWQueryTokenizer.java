@@ -34,6 +34,7 @@ public class CFWQueryTokenizer {
 	
 	private boolean keywordsCaseSensitive = true;
 	private boolean hashComments = true;
+	private boolean multilineComments = true;
 	private ArrayList<String> keywordList = new ArrayList<>();
 	
 	/***********************************************************************************************
@@ -123,6 +124,26 @@ public class CFWQueryTokenizer {
 			
 			while(this.hasMoreTokens() && !this.currentChar().equals("\n")) {
 				cursor++;
+			}
+			return getNextToken();
+		}
+		
+		//-----------------------------------
+		// Multiline Comments, ignore /* .. */
+		if(multilineComments && this.hasMoreTokens() 
+		&& this.currentChar().equals("/")
+		&& this.nextChar().equals("*")) {
+			
+			while(this.hasMoreTokens()) {
+				if(!this.currentChar().equals("*")) {
+					cursor++;
+				}else if(this.nextChar().equals("/"))  {
+					cursor += 2;
+					System.out.println("this.currentChar(): "+this.currentChar());
+					return getNextToken();
+				}else {
+					cursor++;
+				}
 			}
 			return getNextToken();
 		}
@@ -325,14 +346,30 @@ public class CFWQueryTokenizer {
 	}
 	
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
 	private boolean isEOF() {
 		return cursor >= base.length();
 	}
-		
+	
+	/***********************************************************************************************
+	 * Returns the char at cursor position.
+	 ***********************************************************************************************/	
 	private String currentChar(){
 		return this.charAt(cursor);
 	}
 	
+	/***********************************************************************************************
+	 * Returns the char right after the cursor position.
+	 ***********************************************************************************************/
+	private String nextChar(){
+		return this.charAt(cursor+1);
+	}
+	
+	/***********************************************************************************************
+	 * Returns the char at the given position in the string.
+	 ***********************************************************************************************/
 	private String charAt(int position){
 		
 		int endIndex = position;
@@ -344,14 +381,24 @@ public class CFWQueryTokenizer {
 	}
 	
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
 	private boolean matchesCurrentChar(Pattern pattern){
 		return matches(pattern, this.currentChar());
 	}
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
 	private boolean matches(Pattern pattern, String string){
 		return pattern.matcher(string).matches();
 	}
+
 	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
 	private boolean findPattern(Pattern pattern, String string){
 		return pattern.matcher(string).find();
 	}

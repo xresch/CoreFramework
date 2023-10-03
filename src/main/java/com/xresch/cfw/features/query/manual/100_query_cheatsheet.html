@@ -266,14 +266,16 @@
 			<div>Comments</div>
 		</div>
 		<div class="card-body maxvw-40">
-			You can use hash for line comments or 'comment'/'off' command to make everything until the next pipe a comment:
+			You can use hash for line comments, '/* ... */' for multiline comments or 'comment'/'off' command to make everything until the next pipe a comment:
 			<pre><code class="language-cfwquery"># use hash for line comment
-| source random records=879
-| comment 
+| source random records=879 
+| off  
 	"applies until next pipe"
 	"same as off"
 | top 20
-| off distinct FIRSTNAME | tail 10</code></pre>
+| off distinct FIRSTNAME | tail 10
+/* multiline comment
+| display as=panels*/</code></pre>
 		</div>
 	</div>
 </div>
