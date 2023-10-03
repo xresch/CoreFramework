@@ -139,7 +139,6 @@ public class CFWQueryTokenizer {
 					cursor++;
 				}else if(this.nextChar().equals("/"))  {
 					cursor += 2;
-					System.out.println("this.currentChar(): "+this.currentChar());
 					return getNextToken();
 				}else {
 					cursor++;

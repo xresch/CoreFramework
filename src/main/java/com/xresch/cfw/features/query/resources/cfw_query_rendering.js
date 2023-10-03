@@ -1011,8 +1011,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 function cfw_query_renderAsChart(resultTarget, queryResult, options){
 
 	var settings = queryResult.displaySettings;
-	console.log("queryResult.displaySettings: "+queryResult.displaySettings)
-	console.log(queryResult.displaySettings)
+
 	//---------------------------------
 	// Prepare TitleFields
 	var seriesColumns = (settings.by != null) ? settings.by : settings.groupby; // groupby is deprecated
