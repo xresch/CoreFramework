@@ -896,6 +896,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 					//storeid: 'cfw-query',
 					rendererIndex: rendererIndex,
 					menu: queryResult.displaySettings.menu,
+					pagination: queryResult.displaySettings.pagination,
 					sortable: false,
 					renderers: [
 						{	label: 'Table',
@@ -979,19 +980,22 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 				},
 			},
 		};
-		
+	
 	//-----------------------------------
-	// Get Renderer and update Settings
-	var rendererName = "dataviewer";
-	/*if(rendererDefinition.menu.type == false || rendererDefinition.menu.type == 'none'){
-		if(queryResult.displaySettings.as == null){
-			rendererName = "table";
-		}
-	}*/
+	// Merge with Custom Settings
+	var rendererName = "table";
+	if(queryResult.displaySettings.as != null){
+		rendererName = queryResult.displaySettings.as.trim().toLowerCase();
+	}
+	// Merge custom settings into default settings for selected renderer
+	var customSettings = queryResult.displaySettings.settings;
+	var currentSettings = renderDefinition.rendererSettings[rendererName]
+	Object.assign(currentSettings, customSettings);
+
 	
 	//-----------------------------------
 	// Render!!!
-	var renderResult = CFW.render.getRenderer(rendererName).render(renderDefinition);	
+	var renderResult = CFW.render.getRenderer("dataviewer").render(renderDefinition);	
 	
 	targetDiv.append(renderResult);
 }

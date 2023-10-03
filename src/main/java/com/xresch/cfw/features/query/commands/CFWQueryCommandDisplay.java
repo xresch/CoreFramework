@@ -60,8 +60,8 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" as=<asOption> [visiblefields=<arrayOfFieldnames>] [titlefields=<arrayOfFieldnames>]"
-				+"\n[titleformat=<titleformat>] [menu=<showMenu>] [zoom=<zoomNumber>]";
+		return COMMAND_NAME+" as=<asOption> [menu=<menu>] [pagination=<pagination>]  [visiblefields=<arrayOfFieldnames>] [titlefields=<arrayOfFieldnames>]"
+				+"\n[titleformat=<titleformat>]  [zoom=<zoomNumber>]";
 	}
 	
 	/***********************************************************************************************
@@ -69,29 +69,45 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>asOption:&nbsp;</b>One of the following options:</p>"
+		return  "<ul>"
+				+"<li><b>asOption:&nbsp;</b>Defines how the data should be displayed. One of the following options:"
 					+"<ul>"
-					+"<li>table</li>"
-					+"<li>panels</li>"
-					+"<li>cards</li>"
-					+"<li>tiles</li>"
-					+"<li>statustiles</li>"
-					+"<li>statuslist</li>"
-					+"<li>statusbar</li>"
-					+"<li>statusbarreverse</li>"
-					
-					+"<li>statusmap</li>"
-					
-					+"<li>title</li>"
-					+"<li>csv</li>"
-					+"<li>json</li>"
-					+"<li>xml</li>"
+						+"<li>table</li>"
+						+"<li>panels</li>"
+						+"<li>cards</li>"
+						+"<li>tiles</li>"
+						+"<li>statustiles</li>"
+						+"<li>statuslist</li>"
+						+"<li>statusbar</li>"
+						+"<li>statusbarreverse</li>"
+						
+						+"<li>statusmap</li>"
+						
+						+"<li>title</li>"
+						+"<li>csv</li>"
+						+"<li>json</li>"
+						+"<li>xml</li>"
 					+"</ul>"
-				+"<p><b>arrayOfFieldnames:&nbsp;</b>(Optional) Array of the fieldnames.</p>"	
-				+"<p><b>titleformat:&nbsp;</b>(Optional) Format of the title. Use '{0}', '{1}'... as placeholders for field values.</p>"	
-				+"<p><b>showMenu:&nbsp;</b>(Optional) True or false to toggle the menu and pagination.</p>"	
-				+"<p><b>zoomNumber:&nbsp;</b>(Optional) Integer value, zoom in percent to resize the displayed data.</p>"	
-				+"<p><b>settings:&nbsp;</b>(Optional) Json Object containing more options for the selected display type.</p>"	
+				+"</li>"
+				+"<li><b>menu:&nbsp;</b>(Optional) Defines how the menu should be displayed. One of the following options:"
+					+"<ul>"
+						+"<li>default (or true)</li>"
+						+"<li>button</li>"
+						+"<li>none (or false)</li>"
+					+"</ul>"
+				+"</li>"
+				+"<li><b>pagination:&nbsp;</b>(Optional) Defines how the pagination should be displayed. One of the following options:"
+					+"<ul>"
+					+"<li>both (or true)</li>"
+					+"<li>top</li>"
+					+"<li>bottom</li>"
+					+"<li>none (or false)</li>"
+					+"</ul>"
+				+"</li>"
+				+"<li><b>arrayOfFieldnames:&nbsp;</b>(Optional) Array of the fieldnames.</li>"	
+				+"<li><b>titleformat:&nbsp;</b>(Optional) Format of the title. Use '{0}', '{1}'... as placeholders for field values.</li>"	
+				+"<li><b>zoomNumber:&nbsp;</b>(Optional) Integer value, zoom in percent to resize the displayed data.</li>"	
+				+"<li><b>settings:&nbsp;</b>(Optional) Json Object containing more options for the selected display type.</li>"	
 				;
 		
 	}

@@ -827,7 +827,7 @@ pre {
 .cfw-dataviewer-settings-button {
 	z-index: 24;
 	position: absolute;
-    right: 28px;
+    right: 18px;
 }
 .cfw-dataviewer-settings-button > .btn-xs {
 	position: relative;

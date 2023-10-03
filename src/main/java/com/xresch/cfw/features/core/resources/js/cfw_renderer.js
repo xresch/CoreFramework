@@ -2427,7 +2427,6 @@ CFW.render.registerRenderer(CFW_RENDER_NAME_CHART, new CFWRenderer(cfw_renderer_
  ******************************************************************/
 function cfw_renderer_chart_setGlobals() {
 	
-	
 	Chart.defaults.responsive = true; 
 	Chart.defaults.maintainAspectRatio = false;
 
@@ -2947,6 +2946,8 @@ function cfw_renderer_dataviewer(renderDef) {
 			rendererIndex: -1,
 			// Defines how the menu should be rendered
 			menu: 'default', // either 'default' | 'button' | 'none' | true | false 
+			// Defines how the pagination should be rendered
+			pagination: 'both', // either 'both' | 'top' | 'botton' | 'none' | true | false 
 			// The initial page to be drawn.
 			initialpage: 1,
 			// The number of items options for the page size selector. 
@@ -3026,7 +3027,6 @@ function cfw_renderer_dataviewer(renderDef) {
 }
 
 CFW.render.registerRenderer("dataviewer", new CFWRenderer(cfw_renderer_dataviewer) );
-
 
 /******************************************************************
  * 
@@ -3194,7 +3194,10 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			// Pagination
 			let totalRecords = sortedData.length;
 			let dataToRender = _.slice(sortedData, offset, offset+pageSize);
-			if(pageSize == -1){
+			if(pageSize == -1
+			|| settings.pagination == 'none'
+			|| settings.pagination == false ){
+				// reset to unpaginated 
 				dataToRender = sortedData;
 			}
 			params.totalRecords = totalRecords;
@@ -3220,7 +3223,9 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 			// Pagination
 			let totalRecords = sortedData.length;
 			let dataToRender = _.slice(sortedData, offset, offset+pageSize);
-			if(pageSize == -1){
+			if(pageSize == -1
+			|| settings.pagination == 'none'
+			|| settings.pagination == false ){
 				dataToRender = sortedData;
 			}	
 			params.totalRecords = totalRecords;
@@ -3297,15 +3302,26 @@ function cfw_renderer_dataviewer_renderPage(params) {
 	var renderResult = CFW.render.getRenderer(params.rendererName).render(params.finalRenderDef);
 	var renderWrapper = $('<div class="cfw-dataviewer-renderresult d-flex w-100">');
 	renderWrapper.append(renderResult);
+	
 	//-------------------------------------
 	// Create Paginator
 	var pageNavigation = cfw_renderer_dataviewer_createNavigationHTML(dataviewerID, totalRecords, pageSize, pageToRender);
 	
 
 	targetDiv.html('');
-	targetDiv.append(pageNavigation);
+	
+	if(dataviewerSettings.pagination == "both" 
+	|| dataviewerSettings.pagination == "top"
+	|| dataviewerSettings.pagination == true){
+		targetDiv.append(pageNavigation);
+	}
 	targetDiv.append(renderWrapper);
-	targetDiv.append(pageNavigation);
+	
+	if(dataviewerSettings.pagination == "both" 
+	|| dataviewerSettings.pagination == "bottom"
+	|| dataviewerSettings.pagination == true){
+		targetDiv.append(pageNavigation);
+	}
 }
 
 /******************************************************************
@@ -3436,21 +3452,24 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	
 	//--------------------------------------
 	// Page Size
-	html += '<div class="float-right ml-2">'
-		+'	<label for="pagesize">Page Size:&nbsp;</label>'
-		+'	<select name="pagesize" class="dataviewer-pagesize form-control form-control-sm" '+onchangeAttribute+'>'
-	
-		for(key in dataviewerSettings.sizes){
-			var size = dataviewerSettings.sizes[key];
-			var selected = (size == selectedSize) ? 'selected' : '';
-			
-			html += '<option value="'+size+'" '+selected+'>'+size+'</option>';
+	if(dataviewerSettings.pagination != "none" 
+	&& dataviewerSettings.pagination != false){
 
-		}
+		html += '<div class="float-right ml-2">'
+			+'	<label for="pagesize">Page Size:&nbsp;</label>'
+			+'	<select name="pagesize" class="dataviewer-pagesize form-control form-control-sm" '+onchangeAttribute+'>'
+		
+			for(key in dataviewerSettings.sizes){
+				var size = dataviewerSettings.sizes[key];
+				var selected = (size == selectedSize) ? 'selected' : '';
+				
+				html += '<option value="'+size+'" '+selected+'>'+size+'</option>';
 	
-	html += '	</select>'
-			+'</div>';
-	
+			}
+		
+		html += '	</select>'
+				+'</div>';
+	}
 	//--------------------------------------
 	// Filter Query
 	let filterHighlightClass = CFW.utils.isNullOrEmpty(filterquery) ? '' : 'bg-cfw-yellow';
@@ -3464,10 +3483,23 @@ function cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, datavie
 	
 	//--------------------------------------
 	// Toogle Button
-	if(dataviewerSettings.menu == 'toggle'){
+	
+	var topCorrectionCSS = "";
+	if(dataviewerSettings.pagination == "bottom" 
+	|| dataviewerSettings.pagination == "none"
+	|| dataviewerSettings.pagination == false){
+		topCorrectionCSS = "top: 0px;";
+	}
+	
+	if(dataviewerSettings.menu == 'button'){
 		var dropDownID = 'dropdownMenuButton'+CFW.utils.randomString(12);
 		var dropdownHTML = '<div class="dropleft d-inline pl-1 cfw-dataviewer-settings-button">'
-			+ '<button class="btn btn-xs btn-primary mb-2 '+filterHighlightClass+'" type="button" id="'+dropDownID+'" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'
+			+ '<button  type="button" class="btn btn-xs btn-primary mb-2 '+filterHighlightClass+'"'
+					+' id="'+dropDownID+'" '
+					+' style="'+topCorrectionCSS+'" '
+					+' data-toggle="dropdown" '
+					+' aria-haspopup="true" '
+					+' aria-expanded="false">'
 			+ '  <i class="fas fa-sliders-h"></i> '
 			+ '</button>'
 			+ '  <div class="dropdown-menu p-2" onclick="event.stopPropagation()"  aria-labelledby="'+dropDownID+'">'
