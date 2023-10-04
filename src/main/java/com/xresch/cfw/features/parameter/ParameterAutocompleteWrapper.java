@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.dashboard.parameters;
+package com.xresch.cfw.features.parameter;
 
 import java.util.ArrayList;
 
@@ -14,14 +14,14 @@ import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 
-class DashboardParameterAutocompleteWrapper extends CFWAutocompleteHandler {
+class ParameterAutocompleteWrapper extends CFWAutocompleteHandler {
 
 	private CFWField wrappedField; 
 	private String dashboardID;
 	private String widgetType;
 	private CFWAutocompleteHandler wrappedHandler;
 	
-	public DashboardParameterAutocompleteWrapper(CFWField settingsFieldToWrap, String dashboardID, String widgetType) {
+	public ParameterAutocompleteWrapper(CFWField settingsFieldToWrap, String dashboardID, String widgetType) {
 		this.dashboardID = dashboardID;
 		this.widgetType = widgetType;
 		
@@ -55,7 +55,7 @@ class DashboardParameterAutocompleteWrapper extends CFWAutocompleteHandler {
 		
 		AutocompleteList paramList = new AutocompleteList();
 		for(int i = 0 ; i < availableParams.size(); i++) {
-			DashboardParameter param = (DashboardParameter)availableParams.get(i);
+			Parameter param = (Parameter)availableParams.get(i);
 			
 			AutocompleteItem item = new AutocompleteItem("$"+param.name()+"$", "Parameter: $"+param.name()+"$",
 					 "<b>Type:&nbsp;</b>"+param.paramType()

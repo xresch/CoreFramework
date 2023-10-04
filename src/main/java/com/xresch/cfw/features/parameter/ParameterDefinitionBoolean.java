@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.dashboard.parameters;
+package com.xresch.cfw.features.parameter;
 
 import java.util.HashSet;
 
@@ -8,9 +8,9 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 
-public class ParameterDefinitionNumber extends ParameterDefinition {
+public class ParameterDefinitionBoolean extends ParameterDefinition {
 
-	public static final String LABEL = "Number";
+	public static final String LABEL = "Boolean";
 	
 	/***************************************************************
 	 * 
@@ -24,7 +24,7 @@ public class ParameterDefinitionNumber extends ParameterDefinition {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
-		CFWField settingsField = CFWField.newString(FormFieldType.NUMBER, LABEL);
+		CFWField settingsField = CFWField.newBoolean(FormFieldType.BOOLEAN, LABEL);
 		
 		if(fieldValue !=null) {
 			settingsField.setValueConvert(fieldValue, true);
@@ -43,6 +43,7 @@ public class ParameterDefinitionNumber extends ParameterDefinition {
 		return getFieldForSettings(request, dashboardid, parameterValue);
 	}
 	
+	
 	/***************************************************************
 	 * 
 	 ***************************************************************/
@@ -50,6 +51,7 @@ public class ParameterDefinitionNumber extends ParameterDefinition {
 	public boolean isDynamic() {
 		return false;
 	}
+	
 	/***************************************************************
 	 * 
 	 ***************************************************************/
@@ -57,5 +59,6 @@ public class ParameterDefinitionNumber extends ParameterDefinition {
 	public boolean isAvailable(HashSet<String> widgetTypesArray) {
 		return true;
 	}
+
 
 }

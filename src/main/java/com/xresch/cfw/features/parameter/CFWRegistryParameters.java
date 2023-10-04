@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.dashboard.parameters;
+package com.xresch.cfw.features.parameter;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -11,9 +11,9 @@ import com.xresch.cfw.logging.CFWLog;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWRegistryDashboardParameters {
+public class CFWRegistryParameters {
 	
-	private static final Logger logger = CFWLog.getLogger(CFWRegistryDashboardParameters.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWRegistryParameters.class.getName());
 	
 	private static LinkedHashMap<String, ParameterDefinition> definitionArray = new LinkedHashMap<String, ParameterDefinition>();
 	
@@ -37,7 +37,7 @@ public class CFWRegistryDashboardParameters {
 	public static void addAll(ArrayList<ParameterDefinition> definitions)  {
 		if(definitions != null) {
 			for(ParameterDefinition definition : definitions) {
-				CFWRegistryDashboardParameters.add(definition);
+				CFWRegistryParameters.add(definition);
 			}
 		}
 	}

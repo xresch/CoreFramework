@@ -10,13 +10,6 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
-import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
-import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionBoolean;
-import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionDashboardID;
-import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionNumber;
-import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionSelect;
-import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionText;
-import com.xresch.cfw.features.dashboard.parameters.ParameterDefinitionTextarea;
 import com.xresch.cfw.features.dashboard.widgets.ManualPageWidget;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
@@ -44,6 +37,13 @@ import com.xresch.cfw.features.dashboard.widgets.standard.WidgetText;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetWebsite;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetYoutubeVideo;
 import com.xresch.cfw.features.manual.ManualPage;
+import com.xresch.cfw.features.parameter.Parameter;
+import com.xresch.cfw.features.parameter.ParameterDefinitionBoolean;
+import com.xresch.cfw.features.parameter.ParameterDefinitionDashboardID;
+import com.xresch.cfw.features.parameter.ParameterDefinitionNumber;
+import com.xresch.cfw.features.parameter.ParameterDefinitionSelect;
+import com.xresch.cfw.features.parameter.ParameterDefinitionText;
+import com.xresch.cfw.features.parameter.ParameterDefinitionTextarea;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.DynamicItemCreator;
@@ -120,7 +120,6 @@ public class FeatureDashboard extends CFWAppFeature {
     	// Register Objects
 		CFW.Registry.Objects.addCFWObject(Dashboard.class);
 		CFW.Registry.Objects.addCFWObject(DashboardWidget.class);
-		CFW.Registry.Objects.addCFWObject(DashboardParameter.class);
 		CFW.Registry.Objects.addCFWObject(DashboardFavoritesMap.class);
 		CFW.Registry.Objects.addCFWObject(DashboardSharedGroupsMap.class);
 		CFW.Registry.Objects.addCFWObject(DashboardSharedUserMap.class);
@@ -164,15 +163,6 @@ public class FeatureDashboard extends CFWAppFeature {
 		CFW.Registry.Widgets.add(new WidgetEasterEggsFireworks());
 		CFW.Registry.Widgets.add(new WidgetEasterEggsSnow());
 		CFW.Registry.Widgets.add(new WidgetEasterEggsLightSwitch());
-		
-    	//----------------------------------
-    	// Register Parameters
-		CFW.Registry.Parameters.add(new ParameterDefinitionText());
-		CFW.Registry.Parameters.add(new ParameterDefinitionTextarea());
-		CFW.Registry.Parameters.add(new ParameterDefinitionSelect());
-		CFW.Registry.Parameters.add(new ParameterDefinitionBoolean());
-		CFW.Registry.Parameters.add(new ParameterDefinitionNumber());
-		CFW.Registry.Parameters.add(new ParameterDefinitionDashboardID());
 		
 		//----------------------------------
     	// Register Audit

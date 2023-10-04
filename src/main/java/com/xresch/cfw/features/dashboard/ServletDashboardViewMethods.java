@@ -40,10 +40,6 @@ import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
-import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
-import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterFields;
-import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterMode;
-import com.xresch.cfw.features.dashboard.parameters.ParameterDefinition;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
@@ -51,6 +47,10 @@ import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
 import com.xresch.cfw.features.jobs.CFWDBJob;
 import com.xresch.cfw.features.jobs.CFWJob;
 import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
+import com.xresch.cfw.features.parameter.Parameter;
+import com.xresch.cfw.features.parameter.ParameterDefinition;
+import com.xresch.cfw.features.parameter.Parameter.DashboardParameterFields;
+import com.xresch.cfw.features.parameter.Parameter.DashboardParameterMode;
 import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
@@ -566,7 +566,7 @@ public class ServletDashboardViewMethods
 				// Create Form
 				
 				CFWObject settings = definition.getSettings();
-				DashboardParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
+				Parameter.addParameterHandlingToField(settings, dashboardID, widgetType);
 				
 				settings.mapJsonFields(JSON_SETTINGS, false, true);
 				
@@ -967,7 +967,7 @@ public class ServletDashboardViewMethods
 				
 				//--------------------------------------
 				// Check is Global Override Parameter
-				DashboardParameter paramObject = new DashboardParameter();
+				Parameter paramObject = new Parameter();
 				paramObject.mapJsonFields(current, true, true);
 				
 				if(paramObject.mode().equals(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString())
@@ -1111,7 +1111,7 @@ public class ServletDashboardViewMethods
 			
 			//----------------------------
 			// Create Param
-			DashboardParameter param = new DashboardParameter();
+			Parameter param = new Parameter();
 			param.foreignKeyDashboard(Integer.parseInt(dashboardID));
 
 			if(Strings.isNullOrEmpty(widgetSetting)) {
@@ -1226,7 +1226,7 @@ public class ServletDashboardViewMethods
 		ArrayList<CFWObject> parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(dashboardID);
 		
 		CFWTimeframe notNeeded = null;
-		DashboardParameter.prepareParamObjectsForForm(request, parameterList, notNeeded, false);
+		Parameter.prepareParamObjectsForForm(request, parameterList, notNeeded, false);
 		
 		//===========================================
 		// Create Form
@@ -1246,7 +1246,7 @@ public class ServletDashboardViewMethods
 					//revert uniques of the fields to be able to save to the database.
 					form.revertFieldNames();
 						for(CFWObject object : originsMap.values()) {
-							DashboardParameter param = (DashboardParameter)object;
+							Parameter param = (Parameter)object;
 							
 							if(!CFW.DB.DashboardParameters.checkIsParameterNameUsedOnUpdate(param)) {
 								//do not update WidgetType and Setting as the values were overridden with labels.
@@ -1284,7 +1284,7 @@ public class ServletDashboardViewMethods
 					String paramID = field.getName().split("-")[0];
 					int paramIDNumber = Integer.parseInt(paramID);
 					LinkedHashMap<Integer, CFWObject> origins = multiform.getOrigins();
-					DashboardParameter paramToAutocomplete = (DashboardParameter)origins.get(paramIDNumber);
+					Parameter paramToAutocomplete = (Parameter)origins.get(paramIDNumber);
 					String widgetType = paramToAutocomplete.widgetType();
 					
 					Map<String, String[]> extraParams = new HashMap<String, String[]>();
@@ -1293,7 +1293,7 @@ public class ServletDashboardViewMethods
 						//Find all Settings from the same Widget Type
 						
 						for(CFWObject object : origins.values() ) {
-							DashboardParameter currentParam = (DashboardParameter)object;
+							Parameter currentParam = (Parameter)object;
 							if(currentParam.widgetType() != null && currentParam.widgetType().equals(widgetType)) {
 								String paramName = currentParam.paramSettingsLabel();
 								String valueFieldName = currentParam.id()+"-"+DashboardParameterFields.VALUE;
@@ -1305,7 +1305,7 @@ public class ServletDashboardViewMethods
 						String label = paramToAutocomplete.paramSettingsLabel();
 						ParameterDefinition def = CFW.Registry.Parameters.getDefinition(label);
 						for(CFWObject object : origins.values() ) {
-							DashboardParameter currentParam = (DashboardParameter)object;
+							Parameter currentParam = (Parameter)object;
 							
 							if(currentParam.widgetType() != null ) {
 								HashSet<String> widgetTypesArray = new HashSet<>();

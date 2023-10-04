@@ -23,8 +23,8 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
-import com.xresch.cfw.features.dashboard.parameters.DashboardParameter;
 import com.xresch.cfw.features.notifications.Notification;
+import com.xresch.cfw.features.parameter.Parameter;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
@@ -266,7 +266,7 @@ public class ServletDashboardList extends HttpServlet
 				ArrayList<CFWObject> parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(dashboardID);
 				
 				for(CFWObject object : parameterList) {
-					DashboardParameter paramToCopy = (DashboardParameter)object;
+					Parameter paramToCopy = (Parameter)object;
 					paramToCopy.id(null);
 					paramToCopy.foreignKeyDashboard(newID);
 					

@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.dashboard.parameters;
+package com.xresch.cfw.features.parameter;
 
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -12,8 +12,8 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
-import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterFields;
-import com.xresch.cfw.features.dashboard.parameters.DashboardParameter.DashboardParameterMode;
+import com.xresch.cfw.features.parameter.Parameter.DashboardParameterFields;
+import com.xresch.cfw.features.parameter.Parameter.DashboardParameterMode;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -22,11 +22,11 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWDBDashboardParameter {
+public class CFWDBParameter {
 	
-	private static Class<DashboardParameter> cfwObjectClass = DashboardParameter.class;
+	private static Class<Parameter> cfwObjectClass = Parameter.class;
 	
-	private static final Logger logger = CFWLog.getLogger(CFWDBDashboardParameter.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBParameter.class.getName());
 		
 	//####################################################################################################
 	// Preckeck Initialization
@@ -34,7 +34,7 @@ public class CFWDBDashboardParameter {
 	private static PrecheckHandler prechecksCreate =  new PrecheckHandler() {
 		public boolean doCheck(CFWObject object) {
 			
-			DashboardParameter parameter = (DashboardParameter)object;
+			Parameter parameter = (Parameter)object;
 			
 			if(parameter == null ) {
 				new CFWLog(logger)
@@ -53,7 +53,7 @@ public class CFWDBDashboardParameter {
 	
 	private static PrecheckHandler prechecksDeleteUpdate =  new PrecheckHandler() {
 		public boolean doCheck(CFWObject object) {
-			DashboardParameter parameter = (DashboardParameter)object;
+			Parameter parameter = (Parameter)object;
 			
 			if(parameter == null ) {
 				new CFWLog(logger)
@@ -73,15 +73,15 @@ public class CFWDBDashboardParameter {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static boolean	create(DashboardParameter... items) 	{ return CFWDBDefaultOperations.create(prechecksCreate, items); }
-	public static boolean 	create(DashboardParameter item) 		{ return CFWDBDefaultOperations.create(prechecksCreate, item);}
-	public static Integer	createGetPrimaryKey(DashboardParameter item) 	{ return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, item);}
+	public static boolean	create(Parameter... items) 	{ return CFWDBDefaultOperations.create(prechecksCreate, items); }
+	public static boolean 	create(Parameter item) 		{ return CFWDBDefaultOperations.create(prechecksCreate, item);}
+	public static Integer	createGetPrimaryKey(Parameter item) 	{ return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, item);}
 	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(DashboardParameter... items) 	{ return CFWDBDefaultOperations.update(prechecksDeleteUpdate, items); }
-	public static boolean 	update(DashboardParameter item) 		{ return CFWDBDefaultOperations.update(prechecksDeleteUpdate, item); }
+	public static boolean 	update(Parameter... items) 	{ return CFWDBDefaultOperations.update(prechecksDeleteUpdate, items); }
+	public static boolean 	update(Parameter item) 		{ return CFWDBDefaultOperations.update(prechecksDeleteUpdate, item); }
 	
 	//####################################################################################################
 	// DELETE
@@ -93,7 +93,7 @@ public class CFWDBDashboardParameter {
 	//####################################################################################################
 	// SELECT
 	//####################################################################################################
-	public static DashboardParameter selectByID(int id ) {
+	public static Parameter selectByID(int id ) {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardParameterFields.PK_ID.toString(), id);
 	}
 		
@@ -104,7 +104,7 @@ public class CFWDBDashboardParameter {
 	 ****************************************************************/
 	public static String getParametersForDashboardAsJSON(String dashboardID) {
 		
-		return new CFWSQL(new DashboardParameter())
+		return new CFWSQL(new Parameter())
 				.queryCache()
 				.select()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
@@ -119,7 +119,7 @@ public class CFWDBDashboardParameter {
 	 ****************************************************************/
 	public static ArrayList<CFWObject> getParametersForDashboard(String dashboardID) {
 		
-		return new CFWSQL(new DashboardParameter())
+		return new CFWSQL(new Parameter())
 				.queryCache()
 				.select()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
@@ -134,7 +134,7 @@ public class CFWDBDashboardParameter {
 	 ****************************************************************/
 	public static String getParameterAsJSON(String parameterID) {
 		
-		return new CFWSQL(new DashboardParameter())
+		return new CFWSQL(new Parameter())
 				.queryCache()
 				.select()
 				.where(DashboardParameterFields.PK_ID, parameterID)
@@ -147,9 +147,9 @@ public class CFWDBDashboardParameter {
 	 * @return Returns true if the parameter name is already in use
 	 * for this dashboard, ignores the the given parameter in the check.
 	 ****************************************************************/
-	public static boolean checkIsParameterNameUsedOnUpdate(DashboardParameter parameter) {
+	public static boolean checkIsParameterNameUsedOnUpdate(Parameter parameter) {
 		
-		return  0 < new CFWSQL(new DashboardParameter())
+		return  0 < new CFWSQL(new Parameter())
 				.queryCache()
 				.selectCount()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, parameter.foreignKeyDashboard())
@@ -162,9 +162,9 @@ public class CFWDBDashboardParameter {
 	 * @return Returns true if the parameter name is already in use
 	 * for this dashboard.
 	 ****************************************************************/
-	public static boolean checkIsParameterNameUsedOnCreate(DashboardParameter parameter) {
+	public static boolean checkIsParameterNameUsedOnCreate(Parameter parameter) {
 		
-		return  0 < new CFWSQL(new DashboardParameter())
+		return  0 < new CFWSQL(new Parameter())
 				.queryCache()
 				.selectCount()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, parameter.foreignKeyDashboard())
@@ -178,7 +178,7 @@ public class CFWDBDashboardParameter {
 	 ****************************************************************/
 	public static boolean checkIsParameterOfDashboard(String dashboardID, String parameterID) {
 		
-		return  1 == new CFWSQL(new DashboardParameter())
+		return  1 == new CFWSQL(new Parameter())
 				.queryCache()
 				.selectCount()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
@@ -195,8 +195,8 @@ public class CFWDBDashboardParameter {
 	 ****************************************************************/
 	public static ArrayList<CFWObject> getAvailableParamsForDashboard(String dashboardID, String widgetType, String widgetSetting, boolean allowGenericParams) {
 		
-		CFWSQL sql = new DashboardParameter()
-				.queryCache(CFWDBDashboardParameter.class, "autocompleteParametersForDashboard"+allowGenericParams)
+		CFWSQL sql = new Parameter()
+				.queryCache(CFWDBParameter.class, "autocompleteParametersForDashboard"+allowGenericParams)
 				.select()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
 				.and(DashboardParameterFields.MODE, DashboardParameterMode.MODE_SUBSTITUTE.toString())
@@ -227,7 +227,7 @@ public class CFWDBDashboardParameter {
 		|| CFW.Context.Request.hasPermission(FeatureAPI.PERMISSION_CFW_API)
 		|| CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
 			
-			CFWSQL selectForExport = new CFWSQL(new DashboardParameter())
+			CFWSQL selectForExport = new CFWSQL(new Parameter())
 				.queryCache()
 				.select();
 			

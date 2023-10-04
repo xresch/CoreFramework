@@ -39,8 +39,6 @@ import com.xresch.cfw.features.dashboard.CFWDBDashboardSharedUserMap;
 import com.xresch.cfw.features.dashboard.CFWDBDashboardWidget;
 import com.xresch.cfw.features.dashboard.CFWRegistryWidgets;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
-import com.xresch.cfw.features.dashboard.parameters.CFWDBDashboardParameter;
-import com.xresch.cfw.features.dashboard.parameters.CFWRegistryDashboardParameters;
 import com.xresch.cfw.features.datetime.CFWDBDate;
 import com.xresch.cfw.features.datetime.FeatureDateTime;
 import com.xresch.cfw.features.jobs.CFWDBJob;
@@ -55,6 +53,9 @@ import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.notifications.CFWDBNotifications;
 import com.xresch.cfw.features.notifications.FeatureNotifications;
 import com.xresch.cfw.features.notifications.Notification;
+import com.xresch.cfw.features.parameter.CFWDBParameter;
+import com.xresch.cfw.features.parameter.CFWRegistryParameters;
+import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.query.CFWQueryRegistry;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.spaces.CFWDBSpace;
@@ -120,7 +121,7 @@ public class CFW {
 		public static class Dashboards extends CFWDBDashboard{};
 		public static class Date extends CFWDBDate{};
 		public static class DashboardWidgets extends CFWDBDashboardWidget{};
-		public static class DashboardParameters extends CFWDBDashboardParameter{};
+		public static class DashboardParameters extends CFWDBParameter{};
 		public static class DashboardFavorites extends CFWDBDashboardFavoriteMap{};
 		public static class DashboardEditors extends CFWDBDashboardEditorsMap{};
 		public static class DashboardEditorGroups extends CFWDBDashboardEditorGroupsMap{};
@@ -167,7 +168,7 @@ public class CFW {
 		public static class JobsAlerting extends CFWJobsAlerting {} 
 		public static class Manual extends CFWRegistryManual {} 
 		public static class Objects extends CFWRegistryObjects {} 
-		public static class Parameters extends CFWRegistryDashboardParameters {} 
+		public static class Parameters extends CFWRegistryParameters {} 
 		public static class Query extends CFWQueryRegistry {} 
 		public static class Widgets extends CFWRegistryWidgets {} 
 	}
@@ -454,6 +455,7 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureSystemAnalytics.class);		
 		CFW.Registry.Features.addFeature(FeatureManual.class);	
 		CFW.Registry.Features.addFeature(FeatureNotifications.class);	
+		CFW.Registry.Features.addFeature(FeatureParameter.class);	
 		
 		if(CFW.AppSettings.isDashboardingEnabled()) {
 			CFW.Registry.Features.addFeature(FeatureDashboard.class);	

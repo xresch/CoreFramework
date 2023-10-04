@@ -1,4 +1,4 @@
-package com.xresch.cfw.features.dashboard.parameters;
+package com.xresch.cfw.features.parameter;
 
 import java.util.HashSet;
 
@@ -8,9 +8,9 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 
-public class ParameterDefinitionDashboardID extends ParameterDefinition {
+public class ParameterDefinitionTextarea extends ParameterDefinition {
 
-	public static final String LABEL = "Dashboard ID";
+	public static final String LABEL = "Textarea";
 	
 	/***************************************************************
 	 * 
@@ -24,11 +24,12 @@ public class ParameterDefinitionDashboardID extends ParameterDefinition {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
-		CFWField settingsField = 
-				CFWField.newString(FormFieldType.UNMODIFIABLE_TEXT, LABEL)
-				.setValue(dashboardid)
-				;
-			
+		CFWField settingsField = CFWField.newString(FormFieldType.TEXTAREA, LABEL);
+		
+		if(fieldValue !=null) {
+			settingsField.setValueConvert(fieldValue, true);
+		}
+	
 		return settingsField;
 	}
 	
@@ -49,6 +50,7 @@ public class ParameterDefinitionDashboardID extends ParameterDefinition {
 	public boolean isDynamic() {
 		return false;
 	}
+	
 	/***************************************************************
 	 * 
 	 ***************************************************************/
