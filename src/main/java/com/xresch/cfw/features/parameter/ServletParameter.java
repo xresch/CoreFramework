@@ -304,7 +304,7 @@ public class ServletParameter extends HttpServlet
 		
 		//----------------------------
 		// Create Parameter in DB
-		if(CFW.DB.DashboardParameters.create(param)) {
+		if(CFW.DB.Parameters.create(param)) {
 			
 			CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Parameter added!");
 		}
@@ -328,8 +328,8 @@ public class ServletParameter extends HttpServlet
 		//--------------------------------------------
 		// Delete Param
 		String paramID = request.getParameter("paramid");
-		if(CFW.DB.DashboardParameters.checkIsParameterOfDashboard(ID, paramID)) {
-			boolean success = CFW.DB.DashboardParameters.deleteByID(paramID);
+		if(CFW.DB.Parameters.checkIsParameterOfDashboard(ID, paramID)) {
+			boolean success = CFW.DB.Parameters.deleteByID(paramID);
 			json.setSuccess(success);
 			CFW.Messages.deleted();
 			
@@ -361,7 +361,7 @@ public class ServletParameter extends HttpServlet
 		// Get Parameter List
 		ArrayList<CFWObject> parameterList = null;
 		switch(scope) {
-			case SCOPE_DASHBOARD: 	parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(ID);	break;
+			case SCOPE_DASHBOARD: 	parameterList = CFW.DB.Parameters.getParametersForDashboard(ID);	break;
 			case SCOPE_QUERY:  	  	/*parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(ID);*/	break;
 			default:				CFW.Messages.itemNotSupported(scope); return;
 		}
@@ -391,7 +391,7 @@ public class ServletParameter extends HttpServlet
 					for(CFWObject object : originsMap.values()) {
 						CFWParameter param = (CFWParameter)object;
 						
-						if(!CFW.DB.DashboardParameters.checkIsParameterNameUsedOnUpdate(param)) {
+						if(!CFW.DB.Parameters.checkIsParameterNameUsedOnUpdate(param)) {
 							//do not update WidgetType and Setting as the values were overridden with labels.
 							boolean success = new CFWSQL(param).updateWithout(
 									DashboardParameterFields.WIDGET_TYPE.toString(),

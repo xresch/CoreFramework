@@ -7,7 +7,11 @@ import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.JSON;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWFieldChangeHandler;
@@ -294,6 +298,103 @@ public class CFWParameter extends CFWObject {
 	}
 
 	/*****************************************************************
+	 * Returns the settings with applied parameters
+	 *****************************************************************/
+	public static JsonElement replaceParamsInSettings(String jsonSettings, String jsonParams, String widgetType) {
+		
+		//###############################################################################
+		//############################ IMPORTANT ########################################
+		//###############################################################################
+		// When changing this method you have to apply the same changes in the javascript 
+		// method:
+		// cfw_dashboard.js >> cfw_parameter_applyToFields()
+		//
+		//###############################################################################
+	
+		
+		// Parameter Sample
+		//{"PK_ID":1092,"FK_ID_DASHBOARD":2081,"WIDGET_TYPE":null,"LABEL":"Boolean","PARAM_TYPE":false,"NAME":"boolean","VALUE":"FALSE","MODE":"MODE_SUBSTITUTE","IS_MODE_CHANGE_ALLOWED":false},
+		JsonElement dashboardParams = CFW.JSON.fromJson(jsonParams);
+		
+		//=============================================
+		// Handle SUBSTITUTE PARAMS
+		//=============================================
+		
+		// paramSettingsLabel and paramObject
+		HashMap<String, JsonObject> globalOverrideParams = new HashMap<>();
+		
+		if(dashboardParams != null 
+		&& !dashboardParams.isJsonNull()
+		&& dashboardParams.isJsonArray()
+		) {
+			JsonArray paramsArray = dashboardParams.getAsJsonArray();
+			
+			for(JsonElement current : paramsArray) {
+				String paramName = current.getAsJsonObject().get("NAME").getAsString();
+				
+				//--------------------------------------
+				// Skip Timeframe Params as they are already
+				// done.
+				if(paramName.equals("earliest") || paramName.equals("latest") ) {
+					continue;
+				}
+				
+				//--------------------------------------
+				// Check is Global Override Parameter
+				CFWParameter paramObject = new CFWParameter();
+				paramObject.mapJsonFields(current, true, true);
+				
+				if(paramObject.mode().equals(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString())
+				&& ( paramObject.widgetType() == null || paramObject.widgetType().equals(widgetType)) ) {
+					globalOverrideParams.put(paramObject.paramSettingsLabel(), current.getAsJsonObject());
+					continue;
+				}
+					
+				//--------------------------------------
+				// Do Substitute
+				// Escape because Java regex is a bitch.
+				
+				//String escaped = Matcher.quoteReplacement(paramObject.value());
+				String escaped = CFW.JSON.escapeString(
+								CFW.JSON.escapeString(paramObject.value())
+							);
+				
+				if(escaped == null) {
+					escaped = "";
+				}
+				
+				jsonSettings = jsonSettings.replaceAll("\\$"+paramObject.name()+"\\$", escaped);
+				
+				
+			}
+		}
+		
+		//=============================================
+		// Handle GLOBAL OVERRIDE PARAMS
+		//=============================================
+		JsonElement settingsElement = CFW.JSON.fromJson(jsonSettings);
+		
+		if(settingsElement != null 
+		&& !settingsElement.isJsonNull()
+		&& settingsElement.isJsonObject()
+		) {
+			JsonObject settingsObject = settingsElement.getAsJsonObject();
+			
+			for(String paramName : globalOverrideParams.keySet()) {
+				
+				if (settingsObject.has(paramName)) {
+					JsonElement value = globalOverrideParams.get(paramName).get("VALUE");
+					settingsObject.add(paramName, value);
+				}
+			}
+				
+		}
+		
+		return settingsElement;
+		
+	}
+
+	/*****************************************************************
 	 * Add the defined parameters to autocomplete results and selects.
 	 * 
 	 *****************************************************************/
@@ -315,7 +416,7 @@ public class CFWParameter extends CFWObject {
 				// SELECT Fields
 				String fieldname = field.getName();
 				if(field.fieldType() == FormFieldType.SELECT) {
-					ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.getAvailableParamsForDashboard(dashboardID, widgetType, fieldname, true);
+					ArrayList<CFWObject> availableParams = CFW.DB.Parameters.getAvailableParamsForDashboard(dashboardID, widgetType, fieldname, true);
 					HashMap options = field.getOptions();
 					for(CFWObject object : availableParams) {
 						String param = "$"+((CFWParameter)object).name()+"$";

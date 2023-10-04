@@ -263,7 +263,7 @@ public class ServletDashboardList extends HttpServlet
 				//-----------------------------------------
 				// Duplicate Parameters
 				//-----------------------------------------
-				ArrayList<CFWObject> parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(dashboardID);
+				ArrayList<CFWObject> parameterList = CFW.DB.Parameters.getParametersForDashboard(dashboardID);
 				
 				for(CFWObject object : parameterList) {
 					CFWParameter paramToCopy = (CFWParameter)object;

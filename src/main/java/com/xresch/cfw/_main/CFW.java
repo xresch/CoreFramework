@@ -121,7 +121,7 @@ public class CFW {
 		public static class Dashboards extends CFWDBDashboard{};
 		public static class Date extends CFWDBDate{};
 		public static class DashboardWidgets extends CFWDBDashboardWidget{};
-		public static class DashboardParameters extends CFWDBParameter{};
+		public static class Parameters extends CFWDBParameter{};
 		public static class DashboardFavorites extends CFWDBDashboardFavoriteMap{};
 		public static class DashboardEditors extends CFWDBDashboardEditorsMap{};
 		public static class DashboardEditorGroups extends CFWDBDashboardEditorGroupsMap{};

@@ -390,7 +390,7 @@ public class CFWDBDashboard {
 						JsonArray widgets = CFW.DB.DashboardWidgets.getJsonArrayForExport(idElement.getAsString());
 						element.getAsJsonObject().add("widgets", widgets);
 						
-						JsonArray parameters = CFW.DB.DashboardParameters.getJsonArrayForExport(idElement.getAsString());
+						JsonArray parameters = CFW.DB.Parameters.getJsonArrayForExport(idElement.getAsString());
 						element.getAsJsonObject().add("parameters", parameters);
 					}
 					
@@ -594,7 +594,7 @@ public class CFWDBDashboard {
 							//-----------------------------
 							// Create Parameter
 							
-							Integer newID = CFW.DB.DashboardParameters.createGetPrimaryKey(param);
+							Integer newID = CFW.DB.Parameters.createGetPrimaryKey(param);
 							if(newID == null) {
 								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error creating imported parameter.");
 								continue;
