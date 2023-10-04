@@ -1,5 +1,5 @@
 
-CFW_PARAMETER_URL = "/public/dashboard/view";
+CFW_PARAMETER_URL = "/parameter";
 CFW_PARAMETER_SCOPE = "default";
 CFW_PARAMETER_ITEM_ID = -999;
 
@@ -19,7 +19,7 @@ function cfw_parameter_edit(){
 	// ----------------------------
 	// Create Content Div
 	let contentDiv = $('<div>');
-	contentDiv.append('<p>Parameters will substitute values in dashboard widgets or queries.</p>');
+	contentDiv.append('<p>Parameters will substitute values in dashboard widgets or queries. Do not store confidential data like passwords in parameters, as they will be added to the URL.</p>');
 
 	// ----------------------------
 	// Create Add Params Button
@@ -84,8 +84,15 @@ function cfw_parameter_loadParameterForm(){
 		var paramListDiv = $('#param-list');
 		paramListDiv.html('');
 		
+		var requestParams = {
+			action: "fetch"
+			, item: "paramform"
+			, scope: CFW_PARAMETER_SCOPE
+			, id: CFW_PARAMETER_ITEM_ID
+			};
+			
 		CFW.http.createForm(CFW_PARAMETER_URL, 
-				{action: "fetch", item: "paramform", dashboardid: CFW_PARAMETER_ITEM_ID}, 
+				requestParams,
 				paramListDiv, 
 				function (formID){
 					
@@ -135,7 +142,17 @@ function cfw_parameter_loadParameterForm(){
  ******************************************************************************/
 function cfw_parameter_add(widgetType, widgetSetting, label){
 	
-	CFW.http.getJSON(CFW_PARAMETER_URL, {action: 'create', item: 'param', widgetType: widgetType, widgetSetting: widgetSetting, label: label, dashboardid: CFW_PARAMETER_ITEM_ID }, function(data){
+	var requestParams = {
+		  action: 'create'
+		, item: 'param'
+		, scope: widgetType
+		, id: CFW_PARAMETER_ITEM_ID 
+		, widgetType: widgetType
+		, widgetSetting: widgetSetting
+		, label: label
+		};
+	
+	CFW.http.getJSON(CFW_PARAMETER_URL, requestParams, function(data){
 		if(data.success){
 			// Reload Form
 			cfw_parameter_loadParameterForm();
@@ -155,7 +172,17 @@ function cfw_parameter_removeConfirmed(parameterID){
  ******************************************************************************/
 function cfw_parameter_remove(parameterID) {
 	var formID = $('#param-list form').attr('id');
-	CFW.http.postJSON(CFW_PARAMETER_URL, {action: 'delete', item: 'param', paramid: parameterID, formid: formID, dashboardid: CFW_PARAMETER_ITEM_ID }, function(data){
+	
+	var requestParams = {
+		action: 'delete'
+		, item: 'param'
+		, scope: CFW_PARAMETER_SCOPE
+		, paramid: parameterID
+		, formid: formID
+		, id: CFW_PARAMETER_ITEM_ID 
+	};
+		
+	CFW.http.postJSON(CFW_PARAMETER_URL, requestParams, function(data){
 
 			if(data.success){
 				// Remove from Form
@@ -377,8 +404,14 @@ function cfw_parameter_showAddParametersModal(){
 	
 	// --------------------------------------
 	// General
-	
-	CFW.http.getJSON(CFW_PARAMETER_URL, {action: "fetch", item: "availableparams", dashboardid: CFW_PARAMETER_ITEM_ID}, function(data){
+	var requestParams = {
+			action: "fetch"
+			, item: "availableparams"
+			, scope: CFW_PARAMETER_SCOPE
+			, id: CFW_PARAMETER_ITEM_ID
+		};
+		
+	CFW.http.getJSON(CFW_PARAMETER_URL, requestParams, function(data){
 		
 		let paramsArray = data.payload;
 		

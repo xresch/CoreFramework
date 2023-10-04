@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.features.parameter.Parameter.DashboardParameterFields;
+import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 
 public class ParameterDefinitionSelect extends ParameterDefinition {

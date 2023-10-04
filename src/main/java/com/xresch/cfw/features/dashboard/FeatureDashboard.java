@@ -37,7 +37,7 @@ import com.xresch.cfw.features.dashboard.widgets.standard.WidgetText;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetWebsite;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetYoutubeVideo;
 import com.xresch.cfw.features.manual.ManualPage;
-import com.xresch.cfw.features.parameter.Parameter;
+import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.parameter.ParameterDefinitionBoolean;
 import com.xresch.cfw.features.parameter.ParameterDefinitionDashboardID;
 import com.xresch.cfw.features.parameter.ParameterDefinitionNumber;

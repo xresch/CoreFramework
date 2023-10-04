@@ -29,7 +29,7 @@ import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
-import com.xresch.cfw.features.parameter.Parameter;
+import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
@@ -582,7 +582,7 @@ public class CFWDBDashboard {
 							JsonObject paramsObject = paramsElement.getAsJsonObject();
 							//-----------------------------
 							// Map values
-							Parameter param = new Parameter();
+							CFWParameter param = new CFWParameter();
 							param.mapJsonFields(paramsObject, true, true);
 							
 							//-----------------------------

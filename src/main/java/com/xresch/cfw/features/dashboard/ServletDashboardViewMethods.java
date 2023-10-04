@@ -48,9 +48,9 @@ import com.xresch.cfw.features.jobs.CFWJob;
 import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
 import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.features.parameter.FeatureParameter;
-import com.xresch.cfw.features.parameter.Parameter;
-import com.xresch.cfw.features.parameter.Parameter.DashboardParameterFields;
-import com.xresch.cfw.features.parameter.Parameter.DashboardParameterMode;
+import com.xresch.cfw.features.parameter.CFWParameter;
+import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
+import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterMode;
 import com.xresch.cfw.features.parameter.ParameterDefinition;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
@@ -214,8 +214,8 @@ public class ServletDashboardViewMethods
 					case "widgetdata": 			fetchWidgetData(request, response, jsonResponse);
 												break;	
 												
-					case "availableparams": 	getAvailableParams(request, jsonResponse, dashboardID);
-												break;	
+//					case "availableparams": 	getAvailableParams(request, jsonResponse, dashboardID);
+//												break;	
 												
 					case "settingsformwidget":  getSettingsFormWidget(request, response, jsonResponse);
 												break;	
@@ -226,8 +226,8 @@ public class ServletDashboardViewMethods
 					case "taskparamform": 		getTaskParamForm(request, response, jsonResponse);
 												break;	
 												
-					case "paramform": 			createParameterEditForm(request, response, jsonResponse);
-												break; 
+//					case "paramform": 			createParameterEditForm(request, response, jsonResponse);
+//												break; 
 												
 					case "paramwidgetpwcheck": 	WidgetParameter.checkParameterWidgetPassword(request, response, jsonResponse);
 												break;
@@ -242,8 +242,8 @@ public class ServletDashboardViewMethods
 					case "widget": 				createWidget(request, response, jsonResponse);
 	  											break;
 	  											
-					case "param": 				createParam(request, response, jsonResponse);
-												break;
+//					case "param": 				createParam(request, response, jsonResponse);
+//												break;
 												
 					default: 					CFW.Messages.itemNotSupported(item);
 												break;
@@ -297,8 +297,8 @@ public class ServletDashboardViewMethods
 					case "widget": 				deleteWidget(request, response, jsonResponse);
 	  											break;
 					
-					case "param": 				deleteParam(request, response, jsonResponse);
-												break;
+//					case "param": 				deleteParam(request, response, jsonResponse);
+//												break;
 																	
 					default: 					CFW.Messages.itemNotSupported(item);
 												break;
@@ -567,7 +567,7 @@ public class ServletDashboardViewMethods
 				// Create Form
 				
 				CFWObject settings = definition.getSettings();
-				Parameter.addParameterHandlingToField(settings, dashboardID, widgetType);
+				CFWParameter.addParameterHandlingToField(settings, dashboardID, widgetType);
 				
 				settings.mapJsonFields(JSON_SETTINGS, false, true);
 				
@@ -968,7 +968,7 @@ public class ServletDashboardViewMethods
 				
 				//--------------------------------------
 				// Check is Global Override Parameter
-				Parameter paramObject = new Parameter();
+				CFWParameter paramObject = new CFWParameter();
 				paramObject.mapJsonFields(current, true, true);
 				
 				if(paramObject.mode().equals(DashboardParameterMode.MODE_GLOBAL_OVERRIDE.toString())
@@ -1027,322 +1027,322 @@ public class ServletDashboardViewMethods
 	/*****************************************************************
 	 *
 	 *****************************************************************/
-	@SuppressWarnings("rawtypes")
-	private static void getAvailableParams(HttpServletRequest request, JSONResponse response, String dashboardID) {
-		
-		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
-			
-			JsonArray widgetParametersArray = new JsonArray();
-			
-			//--------------------------------------------
-			// Add Params for Widgets on Dashboard
-			ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
-			HashSet<String> uniqueTypeChecker = new HashSet<>();
-			
-			for(DashboardWidget widget : widgetList) {
-				
-				String widgetType = widget.type();
-				
-				if(widgetType.equals(WidgetParameter.WIDGET_TYPE) 
-				|| uniqueTypeChecker.contains(widgetType)) {
-					//skip Parameters Widget and type already processed once
-					continue;
-				}else {
-					uniqueTypeChecker.add(widgetType);
-					WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widgetType);
-					if(definition != null
-					&& definition.getSettings() != null
-					&& definition.getSettings().getFields() != null
-					&& definition.getSettings().getFields().entrySet() != null) {
-						for(Entry<String, CFWField> entry : definition.getSettings().getFields().entrySet()) {
-							CFWField field = entry.getValue();
-							JsonObject paramObject = new JsonObject();
-							paramObject.addProperty("widgetType", definition.getWidgetType());
-							paramObject.addProperty("widgetSetting", field.getName());
-							paramObject.addProperty("label", field.getLabel());
-							
-							widgetParametersArray.add(paramObject);
-						}
-					}
-				}	
-			}
-			
-			//--------------------------------------------
-			// Add Params from Definitions
-			JsonArray parameterDefArray = new JsonArray();
-			
-			for(ParameterDefinition def : CFW.Registry.Parameters.getParameterDefinitions().values()) {
-				if(def.isAvailable(uniqueTypeChecker)) {
-					JsonObject paramObject = new JsonObject();
-					paramObject.add("widgetType", null);
-					paramObject.add("widgetSetting", null);
-					paramObject.addProperty("label", def.getParamUniqueName());
-					
-					parameterDefArray.add(paramObject);
-				}
-			}
-			
-			parameterDefArray.addAll(widgetParametersArray);
-			response.getContent().append(parameterDefArray.toString());
-		}else{
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to load dashboard parameters.");
-		}
-	}
-	
-	/*****************************************************************
-	 *
-	 *****************************************************************/
-	@SuppressWarnings("rawtypes")
-	private static void createParam(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
-		
-		String dashboardID = request.getParameter("dashboardid");
-
-		//Prevent change when DashboardID is null 
-		if(Strings.isNullOrEmpty(dashboardID)) {
-			return;
-		}
-		
-		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
-			
-			//----------------------------
-			// Get and check Values
-			String widgetType = request.getParameter("widgetType");
-			String widgetSetting = request.getParameter("widgetSetting");
-			String label = request.getParameter("label");
-			
-			//----------------------------
-			// Create Param
-			Parameter param = new Parameter();
-			param.foreignKeyDashboard(Integer.parseInt(dashboardID));
-
-			if(Strings.isNullOrEmpty(widgetSetting)) {
-				param.widgetType(null);
-				param.paramSettingsLabel(null);
-				
-				//----------------------------
-				// Handle Default Params
-				
-				ParameterDefinition def = CFW.Registry.Parameters.getDefinition(label);
-				if(def != null) {
-					CFWField paramField = def.getFieldForSettings(request, dashboardID, null);
-					param.paramType(paramField.fieldType());
-					param.paramSettingsLabel(def.getParamUniqueName());
-					param.name(label.toLowerCase().replace(" ", "_")+"_"+CFW.Random.randomStringAlphaNumerical(6));
-					param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
-					param.isModeChangeAllowed(false);
-					param.isDynamic(def.isDynamic());
-					
-//					if(paramField.fieldType().equals(FormFieldType.SELECT)) {
-//						param.isModeChangeAllowed(true);
+//	@SuppressWarnings("rawtypes")
+//	private static void getAvailableParams(HttpServletRequest request, JSONResponse response, String dashboardID) {
+//		
+//		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+//			
+//			JsonArray widgetParametersArray = new JsonArray();
+//			
+//			//--------------------------------------------
+//			// Add Params for Widgets on Dashboard
+//			ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
+//			HashSet<String> uniqueTypeChecker = new HashSet<>();
+//			
+//			for(DashboardWidget widget : widgetList) {
+//				
+//				String widgetType = widget.type();
+//				
+//				if(widgetType.equals(WidgetParameter.WIDGET_TYPE) 
+//				|| uniqueTypeChecker.contains(widgetType)) {
+//					//skip Parameters Widget and type already processed once
+//					continue;
+//				}else {
+//					uniqueTypeChecker.add(widgetType);
+//					WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widgetType);
+//					if(definition != null
+//					&& definition.getSettings() != null
+//					&& definition.getSettings().getFields() != null
+//					&& definition.getSettings().getFields().entrySet() != null) {
+//						for(Entry<String, CFWField> entry : definition.getSettings().getFields().entrySet()) {
+//							CFWField field = entry.getValue();
+//							JsonObject paramObject = new JsonObject();
+//							paramObject.addProperty("widgetType", definition.getWidgetType());
+//							paramObject.addProperty("widgetSetting", field.getName());
+//							paramObject.addProperty("label", field.getLabel());
+//							
+//							widgetParametersArray.add(paramObject);
+//						}
 //					}
-				}else {
-					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter definition could not be found for: "+label);
-				}
-
-
-			}else {
-				//-------------------------------
-				// Check does Widget Exist
-				WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widgetType);
-				if(widgetType != null && definition == null) {
-					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The selected widget type does not exist.");
-					return;
-				}
-				
-				//-------------------------------
-				// Handle Widget Settings Params
-				CFWField settingsField = definition.getSettings().getField(widgetSetting);
-				if(settingsField == null) {
-					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The selected field does not does not exist for this widget type.");
-					return;
-				}else {
-					param.widgetType(widgetType);
-					param.paramSettingsLabel(widgetSetting);
-					param.name(widgetSetting.replace(" ", "_")+"_"+CFW.Random.randomStringAlphaNumerical(6));
-					param.paramType(settingsField.fieldType()); // used to fetch similar field types
-					param.getField(DashboardParameterFields.VALUE.toString()).setValueConvert(settingsField.getValue(), true);
-					param.mode(DashboardParameterMode.MODE_GLOBAL_OVERRIDE);
-					
-					if(settingsField.fieldType() == FormFieldType.BOOLEAN
-					|| settingsField.fieldType() == FormFieldType.NUMBER
-					|| settingsField.fieldType() == FormFieldType.DATEPICKER
-					|| settingsField.fieldType() == FormFieldType.DATETIMEPICKER
-					|| settingsField.fieldType() == FormFieldType.TAGS
-					|| settingsField.fieldType() == FormFieldType.TAGS_SELECTOR
-					) {
-						param.isModeChangeAllowed(false);
-					}
-				}
-			}
-			
-			//----------------------------
-			// Create Parameter in DB
-			if(CFW.DB.DashboardParameters.create(param)) {
-				
-				CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Parameter added!");
-			}
-			
-		}else{
-			CFW.Messages.noPermission();
-		}
-
-	}
+//				}	
+//			}
+//			
+//			//--------------------------------------------
+//			// Add Params from Definitions
+//			JsonArray parameterDefArray = new JsonArray();
+//			
+//			for(ParameterDefinition def : CFW.Registry.Parameters.getParameterDefinitions().values()) {
+//				if(def.isAvailable(uniqueTypeChecker)) {
+//					JsonObject paramObject = new JsonObject();
+//					paramObject.add("widgetType", null);
+//					paramObject.add("widgetSetting", null);
+//					paramObject.addProperty("label", def.getParamUniqueName());
+//					
+//					parameterDefArray.add(paramObject);
+//				}
+//			}
+//			
+//			parameterDefArray.addAll(widgetParametersArray);
+//			response.getContent().append(parameterDefArray.toString());
+//		}else{
+//			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to load dashboard parameters.");
+//		}
+//	}
 	
 	/*****************************************************************
 	 *
 	 *****************************************************************/
-	private static void deleteParam(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
-		
-		String dashboardID = request.getParameter("dashboardid");
-		
-		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
-			
-			String paramID = request.getParameter("paramid");
-			if(CFW.DB.DashboardParameters.checkIsParameterOfDashboard(dashboardID, paramID)) {
-				boolean success = CFW.DB.DashboardParameters.deleteByID(paramID);
-				json.setSuccess(success);
-				CFW.Messages.deleted();
-				
-				//Remove From Form to avoid errors on save
-				String formID = request.getParameter("formid");
-				CFWMultiForm form = (CFWMultiForm)CFW.Context.Session.getForm(formID);
-				
-				form.getOrigins().remove(Integer.parseInt(paramID));
-			}
-			
-			
-		}else{
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
-		}
-
-	}
+//	@SuppressWarnings("rawtypes")
+//	private static void createParam(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
+//		
+//		String dashboardID = request.getParameter("dashboardid");
+//
+//		//Prevent change when DashboardID is null 
+//		if(Strings.isNullOrEmpty(dashboardID)) {
+//			return;
+//		}
+//		
+//		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+//			
+//			//----------------------------
+//			// Get and check Values
+//			String widgetType = request.getParameter("widgetType");
+//			String widgetSetting = request.getParameter("widgetSetting");
+//			String label = request.getParameter("label");
+//			
+//			//----------------------------
+//			// Create Param
+//			CFWParameter param = new CFWParameter();
+//			param.foreignKeyDashboard(Integer.parseInt(dashboardID));
+//
+//			if(Strings.isNullOrEmpty(widgetSetting)) {
+//				param.widgetType(null);
+//				param.paramSettingsLabel(null);
+//				
+//				//----------------------------
+//				// Handle Default Params
+//				
+//				ParameterDefinition def = CFW.Registry.Parameters.getDefinition(label);
+//				if(def != null) {
+//					CFWField paramField = def.getFieldForSettings(request, dashboardID, null);
+//					param.paramType(paramField.fieldType());
+//					param.paramSettingsLabel(def.getParamUniqueName());
+//					param.name(label.toLowerCase().replace(" ", "_")+"_"+CFW.Random.randomStringAlphaNumerical(6));
+//					param.mode(DashboardParameterMode.MODE_SUBSTITUTE);
+//					param.isModeChangeAllowed(false);
+//					param.isDynamic(def.isDynamic());
+//					
+////					if(paramField.fieldType().equals(FormFieldType.SELECT)) {
+////						param.isModeChangeAllowed(true);
+////					}
+//				}else {
+//					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter definition could not be found for: "+label);
+//				}
+//
+//
+//			}else {
+//				//-------------------------------
+//				// Check does Widget Exist
+//				WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widgetType);
+//				if(widgetType != null && definition == null) {
+//					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The selected widget type does not exist.");
+//					return;
+//				}
+//				
+//				//-------------------------------
+//				// Handle Widget Settings Params
+//				CFWField settingsField = definition.getSettings().getField(widgetSetting);
+//				if(settingsField == null) {
+//					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The selected field does not does not exist for this widget type.");
+//					return;
+//				}else {
+//					param.widgetType(widgetType);
+//					param.paramSettingsLabel(widgetSetting);
+//					param.name(widgetSetting.replace(" ", "_")+"_"+CFW.Random.randomStringAlphaNumerical(6));
+//					param.paramType(settingsField.fieldType()); // used to fetch similar field types
+//					param.getField(DashboardParameterFields.VALUE.toString()).setValueConvert(settingsField.getValue(), true);
+//					param.mode(DashboardParameterMode.MODE_GLOBAL_OVERRIDE);
+//					
+//					if(settingsField.fieldType() == FormFieldType.BOOLEAN
+//					|| settingsField.fieldType() == FormFieldType.NUMBER
+//					|| settingsField.fieldType() == FormFieldType.DATEPICKER
+//					|| settingsField.fieldType() == FormFieldType.DATETIMEPICKER
+//					|| settingsField.fieldType() == FormFieldType.TAGS
+//					|| settingsField.fieldType() == FormFieldType.TAGS_SELECTOR
+//					) {
+//						param.isModeChangeAllowed(false);
+//					}
+//				}
+//			}
+//			
+//			//----------------------------
+//			// Create Parameter in DB
+//			if(CFW.DB.DashboardParameters.create(param)) {
+//				
+//				CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Parameter added!");
+//			}
+//			
+//		}else{
+//			CFW.Messages.noPermission();
+//		}
+//
+//	}
+	
+//	/*****************************************************************
+//	 *
+//	 *****************************************************************/
+//	private static void deleteParam(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
+//		
+//		String dashboardID = request.getParameter("dashboardid");
+//		
+//		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+//			
+//			String paramID = request.getParameter("paramid");
+//			if(CFW.DB.DashboardParameters.checkIsParameterOfDashboard(dashboardID, paramID)) {
+//				boolean success = CFW.DB.DashboardParameters.deleteByID(paramID);
+//				json.setSuccess(success);
+//				CFW.Messages.deleted();
+//				
+//				//Remove From Form to avoid errors on save
+//				String formID = request.getParameter("formid");
+//				CFWMultiForm form = (CFWMultiForm)CFW.Context.Session.getForm(formID);
+//				
+//				form.getOrigins().remove(Integer.parseInt(paramID));
+//			}
+//			
+//			
+//		}else{
+//			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Insufficient rights to execute action.");
+//		}
+//
+//	}
 	
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void createParameterEditForm(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
-
-		String dashboardID = request.getParameter("dashboardid");
-		ArrayList<CFWObject> parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(dashboardID);
-		
-		CFWTimeframe notNeeded = null;
-		Parameter.prepareParamObjectsForForm(request, parameterList, notNeeded, false);
-		
-		//===========================================
-		// Create Form
-		//===========================================
-		if(parameterList.size() != 0) {
-			
-			CFWMultiForm parameterEditForm = new CFWMultiForm("cfwParameterEditMultiForm"+CFW.Random.randomStringAlphaNumerical(12), "Save", parameterList);
-			
-			parameterEditForm.setMultiFormHandler(new CFWMultiFormHandler() {
-				
-				@Override
-				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWMultiForm form,
-						LinkedHashMap<Integer, CFWObject> originsMap) {
-					
-					form.mapRequestParameters(request);
-					
-					//revert uniques of the fields to be able to save to the database.
-					form.revertFieldNames();
-						for(CFWObject object : originsMap.values()) {
-							Parameter param = (Parameter)object;
-							
-							if(!CFW.DB.DashboardParameters.checkIsParameterNameUsedOnUpdate(param)) {
-								//do not update WidgetType and Setting as the values were overridden with labels.
-								boolean success = new CFWSQL(param).updateWithout(
-										DashboardParameterFields.WIDGET_TYPE.toString(),
-										DashboardParameterFields.LABEL.toString());
-								
-								if(!success) {
-									CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The data with the ID '"+param.getPrimaryKeyValue()+"' could not be saved to the database.");
-								};
-							}else {
-								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The parameter name is already in use: '"+param.name());
-							}
-						}
-						
-					//make fieldnames Unique again to be able to save again.
-					form.makeFieldNamesUnique();
-					CFW.Messages.saved();
-				}
-				
-			});
-			parameterEditForm.setCustomAutocompleteHandler(new CFWFormCustomAutocompleteHandler() {
-				
-				@Override
-				public AutocompleteResult getAutocompleteData(HttpServletRequest request, HttpServletResponse response,
-						CFWForm form, CFWField field, String searchValue, int cursorPosition) {
-					
-					//------------------------------------
-					// Create Request with additional Params
-					// for the same Widget Type.
-					// allows fields using other request params
-					// for autocomplete to work properly
-					CFWMultiForm multiform = (CFWMultiForm)form;
-					
-					String paramID = field.getName().split("-")[0];
-					int paramIDNumber = Integer.parseInt(paramID);
-					LinkedHashMap<Integer, CFWObject> origins = multiform.getOrigins();
-					Parameter paramToAutocomplete = (Parameter)origins.get(paramIDNumber);
-					String widgetType = paramToAutocomplete.widgetType();
-					
-					Map<String, String[]> extraParams = new HashMap<String, String[]>();
-					if(widgetType != null) {
-						//------------------------------------
-						//Find all Settings from the same Widget Type
-						
-						for(CFWObject object : origins.values() ) {
-							Parameter currentParam = (Parameter)object;
-							if(currentParam.widgetType() != null && currentParam.widgetType().equals(widgetType)) {
-								String paramName = currentParam.paramSettingsLabel();
-								String valueFieldName = currentParam.id()+"-"+DashboardParameterFields.VALUE;
-								String paramValue = request.getParameter(valueFieldName);
-						        extraParams.put(paramName, new String[] { paramValue });
-							}
-						}
-					}else {
-						String label = paramToAutocomplete.paramSettingsLabel();
-						ParameterDefinition def = CFW.Registry.Parameters.getDefinition(label);
-						for(CFWObject object : origins.values() ) {
-							Parameter currentParam = (Parameter)object;
-							
-							if(currentParam.widgetType() != null ) {
-								HashSet<String> widgetTypesArray = new HashSet<>();
-								widgetTypesArray.add(currentParam.widgetType());
-								
-								if(def.isAvailable(widgetTypesArray)) {
-									String currentName = currentParam.paramSettingsLabel();
-									String valueFieldName = currentParam.id()+"-"+DashboardParameterFields.VALUE;
-									String currentParamValue = request.getParameter(valueFieldName);
-							        extraParams.put(currentName, new String[] { currentParamValue });
-								}
-								
-							}
-						}
-					}
-					
-					CFWModifiableHTTPRequest modifiedRequest = new CFWModifiableHTTPRequest(request, extraParams);
-
-					//------------------------------------
-					// Get Autocomplete Results
-			    	if(field.getAutocompleteHandler() != null) {
-			    		AutocompleteResult suggestions = field.getAutocompleteHandler().getAutocompleteData(modifiedRequest, searchValue, cursorPosition);
-			    		return suggestions;
-			    	}else {
-			    		json.setSuccess(false);
-			    		new CFWLog(logger)
-				    		.severe("The field with name '"+field.getName()+"' doesn't have an autocomplete handler.");
-			    		return null;
-			    	}
-				}
-			});
-			
-			parameterEditForm.appendToPayload(json);
-			json.setSuccess(true);	
-		}
-	}
+//	@SuppressWarnings({ "unchecked", "rawtypes" })
+//	private static void createParameterEditForm(HttpServletRequest request, HttpServletResponse response, JSONResponse json) {
+//
+//		String dashboardID = request.getParameter("dashboardid");
+//		ArrayList<CFWObject> parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(dashboardID);
+//		
+//		CFWTimeframe notNeeded = null;
+//		CFWParameter.prepareParamObjectsForForm(request, parameterList, notNeeded, false);
+//		
+//		//===========================================
+//		// Create Form
+//		//===========================================
+//		if(parameterList.size() != 0) {
+//			
+//			CFWMultiForm parameterEditForm = new CFWMultiForm("cfwParameterEditMultiForm"+CFW.Random.randomStringAlphaNumerical(12), "Save", parameterList);
+//			
+//			parameterEditForm.setMultiFormHandler(new CFWMultiFormHandler() {
+//				
+//				@Override
+//				public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWMultiForm form,
+//						LinkedHashMap<Integer, CFWObject> originsMap) {
+//					
+//					form.mapRequestParameters(request);
+//					
+//					//revert uniques of the fields to be able to save to the database.
+//					form.revertFieldNames();
+//						for(CFWObject object : originsMap.values()) {
+//							CFWParameter param = (CFWParameter)object;
+//							
+//							if(!CFW.DB.DashboardParameters.checkIsParameterNameUsedOnUpdate(param)) {
+//								//do not update WidgetType and Setting as the values were overridden with labels.
+//								boolean success = new CFWSQL(param).updateWithout(
+//										DashboardParameterFields.WIDGET_TYPE.toString(),
+//										DashboardParameterFields.LABEL.toString());
+//								
+//								if(!success) {
+//									CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The data with the ID '"+param.getPrimaryKeyValue()+"' could not be saved to the database.");
+//								};
+//							}else {
+//								CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The parameter name is already in use: '"+param.name());
+//							}
+//						}
+//						
+//					//make fieldnames Unique again to be able to save again.
+//					form.makeFieldNamesUnique();
+//					CFW.Messages.saved();
+//				}
+//				
+//			});
+//			parameterEditForm.setCustomAutocompleteHandler(new CFWFormCustomAutocompleteHandler() {
+//				
+//				@Override
+//				public AutocompleteResult getAutocompleteData(HttpServletRequest request, HttpServletResponse response,
+//						CFWForm form, CFWField field, String searchValue, int cursorPosition) {
+//					
+//					//------------------------------------
+//					// Create Request with additional Params
+//					// for the same Widget Type.
+//					// allows fields using other request params
+//					// for autocomplete to work properly
+//					CFWMultiForm multiform = (CFWMultiForm)form;
+//					
+//					String paramID = field.getName().split("-")[0];
+//					int paramIDNumber = Integer.parseInt(paramID);
+//					LinkedHashMap<Integer, CFWObject> origins = multiform.getOrigins();
+//					CFWParameter paramToAutocomplete = (CFWParameter)origins.get(paramIDNumber);
+//					String widgetType = paramToAutocomplete.widgetType();
+//					
+//					Map<String, String[]> extraParams = new HashMap<String, String[]>();
+//					if(widgetType != null) {
+//						//------------------------------------
+//						//Find all Settings from the same Widget Type
+//						
+//						for(CFWObject object : origins.values() ) {
+//							CFWParameter currentParam = (CFWParameter)object;
+//							if(currentParam.widgetType() != null && currentParam.widgetType().equals(widgetType)) {
+//								String paramName = currentParam.paramSettingsLabel();
+//								String valueFieldName = currentParam.id()+"-"+DashboardParameterFields.VALUE;
+//								String paramValue = request.getParameter(valueFieldName);
+//						        extraParams.put(paramName, new String[] { paramValue });
+//							}
+//						}
+//					}else {
+//						String label = paramToAutocomplete.paramSettingsLabel();
+//						ParameterDefinition def = CFW.Registry.Parameters.getDefinition(label);
+//						for(CFWObject object : origins.values() ) {
+//							CFWParameter currentParam = (CFWParameter)object;
+//							
+//							if(currentParam.widgetType() != null ) {
+//								HashSet<String> widgetTypesArray = new HashSet<>();
+//								widgetTypesArray.add(currentParam.widgetType());
+//								
+//								if(def.isAvailable(widgetTypesArray)) {
+//									String currentName = currentParam.paramSettingsLabel();
+//									String valueFieldName = currentParam.id()+"-"+DashboardParameterFields.VALUE;
+//									String currentParamValue = request.getParameter(valueFieldName);
+//							        extraParams.put(currentName, new String[] { currentParamValue });
+//								}
+//								
+//							}
+//						}
+//					}
+//					
+//					CFWModifiableHTTPRequest modifiedRequest = new CFWModifiableHTTPRequest(request, extraParams);
+//
+//					//------------------------------------
+//					// Get Autocomplete Results
+//			    	if(field.getAutocompleteHandler() != null) {
+//			    		AutocompleteResult suggestions = field.getAutocompleteHandler().getAutocompleteData(modifiedRequest, searchValue, cursorPosition);
+//			    		return suggestions;
+//			    	}else {
+//			    		json.setSuccess(false);
+//			    		new CFWLog(logger)
+//				    		.severe("The field with name '"+field.getName()+"' doesn't have an autocomplete handler.");
+//			    		return null;
+//			    	}
+//				}
+//			});
+//			
+//			parameterEditForm.appendToPayload(json);
+//			json.setSuccess(true);	
+//		}
+//	}
 
 	/******************************************************************
 	 *

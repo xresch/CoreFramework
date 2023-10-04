@@ -30,15 +30,15 @@ import com.xresch.cfw.validation.NotNullOrEmptyValidator;
  * The implementation of the Dashboard Parameter functionality is rather complex. If you want to enhance or change 
  * it keep the following in mind:
  * <ul>
- *     <li> {@link Parameter#addParameterHandlingToField()}: Adds defined parameters when editing widget settings</li>
- *     <li> {@link Parameter#prepareParamObjectsForForm()}: For the defined parameter, get the original widget settings field. New general parameters have to be added here. </li>
- *     <li> {@link Parameter#prepareParamObjectsForForm()}: For the defined parameter, get the original widget setting field. </li>
+ *     <li> {@link CFWParameter#addParameterHandlingToField()}: Adds defined parameters when editing widget settings</li>
+ *     <li> {@link CFWParameter#prepareParamObjectsForForm()}: For the defined parameter, get the original widget settings field. New general parameters have to be added here. </li>
+ *     <li> {@link CFWParameter#prepareParamObjectsForForm()}: For the defined parameter, get the original widget setting field. </li>
  *     
  * </ul>
  * @author Reto Scheiwiller, (c) Copyright 2021
  * @license MIT-License
  **************************************************************************************************************/
-public class Parameter extends CFWObject {
+public class CFWParameter extends CFWObject {
 	
 	public static final String TABLE_NAME = "CFW_DASHBOARD_PARAMETER";
 	
@@ -67,7 +67,7 @@ public class Parameter extends CFWObject {
 		IS_DYNAMIC,
 	}
 
-	private static Logger logger = CFWLog.getLogger(Parameter.class.getName());
+	private static Logger logger = CFWLog.getLogger(CFWParameter.class.getName());
 	
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.NONE, DashboardParameterFields.PK_ID.toString())
 			.setPrimaryKeyAutoIncrement(this)
@@ -148,7 +148,7 @@ public class Parameter extends CFWObject {
 	
 	
 	
-	public Parameter() {
+	public CFWParameter() {
 		initializeFields();
 	}
 		
@@ -206,7 +206,7 @@ public class Parameter extends CFWObject {
 		return id.getValue();
 	}
 	
-	public Parameter id(Integer id) {
+	public CFWParameter id(Integer id) {
 		this.id.setValue(id);
 		return this;
 	}
@@ -215,7 +215,7 @@ public class Parameter extends CFWObject {
 		return foreignKeyDashboard.getValue();
 	}
 	
-	public Parameter foreignKeyDashboard(Integer foreignKeyDashboard) {
+	public CFWParameter foreignKeyDashboard(Integer foreignKeyDashboard) {
 		this.foreignKeyDashboard.setValue(foreignKeyDashboard);
 		return this;
 	}
@@ -224,7 +224,7 @@ public class Parameter extends CFWObject {
 		return widgetType.getValue();
 	}
 	
-	public Parameter widgetType(String value) {
+	public CFWParameter widgetType(String value) {
 		this.widgetType.setValue(value);
 		return this;
 	}
@@ -233,7 +233,7 @@ public class Parameter extends CFWObject {
 		return FormFieldType.valueOf(paramType.getValue());
 	}
 	
-	public Parameter paramType(FormFieldType value) {
+	public CFWParameter paramType(FormFieldType value) {
 		this.paramType.setValue(value.toString());
 		return this;
 	}
@@ -243,7 +243,7 @@ public class Parameter extends CFWObject {
 		return paramLabel.getValue();
 	}
 	
-	public Parameter paramSettingsLabel(String value) {
+	public CFWParameter paramSettingsLabel(String value) {
 		this.paramLabel.setValue(value);
 		return this;
 	}
@@ -252,7 +252,7 @@ public class Parameter extends CFWObject {
 		return name.getValue();
 	}
 	
-	public Parameter name(String value) {
+	public CFWParameter name(String value) {
 		this.name.setValue(value);
 		return this;
 	}
@@ -261,7 +261,7 @@ public class Parameter extends CFWObject {
 		return value.getValue();
 	}
 	
-	public Parameter value(String value) {
+	public CFWParameter value(String value) {
 		this.value.setValue(value);
 		return this;
 	}
@@ -270,7 +270,7 @@ public class Parameter extends CFWObject {
 		return mode.getValue();
 	}
 	
-	public Parameter mode(DashboardParameterMode value) {
+	public CFWParameter mode(DashboardParameterMode value) {
 		this.mode.setValue(value.toString());
 		return this;
 	}
@@ -279,7 +279,7 @@ public class Parameter extends CFWObject {
 		return isModeChangeAllowed.getValue();
 	}
 	
-	public Parameter isModeChangeAllowed(Boolean value) {
+	public CFWParameter isModeChangeAllowed(Boolean value) {
 		this.isModeChangeAllowed.setValue(value);
 		return this;
 	}
@@ -288,7 +288,7 @@ public class Parameter extends CFWObject {
 		return isDynamic.getValue();
 	}
 	
-	public Parameter isDynamic(Boolean value) {
+	public CFWParameter isDynamic(Boolean value) {
 		this.isDynamic.setValue(value);
 		return this;
 	}
@@ -318,7 +318,7 @@ public class Parameter extends CFWObject {
 					ArrayList<CFWObject> availableParams = CFW.DB.DashboardParameters.getAvailableParamsForDashboard(dashboardID, widgetType, fieldname, true);
 					HashMap options = field.getOptions();
 					for(CFWObject object : availableParams) {
-						String param = "$"+((Parameter)object).name()+"$";
+						String param = "$"+((CFWParameter)object).name()+"$";
 						options.put(param, param);
 					}
 					
@@ -339,7 +339,7 @@ public class Parameter extends CFWObject {
 		// Replace Value Field
 		//===========================================
 		for(CFWObject object : parameterList) {
-			Parameter param = (Parameter)object;
+			CFWParameter param = (CFWParameter)object;
 			CFWField<String> currentValueField = (CFWField<String>)param.getField(DashboardParameterFields.VALUE.toString());
 			CFWField newValueField;
 			

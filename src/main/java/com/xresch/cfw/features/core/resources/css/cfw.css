@@ -621,6 +621,7 @@ pre {
 
 .cfw-field-wrapper {
 	display: flex;
+	position: relative; /* stops break out of textarea expand button */
 	flex-grow: 1;
 	width: 100%;
 }

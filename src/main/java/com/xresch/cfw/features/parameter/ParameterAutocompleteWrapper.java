@@ -55,7 +55,7 @@ class ParameterAutocompleteWrapper extends CFWAutocompleteHandler {
 		
 		AutocompleteList paramList = new AutocompleteList();
 		for(int i = 0 ; i < availableParams.size(); i++) {
-			Parameter param = (Parameter)availableParams.get(i);
+			CFWParameter param = (CFWParameter)availableParams.get(i);
 			
 			AutocompleteItem item = new AutocompleteItem("$"+param.name()+"$", "Parameter: $"+param.name()+"$",
 					 "<b>Type:&nbsp;</b>"+param.paramType()

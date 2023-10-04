@@ -31,8 +31,8 @@ import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
-import com.xresch.cfw.features.parameter.Parameter;
-import com.xresch.cfw.features.parameter.Parameter.DashboardParameterFields;
+import com.xresch.cfw.features.parameter.CFWParameter;
+import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.utils.CFWUtilsText;
 import com.xresch.cfw.validation.CustomValidator;
@@ -111,7 +111,7 @@ public class WidgetParameter extends WidgetDefinition {
 
 								//---------------------------------------
 								// Return Params not already in use
-								CFWSQL sql = new CFWSQL(new Parameter())
+								CFWSQL sql = new CFWSQL(new CFWParameter())
 										.select()
 										.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
 										.and().like(DashboardParameterFields.NAME, "%"+searchValue+"%");
@@ -193,13 +193,13 @@ public class WidgetParameter extends WidgetDefinition {
 		}
 
 		//Filter by names instead of IDs to still get parameters if they were changed.
-		ArrayList<CFWObject> paramsResultArray = new CFWSQL(new Parameter())
+		ArrayList<CFWObject> paramsResultArray = new CFWSQL(new CFWParameter())
 				.select()
 				.whereIn(DashboardParameterFields.NAME, paramNames)
 				.and(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
 				.getAsObjectList();
 		
-		Parameter.prepareParamObjectsForForm(request, paramsResultArray, timeframe, true);
+		CFWParameter.prepareParamObjectsForForm(request, paramsResultArray, timeframe, true);
 
 		//---------------------------------
 		// Resolve Parameters
@@ -226,7 +226,7 @@ public class WidgetParameter extends WidgetDefinition {
 		// Add parameter fields to form
 		
 		for(CFWObject object : paramsResultArray) {
-			Parameter param = (Parameter)object;
+			CFWParameter param = (CFWParameter)object;
 			
 			CFWField valueField = param.getField(DashboardParameterFields.VALUE.toString());
 			valueField
