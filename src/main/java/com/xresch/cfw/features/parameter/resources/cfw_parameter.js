@@ -1,13 +1,14 @@
 
+CFW_PARAMETER_URL = "/public/dashboard/view";
 CFW_PARAMETER_SCOPE = "default";
-CFW_PARAMETER_ID = -999;
+CFW_PARAMETER_ITEM_ID = -999;
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_parameter_setScope(CFW_PARAMETER_SCOPE, id){
-	CFW_PARAMETER_SCOPE = CFW_PARAMETER_SCOPE;
-	CFW_PARAMETER_ID = id;
+function cfw_parameter_setScope(scope, itemID){
+	CFW_PARAMETER_SCOPE = scope;
+	CFW_PARAMETER_ITEM_ID = itemID;
 }
 
 /*******************************************************************************
@@ -18,7 +19,7 @@ function cfw_parameter_edit(){
 	// ----------------------------
 	// Create Content Div
 	let contentDiv = $('<div>');
-	contentDiv.append('<p>Parameters will substitute values in the widgets on the dashboard.</p>');
+	contentDiv.append('<p>Parameters will substitute values in dashboard widgets or queries.</p>');
 
 	// ----------------------------
 	// Create Add Params Button
@@ -83,8 +84,8 @@ function cfw_parameter_loadParameterForm(){
 		var paramListDiv = $('#param-list');
 		paramListDiv.html('');
 		
-		CFW.http.createForm(CFW_DASHBOARDVIEW_URL, 
-				{action: "fetch", item: "paramform", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, 
+		CFW.http.createForm(CFW_PARAMETER_URL, 
+				{action: "fetch", item: "paramform", dashboardid: CFW_PARAMETER_ITEM_ID}, 
 				paramListDiv, 
 				function (formID){
 					
@@ -134,7 +135,7 @@ function cfw_parameter_loadParameterForm(){
  ******************************************************************************/
 function cfw_parameter_add(widgetType, widgetSetting, label){
 	
-	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'param', widgetType: widgetType, widgetSetting: widgetSetting, label: label, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
+	CFW.http.getJSON(CFW_PARAMETER_URL, {action: 'create', item: 'param', widgetType: widgetType, widgetSetting: widgetSetting, label: label, dashboardid: CFW_PARAMETER_ITEM_ID }, function(data){
 		if(data.success){
 			// Reload Form
 			cfw_parameter_loadParameterForm();
@@ -154,7 +155,7 @@ function cfw_parameter_removeConfirmed(parameterID){
  ******************************************************************************/
 function cfw_parameter_remove(parameterID) {
 	var formID = $('#param-list form').attr('id');
-	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'delete', item: 'param', paramid: parameterID, formid: formID, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
+	CFW.http.postJSON(CFW_PARAMETER_URL, {action: 'delete', item: 'param', paramid: parameterID, formid: formID, dashboardid: CFW_PARAMETER_ITEM_ID }, function(data){
 
 			if(data.success){
 				// Remove from Form
@@ -276,7 +277,7 @@ function cfw_parameter_applyToFields(object, finalParams,  widgetType) {
  * 
  ******************************************************************************/
 function cfw_parameter_getUserParamsStoreKey(){
-	return +CFW_PARAMETER_SCOPE+'['+CFW_PARAMETER_ID+'].userparams';
+	return CFW_PARAMETER_SCOPE+'['+CFW_PARAMETER_ITEM_ID+'].userparams';
 }
 
 /*******************************************************************************
@@ -305,20 +306,17 @@ function cfw_parameter_getStoredUserParams(){
 
 
 /*******************************************************************************
- * Overrides default params with the values set by the Parameter Widgets and 
- * returns a clone of the object held by CFW_DASHBOARD_PARAMS. Also adds the
- * parameters earliest and latest with epoch time from the time picker.
+ * Overrides default parameter values 
+ * with the values set by the Parameter Widgets (if applicable) 
+ * and returns a clone of the object held by customParams. 
+ * Also adds the parameters earliest and latest with epoch time from the time picker.
+ * @param customParams
  ******************************************************************************/
-function cfw_parameter_getFinalParams(){
+function cfw_parameter_getFinalParams(customParams){
 	
 	var storedViewerParams = cfw_parameter_getStoredUserParams();
-	var mergedParams = _.cloneDeep(CFW_DASHBOARD_PARAMS);
+	var mergedParams = _.cloneDeep(customParams);
 	
-	//Add earliest and latest params
-	//mergedParams.push({NAME: "earliest", VALUE: ""+CFW_DASHBOARD_TIME_EARLIEST_EPOCH});
-	//mergedParams.push({NAME: "latest", VALUE: ""+CFW_DASHBOARD_TIME_LATEST_EPOCH});
-
-		
 	for(var index in mergedParams){
 		
 		var currentParam = mergedParams[index];
@@ -380,7 +378,7 @@ function cfw_parameter_showAddParametersModal(){
 	// --------------------------------------
 	// General
 	
-	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "availableparams", dashboardid: CFW_DASHBOARD_URLPARAMS.id}, function(data){
+	CFW.http.getJSON(CFW_PARAMETER_URL, {action: "fetch", item: "availableparams", dashboardid: CFW_PARAMETER_ITEM_ID}, function(data){
 		
 		let paramsArray = data.payload;
 		

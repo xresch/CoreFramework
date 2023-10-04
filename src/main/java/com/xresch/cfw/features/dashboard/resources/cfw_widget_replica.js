@@ -41,7 +41,7 @@
 
 						var replicatedDefinition = CFW.dashboard.getWidgetDefinition(replicatedWidgetObject.TYPE);
 						
-						var finalParams = cfw_parameter_getFinalParams();
+						var finalParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
 						let parameterizedSettings = cfw_parameter_applyToFields(replicatedWidgetObject.JSON_SETTINGS, finalParams, replicatedWidgetObject.TYPE);
 						let widgetCloneParameterized = _.cloneDeep(replicatedWidgetObject);
 						widgetCloneParameterized.JSON_SETTINGS = parameterizedSettings;

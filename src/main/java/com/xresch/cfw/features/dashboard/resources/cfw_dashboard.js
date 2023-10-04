@@ -782,7 +782,7 @@ function cfw_dashboard_widget_save_state(widgetObject, forceSave, defaultSetting
 			  action: 'update'
 			, item: itemToUpdate
 			, dashboardid: CFW_DASHBOARD_URLPARAMS.id
-			, params: JSON.stringify(cfw_parameter_getFinalParams())
+			, params: JSON.stringify(cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS))
 			, widget: JSON.stringify(widgetObject)
 		}; 
 		
@@ -1223,7 +1223,7 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 		
 		// ---------------------------------------
 		// Apply Parameters Placeholder
-		var finalParams = cfw_parameter_getFinalParams();
+		var finalParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
 		let parameterizedSettings = cfw_parameter_applyToFields(originalWidgetObject.JSON_SETTINGS, finalParams, originalWidgetObject.TYPE);
 		let widgetCloneParameterized = _.cloneDeep(originalWidgetObject);
 		widgetCloneParameterized.JSON_SETTINGS = parameterizedSettings;
@@ -1604,7 +1604,7 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			if($('#editWidgetComposite').is(":visible")){
 				let widgetType = $('#edited-widget-type').val();
 				
-				let dashboardParams = cfw_parameter_getFinalParams();
+				let dashboardParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
 				let parameterizedRequestAttributes = cfw_parameter_applyToFields(requestAttributes, dashboardParams, widgetType);
 				
 				Object.assign(requestAttributes, parameterizedRequestAttributes);
@@ -1620,7 +1620,7 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			if(form.attr('id').startsWith('cfwWidgetParameterForm')){
 				
 				// Applied Param values from dashboard
-				dashboardParams = cfw_parameter_getFinalParams();
+				dashboardParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
 				for(index in dashboardParams){
 					let param = dashboardParams[index];
 					
