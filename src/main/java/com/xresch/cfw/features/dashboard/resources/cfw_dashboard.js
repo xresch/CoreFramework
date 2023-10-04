@@ -526,10 +526,14 @@ function cfw_parameter_remove(parameterID) {
  * applies the parameters to the fields of the object.
  * This can either be a widgetObject.JSON_SETTINGS object, or an object containing
  * parameters for a http request(e.g. for autocomplete).
- * 
- * @return settings object with applied parameters
+ *
+ * @param object the object to apply the parameters too
+ * @param finalParams the parameters to be applied
+ * @param widgetType the type of dashboard widget or null if not applicable
+
+ * @returns copy of the object with applied parameters
  ******************************************************************************/
-function cfw_parameter_applyToFields(object, widgetType, finalParams) {
+function cfw_parameter_applyToFields(object, finalParams,  widgetType) {
 
 	//###############################################################################
 	//############################ IMPORTANT ########################################
@@ -627,15 +631,24 @@ function cfw_parameter_applyToFields(object, widgetType, finalParams) {
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_parameter_getViewerParamsStoreKey(){
-	return 'dashboard['+CFW_DASHBOARD_URLPARAMS.id+'].viewercustomparams';
+function cfw_parameter_getViewerParamsStoreKey(scope, id){
+	return +scope+'['+id+'].viewercustomparams';
 }
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_parameter_getStoredViewerParams(){
-	var storekey = cfw_parameter_getViewerParamsStoreKey();
+function cfw_parameter_storeViewerParameters(scope, id, params){
+	var storekey = cfw_parameter_getViewerParamsStoreKey(scope, id);
+	CFW.cache.storeValueForPage(storekey, JSON.stringify(params));
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_parameter_getStoredViewerParams(scope, id){
+	var storekey = cfw_parameter_getViewerParamsStoreKey(scope, id);
+	
 	var storedParamsString = CFW.cache.retrieveValueForPage(storekey);
 	if(storedParamsString != undefined){
 		var storedViewerParams = JSON.parse(storedParamsString);
@@ -646,118 +659,16 @@ function cfw_parameter_getStoredViewerParams(){
 	return storedViewerParams;
 }
 
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_parameter_fireParamWidgetUpdate(paramElement){
-	
-	//----------------------------------
-	// Initialize
-	var FIELDNAME_PROMPT_PW = "cfw-promptpassword";
-	var FIELDNAME_AFFECTED_WIDGETS = "cfw-affectedwidgets";
-	var paramField = $(paramElement);
-	var paramValue = paramField.val();
-	var widgetElement = paramField.closest('.grid-stack-item');
-	var paramForms = widgetElement.find('.cfw-parameter-widget-parent form');
-	var widgetID = widgetElement.data('id');
-	
-	//----------------------------------
-	// Create merged Params
-	var mergedParams = {}; 
-	paramForms.each(function(){
-		var userParamsForWidget = CFW.format.formToParams($(this), true);
-		var preparedParams = {};
-		// add to URL
-		for(key in userParamsForWidget){
-			if(key != CFW.global.formID 
-			&& key != FIELDNAME_PROMPT_PW
-			&& key != FIELDNAME_AFFECTED_WIDGETS
-			){
-				preparedParams[key] = userParamsForWidget[key];
-			}
-		}
-		cfw_dashboard_setURLParams(preparedParams);
-		Object.assign(mergedParams, userParamsForWidget); 
-	});
-	
-	//----------------------------------
-	// Get Prompt and Store
-	var doPrompt = mergedParams[FIELDNAME_PROMPT_PW];
-	var affectedWidgetsString = mergedParams[FIELDNAME_AFFECTED_WIDGETS];
-	var affectedWidgetsArray = 
-		(affectedWidgetsString == null && affectedWidgetsString == "[]") ? [] : JSON.parse(affectedWidgetsString);
-		
-	var storekey = cfw_parameter_getViewerParamsStoreKey();
 
-	delete mergedParams[CFW.global.formID];
-	delete mergedParams[FIELDNAME_PROMPT_PW];
-	delete mergedParams[FIELDNAME_AFFECTED_WIDGETS];
-	CFW.cache.storeValueForPage(storekey, JSON.stringify(mergedParams));
-	
-	//----------------------------------
-	// Prepare Params and Update Function
-	
-	//For security reasons, password check will always be sent, regardless if prompt is shown or not
-	var passwordCheckParams = { action: 'fetch'
-					, item: 'paramwidgetpwcheck'
-					, dashboardid: CFW_DASHBOARD_URLPARAMS.id
-					, widgetid: widgetID
-					, credentialKey: ''
-					}; 
-	
-	var updateFunction = function(affectedWidgetsArray){
-		
-		if(affectedWidgetsArray.length == 0){ 
-			cfw_dashboard_draw(true, false);
-		}else{
-			for(var i in affectedWidgetsArray){
-				var widgetID = affectedWidgetsArray[i];
-				var guid = $(".grid-stack-item[data-id="+widgetID+"]").attr('id');
-				if(guid != null){
-					cfw_dashboard_widget_rerender(guid, true);
-				}
-			}
-		}	
-	}
-	
-	//----------------------------------
-	// Execute Prompt and Updates
-	
-	if(!doPrompt){
-
-		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, passwordCheckParams, function(data){
-			if(data.success){
-				updateFunction(affectedWidgetsArray);
-			}
-		});
-	}else{
-		var modalBody = '<input id="widget-param-password" name="credentialKey" class="w-100" type="password" onkeyup="if(event.keyCode == 13){$(\'#cfw-small-modal-closebutton\').click();}" autocomplete="off">';
-		CFW.ui.showModalSmall("Password", modalBody, function(){
-
-			var givenPassword = $('#widget-param-password').val();
-			
-			passwordCheckParams.credentialKey = givenPassword;
-			
-			$.ajaxSetup({async: false});
-				CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, passwordCheckParams, function(data){
-					if(data.success){
-						updateFunction(affectedWidgetsArray);
-					}
-				});
-			$.ajaxSetup({async: true});
-		});
-	}
-
-}
 
 /*******************************************************************************
  * Overrides default params with the values set by the Parameter Widgets and 
  * returns a clone of the object held by CFW_DASHBOARD_PARAMS. Also adds the
  * parameters earliest and latest with epoch time from the time picker.
  ******************************************************************************/
-function cfw_parameter_getFinalParams(){
+function cfw_parameter_getFinalParams(scope, id){
 	
-	var storedViewerParams = cfw_parameter_getStoredViewerParams();
+	var storedViewerParams = cfw_parameter_getStoredViewerParams(scope, id);
 	var mergedParams = _.cloneDeep(CFW_DASHBOARD_PARAMS);
 	
 	//Add earliest and latest params
@@ -879,6 +790,109 @@ function cfw_parameter_showAddParametersModal(){
 	});
 
 }
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_parameter_fireParamWidgetUpdate(paramElement){
+	
+	//----------------------------------
+	// Initialize
+	var FIELDNAME_PROMPT_PW = "cfw-promptpassword";
+	var FIELDNAME_AFFECTED_WIDGETS = "cfw-affectedwidgets";
+	var paramField = $(paramElement);
+	var paramValue = paramField.val();
+	var widgetElement = paramField.closest('.grid-stack-item');
+	var paramForms = widgetElement.find('.cfw-parameter-widget-parent form');
+	var widgetID = widgetElement.data('id');
+	
+	//----------------------------------
+	// Create merged Params
+	var mergedParams = {}; 
+	paramForms.each(function(){
+		var userParamsForWidget = CFW.format.formToParams($(this), true);
+		var preparedParams = {};
+		// add to URL
+		for(key in userParamsForWidget){
+			if(key != CFW.global.formID 
+			&& key != FIELDNAME_PROMPT_PW
+			&& key != FIELDNAME_AFFECTED_WIDGETS
+			){
+				preparedParams[key] = userParamsForWidget[key];
+			}
+		}
+		cfw_dashboard_setURLParams(preparedParams);
+		Object.assign(mergedParams, userParamsForWidget); 
+	});
+	
+	//----------------------------------
+	// Get Prompt and Store
+	var doPrompt = mergedParams[FIELDNAME_PROMPT_PW];
+	var affectedWidgetsString = mergedParams[FIELDNAME_AFFECTED_WIDGETS];
+	var affectedWidgetsArray = 
+		(affectedWidgetsString == null && affectedWidgetsString == "[]") ? [] : JSON.parse(affectedWidgetsString);
+		
+	delete mergedParams[CFW.global.formID];
+	delete mergedParams[FIELDNAME_PROMPT_PW];
+	delete mergedParams[FIELDNAME_AFFECTED_WIDGETS];
+	cfw_parameter_storeViewerParameters("dashboard", CFW_DASHBOARD_URLPARAMS.id, mergedParams);
+	
+	//----------------------------------
+	// Prepare Params and Update Function
+	
+	//For security reasons, password check will always be sent, regardless if prompt is shown or not
+	var passwordCheckParams = { action: 'fetch'
+					, item: 'paramwidgetpwcheck'
+					, dashboardid: CFW_DASHBOARD_URLPARAMS.id
+					, widgetid: widgetID
+					, credentialKey: ''
+					}; 
+	
+	var updateFunction = function(affectedWidgetsArray){
+		
+		if(affectedWidgetsArray.length == 0){ 
+			cfw_dashboard_draw(true, false);
+		}else{
+			for(var i in affectedWidgetsArray){
+				var widgetID = affectedWidgetsArray[i];
+				var guid = $(".grid-stack-item[data-id="+widgetID+"]").attr('id');
+				if(guid != null){
+					cfw_dashboard_widget_rerender(guid, true);
+				}
+			}
+		}	
+	}
+	
+	//----------------------------------
+	// Execute Prompt and Updates
+	
+	if(!doPrompt){
+
+		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, passwordCheckParams, function(data){
+			if(data.success){
+				updateFunction(affectedWidgetsArray);
+			}
+		});
+	}else{
+		var modalBody = '<input id="widget-param-password" name="credentialKey" class="w-100" type="password" onkeyup="if(event.keyCode == 13){$(\'#cfw-small-modal-closebutton\').click();}" autocomplete="off">';
+		CFW.ui.showModalSmall("Password", modalBody, function(){
+
+			var givenPassword = $('#widget-param-password').val();
+			
+			passwordCheckParams.credentialKey = givenPassword;
+			
+			$.ajaxSetup({async: false});
+				CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, passwordCheckParams, function(data){
+					if(data.success){
+						updateFunction(affectedWidgetsArray);
+					}
+				});
+			$.ajaxSetup({async: true});
+		});
+	}
+
+}
+
 
 
 /*******************************************************************************
@@ -1188,7 +1202,7 @@ function cfw_dashboard_widget_save_state(widgetObject, forceSave, defaultSetting
 			  action: 'update'
 			, item: itemToUpdate
 			, dashboardid: CFW_DASHBOARD_URLPARAMS.id
-			, params: JSON.stringify(cfw_parameter_getFinalParams())
+			, params: JSON.stringify(cfw_parameter_getFinalParams("dashboard", CFW_DASHBOARD_URLPARAMS.id))
 			, widget: JSON.stringify(widgetObject)
 		}; 
 		
@@ -1629,8 +1643,8 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 		
 		// ---------------------------------------
 		// Apply Parameters Placeholder
-		var finalParams = cfw_parameter_getFinalParams();
-		let parameterizedSettings = cfw_parameter_applyToFields(originalWidgetObject.JSON_SETTINGS, originalWidgetObject.TYPE, finalParams);
+		var finalParams = cfw_parameter_getFinalParams("dashboard", CFW_DASHBOARD_URLPARAMS.id);
+		let parameterizedSettings = cfw_parameter_applyToFields(originalWidgetObject.JSON_SETTINGS, finalParams, originalWidgetObject.TYPE);
 		let widgetCloneParameterized = _.cloneDeep(originalWidgetObject);
 		widgetCloneParameterized.JSON_SETTINGS = parameterizedSettings;
 		
@@ -2010,8 +2024,8 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			if($('#editWidgetComposite').is(":visible")){
 				let widgetType = $('#edited-widget-type').val();
 				
-				let dashboardParams = cfw_parameter_getFinalParams();
-				let parameterizedRequestAttributes = cfw_parameter_applyToFields(requestAttributes, widgetType, dashboardParams);
+				let dashboardParams = cfw_parameter_getFinalParams("dashboard", CFW_DASHBOARD_URLPARAMS.id);
+				let parameterizedRequestAttributes = cfw_parameter_applyToFields(requestAttributes, dashboardParams, widgetType);
 				
 				Object.assign(requestAttributes, parameterizedRequestAttributes);
 				
@@ -2026,7 +2040,7 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			if(form.attr('id').startsWith('cfwWidgetParameterForm')){
 				
 				// Applied Param values from dashboard
-				dashboardParams = cfw_parameter_getFinalParams();
+				dashboardParams = cfw_parameter_getFinalParams("dashboard", CFW_DASHBOARD_URLPARAMS.id);
 				for(index in dashboardParams){
 					let param = dashboardParams[index];
 					
@@ -2173,14 +2187,13 @@ function cfw_dashboard_applyParamsFromURLAndDraw(){
 			
 	// -----------------------------------------------
 	// Merge URL Params with Custom Parameter Values
-	var storedViewerParams = cfw_parameter_getStoredViewerParams();
+	var storedViewerParams = cfw_parameter_getStoredViewerParams("dashboard", CFW_DASHBOARD_URLPARAMS.id);
 	var mergedParams = Object.assign(storedViewerParams, CFW_DASHBOARD_URLPARAMS);
 
 	delete mergedParams['title'];
 	delete mergedParams['id'];
 	
-	var storekey = cfw_parameter_getViewerParamsStoreKey();
-	CFW.cache.storeValueForPage(storekey, JSON.stringify(mergedParams));
+	cfw_parameter_storeViewerParameters("dashboard", CFW_DASHBOARD_URLPARAMS.id, mergedParams);
 	
 	// ---------------------------------
 	// Load Refresh interval from URL or Local store
