@@ -36,7 +36,7 @@
 					//----------------------------------
 					// Apply Custom Viewer Settings from
 					// Browser Store
-					var storedViewerParams = cfw_dashboard_parameters_getStoredViewerParams();
+					var storedViewerParams = cfw_parameter_getStoredViewerParams();
 					parentDiv.find('form input, form textarea, form select').each(function (){
 						var inputField = $(this);
 						var name = inputField.attr('name');

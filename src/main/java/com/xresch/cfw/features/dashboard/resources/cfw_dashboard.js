@@ -370,7 +370,7 @@ function cfw_dashboard_registerCategory(faiconClasses, categoryName, categoryLab
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_parameters_edit(){
+function cfw_parameter_edit(){
 	
 	// ----------------------------
 	// Create Content Div
@@ -381,7 +381,7 @@ function cfw_dashboard_parameters_edit(){
 	// Create Add Params Button
 	let addParametersButton = 
 		$('<button class="btn btn-sm btn-success mb-3"><i class="fas fa-plus-circle"></i>&nbsp;Add Parameters</button>')
-				.click(cfw_dashboard_parameters_showAddParametersModal);
+				.click(cfw_parameter_showAddParametersModal);
 	
 	contentDiv.append(addParametersButton);		
 	
@@ -392,12 +392,12 @@ function cfw_dashboard_parameters_edit(){
 	
 	CFW.ui.showModalLarge('Parameters', contentDiv);
 	
-    cfw_dashboard_parameters_loadParameterForm();
+    cfw_parameter_loadParameterForm();
 }
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_parameters_save(){
+function cfw_parameter_save(){
 	var paramListDiv = $('#param-list');
 	var form = paramListDiv.find('form');
 	var formID = form.attr('id');
@@ -413,7 +413,7 @@ function cfw_dashboard_parameters_save(){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_parameters_loadParameterForm(){
+function cfw_parameter_loadParameterForm(){
 	
 	var paramListDiv = $('#param-list');
 	var form = paramListDiv.find('form');
@@ -446,7 +446,7 @@ function cfw_dashboard_parameters_loadParameterForm(){
 					
 					// ----------------------------
 					// Replace Save Action
-					paramListDiv.find('form > button').attr('onclick', 'cfw_dashboard_parameters_save()');
+					paramListDiv.find('form > button').attr('onclick', 'cfw_parameter_save()');
 					
 					// ----------------------------
 					// Add Header
@@ -460,7 +460,7 @@ function cfw_dashboard_parameters_loadParameterForm(){
 						row = $(this);
 						
 						row.append('<td><div class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-							+ 'onclick="cfw_dashboard_parameters_removeConfirmed('+row.data('id')+');">'
+							+ 'onclick="cfw_parameter_removeConfirmed('+row.data('id')+');">'
 							+ '<i class="fa fa-trash"></i>'
 							+ '</div></td>')
 					})
@@ -488,12 +488,12 @@ function cfw_dashboard_parameters_loadParameterForm(){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_parameters_add(widgetType, widgetSetting, label){
+function cfw_parameter_add(widgetType, widgetSetting, label){
 	
 	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: 'create', item: 'param', widgetType: widgetType, widgetSetting: widgetSetting, label: label, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
 		if(data.success){
 			// Reload Form
-			cfw_dashboard_parameters_loadParameterForm();
+			cfw_parameter_loadParameterForm();
 		}
 	});
 }
@@ -501,14 +501,14 @@ function cfw_dashboard_parameters_add(widgetType, widgetSetting, label){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_parameters_removeConfirmed(parameterID){
-	CFW.ui.confirmExecute('Do you really want to delete this parameter? (Cannot be undone)', 'Remove', "cfw_dashboard_parameters_remove('"+parameterID+"')" );
+function cfw_parameter_removeConfirmed(parameterID){
+	CFW.ui.confirmExecute('Do you really want to delete this parameter? (Cannot be undone)', 'Remove', "cfw_parameter_remove('"+parameterID+"')" );
 }
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_parameters_remove(parameterID) {
+function cfw_parameter_remove(parameterID) {
 	var formID = $('#param-list form').attr('id');
 	CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, {action: 'delete', item: 'param', paramid: parameterID, formid: formID, dashboardid: CFW_DASHBOARD_URLPARAMS.id }, function(data){
 
@@ -529,7 +529,7 @@ function cfw_dashboard_parameters_remove(parameterID) {
  * 
  * @return settings object with applied parameters
  ******************************************************************************/
-function cfw_dashboard_parameters_applyToFields(object, widgetType, finalParams) {
+function cfw_parameter_applyToFields(object, widgetType, finalParams) {
 
 	//###############################################################################
 	//############################ IMPORTANT ########################################
@@ -627,15 +627,15 @@ function cfw_dashboard_parameters_applyToFields(object, widgetType, finalParams)
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_parameters_getViewerParamsStoreKey(){
+function cfw_parameter_getViewerParamsStoreKey(){
 	return 'dashboard['+CFW_DASHBOARD_URLPARAMS.id+'].viewercustomparams';
 }
 
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_parameters_getStoredViewerParams(){
-	var storekey = cfw_dashboard_parameters_getViewerParamsStoreKey();
+function cfw_parameter_getStoredViewerParams(){
+	var storekey = cfw_parameter_getViewerParamsStoreKey();
 	var storedParamsString = CFW.cache.retrieveValueForPage(storekey);
 	if(storedParamsString != undefined){
 		var storedViewerParams = JSON.parse(storedParamsString);
@@ -649,7 +649,7 @@ function cfw_dashboard_parameters_getStoredViewerParams(){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
+function cfw_parameter_fireParamWidgetUpdate(paramElement){
 	
 	//----------------------------------
 	// Initialize
@@ -687,7 +687,7 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
 	var affectedWidgetsArray = 
 		(affectedWidgetsString == null && affectedWidgetsString == "[]") ? [] : JSON.parse(affectedWidgetsString);
 		
-	var storekey = cfw_dashboard_parameters_getViewerParamsStoreKey();
+	var storekey = cfw_parameter_getViewerParamsStoreKey();
 
 	delete mergedParams[CFW.global.formID];
 	delete mergedParams[FIELDNAME_PROMPT_PW];
@@ -755,9 +755,9 @@ function cfw_dashboard_parameters_fireParamWidgetUpdate(paramElement){
  * returns a clone of the object held by CFW_DASHBOARD_PARAMS. Also adds the
  * parameters earliest and latest with epoch time from the time picker.
  ******************************************************************************/
-function cfw_dashboard_parameters_getFinalParams(){
+function cfw_parameter_getFinalParams(){
 	
-	var storedViewerParams = cfw_dashboard_parameters_getStoredViewerParams();
+	var storedViewerParams = cfw_parameter_getStoredViewerParams();
 	var mergedParams = _.cloneDeep(CFW_DASHBOARD_PARAMS);
 	
 	//Add earliest and latest params
@@ -817,7 +817,7 @@ function cfw_dashboard_parameters_getFinalParams(){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboard_parameters_showAddParametersModal(){
+function cfw_parameter_showAddParametersModal(){
 	
 	// ----------------------------
 	// Create Content Div
@@ -859,7 +859,7 @@ function cfw_dashboard_parameters_showAddParametersModal(){
 						let widgetType = (record.widgetType != null) ? "'"+record.widgetType+"'" : null;
 						let widgetSetting = (record.widgetSetting != null) ? "'"+record.widgetSetting+"'" : null;
 						let label = (record.label != null) ? "'"+record.label+"'" : null;
-						return '<button class="btn btn-success btn-sm" alt="Delete" title="Add Param" onclick="cfw_dashboard_parameters_add('+widgetType+', '+widgetSetting+', '+label+')">'
+						return '<button class="btn btn-success btn-sm" alt="Delete" title="Add Param" onclick="cfw_parameter_add('+widgetType+', '+widgetSetting+', '+label+')">'
 								+ '<i class="fa fa-plus-circle"></i>'
 								+ '</button>';
 
@@ -1188,7 +1188,7 @@ function cfw_dashboard_widget_save_state(widgetObject, forceSave, defaultSetting
 			  action: 'update'
 			, item: itemToUpdate
 			, dashboardid: CFW_DASHBOARD_URLPARAMS.id
-			, params: JSON.stringify(cfw_dashboard_parameters_getFinalParams())
+			, params: JSON.stringify(cfw_parameter_getFinalParams())
 			, widget: JSON.stringify(widgetObject)
 		}; 
 		
@@ -1629,8 +1629,8 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 		
 		// ---------------------------------------
 		// Apply Parameters Placeholder
-		var finalParams = cfw_dashboard_parameters_getFinalParams();
-		let parameterizedSettings = cfw_dashboard_parameters_applyToFields(originalWidgetObject.JSON_SETTINGS, originalWidgetObject.TYPE, finalParams);
+		var finalParams = cfw_parameter_getFinalParams();
+		let parameterizedSettings = cfw_parameter_applyToFields(originalWidgetObject.JSON_SETTINGS, originalWidgetObject.TYPE, finalParams);
 		let widgetCloneParameterized = _.cloneDeep(originalWidgetObject);
 		widgetCloneParameterized.JSON_SETTINGS = parameterizedSettings;
 		
@@ -2010,8 +2010,8 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			if($('#editWidgetComposite').is(":visible")){
 				let widgetType = $('#edited-widget-type').val();
 				
-				let dashboardParams = cfw_dashboard_parameters_getFinalParams();
-				let parameterizedRequestAttributes = cfw_dashboard_parameters_applyToFields(requestAttributes, widgetType, dashboardParams);
+				let dashboardParams = cfw_parameter_getFinalParams();
+				let parameterizedRequestAttributes = cfw_parameter_applyToFields(requestAttributes, widgetType, dashboardParams);
 				
 				Object.assign(requestAttributes, parameterizedRequestAttributes);
 				
@@ -2026,7 +2026,7 @@ function cfw_dashboard_initialize(gridStackElementSelector){
 			if(form.attr('id').startsWith('cfwWidgetParameterForm')){
 				
 				// Applied Param values from dashboard
-				dashboardParams = cfw_dashboard_parameters_getFinalParams();
+				dashboardParams = cfw_parameter_getFinalParams();
 				for(index in dashboardParams){
 					let param = dashboardParams[index];
 					
@@ -2173,13 +2173,13 @@ function cfw_dashboard_applyParamsFromURLAndDraw(){
 			
 	// -----------------------------------------------
 	// Merge URL Params with Custom Parameter Values
-	var storedViewerParams = cfw_dashboard_parameters_getStoredViewerParams();
+	var storedViewerParams = cfw_parameter_getStoredViewerParams();
 	var mergedParams = Object.assign(storedViewerParams, CFW_DASHBOARD_URLPARAMS);
 
 	delete mergedParams['title'];
 	delete mergedParams['id'];
 	
-	var storekey = cfw_dashboard_parameters_getViewerParamsStoreKey();
+	var storekey = cfw_parameter_getViewerParamsStoreKey();
 	CFW.cache.storeValueForPage(storekey, JSON.stringify(mergedParams));
 	
 	// ---------------------------------

@@ -220,7 +220,7 @@ public class WidgetParameter extends WidgetDefinition {
 		
 		CFWForm paramForm = new CFWForm("cfwWidgetParameterForm"+CFW.Random.randomStringAlphaNumerical(12), buttonLabel);
 		paramForm.isInlineForm(true);
-		paramForm.addAttribute("onclick", "cfw_dashboard_parameters_fireParamWidgetUpdate(this);");
+		paramForm.addAttribute("onclick", "cfw_parameter_fireParamWidgetUpdate(this);");
 		
 		//--------------------------------------
 		// Add parameter fields to form

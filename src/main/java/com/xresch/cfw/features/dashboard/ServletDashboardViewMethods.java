@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -47,11 +46,12 @@ import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
 import com.xresch.cfw.features.jobs.CFWDBJob;
 import com.xresch.cfw.features.jobs.CFWJob;
 import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
+import com.xresch.cfw.features.jobs.CFWJobTask;
+import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.parameter.Parameter;
-import com.xresch.cfw.features.parameter.ParameterDefinition;
 import com.xresch.cfw.features.parameter.Parameter.DashboardParameterFields;
 import com.xresch.cfw.features.parameter.Parameter.DashboardParameterMode;
-import com.xresch.cfw.features.jobs.CFWJobTask;
+import com.xresch.cfw.features.parameter.ParameterDefinition;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
@@ -125,6 +125,7 @@ public class ServletDashboardViewMethods
 				
 				//html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE+".js", "cfw_usermgmt.js"));
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "gridstack-h5-5.1.0.js");
+				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureParameter.PACKAGE_RESOURCES, "cfw_parameter.js");
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_dashboard.js");
 				
 				//---------------------------
@@ -933,7 +934,7 @@ public class ServletDashboardViewMethods
 		//###############################################################################
 		// When changing this method you have to apply the same changes in the javascript 
 		// method:
-		// cfw_dashboard.js >> cfw_dashboard_parameters_applyToFields()
+		// cfw_dashboard.js >> cfw_parameter_applyToFields()
 		//
 		//###############################################################################
 
