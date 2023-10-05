@@ -1,4 +1,5 @@
 
+// global as you can have multiple editors at once
 CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID = null;
 CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = null;
 CFW_QUERY_URL = "/app/query";
@@ -26,8 +27,7 @@ function cfw_query_editor_getManualPage(type, componentName){
 				autocompleteWrapper.html('');
 				
 				var manualDiv = $('<div>');
-				manualDiv.css("background", $('body').css('background'))
-				
+
 				manualDiv.append('<h1 style="margin-top: 0px;">Manual of '+componentName+'</h1>');
 				manualDiv.attr('onclick', 'event.stopPropagation();');
 				
@@ -80,6 +80,9 @@ class CFWQueryEditor{
 		
 		// the execute button, as JQuery
 		this.executeButton = null;
+		
+		// used to avoid multiple parallel executions
+		this.isQueryExecuting = false;	
 		
 		//-------------------------------------------
 		// Settings
@@ -180,7 +183,6 @@ class CFWQueryEditor{
 		domElement.selectionEnd = newCursorPos;
 			
 	}
-	
 	/*******************************************************************************
 	 * Resize the text Area to fit query.
 	 * 
@@ -392,16 +394,12 @@ class CFWQueryEditor{
 		//--------------------------------
 		// Create Autocomplete
 		CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = $('<div id="query-autocomplete-results">');
+		CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV.css("background", $('body').css('background'));
 		
 		queryEditorWrapper.append(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
 		this.createAutocompleteForm();
 		
 		var fieldname = this.textarea.attr('id');
-		
-		console.log("CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID:"+CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID)
-		console.log("fieldname:"+fieldname)
-		console.log(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV)
-		console.log(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV.get(0))
 
 		cfw_autocompleteInitialize(CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID, fieldname, 0,10, null, true, CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
 		
@@ -483,7 +481,7 @@ class CFWQueryEditor{
 			//---------------------------
 			// Ctrl + Enter
 			if (e.ctrlKey && e.keyCode == 13) {
-				cfw_query_execute(false);
+				queryEditor.executeQuery(false);
 				return;
 			}
 			
@@ -540,6 +538,93 @@ class CFWQueryEditor{
 					queryEditor.resizeToFitQuery();
 		        }
 		    }, 1000);
+		});
+	}
+	
+	/*******************************************************************************
+	 * Execute the query and fetch data from the server.
+	 * 
+	 * @param isPageLoad if the execution is caused by a page load 
+	 ******************************************************************************/
+	executeQuery(isPageLoad){
+		
+		//-----------------------------------
+		// Check is already Executing
+		if(this.isQueryExecuting){
+			return;
+		}
+		this.isQueryExecuting = true;
+		
+		//-----------------------------------
+		// Prepare Parameters
+		var targetDiv = CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV;
+		var timeframe = JSON.parse($('#timeframePicker').val());
+		var query =  this.textarea.val();
+	
+	 	var timeZoneOffset = new Date().getTimezoneOffset();
+	
+		params = {action: "execute"
+				, item: "query"
+				, query: query
+				, timezoneOffsetMinutes: timeZoneOffset
+				, offset: timeframe.offset
+				, earliest: timeframe.earliest
+				, latest: timeframe.latest
+			};
+			
+		//-----------------------------------
+		// Update Params in URL
+		
+		
+		/*if(timeframe.offset != null){
+			CFW.http.setURLParam('offset', timeframe.offset);
+		}else{
+			CFW.http.setURLParam('earliest', timeframe.earliest);
+			CFW.http.setURLParam('latest', timeframe.latest);
+		}*/
+		
+		var queryLength = encodeURIComponent(query).length;
+		var finalLength = queryLength + CFW.http.getHostURL().length + CFW.http.getURLPath().length ;
+		
+		if(finalLength+300 > JSDATA.requestHeaderMaxSize){
+			CFW.ui.addToastInfo("The query is quite long and the URL might not work. Make sure to save a copy of your query.");
+		}
+		
+		var doPushHistoryState = !isPageLoad;
+		CFW.http.setURLParams({
+					  "query": query
+					, "offset": timeframe.offset
+					, "earliest": timeframe.earliest
+					, "latest": timeframe.latest
+				}, doPushHistoryState);
+				
+		//CFW_QUERY_URLPARAMS = CFW.http.getURLParamsDecoded();
+		
+		//-----------------------------------			
+		// hide existing messages to not confuse user
+		$('.toast.show').removeClass('show').addClass('hide');
+		
+	
+		//-----------------------------------
+		// Revert Highlighting
+		this.highlightExecuteButton(false);
+		
+		//-----------------------------------
+		// Do Execution
+		
+		//cfw_query_toggleLoading(true);
+		var queryEditor = this;
+		
+		CFW.http.postJSON(CFW_QUERY_URL, params, 
+			function(data) {
+				//cfw_query_toggleLoading(false);
+			
+				if(data.success){
+					queryEditor.isQueryExecuting = false;														
+					cfw_query_renderAllQueryResults(targetDiv, data.payload);
+					
+				}
+				
 		});
 	}
 

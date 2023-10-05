@@ -80,6 +80,8 @@
 }
 
 #query-autocomplete-results > div{
+	background: inherit;
+	border-top: 1px solid black;
     position: fixed;
     width: 100vw;
     bottom: 0vh;

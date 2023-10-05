@@ -572,7 +572,7 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	
 	// ----------------------------------
 	// Show Modal
-	CFW.ui.showModalMedium(CFWL('cfw_core_settings', 'Settings'), compositeDiv, "CFW.cache.clearCache();");
+	CFW.ui.showModalMedium(CFWL('cfw_core_settings', 'Settings'), compositeDiv, "CFW.cache.clearCache();", true);
 	
 	// -----------------------------------
 	// Initialize Forms
