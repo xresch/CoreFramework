@@ -19,7 +19,7 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
  * 
  * @author Reto Scheiwiller, (c) Copyright 2022
  **************************************************************************************************************/
-final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
+public final class CFWQueryAutocompleteHandler extends CFWAutocompleteHandler {
 	
 	// Cached for Autocomplete
 	private static TreeMap<String, CFWQueryCommand> commandMapCached;

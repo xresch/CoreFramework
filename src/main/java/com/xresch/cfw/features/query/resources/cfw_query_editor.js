@@ -1,3 +1,50 @@
+
+CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID = null;
+CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = null;
+CFW_QUERY_URL = "/app/query";
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_editor_getManualPage(type, componentName){
+	
+	//-----------------------------------
+	// Do Execution
+	
+	params = {action: "fetch"
+		, item: "manualpage"
+		, type: type
+		, name: componentName
+	};
+	
+	CFW.http.postJSON(CFW_QUERY_URL, params, 
+		function(data) {
+		
+			if(data.success){	
+				// this will make the manual close then clicked outside the manual
+				var autocompleteWrapper = CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV.find(".autocomplete-wrapper");										
+				autocompleteWrapper.html('');
+				
+				var manualDiv = $('<div>');
+				manualDiv.css("background", $('body').css('background'))
+				
+				manualDiv.append('<h1 style="margin-top: 0px;">Manual of '+componentName+'</h1>');
+				manualDiv.attr('onclick', 'event.stopPropagation();');
+				
+				manualDiv.append(data.payload);
+				
+				autocompleteWrapper.append(manualDiv);
+				
+				autocompleteWrapper.find('pre code').each(function(index, element){
+					hljs.highlightElement(element);
+				})
+			}
+			
+	});
+	
+}
+
+
 /******************************************************************
  * Makes a Query Editor out of a textarea.
  * 
@@ -5,8 +52,6 @@
  * @param data object containing the list of results.
  * 
  ******************************************************************/
-CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID = null;
-
 class CFWQueryEditor{
 	
 	constructor(textarea, settings){
@@ -19,6 +64,9 @@ class CFWQueryEditor{
 		this.guid = CFW.utils.randomString(12);
 		
 		// the original textarea element as JQuery
+		this.formID = $(textarea).closest('form').find('#'+CFW.global.formID).val();
+		
+		// the original textarea element as JQuery
 		this.textarea = $(textarea);
 
 		// contains the original textarea and the code highlighting
@@ -27,6 +75,9 @@ class CFWQueryEditor{
 		// the div that will contain the highlighted code, as JQuery
 		this.query_hljs = null;
 		
+		// the div that will contain the autocomplete results
+		this.autocompleteDiv = null
+		
 		// the execute button, as JQuery
 		this.executeButton = null;
 		
@@ -34,10 +85,10 @@ class CFWQueryEditor{
 		// Settings
 		//-------------------------------------------
 		this.settings = {
+			// the URL path of the query servlet
+			queryURL: CFW_QUERY_URL
 			// the div where the results should be sent to
-			resultDiv: null
-			// if the form for autocomplete should be created () 
-			, createForm: false
+			, resultDiv: null
 		};
 		
 		this.settings = Object.assign({}, this.settings, settings);
@@ -170,7 +221,7 @@ class CFWQueryEditor{
 	}
 	
 	/*******************************************************************************
-	  * 
+	 * 
 	 * @param direction 'up' or 'down' 
 	 ******************************************************************************/
 	copyCurrentLine(direction){
@@ -299,47 +350,60 @@ class CFWQueryEditor{
 	 * Initialize the editor field by adding the event listeners
 	 * 
 	 ******************************************************************************/
-	wrapOriginalField(){
+	createEditorField(){
 		var parent = this.textarea.parent();
 		
+		//--------------------------------
+		// Modify Original Textarea
 		this.textarea.addClass('query-original query-text-format');
 		this.textarea.removeClass('form-control');
 		this.textarea.attr('spellcheck', false);
 		this.textarea.attr('placeholder', 'Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute.');
 		
-/*		var queryEditorDiv = $('<div class="query-editor">');
-		var scrollfixDiv = $('');
-		this.query_hljs = $('<code id="query-highlighting" class="preview language-cfwquery query-text-format"></code>');
-		var codePreElement = $('<pre id="query-pre-element">');
-		
-		codePreElement.append(this.query_hljs);*/
-		
-		var queryEditorDiv = $(`
-			<div class="query-editor">
-				<div id="query-button-menu" class="pb-2 pt-2">
-					<div class="col-12 d-flex justify-content-start">
-						<!-- input id="timeframePicker" name="timeframePicker" type="text" class="form-control" -->
-						<!-- a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></a>
-						<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></a>
-						<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></a -->
-						<a id="executeButton" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute(false);"><b>Execute</b></a>
+		//--------------------------------
+		// Create Editor
+		var queryEditorWrapper = $(`
+			<div class="cfw-query-content-wrapper">
+			
+				<div class="query-editor">
+					<div id="query-button-menu" class="pb-2 pt-2">
+						<div class="col-12 d-flex justify-content-start">
+							<!-- input id="timeframePicker" name="timeframePicker" type="text" class="form-control" -->
+							<!-- a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></a>
+							<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></a>
+							<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></a -->
+							<a id="executeButton" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute(false);"><b>Execute</b></a>
+						</div>
+					</div>
+					<div id="query-editor-field-${this.guid}" class="scroll-fix" style="position: relative; height: auto; ">
+						<pre id="query-pre-element"><code id="query-highlighting" class="preview language-cfwquery query-text-format"></code></pre>
 					</div>
 				</div>
-				<div id="query-editor-field-${this.guid}" class="scroll-fix" style="position: relative; height: auto; ">
-					<pre id="query-pre-element"><code id="query-highlighting" class="preview language-cfwquery query-text-format"></code></pre>
-				</div>
+				
 			</div>
 		`);
 		
-		parent.append(queryEditorDiv);
-		
-		
-		this.editorfield = queryEditorDiv.find('#query-editor-field-'+this.guid);
+		parent.append(queryEditorWrapper);
+		this.editorfield = queryEditorWrapper.find('#query-editor-field-'+this.guid);
 		this.editorfield.prepend(this.textarea);
-		this.query_hljs = queryEditorDiv.find('code');
+		this.query_hljs = queryEditorWrapper.find('code');
 		
+
+		//--------------------------------
+		// Create Autocomplete
+		CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = $('<div id="query-autocomplete-results">');
 		
-		//parent.append('<div id="query-autocomplete-results"></div>');
+		queryEditorWrapper.append(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
+		this.createAutocompleteForm();
+		
+		var fieldname = this.textarea.attr('id');
+		
+		console.log("CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID:"+CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID)
+		console.log("fieldname:"+fieldname)
+		console.log(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV)
+		console.log(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV.get(0))
+
+		cfw_autocompleteInitialize(CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID, fieldname, 0,10, null, true, CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
 		
 	}	
 	
@@ -349,14 +413,12 @@ class CFWQueryEditor{
 	 ******************************************************************************/
 	createAutocompleteForm(){
 		
-		if( this.settings.createForm == true
-		&& CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID == null){
+		if(CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID == null){
 			$.ajaxSetup({async: false});
 				
-				CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "create", item: "autocompleteform"}, function(data){
+				CFW.http.getJSON(this.settings.queryURL, {action: "create", item: "autocompleteform"}, function(data){
 					if(data.success){
 						CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID = data.formid;
-						console.log("CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID:"+CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID);
 					}
 				});
 			
@@ -371,9 +433,10 @@ class CFWQueryEditor{
 	initializeEditor(){
 		
 		this.createAutocompleteForm();
-		this.wrapOriginalField();
+		this.createEditorField();
 		this.refreshHighlighting();
 		this.resizeToFitQuery();
+				
 		
 		// instance of  class CFWQueryEditor
 		var queryEditor = this;

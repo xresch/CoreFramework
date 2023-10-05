@@ -233,7 +233,7 @@ public class CFWQueryAutocompleteHelper {
 	 ********************************************************/
 	public static String createManualButton(CFWQueryComponentType type, String componentName) {
 		return "<span class=\"badge badge-primary cursor-pointer\""
-				+ " onclick=\"cfw_query_getManualPage('"
+				+ " onclick=\"cfw_query_editor_getManualPage('"
 						+ type
 						+ "', '"+componentName+"' )\">Open Manual</span>";
 	}

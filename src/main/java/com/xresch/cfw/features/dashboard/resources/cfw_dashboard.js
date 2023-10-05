@@ -179,7 +179,8 @@ function cfw_dashboard_history_completeOperationsBundle(){
  ******************************************************************************/
 function cfw_dashboard_history_triggerUndo(){
 	
-	if(CFW_DASHBOARD_EDIT_MODE  && !CFW_DASHBOARD_HISTORY_IS_UPDATING){
+	if(CFW_DASHBOARD_EDIT_MODE && !CFW_DASHBOARD_HISTORY_IS_UPDATING){
+		
 		CFW_DASHBOARD_HISTORY_IS_UPDATING = true;
 		
 		cfw_dashboard_toggleEditMode();

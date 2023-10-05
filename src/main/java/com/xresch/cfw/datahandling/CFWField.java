@@ -39,6 +39,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.CFWSQL.CFWSQLReferentialAction;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.features.query.CFWQueryAutocompleteHandler;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
@@ -684,7 +685,10 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//---------------------------------------------
 		// Add Autocomplete Initialization
 		//---------------------------------------------
-		if(autocompleteHandler != null && this.parent instanceof CFWForm) {
+		if(autocompleteHandler != null 
+		&& this.parent instanceof CFWForm
+		&& finalFieldType != FormFieldType.QUERY_EDITOR) { // query editor initializes itself
+			
 			html.append("</div>");
 			
 			String formID = ((CFWForm)this.parent).getFormID();
@@ -1031,6 +1035,8 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		if(this.parent instanceof CFWForm) {
 			((CFWForm)this.parent).javascript.append("cfw_initializeQueryEditor('"+name+"');\r\n");
 		}
+		
+		this.setAutocompleteHandler(new CFWQueryAutocompleteHandler());
 	}
 	
 	/***********************************************************************************

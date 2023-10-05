@@ -1,4 +1,8 @@
 
+.cfw-query-content-wrapper{
+	width: 100%;	
+}
+
 .input-area {
   position: relative;
   outline: none;
@@ -75,10 +79,16 @@
 	tab-size: 4;
 }
 
-#query-autocomplete-results{
-    width: 100%;
-    min-height: 25px;
+#query-autocomplete-results > div{
+    position: fixed;
+    width: 100vw;
+    bottom: 0vh;
+    left: 0;
+    height: 50vh;
+    z-index: 24;
+    overflow-y: scroll;
 }
+
 
 .cursor {
 	position: absolute;
