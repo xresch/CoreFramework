@@ -839,6 +839,11 @@ pre {
 /*************************************************************************
  * Dataviewer
  *************************************************************************/
+ .cfw-dataviewer{
+ 	display: flex;
+ 	flex-direction: column;
+ 	height: 100%;
+ }
 .cfw-dataviewer-settings {
 	display: flex !important;
     justify-content: flex-end !important;

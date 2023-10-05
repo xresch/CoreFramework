@@ -155,6 +155,7 @@ DONE
 - New Feature: Database Extensions, moved over from EMP
 - New Feature: Web Extensions, moved over from EMP
 - New Feature: Export / Import of database backup scripts
+- New Feature: Escape key now removes popovers that got stuck 
 - User Management: Added names of user/roles/group in delete confirmation popup
 - User Management: Fixed toggle button in role-/group-/permission table showing wrong state when switching page
 - Database: Added Feature 'Reindex Fulltext Search' to DB Analytics page

@@ -758,7 +758,7 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
 	
 	//-----------------------------------
 	// Iterate all Query results
-	var maxheightClass = (queryResultsPayload.length == 1) ? "mh-100" : "" ; // needed to prevent overflow (e.g. charts)
+	var maxheightClass = (queryResultsPayload.length == 1) ? "h-100 mh-100" : "" ; // needed to prevent overflow (e.g. charts)
 	var currentRow = $('<div class="row m-0 flex-grow-1 '+maxheightClass+'">');
 	resultTarget.append(currentRow);
 	
@@ -885,6 +885,8 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 					//border: '2px solid black'
 				},
 				statuslist: {},
+				statusbar: {},
+				statusbarreverse: {},
 				tileandbar: {},
 				tileandbarreverse: {},
 				statusmap: {},

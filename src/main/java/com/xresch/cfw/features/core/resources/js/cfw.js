@@ -2229,6 +2229,11 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 				cfw_autocompleteEventHandler(e, settings);
 			}
 			
+			// close autocomplete on Esc
+			if ( e.keyCode == 27) {
+				cfw_autocompleteCloseAll();
+			}
+			
 		});
 	}
 	
@@ -2377,6 +2382,21 @@ function cfw_autocompleteCloseAll() {
 /* execute a function when someone clicks in the document: */
 document.addEventListener("click", function (e) {
     cfw_autocompleteCloseAll();
+
+});
+
+//--------------------------------
+// Do Ctrl+Space separately, as keyup
+// would also trigger on Arrow Keys etc...
+document.addEventListener('keydown', function(e) {
+	
+	// close autocomplete on Esc
+	if ( e.keyCode == 27) {
+		cfw_autocompleteCloseAll();
+		// remove any popovers
+		$('.popover').remove();
+	}
+	
 });
 
 /**************************************************************************************

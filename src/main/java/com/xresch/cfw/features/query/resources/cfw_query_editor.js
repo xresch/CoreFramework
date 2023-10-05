@@ -4,6 +4,8 @@ CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID = null;
 CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = null;
 CFW_QUERY_URL = "/app/query";
 
+
+
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -42,6 +44,17 @@ function cfw_query_editor_getManualPage(type, componentName){
 			
 	});
 	
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_editor_handleButtonExecute(buttonElement){
+	
+	var textarea = $(buttonElement).closest('.cfw-query-content-wrapper').find('textarea');	
+	var queryEditor = textarea.data('queryEditor');
+
+	queryEditor.executeQuery(false);
 }
 
 
@@ -92,6 +105,8 @@ class CFWQueryEditor{
 			queryURL: CFW_QUERY_URL
 			// the div where the results should be sent to
 			, resultDiv: null
+			// the id of the timeframe picker, if null new one will be created (Default: null)
+			, timeframePickerID: null
 		};
 		
 		this.settings = Object.assign({}, this.settings, settings);
@@ -99,8 +114,8 @@ class CFWQueryEditor{
 		//-------------------------------------------
 		// Setup
 		//-------------------------------------------
-		this.textarea.data("queryEditor", this);
-		
+		var queryEditor = this;
+		this.textarea.data("queryEditor", queryEditor);
 		this.initializeEditor();
 
 	}
@@ -109,13 +124,14 @@ class CFWQueryEditor{
 	 * 
 	 ******************************************************************************/
 	highlightExecuteButton(enableHighlighting){
+		var button = $("#executeButton-"+this.guid);
 		
 		if(enableHighlighting){
-			$("#executeButton").addClass('btn-warning')
-			$("#executeButton").removeClass('btn-btn-primary')
+			button.addClass('btn-warning')
+			button.removeClass('btn-btn-primary')
 		}else{
-			$("#executeButton").removeClass('btn-warning')
-			$("#executeButton").addClass('btn-btn-primary')
+			button.removeClass('btn-warning')
+			button.addClass('btn-btn-primary')
 		}
 		
 	}
@@ -127,10 +143,10 @@ class CFWQueryEditor{
 		var query = this.textarea.val();
 		this.query_hljs.text(query);
 		hljs.highlightElement(this.query_hljs.get(0));
-		
 	}
+	
 	/*******************************************************************************
-	 * Copy indentation from current line.
+	 * 
 	 * 
 	 ******************************************************************************/
 	handleEnter(){
@@ -190,7 +206,7 @@ class CFWQueryEditor{
 	resizeToFitQuery(){
 		
 		var value =  this.textarea.val();
-		
+
 		if( !CFW.utils.isNullOrEmpty(value) ){
 			
 			// Number of lines multiplied with 16px line high
@@ -205,7 +221,7 @@ class CFWQueryEditor{
 			var queryHeight = Math.floor((queryLineCount+2) * 16.2);
 			
 			var queryWidth = this.textarea[0].scrollWidth;
-	
+
 			this.textarea.css("height", queryHeight+'px'); 
 			this.textarea.css("width", queryWidth+'px'); 
 			
@@ -349,6 +365,35 @@ class CFWQueryEditor{
 	
 				
 	/*******************************************************************************
+	 * if not exists create timeframe picker
+	 * 
+	 ******************************************************************************/
+	createTimeframePickerField(){
+		
+		//------------------------------
+		// Check if picker is null
+		if(this.settings.timeframePickerID == null){
+			this.settings.timeframePickerID = "timeframePicker-"+this.guid;
+		}
+		
+		//------------------------------
+		// Create Picker if not exists
+		if($("#"+this.settings.timeframePickerID).length == 0){
+			var executeButton = $('#executeButton-'+this.guid);
+			var timeframePicker = $(`<input id="${this.settings.timeframePickerID}" name="timeframePicker" type="text" class="form-control">`);
+			
+			executeButton.before(timeframePicker);
+			
+			var queryEditor  = this;
+			cfw_initializeTimeframePicker(this.settings.timeframePickerID, {offset: '30-m'}, function(){
+				queryEditor.executeQuery(false);
+			});
+			
+		}
+		
+	}
+				
+	/*******************************************************************************
 	 * Initialize the editor field by adding the event listeners
 	 * 
 	 ******************************************************************************/
@@ -366,17 +411,16 @@ class CFWQueryEditor{
 		// Create Editor
 		var queryEditorWrapper = $(`
 			<div class="cfw-query-content-wrapper">
-			
-				<div class="query-editor">
-					<div id="query-button-menu" class="pb-2 pt-2">
-						<div class="col-12 d-flex justify-content-start">
-							<!-- input id="timeframePicker" name="timeframePicker" type="text" class="form-control" -->
-							<!-- a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></a>
-							<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></a>
-							<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></a -->
-							<a id="executeButton" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute(false);"><b>Execute</b></a>
-						</div>
+				<div id="query-button-menu-${this.guid}" class="pb-2 pt-2">
+					<div class="col-12 d-flex justify-content-start">
+						<!-- input id="timeframePicker" name="timeframePicker" type="text" class="form-control" -->
+						<!-- a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></a>
+						<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></a>
+						<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></a -->
+						<a id="executeButton-${this.guid}" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_editor_handleButtonExecute(this);"><b>Execute</b></a>
 					</div>
+				</div>
+				<div class="query-editor">
 					<div id="query-editor-field-${this.guid}" class="scroll-fix" style="position: relative; height: auto; ">
 						<pre id="query-pre-element"><code id="query-highlighting" class="preview language-cfwquery query-text-format"></code></pre>
 					</div>
@@ -390,7 +434,6 @@ class CFWQueryEditor{
 		this.editorfield.prepend(this.textarea);
 		this.query_hljs = queryEditorWrapper.find('code');
 		
-
 		//--------------------------------
 		// Create Autocomplete
 		CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = $('<div id="query-autocomplete-results">');
@@ -403,6 +446,9 @@ class CFWQueryEditor{
 
 		cfw_autocompleteInitialize(CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID, fieldname, 0,10, null, true, CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
 		
+		//--------------------------------
+		// Timeframe Picker
+		this.createTimeframePickerField();
 	}	
 	
 	/******************************************************************************
@@ -432,9 +478,8 @@ class CFWQueryEditor{
 		
 		this.createAutocompleteForm();
 		this.createEditorField();
+		this.resizeToFitQuery();	
 		this.refreshHighlighting();
-		this.resizeToFitQuery();
-				
 		
 		// instance of  class CFWQueryEditor
 		var queryEditor = this;
@@ -558,7 +603,7 @@ class CFWQueryEditor{
 		//-----------------------------------
 		// Prepare Parameters
 		var targetDiv = CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV;
-		var timeframe = JSON.parse($('#timeframePicker').val());
+		var timeframe = JSON.parse($('#'+this.settings.timeframePickerID).val());
 		var query =  this.textarea.val();
 	
 	 	var timeZoneOffset = new Date().getTimezoneOffset();
@@ -618,10 +663,16 @@ class CFWQueryEditor{
 		CFW.http.postJSON(CFW_QUERY_URL, params, 
 			function(data) {
 				//cfw_query_toggleLoading(false);
-			
+				
 				if(data.success){
-					queryEditor.isQueryExecuting = false;														
-					cfw_query_renderAllQueryResults(targetDiv, data.payload);
+					queryEditor.isQueryExecuting = false;	
+					
+					// use autocomplete wrapper to get it closed when clicking outside of div
+					var resultWrapper = $('<div class="autocomplete-wrapper p-2">');
+					resultWrapper.attr('onclick', 'event.stopPropagation();');
+					
+					targetDiv.append	(resultWrapper);					
+					cfw_query_renderAllQueryResults(resultWrapper, data.payload);
 					
 				}
 				

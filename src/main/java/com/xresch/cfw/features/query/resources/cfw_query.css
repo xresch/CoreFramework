@@ -9,6 +9,7 @@
 }
 
 .query-editor{
+	display: block;
 	width: 100%!important;
 	overflow: auto;
 	padding: 0;
@@ -30,6 +31,7 @@
 	margin: 0;
 	overflow: hidden;
 }
+
 #query-highlighting {
   position: relative;
   display: inline-block;
@@ -87,7 +89,7 @@
     bottom: 0vh;
     left: 0;
     height: 50vh;
-    z-index: 24;
+    z-index: 12;
     overflow-y: scroll;
 }
 

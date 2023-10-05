@@ -3018,7 +3018,7 @@ function cfw_renderer_dataviewer(renderDef) {
 	
 	dataviewerDiv.append(cfw_renderer_dataviewer_createMenuHTML(dataviewerID, renderDef, settings, settings.rendererIndex) );
 	
-	dataviewerDiv.append('<div class="cfw-dataviewer-content">');
+	dataviewerDiv.append('<div class="cfw-dataviewer-content  flex-column flex-grow-1">');
 	
 	cfw_renderer_dataviewer_fireChange(dataviewerDiv, settings.initialpage);
 		
@@ -3300,7 +3300,7 @@ function cfw_renderer_dataviewer_renderPage(params) {
 	// Call Renderer
 	params.finalRenderDef.data = dataToRender;
 	var renderResult = CFW.render.getRenderer(params.rendererName).render(params.finalRenderDef);
-	var renderWrapper = $('<div class="cfw-dataviewer-renderresult d-flex w-100">');
+	var renderWrapper = $('<div class="cfw-dataviewer-renderresult d-flex flex-grow-1 w-100">');
 	renderWrapper.append(renderResult);
 	
 	//-------------------------------------
