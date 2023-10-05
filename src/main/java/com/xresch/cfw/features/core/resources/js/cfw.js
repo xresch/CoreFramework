@@ -672,6 +672,17 @@ function cfw_initializeSummernote(formID, editorID){
 /**************************************************************************************
  * 
  *************************************************************************************/
+function cfw_initializeQueryEditor(fieldID){
+	var id = '#'+fieldID;
+
+	var textarea = $(id);
+
+	new CFWQueryEditor(textarea, {});
+
+}
+/**************************************************************************************
+ * 
+ *************************************************************************************/
 function cfw_initializeExpandableTextareaField(fieldID){
 	var id = '#'+fieldID;
 

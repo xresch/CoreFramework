@@ -9,6 +9,47 @@ var $QUERYCODE;
 
 var CFW_QUERY_IS_EXECUTING = false;
 
+
+/******************************************************************
+ * Makes a Query Editor out of a textarea 
+ * 
+ * @param parent JQuery object
+ * @param data object containing the list of results.
+ * 
+ ******************************************************************/
+class CFWQueryEditor{
+	
+	constructor(textarea, settings){
+		
+		this.settings = {
+			  textarea: textarea
+			, resultTarget: null
+		};
+		
+		this.settings = Object.assign({}, this.settings, settings);
+		
+		this.settings.button
+			.data('instance', this)
+			.attr('onclick', 'cfw_toggleTheToggleButton(this)')
+			.html($('<i class="fa"></i>'))
+			;
+					
+		if(isEnabled){
+			this.setEnabled();
+		}else{
+			this.setDisabled();
+		}
+	}
+	
+	
+	/********************************************
+	 * Toggle the table filter, default is true.
+	 ********************************************/
+	appendTo(parent){
+		parent.append(this.options.button);
+	}
+}
+
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -43,6 +84,22 @@ function cfw_query_getManualPage(type, componentName){
 	
 	
 }
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_highlightExecuteButton(enableHighlighting){
+	
+	if(enableHighlighting){
+		$("#executeButton").addClass('btn-warning')
+		$("#executeButton").removeClass('btn-btn-primary')
+	}else{
+		$("#executeButton").removeClass('btn-warning')
+		$("#executeButton").addClass('btn-btn-primary')
+	}
+	
+}
+
 /*******************************************************************************
  * Execute the query and fetch data from the server.
  * 
@@ -362,22 +419,7 @@ function cfw_query_editor_handleTab(domElement, direction){
 	
 }
 	
-/*******************************************************************************
- * 
- ******************************************************************************/
-function cfw_query_highlightExecuteButton(enableHighlighting){
-	
-	if(enableHighlighting){
-		$("#executeButton").addClass('btn-warning')
-		$("#executeButton").removeClass('btn-btn-primary')
-	}else{
-		$("#executeButton").removeClass('btn-warning')
-		$("#executeButton").addClass('btn-btn-primary')
-	}
-	
-}
-		
-		
+			
 /*******************************************************************************
  * Initialize the editor field by adding the event listeners
  * 
@@ -551,23 +593,23 @@ function cfw_query_initialDraw(){
 	
 	parent.append(`
 		<div id="cfw-query-content-wrapper">
-			<div id="query-button-menu" class="row pb-2 pt-2">
-				<div class="col-12 d-flex justify-content-start">
-					<input id="timeframePicker" name="timeframePicker" type="text" class="form-control">
-					<!-- a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></a>
-					<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></a>
-					<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></a -->
-					<a id="executeButton" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute(false);"><b>Execute</b></a>
-				</div>
-				
-			</div>
+			
 			<div class="row">
 				<div class="col-12">
 					<div class="query-editor">
+						<div id="query-button-menu" class="pb-2 pt-2">
+							<div class="col-12 d-flex justify-content-start">
+								<input id="timeframePicker" name="timeframePicker" type="text" class="form-control">
+								<!-- a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></a>
+								<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></a>
+								<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></a -->
+								<a id="executeButton" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_execute(false);"><b>Execute</b></a>
+							</div>
+						</div>
 						<div class="scroll-fix" style="position: relative; height: auto; ">
 							<form id="${formID}">
 								<input id="cfw-formID" name="cfw-formID" type="hidden" value="${formID}">
-								<textarea id="query" name="query" class="query-text-format" spellcheck="false" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
+								<textarea id="query" name="query" class="query-original query-text-format" spellcheck="false" placeholder="Write your query. \r\n Ctrl+Space for content assist. \r\n Ctrl+Enter to execute."></textarea>
 								<pre id="query-pre-element"><code id="query-highlighting" class="preview language-cfwquery query-text-format"></code></pre>
 							</form>
 						</div>

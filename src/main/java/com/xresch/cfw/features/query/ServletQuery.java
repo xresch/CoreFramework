@@ -29,7 +29,8 @@ import com.xresch.cfw.response.JSONResponse;
 public class ServletQuery extends HttpServlet
 {
 
-	private static final String AUTOCOMPLETE_FORMID = "cfwQueryAutocompleteForm";
+	public static final String AUTOCOMPLETE_FORMID = "cfwQueryAutocompleteForm";
+
 	private static final long serialVersionUID = 1L;
 	
 	private static Logger logger = CFWLog.getLogger(ServletQuery.class.getName());
@@ -60,9 +61,8 @@ public class ServletQuery extends HttpServlet
 			//-----------------------------------------------
 			// Create query object to handle autocompletion
 			// Field will be created on client side
-			CFWObject queryObject = createQueryObject();
-			queryObject.toForm(AUTOCOMPLETE_FORMID, "Form for Autocomplete Handling");
-			
+			//createQueryObject(request, null);
+
 			//cfw_autocompleteInitialize('cfwExampleHandlerForm','JSON_TAGS_SELECTOR',1,10);
 			String action = request.getParameter("action");
 			
@@ -111,6 +111,17 @@ public class ServletQuery extends HttpServlet
 				}
 				break;
 			
+			case "create": 			
+				switch(item.toLowerCase()) {
+
+					case "autocompleteform": 	createQueryObject(request, jsonResponse);
+												break;  
+										
+					default: 			CFW.Messages.itemNotSupported(item);
+										break;
+				}
+				break;	
+				
 //			case "fetchpartial": 			
 //				switch(item.toLowerCase()) {
 //					case "personlist": 		String pagesize = request.getParameter("pagesize");
@@ -232,10 +243,11 @@ public class ServletQuery extends HttpServlet
 		//PersonDBMethods.duplicateByID(id);
 	}
 	
+	
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private CFWObject createQueryObject() {
+	public static void createQueryObject(HttpServletRequest request, JSONResponse jsonResponse) {
 			
 		//Create the object
 		CFWObject queryObject = new CFWObject()
@@ -243,9 +255,11 @@ public class ServletQuery extends HttpServlet
 					CFWField.newString(FormFieldType.TEXTAREA, "query")
 						.setAutocompleteHandler(new CFWQueryAutocompleteHandler())
 				);
-				
-		return queryObject;
-				
+		
+		queryObject.toForm(AUTOCOMPLETE_FORMID, "Form for Autocomplete Handling");
+		
+		jsonResponse.addCustomAttribute("formid", AUTOCOMPLETE_FORMID);
+
 	}
 	
 	/******************************************************************

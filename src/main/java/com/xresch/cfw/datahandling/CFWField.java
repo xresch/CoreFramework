@@ -112,6 +112,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	private HashMap valueLabelOptions = null;
 	private boolean isDisabled = false;
 	
+	//--------------------------------------------------
+	// IMPORTANT!!! Do not change the names of these
+	// enums, they are put into the database sometimes
 	public enum FormFieldType{
 		TEXT, 
 		TEXTAREA, 
@@ -133,6 +136,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		// Input Order of elements messed up by client side when containing numbers in keys (numbers will be sorted and listed first)
 		TAGS_SELECTOR,
 		CHART_SETTINGS,
+		QUERY_EDITOR,
 		SCHEDULE, 
 		LANGUAGE,
 		UNMODIFIABLE_TEXT, 
@@ -657,6 +661,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			case CHART_SETTINGS:	createChartSettings(html, cssClasses);
 									break;
 			
+			case QUERY_EDITOR:		createQueryEditor(html, cssClasses);
+									break;
+			
 			case LANGUAGE:  		createLanguageSelect(html, cssClasses);
 									break;	
 									
@@ -1007,6 +1014,23 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			((CFWForm)this.parent).javascript.append("cfw_initializeChartSettingsField('"+name+"', "+CFW.JSON.toJSON(value)+");\r\n");
 		}
 				
+	}
+	
+	/***********************************************************************************
+	 * Create Query Editor
+	 ***********************************************************************************/
+	private void createQueryEditor(StringBuilder html, String cssClasses) {
+		
+		this.removeAttribute("value");
+		String inputValue = "";
+		if(this.value != null) {
+			inputValue = this.value.toString();
+		}
+		html.append("<textarea class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+">"+inputValue+"</textarea>");
+		
+		if(this.parent instanceof CFWForm) {
+			((CFWForm)this.parent).javascript.append("cfw_initializeQueryEditor('"+name+"');\r\n");
+		}
 	}
 	
 	/***********************************************************************************

@@ -5,6 +5,7 @@
 }
 
 .query-editor{
+	width: 100%!important;
 	overflow: auto;
 	padding: 0;
 	margin: 0;
@@ -39,7 +40,7 @@
   overflow: none;
 }
 
-#query {
+.query-original {
 	/*show cursor, only hide text, keep 10% opacity to see issues*/
     -webkit-text-fill-color: rgba(255,255,255,0.1);
     color: #fff;

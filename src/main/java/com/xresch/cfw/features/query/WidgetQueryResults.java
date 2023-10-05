@@ -103,12 +103,12 @@ public class WidgetQueryResults extends WidgetDefinition {
 								
 				// Disable Security to not mess up Queries
 				.addField(
-						(CFWField)CFWField.newString(FormFieldType.TEXTAREA, FIELDNAME_QUERY)
+						(CFWField)CFWField.newString(FormFieldType.QUERY_EDITOR, FIELDNAME_QUERY)
 						.setLabel("{!cfw_widget_queryresults_query!}")
 						.setDescription("{!cfw_widget_queryresults_query_desc!}")
 						.disableSanitization()
 						.addFlag(CFWFieldFlag.SERVER_SIDE_ONLY)
-						.addCssClass("textarea-nowrap")	
+						//.addCssClass("textarea-nowrap")	
 						// validation is done using canSave() method in this class
 						//.addValidator()
 				)
@@ -217,6 +217,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 	@Override
 	public ArrayList<FileDefinition> getJavascriptFiles() {
 		ArrayList<FileDefinition> array = new ArrayList<FileDefinition>();
+		array.add(  new FileDefinition(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "cfw_query_editor.js") );
 		array.add( new FileDefinition(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "cfw_query_rendering.js") );
 		array.add(  new FileDefinition(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "cfw_widget_queryresults.js") );
 		return array;
@@ -229,7 +230,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 	public ArrayList<FileDefinition> getCSSFiles() {
 		ArrayList<FileDefinition> array = new ArrayList<FileDefinition>();
 		array.add( new FileDefinition(HandlingType.JAR_RESOURCE, FeatureQuery.PACKAGE_RESOURCES, "cfw_query.css") );
-		return null;
+		return array;
 	}
 
 	/******************************************************************************
