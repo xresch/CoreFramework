@@ -57,6 +57,20 @@ function cfw_query_editor_handleButtonExecute(buttonElement){
 	queryEditor.executeQuery(false);
 }
 
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_editor_handleButtonFullscreen(buttonElement){
+	
+	var textarea = $(buttonElement).closest('.cfw-query-content-wrapper').find('textarea');	
+	var queryEditor = textarea.data('queryEditor');
+	
+	console.log(textarea)
+	console.log(queryEditor)
+	
+	queryEditor.toggleFullscreen(buttonElement);
+}
+
 
 /******************************************************************
  * Makes a Query Editor out of a textarea.
@@ -143,6 +157,28 @@ class CFWQueryEditor{
 		var query = this.textarea.val();
 		this.query_hljs.text(query);
 		hljs.highlightElement(this.query_hljs.get(0));
+	}
+	
+	/**************************************************************************************
+	 * 
+	 *************************************************************************************/
+	toggleFullscreen(buttonElement){
+	
+		var button = $(buttonElement);
+		var wrapper = $(buttonElement).closest(".query-editor");
+	
+		if(wrapper.hasClass('expanded')){
+			wrapper.removeClass('expanded');
+			button.removeClass('fa-compress');
+			button.addClass('fa-expand');
+			
+		}else{
+			wrapper.addClass('expanded');
+			button.addClass('fa-compress');
+			button.removeClass('fa-expand');
+			
+		}
+	
 	}
 	
 	/*******************************************************************************
@@ -411,6 +447,7 @@ class CFWQueryEditor{
 		// Create Editor
 		var queryEditorWrapper = $(`
 			<div class="cfw-query-content-wrapper">
+				
 				<div id="query-button-menu-${this.guid}" class="pb-2 pt-2">
 					<div class="col-12 d-flex justify-content-start">
 						<!-- input id="timeframePicker" name="timeframePicker" type="text" class="form-control" -->
@@ -421,6 +458,7 @@ class CFWQueryEditor{
 					</div>
 				</div>
 				<div class="query-editor">
+					<i class="fas fa-expand" onclick="cfw_query_editor_handleButtonFullscreen(this)" ></i>
 					<div id="query-editor-field-${this.guid}" class="scroll-fix" style="position: relative; height: auto; ">
 						<pre id="query-pre-element"><code id="query-highlighting" class="preview language-cfwquery query-text-format"></code></pre>
 					</div>
@@ -671,7 +709,7 @@ class CFWQueryEditor{
 					var resultWrapper = $('<div class="autocomplete-wrapper p-2">');
 					resultWrapper.attr('onclick', 'event.stopPropagation();');
 					
-					targetDiv.append	(resultWrapper);					
+					targetDiv.append(resultWrapper);					
 					cfw_query_renderAllQueryResults(resultWrapper, data.payload);
 					
 				}

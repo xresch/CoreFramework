@@ -713,8 +713,6 @@ function cfw_initializeExpandableTextareaField_toggle(buttonElement){
 		button.addClass('fa-compress');
 		button.removeClass('fa-expand');
 	}
-	
-	
 
 }
 

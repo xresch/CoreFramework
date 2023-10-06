@@ -9,11 +9,38 @@
 }
 
 .query-editor{
+
+	position: relative;
 	display: block;
-	width: 100%!important;
+	width: 98%!important;
 	overflow: auto;
 	padding: 0;
 	margin: 0;
+}
+
+.query-editor.expanded {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 4;
+    height: 100%!important;
+    width: 100%!important;
+}
+
+.query-editor.expanded textarea,
+.query-editor.expanded div,
+.query-editor.expanded pre, 
+.query-editor.expanded code {
+	height: 100%!important;
+} 
+
+.query-editor > i {
+	z-index: 8;
+	color: rgba(128,128,128, 0.75);
+    position: absolute;
+    right: 7px;
+    top: 2px;
+    cursor: pointer;
 }
 
 #cfw-query-results{
