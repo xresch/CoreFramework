@@ -225,6 +225,7 @@ DONE
 - Validator: Added ExcludeStringsValidator
 - Manual: Added Filter for Menu
 - Manual: Added General section and more manual pages
+- Query: Added Support for parameters input
 - Query: Fixed Browser Back Button (Better History States) 
 - Query: Performance - Dramatic improvement by removing throttling of threads (to make subqueries execute way faster)
 - Query: Functions - Added tags to functions
@@ -260,6 +261,7 @@ DONE
 	- execute
 	- mimic
 	- nullto
+	- paramdefaults
 	- resultcompare
 	- resultconcat
 	- resultcopy
@@ -279,6 +281,7 @@ DONE
 	- latest
 	- latestSet
 	- now
+	- param
 	- random
 	- randomfloat
 	- randomfrom

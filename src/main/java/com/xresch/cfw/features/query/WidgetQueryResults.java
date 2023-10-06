@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -122,18 +123,15 @@ public class WidgetQueryResults extends WidgetDefinition {
 	@Override
 	public boolean canSave(HttpServletRequest request, JSONResponse response, CFWObject settings, CFWObject settingsWithParams) {
 
-		String queryString = (String)settingsWithParams.getField(FIELDNAME_QUERY).getValue();
 		
 		//----------------------------
-		// Check isEmpty
+		// Get Query String
+		String queryString = (String)settingsWithParams.getField(FIELDNAME_QUERY).getValue();
 		if(Strings.isNullOrEmpty(queryString)) {
 			return true;
 		}
-		
+				
 		CFWQueryContext baseQueryContext = new CFWQueryContext();
-		//baseQueryContext.setEarliest(earliest);
-		//baseQueryContext.setLatest(latest);
-		//baseQueryContext.setTimezoneOffsetMinutes(timezoneOffsetMinutes);
 		baseQueryContext.checkPermissions(true);
 		
 		//----------------------------
@@ -168,7 +166,9 @@ public class WidgetQueryResults extends WidgetDefinition {
 	@Override
 	public void fetchData(HttpServletRequest request, JSONResponse response, CFWObject settings, JsonObject jsonSettings
 			, CFWTimeframe timeframe) { 
-				
+		
+		
+
 		//---------------------------------
 		// Example Data
 		JsonElement sampleDataElement = jsonSettings.get("sampledata");
@@ -189,13 +189,31 @@ public class WidgetQueryResults extends WidgetDefinition {
 		
 		String query = queryElement.getAsString();
 		
+		//---------------------------------
+		// Resolve Parameters
+		String dashboardParamsString = request.getParameter("params");
+		
+		JsonObject queryParams = new JsonObject();
+		if(!Strings.isNullOrEmpty(dashboardParamsString)) {
+			JsonArray boardParams = new JsonArray();
+			boardParams = CFW.JSON.stringToJsonElement(dashboardParamsString).getAsJsonArray();
+			
+			boardParams.forEach(new Consumer<JsonElement>() {
+
+				@Override
+				public void accept(JsonElement element) {
+					JsonObject object = element.getAsJsonObject();
+					queryParams.add(object.get("NAME").getAsString(), object.get("VALUE"));
+				}
+			});
+		}
 		
 		//---------------------------------
 		// Fetch Data, do not check permissions
 		// to allow dashboard viewers to see data
 		
 		CFWQueryExecutor executor = new CFWQueryExecutor().checkPermissions(false);
-		CFWQueryResultList resultList = executor.parseAndExecuteAll(query, timeframe);
+		CFWQueryResultList resultList = executor.parseAndExecuteAll(query, timeframe, queryParams);
 				
 		response.setPayLoad(resultList.toJson());	
 	}

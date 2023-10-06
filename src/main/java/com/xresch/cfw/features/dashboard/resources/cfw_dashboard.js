@@ -1737,6 +1737,20 @@ function cfw_dashboard_initialize(gridStackElementSelector){
  * Main method for building the view.
  * 
  ******************************************************************************/
+function cfw_dashboard_storeMergedParams(){
+	var storedViewerParams = cfw_parameter_getStoredUserParams();
+	var mergedParams = Object.assign(storedViewerParams, CFW_DASHBOARD_URLPARAMS);
+
+	delete mergedParams['title'];
+	delete mergedParams['id'];
+	
+	cfw_parameter_storeUserParams(mergedParams);
+}
+	
+/*******************************************************************************
+ * Main method for building the view.
+ * 
+ ******************************************************************************/
 function cfw_dashboard_applyParamsFromURLAndDraw(){
 	
 	CFW_DASHBOARD_APPLYING_URLPARAMS = true;
@@ -1768,13 +1782,7 @@ function cfw_dashboard_applyParamsFromURLAndDraw(){
 			
 	// -----------------------------------------------
 	// Merge URL Params with Custom Parameter Values
-	var storedViewerParams = cfw_parameter_getStoredUserParams();
-	var mergedParams = Object.assign(storedViewerParams, CFW_DASHBOARD_URLPARAMS);
-
-	delete mergedParams['title'];
-	delete mergedParams['id'];
-	
-	cfw_parameter_storeUserParams(mergedParams);
+	cfw_dashboard_storeMergedParams();
 	
 	// ---------------------------------
 	// Load Refresh interval from URL or Local store

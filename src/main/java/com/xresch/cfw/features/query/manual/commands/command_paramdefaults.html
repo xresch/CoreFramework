@@ -1,0 +1,18 @@
+
+<p>The paramdefaults command is used to add default values for parameters. These parameter properties are case sensitive.</p>
+
+<p>Following query adds default parameter values and uses them afterwards:</p>
+
+<pre><code class="language-cfwquery"># RECOMMENDED: set default values for all parameters to always have a value.
+# This also helps in case you want to copy and paste a query
+| paramdefaults 
+	text="default" 
+	hello="hello world"
+| source empty
+| set
+	# returns "default" if not set, parameter value otherwise
+	TEXT_VALUE = param('text') 
+	# returns "hello world" if not set, parameter value otherwise
+	HELLO_VALUE = param('hello') 
+	# returns null if not set, as there is no default, parameter value otherwise
+	BOOLEAN_VALUE = param('boolean') </code></pre>

@@ -121,6 +121,9 @@ class CFWQueryEditor{
 			, resultDiv: null
 			// the id of the timeframe picker, if null new one will be created (Default: null)
 			, timeframePickerID: null
+			// toggle is the query data should be added to the URL
+			, setURLParams: false
+			
 		};
 		
 		this.settings = Object.assign({}, this.settings, settings);
@@ -638,33 +641,15 @@ class CFWQueryEditor{
 		}
 		this.isQueryExecuting = true;
 		
-		//-----------------------------------
-		// Prepare Parameters
+
 		var targetDiv = CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV;
 		var timeframe = JSON.parse($('#'+this.settings.timeframePickerID).val());
 		var query =  this.textarea.val();
 	
 	 	var timeZoneOffset = new Date().getTimezoneOffset();
-	
-		params = {action: "execute"
-				, item: "query"
-				, query: query
-				, timezoneOffsetMinutes: timeZoneOffset
-				, offset: timeframe.offset
-				, earliest: timeframe.earliest
-				, latest: timeframe.latest
-			};
-			
+					
 		//-----------------------------------
 		// Update Params in URL
-		
-		
-		/*if(timeframe.offset != null){
-			CFW.http.setURLParam('offset', timeframe.offset);
-		}else{
-			CFW.http.setURLParam('earliest', timeframe.earliest);
-			CFW.http.setURLParam('latest', timeframe.latest);
-		}*/
 		
 		var queryLength = encodeURIComponent(query).length;
 		var finalLength = queryLength + CFW.http.getHostURL().length + CFW.http.getURLPath().length ;
@@ -673,13 +658,16 @@ class CFWQueryEditor{
 			CFW.ui.addToastInfo("The query is quite long and the URL might not work. Make sure to save a copy of your query.");
 		}
 		
-		var doPushHistoryState = !isPageLoad;
-		CFW.http.setURLParams({
+		if(this.settings.setURLParams){
+			
+			var doPushHistoryState = !isPageLoad;
+			CFW.http.setURLParams({
 					  "query": query
 					, "offset": timeframe.offset
 					, "earliest": timeframe.earliest
 					, "latest": timeframe.latest
 				}, doPushHistoryState);
+		}
 				
 		//CFW_QUERY_URLPARAMS = CFW.http.getURLParamsDecoded();
 		
@@ -689,9 +677,34 @@ class CFWQueryEditor{
 		
 	
 		//-----------------------------------
-		// Revert Highlighting
+		// Revert Button Highlighting
 		this.highlightExecuteButton(false);
 		
+		//-----------------------------------
+		// Prepare Parameters
+		var pageParams;
+		if (typeof cfw_parameter_getFinalParams !== "undefined") { 
+ 			pageParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
+		} 
+		
+		var queryParams = {};
+		if(pageParams != null){
+			for(var index in pageParams){
+				var current = pageParams[index];
+				queryParams[current.NAME] = current.VALUE;
+			}
+		}
+		
+		params = {action: "execute"
+				, item: "query"
+				, query: query
+				, timezoneOffsetMinutes: timeZoneOffset
+				, offset: timeframe.offset
+				, earliest: timeframe.earliest
+				, latest: timeframe.latest
+				, parameters: JSON.stringify(queryParams)
+			};
+			
 		//-----------------------------------
 		// Do Execution
 		

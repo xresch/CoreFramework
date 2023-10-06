@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.query;
 
+import static org.junit.jupiter.api.Assertions.assertTimeout;
+
 import java.util.HashSet;
 
 import com.google.common.base.Strings;
@@ -27,6 +29,7 @@ public class CFWQueryContext{
 	private CFWQueryResultList resultArray;
 	
 	private JsonObject metadata = new JsonObject();
+	private JsonObject parameters = new JsonObject();
 	private JsonObject globals = new JsonObject();
 	private JsonObject displaySettings = new JsonObject();
 	private JsonObject fieldFormats = new JsonObject();
@@ -71,6 +74,7 @@ public class CFWQueryContext{
 		clonedContext.setEarliest(this.getEarliestMillis());
 		clonedContext.setLatest(this.getLatestMillis());
 		clonedContext.setTimezoneOffsetMinutes(this.getTimezoneOffsetMinutes());
+		clonedContext.setParameters(this.getParameters());
 		clonedContext.setGlobals(this.getGlobals());
 		//clonedContext.setFieldnames(contextFieldnameManager);
 		
@@ -210,7 +214,7 @@ public class CFWQueryContext{
 	}
 	
 	/***********************************************************************************************
-	 * Returns the object containing the globals of the query.
+	 * Adds a global value.
 	 ***********************************************************************************************/
 	public void addGlobal(String propertyName, String value) {
 		globals.addProperty(propertyName, value);
@@ -221,6 +225,38 @@ public class CFWQueryContext{
 	 ***********************************************************************************************/
 	public void setGlobals(JsonObject globalsObject) {
 		globals = globalsObject;
+	}
+	
+	/***********************************************************************************************
+	 * Returns the object containing the parameters defined by this query.
+	 ***********************************************************************************************/
+	public JsonObject getParameters() {
+		return parameters;
+	}
+	
+	/***********************************************************************************************
+	 * Sets a parameter default value.
+	 * If a parameter is already present, this method does nothing.
+	 ***********************************************************************************************/
+	public void setParameterDefaultValue(String paramName, String value) {
+		if(!parameters.has(paramName)) {
+			parameters.addProperty(paramName, value);
+		}
+	}
+	
+	/***********************************************************************************************
+	 * Sets the parameters object that is shared by various queries.
+	 * Must have the format 
+	 * 	{
+	 * 		"paramName1": "paramValue2", 
+	 * 		"paramName2": "paramValue2", 
+	 * 		... 
+	 *  }
+	 ***********************************************************************************************/
+	public void setParameters(JsonObject parametersObject) {
+		if(parametersObject == null) { return; }
+		
+		parameters = parametersObject;
 	}
 	
 	

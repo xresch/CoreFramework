@@ -44,13 +44,8 @@ public class CFWQueryExecutor {
 	 * Takes the max execution time from the in-app configuration for
 	 * limiting query execution time.
 	 * 
-	 * @params queryString the query to execute
-	 * @param earliest time in epoch millis
-	 * @param latest time in epoch millis
-	 * @param timezoneOffsetMinutes TODO
-	 * @param timezoneOffsetMinutes offset for the clients time zone.
-	 * You can use the following in javascript to get this:
-	 * 		var timeZoneOffset = new Date().getTimezoneOffset();
+	 * @param queryString the query to execute
+	 * @param timeframe the timeframe for the execution
 	 * 
 	 ****************************************************************/
 	public CFWQueryResultList parseAndExecuteAll(String queryString, CFWTimeframe timeframe) {
@@ -61,6 +56,34 @@ public class CFWQueryExecutor {
 				, timeframe.getClientTimezoneOffset()
 				);
 	}
+	
+	/****************************************************************
+	 * Parses the query string and executes all queries.
+	 * Returns a Json Array containing the Query Results, or null in
+	 * case of errors. 
+	 * Takes the max execution time from the in-app configuration for
+	 * limiting query execution time.
+	 * 
+	 * @param queryString the query to execute
+	 * @param timeframe the timeframe for the execution
+	 * @param paramObject the parameters for the execution, like
+	 * {
+	 *  	"paramName1": "value1",
+	 *  	"paramName2": "value2",
+	 *  	...
+	 * }
+	 * 
+	 ****************************************************************/
+	public CFWQueryResultList parseAndExecuteAll(String queryString, CFWTimeframe timeframe, JsonObject paramObject) {
+		return this.parseAndExecuteAll(
+				  queryString
+				, timeframe.getEarliest()
+				, timeframe.getLatest()
+				, timeframe.getClientTimezoneOffset()
+				, paramObject
+				);
+	}
+	
 	/****************************************************************
 	 * Parses the query string and executes all queries.
 	 * Returns a Json Array containing the Query Results, or null in
@@ -79,12 +102,41 @@ public class CFWQueryExecutor {
 	 * 
 	 ****************************************************************/
 	public CFWQueryResultList parseAndExecuteAll(String queryString, long earliest, long latest, int timezoneOffsetMinutes) {
+		return this.parseAndExecuteAll(queryString, earliest, latest, timezoneOffsetMinutes, null);
+	}
+	
+	/****************************************************************
+	 * Parses the query string and executes all queries.
+	 * Returns a Json Array containing the Query Results, or null in
+	 * case of errors. 
+	 * Takes the max execution time from the in-app configuration for
+	 * limiting query execution time.
+	 * 
+	 * @params queryString the query to execute
+	 * @param earliest time in epoch millis
+	 * @param latest time in epoch millis
+	 * @param timezoneOffsetMinutes TODO
+	 * @param timezoneOffsetMinutes offset for the clients time zone.
+	 * You can use CFWTimeframe with data from browser, or the following 
+	 * in javascript to get this value:
+	 * 		var timeZoneOffset = new Date().getTimezoneOffset();
+	 * @param paramObject the parameters for the execution, like:
+	 * 	{
+	 *  	"paramName1": "value1",
+	 *  	"paramName2": "value2",
+	 *  	...
+	 *  }
+	 * 
+	 ****************************************************************/
+	public CFWQueryResultList parseAndExecuteAll(String queryString, long earliest, long latest, int timezoneOffsetMinutes, JsonObject parametersObject) {
 		
 		CFWQueryContext baseQueryContext = new CFWQueryContext();
 		baseQueryContext.setEarliest(earliest);
 		baseQueryContext.setLatest(latest);
 		baseQueryContext.setTimezoneOffsetMinutes(timezoneOffsetMinutes);
 		baseQueryContext.checkPermissions(checkPermissions);
+
+		baseQueryContext.setParameters(parametersObject);
 		
 		return this.parseAndExecuteAll(baseQueryContext, queryString, null, null);
 	}

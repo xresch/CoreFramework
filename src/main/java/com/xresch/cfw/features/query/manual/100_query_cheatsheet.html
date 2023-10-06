@@ -543,7 +543,7 @@ We are strings too</code></pre>
 	</div>
 </div>
 
-<!-- =========================== FIRST ROW ================================= -->
+<!-- =========================== SECOND ROW ================================= -->
 <div class="d-flex flex-row page-break-avoid">
 
 
@@ -568,21 +568,28 @@ We are strings too</code></pre>
 	
 	<div class="card flex-grow-1">
 		<div class="card-header pt-1 pb-1">
-			<div>xxx</div>
+			<div>Parameters</div>
 		</div>
 		<div class="card-body maxvw-40">
-			:
-			<pre><code class="language-cfwquery"></code></pre>
+			You can handle parameters from dashboards and other sources using the command 'paramdefaults' and the function 'param':
+			<pre><code class="language-cfwquery">| paramdefaults
+	text="foo"
+	hello="hello world"
+| source empty
+| set
+	TEXT_VALUE = param('text')
+	HELLO_VALUE = param('hello')
+	BOOLEAN_VALUE = param('boolean')</code></pre>
 		</div>
 	</div>
 	
 	
 	<div class="card flex-grow-1">
 		<div class="card-header pt-1 pb-1">
-			<div>xxx</div>
+			<div>Coming soon...</div>
 		</div>
 		<div class="card-body maxvw-40">
-			:
+			...
 			<pre><code class="language-cfwquery"></code></pre>
 		</div>
 	</div>

@@ -1,7 +1,6 @@
 package com.xresch.cfw.features.query;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -9,8 +8,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.gson.JsonArray;
+import com.google.common.base.Strings;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.JSON;
 import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
@@ -216,14 +217,29 @@ public class ServletQuery extends HttpServlet
 	 *
 	 ******************************************************************/
 	private void executeQuery(HttpServletRequest request, JSONResponse jsonResponse) {
+		
 		String query = request.getParameter("query");
 		Long earliest = Long.parseLong(request.getParameter("earliest"));
 		Long latest = Long.parseLong(request.getParameter("latest"));
 		int timezoneOffsetMinutes = Integer.parseInt(request.getParameter("timezoneOffsetMinutes"));
+		
+		String queryParamsString = request.getParameter("parameters");
+		
+		JsonObject queryParamsObject = new JsonObject();
+		if(!Strings.isNullOrEmpty(queryParamsString)) {
+			queryParamsObject = JSON.stringToJsonObject(queryParamsString);
+		}
 
 		query = CFW.Time.replaceTimeframePlaceholders(query, earliest, latest, timezoneOffsetMinutes);
 		
-		CFWQueryResultList resultList = new CFWQueryExecutor().parseAndExecuteAll(query, earliest, latest, timezoneOffsetMinutes);
+		CFWQueryResultList resultList = 
+				new CFWQueryExecutor().parseAndExecuteAll(
+							  query
+							, earliest
+							, latest
+							, timezoneOffsetMinutes
+							, queryParamsObject
+						);
 		
 		if(resultList != null) {
 			jsonResponse.setPayLoad(resultList.toJson());
