@@ -1,6 +1,4 @@
 
-// global as you can have multiple editors at once
-CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID = null;
 CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = null;
 CFW_QUERY_URL = "/app/query";
 
@@ -104,8 +102,9 @@ class CFWQueryEditor{
 		// the div that will contain the highlighted code, as JQuery
 		this.query_hljs = null;
 		
-		// the div that will contain the autocomplete results
-		this.autocompleteDiv = null
+		// the id of the autocomplete form for this editor
+		this.autocompleteFormID = null
+
 		
 		// the div containing the button menu
 		this.editorButtonMenu = null 
@@ -516,15 +515,17 @@ class CFWQueryEditor{
 		
 		//--------------------------------
 		// Create Autocomplete
-		CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = $('<div id="query-autocomplete-results">');
-		CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV.css("background", "rgba(0,0,0, 0.75)");
+		if(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV == null){
+			CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = $('<div id="query-autocomplete-results">');
+			CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV.css("background", "rgba(0,0,0, 0.75)");
+		}
 		
 		queryEditorWrapper.append(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
 		this.createAutocompleteForm();
 		
 		var fieldname = this.textarea.attr('id');
 
-		cfw_autocompleteInitialize(CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID, fieldname, 0,10, null, true, CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
+		cfw_autocompleteInitialize(this.autocompleteFormID, fieldname, 0,10, null, true, CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
 		
 		//--------------------------------
 		// Timeframe Picker
@@ -537,12 +538,19 @@ class CFWQueryEditor{
 	 ******************************************************************************/
 	createAutocompleteForm(){
 		
-		if(CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID == null){
+		if(this.autocompleteFormID == null){
+			
+			var fieldname = this.textarea.attr('name');
+			if(fieldname == null){
+				fieldname = this.textarea.attr('id');
+			}
+			
+			var queryEditor = this;
 			$.ajaxSetup({async: false});
 				
-				CFW.http.getJSON(this.settings.queryURL, {action: "create", item: "autocompleteform"}, function(data){
+				CFW.http.getJSON(this.settings.queryURL, {action: "create", item: "autocompleteform", fieldname: fieldname}, function(data){
 					if(data.success){
-						CFW_QUERY_EDITOR_AUTOCOMPLETE_FORM_ID = data.formid;
+						queryEditor.autocompleteFormID = data.formid;
 					}
 				});
 			

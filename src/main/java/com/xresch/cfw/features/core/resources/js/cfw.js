@@ -3638,7 +3638,7 @@ function cfw_ui_showModalSmall(modalTitle, modalBody, jsCodeOrFunction, keepOnOu
  * @return nothing
  *************************************************************************************/
 function cfw_ui_showModalLarge(modalTitle, modalBody, jsCodeOrFunction, keepOnOutsideClick){
-	cfw_ui_showModal(modalTitle, modalBody, jsCodeOrFunction, 'large');
+	cfw_ui_showModal(modalTitle, modalBody, jsCodeOrFunction, 'large', keepOnOutsideClick);
 }	
 
 /**************************************************************************************

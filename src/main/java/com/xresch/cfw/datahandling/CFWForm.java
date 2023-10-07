@@ -51,8 +51,8 @@ public class CFWForm extends HierarchicalHTMLItem {
 	 ***********************************************************************************/
 	public CFWForm(String formUniqueName, String submitLabel) {
 		
-		if(formUniqueName.matches(".*[^A-Za-z0-9]+.*")) {
-			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "Don't use any other characters for formIDs than A-Z, a-z and 0-9: '"+formUniqueName+"'");
+		if(formUniqueName.matches(".*[^A-Za-z0-9_-]+.*")) {
+			CFW.Context.Request.addAlertMessage(MessageType.WARNING, "Don't use any other characters for formIDs than A-Z, a-z 0-9, and '-' '_': '"+formUniqueName+"'");
 		}
 		this.formID = formUniqueName;
 		this.submitLabel = submitLabel;

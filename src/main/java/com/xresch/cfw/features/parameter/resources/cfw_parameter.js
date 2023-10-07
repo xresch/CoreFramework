@@ -34,7 +34,7 @@ function cfw_parameter_edit(){
 	let paramListDiv = $('<div id="param-list">');
 	contentDiv.append(paramListDiv);
 	
-	CFW.ui.showModalLarge('Parameters', contentDiv);
+	CFW.ui.showModalLarge('Parameters', contentDiv, null, true);
 	
     cfw_parameter_loadParameterForm();
 }

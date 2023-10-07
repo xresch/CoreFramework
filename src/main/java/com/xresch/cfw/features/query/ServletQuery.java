@@ -266,16 +266,24 @@ public class ServletQuery extends HttpServlet
 	 ******************************************************************/
 	public static void createQueryObject(HttpServletRequest request, JSONResponse jsonResponse) {
 			
+		String fieldname = request.getParameter("fieldname");
+		
+		System.out.println(fieldname);
+		if(Strings.isNullOrEmpty(fieldname)) {
+			fieldname = "query";
+		}
+		
 		//Create the object
 		CFWObject queryObject = new CFWObject()
 				.addField(
-					CFWField.newString(FormFieldType.TEXTAREA, "query")
+					CFWField.newString(FormFieldType.TEXTAREA, fieldname)
 						.setAutocompleteHandler(new CFWQueryAutocompleteHandler())
 				);
 		
-		queryObject.toForm(AUTOCOMPLETE_FORMID, "Form for Autocomplete Handling");
+		String uniqueFormID = AUTOCOMPLETE_FORMID + "-" +fieldname;
+		queryObject.toForm(uniqueFormID, "Form for Autocomplete Handling");
 		
-		jsonResponse.addCustomAttribute("formid", AUTOCOMPLETE_FORMID);
+		jsonResponse.addCustomAttribute("formid", uniqueFormID);
 
 	}
 	
