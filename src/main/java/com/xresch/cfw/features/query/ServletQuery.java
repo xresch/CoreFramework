@@ -268,7 +268,6 @@ public class ServletQuery extends HttpServlet
 			
 		String fieldname = request.getParameter("fieldname");
 		
-		System.out.println(fieldname);
 		if(Strings.isNullOrEmpty(fieldname)) {
 			fieldname = "query";
 		}
