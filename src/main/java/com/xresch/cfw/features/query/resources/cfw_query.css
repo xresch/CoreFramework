@@ -22,7 +22,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 4;
+    z-index: 1030;
     height: 100%!important;
     width: 100%!important;
 }
@@ -109,15 +109,18 @@
 }
 
 #query-autocomplete-results > div{
-	background: inherit;
-	border-top: 1px solid black;
-    position: fixed;
-    width: 100vw;
+    background: inherit;
+    border: 2px solid rgba(0,0,0.9);
+    position: fixed; 
     bottom: 0vh;
     left: 0;
     height: 50vh;
-    z-index: 12;
+    z-index: 1031;
     overflow-y: scroll;
+    padding: 10px;
+    margin: 0px 20px;
+    width: calc(100% - 2*20px); /* minus margin*/
+    backdrop-filter: blur(3px);
 }
 
 

@@ -53,8 +53,10 @@ function cfw_query_editor_handleButtonExecute(buttonElement){
 	
 	var textarea = $(buttonElement).closest('.cfw-query-content-wrapper').find('textarea');	
 	var queryEditor = textarea.data('queryEditor');
-
-	queryEditor.executeQuery(false);
+	
+	if(!queryEditor.isExecuting){
+		queryEditor.executeQuery(false);
+	}
 }
 
 /*******************************************************************************
@@ -105,11 +107,14 @@ class CFWQueryEditor{
 		// the div that will contain the autocomplete results
 		this.autocompleteDiv = null
 		
+		// the div containing the button menu
+		this.editorButtonMenu = null 
+		
 		// the execute button, as JQuery
 		this.executeButton = null;
 		
 		// used to avoid multiple parallel executions
-		this.isQueryExecuting = false;	
+		this.isExecuting = false;	
 		
 		//-------------------------------------------
 		// Settings
@@ -121,8 +126,8 @@ class CFWQueryEditor{
 			, resultDiv: null
 			// the id of the timeframe picker, if null new one will be created (Default: null)
 			, timeframePickerID: null
-			// toggle is the query data should be added to the URL
-			, setURLParams: false
+			// toggle is the query data should make use of URL params (store and retrieve from params)
+			, useURLParams: false
 			
 		};
 		
@@ -162,6 +167,22 @@ class CFWQueryEditor{
 		hljs.highlightElement(this.query_hljs.get(0));
 	}
 	
+	/*******************************************************************************
+	 * 
+	 ******************************************************************************/
+	toggleLoading(isLoading) {
+		
+		this.isExecuting = isLoading;
+		
+		this.editorButtonMenu.find('button').prop('disabled', isLoading);
+		this.executeButton.prop('disabled', isLoading);
+		
+		if(this.settings.resultDiv != null){
+			CFW.ui.toggleLoader(isLoading, this.settings.resultDiv.attr('id'));	
+		}
+			
+	}
+
 	/**************************************************************************************
 	 * 
 	 *************************************************************************************/
@@ -415,21 +436,36 @@ class CFWQueryEditor{
 			this.settings.timeframePickerID = "timeframePicker-"+this.guid;
 		}
 		
-		//------------------------------
-		// Create Picker if not exists
-		if($("#"+this.settings.timeframePickerID).length == 0){
+		//-----------------------------------
+		// Load Timeframe from URL or set default
+		var urlParams = CFW.http.getURLParamsDecoded();
+		
+		var callbackFunction = function(){
+					queryEditor.executeQuery(false);
+				};
+		
+		var picker = $('#'+this.settings.timeframePickerID);
+		if(picker.length == 0){
 			var executeButton = $('#executeButton-'+this.guid);
 			var timeframePicker = $(`<input id="${this.settings.timeframePickerID}" name="timeframePicker" type="text" class="form-control">`);
-			
 			executeButton.before(timeframePicker);
 			
 			var queryEditor  = this;
-			cfw_initializeTimeframePicker(this.settings.timeframePickerID, {offset: '30-m'}, function(){
-				queryEditor.executeQuery(false);
-			});
 			
+			if(!CFW.utils.isNullOrEmpty(urlParams.offset)){
+				cfw_initializeTimeframePicker(this.settings.timeframePickerID
+								, {offset: urlParams.offset}
+								, callbackFunction );
+			}else{
+				if(!CFW.utils.isNullOrEmpty(urlParams.earliest)
+				&& !CFW.utils.isNullOrEmpty(urlParams.latest) ){
+					cfw_initializeTimeframePicker(this.settings.timeframePickerID, {earliest: CFW_QUERY_URLPARAMS.earliest, latest: CFW_QUERY_URLPARAMS.latest}, callbackFunction);
+				}else{
+					cfw_initializeTimeframePicker(this.settings.timeframePickerID, {offset: '1-h'}, callbackFunction);
+				}
+			}
 		}
-		
+				
 	}
 				
 	/*******************************************************************************
@@ -451,13 +487,13 @@ class CFWQueryEditor{
 		var queryEditorWrapper = $(`
 			<div class="cfw-query-content-wrapper">
 				
-				<div id="query-button-menu-${this.guid}" class="pb-2 pt-2">
+				<div id="query-editor-btn-menu-${this.guid}" class="pb-2 pt-2">
 					<div class="col-12 d-flex justify-content-start">
 						<!-- input id="timeframePicker" name="timeframePicker" type="text" class="form-control" -->
 						<!-- a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-save"></i></a>
 						<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-star"></i></a>
 						<a type="button" class="btn btn-sm btn-primary ml-2" onclick="alert('save!')"><i class="fas fa-history"></i></a -->
-						<a id="executeButton-${this.guid}" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_editor_handleButtonExecute(this);"><b>Execute</b></a>
+						<button id="executeButton-${this.guid}" type="button" class="btn btn-sm btn-primary ml-2" onclick="cfw_query_editor_handleButtonExecute(this);"><b>Execute</b></button>
 					</div>
 				</div>
 				<div class="query-editor">
@@ -471,6 +507,9 @@ class CFWQueryEditor{
 		`);
 		
 		parent.append(queryEditorWrapper);
+		this.editorButtonMenu = queryEditorWrapper.find('#query-editor-btn-menu-'+this.guid);
+		this.executeButton = queryEditorWrapper.find('#executeButton-'+this.guid);
+		
 		this.editorfield = queryEditorWrapper.find('#query-editor-field-'+this.guid);
 		this.editorfield.prepend(this.textarea);
 		this.query_hljs = queryEditorWrapper.find('code');
@@ -478,7 +517,7 @@ class CFWQueryEditor{
 		//--------------------------------
 		// Create Autocomplete
 		CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = $('<div id="query-autocomplete-results">');
-		CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV.css("background", $('body').css('background'));
+		CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV.css("background", "rgba(0,0,0, 0.75)");
 		
 		queryEditorWrapper.append(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
 		this.createAutocompleteForm();
@@ -521,6 +560,10 @@ class CFWQueryEditor{
 		this.createEditorField();
 		this.resizeToFitQuery();	
 		this.refreshHighlighting();
+		
+		if(this.settings.useURLParams == true){
+			this.loadQueryFromURLAndExecute();
+		}
 		
 		// instance of  class CFWQueryEditor
 		var queryEditor = this;
@@ -627,27 +670,55 @@ class CFWQueryEditor{
 		});
 	}
 	
+	
+	/*******************************************************************************
+	 * 
+	 ******************************************************************************/
+	loadQueryFromURLAndExecute(){
+		
+		CFW_QUERY_URLPARAMS = CFW.http.getURLParamsDecoded();
+		
+		//-----------------------------------
+		// Load Query from URL
+		if( !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.query) ){
+	
+			this.textarea.val(CFW_QUERY_URLPARAMS.query);
+	
+			this.resizeToFitQuery();
+			this.refreshHighlighting();
+			this.executeQuery(true);
+	
+		}else{
+			//cfw_query_editor_resizeToFitQuery();
+			this.refreshHighlighting();
+		}
+	}
+	
+	
 	/*******************************************************************************
 	 * Execute the query and fetch data from the server.
 	 * 
 	 * @param isPageLoad if the execution is caused by a page load 
 	 ******************************************************************************/
 	executeQuery(isPageLoad){
-		
+		console.log("enterExecuteQuery:"+this.isExecuting);
+
 		//-----------------------------------
 		// Check is already Executing
-		if(this.isQueryExecuting){
+		if(this.isExecuting == true){
 			return;
 		}
-		this.isQueryExecuting = true;
-		
 
-		var targetDiv = CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV;
 		var timeframe = JSON.parse($('#'+this.settings.timeframePickerID).val());
+		var timeZoneOffset = new Date().getTimezoneOffset();
+	
 		var query =  this.textarea.val();
 	
-	 	var timeZoneOffset = new Date().getTimezoneOffset();
-					
+		if(CFW.utils.isNullOrEmpty(query)){
+			return;
+		}
+		this.isExecuting = true;
+				
 		//-----------------------------------
 		// Update Params in URL
 		
@@ -658,7 +729,7 @@ class CFWQueryEditor{
 			CFW.ui.addToastInfo("The query is quite long and the URL might not work. Make sure to save a copy of your query.");
 		}
 		
-		if(this.settings.setURLParams){
+		if(this.settings.useURLParams){
 			
 			var doPushHistoryState = !isPageLoad;
 			CFW.http.setURLParams({
@@ -711,23 +782,30 @@ class CFWQueryEditor{
 		//cfw_query_toggleLoading(true);
 		var queryEditor = this;
 		
+		this.toggleLoading(true);
+		
 		CFW.http.postJSON(CFW_QUERY_URL, params, 
 			function(data) {
-				//cfw_query_toggleLoading(false);
 				
 				if(data.success){
-					queryEditor.isQueryExecuting = false;	
 					
-					// use autocomplete wrapper to get it closed when clicking outside of div
-					var resultWrapper = $('<div class="autocomplete-wrapper p-2">');
-					resultWrapper.attr('onclick', 'event.stopPropagation();');
-					
-					targetDiv.append(resultWrapper);					
-					cfw_query_renderAllQueryResults(resultWrapper, data.payload);
+					if(queryEditor.settings.resultDiv != null){
+						cfw_query_renderAllQueryResults(queryEditor.settings.resultDiv, data.payload);
+					}else{
+						
+						// use autocomplete wrapper to get it closed when clicking outside of div
+						var resultWrapper = $('<div class="autocomplete-wrapper p-2 monospace">');
+						resultWrapper.attr('onclick', 'event.stopPropagation();');
+						
+						CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV.append(resultWrapper);					
+						cfw_query_renderAllQueryResults(resultWrapper, data.payload);
+					}
 					
 				}
+				queryEditor.toggleLoading(false);
 				
 		});
+
 	}
 
 }

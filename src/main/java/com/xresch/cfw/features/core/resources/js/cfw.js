@@ -2351,6 +2351,7 @@ function cfw_autocompleteEventHandler(e, settings) {
 				
 				var params = CFW.format.formToParams(settings.$input.closest('form'));
 
+				params[CFW.global.formID] = settings.formID;
 				params.cfwAutocompleteFieldname = settings.fieldName;
 				params.cfwAutocompleteSearchstring = settings.inputField.value;
 				params.cfwAutocompleteCursorPosition = settings.inputField.selectionStart;
@@ -3348,7 +3349,7 @@ function cfw_ui_toggleLoader(isVisible, targetID){
 //		loader.css("transform","translateX(-50%) translateY(-50%);");
 //		loader.css("visibility","hidden");
 		
-		target.append(loader);
+		target.prepend(loader);
 	}
 	
 	if(isVisible){

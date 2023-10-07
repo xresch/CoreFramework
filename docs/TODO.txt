@@ -96,6 +96,8 @@ Potential TODOs
 	- mimic remove command somewhere
 	- metadata template
 	- mimic calling mimic
+	- command paramdefaults
+	- function param
 	
 - Charts Renderer: Add description to manual page "working with render".
 
