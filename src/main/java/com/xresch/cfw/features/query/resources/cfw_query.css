@@ -9,7 +9,6 @@
 }
 
 .query-editor{
-
 	position: relative;
 	display: block;
 	width: 98%!important;
@@ -25,8 +24,17 @@
     z-index: 1030;
     height: 100%!important;
     width: 100%!important;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(3px);
 }
 
+.query-editor.expanded .scroll-fix {
+	height: calc(100% - 2*20px) !important;
+    width: calc(100% - 2*20px) !important;
+    margin: 20px;
+    border: 2px solid rgba(0,0,0,0.9);
+
+}
 .query-editor.expanded textarea,
 .query-editor.expanded div,
 .query-editor.expanded pre, 
@@ -106,6 +114,10 @@
 	font-family: 'Source Code Pro', monospace;
 	line-height: 16px;
 	tab-size: 4;
+}
+
+#query-autocomplete-results{
+	background: rgba(0,0,0, 0.75);
 }
 
 #query-autocomplete-results > div{
