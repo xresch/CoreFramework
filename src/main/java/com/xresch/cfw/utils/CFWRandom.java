@@ -647,6 +647,13 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
+	 * Creates random series generator.
+	 ******************************************************************************/
+	public static RandomSeriesGenerator createRandomSeriesGenerator(int totalValuesCount){
+		return INSTANCE.new RandomSeriesGenerator(totalValuesCount);
+	}
+	
+	/******************************************************************************
 	 * Creates random values in series.
 	 ******************************************************************************/
 	public class RandomSeriesGenerator{
@@ -665,18 +672,18 @@ public class CFWRandom {
 		}
 		
 		
-		public Number getValue(int index) {
+		public Integer getValue(int index) {
 			
 			switch(seriesType) {
 				case 0: // random
 					return randomIntegerInRange(0, 100);
 				
 				case 1: // increase
-					return  ((Math.abs(Math.sin(index)) * 30) + randomIntegerInRange(5, 15)) * (index / 10);
+					return (int) ((Math.abs(Math.sin(index)) * 30) + randomIntegerInRange(5, 15)) * (index / 10);
 				
 				case 2: // decrease
 					float divisor = totalValuesCount / ((totalValuesCount - index) / 1.1f);
-					return ((Math.abs(Math.sin(index)) * 30) + randomIntegerInRange(5, 15)) / divisor ;
+					return (int) Math.round( ((Math.abs(Math.sin(index)) * 30) + randomIntegerInRange(5, 15)) / divisor) ;
 				
 				case 3: //jump up
 					if((totalValuesCount / (float)(index+1)) > jumpPosition1) {
@@ -711,15 +718,15 @@ public class CFWRandom {
 					}
 				
 				case 7: // Sinus
-					return 50+(Math.abs(Math.sin(index/4)) * 30) + randomIntegerInRange(0, 5);
+					return (int) Math.round( 50+(Math.abs(Math.sin(index/4)) * 30) + randomIntegerInRange(0, 5) );
 
 				case 8: // Sinus + Cos Increasing
-					return (
+					return (int) Math.round( (
 								(Math.abs(Math.cos((index)/6)) * 10) 
 								+ (Math.abs(Math.sin(index/4)) * 30) 
 								+ randomIntegerInRange(0, 5)
 							) * (index / 10)
-							;
+						);
 			}
 			
 			// default to random
