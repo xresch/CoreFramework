@@ -20,6 +20,8 @@ import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
  **************************************************************************************************************/
 public class CFWRandom {
 
+	private static final CFWRandom INSTANCE = new CFWRandom();
+	
 	private static final Random random = new Random();
 	
 	public static final String ALPHAS 	  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -614,17 +616,10 @@ public class CFWRandom {
 		for(int i = 0; i < seriesCount; i++) {
 			String warehouse = randomColorName()+" "+randomStringAlphaNumerical(1).toUpperCase()+randomIntegerInRange(1, 9);
 			String item = randomFruitName();
-			
-			//--------------------------------------
-			// Series Type Variables
-			int seriesType = randomIntegerInRange(0, 7);
-			float jumpPosition1 = randomFloatInRange(0.3f, 5f);
-			float jumpPosition2 = randomFloatInRange(0.3f, 5f);
-			float smallerJump = Math.min(jumpPosition1, jumpPosition2);
-			float biggerJump = Math.max(jumpPosition1, jumpPosition2);
-			
+						
 			//--------------------------------------
 			// Create Values for Series
+			RandomSeriesGenerator generator = INSTANCE.new RandomSeriesGenerator(valuesCount);
 			for(int j = 0; j < valuesCount; j++) {
 				JsonObject currentItem = new JsonObject();
 				currentItem.addProperty("TIME", earliest+(timestep*j));
@@ -632,73 +627,7 @@ public class CFWRandom {
 				currentItem.addProperty("ITEM", item);
 				currentItem.addProperty("CLASS", randomFromArray(classesArray));
 				
-				//--------------------------------------
-				// Create Series Type in COUNT
-				switch(seriesType) {
-					case 0: // random
-						currentItem.addProperty("COUNT", randomIntegerInRange(0, 100));
-					break;
-					
-					case 1: // increase
-						currentItem.addProperty("COUNT", ((Math.abs(Math.sin(j)) * 30) + randomIntegerInRange(5, 15)) * (j / 10));
-					break;
-					
-					case 2: // decrease
-						float divisor = valuesCount / ((valuesCount - j) / 1.1f);
-						currentItem.addProperty("COUNT", ((Math.abs(Math.sin(j)) * 30) + randomIntegerInRange(5, 15)) / divisor);
-						break;
-					
-					case 3: //jump up
-						if((valuesCount / (float)(j+1)) > jumpPosition1) {
-							currentItem.addProperty("COUNT", randomIntegerInRange(10, 30));
-						}else {
-							currentItem.addProperty("COUNT", 70+randomIntegerInRange(0, 30));
-						}
-						break;
-					
-					case 4: //jump down
-						if((valuesCount / (float)(j+1)) > jumpPosition2) {
-							currentItem.addProperty("COUNT", randomIntegerInRange(60, 100));
-						}else {
-							currentItem.addProperty("COUNT", randomIntegerInRange(5, 30));
-						}
-						break;
-					
-					case 5: //jump up & down
-						if((valuesCount / (float)(j+1)) > biggerJump) {
-							currentItem.addProperty("COUNT", randomIntegerInRange(15, 25));
-						}else if ( (valuesCount / (float)(j+1)) > smallerJump) {
-							currentItem.addProperty("COUNT", 70+randomIntegerInRange(0, 30));
-						}else {
-							currentItem.addProperty("COUNT", randomIntegerInRange(15, 25));
-						}
-						break;
-
-
-					case 6: //jump down & up
-						if((valuesCount / (float)(j+1)) > biggerJump) {
-							currentItem.addProperty("COUNT", randomIntegerInRange(70, 90));
-						}else if ( (valuesCount / (float)(j+1)) > smallerJump) {
-							currentItem.addProperty("COUNT", randomIntegerInRange(10, 25));
-						}else {
-							currentItem.addProperty("COUNT", randomIntegerInRange(70, 90));
-						}
-						break;
-					
-					case 7: // Sinus
-						currentItem.addProperty("COUNT", 50+(Math.abs(Math.sin(j/4)) * 30) 
-														  + randomIntegerInRange(0, 5) );
-						break;
-					case 8: // Sinus + Cos Increasing
-						currentItem.addProperty("COUNT", 
-								(
-									(Math.abs(Math.cos((j)/6)) * 10) 
-									+ (Math.abs(Math.sin(j/4)) * 30) 
-									+ randomIntegerInRange(0, 5)
-								) * (j / 10)
-								);
-						break;
-				}
+				currentItem.addProperty("COUNT", generator.getValue(j) );
 				
 				//--------------------------------------
 				// Additional Values
@@ -715,6 +644,89 @@ public class CFWRandom {
 		}
 		
 		return array;
+	}
+	
+	/******************************************************************************
+	 * Creates random values in series.
+	 ******************************************************************************/
+	public class RandomSeriesGenerator{
+		
+		private int seriesType = randomIntegerInRange(0, 7);
+		private float jumpPosition1 = randomFloatInRange(0.3f, 5f);
+		private float jumpPosition2 = randomFloatInRange(0.3f, 5f);
+		private float smallerJump = Math.min(jumpPosition1, jumpPosition2);
+		private float biggerJump = Math.max(jumpPosition1, jumpPosition2);
+		
+		// holds the total amount of values to generate
+		int totalValuesCount;
+		
+		public RandomSeriesGenerator(int totalValuesCount) {
+			this.totalValuesCount = totalValuesCount;
+		}
+		
+		
+		public Number getValue(int index) {
+			
+			switch(seriesType) {
+				case 0: // random
+					return randomIntegerInRange(0, 100);
+				
+				case 1: // increase
+					return  ((Math.abs(Math.sin(index)) * 30) + randomIntegerInRange(5, 15)) * (index / 10);
+				
+				case 2: // decrease
+					float divisor = totalValuesCount / ((totalValuesCount - index) / 1.1f);
+					return ((Math.abs(Math.sin(index)) * 30) + randomIntegerInRange(5, 15)) / divisor ;
+				
+				case 3: //jump up
+					if((totalValuesCount / (float)(index+1)) > jumpPosition1) {
+						return randomIntegerInRange(10, 30);
+					}else {
+						return 70+randomIntegerInRange(0, 30);
+					}
+				
+				case 4: //jump down
+					if((totalValuesCount / (float)(index+1)) > jumpPosition2) {
+						return randomIntegerInRange(60, 100);
+					}else {
+						return randomIntegerInRange(5, 30);
+					}
+				
+				case 5: //jump up & down
+					if((totalValuesCount / (float)(index+1)) > biggerJump) {
+						return randomIntegerInRange(15, 25);
+					}else if ( (totalValuesCount / (float)(index+1)) > smallerJump) {
+						return 70+randomIntegerInRange(0, 30);
+					}else {
+						return randomIntegerInRange(15, 25);
+					}	
+	
+				case 6: //jump down & up
+					if((totalValuesCount / (float)(index+1)) > biggerJump) {
+						return randomIntegerInRange(70, 90);
+					}else if ( (totalValuesCount / (float)(index+1)) > smallerJump) {
+						return randomIntegerInRange(10, 25);
+					}else {
+						return randomIntegerInRange(70, 90);
+					}
+				
+				case 7: // Sinus
+					return 50+(Math.abs(Math.sin(index/4)) * 30) + randomIntegerInRange(0, 5);
+
+				case 8: // Sinus + Cos Increasing
+					return (
+								(Math.abs(Math.cos((index)/6)) * 10) 
+								+ (Math.abs(Math.sin(index/4)) * 30) 
+								+ randomIntegerInRange(0, 5)
+							) * (index / 10)
+							;
+			}
+			
+			// default to random
+			return randomIntegerInRange(0, 100);
+		}
+		
+
 	}
 	
 	
