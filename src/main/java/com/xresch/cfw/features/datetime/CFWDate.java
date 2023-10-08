@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.datetime;
 
 import java.sql.Date;
+import java.text.ParseException;
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
@@ -31,7 +32,7 @@ public class CFWDate extends CFWObject {
 	public static String TABLE_NAME = "CFW_DATE";
 	public static String TABLE_NAME_OLD = "OM_DATAPOINTS_DATE";
 	
-	public enum OMDatapointDateFields{
+	public enum CFWDateFields{
 		  PK_ID
 		, DATE
 		, DATE_ISO
@@ -51,73 +52,73 @@ public class CFWDate extends CFWObject {
 		, IS_MONTHS_LAST_WEEK
 	}
 		
-	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, OMDatapointDateFields.PK_ID)
+	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, CFWDateFields.PK_ID)
 								   .setPrimaryKey(this)
 								   .setDescription("The id of the date. Matches YYYYMMDD to keep consistent over several systems.")
 								   .apiFieldType(FormFieldType.NUMBER)
 								   .setValue(null);
 	
-	private CFWField<Date> date = CFWField.newDate(FormFieldType.DATEPICKER, OMDatapointDateFields.DATE)
+	private CFWField<Date> date = CFWField.newDate(FormFieldType.DATEPICKER, CFWDateFields.DATE)
 			.setDescription("The actual date for this record.")
 			.setValue(null);
 	
-	private CFWField<String> dateISO = CFWField.newString(FormFieldType.NUMBER, OMDatapointDateFields.DATE_ISO)
+	private CFWField<String> dateISO = CFWField.newString(FormFieldType.NUMBER, CFWDateFields.DATE_ISO)
 			.setDescription("The date as a string in ISO 8601 format YYYY-MM-DD.")
 			.setValue(null);
 	
-	private CFWField<Long> epochMillis = CFWField.newLong(FormFieldType.NUMBER, OMDatapointDateFields.EPOCH_MILLIS)
+	private CFWField<Long> epochMillis = CFWField.newLong(FormFieldType.NUMBER, CFWDateFields.EPOCH_MILLIS)
 			.setDescription("The epoch time, milliseconds since 1970-01-01 00:00:00.")
 			.setValue(null);
 	
-	private CFWField<Integer> year = CFWField.newInteger(FormFieldType.NUMBER, OMDatapointDateFields.YEAR)
+	private CFWField<Integer> year = CFWField.newInteger(FormFieldType.NUMBER, CFWDateFields.YEAR)
 			.setDescription("The year of the date.")
 			.setValue(null);
 	
-	private CFWField<Integer> month = CFWField.newInteger(FormFieldType.NUMBER, OMDatapointDateFields.MONTH)
+	private CFWField<Integer> month = CFWField.newInteger(FormFieldType.NUMBER, CFWDateFields.MONTH)
 			.setDescription("The month of the date.")
 			.setValue(null);
 	
-	private CFWField<Integer> day = CFWField.newInteger(FormFieldType.NUMBER, OMDatapointDateFields.DAY)
+	private CFWField<Integer> day = CFWField.newInteger(FormFieldType.NUMBER, CFWDateFields.DAY)
 			.setDescription("The day of the date.")
 			.setValue(null);
 	
-	private CFWField<Integer> dayOfWeek = CFWField.newInteger(FormFieldType.NUMBER, OMDatapointDateFields.DAY_OF_WEEK)
+	private CFWField<Integer> dayOfWeek = CFWField.newInteger(FormFieldType.NUMBER, CFWDateFields.DAY_OF_WEEK)
 			.setDescription("The day of the week as number.(e.g. Monday is 1, Tuesday is 2...)")
 			.setValue(null);
 	
-	private CFWField<String> dayName = CFWField.newString(FormFieldType.TEXT, OMDatapointDateFields.DAY_NAME)
+	private CFWField<String> dayName = CFWField.newString(FormFieldType.TEXT, CFWDateFields.DAY_NAME)
 			.setDescription("The name of the day(e.g Monday, Tuesday ...)")
 			.setValue(null);
 	
-	private CFWField<String> dayNameShort = CFWField.newString(FormFieldType.TEXT, OMDatapointDateFields.DAY_NAME_SHORT)
+	private CFWField<String> dayNameShort = CFWField.newString(FormFieldType.TEXT, CFWDateFields.DAY_NAME_SHORT)
 			.setDescription("The short name of the day(e.g Mon, Tue ...)")
 			.setValue(null);
 	
-	private CFWField<Integer> dayOfYear = CFWField.newInteger(FormFieldType.NUMBER, OMDatapointDateFields.DAY_OF_YEAR)
+	private CFWField<Integer> dayOfYear = CFWField.newInteger(FormFieldType.NUMBER, CFWDateFields.DAY_OF_YEAR)
 			.setDescription("The day of the year. ")
 			.setValue(null);
 	
-	private CFWField<Integer> weekOfYear = CFWField.newInteger(FormFieldType.NUMBER, OMDatapointDateFields.WEEK_OF_YEAR)
+	private CFWField<Integer> weekOfYear = CFWField.newInteger(FormFieldType.NUMBER, CFWDateFields.WEEK_OF_YEAR)
 			.setDescription("The week of the year. ")
 			.setValue(null);
 	
-	private CFWField<Integer> weekOfMonth = CFWField.newInteger(FormFieldType.NUMBER, OMDatapointDateFields.WEEK_OF_MONTH)
+	private CFWField<Integer> weekOfMonth = CFWField.newInteger(FormFieldType.NUMBER, CFWDateFields.WEEK_OF_MONTH)
 			.setDescription("The week of the month. (e.g. January is 1, February is 2...)")
 			.setValue(null);
 	
-	private CFWField<Integer> quarterOfYear = CFWField.newInteger(FormFieldType.NUMBER, OMDatapointDateFields.QUARTER_OF_YEAR)
+	private CFWField<Integer> quarterOfYear = CFWField.newInteger(FormFieldType.NUMBER, CFWDateFields.QUARTER_OF_YEAR)
 			.setDescription("The quarter of the year. (e.g. Jan-Mar is 1, Apr-Jun is 2 ...)")
 			.setValue(null);
 	
-	private CFWField<Boolean> isWeekend = CFWField.newBoolean(FormFieldType.BOOLEAN, OMDatapointDateFields.IS_WEEKEND)
+	private CFWField<Boolean> isWeekend = CFWField.newBoolean(FormFieldType.BOOLEAN, CFWDateFields.IS_WEEKEND)
 			.setDescription("True if the day is a Saturday or Sunday, false otherwise.")
 			.setValue(null);
 	
-	private CFWField<Boolean> isMonthsLastDay = CFWField.newBoolean(FormFieldType.BOOLEAN, OMDatapointDateFields.IS_MONTHS_LAST_DAY)
+	private CFWField<Boolean> isMonthsLastDay = CFWField.newBoolean(FormFieldType.BOOLEAN, CFWDateFields.IS_MONTHS_LAST_DAY)
 			.setDescription("True if the day is the last day of the month, false otherwise.")
 			.setValue(null);
 	
-	private CFWField<Boolean> isMonthsLastWeek = CFWField.newBoolean(FormFieldType.BOOLEAN, OMDatapointDateFields.IS_MONTHS_LAST_WEEK)
+	private CFWField<Boolean> isMonthsLastWeek = CFWField.newBoolean(FormFieldType.BOOLEAN, CFWDateFields.IS_MONTHS_LAST_WEEK)
 			.setDescription("True if the week is the last week of the month, false otherwise.")
 			.setValue(null);
 		
@@ -162,6 +163,31 @@ public class CFWDate extends CFWObject {
 	public CFWDate(ZonedDateTime date) {
 		initializeFields();
 		this.initializeData(date);
+	}
+	
+	/**************************************************************************************
+	 * @param dateID integer as "YYYYMMDD"
+	 **************************************************************************************/
+	public CFWDate(int dateID) {
+		this(dateID+"");
+	}
+	/**************************************************************************************
+	 * @param dateID string as "YYYYMMDD"
+	 **************************************************************************************/
+	public CFWDate(String dateID) {
+		
+		initializeFields();
+		try {
+			long millis =  CFW.Time.parseTime("yyyyMMdd", dateID);
+			ZonedDateTime date = CFW.Time.zonedTimeFromEpoch(millis);
+
+			this.initializeData(date);
+			
+		} catch (ParseException e) {
+			new CFWLog(logger).severe(e);
+		}
+		
+		
 	}
 
 	/**************************************************************************************
@@ -292,18 +318,18 @@ public class CFWDate extends CFWObject {
 		
 		String[] inputFields = 
 				new String[] {
-						OMDatapointDateFields.PK_ID.toString(), 
-						OMDatapointDateFields.DATE.toString(), 
-						OMDatapointDateFields.YEAR.toString(), 
-						OMDatapointDateFields.EPOCH_MILLIS.toString(),
+						CFWDateFields.PK_ID.toString(), 
+						CFWDateFields.DATE.toString(), 
+						CFWDateFields.YEAR.toString(), 
+						CFWDateFields.EPOCH_MILLIS.toString(),
 				};
 		
 		String[] outputFields = 
 				new String[] {
-						OMDatapointDateFields.PK_ID.toString(), 
-						OMDatapointDateFields.DATE.toString(), 
-						OMDatapointDateFields.YEAR.toString(), 
-						OMDatapointDateFields.EPOCH_MILLIS.toString(),
+						CFWDateFields.PK_ID.toString(), 
+						CFWDateFields.DATE.toString(), 
+						CFWDateFields.YEAR.toString(), 
+						CFWDateFields.EPOCH_MILLIS.toString(),
 				};
 
 		//----------------------------------

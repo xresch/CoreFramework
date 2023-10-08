@@ -32,9 +32,11 @@ public class FeatureDateTime extends CFWAppFeature {
 
 	@Override
 	public void initializeDB() {
-
+		
+		CFW.DB.Date.reloadCache();
+		
 		//-------------------------------------
-		// Initialize OMDatapointDate with +/-1 year 
+		// Initialize DB with +/-1 year 
 		GregorianCalendar calendar = new GregorianCalendar();
 		calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
 		calendar.add(Calendar.DATE,-365);

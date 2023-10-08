@@ -307,6 +307,9 @@ public class CFWTime {
 	
 	/********************************************************************************************
 	 * Parses a time string as UTC time and returns epoch milliseconds.
+	 * @param formatPattern of SimpleDateFormat, like "yyyy-MM-dd'T'HH:mm:ss.SSS"
+	 * @param parseThis the string to parse
+	 * 
 	 * @throws ParseException 
 	 ********************************************************************************************/
 	public static long parseTime(String formatPattern, String parseThis) throws ParseException {
