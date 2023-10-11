@@ -316,6 +316,27 @@ class CFWRenderer{
 /******************************************************************
  * 
  ******************************************************************/
+function cfw_renderer_common_openDetailsTable(e){
+
+	e.stopPropagation();
+	
+	if($(this).closest('.block-modal').length > 0){
+		return;
+	}
+	
+	settings = $(this).data('settings');
+	recordData = $(this).data('record');
+	
+	cfw_ui_showModal(
+			CFWL('cfw_core_details', 'Details'), 
+			settings.popoverFunction.call(this) )
+	;
+		
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
 function cfw_renderer_common_createDefaultPopupTable(){
 	
 	var entry = $(this).data('record');
@@ -710,14 +731,8 @@ function cfw_renderer_tiles(renderDef) {
 		// Add Details Click
 		currentTile.data('record', currentRecord);
 		currentTile.data('renderDef', renderDef);
-		currentTile.bind('click', function(e) {
-			e.stopPropagation();
-			recordData = $(this).data('record');
-			cfw_ui_showModal(
-					CFWL('cfw_core_details', 'Details'), 
-					settings.popoverFunction.call(this) )
-			;
-		})
+		currentTile.data('settings', settings);
+		currentTile.bind('click', cfw_renderer_common_openDetailsTable)
 		
 		//=====================================
 		// Add Details Popover
@@ -958,14 +973,8 @@ function cfw_renderer_statusbar(renderDef, reverseOrder) {
 		// Add Details Click
 		currentTile.data('record', currentRecord);
 		currentTile.data('renderDef', renderDef);
-		currentTile.bind('click', function(e) {
-			e.stopPropagation();
-			recordData = $(this).data('record');
-			cfw_ui_showModal(
-					CFWL('cfw_core_details', 'Details'), 
-					settings.popoverFunction.call(this) )
-			;
-		})
+		currentTile.data('settings', settings);
+		currentTile.bind('click', cfw_renderer_common_openDetailsTable)
 		
 		//=====================================
 		// Add Details Popover
@@ -1211,14 +1220,8 @@ function cfw_renderer_statusmap_createTiles(renderDef, settings, target) {
 		// Add Details Click
 		currentTile.data('record', currentRecord);
 		currentTile.data('renderDef', renderDef);
-		currentTile.bind('click', function(e) {
-			e.stopPropagation();
-			recordData = $(this).data('record');
-			cfw_ui_showModal(
-					CFWL('cfw_core_details', 'Details'), 
-					settings.popoverFunction.call(this) )
-			;
-		})
+		currentTile.data('settings', settings);
+		currentTile.bind('click', cfw_renderer_common_openDetailsTable)
 		
 		//=====================================
 		// Add Details Popover
@@ -1327,14 +1330,8 @@ function cfw_renderer_statuslist(renderDef) {
 		// Add Details Click
 		currentTile.data('record', currentRecord);
 		currentTile.data('renderDef', renderDef);
-		currentTile.bind('click', function(e) {
-			e.stopPropagation();
-			recordData = $(this).data('record');
-			cfw_ui_showModal(
-					CFWL('cfw_core_details', 'Details'), 
-					settings.popoverFunction.call(this) )
-			;
-		})
+		currentTile.data('settings', settings);
+		currentTile.bind('click', cfw_renderer_common_openDetailsTable)
 		
 		//=====================================
 		// Add Details Popover

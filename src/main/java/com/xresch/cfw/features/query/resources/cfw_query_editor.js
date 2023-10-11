@@ -516,7 +516,7 @@ class CFWQueryEditor{
 		//--------------------------------
 		// Create Autocomplete
 		if(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV == null){
-			CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = $('<div id="query-autocomplete-results">');
+			CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = $('<div id="query-autocomplete-results" class="block-modal">');
 		}
 		
 		queryEditorWrapper.append(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);

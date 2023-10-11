@@ -3506,7 +3506,11 @@ function cfw_ui_addToast(toastTitle, toastBody, style, delay){
  * @param keepOnOutsideClick set true to keep the Modal open when clicking on the backdrop
  * @return nothing
  *************************************************************************************/
-function cfw_ui_showModal(modalTitle, modalBody, jsCodeOrFunction, size, keepOnOutsideClick){
+function cfw_ui_showModal(modalTitle
+		, modalBody
+		, jsCodeOrFunction
+		, size
+		, keepOnOutsideClick){
 	
 	var modalID = 'cfw-default-modal';
 	var modalHeaderClass = '';
