@@ -35,12 +35,12 @@
     border: 2px solid rgba(0,0,0,0.9);
 
 }
-.query-editor.expanded textarea,
+/*.query-editor.expanded textarea,
 .query-editor.expanded div,
 .query-editor.expanded pre, 
 .query-editor.expanded code {
 	height: 100%!important;
-} 
+} */
 
 .query-editor > i {
 	z-index: 8;
