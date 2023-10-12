@@ -148,6 +148,8 @@ Potential TODOs
 DONE
 ====
 
+------- current -------
+
 ------- v.8.0.0 -------
 - BREAKING CODE CHANGE: Renaming of Threshold Fields and CSS-Classes
 - BREAKING CODE CHANGE: refactoring of mapJsonToFields() to toggle sanitation

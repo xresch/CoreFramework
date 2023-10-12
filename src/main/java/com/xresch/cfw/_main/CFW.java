@@ -41,6 +41,7 @@ import com.xresch.cfw.features.dashboard.CFWRegistryWidgets;
 import com.xresch.cfw.features.dashboard.FeatureDashboard;
 import com.xresch.cfw.features.datetime.CFWDBDate;
 import com.xresch.cfw.features.datetime.FeatureDateTime;
+import com.xresch.cfw.features.eav.FeatureEAV;
 import com.xresch.cfw.features.jobs.CFWDBJob;
 import com.xresch.cfw.features.jobs.CFWJobsAlerting;
 import com.xresch.cfw.features.jobs.CFWRegistryJobs;
@@ -444,6 +445,7 @@ public class CFW {
 		CFW.Registry.Features.addFeature(FeatureKeyValuePairs.class);
 		CFW.Registry.Features.addFeature(FeatureCore.class);	
 		CFW.Registry.Features.addFeature(FeatureDateTime.class);	
+		CFW.Registry.Features.addFeature(FeatureEAV.class);
 				
 		CFW.Registry.Features.addFeature(FeatureUserManagement.class);	
 		
