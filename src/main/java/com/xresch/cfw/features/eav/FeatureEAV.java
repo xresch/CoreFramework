@@ -1,5 +1,8 @@
 package com.xresch.cfw.features.eav;
 
+import java.math.BigDecimal;
+import java.util.LinkedHashMap;
+
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.spi.CFWAppFeature;
@@ -24,6 +27,7 @@ public class FeatureEAV extends CFWAppFeature {
 		CFW.Registry.Objects.addCFWObject(EAVEntity.class);
 		CFW.Registry.Objects.addCFWObject(EAVAttribute.class);
 		CFW.Registry.Objects.addCFWObject(EAVValue.class);
+		CFW.Registry.Objects.addCFWObject(EAVStats.class);
 		
 	}
 
@@ -33,7 +37,12 @@ public class FeatureEAV extends CFWAppFeature {
 	}
 
 	@Override
-	public void addFeature(CFWApplicationExecutor app) {	
+	public void addFeature(CFWApplicationExecutor app) {
+		LinkedHashMap<String,String> attributes = new LinkedHashMap<>();
+		attributes.put("name", "Summer Red");
+		attributes.put("taste", "Sweet & Sour");
+		CFW.DB.EAVStats.pushStats("Test", "Apples", attributes, BigDecimal.ONE);
+		
 		//app.addAppServlet(ServletKeyValuePairs.class,  "/configuration");
 	}
 

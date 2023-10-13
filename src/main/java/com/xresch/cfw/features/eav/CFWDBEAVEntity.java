@@ -1,7 +1,13 @@
 package com.xresch.cfw.features.eav;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
@@ -11,7 +17,7 @@ import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2023
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWDBEAVEntity {
@@ -20,8 +26,17 @@ public class CFWDBEAVEntity {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBEAVEntity.class.getName());
 	
-
 	
+	// Cache of "category + entityName" and entities
+	// used to reduce DB calls
+	private static Cache<String, EAVEntity> entityCache = CFW.Caching.addCache("CFW EAV Entity", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(50)
+				.maximumSize(5000)
+				.expireAfterAccess(1, TimeUnit.HOURS)
+		);
+
+
 	//####################################################################################################
 	// Preckeck Initialization
 	//####################################################################################################
@@ -112,13 +127,28 @@ public class CFWDBEAVEntity {
 			oneTimeCreate(category, entityName);
 		}
 		
-		return (EAVEntity)new CFWSQL(new EAVEntity())
-					.select()
-					.where(EAVEntityFields.CATEGORY, category)
-					.and(EAVEntityFields.NAME, entityName)
-					.getFirstAsObject()
-					;
+		EAVEntity entity = null;
+		try {
+			entity = entityCache.get(category+"-"+entityName, new Callable<EAVEntity>() {
+
+				@Override
+				public EAVEntity call() throws Exception {
+					
+					return (EAVEntity)new CFWSQL(new EAVEntity())
+							.select()
+							.where(EAVEntityFields.CATEGORY, category)
+							.and(EAVEntityFields.NAME, entityName)
+							.getFirstAsObject()
+							;
+				}
 				
+			});
+			
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error while reading EAV entity from cache or database.", e);
+		}
+
+		return entity;	
 	}
 	
 	/*****************************************************************************

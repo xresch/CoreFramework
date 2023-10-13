@@ -11,7 +11,7 @@ import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWDBEAVValue {
@@ -41,44 +41,43 @@ public class CFWDBEAVValue {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	private static boolean 	create(EAVValue item) 		{ 
+	private static Integer 	createGetPrimaryKey(EAVValue item) 		{ 
 		
-		boolean result = CFWDBDefaultOperations.create(prechecksCreateUpdate, item);
-		
-		return result;
+		return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreateUpdate, item);
+
 	}
 
 	/********************************************************************************************
 	 * Creates a new attribute if it not already exists
 	 * @param category the category of the attribute
 	 * @param attributeName the name of the attribute to create
-	 * @return true if created, false otherwise
+	 * @return id if created, null otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean oneTimeCreate(int entityID, int attributeID, String value) {
+	public static Integer oneTimeCreate(int entityID, int attributeID, String value) {
 		return oneTimeCreate(new EAVValue(entityID, attributeID, value));
 	}
 	
 	/********************************************************************************************
-	 * Creates a new attribute if it not already exists
-	 * @param attribute with the values that should be inserted. ID should be set by the user.
-	 * @return true if created, false otherwise
+	 * Creates a new value if it not already exists
+	 * @param value with the values that should be inserted. ID should be set by the user.
+	 * @return id if created, null otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean oneTimeCreate(EAVValue attribute) {
+	public static Integer oneTimeCreate(EAVValue value) {
 		
-		if(attribute == null) {
-			return false;
+		if(value == null) {
+			return null;
 		}
 		
 		boolean result = true; 
-		if( !checkExists(attribute.foreignKeyEntity(), attribute.foreignKeyAttribute()) ) {
+		if( !checkExists(value.foreignKeyEntity(), value.foreignKeyAttribute(), value.value()) ) {
 			
-			result &= create(attribute);
+			return createGetPrimaryKey(value);
 			
 		}
 		
-		return result;
+		return null;
 	}
 		
 	//####################################################################################################
@@ -102,12 +101,15 @@ public class CFWDBEAVValue {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVValueFields.PK_ID.toString(), id);
 	}
 	
-	
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public static EAVValue selecFirstBy(String entityID, String attributeID, boolean createIfNotExists) {
-				
+	public static EAVValue selecFirstBy(int entityID, int attributeID, boolean createIfNotExists) {
+		
+		if(createIfNotExists) {
+			oneTimeCreate(entityID, attributeID, null);
+		}
+		
 		return (EAVValue)new CFWSQL(new EAVValue())
 					.select()
 					.where(EAVValueFields.FK_ID_ENTITY, entityID)
@@ -120,20 +122,40 @@ public class CFWDBEAVValue {
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public static boolean checkExists(int entityID, int attributeID) {
-		return checkExists(""+entityID, ""+attributeID);
+	public static EAVValue selecFirstBy(int entityID, int attributeID, String value, boolean createIfNotExists) {
+		
+		if(createIfNotExists) {
+			oneTimeCreate(entityID, attributeID, value);
+		}
+		
+		return (EAVValue)new CFWSQL(new EAVValue())
+					.select()
+					.where(EAVValueFields.FK_ID_ENTITY, entityID)
+					.and(EAVValueFields.FK_ID_ATTR, attributeID)
+					.and(EAVValueFields.VALUE, value)
+					.getFirstAsObject()
+					;
+				
 	}
 	
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public static boolean checkExists(String entityID, String attributeID) {
+	public static boolean checkExists(int entityID, int attributeID, String value) {
+		return checkExists(""+entityID, ""+attributeID, value);
+	}
+	
+	/*****************************************************************************
+	 *  
+	 *****************************************************************************/
+	public static boolean checkExists(String entityID, String attributeID, String value) {
 		
 		return 0 < new CFWSQL(new EAVValue())
 				.queryCache()
 				.selectCount()
 				.where(EAVValueFields.FK_ID_ENTITY, entityID)
 				.and(EAVValueFields.FK_ID_ATTR, attributeID)
+				.and(EAVValueFields.VALUE, value)
 				.executeCount();
 		
 	}

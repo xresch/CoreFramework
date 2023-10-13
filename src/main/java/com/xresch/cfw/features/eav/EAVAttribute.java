@@ -15,7 +15,7 @@ import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2022
+ * @author Reto Scheiwiller, (c) Copyright 2023
  * @license MIT-License
  **************************************************************************************************************/
 public class EAVAttribute extends CFWObject {
@@ -58,7 +58,7 @@ public class EAVAttribute extends CFWObject {
 		initializeFields();
 	}
 	
-	public EAVAttribute(String entityID, String attributeName) {
+	public EAVAttribute(int entityID, String attributeName) {
 		initializeFields();
 		this.foreignKeyEntity(entityID);
 		this.name(attributeName);

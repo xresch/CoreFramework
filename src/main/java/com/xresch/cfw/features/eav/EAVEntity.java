@@ -13,7 +13,7 @@ import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  **************************************************************************************************************/
 public class EAVEntity extends CFWObject {

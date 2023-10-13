@@ -14,7 +14,7 @@ import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2022
+ * @author Reto Scheiwiller, (c) Copyright 2023
  * @license MIT-License
  **************************************************************************************************************/
 public class EAVValue extends CFWObject {
@@ -42,7 +42,7 @@ public class EAVValue extends CFWObject {
 			.setValue(null);
 	
 	private CFWField<Integer> foreignKeyAttribute = CFWField.newInteger(FormFieldType.HIDDEN, EAVValueFields.FK_ID_ATTR)
-			.setForeignKeyCascade(this, EAVEntity.class, EAVEntityFields.PK_ID)
+			.setForeignKeyCascade(this, EAVAttribute.class, EAVEntityFields.PK_ID)
 			.setDescription("The id of the attribute.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
