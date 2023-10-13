@@ -6,8 +6,6 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
-import com.xresch.cfw.features.datetime.EAVEntity;
-import com.xresch.cfw.features.datetime.EAVEntity.EAVEntityFields;
 import com.xresch.cfw.features.eav.EAVEntity.EAVEntityFields;
 import com.xresch.cfw.logging.CFWLog;
 

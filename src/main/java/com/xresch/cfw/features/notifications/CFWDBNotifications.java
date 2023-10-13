@@ -89,6 +89,7 @@ public class CFWDBNotifications {
 		boolean success = true;
 		for(User user : users) {
 			if(user != null && user.id() != null) {
+				templateNotification.id(null);
 				templateNotification.foreignKeyUser(user.id());
 				success &= CFW.DB.Notifications.create(templateNotification);
 			}

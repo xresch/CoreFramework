@@ -149,6 +149,9 @@ DONE
 ====
 
 ------- current -------
+- Notifications: Fixed severe log message
+
+
 
 ------- v.8.0.0 -------
 - BREAKING CODE CHANGE: Renaming of Threshold Fields and CSS-Classes
