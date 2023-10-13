@@ -23,6 +23,7 @@ public class FeatureEAV extends CFWAppFeature {
 		// Register Objects
 		CFW.Registry.Objects.addCFWObject(EAVEntity.class);
 		CFW.Registry.Objects.addCFWObject(EAVAttribute.class);
+		CFW.Registry.Objects.addCFWObject(EAVValue.class);
 		
 	}
 

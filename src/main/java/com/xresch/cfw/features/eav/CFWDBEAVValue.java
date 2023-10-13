@@ -6,7 +6,7 @@ import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
-import com.xresch.cfw.features.eav.EAVAttribute.EAVAttributeFields;
+import com.xresch.cfw.features.eav.EAVValue.EAVValueFields;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -14,11 +14,11 @@ import com.xresch.cfw.logging.CFWLog;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class CFWDBEAVAttribute {
+public class CFWDBEAVValue {
 
-	private static Class<EAVAttribute> cfwObjectClass = EAVAttribute.class;		
+	private static Class<EAVValue> cfwObjectClass = EAVValue.class;		
 	
-	private static final Logger logger = CFWLog.getLogger(CFWDBEAVAttribute.class.getName());
+	private static final Logger logger = CFWLog.getLogger(CFWDBEAVValue.class.getName());
 	
 
 	
@@ -41,7 +41,7 @@ public class CFWDBEAVAttribute {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	private static boolean 	create(EAVAttribute item) 		{ 
+	private static boolean 	create(EAVValue item) 		{ 
 		
 		boolean result = CFWDBDefaultOperations.create(prechecksCreateUpdate, item);
 		
@@ -55,8 +55,8 @@ public class CFWDBEAVAttribute {
 	 * @return true if created, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean oneTimeCreate(String entityID, String attributeName) {
-		return oneTimeCreate(new EAVAttribute(entityID, attributeName));
+	public static boolean oneTimeCreate(int entityID, int attributeID, String value) {
+		return oneTimeCreate(new EAVValue(entityID, attributeID, value));
 	}
 	
 	/********************************************************************************************
@@ -65,14 +65,14 @@ public class CFWDBEAVAttribute {
 	 * @return true if created, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean oneTimeCreate(EAVAttribute attribute) {
+	public static boolean oneTimeCreate(EAVValue attribute) {
 		
 		if(attribute == null) {
 			return false;
 		}
 		
 		boolean result = true; 
-		if( !checkExists(attribute.foreignKeyEntity(), attribute.name()) ) {
+		if( !checkExists(attribute.foreignKeyEntity(), attribute.foreignKeyAttribute()) ) {
 			
 			result &= create(attribute);
 			
@@ -84,38 +84,34 @@ public class CFWDBEAVAttribute {
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(EAVAttribute item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, item); }
+	public static boolean 	update(EAVValue item) 		{ return CFWDBDefaultOperations.update(prechecksCreateUpdate, item); }
 	
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################
-	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, EAVAttributeFields.PK_ID.toString(), id); }
+	public static boolean 	deleteByID(int id) 					{ return CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, cfwObjectClass, EAVValueFields.PK_ID.toString(), id); }
 	
 	//####################################################################################################
 	// SELECT
 	//####################################################################################################
-	public static EAVAttribute selectByID(String id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVAttributeFields.PK_ID.toString(), id);
+	public static EAVValue selectByID(String id ) {
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVValueFields.PK_ID.toString(), id);
 	}
 	
-	public static EAVAttribute selectByID(int id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVAttributeFields.PK_ID.toString(), id);
+	public static EAVValue selectByID(int id) {
+		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVValueFields.PK_ID.toString(), id);
 	}
 	
 	
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public static EAVAttribute selecFirstBy(String entityID, String attributeName, boolean createIfNotExists) {
-		
-		if(createIfNotExists) {
-			oneTimeCreate(entityID, attributeName);
-		}
-		
-		return (EAVAttribute)new CFWSQL(new EAVAttribute())
+	public static EAVValue selecFirstBy(String entityID, String attributeID, boolean createIfNotExists) {
+				
+		return (EAVValue)new CFWSQL(new EAVValue())
 					.select()
-					.where(EAVAttributeFields.FK_ID_ENTITY, entityID)
-					.and(EAVAttributeFields.NAME, attributeName)
+					.where(EAVValueFields.FK_ID_ENTITY, entityID)
+					.and(EAVValueFields.FK_ID_ATTR, attributeID)
 					.getFirstAsObject()
 					;
 				
@@ -124,20 +120,20 @@ public class CFWDBEAVAttribute {
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public static boolean checkExists(int entityID, String attributeName) {
-		return checkExists(""+entityID, attributeName);
+	public static boolean checkExists(int entityID, int attributeID) {
+		return checkExists(""+entityID, ""+attributeID);
 	}
 	
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public static boolean checkExists(String entityID, String attributeName) {
+	public static boolean checkExists(String entityID, String attributeID) {
 		
-		return 0 < new CFWSQL(new EAVAttribute())
+		return 0 < new CFWSQL(new EAVValue())
 				.queryCache()
 				.selectCount()
-				.where(EAVAttributeFields.FK_ID_ENTITY, entityID)
-				.and(EAVAttributeFields.NAME, attributeName)
+				.where(EAVValueFields.FK_ID_ENTITY, entityID)
+				.and(EAVValueFields.FK_ID_ATTR, attributeID)
 				.executeCount();
 		
 	}
@@ -147,7 +143,7 @@ public class CFWDBEAVAttribute {
 	 *****************************************************************************/
 	public static int getCount() {
 		
-		return new CFWSQL(new EAVAttribute())
+		return new CFWSQL(new EAVValue())
 				.queryCache()
 				.selectCount()
 				.executeCount();

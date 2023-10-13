@@ -9,7 +9,6 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
-import com.xresch.cfw.features.dashboard.Dashboard;
 import com.xresch.cfw.features.eav.EAVEntity.EAVEntityFields;
 import com.xresch.cfw.validation.LengthValidator;
 
@@ -18,60 +17,66 @@ import com.xresch.cfw.validation.LengthValidator;
  * @author Reto Scheiwiller, (c) Copyright 2022
  * @license MIT-License
  **************************************************************************************************************/
-public class EAVAttribute extends CFWObject {
+public class EAVValue extends CFWObject {
 	
-	public static final String TABLE_NAME = "CFW_EAV_ATTRIBUTE";
+	public static final String TABLE_NAME = "CFW_EAV_VALUE";
 	
-	enum EAVAttributeFields{
+	enum EAVValueFields{
 		PK_ID, 
 		FK_ID_ENTITY,
-		NAME,
-		DESCRIPTION,
+		FK_ID_ATTR,
+		VALUE,
+		CUSTOM,
 	}
 
-	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, EAVAttributeFields.PK_ID)
+	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, EAVValueFields.PK_ID)
 			.setPrimaryKeyAutoIncrement(this)
-			.setDescription("The id of the attribute.")
+			.setDescription("The id of the value.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 		
-	private CFWField<Integer> foreignKeyEntity = CFWField.newInteger(FormFieldType.HIDDEN, EAVAttributeFields.FK_ID_ENTITY)
+	private CFWField<Integer> foreignKeyEntity = CFWField.newInteger(FormFieldType.HIDDEN, EAVValueFields.FK_ID_ENTITY)
 			.setForeignKeyCascade(this, EAVEntity.class, EAVEntityFields.PK_ID)
 			.setDescription("The id of the entity.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 	
-	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, EAVAttributeFields.NAME)
-			.setColumnDefinition("VARCHAR(4096)")
-			.setDescription("The name of the attribute.")
+	private CFWField<Integer> foreignKeyAttribute = CFWField.newInteger(FormFieldType.HIDDEN, EAVValueFields.FK_ID_ATTR)
+			.setForeignKeyCascade(this, EAVEntity.class, EAVEntityFields.PK_ID)
+			.setDescription("The id of the attribute.")
+			.apiFieldType(FormFieldType.NUMBER)
+			.setValue(null);
+	
+	private CFWField<String> value = CFWField.newString(FormFieldType.TEXT, EAVValueFields.VALUE)
+			//.setColumnDefinition("VARCHAR(4096)")
+			.setDescription("The actual value of this EAV Value.")
 			.addValidator(new LengthValidator(1, 4096))
 			;
 
-	
-	private CFWField<String> description = CFWField.newString(FormFieldType.TEXT, EAVAttributeFields.DESCRIPTION)
-			.setColumnDefinition("VARCHAR(4096)")
-			.setDescription("The description of the attribute.")
+	private CFWField<String> custom = CFWField.newString(FormFieldType.TEXT, EAVValueFields.CUSTOM)
+			.setDescription("Custom data you want to associate with this value.")
 			.addValidator(new LengthValidator(1, 4096))
 			;
 	
-	public EAVAttribute() {
+	public EAVValue() {
 		initializeFields();
 	}
 	
-	public EAVAttribute(String entityID, String attributeName) {
+	public EAVValue(int entityID, int attributeID, String value) {
 		initializeFields();
 		this.foreignKeyEntity(entityID);
-		this.name(attributeName);
+		this.foreignKeyAttribute(attributeID);
+		this.value(value);
 	}
 	
-	public EAVAttribute(ResultSet result) throws SQLException {
+	public EAVValue(ResultSet result) throws SQLException {
 		initializeFields();
 		this.mapResultSet(result);	
 	}
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyEntity, name, description);
+		this.addFields(id, foreignKeyEntity, foreignKeyAttribute, value, custom);
 	}
 	
 	/**************************************************************************************
@@ -83,17 +88,19 @@ public class EAVAttribute extends CFWObject {
 				
 		String[] inputFields = 
 				new String[] {
-						EAVAttributeFields.PK_ID.toString(), 
-						EAVAttributeFields.FK_ID_ENTITY.toString(),
-						EAVAttributeFields.NAME.toString(),
+						EAVValueFields.PK_ID.toString(), 
+						EAVValueFields.FK_ID_ENTITY.toString(),
+						EAVValueFields.FK_ID_ATTR.toString(),
+						EAVValueFields.VALUE.toString(),
 				};
 		
 		String[] outputFields = 
 				new String[] {
-						EAVAttributeFields.PK_ID.toString(), 
-						EAVAttributeFields.NAME.toString(),
-						EAVAttributeFields.FK_ID_ENTITY.toString(),
-						EAVAttributeFields.DESCRIPTION.toString(),
+						EAVValueFields.PK_ID.toString(), 
+						EAVValueFields.FK_ID_ENTITY.toString(),
+						EAVValueFields.FK_ID_ATTR.toString(),
+						EAVValueFields.VALUE.toString(),
+						EAVValueFields.CUSTOM.toString(),
 				};
 
 		//----------------------------------
@@ -121,29 +128,41 @@ public class EAVAttribute extends CFWObject {
 		return foreignKeyEntity.getValue();
 	}
 	
-	public EAVAttribute foreignKeyEntity(String value) {
+	public EAVValue foreignKeyEntity(String value) {
 		return foreignKeyEntity(value);
 	}	
-	public EAVAttribute foreignKeyEntity(Integer value) {
+	public EAVValue foreignKeyEntity(Integer value) {
 		this.foreignKeyEntity.setValue(value);
 		return this;
 	}	
 	
-	public String name() {
-		return name.getValue();
+	public Integer foreignKeyAttribute() {
+		return foreignKeyAttribute.getValue();
 	}
 	
-	public EAVAttribute name(String value) {
-		this.name.setValue(value);
+	public EAVValue foreignKeyAttribute(String value) {
+		return foreignKeyAttribute(value);
+	}	
+	public EAVValue foreignKeyAttribute(Integer value) {
+		this.foreignKeyAttribute.setValue(value);
 		return this;
 	}	
 	
-	public String description() {
-		return description.getValue();
+	public String value() {
+		return value.getValue();
 	}
 	
-	public EAVAttribute description(String value) {
-		this.description.setValue(value);
+	public EAVValue value(String value) {
+		this.value.setValue(value);
+		return this;
+	}	
+	
+	public String custom() {
+		return custom.getValue();
+	}
+	
+	public EAVValue custom(String value) {
+		this.custom.setValue(value);
 		return this;
 	}	
 	
