@@ -1,6 +1,5 @@
 package com.xresch.cfw.features.eav;
 
-import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 
 import com.xresch.cfw._main.CFW;
@@ -41,7 +40,7 @@ public class FeatureEAV extends CFWAppFeature {
 		LinkedHashMap<String,String> attributes = new LinkedHashMap<>();
 		attributes.put("name", "Summer Red");
 		attributes.put("taste", "Sweet & Sour");
-		CFW.DB.EAVStats.pushStats("Test", "Apples", attributes, BigDecimal.ONE);
+		//CFW.DB.EAVStats.pushStats("Test", "Apples", attributes, BigDecimal.ONE);
 		
 		//app.addAppServlet(ServletKeyValuePairs.class,  "/configuration");
 	}
