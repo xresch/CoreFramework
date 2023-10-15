@@ -434,7 +434,7 @@ public class CFWParameter extends CFWObject {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static void prepareParamObjectsForForm(HttpServletRequest request, ArrayList<CFWObject> parameterList, CFWTimeframe timeframe, boolean doForWidget) {
 		
-		String dashboardID = request.getParameter("dashboardid");
+		String dashboardID = request.getParameter("id");
 		
 		//===========================================
 		// Replace Value Field

@@ -672,11 +672,17 @@ public class CFWSQL {
 	 ****************************************************************/
 	private void createInsertStatement(Object ...fieldnames) {
 		
+			// TODO: Make insert statements cachable despite having variable fields
+			isQueryCached = false;
+			this.queryName = null;
+			
+					
 			StringBuilder columnNames = new StringBuilder("(");
 			StringBuilder placeholders = new StringBuilder("(");
 			
 			for(Object fieldname : fieldnames) {
 				CFWField<?> field = fields.get(fieldname.toString());
+				
 				if(field != object.getPrimaryKeyField()
 				|| (field == object.getPrimaryKeyField() && field.getValue() != null)
 				) {

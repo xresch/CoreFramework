@@ -1,15 +1,19 @@
 package com.xresch.cfw.features.parameter;
 
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
+import com.xresch.cfw.logging.CFWLog;
 
 public class ParameterDefinitionDashboardID extends ParameterDefinition {
 
+	private static final Logger logger = CFWLog.getLogger(ParameterDefinitionDashboardID.class.getName());
+	
 	public static final String LABEL = "Dashboard ID";
 	
 	/***************************************************************
