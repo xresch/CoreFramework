@@ -14,7 +14,7 @@ import com.xresch.cfw.db.TaskDatabaseBackup;
 import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.features.core.auth.SSOProviderSettingsManagement;
 import com.xresch.cfw.features.core.auth.ServletChangePassword;
 import com.xresch.cfw.features.core.auth.ServletLogin;
@@ -189,7 +189,7 @@ public class FeatureCore extends CFWAppFeature {
     	//----------------------------------
     	// Register Configurations
 		CFW.DB.Config.oneTimeCreate(
-				new Configuration("Timeouts", CONFIG_BROWSER_RESOURCE_MAXAGE)
+				new Configuration(FeatureConfig.CATEGORY_TIMEOUTS, CONFIG_BROWSER_RESOURCE_MAXAGE)
 					.description("The maximum time in seconds resources(js, css, images etc...) should be cached in the client's browser.")
 					.type(FormFieldType.NUMBER)
 					.value("36000")
@@ -252,9 +252,9 @@ public class FeatureCore extends CFWAppFeature {
 		//-------------------------------
 		// Create Change Listener
 		ConfigChangeListener listener = new ConfigChangeListener(
-				FeatureConfiguration.CONFIG_DB_BACKUP_ENABLED,
-				FeatureConfiguration.CONFIG_DB_BACKUP_INTERVAL,
-				FeatureConfiguration.CONFIG_DB_BACKUP_TIME
+				FeatureConfig.CONFIG_DB_BACKUP_ENABLED,
+				FeatureConfig.CONFIG_DB_BACKUP_INTERVAL,
+				FeatureConfig.CONFIG_DB_BACKUP_TIME
 			) {
 			
 			@Override

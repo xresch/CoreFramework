@@ -266,7 +266,7 @@ public class CFWQueryExecutor {
 			long execMillis = -1;
 			try {
 				startMillis = System.currentTimeMillis();
-				long maxExecTime = CFW.DB.Config.getConfigAsLong(FeatureQuery.CONFIG_QUERY_EXEC_LIMIT);
+				long maxExecTime = CFW.DB.Config.getConfigAsLong(FeatureQuery.CONFIG_CATEGORY, FeatureQuery.CONFIG_QUERY_EXEC_LIMIT);
 				query.execute(maxExecTime, true);
 				
 				execMillis = System.currentTimeMillis() - startMillis;

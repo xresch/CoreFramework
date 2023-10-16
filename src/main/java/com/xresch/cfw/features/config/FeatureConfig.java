@@ -14,12 +14,20 @@ import com.xresch.cfw.spi.CFWAppFeature;
  * @author Reto Scheiwiller, (c) Copyright 2021 
  * @license MIT-License
  **************************************************************************************************************/
-public class FeatureConfiguration extends CFWAppFeature {
+public class FeatureConfig extends CFWAppFeature {
 	
+
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.config.resources";
 	
 	public static final String PERMISSION_CONFIGURATION = "Configuration Management";
 	
+	//---------------------------------
+	// Categories
+	public static final String CATEGORY_LOOK_AND_FEEL = "Look and Feel";
+	public static final String CATEGORY_DATABASE = "Database";
+	public static final String CATEGORY_PERFORMANCE = "Performance";
+	public static final String CATEGORY_TIMEOUTS = "Timeouts";
+
 	//---------------------------------
 	// Performance
 	public static final String CONFIG_FILE_CACHING = "Cache Files";
@@ -42,6 +50,13 @@ public class FeatureConfiguration extends CFWAppFeature {
 	public static final String CONFIG_DB_BACKUP_INTERVAL = "Database Backup Interval";
 	public static final String CONFIG_DB_BACKUP_FOLDER = "Database Backup Folder";
 	public static final String CONFIG_DB_DRIVERS = "Database Drivers";
+
+	public static final String CONFIG_SESSIONTIMEOUT_USERS = "Session Timout Users";
+
+	public static final String CONFIG_SESSIONTIMEOUT_VISITORS = "Session Timout Visitors";
+
+	public static final String CONFIG_SESSIONTIMEOUT_API = "Session Timout API";
+
 	
 	@Override
 	public void register() {
@@ -95,7 +110,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Performance", FeatureConfiguration.CONFIG_FILE_CACHING)
+			new Configuration(CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_FILE_CACHING)
 				.description("Enables the caching of files read from the disk.")
 				.type(FormFieldType.BOOLEAN)
 				.value("true")
@@ -105,7 +120,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Look and Feel", FeatureConfiguration.CONFIG_LANGUAGE)
+			new Configuration(CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_LANGUAGE)
 				.description("Set the default language of the application.")
 				.type(FormFieldType.LANGUAGE)
 				.value("EN")
@@ -115,7 +130,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Look and Feel", FeatureConfiguration.CONFIG_THEME)
+			new Configuration(CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_THEME)
 				.description("Set the application look and feel. 'Slate' is the default and recommended theme, all others are not 100% tested. For custom the file has to be placed under ./resources/css/bootstrap-theme-custom.css.")
 				.type(FormFieldType.SELECT)
 				.options(new String[]{"custom", "darkblue", "flatly", "lumen", "materia", "minty", "pulse", "sandstone", "simplex", "slate", "slate-edged", "spacelab", "superhero", "united", "warm-soft", "warm-edged"})
@@ -127,7 +142,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Look and Feel", FeatureConfiguration.CONFIG_CODE_THEME)
+			new Configuration(CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_CODE_THEME)
 				.description("Set the style for the code highlighting.")
 				.type(FormFieldType.SELECT)
 				.options(new String[]{"androidstudio", "arduino-light", "darkarmament", "magula", "pojoaque", "sunburst", "zenburn"})
@@ -138,7 +153,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Look and Feel", FeatureConfiguration.CONFIG_MENU_TITLE )
+			new Configuration(CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_MENU_TITLE )
 				.description("Set the title displayed in the menu bar. Applies to all new sessions, login/logout required to see the change.")
 				.type(FormFieldType.TEXT)
 				.value("")
@@ -148,7 +163,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Look and Feel", FeatureConfiguration.CONFIG_MENU_TITLE_IN_TAB )
+			new Configuration(CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_MENU_TITLE_IN_TAB )
 				.description("Set to true if you want to prepend the menu title to the title of the tab.")
 				.type(FormFieldType.BOOLEAN)
 				.value("false")
@@ -158,7 +173,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Look and Feel", FeatureConfiguration.CONFIG_LOGO_PATH )
+			new Configuration(CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_LOGO_PATH )
 				.description("The path of the logo displayed in the menu bar. Relativ to the installation directory or a valid URL.")
 				.type(FormFieldType.TEXT)
 				.value("/resources/images/applogo.png")
@@ -170,7 +185,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Performance", FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS )
+			new Configuration(CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_CPU_SAMPLING_SECONDS )
 				.description("The interval in seconds between two CPU samplings. Changes to this value needs a restart to take effect.")
 				.type(FormFieldType.SELECT)
 				.options(new String[]{"0.05", "0.1", "0.2","0.5", "1", "5", "10", "30", "60"})
@@ -182,7 +197,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		//-----------------------------------------
 		
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Performance", FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION )
+			new Configuration(CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_CPU_SAMPLING_AGGREGATION )
 				.description("The period in minutes used for the aggregation of the statistics and writing them to the database.")
 				.type(FormFieldType.SELECT)
 				.options(new Integer[]{3, 15, 60, 240, 720, 1440})
@@ -193,7 +208,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database", FeatureConfiguration.CONFIG_DB_BACKUP_ENABLED )
+			new Configuration(CATEGORY_DATABASE, FeatureConfig.CONFIG_DB_BACKUP_ENABLED )
 				.description("Enable or disable the dackup of the database.")
 				.type(FormFieldType.BOOLEAN)
 				.value("true")
@@ -203,7 +218,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database", FeatureConfiguration.CONFIG_DB_BACKUP_TIME )
+			new Configuration(CATEGORY_DATABASE, FeatureConfig.CONFIG_DB_BACKUP_TIME )
 				.description("The start time of the backup. For example, choose a Sunday at 02:00 AM and set the interval to 7 days to create a weekly backup.")
 				.type(FormFieldType.DATETIMEPICKER)
 				.value("1286668800000")
@@ -213,7 +228,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database", FeatureConfiguration.CONFIG_DB_BACKUP_INTERVAL )
+			new Configuration(CATEGORY_DATABASE, FeatureConfig.CONFIG_DB_BACKUP_INTERVAL )
 				.description("The interval in days to create the backup. For example, choose a Sunday at 02:00 AM and set the interval to 7 days to create a weekly backup.")
 				.type(FormFieldType.NUMBER)
 				.value("7")
@@ -223,7 +238,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		// 
 		//-----------------------------------------
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database", FeatureConfiguration.CONFIG_DB_BACKUP_FOLDER )
+			new Configuration(CATEGORY_DATABASE, FeatureConfig.CONFIG_DB_BACKUP_FOLDER )
 				.description("The path of the folder where the backup files should be created. (default: ./backup)")
 				.type(FormFieldType.TEXT)
 				.value("./backup")
@@ -234,7 +249,7 @@ public class FeatureConfiguration extends CFWAppFeature {
 		//-----------------------------------------
 		
 		CFW.DB.Config.oneTimeCreate(
-			new Configuration("Database", FeatureConfiguration.CONFIG_DB_DRIVERS )
+			new Configuration(CATEGORY_DATABASE, FeatureConfig.CONFIG_DB_DRIVERS )
 				.description("Add additional, fully-qualified driver class names if they do not appear.")
 				.type(FormFieldType.CUSTOM_LIST)
 		);

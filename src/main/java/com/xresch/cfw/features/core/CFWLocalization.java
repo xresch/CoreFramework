@@ -20,7 +20,7 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.utils.LinkedProperties;
@@ -107,7 +107,7 @@ public class CFWLocalization {
 		// fall back to english
 		localeArray.add(Locale.ENGLISH);
 
-		String configLanguage = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_LANGUAGE);
+		String configLanguage = CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_LANGUAGE);
 
 		if (configLanguage != null) {
 			Locale defaultLanguage = Locale.forLanguageTag(configLanguage.toLowerCase());
@@ -211,7 +211,9 @@ public class CFWLocalization {
 		Properties languagePack = new Properties();
 		// ------------------------------
 		// Check is Cached
-		if (!CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
+		boolean cacheFiles = CFW.DB.Config.getConfigAsBoolean(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_FILE_CACHING);
+		
+		if (!cacheFiles) {
 			languagePack = loadLanguagePack(locales, requestURI);
 			languageCache.put(cacheID, languagePack);
 		} else {

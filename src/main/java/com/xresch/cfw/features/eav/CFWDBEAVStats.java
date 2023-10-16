@@ -1,11 +1,13 @@
 package com.xresch.cfw.features.eav;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
+import com.google.common.base.Joiner;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -13,6 +15,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsFields;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 /**************************************************************************************************************
  * 
@@ -24,6 +27,8 @@ public class CFWDBEAVStats {
 	private static Class<EAVStats> cfwObjectClass = EAVStats.class;		
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBEAVStats.class.getName());
+	
+	private static HashMap<String, EAVStats> eavStatsToBeStored = new HashMap<>();
 	
 	//####################################################################################################
 	// Preckeck Initialization
@@ -49,45 +54,13 @@ public class CFWDBEAVStats {
 
 	}
 
-	/********************************************************************************************
-	 * Creates a new attribute if it not already exists
-	 * @param category the category of the attribute
-	 * @param attributeName the name of the attribute to create
-	 * @return true if created, false otherwise
-	 * 
-	 ********************************************************************************************/
-//	public static boolean oneTimeCreate(int entityID, int attributeID, String value) {
-//		return oneTimeCreate(new EAVStats(entityID, attributeID));
-//	}
-	
-	/********************************************************************************************
-	 * Creates a new attribute if it not already exists
-	 * @param attribute with the values that should be inserted. ID should be set by the user.
-	 * @return true if created, false otherwise
-	 * 
-	 ********************************************************************************************/
-//	public static boolean oneTimeCreate(EAVStats attribute) {
-//		
-//		if(attribute == null) {
-//			return false;
-//		}
-//		
-//		boolean result = true; 
-//		if( !checkExists(attribute.foreignKeyEntity(), attribute.foreignKeyAttribute()) ) {
-//			
-//			result &= create(attribute);
-//			
-//		}
-//		
-//		return result;
-//	}
 	
 	
 	/********************************************************************************************
 	 * 
 	 ********************************************************************************************/
 	public static boolean pushStats(
-			String category
+			  String category
 			, String entityName
 			, LinkedHashMap<String,String> attributes
 			, BigDecimal statsValue) {
@@ -107,15 +80,44 @@ public class CFWDBEAVStats {
 			valueIDs.add(value.id());
 		}
 		
-		EAVStats stats = new EAVStats(entity.id(), valueIDs)
-				.granularity(0)
-				.addValue(statsValue)
-				.calculateStatistics(getCount())
-				;
-		
-		createGetPrimaryKey(stats);
+		String storeKey = entity.id()+"_"+Joiner.on(",").join(valueIDs);
+		System.out.println(storeKey);
+		synchronized (eavStatsToBeStored) {
+			EAVStats stats;
+			if(eavStatsToBeStored.containsKey(storeKey)) {
+				stats = eavStatsToBeStored.get(storeKey);
+				stats.addValue(statsValue);
+			}else {
+				stats = new EAVStats(entity.id(), valueIDs)
+						.addValue(statsValue)
+						;
+				eavStatsToBeStored.put(storeKey, stats);
+			}
+		}
 		
 		return result;
+	}
+	
+	/********************************************************************************************
+	 * 
+	 ********************************************************************************************/
+	protected static void storeStatsToDB(int granularityMinutes) {
+				
+		long currentTimeRounded = CFWTimeUnit.m.round(System.currentTimeMillis(), granularityMinutes);
+		synchronized (eavStatsToBeStored) {
+			for(Entry<String, EAVStats> current : eavStatsToBeStored.entrySet()) {
+				
+				EAVStats stats = current.getValue();
+				
+				stats.granularity(granularityMinutes)
+					.time(currentTimeRounded)
+					.calculateStatistics();
+				
+				createGetPrimaryKey(stats);
+
+			}
+			eavStatsToBeStored.clear();
+		}
 	}
 		
 	//####################################################################################################
@@ -139,42 +141,7 @@ public class CFWDBEAVStats {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVStatsFields.PK_ID.toString(), id);
 	}
 	
-	
-	/*****************************************************************************
-	 *  
-	 *****************************************************************************/
-//	public static EAVStats selecFirstBy(String entityID, String attributeID, boolean createIfNotExists) {
-//				
-//		return (EAVStats)new CFWSQL(new EAVStats())
-//					.select()
-//					.where(EAVStatsFields.FK_ID_ENTITY, entityID)
-//					.and(EAVStatsFields.FK_ID_VALUES, attributeID)
-//					.getFirstAsObject()
-//					;
-//				
-//	}
-	
-	/*****************************************************************************
-	 *  
-	 *****************************************************************************/
-//	public static boolean checkExists(int entityID, int attributeID) {
-//		return checkExists(""+entityID, ""+attributeID);
-//	}
-	
-	/*****************************************************************************
-	 *  
-	 *****************************************************************************/
-//	public static boolean checkExists(String entityID, String attributeID) {
-//		
-//		return 0 < new CFWSQL(new EAVStats())
-//				.queryCache()
-//				.selectCount()
-//				.where(EAVStatsFields.FK_ID_ENTITY, entityID)
-//				.and(EAVStatsFields.FK_ID_ATTR, attributeID)
-//				.executeCount();
-//		
-//	}
-	
+		
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/

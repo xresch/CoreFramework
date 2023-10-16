@@ -8,6 +8,7 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
@@ -18,14 +19,12 @@ import com.xresch.cfw.spi.CFWAppFeature;
  **************************************************************************************************************/
 public class FeatureUserManagement extends CFWAppFeature {
 
+	
 	public static final String PERMISSION_CPU_SAMPLING = "CPU Sampling";
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.usermgmt.resources";
 	
-	public static final String CONFIG_SESSIONTIMEOUT_USERS = "Session Timout Users";
-	public static final String CONFIG_SESSIONTIMEOUT_VISITORS = "Session Timout Visitors";
-	public static final String CONFIG_SESSIONTIMEOUT_API = "Session Timout API";
-	
 	public static final String CONFIG_CATEGORY_PW_POLICY = "Password Policy";
+	
 	public static final String CONFIG_PWPOLICY_ISENABLED = "Enable Password Policy";
 	public static final String CONFIG_PWPOLICY_MINLENGTH = "Minimum Length";
 	public static final String CONFIG_PWPOLICY_UPPERCASE = "Uppercase Check";
@@ -77,21 +76,21 @@ public class FeatureUserManagement extends CFWAppFeature {
     	//----------------------------------
     	// Register Timeout Configurations
 		CFW.DB.Config.oneTimeCreate(
-				new Configuration("Timeouts", CONFIG_SESSIONTIMEOUT_USERS)
+				new Configuration(FeatureConfig.CATEGORY_TIMEOUTS, FeatureConfig.CONFIG_SESSIONTIMEOUT_USERS)
 					.description("The session timeout in seconds for logged in users. Changes will be applied to active sessions on the next request.")
 					.type(FormFieldType.NUMBER)
 					.value("36000")
 			);
 		
 		CFW.DB.Config.oneTimeCreate(
-				new Configuration("Timeouts", CONFIG_SESSIONTIMEOUT_VISITORS)
+				new Configuration(FeatureConfig.CATEGORY_TIMEOUTS, FeatureConfig.CONFIG_SESSIONTIMEOUT_VISITORS)
 					.description("The session timeout in seconds for users that are not logged in. Changes will be applied to active sessions on the next request.")
 					.type(FormFieldType.NUMBER)
 					.value("600")
 			);
 		
 		CFW.DB.Config.oneTimeCreate(
-				new Configuration("Timeouts", CONFIG_SESSIONTIMEOUT_API)
+				new Configuration(FeatureConfig.CATEGORY_TIMEOUTS, FeatureConfig.CONFIG_SESSIONTIMEOUT_API)
 					.description("The session timeout in seconds for API related calls without login. ")
 					.type(FormFieldType.NUMBER)
 					.value("10")

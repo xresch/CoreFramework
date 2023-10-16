@@ -3,10 +3,12 @@ package com.xresch.cfw.features.dashboard;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
@@ -88,6 +90,7 @@ public class ServletDashboardViewMethods
 			// null if not logged in
 			User currentUser = CFW.Context.Request.getUser();
 			
+
 			if(action == null) {
 				HTMLResponse html = new HTMLResponse("Dashboard");
 				
@@ -100,6 +103,10 @@ public class ServletDashboardViewMethods
 					return;
 				}
 				
+				//---------------------------
+				// Count PageLoad Statistics
+				pushStats(FeatureDashboard.EAV_STATS_PAGE_LOADS, dashboardID, BigDecimal.ONE);
+
 				//---------------------------
 				// Clear existing History
 				undoredo_clearHistory(CFW.Context.Request.getUserID(), dashboardID);
@@ -173,6 +180,23 @@ public class ServletDashboardViewMethods
 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 		}
         
+    }
+    
+    
+    /*****************************************************************
+     *
+     *****************************************************************/
+    private static void pushStats(String entityName, String dashboardID, BigDecimal value) {
+    	
+    	Integer userID = CFW.Context.Request.getUserID();
+    	String userIDString = (userID != null) ? ""+userID : null;
+    	
+    	LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+		attributes.put("dashboardid", dashboardID);
+		attributes.put("userid", userIDString);
+		
+    	CFW.DB.EAVStats.pushStats(FeatureDashboard.EAV_STATS_CATEGORY, entityName, attributes, value);
+		
     }
     
 	/*****************************************************************
@@ -296,6 +320,10 @@ public class ServletDashboardViewMethods
 		//---------------------------
 		// Public Dashboard Check
 		if(isPublicServlet && !dashboard.isPublic()){ CFW.Messages.accessDenied(); return; }
+		
+		//---------------------------
+		// Count PageLoad Statistics
+		pushStats(FeatureDashboard.EAV_STATS_PAGE_LOADS_AND_REFRESHES, dashboardID, BigDecimal.ONE);
 		
 		//---------------------------
 		// Create Response
@@ -852,7 +880,9 @@ public class ServletDashboardViewMethods
 				) {
 					//----------------------------
 					// Do Not Cache
+					pushStats(FeatureDashboard.EAV_STATS_WIDGET_LOADS_UNCACHED, ""+widget.foreignKeyDashboard(), BigDecimal.ONE);
 					definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), timeframe);
+					
 				}else {
 					//----------------------------
 					// Create Cache ID
@@ -871,6 +901,9 @@ public class ServletDashboardViewMethods
 					 
 					//----------------------------
 					// Do Cached
+					if(WidgetDataCache.CACHE.getIfPresent(cacheID) != null) {
+						pushStats(FeatureDashboard.EAV_STATS_WIDGET_LOADS_CACHED, ""+widget.foreignKeyDashboard(), BigDecimal.ONE);
+					}
 					
 					JSONResponse responseFromCache = WidgetDataCache.CACHE.get(cacheID,
 							new Callable<JSONResponse>() {
@@ -880,6 +913,7 @@ public class ServletDashboardViewMethods
 									
 									try {
 										//Hack: update and return existing jsonResponse to not overwrite it by creating a new instance.
+										pushStats(FeatureDashboard.EAV_STATS_WIDGET_LOADS_UNCACHED, ""+widget.foreignKeyDashboard(), BigDecimal.ONE);
 										definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), timeframe);
 									}catch(Throwable e){
 										new CFWLog(logger).severe("Unexpected Error Occured: "+e.getMessage(), e);
@@ -887,7 +921,8 @@ public class ServletDashboardViewMethods
 									return jsonResponse;
 								}
 							});
-							
+					
+					
 					jsonResponse.copyFrom(responseFromCache);
 				}
 			}else {

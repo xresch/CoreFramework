@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -115,7 +115,7 @@ public class FileAssembly {
 		// Initialize
 		createEtagNameAndPath();
 		
-		if(CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
+		if(CFW.DB.Config.getConfigAsBoolean(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_FILE_CACHING)) {
 			try {
 				// Do this to get proper cache statistics.
 				FileAssembly assembly = this;

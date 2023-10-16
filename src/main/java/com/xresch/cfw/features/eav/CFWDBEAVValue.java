@@ -20,7 +20,6 @@ public class CFWDBEAVValue {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBEAVValue.class.getName());
 	
-
 	
 	//####################################################################################################
 	// Preckeck Initialization
@@ -128,13 +127,23 @@ public class CFWDBEAVValue {
 			oneTimeCreate(entityID, attributeID, value);
 		}
 		
-		return (EAVValue)new CFWSQL(new EAVValue())
+		if(value != null) {
+			return (EAVValue)new CFWSQL(new EAVValue())
 					.select()
 					.where(EAVValueFields.FK_ID_ENTITY, entityID)
 					.and(EAVValueFields.FK_ID_ATTR, attributeID)
 					.and(EAVValueFields.VALUE, value)
 					.getFirstAsObject()
 					;
+		}else {
+			return (EAVValue)new CFWSQL(new EAVValue())
+					.select()
+					.where(EAVValueFields.FK_ID_ENTITY, entityID)
+					.and(EAVValueFields.FK_ID_ATTR, attributeID)
+					.isNull(EAVValueFields.VALUE)
+					.getFirstAsObject()
+					;
+		}
 				
 	}
 	
@@ -150,14 +159,26 @@ public class CFWDBEAVValue {
 	 *****************************************************************************/
 	public static boolean checkExists(String entityID, String attributeID, String value) {
 		
-		return 0 < new CFWSQL(new EAVValue())
-				.queryCache()
+		if(value != null) {
+			return 0 < new CFWSQL(new EAVValue())
+				.queryCache(cfwObjectClass, "-isNotNull")
 				.selectCount()
 				.where(EAVValueFields.FK_ID_ENTITY, entityID)
 				.and(EAVValueFields.FK_ID_ATTR, attributeID)
 				.and(EAVValueFields.VALUE, value)
-				.executeCount();
-		
+				.executeCount()
+				;
+				
+		}else {
+			return 0 < new CFWSQL(new EAVValue())
+					.queryCache(cfwObjectClass, "-isNull")
+					.selectCount()
+					.where(EAVValueFields.FK_ID_ENTITY, entityID)
+					.and(EAVValueFields.FK_ID_ATTR, attributeID)
+					.isNull(EAVValueFields.VALUE)
+					.executeCount()
+					;
+		}
 	}
 	
 	/*****************************************************************************

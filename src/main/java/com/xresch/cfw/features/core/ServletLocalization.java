@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -31,7 +32,9 @@ public class ServletLocalization extends HttpServlet
 	
 		//-----------------------
 		// Response Settings
-		response.addHeader("Cache-Control", "max-age="+CFW.DB.Config.getConfigAsInt(FeatureCore.CONFIG_BROWSER_RESOURCE_MAXAGE));
+		response.addHeader("Cache-Control", "max-age="
+								+CFW.DB.Config.getConfigAsInt(FeatureConfig.CATEGORY_TIMEOUTS, FeatureCore.CONFIG_BROWSER_RESOURCE_MAXAGE)
+							);
 		
 		//-----------------------
 		// Fetch LanguagePack

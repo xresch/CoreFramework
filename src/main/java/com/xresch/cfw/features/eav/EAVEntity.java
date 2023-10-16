@@ -66,6 +66,13 @@ public class EAVEntity extends CFWObject {
 		this.name.setValue(name);
 	}
 	
+	public EAVEntity(String category, String name, String description) {
+		initialize();
+		this.category.setValue(category);
+		this.name.setValue(name);
+		this.description.setValue(description);
+	}
+	
 	private void initialize() {
 		this.setTableName(TABLE_NAME);
 		this.addFields(id, category, name, formfieldType, description);

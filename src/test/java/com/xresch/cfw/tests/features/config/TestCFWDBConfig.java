@@ -21,51 +21,52 @@ public class TestCFWDBConfig extends DBTestMaster {
 	@Test
 	public void testCRUDConfig() {
 		
-		String configname = "Test Config";
-		String confignameUpdated = "Test ConfigUPDATED";
+		String configCategory = "Test";
+		String configName = "Test Config";
+		String configNameUpdated = "Test ConfigUPDATED";
 		
 		//--------------------------------------
 		// Cleanup
-		Configuration configToDelete = CFW.DB.Config.selectByName(configname);
+		Configuration configToDelete = CFW.DB.Config.selectBy(configCategory, configName);
 		if(configToDelete != null) {
 			CFW.DB.Config.deleteByID(configToDelete.id());
 		}
 
-		configToDelete = CFW.DB.Config.selectByName(confignameUpdated);
+		configToDelete = CFW.DB.Config.selectBy(configCategory, configNameUpdated);
 		if(configToDelete != null) {
 			CFW.DB.Config.deleteByID(configToDelete.id());
 		}
-		Assertions.assertFalse(CFW.DB.Config.checkConfigExists(configname), "Config doesn't exists, checkConfigExists(String) works.");
+		Assertions.assertFalse(CFW.DB.Config.checkConfigExists(configCategory,configName), "Config doesn't exists, checkConfigExists(String, String) works.");
 		Assertions.assertFalse(CFW.DB.Config.checkConfigExists(configToDelete), "Config doesn't exist, checkConfigExists(Config) works.");
 		
 		
 		//--------------------------------------
 		// CREATE
 		CFW.DB.Config.create(
-				new Configuration("Test", configname)
+				new Configuration(configCategory, configName)
 				.description("Testdescription")
 				.type(FormFieldType.TEXT)
 				.options(new String[] {"A", "B", "C"})
 				.value("A")
 		);
 		
-		Assertions.assertTrue(CFW.DB.Config.checkConfigExists(configname), "Config created successfully, checkConfigExists(String) works.");
+		Assertions.assertTrue(CFW.DB.Config.checkConfigExists(configCategory, configName), "Config created successfully, checkConfigExists(String) works.");
 
 		//--------------------------------------
 		// SELECT BY NAME
-		Configuration config = CFW.DB.Config.selectByName(configname);
+		Configuration config = CFW.DB.Config.selectBy(configCategory, configName);
 		
 		System.out.println("===== CONFIG =====");
 		System.out.println(config.dumpFieldsAsKeyValueString());
 
 		Assertions.assertNotNull(config);
-		Assertions.assertEquals(config.name(), configname);
+		Assertions.assertEquals(config.name(), configName);
 		Assertions.assertEquals(config.description(), "Testdescription");
 		Assertions.assertEquals(config.type(), "TEXT");
 		
 		//--------------------------------------
 		// UPDATE
-		config.name(confignameUpdated)
+		config.name(configNameUpdated)
 			.description("Testdescription2")
 			.value("B")
 			.options(new String[] {"A", "B", "C", "D"});
@@ -74,13 +75,13 @@ public class TestCFWDBConfig extends DBTestMaster {
 		
 		//--------------------------------------
 		// SELECT UPDATED CONFIG
-		Configuration updatedConfig = CFW.DB.Config.selectByName(confignameUpdated);
+		Configuration updatedConfig = CFW.DB.Config.selectBy(configCategory, configNameUpdated);
 		
 		System.out.println("===== UPDATED CONFIG =====");
 		System.out.println(updatedConfig.dumpFieldsAsKeyValueString());
 		
 		Assertions.assertNotNull(config);
-		Assertions.assertEquals(config.name(), confignameUpdated);
+		Assertions.assertEquals(config.name(), configNameUpdated);
 		Assertions.assertEquals(config.description(), "Testdescription2");
 		
 		//--------------------------------------
@@ -91,13 +92,13 @@ public class TestCFWDBConfig extends DBTestMaster {
 		
 		//--------------------------------------
 		// Read from cache
-		String cachedValue = CFW.DB.Config.getConfigAsString(confignameUpdated);
+		String cachedValue = CFW.DB.Config.getConfigAsString(configCategory, configNameUpdated);
 		Assertions.assertEquals(cachedValue, "B", "Current value is read from cache.");
 		
 		//--------------------------------------
 		// DELETE
 		CFW.DB.Config.deleteByID(updatedConfig.id());
-		Assertions.assertFalse(CFW.DB.Config.checkConfigExists(configname));
+		Assertions.assertFalse(CFW.DB.Config.checkConfigExists(configCategory, configName));
 				
 	}
 	

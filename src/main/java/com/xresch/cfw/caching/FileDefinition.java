@@ -1,7 +1,7 @@
 package com.xresch.cfw.caching;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
 
 /**************************************************************************************************************
  * 
@@ -85,8 +85,14 @@ public class FileDefinition {
 		}
 	}
 	
+	/**************************************************************************
+	 * Get the hash code for this definition
+	 **************************************************************************/
 	public int getHash(){
-		if(hashCode == null || !CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)) {
+		
+		boolean cacheFiles = CFW.DB.Config.getConfigAsBoolean(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_FILE_CACHING);
+		
+		if(hashCode == null || !cacheFiles) {
 			// Hard Refresh
 			readContents();
 			hashCode = (path != null ? path.hashCode() : 0)

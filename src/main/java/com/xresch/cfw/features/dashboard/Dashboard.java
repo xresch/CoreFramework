@@ -131,59 +131,16 @@ public class Dashboard extends CFWObject {
 	private CFWField<Boolean> isShared = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.IS_SHARED)
 			.apiFieldType(FormFieldType.TEXT)
 			.setDescription("Make the dashboard shared with other people or keep it private. If no shared users or shared groups are specified(defined editors have no impact), the dashboard is shared with all users having access to the dashboard features.")
-			.setValue(CFW.DB.Config.getConfigAsBoolean(FeatureDashboard.CONFIG_DEFAULT_IS_SHARED));
+			.setValue(CFW.DB.Config.getConfigAsBoolean(FeatureDashboard.CONFIG_CATEGORY, FeatureDashboard.CONFIG_DEFAULT_IS_SHARED));
 	
 	private CFWField<LinkedHashMap<String,String>> shareWithUsers = this.createSelectorFieldSharedUser(null);
 	
-//	private CFWField<LinkedHashMap<String,String>> shareWithUsers = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_USERS)
-//			.setLabel("Share with Users")
-//			.setDescription("Share this dashboard with specific users.")
-//			.setValue(null)
-//			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-//				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-//					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
-//				}
-//			});
-	
 	private CFWField<LinkedHashMap<String,String>> shareWithGroups = this.createSelectorFieldSharedGroups(null);
-	
-//	private CFWField<LinkedHashMap<String,String>> shareWithGroups = CFWField.newTagsSelector(DashboardFields.JSON_SHARE_WITH_GROUPS)
-//			.setLabel("Share with Groups")
-//			.setDescription("Share this dashboard with specific groups.")
-//			.setValue(null)
-//			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-//				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-//					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());					
-//				}
-//			});
-//	
+		
 	private CFWField<LinkedHashMap<String,String>> editors = this.createSelectorFieldEditors(null);
-			
-//	private CFWField<LinkedHashMap<String,String>> editors = CFWField.newTagsSelector(DashboardFields.JSON_EDITORS)
-//			.setLabel("Editors")
-//			.setDescription("Allow the specified users to view and edit the dashboard, even when the dashboard is not shared.")
-//			.setValue(null)
-//			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-//				
-//				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-//					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());
-//				}
-//			});
 		
 	private CFWField<LinkedHashMap<String,String>> editorGroups = this.createSelectorFieldEditorGroups(null);
-	
-//	private CFWField<LinkedHashMap<String,String>> editorGroups = CFWField.newTagsSelector(DashboardFields.JSON_EDITOR_GROUPS)
-//			.setLabel("Editor Groups")
-//			.setDescription("Allow users having at least one of the specified groups to view and edit the dashboard, even when the dashboard is not shared.")
-//			.setValue(null)
-//			.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
-//				
-//				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
-//					return CFW.DB.Roles.autocompleteGroup(searchValue, this.getMaxResults());
-//				}
-//			});
-	
-	
+
 	private CFWField<Boolean> alloweEditSettings = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.ALLOW_EDIT_SETTINGS)
 			.apiFieldType(FormFieldType.TEXT)
 			.setColumnDefinition("BOOLEAN DEFAULT TRUE")

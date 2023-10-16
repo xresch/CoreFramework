@@ -17,8 +17,8 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFW.Context;
 import com.xresch.cfw.db.CFWDB;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
-import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.AbstractResponse;
 import com.xresch.cfw.response.HTMLResponse;
@@ -91,19 +91,19 @@ public class RequestHandler extends HandlerWrapper
     	// Dirty and not cause store Session to DB
     	int currentInactiveInterval = session.getMaxInactiveInterval();
     	if(CFW.Context.Session.getSessionData().isLoggedIn()) {
-    		int sessionTimeout = CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_USERS);
+    		int sessionTimeout = CFW.DB.Config.getConfigAsInt(FeatureConfig.CATEGORY_TIMEOUTS, FeatureConfig.CONFIG_SESSIONTIMEOUT_USERS);
     		if(sessionTimeout != currentInactiveInterval) {
     			session.setMaxInactiveInterval(sessionTimeout);
     		}
     	}else {
     		if(request.getRequestURI().equals("/metrics")) {
     			
-    			int sessionTimeout = CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_API);
+    			int sessionTimeout = CFW.DB.Config.getConfigAsInt(FeatureConfig.CATEGORY_TIMEOUTS, FeatureConfig.CONFIG_SESSIONTIMEOUT_API);
         		if(sessionTimeout != currentInactiveInterval) {
         			session.setMaxInactiveInterval(sessionTimeout);
         		}
     		}else {
-    			int sessionTimeout = CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_VISITORS);
+    			int sessionTimeout = CFW.DB.Config.getConfigAsInt(FeatureConfig.CATEGORY_TIMEOUTS, FeatureConfig.CONFIG_SESSIONTIMEOUT_VISITORS);
         		if(sessionTimeout != currentInactiveInterval) {
         			session.setMaxInactiveInterval(sessionTimeout);
         		}

@@ -6,7 +6,7 @@ import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.config.Configuration;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.schedule.CFWScheduledTask;
 
@@ -17,7 +17,7 @@ public class TaskCPUSamplingAgeOut extends CFWScheduledTask {
 	
 	public void execute() {
 		
-		Configuration config = CFW.DB.Config.selectByName(FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION);
+		Configuration config = CFW.DB.Config.selectBy(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_CPU_SAMPLING_AGGREGATION);
 		ArrayList<String> granularities = config.options();
 		
 		//----------------------------

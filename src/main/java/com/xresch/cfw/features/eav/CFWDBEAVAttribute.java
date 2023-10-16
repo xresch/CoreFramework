@@ -126,9 +126,9 @@ public class CFWDBEAVAttribute {
 			oneTimeCreate(entityID, attributeName);
 		}
 		
-		EAVAttribute attributeID = null;
+		EAVAttribute attribute = null;
 		try {
-			attributeID = attributeCache.get(entityID+"-"+attributeName, new Callable<EAVAttribute>() {
+			attribute = attributeCache.get(entityID+"-"+attributeName, new Callable<EAVAttribute>() {
 
 				@Override
 				public EAVAttribute call() throws Exception {
@@ -147,7 +147,7 @@ public class CFWDBEAVAttribute {
 			new CFWLog(logger).severe("Error while reading EAV attribute from cache or database.", e);
 		}
 
-		return attributeID;	
+		return attribute;	
 		
 
 				
@@ -165,12 +165,15 @@ public class CFWDBEAVAttribute {
 	 *****************************************************************************/
 	public static boolean checkExists(String entityID, String attributeName) {
 		
-		return 0 < new CFWSQL(new EAVAttribute())
+		
+		boolean result = 0 < new CFWSQL(new EAVAttribute())
 				.queryCache()
 				.selectCount()
 				.where(EAVAttributeFields.FK_ID_ENTITY, entityID)
 				.and(EAVAttributeFields.NAME, attributeName)
 				.executeCount();
+				
+		return result;
 		
 	}
 	

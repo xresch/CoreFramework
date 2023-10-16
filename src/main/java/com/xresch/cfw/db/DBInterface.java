@@ -32,7 +32,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWChartSettings;
 import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.datahandling.CFWTimeframe;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
 
 import io.prometheus.client.Counter;
@@ -677,8 +677,9 @@ public class DBInterface {
 		}
 		
 		driverSet.addAll(
-				CFW.DB.Config.getConfigAsArrayList(FeatureConfiguration.CONFIG_DB_DRIVERS)
+				CFW.DB.Config.getConfigAsArrayList(FeatureConfig.CATEGORY_DATABASE, FeatureConfig.CONFIG_DB_DRIVERS)
 		);
+		
 		return driverSet;
 	}
 	

@@ -23,7 +23,7 @@ import com.xresch.cfw.features.analytics.FeatureSystemAnalytics;
 import com.xresch.cfw.features.api.CFWRegistryAPI;
 import com.xresch.cfw.features.api.FeatureAPI;
 import com.xresch.cfw.features.config.CFWDBConfig;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.features.contextsettings.CFWDBContextSettings;
 import com.xresch.cfw.features.contextsettings.CFWRegistryContextSettings;
 import com.xresch.cfw.features.contextsettings.FeatureContextSettings;
@@ -449,7 +449,7 @@ public class CFW {
 		
 		//---------------------------
 		// Register Features
-		CFW.Registry.Features.addFeature(FeatureConfiguration.class);
+		CFW.Registry.Features.addFeature(FeatureConfig.class);
 		CFW.Registry.Features.addFeature(FeatureKeyValuePairs.class);
 		CFW.Registry.Features.addFeature(FeatureCore.class);	
 		CFW.Registry.Features.addFeature(FeatureDateTime.class);	

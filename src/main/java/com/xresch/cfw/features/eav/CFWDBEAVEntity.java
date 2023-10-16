@@ -76,6 +76,18 @@ public class CFWDBEAVEntity {
 	
 	/********************************************************************************************
 	 * Creates a new entity if it not already exists
+	 * @param category the category of the entity
+	 * @param entityName the name of the entity to create
+	 * @param description the description of the entity
+	 * @return true if created, false otherwise
+	 * 
+	 ********************************************************************************************/
+	public static boolean oneTimeCreate(String category, String entityName, String description) {
+		return oneTimeCreate(new EAVEntity(category, entityName, description));
+	}
+	
+	/********************************************************************************************
+	 * Creates a new entity if it not already exists
 	 * @param entity with the values that should be inserted. ID should be set by the user.
 	 * @return true if created, false otherwise
 	 * 

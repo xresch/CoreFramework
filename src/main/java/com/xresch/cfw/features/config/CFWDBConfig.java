@@ -24,6 +24,8 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWDBConfig {
 	
+	private static final String KEY_SEPARATOR = "_x_x_";
+
 	private static final Logger logger = CFWLog.getLogger(CFWDBConfig.class.getName());
 	
 	//name/value pairs of configuration elements
@@ -55,7 +57,11 @@ public class CFWDBConfig {
 	 ********************************************************************************************/
 	public static boolean updateCache() {
 		ResultSet result = new Configuration()
-			.select(ConfigFields.NAME.toString(), ConfigFields.VALUE.toString())
+			.select(
+					  ConfigFields.CATEGORY.toString()
+					, ConfigFields.NAME.toString()
+					, ConfigFields.VALUE.toString()
+				)
 			.getResultSet();
 		
 		if(result == null) {
@@ -64,11 +70,14 @@ public class CFWDBConfig {
 		
 		try {
 			LinkedHashMap<String, String> newCache = new LinkedHashMap<String, String>();
+			
+			
 			while(result.next()) {
-				newCache.put(
-					result.getString(ConfigFields.NAME.toString()),
-					result.getString(ConfigFields.VALUE.toString())
-				);
+				String category = result.getString(ConfigFields.CATEGORY.toString());
+				String name = result.getString(ConfigFields.NAME.toString());
+				String cacheKey = createKey(category, name);
+				
+				newCache.put( cacheKey, result.getString(ConfigFields.VALUE.toString()) );
 			}
 			cacheAndTriggerChange(newCache);
 			
@@ -84,8 +93,6 @@ public class CFWDBConfig {
 	}
 	
 	/********************************************************************************************
-	 * Creates the table and default admin user if not already exists.
-	 * This method is executed by CFW.DB.initialize().
 	 * 
 	 ********************************************************************************************/
 	private static void cacheAndTriggerChange(LinkedHashMap<String, String> newCache) {
@@ -96,10 +103,11 @@ public class CFWDBConfig {
 		ArrayList<ConfigChangeListener> triggered = new ArrayList<ConfigChangeListener>();
 		
 		for(Entry<String, String> entry: newCache.entrySet()) {
-			String configName = entry.getKey();
+			String cacheKey = entry.getKey();
+			String configName = getNameFromKey(cacheKey);
 			String newValue = entry.getValue();
 			
-			String oldValue = tempOldCache.get(configName);
+			String oldValue = tempOldCache.get(cacheKey);
 			
 
 			if((oldValue == null && newValue != null) 
@@ -118,19 +126,36 @@ public class CFWDBConfig {
 	}
 	
 	/********************************************************************************************
+	 * 
+	 ********************************************************************************************/
+	private static String createKey(String category, String configName) {
+		return category+KEY_SEPARATOR+configName;
+	}
+	
+	/********************************************************************************************
+	 * 
+	 ********************************************************************************************/
+	private static String getNameFromKey(String cacheKey) {
+		return cacheKey.split(KEY_SEPARATOR)[1];
+	}
+	
+	/********************************************************************************************
 	 * Returns a config value from cache as String
 	 * 
 	 ********************************************************************************************/
-	public static String getConfigAsString(String configName) {
-		return configCache.get(configName);
+	public static String getConfigAsString(String category, String configName) {
+		return configCache.get( createKey(category,configName) );
 	}
 	
 	/********************************************************************************************
 	 * Returns a config value from cache as JsonArray
 	 * 
 	 ********************************************************************************************/
-	public static JsonArray getConfigAsJsonArray(String configName) {
-		JsonElement element = CFW.JSON.fromJson(configCache.get(configName));
+	public static JsonArray getConfigAsJsonArray(String category, String configName) {
+		JsonElement element = CFW.JSON.fromJson( 
+				configCache.get( createKey(category,configName) ) 
+			);
+		
 		if(element.isJsonNull()) {
 			return new JsonArray();
 		}
@@ -141,11 +166,11 @@ public class CFWDBConfig {
 	 * Returns a config value from cache as ArrayList
 	 * 
 	 ********************************************************************************************/
-	public static ArrayList<String> getConfigAsArrayList(String configName) {
+	public static ArrayList<String> getConfigAsArrayList(String category, String configName) {
 		
 		ArrayList<String> arrayList = new ArrayList<>();
 		
-		for(JsonElement element : getConfigAsJsonArray(configName)) {
+		for(JsonElement element : getConfigAsJsonArray(category, configName)) {
 			arrayList.add(element.getAsString());
 		}
 		
@@ -156,32 +181,40 @@ public class CFWDBConfig {
 	 * Returns a config value from cache as boolean
 	 * 
 	 ********************************************************************************************/
-	public static boolean getConfigAsBoolean(String configName) {
-		return Boolean.parseBoolean(configCache.get(configName));
+	public static boolean getConfigAsBoolean(String category, String configName) {
+		return Boolean.parseBoolean(
+				configCache.get( createKey(category,configName) )
+			);
 	}
 	
 	/********************************************************************************************
 	 * Returns a config value from cache as integer.
 	 * 
 	 ********************************************************************************************/
-	public static int getConfigAsInt(String configName) {
-		return Integer.parseInt(configCache.get(configName));
+	public static int getConfigAsInt(String category, String configName) {
+		return Integer.parseInt(
+				configCache.get( createKey(category,configName) ) 
+			);
 	}
 	
 	/********************************************************************************************
 	 * Returns a config value from cache as long.
 	 * 
 	 ********************************************************************************************/
-	public static long getConfigAsLong(String configName) {
-		return Long.parseLong(configCache.get(configName));
+	public static long getConfigAsLong(String category, String configName) {
+		return Long.parseLong(
+				configCache.get( createKey(category,configName) )
+			);
 	}
 	
 	/********************************************************************************************
 	 * Returns a config value from cache as long.
 	 * 
 	 ********************************************************************************************/
-	public static float getConfigAsFloat(String configName) {
-		return Float.parseFloat(configCache.get(configName));
+	public static float getConfigAsFloat(String category, String configName) {
+		return Float.parseFloat(
+				configCache.get( createKey(category,configName) )
+			);
 	}
 	
 	/********************************************************************************************
@@ -201,30 +234,30 @@ public class CFWDBConfig {
 	 * Creates a new configuration in the DB if the name was not already given.
 	 * All newly created permissions are by default assigned to the Superuser Role.
 	 * 
-	 * @param configuration with the values that should be inserted. ID will be set by the Database.
+	 * @param config with the values that should be inserted. ID will be set by the Database.
 	 * @return true if successful, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean oneTimeCreate(Configuration configuration) {
+	public static boolean oneTimeCreate(Configuration config) {
 		
-		if(configuration == null || Strings.isNullOrEmpty(configuration.name()) ) {
+		if(config == null || Strings.isNullOrEmpty(config.name()) ) {
 			return false;
 		}
 		
 		boolean result = true; 
-		if(!CFW.DB.Config.checkConfigExists(configuration)) {
+		if(!CFW.DB.Config.checkConfigExists(config)) {
 			
-			result &= CFW.DB.Config.create(configuration);
+			result &= CFW.DB.Config.create(config);
 			
-			if( CFW.DB.Config.selectByName(configuration.name()) == null ) {
+			if( CFW.DB.Config.selectBy(config.category(),config.name()) == null ) {
 				result = false;
 			}
 		}else {
 			//--------------------------
 			// Update Available Options
-			Configuration configToUpdate = CFW.DB.Config.selectByName(configuration.name());
+			Configuration configToUpdate = CFW.DB.Config.selectBy(config.category(), config.name());
 			if( configToUpdate != null ) {
-				configToUpdate.options(configuration.options());
+				configToUpdate.options(config.options());
 				configToUpdate.update(ConfigFields.OPTIONS);
 			}
 			
@@ -273,12 +306,12 @@ public class CFWDBConfig {
 	 * @param id of the config
 	 * @return Returns a config or null if not found or in case of exception.
 	 ****************************************************************/
-	public static Configuration selectByName(String name) {
+	public static Configuration selectBy(String category, String name) {
 		
 		return (Configuration)new Configuration()
-				.queryCache(CFWDBConfig.class, "selectByName")
 				.select()
-				.where(ConfigFields.NAME.toString(), name)
+				.where(ConfigFields.CATEGORY.toString(), category)
+				.and(ConfigFields.NAME.toString(), name)
 				.getFirstAsObject();
 
 	}
@@ -390,8 +423,8 @@ public class CFWDBConfig {
 				.warn("Please specify a name for the config.");
 			return false;
 		}
-		
-		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Configuration.class, "Change config '"+config.name()+"' from '"+configCache.get(config.name())+"' to '"+config.value()+"'");
+		String cacheKey = createKey(config.category(), config.name());
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Configuration.class, "Change config '"+config.name()+"' from '"+configCache.get(cacheKey)+"' to '"+config.value()+"'");
 		boolean updateResult =  config
 				.queryCache(CFWDBConfig.class, "update")
 				.update();
@@ -487,9 +520,9 @@ public class CFWDBConfig {
 	 * @param id of the user
 	 * @return true if successful, false otherwise.
 	 ****************************************************************/
-	public static boolean deleteByName(String name) {
+	public static boolean deleteBy(String category, String name) {
 		
-		Configuration config = selectByName(name);
+		Configuration config = selectBy(category, name);
 		if(config == null ) {
 			new CFWLog(logger)
 			.severe("The config with name '"+name+"'+could not be found.");
@@ -516,7 +549,7 @@ public class CFWDBConfig {
 	public static boolean checkConfigExists(Configuration config) {
 		if(config == null) { return false;}
 		
-		return checkConfigExists(config.name());
+		return checkConfigExists(config.category(), config.name());
 	}
 	
 	/****************************************************************
@@ -525,12 +558,13 @@ public class CFWDBConfig {
 	 * @param configname to check
 	 * @return true if exists, false otherwise or in case of exception.
 	 ****************************************************************/
-	public static boolean checkConfigExists(String configName) {
+	public static boolean checkConfigExists(String configCategory, String configName) {
 		
 		int count = new Configuration()
 				.queryCache(CFWDBConfig.class, "checkConfigExists")
 				.selectCount()
-				.where(ConfigFields.NAME.toString(), configName)
+				.where(ConfigFields.CATEGORY.toString(), configCategory)
+				.and(ConfigFields.NAME.toString(), configName)
 				.executeCount();
 		
 		return (count > 0);

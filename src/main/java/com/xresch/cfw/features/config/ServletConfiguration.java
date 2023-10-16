@@ -44,7 +44,7 @@ public class ServletConfiguration extends HttpServlet
 		
 		StringBuilder content = html.getContent();
 		
-		if(CFW.Context.Request.hasPermission(FeatureConfiguration.PERMISSION_CONFIGURATION)) {
+		if(CFW.Context.Request.hasPermission(FeatureConfig.PERMISSION_CONFIGURATION)) {
 			
 			//--------------------------
 			// Add Form
@@ -55,7 +55,7 @@ public class ServletConfiguration extends HttpServlet
 			
 			//--------------------------
 			// Add Javascript
-			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureConfiguration.RESOURCE_PACKAGE, "cfw_config.js");
+			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureConfig.RESOURCE_PACKAGE, "cfw_config.js");
 			html.addJavascriptData("categories", CFW.JSON.toJSON(CFW.DB.Config.getCategories()) );
 			html.addJavascriptCode("cfw_config_changeToPanels();");
 

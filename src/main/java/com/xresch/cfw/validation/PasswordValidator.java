@@ -19,9 +19,10 @@ public class PasswordValidator extends AbstractValidator {
 	@Override
 	public boolean validate(Object value) {
 		
+		String category = FeatureUserManagement.CONFIG_CATEGORY_PW_POLICY;
 		//--------------------------------
 		// Is Check Enabled
-		if(!CFW.DB.Config.getConfigAsBoolean(FeatureUserManagement.CONFIG_PWPOLICY_ISENABLED)) {
+		if(!CFW.DB.Config.getConfigAsBoolean(category, FeatureUserManagement.CONFIG_PWPOLICY_ISENABLED)) {
 			return true;
 		}
 		
@@ -29,7 +30,7 @@ public class PasswordValidator extends AbstractValidator {
 		boolean isValid = true; 
 		//--------------------------------
 		// Check Minimum Length
-		int minLength = CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_PWPOLICY_MINLENGTH);
+		int minLength = CFW.DB.Config.getConfigAsInt(category, FeatureUserManagement.CONFIG_PWPOLICY_MINLENGTH);
 		if( value.toString().length() < minLength ) {
 			invalidMessage += "minimum "+minLength+" characters, ";
 			isValid = false;
@@ -37,7 +38,7 @@ public class PasswordValidator extends AbstractValidator {
 		
 		//--------------------------------
 		// Check Lowercase Letter
-		if(CFW.DB.Config.getConfigAsBoolean(FeatureUserManagement.CONFIG_PWPOLICY_LOWERCASE)) {
+		if(CFW.DB.Config.getConfigAsBoolean(category, FeatureUserManagement.CONFIG_PWPOLICY_LOWERCASE)) {
 			if( !value.toString().matches(".*[a-z]+.*") ){
 				invalidMessage += "1 lowercase letter, ";
 				isValid = false;
@@ -46,7 +47,7 @@ public class PasswordValidator extends AbstractValidator {
 		
 		//--------------------------------
 		// Check Uppercase Letter
-		if(CFW.DB.Config.getConfigAsBoolean(FeatureUserManagement.CONFIG_PWPOLICY_UPPERCASE)) {
+		if(CFW.DB.Config.getConfigAsBoolean(category, FeatureUserManagement.CONFIG_PWPOLICY_UPPERCASE)) {
 			if( !value.toString().matches(".*[A-Z]+.*") ){
 				invalidMessage += "1 uppercase letter, ";
 				isValid = false;
@@ -55,7 +56,7 @@ public class PasswordValidator extends AbstractValidator {
 		
 		//--------------------------------
 		// Check Number and Special Char
-		if(CFW.DB.Config.getConfigAsBoolean(FeatureUserManagement.CONFIG_PWPOLICY_SPECIALORNUM)) {
+		if(CFW.DB.Config.getConfigAsBoolean(category, FeatureUserManagement.CONFIG_PWPOLICY_SPECIALORNUM)) {
 			if( !value.toString().matches(".*[^A-Za-z]+.*") ){
 				invalidMessage += "1 number or special character, ";
 				isValid = false;
@@ -63,7 +64,7 @@ public class PasswordValidator extends AbstractValidator {
 		}else {
 			//--------------------------------
 			// Check Number Letter
-			if(CFW.DB.Config.getConfigAsBoolean(FeatureUserManagement.CONFIG_PWPOLICY_NUMBER)) {
+			if(CFW.DB.Config.getConfigAsBoolean(category, FeatureUserManagement.CONFIG_PWPOLICY_NUMBER)) {
 				if( !value.toString().matches(".*[0-9]+.*") ){
 					invalidMessage += "1 number, ";
 					isValid = false;
@@ -72,7 +73,7 @@ public class PasswordValidator extends AbstractValidator {
 			
 			//--------------------------------
 			// Check Special 
-			if(CFW.DB.Config.getConfigAsBoolean(FeatureUserManagement.CONFIG_PWPOLICY_SPECIAL)) {
+			if(CFW.DB.Config.getConfigAsBoolean(category, FeatureUserManagement.CONFIG_PWPOLICY_SPECIAL)) {
 				if( !value.toString().matches(".*[^A-Za-z0-9]+.*") ){
 					invalidMessage += "1 special character, ";
 					isValid = false;

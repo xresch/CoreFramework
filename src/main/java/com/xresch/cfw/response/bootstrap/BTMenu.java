@@ -3,7 +3,7 @@ package com.xresch.cfw.response.bootstrap;
 import java.util.ArrayList;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
 
 
 /**************************************************************************************************************
@@ -30,7 +30,7 @@ public class BTMenu extends HierarchicalHTMLItem {
 		html.append("<nav class=\"navbar navbar-expand-md fixed-top navbar-dark\">");
 		html.append("  <a class=\"navbar-brand\" href=\"#\">");
 		
-			String logopath = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_LOGO_PATH);
+			String logopath = CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_LOGO_PATH);
 			if(logopath != null && !logopath.isEmpty()) {
 				html.append("<img id=\"cfw-logo\" src=\""+logopath+"\" />");
 			}

@@ -275,7 +275,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		
 		//------------------------------------------
 		// Default Values
-		fetchLimit = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_FETCH_LIMIT_DEFAULT);
+		fetchLimit = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_CATEGORY, FeatureQuery.CONFIG_FETCH_LIMIT_DEFAULT);
 		
 		//------------------------------------------
 		// Get Name
@@ -315,7 +315,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 					QueryPartValue limitValue = assignment.getRightSide().determineValue(null);
 					if(limitValue.isInteger()) {
 						int newLimit = limitValue.getAsInteger();
-						int maxLimit = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_FETCH_LIMIT_MAX);
+						int maxLimit = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_CATEGORY, FeatureQuery.CONFIG_FETCH_LIMIT_MAX);
 						if(newLimit <= maxLimit) {
 							this.fetchLimit = newLimit;
 						}else {

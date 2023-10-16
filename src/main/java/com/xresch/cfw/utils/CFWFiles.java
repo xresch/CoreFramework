@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -87,8 +87,8 @@ public class CFWFiles {
 	 * 
 	 ***********************************************************************/
 	public static String getFileContent(HttpServletRequest request, String path){
-
-		if( CFWFiles.stringFileCache.asMap().containsKey(path) && CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)){
+		boolean cacheFiles = CFW.DB.Config.getConfigAsBoolean(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_FILE_CACHING);
+		if( CFWFiles.stringFileCache.asMap().containsKey(path) && cacheFiles){
 			new CFWLog(logger).finest("Read file content from cache");
 			return CFWFiles.stringFileCache.getIfPresent(path);
 		}else{
@@ -198,7 +198,9 @@ public class CFWFiles {
 			packageName = packageName.replaceAll("\\.", "/");
 			String resourcePath = packageName + "/" + filename;
 			
-			if(CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)){
+			boolean cacheFiles = CFW.DB.Config.getConfigAsBoolean(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_FILE_CACHING);
+			
+			if(cacheFiles){
 				
 				try {
 					fileContent = stringFileCache.get(resourcePath, new Callable<String>() {
@@ -245,7 +247,9 @@ public class CFWFiles {
 			packageName = packageName.replaceAll("\\.", "/");
 			String resourcePath = packageName + "/" + filename;
 			
-			if(CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_FILE_CACHING)){
+			boolean cacheFiles = CFW.DB.Config.getConfigAsBoolean(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_FILE_CACHING);
+			
+			if(cacheFiles){
 				try {
 					fileContent = byteFileCache.get(resourcePath, new Callable<byte[]>() {
 

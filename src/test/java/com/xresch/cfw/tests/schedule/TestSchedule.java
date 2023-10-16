@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.analytics.TaskCPUSampling;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.schedule.CFWScheduledTask;
 import com.xresch.cfw.tests._master.WebTestMaster;
 
@@ -95,7 +95,7 @@ public class TestSchedule extends WebTestMaster {
 	@Test
 	public void testThreadSamplingTask() throws Exception {
 		
-		int seconds = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS);
+		int seconds = CFW.DB.Config.getConfigAsInt(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_CPU_SAMPLING_SECONDS);
 		
 		ScheduledFuture<?> future = CFW.Schedule.runPeriodically(0, seconds, new TaskCPUSampling());
 

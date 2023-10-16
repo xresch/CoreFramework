@@ -75,6 +75,11 @@ public class FeatureDashboard extends CFWAppFeature {
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.dashboard.resources";
 	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.dashboard.manual";
 	
+	public static final String EAV_STATS_CATEGORY = "DashboardStats";
+	public static final String EAV_STATS_PAGE_LOADS = "Page Loads";
+	public static final String EAV_STATS_PAGE_LOADS_AND_REFRESHES = "Page Loads And Refreshes";
+	public static final String EAV_STATS_WIDGET_LOADS_CACHED = "Widget Loads Cached";
+	public static final String EAV_STATS_WIDGET_LOADS_UNCACHED = "Widget Loads Not Cached";
 	
 	public static final String WIDGET_CATEGORY_ADVANCED = "Advanced";
 	public static final String WIDGET_CATEGORY_EASTEREGGS = "Eastereggs";
@@ -289,6 +294,34 @@ public class FeatureDashboard extends CFWAppFeature {
 				.type(FormFieldType.BOOLEAN)
 				.value("false")
 		);
+		
+		//============================================================
+		// EAV Entities
+		//============================================================
+		CFW.DB.EAVEntity.oneTimeCreate(
+				  FeatureDashboard.EAV_STATS_CATEGORY
+				, FeatureDashboard.EAV_STATS_PAGE_LOADS
+				, "Number of times the dashboard was loaded as a page in the the browser"
+				);
+		
+		CFW.DB.EAVEntity.oneTimeCreate(
+				  FeatureDashboard.EAV_STATS_CATEGORY
+				, FeatureDashboard.EAV_STATS_PAGE_LOADS_AND_REFRESHES
+				, "Number of times the dashboard was loaded as a page in the the browser plus the number of refreshes."
+				);
+		
+		CFW.DB.EAVEntity.oneTimeCreate(
+				FeatureDashboard.EAV_STATS_CATEGORY
+				, FeatureDashboard.EAV_STATS_WIDGET_LOADS_CACHED
+				, "Number of total widget data loads which have been loaded from the cache."
+				);
+		
+		CFW.DB.EAVEntity.oneTimeCreate(
+				FeatureDashboard.EAV_STATS_CATEGORY
+				, FeatureDashboard.EAV_STATS_WIDGET_LOADS_UNCACHED
+				, "Number of total widget data loads which have not been loaded from the cache."
+				);
+		 
 	}
 
 	@Override

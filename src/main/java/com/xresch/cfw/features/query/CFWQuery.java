@@ -87,7 +87,7 @@ public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 		}
 		
 		
-		int maxRecords = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_QUERY_RECORD_LIMIT);
+		int maxRecords = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_CATEGORY, FeatureQuery.CONFIG_QUERY_RECORD_LIMIT);
 		if(sumOfSourceLimits > maxRecords) {
 			context.addMessage(MessageType.ERROR, "Sum of all source limits cannot exceed "+maxRecords+" per query.");
 			return true;
@@ -111,7 +111,7 @@ public class CFWQuery extends Pipeline<EnhancedJsonObject, EnhancedJsonObject>{
 		}
 		
 		
-		int maxCommands = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_QUERY_COMMAND_LIMIT);
+		int maxCommands = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_CATEGORY, FeatureQuery.CONFIG_QUERY_COMMAND_LIMIT);
 		if(count > maxCommands) {
 			context.addMessage(MessageType.ERROR, "Number of commands is limited to "+maxCommands+" per query.");
 			return true;

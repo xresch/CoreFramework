@@ -5,7 +5,7 @@ import java.util.concurrent.ScheduledFuture;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.features.config.ConfigChangeListener;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
@@ -161,8 +161,8 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 		//-------------------------------
 		// Create Change Listener
 		ConfigChangeListener listener = new ConfigChangeListener(
-				FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS,
-				FeatureConfiguration.CONFIG_CPU_SAMPLING_AGGREGATION
+				FeatureConfig.CONFIG_CPU_SAMPLING_SECONDS,
+				FeatureConfig.CONFIG_CPU_SAMPLING_AGGREGATION
 			) {
 			
 			@Override
@@ -183,7 +183,7 @@ public class FeatureSystemAnalytics extends CFWAppFeature {
 			if(cpuSamplingTask != null) {
 				cpuSamplingTask.cancel(false);
 			}
-			int millis = (int)(1000 * CFW.DB.Config.getConfigAsFloat(FeatureConfiguration.CONFIG_CPU_SAMPLING_SECONDS));
+			int millis = (int)(1000 * CFW.DB.Config.getConfigAsFloat(FeatureConfig.CATEGORY_PERFORMANCE, FeatureConfig.CONFIG_CPU_SAMPLING_SECONDS));
 			cpuSamplingTask = CFW.Schedule.runPeriodicallyMillis(0, millis, new TaskCPUSampling());
 			
 			//--------------------------------

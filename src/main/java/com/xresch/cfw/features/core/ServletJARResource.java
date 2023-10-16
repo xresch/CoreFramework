@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
@@ -33,7 +34,9 @@ public class ServletJARResource extends HttpServlet
 		byte[] fontContent = CFW.Files.readPackageResourceAsBytes(pkg, file);
 		if(fontContent != null) {
 			
-			response.addHeader("Cache-Control", "max-age="+CFW.DB.Config.getConfigAsInt(FeatureCore.CONFIG_BROWSER_RESOURCE_MAXAGE));
+			response.addHeader("Cache-Control", "max-age="
+								+ CFW.DB.Config.getConfigAsInt(FeatureConfig.CATEGORY_TIMEOUTS, FeatureCore.CONFIG_BROWSER_RESOURCE_MAXAGE)
+							);
 			response.setStatus(HttpServletResponse.SC_OK);
 			
 			try {

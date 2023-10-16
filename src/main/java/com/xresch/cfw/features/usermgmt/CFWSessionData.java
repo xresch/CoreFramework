@@ -15,6 +15,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWForm;
+import com.xresch.cfw.features.config.FeatureConfig;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.BTFooter;
 import com.xresch.cfw.response.bootstrap.BTMenu;
@@ -253,7 +255,7 @@ public class CFWSessionData implements Serializable {
 			formCache = CacheBuilder.newBuilder()
 				.initialCapacity(5)
 				.maximumSize(20)
-				.expireAfterAccess(CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_USERS), TimeUnit.SECONDS)
+				.expireAfterAccess(CFW.DB.Config.getConfigAsInt(FeatureConfig.CATEGORY_TIMEOUTS, FeatureConfig.CONFIG_SESSIONTIMEOUT_USERS), TimeUnit.SECONDS)
 				.build();
 		}
 	}

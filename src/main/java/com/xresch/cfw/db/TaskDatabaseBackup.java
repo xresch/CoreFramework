@@ -4,7 +4,8 @@ import java.util.Calendar;
 import java.util.Timer;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.schedule.CFWScheduledTask;
 
 public class TaskDatabaseBackup extends CFWScheduledTask {
@@ -21,14 +22,15 @@ public class TaskDatabaseBackup extends CFWScheduledTask {
 		
 		//---------------------------
 		// Check is Backup Enabled
-		if(!CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_DB_BACKUP_ENABLED)) {
+		
+		if(!CFW.DB.Config.getConfigAsBoolean(FeatureConfig.CATEGORY_DATABASE, FeatureConfig.CONFIG_DB_BACKUP_ENABLED)) {
 			return;
 		}
 		
 		//---------------------------
 		// Create new Task
-		long startTimeMillis = CFW.DB.Config.getConfigAsLong(FeatureConfiguration.CONFIG_DB_BACKUP_TIME);
-		int intervalDays = CFW.DB.Config.getConfigAsInt(FeatureConfiguration.CONFIG_DB_BACKUP_INTERVAL);
+		long startTimeMillis = CFW.DB.Config.getConfigAsLong(FeatureConfig.CATEGORY_DATABASE, FeatureConfig.CONFIG_DB_BACKUP_TIME);
+		int intervalDays = CFW.DB.Config.getConfigAsInt(FeatureConfig.CATEGORY_DATABASE, FeatureConfig.CONFIG_DB_BACKUP_INTERVAL);
 		if(intervalDays <= 0) { intervalDays = 7; }
 
 		Calendar startTime = Calendar.getInstance();
@@ -43,7 +45,7 @@ public class TaskDatabaseBackup extends CFWScheduledTask {
 	
 	@Override
 	public void execute() {
-		String folderPath = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_DB_BACKUP_FOLDER);
+		String folderPath = CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_DATABASE, FeatureConfig.CONFIG_DB_BACKUP_FOLDER);
 		CFW.DB.backupDatabaseFile(folderPath, "h2_database_backup");
 	}
 

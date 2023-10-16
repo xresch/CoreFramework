@@ -13,7 +13,7 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWProperties;
-import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.response.AbstractResponse;
@@ -84,7 +84,7 @@ public class AuthenticationHandler extends HandlerWrapper
     		
     		//-----------------------------------
     		// Cleanup session setting timeout
-    		request.getSession().setMaxInactiveInterval(CFW.DB.Config.getConfigAsInt(FeatureUserManagement.CONFIG_SESSIONTIMEOUT_API));
+    		request.getSession().setMaxInactiveInterval(CFW.DB.Config.getConfigAsInt(FeatureConfig.CATEGORY_TIMEOUTS, FeatureConfig.CONFIG_SESSIONTIMEOUT_API));
     	}
     	
     	//##################################

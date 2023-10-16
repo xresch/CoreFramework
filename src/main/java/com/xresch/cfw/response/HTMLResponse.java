@@ -8,7 +8,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
-import com.xresch.cfw.features.config.FeatureConfiguration;
+import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.features.core.FeatureCore;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.CFWLog;
@@ -36,8 +36,8 @@ public class HTMLResponse extends AbstractHTMLResponse {
 		// Title
 		this.pageTitle = pageTitle;
 		
-		if(CFW.DB.Config.getConfigAsBoolean(FeatureConfiguration.CONFIG_MENU_TITLE_IN_TAB)) {
-			String menuTitle = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_MENU_TITLE);
+		if(CFW.DB.Config.getConfigAsBoolean(FeatureConfig.CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_MENU_TITLE_IN_TAB)) {
+			String menuTitle = CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_MENU_TITLE);
 			if(!Strings.isNullOrEmpty(menuTitle)) {
 				this.pageTitle = menuTitle + ": " + this.pageTitle;
 			}
@@ -45,14 +45,15 @@ public class HTMLResponse extends AbstractHTMLResponse {
 		
 		//------------------------------------------
 		// CSS
-		String theme = CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_THEME);
-		if(theme.equals("custom")) {
+		String themeName = CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_THEME);
+		if(themeName.equals("custom")) {
 			this.addCSSFileTheme(HandlingType.FILE, "./resources/css", "bootstrap-theme-custom.css");
 		}else {
-			this.addCSSFileTheme(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "bootstrap-theme-"+CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_THEME)+".css");
+			this.addCSSFileTheme(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "bootstrap-theme-"+themeName+".css");
 		}
 		
-		this.addCSSFileTheme(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "highlightjs_"+CFW.DB.Config.getConfigAsString(FeatureConfiguration.CONFIG_CODE_THEME)+".css");
+		String codeThemeName = CFW.DB.Config.getConfigAsString(FeatureConfig.CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_CODE_THEME);
+		this.addCSSFileTheme(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".css", "highlightjs_"+codeThemeName+".css");
 	}
 		
 	@Override

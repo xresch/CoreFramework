@@ -43,7 +43,7 @@ public class Configuration extends CFWObject {
 									;
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, ConfigFields.NAME.toString())
-									.setColumnDefinition("VARCHAR(255) UNIQUE")
+									.setColumnDefinition("VARCHAR(255)")
 									.setDescription("The name of the configuration.")
 									.addValidator(new LengthValidator(1, 255))
 									;

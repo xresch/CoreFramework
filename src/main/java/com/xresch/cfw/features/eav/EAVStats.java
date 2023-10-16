@@ -24,7 +24,7 @@ public class EAVStats extends CFWObject {
 	
 	public static final String TABLE_NAME = "CFW_EAV_STATS";
 	
-	private static final ArrayList<BigDecimal> valuesArray = new ArrayList<>();
+	private final ArrayList<BigDecimal> valuesArray = new ArrayList<>();
 	
 	enum EAVStatsFields{
 		PK_ID, 
@@ -161,6 +161,15 @@ public class EAVStats extends CFWObject {
 	public Integer id() {
 		return id.getValue();
 	}
+	
+	public Timestamp time() {
+		return time.getValue();
+	}
+	
+	public EAVStats time(long millis) {
+		time.setValue(new Timestamp(millis));
+		return this;
+	}
 
 	public Integer foreignKeyEntity() {
 		return foreignKeyEntity.getValue();
@@ -200,7 +209,7 @@ public class EAVStats extends CFWObject {
 	/****************************************************************
 	 * Calculates the statistical values for putting it in the database.
 	 ****************************************************************/
-	public EAVStats calculateStatistics(int collectionIntervalMillis) {
+	public EAVStats calculateStatistics() {
 		
 		if(valuesArray.isEmpty()) {
 			this.count.setValue(0);
@@ -210,7 +219,6 @@ public class EAVStats extends CFWObject {
 			this.sum.setValue(BigDecimal.ZERO);
 			return this;
 		}
-		
 		
 		int count = valuesArray.size();
 		BigDecimal min = valuesArray.get(0);
