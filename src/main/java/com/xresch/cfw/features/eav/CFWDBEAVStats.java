@@ -81,7 +81,7 @@ public class CFWDBEAVStats {
 		}
 		
 		String storeKey = entity.id()+"_"+Joiner.on(",").join(valueIDs);
-		System.out.println(storeKey);
+
 		synchronized (eavStatsToBeStored) {
 			EAVStats stats;
 			if(eavStatsToBeStored.containsKey(storeKey)) {

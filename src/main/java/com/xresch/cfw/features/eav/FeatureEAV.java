@@ -87,7 +87,6 @@ public class FeatureEAV extends CFWAppFeature {
 		}
 		
 		int millis = (int)(1000 * 60 * CFW.DB.Config.getConfigAsInt(CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_STATISTICS_MAX_GRANULARITY));
-		millis = 60000;
 		taskStoreEav = CFW.Schedule.runPeriodicallyMillis(0, millis, new TaskStoreEAVStats());
 		
 	}
