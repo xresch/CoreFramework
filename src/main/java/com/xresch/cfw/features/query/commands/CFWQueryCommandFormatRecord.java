@@ -116,30 +116,57 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 		//--------------------------------
 		// 5 Color Templates
 		AutocompleteList list = new AutocompleteList();
-		
+		list.title("5 Colors");
 		result.addList(list);
+		
 		list.addItem(
 			helper.createAutocompleteItem("", 
-				  "	[(VALUE >= 80), \"cfw-red\"] \r\n"
-				+ "	[(VALUE >= 60), \"cfw-orange\"]  \r\n"
-				+ "	[(VALUE >= 40), \"cfw-yellow\"] \r\n"
-				+ "	[(VALUE >= 20), \"cfw-limegreen\"] \r\n"
-				+ "	[(VALUE >=  0), \"cfw-green\"] \r\n"
-				+ "	[true, \"cfw-gray\"] "
-				, "5 Colors"
+				  "	[(VALUE == null), \"cfw-gray\"] \r\n"
+				+ "	[(VALUE < 20), \"cfw-green\"] \r\n"
+				+ "	[(VALUE < 40), \"cfw-limegreen\"]  \r\n"
+				+ "	[(VALUE < 60), \"cfw-yellow\"] \r\n"
+				+ "	[(VALUE < 80), \"cfw-orange\"] \r\n"
+				+ "	[true, \"cfw-red\"] \r\n"
+				, "Low to High"
 				, "Low values are good, high values are bad."
 				)
 		);
 		
 		list.addItem(
+			helper.createAutocompleteItem("", 
+				  "	[(VALUE == null), \"cfw-gray\"] \r\n"
+				+ "	[(VALUE < 20), \"cfw-red\"] \r\n"
+				+ "	[(VALUE < 40), \"cfw-orange\"]  \r\n"
+				+ "	[(VALUE < 60), \"cfw-yellow\"] \r\n"
+				+ "	[(VALUE < 80), \"cfw-limegreen\"] \r\n"
+				+ "	[true, \"cfw-green\"] \r\n"
+				, " Low to High - Reverse Colors"
+				, "Low values are bad, high values are good."
+				)
+		);
+		
+		list.addItem(
+			helper.createAutocompleteItem("", 
+				  "	[(VALUE == null), \"cfw-gray\"] \r\n"
+				+ "	[(VALUE >= 80), \"cfw-red\"] \r\n"
+				+ "	[(VALUE >= 60), \"cfw-orange\"]  \r\n"
+				+ "	[(VALUE >= 40), \"cfw-yellow\"] \r\n"
+				+ "	[(VALUE >= 20), \"cfw-limegreen\"] \r\n"
+				+ "	[true, \"cfw-green\"] \r\n"
+				, "High to Low"
+				, "High values are bad, low values are good."
+				)
+		);
+		
+		list.addItem(
 				helper.createAutocompleteItem("", 
-					  "	[(VALUE >= 80), \"cfw-green\"] \r\n"
+					  "	[(VALUE == null), \"cfw-gray\"] \r\n"
+					+ "	[(VALUE >= 80), \"cfw-green\"] \r\n"
 					+ "	[(VALUE >= 60), \"cfw-limegreen\"]  \r\n"
 					+ "	[(VALUE >= 40), \"cfw-yellow\"] \r\n"
 					+ "	[(VALUE >= 20), \"cfw-orange\"] \r\n"
-					+ "	[(VALUE >=  0), \"cfw-red\"] \r\n"
-					+ "	[true, \"cfw-gray\"] "
-					, "5 Colors Reverse"
+					+ "	[true, \"cfw-red\"] \r\n"
+					, "High to Low - Reverse Colors"
 					, "High values are good, low values are bad."
 					)
 			);
@@ -147,25 +174,49 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 		//--------------------------------
 		// 3 Color Templates
 		list = new AutocompleteList();
+		list.title("3 Colors");
 		result.addList(list);
+		
 		list.addItem(
 			helper.createAutocompleteItem("", 
-				  "	[(VALUE >= 66), \"cfw-red\"] \r\n"
-				+ "	[(VALUE >= 33), \"cfw-yellow\"] \r\n"
-				+ "	[(VALUE >= 0), \"cfw-green\"] \r\n"
-				+ "	[true, \"cfw-gray\"] "
-				, "3 Colors"
+				  "	[(VALUE == null), \"cfw-gray\"] \r\n"
+				+ "	[(VALUE < 33), \"cfw-green\"] \r\n"
+				+ "	[(VALUE < 66), \"cfw-yellow\"] \r\n"
+				+ "	[true, \"cfw-red\"] \r\n"
+				, "Low to High"
 				, "Low values are good, high values are bad."
 				)
 		);
 		
 		list.addItem(
+			helper.createAutocompleteItem("", 
+				  "	[(VALUE == null), \"cfw-gray\"] \r\n"
+				+ "	[(VALUE < 33), \"cfw-red\"] \r\n"
+				+ "	[(VALUE < 66), \"cfw-yellow\"] \r\n"
+				+ "	[true, \"cfw-green\"] \r\n"
+				, " Low to High - Reverse Colors"
+				, "Low values are bad, high values are good."
+				)
+		);
+			
+		list.addItem(
+			helper.createAutocompleteItem("", 
+				  "	[(VALUE == null), \"cfw-gray\"] \r\n"
+				+ "	[(VALUE >= 66), \"cfw-red\"] \r\n"
+				+ "	[(VALUE >= 33), \"cfw-yellow\"] \r\n"
+				+ "	[true, \"cfw-green\"] \r\n"
+				, "High to Low"
+				, "High values are bad, low values are good."
+				)
+		);
+		
+		list.addItem(
 				helper.createAutocompleteItem("", 
-					  "	[(VALUE >= 66), \"cfw-green\"] \r\n"
+					  "	[(VALUE == null), \"cfw-gray\"] \r\n"
+					+ "	[(VALUE >= 66), \"cfw-green\"] \r\n"
 					+ "	[(VALUE >= 33), \"cfw-yellow\"] \r\n"
-					+ "	[(VALUE >= 0), \"cfw-red\"] \r\n"
-					+ "	[true, \"cfw-gray\"] "
-					, "3 Colors"
+					+ "	[true, \"cfw-red\"] \r\n"
+					, "High to Low - Reverse Colors"
 					, "High values are good, low values are bad."
 					)
 			);
@@ -173,26 +224,48 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 		//--------------------------------
 		// 2 Color Templates
 		list = new AutocompleteList();
+		list.title("2 Colors");
 		result.addList(list);
+		
 		list.addItem(
 			helper.createAutocompleteItem("", 
-				  "	[(VALUE >= 50), \"cfw-red\"] \r\n"
-				+ "	[(VALUE >= 0), \"cfw-green\"] \r\n"
-				+ "	[true, \"cfw-gray\"] "
-				, "2 Colors"
+				  "	[(VALUE == null), \"cfw-gray\"] \r\n"
+				+ "	[(VALUE < 50), \"cfw-green\"] \r\n"
+				+ "	[true, \"cfw-red\"] \r\n"
+				, "Low to High"
 				, "Low values are good, high values are bad."
 				)
 		);
 		
 		list.addItem(
-				helper.createAutocompleteItem("", 
-					  "	[(VALUE >= 50), \"cfw-green\"] \r\n"
-					+ "	[(VALUE >= 0), \"cfw-red\"] \r\n"
-					+ "	[true, \"cfw-gray\"] "
-					, "2 Colors"
-					, "High values are good, low values are bad."
-					)
-			);
+			helper.createAutocompleteItem("", 
+				  "	[(VALUE == null), \"cfw-gray\"] \r\n"
+				+ "	[(VALUE < 50), \"cfw-red\"] \r\n"
+				+ "	[true, \"cfw-green\"] \r\n"
+				, " Low to High - Reverse Colors"
+				, "Low values are bad, high values are good."
+				)
+		);
+			
+		list.addItem(
+			helper.createAutocompleteItem("", 
+				  "	[(VALUE == null), \"cfw-gray\"] \r\n"
+				+ "	[(VALUE >= 50), \"cfw-red\"] \r\n"
+				+ "	[true, \"cfw-green\"] \r\n"
+				, "High to Low"
+				, "High values are bad, low values are good."
+				)
+		);
+		
+		list.addItem(
+			helper.createAutocompleteItem("", 
+				  "	[(VALUE == null), \"cfw-gray\"] \r\n"
+				+ "	[(VALUE >= 50), \"cfw-green\"] \r\n"
+				+ "	[true, \"cfw-red\"] \r\n"
+				, "High to Low - Reverse Colors"
+				, "High values are good, low values are bad."
+				)
+		);
 	}
 	
 	/***********************************************************************************************
