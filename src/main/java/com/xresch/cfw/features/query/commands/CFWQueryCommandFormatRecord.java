@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryAutocompleteHelper;
@@ -111,7 +112,87 @@ public class CFWQueryCommandFormatRecord extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		// keep default
+		
+		//--------------------------------
+		// 5 Color Templates
+		AutocompleteList list = new AutocompleteList();
+		
+		result.addList(list);
+		list.addItem(
+			helper.createAutocompleteItem("", 
+				  "	[(VALUE >= 80), \"cfw-red\"] \r\n"
+				+ "	[(VALUE >= 60), \"cfw-orange\"]  \r\n"
+				+ "	[(VALUE >= 40), \"cfw-yellow\"] \r\n"
+				+ "	[(VALUE >= 20), \"cfw-limegreen\"] \r\n"
+				+ "	[(VALUE >=  0), \"cfw-green\"] \r\n"
+				+ "	[true, \"cfw-gray\"] "
+				, "5 Colors"
+				, "Low values are good, high values are bad."
+				)
+		);
+		
+		list.addItem(
+				helper.createAutocompleteItem("", 
+					  "	[(VALUE >= 80), \"cfw-green\"] \r\n"
+					+ "	[(VALUE >= 60), \"cfw-limegreen\"]  \r\n"
+					+ "	[(VALUE >= 40), \"cfw-yellow\"] \r\n"
+					+ "	[(VALUE >= 20), \"cfw-orange\"] \r\n"
+					+ "	[(VALUE >=  0), \"cfw-red\"] \r\n"
+					+ "	[true, \"cfw-gray\"] "
+					, "5 Colors Reverse"
+					, "High values are good, low values are bad."
+					)
+			);
+		
+		//--------------------------------
+		// 3 Color Templates
+		list = new AutocompleteList();
+		result.addList(list);
+		list.addItem(
+			helper.createAutocompleteItem("", 
+				  "	[(VALUE >= 66), \"cfw-red\"] \r\n"
+				+ "	[(VALUE >= 33), \"cfw-yellow\"] \r\n"
+				+ "	[(VALUE >= 0), \"cfw-green\"] \r\n"
+				+ "	[true, \"cfw-gray\"] "
+				, "3 Colors"
+				, "Low values are good, high values are bad."
+				)
+		);
+		
+		list.addItem(
+				helper.createAutocompleteItem("", 
+					  "	[(VALUE >= 66), \"cfw-green\"] \r\n"
+					+ "	[(VALUE >= 33), \"cfw-yellow\"] \r\n"
+					+ "	[(VALUE >= 0), \"cfw-red\"] \r\n"
+					+ "	[true, \"cfw-gray\"] "
+					, "3 Colors"
+					, "High values are good, low values are bad."
+					)
+			);
+		
+		//--------------------------------
+		// 2 Color Templates
+		list = new AutocompleteList();
+		result.addList(list);
+		list.addItem(
+			helper.createAutocompleteItem("", 
+				  "	[(VALUE >= 50), \"cfw-red\"] \r\n"
+				+ "	[(VALUE >= 0), \"cfw-green\"] \r\n"
+				+ "	[true, \"cfw-gray\"] "
+				, "2 Colors"
+				, "Low values are good, high values are bad."
+				)
+		);
+		
+		list.addItem(
+				helper.createAutocompleteItem("", 
+					  "	[(VALUE >= 50), \"cfw-green\"] \r\n"
+					+ "	[(VALUE >= 0), \"cfw-red\"] \r\n"
+					+ "	[true, \"cfw-gray\"] "
+					, "2 Colors"
+					, "High values are good, low values are bad."
+					)
+			);
 	}
 	
 	/***********************************************************************************************

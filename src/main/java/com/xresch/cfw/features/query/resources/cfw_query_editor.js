@@ -651,11 +651,13 @@ class CFWQueryEditor{
 		
 		// needed for autocomplete, select with enter
 		this.textarea.on("change", function(e){
+			queryEditor.resizeToFitQuery();
 			queryEditor.refreshHighlighting();
 		});
 		
 		// needed for autocomplete, select with click
 		this.textarea.on("focus", function(e){
+			queryEditor.resizeToFitQuery();
 			queryEditor.refreshHighlighting();
 		});
 		

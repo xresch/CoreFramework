@@ -149,8 +149,8 @@ DONE
 ====
 
 ------- current -------
-- Notifications: Fixed severe log message
-
+- Notifications: Fixed severe log messages showing up
+- Query Command: formatrecord - Added autocomplete options 
 
 
 ------- v.8.0.0 -------
