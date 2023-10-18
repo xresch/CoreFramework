@@ -3,7 +3,7 @@ package com.xresch.cfw.features.eav;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.schedule.CFWScheduledTask;
 
-public class TaskStoreEAVStats extends CFWScheduledTask {
+public class TaskEAVStatsStoreToDB extends CFWScheduledTask {
 	
 
 	@Override

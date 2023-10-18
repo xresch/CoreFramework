@@ -27,7 +27,8 @@ public class FeatureEAV extends CFWAppFeature {
 	public final static String CONFIG_CATEGORY_EAV = "EAV: Entity Attribute Value";
 	public final static String CONFIG_STATISTICS_MAX_GRANULARITY = "Statistic Max Granularity";
 	
-	private static ScheduledFuture<?> taskStoreEav;
+	private static ScheduledFuture<?> taskEavStoreToDB;
+	private static ScheduledFuture<?> taskEavAgeOut;
 	
 	@Override
 	public void register() {
@@ -82,18 +83,31 @@ public class FeatureEAV extends CFWAppFeature {
 	@Override
 	public void startTasks() {
 		
-		if(taskStoreEav != null) {
-			taskStoreEav.cancel(false);
+		//----------------------------------------
+		// Task: Store to Database
+		if(taskEavStoreToDB != null) {
+			taskEavStoreToDB.cancel(false);
 		}
 		
 		int millis = (int)(1000 * 60 * CFW.DB.Config.getConfigAsInt(CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_STATISTICS_MAX_GRANULARITY));
-		taskStoreEav = CFW.Schedule.runPeriodicallyMillis(0, millis, new TaskStoreEAVStats());
+		taskEavStoreToDB = CFW.Schedule.runPeriodicallyMillis(0, millis, new TaskEAVStatsStoreToDB());
+		
+		//----------------------------------------
+		// Task: AgeOut
+		if(taskEavAgeOut != null) {
+			taskEavAgeOut.cancel(false);
+		}
+		
+		int millisAgeOut = (int)(1000 * 60 * CFW.DB.Config.getConfigAsInt(CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_STATISTICS_MAX_GRANULARITY));
+		millisAgeOut = 60000;
+		taskEavAgeOut = CFW.Schedule.runPeriodicallyMillis(0, millisAgeOut, new TaskEAVStatsAgeOut());
 		
 	}
 
 	@Override
 	public void stopFeature() {
-		taskStoreEav.cancel(false);
+		taskEavStoreToDB.cancel(false);
+		taskEavAgeOut.cancel(false);
 	}
 
 }

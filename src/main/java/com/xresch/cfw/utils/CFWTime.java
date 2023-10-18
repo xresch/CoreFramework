@@ -36,6 +36,18 @@ public class CFWTime {
 	private static DateTimeFormatter formatterTimestamp = DateTimeFormatter.ofPattern(CFWTime.FORMAT_TIMESTAMP).withZone(machineTimezone.toZoneId());
 	private static DateTimeFormatter formatterISODate = DateTimeFormatter.ofPattern(CFWTime.FORMAT_ISO8601_DATE).withZone(machineTimezone.toZoneId());
 	
+	public static final int MINUTES_OF_HOUR = 60;
+	public static final int MINUTES_OF_HALFDAY = 12*MINUTES_OF_HOUR;
+	public static final int MINUTES_OF_DAY = 24*MINUTES_OF_HOUR;
+	public static final int MINUTES_OF_WEEK = 7*MINUTES_OF_DAY;
+	
+	public static final int[] AGE_OUT_GRANULARITIES = new int[] {
+			MINUTES_OF_HOUR
+			, MINUTES_OF_HALFDAY
+			, MINUTES_OF_DAY
+			, MINUTES_OF_DAY
+			};
+
 	/********************************************************************************************
 	 * The mother of all time enumerations! :-P
 	 ********************************************************************************************/
@@ -150,12 +162,16 @@ public class CFWTime {
 		/********************************************************************************************
 		 * Return time with an offset starting from the given time.
 		 * Use positive values to go to the future, use negative values to go to the past.
-		 * @param epochMillis the time in milliseconds which should be offset.
+		 * @param epochMillis the time in milliseconds which should be offset. If null takes current time.
 		 * @param amount to offset for the selected time unit.
 		 * @return offset time in epoch milliseconds
 		 ********************************************************************************************/
-		public long offset(long epochMillis, int amount) { 
-						
+		public long offset(Long epochMillis, int amount) { 
+			
+			if(epochMillis == null) {
+				epochMillis = System.currentTimeMillis();
+			}
+			
 			Calendar calendar = Calendar.getInstance();
 			
 			calendar.setTimeInMillis(epochMillis);
