@@ -1928,5 +1928,29 @@ public class CFWSQL {
 		return this.object;
 	}
 	
+	/***************************************************************
+	 * Dumps contents of this CFWSQL instance to Syste.out for
+	 * debug purposes.
+	 ****************************************************************/
+	public CFWSQL dump() {
+		System.out.println("################################################################");
+		System.out.println("###################### CFW SQL DUMP ############################");
+		System.out.println("################################################################");
+		
+		if(object != null) {
+			System.out.println("Object Class: "+object.getClass());
+			System.out.println("Object Contents: "+ CFW.JSON.toJSONPretty(object));
+		}else {
+			System.out.println("Object: is null");
+		}
+		
+		System.out.println("queryName: "+this.queryName);
+		System.out.println("isQueryCached: "+this.isQueryCached);
+		System.out.println("Values: "+CFW.JSON.toJSONPretty(values) );
+		System.out.println("Statement: "+this.getStatementCached() );
+		
+		return this;
+	}
+	
 	
 }

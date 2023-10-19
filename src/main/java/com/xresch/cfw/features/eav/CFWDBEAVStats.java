@@ -11,8 +11,10 @@ import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
+import com.google.gson.JsonArray;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
@@ -141,6 +143,45 @@ public class CFWDBEAVStats {
 	/********************************************************************************************
 	 * 
 	 ********************************************************************************************/
+	public static JsonArray fetchStatsAsJsonArray(
+			  String category
+			, String entityName
+			, LinkedHashMap<String,String> attributes
+			, long earliest
+			, long latest
+			) {
+		
+		JsonArray result = new JsonArray();
+		
+		EAVEntity entity = CFW.DB.EAVEntity.selecFirstBy(category, entityName, true);
+		
+		TreeSet<Integer> valueIDs = new TreeSet<>();
+		
+		for(Entry<String, String> current : attributes.entrySet()) {
+			String attributeName = current.getKey();
+			String attributeValue = current.getValue();
+			
+			EAVAttribute attribute = CFW.DB.EAVAttribute.selecFirstBy(entity.id(), attributeName, true);
+			EAVValue value = CFW.DB.EAVValue.selecFirstBy(entity.id(), attribute.id(), attributeValue, true); 
+			valueIDs.add(value.id());
+		}
+		
+		result = new CFWSQL(new EAVStats())
+				.select()
+				.where(EAVStatsFields.FK_ID_ENTITY, entity.id())
+				.and(EAVStatsFields.FK_ID_VALUES, valueIDs.toArray(new Integer[] {}))
+				.and().custom(" TIME >= ?", new Timestamp(earliest) )
+				.and().custom(" TIME <= ?", new Timestamp(latest) )
+				.dump()
+				.getAsJSONArray()
+				;
+		
+		return result;
+	}
+	
+	/********************************************************************************************
+	 * 
+	 ********************************************************************************************/
 	protected static void storeStatsToDB(int granularityMinutes) {
 				
 		long currentTimeRounded = CFWTimeUnit.m.round(System.currentTimeMillis(), granularityMinutes);
@@ -255,7 +296,7 @@ public class CFWDBEAVStats {
 		// Aggregate Statistics in Temp Table
 		success &=  new EAVStats()
 				.queryCache(CFWDBEAVStats.class, "aggregateStatistics"+(cacheCounter++))
-				.loadSQLResource(FeatureEAV.RESOURCE_PACKAGE, "sql_createTempAggregatedStatistics.sql"
+				.loadSQLResource(FeatureEAV.PACKAGE_RESOURCE, "sql_createTempAggregatedStatistics.sql"
 						, newGranularity
 						, startTime
 						, endTime

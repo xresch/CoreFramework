@@ -1,17 +1,12 @@
 package com.xresch.cfw.features.eav;
 
-import java.math.BigDecimal;
-import java.util.LinkedHashMap;
 import java.util.concurrent.ScheduledFuture;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.features.analytics.TaskCPUSampling;
-import com.xresch.cfw.features.analytics.TaskCPUSamplingAgeOut;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
-import com.xresch.cfw.features.config.FeatureConfig;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -22,7 +17,8 @@ import com.xresch.cfw.spi.CFWAppFeature;
  **************************************************************************************************************/
 public class FeatureEAV extends CFWAppFeature {
 	
-	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.eav.resources";
+	public static final String PACKAGE_RESOURCE = "com.xresch.cfw.features.eav.resources";
+	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.eav.manual";
 
 	public final static String CONFIG_CATEGORY_EAV = "EAV: Entity Attribute Value";
 	public final static String CONFIG_STATISTICS_MAX_GRANULARITY = "Statistic Max Granularity";
@@ -34,7 +30,9 @@ public class FeatureEAV extends CFWAppFeature {
 	public void register() {
 		//----------------------------------
 		// Register Package
-		CFW.Files.addAllowedPackage(RESOURCE_PACKAGE);
+		CFW.Files.addAllowedPackage(PACKAGE_RESOURCE);
+		CFW.Files.addAllowedPackage(PACKAGE_MANUAL);
+		
 		//----------------------------------
 		// Register Objects
 		CFW.Registry.Objects.addCFWObject(EAVEntity.class);
@@ -42,7 +40,9 @@ public class FeatureEAV extends CFWAppFeature {
 		CFW.Registry.Objects.addCFWObject(EAVValue.class);
 		CFW.Registry.Objects.addCFWObject(EAVStats.class);
 		
-
+		//----------------------------------
+		// Register Source
+		CFW.Registry.Query.registerSource(new CFWQuerySourceEAVStats(null));
 	}
 
 	@Override
@@ -90,6 +90,7 @@ public class FeatureEAV extends CFWAppFeature {
 		}
 		
 		int millis = (int)(1000 * 60 * CFW.DB.Config.getConfigAsInt(CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_STATISTICS_MAX_GRANULARITY));
+		millis = 60000;
 		taskEavStoreToDB = CFW.Schedule.runPeriodicallyMillis(0, millis, new TaskEAVStatsStoreToDB());
 		
 		//----------------------------------------
@@ -99,7 +100,7 @@ public class FeatureEAV extends CFWAppFeature {
 		}
 		
 		int millisAgeOut = (int)(1000 * 60 * CFW.DB.Config.getConfigAsInt(CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_STATISTICS_MAX_GRANULARITY));
-		millisAgeOut = 60000;
+		millisAgeOut = 6000;
 		taskEavAgeOut = CFW.Schedule.runPeriodicallyMillis(0, millisAgeOut, new TaskEAVStatsAgeOut());
 		
 	}
