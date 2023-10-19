@@ -1285,6 +1285,23 @@ public class CFWSQL {
 	}
 	
 	/****************************************************************
+	 * Adds an ORDER BY clause to the query. Is case sensitive for
+	 * strings.
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public CFWSQL groupby(String... fieldnames) {
+		if(!isQueryCached()) {
+			query.append(" GROUP BY");
+			for(Object fieldname : fieldnames) {
+				query.append(" T.\"").append(fieldname).append("\",");
+			}
+			query.deleteCharAt(query.length()-1);
+			
+		}
+		return this;
+	}
+	
+	/****************************************************************
 	 * Adds a LIMIT statement
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/

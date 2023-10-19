@@ -25,7 +25,6 @@ public class TaskEAVStatsAgeOut extends CFWScheduledTask {
 		//----------------------------
 		// Iterate all granularities
 		for(int granularity : CFW.Time.AGE_OUT_GRANULARITIES) {
-			
 			//--------------------------
 			// Get Age Out Time
 			Timestamp ageOutTime = CFW.Time.getDefaultAgeOutTime(granularity);
@@ -34,7 +33,6 @@ public class TaskEAVStatsAgeOut extends CFWScheduledTask {
 			// Get timespan 
 			Timestamp oldest = CFWDBEAVStats.getOldestAgedRecord(granularity, ageOutTime);
 			Timestamp youngest = CFWDBEAVStats.getYoungestAgedRecord(granularity, ageOutTime);
-			
 			if(oldest == null || youngest == null ) {
 				//nothing to aggregate for this granularity
 				continue;
@@ -45,13 +43,13 @@ public class TaskEAVStatsAgeOut extends CFWScheduledTask {
 			Timestamp startTime = oldest;
 			Timestamp endTime = CFW.Time.offsetTimestamp(oldest, 0, 0, 0, 0, granularity);
 			
-			while(endTime.getTime() < youngest.getTime()) {
-
+			// do-while to execute at least once, else would not work if (endTime - startTime) < granularity
+			do {
 				CFWDBEAVStats.aggregateStatistics(startTime, endTime, granularity);
 				startTime =  CFW.Time.offsetTimestamp(startTime, 0, 0, 0, 0, granularity);
 				endTime = CFW.Time.offsetTimestamp(endTime, 0, 0, 0, 0, granularity);
 
-			}
+			} while(endTime.getTime() < youngest.getTime());
 
 		}
 		
@@ -68,9 +66,9 @@ public class TaskEAVStatsAgeOut extends CFWScheduledTask {
 		
 		if		(granularityMinutes <= CFW.Time.MINUTES_OF_HOUR) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, -1); }
 		else if (granularityMinutes <= CFW.Time.MINUTES_OF_HALFDAY) { ageOutOffset = CFWTimeUnit.d.offset(null, -14); }
-		else if (granularityMinutes <= CFW.Time.MINUTES_OF_DAY) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, 60); }
-		else if (granularityMinutes <= CFW.Time.MINUTES_OF_WEEK) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, 365); }
-		else  														{ ageOutOffset = CFWTimeUnit.d.offset(null, 365); }
+		else if (granularityMinutes <= CFW.Time.MINUTES_OF_DAY) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, -60); }
+		else if (granularityMinutes <= CFW.Time.MINUTES_OF_WEEK) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, -365); }
+		else  														{ ageOutOffset = CFWTimeUnit.d.offset(null, -365); }
 
 		return new Timestamp(ageOutOffset);
 	}

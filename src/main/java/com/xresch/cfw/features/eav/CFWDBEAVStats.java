@@ -1,6 +1,8 @@
 package com.xresch.cfw.features.eav;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -15,6 +17,7 @@ import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
+import com.xresch.cfw.features.datetime.CFWDate;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
@@ -29,6 +32,7 @@ public class CFWDBEAVStats {
 	private static Class<EAVStats> cfwObjectClass = EAVStats.class;		
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBEAVStats.class.getName());
+	private static final String TEMP_TABLE_AGGREGATION = "CFW_EAV_STATS_AGGREGATION";
 	
 	private static HashMap<String, EAVStats> eavStatsToBeStored = new HashMap<>();
 	
@@ -219,6 +223,7 @@ public class CFWDBEAVStats {
 		boolean success = true;
 		int cacheCounter = 0;
 		
+
 		//--------------------------------------------
 		// Check if there is anything to aggregate
 		int count =  new EAVStats()
@@ -235,33 +240,59 @@ public class CFWDBEAVStats {
 			return true;
 		}
 		
+		
 		//--------------------------------------------
-		// Start Aggregation
+		// Create Temp Table
 		new EAVStats()
 				.queryCache(CFWDBEAVStats.class, "aggregateStatistics"+(cacheCounter++))
 				.custom("CREATE TEMP TABLE" + 
-						" IF NOT EXISTS CFW_EAV_STATS_AGGREGATION" + 
-						" (TIME TIMESTAMP, FK_ID_ENTITY INT, FK_ID_VALUES NUMERIC ARRAY, COUNT NUMERIC, MIN NUMERIC, AVG NUMERIC, MAX NUMERIC, SUM NUMERIC, GRANULARITY INT);")
+						" IF NOT EXISTS " 
+						+ TEMP_TABLE_AGGREGATION 
+						+" (TIME TIMESTAMP, FK_ID_DATE INT, FK_ID_ENTITY INT, FK_ID_VALUES NUMERIC ARRAY, COUNT NUMERIC, MIN NUMERIC, AVG NUMERIC, MAX NUMERIC, SUM NUMERIC, GRANULARITY INT);")
 				.execute();
 		
+		//--------------------------------------------
+		// Aggregate Statistics in Temp Table
 		success &=  new EAVStats()
 				.queryCache(CFWDBEAVStats.class, "aggregateStatistics"+(cacheCounter++))
-				.custom("INSERT INTO CFW_EAV_STATS_AGGREGATION" + 
-						" SELECT (" + 
-						"		DATEADD(" + 
-						"			SECOND," + 
-						"			DATEDIFF(SECOND, MIN(TIME), MAX(TIME)) / 2," + 
-						"			MIN(TIME)" + 
-						"		)) AS NewTime," + 
-						" FK_ID_ENTITY, FK_ID_VALUES, SUM(COUNT), MIN(MIN), AVG(AVG), MAX(MAX), SUM(SUM), ?"+ 
-						" FROM CFW_EAV_STATS" + 
-						" WHERE TIME >= ?" + 
-						" AND TIME < ?" + 
-						" AND GRANULARITY <  ?" + 
-						" GROUP BY FK_ID_ENTITY, FK_ID_VALUES;"
-						,newGranularity ,startTime, endTime, newGranularity)
+				.loadSQLResource(FeatureEAV.RESOURCE_PACKAGE, "sql_createTempAggregatedStatistics.sql"
+						, newGranularity
+						, startTime
+						, endTime
+						, newGranularity)
 				.execute();
 		
+		//--------------------------------------------
+		// Get Aggregated Records with missing FK_ID_DATE
+		 ResultSet noDateRecords = new EAVStats()
+				.queryCache(CFWDBEAVStats.class, "aggregateStatistics"+(cacheCounter++))
+				.custom("SELECT TIME FROM "+TEMP_TABLE_AGGREGATION+" T")
+				.where().isNull("FK_ID_DATE")
+				.getResultSet();
+		 
+		try {
+			while(noDateRecords.next()) {
+				Timestamp time = noDateRecords.getTimestamp("TIME");
+				CFWDate date = CFWDate.newDate(time.getTime());
+				boolean isSuccess = new CFWSQL(null)
+					.custom("UPDATE "+TEMP_TABLE_AGGREGATION+" SET FK_ID_DATE=? WHERE TIME=?"
+							, date.id()
+							, time
+							)
+					.execute();
+				if(!isSuccess) {
+					CFW.DB.transactionRollback();
+					return false;
+				}
+			}
+		} catch (SQLException e) {
+			new CFWLog(logger).severe("EAV Aggregation: Error while handling missing dates: ",e);
+			CFW.DB.transactionRollback();
+			return false;
+			
+		}
+		//--------------------------------------------
+		// Delete Old Stats in CFW_EAV_STATS
 		success &=  new EAVStats()
 				.queryCache(CFWDBEAVStats.class, "aggregateStatistics"+(cacheCounter++))
 				.custom("DELETE FROM CFW_EAV_STATS" + 
@@ -271,16 +302,19 @@ public class CFWDBEAVStats {
 						 ,startTime, endTime, newGranularity)
 				.execute();
 		
+
 		
+		//--------------------------------------------
+		// Move Temp Stats to EAVTable
 		success &=  new EAVStats()
 				.queryCache(CFWDBEAVStats.class, "aggregateStatistics"+(cacheCounter++))
-				.custom(" INSERT INTO CFW_EAV_STATS (TIME, FK_ID_ENTITY, FK_ID_VALUES,  COUNT, MIN, AVG, MAX, SUM, GRANULARITY)" + 
-						" SELECT * FROM CFW_EAV_STATS_AGGREGATION;")
+				.custom(" INSERT INTO CFW_EAV_STATS (TIME, FK_ID_DATE, FK_ID_ENTITY, FK_ID_VALUES, COUNT, MIN, AVG, MAX, SUM, GRANULARITY)" + 
+						" SELECT * FROM "+TEMP_TABLE_AGGREGATION+";")
 				.execute();
 		
 		success &=  new EAVStats()
 				.queryCache(CFWDBEAVStats.class, "aggregateStatistics"+(cacheCounter++))
-				.custom("DELETE FROM CFW_EAV_STATS_AGGREGATION;\r\n")
+				.custom("DELETE FROM "+TEMP_TABLE_AGGREGATION+";\r\n")
 				.execute();
 		
 		CFW.DB.transactionEnd(success);

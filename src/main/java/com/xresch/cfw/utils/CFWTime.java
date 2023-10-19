@@ -40,12 +40,12 @@ public class CFWTime {
 	public static final int MINUTES_OF_HALFDAY = 12*MINUTES_OF_HOUR;
 	public static final int MINUTES_OF_DAY = 24*MINUTES_OF_HOUR;
 	public static final int MINUTES_OF_WEEK = 7*MINUTES_OF_DAY;
-	
+
 	public static final int[] AGE_OUT_GRANULARITIES = new int[] {
 			MINUTES_OF_HOUR
 			, MINUTES_OF_HALFDAY
 			, MINUTES_OF_DAY
-			, MINUTES_OF_DAY
+			, MINUTES_OF_WEEK
 			};
 
 	/********************************************************************************************

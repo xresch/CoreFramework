@@ -108,6 +108,7 @@ public class ServletUserManagement extends HttpServlet
 					
 					origin.mapRequestParameters(request);
 					Role role = (Role)origin;
+					role.id(null);
 					role.category(FeatureUserManagement.CATEGORY_USER);
 					
 					if( CFW.DB.Roles.create(role) ) {
@@ -131,6 +132,7 @@ public class ServletUserManagement extends HttpServlet
 					
 					origin.mapRequestParameters(request);
 					Role role = (Role)origin;
+					role.id(null);
 					role.category(FeatureUserManagement.CATEGORY_USER)
 						.isGroup(true);
 					
