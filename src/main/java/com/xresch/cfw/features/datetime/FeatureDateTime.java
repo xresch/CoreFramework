@@ -53,8 +53,8 @@ public class FeatureDateTime extends CFWAppFeature {
 			.withNano(0);
 		
 		for(int i = 0; i < (365*2); i++) {
-			CFWDate dateObject = new CFWDate(date);
-			CFW.DB.Date.oneTimeCreate(dateObject);
+			// creates entry in DB if not exists
+			CFWDate.newDate(date);
 			date = date
 					.plusDays(1)
 					.withHour(0)

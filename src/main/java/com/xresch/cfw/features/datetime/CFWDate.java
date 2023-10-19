@@ -8,10 +8,10 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.caching.CFWCacheManagement;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -21,8 +21,11 @@ import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
+ * Class for handling dates in memory and in the database for statistical purposes.
+ * This class does not handle hours and any lower time units.
+ * Use the methods "newDate()" to get a new Date. 
  * 
- * @author Reto Scheiwiller, (c) Copyright 2022
+ * @author Reto Scheiwiller, (c) Copyright 2023
  * @license Org Manager License
  **************************************************************************************************************/
 public class CFWDate extends CFWObject {
@@ -31,6 +34,9 @@ public class CFWDate extends CFWObject {
 	
 	public static String TABLE_NAME = "CFW_DATE";
 	public static String TABLE_NAME_OLD = "OM_DATAPOINTS_DATE";
+	
+	// dateID and Instance
+	public static LinkedHashMap<Integer,CFWDate> dateCache = new LinkedHashMap<>();
 	
 	public enum CFWDateFields{
 		  PK_ID
@@ -151,7 +157,8 @@ public class CFWDate extends CFWObject {
 	}
 	
 	/**************************************************************************************
-	 * 
+	 * Please use the methods newDate() to create you date instance.
+	 * This constructor is for internal purposes only, like creating the database table.
 	 **************************************************************************************/
 	public CFWDate() {
 		initializeFields();
@@ -160,42 +167,55 @@ public class CFWDate extends CFWObject {
 	/**************************************************************************************
 	 * @param millis epoch milliseconds
 	 **************************************************************************************/
-	public CFWDate(long millis) {
-		this(CFW.Time.zonedTimeFromEpoch(millis));
+	public static CFWDate newDate(long millis) {
+		return newDate(CFW.Time.zonedTimeFromEpoch(millis));
 	}
 	
 	/**************************************************************************************
+	 * Returns an instance of CFWDate, either new instance or from cache.
+	 * Calling this method ensures that the date with the specified ID is in the database.
 	 * 
 	 **************************************************************************************/
-	public CFWDate(ZonedDateTime date) {
-		initializeFields();
-		this.initializeData(date);
+	public static CFWDate newDate(ZonedDateTime date) {
+		return CFWDate.getInstance(date);
 	}
 	
 
 	/**************************************************************************************
 	 * @param dateID integer as "YYYYMMDD"
 	 **************************************************************************************/
-	public CFWDate(int dateID) {
-		this(dateID+"");
+	public static CFWDate newDate(int dateID) {
+		if(dateCache.containsKey(dateID)) {
+			return dateCache.get(dateID);
+		}
+		return newDate(dateID+"");
 	}
+	
 	/**************************************************************************************
 	 * @param dateID string as "YYYYMMDD"
 	 **************************************************************************************/
-	public CFWDate(String dateID) {
-		
-		initializeFields();
+	public static CFWDate newDate(String dateID) {
+
 		try {
+			//----------------------------------
+			// Check exists in Cache
+			int id = Integer.parseInt(dateID);
+			if(dateCache.containsKey(id)) {
+				return dateCache.get(id);
+			}
+			
+			//----------------------------------
+			// Create Date
 			long millis =  CFW.Time.parseTime("yyyyMMdd", dateID);
 			ZonedDateTime date = CFW.Time.zonedTimeFromEpoch(millis);
-
-			this.initializeData(date);
+			
+			return CFWDate.getInstance(date);
 			
 		} catch (ParseException e) {
 			new CFWLog(logger).severe(e);
 		}
 		
-		
+		return null;
 	}
 
 	/**************************************************************************************
@@ -203,39 +223,48 @@ public class CFWDate extends CFWObject {
 	 **************************************************************************************/
 	@Override
 	public void migrateTable() {
-		new CFWLog(logger).off("Migration: renaming table "+TABLE_NAME_OLD+" to "+TABLE_NAME);
 		new CFWSQL(this).renameTable(TABLE_NAME_OLD, TABLE_NAME);
 	}
 	
 	/**************************************************************************************
 	 * 
 	 **************************************************************************************/
-	private void initializeData(ZonedDateTime input) {
+	private static CFWDate getInstance(ZonedDateTime input) {
+		
+		CFWDate cfwDate = new CFWDate();
 		
 		//calendar.setFirstDayOfWeek(Calendar.MONDAY);
+
 		//----------------------------------------------
-		// Set Year, Month, Day 
+		// Create DateID
 		int year = input.getYear();
 		int month = input.getMonthValue();
 		int day = input.getDayOfMonth();
+		int dateID = (year * 10000) + (month * 100) + day;
 		
-		this.dateISO.setValue( CFW.Time.formatDateAsISO(input) );
-		this.year.setValue(input.getYear());
-		this.month.setValue(input.getMonthValue());
-		this.day.setValue(input.getDayOfMonth());
+		//----------------------------------------------
+		// Check Cache
+		if(dateCache.containsKey(dateID)) {
+			return dateCache.get(dateID);
+		}
+		
+		//----------------------------------------------
+		// Set Year, Month, Day 
+		cfwDate.dateISO.setValue( CFW.Time.formatDateAsISO(input) );
+		cfwDate.year.setValue(input.getYear());
+		cfwDate.month.setValue(input.getMonthValue());
+		cfwDate.day.setValue(input.getDayOfMonth());
 		
 		//----------------------------------------------
 		// Create and Set ID
 		// Create id that corresponds to YYYYMMDD
-		int id = (year * 10000) + (month * 100) + day;
-			
-		this.id.setValue(id);
+		cfwDate.id.setValue(dateID);
 		
 		//----------------------------------------------
 		// Date and Millis
 
-		this.date.setValue(	new java.sql.Date(input.toEpochSecond()*1000) );
-		this.epochMillis.setValue(	input.toEpochSecond()*1000);
+		cfwDate.date.setValue(	new java.sql.Date(input.toEpochSecond()*1000) );
+		cfwDate.epochMillis.setValue(	input.toEpochSecond()*1000);
 
 		//----------------------------------------------
 		// Week Day Related Fields
@@ -243,71 +272,82 @@ public class CFWDate extends CFWObject {
 		
 		switch(mondayIsOne) {
 			case MONDAY: 
-				this.dayName.setValue("Monday");
-				this.dayNameShort.setValue("Mon");
-				this.isWeekend.setValue(false);	
-				this.dayOfWeek.setValue(1);
+				cfwDate.dayName.setValue("Monday");
+				cfwDate.dayNameShort.setValue("Mon");
+				cfwDate.isWeekend.setValue(false);	
+				cfwDate.dayOfWeek.setValue(1);
 			break;
 			
 			case TUESDAY: 
-				this.dayName.setValue("Tuesday");
-				this.dayNameShort.setValue("Tue");
-				this.isWeekend.setValue(false);	
-				this.dayOfWeek.setValue(2);
+				cfwDate.dayName.setValue("Tuesday");
+				cfwDate.dayNameShort.setValue("Tue");
+				cfwDate.isWeekend.setValue(false);	
+				cfwDate.dayOfWeek.setValue(2);
 			break;
 			
 			case WEDNESDAY: 
-				this.dayName.setValue("Wednesday");
-				this.dayNameShort.setValue("Wed");
-				this.isWeekend.setValue(false);	
-				this.dayOfWeek.setValue(3);
+				cfwDate.dayName.setValue("Wednesday");
+				cfwDate.dayNameShort.setValue("Wed");
+				cfwDate.isWeekend.setValue(false);	
+				cfwDate.dayOfWeek.setValue(3);
 			break;
 			
 			case THURSDAY: 
-				this.dayName.setValue("Thursday");
-				this.dayNameShort.setValue("Thu");
-				this.isWeekend.setValue(false);	
-				this.dayOfWeek.setValue(4);
+				cfwDate.dayName.setValue("Thursday");
+				cfwDate.dayNameShort.setValue("Thu");
+				cfwDate.isWeekend.setValue(false);	
+				cfwDate.dayOfWeek.setValue(4);
 			break;
 			
 			case FRIDAY: 
-				this.dayName.setValue("Friday");
-				this.dayNameShort.setValue("Fri");
-				this.isWeekend.setValue(false);	
-				this.dayOfWeek.setValue(5);
+				cfwDate.dayName.setValue("Friday");
+				cfwDate.dayNameShort.setValue("Fri");
+				cfwDate.isWeekend.setValue(false);	
+				cfwDate.dayOfWeek.setValue(5);
 			break;
 			
 			case SATURDAY: 
-				this.dayName.setValue("Saturday");
-				this.dayNameShort.setValue("Sat");
-				this.isWeekend.setValue(true);	
-				this.dayOfWeek.setValue(6);
+				cfwDate.dayName.setValue("Saturday");
+				cfwDate.dayNameShort.setValue("Sat");
+				cfwDate.isWeekend.setValue(true);	
+				cfwDate.dayOfWeek.setValue(6);
 			break;
 			
 			case SUNDAY: 
-				this.dayName.setValue("Sunday");
-				this.dayNameShort.setValue("Sun");
-				this.isWeekend.setValue(true);	
-				this.dayOfWeek.setValue(7);
+				cfwDate.dayName.setValue("Sunday");
+				cfwDate.dayNameShort.setValue("Sun");
+				cfwDate.isWeekend.setValue(true);	
+				cfwDate.dayOfWeek.setValue(7);
 			break;
 		}
 		
 		//----------------------------------------------
 		// OtherFields
-		this.dayOfYear.setValue(	input.getDayOfYear());
-		this.weekOfYear.setValue(	input.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) );
+		cfwDate.dayOfYear.setValue(	input.getDayOfYear());
+		cfwDate.weekOfYear.setValue(	input.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) );
 		
 		int weekOfMonth = input.get(ChronoField.ALIGNED_WEEK_OF_MONTH) ;
-		this.weekOfMonth.setValue(weekOfMonth);
+		cfwDate.weekOfMonth.setValue(weekOfMonth);
 		
-		this.quarterOfYear.setValue(input.get(IsoFields.QUARTER_OF_YEAR));
+		cfwDate.quarterOfYear.setValue(input.get(IsoFields.QUARTER_OF_YEAR));
 		
 		int maxDaysInMonth = input.with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
-		this.isMonthsLastDay.setValue(day == maxDaysInMonth);
+		cfwDate.isMonthsLastDay.setValue(day == maxDaysInMonth);
 		
 		int maxWeeksInMonth = input.with(TemporalAdjusters.lastDayOfMonth()).get(ChronoField.ALIGNED_WEEK_OF_MONTH);
-		this.isMonthsLastWeek.setValue(weekOfMonth == maxWeeksInMonth);
+		cfwDate.isMonthsLastWeek.setValue(weekOfMonth == maxWeeksInMonth);
 	
+		//----------------------------------------------
+		// Create DB if not Exists
+		
+		if(!CFW.DB.Date.checkExistsByID(dateID)) {
+			CFW.DB.Date.oneTimeCreate(cfwDate);
+		}
+		
+		//----------------------------------------------
+		// Add to cache
+		dateCache.put(cfwDate.id(), cfwDate);
+		return cfwDate;
 	}
 
 	

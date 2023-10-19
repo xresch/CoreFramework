@@ -14,7 +14,7 @@ import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2022
+ * @author Reto Scheiwiller, (c) Copyright 2023
  * @license Org Manager License
  **************************************************************************************************************/
 public class CFWDBDate {
@@ -62,7 +62,7 @@ public class CFWDBDate {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	private static boolean 	create(CFWDate item) 		{ 
+	protected static boolean create(CFWDate item) 		{ 
 		
 		boolean result = CFWDBDefaultOperations.create(prechecksCreateUpdate, item);
 		
@@ -79,8 +79,8 @@ public class CFWDBDate {
 	 * @return true if created, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean oneTimeCreate(int dateID) {
-		return oneTimeCreate(new CFWDate(dateID));
+	protected static boolean oneTimeCreate(int dateID) {
+		return oneTimeCreate(CFWDate.newDate(dateID));
 	}
 	/********************************************************************************************
 	 * Creates a new date if it not already exists
@@ -88,8 +88,8 @@ public class CFWDBDate {
 	 * @return true if created, false otherwise
 	 * 
 	 ********************************************************************************************/
-	public static boolean oneTimeCreate(String dateID) {
-		return oneTimeCreate(new CFWDate(dateID));
+	protected static boolean oneTimeCreate(String dateID) {
+		return oneTimeCreate(CFWDate.newDate(dateID));
 	}
 	
 	/********************************************************************************************
