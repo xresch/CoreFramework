@@ -42,6 +42,10 @@ public class EAVStats extends CFWObject {
 		SUM,
 		GRANULARITY,
 	}
+	
+	enum EAVStatsType{
+		COUNTER, VALUES
+	}
 
 	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, EAVStatsFields.PK_ID)
 			.setPrimaryKeyAutoIncrement(this)
@@ -101,14 +105,18 @@ public class EAVStats extends CFWObject {
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(0);
 	
+	private EAVStatsType type = EAVStatsType.VALUES;
+	private int counter = 0;
+	
 	public EAVStats() {
 		initializeFields();
 	}
 	
-	public EAVStats(int entityID, TreeSet<Integer> valueIDs) {
+	public EAVStats(int entityID, TreeSet<Integer> valueIDs, EAVStatsType type) {
 		initializeFields();
 		this.foreignKeyEntity(entityID);
 		this.foreignKeyValues(valueIDs);
+		this.type = type;
 	}
 	
 	public EAVStats(ResultSet result) throws SQLException {
@@ -208,7 +216,16 @@ public class EAVStats extends CFWObject {
 	public Integer foreignKeyDate() {
 		return foreignKeyDate.getValue();
 	}
-			
+	
+	public int granularity() {
+		return granularity.getValue();
+	}
+
+	public EAVStats granularity(int granularity) {
+		this.granularity.setValue(granularity);
+		return this;
+	}
+		
 	
 	/****************************************************************
 	 * Adds a value to this statistic.
@@ -219,10 +236,35 @@ public class EAVStats extends CFWObject {
 	}
 	
 	/****************************************************************
+	 * Adds a value to this statistic.
+	 ****************************************************************/
+	public EAVStats increaseCounter(int increaseBy) {
+		counter += increaseBy;
+		return this;
+	}
+	
+
+	/****************************************************************
 	 * Calculates the statistical values for putting it in the database.
 	 ****************************************************************/
 	public EAVStats calculateStatistics() {
 		
+		//--------------------------------
+		// Handle Type COUNTER
+		if(this.type == EAVStatsType.COUNTER) {
+			
+			this.count.setValue(counter);
+			BigDecimal bigCount = new BigDecimal(counter);
+			this.min.setValue(bigCount);
+			this.max.setValue(bigCount);
+			this.avg.setValue(bigCount);
+			this.sum.setValue(bigCount);
+			
+			return this;
+		}
+
+		//--------------------------------
+		//Handle Empty Array
 		if(valuesArray.isEmpty()) {
 			this.count.setValue(0);
 			this.min.setValue(BigDecimal.ZERO);
@@ -232,7 +274,11 @@ public class EAVStats extends CFWObject {
 			return this;
 		}
 		
+		
+		//--------------------------------
+		// Handle Type VALUES
 		int count = valuesArray.size();
+		
 		BigDecimal min = valuesArray.get(0);
 		BigDecimal max = valuesArray.get(0);
 		BigDecimal sum = BigDecimal.ZERO;
@@ -249,15 +295,6 @@ public class EAVStats extends CFWObject {
 		this.avg.setValue(sum.divide(new BigDecimal(count)));
 		this.sum.setValue(sum);
 		
-		return this;
-	}
-	
-	public int granularity() {
-		return granularity.getValue();
-	}
-	
-	public EAVStats granularity(int granularity) {
-		this.granularity.setValue(granularity);
 		return this;
 	}
 	

@@ -58,6 +58,40 @@ function cfw_dashboard_setURLParams(params){
 	CFW_DASHBOARD_URLPARAMS = CFW.http.getURLParamsDecoded();
 }
 		
+/******************************************************************
+ * Edit Dashboard
+ ******************************************************************/
+function cfw_dashboard_editDashboard(){
+	
+	var allDiv = $('<div id="cfw-dashboard">');	
+
+	//-----------------------------------
+	// Role Details
+	//-----------------------------------
+	var detailsDiv = $('<div id="cfw-dashboard-details">');
+	detailsDiv.append('<h2>'+CFWL('cfw_dashboardlist_dashboard', "Dashboard")+' Details</h2>');
+	allDiv.append(detailsDiv);
+	
+	CFW.ui.showModalMedium(
+			CFWL("cfw_dashboardlist_editDashboard","Edit Dashboard"), 
+			allDiv, 
+			"cfw_dashboard_draw(false, false)"
+	);
+	
+	//-----------------------------------
+	// Load Form
+	//-----------------------------------
+	var requestParams = {
+		action: "getform"
+		, item: "editdashboard"
+		, id: CFW_DASHBOARD_URLPARAMS.id	
+	}
+	
+	CFW.http.createForm(CFW_DASHBOARDLIST_URL, requestParams, detailsDiv);
+	
+}
+
+
 /*******************************************************************************
  * Create default renderer settings for status widgets.
  ******************************************************************************/
@@ -1418,6 +1452,7 @@ function cfw_dashboard_toggleEditMode(){
 		$('#cfw-container').removeClass('edit-mode')
 		$('.cfw-dashboard-widget-actionicons').addClass('d-none');
 		$('#addWidget').addClass('d-none');
+		$('#dashboardSettingsButton').addClass('d-none');
 		$('#parametersButton').addClass('d-none');
 		$('#doneButton').addClass('d-none');
 		$('#editButton').removeClass('d-none');
@@ -1434,6 +1469,7 @@ function cfw_dashboard_toggleEditMode(){
 		$('#cfw-container').addClass('edit-mode')
 		$('.cfw-dashboard-widget-actionicons').removeClass('d-none');
 		$('#addWidget').removeClass('d-none');
+		$('#dashboardSettingsButton').removeClass('d-none');
 		$('#parametersButton').removeClass('d-none');
 		$('#doneButton').removeClass('d-none');
 		$('#editButton').addClass('d-none');

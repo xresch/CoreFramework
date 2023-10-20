@@ -21,6 +21,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.datetime.CFWDate;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsFields;
+import com.xresch.cfw.features.eav.EAVStats.EAVStatsType;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
@@ -101,7 +102,49 @@ public class CFWDBEAVStats {
 	/********************************************************************************************
 	 * 
 	 ********************************************************************************************/
-	public static boolean pushStats(
+	public static boolean pushStatsCounter(
+			  String category
+			, String entityName
+			, LinkedHashMap<String,String> attributes
+			, int increaseCounterBy) {
+		
+		boolean result = true;
+		
+		EAVEntity entity = CFW.DB.EAVEntity.selecFirstBy(category, entityName, true);
+		
+		TreeSet<Integer> valueIDs = new TreeSet<>();
+		
+		for(Entry<String, String> current : attributes.entrySet()) {
+			String attributeName = current.getKey();
+			String attributeValue = current.getValue();
+			
+			EAVAttribute attribute = CFW.DB.EAVAttribute.selecFirstBy(entity.id(), attributeName, true);
+			EAVValue value = CFW.DB.EAVValue.selecFirstBy(entity.id(), attribute.id(), attributeValue, true); 
+			valueIDs.add(value.id());
+		}
+		
+		String storeKey = "COUNTER_"+entity.id()+"_"+Joiner.on(",").join(valueIDs);
+
+		synchronized (eavStatsToBeStored) {
+			EAVStats stats;
+			if(eavStatsToBeStored.containsKey(storeKey)) {
+				stats = eavStatsToBeStored.get(storeKey);
+				stats.increaseCounter(increaseCounterBy);
+			}else {
+				stats = new EAVStats(entity.id(), valueIDs, EAVStatsType.COUNTER)
+						.increaseCounter(increaseCounterBy)
+						;
+				eavStatsToBeStored.put(storeKey, stats);
+			}
+		}
+		
+		return result;
+	}
+	
+	/********************************************************************************************
+	 * 
+	 ********************************************************************************************/
+	public static boolean pushStatsValue(
 			  String category
 			, String entityName
 			, LinkedHashMap<String,String> attributes
@@ -122,7 +165,7 @@ public class CFWDBEAVStats {
 			valueIDs.add(value.id());
 		}
 		
-		String storeKey = entity.id()+"_"+Joiner.on(",").join(valueIDs);
+		String storeKey = "VALUES_"+entity.id()+"_"+Joiner.on(",").join(valueIDs);
 
 		synchronized (eavStatsToBeStored) {
 			EAVStats stats;
@@ -130,7 +173,7 @@ public class CFWDBEAVStats {
 				stats = eavStatsToBeStored.get(storeKey);
 				stats.addValue(statsValue);
 			}else {
-				stats = new EAVStats(entity.id(), valueIDs)
+				stats = new EAVStats(entity.id(), valueIDs, EAVStatsType.VALUES)
 						.addValue(statsValue)
 						;
 				eavStatsToBeStored.put(storeKey, stats);
@@ -139,6 +182,7 @@ public class CFWDBEAVStats {
 		
 		return result;
 	}
+	
 	
 	/********************************************************************************************
 	 * 

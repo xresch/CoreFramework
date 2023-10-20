@@ -105,7 +105,7 @@ public class ServletDashboardViewMethods
 				
 				//---------------------------
 				// Count PageLoad Statistics
-				pushStats(FeatureDashboard.EAV_STATS_PAGE_LOADS, dashboardID, BigDecimal.ONE);
+				pushStats(FeatureDashboard.EAV_STATS_PAGE_LOADS, dashboardID, 1);
 
 				//---------------------------
 				// Clear existing History
@@ -186,7 +186,7 @@ public class ServletDashboardViewMethods
     /*****************************************************************
      *
      *****************************************************************/
-    private static void pushStats(String entityName, String dashboardID, BigDecimal value) {
+    private static void pushStats(String entityName, String dashboardID, int value) {
     	
     	Integer userID = CFW.Context.Request.getUserID();
     	String userIDString = (userID != null) ? ""+userID : null;
@@ -195,7 +195,7 @@ public class ServletDashboardViewMethods
 		attributes.put("dashboardid", dashboardID);
 		attributes.put("userid", userIDString);
 		
-    	CFW.DB.EAVStats.pushStats(FeatureDashboard.EAV_STATS_CATEGORY, entityName, attributes, value);
+    	CFW.DB.EAVStats.pushStatsCounter(FeatureDashboard.EAV_STATS_CATEGORY, entityName, attributes, value);
 		
     }
     
@@ -323,7 +323,7 @@ public class ServletDashboardViewMethods
 		
 		//---------------------------
 		// Count PageLoad Statistics
-		pushStats(FeatureDashboard.EAV_STATS_PAGE_LOADS_AND_REFRESHES, dashboardID, BigDecimal.ONE);
+		pushStats(FeatureDashboard.EAV_STATS_PAGE_LOADS_AND_REFRESHES, dashboardID, 1);
 		
 		//---------------------------
 		// Create Response
@@ -880,7 +880,7 @@ public class ServletDashboardViewMethods
 				) {
 					//----------------------------
 					// Do Not Cache
-					pushStats(FeatureDashboard.EAV_STATS_WIDGET_LOADS_UNCACHED, ""+widget.foreignKeyDashboard(), BigDecimal.ONE);
+					pushStats(FeatureDashboard.EAV_STATS_WIDGET_LOADS_UNCACHED, ""+widget.foreignKeyDashboard(), 1);
 					definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), timeframe);
 					
 				}else {
@@ -902,7 +902,7 @@ public class ServletDashboardViewMethods
 					//----------------------------
 					// Do Cached
 					if(WidgetDataCache.CACHE.getIfPresent(cacheID) != null) {
-						pushStats(FeatureDashboard.EAV_STATS_WIDGET_LOADS_CACHED, ""+widget.foreignKeyDashboard(), BigDecimal.ONE);
+						pushStats(FeatureDashboard.EAV_STATS_WIDGET_LOADS_CACHED, ""+widget.foreignKeyDashboard(), 1);
 					}
 					
 					JSONResponse responseFromCache = WidgetDataCache.CACHE.get(cacheID,
@@ -913,7 +913,7 @@ public class ServletDashboardViewMethods
 									
 									try {
 										//Hack: update and return existing jsonResponse to not overwrite it by creating a new instance.
-										pushStats(FeatureDashboard.EAV_STATS_WIDGET_LOADS_UNCACHED, ""+widget.foreignKeyDashboard(), BigDecimal.ONE);
+										pushStats(FeatureDashboard.EAV_STATS_WIDGET_LOADS_UNCACHED, ""+widget.foreignKeyDashboard(), 1);
 										definition.fetchData(request, jsonResponse, settingsObject, jsonSettings.getAsJsonObject(), timeframe);
 									}catch(Throwable e){
 										new CFWLog(logger).severe("Unexpected Error Occured: "+e.getMessage(), e);
