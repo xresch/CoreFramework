@@ -12,14 +12,15 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.datetime.CFWDate;
+import com.xresch.cfw.features.eav.EAVEntity.EAVEntityFields;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsFields;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsType;
 import com.xresch.cfw.logging.CFWLog;
@@ -219,6 +220,61 @@ public class CFWDBEAVStats {
 				.dump()
 				.getAsJSONArray()
 				;
+		
+		//---------------------------------------
+		// Unnest Values
+		for(int i = 0; i < result.size(); i++) {
+			JsonObject current = result.get(i).getAsJsonObject();
+			
+			int fkidEntity =  current.get(EAVStatsFields.FK_ID_ENTITY.toString()).getAsInt();
+			JsonArray fkidValues =  current.get(EAVStatsFields.FK_ID_VALUES.toString()).getAsJsonArray();
+			
+			EAVEntity currentEntity = CFW.DB.EAVEntity.selectByID(fkidEntity);
+			
+			current.remove("PK_ID");
+					
+
+			current.addProperty("CATEGORY", currentEntity.category());
+			current.addProperty("ENTITY", currentEntity.name());
+			
+			JsonObject attributesList = new JsonObject();
+			for(int k = 0; k < fkidValues.size(); k++) {
+				int valueID = fkidValues.get(k).getAsInt();
+				EAVValue eavValue = CFW.DB.EAVValue.selectByID(valueID);
+				EAVAttribute attribute = CFW.DB.EAVAttribute.selectByID(eavValue.foreignKeyAttribute());
+				attributesList.addProperty(attribute.name(), eavValue.value());
+				//current.addProperty(attribute.name().toUpperCase(), eavValue.value());
+			}
+			current.add("ATTRIBUTES", attributesList);
+			
+			current.add(EAVStatsFields.TIME.name(), 
+				    current.remove(EAVStatsFields.TIME.name())
+				);
+			
+			current.add(EAVStatsFields.COUNT.name(), 
+			    	current.remove(EAVStatsFields.COUNT.name())
+			    );
+			
+			current.add(EAVStatsFields.MIN.name(), 
+			    	current.remove(EAVStatsFields.MIN.name())
+			    );
+			
+			current.add(EAVStatsFields.AVG.name(), 
+					current.remove(EAVStatsFields.AVG.name())
+					);
+			
+			current.add(EAVStatsFields.MAX.name(), 
+					current.remove(EAVStatsFields.MAX.name())
+					);
+			
+			current.add(EAVStatsFields.SUM.name(), 
+					current.remove(EAVStatsFields.SUM.name())
+					);
+			
+			current.add(EAVStatsFields.GRANULARITY.name(), 
+					current.remove(EAVStatsFields.GRANULARITY.name())
+					);
+		}
 		
 		return result;
 	}
