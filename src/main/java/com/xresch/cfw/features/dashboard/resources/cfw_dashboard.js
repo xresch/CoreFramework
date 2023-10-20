@@ -1454,12 +1454,12 @@ function cfw_dashboard_toggleEditMode(){
 		if(JSDATA.isOwner 
 		|| (JSDATA.canEdit && JSDATA.canEditSettings)
 		|| CFW.hasPermission('Dashboard Admin')){
-			$('#dashboardSettingsButton').removeClass('d-none');
+			$('#dashboardSettingsButton').addClass('d-none');
 		}
 		
 		$('#parametersButton').addClass('d-none');
 		$('#doneButton').addClass('d-none');
-		$('#editButton').addClass('d-none');
+		$('#editButton').removeClass('d-none');
 		$('#top-ruler').addClass('d-none');
 		$('#side-ruler').addClass('d-none');
 		$('#bottom-ruler').addClass('d-none');
