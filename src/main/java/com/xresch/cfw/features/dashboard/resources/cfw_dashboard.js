@@ -74,9 +74,7 @@ function cfw_dashboard_editDashboard(){
 	
 	CFW.ui.showModalMedium(
 			CFWL("cfw_dashboardlist_editDashboard","Edit Dashboard"), 
-			allDiv, 
-			"cfw_dashboard_draw(false, false)"
-	);
+			allDiv);
 	
 	//-----------------------------------
 	// Load Form
@@ -1452,11 +1450,16 @@ function cfw_dashboard_toggleEditMode(){
 		$('#cfw-container').removeClass('edit-mode')
 		$('.cfw-dashboard-widget-actionicons').addClass('d-none');
 		$('#addWidget').addClass('d-none');
-		$('#dashboardSettingsButton').addClass('d-none');
+		
+		if(JSDATA.isOwner 
+		|| (JSDATA.canEdit && JSDATA.canEditSettings)
+		|| CFW.hasPermission('Dashboard Admin')){
+			$('#dashboardSettingsButton').removeClass('d-none');
+		}
+		
 		$('#parametersButton').addClass('d-none');
 		$('#doneButton').addClass('d-none');
-		$('#editButton').removeClass('d-none');
-		
+		$('#editButton').addClass('d-none');
 		$('#top-ruler').addClass('d-none');
 		$('#side-ruler').addClass('d-none');
 		$('#bottom-ruler').addClass('d-none');
@@ -1469,11 +1472,16 @@ function cfw_dashboard_toggleEditMode(){
 		$('#cfw-container').addClass('edit-mode')
 		$('.cfw-dashboard-widget-actionicons').removeClass('d-none');
 		$('#addWidget').removeClass('d-none');
-		$('#dashboardSettingsButton').removeClass('d-none');
+		
+		if(JSDATA.isOwner 
+		|| (JSDATA.canEdit && JSDATA.canEditSettings)
+		|| CFW.hasPermission('Dashboard Admin')){
+			$('#dashboardSettingsButton').removeClass('d-none');
+		}
+
 		$('#parametersButton').removeClass('d-none');
 		$('#doneButton').removeClass('d-none');
 		$('#editButton').addClass('d-none');
-		
 		$('#top-ruler').removeClass('d-none');
 		$('#side-ruler').removeClass('d-none');
 		$('#bottom-ruler').removeClass('d-none');

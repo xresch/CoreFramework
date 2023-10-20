@@ -149,7 +149,9 @@ DONE
 ====
 
 ------- current -------
+- BREAKING CODE CHANGE: CFWConfig renamed and requires category parameter in several mathods
 - Notifications: Fixed severe log messages showing up
+- Dashboard: Dashboard Settings can now be edited when viewing the dashboard
 - Query Command: formatrecord - Added autocomplete options 
 
 

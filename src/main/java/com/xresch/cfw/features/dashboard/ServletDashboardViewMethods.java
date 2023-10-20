@@ -146,12 +146,15 @@ public class ServletDashboardViewMethods
 				html.setPageTitle(dashboard.name());
 				html.addJavascriptData("dashboardName",  dashboard.name());
 				
+				
 				if(currentUser != null) {
 					html.addJavascriptData("dashboardIsFaved",  CFW.DB.DashboardFavorites.checkIsDashboardFavedByUser(dashboard, currentUser));
 				}
 				
 				html.addJavascriptData("startFullscreen", dashboard.startFullscreen() );
+				html.addJavascriptData("isOwner", dashboard.foreignKeyOwner() == CFW.Context.Request.getUserID() );
 				html.addJavascriptData("canEdit", CFW.DB.Dashboards.checkCanEdit(request.getParameter("id")) );
+				html.addJavascriptData("canEditSettings",  dashboard.alloweEditSettings());
 				html.addJavascriptCode("cfw_dashboard_initialDraw();");
 				
 		        response.setContentType("text/html");
