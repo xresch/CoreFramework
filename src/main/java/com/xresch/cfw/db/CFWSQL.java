@@ -1285,11 +1285,16 @@ public class CFWSQL {
 	}
 	
 	/****************************************************************
-	 * Adds an ORDER BY clause to the query. Is case sensitive for
+	 * Adds an GROUP BY clause to the query. Is case sensitive for
 	 * strings.
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
-	public CFWSQL groupby(String... fieldnames) {
+	public CFWSQL groupby(Object... fieldnames) {
+		
+		if(fieldnames == null  || fieldnames.length == 0) {
+			return this;
+		}
+		
 		if(!isQueryCached()) {
 			query.append(" GROUP BY");
 			for(Object fieldname : fieldnames) {
