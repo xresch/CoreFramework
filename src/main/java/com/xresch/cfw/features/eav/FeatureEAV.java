@@ -7,6 +7,8 @@ import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
+import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.spi.CFWAppFeature;
 
 /**************************************************************************************************************
@@ -20,6 +22,8 @@ public class FeatureEAV extends CFWAppFeature {
 	public static final String PACKAGE_RESOURCE = "com.xresch.cfw.features.eav.resources";
 	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.eav.manual";
 
+	public static final String PERMISSION_EAV_USER = "EAV: User";
+	
 	public final static String CONFIG_CATEGORY_EAV 		= "EAV: Entity Attribute Value";
 	public final static String CONFIG_MAX_GRANULARITY 	= "Statistic Max Granularity";
 	public final static String CONFIG_AGE_OUT_INTERVAL	= "Age Out Interval";
@@ -53,6 +57,17 @@ public class FeatureEAV extends CFWAppFeature {
 
 	@Override
 	public void initializeDB() {
+		
+		//----------------------------------
+    	// Permissions
+		CFW.DB.Permissions.oneTimeCreate(
+				new Permission(PERMISSION_EAV_USER, FeatureUserManagement.CATEGORY_USER)
+					.description("Allows to use the Entry-Attribute Values Features (query source, widget etc...)."),
+					true,
+					false
+			);
+		
+		
 		//-----------------------------------------
 		// 
 		//-----------------------------------------
@@ -139,8 +154,8 @@ public class FeatureEAV extends CFWAppFeature {
 		
 		CFW.DB.Config.addChangeListener(listener);
 		
-		
 	}
+	
 
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {

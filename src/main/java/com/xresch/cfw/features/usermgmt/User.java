@@ -167,7 +167,8 @@ public class User extends CFWObject {
 	
 	private boolean hasUsernameChanged = false;
 
-	//private field, do not change the map or return it as it may contain the current users permission
+	// private field, do not change the map or return it as it may contain the current users permission
+	// implemented to reduce performance overhead
 	private HashMap<String, Permission> permissions;
 	
 
@@ -585,6 +586,13 @@ public class User extends CFWObject {
 			
 		definition.setSQLExecutor(addRoleExecutor);
 		return definition;
+	}
+	
+	/**************************************************************************************
+	 * Reset the permissions so they will be reloaded the next time.
+	 **************************************************************************************/
+	public void resetPermissions() {
+		permissions = null;
 	}
 	
 	/**************************************************************************************

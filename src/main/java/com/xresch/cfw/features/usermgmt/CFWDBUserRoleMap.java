@@ -44,8 +44,9 @@ public class CFWDBUserRoleMap {
 	/********************************************************************************************
 	 * 
 	 ********************************************************************************************/
-	private static void invalidateCache(int userID) {
+	public static void invalidateCache(Integer userID) {
 		userRolesCache.invalidate(userID);
+		CFW.DB.RolePermissionMap.invalidateCache(userID);
 	}
 	
 	/********************************************************************************************
@@ -92,15 +93,17 @@ public class CFWDBUserRoleMap {
 				  + UserRoleMapFields.IS_DELETABLE +" "
 				  + ") VALUES (?,?,?);";
 		
-		invalidateCache(user.id());
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, User.class, "Add Role to User: "+user.username()+", Role: "+role.name());
 		
-		return CFWDB.preparedExecute(insertRoleSQL, 
+		boolean isSuccess = CFWDB.preparedExecute(insertRoleSQL, 
 				user.id(),
 				role.id(),
 				isDeletable
 				);
 		
+		invalidateCache(user.id());
+		
+		return isSuccess;
 	}
 	
 	/********************************************************************************************
@@ -147,13 +150,16 @@ public class CFWDBUserRoleMap {
 				  + UserRoleMapFields.IS_DELETABLE +" = TRUE "
 				  + ";";
 		
-		invalidateCache(user.id());
+		
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, User.class, "Remove Role from User: "+user.username()+", Role: "+role.name());
 		
-		return CFWDB.preparedExecute(removeUserFromRoleSQL, 
+		boolean isSuccess = CFWDB.preparedExecute(removeUserFromRoleSQL, 
 				user.id(),
 				role.id()
 				);
+		
+		invalidateCache(user.id());
+		return isSuccess; 
 		
 	}
 

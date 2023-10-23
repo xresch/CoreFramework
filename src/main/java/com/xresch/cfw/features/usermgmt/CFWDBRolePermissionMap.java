@@ -45,7 +45,14 @@ public class CFWDBRolePermissionMap {
 	/********************************************************************************************
 	 * 
 	 ********************************************************************************************/
-	private static void invalidateCache() {
+	public static void invalidateCache(Integer userID) {
+		userPermissionsCache.invalidate(userID);
+	}
+	
+	/********************************************************************************************
+	 * 
+	 ********************************************************************************************/
+	private static void invalidateCacheAll() {
 		userPermissionsCache.invalidateAll();
 	}
 	
@@ -88,7 +95,7 @@ public class CFWDBRolePermissionMap {
 				  + RolePermissionMapFields.IS_DELETABLE +" "
 				  + ") VALUES (?,?,?);";
 		
-		invalidateCache();
+		invalidateCacheAll();
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Role.class, "Add Permission to Role: "+role.name()+", Permission: "+permission.name());
 		
 		return CFWDB.preparedExecute(insertPermissionSQL, 
@@ -184,7 +191,7 @@ public class CFWDBRolePermissionMap {
 				  + RolePermissionMapFields.IS_DELETABLE +" = TRUE "
 				  + ";";
 		
-		invalidateCache();
+		invalidateCacheAll();
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Role.class, "Remove Permission from Role: "+role.name()+", Permission: "+permission.name());
 		
 		return CFWDB.preparedExecute(removePermissionFromRoleSQL, 

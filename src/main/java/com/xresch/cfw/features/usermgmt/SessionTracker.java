@@ -116,10 +116,12 @@ public class SessionTracker implements HttpSessionListener, HttpSessionIdListene
 				if(session != null) {
 					
 					CFWSessionData data = (CFWSessionData)session.getAttribute(CFW.SESSION_DATA);
-					
+
 					if(data != null) {
+
 						User user = data.getUser();
 						if(user != null && user.id() != null && user.id() == userID) {
+
 							data.loadUserPermissions();
 						}
 					}

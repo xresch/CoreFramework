@@ -47,7 +47,7 @@ public class CFWQuerySourceEAVStats extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Fetches statistical data from entry attribute value(EAV) tables.";
+		return "Fetches statistical data from Entry-Attribute-Value(EAV) tables.";
 	}
 	
 	/******************************************************************
@@ -71,7 +71,7 @@ public class CFWQuerySourceEAVStats extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionRequiredPermission() {
-		return "None";
+		return ""+FeatureEAV.PERMISSION_EAV_USER;
 	}
 	
 	/******************************************************************
@@ -79,7 +79,7 @@ public class CFWQuerySourceEAVStats extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public boolean hasPermission(User user) {
-		return true;
+		return user.hasPermission(FeatureEAV.PERMISSION_EAV_USER);
 	}
 	
 	/***********************************************************************************************

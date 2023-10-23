@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -16,7 +15,6 @@ import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.features.config.FeatureConfig;
-import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.BTFooter;
 import com.xresch.cfw.response.bootstrap.BTMenu;
@@ -86,6 +84,7 @@ public class CFWSessionData implements Serializable {
 		userPermissions = new HashMap<>();
 		customProperties= new HashMap<>();
 		
+		CFW.DB.UserRoleMap.invalidateCache(this.user.id());
 		formCache.invalidateAll();
 		
 		loadMenu(false);
@@ -174,11 +173,15 @@ public class CFWSessionData implements Serializable {
 		if(user != null) {
 			user.id(userID);
 		}
+		
+		user.resetPermissions();
+		
 		// use putAll() to not clear the HashMaps which are cached in classes CFWDBUserRoleMap/CFWDBRolePermissionMap
 		this.userRoles = new HashMap<>();
 		this.userRoles.putAll( CFW.DB.Users.selectRolesForUser(userID) );
 		this.userPermissions = new HashMap<>();
 		this.userPermissions.putAll( CFW.DB.Users.selectPermissionsForUser(userID) );
+
 		loadMenu(true);
 	}
 	
