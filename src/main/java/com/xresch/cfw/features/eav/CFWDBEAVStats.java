@@ -201,6 +201,7 @@ public class CFWDBEAVStats {
 		
 		ArrayList<EAVEntity> entityList = CFW.DB.EAVEntity.selectLike(category, entityName);
 		
+		outer:
 		for(EAVEntity entity : entityList) {
 			TreeSet<Integer> valueIDs = new TreeSet<>();
 			
@@ -208,20 +209,35 @@ public class CFWDBEAVStats {
 				String attributeName = current.getKey();
 				String attributeValue = current.getValue();
 				
-				EAVAttribute attribute = CFW.DB.EAVAttribute.selecFirstBy(entity.id(), attributeName, true);
-				EAVValue value = CFW.DB.EAVValue.selecFirstBy(entity.id(), attribute.id(), attributeValue, true); 
+				EAVAttribute attribute = CFW.DB.EAVAttribute.selecFirstBy(entity.id(), attributeName, false);
+				if(attribute == null) {
+					new CFWLog(logger).warn("Attribute '"+attributeName+"' for entity '"+entityName+"' cannot be found.");
+					continue outer;
+				}
+				
+				EAVValue value = CFW.DB.EAVValue.selecFirstBy(entity.id(), attribute.id(), attributeValue, false); 
+				if(value == null) {
+					new CFWLog(logger).warn("Value '"+attributeValue+"' for attribute '"+attributeName+"' and entity '"+entityName+"' cannot be found.");
+					continue outer;
+				}
 				valueIDs.add(value.id());
 			}
 			
-			JsonArray result = new CFWSQL(new EAVStats())
+			CFWSQL sql = new CFWSQL(new EAVStats())
 					.select()
 					.where(EAVStatsFields.FK_ID_ENTITY, entity.id())
-					.and(EAVStatsFields.FK_ID_VALUES, valueIDs.toArray(new Integer[] {}))
-					.and().custom(" TIME >= ?", new Timestamp(earliest) )
-					.and().custom(" TIME <= ?", new Timestamp(latest) )
-					.getAsJSONArray()
 					;
 
+			for(int id : valueIDs) {
+				sql.and().arrayContains(EAVStatsFields.FK_ID_VALUES, id);
+			}
+			
+			sql.and().custom(" TIME >= ?", new Timestamp(earliest) )
+			   .and().custom(" TIME <= ?", new Timestamp(latest) )
+			   ;
+
+			JsonArray result = sql.getAsJSONArray();
+			
 			//---------------------------------------
 			// Unnest Values
 			for(int i = 0; i < result.size(); i++) {
@@ -274,8 +290,8 @@ public class CFWDBEAVStats {
 				
 		long currentTimeRounded = CFWTimeUnit.m.round(System.currentTimeMillis(), granularityMinutes);
 		synchronized (eavStatsToBeStored) {
+			
 			for(Entry<String, EAVStats> current : eavStatsToBeStored.entrySet()) {
-				
 				EAVStats stats = current.getValue();
 				
 				stats.granularity(granularityMinutes)

@@ -34,7 +34,7 @@ function cfw_config_changeToPanels(){
 		//-------------------------
 		// Add Panel to Form
 		var cfwPanel = new CFWPanel(panelSettings);
-		$('form').prepend(cfwPanel.getPanel());
+		$('form').append(cfwPanel.getPanel());
 	}
 }
 

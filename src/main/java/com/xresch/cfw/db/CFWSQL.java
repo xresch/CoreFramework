@@ -1254,7 +1254,7 @@ public class CFWSQL {
 	 * strings.
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
-	public CFWSQL orderby(String... fieldnames) {
+	public CFWSQL orderby(Object... fieldnames) {
 		if(!isQueryCached()) {
 			query.append(" ORDER BY");
 			for(Object fieldname : fieldnames) {

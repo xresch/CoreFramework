@@ -135,6 +135,10 @@ public class CFWQuerySourceEAVStats extends CFWQuerySource {
 
 		LinkedHashMap<String, String> attributes = CFW.JSON.fromJsonLinkedHashMap(attributesString);
 		
+		if(attributes == null) {
+			attributes = new LinkedHashMap<>();
+		}
+		
 		JsonArray array = CFWDBEAVStats.fetchStatsAsJsonArray(category, entity, attributes, earliestMillis, latestMillis);
 		
 		for(int i = 0; i < array.size(); i++) {

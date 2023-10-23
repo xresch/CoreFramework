@@ -36,14 +36,16 @@ public class CFWTime {
 	private static DateTimeFormatter formatterTimestamp = DateTimeFormatter.ofPattern(CFWTime.FORMAT_TIMESTAMP).withZone(machineTimezone.toZoneId());
 	private static DateTimeFormatter formatterISODate = DateTimeFormatter.ofPattern(CFWTime.FORMAT_ISO8601_DATE).withZone(machineTimezone.toZoneId());
 	
+	public static final int MINUTES_OF_15 = 15;
 	public static final int MINUTES_OF_HOUR = 60;
-	public static final int MINUTES_OF_HALFDAY = 12*MINUTES_OF_HOUR;
+	public static final int MINUTES_OF_6HOURS = 6*MINUTES_OF_HOUR;
 	public static final int MINUTES_OF_DAY = 24*MINUTES_OF_HOUR;
 	public static final int MINUTES_OF_WEEK = 7*MINUTES_OF_DAY;
 
 	public static final int[] AGE_OUT_GRANULARITIES = new int[] {
-			MINUTES_OF_HOUR
-			, MINUTES_OF_HALFDAY
+			  MINUTES_OF_15
+			, MINUTES_OF_HOUR
+			, MINUTES_OF_6HOURS
 			, MINUTES_OF_DAY
 			, MINUTES_OF_WEEK
 			};

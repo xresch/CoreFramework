@@ -387,7 +387,7 @@ public class CFWDBConfig {
 		return new Configuration()
 				.queryCache(CFWDBConfig.class, "getConfigList")
 				.select()
-				.orderby(ConfigFields.NAME.toString())
+				.orderby(ConfigFields.CATEGORY, ConfigFields.NAME)
 				.getAsObjectList();
 		
 	}

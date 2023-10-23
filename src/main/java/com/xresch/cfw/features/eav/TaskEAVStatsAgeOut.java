@@ -61,14 +61,21 @@ public class TaskEAVStatsAgeOut extends CFWScheduledTask {
 	 ********************************************************************************************/
 	public Timestamp getAgeOutTime(int granularityMinutes) {
 		
+		int hours15Min = -1 * CFW.DB.Config.getConfigAsInt(FeatureEAV.CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_AGE_OUT_15MIN);
+		int days1Hour = -1 * CFW.DB.Config.getConfigAsInt(FeatureEAV.CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_AGE_OUT_1HOUR);
+		int days6Hours = -1 * CFW.DB.Config.getConfigAsInt(FeatureEAV.CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_AGE_OUT_6HOURS);
+		int days24Hours = -1 * CFW.DB.Config.getConfigAsInt(FeatureEAV.CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_AGE_OUT_24HOURS);
+		int days1Week = -1 * CFW.DB.Config.getConfigAsInt(FeatureEAV.CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_AGE_OUT_1WEEK);
+		
 		// offset from present time by the duration you want to keep the specific granularity
 		long ageOutOffset;
 		
-		if		(granularityMinutes <= CFW.Time.MINUTES_OF_HOUR) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, -1); }
-		else if (granularityMinutes <= CFW.Time.MINUTES_OF_HALFDAY) { ageOutOffset = CFWTimeUnit.d.offset(null, -14); }
-		else if (granularityMinutes <= CFW.Time.MINUTES_OF_DAY) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, -60); }
-		else if (granularityMinutes <= CFW.Time.MINUTES_OF_WEEK) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, -365); }
-		else  														{ ageOutOffset = CFWTimeUnit.d.offset(null, -365); }
+		if		(granularityMinutes <= CFW.Time.MINUTES_OF_15) 		{ ageOutOffset = CFWTimeUnit.h.offset(null, hours15Min); }
+		else if	(granularityMinutes <= CFW.Time.MINUTES_OF_HOUR) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, days1Hour); }
+		else if (granularityMinutes <= CFW.Time.MINUTES_OF_6HOURS) { ageOutOffset = CFWTimeUnit.d.offset(null, days6Hours); }
+		else if (granularityMinutes <= CFW.Time.MINUTES_OF_DAY) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, days24Hours); }
+		else if (granularityMinutes <= CFW.Time.MINUTES_OF_WEEK) 	{ ageOutOffset = CFWTimeUnit.d.offset(null, days1Week); }
+		else  														{ ageOutOffset = CFWTimeUnit.d.offset(null, days1Week); }
 
 		return new Timestamp(ageOutOffset);
 	}

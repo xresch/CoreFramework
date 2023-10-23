@@ -1,0 +1,24 @@
+
+<p>This source allows you to fetch data stored in the entry-attribute-value(EAV) tables.</p>
+
+<p>Following is a basic example how to use the source and create charts.:</p>
+
+<pre><code class="language-cfwquery">| source eavstats 
+	category="DashboardStats" # supports SQL wildcards
+	entity="Page Loads%" # supports SQL wildcards
+	attributes={ # does not support wildcards
+		dashboardid: 2793, 
+		userid: 1
+	}
+| unbox ATTRIBUTES 
+| remove ATTRIBUTES
+| chart 
+	by=[ENTITY, dashboardid, userid] 
+	type=area
+	x=TIME 
+	y=SUM
+</code></pre>
+
+
+
+

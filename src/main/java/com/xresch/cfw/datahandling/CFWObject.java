@@ -781,6 +781,13 @@ public class CFWObject {
 		return new CFWSQL(this).delete();
 	}
 	
+	/****************************************************************
+	 * Override to return a JSON String.
+	 ****************************************************************/
+	@Override
+	public String toString() {		
+		return toJSONEncrypted();
+	}
 	
 	/****************************************************************
 	 * Return a JSON string containing all values of the fields of this 
