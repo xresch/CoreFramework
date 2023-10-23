@@ -1,11 +1,18 @@
 package com.xresch.cfw.features.eav;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
+import com.xresch.cfw.features.eav.EAVAttribute.EAVAttributeFields;
 import com.xresch.cfw.features.eav.EAVValue.EAVValueFields;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -20,6 +27,23 @@ public class CFWDBEAVValue {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBEAVValue.class.getName());
 	
+	// Cache of "entityID-attributeID-value" and values
+	// used to reduce DB calls
+	private static Cache<String, EAVValue> valueCacheByName = CFW.Caching.addCache("CFW EAV Value(Name)", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(50)
+				.maximumSize(50000)
+				.expireAfterAccess(1, TimeUnit.HOURS)
+		);
+	
+	// Cache of id and values
+	// used to reduce DB calls
+	private static Cache<Integer, EAVValue> valueCacheByID = CFW.Caching.addCache("CFW EAV Value(ID)", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(50)
+				.maximumSize(50000)
+				.expireAfterAccess(1, TimeUnit.HOURS)
+		);
 	
 	//####################################################################################################
 	// Preckeck Initialization
@@ -97,7 +121,22 @@ public class CFWDBEAVValue {
 	}
 	
 	public static EAVValue selectByID(int id) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVValueFields.PK_ID.toString(), id);
+		EAVValue valueObject = null;
+		try {
+			valueObject = valueCacheByID.get(id, new Callable<EAVValue>() {
+				@Override
+				public EAVValue call() throws Exception {
+					return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVValueFields.PK_ID.toString(), id);
+				}
+				
+			});
+			
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error while reading EAV attribute from cache or database.", e);
+		}
+
+		return valueObject;
+		
 	}
 	
 	/*****************************************************************************
@@ -127,23 +166,39 @@ public class CFWDBEAVValue {
 			oneTimeCreate(entityID, attributeID, value);
 		}
 		
-		if(value != null) {
-			return (EAVValue)new CFWSQL(new EAVValue())
-					.select()
-					.where(EAVValueFields.FK_ID_ENTITY, entityID)
-					.and(EAVValueFields.FK_ID_ATTR, attributeID)
-					.and(EAVValueFields.VALUE, value)
-					.getFirstAsObject()
-					;
-		}else {
-			return (EAVValue)new CFWSQL(new EAVValue())
-					.select()
-					.where(EAVValueFields.FK_ID_ENTITY, entityID)
-					.and(EAVValueFields.FK_ID_ATTR, attributeID)
-					.isNull(EAVValueFields.VALUE)
-					.getFirstAsObject()
-					;
+		EAVValue valueObject = null;
+		try {
+			valueObject = valueCacheByName.get(entityID+"-"+attributeID+"-"+value, new Callable<EAVValue>() {
+
+				@Override
+				public EAVValue call() throws Exception {
+					
+					if(value != null) {
+						return (EAVValue)new CFWSQL(new EAVValue())
+								.select()
+								.where(EAVValueFields.FK_ID_ENTITY, entityID)
+								.and(EAVValueFields.FK_ID_ATTR, attributeID)
+								.and(EAVValueFields.VALUE, value)
+								.getFirstAsObject()
+								;
+					}else {
+						return (EAVValue)new CFWSQL(new EAVValue())
+								.select()
+								.where(EAVValueFields.FK_ID_ENTITY, entityID)
+								.and(EAVValueFields.FK_ID_ATTR, attributeID)
+								.isNull(EAVValueFields.VALUE)
+								.getFirstAsObject()
+								;
+					}
+				}
+				
+			});
+			
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error while reading EAV attribute from cache or database.", e);
 		}
+
+		return valueObject;
 				
 	}
 	

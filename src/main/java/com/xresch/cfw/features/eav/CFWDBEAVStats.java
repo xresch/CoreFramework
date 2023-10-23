@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
@@ -196,87 +197,74 @@ public class CFWDBEAVStats {
 			, long latest
 			) {
 		
-		JsonArray result = new JsonArray();
+		JsonArray resultAll = new JsonArray();
 		
-		EAVEntity entity = CFW.DB.EAVEntity.selecFirstBy(category, entityName, true);
+		ArrayList<EAVEntity> entityList = CFW.DB.EAVEntity.selectLike(category, entityName);
 		
-		TreeSet<Integer> valueIDs = new TreeSet<>();
-		
-		for(Entry<String, String> current : attributes.entrySet()) {
-			String attributeName = current.getKey();
-			String attributeValue = current.getValue();
+		for(EAVEntity entity : entityList) {
+			TreeSet<Integer> valueIDs = new TreeSet<>();
 			
-			EAVAttribute attribute = CFW.DB.EAVAttribute.selecFirstBy(entity.id(), attributeName, true);
-			EAVValue value = CFW.DB.EAVValue.selecFirstBy(entity.id(), attribute.id(), attributeValue, true); 
-			valueIDs.add(value.id());
-		}
-		
-		result = new CFWSQL(new EAVStats())
-				.select()
-				.where(EAVStatsFields.FK_ID_ENTITY, entity.id())
-				.and(EAVStatsFields.FK_ID_VALUES, valueIDs.toArray(new Integer[] {}))
-				.and().custom(" TIME >= ?", new Timestamp(earliest) )
-				.and().custom(" TIME <= ?", new Timestamp(latest) )
-				.dump()
-				.getAsJSONArray()
-				;
-		
-		//---------------------------------------
-		// Unnest Values
-		for(int i = 0; i < result.size(); i++) {
-			JsonObject current = result.get(i).getAsJsonObject();
-			
-			int fkidEntity =  current.get(EAVStatsFields.FK_ID_ENTITY.toString()).getAsInt();
-			JsonArray fkidValues =  current.get(EAVStatsFields.FK_ID_VALUES.toString()).getAsJsonArray();
-			
-			EAVEntity currentEntity = CFW.DB.EAVEntity.selectByID(fkidEntity);
-			
-			current.remove("PK_ID");
-					
-
-			current.addProperty("CATEGORY", currentEntity.category());
-			current.addProperty("ENTITY", currentEntity.name());
-			
-			JsonObject attributesList = new JsonObject();
-			for(int k = 0; k < fkidValues.size(); k++) {
-				int valueID = fkidValues.get(k).getAsInt();
-				EAVValue eavValue = CFW.DB.EAVValue.selectByID(valueID);
-				EAVAttribute attribute = CFW.DB.EAVAttribute.selectByID(eavValue.foreignKeyAttribute());
-				attributesList.addProperty(attribute.name(), eavValue.value());
-				//current.addProperty(attribute.name().toUpperCase(), eavValue.value());
+			for(Entry<String, String> current : attributes.entrySet()) {
+				String attributeName = current.getKey();
+				String attributeValue = current.getValue();
+				
+				EAVAttribute attribute = CFW.DB.EAVAttribute.selecFirstBy(entity.id(), attributeName, true);
+				EAVValue value = CFW.DB.EAVValue.selecFirstBy(entity.id(), attribute.id(), attributeValue, true); 
+				valueIDs.add(value.id());
 			}
-			current.add("ATTRIBUTES", attributesList);
 			
-			current.add(EAVStatsFields.TIME.name(), 
-				    current.remove(EAVStatsFields.TIME.name())
-				);
+			JsonArray result = new CFWSQL(new EAVStats())
+					.select()
+					.where(EAVStatsFields.FK_ID_ENTITY, entity.id())
+					.and(EAVStatsFields.FK_ID_VALUES, valueIDs.toArray(new Integer[] {}))
+					.and().custom(" TIME >= ?", new Timestamp(earliest) )
+					.and().custom(" TIME <= ?", new Timestamp(latest) )
+					.getAsJSONArray()
+					;
+
+			//---------------------------------------
+			// Unnest Values
+			for(int i = 0; i < result.size(); i++) {
+				JsonObject current = result.get(i).getAsJsonObject();
+				
+				int fkidEntity =  current.get(EAVStatsFields.FK_ID_ENTITY.toString()).getAsInt();
+				JsonArray fkidValues =  current.get(EAVStatsFields.FK_ID_VALUES.toString()).getAsJsonArray();
+				
+				EAVEntity currentEntity = CFW.DB.EAVEntity.selectByID(fkidEntity);
+				
+				current.remove("PK_ID");
+						
+	
+				current.addProperty("CATEGORY", currentEntity.category());
+				current.addProperty("ENTITY", currentEntity.name());
+				
+				JsonObject attributesList = new JsonObject();
+				for(int k = 0; k < fkidValues.size(); k++) {
+					int valueID = fkidValues.get(k).getAsInt();
+					EAVValue eavValue = CFW.DB.EAVValue.selectByID(valueID);
+					EAVAttribute attribute = CFW.DB.EAVAttribute.selectByID(eavValue.foreignKeyAttribute());
+					attributesList.addProperty(attribute.name(), eavValue.value());
+					//current.addProperty(attribute.name().toUpperCase(), eavValue.value());
+				}
+				
+				current.add("ATTRIBUTES", attributesList);
+				
+				// Commented for performance reasons
+				// include again if someone wants it
+				/*
+				current.add(EAVStatsFields.TIME.name(),  		current.remove(EAVStatsFields.TIME.name()) );
+				current.add(EAVStatsFields.COUNT.name(), 		current.remove(EAVStatsFields.COUNT.name()) );
+				current.add(EAVStatsFields.MIN.name(), 			current.remove(EAVStatsFields.MIN.name()) );
+				current.add(EAVStatsFields.AVG.name(), 			current.remove(EAVStatsFields.AVG.name()) );
+				current.add(EAVStatsFields.MAX.name(), 			current.remove(EAVStatsFields.MAX.name()) );
+				current.add(EAVStatsFields.SUM.name(), 			current.remove(EAVStatsFields.SUM.name()) );
+				current.add(EAVStatsFields.GRANULARITY.name(), 	current.remove(EAVStatsFields.GRANULARITY.name()) );
+				*/
+			}
 			
-			current.add(EAVStatsFields.COUNT.name(), 
-			    	current.remove(EAVStatsFields.COUNT.name())
-			    );
-			
-			current.add(EAVStatsFields.MIN.name(), 
-			    	current.remove(EAVStatsFields.MIN.name())
-			    );
-			
-			current.add(EAVStatsFields.AVG.name(), 
-					current.remove(EAVStatsFields.AVG.name())
-					);
-			
-			current.add(EAVStatsFields.MAX.name(), 
-					current.remove(EAVStatsFields.MAX.name())
-					);
-			
-			current.add(EAVStatsFields.SUM.name(), 
-					current.remove(EAVStatsFields.SUM.name())
-					);
-			
-			current.add(EAVStatsFields.GRANULARITY.name(), 
-					current.remove(EAVStatsFields.GRANULARITY.name())
-					);
+			resultAll.addAll(result);
 		}
-		
-		return result;
+		return resultAll;
 	}
 	
 	/********************************************************************************************

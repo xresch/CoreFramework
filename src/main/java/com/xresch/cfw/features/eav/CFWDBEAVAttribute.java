@@ -27,9 +27,18 @@ public class CFWDBEAVAttribute {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBEAVAttribute.class.getName());
 	
-	// Cache of "entityID + attributeName" and entities
+	// Cache of "entityID + attributeName" and attributes
 	// used to reduce DB calls
-	private static Cache<String, EAVAttribute> attributeCache = CFW.Caching.addCache("CFW EAV Attribute", 
+	private static Cache<String, EAVAttribute> attributeCacheByName = CFW.Caching.addCache("CFW EAV Attribute(Name)", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(50)
+				.maximumSize(5000)
+				.expireAfterAccess(1, TimeUnit.HOURS)
+		);
+	
+	// Cache of integer and attributes
+	// used to reduce DB calls
+	private static Cache<Integer, EAVAttribute> attributeCacheByID = CFW.Caching.addCache("CFW EAV Attribute(ID)", 
 			CacheBuilder.newBuilder()
 				.initialCapacity(50)
 				.maximumSize(5000)
@@ -109,11 +118,29 @@ public class CFWDBEAVAttribute {
 	// SELECT
 	//####################################################################################################
 	public static EAVAttribute selectByID(String id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVAttributeFields.PK_ID.toString(), id);
+		return selectByID(Integer.parseInt(id));
 	}
 	
 	public static EAVAttribute selectByID(int id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVAttributeFields.PK_ID.toString(), id);
+		
+		EAVAttribute attribute = null;
+		try {
+			attribute = attributeCacheByID.get(id, new Callable<EAVAttribute>() {
+
+				@Override
+				public EAVAttribute call() throws Exception {
+					
+					return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVAttributeFields.PK_ID.toString(), id);
+				}
+				
+			});
+			
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error while reading EAV attribute from cache or database.", e);
+		}
+
+		return attribute;
+		
 	}
 	
 	
@@ -128,7 +155,7 @@ public class CFWDBEAVAttribute {
 		
 		EAVAttribute attribute = null;
 		try {
-			attribute = attributeCache.get(entityID+"-"+attributeName, new Callable<EAVAttribute>() {
+			attribute = attributeCacheByName.get(entityID+"-"+attributeName, new Callable<EAVAttribute>() {
 
 				@Override
 				public EAVAttribute call() throws Exception {
@@ -164,7 +191,6 @@ public class CFWDBEAVAttribute {
 	 *  
 	 *****************************************************************************/
 	public static boolean checkExists(String entityID, String attributeName) {
-		
 		
 		boolean result = 0 < new CFWSQL(new EAVAttribute())
 				.queryCache()

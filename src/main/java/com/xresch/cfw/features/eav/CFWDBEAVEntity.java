@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.eav;
 
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -29,13 +30,22 @@ public class CFWDBEAVEntity {
 	
 	// Cache of "category + entityName" and entities
 	// used to reduce DB calls
-	private static Cache<String, EAVEntity> entityCache = CFW.Caching.addCache("CFW EAV Entity", 
+	private static Cache<String, EAVEntity> entityCacheByName = CFW.Caching.addCache("CFW EAV Entity(Name)", 
 			CacheBuilder.newBuilder()
 				.initialCapacity(50)
 				.maximumSize(5000)
 				.expireAfterAccess(1, TimeUnit.HOURS)
 		);
 
+	
+	// Cache of id and entities
+	// used to reduce DB calls
+	private static Cache<Integer, EAVEntity> entityCacheByID = CFW.Caching.addCache("CFW EAV Entity(ID)", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(50)
+				.maximumSize(5000)
+				.expireAfterAccess(1, TimeUnit.HOURS)
+		);
 
 	//####################################################################################################
 	// Preckeck Initialization
@@ -99,7 +109,7 @@ public class CFWDBEAVEntity {
 		}
 		
 		boolean result = true; 
-		if( !checkExists(entity.category(), entity.name()) ) {
+		if( !checkExistsByName(entity.category(), entity.name()) ) {
 			
 			result &= create(entity);
 			
@@ -122,14 +132,29 @@ public class CFWDBEAVEntity {
 	// SELECT
 	//####################################################################################################
 	public static EAVEntity selectByID(String id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVEntityFields.PK_ID.toString(), id);
+		return selectByID(Integer.parseInt(id));
 	}
 	
 	public static EAVEntity selectByID(int id ) {
-		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVEntityFields.PK_ID.toString(), id);
+		EAVEntity entity = null;
+		try {
+			entity = entityCacheByID.get(id, new Callable<EAVEntity>() {
+
+				@Override
+				public EAVEntity call() throws Exception {
+					return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, EAVEntityFields.PK_ID.toString(), id);
+				}
+				
+			});
+			
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error while reading EAV entity from cache or database.", e);
+		}
+
+		return entity;	
+		
 	}
-	
-	
+		
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
@@ -141,7 +166,7 @@ public class CFWDBEAVEntity {
 		
 		EAVEntity entity = null;
 		try {
-			entity = entityCache.get(category+"-"+entityName, new Callable<EAVEntity>() {
+			entity = entityCacheByName.get(category+"-"+entityName, new Callable<EAVEntity>() {
 
 				@Override
 				public EAVEntity call() throws Exception {
@@ -163,10 +188,30 @@ public class CFWDBEAVEntity {
 		return entity;	
 	}
 	
+	
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
-	public static boolean checkExists(String category, String entityName) {
+	public static ArrayList<EAVEntity> selectLike(String category, String entityName) {
+				
+		return new CFWSQL(new EAVEntity())
+				.select()
+				.where().like(EAVEntityFields.CATEGORY, category)
+				.and().like(EAVEntityFields.NAME, entityName)
+				.getAsObjectListConvert(EAVEntity.class)
+				;
+	}
+	
+	
+	
+	/*****************************************************************************
+	 *  
+	 *****************************************************************************/
+	public static boolean checkExistsByName(String category, String entityName) {
+		
+		if(entityCacheByName.getIfPresent(category+"-"+entityName) != null) {
+			return true;
+		}
 		
 		return 0 < new CFWSQL(new EAVEntity())
 				.queryCache()
