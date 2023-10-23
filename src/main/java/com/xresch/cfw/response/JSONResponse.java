@@ -3,6 +3,7 @@ package com.xresch.cfw.response;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
@@ -18,10 +19,17 @@ public class JSONResponse extends AbstractTemplateJSON {
 	protected boolean success = true;
 	protected LinkedHashMap<String, JsonElement> jsonElements = new LinkedHashMap<>();
 	
+	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
 	public JSONResponse() {
 		super();
 	}
-
+	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
 	@Override
 	public StringBuilder buildResponse() {
 		
@@ -57,38 +65,68 @@ public class JSONResponse extends AbstractTemplateJSON {
 		return builder;
 	}
 	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
 	public void addCustomAttribute(String fieldname, Boolean bool) {
 		jsonElements.put(fieldname, new JsonPrimitive(bool));
 	}
 	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
 	public void addCustomAttribute(String fieldname, Integer number) {
 		jsonElements.put(fieldname, new JsonPrimitive(number));
 	}
 	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
 	public void addCustomAttribute(String fieldname, String string) {
 		jsonElements.put(fieldname, new JsonPrimitive(string));
 	}
 	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
 	public void addCustomAttribute(String fieldname, JsonElement element) {
 		jsonElements.put(fieldname, element);
 	}
 	
-	public void setPayLoad(String text) {
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
+	public void setPayload(String text) {
 		this.getContent()
 		.append("\"")
 		.append(CFW.JSON.escapeString(text))
 		.append("\"");
 	}
 	
-	
-	public void setPayLoad(JsonElement element) {
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
+	public void setPayload(JsonElement element) {
 		if(element == null) {
 			this.getContent().append("null");
 		}else {
 			this.getContent().append(CFW.JSON.toJSON(element));
 		}
 	}
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
+	public void setPayload(JsonArray array) {
+		if(array == null) {
+			this.getContent().append("null");
+		}else {
+			this.getContent().append(CFW.JSON.toJSON(array));
+		}
+	}
 	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
 	public void copyFrom(JSONResponse toCopy) {
 		if(toCopy != null) {
 			this.content = toCopy.content;
@@ -97,6 +135,9 @@ public class JSONResponse extends AbstractTemplateJSON {
 		}
 	}
 	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
 	@Override
 	public int getEstimatedSizeChars() {
 		
@@ -105,14 +146,23 @@ public class JSONResponse extends AbstractTemplateJSON {
 		return size;
 	}
 	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
 	public boolean isSuccess() {
 		return success;
 	}
 	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
 	public void setSuccess(boolean success) {
 		this.success = success;
 	}
 	
+	/****************************************************************************
+	 * 
+	 ****************************************************************************/
 	public void addAlert(MessageType type, String message) {
 		CFW.Context.Request.addAlertMessage(type, message);
 	}

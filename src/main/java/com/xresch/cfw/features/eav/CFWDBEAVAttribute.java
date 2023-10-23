@@ -151,6 +151,8 @@ public class CFWDBEAVAttribute {
 		
 		if(createIfNotExists) {
 			oneTimeCreate(entityID, attributeName);
+		}else if(!checkExists(entityID, attributeName)) {
+			return null;
 		}
 		
 		EAVAttribute attribute = null;

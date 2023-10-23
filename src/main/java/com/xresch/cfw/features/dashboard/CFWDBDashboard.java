@@ -17,6 +17,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFW.Context;
+import com.xresch.cfw._main.CFW.Context.Request;
+import com.xresch.cfw._main.CFW.DB;
+import com.xresch.cfw._main.CFW.DB.EAVStats;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -29,12 +33,14 @@ import com.xresch.cfw.features.core.AutocompleteList;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
+import com.xresch.cfw.features.eav.CFWDBEAVStats;
 import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 /**************************************************************************************************************
  * 
@@ -43,6 +49,8 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  **************************************************************************************************************/
 public class CFWDBDashboard {
 	
+	private static final String EAV_ATTRIBUTE_USERID = "userid";
+	private static final String EAV_ATTRIBUTE_DASHBOARDID = "dashboardid";
 	private static final String SQL_SUBQUERY_OWNER = "SELECT USERNAME FROM CFW_USER U WHERE U.PK_ID = T.FK_ID_USER";
 	private static final String SQL_SUBQUERY_ISFAVED = "(SELECT COUNT(*) FROM CFW_DASHBOARD_FAVORITE_MAP M WHERE M.FK_ID_USER = ? AND M.FK_ID_DASHBOARD = T.PK_ID) > 0";
 
@@ -230,6 +238,7 @@ public class CFWDBDashboard {
 				
 	}
 	
+
 	/***************************************************************
 	 * Return a list of all user dashboards as json string.
 	 * 
@@ -1058,6 +1067,43 @@ public class CFWDBDashboard {
 		}
 		
 		return CFW.JSON.toJSON(tags.toArray(new String[] {}));
+	}
+
+	/*****************************************************************
+	 *
+	 *****************************************************************/
+	static void pushEAVStats(String entityName, String dashboardID, int value) {
+		
+		Integer userID = CFW.Context.Request.getUserID();
+		String userIDString = (userID != null) ? ""+userID : null;
+		
+		LinkedHashMap<String, String> attributes = new LinkedHashMap<>();
+		attributes.put(EAV_ATTRIBUTE_DASHBOARDID, dashboardID);
+		attributes.put(EAV_ATTRIBUTE_USERID, userIDString);
+		
+		CFW.DB.EAVStats.pushStatsCounter(FeatureDashboard.EAV_STATS_CATEGORY, entityName, attributes, value);
+		
+	}
+	
+	/***************************************************************
+	 * Return a list of all user dashboards as json string.
+	 * 
+	 * @return Returns a result set with all users or null.
+	 ****************************************************************/
+	public static JsonArray getEAVStats(String boardID) {
+		
+		String category = FeatureDashboard.EAV_STATS_CATEGORY;
+		String entity = "%";
+		
+		LinkedHashMap<String, String> values = new LinkedHashMap<>();
+		values.put(EAV_ATTRIBUTE_DASHBOARDID, boardID);
+		
+		long latest = System.currentTimeMillis();
+		long earliest = CFWTimeUnit.y.offset(latest, -1);
+		
+		JsonArray array = CFWDBEAVStats.fetchStatsAsJsonArray(category, entity, values, earliest, latest);
+		
+		return array;
 	}
 		
 }

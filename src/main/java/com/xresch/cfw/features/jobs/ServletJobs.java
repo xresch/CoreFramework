@@ -181,7 +181,7 @@ public class ServletJobs extends HttpServlet
 		if(CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_ADMIN)
 		|| CFW.Context.Request.hasPermission(FeatureJobs.PERMISSION_JOBS_USER)) {
 			
-			jsonResponse.setPayLoad(CFW.Registry.Jobs.getTasksForUserAsJson());
+			jsonResponse.setPayload(CFW.Registry.Jobs.getTasksForUserAsJson());
 			
 			return;
 		}else {

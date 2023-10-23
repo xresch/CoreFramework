@@ -112,7 +112,7 @@ public class ServletAPI extends HttpServlet
 					}
 				}
 				
-				json.setPayLoad(array);
+				json.setPayload(array);
 			} catch (SQLException e) {
 				new CFWLog(logger).severe("SQLException occurred:"+e.getMessage(), e);
 				json.setSuccess(false);
@@ -177,7 +177,7 @@ public class ServletAPI extends HttpServlet
 			// Return data for overview Page
 			if(data != null) {
 				JSONResponse json = new JSONResponse();
-				json.setPayLoad(CFW.Registry.API.getJSONArray());
+				json.setPayload(CFW.Registry.API.getJSONArray());
 				return;
 			}
 		

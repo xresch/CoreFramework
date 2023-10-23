@@ -172,7 +172,7 @@ public class FeatureEAV extends CFWAppFeature {
 		}
 		
 		int millis = (int)(1000 * 60 * CFW.DB.Config.getConfigAsInt(CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_MAX_GRANULARITY));
-		taskEavStoreToDB = CFW.Schedule.runPeriodicallyMillis(0, millis, new TaskEAVStatsStoreToDB());
+		taskEavStoreToDB = CFW.Schedule.runPeriodicallyMillis(10000, millis, new TaskEAVStatsStoreToDB());
 		
 		//----------------------------------------
 		// Task: AgeOut
@@ -181,7 +181,8 @@ public class FeatureEAV extends CFWAppFeature {
 		}
 		
 		int millisAgeOut = (int)(1000 * 60 * CFW.DB.Config.getConfigAsInt(CONFIG_CATEGORY_EAV, FeatureEAV.CONFIG_AGE_OUT_INTERVAL));
-		taskEavAgeOut = CFW.Schedule.runPeriodicallyMillis(0, millisAgeOut, new TaskEAVStatsAgeOut());
+		millisAgeOut = 5000;
+		taskEavAgeOut = CFW.Schedule.runPeriodicallyMillis(10000, millisAgeOut, new TaskEAVStatsAgeOut());
 		
 	}
 

@@ -176,7 +176,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 		if(sampleDataElement != null 
 		&& !sampleDataElement.isJsonNull() 
 		&& sampleDataElement.getAsBoolean()) {
-			response.setPayLoad(createSampleData());
+			response.setPayload(createSampleData());
 			return;
 		}
 		
@@ -215,7 +215,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 		CFWQueryExecutor executor = new CFWQueryExecutor().checkPermissions(false);
 		CFWQueryResultList resultList = executor.parseAndExecuteAll(query, timeframe, queryParams);
 				
-		response.setPayLoad(resultList.toJson());	
+		response.setPayload(resultList.toJson());	
 	}
 	
 	/******************************************************************************

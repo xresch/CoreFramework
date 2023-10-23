@@ -65,7 +65,7 @@ public class APIQueryExecute extends APIDefinition{
 				
 				CFWQueryResultList resultArray = executor.parseAndExecuteAll(query, earliest, latest, timezoneOffsetMinutes);
 				
-				json.setPayLoad(resultArray.toJson());
+				json.setPayload(resultArray.toJson());
 				json.setSuccess(true);
 
 			}

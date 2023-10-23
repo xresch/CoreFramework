@@ -462,7 +462,7 @@ function cfw_dashboardlist_showPublicLink(id){
 /******************************************************************
  * Edit Dashboard
  ******************************************************************/
-function cfw_dashboardlist_editDashboard(id){
+/*function cfw_dashboardlist_editDashboard(id){
 	
 	var allDiv = $('<div id="cfw-dashboard">');	
 
@@ -484,6 +484,107 @@ function cfw_dashboardlist_editDashboard(id){
 	//-----------------------------------
 	CFW.http.createForm(CFW_DASHBOARDLIST_URL, {action: "getform", item: "editdashboard", id: id}, detailsDiv);
 	
+}
+*/
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboardlist_showStatistics(id){
+		
+	$.ajaxSetup({async: false});
+		CFW.http.postJSON(CFW_DASHBOARDLIST_URL, {action: 'fetch', item: 'dashboardstats', id: id}, function(data){
+				
+				if(data.payload != null){
+					
+					let statisticsTab = $('#dashboardStatisticsContent');
+					let payload = data.payload;
+					statisticsTab.html('');
+					
+					//---------------------------
+					// Render Settings
+					var dataToRender = {
+						data: payload,
+						titlefields: ["ENTITY"],
+						rendererSettings:{
+							chart: {
+								charttype: "area",
+								// How should the input data be handled groupbytitle|arrays 
+								datamode: 'groupbytitle',
+								xfield: "TIME",
+								yfield: "NORM",
+								type: "line",
+								xtype: "time",
+								ytype: "linear",
+								stacked: false,
+								legend: true,
+								axes: true,
+								ymin: 0,
+								ymax: null,
+								pointradius: 1,
+								spangaps: true,
+								padding: '2px',
+								multichart: true
+							}
+						}
+					};
+													
+					//--------------------------
+					// Render Widget
+					var renderer = CFW.render.getRenderer('chart');
+					
+					var renderResult = CFW.render.getRenderer('chart').render(dataToRender);	
+					statisticsTab.append(renderResult);
+								
+				}
+			}
+		);
+	$.ajaxSetup({async: true});
+}
+	
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboardlist_editDashboard(id){
+	
+
+	// ##################################################
+	// Create and show Modal
+	// ##################################################
+	var compositeDiv = $('<div id="editDashboardSettingsComposite">');
+	
+	// ----------------------------------
+	// Create Pill Navigation
+	var list = $('<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">');
+
+	list.append(
+		'<li class="nav-item"><a class="nav-link active" id="dashboardSettingsTab" data-toggle="pill" href="#dashboardSettingsContent" role="tab" ><i class="fas fa-tools mr-2"></i>Settings</a></li>'
+	  + '<li class="nav-item"><a class="nav-link" id="dashboardStatisticsTab" data-toggle="pill" href="#dashboardStatisticsContent" role="tab" onclick="cfw_dashboardlist_showStatistics('+id+')" ><i class="fas fa-chart-bar"></i>&nbsp;Statistics</a></li>'
+	);
+	
+	compositeDiv.append(list);
+	compositeDiv.append('<div id="settingsTabContent" class="tab-content">'
+			  +'<div class="tab-pane fade show active" id="dashboardSettingsContent" role="tabpanel" aria-labelledby="dashboardSettingsTab"></div>'
+			  +'<div class="tab-pane fade" id="dashboardStatisticsContent" role="tabpanel" aria-labelledby="dashboardStatisticsTab"></div>'
+		+'</div>' );	
+
+	//-----------------------------------
+	// Role Details
+	//-----------------------------------
+	
+	CFW.ui.showModalMedium(
+			CFWL('cfw_core_settings', 'Settings'), 
+			compositeDiv, 
+			"cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)",
+			true
+	);
+	
+	//-----------------------------------
+	// Load Form
+	//-----------------------------------
+	var elTargeto = compositeDiv.find('#dashboardSettingsContent');
+	CFW.http.createForm(CFW_DASHBOARDLIST_URL, {action: "getform", item: "editdashboard", id: id}, elTargeto );
+
+	$('#editDashboardSettingsComposite [data-toggle="tooltip"]').tooltip();		
 }
 
 /******************************************************************

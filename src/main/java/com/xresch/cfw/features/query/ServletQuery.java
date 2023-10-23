@@ -193,19 +193,19 @@ public class ServletQuery extends HttpServlet
 			case COMMAND:
 				CFWQueryCommand command = CFW.Registry.Query.createCommandInstance(pseudoQuery, componentName);
 				CFWQueryManualPageCommand commandPage = new CFWQueryManualPageCommand(componentName, command);
-				jsonResponse.setPayLoad(commandPage.content().readContents());
+				jsonResponse.setPayload(commandPage.content().readContents());
 			break;
 				
 			case FUNCTION:
 				CFWQueryFunction current = CFW.Registry.Query.createFunctionInstance(pseudoQuery.getContext(), componentName);
 				CFWQueryManualPageFunction functionPage = new CFWQueryManualPageFunction(componentName, current);
-				jsonResponse.setPayLoad(functionPage.content().readContents());
+				jsonResponse.setPayload(functionPage.content().readContents());
 			break;
 				
 			case SOURCE:
 				CFWQuerySource source = CFW.Registry.Query.createSourceInstance(pseudoQuery, componentName);
 				CFWQueryManualPageSource sourcePage = new CFWQueryManualPageSource(componentName, source);
-				jsonResponse.setPayLoad(sourcePage.content().readContents());
+				jsonResponse.setPayload(sourcePage.content().readContents());
 			break;
 			
 			default:
@@ -243,7 +243,7 @@ public class ServletQuery extends HttpServlet
 						);
 		
 		if(resultList != null) {
-			jsonResponse.setPayLoad(resultList.toJson());
+			jsonResponse.setPayload(resultList.toJson());
 			jsonResponse.setSuccess(true);
 		}else {
 			jsonResponse.setSuccess(false);

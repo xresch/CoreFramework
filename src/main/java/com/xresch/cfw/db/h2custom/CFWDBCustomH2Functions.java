@@ -1,5 +1,7 @@
 package com.xresch.cfw.db.h2custom;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,10 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
-import org.h2.api.AggregateFunction;
 import org.h2.tools.SimpleResultSet;
 
-import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.db.DBInterface;
 
 public class CFWDBCustomH2Functions {
@@ -37,6 +37,7 @@ public class CFWDBCustomH2Functions {
 				  "COUNT_ROWS"
 				, "CFW_ARRAY_DISTINCT"
 				, "CFW_ARRAY_CONTAINS_ANY_INT"
+				, "CFW_BIGDEC_DIVIDE"
 			};
 		
 		for(String name : functionNames ) {
@@ -67,6 +68,19 @@ public class CFWDBCustomH2Functions {
 		    executeQuery("select count(*) from " + tableName);
 		rs.next();
 		return rs.getLong(1); 
+	}
+	
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	public static BigDecimal CFW_BIGDEC_DIVIDE(Connection conn, BigDecimal dividend, BigDecimal divisor) throws SQLException {
+		System.out.println("===================");
+		System.out.println("dividend-float: "+dividend.floatValue());
+		System.out.println("dividend-scale: "+dividend.scale());
+		System.out.println("dividend-precision: "+dividend.scale());
+		System.out.println("result: " + dividend.divide(divisor, RoundingMode.HALF_UP));
+		
+		return dividend.divide(divisor, RoundingMode.HALF_UP); 
 	}
 	
 	/************************************************************************

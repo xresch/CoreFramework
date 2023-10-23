@@ -312,7 +312,7 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 				
 				
 				jsonArray.add(debugObject);
-				jsonResponse.setPayLoad(jsonArray);
+				jsonResponse.setPayload(jsonArray);
 				return;
 			}
 			
@@ -411,7 +411,7 @@ public class WidgetWebEvaluateResponse extends WidgetDefinition {
 		}
 
 		// Add jsonArray to the payload
-		jsonResponse.setPayLoad(jsonArray);
+		jsonResponse.setPayload(jsonArray);
 
 	}
 

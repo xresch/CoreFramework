@@ -162,13 +162,19 @@ public class CFWDBEAVValue {
 	 *****************************************************************************/
 	public static EAVValue selecFirstBy(int entityID, int attributeID, String value, boolean createIfNotExists) {
 		
+
 		if(createIfNotExists) {
 			oneTimeCreate(entityID, attributeID, value);
+		}else if(!checkExists(entityID, attributeID, value)) {
+			return null;
 		}
 		
+		
+		String cacheKey = entityID+"-"+attributeID+"-"+value;
 		EAVValue valueObject = null;
 		try {
-			valueObject = valueCacheByName.get(entityID+"-"+attributeID+"-"+value, new Callable<EAVValue>() {
+
+			valueObject = valueCacheByName.get(cacheKey, new Callable<EAVValue>() {
 
 				@Override
 				public EAVValue call() throws Exception {

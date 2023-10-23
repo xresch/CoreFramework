@@ -138,6 +138,9 @@ public class ServletDashboardList extends HttpServlet
 					case "admindashboards": 	jsonResponse.getContent().append(CFW.DB.Dashboards.getAdminDashboardListAsJSON());
 												break;	
 												
+					case "dashboardstats": 		jsonResponse.setPayload(CFW.DB.Dashboards.getEAVStats(ID));
+												break;	
+					
 					case "export": 				jsonResponse.getContent().append(CFW.DB.Dashboards.getJsonArrayForExport(ID));
 												break;									
 																										
