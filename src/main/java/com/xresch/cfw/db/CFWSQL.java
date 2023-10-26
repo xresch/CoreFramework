@@ -928,7 +928,7 @@ public class CFWSQL {
 			if(isCaseSensitive) {
 				query.append(" WHERE "+ALIAS+".\"").append(fieldname).append("\" = ?");	
 			}else {
-				query.append(" WHERE LOWER("+ALIAS+".").append(fieldname).append(") = LOWER(?)");	
+				query.append(" WHERE LOWER("+ALIAS+".\""+fieldname+"\") = LOWER(?)");	
 			}
 		}
 		values.add(value);
@@ -981,8 +981,9 @@ public class CFWSQL {
 	 * @return CFWSQL for method chaining
 	 ****************************************************************/
 	public CFWSQL isNull(Object fieldname) {
+
 		if(!isQueryCached()) {
-			query.append(" ").append(ALIAS+"."+fieldname).append(" IS NULL");
+			query.append(" ").append(ALIAS+".\""+fieldname+"\"").append(" IS NULL");
 		}
 		return this;
 	}
@@ -993,7 +994,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL whereIn(Object fieldname, Object value) {
 		if(!isQueryCached()) {
-			query.append(" WHERE ").append(ALIAS+"."+fieldname).append(" IN(?)");
+			query.append(" WHERE ").append(ALIAS+".\""+fieldname+"\"").append(" IN(?)");
 		}
 		values.add(value);
 		return this;

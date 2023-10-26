@@ -192,7 +192,7 @@ public class CFWDBEAVValue {
 								.select()
 								.where(EAVValueFields.FK_ID_ENTITY, entityID)
 								.and(EAVValueFields.FK_ID_ATTR, attributeID)
-								.isNull(EAVValueFields.VALUE)
+								.and().isNull(EAVValueFields.VALUE)
 								.getFirstAsObject()
 								;
 					}
@@ -222,7 +222,7 @@ public class CFWDBEAVValue {
 		
 		if(value != null) {
 			return 0 < new CFWSQL(new EAVValue())
-				.queryCache(cfwObjectClass, "-isNotNull")
+				.queryCache(cfwObjectClass, "-checkExists-isNotNull")
 				.selectCount()
 				.where(EAVValueFields.FK_ID_ENTITY, entityID)
 				.and(EAVValueFields.FK_ID_ATTR, attributeID)
@@ -232,11 +232,11 @@ public class CFWDBEAVValue {
 				
 		}else {
 			return 0 < new CFWSQL(new EAVValue())
-					.queryCache(cfwObjectClass, "-isNull")
+					.queryCache(cfwObjectClass, "-checkExists-isNull")
 					.selectCount()
 					.where(EAVValueFields.FK_ID_ENTITY, entityID)
 					.and(EAVValueFields.FK_ID_ATTR, attributeID)
-					.isNull(EAVValueFields.VALUE)
+					.and().isNull(EAVValueFields.VALUE)
 					.executeCount()
 					;
 		}
