@@ -497,12 +497,16 @@ function cfw_dashboardlist_showStatistics(id){
 	var dashStatsChartDiv = $('#dashStatsChartDiv');
 	var timepicker = $('#dashStatsTime');
 	if(timepicker.length == 0){
+		
+		statisticsTab.append("<p>Following charts show you average values per minute.</p>");
+
 		var timepicker = $('<input id="dashStatsTime" type="text">');
 		statisticsTab.append(timepicker);
 		cfw_initializeTimeframePicker("dashStatsTime", {offset: '1-d'}, function(){
 			cfw_dashboardlist_showStatistics(id);
 		});
 		
+				
 		dashStatsChartDiv =$('<div id="dashStatsChartDiv">');
 		statisticsTab.append(dashStatsChartDiv);
 		

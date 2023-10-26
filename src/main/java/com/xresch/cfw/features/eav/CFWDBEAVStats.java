@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.eav;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -8,11 +9,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import com.google.common.base.Joiner;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
@@ -21,9 +24,9 @@ import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
 import com.xresch.cfw.features.datetime.CFWDate;
-import com.xresch.cfw.features.eav.EAVEntity.EAVEntityFields;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsFields;
 import com.xresch.cfw.features.eav.EAVStats.EAVStatsType;
+import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
@@ -228,59 +231,152 @@ public class CFWDBEAVStats {
 					.where(EAVStatsFields.FK_ID_ENTITY, entity.id())
 					;
 
+			
 			for(int id : valueIDs) {
 				sql.and().arrayContains(EAVStatsFields.FK_ID_VALUES, id);
 			}
 			
 			sql.and().custom(" TIME >= ?", new Timestamp(earliest) )
 			   .and().custom(" TIME <= ?", new Timestamp(latest) )
+			   .groupby(EAVStatsFields.TIME,EAVStatsFields.FK_ID_ENTITY,EAVStatsFields.FK_ID_VALUES)
 			   ;
 
 			JsonArray result = sql.getAsJSONArray();
 			
 			//---------------------------------------
-			// Unnest Values
-			for(int i = 0; i < result.size(); i++) {
-				JsonObject current = result.get(i).getAsJsonObject();
-				
-				int fkidEntity =  current.get(EAVStatsFields.FK_ID_ENTITY.toString()).getAsInt();
-				JsonArray fkidValues =  current.get(EAVStatsFields.FK_ID_VALUES.toString()).getAsJsonArray();
-				
-				EAVEntity currentEntity = CFW.DB.EAVEntity.selectByID(fkidEntity);
-				
-				current.remove("PK_ID");
-						
-	
-				current.addProperty("CATEGORY", currentEntity.category());
-				current.addProperty("ENTITY", currentEntity.name());
-				
-				JsonObject attributesList = new JsonObject();
-				for(int k = 0; k < fkidValues.size(); k++) {
-					int valueID = fkidValues.get(k).getAsInt();
-					EAVValue eavValue = CFW.DB.EAVValue.selectByID(valueID);
-					EAVAttribute attribute = CFW.DB.EAVAttribute.selectByID(eavValue.foreignKeyAttribute());
-					attributesList.addProperty(attribute.name(), eavValue.value());
-					//current.addProperty(attribute.name().toUpperCase(), eavValue.value());
-				}
-				
-				current.add("ATTRIBUTES", attributesList);
-				
-				// Commented for performance reasons
-				// include again if someone wants it
-				/*
-				current.add(EAVStatsFields.TIME.name(),  		current.remove(EAVStatsFields.TIME.name()) );
-				current.add(EAVStatsFields.COUNT.name(), 		current.remove(EAVStatsFields.COUNT.name()) );
-				current.add(EAVStatsFields.MIN.name(), 			current.remove(EAVStatsFields.MIN.name()) );
-				current.add(EAVStatsFields.AVG.name(), 			current.remove(EAVStatsFields.AVG.name()) );
-				current.add(EAVStatsFields.MAX.name(), 			current.remove(EAVStatsFields.MAX.name()) );
-				current.add(EAVStatsFields.SUM.name(), 			current.remove(EAVStatsFields.SUM.name()) );
-				current.add(EAVStatsFields.GRANULARITY.name(), 	current.remove(EAVStatsFields.GRANULARITY.name()) );
-				*/
-			}
+			// Unnest Values & Group
+			// Note: Done like this to allow flexible number
+			// of attributes. No easy solution found to do this
+			// in DB directly.
+			result = unnestValuesAndGroupBy(result, attributes.keySet());
 			
 			resultAll.addAll(result);
 		}
 		return resultAll;
+	}
+
+	/********************************************************************************************
+	 * Get the values for the specified valueIDs.
+	 * @param groupByAttributes the attributes grouped by
+	 * 
+	 ********************************************************************************************/
+	private static JsonArray unnestValuesAndGroupBy(JsonArray result, Set<String> groupByAttributes) {
+		
+		JsonArray groupedResults = new JsonArray();
+		LinkedHashMap<String, ArrayList<JsonObject>> groupsMap = new LinkedHashMap<>();
+		
+		//=====================================================
+		// Unnest Values
+		//=====================================================
+		for(int i = 0; i < result.size(); i++) {
+			
+			//---------------------------------------
+			// Get Entity NAME & CATEGORY
+			JsonObject current = result.get(i).getAsJsonObject();
+			
+			int fkidEntity =  current.get(EAVStatsFields.FK_ID_ENTITY.toString()).getAsInt();
+			JsonArray fkidValues =  current.get(EAVStatsFields.FK_ID_VALUES.toString()).getAsJsonArray();
+			
+			EAVEntity currentEntity = CFW.DB.EAVEntity.selectByID(fkidEntity);
+			
+			current.remove("PK_ID");
+					
+			current.addProperty("CATEGORY", currentEntity.category());
+			current.addProperty("ENTITY", currentEntity.name());
+			
+			//---------------------------------------
+			// Get Values and add to Record
+			JsonObject attributesList = new JsonObject();
+			
+			for(int k = 0; k < fkidValues.size(); k++) {
+				int valueID = fkidValues.get(k).getAsInt();
+				EAVValue eavValue = CFW.DB.EAVValue.selectByID(valueID);
+				EAVAttribute attribute = CFW.DB.EAVAttribute.selectByID(eavValue.foreignKeyAttribute());
+				attributesList.addProperty(attribute.name(), eavValue.value());
+				//current.addProperty(attribute.name().toUpperCase(), eavValue.value());
+			}
+			
+			current.add("ATTRIBUTES", attributesList);
+			
+			//---------------------------------------
+			// Create Groups
+			String groupKey = fkidEntity+"_"+current.get(EAVStatsFields.TIME.toString()).getAsLong();
+			
+			for(String name : groupByAttributes) {
+				JsonElement attributeElement = current.get(name);
+				groupKey += "_";
+				if(attributeElement != null) {
+					if(!attributeElement.isJsonNull()) {
+						groupKey += attributeElement.getAsString();
+					}else {
+						groupKey += "cfwnullPlaceholder";
+					}
+				}
+			}
+			ArrayList<JsonObject> existingGroup = groupsMap.get(groupKey);
+			if(existingGroup == null) {
+				existingGroup = new ArrayList<JsonObject>();
+				groupsMap.put(groupKey, existingGroup);
+			}
+			
+			existingGroup.add(current);
+			
+		}
+						
+		//=====================================================
+		// Recalculate Values by Groups	
+		//=====================================================
+		for(ArrayList<JsonObject> currentArray : groupsMap.values()) {
+			
+			JsonObject target =  currentArray.get(0);
+			groupedResults.add(target);
+
+			//---------------------------------------
+			// No Calculation needed
+			if(currentArray.size() == 1) {
+				continue;
+			}
+			
+			//---------------------------------------
+			// Calculate COUNT, MIN, MAX, SUM
+			for(int k = 1; k < currentArray.size(); k++) {	
+				
+				JsonObject toMerge = currentArray.get(k);
+				
+				//---------------------------------------
+				// Merge it Together
+				int count = target.get(EAVStatsFields.COUNT.name() ).getAsInt();
+				BigDecimal min = target.get(EAVStatsFields.MIN.name() ).getAsBigDecimal();
+				BigDecimal max = target.get(EAVStatsFields.MAX.name() ).getAsBigDecimal();
+				BigDecimal sum = target.get(EAVStatsFields.SUM.name() ).getAsBigDecimal();
+				BigDecimal val = target.get(EAVStatsFields.VAL.name() ).getAsBigDecimal();
+				
+				int count2 = toMerge.get(EAVStatsFields.COUNT.name() ).getAsInt();
+				BigDecimal min2 = toMerge.get(EAVStatsFields.MIN.name() ).getAsBigDecimal();
+				BigDecimal max2 = toMerge.get(EAVStatsFields.MAX.name() ).getAsBigDecimal();
+				BigDecimal sum2 = toMerge.get(EAVStatsFields.SUM.name() ).getAsBigDecimal();
+				BigDecimal val2 = toMerge.get(EAVStatsFields.VAL.name() ).getAsBigDecimal();
+				
+				target.addProperty(EAVStatsFields.COUNT.name(), 		count+count2);
+				target.addProperty(EAVStatsFields.MIN.name(), 			(min.compareTo(min2) <= 0 ? min : min2) );
+				target.addProperty(EAVStatsFields.MAX.name(), 			(max.compareTo(max2) >= 0 ? max : max2) );
+				target.addProperty(EAVStatsFields.SUM.name(), 			sum.add(sum2) );
+				target.addProperty("VALSUM", 							val2.add(val2) );
+
+			}
+			
+			//---------------------------------------
+			// Calculate AVG and VAL
+			BigDecimal finalCount = new BigDecimal(target.get(EAVStatsFields.COUNT.name() ).getAsInt());
+			BigDecimal finalSum = target.get(EAVStatsFields.SUM.name() ).getAsBigDecimal();
+			BigDecimal valSum = target.remove("VALSUM").getAsBigDecimal();
+
+			target.addProperty(EAVStatsFields.AVG.name(), finalSum.divide(finalCount, RoundingMode.HALF_UP));
+			target.addProperty(EAVStatsFields.VAL.name(), valSum.divide(finalCount, RoundingMode.HALF_UP));
+			
+		}
+		
+		return groupedResults;
 	}
 	
 	/********************************************************************************************
