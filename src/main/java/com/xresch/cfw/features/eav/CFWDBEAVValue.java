@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.eav;
 
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -206,6 +207,34 @@ public class CFWDBEAVValue {
 
 		return valueObject;
 				
+	}
+	
+	/*****************************************************************************
+	 *  
+	 *****************************************************************************/
+	public static ArrayList<EAVValue> selectLike(int entityID, int attributeID, String valueLike) {
+		
+			
+		if(valueLike != null) {
+			return new CFWSQL(new EAVValue())
+					.distinct()
+					.select()
+					.where(EAVValueFields.FK_ID_ENTITY, entityID)
+					.and(EAVValueFields.FK_ID_ATTR, attributeID)
+					.and().like(EAVValueFields.VALUE, valueLike)
+					.getAsObjectListConvert(EAVValue.class)
+					;
+		}else {
+			return new CFWSQL(new EAVValue())
+					.distinct()
+					.select()
+					.where(EAVValueFields.FK_ID_ENTITY, entityID)
+					.and(EAVValueFields.FK_ID_ATTR, attributeID)
+					.and().isNull(EAVValueFields.VALUE)
+					.getAsObjectListConvert(EAVValue.class)
+					;
+		}
+		
 	}
 	
 	/*****************************************************************************

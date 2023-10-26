@@ -52,7 +52,9 @@ public class CFWSQL {
 	private boolean isQueryCached = false;
 	private boolean isNextSelectDistinct = false;
 	
+	// Alias used for the table
 	private String ALIAS = " T";
+	
 	private CFWObject object;
 	@SuppressWarnings("rawtypes")
 	private LinkedHashMap<String, CFWField> fields;
@@ -969,7 +971,7 @@ public class CFWSQL {
 	 ****************************************************************/
 	public CFWSQL arrayContains(Object fieldname, Object value) {
 		if(!isQueryCached()) {
-			query.append(" ARRAY_CONTAINS(").append(fieldname).append(", ?)");	
+			query.append(" ARRAY_CONTAINS("+ALIAS+".\""+fieldname+"\", ?)");	
 		}
 		values.add(value);
 		return this;
@@ -1185,9 +1187,9 @@ public class CFWSQL {
 	public CFWSQL like(Object fieldname, Object value, boolean isCaseSensitive) {
 		if(!isQueryCached()) {
 			if(isCaseSensitive) {
-				query.append(" ").append(ALIAS+"."+fieldname).append(" LIKE ").append(" ? ");
+				query.append(" "+ALIAS+".\""+fieldname+"\" LIKE ? ");
 			}else {
-				query.append(" LOWER(").append(ALIAS+"."+fieldname).append(") LIKE LOWER(").append("?) ");
+				query.append(" LOWER("+ALIAS+".\""+fieldname+"\") LIKE LOWER(?) ");
 			}
 		}
 

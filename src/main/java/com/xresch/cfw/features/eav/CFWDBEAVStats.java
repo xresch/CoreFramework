@@ -204,41 +204,67 @@ public class CFWDBEAVStats {
 		
 		ArrayList<EAVEntity> entityList = CFW.DB.EAVEntity.selectLike(category, entityName);
 		
+		//--------------------------------
+		// Iterate Entities
 		outer:
 		for(EAVEntity entity : entityList) {
 			TreeSet<Integer> valueIDs = new TreeSet<>();
 			
+			//--------------------------------
+			// Iterate Filtering Attributes 
+			CFWSQL partialSQL = new CFWSQL(null);
+			inner:
 			for(Entry<String, String> current : attributes.entrySet()) {
 				String attributeName = current.getKey();
 				String attributeValue = current.getValue();
 				
+				//--------------------------------
+				// Ignore '%', performance improvement
+				if(attributeValue != null && attributeValue.equals("%")) { 
+					continue inner; 
+				}
+				
+				//--------------------------------
+				// Get Attribute ID
 				EAVAttribute attribute = CFW.DB.EAVAttribute.selecFirstBy(entity.id(), attributeName, false);
 				if(attribute == null) {
 					new CFWLog(logger).warn("Attribute '"+attributeName+"' for entity '"+entityName+"' cannot be found.");
 					continue outer;
 				}
 				
-				EAVValue value = CFW.DB.EAVValue.selecFirstBy(entity.id(), attribute.id(), attributeValue, false); 
-				if(value == null) {
+				//--------------------------------
+				// Fetch Values		
+				ArrayList<EAVValue> valueArray = CFW.DB.EAVValue.selectLike(entity.id(), attribute.id(), attributeValue); 
+				if(!valueArray.isEmpty()) {
+					partialSQL.and().custom("(");
+						partialSQL.arrayContains(EAVStatsFields.FK_ID_VALUES, valueArray.get(0).id());
+						for(int i=1; i < valueArray.size(); i++) {
+							partialSQL.or().arrayContains(EAVStatsFields.FK_ID_VALUES, valueArray.get(i).id());
+						}
+					partialSQL.custom(") ");
+				}else {
 					new CFWLog(logger).warn("Value '"+attributeValue+"' for attribute '"+attributeName+"' and entity '"+entityName+"' cannot be found.");
 					continue outer;
 				}
-				valueIDs.add(value.id());
+				
 			}
 			
+			//--------------------------------
+			// Execute SQL for Each Entity
 			CFWSQL sql = new CFWSQL(new EAVStats())
 					.select()
 					.where(EAVStatsFields.FK_ID_ENTITY, entity.id())
+					.append(partialSQL)
 					;
 
-			
-			for(int id : valueIDs) {
-				sql.and().arrayContains(EAVStatsFields.FK_ID_VALUES, id);
-			}
+//			for(int id : valueIDs) {
+//				sql.and().arrayContains(EAVStatsFields.FK_ID_VALUES, id);
+//			}
 			
 			sql.and().custom(" TIME >= ?", new Timestamp(earliest) )
 			   .and().custom(" TIME <= ?", new Timestamp(latest) )
 			   .groupby(EAVStatsFields.TIME,EAVStatsFields.FK_ID_ENTITY,EAVStatsFields.FK_ID_VALUES)
+			   .dump()
 			   ;
 
 			JsonArray result = sql.getAsJSONArray();
@@ -251,7 +277,9 @@ public class CFWDBEAVStats {
 			result = unnestValuesAndGroupBy(result, attributes.keySet());
 			
 			resultAll.addAll(result);
+			
 		}
+		
 		return resultAll;
 	}
 
@@ -292,11 +320,16 @@ public class CFWDBEAVStats {
 				int valueID = fkidValues.get(k).getAsInt();
 				EAVValue eavValue = CFW.DB.EAVValue.selectByID(valueID);
 				EAVAttribute attribute = CFW.DB.EAVAttribute.selectByID(eavValue.foreignKeyAttribute());
-				attributesList.addProperty(attribute.name(), eavValue.value());
-				//current.addProperty(attribute.name().toUpperCase(), eavValue.value());
+				
+				if(groupByAttributes.contains(attribute.name())) {
+					current.addProperty(attribute.name().toUpperCase(), eavValue.value());
+				}
+				
+				//attributesList.addProperty(attribute.name(), eavValue.value());
+				
 			}
 			
-			current.add("ATTRIBUTES", attributesList);
+			//current.add("ATTRIBUTES", attributesList);
 			
 			//---------------------------------------
 			// Create Groups
@@ -339,6 +372,7 @@ public class CFWDBEAVStats {
 			
 			//---------------------------------------
 			// Calculate COUNT, MIN, MAX, SUM
+			
 			for(int k = 1; k < currentArray.size(); k++) {	
 				
 				JsonObject toMerge = currentArray.get(k);

@@ -505,8 +505,7 @@ function cfw_dashboardlist_showStatistics(id){
 		cfw_initializeTimeframePicker("dashStatsTime", {offset: '1-d'}, function(){
 			cfw_dashboardlist_showStatistics(id);
 		});
-		
-				
+			
 		dashStatsChartDiv =$('<div id="dashStatsChartDiv">');
 		statisticsTab.append(dashStatsChartDiv);
 		
