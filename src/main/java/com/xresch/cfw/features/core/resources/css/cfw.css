@@ -128,35 +128,53 @@ pre {
     border: 1px rgba(0,0,0,0) solid; 
 }
 
-.table-cfw-green, .table-cfw-green th, .table-cfw-green td, .table-cfw-green thead, .table-cfw-green tbody, .table-hover .table-cfw-green:hover {		background-color: var(--cfw-green); }
-.table-cfw-limegreen, .table-cfw-limegreen th, .table-cfw-limegreen td, .table-cfw-limegreen thead, .table-cfw-limegreen tbody, .table-hover .table-cfw-limegreen:hover {		background-color: var(--cfw-limegreen); }
-.table-cfw-yellow, .table-cfw-yellow th, .table-cfw-yellow td, .table-cfw-yellow thead, .table-cfw-yellow tbody, .table-hover .table-cfw-yellow:hover {		background-color: var(--cfw-yellow); }
-.table-cfw-orange, .table-cfw-orange th, .table-cfw-orange td, .table-cfw-orange thead, .table-cfw-orange tbody, .table-hover .table-cfw-orange:hover {		background-color: var(--cfw-orange); }
-.table-cfw-red, .table-cfw-red th, .table-cfw-red td, .table-cfw-red thead, .table-cfw-red tbody, .table-hover .table-cfw-red:hover {		background-color: var(--cfw-red); }
-.table-cfw-blue, .table-cfw-blue th, .table-cfw-blue td, .table-cfw-blue thead, .table-cfw-blue tbody, .table-hover .table-cfw-blue:hover {		background-color: var(--cfw-blue); }
-.table-cfw-indigo, .table-cfw-indigo th, .table-cfw-indigo td, .table-cfw-indigo thead, .table-cfw-indigo tbody, .table-hover .table-cfw-indigo:hover {		background-color: var(--cfw-indigo); }
-.table-cfw-purple, .table-cfw-purple th, .table-cfw-purple td, .table-cfw-purple thead, .table-cfw-purple tbody, .table-hover .table-cfw-purple:hover {		background-color: var(--cfw-purple); }
-.table-cfw-pink, .table-cfw-pink th, .table-cfw-pink td, .table-cfw-pink thead, .table-cfw-pink tbody, .table-hover .table-cfw-pink:hover {		background-color: var(--cfw-pink); }
-.table-cfw-teal, .table-cfw-teal th, .table-cfw-teal td, .table-cfw-teal thead, .table-cfw-teal tbody, .table-hover .table-cfw-teal:hover {		background-color: var(--cfw-teal); }
-.table-cfw-cyan, .table-cfw-cyan th, .table-cfw-cyan td, .table-cfw-cyan thead, .table-cfw-cyan tbody, .table-hover .table-cfw-cyan:hover {		background-color: var(--cfw-cyan); }
-.table-cfw-white, .table-cfw-white th, .table-cfw-white td, .table-cfw-white thead, .table-cfw-white tbody, .table-hover .table-cfw-white:hover {		background-color: var(--cfw-white); }
-.table-cfw-lightgray, .table-cfw-lightgray th, .table-cfw-lightgray td, .table-cfw-lightgray thead, .table-cfw-lightgray tbody, .table-hover .table-cfw-lightgray:hover {		background-color: var(--cfw-lightgray); }
-.table-cfw-gray, .table-cfw-gray th, .table-cfw-gray td, .table-cfw-gray thead, .table-cfw-gray tbody, .table-hover .table-cfw-gray:hover {		background-color: var(--cfw-gray); }
-.table-cfw-darkgray, .table-cfw-darkgray th, .table-cfw-darkgray td, .table-cfw-darkgray thead, .table-cfw-darkgray tbody, .table-hover .table-cfw-darkgray:hover {	background-color: var(--cfw-darkgray); }
-.table-cfw-black, .table-cfw-black th, .table-cfw-black td, .table-cfw-black thead, .table-cfw-black tbody, .table-hover .table-cfw-black:hover {		background-color: var(--cfw-black); }
+.table-cfw-green, .table-cfw-green th, .table-cfw-green td, .table-cfw-green thead, .table-cfw-green tbody {		background-color: var(--cfw-green); }
+.table-cfw-limegreen, .table-cfw-limegreen th, .table-cfw-limegreen td, .table-cfw-limegreen thead, .table-cfw-limegreen tbody{		background-color: var(--cfw-limegreen); }
+.table-cfw-yellow, .table-cfw-yellow th, .table-cfw-yellow td, .table-cfw-yellow thead, .table-cfw-yellow tbody{		background-color: var(--cfw-yellow); }
+.table-cfw-orange, .table-cfw-orange th, .table-cfw-orange td, .table-cfw-orange thead, .table-cfw-orange tbody{		background-color: var(--cfw-orange); }
+.table-cfw-red, .table-cfw-red th, .table-cfw-red td, .table-cfw-red thead, .table-cfw-red tbody {		background-color: var(--cfw-red); }
+.table-cfw-blue, .table-cfw-blue th, .table-cfw-blue td, .table-cfw-blue thead, .table-cfw-blue tbody{		background-color: var(--cfw-blue); }
+.table-cfw-indigo, .table-cfw-indigo th, .table-cfw-indigo td, .table-cfw-indigo thead, .table-cfw-indigo tbody {		background-color: var(--cfw-indigo); }
+.table-cfw-purple, .table-cfw-purple th, .table-cfw-purple td, .table-cfw-purple thead, .table-cfw-purple tbody {		background-color: var(--cfw-purple); }
+.table-cfw-pink, .table-cfw-pink th, .table-cfw-pink td, .table-cfw-pink thead, .table-cfw-pink tbody {		background-color: var(--cfw-pink); }
+.table-cfw-teal, .table-cfw-teal th, .table-cfw-teal td, .table-cfw-teal thead, .table-cfw-teal tbody {		background-color: var(--cfw-teal); }
+.table-cfw-cyan, .table-cfw-cyan th, .table-cfw-cyan td, .table-cfw-cyan thead, .table-cfw-cyan tbody{		background-color: var(--cfw-cyan); }
+.table-cfw-white, .table-cfw-white th, .table-cfw-white td, .table-cfw-white thead, .table-cfw-white tbody {		background-color: var(--cfw-white); }
+.table-cfw-lightgray, .table-cfw-lightgray th, .table-cfw-lightgray td, .table-cfw-lightgray thead, .table-cfw-lightgray tbody {		background-color: var(--cfw-lightgray); }
+.table-cfw-gray, .table-cfw-gray th, .table-cfw-gray td, .table-cfw-gray thead, .table-cfw-gray tbody {		background-color: var(--cfw-gray); }
+.table-cfw-darkgray, .table-cfw-darkgray th, .table-cfw-darkgray td, .table-cfw-darkgray thead, .table-cfw-darkgray tbody {	background-color: var(--cfw-darkgray); }
+.table-cfw-black, .table-cfw-black th, .table-cfw-black td, .table-cfw-black thead, .table-cfw-black tbody {		background-color: var(--cfw-black); }
 
+.table-hover tbody tr:hover,
+.table-hover tbody tr:hover td,
+.table-dark.table-hover tbody tr:hover,
+.table-dark.table-hover tbody tr:hover td,
+.table-hover .table-cfw-green:hover td,
+.table-hover .table-cfw-limegreen:hover td,
+.table-hover .table-cfw-yellow:hover td,
+.table-hover .table-cfw-orange:hover td,
+.table-hover .table-cfw-red:hover td,
+.table-hover .table-cfw-blue:hover td,
+.table-hover .table-cfw-indigo:hover td,
+.table-hover .table-cfw-purple:hover td,
+.table-hover .table-cfw-pink:hover td,
+.table-hover .table-cfw-teal:hover td,
+.table-hover .table-cfw-cyan:hover td,
+.table-hover .table-cfw-white:hover td,
+.table-hover .table-cfw-lightgray:hover td,
+.table-hover .table-cfw-gray:hover td,
+.table-hover .table-cfw-darkgray:hover td,
+.table-hover .table-cfw-black:hover td
+{
+    color: #fff;
+    background-color: var(--primary)!important; 
+}
  /*************************************************************************
  * Bootstrap overwrite & extensions
  *************************************************************************/
 
 .table-sm thead th {
     line-height: 1.0rem;
-}
-
-.table-hover tbody tr:hover,
-.table-dark.table-hover tbody tr:hover {
-    color: #fff;
-    background-color: var(--primary); 
 }
 
 .btn-xs {
