@@ -69,6 +69,9 @@ public class HTMLResponse extends AbstractHTMLResponse {
 				buildedPage.append("<meta charset=\"utf-8\">");
 				buildedPage.append("<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">");
 		    	buildedPage.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">");
+		    	// Set Content-Security-Policy header to avoid random errors with page load
+		    	// Allow all hosts to be able to load scripts from other locations, e.g. pyscript
+		    	buildedPage.append("<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self' 'unsafe-inline' 'unsafe-eval' *;\">");
 		    	buildedPage.append("<link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"/resources/images/favicon.ico\"/>");
 				buildedPage.append("<title>").append(this.pageTitle).append("</title>");
 				buildedPage.append(head);

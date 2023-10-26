@@ -147,7 +147,7 @@ public abstract class AbstractHTMLResponse extends AbstractResponse {
 	// Setters
 	//##############################################################################
 	public void setPageTitle(String pageTitle) { this.pageTitle = pageTitle; }
-	public void setHead(StringBuilder head) { this.head = head; }
+	public void setHeader(StringBuilder head) { this.head = head; }
 	public void setMenu(StringBuilder menu) { this.menu = menu; }
 	public void setFooter(StringBuilder footer) {this.footer = footer;}
 	public void setSupportInfo(StringBuilder comments) {this.supportInfo = comments;}
