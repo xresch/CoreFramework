@@ -218,6 +218,9 @@ public class CFWSessionData implements Serializable {
 	 * 
 	 ***********************************************************************/
 	public BTMenu getMenu() {
+		if(menu == null) {
+			loadMenu(isLoggedIn);
+		}
 		return menu;
 	}
 

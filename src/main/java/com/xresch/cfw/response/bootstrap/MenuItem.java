@@ -88,7 +88,7 @@ public class MenuItem extends HierarchicalHTMLItem {
 			boolean hasPermission = false;
 			HashMap<String, Permission> usersPermissions = CFW.Context.Request.getUserPermissions();
 			for(String permission : permissions) {
-				if(usersPermissions.containsKey(permission)) {
+				if(usersPermissions != null && usersPermissions.containsKey(permission)) {
 					hasPermission = true;
 					break;
 				}

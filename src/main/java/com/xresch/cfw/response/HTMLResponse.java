@@ -94,6 +94,7 @@ public class HTMLResponse extends AbstractHTMLResponse {
 				this.appendSectionTitle(buildedPage, "Menubar");
 				buildedPage.append("");
 				CFWSessionData sessionData = CFW.Context.Request.getSessionData();
+				
 				BTMenu menu = sessionData.getMenu();
 				if(menu != null) {
 					buildedPage.append(menu.getHTML());
