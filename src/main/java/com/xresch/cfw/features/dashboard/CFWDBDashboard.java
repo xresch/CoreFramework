@@ -1090,16 +1090,13 @@ public class CFWDBDashboard {
 	 * 
 	 * @return Returns a result set with all users or null.
 	 ****************************************************************/
-	public static JsonArray getEAVStats(String boardID) {
+	public static JsonArray getEAVStats(String boardID, long earliest, long latest) {
 		
 		String category = FeatureDashboard.EAV_STATS_CATEGORY;
 		String entity = "%";
 		
 		LinkedHashMap<String, String> values = new LinkedHashMap<>();
 		values.put(EAV_ATTRIBUTE_DASHBOARDID, boardID);
-		
-		long latest = System.currentTimeMillis();
-		long earliest = CFWTimeUnit.y.offset(latest, -1);
 		
 		JsonArray array = CFWDBEAVStats.fetchStatsAsJsonArray(category, entity, values, earliest, latest);
 		

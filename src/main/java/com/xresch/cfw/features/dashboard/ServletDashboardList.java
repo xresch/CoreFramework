@@ -20,6 +20,7 @@ import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
 import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
@@ -104,7 +105,6 @@ public class ServletDashboardList extends HttpServlet
 		String action = request.getParameter("action");
 		String item = request.getParameter("item");
 		String ID = request.getParameter("id");
-		String IDs = request.getParameter("ids");
 		//int	userID = CFW.Context.Request.getUser().id();
 			
 		JSONResponse jsonResponse = new JSONResponse();
@@ -138,7 +138,9 @@ public class ServletDashboardList extends HttpServlet
 					case "admindashboards": 	jsonResponse.getContent().append(CFW.DB.Dashboards.getAdminDashboardListAsJSON());
 												break;	
 												
-					case "dashboardstats": 		jsonResponse.setPayload(CFW.DB.Dashboards.getEAVStats(ID));
+					case "dashboardstats": 		String timeframeString = request.getParameter("timeframe");
+												CFWTimeframe time = new CFWTimeframe(timeframeString);
+												jsonResponse.setPayload(CFW.DB.Dashboards.getEAVStats(ID, time.getEarliest(), time.getLatest()));
 												break;	
 					
 					case "export": 				jsonResponse.getContent().append(CFW.DB.Dashboards.getJsonArrayForExport(ID));
@@ -196,6 +198,7 @@ public class ServletDashboardList extends HttpServlet
 										break;
 				}
 				break;	
+				
 			case "getform": 			
 				switch(item.toLowerCase()) {
 					case "editdashboard": 	createEditDashboardForm(jsonResponse, ID);

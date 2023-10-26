@@ -40,7 +40,7 @@ public class EAVStats extends CFWObject {
 		AVG,
 		MAX,
 		SUM,
-		NORM,
+		VAL,
 		GRANULARITY,
 	}
 	
@@ -101,8 +101,8 @@ public class EAVStats extends CFWObject {
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(BigDecimal.ZERO);
 	
-	private CFWField<BigDecimal> norm = CFWField.newBigDecimal(FormFieldType.NONE, EAVStatsFields.NORM)
-			.setDescription("A normalized value giving value per minute. Calculated using SUM divided by GRANULARITY.")
+	private CFWField<BigDecimal> val = CFWField.newBigDecimal(FormFieldType.NONE, EAVStatsFields.VAL)
+			.setDescription("A normalized value giving a value per minute. Calculated using SUM divided by GRANULARITY.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(BigDecimal.ZERO);
 	
@@ -132,7 +132,7 @@ public class EAVStats extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyEntity, foreignKeyValues, foreignKeyDate, time, count, min, avg, max, sum, norm, granularity);
+		this.addFields(id, foreignKeyEntity, foreignKeyValues, foreignKeyDate, time, count, min, avg, max, sum, val, granularity);
 	}
 	
 	/**************************************************************************************
@@ -161,6 +161,8 @@ public class EAVStats extends CFWObject {
 						EAVStatsFields.MIN.toString(),
 						EAVStatsFields.AVG.toString(),
 						EAVStatsFields.MAX.toString(),
+						EAVStatsFields.SUM.toString(),
+						EAVStatsFields.VAL.toString(),
 						EAVStatsFields.GRANULARITY.toString(),
 				};
 
@@ -266,7 +268,7 @@ public class EAVStats extends CFWObject {
 			this.max.setValue(bigCount);
 			this.avg.setValue(bigCount);
 			this.sum.setValue(bigCount);
-			this.norm.setValue(bigCount.divide(bigGranularity));
+			this.val.setValue(bigCount.divide(bigGranularity));
 			
 			return this;
 		}
@@ -279,7 +281,7 @@ public class EAVStats extends CFWObject {
 			this.avg.setValue(BigDecimal.ZERO);
 			this.max.setValue(BigDecimal.ZERO);
 			this.sum.setValue(BigDecimal.ZERO);
-			this.norm.setValue(BigDecimal.ZERO);
+			this.val.setValue(BigDecimal.ZERO);
 			return this;
 		}
 		
@@ -302,7 +304,7 @@ public class EAVStats extends CFWObject {
 		this.max.setValue(max);
 		this.avg.setValue(sum.divide(new BigDecimal(count)));
 		this.sum.setValue(sum);
-		this.norm.setValue(sum.divide(bigGranularity));
+		this.val.setValue(sum.divide(bigGranularity));
 		
 		return this;
 	}

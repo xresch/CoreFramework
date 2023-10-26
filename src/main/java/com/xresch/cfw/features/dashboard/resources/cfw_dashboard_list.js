@@ -490,16 +490,48 @@ function cfw_dashboardlist_showPublicLink(id){
  * 
  ******************************************************************************/
 function cfw_dashboardlist_showStatistics(id){
+	var statisticsTab = $('#dashboardStatisticsContent');
+	
+	//-----------------------------
+	// Create HTML Structure 
+	var dashStatsChartDiv = $('#dashStatsChartDiv');
+	var timepicker = $('#dashStatsTime');
+	if(timepicker.length == 0){
+		var timepicker = $('<input id="dashStatsTime" type="text">');
+		statisticsTab.append(timepicker);
+		cfw_initializeTimeframePicker("dashStatsTime", {offset: '1-d'}, function(){
+			cfw_dashboardlist_showStatistics(id);
+		});
 		
+		dashStatsChartDiv =$('<div id="dashStatsChartDiv">');
+		statisticsTab.append(dashStatsChartDiv);
+		
+
+	}
+	
+	//-----------------------------
+	// Clear chart
+	dashStatsChartDiv.html('');
+	
+	
+	//-----------------------------
+	// Fetch Data
+	;
+	
+	var requestParams = {
+		action: 'fetch'
+		, item: 'dashboardstats'
+		, id: id
+		, timeframe: timepicker.val()
+	};
+	
 	$.ajaxSetup({async: false});
-		CFW.http.postJSON(CFW_DASHBOARDLIST_URL, {action: 'fetch', item: 'dashboardstats', id: id}, function(data){
+		CFW.http.postJSON(CFW_DASHBOARDLIST_URL, requestParams, function(data){
 				
 				if(data.payload != null){
 					
-					let statisticsTab = $('#dashboardStatisticsContent');
 					let payload = data.payload;
-					statisticsTab.html('');
-					
+
 					//---------------------------
 					// Render Settings
 					var dataToRender = {
@@ -511,7 +543,7 @@ function cfw_dashboardlist_showStatistics(id){
 								// How should the input data be handled groupbytitle|arrays 
 								datamode: 'groupbytitle',
 								xfield: "TIME",
-								yfield: "NORM",
+								yfield: "VAL",
 								type: "line",
 								xtype: "time",
 								ytype: "linear",
@@ -533,7 +565,7 @@ function cfw_dashboardlist_showStatistics(id){
 					var renderer = CFW.render.getRenderer('chart');
 					
 					var renderResult = CFW.render.getRenderer('chart').render(dataToRender);	
-					statisticsTab.append(renderResult);
+					dashStatsChartDiv.append(renderResult);
 								
 				}
 			}
