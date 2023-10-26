@@ -153,6 +153,12 @@ pre {
     line-height: 1.0rem;
 }
 
+.table-hover tbody tr:hover,
+.table-dark.table-hover tbody tr:hover {
+    color: #fff;
+    background-color: var(--primary); 
+}
+
 .btn-xs {
     padding: 0.0rem 0.3em;
     font-size: 0.82031rem;
