@@ -39,9 +39,18 @@ public class TaskEAVStatsAgeOut extends CFWScheduledTask {
 			}
 			
 			//--------------------------
+			// Get Start Time
+			// Cannot take oldest as start time, as it might offset deep into 
+			// the timerange that still should be kept
+			Timestamp startTime = CFW.Time.offsetTimestamp(oldest, 0, 0, 0, 0, +1);
+			
+			while(startTime.getTime() > oldest.getTime()) {
+				startTime = CFW.Time.offsetTimestamp(startTime, 0, 0, 0, 0, -granularity);
+			}
+			
+			//--------------------------
 			// Iterate with offsets
-			Timestamp startTime = oldest;
-			Timestamp endTime = CFW.Time.offsetTimestamp(oldest, 0, 0, 0, 0, granularity);
+			Timestamp endTime = CFW.Time.offsetTimestamp(startTime, 0, 0, 0, 0, granularity);
 			
 			// do-while to execute at least once, else would not work if (endTime - startTime) < granularity
 			do {
