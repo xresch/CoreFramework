@@ -154,6 +154,7 @@ DONE
 - Tables: Improved hovering contrast by changing color to blue
 - User Management: Fixed bug in reloading user rights when changing roles & permissions
 - Dashboard: Dashboard Settings can now be edited when viewing the dashboard
+- Dashboard: Widget Checklist - Show URLs as links, remove button
 - Query Command: formatrecord - Added autocomplete options 
 
 

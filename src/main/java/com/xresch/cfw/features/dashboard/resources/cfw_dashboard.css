@@ -93,7 +93,7 @@
     overflow: hidden;
 }
 
-.strikethrough-checkbox + label {
+.strikethrough-checkbox > label {
     opacity: 0.5;
     font-style: oblique;
     text-decoration: line-through;

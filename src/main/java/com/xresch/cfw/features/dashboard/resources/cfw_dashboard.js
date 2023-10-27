@@ -809,6 +809,7 @@ function cfw_dashboard_widget_save_state(widgetObject, forceSave, defaultSetting
 			itemToUpdate = 'widgetdefaultsettings';
 		}
 
+		delete widgetObject.content;
 		// ----------------------------------
 		// Update Object
 		var params = {

@@ -70,6 +70,13 @@ function cfw_utils_replaceAll(string, search, replace) {
 }
 
 /************************************************************************************************
+ * Replaces all URLs in the string with html links.
+ ************************************************************************************************/
+function cfw_utils_urlToLink(string) {
+  return string.replaceAll(/(.*?)(http[s]?:\/\/[^\s]+)(.*?)/gm, '$1<a target=":blank" href="$2">$2</a>$3' );;
+}
+
+/************************************************************************************************
  * Converts null and undefined to the specified nullToThis value.
  * 
  ************************************************************************************************/
@@ -5164,6 +5171,7 @@ var CFW = {
 		isNullOrEmpty: cfw_utils_isNullOrEmpty,
 		nullTo: cfw_utils_nullTo,
 		setFloatPrecision: cfw_utils_setFloatPrecision,
+		urlToLink: cfw_utils_urlToLink,
 		replaceAll: cfw_utils_replaceAll,
 		randomInt: cfw_utils_randomInt,
 		clipboardRead: cfw_utils_clipboardRead,
