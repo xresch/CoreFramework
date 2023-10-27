@@ -1,5 +1,5 @@
 
-CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor-pointer" onclick="cfw_widget_checklist_triggerRemove(this)"></i>';
+CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor-pointer ml-1" onclick="cfw_widget_checklist_triggerRemove(this)"></i>';
 
 (function (){
 
@@ -85,24 +85,26 @@ function cfw_widget_checklist_checkboxChange(checkboxElement){
 		}
 		
 		//---------------------
-		// Handle Strikethrough
-		var newContent = '';
+		// Handle Items
+		var itemsUnchecked = '';
+		var itemsChecked = '';
 		group.find('input[type="checkbox"]').each(function(){
 			var currentBox = $(this);
 			var value = currentBox.attr('value');
 			var checked = currentBox.is(':checked');
 			
 			if (checked){
-				newContent += 'X '+value;
+				itemsChecked += 'X ' + value + "\r\n";
 			}else{
-				newContent += value;
+				itemsUnchecked += value + "\r\n";
 			}
-			newContent += "\r\n";
+			
 		});
 		
-		widgetObject.JSON_SETTINGS.content = newContent;
+		widgetObject.JSON_SETTINGS.content = itemsUnchecked + itemsChecked;
 		 
 		cfw_dashboard_widget_save_state(widgetObject, true); 
+		cfw_dashboard_widget_rerender(widgetObject.guid, true);
 	}else{
 		checkbox.prop("checked", !isChecked);
 		CFW.ui.addToastWarning('You don\'t have the required permissions to change this dashboard.');
@@ -127,8 +129,9 @@ function cfw_widget_checklist_triggerRemove(buttonElement){
 		var widgetObject = group.data('widgetObject');
 
 		//---------------------
-		// Handle Strikethrough
-		var newContent = '';
+		// Handle Items
+		var itemsUnchecked = '';
+		var itemsChecked = '';
 		group.find('input[type="checkbox"]').each(function(){
 			var currentBox = $(this);
 			var value = currentBox.attr('value');
@@ -139,14 +142,14 @@ function cfw_widget_checklist_triggerRemove(buttonElement){
 			}
 			
 			if (checked){
-				newContent += 'X '+value;
+				itemsChecked += 'X ' + value + "\r\n";
 			}else{
-				newContent += value;
+				itemsUnchecked += value + "\r\n";
 			}
-			newContent += "\r\n";
+			
 		});
 		
-		widgetObject.JSON_SETTINGS.content = newContent;
+		widgetObject.JSON_SETTINGS.content = itemsUnchecked + itemsChecked;
 		 
 		cfw_dashboard_widget_save_state(widgetObject, true); 
 		cfw_dashboard_widget_rerender(widgetObject.guid, true);
