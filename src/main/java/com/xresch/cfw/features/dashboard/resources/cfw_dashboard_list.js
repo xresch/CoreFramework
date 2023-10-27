@@ -386,7 +386,16 @@ function cfw_dashboardlist_createTabs(){
 }
 
 /******************************************************************
- * Create Role
+ * Edit
+ ******************************************************************/
+function cfw_dashboardlist_editDashboard(id){
+	
+	cfw_dashboardcommon_editDashboard(id, "cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)");
+	 
+}
+
+/******************************************************************
+ * Create
  ******************************************************************/
 function cfw_dashboardlist_createDashboard(){
 	
@@ -649,7 +658,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 				|| type == 'admindashboards'
 				|| (record.IS_EDITOR && record.ALLOW_EDIT_SETTINGS) ){
 					htmlString += '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
-						+'onclick="cfw_dashboardcommon_editDashboard('+id+');">'
+						+'onclick="cfw_dashboardlist_editDashboard('+id+')");">'
 						+ '<i class="fa fa-pen"></i>'
 						+ '</button>';
 				}else{

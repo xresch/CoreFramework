@@ -94,7 +94,7 @@ function cfw_dashboardcommon_showStatistics(id){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_dashboardcommon_editDashboard(id){
+function cfw_dashboardcommon_editDashboard(id, callbackJSOrFunc){
 	
 
 	// ##################################################
@@ -124,7 +124,7 @@ function cfw_dashboardcommon_editDashboard(id){
 	CFW.ui.showModalMedium(
 			CFWL('cfw_core_settings', 'Settings'), 
 			compositeDiv, 
-			"cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS)",
+			callbackJSOrFunc,
 			true
 	);
 	
