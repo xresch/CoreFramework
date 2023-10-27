@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.eav.EAVEntity.EAVEntityFields;
@@ -77,6 +78,22 @@ public class EAVValue extends CFWObject {
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
 		this.addFields(id, foreignKeyEntity, foreignKeyAttribute, value, custom);
+	}
+	
+	/**************************************************************************************
+	 * 
+	 **************************************************************************************/
+	public void updateTable() {
+		
+		// add constraint to make sure no duplicate values are in database.
+		new CFWSQL(null)
+			.custom("ALTER TABLE "+TABLE_NAME
+					+" ADD CONSTRAINT IF NOT EXISTS UNIQUE_VALUES UNIQUE("
+					+ EAVValueFields.FK_ID_ENTITY
+					+", "+EAVValueFields.FK_ID_ATTR
+					+", \""+EAVValueFields.VALUE+"\");")
+			.execute();
+			;
 	}
 	
 	/**************************************************************************************

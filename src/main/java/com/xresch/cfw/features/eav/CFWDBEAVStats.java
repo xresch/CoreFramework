@@ -263,8 +263,7 @@ public class CFWDBEAVStats {
 			
 			sql.and().custom(" TIME >= ?", new Timestamp(earliest) )
 			   .and().custom(" TIME <= ?", new Timestamp(latest) )
-			   .groupby(EAVStatsFields.TIME,EAVStatsFields.FK_ID_ENTITY,EAVStatsFields.FK_ID_VALUES)
-			   .dump()
+			   //.groupby(xxx) cannot group here
 			   ;
 
 			JsonArray result = sql.getAsJSONArray();

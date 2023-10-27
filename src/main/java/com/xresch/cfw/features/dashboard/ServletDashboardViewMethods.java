@@ -143,6 +143,11 @@ public class ServletDashboardViewMethods
 				CFW.Registry.Widgets.addFilesToResponse(html);
 
 				Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
+				if(dashboard == null) {
+					CFW.Messages.addWarningMessage("The dashboard with the id '"+dashboardID+"' does not exist.");
+					content.setLength(0);
+					return;
+				}
 				html.setPageTitle(dashboard.name());
 				html.addJavascriptData("dashboardName",  dashboard.name());
 				

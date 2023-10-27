@@ -1941,10 +1941,14 @@ public class CFWSQL {
 	 * debug purposes.
 	 ****************************************************************/
 	public CFWSQL dump() {
+		
 		System.out.println("################################################################");
 		System.out.println("###################### CFW SQL DUMP ############################");
 		System.out.println("################################################################");
 		
+		StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
+		StackTraceElement callingMethod = stacktrace[2];
+		System.out.println("Calling Method: "+callingMethod.toString());
 		if(object != null) {
 			System.out.println("Object Class: "+object.getClass());
 			System.out.println("Object Contents: "+ CFW.JSON.toJSONPretty(object));
