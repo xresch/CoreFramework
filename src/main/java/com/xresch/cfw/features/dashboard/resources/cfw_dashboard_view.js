@@ -1,7 +1,6 @@
 
 //works with public and user-based access
 var CFW_DASHBOARDVIEW_URL = CFW.http.getURLPath();
-var CFW_DASHBOARDLIST_URL = "./list";
 
 var CFW_DASHBOARD_URLPARAMS = CFW.http.getURLParamsDecoded();
 var CFW_DASHBOARD_PARAMS = null;
@@ -63,30 +62,8 @@ function cfw_dashboard_setURLParams(params){
  ******************************************************************/
 function cfw_dashboard_editDashboard(){
 	
-	var allDiv = $('<div id="cfw-dashboard">');	
+	cfw_dashboardcommon_editDashboard(CFW_DASHBOARD_URLPARAMS.id);
 
-	//-----------------------------------
-	// Role Details
-	//-----------------------------------
-	var detailsDiv = $('<div id="cfw-dashboard-details">');
-	detailsDiv.append('<h2>'+CFWL('cfw_dashboardlist_dashboard', "Dashboard")+' Details</h2>');
-	allDiv.append(detailsDiv);
-	
-	CFW.ui.showModalMedium(
-			CFWL("cfw_dashboardlist_editDashboard","Edit Dashboard"), 
-			allDiv);
-	
-	//-----------------------------------
-	// Load Form
-	//-----------------------------------
-	var requestParams = {
-		action: "getform"
-		, item: "editdashboard"
-		, id: CFW_DASHBOARD_URLPARAMS.id	
-	}
-	
-	CFW.http.createForm(CFW_DASHBOARDLIST_URL, requestParams, detailsDiv);
-	
 }
 
 

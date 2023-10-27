@@ -307,7 +307,7 @@ public class CFWParameter extends CFWObject {
 		//###############################################################################
 		// When changing this method you have to apply the same changes in the javascript 
 		// method:
-		// cfw_dashboard.js >> cfw_parameter_applyToFields()
+		// cfw_parameter.js >> cfw_parameter_applyToFields()
 		//
 		//###############################################################################
 	
