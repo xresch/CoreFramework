@@ -880,7 +880,13 @@ pre {
 	z-index: 24;
 	position: absolute;
     right: 18px;
+    opacity: 33%;
 }
+
+.cfw-dataviewer-settings-button:hover {
+	opacity: 100%;
+}
+
 .cfw-dataviewer-settings-button > .btn-xs {
 	position: relative;
     top: 37px;
