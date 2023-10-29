@@ -28,6 +28,8 @@ public class CFWDBEAVValue {
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBEAVValue.class.getName());
 	
+	private static Object SYNC_OBJECT_ONETIMECREATE = new Object();
+	
 	// Cache of "entityID-attributeID-value" and values
 	// used to reduce DB calls
 	private static Cache<String, EAVValue> valueCacheByName = CFW.Caching.addCache("CFW EAV Value(Name)", 
@@ -94,12 +96,13 @@ public class CFWDBEAVValue {
 			return null;
 		}
 		
-		boolean result = true; 
-		if( !checkExists(value.foreignKeyEntity(), value.foreignKeyAttribute(), value.value()) ) {
-			
-			return createGetPrimaryKey(value);
-			
+		// Can cause exceptions if not synched
+		synchronized (SYNC_OBJECT_ONETIMECREATE) {
+			if( !checkExists(value.foreignKeyEntity(), value.foreignKeyAttribute(), value.value()) ) {
+				return createGetPrimaryKey(value);
+			}
 		}
+
 		
 		return null;
 	}
@@ -171,7 +174,7 @@ public class CFWDBEAVValue {
 		}
 		
 		
-		String cacheKey = entityID+"-"+attributeID+"-"+value;
+		String cacheKey = getCacheByNameKey(entityID, attributeID, value);
 		EAVValue valueObject = null;
 		try {
 
@@ -208,6 +211,10 @@ public class CFWDBEAVValue {
 		return valueObject;
 				
 	}
+
+	private static String getCacheByNameKey(int entityID, int attributeID, String value) {
+		return entityID+"-"+attributeID+"-"+value;
+	}
 	
 	/*****************************************************************************
 	 *  
@@ -236,18 +243,16 @@ public class CFWDBEAVValue {
 		}
 		
 	}
-	
+		
 	/*****************************************************************************
 	 *  
 	 *****************************************************************************/
 	public static boolean checkExists(int entityID, int attributeID, String value) {
-		return checkExists(""+entityID, ""+attributeID, value);
-	}
-	
-	/*****************************************************************************
-	 *  
-	 *****************************************************************************/
-	public static boolean checkExists(String entityID, String attributeID, String value) {
+		
+		String cacheKey = getCacheByNameKey(entityID, attributeID, value);
+		if(valueCacheByName.getIfPresent(cacheKey) != null) {
+			return true;
+		}
 		
 		if(value != null) {
 			return 0 < new CFWSQL(new EAVValue())
