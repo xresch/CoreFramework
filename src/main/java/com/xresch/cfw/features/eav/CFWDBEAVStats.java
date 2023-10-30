@@ -394,18 +394,18 @@ public class CFWDBEAVStats {
 				target.addProperty(EAVStatsFields.MIN.name(), 			(min.compareTo(min2) <= 0 ? min : min2) );
 				target.addProperty(EAVStatsFields.MAX.name(), 			(max.compareTo(max2) >= 0 ? max : max2) );
 				target.addProperty(EAVStatsFields.SUM.name(), 			sum.add(sum2) );
-				target.addProperty("VALSUM", 							val2.add(val2) );
+				target.addProperty("VALSUM", 							val.add(val2) );
 
 			}
 			
 			//---------------------------------------
 			// Calculate AVG and VAL
-			BigDecimal finalCount = new BigDecimal(target.get(EAVStatsFields.COUNT.name() ).getAsInt());
+			BigDecimal count = new BigDecimal(currentArray.size());
 			BigDecimal finalSum = target.get(EAVStatsFields.SUM.name() ).getAsBigDecimal();
 			BigDecimal valSum = target.remove("VALSUM").getAsBigDecimal();
 
-			target.addProperty(EAVStatsFields.AVG.name(), finalSum.divide(finalCount, RoundingMode.HALF_UP));
-			target.addProperty(EAVStatsFields.VAL.name(), valSum.divide(finalCount, RoundingMode.HALF_UP));
+			target.addProperty(EAVStatsFields.AVG.name(), finalSum.divide(count, RoundingMode.HALF_UP));
+			target.addProperty(EAVStatsFields.VAL.name(), valSum.divide(count, RoundingMode.HALF_UP));
 			
 		}
 		
