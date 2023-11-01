@@ -37,9 +37,9 @@ CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor
 			 		if(value.toLowerCase().startsWith("x ")){
 			 			value = value.slice(1);
 			 			checked = 'checked="checked"';
+						removeButton = CFW_WIDGET_CHECKLIST_REMOVE_BUTTON;
 			 			if(widgetObject.JSON_SETTINGS.strikethrough){
 			 				strikethrough = 'strikethrough-checkbox';
-							removeButton = CFW_WIDGET_CHECKLIST_REMOVE_BUTTON;
 			 			}
 			 		}
 			 		var checkboxDiv = $(
@@ -76,9 +76,12 @@ function cfw_widget_checklist_checkboxChange(checkboxElement){
 		
 		//---------------------
 		// Handle Strikethrough
-		if(isChecked && widgetObject.JSON_SETTINGS.strikethrough){
-			parent.addClass('strikethrough-checkbox');
+		if(isChecked){
 			parent.find('label').after(CFW_WIDGET_CHECKLIST_REMOVE_BUTTON);
+			if(widgetObject.JSON_SETTINGS.strikethrough){
+				parent.addClass('strikethrough-checkbox');
+			}
+			
 		}else{
 			parent.removeClass('strikethrough-checkbox');
 			parent.find('i').remove();
