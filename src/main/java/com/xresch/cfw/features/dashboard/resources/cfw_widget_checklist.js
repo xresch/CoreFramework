@@ -1,4 +1,5 @@
 
+//CFW_WIDGET_CHECKLIST_EDIT_BUTTON = '<i class="fas fa-pen cursor-pointer ml-1" onclick="cfw_widget_checklist_triggerEdit(this)"></i>';
 CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor-pointer ml-1" onclick="cfw_widget_checklist_checkboxChange(this, true)"></i>';
 
 (function (){
@@ -32,22 +33,22 @@ CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor
 			 		var value = lines[i].trim();
 			 		var checked = "";
 			 		var strikethrough = ''; 
-			 		var removeButton = ''; 
+			 		var button = ''; 
 
 			 		if(value.toLowerCase().startsWith("x ")){
 			 			value = value.slice(1);
 			 			checked = 'checked="checked"';
-						removeButton = CFW_WIDGET_CHECKLIST_REMOVE_BUTTON;
+						button = CFW_WIDGET_CHECKLIST_REMOVE_BUTTON;
 			 			if(widgetObject.JSON_SETTINGS.strikethrough){
 			 				strikethrough = 'strikethrough-checkbox';
 			 			}
 			 		}
 			 		var checkboxDiv = $(
 			 			'<div class="form-check '+strikethrough+'">'
-							+'<input class="form-input d-none" type="text" onenter="cfw_widget_checklist_checkboxChange(this, false)" id="'+checkboxGUID+'" '+checked+' >'
+							+'<input class="form-input form-input-sm w-100 valuebox d-none" type="text" onkeypress="cfw_widget_checklist_editKeyPress(event, this)" id="'+checkboxGUID+'" '+checked+' >'
 			 				+'<input class="form-check-input" type="checkbox" onchange="cfw_widget_checklist_checkboxChange(this, false)" id="'+checkboxGUID+'" '+checked+' >'
-							+'<label class="form-check-label" for="'+checkboxGUID+'"></label>'
-			 				+ removeButton
+							+'<label class="form-check-label" ondblclick="cfw_widget_checklist_triggerEdit(this)" for="'+checkboxGUID+'"></label>'
+			 				+ button
 			 			+'</div>');
 			 		checkboxDiv.find('.form-input').val(value);
 			 		checkboxDiv.find('label').html(CFW.utils.urlToLink(value));
@@ -61,6 +62,57 @@ CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor
 		}
 	);
 })();
+
+/**********************************************************************
+ *
+ **********************************************************************/
+function cfw_widget_checklist_triggerEdit(element){
+	console.log("edit")
+	var parent = $(element).closest('.form-check');
+	var checkbox = parent.find('.form-check-input');
+	var label = parent.find('.form-check-label');
+	var valuebox = parent.find('.valuebox');
+	
+	label.addClass("d-none");
+	checkbox.addClass("d-none");
+	
+	valuebox.removeClass("d-none");
+	valuebox.focus();
+	
+}
+
+/**********************************************************************
+ *
+ **********************************************************************/
+function cfw_widget_checklist_editKeyPress(e){
+	
+	console.log("confirm")
+	
+	//---------------------------
+	// Do nothing if not Enter
+	if ( e.keyCode != 13) {
+		return;
+	}
+	
+	//---------------------------
+	// Revert display and save
+	var element = event.target || event.srcElement;
+
+	var parent = $(element).closest('.form-check');
+	var checkbox = parent.find('.form-check-input');
+	var label = parent.find('.form-check-label');
+	var valuebox = parent.find('.valuebox');
+	
+	label.html(CFW.utils.urlToLink(valuebox.val()));
+	
+	label.removeClass("d-none");
+	checkbox.removeClass("d-none");
+	
+	valuebox.addClass("d-none");
+	
+	cfw_widget_checklist_checkboxChange(element, false);
+	
+}
 	
 /**********************************************************************
  *
