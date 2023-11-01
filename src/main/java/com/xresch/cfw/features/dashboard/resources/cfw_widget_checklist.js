@@ -1,5 +1,5 @@
 
-CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor-pointer ml-1" onclick="cfw_widget_checklist_triggerRemove(this)"></i>';
+CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor-pointer ml-1" onclick="cfw_widget_checklist_checkboxChange(this, true)"></i>';
 
 (function (){
 
@@ -44,11 +44,12 @@ CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor
 			 		}
 			 		var checkboxDiv = $(
 			 			'<div class="form-check '+strikethrough+'">'
-			 				+'<input class="form-check-input" type="checkbox" onchange="cfw_widget_checklist_checkboxChange(this)" id="'+checkboxGUID+'" '+checked+' >'
+							+'<input class="form-input d-none" type="text" onenter="cfw_widget_checklist_checkboxChange(this, false)" id="'+checkboxGUID+'" '+checked+' >'
+			 				+'<input class="form-check-input" type="checkbox" onchange="cfw_widget_checklist_checkboxChange(this, false)" id="'+checkboxGUID+'" '+checked+' >'
 							+'<label class="form-check-label" for="'+checkboxGUID+'"></label>'
 			 				+ removeButton
 			 			+'</div>');
-			 		checkboxDiv.find('input').val(value);
+			 		checkboxDiv.find('.form-input').val(value);
 			 		checkboxDiv.find('label').html(CFW.utils.urlToLink(value));
 			 		checkboxGroup.append(checkboxDiv);
 			 	}
@@ -64,10 +65,11 @@ CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor
 /**********************************************************************
  *
  **********************************************************************/
-function cfw_widget_checklist_checkboxChange(checkboxElement){
-	var checkbox = $(checkboxElement);
+function cfw_widget_checklist_checkboxChange(element, doRemove){
+	
+	var parent = $(element).closest('.form-check');
+	var checkbox = parent.find('.form-check-input');
 	var isChecked = checkbox.prop("checked");
-	var parent = checkbox.closest('.form-check');
 	var group = checkbox.closest('.grid-stack-item');
 	
 	if(JSDATA.canEdit){
@@ -91,10 +93,15 @@ function cfw_widget_checklist_checkboxChange(checkboxElement){
 		// Handle Items
 		var itemsUnchecked = '';
 		var itemsChecked = '';
-		group.find('input[type="checkbox"]').each(function(){
-			var currentBox = $(this);
-			var value = currentBox.attr('value');
+		group.find('.form-check').each(function(){
+			var currentParent = $(this);
+			var currentBox = currentParent.find('.form-check-input');
+			var value = currentParent.find('.form-input').val();
 			var checked = currentBox.is(':checked');
+			
+			if(doRemove && checkbox.attr('id') == currentBox.attr('id') ){
+				return 1;
+			}
 			
 			if (checked){
 				itemsChecked += 'X ' + value + "\r\n";
@@ -118,7 +125,7 @@ function cfw_widget_checklist_checkboxChange(checkboxElement){
 /**********************************************************************
  *
  **********************************************************************/
-function cfw_widget_checklist_triggerRemove(buttonElement){
+/*function cfw_widget_checklist_triggerRemove(buttonElement){
 	
 	console.log('remove');
 	
@@ -161,4 +168,4 @@ function cfw_widget_checklist_triggerRemove(buttonElement){
 		checkbox.prop("checked", !isChecked);
 		CFW.ui.addToastWarning('You don\'t have the required permissions to change this dashboard.');
 	}
-}
+}*/
