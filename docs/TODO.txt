@@ -155,7 +155,7 @@ DONE
 - User Management: Fixed bug in reloading user rights when changing roles & permissions
 - Dashboard: Dashboard Settings can now be edited when viewing the dashboard
 - Dashboard: Display warning when dashboard does not exist.
-- Dashboard: Widget Checklist - Show URLs as links, remove button
+- Dashboard: Widget Checklist - Show URLs as links, Add/Edit/Remove functionality
 - Query Command: formatrecord - Added autocomplete options 
 
 

@@ -25,33 +25,16 @@ CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor
 				
 				//-------------------------
 				//Create List HTML
-				var checkboxGroup = $('<div class="form-group">');
+				var checkboxGroup = $('<div class="cfw-widget-checklist form-group w-100">');
 				checkboxGroup.data('widgetObject', widgetObject);
 				
+				checkboxGroup.append('<button type="button" class="btn btn-xs btn-primary mb-2" onclick="cfw_widget_checklist_triggerAdd(this)"> <i class="fas fa-plus"></i> </button>');
+				
 			 	for(var i = 0; i < lines.length; i++){
-			 		var checkboxGUID = "checkbox-"+CFW.utils.randomString(16);
-			 		var value = lines[i].trim();
-			 		var checked = "";
-			 		var strikethrough = ''; 
-			 		var button = ''; 
 
-			 		if(value.toLowerCase().startsWith("x ")){
-			 			value = value.slice(1);
-			 			checked = 'checked="checked"';
-						button = CFW_WIDGET_CHECKLIST_REMOVE_BUTTON;
-			 			if(widgetObject.JSON_SETTINGS.strikethrough){
-			 				strikethrough = 'strikethrough-checkbox';
-			 			}
-			 		}
-			 		var checkboxDiv = $(
-			 			'<div class="form-check '+strikethrough+'">'
-							+'<input class="form-input form-input-sm w-100 valuebox d-none" type="text" onkeypress="cfw_widget_checklist_editKeyPress(event, this)" id="'+checkboxGUID+'" '+checked+' >'
-			 				+'<input class="form-check-input" type="checkbox" onchange="cfw_widget_checklist_checkboxChange(this, false)" id="'+checkboxGUID+'" '+checked+' >'
-							+'<label class="form-check-label" ondblclick="cfw_widget_checklist_triggerEdit(this)" for="'+checkboxGUID+'"></label>'
-			 				+ button
-			 			+'</div>');
-			 		checkboxDiv.find('.form-input').val(value);
-			 		checkboxDiv.find('label').html(CFW.utils.urlToLink(value));
+			 		var value = lines[i].trim();
+
+			 		var checkboxDiv = cfw_widget_checklist_createCheckboxElement(value, widgetObject.JSON_SETTINGS.strikethrough);
 			 		checkboxGroup.append(checkboxDiv);
 			 	}
 			 				
@@ -66,8 +49,63 @@ CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor
 /**********************************************************************
  *
  **********************************************************************/
+function cfw_widget_checklist_createCheckboxElement(value, isStrikethrough, isChecked){
+	
+	var checkboxGUID = "checkbox-"+CFW.utils.randomString(8);
+	var checked = "";
+	var strikethrough = ''; 
+	var button = ''; 
+				
+	if(value.toLowerCase().startsWith("x ")){
+		value = value.slice(1);
+		isChecked = true;
+	}
+	
+	if(isChecked){
+		value = value.slice(1);
+		checked = 'checked="checked"';
+		button = CFW_WIDGET_CHECKLIST_REMOVE_BUTTON;
+		if(isStrikethrough){
+			strikethrough = 'strikethrough-checkbox';
+		}
+	}
+				
+	var checkboxDiv = $(
+		'<div class="form-check '+strikethrough+'">'
+			+'<input class="form-input form-input-sm w-100 valuebox d-none" type="text"'
+					+' onkeypress="cfw_widget_checklist_editKeyPress(event, this)"'
+					+' onblur="cfw_widget_checklist_confirmEdit(this)"'
+					+'>'
+			+'<input class="form-check-input" type="checkbox" onchange="cfw_widget_checklist_checkboxChange(this, false)" id="'+checkboxGUID+'" '+checked+' >'
+			+'<label class="form-check-label" ondblclick="cfw_widget_checklist_triggerEdit(this)" for="'+checkboxGUID+'"></label>'
+			+ button
+		+'</div>');
+	checkboxDiv.find('.form-input').val(value);
+	checkboxDiv.find('label').html(CFW.utils.urlToLink(value));
+	
+	return checkboxDiv;
+}
+	
+/**********************************************************************
+ *
+ **********************************************************************/
+function cfw_widget_checklist_triggerAdd(buttonElement){
+
+	var checklist = $(buttonElement).closest('.cfw-widget-checklist');
+	var newCheckboxItem = cfw_widget_checklist_createCheckboxElement("");
+
+	checklist.prepend(newCheckboxItem);
+	
+	var valuebox = newCheckboxItem.find('.valuebox');
+	cfw_widget_checklist_triggerEdit(valuebox);
+	
+}
+
+/**********************************************************************
+ *
+ **********************************************************************/
 function cfw_widget_checklist_triggerEdit(element){
-	console.log("edit")
+
 	var parent = $(element).closest('.form-check');
 	var checkbox = parent.find('.form-check-input');
 	var label = parent.find('.form-check-label');
@@ -96,7 +134,20 @@ function cfw_widget_checklist_editKeyPress(e){
 	
 	//---------------------------
 	// Revert display and save
+	
 	var element = event.target || event.srcElement;
+	$(element).blur();
+	//cfw_widget_checklist_confirmEdit(element);
+	
+}
+
+/**********************************************************************
+ *
+ **********************************************************************/
+function cfw_widget_checklist_confirmEdit(element){
+	
+	//---------------------------
+	// Revert display and save
 
 	var parent = $(element).closest('.form-check');
 	var checkbox = parent.find('.form-check-input');

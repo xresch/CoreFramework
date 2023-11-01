@@ -93,6 +93,18 @@
     overflow: hidden;
 }
 
+.cfw-widget-checklist button{
+	z-index: 24;
+    position: absolute;
+    right: 7px;
+    opacity: 33%;
+	
+}
+
+.cfw-widget-checklist button:hover{
+    opacity: 100%;
+	
+}
 .strikethrough-checkbox > label {
     opacity: 0.5;
     font-style: oblique;
