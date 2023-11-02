@@ -228,7 +228,6 @@ public class CFWDBEAVStats {
 				// Get Attribute ID
 				EAVAttribute attribute = CFW.DB.EAVAttribute.selecFirstBy(entity.id(), attributeName, false);
 				if(attribute == null) {
-					new CFWLog(logger).warn("Attribute '"+attributeName+"' for entity '"+entityName+"' cannot be found.");
 					continue outer;
 				}
 				
@@ -243,7 +242,6 @@ public class CFWDBEAVStats {
 						}
 					partialSQL.custom(") ");
 				}else {
-					new CFWLog(logger).warn("Value '"+attributeValue+"' for attribute '"+attributeName+"' and entity '"+entityName+"' cannot be found.");
 					continue outer;
 				}
 				

@@ -154,9 +154,11 @@ DONE
 
 ------- current -------
 - BREAKING CODE CHANGE: CFWConfig renamed and requires category parameter in several mathods
+- New Feature: EAV Tables with Statistics, plus query source 'eavstats'
 - Notifications: Fixed severe log messages showing up
 - Tables: Improved hovering contrast by changing color to blue
 - User Management: Fixed bug in reloading user rights when changing roles & permissions
+- Dashboard: Usage Statistics added, can be found in Settings 
 - Dashboard: Dashboard Settings can now be edited when viewing the dashboard
 - Dashboard: Display warning when dashboard does not exist.
 - Dashboard: Widget Checklist - Show URLs as links, Add/Edit/Remove functionality
