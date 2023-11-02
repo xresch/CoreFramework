@@ -548,7 +548,7 @@ public class DBInterface {
 			log.silent(isSilent)
 				.severe("Issue executing prepared statement: "+e.getLocalizedMessage(), e);
 			try {
-				if(conn != null && transactionConnection == null) { 
+				if(conn != null && transactionConnection.get() == null) { 
 					removeOpenConnection(conn);
 					conn.close(); 
 				}
@@ -562,6 +562,138 @@ public class DBInterface {
 		log.custom("sql", sql).end(Level.FINE);
 				 
 		return result;
+	}
+	
+	/********************************************************************************************
+	 * Returns the result or null if there was any issue.
+	 * 
+	 * @param isSilent write errors to log but do not propagate to client
+	 * @param sql string with placeholders
+	 * @param values the values to be placed in the prepared statement
+	 * @throws SQLException 
+	 ********************************************************************************************/
+	public CFWResultSet preparedExecuteQueryCFWResultSet(boolean isSilent, String sql, Object... values){	
+        
+		CFWLog log = new CFWLog(logger)
+				.start();
+		
+		Connection conn = null;
+		PreparedStatement prepared = null;
+		ResultSet result = null;
+		try {
+			//-----------------------------------------
+			// Initialize Variables
+			conn = this.getConnection();
+			prepared = conn.prepareStatement(sql);
+			
+			//-----------------------------------------
+			// Prepare Statement
+			DBInterface.prepareStatement(prepared, values);
+			
+			//-----------------------------------------
+			// Execute
+			result = prepared.executeQuery();
+			increaseDBCallsCount(conn, false);
+			
+			CFWResultSet cfwResult = new CFWResultSet(this);
+			
+			cfwResult.connection(conn)
+				     .isSilent(isSilent)
+					 .isResultSet(true) 
+					 .preparedStatement(prepared) 
+					 .sqlString(sql)
+					 .values(values) 
+					 .executionResult(true) 
+					 .updateCount(-1) 
+					 ;
+			
+			return cfwResult;
+			
+		} catch (SQLException e) {
+			increaseDBCallsCount(conn, true);
+			log.silent(isSilent)
+				.severe("Issue executing prepared statement: "+e.getLocalizedMessage(), e);
+			try {
+				if(conn != null && transactionConnection.get() == null) { 
+					removeOpenConnection(conn);
+					conn.close(); 
+				}
+				if(prepared != null) { prepared.close(); }
+			} catch (SQLException e2) {
+				log.silent(isSilent)
+					.severe("Issue closing resources.", e2);
+			}
+		} 
+		
+		log.custom("sql", sql).end(Level.FINE);
+				 
+		return new CFWResultSet(this);
+	}
+
+	/********************************************************************************************
+	 * 
+	 * @param request HttpServletRequest containing session data used for logging information(null allowed).
+	 * @param sql string with placeholders
+	 * @param values the values to be placed in the prepared statement
+	 * @return true if update count is > 0, false otherwise
+	 ********************************************************************************************/
+	public CFWResultSet preparedExecuteCFWResultSet(String sql, Object... values){	
+        
+		CFWLog log = new CFWLog(logger).start();
+		Connection conn = null;
+		PreparedStatement prepared = null;
+				
+		try {
+			//-----------------------------------------
+			// Initialize Variables
+			conn = this.getConnection();
+			
+			prepared = conn.prepareStatement(sql);
+			
+			//-----------------------------------------
+			// Prepare Statement
+			prepareStatement(prepared, values);
+			
+			//-----------------------------------------
+			// Execute
+			boolean isResultSet = prepared.execute();
+			boolean result = false;
+			if(!isResultSet && prepared.getUpdateCount() > 0) {
+				result = true;
+			}
+			increaseDBCallsCount(conn, false);
+			
+			CFWResultSet cfwResult = new CFWResultSet(this);
+			
+			cfwResult.connection(conn)
+					 .isResultSet(isResultSet) 
+					 .preparedStatement(prepared) 
+					 .sqlString(sql)
+					 .values(values) 
+					 .executionResult(result) 
+					 .updateCount(prepared.getUpdateCount() ) 
+					 ;
+			
+			log.custom("sql", sql).end(Level.FINE);
+			return cfwResult;
+			
+		} catch (SQLException e) {
+			increaseDBCallsCount(conn, true);
+			log.severe("Database Error: "+e.getMessage(), e);
+			
+			try {
+				if(conn != null && transactionConnection.get() == null) { 
+					removeOpenConnection(conn);
+					conn.close(); 
+				}
+				if(prepared != null) { prepared.close(); }
+			} catch (SQLException e2) {
+				log.severe("Issue closing resources.", e2);
+			}
+		} 
+		
+		log.custom("sql", sql).end(Level.FINE);
+		return new CFWResultSet(this);
 	}
 	
 	/********************************************************************************************
