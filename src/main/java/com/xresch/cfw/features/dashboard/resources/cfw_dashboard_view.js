@@ -507,7 +507,6 @@ function cfw_dashboard_widget_selectByGUID(widgetGUID){
 	return $('#'+widgetGUID);
 }
 	
-	
 /*******************************************************************************
  * 
  ******************************************************************************/
@@ -545,17 +544,53 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	}
 
 	// ##################################################
-	// Create and show Modal
+	// Create Description
 	// ##################################################
 	var compositeDiv = $('<div id="editWidgetComposite">');
-	compositeDiv.append('<p><strong>Widget:</strong>&nbsp;'+widgetDef.menulabel+'</p>');
-	compositeDiv.append('<p><strong>Description:</strong>&nbsp;'+widgetDef.description+'</p>');
 	
+	//---------------------------
+	// Create Panel
+	 var panelSettings = {
+			cardstyle: null,
+			textstyle: null,
+			textstyleheader: 'white',
+			title: "Manual",
+			body: "&nbsp;",
+			narrow: true,
+			maxheight: '50vh'
+	};
+	
+	var cfwPanel = new CFWPanel(panelSettings);
+	cfwPanel.appendTo(compositeDiv);
+	
+	cfwPanel.onclick(function(event){ 
+		var params = {
+			action: 'fetch'
+			, item: 'manualpage'
+			, type: widgetObject.TYPE
+		};
+		
+		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, 
+			function(data){
+				if(data.payload != null){
+					cfwPanel.panelBody.html(data.payload);							
+				}
+			}
+		);
+	});
+	
+	//compositeDiv.append('<p><strong>Widget:</strong>&nbsp;'+widgetDef.menulabel+'</p>');
+	//compositeDiv.append('<p><strong>Description:</strong>&nbsp;'+widgetDef.description+'</p>');
+	
+	//---------------------------
+	// Create Panel
 	//used for autocomplete parameter substitution
 	compositeDiv.append('<div id="edited-widget-type" class="d-none">'+widgetObject.TYPE+'</div>');
-		
-	// ----------------------------------
-	// Create Pill Navigation
+	
+	// ##################################################
+	// Pill Navigation
+	// ##################################################
+
 	var list = $('<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">');
 
 	list.append(

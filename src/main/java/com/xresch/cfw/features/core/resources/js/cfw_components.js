@@ -383,6 +383,8 @@ class CFWPanel{
 			body: "&nbsp;",
 			//set to true to make the header smaller
 			narrow: false,
+			// set a max height for the content before scrolling occurs
+			maxheight: null
 		}
 		 
 		 Object.assign(this.settings, customSettings);
@@ -401,7 +403,6 @@ class CFWPanel{
 		 this.panel = $(document.createElement("div"));
 		 this.panel.addClass(panelClasses);
 	
-		 
 		 this.counter = CFW_GLOBAL_PANEL_COUNTER++;
 		
 		//----------------------------
@@ -409,7 +410,7 @@ class CFWPanel{
 		this.panelHeader = $(document.createElement("div"));
 		this.panelHeader.addClass(panelHeaderClasses);
 		this.panelHeader.attr("id", "panelHead"+this.counter);	
-		
+				
 		//----------------------------
 		// Create Body
 		this.panelBody = $(document.createElement("div"));
@@ -473,6 +474,10 @@ class CFWPanel{
 		// Create Body
 		
 		this.panelBody.addClass("card-body");
+		if(this.settings.maxheight != null){
+			this.panelBody.css("max-height", this.settings.maxheight);
+			this.panelBody.css("overflow-y", "scroll");
+		}
 		collapseContainer.append(this.panelBody);
 		this.panelBody.append(this.settings.body);
 		
@@ -480,6 +485,17 @@ class CFWPanel{
 		 
 	 }
 
+	 /********************************************
+	  * Return the JQuery PanelBody object
+	  * @param 
+	  ********************************************/
+	 onclick(callbackFunction){
+		
+		if(callbackFunction != null){
+			this.panelHeader.on("click", callbackFunction);
+		}	
+		
+	 }
 	 /********************************************
 	  * Return the JQuery PanelBody object
 	  * @param 

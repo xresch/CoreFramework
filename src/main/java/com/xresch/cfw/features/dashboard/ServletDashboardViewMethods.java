@@ -3,12 +3,10 @@ package com.xresch.cfw.features.dashboard;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
@@ -31,6 +29,7 @@ import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.datahandling.CFWSchedule.EndType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.dashboard.DashboardWidget.DashboardWidgetFields;
+import com.xresch.cfw.features.dashboard.widgets.ManualPageWidget;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
@@ -41,6 +40,8 @@ import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
 import com.xresch.cfw.features.jobs.CFWJobTask;
 import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.parameter.FeatureParameter;
+import com.xresch.cfw.features.query.CFWQuery;
+import com.xresch.cfw.features.query.CFWQueryManualPageSource;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
@@ -215,6 +216,9 @@ public class ServletDashboardViewMethods
 												break;	
 					
 					case "widgetdata": 			fetchWidgetData(request, response, jsonResponse);
+												break;	
+												
+					case "manualpage": 			getManualPage(request, jsonResponse);
 												break;	
 												
 					case "settingsformwidget":  getSettingsFormWidget(request, response, jsonResponse);
@@ -537,6 +541,17 @@ public class ServletDashboardViewMethods
 
 	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private static void getManualPage(HttpServletRequest request, JSONResponse jsonResponse) {
+		String widgetType = request.getParameter("type");
+		
+		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
+		ManualPageWidget page = new ManualPageWidget(definition);
+		jsonResponse.setPayload(page.content().readContents());
+
+	}
 	/*****************************************************************
 	 *
 	 *****************************************************************/
