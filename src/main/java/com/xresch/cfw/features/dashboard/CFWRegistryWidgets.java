@@ -48,7 +48,8 @@ public class CFWRegistryWidgets {
 			HashMap<Locale, FileDefinition> localeFiles = definition.getLocalizationFiles();
 			if(localeFiles != null) {
 				for(Entry<Locale, FileDefinition> entry : localeFiles.entrySet()) {
-					CFW.Localization.registerLocaleFile(entry.getKey(), "/app/dashboard/view", entry.getValue());
+					CFW.Localization.registerLocaleFile(entry.getKey(), FeatureDashboard.URI_DASHBOARD_VIEW, entry.getValue());
+					CFW.Localization.registerLocaleFile(entry.getKey(), FeatureDashboard.URI_DASHBOARD_VIEW_PUBLIC, entry.getValue());
 				}
 			}
 			

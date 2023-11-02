@@ -31,17 +31,14 @@ public class FeatureDBExtensions extends CFWAppFeature {
 		
 		//----------------------------------
 		// Register Locales
-		CFW.Localization.registerLocaleFile(
-				Locale.ENGLISH, 
-				FeatureDashboard.URI_DASHBOARD_VIEW, 
-				new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDBExtensions.PACKAGE_RESOURCE, "lang_en_dbextensions.properties")
-		);
 		
-		CFW.Localization.registerLocaleFile(
-				Locale.ENGLISH, 
-				FeatureJobs.getJobsURI(), 
-				new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDBExtensions.PACKAGE_RESOURCE, "lang_en_dbextensions.properties")
-		);
+		FileDefinition english = new FileDefinition(HandlingType.JAR_RESOURCE, FeatureDBExtensions.PACKAGE_RESOURCE, "lang_en_dbextensions.properties");
+		
+		CFW.Localization.registerLocaleFile(Locale.ENGLISH, FeatureDashboard.URI_DASHBOARD_VIEW, english);
+		CFW.Localization.registerLocaleFile(Locale.ENGLISH, FeatureDashboard.URI_DASHBOARD_VIEW_PUBLIC, english);
+		CFW.Localization.registerLocaleFile(Locale.ENGLISH, FeatureManual.URI_MANUAL, english);
+		
+		CFW.Localization.registerLocaleFile(Locale.ENGLISH, FeatureJobs.getJobsURI(), english);
 		
 		//----------------------------------
 		// Register Manual Page
