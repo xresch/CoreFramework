@@ -27,9 +27,9 @@ public class GenericJDBCEnvironment extends AbstractContextSettings {
 		DB_CONNECTION_URL,
 		DB_USER,
 		DB_PASSWORD,
+		IS_UPDATE_ALLOWED,
 		TIME_ZONE,
 	}
-		
 	
 	private CFWField<String> dbDriver = CFWField.newString(FormFieldType.SELECT, GenericJDBCEnvironmentFields.DB_DRIVER)
 			.setDescription("The JDBC driver for your database solution. Copy the driver jar-File(s) to the folder ./extensions in the application root directory. (needs restart)")
@@ -48,6 +48,10 @@ public class GenericJDBCEnvironment extends AbstractContextSettings {
 			.disableSanitization()
 			.enableEncryption("genericjdbc_DB_PW_Salt");
 	
+	private CFWField<Boolean> isUpdateAllowed = CFWField.newBoolean(FormFieldType.BOOLEAN, GenericJDBCEnvironmentFields.IS_UPDATE_ALLOWED)
+			.setDescription("Defines if this database connection allows to execute updates.")
+			.setValue(false);
+	
 	private CFWField<String> timezone = CFWField.newString(FormFieldType.TIMEZONEPICKER, GenericJDBCEnvironmentFields.TIME_ZONE)
 			.setDescription("The timezone the database is using. Needed to manage differences from GMT properly.");
 			
@@ -56,7 +60,7 @@ public class GenericJDBCEnvironment extends AbstractContextSettings {
 	}
 		
 	private void initializeFields() {
-		this.addFields(dbDriver, dbConnectionURL, dbUser, dbPassword, timezone);
+		this.addFields(dbDriver, dbConnectionURL, dbUser, dbPassword,isUpdateAllowed, timezone);
 	}
 		
 	
@@ -121,6 +125,15 @@ public class GenericJDBCEnvironment extends AbstractContextSettings {
 	
 	public GenericJDBCEnvironment dbPassword(String value) {
 		this.dbPassword.setValue(value);
+		return this;
+	}	
+	
+	public Boolean isUpdateAllowed() {
+		return isUpdateAllowed.getValue();
+	}
+	
+	public GenericJDBCEnvironment isUpdateAllowed(Boolean value) {
+		this.isUpdateAllowed.setValue(value);
 		return this;
 	}	
 	

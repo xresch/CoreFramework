@@ -38,6 +38,20 @@ public class CFWQuerySourceMSSQL extends CFWQuerySourceDatabase {
 	 *
 	 ******************************************************************/
 	@Override
+	public boolean isUpdateAllowed(int environmentID) {
+		MSSQLEnvironment environment =
+				MSSQLEnvironmentManagement.getEnvironment(environmentID);
+
+		if(environment == null) { return false; }
+		
+		return environment.isUpdateAllowed();
+	
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
 	public String getTimezone(int environmentID) {
 		MSSQLEnvironment environment =
 				MSSQLEnvironmentManagement.getEnvironment(environmentID);

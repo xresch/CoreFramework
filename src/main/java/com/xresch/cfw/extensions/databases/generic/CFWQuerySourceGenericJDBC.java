@@ -32,6 +32,20 @@ public class CFWQuerySourceGenericJDBC extends CFWQuerySourceDatabase {
 		return environment.getDBInstance();
 	
 	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public boolean isUpdateAllowed(int environmentID) {
+		GenericJDBCEnvironment environment =
+				GenericJDBCEnvironmentManagement.getEnvironment(environmentID);
+
+		if(environment == null) { return false; }
+		
+		return environment.isUpdateAllowed();
+	
+	}
 
 	/******************************************************************
 	 *

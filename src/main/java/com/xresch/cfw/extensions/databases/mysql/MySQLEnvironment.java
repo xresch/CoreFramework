@@ -26,6 +26,7 @@ public class MySQLEnvironment extends AbstractContextSettings {
 		DB_NAME,
 		DB_USER,
 		DB_PASSWORD,
+		IS_UPDATE_ALLOWED,
 		TIME_ZONE,
 	}
 		
@@ -46,6 +47,10 @@ public class MySQLEnvironment extends AbstractContextSettings {
 			.disableSanitization()
 			.enableEncryption("mysql_DB_PW_Salt");
 	
+	private CFWField<Boolean> isUpdateAllowed = CFWField.newBoolean(FormFieldType.BOOLEAN, MySQLEnvironmentFields.IS_UPDATE_ALLOWED)
+			.setDescription("Defines if this database connection allows to execute updates.")
+			.setValue(false);
+	
 	private CFWField<String> timezone = CFWField.newString(FormFieldType.TIMEZONEPICKER, MySQLEnvironmentFields.TIME_ZONE)
 			.setDescription("The timezone the database is using. Needed to manage differences from GMT properly.");
 	
@@ -54,7 +59,7 @@ public class MySQLEnvironment extends AbstractContextSettings {
 	}
 		
 	private void initializeFields() {
-		this.addFields(dbHost, dbPort, dbName, dbUser, dbPassword, timezone);
+		this.addFields(dbHost, dbPort, dbName, dbUser, dbPassword, isUpdateAllowed, timezone);
 	}
 		
 	
@@ -128,6 +133,15 @@ public class MySQLEnvironment extends AbstractContextSettings {
 	
 	public MySQLEnvironment dbPassword(String value) {
 		this.dbPassword.setValue(value);
+		return this;
+	}	
+	
+	public Boolean isUpdateAllowed() {
+		return isUpdateAllowed.getValue();
+	}
+	
+	public MySQLEnvironment isUpdateAllowed(Boolean value) {
+		this.isUpdateAllowed.setValue(value);
 		return this;
 	}	
 	

@@ -27,6 +27,7 @@ public class OracleEnvironment extends AbstractContextSettings {
 		DB_TYPE,
 		DB_USER,
 		DB_PASSWORD,
+		IS_UPDATE_ALLOWED,
 		TIME_ZONE,
 	}
 		
@@ -52,6 +53,10 @@ public class OracleEnvironment extends AbstractContextSettings {
 			.disableSanitization()
 			.enableEncryption("oracle_DB_PW_Salt");
 	
+	private CFWField<Boolean> isUpdateAllowed = CFWField.newBoolean(FormFieldType.BOOLEAN, OracleEnvironmentFields.IS_UPDATE_ALLOWED)
+			.setDescription("Defines if this database connection allows to execute updates.")
+			.setValue(false);
+	
 	private CFWField<String> timezone = CFWField.newString(FormFieldType.TIMEZONEPICKER, OracleEnvironmentFields.TIME_ZONE)
 			.setDescription("The timezone the database is using. Needed to manage differences from GMT properly.");
 	
@@ -61,7 +66,7 @@ public class OracleEnvironment extends AbstractContextSettings {
 	}
 		
 	private void initializeFields() {
-		this.addFields(dbHost, dbPort, dbName, dbType, dbUser, dbPassword, timezone);
+		this.addFields(dbHost, dbPort, dbName, dbType, dbUser, dbPassword, isUpdateAllowed, timezone);
 	}
 		
 	
@@ -145,6 +150,15 @@ public class OracleEnvironment extends AbstractContextSettings {
 	
 	public OracleEnvironment dbPassword(String value) {
 		this.dbPassword.setValue(value);
+		return this;
+	}
+	
+	public Boolean isUpdateAllowed() {
+		return isUpdateAllowed.getValue();
+	}
+	
+	public OracleEnvironment isUpdateAllowed(Boolean value) {
+		this.isUpdateAllowed.setValue(value);
 		return this;
 	}	
 	

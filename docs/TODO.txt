@@ -161,6 +161,7 @@ DONE
 - Dashboard: Display warning when dashboard does not exist.
 - Dashboard: Widget Checklist - Show URLs as links, Add/Edit/Remove functionality
 - Dashboard: Widget - Added accessing manual page to widget settings
+- DB Extensions: Added option to context settings to allow updates on databases 
 - Query Command: formatrecord - Added autocomplete options 
 
 

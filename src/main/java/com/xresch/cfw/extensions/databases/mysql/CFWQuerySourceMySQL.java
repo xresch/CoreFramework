@@ -33,6 +33,20 @@ public class CFWQuerySourceMySQL extends CFWQuerySourceDatabase {
 		return environment.getDBInstance();
 	
 	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	@Override
+	public boolean isUpdateAllowed(int environmentID) {
+		MySQLEnvironment environment =
+				MySQLEnvironmentManagement.getEnvironment(environmentID);
+
+		if(environment == null) { return false; }
+		
+		return environment.isUpdateAllowed();
+	
+	}
 
 	/******************************************************************
 	 *

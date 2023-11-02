@@ -44,6 +44,11 @@ public abstract class CFWQuerySourceDatabase extends CFWQuerySource {
 	public abstract DBInterface getDatabaseInterface(int environmentID);
 
 	/******************************************************************
+	 * Return true if the database connection allows updates.
+	 ******************************************************************/
+	public abstract boolean isUpdateAllowed(int environmentID);
+	
+	/******************************************************************
 	 * Return the time zone for the given environment.
 	 ******************************************************************/
 	public abstract String getTimezone(int environmentID);
@@ -243,13 +248,14 @@ public abstract class CFWQuerySourceDatabase extends CFWQuerySource {
 		// Resolve Environment & Fetch Data
 
 		DBInterface dbInterface = this.getDatabaseInterface(environmentID);
+		boolean isQueryOnly = !isUpdateAllowed(environmentID);
 		
 		if(dbInterface == null) { return; }
 		
 		//add limiting to getAsJSONArray()
 		CFWResultSet cfwResult = new CFWSQL(dbInterface, null)
 				.custom(query)
-				.executeCFWResultSet(false);
+				.executeCFWResultSet(isQueryOnly);
 		
 		if(!cfwResult.isSuccess()) {
 			return;
@@ -257,6 +263,7 @@ public abstract class CFWQuerySourceDatabase extends CFWQuerySource {
 		
 		//-----------------------------
 		// Fetch Query Result
+
 		if(cfwResult.isResultSet()) {
 			ResultSetAsJsonReader resultReader = cfwResult.toJSONReader();
 			
