@@ -548,7 +548,7 @@ public class ServletDashboardViewMethods
 		String widgetType = request.getParameter("type");
 		
 		WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widgetType);
-		ManualPageWidget page = new ManualPageWidget(definition);
+		ManualPageWidget page = new ManualPageWidget(definition, false);
 		jsonResponse.setPayload(page.content().readContents());
 
 	}

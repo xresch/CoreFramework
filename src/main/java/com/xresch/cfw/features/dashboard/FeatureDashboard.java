@@ -395,10 +395,10 @@ public class FeatureDashboard extends CFWAppFeature {
 		
 		//----------------------------------
 		// Pages for each Widget
-		LinkedHashMap<String, WidgetDefinition> sourcelist = CFW.Registry.Widgets.getWidgetDefinitions();
+		LinkedHashMap<String, WidgetDefinition> widgetList = CFW.Registry.Widgets.getWidgetDefinitions();
 		
 		
-		for(WidgetDefinition current : sourcelist.values()) {
+		for(WidgetDefinition current : widgetList.values()) {
 			
 			ManualPageWidget widgetPage = new ManualPageWidget(current);
 			String path = MANUAL_PATH_WIDGETS;
