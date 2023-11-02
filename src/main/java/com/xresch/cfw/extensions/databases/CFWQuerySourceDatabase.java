@@ -12,6 +12,7 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.db.CFWResultSet;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.DBInterface;
 import com.xresch.cfw.features.core.AutocompleteList;
@@ -246,20 +247,38 @@ public abstract class CFWQuerySourceDatabase extends CFWQuerySource {
 		if(dbInterface == null) { return; }
 		
 		//add limiting to getAsJSONArray()
-		ResultSetAsJsonReader resultReader = new CFWSQL(dbInterface, null)
+		CFWResultSet cfwResult = new CFWSQL(dbInterface, null)
 				.custom(query)
-				.getAsJSONReader();
+				.executeCFWResultSet(false);
 		
-		int recordCounter = 0;
-		JsonObject object;
-		while( (object = resultReader.next()) != null) {
-			
-			if( this.isLimitReached(limit, recordCounter)) { break; }
-			
-			outQueue.add(new EnhancedJsonObject(object));
+		if(!cfwResult.isSuccess()) {
+			return;
 		}
-			
 		
+		//-----------------------------
+		// Fetch Query Result
+		if(cfwResult.isResultSet()) {
+			ResultSetAsJsonReader resultReader = cfwResult.toJSONReader();
+			
+			int recordCounter = 0;
+			JsonObject object;
+			while( (object = resultReader.next()) != null) {
+				
+				if( this.isLimitReached(limit, recordCounter)) { break; }
+				
+				outQueue.add(new EnhancedJsonObject(object));
+			}
+			
+			return;
+		}
+		
+		
+		//-----------------------------
+		// Update Count
+		JsonObject object = new JsonObject();
+		object.addProperty("UPDATE_COUNT", cfwResult.updateCount());
+		outQueue.add(new EnhancedJsonObject(object));
+
 	}
 
 }

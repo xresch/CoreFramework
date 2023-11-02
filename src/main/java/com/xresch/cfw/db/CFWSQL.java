@@ -1595,6 +1595,28 @@ public class CFWSQL {
 	}
 	
 	/****************************************************************
+	 * Executes the query and saves the results in the global 
+	 * variable.
+	 * @param queryOnly true
+	 * @return CFWSQL for method chaining
+	 ****************************************************************/
+	public CFWResultSet executeCFWResultSet(boolean queryOnly) {
+		
+		//----------------------------
+		// Handle Caching
+		String statement = getStatementCached();
+		
+		//----------------------------
+		// Execute Statement 
+		if(queryOnly || statement.trim().startsWith("SELECT")) {
+			return dbInterface.preparedExecuteQueryCFWResultSet(false, statement, values.toArray());
+
+		}else {
+			return dbInterface.preparedExecuteCFWResultSet(statement, values.toArray());
+		}
+	}
+	
+	/****************************************************************
 	 * Executes the query and returns the result set.
 	 * Don't forget to close the connection using CFW.DB.close();
 	 * @return ResultSet or null 

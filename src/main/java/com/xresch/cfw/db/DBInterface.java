@@ -175,7 +175,7 @@ public class DBInterface {
 	 * 
 	 * @throws SQLException 
 	 ********************************************************************************************/
-	private void removeOpenConnection(Connection connection) {	
+	protected void removeOpenConnection(Connection connection) {	
 		
 		if(myOpenConnections.get() == null) {
 			return;
@@ -565,12 +565,13 @@ public class DBInterface {
 	}
 	
 	/********************************************************************************************
-	 * Returns the result or null if there was any issue.
+	 * Returns the CFWResultSet.
+	 * Note: This adjusted copy of preparedExecuteQuery() is very similar. Because of performance
+	 * it was decided to accept this kind of code redundancy.
 	 * 
 	 * @param isSilent write errors to log but do not propagate to client
 	 * @param sql string with placeholders
 	 * @param values the values to be placed in the prepared statement
-	 * @throws SQLException 
 	 ********************************************************************************************/
 	public CFWResultSet preparedExecuteQueryCFWResultSet(boolean isSilent, String sql, Object... values){	
         
@@ -595,7 +596,7 @@ public class DBInterface {
 			result = prepared.executeQuery();
 			increaseDBCallsCount(conn, false);
 			
-			CFWResultSet cfwResult = new CFWResultSet(this);
+			CFWResultSet cfwResult = new CFWResultSet(this, true);
 			
 			cfwResult.connection(conn)
 				     .isSilent(isSilent)
@@ -627,10 +628,13 @@ public class DBInterface {
 		
 		log.custom("sql", sql).end(Level.FINE);
 				 
-		return new CFWResultSet(this);
+		return new CFWResultSet(this, false);
 	}
 
 	/********************************************************************************************
+	 * Returns the CFWResultSet.
+	 * Note: This adjusted copy of preparedExecute() is very similar. Because of performance
+	 * it was decided to accept this kind of code redundancy.
 	 * 
 	 * @param request HttpServletRequest containing session data used for logging information(null allowed).
 	 * @param sql string with placeholders
@@ -663,7 +667,7 @@ public class DBInterface {
 			}
 			increaseDBCallsCount(conn, false);
 			
-			CFWResultSet cfwResult = new CFWResultSet(this);
+			CFWResultSet cfwResult = new CFWResultSet(this, true);
 			
 			cfwResult.connection(conn)
 					 .isResultSet(isResultSet) 
@@ -693,7 +697,7 @@ public class DBInterface {
 		} 
 		
 		log.custom("sql", sql).end(Level.FINE);
-		return new CFWResultSet(this);
+		return new CFWResultSet(this, false);
 	}
 	
 	/********************************************************************************************

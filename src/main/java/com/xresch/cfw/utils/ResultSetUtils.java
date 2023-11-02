@@ -738,6 +738,10 @@ public class ResultSetUtils {
 		 ****************************************************************/
 		public JsonObject next() {
 
+			if(this.resultSet == null) {
+				return null;
+			}
+			
 			try {
 				
 				if(resultSet.next()) {

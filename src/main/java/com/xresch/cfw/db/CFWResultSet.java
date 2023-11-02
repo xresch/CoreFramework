@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.ResultSetUtils;
+import com.xresch.cfw.utils.ResultSetUtils.ResultSetAsJsonReader;
 
 public class CFWResultSet {
 	
@@ -20,13 +22,21 @@ public class CFWResultSet {
 	private int updateCount = -1;
 	private Connection connection;
 	private PreparedStatement prepared;
+	
+	
+	private boolean isSuccess = false;
 	private boolean isResultSet = false;
 	private boolean executionResult = false;
 	
 	private boolean isSilent = false;
 	
-	public CFWResultSet(DBInterface dbInterface) {
+	public CFWResultSet(DBInterface dbInterface, boolean isSuccess) {
 		this.dbInterface = dbInterface;
+		this.isSuccess = isSuccess;
+	}
+	
+	public boolean isSuccess() {
+		return this.isSuccess;
 	}
 	
 	public CFWResultSet connection(Connection value) {
@@ -71,6 +81,10 @@ public class CFWResultSet {
 		} 
 		
 		return null;
+	}
+	
+	public ResultSetAsJsonReader toJSONReader() {
+		return ResultSetUtils.toJSONReader(getResultSet());
 	}
 	
 	public CFWResultSet isSilent(boolean value) {
@@ -120,7 +134,7 @@ public class CFWResultSet {
 
 	public CFWResultSet preparedStatement(PreparedStatement value) {
 		this.prepared = value;
-		return null;
+		return this;
 	}
 	
 	public PreparedStatement preparedStatement() {
