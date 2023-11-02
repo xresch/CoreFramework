@@ -77,7 +77,7 @@ function cfw_widget_checklist_createCheckboxElement(value, isStrikethrough, isCh
 					+' onblur="cfw_widget_checklist_confirmEdit(this)"'
 					+'>'
 			+'<input class="form-check-input" type="checkbox" onchange="cfw_widget_checklist_checkboxChange(this, false)" id="'+checkboxGUID+'" '+checked+' >'
-			+'<label class="form-check-label" ondblclick="cfw_widget_checklist_triggerEdit(this)" for="'+checkboxGUID+'"></label>'
+			+'<label class="form-check-label" ondblclick="cfw_widget_checklist_triggerEdit(this)"></label>'
 			+ button
 		+'</div>');
 	checkboxDiv.find('.form-input').val(value);

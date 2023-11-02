@@ -32,6 +32,10 @@ Potential TODOs
   - Selected Space in SessionData
   - CFWSQL partial query, select entries for user
 
+- Features: Emojis 
+	- https://emojipedia.org/samsung
+	- Free Packs: https://github.com/googlefonts/noto-emoji/tree/main
+
 - Jobs: Log Job Executions to DB, plus age out.
 - Jobs: Define max number of instances.
 

@@ -34,13 +34,16 @@ public class WidgetChecklist extends WidgetDefinition {
 	@Override
 	public CFWObject getSettings() {
 		return new CFWObject()
-				.addField(CFWField.newString(FormFieldType.TEXTAREA, "content")
+				.addField(
+					CFWField.newString(FormFieldType.TEXTAREA, "content")
+						.setDescription("Contains all the items on the checklist. Items checked begin with 'X '.")
 						.setValue("Checkpoint A\r\nCheckpoint B\r\nCheckpoint C")
-						)
-				.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, "strikethrough")
-						.setLabel("Strikethrough")
+				)
+				.addField(
+					CFWField.newBoolean(FormFieldType.BOOLEAN, "strikethrough")
+						.setDescription("Toggle if checked items should be striked through.")
 						.setValue(true)
-						)
+				)
 		;
 	}
 	
