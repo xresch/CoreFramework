@@ -58,6 +58,7 @@ public class WidgetHTMLEditor extends WidgetDefinition {
 		return new CFWObject()
 				.addField(CFWField.newString(FormFieldType.WYSIWYG, "content")
 						.allowHTML(true)
+						.setDescription("Use the editor to create your HTML content.")
 						.setValue("<h2>Your Title</h2><p>Your fancy introduction.</p><ul><li>Some Bulletpoint</li><li>Another Bulletpoint</li></ul>")
 						)
 		;

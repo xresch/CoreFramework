@@ -66,6 +66,7 @@ public class WidgetYoutubeVideo extends WidgetDefinition {
 		return new CFWObject()
 				.addField(CFWField.newString(FormFieldType.TEXT, "url")
 						.setLabel("URL")
+						.setDescription("The URL of the Youtube video.")
 						.allowHTML(true)
 						.setValue("")
 				)

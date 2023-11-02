@@ -68,6 +68,7 @@ public class WidgetJavascript extends WidgetDefinition {
 	public CFWObject getSettings() {
 		return new CFWObject()
 				.addField(CFWField.newString(FormFieldType.TEXTAREA, "script")
+						.setDescription("The javascript that should be added to the dashboard.")
 						.setValue(
 							"//Sample script on how to register function with interval\r\n" + 
 							"//function myAction(){ console.log('executed'); }\r\n" + 

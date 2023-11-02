@@ -36,6 +36,7 @@ import com.xresch.cfw.features.dashboard.widgets.standard.WidgetTags;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetText;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetWebsite;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetYoutubeVideo;
+import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.parameter.ParameterDefinitionBoolean;
@@ -115,11 +116,18 @@ public class FeatureDashboard extends CFWAppFeature {
 		
 		//----------------------------------
 		// Register Languages
-		CFW.Localization.registerLocaleFile(Locale.ENGLISH, "/app/dashboard", new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_en_dashboard.properties"));
-		CFW.Localization.registerLocaleFile(Locale.GERMAN, "/app/dashboard", new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_de_dashboard.properties"));
 		
-		CFW.Localization.registerLocaleFile(Locale.ENGLISH, URI_DASHBOARD_VIEW_PUBLIC, new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_en_dashboard.properties"));
-		CFW.Localization.registerLocaleFile(Locale.GERMAN, URI_DASHBOARD_VIEW_PUBLIC, new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_de_dashboard.properties"));
+		FileDefinition english = new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_en_dashboard.properties");
+		FileDefinition german = new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_de_dashboard.properties");
+		
+		CFW.Localization.registerLocaleFile(Locale.ENGLISH, "/app/dashboard", english);
+		CFW.Localization.registerLocaleFile(Locale.ENGLISH, URI_DASHBOARD_VIEW_PUBLIC, english);
+		CFW.Localization.registerLocaleFile(Locale.ENGLISH, FeatureManual.URI_MANUAL, english);
+		
+		CFW.Localization.registerLocaleFile(Locale.GERMAN, "/app/dashboard", german);
+		CFW.Localization.registerLocaleFile(Locale.GERMAN, URI_DASHBOARD_VIEW_PUBLIC, german);
+		CFW.Localization.registerLocaleFile(Locale.GERMAN, FeatureManual.URI_MANUAL, german);
+		
 		
     	//----------------------------------
     	// Register Objects

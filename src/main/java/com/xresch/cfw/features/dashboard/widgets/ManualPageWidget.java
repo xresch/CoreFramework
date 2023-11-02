@@ -1,7 +1,14 @@
 package com.xresch.cfw.features.dashboard.widgets;
 
-import com.google.common.base.Strings;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map.Entry;
+
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw.caching.FileDefinition;
+import com.xresch.cfw.datahandling.CFWField;
+import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.manual.ManualPage;
 
 public class ManualPageWidget extends ManualPage {
@@ -13,11 +20,38 @@ public class ManualPageWidget extends ManualPage {
 	}
 	
 	public ManualPageWidget(WidgetDefinition widget) {
-		//Set title to command name
+		
+		//-------------------------------------
+		// Set title to widget name
 		super(widget.widgetName());
 		
 		StringBuilder builder = new StringBuilder();
 		
+		//-------------------------------------
+		// Localization
+		HashMap<Locale, FileDefinition> localeMap = widget.getLocalizationFiles();
+		
+		if(localeMap != null) {
+			for(Entry<Locale, FileDefinition> entry : localeMap.entrySet()) {
+				CFW.Localization.registerLocaleFile(entry.getKey(), FeatureManual.URI_MANUAL, entry.getValue());
+			}
+		}
+		
+		//-------------------------------------
+		// Set description 
+		builder.append("<h2 class=\"toc-hidden\">Settings</h2>");
+		CFWObject settings = widget.getSettings();
+		
+		builder.append("<ul>");
+		for(CFWField<?> field : settings.getFields().values()) {
+			if(field.getDescription() == null) { continue; }
+			builder.append("<li><b>"+field.getLabel()+":&nbsp;</b>"+field.getDescription()+"</li>");
+		}
+		builder.append("</ul>");
+		
+		//-------------------------------------
+		// Set description 
+		builder.append("<h2 class=\"toc-hidden\">Usage</h2>");
 		builder.append(widget.descriptionHTML());
 		
 		this.content(builder.toString());

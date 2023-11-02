@@ -65,6 +65,7 @@ public class WidgetText extends WidgetDefinition {
 	public CFWObject getSettings() {
 		return new CFWObject()
 				.addField(CFWField.newString(FormFieldType.TEXTAREA, "content")
+						.setDescription("The text that should be shown in the widget.")
 						.setValue("")
 						)
 		;

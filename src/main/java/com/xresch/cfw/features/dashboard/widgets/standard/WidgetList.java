@@ -65,6 +65,7 @@ public class WidgetList extends WidgetDefinition {
 	public CFWObject getSettings() {
 		return new CFWObject()
 				.addField(CFWField.newString(FormFieldType.TEXTAREA, "content")
+						.setDescription("Add the items for the list separated by new line.")
 						.setValue("Item A\r\nItem B\r\nItem C")
 						)
 				.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, "isordered")

@@ -67,6 +67,7 @@ public class WidgetWebsite extends WidgetDefinition {
 		return new CFWObject()
 				.addField(CFWField.newString(FormFieldType.TEXT, "url")
 						.setLabel("URL")
+						.setDescription("Define the URL of the website to display.")
 						.allowHTML(true)
 						.setValue("")
 				)

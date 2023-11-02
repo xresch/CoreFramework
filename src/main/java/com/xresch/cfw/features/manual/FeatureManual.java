@@ -17,7 +17,8 @@ import com.xresch.cfw.spi.CFWAppFeature;
  **************************************************************************************************************/
 public class FeatureManual extends CFWAppFeature {
 
-	private Object object;
+	public static final String URI_MANUAL = "/app/manual";
+	
 	public static final String PERMISSION_MANUAL = "Manual";
 	public static final String PERMISSION_ADMIN_MANUAL = "Manual for Admins";
 
@@ -86,7 +87,7 @@ public class FeatureManual extends CFWAppFeature {
 
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
-    	app.addAppServlet(ServletManual.class,  "/manual");
+    	app.addAppServlet(ServletManual.class,  URI_MANUAL);
 	}
 
 	@Override

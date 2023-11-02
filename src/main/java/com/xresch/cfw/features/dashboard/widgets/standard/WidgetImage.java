@@ -59,6 +59,7 @@ public class WidgetImage extends WidgetDefinition {
 		return new CFWObject()
 				.addField(CFWField.newString(FormFieldType.TEXT, "url")
 						.setLabel("URL")
+						.setDescription("Provide the URL of the image you want to display.")
 						.allowHTML(true)
 						.setValue("/resources/images/login_background.jpg")
 				)
