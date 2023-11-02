@@ -14,12 +14,16 @@ import com.xresch.cfw.features.manual.ManualPage;
 public class ManualPageWidget extends ManualPage {
 
 	public ManualPageWidget(ManualPage parent, WidgetDefinition widget) {
-		this(widget);
+		this(widget, true);
 		
 		parent.addChild(this);
 	}
 	
 	public ManualPageWidget(WidgetDefinition widget) {
+		this(widget, true);
+	}
+	
+	public ManualPageWidget(WidgetDefinition widget, boolean registerLocales) {
 		
 		//-------------------------------------
 		// Set title to widget name
@@ -29,26 +33,31 @@ public class ManualPageWidget extends ManualPage {
 		
 		//-------------------------------------
 		// Localization
-		HashMap<Locale, FileDefinition> localeMap = widget.getLocalizationFiles();
-		
-		if(localeMap != null) {
-			for(Entry<Locale, FileDefinition> entry : localeMap.entrySet()) {
-				CFW.Localization.registerLocaleFile(entry.getKey(), FeatureManual.URI_MANUAL, entry.getValue());
+		if(registerLocales) {
+			HashMap<Locale, FileDefinition> localeMap = widget.getLocalizationFiles();
+			
+			if(localeMap != null) {
+				for(Entry<Locale, FileDefinition> entry : localeMap.entrySet()) {
+					CFW.Localization.registerLocaleFile(entry.getKey(), FeatureManual.URI_MANUAL, entry.getValue());
+				}
 			}
 		}
 		
 		//-------------------------------------
-		// Set description 
+		// Settings
 		builder.append("<h2 class=\"toc-hidden\">Settings</h2>");
 		CFWObject settings = widget.getSettings();
 		
-		builder.append("<ul>");
-		for(CFWField<?> field : settings.getFields().values()) {
-			if(field.getDescription() == null) { continue; }
-			builder.append("<li><b>"+field.getLabel()+":&nbsp;</b>"+field.getDescription()+"</li>");
+		if(settings.getFields().size() == 0) {
+			builder.append("<p>No widget specific settings.</p>");
+		}else {
+			builder.append("<ul>");
+			for(CFWField<?> field : settings.getFields().values()) {
+				if(field.getDescription() == null) { continue; }
+				builder.append("<li><b>"+field.getLabel()+":&nbsp;</b>"+field.getDescription()+"</li>");
+			}
+			builder.append("</ul>");
 		}
-		builder.append("</ul>");
-		
 		//-------------------------------------
 		// Set description 
 		builder.append("<h2 class=\"toc-hidden\">Usage</h2>");
