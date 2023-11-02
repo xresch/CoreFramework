@@ -18,7 +18,7 @@
 					buttonLabel += settings.LABEL;
 				}
 				
-				button = '<button class="btn btn-sm btn-primary w-100 h-100" onclick="cfw_dashboard_draw(true, true)">'+buttonLabel+"</button>";
+				button = '<button class="btn btn-sm btn-primary w-100 h-100" onclick="cfw_dashboard_draw(false, true)">'+buttonLabel+"</button>";
 				
 				callback(widgetObject, button);
 
