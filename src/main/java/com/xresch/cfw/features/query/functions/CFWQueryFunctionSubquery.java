@@ -71,8 +71,8 @@ public class CFWQueryFunctionSubquery extends CFWQueryFunction {
 		return 
 				"<ul>"
 					+"<li><b>queryString:&nbsp;</b>The query to execute.</li>"
-					+"<li><b>doUnpack:&nbsp;</b>(Optional)If true and only one result is returned, unpack the result out of the array.(Default:false)</li>"
-					+"<li><b>doSimplify:&nbsp;</b>(Optional)If true and only one result is returned, and the result only contains a single value, return only the value.(Default:false)</li>"
+					+"<li><b>doUnpack:&nbsp;</b>(Optional)If true and only one result is returned, unpack the result out of the array.(Default:true)</li>"
+					+"<li><b>doSimplify:&nbsp;</b>(Optional)If true and only one result is returned, and the result only contains a single value, return only the value.(Default:true)</li>"
 				+ "</ul>"
 			;
 	}
@@ -123,7 +123,7 @@ public class CFWQueryFunctionSubquery extends CFWQueryFunction {
 		
 		//----------------------------------
 		// Get doUnpack
-		boolean doUnpack = false;
+		boolean doUnpack = true;
 		if(parameters.size() >= 2) { 
 			QueryPartValue simplifyValue = parameters.get(1);
 			if(simplifyValue.isBoolOrBoolString()) {
@@ -133,7 +133,7 @@ public class CFWQueryFunctionSubquery extends CFWQueryFunction {
 		
 		//----------------------------------
 		// Get simplify
-		boolean doSimplify = false;
+		boolean doSimplify = true;
 		if(parameters.size() >= 3) { 
 			QueryPartValue simplifyValue = parameters.get(2);
 			if(simplifyValue.isBoolOrBoolString()) {

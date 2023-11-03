@@ -16,15 +16,8 @@ This function is useful to fetch additional data from another source for each re
 		| keep IS_BUSY
 		") </code></pre>
 
-
-
-
-<p>Above subquery()-executions will return all the results as an array like  :</p>
-<pre><code class="language-cfwquery">[{"IS_BUSY":true}]</code></pre>
-
-
-
-<p>For subqueries that return a single result, you can use the two additional parameters doUnpack and doSimplify to get the pure values:</p>
+<p>Above subquery()-executions will return all the results as a value(like 'true'), as there is only a single record and only one column.
+This might lead to issues when you need a consistent data format. Therefore two additional parameters  doUnpack and doSimplify are provided so you can turn of this behavior:</p>
 <pre><code class="language-cfwquery">| source random records=10
 | keep FIRSTNAME, LASTNAME
 | set 
@@ -32,21 +25,9 @@ This function is useful to fetch additional data from another source for each re
 		| source empty
 		| set IS_BUSY=randomFrom([true, false])
 		| keep IS_BUSY
-		", true, true) # if only one result, unpack the array and convert object to value</code></pre>
+		", false, false) # if only one result, do not unpack the array and do not convert object to value</code></pre>
 		
-
-
-<p>For subqueries that return a single result, you can use the two additional parameters doUnpack and doSimplify to get the pure values:</p>
-<pre><code class="language-cfwquery">| source random records=10
-| keep FIRSTNAME, LASTNAME
-| set 
-	UTTERLY_BUSY = subquery("
-		| source empty
-		| set IS_BUSY=randomFrom([true, false])
-		| keep IS_BUSY
-		", true, true) # if only one result, unpack the array and convert object to value</code></pre>	
-		
-			
+	
 <p>If you have multiple records in your subquery results, you can use unbox to convert them to fields of your main query:</p>
 <pre><code class="language-cfwquery">| source random records=100
 | keep FIRSTNAME, VALUE
@@ -56,7 +37,7 @@ This function is useful to fetch additional data from another source for each re
 		| distinct FRUIT, COLOR
 		| keep FRUIT, COLOR
 		| top "+random(1,3)+" # limit to 3
-	")
+	", false, false)
 | unbox DETAILS # unbox array, create additional records for every entry
 | unbox DETAILS # unbox object create additional records for every object member
 | remove DETAILS # remove the details field</code></pre>
