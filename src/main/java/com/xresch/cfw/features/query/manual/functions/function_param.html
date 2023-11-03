@@ -16,3 +16,14 @@
 	HELLO_VALUE = param('hello') 
 	# returns null if not set, as there is no default, parameter value otherwise
 	BOOLEAN_VALUE = param('boolean') </code></pre>
+	
+<p>In case you are dealing with null and empty strings, use the second parameter to define a fallback value:</p>
+<pre><code class="language-cfwquery">| paramdefaults
+	testA=null
+	testB=" "
+| source empty
+| set 
+	TEST_A = param("testA", "use this because Null")
+	TEST_B = param("testB", "use this because empty string")
+	TEST_C = param("testC", "use this because param undefined")
+	TEST_D_NULL = param("testC")</code></pre>

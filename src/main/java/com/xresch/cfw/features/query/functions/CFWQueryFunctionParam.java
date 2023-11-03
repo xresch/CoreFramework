@@ -3,6 +3,8 @@ package com.xresch.cfw.features.query.functions;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
+import com.google.common.base.Strings;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
@@ -48,14 +50,14 @@ public class CFWQueryFunctionParam extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(propertyName [, propertyValue])";
+		return FUNCTION_NAME+"(propertyName [, fallbackForNullOrEmpty])";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Sets or gets the value for the paramater. Will only set if not already exists.";
+		return "Gets the value for the parameter..";
 	}
 	
 	/***********************************************************************************************
@@ -65,7 +67,7 @@ public class CFWQueryFunctionParam extends CFWQueryFunction {
 	public String descriptionSyntaxDetailsHTML() {
 		return 
 				"<p><b>propertyName:&nbsp;</b>The name of the property to get or set.</p>"
-			  + "<p><b>propertyValue:&nbsp;</b>(Optional)if given, the value will be set.</p>"
+			  + "<p><b>fallbackForNullOrEmpty:&nbsp;</b>(Optional)if given, this value will be used if the parameter value is null or empty string.</p>"
 			;
 	}
 
@@ -111,17 +113,23 @@ public class CFWQueryFunctionParam extends CFWQueryFunction {
 		if(propertyName != null) { 
 
 			//----------------------------------
-			// Set Global Value
-			JsonObject paramsObject = this.getContext().getParameters();
+			// Se Global Value
 			
-			if(parameters.size() > 1
-			&& !paramsObject.has(propertyName)) {
-				parameters.get(1).addToJsonObject(propertyName, paramsObject);
+			JsonObject paramsObject = this.getContext().getParameters();
+			JsonElement param = paramsObject.get(propertyName);
+			
+			if(parameters.size() > 1) {
+				if(param == null 
+				|| param.isJsonNull() 
+				|| (param.isJsonPrimitive() && param.getAsString().trim().length() == 0)
+				) {
+					return parameters.get(1); 
+				}
 			}
 			
 			//----------------------------------
 			// Get Param Value
-			return QueryPartValue.newFromJsonElement(paramsObject.get(propertyName)); 
+			return QueryPartValue.newFromJsonElement(param); 
 		}
 		
 		return QueryPartValue.newString(""); 
