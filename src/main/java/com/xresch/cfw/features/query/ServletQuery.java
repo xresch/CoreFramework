@@ -17,6 +17,7 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.query.FeatureQuery.CFWQueryComponentType;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
@@ -220,9 +221,12 @@ public class ServletQuery extends HttpServlet
 	private void executeQuery(HttpServletRequest request, JSONResponse jsonResponse) {
 		
 		String query = request.getParameter("query");
-		Long earliest = Long.parseLong(request.getParameter("earliest"));
-		Long latest = Long.parseLong(request.getParameter("latest"));
-		int timezoneOffsetMinutes = Integer.parseInt(request.getParameter("timezoneOffsetMinutes"));
+		String timeframeJson = request.getParameter("timeframe");
+		CFWTimeframe timeframe = new CFWTimeframe(timeframeJson);
+		
+//		Long earliest = timeframe.getEarliest();
+//		Long latest = Long.parseLong(request.getParameter("latest"));
+//		int timezoneOffsetMinutes = Integer.parseInt(request.getParameter("timezoneOffsetMinutes"));
 		
 		String queryParamsString = request.getParameter("parameters");
 		
@@ -231,14 +235,12 @@ public class ServletQuery extends HttpServlet
 			queryParamsObject = JSON.stringToJsonObject(queryParamsString);
 		}
 
-		query = CFW.Time.replaceTimeframePlaceholders(query, earliest, latest, timezoneOffsetMinutes);
+		query = CFW.Time.replaceTimeframePlaceholders(query, timeframe);
 		
 		CFWQueryResultList resultList = 
 				new CFWQueryExecutor().parseAndExecuteAll(
 							  query
-							, earliest
-							, latest
-							, timezoneOffsetMinutes
+							, timeframe
 							, queryParamsObject
 						);
 		

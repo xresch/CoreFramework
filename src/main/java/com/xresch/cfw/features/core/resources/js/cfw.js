@@ -2075,7 +2075,7 @@ function cfw_timeframePicker_confirmCustom(origin){
 	var earliestMillis = $('#'+fieldID+'-CUSTOM_EARLIEST').val();
 	var latestMillis = $('#'+fieldID+'-CUSTOM_LATEST').val()
 
-	if(parseFloat(earliestMillis) > parseFloat(latestMillis)){
+	if(earliestMillis >= latestMillis){
 		CFW.ui.addToastWarning("Earliest time has to be before latest time.");
 		return;
 	}

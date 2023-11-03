@@ -59,7 +59,7 @@ public class CFWTime {
 		 ms("milliseconds", TimeUnit.MILLISECONDS, 	ChronoUnit.MILLIS, 	Calendar.MILLISECOND)
 		, s("seconds", 		TimeUnit.SECONDS, 		ChronoUnit.SECONDS, Calendar.SECOND)
 		, m("minutes", 		TimeUnit.MINUTES,		ChronoUnit.MINUTES, Calendar.MINUTE)
-		, h("hours", 		TimeUnit.HOURS, 		ChronoUnit.HOURS, 	Calendar.HOUR)
+		, h("hours", 		TimeUnit.HOURS, 		ChronoUnit.HOURS, 	Calendar.HOUR_OF_DAY)
 		, d("days", 		TimeUnit.DAYS, 			ChronoUnit.DAYS, 	Calendar.DAY_OF_YEAR)
 		, M("months", 		null, 					ChronoUnit.MONTHS, 	Calendar.MONTH)
 		, y("years", 		null, 					ChronoUnit.YEARS, 	Calendar.YEAR)
@@ -196,7 +196,7 @@ public class CFWTime {
 			int valueToRound = calendar.get(this.calendarUnit);
 			
 			int modulo = (valueToRound % amount);
-			
+
 			if(modulo != 0) {
 				
 				int diff = 0;
@@ -210,7 +210,7 @@ public class CFWTime {
 
 			}
 			truncate(calendar);
-						
+			
 			return calendar.getTimeInMillis();
 		}
 		
@@ -239,7 +239,7 @@ public class CFWTime {
 			switch(this) {
 				case y:	 calendar.set(Calendar.MONTH, 0);
 				case M:	 calendar.set(Calendar.DAY_OF_MONTH, 0);
-				case d:	 calendar.set(Calendar.HOUR, 0);
+				case d:	 calendar.set(Calendar.HOUR_OF_DAY, 0);
 				case h:	 calendar.set(Calendar.MINUTE, 0);
 				case m:	 calendar.set(Calendar.SECOND, 0);
 				case s:	 calendar.set(Calendar.MILLISECOND, 0);

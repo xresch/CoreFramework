@@ -779,9 +779,7 @@ class CFWQueryEditor{
 				, item: "query"
 				, query: query
 				, timezoneOffsetMinutes: timeZoneOffset
-				, offset: timeframe.offset
-				, earliest: timeframe.earliest
-				, latest: timeframe.latest
+				, timeframe: JSON.stringify(timeframe)
 				, parameters: JSON.stringify(queryParams)
 			};
 			
