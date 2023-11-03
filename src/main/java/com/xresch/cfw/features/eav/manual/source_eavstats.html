@@ -20,5 +20,37 @@
 </code></pre>
 
 
+<p>Here an exampleusing the crates command with parameters that allows to set the interval of the chart.
+By default the automatically detected interval will be used:</p>
+
+<pre><code class="language-cfwquery">| paramdefaults
+	amount=interval()
+	timeunit=intervalunit()
+| source eavstats 
+	category="DashboardStats"
+	entity="Page Loads%" # supports SQL wildcards
+	attributes={ 
+		dashboardid: "%", 
+		userid: "%"
+	}
+| crates
+	name=CRATE
+	by=TIME
+	type=time 
+	step=param(amount, 1)
+	timeunit=param(timeunit, 'h')
+| stats
+	by=[CRATE, ENTITY] # make stats based on CRATE
+	SUM=SUM(SUM)
+| chart 
+	by=[ENTITY] 
+	type=bar
+	x=CRATE
+	y=SUM
+	multichart=true
+</code></pre>
+
+
+
 
 

@@ -102,6 +102,8 @@ Potential TODOs
 	- mimic calling mimic
 	- command paramdefaults
 	- function param
+	- function interval
+	- function intervalunit
 	
 - Charts Renderer: Add description to manual page "working with render".
 
@@ -168,6 +170,9 @@ DONE
 - Query Command: formatrecord - Added autocomplete options 
 - Query: Added Sources:
 	- appdb
+- Query: Added Functions:
+	- interval
+	- intervalunit
 
 ------- v.8.0.0 -------
 - BREAKING CODE CHANGE: Renaming of Threshold Fields and CSS-Classes

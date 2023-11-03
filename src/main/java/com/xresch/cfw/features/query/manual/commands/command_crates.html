@@ -62,3 +62,23 @@ This command is especially useful to make groups for statistical purposes and ro
 | formatfield
 	[CRATE, EARLIEST, LATEST] = ['timestamp', "yyyy-MM-DD HH:mm:ss"]</code></pre>
 	
+	
+<p>Following an example how to use creates with interval() and intervalunit() for automatically adjusting amount of data points on a chart:</p>
+<pre><code class="language-cfwquery">| source random records = 3000
+| crates
+	name=CRATE
+	by=TIME 
+	type=time 
+	step=interval() 
+	timeunit=intervalunit()
+| stats
+	by=[CRATE, LIKES_TIRAMISU]
+	SUM=SUM(VALUE)
+| nullto value="undecided" fields=LIKES_TIRAMISU
+| chart 
+	by=[LIKES_TIRAMISU] 
+	type=bar
+	x=CRATE
+	y=SUM
+	multichart=true</code></pre>
+	

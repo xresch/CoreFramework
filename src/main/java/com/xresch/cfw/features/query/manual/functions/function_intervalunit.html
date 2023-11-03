@@ -1,0 +1,25 @@
+
+<p>This function returns the unit of the auto-detected interval for the selected time range.
+This can be useful for example when limiting the amount of data points on a chart.
+Following an example using the function in combination with the crates command: </p>
+
+<pre><code class="language-cfwquery">| source random records = 3000
+| crates
+	name=CRATE
+	by=TIME 
+	type=time 
+	step=interval() 
+	timeunit=intervalunit()
+| stats
+	by=[CRATE, LIKES_TIRAMISU]
+	SUM=SUM(VALUE)
+| nullto value="undecided" fields=LIKES_TIRAMISU
+| chart 
+	by=[LIKES_TIRAMISU] 
+	type=bar
+	x=CRATE
+	y=SUM
+	multichart=true</code></pre>
+
+
+

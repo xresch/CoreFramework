@@ -698,28 +698,34 @@ public class CFWTime {
 	
 	/********************************************************************************************
 	 * Returns an interval string like "15s", "5m" or "1h". 
+	 * @param earliestMillis
+	 * @param latestMillis
+	 * @param maxPoints max number of datapoints for the given interval
+	 * @param separator (optional)will be put in between the amount and the time unit
 	 * @return string
 	 ********************************************************************************************/
-	public static String calculateDatapointInterval(long earliestMillis, long latestMillis, int maxPoints) {
+	public static String calculateDatapointInterval(long earliestMillis, long latestMillis, int maxPoints, String separator) {
+		
+		String s = (separator != null) ? separator : "";
 		
 		long seconds = calculateSecondsBetween(earliestMillis, latestMillis);
 
-		if((seconds / 15) < maxPoints) { return "15s"; }
-		else if((seconds / 30) < maxPoints) { return "30s"; }
-		else if((seconds / 60) < maxPoints) { return "1m"; }
-		else if((seconds / 120) < maxPoints) { return "2m"; }
-		else if((seconds / 300) < maxPoints) { return "5m"; }
-		else if((seconds / 600) < maxPoints) { return "10m"; }
-		else if((seconds / 900) < maxPoints) { return "15m"; }
-		else if((seconds / 1800) < maxPoints) { return "30m"; }
-		else if((seconds / 3600) < maxPoints) { return "1h"; }
-		else if((seconds / (3600*2) ) < maxPoints) { return "2h"; }
-		else if((seconds / (3600*4) ) < maxPoints) { return "4h"; }
-		else if((seconds / (3600*6) ) < maxPoints) { return "6h"; }
-		else if((seconds / (3600*12) ) < maxPoints) { return "12h"; }
-		else if((seconds / (3600*24) ) < maxPoints) { return "24h"; }
+		if((seconds / 15) < maxPoints) { return "15"+s+"s"; }
+		else if((seconds / 30) < maxPoints) { return "30"+s+"s"; }
+		else if((seconds / 60) < maxPoints) { return "1"+s+"m"; }
+		else if((seconds / 120) < maxPoints) { return "2"+s+"m"; }
+		else if((seconds / 300) < maxPoints) { return "5"+s+"m"; }
+		else if((seconds / 600) < maxPoints) { return "10"+s+"m"; }
+		else if((seconds / 900) < maxPoints) { return "15"+s+"m"; }
+		else if((seconds / 1800) < maxPoints) { return "30"+s+"m"; }
+		else if((seconds / 3600) < maxPoints) { return "1"+s+"h"; }
+		else if((seconds / (3600*2) ) < maxPoints) { return "2"+s+"h"; }
+		else if((seconds / (3600*4) ) < maxPoints) { return "4"+s+"h"; }
+		else if((seconds / (3600*6) ) < maxPoints) { return "6"+s+"h"; }
+		else if((seconds / (3600*12) ) < maxPoints) { return "12"+s+"h"; }
+		else if((seconds / (3600*24) ) < maxPoints) { return "24"+s+"h"; }
 		
-		return "7d";
+		return "7"+s+"d";
 	}
 	
 	
