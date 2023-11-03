@@ -87,6 +87,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeframeOffset;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionToJSON;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTrim;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionType;
+import com.xresch.cfw.features.query.sources.CFWQuerySourceAppDB;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceApplog;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceAuditlog;
 import com.xresch.cfw.features.query.sources.CFWQuerySourceEmpty;
@@ -111,6 +112,7 @@ public class FeatureQuery extends CFWAppFeature {
 	public static final String PACKAGE_MANUAL =    "com.xresch.cfw.features.query.manual";
 	public static final String PERMISSION_QUERY_USER = "Query: User";
 	public static final String PERMISSION_QUERY_ADMIN = "Query: Admin";
+	public static final String PERMISSION_QUERY_SOURCE_APPDB = "Query: Source appdb";
 	
 	public static final String CONFIG_CATEGORY = "Query";
 	public static final String CONFIG_FETCH_LIMIT_DEFAULT = "Fetch Limit Default";
@@ -236,6 +238,7 @@ public class FeatureQuery extends CFWAppFeature {
 		 
 		//----------------------------------
 		// Register Sources
+		CFW.Registry.Query.registerSource(new CFWQuerySourceAppDB(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceApplog(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceAuditlog(null));
 		CFW.Registry.Query.registerSource(new CFWQuerySourceEmpty(null));
@@ -286,10 +289,18 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		CFW.DB.Permissions.oneTimeCreate(
 				new Permission(PERMISSION_QUERY_ADMIN, FeatureUserManagement.CATEGORY_USER)
-					.description("User can view and edit all queries in the system."),
+				.description("User can view and edit all queries in the system."),
+				true,
+				false
+				);
+		
+		CFW.DB.Permissions.oneTimeCreate(
+				new Permission(PERMISSION_QUERY_SOURCE_APPDB, FeatureUserManagement.CATEGORY_USER)
+					.description("User can use the query source appdb to access this application's database."),
 					true,
 					false
 			);
+		
 		
 		//============================================================
 		// CONFIGURATION

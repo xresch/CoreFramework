@@ -67,7 +67,7 @@ public abstract class CFWQuerySourceDatabase extends CFWQuerySource {
 	 ******************************************************************/
 	@Override
 	public String descriptionTime() {
-		return "Use placeholders $earliest$ and $latest$ to insert epoch time in milliseconds into your DB query.";
+		return "Time has to be added to the query manually using time functions.";
 	}
 
 	/******************************************************************
@@ -142,10 +142,10 @@ public abstract class CFWQuerySourceDatabase extends CFWQuerySource {
 							.setDescription("The database environment to fetch the data from. Use Ctrl+Space in the query editor for content assist.")	
 							.addValidator(new NotNullOrEmptyValidator())
 					)
-				.addField(
-						CFWField.newString(FormFieldType.TEXT, FIELDNAME_TIMEZONE)
-							.setDescription("Parameter can be used to adjust time zone differences between epoch time and the database. See manual for list of available zones.")	
-					)
+//				.addField(
+//						CFWField.newString(FormFieldType.TEXT, FIELDNAME_TIMEZONE)
+//							.setDescription("Parameter can be used to adjust time zone differences between epoch time and the database. See manual for list of available zones.")	
+//					)
 				
 			;
 	}
@@ -226,23 +226,23 @@ public abstract class CFWQuerySourceDatabase extends CFWQuerySource {
 		
 		//-----------------------------
 		// Resolve Timezone Offsets
-		TimeZone timezone;
-		String timezoneParam = (String)parameters.getField(FIELDNAME_TIMEZONE).getValue();
-		if(!Strings.isNullOrEmpty(timezoneParam)) {
-			timezone = TimeZone.getTimeZone(timezoneParam);
-			
-		}else {
-			timezone = TimeZone.getTimeZone(
-					Strings.nullToEmpty(this.getTimezone(environmentID))
-				);
-		}
-		
-		earliestMillis +=  timezone.getOffset(earliestMillis);
-		latestMillis +=  timezone.getOffset(latestMillis);
-		
-		query = query.replace("$earliest$", ""+earliestMillis)
-					 .replace("$latest$", ""+latestMillis)
-					 ;
+//		TimeZone timezone;
+//		String timezoneParam = (String)parameters.getField(FIELDNAME_TIMEZONE).getValue();
+//		if(!Strings.isNullOrEmpty(timezoneParam)) {
+//			timezone = TimeZone.getTimeZone(timezoneParam);
+//			
+//		}else {
+//			timezone = TimeZone.getTimeZone(
+//					Strings.nullToEmpty(this.getTimezone(environmentID))
+//				);
+//		}
+//		
+//		earliestMillis +=  timezone.getOffset(earliestMillis);
+//		latestMillis +=  timezone.getOffset(latestMillis);
+//		
+//		query = query.replace("$earliest$", ""+earliestMillis)
+//					 .replace("$latest$", ""+latestMillis)
+//					 ;
 		
 		//-----------------------------
 		// Resolve Environment & Fetch Data

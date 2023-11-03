@@ -154,6 +154,7 @@ DONE
 
 ------- current -------
 - BREAKING CODE CHANGE: CFWConfig renamed and requires category parameter in several mathods
+- BREAKING CODE CHANGE: Query Function param() - second param is now a default value.
 - New Feature: EAV Tables with Statistics, plus query source 'eavstats'
 - Notifications: Fixed severe log messages showing up
 - Tables: Improved hovering contrast by changing color to blue
@@ -165,7 +166,8 @@ DONE
 - Dashboard: Widget - Added accessing manual page to widget settings
 - DB Extensions: Added option to context settings to allow updates on databases 
 - Query Command: formatrecord - Added autocomplete options 
-
+- Query: Added Sources:
+	- appdb
 
 ------- v.8.0.0 -------
 - BREAKING CODE CHANGE: Renaming of Threshold Fields and CSS-Classes
