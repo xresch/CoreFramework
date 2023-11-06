@@ -13,6 +13,7 @@ import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.dashboard.widgets.ManualPageWidget;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
+import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetDefaultRefresh;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetForceRefresh;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetJavascript;
 import com.xresch.cfw.features.dashboard.widgets.advanced.WidgetParameter;
@@ -160,6 +161,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		
     	//----------------------------------
     	// Register Advanced Widgets
+		CFW.Registry.Widgets.add(new WidgetDefaultRefresh());
 		CFW.Registry.Widgets.add(new WidgetForceRefresh());
 		CFW.Registry.Widgets.add(new WidgetParameter());
 		CFW.Registry.Widgets.add(new WidgetReplica());
