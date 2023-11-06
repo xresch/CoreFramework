@@ -167,7 +167,8 @@ DONE
 - Dashboard: Widget - Added new widget Advanced >> Default Refresh
 - Dashboard: Widget Checklist - Show URLs as links, Add/Edit/Remove functionality
 - Dashboard: Widget - Added accessing manual page to widget settings
-- Dashboard: Widget - Added setting for title alignment
+- Dashboard: Widget - Settings: Added setting for title alignment
+- Dashboard: Widget - Settings: Title position now supports bottom&right additionally to top/left
 - Dashboard: Widget - When title is left, give widget body a min-width
 - DB Extensions: Added option to context settings to allow updates on databases 
 - Query Command: formatrecord - Added autocomplete options 

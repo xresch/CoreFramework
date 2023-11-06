@@ -11,6 +11,8 @@ import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandMetadata;
+import com.xresch.cfw.features.query.database.CFWDBQueryHistory;
+import com.xresch.cfw.features.query.database.CFWQueryHistory;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.pipeline.PipelineAction;
@@ -27,6 +29,7 @@ public class CFWQueryExecutor {
 	private static Logger logger = CFWLog.getLogger(CFWQueryExecutor.class.getName());
 	
 	private boolean checkPermissions = true;
+	private boolean saveToHistory = false;
 	
 	/****************************************************************
 	 * Enable or disable if the users permissions should be
@@ -34,6 +37,15 @@ public class CFWQueryExecutor {
 	 ****************************************************************/
 	public CFWQueryExecutor checkPermissions(boolean checkPermissions) {
 		this.checkPermissions = checkPermissions;
+		return this;
+	}
+	
+	/****************************************************************
+	 * Enable or disable storing this query execution to the 
+	 * query history (default: false).
+	 ****************************************************************/
+	public CFWQueryExecutor saveToHistory(boolean saveToHistory) {
+		this.saveToHistory = saveToHistory;
 		return this;
 	}
 	
@@ -200,13 +212,26 @@ public class CFWQueryExecutor {
 			, LinkedBlockingQueue<EnhancedJsonObject> resultQueue
 			) {
 		
-		//--------------------------------
+
+		//============================================
 		// Handle Empty List
 		if(queryList.isEmpty()) {
 			return new CFWQueryResultList();
 		}
 		
-		//--------------------------------
+		//============================================
+		// Save to History
+		if(saveToHistory) {
+			Integer userid = CFW.Context.Request.getUserID();
+			if(userid != null) {
+				CFWQueryHistory aHistoricMoment = new CFWQueryHistory(userid, queryList.get(0).getContext());
+				
+				CFWDBQueryHistory.create(aHistoricMoment);
+			}
+			
+		}
+		
+		//============================================
 		// Get Result List
 		CFWQueryResultList resultArray = queryList.get(0).getContext().getResultList();
 		

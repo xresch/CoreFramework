@@ -153,6 +153,8 @@ public class CFWQueryParser {
 			initialContext = new CFWQueryContext();
 		}
 		
+		initialContext.setFullQueryString(inputQuery);
+		
 		this.query = inputQuery;
 		this.initialContext = initialContext;
 		this.doCloneContext = doCloneContext;

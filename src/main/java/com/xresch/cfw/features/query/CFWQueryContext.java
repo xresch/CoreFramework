@@ -18,8 +18,10 @@ import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
  * @license MIT-License
  **************************************************************************************************************/
 public class CFWQueryContext{
+	// used for history, fully query string, all queries
+	private String fullQueryString = "";
 	
-	// used for mimicry command
+	// used for mimicry command, part of a full query separated with ;
 	private String originalQueryString = "";
 	
 	private long earliest = 0;
@@ -70,6 +72,7 @@ public class CFWQueryContext{
 		//-----------------------------
 		// Clone
 		CFWQueryContext clonedContext = new CFWQueryContext(resultList);
+		clonedContext.setFullQueryString(this.getFullQueryString());
 		clonedContext.checkPermissions(this.checkPermissions());
 		clonedContext.setEarliest(this.getEarliestMillis());
 		clonedContext.setLatest(this.getLatestMillis());
@@ -95,8 +98,26 @@ public class CFWQueryContext{
 		this.earliest = earliest;
 		return this;
 	}
+	
 	/***********************************************************************************************
-	 * Get the earliest time for this query.
+	 * Get the full query string containing all query parts.
+	 ***********************************************************************************************/
+	public String getFullQueryString() {
+		return fullQueryString;
+	}
+	
+	/***********************************************************************************************
+	 * Set the original query string if not already set.
+	 ***********************************************************************************************/
+	public CFWQueryContext setFullQueryString(String fullQueryString) {
+		if(Strings.isNullOrEmpty(this.fullQueryString)) {
+			this.fullQueryString = fullQueryString;
+		}
+		return this;
+	}
+	
+	/***********************************************************************************************
+	 * Get the query part(separated with ';') of the full query string that caused the current query.
 	 ***********************************************************************************************/
 	public String getOriginalQueryString() {
 		return originalQueryString;

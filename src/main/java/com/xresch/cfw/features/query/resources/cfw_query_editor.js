@@ -778,6 +778,7 @@ class CFWQueryEditor{
 		params = {action: "execute"
 				, item: "query"
 				, query: query
+				, saveToHistory: true
 				, timezoneOffsetMinutes: timeZoneOffset
 				, timeframe: JSON.stringify(timeframe)
 				, parameters: JSON.stringify(queryParams)

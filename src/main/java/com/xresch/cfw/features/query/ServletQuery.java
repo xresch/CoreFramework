@@ -224,9 +224,14 @@ public class ServletQuery extends HttpServlet
 		String timeframeJson = request.getParameter("timeframe");
 		CFWTimeframe timeframe = new CFWTimeframe(timeframeJson);
 		
-//		Long earliest = timeframe.getEarliest();
-//		Long latest = Long.parseLong(request.getParameter("latest"));
-//		int timezoneOffsetMinutes = Integer.parseInt(request.getParameter("timezoneOffsetMinutes"));
+		String saveToHistoryString = request.getParameter("saveToHistory");
+		boolean saveToHistory = false;
+		
+		if(saveToHistoryString != null
+		&& Boolean.parseBoolean(saveToHistoryString.trim()) ) {
+			saveToHistory = true;
+		}
+
 		
 		String queryParamsString = request.getParameter("parameters");
 		
@@ -238,7 +243,9 @@ public class ServletQuery extends HttpServlet
 		query = CFW.Time.replaceTimeframePlaceholders(query, timeframe);
 		
 		CFWQueryResultList resultList = 
-				new CFWQueryExecutor().parseAndExecuteAll(
+				new CFWQueryExecutor()
+					.saveToHistory(saveToHistory)
+					.parseAndExecuteAll(
 							  query
 							, timeframe
 							, queryParamsObject

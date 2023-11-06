@@ -37,6 +37,7 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandStatsMatrix;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTail;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTop;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandUnbox;
+import com.xresch.cfw.features.query.database.CFWQueryHistory;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionAbs;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionAvg;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionCeil;
@@ -146,7 +147,7 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		//----------------------------------
 		// Register Objects
-		//CFW.Registry.Objects.addCFWObject(CFWJob.class);
+		CFW.Registry.Objects.addCFWObject(CFWQueryHistory.class);
 		
 		//----------------------------------
 		// Register Global Javascript
