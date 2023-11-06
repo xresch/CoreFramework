@@ -2982,7 +2982,9 @@ function cfw_renderer_dataviewer(renderDef) {
 				//The name of the field containing the total number of rows
 				totalrowsfield: 'TOTAL_RECORDS',
 				//a function to pre-process the data: function(data), data will be an array of records
-				preprocess: null
+				preprocess: null,
+				//a function to call after a page has been rendered
+				callback: null
 			},
 	};
 	
@@ -3260,6 +3262,10 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 				params.totalRecords = totalRecords;
 				params.dataToRender = dataToRender;
 				cfw_renderer_dataviewer_renderPage(params);
+				
+				if(settings.datainterface.callback != null){
+					settings.datainterface.callback();
+				}
 			}
 		}
 	);

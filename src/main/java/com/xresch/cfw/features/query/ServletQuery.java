@@ -19,6 +19,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.query.FeatureQuery.CFWQueryComponentType;
+import com.xresch.cfw.features.query.database.CFWDBQueryHistory;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.JSONResponse;
@@ -113,6 +114,23 @@ public class ServletQuery extends HttpServlet
 											break;
 				}
 				break;
+				
+			case "fetchpartial": 			
+				switch(item.toLowerCase()) {
+					case "queryhistorylist": String pagesize = request.getParameter("pagesize");
+											String pagenumber = request.getParameter("pagenumber");
+											String filterquery = request.getParameter("filterquery");
+											String sortby = request.getParameter("sortby");
+											String isAscendingString = request.getParameter("isascending");
+											boolean isAscending = (isAscendingString == null || isAscendingString.equals("true")) ? true : false;
+											
+											jsonResponse.getContent().append(CFWDBQueryHistory.getPartialQueryHistoryListAsJSON(pagesize, pagenumber, filterquery, sortby, isAscending));
+	  										break;
+	  										
+					default: 				CFW.Messages.itemNotSupported(item);
+											break;
+				}
+				break;		
 			
 			case "create": 			
 				switch(item.toLowerCase()) {
@@ -125,22 +143,7 @@ public class ServletQuery extends HttpServlet
 				}
 				break;	
 				
-//			case "fetchpartial": 			
-//				switch(item.toLowerCase()) {
-//					case "personlist": 		String pagesize = request.getParameter("pagesize");
-//											String pagenumber = request.getParameter("pagenumber");
-//											String filterquery = request.getParameter("filterquery");
-//											String sortby = request.getParameter("sortby");
-//											String isAscendingString = request.getParameter("isascending");
-//											boolean isAscending = (isAscendingString == null || isAscendingString.equals("true")) ? true : false;
-//											
-//											//jsonResponse.getContent().append(PersonDBMethods.getPartialPersonListAsJSON(pagesize, pagenumber, filterquery, sortby, isAscending));
-//	  										break;
-//	  										
-//					default: 				CFW.Messages.itemNotSupported(item);
-//											break;
-//				}
-//				break;	
+
 			
 //			case "delete": 			
 //				switch(item.toLowerCase()) {
