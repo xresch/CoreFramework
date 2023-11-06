@@ -42,6 +42,11 @@
     align-content: start;
 }
 
+/*when title is left, give body a min-width */
+.flex-row > .cfw-dashboard-widget-body {
+    min-width: 50%;
+}
+
 .cfw-dashboard-widget-footer {
 	padding: 0.4rem 0.7rem;
     padding-right: 1.5rem;
