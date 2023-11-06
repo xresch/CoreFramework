@@ -13,7 +13,16 @@ function cfw_dashboardcommon_showStatistics(id){
 	var timepicker = $('#dashStatsTime');
 	if(timepicker.length == 0){
 		
-		statisticsTab.append("<p>Following charts show you average values per minute.</p>");
+		statisticsTab.append(
+			  "<p>Following charts display summarized values for all users that have accessed the dashboard.</p>"
+			+ "<ul>"
+			+ "<li><b>Page Loads:&nbsp;</b> Total times the dashboard was loaded in the browser, including page reloads.</li>"
+			+ "<li><b>Page Loads:&nbsp;</b> Above Page Loads, plus every time the dashboard was refreshed with the automatic refresh.</li>"
+			+ "<li><b>Widget Loads Cached:&nbsp;</b> Number of times widget data has been loaded from the cache.</li>"
+			+ "<li><b>Widget Loads Not Cached:&nbsp;</b> Number of times widget data has been loaded from the data source.</li>"
+			+ "</ul>"
+		);
+
 
 		var timepicker = $('<input id="dashStatsTime" type="text">');
 		statisticsTab.append(timepicker);
@@ -61,7 +70,7 @@ function cfw_dashboardcommon_showStatistics(id){
 								// How should the input data be handled groupbytitle|arrays 
 								datamode: 'groupbytitle',
 								xfield: "TIME",
-								yfield: "VAL",
+								yfield: "SUM",
 								type: "line",
 								xtype: "time",
 								ytype: "linear",
