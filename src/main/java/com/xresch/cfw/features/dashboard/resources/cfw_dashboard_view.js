@@ -358,15 +358,8 @@ function cfw_dashboard_registerWidget(widgetUniqueType, widgetObject){
 			menulabel: "Unnamed Widget",
 			// Description of the widget
 			description: "",
-			// Override to customize initial widget title. If null, the menu
-			// label will be used as default.
-			defaulttitle: null,
-			// Override to customize initial widget height. If null, default
-			// value defined in DashboardWidget.java is used.
-			defaultheight: null,
-			// Override to customize initial widget defaultwidth. If null,
-			// default value defined in DashboardWidget.java is used.
-			defaultwidth: null,
+			// Override to customize initial settings
+			defaultsettings: {},
 			// Set to true if this widget uses the time from the global
 			// timeframe picker. Timeframe will be added to the settings with
 			// the fields timeframe_earliest/timeframe_latest.
@@ -391,8 +384,8 @@ function cfw_dashboard_registerWidget(widgetUniqueType, widgetObject){
 	}
 	
 	var merged = Object.assign({}, defaultObject, widgetObject);
-	if(merged.defaulttitle == null){
-		merged.defaulttitle = merged.menulabel;
+	if(merged.defaultsettings.TITLE == null){
+		merged.defaultsettings.TITLE = merged.menulabel;
 	}
 	
 	CFW_DASHBOARD_WIDGET_REGISTRY[widgetUniqueType] = merged;
@@ -932,14 +925,9 @@ function cfw_dashboard_widget_add(type, optionalWidgetObjectData, doAutoposition
 				// Handle Initial Creation
 				var widgetDefinition = CFW.dashboard.getWidgetDefinition(type);
 				widgetObject.TYPE   = type;
-				widgetObject.TITLE  = widgetDefinition.defaulttitle;
-				
-				if(widgetDefinition.defaultheight != null){
-					widgetObject.HEIGHT = widgetDefinition.defaultheight;
-				}
-				
-				if(widgetDefinition.defaultwidth != null){
-					widgetObject.WIDTH  = widgetDefinition.defaultwidth;
+
+				if(widgetDefinition.defaultsettings != null){
+					widgetObject = Object.assign(widgetObject,widgetDefinition.defaultsettings);
 				}
 
 				cfw_dashboard_widget_createInstance(widgetObject, true, false, function(subWidgetObject){

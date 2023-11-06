@@ -6,9 +6,11 @@
 			menuicon: "fas fa-sync",
 			menulabel: CFWL('cfw_widget_forcerefresh', 'Force Refresh'),
 			description: CFWL('cfw_widget_forcerefresh_desc', 'Forces the widget data to refresh and does not take it from the widget cache.'),
-			defaulttitle: "",
-			defaultwidth: 4,
-			defaultheight: 4,
+			defaultsettings: {
+				TITLE: "",
+				WIDTH: 3,
+				HEIGHT: 4,
+			},
 			createWidgetInstance: function (widgetObject, params, callback) {			
 				
 				var settings = widgetObject.JSON_SETTINGS;

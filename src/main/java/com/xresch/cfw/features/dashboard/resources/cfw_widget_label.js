@@ -6,9 +6,11 @@
 			menuicon: "fas fa-tag",
 			menulabel: CFWL('cfw_widget_cfwlabel', 'Label'),
 			description: CFWL('cfw_widget_cfwlabel_desc', 'Displays a vertical label.'),
-			defaulttitle: "",
-			defaultwidth: 8,
-			defaultheight: 3,
+			defaultsettings: {
+				TITLE: "",
+				WIDTH: 8,
+				HEIGHT: 3,
+			},
 			createWidgetInstance: function (widgetObject, params, callback) {	
 				var settings = widgetObject.JSON_SETTINGS;
 				if(settings.label != null){

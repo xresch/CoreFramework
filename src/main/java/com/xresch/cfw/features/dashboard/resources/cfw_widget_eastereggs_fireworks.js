@@ -14,9 +14,11 @@
 			menuicon: "fas fa-bomb",
 			menulabel: CFWL('cfw_widget_fireworks', "Fireworks"),
 			description: CFWL('cfw_widget_fireworks_desc', "Adds some explosions to your dashboard."),
-			defaulttitle: "",
-			defaultwidth: 4,
-			defaultheight: 4,
+			defaultsettings: {
+				TITLE: "",
+				WIDTH: 3,
+				HEIGHT: 4,
+			},
 			createWidgetInstance: function (widgetObject, params, callback) {		
 				
 				var fwTemplate = $('#fireworks-template');

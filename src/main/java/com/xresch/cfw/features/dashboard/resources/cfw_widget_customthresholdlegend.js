@@ -10,9 +10,11 @@
 			menuicon: "fas fa-info-circle",
 			menulabel: CFWL('cfw_widget_thresholdlegend', "Custom Threshold Legend"),
 			description: CFWL('cfw_widget_thresholdlegend_desc', "Displays a legend for the threshold colors with custom labels."),
-			defaulttitle: "",
-			defaultwidth: 32,
-			defaultheight: 4,
+			defaultsettings: {
+				TITLE: "",
+				WIDTH: 32,
+				HEIGHT: 4,
+			},
 			createWidgetInstance: function (widgetObject, params, callback) {		
 				
 				var settings = widgetObject.JSON_SETTINGS;

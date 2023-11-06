@@ -14,9 +14,11 @@
 			menuicon: "fas fa-globe fa-spin",
 			menulabel: CFWL('cfw_widget_discomode', "Disco!!!"),
 			description: CFWL('cfw_widget_discomode_desc', "Toggles discomode."),
-			defaulttitle: "",
-			defaultwidth: 4,
-			defaultheight: 4,
+			defaultsettings: {
+				TITLE: "",
+				WIDTH: 3,
+				HEIGHT: 4,
+			},
 			createWidgetInstance: function (widgetObject, params, callback) {		
 				var html = 
 					 '<button class="btn btn-sm text-white bg-cfw-purple fa fa-globe" onclick="cfw_widget_toggleDisco('+widgetObject.JSON_SETTINGS.discolevel+')" style="height: 100%; width:100%;"></button>'

@@ -6,9 +6,11 @@
 			menuicon: "fas fa-history",
 			menulabel: CFWL('cfw_widget_cfwrefreshtime', 'Refresh Time'),
 			description: CFWL('cfw_widget_cfwrefreshtime_desc', 'Displays the time the dashboard was refreshed.'),
-			defaulttitle: "",
-			defaultwidth: 8,
-			defaultheight: 3,
+			defaultsettings: {
+				TITLE: "",
+				WIDTH: 8,
+				HEIGHT: 3,
+			},
 			createWidgetInstance: function (widgetObject, params, callback) {	
 				
 				var settings = widgetObject.JSON_SETTINGS;

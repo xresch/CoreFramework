@@ -14,9 +14,11 @@
 			menuicon: "far fa-snowflake",
 			menulabel: CFWL('cfw_widget_snow', "Snow"),
 			description: CFWL('cfw_widget_snow_desc', "Adds some weather to your dashboard."),
-			defaulttitle: "",
-			defaultwidth: 4,
-			defaultheight: 4,
+			defaultsettings: {
+				TITLE: "",
+				WIDTH: 3,
+				HEIGHT: 4,
+			},
 			createWidgetInstance: function (widgetObject, params, callback) {		
 				
 				var html = 
