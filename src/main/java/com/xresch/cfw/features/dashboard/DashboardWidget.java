@@ -140,6 +140,8 @@ public class DashboardWidget extends CFWObject {
 			.setDescription("The position of the title.")
 			.addOption("top", "Top")
 			.addOption("left", "Left")
+			.addOption("bottom", "Bottom")
+			.addOption("right", "Right")
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
 			;
 	

@@ -1144,6 +1144,12 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	if(merged.TITLE_POSITION == "left"){ 
 		titleposClass = "flex-row "; 
 		titleBorderClass = "";
+	}else if(merged.TITLE_POSITION == "bottom"){
+		titleposClass = "flex-column-reverse "; 
+		titleBorderClass = "border-top ";
+	}else if(merged.TITLE_POSITION == "right"){
+		titleposClass = "flex-row-reverse "; 
+		titleBorderClass = "";
 	}
 	
 	var titleLinkStart = "";
@@ -1154,7 +1160,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	}
 	
 	var titleLinkAlignClass = '';
-	if(merged.TITLE_POSITION == "top"){
+	if(merged.TITLE_POSITION == "top" || merged.TITLE_POSITION == "bottom" ){
 		if 		(merged.TITLE_ALIGN == "center"){	titleLinkAlignClass = "text-center"; }
 		else if (merged.TITLE_ALIGN == "end"){	titleLinkAlignClass = "text-right"; }
 	}else{
