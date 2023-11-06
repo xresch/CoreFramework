@@ -1108,6 +1108,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 			TITLE_LINK: null,
 			TITLE_FONTSIZE: 16,
 			TITLE_POSITION: 'top',
+			TITLE_ALIGN: 'start',
 			CONTENT_FONTSIZE: 16,
 			FOOTER: "",
 			BGCOLOR: "",
@@ -1152,6 +1153,15 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 		titleLinkEnd = "</a>";
 	}
 	
+	var titleLinkAlignClass = '';
+	if(merged.TITLE_POSITION == "top"){
+		if 		(merged.TITLE_ALIGN == "center"){	titleLinkAlignClass = "text-center"; }
+		else if (merged.TITLE_ALIGN == "end"){	titleLinkAlignClass = "text-right"; }
+	}else{
+		titleLinkAlignClass = ' align-self-'+merged.TITLE_ALIGN;
+	}
+	
+	
 	var htmlString =
 		'<div class="grid-stack-item-content card d-flex '+titleposClass+BGCOLORClass+' '+FGCOLORClass+'">'
 		+'	<div role="button" class="cfw-dashboard-widget-actionicons text-cfw-lightgray show-on-edit">'
@@ -1170,7 +1180,11 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 
 	if(merged.TITLE != null && merged.TITLE != ''){
 		htmlString += 
-		 '     	  <div class="cfw-dashboard-widget-title '+titleBorderClass+borderClass+'" style="font-size: '+merged.TITLE_FONTSIZE+'px;">'
+		 '     	  <div class="cfw-dashboard-widget-title '
+								+titleBorderClass
+								+borderClass
+								+titleLinkAlignClass+'"'
+					+' style="font-size: '+merged.TITLE_FONTSIZE+'px;">'
 		+'		  	<span>'+titleLinkStart + merged.TITLE + titleLinkEnd+'</span>'
 		+'		  </div>'
 	}

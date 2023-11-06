@@ -49,6 +49,7 @@ public class DashboardWidget extends CFWObject {
 		TITLE,
 		TITLE_LINK,
 		TITLE_POSITION,
+		TITLE_ALIGN,
 		TITLE_FONTSIZE,
 		CONTENT_FONTSIZE,
 		FOOTER,
@@ -142,6 +143,15 @@ public class DashboardWidget extends CFWObject {
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
 			;
 	
+	private CFWField<String> titlealign = CFWField.newString(FormFieldType.SELECT, DashboardWidgetFields.TITLE_ALIGN)
+			.setColumnDefinition("VARCHAR(32)")
+			.setDescription("The alignment of the title.")
+			.addOption("start", "Start")
+			.addOption("center", "Center")
+			.addOption("end", "End")
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			;
+	
 	private CFWField<Integer> contentFontsize = CFWField.newInteger(FormFieldType.NUMBER, DashboardWidgetFields.CONTENT_FONTSIZE)
 			.setDescription("The font size of the content.")
 			.addValidator(new NumberRangeValidator(6, 32).setNullAllowed(true))
@@ -219,7 +229,7 @@ public class DashboardWidget extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titlelink, titleFontsize, titleposition, contentFontsize, footer, bgcolor, fgcolor, invisible, manualLoad, paramWidgetLoad, settings, taskParameters);
+		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titlelink, titleFontsize, titleposition, titlealign, contentFontsize, footer, bgcolor, fgcolor, invisible, manualLoad, paramWidgetLoad, settings, taskParameters);
 	}
 
 	/**************************************************************************************
@@ -267,6 +277,7 @@ public class DashboardWidget extends CFWObject {
 						DashboardWidgetFields.TITLE.toString(),
 						DashboardWidgetFields.TITLE_LINK.toString(),
 						DashboardWidgetFields.TITLE_POSITION.toString(),
+						DashboardWidgetFields.TITLE_ALIGN.toString(),
 						DashboardWidgetFields.TITLE_FONTSIZE.toString(),
 						DashboardWidgetFields.CONTENT_FONTSIZE.toString(),
 						DashboardWidgetFields.FOOTER.toString(),
@@ -488,8 +499,26 @@ public class DashboardWidget extends CFWObject {
 		return title.getValue();
 	}
 	
-	public DashboardWidget title(String title) {
-		this.title.setValue(title);
+	public DashboardWidget title(String value) {
+		this.title.setValue(value);
+		return this;
+	}
+	
+	public String titleposition() {
+		return titleposition.getValue();
+	}
+	
+	public DashboardWidget titleposition(String value) {
+		this.titleposition.setValue(value);
+		return this;
+	}
+	
+	public String titlealign() {
+		return titlealign.getValue();
+	}
+	
+	public DashboardWidget titlealign(String value) {
+		this.titlealign.setValue(value);
 		return this;
 	}
 	
