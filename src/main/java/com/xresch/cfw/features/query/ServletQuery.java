@@ -145,16 +145,16 @@ public class ServletQuery extends HttpServlet
 				
 
 			
-//			case "delete": 			
-//				switch(item.toLowerCase()) {
-//
-//					case "person": 		//deletePerson(jsonResponse, ID);
-//										break;  
-//										
-//					default: 			CFW.Messages.itemNotSupported(item);
-//										break;
-//				}
-//				break;	
+			case "delete": 			
+				switch(item.toLowerCase()) {
+
+					case "historyitem": CFWDBQueryHistory.deleteByID( Integer.parseInt(ID) );
+										break;  
+										
+					default: 			CFW.Messages.itemNotSupported(item);
+										break;
+				}
+				break;	
 				
 			case "execute": 			
 				switch(item.toLowerCase()) {

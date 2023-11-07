@@ -90,6 +90,7 @@ function cfw_query_printEditor(){
 function cfw_query_printHistoryView(){
 	
 	var parent = $("#tab-content");
+	parent.html('');
 	
 	//======================================
 	// Prepare actions
@@ -100,7 +101,7 @@ function cfw_query_printHistoryView(){
 	actionButtons.push(
 		function (record, id){
 			return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete <strong>\\\''+record.PK_ID+'\\\'</strong>?\', \'Delete\', \'cfw_query_delete('+id+');\')">'
+					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete <strong>\\\''+record.PK_ID+'\\\'</strong>?\', \'Delete\', \'cfw_query_deleteHistoryItem('+id+');\')">'
 					+ '<i class="fa fa-trash"></i>'
 					+ '</button>';
 
