@@ -30,6 +30,7 @@ public class CFWTimeframe {
 	private static final String MEMBER_EARLIEST = "earliest";
 	private static final String MEMBER_OFFSET = "offset";
 	
+	// this is a values representing something from Javascript >> new Date().getTimezoneOffset()
 	private static final String MEMBER_CLIENT_TIMEZONE_OFFSET = "clientTimezoneOffset";
 
 

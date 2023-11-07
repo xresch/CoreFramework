@@ -11,7 +11,6 @@ function cfw_query_editor_getManualPage(type, componentName){
 	
 	//-----------------------------------
 	// Do Execution
-	
 	params = {action: "fetch"
 		, item: "manualpage"
 		, type: type
@@ -64,9 +63,6 @@ function cfw_query_editor_handleButtonFullscreen(buttonElement){
 	
 	var textarea = $(buttonElement).closest('.cfw-query-content-wrapper').find('textarea');	
 	var queryEditor = textarea.data('queryEditor');
-	
-	console.log(textarea)
-	console.log(queryEditor)
 	
 	queryEditor.toggleFullscreen(buttonElement);
 }
@@ -136,6 +132,7 @@ class CFWQueryEditor{
 		// Setup
 		//-------------------------------------------
 		var queryEditor = this;
+
 		this.textarea.data("queryEditor", queryEditor);
 		this.initializeEditor();
 
@@ -517,15 +514,16 @@ class CFWQueryEditor{
 		// Create Autocomplete
 		if(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV == null){
 			CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV = $('<div id="query-autocomplete-results" class="block-modal">');
+			// add to body as it is shared by all editors
+			$('body').append(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
 		}
 		
-		queryEditorWrapper.append(CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
 		this.createAutocompleteForm();
 		
 		var fieldname = this.textarea.attr('id');
 
 		cfw_autocompleteInitialize(this.autocompleteFormID, fieldname, 0,10, null, true, CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV);
-		
+			
 		//--------------------------------
 		// Timeframe Picker
 		this.createTimeframePickerField();
@@ -564,6 +562,7 @@ class CFWQueryEditor{
 	initializeEditor(){
 		
 		this.createAutocompleteForm();
+				
 		this.createEditorField();
 		this.resizeToFitQuery();	
 		this.refreshHighlighting();
@@ -579,7 +578,6 @@ class CFWQueryEditor{
 		//-----------------------------------
 		// Query Field Event Handler
 		this.textarea.on("keydown", function(e){
-			
 			
 			queryEditor.highlightExecuteButton(true);
 			
@@ -611,8 +609,6 @@ class CFWQueryEditor{
 			    e.preventDefault();
 				queryEditor.handleTab("increase");
 			}
-			
-	
 			
 			//---------------------------
 			// Ctrl + Enter
@@ -703,6 +699,52 @@ class CFWQueryEditor{
 		}
 	}
 	
+	/*******************************************************************************
+	 * Execute the query and fetch data from the server.
+	 * 
+	 * @param isPageLoad if the execution is caused by a page load 
+	 ******************************************************************************/
+	executeQueryRequest(query, saveToHistory, timeframe, parameters){
+		
+		var params = {action: "execute"
+			, item: "query"
+			, query: query
+			, saveToHistory: saveToHistory
+			, timeframe: JSON.stringify(timeframe)
+			, parameters: JSON.stringify(parameters)
+		};
+		
+		//-----------------------------------
+		// Do Execution
+		
+		//cfw_query_toggleLoading(true);
+		var queryEditor = this;
+		
+		this.toggleLoading(true);
+		
+		CFW.http.postJSON(CFW_QUERY_URL, params, 
+			function(data) {
+				
+				if(data.success){
+					
+					if(queryEditor.settings.resultDiv != null){
+						cfw_query_renderAllQueryResults(queryEditor.settings.resultDiv, data.payload);
+					}else{
+						
+						// use autocomplete wrapper to get it closed when clicking outside of div
+						var resultWrapper = $('<div class="autocomplete-wrapper p-2 monospace">');
+						resultWrapper.attr('onclick', 'event.stopPropagation();');
+						
+						CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV.append(resultWrapper);					
+						cfw_query_renderAllQueryResults(resultWrapper, data.payload);
+					}
+					
+				}
+				queryEditor.toggleLoading(false);
+				
+		});
+	
+	}
 	
 	/*******************************************************************************
 	 * Execute the query and fetch data from the server.
@@ -755,7 +797,6 @@ class CFWQueryEditor{
 		// hide existing messages to not confuse user
 		$('.toast.show').removeClass('show').addClass('hide');
 		
-	
 		//-----------------------------------
 		// Revert Button Highlighting
 		this.highlightExecuteButton(false);
@@ -774,45 +815,14 @@ class CFWQueryEditor{
 				queryParams[current.NAME] = current.VALUE;
 			}
 		}
-		
-		params = {action: "execute"
-				, item: "query"
-				, query: query
-				, saveToHistory: true
-				, timezoneOffsetMinutes: timeZoneOffset
-				, timeframe: JSON.stringify(timeframe)
-				, parameters: JSON.stringify(queryParams)
-			};
 			
 		//-----------------------------------
 		// Do Execution
 		
-		//cfw_query_toggleLoading(true);
 		var queryEditor = this;
+		var saveToHistory = true;
 		
-		this.toggleLoading(true);
-		
-		CFW.http.postJSON(CFW_QUERY_URL, params, 
-			function(data) {
-				
-				if(data.success){
-					
-					if(queryEditor.settings.resultDiv != null){
-						cfw_query_renderAllQueryResults(queryEditor.settings.resultDiv, data.payload);
-					}else{
-						
-						// use autocomplete wrapper to get it closed when clicking outside of div
-						var resultWrapper = $('<div class="autocomplete-wrapper p-2 monospace">');
-						resultWrapper.attr('onclick', 'event.stopPropagation();');
-						
-						CFW_QUERY_EDITOR_AUTOCOMPLETE_DIV.append(resultWrapper);					
-						cfw_query_renderAllQueryResults(resultWrapper, data.payload);
-					}
-					
-				}
-				queryEditor.toggleLoading(false);
-				
-		});
+		this.executeQueryRequest(query, saveToHistory, timeframe, queryParams);
 
 	}
 
