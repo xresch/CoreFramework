@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query;
 
 import java.util.TreeMap;
+import java.util.concurrent.ScheduledFuture;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
@@ -8,6 +9,8 @@ import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
+import com.xresch.cfw.features.eav.FeatureEAV;
+import com.xresch.cfw.features.eav.TaskEAVStatsStoreToDB;
 import com.xresch.cfw.features.manual.ManualPage;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandChart;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandComment;
@@ -38,6 +41,7 @@ import com.xresch.cfw.features.query.commands.CFWQueryCommandTail;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandTop;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandUnbox;
 import com.xresch.cfw.features.query.database.CFWQueryHistory;
+import com.xresch.cfw.features.query.database.TaskQueryHistoryLimitEntries;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionAbs;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionAvg;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionCeil;
@@ -102,6 +106,7 @@ import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 /************************************************************************************************************
  * 
@@ -123,6 +128,9 @@ public class FeatureQuery extends CFWAppFeature {
 	public static final String CONFIG_QUERY_RECORD_LIMIT = "Query Record Limit";
 	public static final String CONFIG_QUERY_COMMAND_LIMIT = "Query Command Limit";
 	public static final String CONFIG_QUERY_EXEC_LIMIT = "Query Time Limit";
+	public static final String CONFIG_QUERY_HISTORY_LIMIT = "Query History Limit";
+	
+	private static ScheduledFuture<?> taskQueryHistoryLimit;
 	
 	public static final ManualPage ROOT_MANUAL_PAGE = CFW.Registry.Manual.addManualPage(null, 
 			new ManualPage("Query")
@@ -359,6 +367,16 @@ public class FeatureQuery extends CFWAppFeature {
 				.type(FormFieldType.NUMBER)
 				.value("180")
 				);
+		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+				new Configuration(CONFIG_CATEGORY, CONFIG_QUERY_HISTORY_LIMIT)
+				.description("The maximum amount of queries kept in the history per user. Exceeding amount will be deleted periodically.")
+				.type(FormFieldType.NUMBER)
+				.value("1000")
+				);
 	}
 
 	@Override
@@ -374,12 +392,22 @@ public class FeatureQuery extends CFWAppFeature {
 
 	@Override
 	public void startTasks() {
-		//do nothing
+
+		//----------------------------------------
+		// Task: Store to Database
+		if(taskQueryHistoryLimit != null) {
+			taskQueryHistoryLimit.cancel(false);
+		}
+		
+		// use an odd number to reduce number of clashes
+		int millis = (int)CFWTimeUnit.m.toMillis(144);
+		taskQueryHistoryLimit = CFW.Schedule.runPeriodicallyMillis(millis, millis, new TaskQueryHistoryLimitEntries());
+		
 	}
 
 	@Override
 	public void stopFeature() {
-		// do nothing
+		taskQueryHistoryLimit.cancel(false);
 	}
 	
 	public static String getQueryURI() {

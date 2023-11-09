@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.query.database;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import com.xresch.cfw.datahandling.CFWObject;
@@ -76,10 +77,16 @@ public class CFWDBQueryHistory {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWQueryHistoryFields.PK_ID.toString(), id);
 	}
 	
+	/********************************************************
+	 * 
+	 ********************************************************/
 	public static CFWQueryHistory selectByID(int id ) {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWQueryHistoryFields.PK_ID.toString(), id);
 	}
 	
+	/********************************************************
+	 * 
+	 ********************************************************/
 	public static String getQueryHistoryListAsJSON() {
 		
 		return new CFWSQL(new CFWQueryHistory())
@@ -89,11 +96,16 @@ public class CFWDBQueryHistory {
 		
 	}
 	
+	/********************************************************
+	 * 
+	 ********************************************************/
 	public static String getPartialQueryHistoryListAsJSON(String pageSize, String pageNumber, String filterquery, String sortby, boolean sortAscending) {
 		return getPartialQueryHistoryListAsJSON(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery, sortby, sortAscending);
 	}
 	
-	
+	/********************************************************
+	 * 
+	 ********************************************************/
 	public static String getPartialQueryHistoryListAsJSON(int pageSize, int pageNumber, String filterquery, String sortby, boolean sortAscending) {	
 		
 		//-------------------------------------
@@ -106,53 +118,47 @@ public class CFWDBQueryHistory {
 				.fulltextSearchLucene(filterquery, sortby, sortAscending, pageSize, pageNumber)
 				.getAsJSON();
 		
-		
-		//===========================================
-		// Manual Alternative
-		//===========================================
-		
-//		if(Strings.isNullOrEmpty(filterquery)) {
-//			//-------------------------------------
-//			// Unfiltered
-//			return new CFWSQL(new QueryHistory())
-//				.queryCache()
-//				.columnSubquery("TOTAL_RECORDS", "COUNT(*) OVER()")
-//				.select()
-//				.limit(pageSize)
-//				.offset(pageSize*(pageNumber-1))
-//				.getAsJSON();
-//		}else {
-//			//-------------------------------------
-//			// Filter with fulltext search
-//			// Enabled by CFWObject.enableFulltextSearch()
-//			// on the QueryHistory Object
-//			return new CFWSQL(new QueryHistory())
-//					.queryCache()
-//					.select()
-//					.fulltextSearch()
-//						.custom(filterquery)
-//						.build(pageSize, pageNumber)
-//					.getAsJSON();
-//		}
-		
 	}
 	
+	/********************************************************
+	 * 
+	 ********************************************************/
 	public static int getCount() {
 		
 		return new CFWQueryHistory()
 				.queryCache(CFWDBQueryHistory.class, "getCount")
 				.selectCount()
 				.executeCount();
-		
 	}
 	
 	
-	
-	
-	
-
-	
-
-
+	/********************************************************
+	 * Removes the oldest entries.
+	 * @param amount of records to keep
+	 ********************************************************/
+	public static void removeOldestEntries(int keepCount) {
+		ArrayList<Integer> userIDList = new CFWSQL(new CFWQueryHistory())
+				.distinct()
+				.select(CFWQueryHistoryFields.FK_ID_USER)
+				.getAsIntegerArrayList(CFWQueryHistoryFields.FK_ID_USER);
+		
+		for(Integer userID : userIDList) {
+			
+			new CFWSQL(null)
+			.custom(
+				   "DELETE FROM CFW_QUERY_HISTORY H\r\n"
+				 + "WHERE H.PK_ID IN (\r\n"
+				 + "	SELECT PK_ID FROM CFW_QUERY_HISTORY\r\n"
+				 + "	WHERE FK_ID_USER = ?\r\n"
+				 + "	ORDER BY TIME DESC\r\n"
+				 + "	OFFSET ?"
+				 + ")"
+			, userID
+			, keepCount)
+			.executeDelete()
+			;
+			
+		}
+	}
 		
 }

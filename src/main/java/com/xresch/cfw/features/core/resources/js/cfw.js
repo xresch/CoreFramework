@@ -5024,6 +5024,7 @@ function cfw_loadLocalization(){
 					window.localStorage.setItem("lang-"+JSDATA.localeIdentifier, JSON.stringify(data.payload) );
 					CFW.cache.lang = data.payload;
 				}else if (xhr.status == 304){
+					//CFW.cache.lang = data.payload;
 					CFW.cache.lang = JSON.parse(window.localStorage.getItem("lang-"+JSDATA.localeIdentifier));
 				}
 

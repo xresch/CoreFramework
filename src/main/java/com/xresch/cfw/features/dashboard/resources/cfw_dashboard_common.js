@@ -23,7 +23,6 @@ function cfw_dashboardcommon_showStatistics(id){
 			+ "</ul>"
 		);
 
-
 		var timepicker = $('<input id="dashStatsTime" type="text">');
 		statisticsTab.append(timepicker);
 		cfw_initializeTimeframePicker("dashStatsTime", {offset: '1-d'}, function(){
