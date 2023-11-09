@@ -46,6 +46,7 @@ public class WidgetParameter extends WidgetDefinition {
 	public static final String FIELDNAME_SHOWBUTTON = "showbutton";
 	public static final String FIELDNAME_JSON_PARAMETERS = "JSON_PARAMETERS";
 	public static final String FIELDNAME_DESCRIPTION = "description";
+	public static final String FIELDNAME_LOAD_PREVIOUS_VALUES = "load_previous_values";
 	
 	public static final String WIDGET_TYPE = "cfw_parameter";
 	
@@ -161,6 +162,12 @@ public class WidgetParameter extends WidgetDefinition {
 						}
 					})
 			)
+			
+			.addField(CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_LOAD_PREVIOUS_VALUES)
+					.setLabel("{!cfw_widget_parameter_loadpreviousvalues!}")
+					.setDescription("{!cfw_widget_parameter_loadpreviousvalues_desc!}")
+					.setValue(true)
+				)
 		;
 	}
 	

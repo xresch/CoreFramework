@@ -36,58 +36,60 @@
 					//----------------------------------
 					// Apply Custom Viewer Settings from
 					// Browser Store
-					var storedViewerParams = cfw_parameter_getStoredUserParams();
-					parentDiv.find('form input, form textarea, form select').each(function (){
-						var inputField = $(this);
-						var name = inputField.attr('name');
-						var type = inputField.attr('type');
-						
-						//--------------------
-						// Skip Hidden Fields
-						if(type == "hidden"){
-							return;
-						}
-						
-						//--------------------
-						// Do others
-						var viewerCustomValue = storedViewerParams[name];
-								
-						if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
-							if(type == 'radio'){
-								//$('input[name="'+name+'"]').prop("checked", false);
-								parentDiv.find('input[name="'+name+'"]').each(function(){
-									var current = $(this);
-									
-									if(current.val() == ""+viewerCustomValue){
-										current.prop("checked", 'checked');
-									}else{
-										current.prop("checked", false);
-									}
-								});
-							}else if(inputField.hasClass('cfw-tags-selector')){
-								var tagsInputValues = JSON.parse(viewerCustomValue);
-								//must be initialized to add values
-								inputField.tagsinput('removeAll');
-								for(var key in tagsInputValues){
-									inputField.tagsinput('add', { "value": key , "label": tagsInputValues[key] });
-								}
-							}else if(inputField.hasClass('cfw-tags')){
-								var tagsInputValues = viewerCustomValue.split(',');
-								//must be initialized to add values
-								inputField.tagsinput('removeAll');
-								for(var index in tagsInputValues){
-									inputField.tagsinput('add', tagsInputValues[index]);
-								}
-							}else if(inputField.data('role') == "chartsettings"){
-								var chartsettingsValues = JSON.parse(viewerCustomValue);
-								var wrapper = inputField.closest('.cfw-chartsettings-field-wrapper');
-								 cfw_internal_applyChartSettings(inputField.attr('id'), wrapper, chartsettingsValues);
-							}else{
-								// stringify value, else it won't work with properly with booleans
-								inputField.val(""+viewerCustomValue);
+					if(settings.load_previous_values){
+						var storedViewerParams = cfw_parameter_getStoredUserParams();
+						parentDiv.find('form input, form textarea, form select').each(function (){
+							var inputField = $(this);
+							var name = inputField.attr('name');
+							var type = inputField.attr('type');
+							
+							//--------------------
+							// Skip Hidden Fields
+							if(type == "hidden"){
+								return;
 							}
-						}
-					});
+							
+							//--------------------
+							// Do others
+							var viewerCustomValue = storedViewerParams[name];
+									
+							if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
+								if(type == 'radio'){
+									//$('input[name="'+name+'"]').prop("checked", false);
+									parentDiv.find('input[name="'+name+'"]').each(function(){
+										var current = $(this);
+										
+										if(current.val() == ""+viewerCustomValue){
+											current.prop("checked", 'checked');
+										}else{
+											current.prop("checked", false);
+										}
+									});
+								}else if(inputField.hasClass('cfw-tags-selector')){
+									var tagsInputValues = JSON.parse(viewerCustomValue);
+									//must be initialized to add values
+									inputField.tagsinput('removeAll');
+									for(var key in tagsInputValues){
+										inputField.tagsinput('add', { "value": key , "label": tagsInputValues[key] });
+									}
+								}else if(inputField.hasClass('cfw-tags')){
+									var tagsInputValues = viewerCustomValue.split(',');
+									//must be initialized to add values
+									inputField.tagsinput('removeAll');
+									for(var index in tagsInputValues){
+										inputField.tagsinput('add', tagsInputValues[index]);
+									}
+								}else if(inputField.data('role') == "chartsettings"){
+									var chartsettingsValues = JSON.parse(viewerCustomValue);
+									var wrapper = inputField.closest('.cfw-chartsettings-field-wrapper');
+									 cfw_internal_applyChartSettings(inputField.attr('id'), wrapper, chartsettingsValues);
+								}else{
+									// stringify value, else it won't work with properly with booleans
+									inputField.val(""+viewerCustomValue);
+								}
+							}
+						});
+					}
 					
 					//----------------------------------
 					// Callback

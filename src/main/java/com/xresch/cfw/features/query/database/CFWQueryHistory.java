@@ -1,7 +1,5 @@
 package com.xresch.cfw.features.query.database;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -11,14 +9,9 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
-import com.xresch.cfw.features.dashboard.Dashboard;
-import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
-import com.xresch.cfw.utils.CFWRandom;
-import com.xresch.cfw.validation.EmailValidator;
-import com.xresch.cfw.validation.LengthValidator;
 
 /**************************************************************************************************************
  * 

@@ -280,7 +280,7 @@ function cfw_parameter_fireParamWidgetUpdate(paramElement){
 	var doPrompt = mergedParams[FIELDNAME_PROMPT_PW];
 	var affectedWidgetsString = mergedParams[FIELDNAME_AFFECTED_WIDGETS];
 	var affectedWidgetsArray = 
-		(affectedWidgetsString == null && affectedWidgetsString == "[]") ? [] : JSON.parse(affectedWidgetsString);
+		(affectedWidgetsString == null || affectedWidgetsString == "[]") ? [] : JSON.parse(affectedWidgetsString);
 		
 	delete mergedParams[CFW.global.formID];
 	delete mergedParams[FIELDNAME_PROMPT_PW];
@@ -301,7 +301,8 @@ function cfw_parameter_fireParamWidgetUpdate(paramElement){
 	var updateFunction = function(affectedWidgetsArray){
 		
 		if(affectedWidgetsArray.length == 0){ 
-			cfw_dashboard_draw(true, false);
+			// redraw whole dashboard
+			cfw_dashboard_draw(false, false);
 		}else{
 			for(var i in affectedWidgetsArray){
 				var widgetID = affectedWidgetsArray[i];
