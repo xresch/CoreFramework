@@ -1,0 +1,15 @@
+| paramdefaults 
+	text="default" 
+	hello="hello world"
+	nullValue=null
+	emptyString=' ' 
+| source empty
+| set
+	TEXT_VALUE = param('text') # returns 'default'
+	HELLO_VALUE = param('hello') # returns 'hello world'
+	UNDEF = param('notAParam') # returns null
+	TAKE_THIS= param('againNoParam', 'takeThis') # returns 'takeThis'
+	NULL=param('nullValue') # returns null
+	NULL_SUBSTITUTED=param('nullValue', 'insteadOfNull') # returns 'insteadOfNull'
+	EMPTY=param('emptyString') # returns ' '
+	EMPTY_SUBSTITUTED=param('emptyString', 'insteadOfEmpty') # returns 'insteadOfEmpty'

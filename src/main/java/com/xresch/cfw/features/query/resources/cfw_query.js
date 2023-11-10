@@ -174,7 +174,7 @@ function cfw_query_printHistoryView(){
 		 	bgstylefield: null,
 		 	textstylefield: null,
 		 	titlefields: [],
-		 	visiblefields: ['PK_ID', 'TIME', 'EARLIEST', 'LATEST', "QUERY"],
+		 	visiblefields: ['TIME', 'EARLIEST', 'LATEST', "QUERY"],
 		 	labels: {
 		 		PK_ID: "ID",
 		 		TIME: "Exection Time",

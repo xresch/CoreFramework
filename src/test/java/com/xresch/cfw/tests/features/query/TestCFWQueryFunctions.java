@@ -1367,6 +1367,36 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testParam() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionParam.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+							
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("default", record.get("TEXT_VALUE").getAsString());
+		Assertions.assertEquals("hello world", record.get("HELLO_VALUE").getAsString());
+		Assertions.assertTrue(record.get("UNDEF").isJsonNull());
+		Assertions.assertEquals("takeThis", record.get("TAKE_THIS").getAsString());
+		Assertions.assertTrue(record.get("NULL").isJsonNull());
+		Assertions.assertEquals("insteadOfNull", record.get("NULL_SUBSTITUTED").getAsString());
+		Assertions.assertEquals(" ", record.get("EMPTY").getAsString());
+		Assertions.assertEquals("insteadOfEmpty", record.get("EMPTY_SUBSTITUTED").getAsString());
+
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testPerc() throws IOException {
 		
 		//---------------------------------
