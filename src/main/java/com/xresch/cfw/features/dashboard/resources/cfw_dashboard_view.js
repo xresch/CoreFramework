@@ -301,13 +301,29 @@ function cfw_parameter_fireParamWidgetUpdate(paramElement){
 	var updateFunction = function(affectedWidgetsArray){
 		
 		if(affectedWidgetsArray.length == 0){ 
-			// redraw whole dashboard
-			cfw_dashboard_draw(false, false);
+			// -------------------------------
+			// Redraw every Widget except 
+			// parameter widgets
+			$(".grid-stack-item").each(function(){
+				
+				var widgetID = affectedWidgetsArray[i];
+				var widgetInstance = $(this);
+				var guid = widgetInstance.attr('id');
+				var widgetObject = widgetInstance.data("widgetObject");
+				
+				if(widgetObject.TYPE != "cfw_parameter"){
+					cfw_dashboard_widget_rerender(guid, false);
+				}
+			});
+			
 		}else{
+			// -------------------------------
+			// Redraw affected widgets
 			for(var i in affectedWidgetsArray){
 				var widgetID = affectedWidgetsArray[i];
 				var guid = $(".grid-stack-item[data-id="+widgetID+"]").attr('id');
 				if(guid != null){
+					console.log($('#'+guid).data("widgetObject"));
 					cfw_dashboard_widget_rerender(guid, true);
 				}
 			}
@@ -815,7 +831,7 @@ function cfw_dashboard_widget_save_state(widgetObject, forceSave, defaultSetting
 			itemToUpdate = 'widgetdefaultsettings';
 		}
 
-		delete widgetObject.content;
+		delete widgetObject.widgetBody;
 		// ----------------------------------
 		// Update Object
 		var params = {
@@ -828,9 +844,6 @@ function cfw_dashboard_widget_save_state(widgetObject, forceSave, defaultSetting
 		
 		//delete params.widget.JSON_SETTINGS;
 		
-		//params.JSON_SETTINGS = JSON.stringify(widgetObject.JSON_SETTINGS);
-		console.log("params")
-		console.log(params)		
 		// ----------------------------------
 		// Update in Database
 		CFW.http.postJSON(CFW_DASHBOARDVIEW_URL, params, function(data){});
@@ -960,7 +973,7 @@ function cfw_dashboard_widget_duplicate(widgetGUID) {
 				// remove content to avoid circular
 				// references on deep copy
 				var withoutContent = Object.assign(widgetObject);
-				delete withoutContent.content;
+				delete withoutContent.widgetBody;
 				
 				// ---------------------------------
 				// Deep copy and create Duplicate
@@ -991,7 +1004,7 @@ function cfw_dashboard_widget_getSettingsFormWidget(widgetObject) {
 	
 	var params = Object.assign({action: 'fetch', item: 'settingsformwidget'}, widgetObject); 
 	
-	delete params.content;
+	delete params.widgetBody;
 	delete params.guid;
 	delete params.JSON_SETTINGS;
 	
@@ -1018,7 +1031,7 @@ function cfw_dashboard_widget_getSettingsFormDefault(widgetObject) {
 	
 	var params = Object.assign({action: 'fetch', item: 'settingsformdefault'}, widgetObject); 
 	
-	delete params.content;
+	delete params.widgetBody;
 	delete params.guid;
 	delete params.JSON_SETTINGS;
 	
@@ -1090,7 +1103,6 @@ function cfw_dashboard_widget_fetchData(widgetObject, dashboardParams, callback)
 function cfw_dashboard_widget_rerender(widgetGUID, manualLoad) {
 	var widget = $('#'+widgetGUID);
 	var widgetObject = widget.data("widgetObject");
-	
 	cfw_dashboard_widget_removeFromGrid(widget);
 	cfw_dashboard_widget_createInstance(widgetObject, false, manualLoad);
 	
@@ -1196,7 +1208,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 		+'		  </div>'
 	}
 	
-	if(merged.content != null && merged.content != ''
+	if(merged.widgetBody != null && merged.widgetBody != ''
 	|| merged.FOOTER != null && merged.FOOTER != ''){
 		htmlString += 
 			'<div class="cfw-dashboard-widget-body" style="font-size: '+merged.CONTENT_FONTSIZE+'px;">';
@@ -1214,8 +1226,8 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	widgetItem.append(htmlString);
 	widgetItem.data("widgetObject", merged)
 	
-	if(merged.content != null && merged.content != ''){
-		widgetItem.find('.cfw-dashboard-widget-body').append(merged.content);
+	if(merged.widgetBody != null && merged.widgetBody != ''){
+		widgetItem.find('.cfw-dashboard-widget-body').append(merged.widgetBody);
 	}
 
 	return widgetItem;
@@ -1232,7 +1244,7 @@ function cfw_dashboard_widget_createLoadingPlaceholder(widgetObject, doAutoposit
 // };
 	
 	var placeholderWidget = _.cloneDeep(widgetObject);
-	placeholderWidget.content = CFW.ui.createLoaderHTML();
+	placeholderWidget.widgetBody = CFW.ui.createLoaderHTML();
 
 	var widgetInstance = cfw_dashboard_widget_createHTMLElement(placeholderWidget);
 
@@ -1303,7 +1315,8 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 			*/
 			// ---------------------------------------
 			// Add Placeholder
-			cfw_dashboard_widget_createLoadingPlaceholder(widgetCloneParameterized, doAutoposition);
+			// must use original, else there will be issues for manual load(parameters already substituted isntead of substituting newly)
+			cfw_dashboard_widget_createLoadingPlaceholder(originalWidgetObject, doAutoposition);
 
 			// ---------------------------------------
 			// Handle Parameter Widget Load & Manual Load
@@ -1331,14 +1344,14 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 					cfw_dashboard_widget_removeFromGrid(placeholderWidget);
 					
 					// ---------------------------------------
-					// Check Collision Placeholder
+					// Check Collision
 					if(fullRedrawCounter != undefined && fullRedrawCounter != CFW_DASHBOARD_FULLREDRAW_COUNTER){
 						return;
 					}
 					
 					// ---------------------------------------
 					// Add Widget
-					widgetAdjustedByWidgetDef.content = widgetContent;
+					widgetAdjustedByWidgetDef.widgetBody = widgetContent;
 					var widgetInstance = cfw_dashboard_widget_createHTMLElement(widgetAdjustedByWidgetDef);
 	
 					var grid = cfw_dashboard_getGrid();
