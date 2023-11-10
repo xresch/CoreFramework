@@ -85,6 +85,7 @@
 	/*show cursor, only hide text, keep 10% opacity to see issues*/
     -webkit-text-fill-color: rgba(255,255,255,0.1);
     color: #fff;
+    caret-color: #00afff;
     resize: none;
 	overflow: hidden;
 	position: absolute;
