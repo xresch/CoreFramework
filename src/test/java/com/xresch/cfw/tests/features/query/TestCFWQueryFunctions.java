@@ -1393,6 +1393,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals("insteadOfEmpty", record.get("EMPTY_SUBSTITUTED").getAsString());
 
 	}
+	
 	/****************************************************************
 	 * 
 	 ****************************************************************/

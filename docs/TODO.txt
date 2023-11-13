@@ -100,8 +100,6 @@ Potential TODOs
 	- mimic remove command somewhere
 	- metadata template
 	- mimic calling mimic
-	- command paramdefaults
-	- function param
 	- function interval
 	- function intervalunit
 	
