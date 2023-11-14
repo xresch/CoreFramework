@@ -1119,6 +1119,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 			guid: cfw_dashboard_widget_createGUID(),
 			TITLE: "",
 			TITLE_LINK: null,
+			TITLE_INFO: null,
 			TITLE_FONTSIZE: 16,
 			TITLE_POSITION: 'top',
 			TITLE_ALIGN: 'start',
@@ -1151,6 +1152,18 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	if(widgetObject.WIDTH >= 3 && CFW_DASHBOARD_EDIT_MODE_ADVANCED){
 		advancedDisplayClass = '';
 	}
+
+	var titleInfoBadge = '';
+	if( !CFW.utils.isNullOrEmpty(widgetObject.TITLE_INFO) ){
+		titleInfoBadge = `<span class="badge badge-info cfw-decorator" 
+		data-toggle="tooltip" 
+		data-placement="top"
+		data-delay="500" title=""
+		data-original-title="${widgetObject.TITLE_INFO}">
+		<i class="fa fa-sm fa-info"></i></span>
+		`;
+	}
+
 	
 	var titleposClass = "";
 	var titleBorderClass = "border-bottom ";
@@ -1204,6 +1217,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 								+borderClass
 								+titleLinkAlignClass+'"'
 					+' style="font-size: '+merged.TITLE_FONTSIZE+'px;">'
+					+ titleInfoBadge
 		+'		  	<span>'+titleLinkStart + merged.TITLE + titleLinkEnd+'</span>'
 		+'		  </div>'
 	}
@@ -1386,6 +1400,14 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 						$('#'+originalWidgetObject.guid).addClass('show-on-edit');
 					}
 
+					// ----------------------------
+				    // Check TITLEINFO
+					if( !CFW.utils.isNullOrEmpty(originalWidgetObject.TITLE_INFO)){
+						$('#'+originalWidgetObject.guid)
+							.find('[data-toggle="tooltip"]')
+							.tooltip();
+					}
+					
 				    // ----------------------------
 				    // Update Data of Original&Clone
 				    originalWidgetObject.WIDTH	= widgetInstance.attr("gs-w");

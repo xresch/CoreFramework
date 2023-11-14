@@ -167,6 +167,7 @@ DONE
 - Dashboard: Widget - Added accessing manual page to widget settings
 - Dashboard: Widget - Settings: Added setting for title alignment
 - Dashboard: Widget - Settings: Title position now supports bottom&right additionally to top/left
+- Dashboard: Widget - Settings: New setting "Title Info" to add info as a hoverable info icon 
 - Dashboard: Widget - When title is left, give widget body a min-width
 - DB Extensions: Added option to context settings to allow updates on databases 
 - Query Command: formatrecord - Added autocomplete options 

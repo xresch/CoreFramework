@@ -47,6 +47,7 @@ public class DashboardWidget extends CFWObject {
 		WIDTH,
 		HEIGHT,
 		TITLE,
+		TITLE_INFO,
 		TITLE_LINK,
 		TITLE_POSITION,
 		TITLE_ALIGN,
@@ -123,9 +124,16 @@ public class DashboardWidget extends CFWObject {
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
 			;
 	
+	
 	private CFWField<String> titlelink = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.TITLE_LINK)
 			.setColumnDefinition("VARCHAR(32767)")
 			.setDescription("An optional link for the title.")
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			;
+	
+	private CFWField<String> titleInfo = CFWField.newString(FormFieldType.TEXT, DashboardWidgetFields.TITLE_INFO)
+			.setColumnDefinition("VARCHAR(32767)")
+			.setDescription("An info that will be added to the title as an hoverable info icon.")
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
 			;
 	
@@ -231,7 +239,7 @@ public class DashboardWidget extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titlelink, titleFontsize, titleposition, titlealign, contentFontsize, footer, bgcolor, fgcolor, invisible, manualLoad, paramWidgetLoad, settings, taskParameters);
+		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titlelink, titleInfo, titleFontsize, titleposition, titlealign, contentFontsize, footer, bgcolor, fgcolor, invisible, manualLoad, paramWidgetLoad, settings, taskParameters);
 	}
 
 	/**************************************************************************************
@@ -278,6 +286,7 @@ public class DashboardWidget extends CFWObject {
 						DashboardWidgetFields.HEIGHT.toString(),
 						DashboardWidgetFields.TITLE.toString(),
 						DashboardWidgetFields.TITLE_LINK.toString(),
+						DashboardWidgetFields.TITLE_INFO.toString(),
 						DashboardWidgetFields.TITLE_POSITION.toString(),
 						DashboardWidgetFields.TITLE_ALIGN.toString(),
 						DashboardWidgetFields.TITLE_FONTSIZE.toString(),
