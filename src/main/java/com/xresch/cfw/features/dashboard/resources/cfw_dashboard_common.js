@@ -17,7 +17,7 @@ function cfw_dashboardcommon_showStatistics(id){
 			  "<p>Following charts display summarized values for all users that have accessed the dashboard.</p>"
 			+ "<ul>"
 			+ "<li><b>Page Loads:&nbsp;</b> Total times the dashboard was loaded in the browser, including page reloads.</li>"
-			+ "<li><b>Page Loads:&nbsp;</b> Above Page Loads, plus every time the dashboard was refreshed with the automatic refresh.</li>"
+			+ "<li><b>Page Loads and Refreshes:&nbsp;</b> Above Page Loads, plus every time the dashboard was refreshed with the automatic refresh.</li>"
 			+ "<li><b>Widget Loads Cached:&nbsp;</b> Number of times widget data has been loaded from the cache.</li>"
 			+ "<li><b>Widget Loads Not Cached:&nbsp;</b> Number of times widget data has been loaded from the data source.</li>"
 			+ "</ul>"
