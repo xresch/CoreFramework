@@ -1158,7 +1158,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 		titleInfoBadge = `<span class="badge badge-info cfw-decorator" 
 		data-toggle="tooltip" 
 		data-placement="top"
-		data-delay="500" title=""
+		data-delay="300" title=""
 		data-original-title="${widgetObject.TITLE_INFO}">
 		<i class="fa fa-sm fa-info"></i></span>
 		`;
