@@ -1139,13 +1139,13 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	var FGCOLORClass = '';
 	var borderClass = '';
 	if(merged.FGCOLOR != null && merged.FGCOLOR.trim().length > 0){
-		FGCOLORClass = 'text-'+merged.FGCOLOR;
-		borderClass = 'border-'+merged.FGCOLOR;
+		FGCOLORClass = ' text-'+merged.FGCOLOR;
+		borderClass = ' border-'+merged.FGCOLOR;
 	}
 	
 	var BGCOLORClass = '';
 	if(merged.BGCOLOR != null && merged.BGCOLOR.trim().length > 0){
-		BGCOLORClass = 'bg-'+merged.BGCOLOR;
+		BGCOLORClass = ' bg-'+merged.BGCOLOR;
 	}
 		
 	var advancedDisplayClass = 'd-none';
@@ -1195,7 +1195,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	
 	
 	var htmlString =
-		'<div class="grid-stack-item-content card d-flex '+titleposClass+BGCOLORClass+' '+FGCOLORClass+'">'
+		'<div class="grid-stack-item-content card d-flex '+titleposClass+" "+BGCOLORClass+' '+FGCOLORClass+'">'
 		+'	<div role="button" class="cfw-dashboard-widget-actionicons text-cfw-lightgray show-on-edit">'
 		+'		<div role="button" class="actionicon-delete '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_remove(\''+merged.guid+'\')"><i class="fas fa-times"></i></div>'
 		+'		<div role="button" class="actionicon-duplicate '+advancedDisplayClass+'" onclick="cfw_dashboard_widget_duplicate(\''+merged.guid+'\')"><i class="fas fa-clone"></i></div>'
@@ -1213,9 +1213,9 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 	if(merged.TITLE != null && merged.TITLE != ''){
 		htmlString += 
 		 '     	  <div class="cfw-dashboard-widget-title '
-								+titleBorderClass
-								+borderClass
-								+titleLinkAlignClass+'"'
+								+' '+titleBorderClass
+								+' '+borderClass
+								+' '+titleLinkAlignClass+'"'
 					+' style="font-size: '+merged.TITLE_FONTSIZE+'px;">'
 					+ titleInfoBadge
 		+'		  	<span>'+titleLinkStart + merged.TITLE + titleLinkEnd+'</span>'
