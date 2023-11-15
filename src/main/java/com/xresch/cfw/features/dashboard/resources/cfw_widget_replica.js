@@ -65,7 +65,7 @@
 									}*/
 									//---------------------------------------
 									// Add Widget
-									subWidgetObject.content = widgetContent;
+									subWidgetObject.widgetBody = widgetContent;
 									var widgetInstance = cfw_dashboard_widget_createHTMLElement(subWidgetObject);
 
 									var grid =  cfw_dashboard_getGrid();
@@ -97,6 +97,14 @@
 								    // Check Visibility
 									if(widgetObject.INVISIBLE != null && widgetObject.INVISIBLE){
 										$('#'+subWidgetObject.guid).addClass('show-on-edit');
+									}
+									
+									// ----------------------------
+								    // Check TITLEINFO
+									if( !CFW.utils.isNullOrEmpty(widgetObject.TITLE_INFO)){
+										$('#'+widgetObject.guid)
+											.find('[data-toggle="tooltip"]')
+											.tooltip();
 									}
 									
 								    //----------------------------
