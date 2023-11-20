@@ -2880,7 +2880,7 @@ function cfw_renderer_chart_createDatasetsFromDatapoints(renderDef, settings) {
 	var datasets = {};
 
 	for(var i = 0; i < renderDef.data.length; i++){
-		console.log('loop');
+
 		var currentRecord = renderDef.data[i];
 		
 		//----------------------------
@@ -2895,11 +2895,10 @@ function cfw_renderer_chart_createDatasetsFromDatapoints(renderDef, settings) {
 		var value = currentRecord[settings.yfield];
 		var datapoints = currentRecord['datapoints'];
 		datasets[label].tableData.push(currentRecord);
-		console.log(currentRecord);
+
 		for(x in datapoints){
 			var y = datapoints[x]
-			console.log('x: '+x);
-			console.log('y: '+y);
+
 			datasets[label].data.push({
 				x: x, 
 				y: y
