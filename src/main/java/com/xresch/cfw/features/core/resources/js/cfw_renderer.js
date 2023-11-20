@@ -2151,9 +2151,9 @@ function cfw_renderer_chart(renderDef) {
 		// the minimum height of the chart(s), as percent or pixel value like 100px, 50% etc... (default: 100%)
 		height: '100%',
 		// the color of the x-axes grid lines
-		xaxescolor: 'rgba(128,128,128, 0.1)',
+		xaxescolor: null,
 		// the color of the y-axes grid lines
-		yaxescolor: 'rgba(128,128,128, 0.2)',
+		yaxescolor: 'rgba(190,190,190, 0.2)',
 		// the minimum unit used to display time: millisecond|second|minute|hour|day|week|month|quarter|year
 		xminunit: 'millisecond',
 		// the momentjs format used to parse the time, or a function(value) that returns a value that can be parsed by moment
@@ -2175,6 +2175,16 @@ function cfw_renderer_chart(renderDef) {
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
+	
+	//========================================
+	// Colors
+	if(settings.xaxescolor == null){
+		settings.xaxescolor = Chart.defaults.color.replace('1.0)', '0.1)');
+	}
+	
+	if(settings.yaxescolor == null){
+		settings.yaxescolor = Chart.defaults.color.replace('1.0)', '0.2)');
+	}
 	
 	//========================================
 	// Initialize
@@ -2476,6 +2486,7 @@ function cfw_renderer_chart_setGlobals() {
 	
 	Chart.defaults.responsive = true; 
 	Chart.defaults.maintainAspectRatio = false;
+	Chart.defaults.color = "rgba(190,190,190, 1.0)";
 
 	Chart.defaults.plugins.legend.display = false;
 	Chart.defaults.plugins.legend.position =  'bottom';
