@@ -2049,6 +2049,41 @@ CFW.render.registerRenderer("cards", new CFWRenderer(cfw_renderer_cards) );
  *			}
  *	}};
  *
+ * * datamode: 'datapoints'
+ * ------------------------
+ * This mode uses the takes an array of objects, while the data is in a member "datapoints" as x/y values.
+ * 
+ * Example: 
+ * var chartDatasets =  [
+	{
+		"ID": 43,
+		"NAME": "Perfect Fairies Enchanted",
+		"datapoints": {
+			"20231116": "51", "20231117": "50", "20231118": "54", "20231119": "55", "20231113": "79", "20231114": "75", "20231115": "80"
+		}
+	},
+	{
+		"ID": 43,
+		"NAME": "Enslaved Devils Sold",
+		"datapoints": {
+			"20231116": "55", "20231117": "52", "20231118": "50", "20231119": "50", "20231113": "80", "20231114": "79", "20231115": "80"
+		}
+	}
+	...
+]
+ * 
+ * var dataToRender = {
+ * 		data: chartDatasets,
+ *	    ...
+ *		titlefields: ['NAME'], 
+ *		rendererSettings:{
+ *			chart: {
+ *				datamode: 'datapoints',
+ *				...
+ *			}
+ *	}};
+ *
+ *
  * datamode: 'datasets' (experimental)
  * ------------------------
  * This mode uses the datasets format of ChartJS.
@@ -2245,13 +2280,28 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// Create Datasets
 	var datasets;
-	if(settings.datamode == 'groupbytitle'){
-		var datasets = cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settings);
-	}else if(settings.datamode == 'arrays'){
-		var datasets = cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings);
-	}else if(settings.datamode == 'datasets'){
-		datasets = cfw_renderer_chart_prepareDatasets(renderDef, settings); 
+	switch(settings.datamode){
+	
+		case 'groupbytitle':
+			 datasets = cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settings);
+			 break;
+			 
+		case 'arrays':
+			 datasets = cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings);
+			 break;
+		
+		case 'datapoints':
+			 datasets = cfw_renderer_chart_createDatasetsFromDatapoints(renderDef, settings);
+			 break;
+			 
+		case 'datasets':
+			 datasets = cfw_renderer_chart_prepareDatasets(renderDef, settings);
+			 break;
+			 
 	}
+
+	
+	
 	
 	//========================================
 	// sort by x to avoid displaying issues
@@ -2755,10 +2805,37 @@ function cfw_renderer_chart_customTooltip(context) {
 /******************************************************************
  * 
  ******************************************************************/
+function cfw_renderer_chart_createDatasetObject(settings, label, index) {
+	
+	hue = 195; 
+	hue += index * 30;
+	
+	var borderColor = CFW.colors.randomSL(hue,65,100,55,70);
+	var bgColor = borderColor.replace('1.0)', '0.65)');
+	
+	return {
+			label: label, 
+			data: [], //data used by chartjs
+			tableData: [], // original data used for table
+			backgroundColor: bgColor,
+			fill: settings.doFill,
+            borderColor: borderColor,
+            borderWidth: 1,
+            spanGaps: settings.spangaps,
+            stepped: settings.isSteppedline,
+            lineTension: 0,
+            cfwSum: 0,
+            cfwCount: 0
+		};
+	
+}
+	
+/******************************************************************
+ * 
+ ******************************************************************/
 function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settings) {
 	
 	var datasets = {};
-	var hue = 165; 
 
 	for(var i = 0; i < renderDef.data.length; i++){
 		var currentRecord = renderDef.data[i];
@@ -2767,24 +2844,7 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 		// Create Label & Dataset
 		var label = renderDef.getTitleString(currentRecord);
 		if(datasets[label] == undefined){
-			hue += 30;
-			var borderColor = CFW.colors.randomSL(hue,65,100,55,70);
-			var bgColor = borderColor.replace('1.0)', '0.65)');
-			datasets[label] = {
-					label: label, 
-					data: [], //data used by chartjs
-					tableData: [], // original data used for table
-					backgroundColor: bgColor,
-					fill: settings.doFill,
-		            borderColor: borderColor,
-		            borderWidth: 1,
-		            spanGaps: settings.spangaps,
-		            stepped: settings.isSteppedline,
-		            lineTension: 0,
-		            cfwSum: 0,
-		            cfwCount: 0
-				};
-			
+			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, i);
 		}
 		
 		//----------------------------
@@ -2815,10 +2875,52 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 /******************************************************************
  * 
  ******************************************************************/
+function cfw_renderer_chart_createDatasetsFromDatapoints(renderDef, settings) {
+	
+	var datasets = {};
+
+	for(var i = 0; i < renderDef.data.length; i++){
+		console.log('loop');
+		var currentRecord = renderDef.data[i];
+		
+		//----------------------------
+		// Create Label & Dataset
+		var label = renderDef.getTitleString(currentRecord);
+		if(datasets[label] == undefined){
+			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, i);
+		}
+		
+		//----------------------------
+		// Add Values
+		var value = currentRecord[settings.yfield];
+		var datapoints = currentRecord['datapoints'];
+		datasets[label].tableData.push(currentRecord);
+		console.log(currentRecord);
+		for(x in datapoints){
+			var y = datapoints[x]
+			console.log('x: '+x);
+			console.log('y: '+y);
+			datasets[label].data.push({
+				x: x, 
+				y: y
+			});
+			
+			datasets[label].cfwSum += isNaN(y) ? 0 : parseFloat(y);
+			datasets[label].cfwCount += 1;
+		}
+			
+	}
+	
+	return datasets;
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
 function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 	
 	var datasets = {};
-	var hue = 165; 
+
 
 	for(var i = 0; i < renderDef.data.length; i++){
 		var currentRecord = renderDef.data[i];
@@ -2827,24 +2929,7 @@ function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 		// Create Label & Dataset
 		var label = renderDef.getTitleString(currentRecord);
 		if(datasets[label] == undefined){
-			hue += 30;
-			var borderColor = CFW.colors.randomSL(hue,65,100,55,70);
-			var bgColor = borderColor.replace('1.0)', '0.65)');
-			datasets[label] = {
-					label: label, 
-					data: [], //data used by chartjs
-					tableData: [], // original data used for table
-					backgroundColor: bgColor,
-					fill: settings.doFill,
-		            borderColor: borderColor,
-		            borderWidth: 1,
-		            spanGaps: settings.spangaps,
-		            steppedLine: settings.isSteppedline,
-		            lineTension: 0,
-		            cfwSum: 0,
-		            cfwCount: 0
-				};
-			
+			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, i);
 		}
 		
 		var yArray = currentRecord[settings.yfield];
