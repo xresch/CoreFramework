@@ -269,11 +269,31 @@ pre {
  * Bootstrap Submenus and Menu Enhancements
  *************************************************************************/
 
+.dropdown-menu-fixed{
+	display: none;
+}
+
+.dropdown.show .dropdown-menu-fixed {
+	display: block;
+	 overflow-x: auto;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.85);
+    backdrop-filter: blur(3px);
+    padding: 5px;
+}
+
 @media (min-width: 768px){
 	.dropdown-submenu .dropdown-menu {
 	      top: 0;
 		  left: 100%;
 	      position: absolute;
+	}
+	
+	.dropdown-menu-fixed{
+		width: 400px;
 	}
 	
 	/* Make button menu popup to the left, so it won't vanish out of the screen*/
@@ -302,6 +322,10 @@ pre {
 	  	  top: 0;
 		  left: 5%;
 	      position: relative;
+	}
+	
+	.dropdown-menu-fixed{
+		width: 80vw;
 	}
 }
 .dropdown-submenu {

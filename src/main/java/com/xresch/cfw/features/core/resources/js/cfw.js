@@ -1085,12 +1085,12 @@ function cfw_initializeChartSettingsField(fieldID, jsonData){
 	//----------------------------------
 	// Create HTML
 	
-	wrapper.append(`<div class="dropdown">
-		<button id="chartSettingsButton" class="btn btn-sm btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	wrapper.append(`<div class="dropdown dropright">
+		<button id="chartSettingsButton" class="btn btn-sm btn-primary dropdown-toggle" type="button" onclick="CFW.ui.toggleDropdownMenuFixed(event, this)" >
 			Chart Settings
 		</button>
-		<div id="${fieldID}-DROPDOWNMENU" class="dropdown-menu col-sm-12" style="max-height: 60vh; overflow-x: auto;" aria-labelledby="dropdownMenuButton" onclick="event.stopPropagation();">
-			
+		<div id="${fieldID}-DROPDOWNMENU" class="dropdown-menu-fixed col-sm-12" onclick="event.stopPropagation();">
+
 			<div class="row m-1"><strong>Series Display</strong></div>
 			
 			<div class="row m-1">  
@@ -2385,26 +2385,6 @@ function cfw_autocompleteCloseAll() {
 	$('.autocomplete-wrapper').remove();
 }
 
-/* execute a function when someone clicks in the document: */
-document.addEventListener("click", function (e) {
-    cfw_autocompleteCloseAll();
-
-});
-
-//--------------------------------
-// Do Ctrl+Space separately, as keyup
-// would also trigger on Arrow Keys etc...
-document.addEventListener('keydown', function(e) {
-	
-	// close autocomplete on Esc
-	if ( e.keyCode == 27) {
-		cfw_autocompleteCloseAll();
-		// remove any popovers
-		$('.popover').remove();
-	}
-	
-});
-
 /**************************************************************************************
  * Show autocomplete
  * @param inputField domElement to show the autocomplete for.
@@ -3386,6 +3366,42 @@ function cfw_ui_createLoaderHTML(){
 			+'</div>'
 		+'</div>';
 	
+}
+
+/*******************************************************************************
+ * Function to show fixed dropdown menus.
+ * Example HTML:
+	<div class="dropdown dropright">
+		<button id="chartSettingsButton" class="btn btn-sm btn-primary dropdown-toggle" type="button" onclick="CFW.ui.toggleDropdownMenuFixed(event, this)" >
+			Chart Settings
+		</button>
+		<div id="${fieldID}-DROPDOWNMENU" class="dropdown-menu-fixed col-sm-12" onclick="event.stopPropagation();">
+			... your dropdown content ...
+		</div>
+	</div>
+ ******************************************************************************/
+function cfw_ui_toggleDropdownMenuFixed(event, buttonElement){
+	
+	event.stopPropagation();
+	
+	var parent = $(buttonElement).closest('.dropdown');
+	var isShown = parent.hasClass('show');
+	// close any visible before opening new one
+	cfw_ui_closeAllDropdownMenuFixed();
+	
+	if(!isShown){
+		parent.addClass('show');
+	}
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_ui_closeAllDropdownMenuFixed(){
+	
+	$('.dropdown-menu-fixed')
+		.closest('.dropdown')
+		.removeClass('show');
 }
 
 
@@ -5192,6 +5208,7 @@ var CFW = {
 		showModalLarge: cfw_ui_showModalLarge,
 		confirmExecute: cfw_ui_confirmExecute,
 		toggleLoader: cfw_ui_toggleLoader,
+		toggleDropdownMenuFixed: cfw_ui_toggleDropdownMenuFixed,
 		createLoaderHTML: cfw_ui_createLoaderHTML,
 		addAlert: cfw_ui_addAlert,
 		getWorkspace: cfw_ui_getWorkspace,
@@ -5230,6 +5247,30 @@ CFW.utils.chainedOnload(function () {
 		}
 		
 	});
+	
+	//-----------------------------------
+	// execute a function when someone clicks in the document
+	document.addEventListener("click", function (e) {
+	    cfw_autocompleteCloseAll();
+		cfw_ui_closeAllDropdownMenuFixed();
+	});
+	
+	//--------------------------------
+	// Do Ctrl+Space separately, as keyup
+	// would also trigger on Arrow Keys etc...
+	document.addEventListener('keydown', function(e) {
+		
+		// close autocomplete on Esc
+		if ( e.keyCode == 27) {
+			cfw_autocompleteCloseAll();
+			// remove any popovers
+			$('.popover').remove();
+			
+			cfw_ui_closeAllDropdownMenuFixed();
+		}
+		
+	});
+
 	
 	//-----------------------------------
 	// Check Session Timeout
@@ -5282,3 +5323,4 @@ CFW.utils.chainedOnload(function () {
 		return false;
 	});
 })
+
