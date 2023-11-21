@@ -98,6 +98,7 @@ Potential TODOs
 	- mimic remove first command
 	- mimic remove last command
 	- mimic remove command somewhere
+	- command messages
 	- metadata template
 	- mimic calling mimic
 	- function interval
@@ -174,6 +175,8 @@ DONE
 - Query Command: formatrecord - Added autocomplete options 
 - Query: Added Sources:
 	- appdb
+- Query: Added Commands:
+	- message
 - Query: Added Functions:
 	- interval
 	- intervalunit

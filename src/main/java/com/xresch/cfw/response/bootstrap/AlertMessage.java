@@ -13,7 +13,19 @@ public class AlertMessage {
 		INFO, 
 		SUCCESS, 
 		WARNING, 
-		ERROR 
+		ERROR;
+		
+		public static boolean hasMessageType(String value) {
+			if(value == null) { return false; }
+			if(value.equals("INFO")
+			|| value.equals("SUCCESS")
+			|| value.equals("WARNING")
+			|| value.equals("ERROR")
+			){
+				return true;
+			}
+			return false;
+		}
 	}
 
 	public AlertMessage(MessageType type, String message){

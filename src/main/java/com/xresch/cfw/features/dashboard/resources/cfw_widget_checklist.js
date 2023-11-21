@@ -21,6 +21,7 @@ CFW_WIDGET_CHECKLIST_REMOVE_BUTTON = '<i class="fas fa-times text-cfw-red cursor
 					lines = content.trim().split(/\r\n|\r|\n/);
 				}else{
 					callback(widgetObject, '');
+					return;
 				}
 				
 				//-------------------------

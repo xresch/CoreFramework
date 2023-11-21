@@ -106,6 +106,7 @@ public class QueryPartValue extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	public static QueryPartValue newString(String value){
+		if(value == null) { return newNull(); }
 		return new QueryPartValue(QueryPartValueType.STRING,value);
 	}
 	
@@ -120,6 +121,7 @@ public class QueryPartValue extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	public static QueryPartValue newBoolean(Boolean value){
+		if(value == null) { return newNull(); }
 		return new QueryPartValue(QueryPartValueType.BOOLEAN, value);
 	}
 	
@@ -127,6 +129,7 @@ public class QueryPartValue extends QueryPart {
 	 * 
 	 ******************************************************************************************************/
 	public static QueryPartValue newJson(JsonElement value){
+		if(value == null) { return newNull(); }
 		return new QueryPartValue(QueryPartValueType.JSON, value);
 	}
 	

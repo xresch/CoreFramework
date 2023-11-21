@@ -1,0 +1,14 @@
+
+<p>This command can be used to show messages to the user based on data from the </p>
+
+<p>Following code will create 300 random records, and creates various messages based on a number value:</p>
+
+<pre><code class="language-cfwquery">| source random records=300 
+| message 
+	mode='all'
+	separator=" --- "
+	[(VALUE > 98), "ERROR", "Value is: "+VALUE]
+	[(VALUE > 96), "WARNING", "Value is: "+VALUE]
+	[(VALUE > 94), "INFO", "Value is: "+VALUE]
+	[(VALUE > 80), "SUCCESS", "Value is: "+VALUE]</code></pre>
+
