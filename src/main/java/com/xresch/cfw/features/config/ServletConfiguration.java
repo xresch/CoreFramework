@@ -72,7 +72,10 @@ public class ServletConfiguration extends HttpServlet
     }
 	
 	private static CFWForm createConfigForm() {
-				
+		
+		// id must not start with number, needed to make jquery selectors working properly
+		String ID_PREFIX = "id-";
+		
 		//--------------------------------------
 		// Create Group Form
 		
@@ -81,7 +84,7 @@ public class ServletConfiguration extends HttpServlet
 		ArrayList<CFWObject> configObjects = CFW.DB.Config.getConfigObjectList();
 		for(CFWObject object :  configObjects) {
 			Configuration config = (Configuration)object;
-			CFWField<String> field = CFWField.newString(FormFieldType.valueOf(config.type()), ""+config.id());
+			CFWField<String> field = CFWField.newString(FormFieldType.valueOf(config.type()), ID_PREFIX+config.id());
 			field.setLabel(config.name());
 			field.setValue(config.value());
 			field.setDescription(config.description());
@@ -105,7 +108,8 @@ public class ServletConfiguration extends HttpServlet
 			    	
 			    	for(CFWField<?> field : form.getFields().values() ) {
 			    		String value = (field.getValue() != null) ? field.getValue().toString() : "";
-			    		success = success && CFW.DB.Config.updateValue(Integer.parseInt(field.getName()), value);
+			    		String id = field.getName().replaceFirst(ID_PREFIX, "");
+			    		success = success && CFW.DB.Config.updateValue(Integer.parseInt(id), value);
 			    	}
 			    	CFW.DB.Config.updateCache();
 			    	

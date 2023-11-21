@@ -283,6 +283,7 @@ pre {
     background-color: rgba(0,0,0,0.85);
     backdrop-filter: blur(3px);
     padding: 5px;
+    z-index: 1065;
 }
 
 @media (min-width: 768px){
