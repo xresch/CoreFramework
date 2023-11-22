@@ -1756,9 +1756,9 @@ public class CFWSQL {
 	/***************************************************************
 	 * Execute the Query and gets the result as a key value map.
 	 ****************************************************************/
-	public HashMap<Integer, Object> getAsIDValueMap(Object idColumnName, Object valueColumnName) {
+	public LinkedHashMap<Integer, Object> getAsIDValueMap(Object idColumnName, Object valueColumnName) {
 		
-		HashMap<Integer, Object> keyValueMap = new HashMap<>();
+		LinkedHashMap<Integer, Object> keyValueMap = new LinkedHashMap<>();
 		
 		if(this.execute(true)) {
 			keyValueMap = ResultSetUtils.toIDValueMap(result, idColumnName, valueColumnName);

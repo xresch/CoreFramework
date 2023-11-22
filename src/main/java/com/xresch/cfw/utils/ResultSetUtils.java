@@ -247,9 +247,9 @@ public class ResultSetUtils {
 	 * Converts a ResultSet into a map with the key/values of the selected columns.
 	 * @return list of object, empty if results set is null or an error occurs.
 	 ***************************************************************************/
-	public static HashMap<Integer, Object> toIDValueMap(ResultSet result, Object idColumnName, Object valueColumnName) {
+	public static LinkedHashMap<Integer, Object> toIDValueMap(ResultSet result, Object idColumnName, Object valueColumnName) {
 		
-		HashMap<Integer, Object> keyValueMap = new HashMap<>();
+		LinkedHashMap<Integer, Object> keyValueMap = new LinkedHashMap<>();
 		
 		if(result == null) {
 			return keyValueMap;

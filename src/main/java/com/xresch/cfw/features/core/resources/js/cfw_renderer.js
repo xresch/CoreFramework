@@ -2833,7 +2833,7 @@ function cfw_renderer_chart_createDatasetObject(settings, label, index) {
 	return {
 			label: label, 
 			data: [], //data used by chartjs
-			tableData: [], // original data used for table
+			originalData: [], // original data used for table
 			backgroundColor: bgColor,
 			fill: settings.doFill,
             borderColor: borderColor,
