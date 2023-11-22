@@ -2172,6 +2172,8 @@ function cfw_renderer_chart(renderDef) {
 		multicharttitle: false,
 		// toogle if multicharts have a title
 		multichartcolumns: 1,
+		// function to execute on double click, will receive an object with the chart data
+		ondblclick: null,
 	};
 	
 	var settings = Object.assign({}, defaultSettings, renderDef.rendererSettings.chart);
@@ -2425,6 +2427,10 @@ function cfw_renderer_chart(renderDef) {
 		chartWrapper.css('height', "100%");
 		chartWrapper.css("max-height", "100vh"); // prevent infinite Height loop
 		chartWrapper.css("max-width", "100vw"); // prevent chart bigger then screen
+		if(settings.ondblclick != null){
+			chartWrapper.addClass("cursor-pointer");
+			chartWrapper.on("dblclick", function(){ settings.ondblclick(currentData) });
+		}
 		
 		if(settings.height != null){
 			chartWrapper.css('height', settings.height +" !important");
@@ -2691,7 +2697,7 @@ function cfw_renderer_chart_addDetails(renderDef, settings, currentData, chartPl
 	cloneRenderDef = Object.assign({}, renderDef, cloneRenderDef);
 	
 	if(settings.multichart == true){
-		cloneRenderDef.data = currentData.datasets[0].tableData;
+		cloneRenderDef.data = currentData.datasets[0].originalData;
 	}
 	
 	var detailsDiv = CFW.render.getRenderer(settings.detailsrenderer).render(cloneRenderDef);
@@ -2861,7 +2867,7 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 		//----------------------------
 		// Add Values
 		var value = currentRecord[settings.yfield];
-		datasets[label].tableData.push(currentRecord);
+		datasets[label].originalData.push(currentRecord);
 		
 		if(settings.xfield == null){
 			datasets[label].data.push(value);
@@ -2905,7 +2911,7 @@ function cfw_renderer_chart_createDatasetsFromDatapoints(renderDef, settings) {
 		// Add Values
 		var value = currentRecord[settings.yfield];
 		var datapoints = currentRecord['datapoints'];
-		datasets[label].tableData.push(currentRecord);
+		datasets[label].originalData.push(currentRecord);
 
 		for(x in datapoints){
 			var y = datapoints[x]
@@ -2943,7 +2949,7 @@ function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 		}
 		
 		var yArray = currentRecord[settings.yfield];
-		datasets[label].tableData.push(currentRecord);
+		datasets[label].originalData.push(currentRecord);
 		
 		if(settings.xfield == null){
 			datasets[label].data = yArray;
@@ -2988,7 +2994,7 @@ function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
 		currentDataset.backgroundColor = bgColor; 
 		currentDataset.borderColor = borderColor; 
 		currentDataset.borderWidth = 1;
-		currentDataset.tableData = currentDataset; // data for data table
+		currentDataset.originalData = currentDataset; // data for data table
 		
 		currentDataset.spanGaps = settings.spangaps;
 		currentDataset.steppedLine = settings.isSteppedline;

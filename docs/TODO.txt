@@ -159,6 +159,7 @@ DONE
 - New Feature: EAV Tables with Statistics, plus query source 'eavstats'
 - Notifications: Fixed severe log messages showing up
 - ChartSettings: Fixed issue where Chart Settings are not fully scrollable
+- Chart Renderer: Added option to add an action on double click
 - Tables: Improved hovering contrast by changing color to blue
 - User Management: Fixed bug in reloading user rights when changing roles & permissions
 - Dashboard: Usage Statistics added, can be found in Settings 
