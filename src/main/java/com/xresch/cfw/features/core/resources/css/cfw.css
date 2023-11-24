@@ -172,8 +172,8 @@ pre {
 
 /* default selection color is blue, what is not really visible when bg is blue on hover*/
 .table-hover tr:hover ::selection {
-  color: #fff;
-  background: var(--cfw-orange)!important;
+  color: #000;
+  background: var(--cfw-yellow)!important;
 }
  /*************************************************************************
  * Bootstrap overwrite & extensions
