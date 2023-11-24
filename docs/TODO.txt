@@ -190,6 +190,7 @@ DONE
 - BREAKING CODE CHANGE: Renaming of Threshold Fields and CSS-Classes
 - BREAKING CODE CHANGE: refactoring of mapJsonToFields() to toggle sanitation
 - BREAKING CODE CHANGE: Query function parameters changed - now()
+- BREAKING CHANGE: Query Command display - default value of parameter has changed to menu=false. Queries not defining this parameter will have their menu vanish 
 - New Feature: Page Tutorials
 - New Feature: Single-Sign-On with SAML and OpenID Connect
 - New Feature: Database Extensions, moved over from EMP

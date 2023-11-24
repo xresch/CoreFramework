@@ -661,8 +661,10 @@ public class DBInterface {
 			//-----------------------------------------
 			// Execute
 			boolean isResultSet = prepared.execute();
+			int  updateCount = prepared.getUpdateCount();
 			boolean result = false;
-			if(!isResultSet && prepared.getUpdateCount() > 0) {
+			
+			if(!isResultSet && updateCount > 0) {
 				result = true;
 			}
 			increaseDBCallsCount(conn, false);
@@ -675,9 +677,9 @@ public class DBInterface {
 					 .sqlString(sql)
 					 .values(values) 
 					 .executionResult(result) 
-					 .updateCount(prepared.getUpdateCount() ) 
+					 .updateCount(updateCount ) 
 					 ;
-			
+
 			log.custom("sql", sql).end(Level.FINE);
 			return cfwResult;
 			

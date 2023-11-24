@@ -19,7 +19,7 @@ public class CFWResultSet {
 	private String sqlString;
 	private Object[] values;
 	
-	private int updateCount = -1;
+	private int updateCount = -999;
 	private Connection connection;
 	private PreparedStatement prepared;
 	
@@ -101,6 +101,10 @@ public class CFWResultSet {
 		return this;
 	}
 	
+	/***********************************************************
+	 * 
+	 * @return number of rows updated, -999 if count was not set
+	 ***********************************************************/
 	public int updateCount() {
 		return this.updateCount;
 	}

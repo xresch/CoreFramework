@@ -283,7 +283,11 @@ public abstract class CFWQuerySourceDatabase extends CFWQuerySource {
 		//-----------------------------
 		// Update Count
 		JsonObject object = new JsonObject();
+		
 		object.addProperty("UPDATE_COUNT", cfwResult.updateCount());
+		if(cfwResult.updateCount() == -999){
+			object.addProperty("MESSAGE", "seems like an error occured.");
+		}
 		outQueue.add(new EnhancedJsonObject(object));
 
 	}
