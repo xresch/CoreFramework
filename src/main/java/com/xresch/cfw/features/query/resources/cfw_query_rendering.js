@@ -860,6 +860,12 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	}
 	
 	//-----------------------------------
+	// Hide Menu by Default
+	if(queryResult.displaySettings.menu == null){
+		queryResult.displaySettings.menu = false;
+	}
+	
+	//-----------------------------------
 	// Render Definition 
 	var renderDefinition = {
 			data: queryResult.records,
