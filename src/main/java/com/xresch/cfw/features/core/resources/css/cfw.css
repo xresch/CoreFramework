@@ -217,6 +217,17 @@ pre {
 
 }
 
+@media (min-width: 992px) {
+  .modal-lg,
+  .modal-xl {		max-width: 800px; } 
+  .modal-xxl-cfw{	max-width: 90%; }
+}
+
+@media (min-width: 1200px) {
+  .modal-xl {		max-width: 1140px; } 
+  .modal-xxl-cfw{	max-width: 90%; }
+}
+
 .card {
     margin: 5px;
 }

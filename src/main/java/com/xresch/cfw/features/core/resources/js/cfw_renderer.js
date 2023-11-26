@@ -2086,7 +2086,7 @@ CFW.render.registerRenderer("cards", new CFWRenderer(cfw_renderer_cards) );
  *
  * datamode: 'datasets' (experimental)
  * ------------------------
- * This mode uses the datasets format of ChartJS.
+ * This mode uses the datasets format of ChartJS. Can be used for rerendering charts when ondblclick-function is set.
  * One object in the array causes a full series on the graph.
  * The series name is defined by the datasets label field. 
  * xfield and yfield settings are ignored. 
@@ -2172,7 +2172,7 @@ function cfw_renderer_chart(renderDef) {
 		multicharttitle: false,
 		// toogle if multicharts have a title
 		multichartcolumns: 1,
-		// function to execute on double click, will receive an object with the chart data
+		// function to execute on double click, will receive an object with the chart settings and chart data: function(chartSettings, chartData)
 		ondblclick: null,
 	};
 	
@@ -2429,7 +2429,7 @@ function cfw_renderer_chart(renderDef) {
 		chartWrapper.css("max-width", "100vw"); // prevent chart bigger then screen
 		if(settings.ondblclick != null){
 			chartWrapper.addClass("cursor-pointer");
-			chartWrapper.on("dblclick", function(){ settings.ondblclick(currentData) });
+			chartWrapper.on("dblclick", function(){ settings.ondblclick(settings, currentData) });
 		}
 		
 		if(settings.height != null){
@@ -2991,10 +2991,21 @@ function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
 			currentDataset.label = renderDef.getTitleString(currentRecord); 
 		}
 		
-		currentDataset.backgroundColor = bgColor; 
-		currentDataset.borderColor = borderColor; 
-		currentDataset.borderWidth = 1;
-		currentDataset.originalData = currentDataset; // data for data table
+		if(currentDataset.backgroundColor == null){
+			currentDataset.backgroundColor = bgColor; 
+		}
+		
+		if(currentDataset.backgroundColor == null){
+			currentDataset.backgroundColor = borderColor; 
+		}
+		
+		if(currentDataset.borderWidth == null){
+			currentDataset.borderWidth = 1;
+		}
+		
+		if(currentDataset.originalData == null){
+			currentDataset.originalData = currentDataset; // data for data table
+		}
 		
 		currentDataset.spanGaps = settings.spangaps;
 		currentDataset.steppedLine = settings.isSteppedline;

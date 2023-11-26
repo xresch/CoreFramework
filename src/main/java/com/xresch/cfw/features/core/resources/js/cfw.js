@@ -3538,7 +3538,7 @@ function cfw_ui_showModal(modalTitle
 	var modalID = 'cfw-default-modal';
 	var modalHeaderClass = '';
 	var modalHeaderType = 'h3';
-	var modalDialogClass = 'modal-lg';
+	var modalDialogClass = 'modal-xl';
 	var backdrop = true;
 	var modalSettings = {};
 	
@@ -3547,13 +3547,13 @@ function cfw_ui_showModal(modalTitle
 		modalID = 'cfw-small-modal';
 		style = 'style="z-index: 1155; display: block; top: 25px;"';
 		modalHeaderClass = 'p-2';
-		modalDialogClass = '';
+		modalDialogClass = 'modal-lg';
 		modalHeaderType = 'h4';
 		backdrop = false;
 	}else if(size == 'large'){
 		modalID = 'cfw-large-modal';
 		style = 'style="z-index: 1045; display: block; top: -10px;"';
-		modalDialogClass = 'modal-xl';
+		modalDialogClass = 'modal-xxl-cfw';
 	}
 	
 	if(keepOnOutsideClick){
