@@ -99,6 +99,8 @@ public class FeatureDashboard extends CFWAppFeature {
 						.addPermission(PERMISSION_DASHBOARD_ADMIN)
 				);
 	
+	
+	
 	public static final ManualPage MANUAL_PAGE_WIDGETS = MANUAL_PAGE_ROOT.addChild( 
 			new ManualPage(MANUAL_NAME_WIDGETS)
 				.faicon("fas fa-th")
@@ -107,6 +109,8 @@ public class FeatureDashboard extends CFWAppFeature {
 				.addPermission(PERMISSION_DASHBOARD_ADMIN)
 				.content(HandlingType.JAR_RESOURCE, PACKAGE_MANUAL, "&nbsp;"))
 			;
+	
+	
 	
 	@Override
 	public void register() {
@@ -119,15 +123,10 @@ public class FeatureDashboard extends CFWAppFeature {
 		// Register Languages
 		
 		FileDefinition english = new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_en_dashboard.properties");
+		registerLocale(Locale.ENGLISH, english);
+		
 		FileDefinition german = new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES, "lang_de_dashboard.properties");
-		
-		CFW.Localization.registerLocaleFile(Locale.ENGLISH, "/app/dashboard", english);
-		CFW.Localization.registerLocaleFile(Locale.ENGLISH, URI_DASHBOARD_VIEW_PUBLIC, english);
-		CFW.Localization.registerLocaleFile(Locale.ENGLISH, FeatureManual.URI_MANUAL, english);
-		
-		CFW.Localization.registerLocaleFile(Locale.GERMAN, "/app/dashboard", german);
-		CFW.Localization.registerLocaleFile(Locale.GERMAN, URI_DASHBOARD_VIEW_PUBLIC, german);
-		CFW.Localization.registerLocaleFile(Locale.GERMAN, FeatureManual.URI_MANUAL, german);
+		registerLocale(Locale.GERMAN, german);
 		
 		
     	//----------------------------------
@@ -241,6 +240,24 @@ public class FeatureDashboard extends CFWAppFeature {
 		
 		CFW.Registry.Components.addButtonsMenuItem(favoritesMenu, null);
 		
+	}
+
+	
+	/**********************************************************************************
+	 * Registers a locale file for dashboard, public dashboard and manual.
+	 * 
+	 * @param locale
+	 * @param definition
+	 **********************************************************************************/
+	public static void registerLocale(Locale locale, FileDefinition definition) {
+		
+		if(locale == null || definition == null) {
+			return;
+		}
+		
+		CFW.Localization.registerLocaleFile(locale, "/app/dashboard", definition);
+		CFW.Localization.registerLocaleFile(locale, URI_DASHBOARD_VIEW_PUBLIC, definition);
+		CFW.Localization.registerLocaleFile(locale, FeatureManual.URI_MANUAL, definition);
 	}
 	
 	@Override
