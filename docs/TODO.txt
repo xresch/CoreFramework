@@ -198,6 +198,7 @@ DONE
 - New Feature: Export / Import of database backup scripts
 - New Feature: Escape key now removes popovers that got stuck 
 - Modals: Increased width of modals to have more space to work with
+- Charts: Can now be double clicked to get more details
 - User Management: Added names of user/roles/group in delete confirmation popup
 - User Management: Fixed toggle button in role-/group-/permission table showing wrong state when switching page
 - Database: Added Feature 'Reindex Fulltext Search' to DB Analytics page

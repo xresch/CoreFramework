@@ -97,7 +97,10 @@ public class FeatureCore extends CFWAppFeature {
 		
 		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "cfw_components.js");
 		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "cfw.js");
-		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js", "cfw_renderer.js");
+		
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer.js");
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE + ".js.rendering", "cfw_renderer_chart.js");
+		
 		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.FILE, "./resources/js", "custom.js");
 		
 		//----------------------------------
