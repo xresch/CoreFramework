@@ -15,12 +15,12 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionIf extends CFWQueryFunction {
+public class CFWQueryFunctionIsNullOrEmpty extends CFWQueryFunction {
 
 	
-	public static final String FUNCTION_NAME = "if";
+	public static final String FUNCTION_NAME = "isnullorempty";
 
-	public CFWQueryFunctionIf(CFWQueryContext context) {
+	public CFWQueryFunctionIsNullOrEmpty(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -47,7 +47,7 @@ public class CFWQueryFunctionIf extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(condition, trueValue, falseValue)";
+		return FUNCTION_NAME+"(valueOrFieldname)";
 	}
 	
 	/***********************************************************************************************
@@ -55,7 +55,7 @@ public class CFWQueryFunctionIf extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Evaluates the condition, returns the respective value for true or false.";
+		return "Checks if the value is null or an empty string(string with length 0).";
 	}
 	
 	/***********************************************************************************************
@@ -64,9 +64,7 @@ public class CFWQueryFunctionIf extends CFWQueryFunction {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return "<ul>"
-			  +"<li><b>condition:&nbsp;</b>The condition to evaluate for the if-statement.</li>"
-			  +"<li><b>trueValue:&nbsp;</b>The value to return if the condition is true.</li>"
-			  +"<li><b>falseValue:&nbsp;</b>The value to return if the condition is false.</li>"
+			  +"<li><b>valueOrFieldname:&nbsp;</b>The value or field that should be checked.</li>"
 			  +"</ul>"
 			;
 	}
@@ -104,23 +102,15 @@ public class CFWQueryFunctionIf extends CFWQueryFunction {
 		
 		//----------------------------------
 		// Return same value if not second param
-		if(parameters.size() >= 2) { 
+		if(parameters.size() >= 1) { 
 			
-			QueryPartValue condition = parameters.get(0); 
-			QueryPartValue trueValue = parameters.get(1); 
-			QueryPartValue falseValue = (parameters.size() >= 3) ? parameters.get(2) : QueryPartValue.newString(""); 
-			
-			if(condition.getAsBoolean()) {
-				return trueValue;
-			}else {
-				return falseValue;
-			}
+			QueryPartValue value = parameters.get(0); 
+			return QueryPartValue.newBoolean( value.isNullOrEmptyString() );
 		}
 		
 		//----------------------------------
-		// Return empty string if not enough params
+		// Return null if not enough params
 		return QueryPartValue.newNull();
 		
 	}
-
 }

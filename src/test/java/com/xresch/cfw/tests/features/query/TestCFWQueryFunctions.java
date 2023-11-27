@@ -950,6 +950,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals("Jane", record.get("NAME").getAsString());
 		
 	}
+	
 	/****************************************************************
 	 * 
 	 ****************************************************************/
@@ -1141,6 +1142,37 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals("zero", record.get("J4").getAsString());
 		Assertions.assertEquals(true, 	record.get("J5").isJsonNull());
 				
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testIsNullOrEmpty() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIsNullOrEmpty.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+
+		Assertions.assertEquals(true, record.get("EMPTY").isJsonNull());
+		Assertions.assertEquals(true, record.get("ISNULL").getAsBoolean());
+		Assertions.assertEquals(true, record.get("ISEMPTY_A").getAsBoolean());
+		Assertions.assertEquals(true, record.get("ISEMPTY_B").getAsBoolean());
+		Assertions.assertEquals(false, record.get("NOTEMPTY").getAsBoolean());
+		Assertions.assertEquals(false, record.get("BOOLEAN").getAsBoolean());
+		Assertions.assertEquals(false, record.get("NUMBER").getAsBoolean());
+		
 	}
 	
 	

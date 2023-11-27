@@ -1,0 +1,14 @@
+
+<p>The following query creates sample records and show some uses of the isNullOrEmpty-function:</p>
+
+<pre><code class="language-cfwquery">| source random records=100
+| set
+	EMPTY= isNullOrEmpty() 						 # returns null
+	ISNULL = isNullOrEmpty(null) 				 # returns true
+	ISNULL_FIELD = isNullOrEmpty(LIKES_TIRAMISU) # returns true or false
+	ISEMPTY_A = isNullOrEmpty("") 				 # returns true
+	ISEMPTY_B = isNullOrEmpty(trim("  	")) 	 # returns true
+	NOTEMPTY = isNullOrEmpty(" ") 				 # returns false
+	BOOLEAN = isNullOrEmpty(true) 				 # returns false
+	NUMBER= isNullOrEmpty(123) 					 # returns false</code></pre>
+

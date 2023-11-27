@@ -79,14 +79,12 @@ Potential TODOs
 - Query: Improve Autocomplete
 - Query: function: math ceil/floor/abs etc...
 - Query: function: array() aggregation
-- Query: function: countif() aggregation
 - Query: function: distinct() aggregation
 - Query: function: length() should support arrays and objects
 - Query: function: fieldshidden()
 - Query: function: timeround()
 - Query: function: timetruncate()
 - Query: function: timediff()
-- Query: function: isNullOrEmpty
 - Query: function: isString
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
@@ -187,6 +185,7 @@ DONE
 	- countif
 	- interval
 	- intervalunit
+	- isNullOrEmpty
 	- sumif
 
 ------- v.8.0.0 -------
