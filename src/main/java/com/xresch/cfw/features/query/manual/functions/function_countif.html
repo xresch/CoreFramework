@@ -1,0 +1,35 @@
+
+<p>This function is used to count number of records matching specified conditions. It supports aggregation and can be used in aggregation commands.</p>
+
+<p>Following is an example how to use this function in aggregation commands:</p>
+<pre><code class="language-cfwquery">| source random records=1000
+| stats by=[LIKES_TIRAMISU] 
+	# whenever the condition is true, count + 1
+	COUNT_BIG=countif( VALUE >= 50 )
+	COUNT_SMALL=countif( VALUE &lt; 50 ) 
+	COUNT_AURORA=countif( FIRSTNAME == "Aurora" ) 
+	COUNT_HERA_BIG=countif( 
+		FIRSTNAME == "Hera" 
+		AND VALUE >= 50
+	)
+	COUNT_HERA_SMALL=countif( 
+		FIRSTNAME == "Hera" 
+		AND VALUE &lt; 50
+	)
+| sort COUNT reverse=true</code></pre>
+
+
+<p>Following query creates random records and uses the countif-function. 
+The count will be increased on records where the condition is met.
+This can be useful for time based data to find out 'how many records up to this point have met the condition?'.</p>
+<pre><code class="language-cfwquery">| source random records=1000
+| set 
+	#return a number that increases by 1 every call
+	COUNT_ALL=countif(true)
+	# return number that increase every time condition is true
+	COUNT_NUMBERS=countif(VALUE > 50)
+</code></pre>
+
+
+
+

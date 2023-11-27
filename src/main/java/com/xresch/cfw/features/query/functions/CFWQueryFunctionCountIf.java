@@ -15,14 +15,14 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionCount extends CFWQueryFunction {
+public class CFWQueryFunctionCountIf extends CFWQueryFunction {
 
-	public static final String FUNCTION_NAME = "count";
+	public static final String FUNCTION_NAME = "countif";
 	
 	private int count = 0; 
 	private boolean isAggregated = false;
 	
-	public CFWQueryFunctionCount(CFWQueryContext context) {
+	public CFWQueryFunctionCountIf(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -50,14 +50,14 @@ public class CFWQueryFunctionCount extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(valueOrFieldname, countNulls)";
+		return FUNCTION_NAME+"(condition)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Aggregation function to create counts.";
+		return "Aggregation function to create counts based on conditions.";
 	}
 	
 	/***********************************************************************************************
@@ -65,8 +65,7 @@ public class CFWQueryFunctionCount extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>valueOrFieldname:&nbsp;</b>(Optional)The value or fieldname used for the count.</p>"
-			 + "<p><b>countNulls:&nbsp;</b>(Optional)Toggle if null values and empty strings should be counted or not(Default:false).</p>"
+		return "<p><b>condition:&nbsp;</b>(Optional)An expression, if evaluates to true, increase count by one.</p>"
 			;
 	}
 
@@ -102,15 +101,12 @@ public class CFWQueryFunctionCount extends CFWQueryFunction {
 			return;
 		}
 
-		QueryPartValue value = parameters.get(0);
-		boolean countNulls = false;
-		if(paramCount > 1) {
-			countNulls = parameters.get(1).getAsBoolean();
+		boolean doCount = true;
+		if(paramCount >= 1) {
+			doCount = parameters.get(0).getAsBoolean();
 		}
 		
-		if(!value.isNullOrEmptyString()) {
-			count++;
-		}else if(countNulls) {
+		if(doCount) {
 			count++;
 		}
 			
@@ -123,26 +119,21 @@ public class CFWQueryFunctionCount extends CFWQueryFunction {
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
 		QueryPartValue result = QueryPartValue.newNull();
-		if(isAggregated || parameters.size() == 0) {
+		if(isAggregated) {
 			result = QueryPartValue.newNumber(count);
-		}else if(parameters.size() > 0) {
-			
-			QueryPartValue param = parameters.get(0);
-
-			if(param.isJsonArray()) {
-				result = QueryPartValue.newNumber(param.getAsJsonArray().size());
-			}else if(param.isJsonObject()) {
-				result = QueryPartValue.newNumber(param.getAsJsonObject().entrySet().size());
-			}else if(param.isNull()) {
-				result = QueryPartValue.newNull();
+		}else {
+			if(parameters.size() > 0) {
+				boolean doCount = parameters.get(0).getAsBoolean();
+				if(doCount) {
+					count++;
+				}
 			}else {
-				result = QueryPartValue.newNumber(1);
+				count++;
 			}
+			
 		}
-
-		count++;
 		
-		return result;
+		return QueryPartValue.newNumber(count);
 	}
 
 }

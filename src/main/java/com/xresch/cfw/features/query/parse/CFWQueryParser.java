@@ -239,6 +239,7 @@ public class CFWQueryParser {
 	 * Returns null of there is no previous part.
 	 ***********************************************************************************************/
 	private QueryPart popPreviousPart() {
+
 		QueryPart previousPart = null;
 		if( currentQueryParts.size() > 0) { 
 			previousPart = currentQueryParts.remove(currentQueryParts.size()-1);
@@ -506,7 +507,7 @@ public class CFWQueryParser {
 	public QueryPart parseQueryPart(CFWQueryParserContext context) throws ParseException {
 		
 		QueryPart secondPart = null;
-		
+
 		//------------------------------------------
 		// Prevent endless loops and OutOfMemoryErrors
 		if(cursor != lastCursor) {
@@ -518,6 +519,11 @@ public class CFWQueryParser {
 			if(endlessLoopPreventionCounter >= 10 ) {
 				throw new ParseException("Query Parser got stuck at a single cursor position and looped endlessly.", cursor);
 			}
+		}
+		
+		if(currentQueryParts.size() > 100000) {
+			// should not be reached, just in case it ever does.
+			throw new ParseException("Query Parser reached max number of allowed query parts(100'000). It's likely you started looping endlessly because of syntax errors.", cursor);
 		}
 		
 		//------------------------------------------
@@ -705,12 +711,12 @@ public class CFWQueryParser {
 				contextStack.add(CFWQueryParserContext.GROUP);
 				addTrace("Start Part", "Group", firstToken.value());
 
-
 				QueryPart groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP);
 				
 				int startIndex = currentQueryParts.size();
 				
 				while( groupMember != null && !(groupMember instanceof QueryPartEnd) ) {
+
 					currentQueryParts.add(groupMember);
 					
 					CFWQueryToken nextToken = this.lookahead();
@@ -725,6 +731,8 @@ public class CFWQueryParser {
 						//------------------------------
 						// Parse Next Part
 						groupMember = this.parseQueryPart(CFWQueryParserContext.GROUP);
+					}else {
+						this.throwParseException("A opening '(' is missing a matching ')', or a syntax error is preventing it. ", firstToken.position());
 					}
 				}
 				
@@ -824,6 +832,7 @@ public class CFWQueryParser {
 			case OPERATOR_EQUAL:
 				
 				this.consumeToken();
+
 				addTrace("Start Part", "Assignment", "");
 				QueryPart rightside = this.parseQueryPart(context);
 				if(firstPart == null) {
@@ -958,6 +967,7 @@ public class CFWQueryParser {
 	 * @param consumeToken TODO
 	 ***********************************************************************************************/
 	private QueryPart createBinaryExpressionPart(CFWQueryParserContext context, QueryPart firstPart, CFWQueryTokenType operatorType, boolean consumeToken ) throws ParseException {
+		
 		addTrace("Start Part", "Binary Expression", operatorType);
 			if(firstPart == null) {
 				firstPart = this.popPreviousPart();
@@ -1069,6 +1079,11 @@ public class CFWQueryParser {
 		object.addProperty("VALUE", this.query.substring(currentToken.position()) );
 		resultArray.add(object);
 		
+		//-------------------------
+		object = new JsonObject();
+		object.addProperty("KEY", "Query Part Count");
+		object.addProperty("VALUE", currentQueryParts.size());
+		resultArray.add(object);
 		
 		return resultArray;
 	}

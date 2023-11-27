@@ -1,0 +1,13 @@
+| source json data=`
+[
+	  {count: 1, value: 1, float: 1.33333333}
+	 ,{count: 2, value: 2, float: null}
+	 ,{count: 3, value: 3, float: null}
+	 ,{count: 4, value: null, float: 22}
+
+]
+`
+| stats 
+	ALL=countnulls() # returns 4
+	COUNT_NULLS=countnulls(value) # returns 1
+	COUNT_NULLS_FLOAT=countnulls(float) # returns 2
