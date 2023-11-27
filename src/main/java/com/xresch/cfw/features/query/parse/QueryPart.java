@@ -1,5 +1,7 @@
 package com.xresch.cfw.features.query.parse;
 
+import java.util.Objects;
+
 import com.google.gson.JsonObject;
 import com.xresch.cfw.features.query.CFWQueryMemoryException;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
@@ -59,6 +61,25 @@ public abstract class QueryPart {
 		return this.determineValue(null).getAsString();
 		
 	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
+
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+	
+	
+	
 	
 	
 	

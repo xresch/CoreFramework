@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.parse;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -844,5 +845,30 @@ public class QueryPartValue extends QueryPart {
 
 		return debugObject;
 	}
+
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public int hashCode() {
+		return Objects.hash(type, value);
+	}
+
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)				 	{ return true;  }
+		if (obj == null) 					{ return false; }
+		if (getClass() != obj.getClass()) 	{ return false; }
+		
+		QueryPartValue other = (QueryPartValue) obj;
+		return type == other.type && Objects.equals(value, other.value);
+	}
+	
+
+	
+	
 
 }

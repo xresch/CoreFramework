@@ -80,18 +80,18 @@ Potential TODOs
 - Query: function: math ceil/floor/abs etc...
 - Query: function: array() aggregation
 - Query: function: distinct() aggregation
-- Query: function: length() should support arrays and objects
 - Query: function: fieldshidden()
 - Query: function: timeround()
 - Query: function: timetruncate()
 - Query: function: timediff()
-- Query: function: isString
+- Query: function: isString()
+- Query: arrayify (needed for subquery results)
+- Query: Command hide (to hide fields, or make prefix "_" to hide fields)
 - Query: Command record
 - Query: Command resultmerge (merge columns by identifiers)
 - Query: Command resultdelete (delete by name)
 - Query: Command statsx (pivot)
 - Query: Command formatfield - sparkline format (or new command)
-- Query: arrayify (needed for subquery results)
 - Query: Manual Page - How to create charts 
 - Query: Mimic calling mimic working with meta()
 - Query: Chart - Show data table option
