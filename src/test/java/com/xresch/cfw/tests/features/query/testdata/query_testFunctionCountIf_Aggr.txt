@@ -8,7 +8,8 @@
 ]
 `
 | stats 
-	ALL=count() # returns 4
-	COUNT_NONULL=count(value) # returns 3
-	COUNT_NULLS=count(value,true) # returns 4
-	COUNT_FLOAT=count(float) # returns 4
+	ALL=countif() # returns 4
+	COUNT_TRUE=countif(true) # returns 4
+	COUNT_BIG=countif( count > 2 ) # returns 2
+	COUNT_NULLS=countif( value == null ) # returns 1
+	COUNT_FLOAT=countif(float > 5 AND float < 90) # returns 2

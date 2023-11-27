@@ -583,6 +583,79 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testCountif() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionCountIf.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		int index = 0;
+		CFWQueryResult queryResults = resultArray.get(index);
+		Assertions.assertEquals(4, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(1, record.get("ALL").getAsInt());
+		Assertions.assertEquals(0, record.get("COUNT_BIG").getAsInt());
+
+		
+		//------------------------------
+		// Check 2nd Query Result
+		record = queryResults.getRecord(++index);
+		Assertions.assertEquals(2, record.get("ALL").getAsInt());
+		Assertions.assertEquals(0, record.get("COUNT_BIG").getAsInt());
+		
+		//------------------------------
+		// Check 3rd Query Result
+		record = queryResults.getRecord(++index);
+		Assertions.assertEquals(3, record.get("ALL").getAsInt());
+		Assertions.assertEquals(1, record.get("COUNT_BIG").getAsInt());
+		
+		//------------------------------
+		// Check 4th Query Result
+		record = queryResults.getRecord(++index);
+		Assertions.assertEquals(4, record.get("ALL").getAsInt());
+		Assertions.assertEquals(2, record.get("COUNT_BIG").getAsInt());
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testCountIf_Aggr() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionCountIf_Aggr.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(4, record.get("ALL").getAsInt());
+		Assertions.assertEquals(4, record.get("COUNT_TRUE").getAsInt());
+		Assertions.assertEquals(2,  record.get("COUNT_BIG").getAsInt());
+		Assertions.assertEquals(1, record.get("COUNT_NULLS").getAsInt());
+		Assertions.assertEquals(2, record.get("COUNT_FLOAT").getAsInt());
+
+	}
+	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testCountnulls() throws IOException {
 		
 		//---------------------------------
