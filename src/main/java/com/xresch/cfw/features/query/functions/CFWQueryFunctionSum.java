@@ -21,6 +21,8 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  ************************************************************************************************************/
 public class CFWQueryFunctionSum extends CFWQueryFunction {
 
+	public static final String FUNCTION_NAME = "sum";
+
 	private BigDecimal sum = new BigDecimal(0); 
 	
 	private boolean isAggregated = false;
@@ -35,7 +37,7 @@ public class CFWQueryFunctionSum extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String uniqueName() {
-		return "sum";
+		return FUNCTION_NAME;
 	}
 	
 	
@@ -54,14 +56,14 @@ public class CFWQueryFunctionSum extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return "sum(valueOrFieldname)";
+		return FUNCTION_NAME+"(valueOrFieldname)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Aggregation function to create average.";
+		return "Aggregation function to create sums.";
 	}
 	
 	/***********************************************************************************************
@@ -69,7 +71,7 @@ public class CFWQueryFunctionSum extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return "<p><b>valueOrFieldname:&nbsp;</b>(Optional)The value or fieldname used for the count.</p>"
+		return "<p><b>valueOrFieldname:&nbsp;</b>(Optional)The value or fieldname used for the sum.</p>"
 			;
 	}
 
@@ -78,7 +80,7 @@ public class CFWQueryFunctionSum extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionHTML() {
-		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_sum.html");
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL+".functions", "function_"+FUNCTION_NAME+".html");
 	}
 
 

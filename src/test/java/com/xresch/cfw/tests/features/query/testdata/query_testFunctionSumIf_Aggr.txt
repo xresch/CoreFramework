@@ -1,0 +1,15 @@
+| source json data=`
+[
+	  {count: 1, value: 1, float: 1.33333333}
+	 ,{count: 2, value: 2, float: 7.12345678}
+	 ,{count: 3, value: 3, float: 99.123456}
+	 ,{count: 4, value: null, float: 22}
+
+]
+`
+| stats 
+	SUM_ZERO=sumif() # returns 0
+	SUM_ALL=sumif(count) # returns 10
+	SUM_NONULL=sumif(value) # returns 6
+	SUM_BIGFLOAT=sumif(float, float > 10 ) # returns 	121.123456
+	SUM_FLOAT=sumif(float, (float > 5 AND float < 90) ) # returns 29.12345678

@@ -1,8 +1,12 @@
 package com.xresch.cfw.features.query.functions;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryFunction;
@@ -15,14 +19,16 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionCountIf extends CFWQueryFunction {
+public class CFWQueryFunctionSumIf extends CFWQueryFunction {
 
-	public static final String FUNCTION_NAME = "countif";
+	public static final String FUNCTION_NAME = "sumif";
+
+	private BigDecimal sum = new BigDecimal(0); 
 	
-	private int count = 0; 
 	private boolean isAggregated = false;
 	
-	public CFWQueryFunctionCountIf(CFWQueryContext context) {
+	
+	public CFWQueryFunctionSumIf(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -34,13 +40,13 @@ public class CFWQueryFunctionCountIf extends CFWQueryFunction {
 		return FUNCTION_NAME;
 	}
 	
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public TreeSet<String> getTags(){
 		TreeSet<String> tags = new TreeSet<>();
-		tags.add(CFWQueryFunction.TAG_MATH);
 		tags.add(CFWQueryFunction.TAG_AGGREGATION);
 		return tags;
 	}
@@ -50,14 +56,14 @@ public class CFWQueryFunctionCountIf extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(condition)";
+		return FUNCTION_NAME+"(valueOrFieldname, condition)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Aggregation function to create counts based on conditions.";
+		return "Aggregation function to create sum based on conditions.";
 	}
 	
 	/***********************************************************************************************
@@ -66,8 +72,9 @@ public class CFWQueryFunctionCountIf extends CFWQueryFunction {
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
 		return "<ul>"
-			  +"<li><b>condition:&nbsp;</b>(Optional)An expression, if evaluates to true, increase count by one.</li>"
-			  +"</ul>"
+				+"<li><b>valueOrFieldname:&nbsp;</b>The value or fieldname used to add to the sum.</li>"
+				+"<li><b>condition:&nbsp;</b>(Optional)An expression, if evaluates to true, add the value to the sum. (default: true)</li>"
+				+"</ul>"
 			;
 	}
 
@@ -89,6 +96,31 @@ public class CFWQueryFunctionCountIf extends CFWQueryFunction {
 	}
 
 	
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	private void addValueToAggregation(QueryPartValue value) {
+		
+		if(value.isNumberOrNumberString()) {
+			sum = sum.add(value.getAsBigDecimal());
+		}
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	private QueryPartValue getSum() {
+		
+		QueryPartValue result = QueryPartValue.newNumber(sum);
+		
+		//reset aggregation
+		sum = new BigDecimal(0);
+		
+		return result;
+	}
+
+	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
@@ -99,19 +131,19 @@ public class CFWQueryFunctionCountIf extends CFWQueryFunction {
 		
 		int paramCount = parameters.size();
 		if(paramCount == 0) {
-			count++;
 			return;
 		}
-
-		boolean doCount = true;
-		if(paramCount >= 1) {
-			doCount = parameters.get(0).getAsBoolean();
+		
+		QueryPartValue value = parameters.get(0);
+		if(paramCount == 1) {
+			addValueToAggregation(value);
+			return;
 		}
 		
-		if(doCount) {
-			count++;
+		boolean doAddToSum = parameters.get(1).getAsBoolean();
+		if(doAddToSum) {
+			addValueToAggregation(value);
 		}
-			
 	}
 
 	/***********************************************************************************************
@@ -120,22 +152,15 @@ public class CFWQueryFunctionCountIf extends CFWQueryFunction {
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
-		QueryPartValue result = QueryPartValue.newNull();
-		if(isAggregated) {
-			result = QueryPartValue.newNumber(count);
-		}else {
-			if(parameters.size() > 0) {
-				boolean doCount = parameters.get(0).getAsBoolean();
-				if(doCount) {
-					count++;
-				}
-			}else {
-				count++;
-			}
-			
+		if(isAggregated) {			
+			return getSum();
+		}else if(parameters.size() == 0) {
+			return QueryPartValue.newNull();
 		}
 		
-		return QueryPartValue.newNumber(count);
+		//reset and return null in all other cases
+		sum = new BigDecimal(0);
+		return QueryPartValue.newNull();
 	}
 
 }

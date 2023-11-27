@@ -1,0 +1,31 @@
+
+<p>This function is used to calculate the sum of values based on conditions. It is only supported for aggregation commands.</p>
+
+<p>Following query uses some json example data to demonstrate the sumif-function:</p>
+<pre><code class="language-cfwquery">| source random records=1000
+| stats by=[LIKES_TIRAMISU] 
+	SUM_SMALL = sumif(VALUE, (VALUE &lt; 50) ) # add to sum if VALUE &lt; 50
+	SUM_BIG = sumif(VALUE, (VALUE >= 50) )  # add to sum if VALUE >= 50	
+	SUM_GIRL_WITH_GOOD_TASTE = 				# add to sum based on multiple conditions
+		sumif(VALUE, 
+			(
+				FIRSTNAME == "Aurora" 
+				AND LIKES_TIRAMISU 
+			) 
+		) 	
+	TOTAL = sumif(VALUE) # sums all values
+	TOTAL_AGAIN = sumif(VALUE, true) # sums all values
+	ZERO = sumif() # results in 0 as nothing is specified
+	ZERO_AGAIN = sumif(VALUE, false)  # results in 0 as condition always false
+| sort LIKES_TIRAMISU reverse=true</code></pre>
+
+<p>When this function is used outside of an aggregation command, it always returns null:</p>
+<pre><code class="language-cfwquery">| source random records=10
+| set
+	# all return null as not supported
+	NULL_A = sumif(VALUE, (VALUE > 50) ) 
+	NULL_B = sumif(VALUE) 
+	NULL_C = sumif()</code></pre>
+
+
+

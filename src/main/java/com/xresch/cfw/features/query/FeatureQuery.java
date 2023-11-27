@@ -86,6 +86,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionStdev;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionSubquery;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionSubstring;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionSum;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionSumIf;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTan;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeFormat;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionTimeOffset;
@@ -242,6 +243,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSubquery(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSubstring(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSum(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionSumIf(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTan(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTimeFormat(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionTimeframeOffset(null));

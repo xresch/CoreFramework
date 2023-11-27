@@ -1,0 +1,6 @@
+| source random records=10
+| set
+	# all return null as not supported
+	NULL_A = sumif(VALUE, (VALUE > 50) ) 
+	NULL_B = sumif(VALUE) 
+	NULL_C = sumif()

@@ -187,6 +187,7 @@ DONE
 	- countif
 	- interval
 	- intervalunit
+	- sumif
 
 ------- v.8.0.0 -------
 - BREAKING CODE CHANGE: Renaming of Threshold Fields and CSS-Classes

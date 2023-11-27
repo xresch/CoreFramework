@@ -1826,6 +1826,62 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testSumIf() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionSumIf.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+							
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(10, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals(true, record.get("NULL_A").isJsonNull());
+		Assertions.assertEquals(true, record.get("NULL_B").isJsonNull());
+		Assertions.assertEquals(true, record.get("NULL_C").isJsonNull());
+
+		
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testSumIf_Aggr() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionSumIf_Aggr.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+							
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("0", record.get("SUM_ZERO").getAsString());
+		Assertions.assertEquals("10", record.get("SUM_ALL").getAsString());
+		Assertions.assertEquals("6", record.get("SUM_NONULL").getAsString());
+		Assertions.assertEquals("121.123456", record.get("SUM_BIGFLOAT").getAsString());
+		Assertions.assertEquals("29.12345678", record.get("SUM_FLOAT").getAsString());
+		
+	}
+	
+
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testTan() throws IOException {
 		
 		//---------------------------------
