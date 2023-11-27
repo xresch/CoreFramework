@@ -20,7 +20,7 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
  * @author Reto Scheiwiller, (c) Copyright 2021 
  * @license MIT-License
  **************************************************************************************************************/
-public class QueryPartValue extends QueryPart {
+public class QueryPartValue extends QueryPart implements Comparable<QueryPartValue> {
 	
 	private QueryPartValueType type;
 	private Object value = null;
@@ -866,6 +866,16 @@ public class QueryPartValue extends QueryPart {
 		QueryPartValue other = (QueryPartValue) obj;
 		return type == other.type && Objects.equals(value, other.value);
 	}
+
+	/******************************************************************************************************
+	 * 
+	 ******************************************************************************************************/
+	@Override
+	public int compareTo(QueryPartValue o) {
+		return CFW.Utils.Text.compareStringsAlphanum(this.getAsString(), o.getAsString());
+	}
+	
+	
 	
 
 	

@@ -53,6 +53,11 @@ public class CFWUtilsText {
 	 * 
 	 *******************************************************************/
 	public static int compareStringsAlphanum(String val1, String val2) {
+		
+		if (val1 == null) 	{ return 1; }
+		if (val2 == null) 	{ return -1; }
+		if (val1 == val2)		{ return 0;  }
+		
 		int len1 = val1.length();
 		int len2 = val2.length();
 
