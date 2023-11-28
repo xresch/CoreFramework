@@ -23,7 +23,7 @@ import com.xresch.cfw.features.query.parse.QueryPartValue;
 public class CFWQueryFunctionDistinct extends CFWQueryFunction {
 
 	public static final String FUNCTION_NAME = "distinct";
-	private boolean isFirstFound = false;
+
 	private LinkedHashSet<QueryPartValue> distinctValues = new LinkedHashSet<>(); 
 	private boolean isAggregated = false;
 	
@@ -138,6 +138,45 @@ public class CFWQueryFunctionDistinct extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
+				
+		//-------------------------------
+		// Do Not Aggregated
+		if(!isAggregated) {
+	
+			if(parameters.size() == 0) {
+				return QueryPartValue.newNull();
+			}
+			
+			QueryPartValue param = parameters.get(0);
+			boolean includeNulls = false;
+			if(parameters.size() > 1) {
+				includeNulls = parameters.get(1).getAsBoolean();
+			}
+			
+			if(param.isJsonArray()) {
+				
+				JsonArray array = param.getAsJsonArray();
+				
+				for(int i = 0; i < array.size(); i++) {
+					JsonElement current = array.get(i);
+					if(!current.isJsonNull() || includeNulls) {
+						distinctValues.add( QueryPartValue.newFromJsonElement(current) );
+					}
+				}
+				
+			}else if(param.isJsonObject()) {
+				for(Entry<String, JsonElement> entry : param.getAsJsonObject().entrySet()){
+					distinctValues.add( 
+						QueryPartValue.newFromJsonElement( entry.getValue() )
+					);
+				}
+
+			}else {
+				// just return the value
+				return param;
+			}
+			
+		}
 		
 		//-------------------------------
 		// Do Sort
@@ -153,52 +192,15 @@ public class CFWQueryFunctionDistinct extends CFWQueryFunction {
 		}
 		
 		//-------------------------------
-		// Do Aggregated
-		if(isAggregated) {
-			JsonArray array = new JsonArray();
-			
-			for(QueryPartValue value : finalSet) {
-				array.add(value.getAsJsonElement());
-			}
-			return QueryPartValue.newFromJsonElement(array);
-			
-		}else if(parameters.size() == 0) {
-			return QueryPartValue.newNull();
-		}else {
-			
-			QueryPartValue param = parameters.get(0);
-			boolean includeNulls = false;
-			if(parameters.size() > 1) {
-				includeNulls = parameters.get(1).getAsBoolean();
-			}
-			
-			if(param.isJsonArray()) {
-				
-				JsonArray array = param.getAsJsonArray();
-				
-				for(int i = 0; i < array.size(); i++) {
-					
-					if(!array.get(i).isJsonNull() || includeNulls) {
-						return QueryPartValue.newFromJsonElement(array.get(i));
-					}
-					
-				}
-				return QueryPartValue.newNull();
-				
-			}else if(param.isJsonObject()) {
-				for(Entry<String, JsonElement> entry : param.getAsJsonObject().entrySet()){
-					return QueryPartValue.newString(entry.getKey());
-				}
-
-			}else {
-				// just return the value
-				return param;
-			}
-			
-		}
+		// Create Array and Return
+		JsonArray array = new JsonArray();
 		
-		//reset and return null in all other cases
-		return QueryPartValue.newNull();
+		for(QueryPartValue value : finalSet) {
+			array.add(value.getAsJsonElement());
+		}
+		distinctValues = new LinkedHashSet<>(); // reset values
+		return QueryPartValue.newFromJsonElement(array);
+
 	}
 
 }

@@ -50,10 +50,13 @@ public class CFWUtilsText {
     }
 	
 	/*******************************************************************
-	 * 
+	 * This Method sorts with the following in ming:
+	 *   - Numbers in strings are in order
+	 *   - Lower and uppercase letters of same char are next to each other 
+	 *    
 	 *******************************************************************/
 	public static int compareStringsAlphanum(String val1, String val2) {
-		
+
 		if (val1 == null) 	{ return 1; }
 		if (val2 == null) 	{ return -1; }
 		if (val1 == val2)		{ return 0;  }
@@ -63,6 +66,8 @@ public class CFWUtilsText {
 
 		int lim = Math.min(len1, len2);
         
+		//------------------------------
+        // Iterate until 
 		for (int i = 0; i < lim; i++) {
             char c1 = val1.charAt(i);
             char c2 = val2.charAt(i);
@@ -102,7 +107,18 @@ public class CFWUtilsText {
             //------------------------------
             // Compare As Characters
             if (c1 != c2) {
-            	return c1 - c2;
+            	
+            	//------------------------------
+                // Keep same chars lower/uppercase together
+            	if(Character.toUpperCase(c1) == Character.toUpperCase(c2)) {
+            		if(Character.isLowerCase(c1)) {
+            			return 1;
+            		}else {
+            			return -1;
+            		}
+            	}
+            	
+            	return Character.toUpperCase(c1) - Character.toUpperCase(c2);
             }
         }
 
