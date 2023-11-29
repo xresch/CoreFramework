@@ -184,7 +184,10 @@ DONE
 - Query: Added Commands:
 	- message
 - Query: Added Functions:
+	- array
+	- case
 	- countif
+	- distinct
 	- interval
 	- intervalunit
 	- isNullOrEmpty

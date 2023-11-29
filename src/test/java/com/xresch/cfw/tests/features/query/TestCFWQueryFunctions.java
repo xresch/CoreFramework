@@ -142,6 +142,43 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		Assertions.assertEquals("32.39506", record.get("AVG_FLOAT").toString());
 	}
 	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testCase() throws IOException { // well this test case is testing case, therefore the name testCase()
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionCase.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("One beer for Franky!",  record.get("SIMPLE_A").getAsString());
+		Assertions.assertEquals(1,  record.get("SIMPLE_B").getAsInt());
+		Assertions.assertEquals(2,  record.get("SIMPLE_C").getAsInt());
+		Assertions.assertEquals("YES!",  record.get("SLIGHTLY_COMPLEX").getAsString());
+		
+		Assertions.assertEquals(true, record.get("NULL").isJsonNull());
+		Assertions.assertEquals(true, record.get("MISSING_A").isJsonNull());
+		Assertions.assertEquals(true, record.get("MISSING_B").isJsonNull());
+		
+		Assertions.assertEquals(2, record.get("NOT_BOOLEAN").getAsInt());
+		Assertions.assertEquals(42, record.get("BOOLEAN_NUMBER_A").getAsInt());
+		Assertions.assertEquals(88, record.get("BOOLEAN_NUMBER_B").getAsInt());
+		Assertions.assertEquals(true, record.get("VALUE_IS_CONDITION").getAsBoolean());
+		
+	}
+	
 	/****************************************************************
 	 * 
 	 ****************************************************************/

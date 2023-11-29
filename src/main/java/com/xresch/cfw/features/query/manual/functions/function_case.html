@@ -1,0 +1,53 @@
+
+<p>The case-function takes arguments alternating between conditions and values. 
+The function returns the value right after the first condition that evaluates to true.</p>
+
+
+<p>The following example creates sample records and show some example uses of the case-function:</p>
+<pre><code class="language-cfwquery">| source random records=3000
+| set
+	CASE=case(
+		 (VALUE >= 80), " >= 80" 
+		,(VALUE >= 60), " >= 60" 
+		,(VALUE >= 40), " >= 40" 
+		,(VALUE >= 20), " >= 20" 
+		, true, " &lt; 20" 
+	)
+	FAVORITE = CASE(
+		  (FIRSTNAME == 'Aurora' OR FIRSTNAME == 'Hera' OR FIRSTNAME == 'Venus'), true
+		, (LIKES_TIRAMISU == true), true
+		, (1 == 1) , false
+	)</code></pre>
+
+
+<p>Here some examples for special cases:</p>
+<pre><code class="language-cfwquery">| source random records=300
+| keep FIRSTNAME, VALUE
+| set
+	NULL = case() # returns null
+	
+	MISSING_VALUE_A = case( (1 == 1) ) # returns null
+	
+	MISSING_VALUE_B = case( 
+			(VALUE > 50), true
+			, (1 == 2) 
+		) # returns null if first condition does not match, as value for 2nd condition is undefined
+		
+	NOT_BOOLEAN = case(
+					"Panna Cotta", 1
+					, true, 2
+				) # returns 2 as first argument is not a condition but an Italian dessert(tasty, but not true) 
+	
+	BOOLEAN_NUMBER_A = case(
+					  0   , 1
+					, true, 42
+				) # returns 42 as first condition is 0 (interpreted as boolean false)
+	
+	BOOLEAN_NUMBER_B = case(
+					  8.8  , 88
+					, true , 42
+				) # returns 88 as first condition is non-zero (interpreted as boolean true)		
+					
+	VALUE_IS_CONDITION=case(true, (VALUE >= 50)) # if the value is a condition it will be evaluated and result used as the value
+</code></pre>	
+	
