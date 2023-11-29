@@ -2067,4 +2067,33 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testTimeround() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionTimeround.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, -120);
+		
+		Assertions.assertEquals(1, resultArray.size());
+							
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("2022-07-26 21:17:03", record.get("TIME").getAsString());
+		Assertions.assertEquals("2022-07-26 21:17:00", record.get("ONE_MIN").getAsString());
+		Assertions.assertEquals("2022-07-26 21:15:00", record.get("FIVE_MIN").getAsString());
+		Assertions.assertEquals("2022-07-26 22:00:00", record.get("TWO_HOURS").getAsString());
+		Assertions.assertEquals("2022-07-29 00:00:00", record.get("SEVEN_DAYS").getAsString());
+		Assertions.assertEquals("2022-06-30 00:00:00", record.get("ZE_MONTH").getAsString());
+	
+	}
+	
 }

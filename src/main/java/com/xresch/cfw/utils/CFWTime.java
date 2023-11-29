@@ -193,14 +193,23 @@ public class CFWTime {
 			Calendar calendar = Calendar.getInstance();
 			
 			calendar.setTimeInMillis(epochMillis);
-			int valueToRound = calendar.get(this.calendarUnit);
+			
+			int unit = this.calendarUnit;
+			
+			// don't round on days of month, will shift more values to 07th and reduce on 28th
+//			if(unit == Calendar.DAY_OF_YEAR) {
+//				unit = Calendar.DAY_OF_MONTH;
+//			}
+			int valueToRound = calendar.get(unit);
+			
 			
 			int modulo = (valueToRound % amount);
 
 			if(modulo != 0) {
 				
+				// decide to round up or down
 				int diff = 0;
-				if(modulo < (amount / 2)) {
+				if(modulo < ((float)amount / 2)) {
 					diff = modulo*-1;
 				}else {
 					diff = amount - modulo;

@@ -16,12 +16,12 @@ import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryFunctionEarliestSet extends CFWQueryFunction {
+public class CFWQueryFunctionTimeRound extends CFWQueryFunction {
 
 	
-	public static final String FUNCTION_NAME = "earliestSet";
+	public static final String FUNCTION_NAME = "timeround";
 
-	public CFWQueryFunctionEarliestSet(CFWQueryContext context) {
+	public CFWQueryFunctionTimeRound(CFWQueryContext context) {
 		super(context);
 	}
 
@@ -48,14 +48,14 @@ public class CFWQueryFunctionEarliestSet extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(timeInMillis, offsetAmount, offsetUnit)";
+		return FUNCTION_NAME+"(timeInMillis, amount, unit)";
 	}
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Takes epoch milliseconds and offsets it by the specified amount, then sets it as the earliest time. ";
+		return "Takes epoch milliseconds and rounds it by the specified amount and unit. ";
 	}
 	
 	/***********************************************************************************************
@@ -65,8 +65,8 @@ public class CFWQueryFunctionEarliestSet extends CFWQueryFunction {
 	public String descriptionSyntaxDetailsHTML() {
 		return "<ul>"
 				  +"<li><b>timeInMillis:&nbsp;</b>(Optional) The time in epoch milliseconds. If null, current earliest time is used.</li>"
-				  +"<li><b>offsetAmount:&nbsp;</b>(Optional) The amount to offset from present time.(Default: 0)</li>"
-				  +"<li><b>offsetUnit:&nbsp;</b>(Optional) The unit used to offset the time. One of the following(Default: 'm'):"
+				  +"<li><b>amount:&nbsp;</b>(Optional) The amount to offset from present time.(Default: 1)</li>"
+				  +"<li><b>unit:&nbsp;</b>(Optional) The unit used to offset the time. One of the following(Default: 'm'):"
 				  + CFWTimeUnit.getOptionsHTMLList()
 				  + "</li>"
 			  + "</ul>"
@@ -108,8 +108,8 @@ public class CFWQueryFunctionEarliestSet extends CFWQueryFunction {
 		//----------------------------------
 		// Default Params
 		Long epochMillis = null;
-		int offsetAmount = 0;
-		String offsetUnit = "m";
+		int amount = 1;
+		String unit = "m";
 	
 		//----------------------------------
 		// Get Parameters
@@ -122,16 +122,16 @@ public class CFWQueryFunctionEarliestSet extends CFWQueryFunction {
 			index++;
 
 			//----------------------------------
-			// Offset Amount
+			// Amount
 			if(size > index) {
 				QueryPartValue offsetAmmountValue = parameters.get(index);
-				if(offsetAmmountValue.isNumberOrNumberString()) { offsetAmount = offsetAmmountValue.getAsInteger(); };
+				if(offsetAmmountValue.isNumberOrNumberString()) { amount = offsetAmmountValue.getAsInteger(); };
 				index++;
 				//----------------------------------
-				// offset Unit
+				// Unit
 				if(size > index) {
 					QueryPartValue offsetUnitValue = parameters.get(index);
-					if(offsetUnitValue.isString()) { offsetUnit = offsetUnitValue.getAsString(); };
+					if(offsetUnitValue.isString()) { unit = offsetUnitValue.getAsString(); };
 					index++;
 				}
 			}
@@ -145,13 +145,12 @@ public class CFWQueryFunctionEarliestSet extends CFWQueryFunction {
 
 		//----------------------------------
 		// Offset an set Earliest
-		if(offsetAmount != 0 && CFWTimeUnit.has(offsetUnit)) {
+		if(amount != 0 && CFWTimeUnit.has(unit)) {
 			epochMillis = CFWTimeUnit
-							.valueOf(offsetUnit)
-							.offset(epochMillis, offsetAmount);
+							.valueOf(unit)
+							.round(epochMillis, amount);
 		}
 		
-		this.context.setEarliest(epochMillis);
 		return QueryPartValue.newNumber(epochMillis);
 
 				

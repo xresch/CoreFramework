@@ -1,0 +1,17 @@
+| global
+	format = "yyyy-MM-dd HH:mm:ss"
+| source empty
+| set
+	TIME = timeparse(globals(format), "2022-07-26 21:17:03") 
+	ONE_MIN = timeround(TIME) # returns 2022-07-26 22:17:00
+	FIVE_MIN = timeround(TIME, 5, 'm') # returns 2022-07-26 22:15:00
+	TWO_HOURS = timeround(TIME, 2, 'h') # returns 2022-07-26 22:00:00
+	SEVEN_DAYS = timeround(TIME, 7, 'd') # returns 2022-07-29 00:00:00
+	ZE_MONTH = timeround(TIME, 1, 'M') # returns 2022-06-30 00:00:00
+| set # format on server-side to have no issues with timezone differences
+	TIME = timeformat(globals(format), TIME)
+	ONE_MIN = timeformat(globals(format), ONE_MIN)
+	FIVE_MIN = timeformat(globals(format), FIVE_MIN)
+	TWO_HOURS = timeformat(globals(format), TWO_HOURS)
+	SEVEN_DAYS = timeformat(globals(format), SEVEN_DAYS)
+	ZE_MONTH = timeformat(globals(format), ZE_MONTH)

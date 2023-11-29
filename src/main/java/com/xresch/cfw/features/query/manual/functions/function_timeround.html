@@ -1,0 +1,16 @@
+
+<p>Following query uses the function to round the time in various ways:</p>
+
+<pre><code class="language-cfwquery">| execute earliestSet(now, -1, 'y')
+| source random records=42
+| keep TIME
+| set
+	ONE_MIN = timeround(TIME)
+	FIVE_MIN = timeround(TIME, 5, 'm')
+	TWO_HOURS = timeround(TIME, 2, 'h')
+	SEVEN_DAYS = timeround(TIME, 7, 'd')
+	ZE_MONTH = timeround(TIME, 1, 'M')
+| formatfield
+	[ONE_MIN, FIVE_MIN, TWO_HOURS, SEVEN_DAYS, ZE_MONTH ] = 
+			['timestamp', "yyyy-MM-DD HH:mm:ss"]</code></pre>
+

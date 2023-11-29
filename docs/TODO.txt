@@ -81,7 +81,6 @@ Potential TODOs
 - Query: function: array() aggregation
 - Query: function: distinct() aggregation
 - Query: function: fieldshidden()
-- Query: function: timeround()
 - Query: function: timetruncate()
 - Query: function: timediff()
 - Query: function: isString()
@@ -192,6 +191,7 @@ DONE
 	- intervalunit
 	- isNullOrEmpty
 	- sumif
+	- timeround
 
 ------- v.8.0.0 -------
 - BREAKING CODE CHANGE: Renaming of Threshold Fields and CSS-Classes
