@@ -103,6 +103,8 @@ Potential TODOs
 	- command messages
 	- metadata template
 	- mimic calling mimic
+	- function array
+	- function distinct
 	- function interval
 	- function intervalunit
 	
