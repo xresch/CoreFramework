@@ -185,26 +185,29 @@ public class WidgetParameter extends WidgetDefinition {
 		//---------------------------------
 		// Resolve Parameters
 		JsonElement paramsElement = jsonSettings.get(FIELDNAME_JSON_PARAMETERS);
-		if(paramsElement.isJsonNull()) {
-			return;
-		}
+		JsonObject paramsObject = new JsonObject();
 		
-		JsonObject paramsObject = paramsElement.getAsJsonObject();
-		if(paramsObject.size() == 0) {
-			return;
+		if(!paramsElement.isJsonNull()) {
+			paramsObject = paramsElement.getAsJsonObject();
 		}
 		
 		ArrayList<String> paramNames = new ArrayList<>();
-		for(Entry<String, JsonElement> entry : paramsObject.entrySet()) {
-			paramNames.add(entry.getValue().getAsString());
+		if(paramsObject.size() > 0) {
+			for(Entry<String, JsonElement> entry : paramsObject.entrySet()) {
+				paramNames.add(entry.getValue().getAsString());
+			}
 		}
 
 		//Filter by names instead of IDs to still get parameters if they were changed.
-		ArrayList<CFWObject> paramsResultArray = new CFWSQL(new CFWParameter())
+		ArrayList<CFWObject> paramsResultArray = new ArrayList<CFWObject>();
+		
+		if(!paramNames.isEmpty()) {
+			paramsResultArray = new CFWSQL(new CFWParameter())
 				.select()
 				.whereIn(DashboardParameterFields.NAME, paramNames)
 				.and(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
 				.getAsObjectList();
+		}
 		
 		CFWParameter.prepareParamObjectsForForm(request, paramsResultArray, timeframe, true);
 

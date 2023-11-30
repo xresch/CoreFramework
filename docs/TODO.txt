@@ -168,6 +168,7 @@ DONE
 - Dashboard: Usage Statistics added, can be found in Settings 
 - Dashboard: Dashboard Settings can now be edited when viewing the dashboard
 - Dashboard: Display warning when dashboard does not exist.
+- Dashboard: Parameters - Made it possible to have only param without a button. Click on Button updates all params
 - Dashboard: Widget - Added new widget Advanced >> Default Refresh
 - Dashboard: Widget Checklist - Show URLs as links, Add/Edit/Remove functionality
 - Dashboard: Widget - Added accessing manual page to widget settings

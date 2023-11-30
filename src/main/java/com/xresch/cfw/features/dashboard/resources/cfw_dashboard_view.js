@@ -251,10 +251,9 @@ function cfw_parameter_fireParamWidgetUpdate(paramElement){
 	var FIELDNAME_PROMPT_PW = "cfw-promptpassword";
 	var FIELDNAME_AFFECTED_WIDGETS = "cfw-affectedwidgets";
 	var paramField = $(paramElement);
-	var paramValue = paramField.val();
 	var widgetElement = paramField.closest('.grid-stack-item');
-	var paramForms = widgetElement.find('.cfw-parameter-widget-parent form');
 	var widgetID = widgetElement.data('id');
+	var paramForms = $('.cfw-parameter-widget-parent form');
 	
 	//----------------------------------
 	// Create merged Params
@@ -264,6 +263,7 @@ function cfw_parameter_fireParamWidgetUpdate(paramElement){
 		var preparedParams = {};
 		// add to URL
 		for(key in userParamsForWidget){
+			console.log(key)
 			if(key != CFW.global.formID 
 			&& key != FIELDNAME_PROMPT_PW
 			&& key != FIELDNAME_AFFECTED_WIDGETS
