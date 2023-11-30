@@ -3,15 +3,23 @@
 
 <p>The following properties will also be used by the query engine itself:</p>
 <ul>
-	<li><b>name:&nbsp;</b> Will be used as title on the user interface.</li>
+	<li><b>name:&nbsp;</b> Will be used to give the current query a name. Used to identify the query with other commands like 'resultcompare'.</li>
+	<li><b>title:&nbsp;</b> When set to true, the name will be shown as a title on the User Interface. Title will also contain the queries execution duration.</li>
 	<li><b>description:&nbsp;</b> Will be used as a description on the user interface.</li>
 	<li><b>template:&nbsp;</b> Set to true if query is a template to be used with mimic command. Query will be cancelled at the metadata command. Any results caused by the query will be removed.</li>
 </ul>
 
 <p>Following code has two queries and adds the properties name and description to each query. The name property will also be used in the user interface for the title of the query. </p>
 
-<pre><code class="language-cfwquery">| metadata name="Random Records" description="Query creates random records." custom="whatever you wanna say."
+<pre><code class="language-cfwquery">| metadata 
+	name="Random Records" 
+	title=true
+	description="Query creates random records." 
+	custom="whatever you wanna say."
 | source random
 ;
-| metadata name="More Randomness" description="just another example query"
+| metadata 
+	name="More Randomness" 
+	title=true
+	description="just another example query"
 | source random</code></pre>

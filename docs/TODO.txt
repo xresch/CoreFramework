@@ -177,6 +177,7 @@ DONE
 - Dashboard: Widget - When title is left, give widget body a min-width
 - DB Extensions: Added option to context settings to allow updates on databases 
 - Query: Bugfix: Fixed endless loop on syntax errors
+- Query Command: metadata - Added boolean option 'title' to toggle if name is used as title on UI
 - Query Command: formatrecord - Added autocomplete options 
 - Query: Added Sources:
 	- appdb
@@ -190,6 +191,7 @@ DONE
 	- interval
 	- intervalunit
 	- isNullOrEmpty
+	- resultremove
 	- sumif
 	- timeround
 

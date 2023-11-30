@@ -2,7 +2,6 @@ package com.xresch.cfw.tests.features.query;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.joda.time.Instant;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw.datahandling.CFWTimeframe;
 import com.xresch.cfw.features.query.CFWQueryContext;
 import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.CFWQueryResult;
@@ -30,7 +28,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	 ****************************************************************/
 	private static CFWQueryContext context = new CFWQueryContext();
 	
-	private static final String PACKAGE = "com.xresch.cfw.tests.features.query.testdata";
+	private static final String PACKAGE_FUNCTIONS = "com.xresch.cfw.tests.features.query.testdata.functions";
 	
 	private static long earliest = new Instant().minus(1000*60*30).getMillis();
 	private static long latest = new Instant().getMillis();
@@ -41,7 +39,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		FeatureQuery feature = new FeatureQuery();
 		feature.register();
 		
-		CFW.Files.addAllowedPackage(PACKAGE);
+		CFW.Files.addAllowedPackage(PACKAGE_FUNCTIONS);
 
 		context.setEarliest(earliest);
 		context.setLatest(latest);
@@ -91,7 +89,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testAvg() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionAvg.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionAvg.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -123,7 +121,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testAvg_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionAvg_Aggr.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionAvg_Aggr.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -150,7 +148,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCase() throws IOException { // well this test case is testing case, therefore the name testCase()
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionCase.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionCase.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -258,7 +256,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testContains_Strings() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionContains_Strings.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionContains_Strings.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -298,7 +296,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testContains_Numbers() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionContains_Numbers.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionContains_Numbers.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -340,7 +338,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testContains_Booleans() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionContains_Booleans.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionContains_Booleans.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -380,7 +378,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testContains_Arrays() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionContains_Arrays.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionContains_Arrays.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -428,7 +426,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testContains_Objects() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionContains_Objects.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionContains_Objects.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -470,7 +468,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testContains_Nulls() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionContains_Nulls.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionContains_Nulls.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -596,7 +594,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCount_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionCount_Aggr.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionCount_Aggr.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -623,7 +621,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCountif() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionCountIf.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionCountIf.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -667,7 +665,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCountIf_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionCountIf_Aggr.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionCountIf_Aggr.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -751,7 +749,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCountnulls_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionCountnulls_Aggr.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionCountnulls_Aggr.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -812,7 +810,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		
 		//---------------------------------
 		// Initialize
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionEarliest.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionEarliest.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, -60);
@@ -878,7 +876,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testExtract() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionExtract.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionExtract.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -904,7 +902,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testFields() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionFields.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionFields.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -961,7 +959,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testGlobals() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionGlobals.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionGlobals.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -995,7 +993,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIf() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIf.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIf.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1029,7 +1027,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIndexOf_Strings() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIndexOf_Strings.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIndexOf_Strings.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1065,7 +1063,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIndexOf_Numbers() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIndexOf_Numbers.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIndexOf_Numbers.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1097,7 +1095,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIndexOf_Booleans() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIndexOf_Booleans.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIndexOf_Booleans.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1127,7 +1125,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIndexOf_Arrays() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIndexOf_Arrays.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIndexOf_Arrays.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1158,7 +1156,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIndexOf_Objects() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIndexOf_Objects.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIndexOf_Objects.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1188,7 +1186,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIsNullOrEmpty() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionIsNullOrEmpty.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIsNullOrEmpty.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1221,7 +1219,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		
 		//---------------------------------
 		// Initialize
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionLatest.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionLatest.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, -120);
@@ -1255,7 +1253,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		
 		//---------------------------------
 		// Initialize
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionLength.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionLength.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, -0);
@@ -1287,7 +1285,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMax() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionMax.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMax.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1317,7 +1315,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMax_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionMax_Aggr.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMax_Aggr.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1342,7 +1340,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMedian() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionMedian.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMedian.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1374,7 +1372,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMedian_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionMedian_Aggr.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMedian_Aggr.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1400,7 +1398,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMeta() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionMeta.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMeta.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1430,7 +1428,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMin() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionMin.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMin.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1460,7 +1458,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMin_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionMin_Aggr.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMin_Aggr.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1566,7 +1564,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testParam() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionParam.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionParam.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1597,7 +1595,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testPerc() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionPerc.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionPerc.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1652,7 +1650,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testPerc_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionPerc_Aggr.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionPerc_Aggr.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1797,7 +1795,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testReplace() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionReplace.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionReplace.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1826,7 +1824,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testRound() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionRound.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionRound.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1898,7 +1896,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testSumIf() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionSumIf.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionSumIf.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1924,7 +1922,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testSumIf_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionSumIf_Aggr.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionSumIf_Aggr.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1997,7 +1995,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testTimeformat() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionTimeformat.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionTimeformat.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, -120);
@@ -2074,7 +2072,7 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testTimeround() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE, "query_testFunctionTimeround.txt");
+		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionTimeround.txt");
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, -120);

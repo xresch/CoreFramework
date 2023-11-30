@@ -1,0 +1,40 @@
+
+<p>This function is used to get lists of distinct values. It supports aggregation and can be used in aggregation commands.</p>
+
+<p>Following query creates random records and uses the distinct-function for aggregation:</p>
+<pre><code class="language-cfwquery">| source random records=1000
+| keep FIRSTNAME
+| set VALUE = if( random(0,20) <19
+				, random(0,20)
+				, null)
+| stats by=[FIRSTNAME] 
+	# regular count 
+	COUNT=count() 
+	MIN=min(VALUE) 
+	AVG=avg(VALUE) 
+	MAX=max(VALUE)
+	DISTINCT=distinct(VALUE) # returns a sorted array of distinct values
+	DISTINCT_NULLS=distinct(VALUE, true) # returns a sorted array of distinct values, including null values
+	DISTINCT_NOSORT=distinct(VALUE, false, false) # returns an unsorted array of distinct values
+| sort FIRSTNAME reverse=true</code></pre>
+
+<p>Here some examples of the distinct-function when used outside of an aggregation command:</p>
+<pre><code class="language-cfwquery">| source empty
+| set
+	DISTINCT_EMPTY		= distinct() #returns null
+	DISTINCT_NULL		= distinct(null) #returns null
+	DISTINCT_NUMBER		= distinct(123) #returns 123
+	DISTINCT_BOOLEAN	= distinct(true) #returns true
+	DISTINCT_STRING		= distinct("
+		It's beginning to look a lot like Christmas
+		Everywhere you go
+		Take a look at the five and ten, it's glistening once again
+		With candy canes and silver lanes that glow
+	") # returns a bit of holy-jolly
+	DISTINCT_ARRAY		= distinct(['a', 'a', 'B', 'B', 'C!', 'C!'], true, true) # returns ["a", "B", "C!"]
+	DISTINCT_OBJECT		= distinct({a: "one", b: true, c: 3, c: "one", d: true, e: 3}) # returns [3, "one", true]</code></pre>
+
+
+
+
+

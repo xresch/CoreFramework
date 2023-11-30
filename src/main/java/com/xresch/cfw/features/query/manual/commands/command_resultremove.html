@@ -1,0 +1,20 @@
+
+<p>This command is used to remove one or more results.</p>
+
+<p>Following example executes 3 queries and deletes the result with the name 'config' as it is empty:
+</p>
+<pre><code class="language-cfwquery">| metadata name = "config" 
+| globals recordCount=7
+;
+| metadata name = "two"
+| source random records=globals(recordCount)
+;
+| metadata name = "three"
+| source random records=globals(recordCount)*2
+;
+| metadata name = "Concat two &amp; three" title=true
+| resultconcat "two", "three" #concatenates and removes originals
+| resultremove "config" # remove result "config" as it would be shown as an empty result</code></pre>
+
+
+

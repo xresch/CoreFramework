@@ -794,7 +794,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	var options = {};
 	//-----------------------------------
 	// Create Title				
-	if(queryResult.metadata.name != null){
+	if(queryResult.metadata.title == true){
 		var execSeconds = '';
 		if(queryResult.execTimeMillis != -1){
 			execSeconds = " ("+(queryResult.execTimeMillis / 1000).toFixed(3)+"s)";
