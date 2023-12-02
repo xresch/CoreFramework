@@ -77,6 +77,16 @@ public abstract class CFWQueryFunction{
 	 *************************************************************************/
 	public abstract void aggregate(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters);
 	
+	
+	/*************************************************************************
+	 * Override this method and return true to not replace strings matching
+	 * field names with the values of the field.
+	 * This is needed in case you want to not receive the field value, but 
+	 * the field names.
+	 *************************************************************************/
+	public boolean receiveStringParamsLiteral() {
+		return false;
+	}
 	/***********************************************************************************************
 	 * Execute the function and return the result as a QueryPartValue.
 	 * If the implementation of this class stores any internal values(e.g. for aggregation), the call

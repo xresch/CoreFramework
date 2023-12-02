@@ -767,12 +767,7 @@ class CFWQueryEditor{
 			return;
 		}
 		this.isExecuting = true;
-		
-		// ---------------------------------------
-		// Replace Parameters
-		var finalParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
-		let finalQuery = cfw_parameter_substituteInString(originalQuery, finalParams);
-				
+						
 		//-----------------------------------
 		// Update Params in URL
 		
@@ -807,8 +802,10 @@ class CFWQueryEditor{
 		//-----------------------------------
 		// Prepare Parameters
 		var pageParams;
+		var finalQuery = originalQuery;
 		if (typeof cfw_parameter_getFinalParams !== "undefined") { 
  			pageParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
+			finalQuery = cfw_parameter_substituteInString(originalQuery, pageParams);
 		} 
 		
 		var queryParams = {};

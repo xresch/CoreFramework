@@ -152,15 +152,33 @@ public class QueryPartFunction extends QueryPart {
 	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
-	public ArrayList<QueryPartValue> prepareParameters(EnhancedJsonObject object) {
+	public ArrayList<QueryPartValue> prepareParameters(EnhancedJsonObject object, boolean receiveStringParamsLiteral) {
 		ArrayList<QueryPartValue> parameterValues = new ArrayList<>();
 
+		//----------------------------
+		// Iterate Function Parameters
 		for(QueryPart param : functionParameters) {
+			
+			//----------------------------
+			// Use Literal Values 
+			if(receiveStringParamsLiteral 
+			&& param instanceof QueryPartValue) {
+				parameterValues.add(param.determineValue(object));
+				continue;
+			}
+			
+			//----------------------------
+			// Substitute Fieldnames with Values
 			if(param instanceof QueryPartValue) {
 				param = ((QueryPartValue)param).convertFieldnameToFieldvalue(object);
 			}
+			
+			//----------------------------
+			// All other
 			parameterValues.add(param.determineValue(object));
+			
 		}
+		
 		return parameterValues;
 	}
 	
@@ -180,7 +198,7 @@ public class QueryPartFunction extends QueryPart {
 	private void aggregateFunctionInstance(CFWQueryFunction functionInstance, EnhancedJsonObject object) {
 		//------------------------------------
 		//Evaluate params to QueryPartValue 
-		ArrayList<QueryPartValue> parameterValues = prepareParameters(object);
+		ArrayList<QueryPartValue> parameterValues = prepareParameters(object, functionInstance.receiveStringParamsLiteral());
 		
 		//------------------------------------
 		//execute Function 
@@ -202,7 +220,8 @@ public class QueryPartFunction extends QueryPart {
 	 ******************************************************************************************************/
 	private QueryPartValue executeFunctionInstance(CFWQueryFunction functionInstance, EnhancedJsonObject object) {
 		
-		ArrayList<QueryPartValue> parameterValues = prepareParameters(object);
+		
+		ArrayList<QueryPartValue> parameterValues = prepareParameters(object, functionInstance.receiveStringParamsLiteral() );
 		
 		//------------------------------------
 		//execute Function 

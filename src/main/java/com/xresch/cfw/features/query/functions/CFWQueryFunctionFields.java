@@ -98,6 +98,14 @@ public class CFWQueryFunctionFields extends CFWQueryFunction {
 	public void aggregate(EnhancedJsonObject object,ArrayList<QueryPartValue> parameters) {
 		// not supported
 	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public boolean receiveStringParamsLiteral() {
+		return true;
+	}
 
 	/***********************************************************************************************
 	 * 
@@ -106,8 +114,7 @@ public class CFWQueryFunctionFields extends CFWQueryFunction {
 	public QueryPartValue execute(EnhancedJsonObject object, ArrayList<QueryPartValue> parameters) {
 		
 		HashSet<String> detectedFieldnames = this.context.getFinalFieldnames();
-		if(parameters.size() > 0) {
-			QueryPartValue withoutFields = parameters.get(0);
+		for(QueryPartValue withoutFields : parameters) {
 			
 			for( String fieldname : withoutFields.getAsStringArray()){
 				detectedFieldnames.remove(fieldname);
