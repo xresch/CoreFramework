@@ -255,15 +255,15 @@ function cfw_parameter_fireParamWidgetUpdate(paramElement){
 	var widgetID = widgetElement.data('id');
 	var paramForms = $('.cfw-parameter-widget-parent form');
 	
-	//----------------------------------
-	// Create merged Params
+	//-----------------------------------------------
+	// Create merged Params of All Parameter Widgets
 	var mergedParams = {}; 
 	paramForms.each(function(){
 		var userParamsForWidget = CFW.format.formToParams($(this), true);
 		var preparedParams = {};
 		// add to URL
 		for(key in userParamsForWidget){
-			console.log(key)
+
 			if(key != CFW.global.formID 
 			&& key != FIELDNAME_PROMPT_PW
 			&& key != FIELDNAME_AFFECTED_WIDGETS
@@ -274,6 +274,30 @@ function cfw_parameter_fireParamWidgetUpdate(paramElement){
 		cfw_dashboard_setURLParams(preparedParams);
 		Object.assign(mergedParams, userParamsForWidget); 
 	});
+	
+	//-----------------------------------------------
+	// Override certain Params from the Originating
+	// Param Widget
+	originatingForm = widgetElement.find('.cfw-parameter-widget-parent form');
+	originatingForm.each(function(){
+		var userParamsForWidget = CFW.format.formToParams($(this), true);
+		var preparedParams = {};
+		// add to URL
+		for(key in userParamsForWidget){
+
+			if(key == FIELDNAME_AFFECTED_WIDGETS
+			|| key == FIELDNAME_PROMPT_PW
+			){
+				preparedParams[key] = userParamsForWidget[key];
+			}
+		}
+		cfw_dashboard_setURLParams(preparedParams);
+		Object.assign(mergedParams, userParamsForWidget); 
+	});
+	
+	
+	//-----------------------------------------------
+	// Create merged Params of All Parameter Widgets
 	
 	//----------------------------------
 	// Get Prompt and Store

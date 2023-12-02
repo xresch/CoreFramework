@@ -39,13 +39,7 @@ import com.xresch.cfw.features.dashboard.widgets.standard.WidgetWebsite;
 import com.xresch.cfw.features.dashboard.widgets.standard.WidgetYoutubeVideo;
 import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.manual.ManualPage;
-import com.xresch.cfw.features.parameter.CFWParameter;
-import com.xresch.cfw.features.parameter.ParameterDefinitionBoolean;
-import com.xresch.cfw.features.parameter.ParameterDefinitionDashboardID;
-import com.xresch.cfw.features.parameter.ParameterDefinitionNumber;
-import com.xresch.cfw.features.parameter.ParameterDefinitionSelect;
-import com.xresch.cfw.features.parameter.ParameterDefinitionText;
-import com.xresch.cfw.features.parameter.ParameterDefinitionTextarea;
+import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.usermgmt.FeatureUserManagement;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.response.bootstrap.DynamicItemCreator;
@@ -257,6 +251,7 @@ public class FeatureDashboard extends CFWAppFeature {
 		
 		CFW.Localization.registerLocaleFile(locale, "/app/dashboard", definition);
 		CFW.Localization.registerLocaleFile(locale, URI_DASHBOARD_VIEW_PUBLIC, definition);
+		CFW.Localization.registerLocaleFile(locale, FeatureParameter.URI_PARAMETER, definition);
 		CFW.Localization.registerLocaleFile(locale, FeatureManual.URI_MANUAL, definition);
 	}
 	
