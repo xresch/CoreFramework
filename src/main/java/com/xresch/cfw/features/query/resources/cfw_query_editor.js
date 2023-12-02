@@ -752,7 +752,6 @@ class CFWQueryEditor{
 	 * @param isPageLoad if the execution is caused by a page load 
 	 ******************************************************************************/
 	executeQuery(isPageLoad){
-		console.log("enterExecuteQuery:"+this.isExecuting);
 
 		//-----------------------------------
 		// Check is already Executing
@@ -761,19 +760,23 @@ class CFWQueryEditor{
 		}
 
 		var timeframe = JSON.parse($('#'+this.settings.timeframePickerID).val());
-		var timeZoneOffset = new Date().getTimezoneOffset();
 	
-		var query =  this.textarea.val();
+		var originalQuery =  this.textarea.val();
 	
-		if(CFW.utils.isNullOrEmpty(query)){
+		if(CFW.utils.isNullOrEmpty(originalQuery)){
 			return;
 		}
 		this.isExecuting = true;
+		
+		// ---------------------------------------
+		// Replace Parameters
+		var finalParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
+		let finalQuery = cfw_parameter_substituteInString(originalQuery, finalParams);
 				
 		//-----------------------------------
 		// Update Params in URL
 		
-		var queryLength = encodeURIComponent(query).length;
+		var queryLength = encodeURIComponent(originalQuery).length;
 		var finalLength = queryLength + CFW.http.getHostURL().length + CFW.http.getURLPath().length ;
 		
 		if(finalLength+300 > JSDATA.requestHeaderMaxSize){
@@ -784,7 +787,7 @@ class CFWQueryEditor{
 			
 			var doPushHistoryState = !isPageLoad;
 			CFW.http.setURLParams({
-					  "query": query
+					  "query": originalQuery
 					, "offset": timeframe.offset
 					, "earliest": timeframe.earliest
 					, "latest": timeframe.latest
@@ -822,7 +825,7 @@ class CFWQueryEditor{
 		var queryEditor = this;
 		var saveToHistory = true;
 		
-		this.executeQueryRequest(query, saveToHistory, timeframe, queryParams);
+		this.executeQueryRequest(finalQuery, saveToHistory, timeframe, queryParams);
 
 	}
 

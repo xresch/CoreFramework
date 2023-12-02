@@ -195,9 +195,11 @@ function cfw_parameter_remove(parameterID) {
 };
 
 /*******************************************************************************
- * applies the parameters to the fields of the object.
+ * Applies the parameters to the fields of the object.
  * This can either be a widgetObject.JSON_SETTINGS object, or an object containing
  * parameters for a http request(e.g. for autocomplete).
+ * When params type is substitute, dollar placeholders "${paramName}$" are replaces with the
+ * parameter value.
  *
  * @param object the object to apply the parameters too
  * @param finalParams the parameters to be applied
@@ -298,6 +300,50 @@ function cfw_parameter_applyToFields(object, finalParams,  widgetType) {
 
 	return newSettingsObject;
 	
+}
+
+/*******************************************************************************
+ * Applies the parameters to the specified string.
+ * When params type is SUBSTITUTE, dollar placeholders "${paramName}$" are replaces with the
+ * parameter value.
+ * GLOBAL_OVERRIDE parameters are ignored.
+ *
+ * @param targetString the string to apply the parameters too
+ * @param finalParams the parameters to be applied
+ * @returns string with replaced paramters
+ ******************************************************************************/
+function cfw_parameter_substituteInString(targetString, finalParams) {
+	
+	var resultString = targetString;
+	//=============================================
+	// Handle SUBSTITUTE PARAMS
+	//=============================================
+	for(var index in finalParams){
+		let currentParam = finalParams[index];
+		let paramMode = currentParam.MODE;
+		let currentSettingName = currentParam.LABEL;
+		
+		// ----------------------------------------
+		// Ignore Global Params
+		if(currentParam.MODE === "MODE_GLOBAL_OVERRIDE"
+		&& (widgetType == null || currentParam.WIDGET_TYPE === widgetType) ){
+			continue;
+		}
+		
+		// ----------------------------------------
+		// Substitute Params
+		let stringifiedValue = JSON.stringify(currentParam.VALUE);
+		
+		// remove
+		if (typeof currentParam.VALUE == "string"){
+			// reomve quotes
+			stringifiedValue = stringifiedValue.substring(1, stringifiedValue.length-1)
+		}
+		
+		resultString = resultString.replaceAll('$'+currentParam.NAME+'$', stringifiedValue);
+	}
+	
+	return resultString;
 }
 
 /*******************************************************************************
