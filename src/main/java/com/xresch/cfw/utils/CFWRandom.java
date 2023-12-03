@@ -1,5 +1,6 @@
 package com.xresch.cfw.utils;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Random;
 import java.util.Set;
@@ -9,7 +10,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.ibm.icu.math.BigDecimal;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
@@ -427,20 +427,33 @@ public class CFWRandom {
 	}
 	
 	/******************************************************************************
-	 * Creates a random integer between 0 and the given number(inclusive).
+	 * Creates a random BigDecimal based on long number, no fractions.
 	 * 
-	 * @param byteCount number of bytes to create
 	 * @return
 	 ******************************************************************************/
-	public static BigDecimal randomBigDecimalsInRange(int lowerInclusive, int upperInclusive) {
+	public static BigDecimal randomBigDecimalInRange(long lowerInclusive, long upperInclusive) {
 		
-		long integer = CFW.Random.randomLongInRange(lowerInclusive, upperInclusive);
-		long decimals = CFW.Random.randomLongInRange(100, 100000000000000l);
+		long number = CFW.Random.randomLongInRange(lowerInclusive, upperInclusive);
+		return new BigDecimal(number);
+
+	}
+	/******************************************************************************
+	 * Creates a random BigDecimal based on long number, no fractions.
+	 * 
+	 * @return
+	 ******************************************************************************/
+	public static BigDecimal randomBigDecimalInRange(long lowerInclusive, long upperInclusive, int maxDecimals) {
 		
-		BigDecimal decimal = new BigDecimal(integer+"."+decimals);
+		long number = CFW.Random.randomLongInRange(lowerInclusive, upperInclusive);
+		
+		
+		long decimals = CFW.Random.randomLongInRange(1, 9 * (10 ^ (maxDecimals-1)));
+		
+		BigDecimal decimal = new BigDecimal(number+"."+decimals);
 		
 		return decimal ;
 	}
+	
 	
 	/******************************************************************************
 	 * Creates a random String containing lower and uppercase characters.
@@ -841,7 +854,7 @@ public class CFWRandom {
 		object.addProperty("UUID", UUID.randomUUID().toString());
 		object.addProperty("THOUSANDS",   thousands);
 		object.addProperty("FLOAT",   CFW.Random.randomFloatInRange(1, 10000000));
-		object.addProperty("BIG_DECIMAL",   CFW.Random.randomBigDecimalsInRange(1, 1000000));
+		object.addProperty("BIG_DECIMAL",   CFW.Random.randomBigDecimalInRange(1, 1000000, 2));
 		
 
 		return object;

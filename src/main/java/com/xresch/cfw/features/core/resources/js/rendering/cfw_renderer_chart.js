@@ -13,6 +13,10 @@ function cfw_renderer_chart_defaultOnDoubleClick(renderDef, chartSettings, data)
 	clonedRenderDef.rendererSettings.chart.datamode = 'datasets';
 	clonedRenderDef.rendererSettings.chart.multichartcolumns = 1;
 	
+	// remove labels as they might be displayed wrongly
+	clonedRenderDef.rendererSettings.chart.xlabel = null;
+	clonedRenderDef.rendererSettings.chart.ylabel = null;
+	
 	//------------------------------
 	// Iterate Datasets
 	for(index in data.datasets){
@@ -129,14 +133,15 @@ function cfw_renderer_chart_defaultOnDoubleClick(renderDef, chartSettings, data)
 		"ID": 43,
 		"NAME": "Perfect Fairies Enchanted",
 		"datapoints": {
-			"20231116": "51", "20231117": "50", "20231118": "54", "20231119": "55", "20231113": "79", "20231114": "75", "20231115": "80"
+			data: { "20231116": "51", "20231117": "50", "20231118": "54", "20231119": "55", "20231113": "79", "20231114": "75", "20231115": "80"}
+		
 		}
 	},
 	{
 		"ID": 43,
 		"NAME": "Enslaved Devils Sold",
 		"datapoints": {
-			"20231116": "55", "20231117": "52", "20231118": "50", "20231119": "50", "20231113": "80", "20231114": "79", "20231115": "80"
+			data: { "20231116": "55", "20231117": "52", "20231118": "50", "20231119": "50", "20231113": "80", "20231114": "79", "20231115": "80"}
 		}
 	}
 	...
@@ -206,6 +211,10 @@ function cfw_renderer_chart(renderDef) {
 		xfield: null,
 		// The name of the field which contains the values for the y-axis
 		yfield: null,
+		// The label for the x-axis
+		xlabel: null,
+		// The label for the y-axis
+		ylabel: null,
 		// The suggested minimum value for the y axis 
 		ymin: 0,
 		// The suggested maximum value for the y axis 
@@ -626,6 +635,10 @@ function cfw_renderer_chart_createChartOptions(settings) {
 						display: false,
 						color: settings.xaxescolor
 					},
+					title: {
+						display: (!CFW.utils.isNullOrEmpty(settings.xlabel)),
+						text: settings.xlabel,
+					},
 					ticks: {
 						min: 0,
 						major: {
@@ -655,8 +668,8 @@ function cfw_renderer_chart_createChartOptions(settings) {
 						color: settings.yaxescolor
 					},
 					title: {
-						display: false,
-						//text: 'Closing price ($)'
+						display: (!CFW.utils.isNullOrEmpty(settings.ylabel)),
+						text: settings.ylabel,
 					},
 					ticks: {
 						min: 0,
@@ -992,8 +1005,8 @@ function cfw_renderer_chart_createDatasetsFromDatapoints(renderDef, settings) {
 		var datapoints = currentRecord['datapoints'];
 		datasets[label].originalData.push(currentRecord);
 
-		for(x in datapoints){
-			var y = datapoints[x]
+		for(x in datapoints.data){
+			var y = datapoints.data[x]
 
 			datasets[label].data.push({
 				x: x, 
