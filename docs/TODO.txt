@@ -165,10 +165,12 @@ DONE
 - Notifications: Fixed severe log messages showing up
 - Modals: Increased width of modals to have more space to work with
 - Charts: Can now be double clicked to get more details
+- Charts: Have now a setting to set labels for x and y axis
 - ChartSettings: Fixed issue where Chart Settings are not fully scrollable
 - Chart Renderer: Added option to add an action on double click
 - Tables: Improved hovering contrast by changing color to blue
 - User Management: Fixed bug in reloading user rights when changing roles & permissions
+- Schedule: Consider user timezone when saving schedules for jobs
 - Dashboard: Usage Statistics added, can be found in Settings 
 - Dashboard: Dashboard Settings can now be edited when viewing the dashboard
 - Dashboard: Display warning when dashboard does not exist.

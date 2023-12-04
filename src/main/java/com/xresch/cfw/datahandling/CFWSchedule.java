@@ -18,6 +18,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 import com.xresch.cfw.validation.AbstractValidatable;
 import com.xresch.cfw.validation.ScheduleValidator;
 
@@ -41,6 +42,7 @@ public class CFWSchedule {
 	private static final String EVERYXDAYS 		= "everyxdays";
 	private static final String CRONEXPRESSION 	= "cronexpression";
 	private static final String EVERYWEEK 		= "everyweek";
+	private static final String TIMEZONEOFFSET	= "timezoneOffset";
 	
 
 	private TriggerBuilder<Trigger> triggerBuilder = null;
@@ -91,7 +93,7 @@ public class CFWSchedule {
 			scheduleData = element.getAsJsonObject();
 				timeframe 	= scheduleData.get("timeframe").getAsJsonObject();
 				interval 	= scheduleData.get("interval").getAsJsonObject();
-					everyweek = interval.get("everyweek").getAsJsonObject();
+				everyweek = interval.get("everyweek").getAsJsonObject();
 			
 		}
 		reset();
@@ -103,6 +105,12 @@ public class CFWSchedule {
 	private void setToDefaults() {
 		reset();
 		scheduleData = new JsonObject();
+		
+
+		int offsetMinutes = CFW.Time.getMachineTimeZoneOffSetMinutes();
+
+		scheduleData.addProperty(TIMEZONEOFFSET,  offsetMinutes);
+		
 			timeframe 	= new JsonObject(); scheduleData.add("timeframe", timeframe);
 				timeframe.add(STARTDATETIME, null);
 				timeframe.add(ENDTYPE, null);
@@ -126,7 +134,23 @@ public class CFWSchedule {
 				
 	}
 	
+	/***************************************************************************************
+	 * Can return null
+	 ***************************************************************************************/
+	public Integer timezoneOffset() {
+		if(scheduleData == null || scheduleData.get(TIMEZONEOFFSET).isJsonNull()) return null;
+		
+		return scheduleData.get(TIMEZONEOFFSET).getAsInt();
+	}
 	
+	/***************************************************************************************
+	 * 
+	 ***************************************************************************************/
+	public CFWSchedule timezoneOffset(int timezoneOffset) {
+		scheduleData.addProperty(TIMEZONEOFFSET, timezoneOffset);
+		reset();
+		return this;
+	}
 	
 	/***************************************************************************************
 	 * Can return null
@@ -378,7 +402,7 @@ public class CFWSchedule {
 	
 	
 	/***************************************************************************************
-	 * Returns true if schedule is valid, false otherview
+	 * Returns true if schedule is valid, false otherwise
 	 ***************************************************************************************/
 	public boolean validate() {
 		ScheduleValidator validator = new ScheduleValidator(
@@ -461,7 +485,11 @@ public class CFWSchedule {
 			case EVERY_X_DAYS: 
 				CalendarIntervalScheduleBuilder calendarBuilder = CalendarIntervalScheduleBuilder
 					.calendarIntervalSchedule()
-					.withIntervalInDays(this.intervalDays());
+					.withIntervalInDays(this.intervalDays())
+					.inTimeZone(
+						CFW.Time.timezoneFromTimeZoneOffset( this.timezoneOffset() ) 
+					)
+					;
 				
 				switch(this.endType()) {
 					case RUN_FOREVER: 		/*do nothing*/ break;
@@ -490,9 +518,14 @@ public class CFWSchedule {
 				break;
 			
 			case CRON_EXPRESSION: 
+				
 				CronScheduleBuilder cronBuilder = CronScheduleBuilder
-					.cronSchedule(this.intervalCronExpression());
-
+					.cronSchedule(this.intervalCronExpression())
+					.inTimeZone( 
+							CFW.Time.timezoneFromTimeZoneOffset( this.timezoneOffset() ) 
+						)
+					;
+				
 				switch(this.endType()) {
 				case RUN_FOREVER: 		/*do nothing*/ break;
 				case EXECUTION_COUNT: 	new CFWLog(logger).severe("Execution count is not supported for cron expressions.", new Exception());	

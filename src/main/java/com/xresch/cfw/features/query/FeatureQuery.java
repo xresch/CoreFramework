@@ -166,8 +166,11 @@ public class FeatureQuery extends CFWAppFeature {
 		
 		//----------------------------------
 		// Register Global Javascript
+		CFW.Registry.Components.addGlobalCSSFile(FileDefinition.HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES , "cfw_query.css");
 		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES , "hightlight_cfwquery.js");
-		
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES , "cfw_query_rendering.js");
+		CFW.Registry.Components.addGlobalJavascript(FileDefinition.HandlingType.JAR_RESOURCE, PACKAGE_RESOURCES , "cfw_query_editor.js");
+				
 		//----------------------------------
 		// Register Commands
 		CFW.Registry.Query.registerCommand(new CFWQueryCommandSource(null));

@@ -10,7 +10,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -20,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWTimeframe;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 /**************************************************************************************************************
  * 
@@ -284,7 +284,7 @@ public class CFWTime {
 			
 			long diff = later - earlier;
 
-			return convert(diff);
+			return convertPrecise(diff);
 		}
 		
 		/********************************************************************************************
@@ -292,12 +292,51 @@ public class CFWTime {
 		 * @param millis the time in milliseconds of the earlier time
 		 * @return float value representing milliseconds
 		 ********************************************************************************************/
-		public float convert(long millis) { 
+		public float convertPrecise(long millis) { 
 			
 			return millis / ((float)this.toMillis());
 		}
 		
+		/********************************************************************************************
+		 * Converts the given milliseconds to a representation of the selected time unit.
+		 * @param millis the time in milliseconds of the earlier time
+		 * @return long value representing milliseconds, rounding will occur
+		 ********************************************************************************************/
+		public long convert(long millis) { 
+			
+			return millis / this.toMillis();
+		}
 		
+		
+	}
+	
+	TimeZone timeZone = TimeZone.getTimeZone(ZoneId.systemDefault());
+	
+	
+	/********************************************************************************************
+	 * Returns TimeZone for for offset minutes.
+	 * 
+	 * * @param timezoneOffsetMinutes offset for the clients time zone.
+	 * You can use CFWTimeframe with data from browser, or the following 
+	 * in javascript to get this value:
+	 * 		var timeZoneOffset = new Date().getTimezoneOffset();
+	 * 
+	 ********************************************************************************************/
+	public static TimeZone timezoneFromTimeZoneOffset(int timezoneOffsetMinutes) {
+		ZoneOffset offset = zonedOffsetFromTimeZoneOffset(timezoneOffsetMinutes);
+		TimeZone timeZone = TimeZone.getTimeZone(offset);
+		return timeZone;
+	}
+	/********************************************************************************************
+	 * Returns ZoneOffset for offset minutes.
+	 * 
+	 * * @param timezoneOffsetMinutes offset for the clients time zone.
+	 * You can use CFWTimeframe with data from browser, or the following 
+	 * in javascript to get this value:
+	 * 		var timeZoneOffset = new Date().getTimezoneOffset();
+	 ********************************************************************************************/
+	public static ZoneOffset zonedOffsetFromTimeZoneOffset(int timezoneOffsetMinutes) {
+		return ZoneOffset.ofTotalSeconds(timezoneOffsetMinutes*-60); // multiply by minus as javascript uses opposite values
 	}
 	
 	/********************************************************************************************
@@ -469,7 +508,7 @@ public class CFWTime {
 	}
 
 	/********************************************************************************************
-	 * Get a timestamp string of the current time in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
+	 * 
 	 * 
 	 ********************************************************************************************/
 	public static TimeZone getMachineTimeZone(){
@@ -477,7 +516,24 @@ public class CFWTime {
 	}
 	
 	/********************************************************************************************
-	 * Get a timestamp string of the current time in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
+	 * Returns an offset similar to what you will get from javascript:
+	 *     var timeZoneOffset = new Date().getTimezoneOffset();
+	 * The offset will represent minutes you have to add to a time to get UTC, e.g. GMT+2 will 
+	 * result in -120.
+	 * 
+	 * @return offset in minutes for the machine
+	 ********************************************************************************************/
+	public static int getMachineTimeZoneOffSetMinutes(){
+		int offsetMillis = CFW.Time.getMachineTimeZone().getOffset(System.currentTimeMillis());
+
+		return (int) ( -1 * CFWTimeUnit.m.convert(offsetMillis) );
+		
+	}
+	
+
+	
+	/********************************************************************************************
+	 * 
 	 * 
 	 ********************************************************************************************/
 	public static void setMachineTimeZone(TimeZone timezone){
@@ -486,7 +542,7 @@ public class CFWTime {
 	
 
 	/********************************************************************************************
-	 * Get a timestamp string of the current time in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
+	 * 
 	 * 
 	 ********************************************************************************************/
 	public static long machineTimeMillis(){
@@ -495,7 +551,7 @@ public class CFWTime {
 	}
 	
 	/********************************************************************************************
-	 * Get a timestamp string of the current time in the format  "yyyy-MM-dd'T'HH:mm:ss.SSS".
+	 * 
 	 * 
 	 ********************************************************************************************/
 	public static String currentTimestamp(){

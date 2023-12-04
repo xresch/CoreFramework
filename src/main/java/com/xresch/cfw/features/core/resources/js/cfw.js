@@ -1551,8 +1551,9 @@ function cfw_internal_confirmSchedule(elementID){
 	//--------------------------------------
 	// Create Data Structure
 	var scheduleData = {
-			timeframe: {},
-			interval: {}
+			  timezoneOffset: new Date().getTimezoneOffset()
+			, timeframe: {}
+			, interval: {}
 	};
 	
 	scheduleData.timeframe.startdatetime 	= isNaN($(selector+'-STARTDATETIME').val()) ? null : parseInt($(selector+'-STARTDATETIME').val());
