@@ -779,6 +779,83 @@ pre {
 }
 
 /*************************************************************************
+ * Switch
+ *************************************************************************/
+.cfw-switch {
+  position: relative;
+  display: flex!important;
+  justify-content: start!important;
+  width: 86px;
+  height: 28px;
+  border-radius: 34px;
+  overflow: hidden;
+  padding: 2px;
+}
+
+/* .cfw-switch input:focus + .cfw-slider {
+  box-shadow: 0 0 1px #2196F3;
+} */
+
+.cfw-switch.switch-off  {
+  background-color: var(--cfw-gray);
+} 
+
+.cfw-switch.switch-on {
+  background-color: var(--cfw-green);
+} 
+
+.cfw-switch input {
+  display: none;
+}
+
+.cfw-switch-slider {
+	display:flex;
+	min-width: 126px!important;
+}
+.switch-off .cfw-switch-slider {
+  -webkit-transform: translateX(-50px);
+  -ms-transform: translateX(-50px);
+  transform: translateX(-50px);
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.switch-on .cfw-switch-slider {
+  -webkit-transform: translateX(6px);
+  -ms-transform: translateX(6px);
+  transform: translateX(6px);
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+} 
+
+.cfw-switch-slider-button {	
+  display: inline-block;
+  flex-shrink: 0!important;
+  height: 23px;
+  width: 23px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+.cfw-switch-slider-off,
+.cfw-switch-slider-on  {
+	flex-grow: 1;
+	height: 100%;
+	width: 50px;
+	text-align: center;
+	align-self: center;
+	font-weight: bold;
+}
+
+
+
+
+
+
+
+/*************************************************************************
  * Status Map
  *************************************************************************/
 .smap-cell{

@@ -609,6 +609,25 @@ function cfw_filterTable(searchField){
 }
 
 /**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_internal_toogleBooleanSwitchValue(switchElement){
+	
+	var elButton = $(switchElement); 
+	var elSwitch =  elButton.closest('.cfw-switch');
+	var zeInput =  elSwitch.find('input');
+	var zeIdentificazione = elSwitch.attr('id');
+	var hontouNiSelected = elSwitch.hasClass('switch-on');
+	
+	zeInput.val(!hontouNiSelected)
+	
+	console.log("hontouNiSelected: "+hontouNiSelected)
+	elSwitch.toggleClass('switch-on');
+	elSwitch.toggleClass('switch-off');
+
+}
+
+/**************************************************************************************
  * Initialize a form create with the CFWForm Java Class.
  * @param formIDOrObject the ID, element or JQueryObject of the form
  * @param epochMillis the initial date in epoch time or null

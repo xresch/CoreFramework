@@ -734,12 +734,14 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	private void createBooleanRadiobuttons(StringBuilder html, String cssClasses) {
 		
 		String falseChecked = "";
-		String trueChecked = "";
+		boolean isChecked = true;
 		
 		if(value != null && value.toString().trim().toLowerCase().equals("true")) {
-			trueChecked = "checked";
+			isChecked= true;
+			cssClasses += " switch-on";
 		}else {
-			falseChecked = "checked";
+			isChecked = false;
+			cssClasses += " switch-off";
 		}
 		
 		this.removeAttribute("value");
@@ -748,18 +750,19 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		if(isDisabled) {	disabled = "disabled=\"disabled\""; };
 		
 		String originalID = this.getAttributeValue("id");
+		this.removeAttribute("id");
+		//if(originalID != null) { this.addAttribute("id", originalID+"-TRUE");}
 		
-		if(originalID != null) { this.addAttribute("id", originalID+"-TRUE");}
-		html.append("<div class=\"form-check form-check-inline\">" + 
-			"  <input class=\"form-check-input "+cssClasses+"\" type=\"radio\" value=\"true\" name=\""+name+"\" "+this.getAttributesString()+" "+disabled+" "+trueChecked+" />" + 
-			"  <label class=\"form-check-label\" for=\"inlineRadio1\">true</label>" + 
-			"</div>");
+		html.append(
+		"<label class=\"cfw-switch "+cssClasses+"\">"
+		 + "<input type=\"text\" name=\""+name+"\" id=\""+originalID+"\" value=\""+isChecked+"\" "+this.getAttributesString()+" "+disabled+">"
+		 + "<div class=\"cfw-switch-slider\" onclick=\"cfw_internal_toogleBooleanSwitchValue(this);\">"
+			 + "<div class=\"cfw-switch-slider-on\">ON</div>"
+			 + "<div class=\"cfw-switch-slider-button\">&nbsp;</div>"
+			 + "<div class=\"cfw-switch-slider-off\">OFF</div>"
+		 + "</div>"
+		+ "</label>");
 		
-		if(originalID != null) { this.addAttribute("id", originalID+"-FALSE");}
-		html.append("<div class=\"form-check form-check-inline\">" + 
-				"  <input class=\"form-check-input "+cssClasses+"\" type=\"radio\" value=\"false\" name=\""+name+"\" "+this.getAttributesString()+" "+disabled+" "+falseChecked+"/>" + 
-				"  <label class=\"form-check-label\" for=\"inlineRadio1\">false</label>" + 
-				"</div>");
 	}
 	
 	/***********************************************************************************

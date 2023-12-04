@@ -96,6 +96,12 @@ public class CFWSchedule {
 				everyweek = interval.get("everyweek").getAsJsonObject();
 			
 		}
+		
+		// needed for older schedules which might miss the timezonoffset property
+		if(scheduleData.get(TIMEZONEOFFSET) == null) {
+			int offsetMinutes = CFW.Time.getMachineTimeZoneOffSetMinutes();
+			scheduleData.addProperty(TIMEZONEOFFSET,  offsetMinutes);
+		}
 		reset();
 	}
 	
@@ -135,10 +141,14 @@ public class CFWSchedule {
 	}
 	
 	/***************************************************************************************
-	 * Can return null
+	 * 
 	 ***************************************************************************************/
 	public Integer timezoneOffset() {
-		if(scheduleData == null || scheduleData.get(TIMEZONEOFFSET).isJsonNull()) return null;
+		if(scheduleData == null 
+		|| scheduleData.get(TIMEZONEOFFSET).isJsonNull()
+		) {
+			return CFW.Time.getMachineTimeZoneOffSetMinutes();
+		}
 		
 		return scheduleData.get(TIMEZONEOFFSET).getAsInt();
 	}
