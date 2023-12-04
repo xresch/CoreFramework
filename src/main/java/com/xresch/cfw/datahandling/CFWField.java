@@ -757,9 +757,9 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		"<label class=\"cfw-switch "+cssClasses+"\">"
 		 + "<input type=\"text\" name=\""+name+"\" id=\""+originalID+"\" value=\""+isChecked+"\" "+this.getAttributesString()+" "+disabled+">"
 		 + "<div class=\"cfw-switch-slider\" onclick=\"cfw_internal_toogleBooleanSwitchValue(this);\">"
-			 + "<div class=\"cfw-switch-slider-on\">ON</div>"
+			 + "<div class=\"cfw-switch-slider-on\">"+CFW.L("cfw_core_yes", "Yes")+"</div>"
 			 + "<div class=\"cfw-switch-slider-button\">&nbsp;</div>"
-			 + "<div class=\"cfw-switch-slider-off\">OFF</div>"
+			 + "<div class=\"cfw-switch-slider-off\">"+CFW.L("cfw_core_no", "No")+"</div>"
 		 + "</div>"
 		+ "</label>");
 		
