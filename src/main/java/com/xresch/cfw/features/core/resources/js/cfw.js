@@ -952,8 +952,8 @@ function cfw_initializeValueLabelField(fieldID, values){
  *************************************************************************************/
 function cfw_initializeValueLabelField_createField(key, value){
 	return '<div class="cfw-value-label d-flex">'
-			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Value" onchange="cfw_internal_updateValueLabelField(this)" value="'+key+'">'
-			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Label" onchange="cfw_internal_updateValueLabelField(this)" value="'+value+'">'	
+			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Value" onchange="cfw_internal_updateValueLabelField(this)" value="'+key.replaceAll('"', '&quot;')+'">'
+			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Label" onchange="cfw_internal_updateValueLabelField(this)" value="'+value.replaceAll('"', '&quot;')+'">'	
 	+'</div>';	
 }
 
@@ -1042,7 +1042,7 @@ function cfw_initializeCustomListField(fieldID, values){
  *************************************************************************************/
 function cfw_initializeCustomListField_createField(value){
 	return '<div class="cfw-custom-list-item d-flex">'
-			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Value" onchange="cfw_internal_updateCustomListField(this)" value="'+value+'">'	
+			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Value" onchange="cfw_internal_updateCustomListField(this)" value="'+value.replaceAll('"', '&quot;')+'">'	
 	+'</div>';	
 }
 
@@ -4119,6 +4119,7 @@ function cfw_http_setURLParams(paramsObject, pushHistoryState){
 	for(var paramName in paramsObject){
 
 		var value = paramsObject[paramName];
+		console.log("paramsObject[paramName]:"+paramsObject[paramName])
 		if(value != null){
 			params[paramName] = encodeURIComponent(value);
 		}else{

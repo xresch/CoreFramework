@@ -772,7 +772,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		
 		this.removeAttribute("value");
 		
-		String stringVal = (value == null) ? "" : value.toString();
+		String selectedValue = (value == null) ? "" : value.toString();
 		
 		html.append("<select class=\"form-control "+cssClasses+"\" "+this.getAttributesString()+" >");
 		
@@ -783,12 +783,15 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			for(Object optionValue : valueLabelOptions.keySet()) {
 				
 				String currentLabel = valueLabelOptions.get(optionValue).toString();
-				if(optionValue.toString().equals(stringVal)) {
-					html.append("<option value=\""+optionValue+"\" selected>")
+				String stringValue = optionValue.toString();
+				String stringValueNoQuotes = stringValue.replaceAll("\"", "&quot;");
+				if(stringValue.equals(selectedValue)) {
+					
+					html.append("<option value=\""+stringValueNoQuotes +"\" selected>")
 						.append(currentLabel)
 					.append("</option>");
 				}else {
-					html.append("<option value=\""+optionValue+"\">")
+					html.append("<option value=\""+stringValueNoQuotes+"\">")
 						.append(currentLabel)
 					.append("</option>");
 				}
