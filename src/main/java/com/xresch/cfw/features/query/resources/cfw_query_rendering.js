@@ -992,8 +992,15 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	}
 	// Merge custom settings into default settings for selected renderer
 	var customSettings = queryResult.displaySettings.settings;
-	var currentSettings = renderDefinition.rendererSettings[rendererName]
-	Object.assign(currentSettings, customSettings);
+	if(customSettings != null){
+		var currentSettings = renderDefinition.rendererSettings[rendererName]
+		console.log("==========")
+		console.log(currentSettings)
+		console.log(customSettings)
+		Object.assign(currentSettings, customSettings);
+		console.log(rendererName)
+		console.log( renderDefinition.rendererSettings[rendererName])
+	}
 
 	
 	//-----------------------------------
@@ -1013,6 +1020,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
  ******************************************************************************/
 function cfw_query_renderAsChart(resultTarget, queryResult, options){
 
+	// settings contains params of chart-command
 	var settings = queryResult.displaySettings;
 
 	//---------------------------------
@@ -1066,10 +1074,15 @@ function cfw_query_renderAsChart(resultTarget, queryResult, options){
 		padding: '2px'
 	};
 	
+	//---------------------------
+	// Merge Parameters
 	var finalSettings = Object.assign({}, defaultSettings, settings);
 	if(settings.type != null){
 		finalSettings.charttype = settings.type;
 	}
+	
+	//Final override by param "settings" of chart command
+	Object.assign(finalSettings, settings.settings)
 	
 	//---------------------------
 	// Render Settings

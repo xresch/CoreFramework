@@ -621,7 +621,6 @@ function cfw_internal_toogleBooleanSwitchValue(switchElement){
 	
 	zeInput.val(!hontouNiSelected)
 	
-	console.log("hontouNiSelected: "+hontouNiSelected)
 	elSwitch.toggleClass('switch-on');
 	elSwitch.toggleClass('switch-off');
 
@@ -4119,7 +4118,7 @@ function cfw_http_setURLParams(paramsObject, pushHistoryState){
 	for(var paramName in paramsObject){
 
 		var value = paramsObject[paramName];
-		console.log("paramsObject[paramName]:"+paramsObject[paramName])
+		
 		if(value != null){
 			params[paramName] = encodeURIComponent(value);
 		}else{

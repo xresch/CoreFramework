@@ -2432,7 +2432,7 @@ function cfw_renderer_dataviewer_resolveSelectedRendererDetails(params) {
 		rendererName = dataviewerSettings.renderers[rendererIndex].name;
 	}
 
-	let finalRenderDef = _.assign({}, renderDef, renderDefOverrides);
+	let finalRenderDef = _.merge({}, renderDef, renderDefOverrides);
 	
 	params.rendererName =  rendererName;
 	params.finalRenderDef =	finalRenderDef;
