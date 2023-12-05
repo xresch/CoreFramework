@@ -38,21 +38,25 @@
 					// Browser Store
 					if(settings.load_previous_values){
 						var storedViewerParams = cfw_parameter_getStoredUserParams();
-						parentDiv.find('form input, form textarea, form select').each(function (){
+						
+						parentDiv.find('input, textarea, select').each(function (){
 							var inputField = $(this);
 							var name = inputField.attr('name');
 							var type = inputField.attr('type');
 							
 							//--------------------
 							// Skip Hidden Fields
-							if(type == "hidden"){
-								return;
-							}
+							// doesn't work with all fields, e.g. chart settings
+							//if(type == "hidden"){ return; }
 							
 							//--------------------
 							// Do others
 							var viewerCustomValue = storedViewerParams[name];
-									
+							console.log("=======: ")	
+							console.log("id: "+$(this).attr("id"))	
+							console.log("name: "+name)	
+							console.log("value: "+viewerCustomValue)
+							
 							if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
 								if(type == 'radio'){
 									//$('input[name="'+name+'"]').prop("checked", false);
@@ -79,7 +83,8 @@
 									for(var index in tagsInputValues){
 										inputField.tagsinput('add', tagsInputValues[index]);
 									}
-								}else if(inputField.data('role') == "chartsettings"){
+								}else if(inputField.data("role") == "chartsettings"){
+									console.log("hit")
 									var chartsettingsValues = JSON.parse(viewerCustomValue);
 									var wrapper = inputField.closest('.cfw-chartsettings-field-wrapper');
 									 cfw_internal_applyChartSettings(inputField.attr('id'), wrapper, chartsettingsValues);
