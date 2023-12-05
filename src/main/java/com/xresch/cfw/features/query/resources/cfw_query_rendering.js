@@ -994,12 +994,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	var customSettings = queryResult.displaySettings.settings;
 	if(customSettings != null){
 		var currentSettings = renderDefinition.rendererSettings[rendererName]
-		console.log("==========")
-		console.log(currentSettings)
-		console.log(customSettings)
 		Object.assign(currentSettings, customSettings);
-		console.log(rendererName)
-		console.log( renderDefinition.rendererSettings[rendererName])
 	}
 
 	

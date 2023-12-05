@@ -347,7 +347,7 @@ function cfw_parameter_fireParamWidgetUpdate(paramElement){
 				var widgetID = affectedWidgetsArray[i];
 				var guid = $(".grid-stack-item[data-id="+widgetID+"]").attr('id');
 				if(guid != null){
-					console.log($('#'+guid).data("widgetObject"));
+					
 					cfw_dashboard_widget_rerender(guid, true);
 				}
 			}
