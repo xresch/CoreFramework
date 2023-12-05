@@ -805,7 +805,7 @@ class CFWQueryEditor{
 		var finalQuery = originalQuery;
 		if (typeof cfw_parameter_getFinalParams !== "undefined") { 
  			pageParams = cfw_parameter_getFinalParams(CFW_DASHBOARD_PARAMS);
-			finalQuery = cfw_parameter_substituteInString(originalQuery, pageParams);
+			//finalQuery = cfw_parameter_substituteInString(originalQuery, pageParams);
 		} 
 		
 		var queryParams = {};

@@ -3,6 +3,7 @@ package com.xresch.cfw.features.parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFW.JSON;
 import com.xresch.cfw.datahandling.CFWField;
@@ -28,6 +30,8 @@ import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.validation.CustomValidator;
 import com.xresch.cfw.validation.NotNullOrEmptyValidator;
+
+import jdk.internal.joptsimple.internal.Strings;
 
 /**************************************************************************************************************
  * CFWObject representing the dashboard parameters.
@@ -298,9 +302,20 @@ public class CFWParameter extends CFWObject {
 	}
 
 	/*****************************************************************
-	 * Returns the settings with applied parameters
+	 * Returns the settings with applied parameters.
+	 * 
+	 * @param javascriptStyleParams in the format of the javascript parameters
 	 *****************************************************************/
-	public static JsonElement replaceParamsInSettings(String jsonSettings, String jsonParams, String widgetType) {
+	public static JsonElement replaceParamsInSettings(String jsonSettings, String javascriptStyleParams, String widgetType) {
+		return replaceParamsInSettings(jsonSettings, CFW.JSON.fromJson(javascriptStyleParams), widgetType);
+	}
+	
+	/*****************************************************************
+	 * Returns the settings with applied parameters.
+	 * 
+	 * @param javascriptStyleParams in the format of the javascript parameters
+	 *****************************************************************/
+	public static JsonElement replaceParamsInSettings(String jsonSettings, JsonElement parameters, String widgetType) {
 		
 		//###############################################################################
 		//############################ IMPORTANT ########################################
@@ -311,11 +326,6 @@ public class CFWParameter extends CFWObject {
 		//
 		//###############################################################################
 	
-		
-		// Parameter Sample
-		//{"PK_ID":1092,"FK_ID_DASHBOARD":2081,"WIDGET_TYPE":null,"LABEL":"Boolean","PARAM_TYPE":false,"NAME":"boolean","VALUE":"FALSE","MODE":"MODE_SUBSTITUTE","IS_MODE_CHANGE_ALLOWED":false},
-		JsonElement dashboardParams = CFW.JSON.fromJson(jsonParams);
-		
 		//=============================================
 		// Handle SUBSTITUTE PARAMS
 		//=============================================
@@ -323,11 +333,11 @@ public class CFWParameter extends CFWObject {
 		// paramSettingsLabel and paramObject
 		HashMap<String, JsonObject> globalOverrideParams = new HashMap<>();
 		
-		if(dashboardParams != null 
-		&& !dashboardParams.isJsonNull()
-		&& dashboardParams.isJsonArray()
+		if(parameters != null 
+		&& !parameters.isJsonNull()
+		&& parameters.isJsonArray()
 		) {
-			JsonArray paramsArray = dashboardParams.getAsJsonArray();
+			JsonArray paramsArray = parameters.getAsJsonArray();
 			
 			for(JsonElement current : paramsArray) {
 				String paramName = current.getAsJsonObject().get("NAME").getAsString();
@@ -393,6 +403,98 @@ public class CFWParameter extends CFWObject {
 		return settingsElement;
 		
 	}
+	
+	/*******************************************************************************
+	 * Applies the parameters to the specified string.
+	 * When params type is SUBSTITUTE, dollar placeholders "${paramName}$" are replaces with the
+	 * parameter value.
+	 * GLOBAL_OVERRIDE parameters are ignored.
+	 *
+	 * @param zeString the string to apply the parameters too
+	 * @param jsonParams the parameters to be applied, like { paramName1: value1, etc...}
+	 * @returns string with replaced parameters
+	 ******************************************************************************/
+	public static String substituteInString(String zeString, String jsonParams) {
+		if( Strings.isNullOrEmpty(jsonParams) ) {
+			return zeString;
+		}
+		return substituteInString(zeString, CFW.JSON.fromJson(jsonParams).getAsJsonObject());
+	}
+	
+	/*******************************************************************************
+	 * Applies the parameters to the specified string.
+	 * When params type is SUBSTITUTE, dollar placeholders "${paramName}$" are replaces with the
+	 * parameter value.
+	 * GLOBAL_OVERRIDE parameters are ignored.
+	 *
+	 * @param zeString the string to apply the parameters too
+	 * @param jsonParams the parameters to be applied, like { paramName1: value1, etc...}
+	 * @returns string with replaced parameters
+	 ******************************************************************************/
+	public static String substituteInString(String zeString, JsonObject parameters) {
+		
+		System.out.println("params: "+CFW.JSON.toJSON(parameters));
+		//###############################################################################
+		//############################ IMPORTANT ########################################
+		//###############################################################################
+		// When changing this method you have to apply the same changes in the javascript 
+		// method:
+		// cfw_parameter.js >> cfw_parameter_applyToFields()
+		//
+		//###############################################################################
+	
+		//=============================================
+		// Handle SUBSTITUTE PARAMS
+		//=============================================
+		
+		if(parameters != null 
+		&& !parameters.isJsonNull()
+		&& parameters.isJsonObject()
+		) {
+			JsonObject paramsObject = parameters.getAsJsonObject();
+			
+			for(Entry<String, JsonElement> current : paramsObject.entrySet()) {
+				String paramName = current.getKey();
+				JsonElement valueElement = current.getValue();
+				
+				String valueString = "";
+				if(valueElement == null || valueElement.isJsonNull()) {
+					valueString="null";
+				}else if(valueElement.isJsonPrimitive() ){
+					JsonPrimitive primitive = valueElement.getAsJsonPrimitive();
+					if(primitive.isString()) {
+						valueString = primitive.getAsString();
+					}else if (primitive.isNumber()) {
+						valueString = ""+primitive.getAsNumber();
+					}else {
+						valueString = (primitive.getAsBoolean()+"").toLowerCase();
+					}
+					
+				}else {
+					valueString = CFW.JSON.toJSON(valueElement);
+				}
+				
+				
+				//--------------------------------------
+				// Do Substitute
+				String escaped = CFW.JSON.escapeString(valueString);
+				
+				if(escaped == null) {
+					escaped = "";
+				}
+
+				
+				zeString = zeString.replaceAll("\\$"+paramName+"\\$", escaped);
+				
+				
+			}
+		}
+		
+		return zeString;
+		
+	}
+	
+	
 
 	/*****************************************************************
 	 * Add the defined parameters to autocomplete results and selects.

@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWTimeframe;
+import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandMetadata;
 import com.xresch.cfw.features.query.database.CFWDBQueryHistory;
 import com.xresch.cfw.features.query.database.CFWQueryHistory;
@@ -148,9 +149,12 @@ public class CFWQueryExecutor {
 		baseQueryContext.setTimezoneOffsetMinutes(timezoneOffsetMinutes);
 		baseQueryContext.checkPermissions(checkPermissions);
 
+		//----------------------
+		// Apply Parameters
+		String finalQuery = CFWParameter.substituteInString(queryString, parametersObject);
 		baseQueryContext.setParameters(parametersObject);
 		
-		return this.parseAndExecuteAll(baseQueryContext, queryString, null, null);
+		return this.parseAndExecuteAll(baseQueryContext, finalQuery, null, null);
 	}
 	
 	/****************************************************************************************
