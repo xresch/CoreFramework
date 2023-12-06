@@ -26,7 +26,7 @@ public class ParameterDefinitionBoolean extends ParameterDefinition {
 	public CFWField getFieldForSettings(HttpServletRequest request, String dashboardid, Object fieldValue) {
 		CFWField settingsField = CFWField.newBoolean(FormFieldType.BOOLEAN, LABEL);
 		
-		if(fieldValue !=null) {
+		if(fieldValue != null) {
 			settingsField.setValueConvert(fieldValue, true);
 		}
 	

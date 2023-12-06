@@ -41,7 +41,7 @@ public class CFWMultiForm extends CFWForm {
 	
 	private CFWMultiFormHandler formHandler = null;
 	
-	public CFWMultiForm(String formID, String submitLabel, ArrayList<CFWObject> origins) {
+	public CFWMultiForm(String formID, String submitLabel, ArrayList<? extends CFWObject> origins) {
 		
 		//---------------------------------------
 		// Initialize

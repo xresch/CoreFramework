@@ -199,14 +199,14 @@ public class WidgetParameter extends WidgetDefinition {
 		}
 
 		//Filter by names instead of IDs to still get parameters if they were changed.
-		ArrayList<CFWObject> paramsResultArray = new ArrayList<CFWObject>();
+		ArrayList<CFWParameter> paramsResultArray = new ArrayList<>();
 		
 		if(!paramNames.isEmpty()) {
 			paramsResultArray = new CFWSQL(new CFWParameter())
 				.select()
 				.whereIn(DashboardParameterFields.NAME, paramNames)
 				.and(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-				.getAsObjectList();
+				.getAsObjectListConvert(CFWParameter.class);
 		}
 		
 		CFWParameter.prepareParamObjectsForForm(request, paramsResultArray, timeframe, true);

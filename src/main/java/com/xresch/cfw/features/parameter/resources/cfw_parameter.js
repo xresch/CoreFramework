@@ -421,10 +421,11 @@ function cfw_parameter_getFinalParams(customParams){
 			
 			//---------------------------------------------
 			// Use and prepare Default Param Values
+			
 			if(currentParam.PARAM_TYPE == 'TAGS_SELECTOR'){
 					var tagsInputObject = JSON.parse(currentParam.VALUE);
 					currentParam.VALUE = tagsInputObject;
-			}else if( currentParam.PARAM_TYPE ="VALUE_LABEL"
+			}else if( currentParam.PARAM_TYPE == "VALUE_LABEL"
 				  &&  currentParam.VALUE != null 
 				  &&  currentParam.VALUE.startsWith("{")){
 				let valueLabelOptions = JSON.parse(currentParam.VALUE);

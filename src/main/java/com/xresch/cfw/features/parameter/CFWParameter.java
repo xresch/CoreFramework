@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.parameter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -534,15 +535,15 @@ public class CFWParameter extends CFWObject {
 	 *
 	 *****************************************************************/
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static void prepareParamObjectsForForm(HttpServletRequest request, ArrayList<CFWObject> parameterList, CFWTimeframe timeframe, boolean doForWidget) {
+	public static void prepareParamObjectsForForm(HttpServletRequest request, ArrayList<CFWParameter> parameterList, CFWTimeframe timeframe, boolean doForWidget) {
 		
 		String dashboardID = request.getParameter("id");
 		
 		//===========================================
 		// Replace Value Field
 		//===========================================
-		for(CFWObject object : parameterList) {
-			CFWParameter param = (CFWParameter)object;
+		for(CFWParameter param : parameterList) {
+
 			CFWField<String> currentValueField = (CFWField<String>)param.getField(DashboardParameterFields.VALUE.toString());
 			CFWField newValueField;
 			
@@ -591,4 +592,37 @@ public class CFWParameter extends CFWObject {
 		}
 	}
 	
+	/*****************************************************************
+	 * Create Json Conversion
+	 *****************************************************************/
+	public JsonObject toJson() {
+		
+		System.out.println("====== toJson ======");
+		JsonObject object = new JsonObject();
+		
+		object.addProperty(name.getName(), name.getValue());
+		
+		//------------------------------------------------
+		// Convert Value to Correct Type
+		System.out.println("paramType.getValue(): "+paramType.getValue());
+		if(paramType.getValue().contentEquals("BOOLEAN")) {
+			System.out.println("Boolean");
+			object.addProperty(value.getName(), Boolean.parseBoolean(value.getValue()) );
+		}else if(paramType.getValue().contentEquals("NUMBER")) {
+			object.addProperty(value.getName(), new BigDecimal(value.getValue()) );
+		}else {
+			object.addProperty(value.getName(), value.getValue() );
+		}
+		
+		object.addProperty(id.getName(), id.getValue());
+		object.addProperty(foreignKeyDashboard.getName(), foreignKeyDashboard.getValue());
+		object.addProperty(widgetType.getName(), widgetType.getValue());
+		object.addProperty(paramLabel.getName(), paramLabel.getValue());
+		object.addProperty(paramType.getName(), paramType.getValue());		
+		object.addProperty(mode.getName(), mode.getValue());
+		object.addProperty(isModeChangeAllowed.getName(), isModeChangeAllowed.getValue());
+		object.addProperty(isDynamic.getName(), isDynamic.getValue());
+		
+		return object;
+	}
 }

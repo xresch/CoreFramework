@@ -104,11 +104,13 @@ public class CFWDBParameter {
 	 ****************************************************************/
 	public static String getParametersForDashboardAsJSON(String dashboardID) {
 		
-		return new CFWSQL(new CFWParameter())
-				.queryCache()
-				.select()
-				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-				.getAsJSON();
+		ArrayList<CFWParameter> objectList = getParametersForDashboard( dashboardID );
+		
+		JsonArray array = new JsonArray();
+		for(CFWParameter param : objectList) {
+			array.add(param.toJson());
+		}
+		return CFW.JSON.toJSON(array);
 		
 	}
 	
@@ -117,13 +119,13 @@ public class CFWDBParameter {
 	 * 
 	 * @return Returns an array with the parameters or an empty list.
 	 ****************************************************************/
-	public static ArrayList<CFWObject> getParametersForDashboard(String dashboardID) {
+	public static ArrayList<CFWParameter> getParametersForDashboard(String dashboardID) {
 		
 		return new CFWSQL(new CFWParameter())
 				.queryCache()
 				.select()
 				.where(DashboardParameterFields.FK_ID_DASHBOARD, dashboardID)
-				.getAsObjectList();
+				.getAsObjectListConvert(CFWParameter.class);
 		
 	}
 	

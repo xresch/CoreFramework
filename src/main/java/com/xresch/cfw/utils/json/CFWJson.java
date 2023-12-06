@@ -37,6 +37,7 @@ import com.xresch.cfw.datahandling.CFWField.CFWFieldFlag;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWSchedule;
 import com.xresch.cfw.datahandling.CFWTimeframe;
+import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 
@@ -87,12 +88,13 @@ public class CFWJson {
 	 *************************************************************************************/
 	private static GsonBuilder createGsonBuilderBase() {
 		return new GsonBuilder()
-				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
-				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
+				.registerTypeHierarchyAdapter(BigDecimal.class, new SerializerBigDecimal())
 				.registerTypeHierarchyAdapter(CFWChartSettings.class, new SerializerCFWChartSettings())
+				.registerTypeHierarchyAdapter(CFWParameter.class, new SerializerCFWParameter())
+				.registerTypeHierarchyAdapter(CFWSchedule.class, new SerializerCFWSchedule())
 				.registerTypeHierarchyAdapter(CFWTimeframe.class, new SerializerCFWTimeframe())
 				.registerTypeHierarchyAdapter(JSONResponse.class, new SerializerJSONResponse())
-				.registerTypeHierarchyAdapter(BigDecimal.class, new SerializerBigDecimal())
+				.registerTypeHierarchyAdapter(ResultSet.class, new SerializerResultSet())
 			;
 	}
 	/*************************************************************************************

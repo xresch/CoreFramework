@@ -359,7 +359,7 @@ public class ServletParameter extends HttpServlet
 		
 		//--------------------------------------------
 		// Get Parameter List
-		ArrayList<CFWObject> parameterList = null;
+		ArrayList<CFWParameter> parameterList = null;
 		switch(scope) {
 			case SCOPE_DASHBOARD: 	parameterList = CFW.DB.Parameters.getParametersForDashboard(ID);	break;
 			case SCOPE_QUERY:  	  	/*parameterList = CFW.DB.DashboardParameters.getParametersForDashboard(ID);*/	break;

@@ -619,7 +619,7 @@ function cfw_internal_toogleBooleanSwitchValue(switchElement){
 	var zeIdentificazione = elSwitch.attr('id');
 	var hontouNiSelected = elSwitch.hasClass('switch-on');
 	
-	zeInput.val(!hontouNiSelected)
+	zeInput.val(!hontouNiSelected);
 	
 	elSwitch.toggleClass('switch-on');
 	elSwitch.toggleClass('switch-off');
@@ -3110,6 +3110,7 @@ function cfw_format_formToArray(formOrID, numbersAsStrings){
 	for(let i in paramsArray){
 		let name = paramsArray[i].name;
 		let current = paramsArray[i].value;
+		console.log(name + ":" + current)
 		if(typeof current == 'string'){
 			//---------------------------
 			// Convert String Numbers
@@ -3127,9 +3128,9 @@ function cfw_format_formToArray(formOrID, numbersAsStrings){
 				}
 			//---------------------------
 			// Convert String true/false to boolean
-			}else if(current.toLowerCase() === 'true'){
+			}else if(current.toLowerCase() == 'true'){
 				paramsArray[i].value = true;
-			}else if(current.toLowerCase() === 'false'){
+			}else if(current.toLowerCase() == 'false'){
 				paramsArray[i].value = false;
 			}
 		}
@@ -3165,7 +3166,7 @@ function cfw_format_formToArray(formOrID, numbersAsStrings){
 			}
 		});
 	}
-	
+	console.log(paramsArray)
 	return paramsArray;
 }
 

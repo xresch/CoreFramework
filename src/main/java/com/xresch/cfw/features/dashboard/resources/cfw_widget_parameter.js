@@ -52,10 +52,6 @@
 							//--------------------
 							// Do others
 							var viewerCustomValue = storedViewerParams[name];
-							console.log("=======: ")	
-							console.log("id: "+$(this).attr("id"))	
-							console.log("name: "+name)	
-							console.log("value: "+viewerCustomValue)
 							
 							if(!CFW.utils.isNullOrEmpty(viewerCustomValue)){
 								if(type == 'radio'){
