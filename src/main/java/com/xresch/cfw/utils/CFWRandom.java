@@ -778,7 +778,7 @@ public class CFWRandom {
 		object.addProperty("LOCATION", CFW.Random.randomMythicalLocation(nullRatioPercent));
 
 		object.addProperty("LIKES_TIRAMISU", CFW.Random.randomBoolean(nullRatioPercent));
-		object.addProperty("LAST_LOGIN", currentTime-(CFW.Random.randomIntegerInRange(100, 10000)*1000000) );
+		object.addProperty("LAST_LOGIN", currentTime-(CFW.Random.randomLongInRange(100, 10000)*1000000) );
 		object.addProperty("URL", "http://www.example.url/mightyperson?id="+id);
 		object.addProperty("VALUE", CFW.Random.randomIntegerInRange(1, 100));
 
