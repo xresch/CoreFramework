@@ -276,6 +276,7 @@ function cfw_renderer_chart(renderDef) {
 	settings.isSteppedline = false;
 	settings.indexAxis = 'x';
 	settings.isLabelBased = false;
+	settings.tooltipmode = 'index';
 
 	switch(settings.charttype.toLowerCase()){
 		case 'sparkarea':
@@ -298,6 +299,9 @@ function cfw_renderer_chart(renderDef) {
 			settings.doFill = true;
 			settings.isLabelBased = true;
 			settings.multichart = false;
+			settings.tooltipmode = 'nearest';
+			settings.showlegend = false;
+			settings.ondblclick = null;
 			break;
 		case 'sparkline':
 			settings.charttype = 'line';
@@ -471,29 +475,26 @@ function cfw_renderer_chart(renderDef) {
 		data = {labels: [], datasets: []};
 		dataArray.push(data);
 		
-		isFirst = true;
+		var colorsArray = [];
+		
 		for(label in datasets){
 			
 			let current = datasets[label];
 			var currentData = current.data;
-			var bgColor = current.backgroundColor;
-			var borderColor = current.borderColor;
 			
 			data.labels.push(label);
-			if(data.datasets.length == 0){
-				data.datasets.push(_.cloneDeep(current));
-				data.datasets[0].data = [];
-				data.datasets[0].label = "Gantt Chart"; //settings.aggregation;
-				data.datasets[0].fill = true;
-				data.datasets[0].backgroundColor = [];
-				data.datasets[0].borderColor = [];
-				data.datasets[0].hoverOffset = 5;
-			}
 			
-			data.datasets[0].data.push(currentData[0]);
-			data.datasets[0].backgroundColor.push(bgColor);
-			data.datasets[0].borderColor.push(bgColor);
-			i++;
+			for(var i in currentData){
+				if(data.datasets[i] == null){
+					var newSet = cfw_renderer_chart_createDatasetObject(settings, "", i); 
+					colorsArray.push(newSet.borderColor);
+					newSet.borderColor = colorsArray;
+					newSet.backgroundColor = colorsArray;
+					data.datasets.push(newSet);
+				}
+				data.datasets[i].data.push(currentData[i]);
+			}
+
 		}
 	}else{
 		
@@ -735,27 +736,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 							enabled: true,
 							//fontStyle: 'bold'
 						},
-						// now done with plugin tickFormat
-						// this corrupts horizontal chart labels
-//						callback : function(value, index, values) {
-//							
-//							console.log(value)
-//							if(!isNaN(value)){
-//								let sureNumber = parseFloat(value);
-//								if (sureNumber > 1000000000) {
-//									return (sureNumber / 1000000000).toFixed(2) + "G";
-//								} else if (sureNumber > 1000000) {
-//									return (sureNumber / 1000000).toFixed(2) + "M";
-//								} else if (sureNumber > 1000) {
-//									return (sureNumber / 1000).toFixed(2) + "K";
-//								} else{
-//									
-//									return sureNumber.toFixed(2);
-//								}
-//							}
-//							
-//							return value;
-//						}
+
 					},
 				}
 			},
@@ -764,17 +745,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
                 point:{
                     radius: settings.pointradius
                 },
-            },
-            // padding will be done by wrapper
-//            layout: {
-//                padding: {
-//                    left: settings.padding,
-//                    right: settings.padding,
-//                    top: settings.padding,
-//                    bottom: settings.padding
-//                }
-//            },
-            
+            },            
 			plugins:  {
 				legend: {
 		    		display: settings.showlegend,
@@ -786,19 +757,8 @@ function cfw_renderer_chart_createChartOptions(settings) {
 				tooltip: {
 					intersect: false,
 					enabled: false,
-					mode: 'index',
+					mode: settings.tooltipmode,
 					external: cfw_renderer_chart_customTooltip,
-					/*callbacks: {
-						label: function(tooltipItem, myData) {
-							var label = myData.datasets[tooltipItem.datasetIndex].label || '';
-							if (label) {
-								label += ': ';
-							}
-							label += parseFloat(tooltipItem.value).toFixed(2);
-							return label;
-						}
-					}*/
-	
 				},
 			}
 	    };
@@ -898,22 +858,27 @@ function cfw_renderer_chart_addDetails(renderDef, settings, currentData, chartPl
  ******************************************************************/
 
 function cfw_renderer_chart_customTooltip(context) {
-    // Tooltip Element
+    
+	//---------------------------------
+	// Tooltip Element
     var $tooltip = $('#chartjs-tooltip');
 	var tooltipModel = context.tooltip;
 
+	//---------------------------------
     // Create element on first render
     if ($tooltip.length === 0) {
         $tooltip = $('<div id="chartjs-tooltip" class="bg-cfw-black"><table></table></div>');
         $('body').append($tooltip);
     }
-
+    
+    //---------------------------------
     // Hide if no tooltip
     if (tooltipModel.opacity === 0) {
         $tooltip.css('opacity', 0);
         return;
     }
 
+    //---------------------------------
     // Set caret Position
     $tooltip.removeClass('above below no-transform');
     if (tooltipModel.yAlign) {
@@ -925,19 +890,26 @@ function cfw_renderer_chart_customTooltip(context) {
     function getBody(bodyItem) {
         return bodyItem.lines;
     }
-
+    
+    //==============================================
     // Set Text
     if (tooltipModel.body) {
-        var titleLines = tooltipModel.title || [];
+        
+    	
+    	var titleLines = tooltipModel.title || [];
         var bodyLines = tooltipModel.body.map(getBody);
 
         var innerHtml = '<thead>';
 
+        //---------------------------------
+        // Title Lines
         titleLines.forEach(function(title) {
             innerHtml += '<tr><th>' + title + '</th></tr>';
         });
         innerHtml += '</thead><tbody>';
 
+        //---------------------------------
+        // Body Lines
         bodyLines.forEach(function(body, i) {
             var colors = tooltipModel.labelColors[i];
 
@@ -946,7 +918,31 @@ function cfw_renderer_chart_customTooltip(context) {
             					+'; border-color:' + colors.borderColor
             				   + '; border-width: 2px;">&nbsp;</div>';
             
-            innerHtml += '<tr><td>' + div + body + '</td></tr>';
+            //---------------------------------
+            // Handle Special Cases
+            finalBody = body;
+            if( Array.isArray(body)
+            && body.length > 0){
+            	
+            	var first = body[0];
+            	if(first.startsWith('[') && first.endsWith(']')){
+            		
+            		var array = JSON.parse(first);
+            		if(array.length == 2
+            		&& !isNaN(array[0]) 
+            		&& !isNaN(array[1]) ){
+            			// assume its Gantt charts from/to epoch time
+            			finalBody = 
+            					""+CFW.format.epochToTimestamp(array[0])
+            					+" to <br>"+CFW.format.epochToTimestamp(array[1]);
+            		}
+            	}
+            	
+            }
+            
+            //---------------------------------
+            // Add Body
+            innerHtml += '<tr><td>' + div + finalBody + '</td></tr>';
         });
         innerHtml += '</tbody>';
 
@@ -957,7 +953,7 @@ function cfw_renderer_chart_customTooltip(context) {
     var position = context.chart.canvas.getBoundingClientRect();
 	const bodyFont = Chart.helpers.toFont(tooltipModel.options.bodyFont);
 
-
+    //==============================================
     // Display, position, and set styles for font
     $tooltip.css('opacity', 1);
     $tooltip.css('position', 'absolute');
@@ -973,21 +969,33 @@ function cfw_renderer_chart_customTooltip(context) {
 /******************************************************************
  * 
  ******************************************************************/
-function cfw_renderer_chart_createDatasetObject(settings, label, index) {
+function cfw_renderer_chart_createDatasetColor(settings, index) {
 	
-	hue = 195; 
-	hue += index * 30;
+	let hue = 195; 
+	hue += index * 31;
 	
 	var borderColor = CFW.colors.randomSL(hue,65,100,55,70);
 	var bgColor = borderColor.replace('1.0)', '0.65)');
+
+	return {
+		border: borderColor
+		, bg: bgColor
+	};
+}
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_chart_createDatasetObject(settings, label, index) {
 	
+	var colors = cfw_renderer_chart_createDatasetColor(settings, index);
+
 	return {
 			label: label, 
 			data: [], //data used by chartjs
 			originalData: [], // original data used for table
-			backgroundColor: bgColor,
+			backgroundColor: colors.bg,
 			fill: settings.doFill,
-            borderColor: borderColor,
+            borderColor: colors.border,
             borderWidth: 1,
             spanGaps: settings.spangaps,
             stepped: settings.isSteppedline,
@@ -1007,6 +1015,8 @@ function cfw_renderer_chart_createDatasetsForGantt(renderDef, settings) {
 
 	var timelineStart = null; 
 	
+	//----------------------------
+	// STEP ONE: Sort All by Label
 	for(var i = 0; i < renderDef.data.length; i++){
 		var currentRecord = renderDef.data[i];
 		
@@ -1025,37 +1035,20 @@ function cfw_renderer_chart_createDatasetsForGantt(renderDef, settings) {
 		currentSet.originalData.push(currentRecord);
 		
 		var xValue = currentRecord[settings.xfield];
-		if( (xValue != null 
-		&& currentSet.minX > xValue )
-		|| currentSet.minX == null){
-			currentSet.minX = xValue;
-			if(timelineStart > xValue
-			|| timelineStart == null){
-				timelineStart = xValue;
-			}
-		}
 		
-		var yValue = currentRecord[settings.yfield];
-		if( (yValue != null 
-		&& currentSet.maxY > xValue )
-		|| currentSet.maxY == null){
-			currentSet.maxY = yValue;
-
-		}
-		//currentSet.cfwSum += isNaN(value) ? 0 : parseFloat(value);
-		currentSet.cfwCount += 1;
+		currentSet.data.push([ 
+			CFW.format.epochToTimestamp(xValue)
+			, CFW.format.epochToTimestamp(yValue) 
+		]) ;
+		
+		if(timelineStart > xValue
+				|| timelineStart == null){
+					timelineStart = xValue;
+				}
+		
 	}
 	
-	//------------------------------------------------
-	// 
-	for(label in datasets){
-		currentSet = datasets[label];
-		currentSet.data = [
-			[ currentSet.minX, currentSet.maxY]
-		];
-	}
-
-	settings.xmin = timelineStart;
+	settings.xmin = CFW.format.epochToTimestamp(timelineStart);
 	
 	return datasets;
 }
@@ -1065,17 +1058,18 @@ function cfw_renderer_chart_createDatasetsForGantt(renderDef, settings) {
 function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settings) {
 	
 	var datasets = {};
-
-	for(var i = 0; i < renderDef.data.length; i++){
+	
+	var colorCounter = 0;
+	for(let i = 0; i < renderDef.data.length; i++){
 		var currentRecord = renderDef.data[i];
 		
 		//----------------------------
 		// Create Label & Dataset
 		var label = renderDef.getTitleString(currentRecord);
 		if(datasets[label] == undefined){
-			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, i);
+			
+			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, colorCounter++);
 		}
-		
 		
 		//----------------------------
 		// Add Values
@@ -1108,7 +1102,7 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 function cfw_renderer_chart_createDatasetsFromDatapoints(renderDef, settings) {
 	
 	var datasets = {};
-
+	var colorCounter = 0;
 	for(var i = 0; i < renderDef.data.length; i++){
 
 		var currentRecord = renderDef.data[i];
@@ -1117,7 +1111,7 @@ function cfw_renderer_chart_createDatasetsFromDatapoints(renderDef, settings) {
 		// Create Label & Dataset
 		var label = renderDef.getTitleString(currentRecord);
 		if(datasets[label] == undefined){
-			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, i);
+			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, colorCounter++);
 		}
 		
 		//----------------------------
@@ -1149,8 +1143,8 @@ function cfw_renderer_chart_createDatasetsFromDatapoints(renderDef, settings) {
 function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 	
 	var datasets = {};
-
-
+	var colorCounter = 0;
+	
 	for(var i = 0; i < renderDef.data.length; i++){
 		var currentRecord = renderDef.data[i];
 		
@@ -1158,7 +1152,7 @@ function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 		// Create Label & Dataset
 		var label = renderDef.getTitleString(currentRecord);
 		if(datasets[label] == undefined){
-			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, i);
+			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, colorCounter++);
 		}
 		
 		var yArray = currentRecord[settings.yfield];
@@ -1189,27 +1183,25 @@ function cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings) {
 function cfw_renderer_chart_prepareDatasets(renderDef, settings) {
 	
 	var datasets = renderDef.data;
-	var hue = 165; 
 
 	for(var i = 0; i < renderDef.data.length; i++){
 		var currentDataset = renderDef.data[i];
 		
 		//----------------------------
 		// Create Label & Dataset
-		hue += 31;
-		var borderColor = CFW.colors.randomSL(hue,65,100,55,70);
-		var bgColor = borderColor.replace('1.0)', '0.65)');
+
+		var colors = cfw_renderer_chart_createDatasetColor(settings, i);
 		
 		if( CFW.utils.isNullOrEmpty(currentDataset.label) ){			
 			currentDataset.label = renderDef.getTitleString(currentRecord); 
 		}
 		
 		if(currentDataset.backgroundColor == null){
-			currentDataset.backgroundColor = bgColor; 
+			currentDataset.backgroundColor = colors.bg; 
 		}
 		
-		if(currentDataset.backgroundColor == null){
-			currentDataset.backgroundColor = borderColor; 
+		if(currentDataset.borderColor == null){
+			currentDataset.borderColor = colors.border; 
 		}
 		
 		if(currentDataset.borderWidth == null){

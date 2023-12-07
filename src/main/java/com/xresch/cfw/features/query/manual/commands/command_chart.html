@@ -71,7 +71,8 @@
 	detailsposition=bottom</code></pre>	
 	
 <h2>Gantt Chart</h2>
-<p>Gantt chart has a bit of a special treatment. The by-parameter will be used to create labels, while x/y parameters take start/end date of the bar in the chart.</p>	
+<p>Gantt chart has a bit of a special treatment. The by-parameter will be used to create labels, while x/y parameters take start/end date of the bar in the chart.
+Following will give you a chart containing a time line for each group created with the by-parameter:</p>	
 <pre><code class="language-cfwquery">| source random records=1000 
 | filter
 	FIRSTNAME ~= 'Hera|Aurora|Luna|Zeus|Heracles|Cupid'
@@ -83,4 +84,29 @@
 	by=[FIRSTNAME] 
 	type='gantt'
 	x=FROM # start time in epoch milliseconds
-	y=TO   # end time in epoch milliseconds</code></pre>	
+	y=TO   # end time in epoch milliseconds
+	height="800px"
+</code></pre>
+
+<p>To get only one bar per element, you can use the stats command to filter by first and last element:</p>	
+<pre><code class="language-cfwquery">| source random records=100
+| filter
+	FIRSTNAME ~= 'Hera|Aurora|Luna|Zeus|Heracles|Cupid'
+| set
+	FROM = LAST_LOGIN
+	TO = FROM + (VALUE * 1000000)
+| sort FROM
+| stats
+	by=[FIRSTNAME]
+	FROM=first(FROM)
+	TO=last(TO)
+| set 
+	FROM = timeformat("yyyy-MM-dd'T'HH:mm:ss", FROM)
+	TO = timeformat("yyyy-MM-dd'T'HH:mm:ss", TO)
+| chart 
+	by=[FIRSTNAME] 
+	type='gantt'
+	x=FROM # start time in epoch milliseconds
+	y=TO   # end time in epoch milliseconds
+	</code></pre>
+

@@ -166,6 +166,7 @@ DONE
 - Modals: Increased width of modals to have more space to work with
 - Charts: Can now be double clicked to get more details
 - Charts: Have now a setting to set labels for x and y axis
+- Charts: Now supports gantt charts
 - ChartSettings: Fixed issue where Chart Settings are not fully scrollable
 - Chart Renderer: Added option to add an action on double click
 - Tables: Improved hovering contrast by changing color to blue
