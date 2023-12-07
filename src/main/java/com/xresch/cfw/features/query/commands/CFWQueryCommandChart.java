@@ -84,6 +84,7 @@ public class CFWQueryCommandChart extends CFWQueryCommand {
 						+"<li>doughnut</li>"
 						+"<li>radar</li>"
 						+"<li>polar</li>"
+						+"<li>gantt (x will be start time and y will be end time)</li>"
 					+"</ul>"
 				+"<p><b>by:&nbsp;</b>Array of fieldnames to group by. This determines the series for the chart.</p>"	
 				+"<p><b>aggregation:&nbsp;</b>How the data should be aggregated for category charts(pie|doughnut|radar|polar), either:.</p>"	

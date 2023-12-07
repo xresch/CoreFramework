@@ -597,16 +597,14 @@ public class CFWParameter extends CFWObject {
 	 *****************************************************************/
 	public JsonObject toJson() {
 		
-		System.out.println("====== toJson ======");
+
 		JsonObject object = new JsonObject();
 		
 		object.addProperty(name.getName(), name.getValue());
 		
 		//------------------------------------------------
 		// Convert Value to Correct Type
-		System.out.println("paramType.getValue(): "+paramType.getValue());
 		if(paramType.getValue().contentEquals("BOOLEAN")) {
-			System.out.println("Boolean");
 			object.addProperty(value.getName(), Boolean.parseBoolean(value.getValue()) );
 		}else if(paramType.getValue().contentEquals("NUMBER")) {
 			object.addProperty(value.getName(), new BigDecimal(value.getValue()) );

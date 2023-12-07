@@ -190,7 +190,8 @@ function cfw_renderer_chart(renderDef) {
 	var defaultSettings = {
 		// The type of the chart: 	line|steppedline|area|steppedarea|bar|scatter
 		//							sparkline|sparkbar
-		//							pie|doughnut|radar|polar			
+		//							pie|doughnut|radar|polar
+		//							gantt (xfield contains start time and yfield contains end time)
 		//							(to be done: bubble)
 		charttype: 'line',
 		// How should the input data be handled groupbytitle|arrays 
@@ -215,6 +216,8 @@ function cfw_renderer_chart(renderDef) {
 		xlabel: null,
 		// The label for the y-axis
 		ylabel: null,
+		// The suggested minimum value for the x axis
+		xmin: null,
 		// The suggested minimum value for the y axis 
 		ymin: 0,
 		// The suggested maximum value for the y axis 
@@ -271,8 +274,10 @@ function cfw_renderer_chart(renderDef) {
 	// Initialize
 	settings.doFill = false;
 	settings.isSteppedline = false;
+	settings.indexAxis = 'x';
+	settings.isLabelBased = false;
 
-	switch(settings.charttype){
+	switch(settings.charttype.toLowerCase()){
 		case 'sparkarea':
 			settings.showaxes = false;
 			settings.showlegend = false;
@@ -284,6 +289,15 @@ function cfw_renderer_chart(renderDef) {
 			break;
 		case 'bar':
 			settings.doFill = true;
+			break;
+		case 'gantt':
+			//settings.charttype = 'bar';
+			settings.xtype = 'time';
+			settings.ytype = 'category';
+			settings.indexAxis = 'y';
+			settings.doFill = true;
+			settings.isLabelBased = true;
+			settings.multichart = false;
 			break;
 		case 'sparkline':
 			settings.charttype = 'line';
@@ -316,7 +330,6 @@ function cfw_renderer_chart(renderDef) {
 		case 'polar':
 			settings.charttype = 'polarArea';
 			break;
-		
 	}
 	
 	settings.isCategoryChart = ['radar', 'polarArea', 'pie', 'doughnut'].includes(settings.charttype);
@@ -372,66 +385,47 @@ function cfw_renderer_chart(renderDef) {
 	//========================================
 	// Create Datasets
 	var datasets;
-	switch(settings.datamode){
-	
-		case 'groupbytitle':
-			 datasets = cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settings);
-			 break;
-			 
-		case 'arrays':
-			 datasets = cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings);
-			 break;
+	if(settings.charttype == 'gantt'){
+		 datasets = cfw_renderer_chart_createDatasetsForGantt(renderDef, settings);
+	}else{
+		switch(settings.datamode){
 		
-		case 'datapoints':
-			 datasets = cfw_renderer_chart_createDatasetsFromDatapoints(renderDef, settings);
-			 break;
-			 
-		case 'datasets':
-			 datasets = cfw_renderer_chart_prepareDatasets(renderDef, settings);
-			 break;
-			 
+			case 'groupbytitle':
+				 datasets = cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settings);
+				 break;
+				 
+			case 'arrays':
+				 datasets = cfw_renderer_chart_createDatasetsFromArrays(renderDef, settings);
+				 break;
+			
+			case 'datapoints':
+				 datasets = cfw_renderer_chart_createDatasetsFromDatapoints(renderDef, settings);
+				 break;
+				 
+			case 'datasets':
+				 datasets = cfw_renderer_chart_prepareDatasets(renderDef, settings);
+				 break;	 
+		}
 	}
 
 	
-	
-	
 	//========================================
 	// sort by x to avoid displaying issues
-	if(!settings.isCategoryChart){
+	if(!settings.isCategoryChart && !settings.isLabelBased){
 		for(i in datasets){
 			datasets[i].data = _.sortBy(datasets[i].data, ['x']);
 		}
 	}
 	
-	//========================================
+	
+	//=======================================================
 	// Create ChartJS Data Object
+	//=======================================================
 	var dataArray = [];
 	var data;
 
-	if(!settings.isCategoryChart){
-		//--------------------------------
-		// Regular Charts
-		data = {datasets: []};
-		dataArray.push(data);
+	if(settings.isCategoryChart){
 		
-		isFirst = true;
-		for(label in datasets){
-			if(!settings.multichart){
-				// Show all datasets in a single chart
-				data.datasets.push(datasets[label]);
-			}else{
-				// Show every dataset in it's own chart
-				data.datasets.push(datasets[label]);
-				if(!isFirst){
-					dataArray.push(data);
-				}else{
-					isFirst = false;
-				}
-				
-				data = {datasets: []};
-			}
-		}
-	}else{
 		//--------------------------------
 		// Category Charts
 		// Put everything into a single data set
@@ -467,7 +461,64 @@ function cfw_renderer_chart(renderDef) {
 			data.datasets[0].borderColor.push(bgColor);
 			i++;
 		}
-
+		
+	}else if (settings.charttype == 'gantt'){
+		
+		settings.charttype = 'bar';
+		
+		//--------------------------------
+		// Gantt Charts
+		data = {labels: [], datasets: []};
+		dataArray.push(data);
+		
+		isFirst = true;
+		for(label in datasets){
+			
+			let current = datasets[label];
+			var currentData = current.data;
+			var bgColor = current.backgroundColor;
+			var borderColor = current.borderColor;
+			
+			data.labels.push(label);
+			if(data.datasets.length == 0){
+				data.datasets.push(_.cloneDeep(current));
+				data.datasets[0].data = [];
+				data.datasets[0].label = "Gantt Chart"; //settings.aggregation;
+				data.datasets[0].fill = true;
+				data.datasets[0].backgroundColor = [];
+				data.datasets[0].borderColor = [];
+				data.datasets[0].hoverOffset = 5;
+			}
+			
+			data.datasets[0].data.push(currentData[0]);
+			data.datasets[0].backgroundColor.push(bgColor);
+			data.datasets[0].borderColor.push(bgColor);
+			i++;
+		}
+	}else{
+		
+		//--------------------------------
+		// Regular Charts
+		data = {datasets: []};
+		dataArray.push(data);
+		
+		isFirst = true;
+		for(label in datasets){
+			if(!settings.multichart){
+				// Show all datasets in a single chart
+				data.datasets.push(datasets[label]);
+			}else{
+				// Show every dataset in it's own chart
+				data.datasets.push(datasets[label]);
+				if(!isFirst){
+					dataArray.push(data);
+				}else{
+					isFirst = false;
+				}
+				
+				data = {datasets: []};
+			}
+		}
 	}
 	
 	//========================================
@@ -548,12 +599,13 @@ function cfw_renderer_chart(renderDef) {
 		// Draw Chart
 		var chartCtx = chartCanvas.get(0).getContext("2d");
 		//var chartCtx = chartCanvas.get(0);
-		
+				
 		new Chart(chartCtx, {
 		    type: settings.charttype,
 		    data: currentData,
 		    options: chartOptionsClone
 		});
+		
 	}
 	
 	return allChartsDiv;
@@ -616,6 +668,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 	    	responsive: settings.responsive,
 	    	maintainAspectRatio: false,
 	    	resizeDelay: 300,
+	    	indexAxis: settings.indexAxis, 
 			scales: {
 				x: {
 					display: settings.showaxes,
@@ -623,6 +676,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 					distribution: 'linear',
 					offset: true,
 					stacked: settings.stacked,
+					min: settings.xmin,
 					time:{
 						minUnit: settings.xminunit,
 						parser:  settings.timeformat
@@ -645,7 +699,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 							enabled: true,
 							//fontStyle: 'bold'
 						},
-						source: 'data',
+						//source: 'data', // this corrupts horizontal charts
 						autoSkip: true,
 						autoSkipPadding: 15,
 						//maxRotation: 0,
@@ -653,7 +707,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 					},
 					
 				},
-				y: {
+				y: { 
 					display: settings.showaxes,
 					stacked: settings.stacked,
 					type: settings.ytype,
@@ -673,7 +727,7 @@ function cfw_renderer_chart_createChartOptions(settings) {
 					},
 					ticks: {
 						min: 0,
-						source: 'data',
+						//source: 'data',
 						autoSkip: true,
 						autoSkipPadding: 15,
 						//sampleSize: 1000,
@@ -681,25 +735,27 @@ function cfw_renderer_chart_createChartOptions(settings) {
 							enabled: true,
 							//fontStyle: 'bold'
 						},
-						// Custom Tick Format
-						callback : function(value, index, values) {
-							
-							if(!isNaN(value)){
-								let sureNumber = parseFloat(value);
-								if (sureNumber > 1000000000) {
-									return (sureNumber / 1000000000).toFixed(2) + "G";
-								} else if (sureNumber > 1000000) {
-									return (sureNumber / 1000000).toFixed(2) + "M";
-								} else if (sureNumber > 1000) {
-									return (sureNumber / 1000).toFixed(2) + "K";
-								} else{
-									
-									return sureNumber.toFixed(2);
-								}
-							}
-							
-							return value;
-						}
+						// now done with plugin tickFormat
+						// this corrupts horizontal chart labels
+//						callback : function(value, index, values) {
+//							
+//							console.log(value)
+//							if(!isNaN(value)){
+//								let sureNumber = parseFloat(value);
+//								if (sureNumber > 1000000000) {
+//									return (sureNumber / 1000000000).toFixed(2) + "G";
+//								} else if (sureNumber > 1000000) {
+//									return (sureNumber / 1000000).toFixed(2) + "M";
+//								} else if (sureNumber > 1000) {
+//									return (sureNumber / 1000).toFixed(2) + "K";
+//								} else{
+//									
+//									return sureNumber.toFixed(2);
+//								}
+//							}
+//							
+//							return value;
+//						}
 					},
 				}
 			},
@@ -723,6 +779,9 @@ function cfw_renderer_chart_createChartOptions(settings) {
 				legend: {
 		    		display: settings.showlegend,
 		    	},
+	    	    tickFormat: {
+	    	      notation: 'compact'
+	    	    },
 		    	title: {}, // placeholder
 				tooltip: {
 					intersect: false,
@@ -782,7 +841,7 @@ function cfw_renderer_chart_addDetails(renderDef, settings, currentData, chartPl
 		};
 	
 	cloneRenderDef = Object.assign({}, renderDef, cloneRenderDef);
-console.log(currentData);
+
 	if(settings.multichart == true || settings.datamode == 'datasets'){
 		cloneRenderDef.data = currentData.datasets[0].originalData;
 	}
@@ -938,7 +997,68 @@ function cfw_renderer_chart_createDatasetObject(settings, label, index) {
 		};
 	
 }
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_renderer_chart_createDatasetsForGantt(renderDef, settings) {
 	
+	var datasets = {};
+
+	var timelineStart = null; 
+	
+	for(var i = 0; i < renderDef.data.length; i++){
+		var currentRecord = renderDef.data[i];
+		
+		//----------------------------
+		// Create Label & Dataset
+		var label = renderDef.getTitleString(currentRecord);
+		if(datasets[label] == undefined){
+			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, i);
+		}
+		
+		var currentSet = datasets[label];
+		
+		//----------------------------
+		// Add Values
+		var yValue = currentRecord[settings.yfield];
+		currentSet.originalData.push(currentRecord);
+		
+		var xValue = currentRecord[settings.xfield];
+		if( (xValue != null 
+		&& currentSet.minX > xValue )
+		|| currentSet.minX == null){
+			currentSet.minX = xValue;
+			if(timelineStart > xValue
+			|| timelineStart == null){
+				timelineStart = xValue;
+			}
+		}
+		
+		var yValue = currentRecord[settings.yfield];
+		if( (yValue != null 
+		&& currentSet.maxY > xValue )
+		|| currentSet.maxY == null){
+			currentSet.maxY = yValue;
+
+		}
+		//currentSet.cfwSum += isNaN(value) ? 0 : parseFloat(value);
+		currentSet.cfwCount += 1;
+	}
+	
+	//------------------------------------------------
+	// 
+	for(label in datasets){
+		currentSet = datasets[label];
+		currentSet.data = [
+			[ currentSet.minX, currentSet.maxY]
+		];
+	}
+
+	settings.xmin = timelineStart;
+	
+	return datasets;
+}
 /******************************************************************
  * 
  ******************************************************************/
@@ -955,6 +1075,7 @@ function cfw_renderer_chart_createDatasetsGroupedByTitleFields(renderDef, settin
 		if(datasets[label] == undefined){
 			datasets[label] =  cfw_renderer_chart_createDatasetObject(settings, label, i);
 		}
+		
 		
 		//----------------------------
 		// Add Values

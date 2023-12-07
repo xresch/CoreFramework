@@ -69,3 +69,18 @@
 	detailsrenderer='table'
 	detailssize=50 # number representing percentage
 	detailsposition=bottom</code></pre>	
+	
+<h2>Gantt Chart</h2>
+<p>Gantt chart has a bit of a special treatment. The by-parameter will be used to create labels, while x/y parameters take start/end date of the bar in the chart.</p>	
+<pre><code class="language-cfwquery">| source random records=1000 
+| filter
+	FIRSTNAME ~= 'Hera|Aurora|Luna|Zeus|Heracles|Cupid'
+| set
+	FROM = LAST_LOGIN
+	TO = FROM + (VALUE * 5000000)
+| sort FROM
+| chart 
+	by=[FIRSTNAME] 
+	type='gantt'
+	x=FROM # start time in epoch milliseconds
+	y=TO   # end time in epoch milliseconds</code></pre>	
