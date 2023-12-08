@@ -30,6 +30,9 @@ public class CFWProperties {
 	/** Default maximum upload size for files in megabyte. (Property=cfw_application_max_uploadsize, Default=200) */
 	public static int APPLICATION_MAX_UPLOADSIZE = 200;
 	
+	/** Default maximum upload size for files in bytes. (Property=cfw_application_max_formsize, Default=5000000) */
+	public static int APPLICATION_MAX_FORM_SIZE = 5 * 1000 * 1000;
+	
 	/** Reset the admin password on the next restart. (Property=cfw_reset_admin_pw, Default=false) */
 	public static boolean RESET_ADMIN_PW = false;
 	
@@ -213,6 +216,8 @@ public class CFWProperties {
 		APPLICATION_ID					= CFWProperties.configAsString("cfw_application_id", APPLICATION_ID);
 		APPLICATION_NAME				= CFWProperties.configAsString("cfw_application_name", APPLICATION_NAME);
 		APPLICATION_MAX_UPLOADSIZE		= CFWProperties.configAsInt("cfw_application_max_uploadsize", APPLICATION_MAX_UPLOADSIZE);
+		APPLICATION_MAX_FORM_SIZE		= CFWProperties.configAsInt("cfw_application_max_formsize", APPLICATION_MAX_FORM_SIZE);
+		
 		RESET_ADMIN_PW 					= CFWProperties.configAsBoolean("cfw_reset_admin_pw", RESET_ADMIN_PW);
 		
 		APPLICATION_URL					= CFWProperties.configAsString("cfw_application_url", APPLICATION_URL);

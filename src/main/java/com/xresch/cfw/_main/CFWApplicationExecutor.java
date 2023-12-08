@@ -16,6 +16,7 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -31,8 +32,6 @@ import org.eclipse.jetty.server.session.DatabaseAdaptor;
 import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.DefaultSessionIdManager;
 import org.eclipse.jetty.server.session.JDBCSessionDataStore;
-import org.eclipse.jetty.server.session.JDBCSessionDataStoreFactory;
-import org.eclipse.jetty.server.session.NullSessionDataStore;
 import org.eclipse.jetty.server.session.SessionCache;
 import org.eclipse.jetty.server.session.SessionDataStore;
 import org.eclipse.jetty.server.session.SessionHandler;
@@ -90,9 +89,12 @@ public class CFWApplicationExecutor {
         applicationContext = new WebAppContext();
         applicationContext.setContextPath("/");
         applicationContext.setServer(server);
-        
         applicationContext.setErrorHandler(CFWApplicationExecutor.createErrorHandler());
 
+        applicationContext.setMaxFormContentSize(CFW.Properties.APPLICATION_MAX_FORM_SIZE);
+        servletContext.setMaxFormContentSize(CFW.Properties.APPLICATION_MAX_FORM_SIZE);
+        
+        
     	//---------------------------------------
     	// Default Multipart Config
         int maxSize = 1024*1024*CFW.Properties.APPLICATION_MAX_UPLOADSIZE;
