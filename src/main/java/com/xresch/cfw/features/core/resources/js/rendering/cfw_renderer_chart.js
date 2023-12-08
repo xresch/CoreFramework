@@ -298,7 +298,7 @@ function cfw_renderer_chart(renderDef) {
 			settings.indexAxis = 'y';
 			settings.doFill = true;
 			settings.isLabelBased = true;
-			settings.multichart = false;
+			//settings.multichart = false;
 			settings.tooltipmode = 'nearest';
 			settings.showlegend = false;
 			settings.ondblclick = null;
@@ -430,7 +430,7 @@ function cfw_renderer_chart(renderDef) {
 
 	if(settings.isCategoryChart){
 		
-		//--------------------------------
+		//====================================================
 		// Category Charts
 		// Put everything into a single data set
 		data = { labels: [], datasets: []};
@@ -467,38 +467,57 @@ function cfw_renderer_chart(renderDef) {
 		}
 		
 	}else if (settings.charttype == 'gantt'){
-		
-		settings.charttype = 'bar';
-		
-		//--------------------------------
-		// Gantt Charts
-		data = {labels: [], datasets: []};
-		dataArray.push(data);
-		
-		var colorsArray = [];
-		
-		for(label in datasets){
-			
-			let current = datasets[label];
-			var currentData = current.data;
-			
-			data.labels.push(label);
-			
-			for(var i in currentData){
-				if(data.datasets[i] == null){
-					var newSet = cfw_renderer_chart_createDatasetObject(settings, "", i); 
-					colorsArray.push(newSet.borderColor);
-					newSet.borderColor = colorsArray;
-					newSet.backgroundColor = colorsArray;
-					data.datasets.push(newSet);
-				}
-				data.datasets[i].data.push(currentData[i]);
-			}
 
+		//====================================================
+		// Gantt Charts
+		settings.charttype = 'bar';
+
+		if(!settings.multichart){
+			//--------------------------------
+		    // Single or Multichart
+			data = {labels: [], datasets: []};
+			dataArray.push(data);
+			
+			var colorsArray = [];
+			
+			for(label in datasets){
+				
+				let current = datasets[label];
+				var currentData = current.data;
+				
+				data.labels.push(label);
+				
+				for(var i in currentData){
+					if(data.datasets[i] == null){
+						var newSet = cfw_renderer_chart_createDatasetObject(settings, "", i); 
+						colorsArray.push(newSet.borderColor);
+						newSet.borderColor = colorsArray;
+						newSet.backgroundColor = colorsArray;
+						data.datasets.push(newSet);
+					}
+					data.datasets[i].data.push(currentData[i]);
+				}
+	
+			}
+		}else{
+			for(label in datasets){
+				let current = datasets[label];
+				var currentData = current.data;
+				data = {
+					labels: []
+					, datasets: [current] 
+				};
+				for(var i in currentData){
+					data.labels.push(label);
+				}
+				dataArray.push(data);
+			}
+				
 		}
+
 	}else{
 		
-		//--------------------------------
+		//====================================================
 		// Regular Charts
 		data = {datasets: []};
 		dataArray.push(data);
