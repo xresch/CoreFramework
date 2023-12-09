@@ -80,7 +80,6 @@
 										inputField.tagsinput('add', tagsInputValues[index]);
 									}
 								}else if(inputField.data("role") == "chartsettings"){
-									console.log("hit")
 									var chartsettingsValues = JSON.parse(viewerCustomValue);
 									var wrapper = inputField.closest('.cfw-chartsettings-field-wrapper');
 									 cfw_internal_applyChartSettings(inputField.attr('id'), wrapper, chartsettingsValues);

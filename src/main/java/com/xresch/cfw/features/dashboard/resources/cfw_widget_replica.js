@@ -60,7 +60,6 @@
 									
 									/*console.log('CFW_DASHBOARD_FULLREDRAW_COUNTER:'+CFW_DASHBOARD_FULLREDRAW_COUNTER);
 									if(fullRedrawCounter != CFW_DASHBOARD_FULLREDRAW_COUNTER){
-										console.log('hit!');
 										return;
 									}*/
 									//---------------------------------------

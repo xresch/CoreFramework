@@ -14,7 +14,6 @@ var MODAL_CURRENT_ACTION = "";
  ******************************************************************/
 function cfw_apioverview_formResult(data, status, xhr){
 	
-	console.log(MODAL_CURRENT_ACTION);
 	//-------------------------------
 	// Get Form
 	var form = $('#cfw-apioverview-samplemodal form');
@@ -94,8 +93,6 @@ function cfw_apioverview_formResult(data, status, xhr){
 	}
 	var regex = new RegExp("&"+bodyParamName+"=[^&]*");
 	var postURL = urlEncoded.replace(regex, '');
-	console.log("bodyParamName: "+bodyParamName)
-	console.log("postURL: "+postURL)
 
 	var postContentTypeEncoded   = ' \\\r\n -H "Content-Type: application/x-www-form-urlencoded"';
 	var postContentTypePlaintext = ' \\\r\n -H "Content-Type: text/plain"';

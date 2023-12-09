@@ -124,9 +124,7 @@ function cfw_widget_checklist_triggerEdit(element){
  *
  **********************************************************************/
 function cfw_widget_checklist_editKeyPress(e){
-	
-	console.log("confirm")
-	
+		
 	//---------------------------
 	// Do nothing if not Enter
 	if ( e.keyCode != 13) {
@@ -230,9 +228,7 @@ function cfw_widget_checklist_checkboxChange(element, doRemove){
  *
  **********************************************************************/
 /*function cfw_widget_checklist_triggerRemove(buttonElement){
-	
-	console.log('remove');
-	
+		
 	var button = $(buttonElement);
 	var parent = button.closest('.form-check');
 	var checkboxToDelete = parent.find('input');

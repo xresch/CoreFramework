@@ -783,7 +783,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			for(Object optionValue : valueLabelOptions.keySet()) {
 				
 				String currentLabel = valueLabelOptions.get(optionValue).toString();
-				String stringValue = optionValue.toString();
+				String stringValue = (optionValue == null) ? "" : optionValue.toString();
 				String stringValueNoQuotes = stringValue.replaceAll("\"", "&quot;");
 				if(stringValue.equals(selectedValue)) {
 					

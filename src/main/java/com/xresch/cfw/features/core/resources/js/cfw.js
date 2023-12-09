@@ -3110,7 +3110,7 @@ function cfw_format_formToArray(formOrID, numbersAsStrings){
 	for(let i in paramsArray){
 		let name = paramsArray[i].name;
 		let current = paramsArray[i].value;
-		console.log(name + ":" + current)
+		
 		if(typeof current == 'string'){
 			//---------------------------
 			// Convert String Numbers
@@ -3166,7 +3166,7 @@ function cfw_format_formToArray(formOrID, numbersAsStrings){
 			}
 		});
 	}
-	console.log(paramsArray)
+
 	return paramsArray;
 }
 

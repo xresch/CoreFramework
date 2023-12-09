@@ -27,7 +27,6 @@
 
 						//--------------------
 						// Handle Debug Response
-						console.log("settings.DEBUG_MODE: "+settings.DEBUG_MODE)
 						if(settings.DEBUG_MODE){
 							var debugObject = data.payload[0];
 							
@@ -58,9 +57,7 @@
 							debugInfoWrapper.append(debugHTML);
 							debugInfoWrapper.append('<p><b>Response Body:</b></p>');
 							debugInfoWrapper.append(pre);
-			
-							console.log(debugInfoWrapper);
-							
+										
 							callback(widgetObject, debugInfoWrapper);
 							//callback(widgetObject, "Debug Info");
 							return;
@@ -75,7 +72,6 @@
 							var current = result[key];
 							var success = current.CHECK_RESULT;
 							
-							console.log("current.STATUS_CODE_VALID: "+current.STATUS_CODE_VALID)
 							if(current.STATUS_CODE_VALID == false){
 								success = false;
 							}

@@ -31,7 +31,7 @@ function cfw_manual_filterMenu(inputField){
 	//---------------------------------------------
 	// Open all parent elements and highlight
 	if( CFW.utils.isNullOrEmpty($(inputField).val()) ){
-		console.log("HIT")
+
 		$('#menu-content')
 			.find('.collapse')
 			.removeClass('show')
