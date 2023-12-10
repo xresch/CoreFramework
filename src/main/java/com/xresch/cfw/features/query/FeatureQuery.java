@@ -302,9 +302,6 @@ public class FeatureQuery extends CFWAppFeature {
 					.addAttribute("id", "cfwMenuTools-Query")
 				, null);
 		
-		//----------------------------------
-    	// Register APIs
-		CFW.Registry.API.add( new APIQueryExecute("Query", "execute") );
 	}
 
 	@Override
@@ -401,7 +398,13 @@ public class FeatureQuery extends CFWAppFeature {
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
 		
+		//----------------------------------
+    	// Register Servlets
 		app.addAppServlet(ServletQuery.class,  URI_QUERY);
+		
+		//----------------------------------
+    	// Register APIs
+		CFW.Registry.API.add( new APIQueryExecute("Query", "execute") );
 		
 		//-----------------------------------------------
     	// Register Manual: Done here after all Sources, 

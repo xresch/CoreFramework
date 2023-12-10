@@ -147,6 +147,15 @@ public class FeatureUserManagement extends CFWAppFeature {
 				.value("false")
 				);
 		
+	}
+
+	@Override
+	public void addFeature(CFWApplicationExecutor app) {	
+		
+		app.addAppServlet(ServletUserManagement.class,  "/usermanagement");
+		app.addAppServlet(ServletPermissions.class,  "/usermanagement/permissions");
+		app.addAppServlet(ServletUserManagementAPI.class, "/usermanagement/data"); 
+		
 		//----------------------------------
     	// Cleanup Expired Sessions to 
 		// prevent warning logs
@@ -155,13 +164,6 @@ public class FeatureUserManagement extends CFWAppFeature {
 		  + "FROM CFW_JETTY_SESSIONS "
 		  + "WHERE DATEADD(SECOND, EXPIRY_TIME / 1000, DATE '1970-01-01') < CURRENT_TIMESTAMP()" 
 		);
-	}
-
-	@Override
-	public void addFeature(CFWApplicationExecutor app) {	
-		app.addAppServlet(ServletUserManagement.class,  "/usermanagement");
-		app.addAppServlet(ServletPermissions.class,  "/usermanagement/permissions");
-		app.addAppServlet(ServletUserManagementAPI.class, "/usermanagement/data"); 
 	}
 
 	@Override
