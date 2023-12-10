@@ -1,14 +1,20 @@
 package com.xresch.cfw.features.datetime;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
-import com.xresch.cfw.features.datetime.CFWDate.CFWDateFields;
 import com.xresch.cfw.features.datetime.CFWDate.CFWDateFields;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -25,6 +31,13 @@ public class CFWDBDate {
 	
 	private static ArrayList<String> dateIDCache = new ArrayList<>(); 
 	
+	// dayID and scopeAndDayMap
+	private static Cache<Integer, LinkedHashMap<String,Integer> > scopeAndDayCache = CFW.Caching.addCache("CFW Date: ScopeAndDayMap", 
+			CacheBuilder.newBuilder()
+				.initialCapacity(100)
+				.maximumSize(1000)
+				.expireAfterAccess(25, TimeUnit.HOURS)
+			);
 	
 	//####################################################################################################
 	// Cache Management
@@ -138,6 +151,53 @@ public class CFWDBDate {
 	public static CFWDate selectByID(int id ) {
 		oneTimeCreate(id+"");
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, CFWDateFields.PK_ID.toString(), id);
+	}
+	
+	/*****************************************************************************
+	 * For the specified dateID, select the last day for the Week, Month, Quarter
+	 * and Year of the day represented by the dayID.
+	 * @returns map with Keys WEEK,MONTH,QUARTER,YEAR and dayID as values, returns null on error
+	 *****************************************************************************/
+	public static LinkedHashMap<String, Integer> selectLastDaysForAggregation(int id) {
+		
+		LinkedHashMap<String, Integer> scopeAndDayID = null;
+		try {
+			scopeAndDayID = 
+				scopeAndDayCache.get(id, new Callable<LinkedHashMap<String, Integer>>() {
+					@Override
+					public LinkedHashMap<String, Integer> call() throws Exception {
+						
+						//------------------------------
+						// Get Values
+						ResultSet result = new CFWSQL(null).loadSQLResource(
+										FeatureDateTime.PACKAGE_RESOURCE
+										, "sql_selectLastDaysForAggregation.sql"
+										, id, id, id, id, id, id, id
+									).getResultSet();
+						
+						//------------------------------
+						// Create Map
+						LinkedHashMap<String, Integer> scopeDayMap = new LinkedHashMap<String, Integer>();
+						 while(result.next()) {
+							 scopeDayMap.put(
+									   result.getString("SCOPE")
+									 , result.getInt(CFWDateFields.PK_ID.toString()) 
+									);
+						 }
+						 
+						//------------------------------
+						// Close and Return
+						CFW.DB.close(result);
+						
+						return scopeDayMap;
+	
+					}
+				});
+		} catch (ExecutionException e) {
+			new CFWLog(logger).severe("Error while loading last days for aggregation: "+e.getMessage(), e);
+		}
+		
+		return scopeAndDayID;
 	}
 	
 	/*****************************************************************************

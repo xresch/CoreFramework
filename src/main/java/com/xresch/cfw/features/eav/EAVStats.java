@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.eav;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -268,7 +269,7 @@ public class EAVStats extends CFWObject {
 			this.max.setValue(bigCount);
 			this.avg.setValue(bigCount);
 			this.sum.setValue(bigCount);
-			this.val.setValue(bigCount.divide(bigGranularity));
+			this.val.setValue(bigCount.divide(bigGranularity, RoundingMode.HALF_UP));
 			
 			return this;
 		}
