@@ -358,6 +358,7 @@ function cfw_parameter_getUserParamsStoreKey(){
  ******************************************************************************/
 function cfw_parameter_storeUserParams(params){
 	var storekey = cfw_parameter_getUserParamsStoreKey();
+
 	CFW.cache.storeValueForPage(storekey, JSON.stringify(params));
 }
 

@@ -295,7 +295,6 @@ function cfw_parameter_fireParamWidgetUpdate(paramElement){
 		Object.assign(mergedParams, userParamsForWidget); 
 	});
 	
-	
 	//-----------------------------------------------
 	// Create merged Params of All Parameter Widgets
 	
@@ -309,8 +308,9 @@ function cfw_parameter_fireParamWidgetUpdate(paramElement){
 	delete mergedParams[CFW.global.formID];
 	delete mergedParams[FIELDNAME_PROMPT_PW];
 	delete mergedParams[FIELDNAME_AFFECTED_WIDGETS];
+
 	cfw_parameter_storeUserParams(mergedParams);
-	
+
 	//----------------------------------
 	// Prepare Params and Update Function
 	

@@ -164,6 +164,47 @@ function cfw_utils_randomInt(min, max) {
 	return Math.floor(Math.random() * (max - min) + min);
 }
 
+/**************************************************************************************
+ * Converts a string values to the appropriate value.
+ * @param fieldname name of the field, if starts with "JSON_", will parse as JSON.
+ * @param value to convert
+ * @param numbersAsStrings define if number should be converted to strings. Needed to
+ *        keep leading zeros.
+ *
+ *************************************************************************************/
+function cfw_utils_convertStringsToType(fieldname, value,  numbersAsStrings){
+
+	var result = value;
+
+	if(typeof value == 'string'){
+		//---------------------------
+		// Convert String JSON
+		if(fieldname.startsWith("JSON_") 
+		   && value.startsWith("{")){
+			result = JSON.parse(value);
+			
+		//---------------------------
+		// Convert String Numbers
+		} else if(!(value === '') && !isNaN(value)){
+			if(numbersAsStrings){
+				result = value;
+			}else{
+				result = Number(value);
+			}
+			
+		//---------------------------
+		// Convert String true/false to boolean
+		}else if(value.toLowerCase() == 'true'){
+			result = true;
+		}else if(value.toLowerCase() == 'false'){
+			result = false;
+		}
+	}
+	
+	return result;
+}
+
+
 /*************************************************************
  * Adds coloring to the element based on the records value and
  * the value added in the fields bgstylefield and textstylefield.
@@ -3111,29 +3152,8 @@ function cfw_format_formToArray(formOrID, numbersAsStrings){
 		let name = paramsArray[i].name;
 		let current = paramsArray[i].value;
 		
-		if(typeof current == 'string'){
-			//---------------------------
-			// Convert String Numbers
-			if(name.startsWith("JSON_") 
-			   && current.startsWith("{")){
-				paramsArray[i].value = JSON.parse(current);
-				
-			//---------------------------
-			// Convert String Numbers
-			} else if(!(current === '') && !isNaN(current)){
-				if(numbersAsStrings){
-					paramsArray[i].value = current;
-				}else{
-					paramsArray[i].value = Number(current);
-				}
-			//---------------------------
-			// Convert String true/false to boolean
-			}else if(current.toLowerCase() == 'true'){
-				paramsArray[i].value = true;
-			}else if(current.toLowerCase() == 'false'){
-				paramsArray[i].value = false;
-			}
-		}
+		paramsArray[i].value = cfw_utils_convertStringsToType(name, current, numbersAsStrings);
+
 	}
 
 	//---------------------------
@@ -4065,7 +4085,7 @@ function cfw_http_getURLParamsDecoded()
         if(paramValue.endsWith('#')){
         	paramValue = paramValue.substring(0, paramValue.length-1);
         }
-        vars[key] = paramValue;
+        vars[key] = cfw_utils_convertStringsToType(key, paramValue, true);;
     }
     
     return vars;
