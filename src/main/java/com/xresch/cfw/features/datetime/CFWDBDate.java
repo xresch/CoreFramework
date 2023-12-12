@@ -25,6 +25,8 @@ import com.xresch.cfw.logging.CFWLog;
  **************************************************************************************************************/
 public class CFWDBDate {
 	
+	private static final Object SYNC_LOCK = new Object();
+
 	private static Class<CFWDate> cfwObjectClass = CFWDate.class;		
 	
 	public static Logger logger = CFWLog.getLogger(CFWDBDate.class.getName());
@@ -118,11 +120,14 @@ public class CFWDBDate {
 		}
 		
 		boolean result = true; 
-		if(!checkExistsByID(dateObject.id())) {
-			
-			result &= create(dateObject);
-			
+		
+		//synched because else it might cause Primary Key Violation Exception
+		synchronized (SYNC_LOCK) {
+			if(!checkExistsByID(dateObject.id())) {
+				result &= create(dateObject);
+			}
 		}
+		
 		
 		return result;
 	}
