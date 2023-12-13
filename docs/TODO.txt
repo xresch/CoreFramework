@@ -100,6 +100,7 @@ Potential TODOs
 	- mimic remove last command
 	- mimic remove command somewhere
 	- command messages
+	- command record
 	- metadata template
 	- mimic calling mimic
 	- function array
@@ -195,6 +196,7 @@ Properties: added config property cfw_application_max_formsize=5000000 (Helps so
 	- appdb
 - Query: Added Commands:
 	- message
+	- record
 	- resultremove
 - Query: Added Functions:
 	- array

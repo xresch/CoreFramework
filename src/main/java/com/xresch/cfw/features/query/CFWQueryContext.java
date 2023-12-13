@@ -1,8 +1,6 @@
 package com.xresch.cfw.features.query;
 
-import static org.junit.jupiter.api.Assertions.assertTimeout;
-
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
@@ -307,7 +305,7 @@ public class CFWQueryContext{
 	/***********************************************************************************************
 	 * Returns the detected Fieldnames
 	 ***********************************************************************************************/
-	public HashSet<String> getFinalFieldnames() {
+	public LinkedHashSet<String> getFinalFieldnames() {
 		return contextFieldnameManager.getFinalFieldList();
 	}
 	

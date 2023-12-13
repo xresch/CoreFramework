@@ -1,0 +1,23 @@
+
+<p>This command creates records manually and adds them to the end of the queue. 
+It is not possible to access any values from other records. </p>
+
+<p>Following query creates 5 records with the fields Type, Name and Grade:</p>
+
+<pre><code class="language-cfwquery">| record 
+	[Type		, Name		, Grade] # first record contains the fieldnames
+	["Fruit"	, "Apple"	, "A"]
+	["Fruit"	, "Pear"	, "B"]
+	["Fruit"	, "Orange"	, "C"]
+	["Dessert"	, "Amaretti", "S"]
+	["Dessert"	, "Tiramisu", "SS", "8008"] # if fieldname is missing adds a default one</code></pre>
+
+
+<p>Following query will use the detected fieldnames and adds the values in order:</p>
+<pre><code class="language-cfwquery">|source random records=5
+| record names=false # use existing fields from previous records
+	["Fruit"	, "Apple"	, "A"] # first record is a record too if names=false
+	["Fruit"	, "Pear"	, "B"]
+	["Fruit"	, "Orange"	, "C"]
+	["Dessert"	, "Amaretti", "S"]
+	["Dessert"	, "Tiramisu", "SS", "666"]</code></pre>
