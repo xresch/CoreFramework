@@ -2218,7 +2218,8 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 	
 	var $input = $("#"+fieldName);	
 	if($input.attr('data-role') == "tagsinput"){
-		$input = $("#"+fieldName+"-tagsinput")
+		$input = $("#"+fieldName+"-tagsinput");
+		//$input.parent().prepend('<i class="fas fa-search pr-2"><i>');
 	}
 	
 	var settings = {
@@ -2230,7 +2231,6 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 		triggerWithCtrlSpace:	triggerWithCtrlSpace,
 	}
 	
-	
 	//prevent browser default auto fill
 	$input.attr('autocomplete', 'off');
 	
@@ -2241,8 +2241,6 @@ function cfw_autocompleteInitialize(formID, fieldName, minChars, maxResults, arr
 	if(target != null){
 		settings.autocompleteTarget = $(target);
 	}
-	
-	
 	
 	// For testing
 	//var array = ["Afghanistan","Albania","Algeria","Andorra","Angola","Anguilla"];
