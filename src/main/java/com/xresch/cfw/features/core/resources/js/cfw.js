@@ -651,20 +651,37 @@ function cfw_filterTable(searchField){
 
 /**************************************************************************************
  * 
+ * @param switchButton the button that was clicked
  *************************************************************************************/
-function cfw_internal_toogleBooleanSwitchValue(switchElement){
+function cfw_internal_toggleBooleanSwitchValue(switchButton){
 	
-	var elButton = $(switchElement); 
-	var elSwitch =  elButton.closest('.cfw-switch');
-	var zeInput =  elSwitch.find('input');
-	var zeIdentificazione = elSwitch.attr('id');
-	var hontouNiSelected = elSwitch.hasClass('switch-on');
-	
-	zeInput.val(!hontouNiSelected);
-	
-	elSwitch.toggleClass('switch-on');
-	elSwitch.toggleClass('switch-off');
+	var elButton = $(switchButton); 
+	var elSwitchWrapper =  elButton.closest('.cfw-switch');
+	var hontouNiSelected = elSwitchWrapper.hasClass('switch-on');
+		
+	cfw_internal_setBooleanSwitchValue(elSwitchWrapper, !hontouNiSelected)
 
+
+}
+
+/**************************************************************************************
+ * 
+ * @param elSwitchWrapper the main switch element
+ *************************************************************************************/
+function cfw_internal_setBooleanSwitchValue(elSwitchWrapper, isSelected){
+	
+	var zeInput =  elSwitchWrapper.find('input');
+	
+	zeInput.val(isSelected);
+	
+	if(isSelected){
+		elSwitchWrapper.addClass('switch-on');
+		elSwitchWrapper.removeClass('switch-off');
+	}else{
+		elSwitchWrapper.removeClass('switch-on');
+		elSwitchWrapper.addClass('switch-off');
+	}
+	
 }
 
 /**************************************************************************************

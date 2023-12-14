@@ -547,6 +547,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//---------------------------------------------
 		this.addAttribute("placeholder", formLabel);
 		this.addAttribute("name", name);
+		this.addAttribute("cfwtype", this.type.toString());
 		
 		if(isDisabled) {	this.addAttribute("disabled", "disabled");};
 		
@@ -626,7 +627,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			case HIDDEN:  			html.append("<input type=\"hidden\" "+this.getAttributesString()+"/>");
 									break;
 			
-			case BOOLEAN:  			createBooleanRadiobuttons(html, cssClasses);
+			case BOOLEAN:  			createBooleanSwitch(html, cssClasses);
 									break;	
 									
 			case CUSTOM_LIST:		createCustomListField(html, cssClasses);
@@ -731,7 +732,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	/***********************************************************************************
 	 * Create Boolean Radio Buttons
 	 ***********************************************************************************/
-	private void createBooleanRadiobuttons(StringBuilder html, String cssClasses) {
+	private void createBooleanSwitch(StringBuilder html, String cssClasses) {
 		
 		String falseChecked = "";
 		boolean isChecked = true;
@@ -756,7 +757,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		html.append(
 		"<label class=\"cfw-switch "+cssClasses+"\">"
 		 + "<input type=\"text\" name=\""+name+"\" id=\""+originalID+"\" value=\""+isChecked+"\" "+this.getAttributesString()+" "+disabled+">"
-		 + "<div class=\"cfw-switch-slider\" onclick=\"cfw_internal_toogleBooleanSwitchValue(this);\">"
+		 + "<div class=\"cfw-switch-slider\" onclick=\"cfw_internal_toggleBooleanSwitchValue(this);\">"
 			 + "<div class=\"cfw-switch-slider-on\">"+CFW.L("cfw_core_yes", "Yes")+"</div>"
 			 + "<div class=\"cfw-switch-slider-button\">&nbsp;</div>"
 			 + "<div class=\"cfw-switch-slider-off\">"+CFW.L("cfw_core_no", "No")+"</div>"
@@ -2057,6 +2058,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 			}
 		}
 		
+		
 		//-------------------------------------------------
 		// Convert Arrays to String ArrayList
 		if(value.getClass() == Object[].class) {
@@ -2087,6 +2089,12 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 				return false;
 			}
 			
+		}
+		
+		//-------------------------------------------------
+		// Convert String
+		if(valueClass == String.class) 	{ 
+			return this.changeValue(value.toString() );  
 		}
 		
 		return success;

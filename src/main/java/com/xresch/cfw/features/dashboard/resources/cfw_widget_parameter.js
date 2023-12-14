@@ -46,8 +46,10 @@
 							
 							//--------------------
 							// Skip Hidden Fields
-							// doesn't work with all fields, e.g. chart settings
-							//if(type == "hidden"){ return; }
+							if(type == "hidden"
+							&& inputField.data("role") != "chartsettings"){ 
+								return; 
+							}
 							
 							//--------------------
 							// Do others
@@ -65,13 +67,28 @@
 											current.prop("checked", false);
 										}
 									});
-								} else if (inputField.hasClass('cfw-tags-selector')){
+								}
+								
+								//----------------------------------------------
+								// Boolean Switches
+								else if (inputField.attr('cfwtype') == "BOOLEAN"){
+									cfw_internal_setBooleanSwitchValue(
+										inputField.closest('.cfw-switch')
+										, viewerCustomValue);
+								}
+								
+								//----------------------------------------------
+								// Tag Selectors
+								else if (inputField.hasClass('cfw-tags-selector')){
 									var tagsInputValues = JSON.parse(viewerCustomValue);
 									//must be initialized to add values
 									inputField.tagsinput('removeAll');
 									for(var key in tagsInputValues){
 										inputField.tagsinput('add', { "value": key , "label": tagsInputValues[key] });
 									}
+									
+								//----------------------------------------------
+								// Tags
 								}else if(inputField.hasClass('cfw-tags')){
 									var tagsInputValues = viewerCustomValue.split(',');
 									//must be initialized to add values
@@ -79,6 +96,9 @@
 									for(var index in tagsInputValues){
 										inputField.tagsinput('add', tagsInputValues[index]);
 									}
+									
+								//----------------------------------------------
+								// Chart Settings
 								}else if(inputField.data("role") == "chartsettings"){
 									var chartsettingsValues = JSON.parse(viewerCustomValue);
 									var wrapper = inputField.closest('.cfw-chartsettings-field-wrapper');

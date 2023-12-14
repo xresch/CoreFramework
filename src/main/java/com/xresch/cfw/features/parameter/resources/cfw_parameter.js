@@ -413,10 +413,14 @@ function cfw_parameter_getFinalParams(customParams){
 			if(currentParam.PARAM_TYPE == 'TAGS_SELECTOR'){
 				var tagsInputObject = JSON.parse(viewerCustomValue);
 				currentParam.VALUE = tagsInputObject;
-			}else if(typeof viewerCustomValue == "string"){
+			}else if(typeof viewerCustomValue == "string"
+			|| typeof viewerCustomValue == "boolean"
+			|| typeof viewerCustomValue == "number"
+			){
 				currentParam.VALUE = viewerCustomValue;
-			}else{
-				currentParam.VALUE = JSON.stringify(viewerCustomValue);
+			}
+			else{
+				currentParam.VALUE = viewerCustomValue;
 			}
 		}else{
 			
@@ -437,6 +441,8 @@ function cfw_parameter_getFinalParams(customParams){
 			}
 		}
 	}
+	
+	console.log(mergedParams);
 	
 	return mergedParams;
 }

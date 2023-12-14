@@ -310,7 +310,7 @@ function cfw_parameter_fireParamWidgetUpdate(paramElement){
 	delete mergedParams[FIELDNAME_AFFECTED_WIDGETS];
 
 	cfw_parameter_storeUserParams(mergedParams);
-
+	
 	//----------------------------------
 	// Prepare Params and Update Function
 	
