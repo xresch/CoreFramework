@@ -432,7 +432,6 @@ public class CFWParameter extends CFWObject {
 	 ******************************************************************************/
 	public static String substituteInString(String zeString, JsonObject parameters) {
 		
-		System.out.println("params: "+CFW.JSON.toJSON(parameters));
 		//###############################################################################
 		//############################ IMPORTANT ########################################
 		//###############################################################################

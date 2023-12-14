@@ -442,8 +442,6 @@ function cfw_parameter_getFinalParams(customParams){
 		}
 	}
 	
-	console.log(mergedParams);
-	
 	return mergedParams;
 }
 
