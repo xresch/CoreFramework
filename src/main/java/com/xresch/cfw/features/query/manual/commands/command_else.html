@@ -1,0 +1,41 @@
+
+<p>The else-command is used to start an else- or elseif-block in an if-statement.
+</p>
+
+<p>Simple example of an else-statement:</p>
+
+<pre><code class="language-cfwquery">| source random records = 20
+| if (VALUE &lt; 50)
+	| set SIZE = "Small"
+| else
+	| set SIZE = "Big"	
+| end
+| formatfield
+	SIZE = ['case' 
+				, "==Small", "cfw-green"
+				, [], "cfw-red"
+		   ]
+| sort VALUE</code></pre>
+
+
+<p>You can add a condition to your else statement to turn it into an elseif-block:</p>
+
+<pre><code class="language-cfwquery">| source random records = 20
+| if (VALUE &lt; 33)
+	| set SIZE = "Small"
+	
+| else (VALUE &lt; 66)
+	| set SIZE = "Medium"
+	
+| else
+	| set SIZE = "Big"
+		
+| end
+| formatfield
+	SIZE = ['case' 
+			, "==Small", "cfw-green"
+			, "==Medium", "cfw-orange"
+			, [], "cfw-red"
+			]
+| sort VALUE</code></pre>
+

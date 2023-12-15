@@ -1,0 +1,59 @@
+
+<p>The if-command is used to start and if-statement and introduce flow control into your query.
+If-statements are ended with the end-command. 
+The order of the records after an if-statement cannot be predicted, even if most of the times it might look as having a specific order.</p>
+
+<pre><code class="language-cfwquery">| source random records = 20
+| if (VALUE &lt; 50)
+	| set SIZE = "Small"
+| end
+| sort VALUE</code></pre>
+
+
+
+<p>Example with an else statement:</p>
+
+<pre><code class="language-cfwquery">| source random records = 20
+| if (VALUE &lt; 50)
+	| set SIZE = "Small"
+| else
+	| set SIZE = "Big"	
+| end
+| formatfield
+	SIZE = ['case' 
+				, "==Small", "cfw-green"
+				, [], "cfw-red"
+		   ]
+| sort VALUE</code></pre>
+
+
+<p>Here a bit more complex example with nested if-statements and bigger conditions:</p>
+
+<pre><code class="language-cfwquery">| source random records = 20
+| if (
+		VALUE &lt; 33 
+		AND ( 1 == 1 OR length("1234") == 4) 
+	)
+	| if (LIKES_TIRAMISU == true)
+		| set SIZE = "Small"
+	| else
+		| set SIZE = "-"
+	| end
+	| set NEW_FIELD = "123456"
+	
+| else (VALUE &lt; 66 AND null == null )
+	| set SIZE = "Medium"
+	
+| else
+	| set SIZE = "Big"
+		
+| end
+| formatfield
+	SIZE = ['case' 
+			, "==Small", "cfw-green"
+			, "==Medium", "cfw-orange"
+			, "==Big", "cfw-red"
+			, [], ""
+			]
+| sort VALUE</code></pre>
+

@@ -2,7 +2,7 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
@@ -13,11 +13,9 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.features.query.parse.QueryPartArray;
-import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartGroup;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
 /************************************************************************************************************
@@ -25,18 +23,22 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryCommandFilter extends CFWQueryCommand {
+public class CFWQueryCommandElse extends _CFWQueryCommandFlowControl {
 	
-	public static final String COMMAND_NAME = "filter";
+	public static final String COMMAND_NAME = "else";
 
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandFilter.class.getName());
-	
+	private _CFWQueryCommandFlowControl targetCommand;
+	private _CFWQueryCommandFlowControl endCommand;
 	private QueryPartGroup evaluationGroup;
+	
+	protected LinkedBlockingQueue<EnhancedJsonObject> flowControlQueue = new LinkedBlockingQueue<>();
+	protected boolean lastObjectReceived =  false;
+	
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandFilter(CFWQuery parent) {
+	public CFWQueryCommandElse(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -45,7 +47,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {COMMAND_NAME, "grep"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -53,7 +55,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Filters the record based on field values.";
+		return "Creates an else or elseif block as part of an if-statement.";
 	}
 
 	/***********************************************************************************************
@@ -61,7 +63,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" <fieldname><operator><value> [<fieldname><operator><value> ...]";
+		return COMMAND_NAME+" [<fieldname><operator><value> ...]";
 	}
 	
 	/***********************************************************************************************
@@ -101,7 +103,94 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		// keep default
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception {
+		
+
+		
+		//----------------------------------------
+		// Find Target elseif / else / end
+		PipelineAction<?, ?> nextAction = this.getNextAction();
+		
+		// used to skip nested if-statement blocks
+		int openIfBlockCounter = 0;
+		
+		while(nextAction != null) {
+			
+			if(nextAction instanceof _CFWQueryCommandFlowControl) {
+				
+				if(nextAction instanceof CFWQueryCommandIf) {
+					openIfBlockCounter++;
+				}else if(openIfBlockCounter > 0
+					&& nextAction instanceof CFWQueryCommandEnd) {
+					openIfBlockCounter--;
+				}else if(openIfBlockCounter == 0) {
+					// else, elseif, or end
+					targetCommand = (_CFWQueryCommandFlowControl)nextAction;
+					break;
+				}
+			}
+			
+			nextAction =  nextAction.getNextAction();
+			
+		}
+		
+		//----------------------------------------
+		// Find end command
+		nextAction = this.getNextAction();
+		openIfBlockCounter = 0;
+		
+		while(nextAction != null) {
+			
+			if(nextAction instanceof _CFWQueryCommandFlowControl) {
+				
+				if(nextAction instanceof CFWQueryCommandIf) {
+					openIfBlockCounter++;
+				}else if(openIfBlockCounter > 0
+					&& nextAction instanceof CFWQueryCommandEnd) {
+					openIfBlockCounter--;
+				}else if(openIfBlockCounter == 0
+				&& nextAction instanceof CFWQueryCommandEnd) {
+					endCommand = (_CFWQueryCommandFlowControl)nextAction;
+					break;
+				}
+			}
+			
+			nextAction =  nextAction.getNextAction();
+			
+		}
+		
+		//----------------------------------------
+		// Find end command
+		if(targetCommand == null && endCommand != null) {
+			targetCommand = endCommand;
+		}
+		
+		//----------------------------------------
+		// Check for missing target
+		if(targetCommand == null) {
+			throw new Exception(COMMAND_NAME+": could not find a matching end or target for the elseif-block(else, elseif or end).");
+		}
+		
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void putIntoFlowControlQueue(EnhancedJsonObject object) throws Exception {
+		if(object != null) {
+			flowControlQueue.put(object);
+		}else {
+			lastObjectReceived = true;
+		}
 	}
 	
 	
@@ -111,9 +200,19 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
-		//boolean printed = false;
+		//----------------------------------
+		// From Previous Command 
 		while(keepPolling()) {
-			EnhancedJsonObject record = inQueue.poll();
+			// already handled, give to end command
+			endCommand.putIntoFlowControlQueue(inQueue.poll());
+			
+		}
+		
+		//----------------------------------
+		// From Previous Flow Control 
+		while(!flowControlQueue.isEmpty()) {
+			
+			EnhancedJsonObject record = flowControlQueue.poll();
 			
 			if(evaluationGroup == null || evaluationGroup.size() == 0) {
 				outQueue.add(record);
@@ -121,21 +220,25 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 
 				QueryPartValue evalResult = evaluationGroup.determineValue(record);
 				
-//				if(!printed) { 
-//					System.out.println(CFW.JSON.toJSONPrettyDebugOnly(evaluationGroup.createDebugObject(record)));
-//					printed = true;
-//				} 
-				
-				if(evalResult.isBoolOrBoolString()) {
-					if(evalResult.getAsBoolean()) {
-						outQueue.add(record);
-					}
+				if(evalResult.getAsBoolean()) {
+					//if matches give to next command in pipeline
+					outQueue.add(record);
+				}else {
+					// if not matched give to else, elseif or end
+					targetCommand.putIntoFlowControlQueue(record);
 				}
+				
 			}
 		}
 		
-		this.setDoneIfPreviousDone();
-	
+		
+		
+		if(lastObjectReceived && this.isPreviousDone()) {
+			targetCommand.putIntoFlowControlQueue(null);
+			this.setDone();
+		}
+		
+		
 	}
 
 }

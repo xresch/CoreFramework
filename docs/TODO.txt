@@ -101,6 +101,7 @@ Potential TODOs
 	- mimic remove command somewhere
 	- command messages
 	- command record
+	- command if, else, end
 	- metadata template
 	- mimic calling mimic
 	- function array
@@ -195,6 +196,9 @@ Properties: added config property cfw_application_max_formsize=5000000 (Helps so
 - Query: Added Sources:
 	- appdb
 - Query: Added Commands:
+	- else
+	- end
+	- if
 	- message
 	- record
 	- resultremove

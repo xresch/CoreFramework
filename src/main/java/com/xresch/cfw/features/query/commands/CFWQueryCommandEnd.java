@@ -2,7 +2,6 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.logging.Logger;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.core.AutocompleteResult;
@@ -13,11 +12,9 @@ import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.parse.CFWQueryParser;
 import com.xresch.cfw.features.query.parse.QueryPart;
-import com.xresch.cfw.features.query.parse.QueryPartArray;
-import com.xresch.cfw.features.query.parse.QueryPartAssignment;
 import com.xresch.cfw.features.query.parse.QueryPartGroup;
 import com.xresch.cfw.features.query.parse.QueryPartValue;
-import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.pipeline.PipelineAction;
 import com.xresch.cfw.pipeline.PipelineActionContext;
 
 /************************************************************************************************************
@@ -25,18 +22,16 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
  * @author Reto Scheiwiller, (c) Copyright 2023 
  * @license MIT-License
  ************************************************************************************************************/
-public class CFWQueryCommandFilter extends CFWQueryCommand {
+public class CFWQueryCommandEnd extends _CFWQueryCommandFlowControl {
 	
-	public static final String COMMAND_NAME = "filter";
-
-	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandFilter.class.getName());
+	public static final String COMMAND_NAME = "end";
 	
-	private QueryPartGroup evaluationGroup;
+	protected boolean lastRecordReceived =  false;
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public CFWQueryCommandFilter(CFWQuery parent) {
+	public CFWQueryCommandEnd(CFWQuery parent) {
 		super(parent);
 	}
 
@@ -45,7 +40,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String[] uniqueNameAndAliases() {
-		return new String[] {COMMAND_NAME, "grep"};
+		return new String[] {COMMAND_NAME};
 	}
 
 	/***********************************************************************************************
@@ -53,7 +48,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionShort() {
-		return "Filters the record based on field values.";
+		return "Ends a flow control section, e.g. for if-statements.";
 	}
 
 	/***********************************************************************************************
@@ -61,7 +56,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" <fieldname><operator><value> [<fieldname><operator><value> ...]";
+		return COMMAND_NAME;
 	}
 	
 	/***********************************************************************************************
@@ -69,7 +64,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return _CFWQueryCommandCommon.getFilterOperatorDescipriontHTML();
+		return "";
 		
 	}
 
@@ -87,13 +82,7 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void setAndValidateQueryParts(CFWQueryParser parser, ArrayList<QueryPart> parts) throws ParseException {
-		
-		if(evaluationGroup == null) {
-			evaluationGroup = new QueryPartGroup(parent.getContext());
-		}
-		
-		_CFWQueryCommandCommon.createFilterEvaluatiooGroup(parser, parts, COMMAND_NAME, evaluationGroup);;
-		
+		// ignore all commands
 	}
 	
 	/***********************************************************************************************
@@ -101,7 +90,29 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public void autocomplete(AutocompleteResult result, CFWQueryAutocompleteHelper helper) {
-		// keep default
+		// no autocomplete
+		
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void initializeAction() throws Exception {
+		// none
+	}
+	
+	/***********************************************************************************************
+	 * 
+	 ***********************************************************************************************/
+	@Override
+	public void putIntoFlowControlQueue(EnhancedJsonObject object) throws Exception {
+		if(object != null) {
+			// end command puts all incoming records to the next command 
+			this.outQueue.put(object);
+		}else {
+			lastRecordReceived = true;
+		}
 	}
 	
 	
@@ -111,30 +122,16 @@ public class CFWQueryCommandFilter extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 		
-		//boolean printed = false;
 		while(keepPolling()) {
-			EnhancedJsonObject record = inQueue.poll();
-			
-			if(evaluationGroup == null || evaluationGroup.size() == 0) {
-				outQueue.add(record);
-			}else {
-
-				QueryPartValue evalResult = evaluationGroup.determineValue(record);
-				
-//				if(!printed) { 
-//					System.out.println(CFW.JSON.toJSONPrettyDebugOnly(evaluationGroup.createDebugObject(record)));
-//					printed = true;
-//				} 
-				
-				if(evalResult.isBoolOrBoolString()) {
-					if(evalResult.getAsBoolean()) {
-						outQueue.add(record);
-					}
-				}
-			}
+			outQueue.add(inQueue.poll());
 		}
-		
-		this.setDoneIfPreviousDone();
+				
+		if(inQueue.isEmpty() 
+		&& this.isPreviousDone() 
+		&& lastRecordReceived) {
+			this.setDone();
+		}
+
 	
 	}
 
