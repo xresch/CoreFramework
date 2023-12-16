@@ -20,7 +20,7 @@
     margin-bottom: 10px;
     position: sticky;
     top: 40px;
-    z-index: 16;
+    z-index: 32;
     background: inherit;
     width: 101%;
 }

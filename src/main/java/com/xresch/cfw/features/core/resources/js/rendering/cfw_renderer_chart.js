@@ -229,7 +229,7 @@ function cfw_renderer_chart(renderDef) {
 		//the radius for the points shown on line and area charts
 		pointradius: 0,
 		// the padding of the chart
-		padding: '10px',
+		padding: '5px',
 		// the minimum height of the chart(s), as percent or pixel value like 100px, 50% etc... (default: 100%)
 		height: '100%',
 		// the color of the x-axes grid lines
@@ -571,7 +571,7 @@ function cfw_renderer_chart(renderDef) {
 		
 		var columnCount = settings.multichartcolumns;
 		if(!settings.multichart){ columnCount = 1; };
-		var chartPlusDetailsWrapper = $('<div class="d-flex" style="width:'+(100/columnCount)+'%">');
+		var chartPlusDetailsWrapper = $('<div class="d-flex mh-100" style="width:'+(100/columnCount)+'%">');
 		chartPlusDetailsWrapper.css("height", settings.height);
 		chartPlusDetailsWrapper.css("padding", settings.padding);
 		

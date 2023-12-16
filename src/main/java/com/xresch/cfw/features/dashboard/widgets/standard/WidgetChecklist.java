@@ -6,21 +6,28 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
-import com.xresch.cfw.features.dashboard.FeatureDashboard;
-import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
-import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
-import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.datahandling.CFWTimeframe;
+import com.xresch.cfw.features.dashboard.DashboardWidget;
+import com.xresch.cfw.features.dashboard.FeatureDashboard;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache.WidgetDataCachePolicy;
+import com.xresch.cfw.features.dashboard.widgets.WidgetDefinition;
 import com.xresch.cfw.response.JSONResponse;
 
 public class WidgetChecklist extends WidgetDefinition {
+
+	private static final String FIELDNAME_CONTENT = "content";
+	private static final String FIELDNAME_STRIKETHROUGH = "strikethrough";
+	private static final String FIELDNAME_DO_SORT = "doSort";
 
 	/************************************************************
 	 * 
@@ -35,15 +42,21 @@ public class WidgetChecklist extends WidgetDefinition {
 	public CFWObject getSettings() {
 		return new CFWObject()
 				.addField(
-					CFWField.newString(FormFieldType.TEXTAREA, "content")
+					CFWField.newString(FormFieldType.TEXTAREA, FIELDNAME_CONTENT)
 						.setDescription("Contains all the items on the checklist. Items checked begin with 'X '.")
 						.setValue("Checkpoint A\r\nCheckpoint B\r\nCheckpoint C")
 				)
 				.addField(
-					CFWField.newBoolean(FormFieldType.BOOLEAN, "strikethrough")
+					CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_STRIKETHROUGH)
 						.setDescription("Toggle if checked items should be striked through.")
 						.setValue(true)
 				)
+				.addField(
+						CFWField.newBoolean(FormFieldType.BOOLEAN, FIELDNAME_DO_SORT)
+						.setLabel("Sort")
+						.setDescription("Toggle if checked/unchecked items should be sorted.")
+						.setValue(false)
+						)
 		;
 	}
 	
@@ -103,6 +116,72 @@ public class WidgetChecklist extends WidgetDefinition {
 	public HashMap<Locale, FileDefinition> getLocalizationFiles() {
 		HashMap<Locale, FileDefinition> map = new HashMap<Locale, FileDefinition>();
 		return map;
+	}
+	
+	/*********************************************************************
+	 * 
+	 *********************************************************************/
+	public boolean supportsTask() {
+		return true;
+	}
+	
+	/************************************************************
+	 * Override this method to return a description of what the
+	 * task of this widget does.
+	 ************************************************************/
+	public String getTaskDescription() {
+		return "Resets all checkboxes at the defined schedule.";
+	}
+	
+	/************************************************************
+	 * Override this method and return a CFWObject containing 
+	 * fields for the task parameters. The settings will be passed 
+	 * to the 
+	 * Always return a new instance, do not reuse a CFWObject.
+	 * @return CFWObject
+	 ************************************************************/
+	public CFWObject getTasksParameters() {
+		
+		return new CFWObject();
+	}
+	
+	/*************************************************************************
+	 * Implement the actions your task should execute.
+	 * See {@link com.xresch.cfw.features.jobs.CFWJobTask#executeTask CFWJobTask.executeTask()} to get
+	 * more details on how to implement this method.
+	 *************************************************************************/
+	@SuppressWarnings("unchecked")
+	public void executeTask(JobExecutionContext context
+						  , CFWObject taskParams
+						  , DashboardWidget widget
+						  , CFWObject widgetSettings
+						  , CFWTimeframe offset) throws JobExecutionException {
+		
+		
+		//----------------------------------------
+		// Fetch Data
+		CFWField<String> contentField = (CFWField<String>)widgetSettings.getField(FIELDNAME_CONTENT);
+		String currentContent = contentField.getValue();
+
+		
+		//----------------------------------------
+		// Reset Checkboxes
+		String resetContent = currentContent
+								.replace("\nX", "\n")
+								.replace("\nx", "\n")
+								.replace("\r\nX", "\r\n")
+								.replace("\r\nx", "\r\n")
+								;
+		
+		//----------------------------------------
+		// Save
+		contentField.setValue(resetContent);
+		
+		widget.settings(CFW.JSON.toJSON(widgetSettings));
+		
+		widget.update();
+		
+		
 	}
 
 }

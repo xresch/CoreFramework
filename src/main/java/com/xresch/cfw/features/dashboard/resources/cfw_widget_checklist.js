@@ -170,6 +170,9 @@ function cfw_widget_checklist_confirmEdit(element){
 function cfw_widget_checklist_checkboxChange(element, doRemove){
 	
 	var parent = $(element).closest('.form-check');
+	var checklistWrapper = $(element).closest('.cfw-widget-checklist');
+	var widgetObject = $(checklistWrapper).data('widgetObject');
+	var doSort = widgetObject.JSON_SETTINGS.doSort;
 	var checkbox = parent.find('.form-check-input');
 	var isChecked = checkbox.prop("checked");
 	var group = checkbox.closest('.grid-stack-item');
@@ -205,10 +208,14 @@ function cfw_widget_checklist_checkboxChange(element, doRemove){
 				return 1;
 			}
 			
-			if (checked){
-				itemsChecked += 'X ' + value + "\r\n";
+			var checkedString = "";
+			if (checked){	checkedString += 'X '; }
+			
+			//if doSort=false, all items will be put into itemsChecked variable
+			if (checked || !doSort){
+				itemsChecked += checkedString + value + "\r\n";
 			}else{
-				itemsUnchecked += value + "\r\n";
+				itemsUnchecked += checkedString + value + "\r\n";
 			}
 			
 		});
