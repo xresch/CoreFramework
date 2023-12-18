@@ -3,11 +3,11 @@ package com.xresch.cfw.features.query;
 import java.lang.ref.SoftReference;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.xresch.cfw.features.query.parse.QueryPart;
@@ -23,6 +23,10 @@ public class EnhancedJsonObject {
 
 	private SoftReference<JsonObject> internal;
 	
+	// custom properties to add metadata etc.. to a record 
+	// only initialized if used
+	private Properties metadata;
+
 	public EnhancedJsonObject() {
 		this.internal = new SoftReference<>(new JsonObject());
 	}
@@ -209,6 +213,34 @@ public class EnhancedJsonObject {
 	public void addProperty(String property, Character value) {
 		getWrappedObject().addProperty(property, value);
 	}
+	
+	/*************************************************************************************************
+	 * Used to add a metadata to a record.
+	 * Metadata is only used by code and will not be added to any object data.
+	 *
+	 * @param name name of the metadata.
+	 * @param value the value of the metadata
+	 *************************************************************************************************/
+	public void addMetadata(String name, Object value) {
+		if(metadata == null) { metadata = new Properties(); }
+		
+		metadata.put(name, value);
+	}
+	
+	/*************************************************************************************************
+	 * Used to add a metadata to a record.
+	 * Metadata is only used by code and will not be added to any object data.
+	 *
+	 * @param name name of the metadata.
+	 * @return the object or null
+	 *************************************************************************************************/
+	public Object getMetadata(String name) {
+		if(metadata == null) { return null; }
+		
+		return metadata.get(name);
+	}
+	
+	
 	
 	/*************************************************************************************************
 	 * Returns a set of members of this object. The set is ordered, and the order is in which the

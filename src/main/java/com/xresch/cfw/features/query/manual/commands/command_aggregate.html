@@ -1,0 +1,22 @@
+
+<p>
+Used to create aggregated values, while keeping all the records and adding the resulting values for every record.
+The aggregation can be over all records or grouped by specified fields. If you do not want to keep the original fields, but want a result with one record per group, use the stats command.
+</p>
+
+
+<p>Following query creates 1000 records and creates aggregated statistics by FIRSTNAME:</p>
+<pre><code class="language-cfwquery">| source random records=1000
+| aggregate 
+	by=[FIRSTNAME] 
+	FIRST_ID=first(ID) 
+	COUNT=count() 
+	SUM=sum(VALUE)
+	MAX=max(VALUE)
+| sort FIRSTNAME</code></pre>
+
+<p>This command can be used to add the total amount of records to every row. Do not define the by-parameter to get statistics for all records:</p>
+<pre><code class="language-cfwquery">| source random records=123 
+| aggregate 
+	TOTAL_RECORDS=count() </code></pre>
+

@@ -293,6 +293,23 @@ public abstract class CFWQueryCommand extends PipelineAction<EnhancedJsonObject,
 		}
 		
 	}
+	/***********************************************************************************************
+	 * Add all fieldnames, except for fieldnames that start with an underscore.
+	 ***********************************************************************************************/
+	protected void fieldnameAddAll(ArrayList<String> array) {
+		
+		//-----------------------------------
+		// Add Change to Source fieldmanager
+		CFWQueryFieldnameManager sourceFieldmanager = this.getSourceFieldmanager();
+			
+		if(sourceFieldmanager != null) {
+			for(String fieldname : array) {
+				sourceFieldmanager.add(fieldname);
+				
+			}
+		}
+		
+	}
 	
 	/***********************************************************************************************
 	 * Add all fieldnames, except for fieldnames that start with an underscore.
