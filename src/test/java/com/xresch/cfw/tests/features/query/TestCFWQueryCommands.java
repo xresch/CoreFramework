@@ -879,6 +879,116 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testRecord() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testRecord.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//=================================================
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(4, queryResults.getRecordCount());
+		
+		
+		//------------------------------------
+		// Check 1st  Record
+		JsonObject record = queryResults.getRecord(0);
+			
+		Assertions.assertEquals("Aurora", record.get("FIRSTNAME").getAsString());
+		Assertions.assertEquals(11, record.get("VALUE").getAsInt());
+		Assertions.assertEquals(null, record.get("AddedField-2"));
+		Assertions.assertEquals(null, record.get("AddedField-3"));
+
+		//------------------------------------
+		// Check 2nd  Record
+		record = queryResults.getRecord(1);
+			
+		Assertions.assertEquals("Alejandra", record.get("FIRSTNAME").getAsString());
+		Assertions.assertEquals(true, record.get("VALUE").isJsonArray());
+		Assertions.assertEquals(null, record.get("AddedField-2"));
+		Assertions.assertEquals(null, record.get("AddedField-3"));
+		
+		//------------------------------------
+		// Check 3rd  Record
+		record = queryResults.getRecord(2);
+			
+		Assertions.assertEquals("Roberto", record.get("FIRSTNAME").getAsString());
+		Assertions.assertEquals(true, record.get("VALUE").isJsonObject());
+		Assertions.assertEquals(null, record.get("AddedField-2"));
+		Assertions.assertEquals(null, record.get("AddedField-3"));
+		
+		//------------------------------------
+		// Check 4th  Record
+		record = queryResults.getRecord(3);
+			
+		Assertions.assertEquals("Hera", record.get("FIRSTNAME").getAsString());
+		Assertions.assertEquals(8008, record.get("VALUE").getAsInt());
+		Assertions.assertEquals(true, record.get("AddedField-2").isJsonNull());
+		Assertions.assertEquals(true, record.get("AddedField-3").getAsBoolean());
+		
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testRecord_NamesFalse() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testRecord_NamesFalse.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//=================================================
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(3, queryResults.getRecordCount());
+		
+		
+		//------------------------------------
+		// Check 1st  Record
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals("Hejdi", record.get("FIRSTNAME").getAsString());
+		Assertions.assertEquals("8.8008", record.get("VALUE").getAsString());
+		
+		//------------------------------------
+		// Check 2nd  Record
+		record = queryResults.getRecord(1);
+		
+		Assertions.assertEquals("Laura", record.get("FIRSTNAME").getAsString());
+		Assertions.assertEquals(42, record.get("VALUE").getAsInt());
+		
+		//------------------------------------
+		// Check 3rd  Record
+		record = queryResults.getRecord(2);
+		
+		Assertions.assertEquals("Victora", record.get("FIRSTNAME").getAsString());
+		Assertions.assertEquals(99, record.get("VALUE").getAsInt());
+
+//		| source empty
+//		| set 
+//			FIRSTNAME = "Hejdi"
+//			VALUE = 8.8008
+//		| record names=false
+//			["Laura", 42]
+//			["Victora", 99]
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testRemove() throws IOException {
 		
 		//---------------------------------

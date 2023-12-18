@@ -100,7 +100,6 @@ Potential TODOs
 	- mimic remove last command
 	- mimic remove command somewhere
 	- command messages
-	- command record
 	- command if, else, end
 	- metadata template
 	- mimic calling mimic
