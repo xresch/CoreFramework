@@ -78,6 +78,7 @@ import com.xresch.cfw.features.query.functions.CFWQueryFunctionLastIndexOf;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionLatest;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionLatestSet;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionLength;
+import com.xresch.cfw.features.query.functions.CFWQueryFunctionLiteral;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionMax;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionMedian;
 import com.xresch.cfw.features.query.functions.CFWQueryFunctionMeta;
@@ -249,6 +250,7 @@ public class FeatureQuery extends CFWAppFeature {
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionLatest(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionLatestSet(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionLength(null));
+		CFW.Registry.Query.registerFunction(new CFWQueryFunctionLiteral(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionMax(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionMedian(null));
 		CFW.Registry.Query.registerFunction(new CFWQueryFunctionMeta(null));

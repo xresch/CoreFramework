@@ -509,7 +509,8 @@ We are strings too</code></pre>
 		<div class="card-body maxvw-40">
 			Any string that matches a fieldname(case sensitive) will be replaced by the value of that field.
 			Following example assigns the value of the field INDEX to 4 other fields. 
-			The new field STRING will contain the string 'index' as it does not match the case:
+			The new field STRING will contain the string 'index' as it does not match the case.
+			You can use the function literal() to not convert into field values:
 			<pre><code class="language-cfwquery">| source random records=100
 | set
 	INDEX_A=INDEX
@@ -517,6 +518,7 @@ We are strings too</code></pre>
 	INDEX_C='INDEX'
 	INDEX_D=`INDEX`
 	STRING=index
+	LITERAL=literal("INDEX")
 	</code></pre>
 		</div>
 	</div>

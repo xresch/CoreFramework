@@ -1,0 +1,12 @@
+
+<p>The literal function is used to make sure you receive the string and not the value of a field with that fieldname.</p>
+
+<pre><code class="language-cfwquery">| source random records=123 
+| keep FIRSTNAME
+| set
+	FIELDVALUE = "FIRSTNAME" # returns the value of the field "FIELDNAME"
+	LITERAL = literal("FIRSTNAME") #returns the string "FIRSTNAME" </code></pre>
+
+
+
+

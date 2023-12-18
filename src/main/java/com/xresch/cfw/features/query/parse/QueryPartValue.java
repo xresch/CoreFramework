@@ -24,6 +24,9 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 	
 	private QueryPartValueType type;
 	private Object value = null;
+	
+	// set to true to NOT convert strings that are fieldnames to the value of the field
+	private boolean isLiteral = false;
 		
 	/******************************************************************************************************
 	 * 
@@ -368,6 +371,21 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 	}
 	
 	/******************************************************************************************************
+	 * Check if the value is literal
+	 ******************************************************************************************************/
+	public boolean isLiteral() {
+		return isLiteral;
+	}
+	
+	/******************************************************************************************************
+	 * Set this value to be a literal or not.
+	 * You might want to make a clone to make sure nothing breaks with the getAsClone() method. 
+	 ******************************************************************************************************/
+	public void isLiteral(boolean value) {
+		 isLiteral = value;
+	}
+	
+	/******************************************************************************************************
 	 * 
 	 ******************************************************************************************************/
 	@SuppressWarnings("unchecked")
@@ -681,7 +699,7 @@ public class QueryPartValue extends QueryPart implements Comparable<QueryPartVal
 		
 		if(value == null || object == null) return this;
 
-		if(this.isString()){
+		if(this.isString() && !this.isLiteral()){
 
 			String potentialFieldname = this.getAsString();
 			if(object.has(potentialFieldname)) {
