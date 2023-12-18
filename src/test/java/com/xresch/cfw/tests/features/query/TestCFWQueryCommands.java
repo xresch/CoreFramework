@@ -66,6 +66,88 @@ public class TestCFWQueryCommands extends DBTestMaster{
 
 	}
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testAggregate() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testAggregate.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(7, queryResults.getRecordCount());
+		
+		// Check Aurora Records
+		for(int i = 0; i < 3; i++) {
+			JsonObject record = queryResults.getRecord(i);
+					
+			Assertions.assertEquals("Aurora", record.get("FIRSTNAME").getAsString());
+			Assertions.assertEquals(3, record.get("count()").getAsInt());
+			Assertions.assertEquals(66, record.get("SUM").getAsInt());
+			Assertions.assertEquals(11, record.get("MIN").getAsInt());
+			Assertions.assertEquals(33, record.get("MAX").getAsInt());
+			Assertions.assertEquals(11, record.get("FIRST").getAsInt());
+			Assertions.assertEquals(33, record.get("LAST").getAsInt());
+		}
+		
+		
+		// Check Aurora Records
+		for(int i = 3; i < 7; i++) {
+			JsonObject record = queryResults.getRecord(i);
+					
+			Assertions.assertEquals("Hera", record.get("FIRSTNAME").getAsString());
+			Assertions.assertEquals(4, record.get("count()").getAsInt());
+			Assertions.assertEquals(242, record.get("SUM").getAsInt());
+			Assertions.assertEquals(44, record.get("MIN").getAsInt());
+			Assertions.assertEquals(77, record.get("MAX").getAsInt());
+			Assertions.assertEquals(77, record.get("FIRST").getAsInt());
+			Assertions.assertEquals(44, record.get("LAST").getAsInt());
+		}
+				
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testAggregate_NoGrouping() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testAggregate_NoGrouping.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(7, queryResults.getRecordCount());
+		
+		// Check All Records
+		for(int i = 0; i < 7; i++) {
+			JsonObject record = queryResults.getRecord(i);
+					
+			Assertions.assertEquals(7, record.get("count()").getAsInt());
+			Assertions.assertEquals(308, record.get("SUM").getAsInt());
+			Assertions.assertEquals(11, record.get("MIN").getAsInt());
+			Assertions.assertEquals(77, record.get("MAX").getAsInt());
+			Assertions.assertEquals(11, record.get("FIRST").getAsInt());
+			Assertions.assertEquals(44, record.get("LAST").getAsInt());
+		}
+			
+	}
 	
 	/****************************************************************
 	 * 

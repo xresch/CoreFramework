@@ -1,0 +1,17 @@
+| record
+	[FIRSTNAME, VALUE]
+	["Aurora", 11]
+	["Aurora", 22]
+	["Aurora", 33]
+	["Hera", 77]
+	["Hera", 66]
+	["Hera", 55]
+	["Hera", 44]
+| aggregate     
+	count() 			# 7
+	SUM=sum(VALUE)		# 308
+	MIN=min(VALUE)		# 11
+	MAX=max(VALUE)		# 77
+	FIRST=first(VALUE) 	# 11
+	LAST=last(VALUE)	# 44
+| sort FIRSTNAME

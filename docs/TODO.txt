@@ -99,7 +99,6 @@ Potential TODOs
 	- mimic remove first command
 	- mimic remove last command
 	- mimic remove command somewhere
-	- command aggregate
 	- command messages
 	- command record
 	- command if, else, end
@@ -110,7 +109,6 @@ Potential TODOs
 	- function fields
 	- function interval
 	- function intervalunit
-	- function literal
 	
 - Charts Renderer: Add description to manual page "working with render".
 
