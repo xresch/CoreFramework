@@ -173,6 +173,24 @@ userlist_file=/etc/vsftpd/user_list
 # test
 ftp localhost
 
+#########################################################
+# Setup Certbot (CentOS)
+#########################################################
+
+#-------------------------------
+# first install snapd
+sudo dnf install epel-release
+sudo dnf upgrade --refresh
+sudo dnf update
+dnf config-manager --enable cr
+
+
+sudo yum install snapd
+
+yum install http://yum.stanford.edu/mrepo/centos8-x86_64/RPMS.os/selinux-policy-targeted-3.14.3-80.el8_5.2.noarch.rpm http://yum.stanford.edu/mrepo/centos8-x86_64/RPMS.os/selinux-policy-3.14.3-80.el8_5.2.noarch.rpm http://yum.stanford.edu/mrepo/centos8-x86_64/RPMS.os/selinux-policy-minimum-3.14.3-80.el8_5.2.noarch.rpm
+
+
+
 
 #########################################################
 # Schedule Tasks Example (pihole)

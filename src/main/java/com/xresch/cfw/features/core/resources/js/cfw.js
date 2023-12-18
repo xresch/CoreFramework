@@ -1008,7 +1008,11 @@ function cfw_initializeValueLabelField(fieldID, values){
  * 
  *************************************************************************************/
 function cfw_initializeValueLabelField_createField(key, value){
-	return '<div class="cfw-value-label d-flex">'
+	return '<div class="cfw-value-label d-flex pb-1">'
+			+'<div class="d-flex flex-column">'
+				+'<i class="fas fa-sort-up cfw-field-sort-up" onclick="cfw_internal_sortValueLabelField(this, \'up\')" ></i>'
+				+'<i class="fas fa-sort-down cfw-field-sort-down" onclick="cfw_internal_sortValueLabelField(this, \'down\')"></i>'
+			+'</div>'
 			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Value" onchange="cfw_internal_updateValueLabelField(this)" value="'+key.replaceAll('"', '&quot;')+'">'
 			+'<input type="text" class="form-control-sm flex-grow-1" placeholder="Label" onchange="cfw_internal_updateValueLabelField(this)" value="'+value.replaceAll('"', '&quot;')+'">'	
 	+'</div>';	
@@ -1048,6 +1052,26 @@ function cfw_internal_updateValueLabelField(element){
 	
 	originalField.val(JSON.stringify(newValueLabels));
 
+}
+
+/**************************************************************************************
+ * 
+ *************************************************************************************/
+function cfw_internal_sortValueLabelField(element, upOrDown){
+	
+	var clickedButton = $(element);
+	var currentValueLabel = clickedButton.closest(".cfw-value-label");
+	
+	
+	if(upOrDown.toLowerCase() == "up"){
+		var previousValueLabel = currentValueLabel.prev(".cfw-value-label");
+		previousValueLabel.before(currentValueLabel);
+	}else{
+		var nextValueLabel = currentValueLabel.next(".cfw-value-label");
+		nextValueLabel.after(currentValueLabel);
+	}
+	
+	 cfw_internal_updateValueLabelField(element);
 }
 
 /**************************************************************************************

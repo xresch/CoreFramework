@@ -752,6 +752,26 @@ pre {
 	text-align: center !important;
 }
 
+.cfw-field-sort-up{
+	cursor: pointer;
+	background-color: var(--primary);
+    line-height: 0;
+    padding: 5px;
+    padding-top: 10px;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
+.cfw-field-sort-down{
+	cursor: pointer;
+	background-color: var(--primary);
+    line-height: 0;
+    padding: 5px;
+    padding-bottom: 10px;
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+
 
 
 /*
