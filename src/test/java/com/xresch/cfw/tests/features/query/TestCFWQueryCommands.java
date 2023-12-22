@@ -788,18 +788,8 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testMimic() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				  "| globals multidisplay=3 # display 3 results in one row\r\n" + 
-				  "| metadata name=\"mimicThis\"\r\n" + 
-				  "| source random records = 1\r\n" + 
-				  "; # End of First Query\r\n" + 
-				  "| source random records = 2\r\n" + 
-				  "; # End of Second Query\r\n" + 
-				  "| source random records = 4\r\n" + 
-				  "| mimic name=\"mimicThis\" # copies and executes the first query named 'mimicThis'\r\n" + 
-				  "| source random records = 8"
-				;
-		
+		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic.txt");
+				
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
@@ -811,6 +801,138 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(2);
 		Assertions.assertEquals(13, queryResults.getRecordCount(), "Has 13 records from records = 1 + 4 + 8 = 13");
 		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testMimic_CallingMimic() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic_CallingMimic.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(3, resultArray.size());
+		
+		//------------------------------
+		// Check Third Result
+		CFWQueryResult queryResults = resultArray.get(2);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+			//------------------------------
+			// Second Record
+			JsonObject record = queryResults.getRecord(0);
+			
+			Assertions.assertEquals("Rakesh", record.get("NAME").getAsString());
+			Assertions.assertEquals(99, record.get("VALUE").getAsInt());
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testMimic_RemoveLastCommand() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic_RemoveLastCommand.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(3, resultArray.size());
+		
+		//------------------------------
+		// Check Third Result
+		CFWQueryResult queryResults = resultArray.get(2);
+		Assertions.assertEquals(2, queryResults.getRecordCount());
+		
+			//------------------------------
+			// First Record
+			JsonObject record = queryResults.getRecord(0);
+				
+			Assertions.assertEquals("Hana", record.get("NAME").getAsString());
+			Assertions.assertEquals(42, record.get("VALUE").getAsInt());
+			
+			//------------------------------
+			// Second Record
+			record = queryResults.getRecord(1);
+			
+			Assertions.assertEquals("Rakesh", record.get("NAME").getAsString());
+			Assertions.assertEquals(88, record.get("VALUE").getAsInt());
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testMimic_RemoveFirstCommand() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic_RemoveFirstCommand.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(2, resultArray.size());
+		
+		//------------------------------
+		// Check 2nd Result
+		CFWQueryResult queryResults = resultArray.get(1);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+			//------------------------------
+			// First Record
+			JsonObject record = queryResults.getRecord(0);
+			
+			Assertions.assertEquals("Hana", record.get("NAME").getAsString());
+			Assertions.assertEquals(42, record.get("VALUE").getAsInt());
+		
+
+		
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testMimic_RemoveMultipleCommands() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic_RemoveMultipleCommands.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(2, resultArray.size());
+		
+		//------------------------------
+		// Check Third Result
+		CFWQueryResult queryResults = resultArray.get(1);
+		Assertions.assertEquals(2, queryResults.getRecordCount());
+		
+			//------------------------------
+			// First Record
+			JsonObject record = queryResults.getRecord(0);
+				
+			Assertions.assertEquals("Hana", record.get("NAME").getAsString());
+			Assertions.assertEquals(42, record.get("VALUE").getAsInt());
+			
+			//------------------------------
+			// Second Record
+			record = queryResults.getRecord(1);
+			
+			Assertions.assertEquals("Rakesh", record.get("NAME").getAsString());
+			Assertions.assertEquals(88, record.get("VALUE").getAsInt());
+
 	}
 	
 	/****************************************************************
@@ -974,14 +1096,6 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		Assertions.assertEquals("Victora", record.get("FIRSTNAME").getAsString());
 		Assertions.assertEquals(99, record.get("VALUE").getAsInt());
-
-//		| source empty
-//		| set 
-//			FIRSTNAME = "Hejdi"
-//			VALUE = 8.8008
-//		| record names=false
-//			["Laura", 42]
-//			["Victora", 99]
 		
 	}
 	

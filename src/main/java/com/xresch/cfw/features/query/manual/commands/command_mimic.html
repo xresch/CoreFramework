@@ -3,6 +3,7 @@
 It is useful to copy a query that you want to execute with different parameters(specified with command 'metadata' or 'globals') without having to write the 
 whole query twice. 
 The mimicked query will be inserted at the place where mimic is used.
+Mimic commands cannot be nested. Any mimic command in a mimicked query will always be removed.
 </p>
 
 <p>Following example executes 3 queries and then merges the result into one:

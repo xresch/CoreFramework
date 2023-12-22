@@ -1,0 +1,17 @@
+| source random records = 10
+| metadata 
+	name="TEST_QUERY"
+	firstname = "Hana"
+	value = 42
+| record
+	[NAME, VALUE]
+	[meta(firstname), meta(value)]
+	["Rakesh", 88]
+
+| filter NAME == "Hana"
+; 
+
+| mimic name="TEST_QUERY" remove=["source"]
+# check remove first command in query, first and only record will be:
+# NAME 	VALUE
+# Hana	42

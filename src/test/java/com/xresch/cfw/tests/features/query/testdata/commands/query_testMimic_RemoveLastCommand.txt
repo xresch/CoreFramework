@@ -1,0 +1,22 @@
+| metadata 
+	name="TEST_QUERY"
+	firstname = "Hana"
+	value = 42
+| record
+	[NAME, VALUE]
+	[meta(firstname), meta(value)]
+	["Rakesh", 88]
+
+| filter NAME == "Hana"
+; 
+
+
+| source random records = 10
+; 
+
+
+| mimic name="TEST_QUERY" remove=["filter"]
+# test removing last command in query(keeps Rakesh), & keep metadata(keeps Hana), result:
+#  NAME    	VALUE
+#  Hana		42
+#  Rakesh	88

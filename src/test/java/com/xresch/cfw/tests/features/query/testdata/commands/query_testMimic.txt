@@ -1,0 +1,9 @@
+| globals multidisplay=3 # display 3 results in one row
+| metadata name="mimicThis"
+| source random records = 1
+; # End of First Query
+| source random records = 2
+; # End of Second Query
+| source random records = 4
+| mimic name="mimicThis" # copies and executes the first query named 'mimicThis'
+| source random records = 8

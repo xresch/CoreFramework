@@ -144,6 +144,9 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 				
 			}
 		}
+		
+		// always remove all mimic commands
+		commandsToRemove.add("mimic");
 	}
 	
 	/***********************************************************************************************
