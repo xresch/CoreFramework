@@ -190,7 +190,13 @@ public class CFWQueryCommandMimic extends CFWQueryCommand {
 					for(String commandName : commandsToRemove) {
 						query.removeCommandsByName(commandName);
 					}
+					
+					// add a set command at the end to have at least one command that reads records
+					// else result might be empty if a user mimics a query that does not read the records.
+					query.addCommand(new CFWQueryCommandSet(query));
 				}
+				
+				
 				//--------------------------
 				// Execute
 				executor.executeAll(queryList, this.inQueue, this.outQueue);

@@ -1,0 +1,19 @@
+| metadata
+	name="format"  
+	template=true # mark this query as a template
+| formatfield
+	VALUE = ['threshold', 44, 55, 66, 77, 88, "bg"]
+| sort NAME
+; 
+
+#############################################
+| record
+	[NAME, VALUE]
+	["Raurova", 44]
+	["Rakesh", 77]
+| mimic name="format" # insert formater
+; 
+#  test if data before mimic is still going through pipeline when no record manipulation command is specified
+#  NAME    	VALUE
+#  Rakesh	77
+#  Raurova  44

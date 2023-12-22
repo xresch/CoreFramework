@@ -836,6 +836,77 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testMimic_DataBeforeMimic() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic_DataBeforeMimic.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check Third Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(2, queryResults.getRecordCount());
+		
+			//------------------------------
+			// First Record
+			JsonObject record = queryResults.getRecord(0);
+				
+			Assertions.assertEquals("Rakesh", record.get("NAME").getAsString());
+			Assertions.assertEquals(77, record.get("VALUE").getAsInt());
+			
+			//------------------------------
+			// Second Record
+			record = queryResults.getRecord(1);
+			
+			Assertions.assertEquals("Raurova", record.get("NAME").getAsString());
+			Assertions.assertEquals(44, record.get("VALUE").getAsInt());
+
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testMimic_MultipleCallsAndTemplate() throws IOException {
+		
+		//---------------------------------
+		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic_MultipleCallsAndTemplate.txt");
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check Third Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(2, queryResults.getRecordCount());
+		
+			//------------------------------
+			// First Record
+			JsonObject record = queryResults.getRecord(0);
+				
+			Assertions.assertEquals("Rakesh", record.get("NAME").getAsString());
+			Assertions.assertEquals(8008, record.get("VALUE").getAsInt());
+			
+			//------------------------------
+			// Second Record
+			record = queryResults.getRecord(1);
+			
+			Assertions.assertEquals("Raurova", record.get("NAME").getAsString());
+			Assertions.assertEquals(44, record.get("VALUE").getAsInt());
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testMimic_RemoveLastCommand() throws IOException {
 		
 		//---------------------------------
@@ -852,20 +923,20 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		CFWQueryResult queryResults = resultArray.get(2);
 		Assertions.assertEquals(2, queryResults.getRecordCount());
 		
-			//------------------------------
-			// First Record
-			JsonObject record = queryResults.getRecord(0);
-				
-			Assertions.assertEquals("Hana", record.get("NAME").getAsString());
-			Assertions.assertEquals(42, record.get("VALUE").getAsInt());
-			
-			//------------------------------
-			// Second Record
-			record = queryResults.getRecord(1);
-			
-			Assertions.assertEquals("Rakesh", record.get("NAME").getAsString());
-			Assertions.assertEquals(88, record.get("VALUE").getAsInt());
-
+		//------------------------------
+		// First Record
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals("Hana", record.get("NAME").getAsString());
+		Assertions.assertEquals(42, record.get("VALUE").getAsInt());
+		
+		//------------------------------
+		// Second Record
+		record = queryResults.getRecord(1);
+		
+		Assertions.assertEquals("Rakesh", record.get("NAME").getAsString());
+		Assertions.assertEquals(88, record.get("VALUE").getAsInt());
+		
 	}
 	
 	/****************************************************************

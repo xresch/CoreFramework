@@ -6,7 +6,7 @@ The mimicked query will be inserted at the place where mimic is used.
 Mimic commands cannot be nested. Any mimic command in a mimicked query will always be removed.
 </p>
 
-<p>Following example executes 3 queries and then merges the result into one:
+<p>Following example executes 2 queries, and the third one mimics the previous one:
 </p>
 <pre><code class="language-cfwquery">| globals multidisplay=3 # display 3 results in one row
 | source random records = 5
@@ -31,6 +31,40 @@ Use the command 'metadata' to set the name. By default, 'metadata' commands are 
 | keep TIME, VALUE
 ; # End of Second Query
 | mimic name="mimicThis" # copies and executes the first query named 'mimicThis'</code></pre>
+
+
+
+<p> Using the metadata command, you can specify that a query is a template and not be executed.
+This can be useful to reuse a query, like in the following example, where formatting is specified and reused in multiple queries:
+</p>
+<pre><code class="language-cfwquery">| metadata
+	name="format"  
+	template=true # mark this query as a template
+| formatfield
+	VALUE = ['threshold', 44, 55, 66, 77, 88, "bg"]
+| formatrecord
+	[(VALUE == null), "cfw-gray"] 
+	[(VALUE &lt; 50), "cfw-green"] 
+	[true, "cfw-red"] 
+| display as=tiles menu=false
+; 
+
+#############################################
+| record
+	[NAME, VALUE]
+	["Raurova", 44]
+	["Rakesh", 77]
+| mimic name="format" # insert formatter
+; 
+
+#############################################
+| record
+	[NAME, VALUE]
+	["Vera", 66]
+	["Aloe", 22]
+| mimic name="format" # insert formatter again
+
+</code></pre>
 
 
 
