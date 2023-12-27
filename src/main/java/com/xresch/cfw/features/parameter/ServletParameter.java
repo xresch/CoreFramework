@@ -164,47 +164,48 @@ public class ServletParameter extends HttpServlet
 		//--------------------------------------------
 		// Add Params for Widgets on Dashboard
 		
-		// this jsut doesn't work properly and is too complex to understand for average user
+		// this doesn't work properly and is too complex to understand for average user
+		// will have to find a better solution
+		HashSet<String> uniqueTypeChecker = new HashSet<>();
 		
-//		JsonArray widgetParametersArray = new JsonArray();
-//		
-//		if( scope.equals(SCOPE_DASHBOARD) ) {
-//			ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(ID);
-//			
-//			for(DashboardWidget widget : widgetList) {
-//				
-//				String widgetType = widget.type();
-//				
-//				if(widgetType.equals(WidgetParameter.WIDGET_TYPE) 
-//				|| uniqueTypeChecker.contains(widgetType)) {
-//					//skip Parameters Widget and type already processed once
-//					continue;
-//				}else {
-//					uniqueTypeChecker.add(widgetType);
-//					WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widgetType);
-//					if(definition != null
-//					&& definition.getSettings() != null
-//					&& definition.getSettings().getFields() != null
-//					&& definition.getSettings().getFields().entrySet() != null) {
-//						for(Entry<String, CFWField> entry : definition.getSettings().getFields().entrySet()) {
-//							CFWField field = entry.getValue();
-//							JsonObject paramObject = new JsonObject();
-//							paramObject.addProperty("widgetType", definition.getWidgetType());
-//							paramObject.addProperty("widgetSetting", field.getName());
-//							paramObject.addProperty("label", field.getLabel());
-//							
-//							widgetParametersArray.add(paramObject);
-//						}
-//					}
-//				}	
-//			}
-//		}
-//		
+		JsonArray widgetParametersArray = new JsonArray();
+		if( scope.equals(SCOPE_DASHBOARD) ) {
+			ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(ID);
+			
+			for(DashboardWidget widget : widgetList) {
+				
+				String widgetType = widget.type();
+				
+				if(widgetType.equals(WidgetParameter.WIDGET_TYPE) 
+				|| uniqueTypeChecker.contains(widgetType)) {
+					//skip Parameters Widget and type already processed once
+					continue;
+				}else {
+					uniqueTypeChecker.add(widgetType);
+					WidgetDefinition definition =  CFW.Registry.Widgets.getDefinition(widgetType);
+					if(definition != null
+					&& definition.getSettings() != null
+					&& definition.getSettings().getFields() != null
+					&& definition.getSettings().getFields().entrySet() != null) {
+						for(Entry<String, CFWField> entry : definition.getSettings().getFields().entrySet()) {
+							CFWField field = entry.getValue();
+							JsonObject paramObject = new JsonObject();
+							paramObject.addProperty("widgetType", definition.getWidgetType());
+							paramObject.addProperty("widgetSetting", field.getName());
+							paramObject.addProperty("label", field.getLabel());
+							
+							widgetParametersArray.add(paramObject);
+						}
+					}
+				}	
+			}
+		}
+		
 		
 		//--------------------------------------------
 		// Add Params from Definitions
 		JsonArray parameterDefArray = new JsonArray();
-		HashSet<String> uniqueTypeChecker = new HashSet<>();	
+		
 		for(ParameterDefinition def : CFW.Registry.Parameters.getParameterDefinitions().values()) {
 			if(def.isAvailable(uniqueTypeChecker)) {
 				JsonObject paramObject = new JsonObject();
