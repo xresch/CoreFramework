@@ -17,6 +17,8 @@ import com.xresch.cfw.spi.CFWAppFeature;
 public class FeatureConfig extends CFWAppFeature {
 	
 
+	public static final String[] THEME_OPTIONS_ARRAY = new String[]{"custom", "darkblue", "flatly", "lumen", "materia", "minty", "pulse", "sandstone", "simplex", "slate", "slate-edged", "spacelab", "superhero", "united", "warm-soft", "warm-edged"};
+
 	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.config.resources";
 	
 	public static final String PERMISSION_CONFIGURATION = "Configuration Management";
@@ -133,7 +135,7 @@ public class FeatureConfig extends CFWAppFeature {
 			new Configuration(CATEGORY_LOOK_AND_FEEL, FeatureConfig.CONFIG_THEME)
 				.description("Set the application look and feel. 'Slate' is the default and recommended theme, all others are not 100% tested. For custom the file has to be placed under ./resources/css/bootstrap-theme-custom.css.")
 				.type(FormFieldType.SELECT)
-				.options(new String[]{"custom", "darkblue", "flatly", "lumen", "materia", "minty", "pulse", "sandstone", "simplex", "slate", "slate-edged", "spacelab", "superhero", "united", "warm-soft", "warm-edged"})
+				.options(THEME_OPTIONS_ARRAY)
 				.value("slate-edged")
 		);
 		
