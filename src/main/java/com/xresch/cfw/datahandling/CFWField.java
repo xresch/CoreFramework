@@ -737,14 +737,6 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		String falseChecked = "";
 		boolean isChecked = true;
 		
-		if(value != null && value.toString().trim().toLowerCase().equals("true")) {
-			isChecked= true;
-			cssClasses += " switch-on";
-		}else {
-			isChecked = false;
-			cssClasses += " switch-off";
-		}
-		
 		this.removeAttribute("value");
 		
 		String disabled = "";
@@ -753,17 +745,15 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		String originalID = this.getAttributeValue("id");
 		this.removeAttribute("id");
 		//if(originalID != null) { this.addAttribute("id", originalID+"-TRUE");}
-		
+	
 		html.append(
-		"<label class=\"cfw-switch "+cssClasses+"\">"
-		 + "<input type=\"text\" name=\""+name+"\" id=\""+originalID+"\" value=\""+isChecked+"\" "+this.getAttributesString()+" "+disabled+">"
-		 + "<div class=\"cfw-switch-slider\" onclick=\"cfw_internal_toggleBooleanSwitchValue(this);\">"
-			 + "<div class=\"cfw-switch-slider-on\">"+CFW.L("cfw_core_yes", "Yes")+"</div>"
-			 + "<div class=\"cfw-switch-slider-button\">&nbsp;</div>"
-			 + "<div class=\"cfw-switch-slider-off\">"+CFW.L("cfw_core_no", "No")+"</div>"
-		 + "</div>"
-		+ "</label>");
+			"<input type=\"text\" name=\""+name+"\" id=\""+originalID+"\" value=\""+isChecked+"\" "+this.getAttributesString()+" "+disabled+">"
+		);
 		
+		if(this.parent instanceof CFWForm) {
+			((CFWForm)this.parent).javascript.append("cfw_internal_initializeBooleanSwitch('"+originalID+"');\r\n");
+		}
+				
 	}
 	
 	/***********************************************************************************

@@ -649,6 +649,37 @@ function cfw_filterTable(searchField){
 
 }
 
+
+/**************************************************************************************
+ * 
+ * @param fieldIDOrJQuery either the id of the field e.g. "myField" or a JQueryObject
+ *************************************************************************************/
+function cfw_internal_initializeBooleanSwitch(fieldIDOrJQuery){
+	
+	var inputField;
+	if (fieldIDOrJQuery instanceof jQuery){
+		inputField = fieldIDOrJQuery;
+	}else{
+		inputField = $('#'+fieldIDOrJQuery);
+	}
+
+	labelYes = CFWL("cfw_core_yes", "Yes");
+	labelNo = CFWL("cfw_core_no", "cfw_core_no");
+
+	var booleanSwitch = $(`<label class="cfw-switch">
+		<div class="cfw-switch-slider" onclick="cfw_internal_toggleBooleanSwitchValue(this);">
+			 <div class="cfw-switch-slider-on">${labelYes}</div>
+			 <div class="cfw-switch-slider-button">&nbsp;</div>
+			 <div class="cfw-switch-slider-off">${labelNo}</div>
+		</div>
+	</label>`);
+		
+	inputField.before(booleanSwitch);
+	booleanSwitch.prepend(inputField);
+	
+	cfw_internal_setBooleanSwitchValue(booleanSwitch, inputField.val());
+}
+
 /**************************************************************************************
  * 
  * @param switchButton the button that was clicked
@@ -670,6 +701,14 @@ function cfw_internal_toggleBooleanSwitchValue(switchButton){
  *************************************************************************************/
 function cfw_internal_setBooleanSwitchValue(elSwitchWrapper, isSelected){
 	
+	if(typeof isSelected === "string"){
+		if(isSelected.trim().toLowerCase() == "true"){
+			isSelected = true;
+		}else{
+			isSelected = false;
+		}
+	}
+	console.log(isSelected);
 	var zeInput =  elSwitchWrapper.find('input');
 	
 	zeInput.val(isSelected);
