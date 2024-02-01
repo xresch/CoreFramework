@@ -235,8 +235,12 @@ public class ServletDashboardList extends HttpServlet
 	 ******************************************************************/
 	private void duplicateDashboard(JSONResponse jsonResponse, String dashboardID) {
 		// TODO Auto-generated method stub
-		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
-		|| CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
+		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)
+		|| (
+			   CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_CREATOR)
+			&& CFW.DB.Dashboards.checkCanEdit(dashboardID) 
+			) 
+		) {
 			Dashboard duplicate = CFW.DB.Dashboards.selectByID(dashboardID);
 			
 			duplicate.id(null);

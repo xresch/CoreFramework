@@ -686,15 +686,25 @@ function cfw_dashboardlist_printDashboards(data, type){
 		
 		//-------------------------
 		// Duplicate Button
-		if(CFW.hasPermission('Dashboard Creator') 
+		if(CFW.hasPermission('Dashboard Creator')
 		|| CFW.hasPermission('Dashboard Admin')){
 
 			actionButtons.push(
 				function (record, id){
-					var htmlString = '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
+					
+					// IMPORTANT: Do only allow duplicate if the user can edit the dashboard,
+					// else this would create a security issue.
+					var htmlString = '';
+					if(JSDATA.userid == record.FK_ID_USER 
+					|| CFW.hasPermission('Dashboard Admin')
+					|| (record.IS_EDITOR && record.ALLOW_EDIT_SETTINGS) ){
+						htmlString = '<button class="btn btn-warning btn-sm text-white" alt="Duplicate" title="Duplicate" '
 							+'onclick="CFW.ui.confirmExecute(\'This will create a duplicate of <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong> and add it to your dashboards.\', \'Do it!\', \'cfw_dashboardlist_duplicate('+id+');\')">'
 							+ '<i class="fas fa-clone"></i>'
 							+ '</button>';
+					}else{
+						htmlString += '&nbsp;';
+					}
 					
 					return htmlString;
 				});

@@ -733,12 +733,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 	 * Create Boolean Radio Buttons
 	 ***********************************************************************************/
 	private void createBooleanSwitch(StringBuilder html, String cssClasses) {
-		
-		String falseChecked = "";
-		boolean isChecked = true;
-		
-		this.removeAttribute("value");
-		
+				
 		String disabled = "";
 		if(isDisabled) {	disabled = "disabled=\"disabled\""; };
 		
@@ -747,7 +742,7 @@ public class CFWField<T> extends HierarchicalHTMLItem implements IValidatable<T>
 		//if(originalID != null) { this.addAttribute("id", originalID+"-TRUE");}
 	
 		html.append(
-			"<input type=\"text\" name=\""+name+"\" id=\""+originalID+"\" value=\""+isChecked+"\" "+this.getAttributesString()+" "+disabled+">"
+			"<input type=\"text\" name=\""+name+"\" id=\""+originalID+"\"  "+this.getAttributesString()+" "+disabled+">"
 		);
 		
 		if(this.parent instanceof CFWForm) {

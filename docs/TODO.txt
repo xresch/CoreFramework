@@ -176,6 +176,7 @@ Properties: added config property cfw_application_max_formsize=5000000 (Helps so
 - Dashboard: Usage Statistics added, can be found in Settings 
 - Dashboard: Dashboard Settings can now be edited when viewing the dashboard
 - Dashboard: Display warning when dashboard does not exist.
+- Dashboard: Security - Do not allow duplication of shared dashboards if user cannot edit the dashboard.
 - Dashboard: Parameters - Made it possible to have only param without a button. Click on Button updates all params
 - Dashboard: Widget - Added new widget Advanced >> Default Refresh
 - Dashboard: Widget Checklist - Show URLs as links, Add/Edit/Remove functionality

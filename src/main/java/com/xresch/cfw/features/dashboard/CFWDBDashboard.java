@@ -333,24 +333,26 @@ public class CFWDBDashboard {
 	
 		//-------------------------
 		// Grab Results
-		ArrayList<Dashboard> sharedBoards = query
+		
+		// IMPORTANT: Do not change to CFWObjects as you will lose the fields OWNER and IS_FAVED
+		JsonArray sharedBoards = query
 			.custom("ORDER BY NAME")
-			.getAsObjectListConvert(Dashboard.class);
+			.getAsJSONArray();
 		
 		//-------------------------
 		// Add IS_EDITOR
 		
 		// TODO a bit of a hack, need to be done with SQL after database structure change
-		for(Dashboard board : sharedBoards) {
-			board.addField(
-					CFWField.newBoolean(FormFieldType.BOOLEAN, "IS_EDITOR")
-					.setValue(checkCanEdit(board.id()))
+		for(JsonElement boardElement : sharedBoards) {
+			JsonObject board = boardElement.getAsJsonObject();
+			board.addProperty("IS_EDITOR"
+					, checkCanEdit(board.get(DashboardFields.PK_ID.toString()).getAsInt())
 				);
 			
 		}
 	
 		//-------------------------
-		// Add IS_EDITOR
+		// Return
 		return CFW.JSON.toJSON(sharedBoards);
 	}
 	

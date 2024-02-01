@@ -700,7 +700,7 @@ function cfw_internal_toggleBooleanSwitchValue(switchButton){
  * @param elSwitchWrapper the main switch element
  *************************************************************************************/
 function cfw_internal_setBooleanSwitchValue(elSwitchWrapper, isSelected){
-	
+	console.log(isSelected);
 	if(typeof isSelected === "string"){
 		if(isSelected.trim().toLowerCase() == "true"){
 			isSelected = true;
@@ -708,7 +708,7 @@ function cfw_internal_setBooleanSwitchValue(elSwitchWrapper, isSelected){
 			isSelected = false;
 		}
 	}
-	console.log(isSelected);
+	
 	var zeInput =  elSwitchWrapper.find('input');
 	
 	zeInput.val(isSelected);
