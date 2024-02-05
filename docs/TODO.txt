@@ -72,6 +72,9 @@ Potential TODOs
 - Widget: Next Refresh as MM:SS
 - Widget: Collaboration: Chat
 - Widget: Collaboration: Logbook
+- Widget: Disable Refresh
+- Widget: Global Params: Add params next to title instead of in widget.
+- Widget: Param Value Button: Apply parameter values if button is pressed.
 
 - Query: Docs - Write Developers Manual dev_query.html
 - Query: Docs - mimic template mechanism
@@ -111,6 +114,8 @@ Potential TODOs
 - cfw.js: Finish javascript CFWFormField
 - cfw.js: Add Tic Tac Toe Loader for Long running requests
 - cfw.js: Progress Bar Loader
+- cfw.js: Select Boxes: Add filter for options
+- cfw.js: Filter option for autocomplete items
 
 - Security: SSO With ADFS
 - Security: Enable Decryption for ResultSet to JSON on CFWSQL
@@ -155,6 +160,7 @@ DONE
 ====
 
 ------- current -------
+- BREAKING CHANGE: Dropping support for Java 8, new minimum version is Java 17 
 - BREAKING CODE CHANGE: CFWConfig renamed and requires category parameter in several mathods
 - BREAKING CODE CHANGE: Query Function param() - second param is now a default value.
 - BREAKING CHANGE: Query Command display - default value of parameter has changed to menu=false. Queries not defining this parameter will have their menu vanish 
