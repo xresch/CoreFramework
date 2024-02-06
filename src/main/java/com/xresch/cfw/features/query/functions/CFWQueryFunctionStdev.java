@@ -60,7 +60,7 @@ public class CFWQueryFunctionStdev extends CFWQueryFunction {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return FUNCTION_NAME+"(valueOrFieldname, includeNulls, precision)";
+		return FUNCTION_NAME+"(valueOrFieldname, includeNulls, precision, usePopulation)";
 	}
 	/***********************************************************************************************
 	 * 
