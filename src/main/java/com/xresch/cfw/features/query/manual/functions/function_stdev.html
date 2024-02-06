@@ -4,7 +4,7 @@
 <p>Following query uses some json example data to demonstrate the stdev-function:</p>
 <pre><code class="language-cfwquery">| source json data=`
 [
-	 {index: 0, array: [1,2,3], object: {a: 0, b: 1, c: 3 } }
+	 {index: 0, array: [1,2,3], object: {a: 0, b: -1, c: 3 } }
 	,{index: 1, array: [1,null,3], object: {a: 11, b: 22, c: null} }
 	,{index: 2, array: [null,null,3], object: {a: null, b: 22, c: null} }
 	,{index: 3, array: [null,null,null], object: {a: null, b: null, c: null} }
@@ -12,15 +12,15 @@
 ]
 `
 | set 
-	# return number of items in array that are null
+	# returns the standard deviation(population) for the values in the array 
 	STDEV_ARRAY=stdev(array)
-	# treat nulls as zero in the statistics
-	STDEV_ARRAY_NULLS=stdev(array,true)
-	# returns the average of all numbers of all fields
-	STDEV_OBJECT=stdev(object)
-	# treat nulls as zero in the statistics
-	STDEV_OBJECT_NULLS=stdev(object,true)
-	# if input is a single number, returns that number
+	# returns the standard deviation(population) for the values in the array, nulls will be threated as zero
+	STDEV_ARRAY_NULLS=stdev(array, true)
+	# returns the standard deviation(population) for the values of all fields in the object, nulls will be ignored, precision of the result will be 5
+	STDEV_OBJECT=stdev(object, false, 5)
+	# returns the standard deviation(sample) for the values of all fields in the object, nulls will be threated as zeros, precision of the result will be 2
+	STDEV_OBJECT_NULLS=stdev(object, true, 2, false)
+	# if input is a single number, returns 0, as there is no deviation from a single number
 	STDEV_NUMBER=stdev(index)
 	# following will return null
 	STDEV_ZERO=stdev()
@@ -29,12 +29,15 @@
 	UNSUPPORTED_B=stdev("some_string")</code></pre>
 
 <p>Following is an example on how to use this function in aggregation commands:</p>
-<pre><code class="language-cfwquery">| source random records=10000
-| set VALUE=if(random()>30, VALUE, null) # add some nulls
-| stats by=[LIKES_TIRAMISU] 	
+<pre><code class="language-cfwquery">| source random records=100
+| set VALUE=if(random() &gt; 30, VALUE, null) # add some nulls
+| stats by=[LIKES_TIRAMISU] 
+	"COUNT"=count(VALUE) # just a count
 	"STDEV"=stdev(VALUE) # ignore nulls, 3 decimal precision
 	"STDEV2DEC"=stdev(VALUE, true, 2) # count nulls as 0, 2 decimals
 	"STDEV_ZERO_DEC"=stdev(VALUE, false, 0) # ignore nulls, no decimals
+	"STDEV_SAMPLE"=stdev(VALUE, false, 5, false) # ignore nulls, 5 decimals, use sample formula
+	"VALUES"=array(VALUE) # array of all values
 | formatfield # keep stuff aligned with decimal point
 	["STDEV", "STDEV2DEC", "STDEV_ZERO_DEC"] = [ 
 		  ['decimals', 3]
