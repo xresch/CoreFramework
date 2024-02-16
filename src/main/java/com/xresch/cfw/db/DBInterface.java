@@ -116,6 +116,20 @@ public class DBInterface {
 	 ********************************************************************************************/
 	public void forceCloseRemainingConnections() {	
 		
+		//--------------------------------------
+		// Add transaction connection to handling
+		if(transactionConnection.get() != null) {
+			
+			if(myOpenConnections.get() == null) {
+				myOpenConnections.set( new ArrayList<Connection>() );
+			}
+			
+			myOpenConnections.get().add( transactionConnection.get() );
+			transactionConnection.remove();
+		}
+		
+		//--------------------------------------
+		// Return if null
 		if(myOpenConnections.get() == null) {
 			//all good, return
 			return;
@@ -128,7 +142,6 @@ public class DBInterface {
 		//Create new array to avoid ConcurrentModificationException
 		for(Connection con : connArray.toArray(new Connection[] {})) {
 			
-
 			try {
 				if(!con.isClosed()) {
 					counter++;

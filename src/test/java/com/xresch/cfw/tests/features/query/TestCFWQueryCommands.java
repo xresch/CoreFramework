@@ -73,8 +73,27 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testAggregate() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testAggregate.txt");
-		
+		String queryString = """
+| record
+	[FIRSTNAME, VALUE]
+	["Aurora", 11]
+	["Aurora", 22]
+	["Aurora", 33]
+	["Hera", 77]
+	["Hera", 66]
+	["Hera", 55]
+	["Hera", 44]
+| aggregate 
+	by=[FIRSTNAME]      
+	count() 			# Aurora: 3  / Hera: 4
+	SUM=sum(VALUE)		# Aurora: 66  / Hera: 242
+	MIN=min(VALUE)		# Aurora: 11  / Hera: 44
+	MAX=max(VALUE)		# Aurora: 33  / Hera: 77
+	FIRST=first(VALUE) 	# Aurora: 11  / Hera: 77
+	LAST=last(VALUE)	# Aurora: 33  / Hera: 44  
+| sort FIRSTNAME
+			""";
+
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
@@ -122,8 +141,26 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testAggregate_NoGrouping() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testAggregate_NoGrouping.txt");
-		
+		String queryString = """
+| record
+	[FIRSTNAME, VALUE]
+	["Aurora", 11]
+	["Aurora", 22]
+	["Aurora", 33]
+	["Hera", 77]
+	["Hera", 66]
+	["Hera", 55]
+	["Hera", 44]
+| aggregate     
+	count() 			# 7
+	SUM=sum(VALUE)		# 308
+	MIN=min(VALUE)		# 11
+	MAX=max(VALUE)		# 77
+	FIRST=first(VALUE) 	# 11
+	LAST=last(VALUE)	# 44
+| sort FIRSTNAME
+				""";
+				
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
@@ -155,11 +192,13 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	@Test
 	public void testChart() throws IOException {
 		
-		String queryString = "| source random records=10 type=series\r\n" + 
-				"| chart \r\n" + 
-				"	by=[WAREHOUSE, ITEM]\r\n" + 
-				"	x=TIME \r\n" + 
-				"	y=COUNT";
+		String queryString = """
+| source random records=10 type=series
+| chart
+	by=[WAREHOUSE, ITEM]
+	x=TIME 
+	y=COUNT
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -190,9 +229,11 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	@Test
 	public void testComments() throws IOException {
 		
-		String queryString = "| source random records=100\r\n"
-				+ "			   # filter LIKES_TIRAMISU==null\r\n"
-				+ "			| comment filter LIKES_TIRAMISU==true | tail 100 | off filter LIKES_TIRAMISU==false | top 100 #filter LIKES_TIRAMISU==true";
+		String queryString = """
+| source random records=100
+# filter LIKES_TIRAMISU==null
+| comment filter LIKES_TIRAMISU==true | tail 100 | off filter LIKES_TIRAMISU==false | top 100 #filter LIKES_TIRAMISU==true"
+			""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -211,12 +252,12 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	@Test
 	public void testCrates() throws IOException {
 		
-		int minuteRounding = 4;
-		String queryString = "| source random records=1000\r\n" + 
-				"| crates by=VALUE 		type=number		step=10		name=NUM\r\n" + 
-				"| crates by=FIRSTNAME 	type=alpha 		step=3		name=ALPHA\r\n" + 
-				"| crates by=TIME		type=time		step="+minuteRounding+"	name=TIMEROUNDED\r\n"  
-			;
+		String queryString = """
+| source random records=1000
+| crates by=VALUE 		type=number		step=10		name=NUM
+| crates by=FIRSTNAME 	type=alpha 		step=3		name=ALPHA
+| crates by=TIME		type=time		step=4	name=TIMEROUNDED
+				""";
 		
 		
 		//--------------------------------
@@ -271,10 +312,15 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//--------------------------------
 		// Test multiplier=2
-		String queryStringMultiplier = "| source random records=1000\r\n" + 
-				"| crates by=VALUE 		type=number		step=10		multiplier=2\r\n" + 
-				"| uniq CRATE | sort CRATE"  
-			;
+		String queryStringMultiplier = """
+| source random records=1000
+| crates 
+	by=VALUE 		
+	type=number		
+	step=10		
+	multiplier=2
+| uniq CRATE | sort CRATE 
+				""";
 		
 		resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryStringMultiplier, earliest, latest, 0);
@@ -299,15 +345,15 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		
 		//---------------------------------
 		// Create and Execute Query
-		String queryString = "	| source random records=1\r\n"
-				+ "	| rename URL = url\r\n"
-				+ "	| rename LAST_LOGIN = 'Last Login'\r\n"
-				+ "	| display as=panels  \r\n"
-				+ "	    visiblefields=[FIRSTNAME, LASTNAME, 'Last Login', url] \r\n"
-				+ "		titlefields=[INDEX, FIRSTNAME, LASTNAME, LOCATION]\r\n"
-				+ "		titleformat='{0}: {2} {1} (Location: {3})'"
-				;
-		
+		String queryString = """
+| source random records=1
+| rename URL = url
+| rename LAST_LOGIN = 'Last Login'
+| display as=panels  
+	visiblefields=[FIRSTNAME, LASTNAME, 'Last Login', url] 
+	titlefields=[INDEX, FIRSTNAME, LASTNAME, LOCATION]
+	titleformat='{0}: {2} {1} (Location: {3})'
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -360,9 +406,13 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testDistinct_Dedup_Uniq() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source random records=1000 | distinct LIKES_TIRAMISU"
-				+ ";| source random records=1000 | dedup LIKES_TIRAMISU"
-				+ ";| source random records=1000 | uniq LIKES_TIRAMISU"
+		String queryString = """
+ | source random records=1000 | distinct LIKES_TIRAMISU
+ ;
+ | source random records=1000 | dedup LIKES_TIRAMISU
+ ;
+ | source random records=1000 | uniq LIKES_TIRAMISU
+				 """
 				;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
@@ -391,14 +441,16 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testExecute() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| globals multidisplay=2\r\n" + 
-				"| source random records = 10\r\n" + 
-				"| keep TIME\r\n" + 
-				";\r\n" + 
-				"# offset earliest/latest by one day, alternatively you can use earliestSet() or latestSet()\r\n" + 
-				"| execute timeframeoffset(0,-1, \"d\") \r\n" + 
-				"| source random records = 10\r\n" + 
-				"| keep TIME"
+		String queryString ="""
+| globals multidisplay=2
+| source random records = 10
+| keep TIME
+;
+# offset earliest/latest by one day, alternatively you can use earliestSet() or latestSet()
+| execute timeframeoffset(0,-1, "d") 
+| source random records = 10
+| keep TIME
+				"""
 				;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
@@ -435,8 +487,42 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	@Test
 	public void testFilterNullValues() throws IOException {
 		
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testFilterNullValues.txt");
-		
+		String queryString = """
+| source random type=numbers records=10000 limit=10000
+| filter 
+	#in equal and not equal comparison, null is handled as null and only equal to itself
+	null == null
+	AND (null != null) == false 
+	AND (null != "anythingElse") == true
+	AND (null != false) == true
+	AND (null != 123) == true
+	# Division by null or zero will evaluate to null
+	AND (100 / 0) 	== null
+	AND (1 / null) 	== null
+	AND (0 / 0) 	== null
+	# in arithmetic expressions, null will be converted to zero
+	AND (null / 1) 	== 0
+	AND (0 / 100) 	== 0
+	AND (null * 10)	== 0
+	AND (10 * null)	== 0
+	AND (null - 10)	== -10
+	AND (10 - null)	== 10	
+	AND (null + 10)	== 10
+	AND (10 + null)	== 10
+	# for lower/greater than comparison, null will be converted to zero
+	AND (null < 1)	== true
+	AND (null <= 1)	== true
+	AND (1 > null)	== true
+	AND (1 >= null)	== true
+	# results of regex operator is always false if either side is null 
+	AND ("myString" ~= null) == false
+	AND (null ~= ".*") == false
+	AND (null ~= null) == false
+	# results of AND/OR with either side null 
+	AND (null AND true) == false
+	AND (null OR true) == true 
+				""";
+				
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
 		
@@ -491,11 +577,12 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testFormatField_TwoFieldsMultipleFormats() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source random \r\n"
-				+ "| formatfield \r\n"
-				+ "	INDEX=align,right  \r\n"
-				+ "	VALUE=[prefix,'Mighty Balance: ']  VALUE=[postfix,' $']  VALUE=[threshold,0,10,20,30,40]  VALUE=uppercase"
-				;
+		String queryString = """
+| source random 
+| formatfield 
+	INDEX=align,right 
+	VALUE=[prefix,'Mighty Balance: ']  VALUE=[postfix,' $']  VALUE=[threshold,0,10,20,30,40]  VALUE=uppercase
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -540,14 +627,14 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testFormatField_ArrayFieldsArrayFormats() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				  "| source random type=numbers\r\n"
-				+ "| formatfield \r\n"
-				+ "	[THOUSANDS,FLOAT,BIG_DECIMAL]=[\r\n"
-				+ "			 [separators]\r\n"
-				+ "			,['threshold', 0, 1000, 1000^2, 1000^3, 1000^4, 'text']\r\n"
-				+ "		]"
-				;
+		String queryString = """
+| source random type=numbers
+| formatfield 
+	[THOUSANDS,FLOAT,BIG_DECIMAL]=[
+			 [separators]
+			,['threshold', 0, 1000, 1000^2, 1000^3, 1000^4, 'text']
+		]
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -609,14 +696,15 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testFormatrecord() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source random records=100\r\n" + 
-				"| formatrecord \r\n" + 
-				"	[(FIRSTNAME ~='^He'), \"#332288\"] \r\n" + 
-				"	[(VALUE >= 60), \"red\", \"yellow\"] \r\n" + 
-				"	[(LIKES_TIRAMISU==true), \"green\"] \r\n" + 
-				"	[true, \"cfw-gray\"]\r\n" + 
-				"| formatfield LIKES_TIRAMISU=none"
-				;
+		String queryString = """
+| source random records=100
+| formatrecord 
+	[(FIRSTNAME ~='^He'), \"#332288\"] 
+	[(VALUE >= 60), \"red\", \"yellow\"] 
+	[(LIKES_TIRAMISU==true), \"green\"] 
+	[true, \"cfw-gray\"]
+| formatfield LIKES_TIRAMISU=none
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -662,12 +750,12 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testGlobals() throws IOException {
 			
 		//---------------------------------
-		String queryString = 
-				  "| globals multidisplay=4 myCustomProperty=MyCustomValue\r\n"
-				+ "| metadata name='Default Table' firstQueryProp='hello' | source random type=default records=5 | display as=table \r\n"
-				+ ";\r\n"
-				+ "| metadata name='Bigger Number Table' secondQueryProp='world' | source random type=numbers records=5 | display as=biggertable "
+		String queryString = """
+				| globals multidisplay=4 myCustomProperty=MyCustomValue
+				| metadata name='Default Table' firstQueryProp='hello' | source random type=default records=5 | display as=table
 				;
+				| metadata name='Bigger Number Table' secondQueryProp='world' | source random type=numbers records=5 | display as=table
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -710,9 +798,10 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testKeep() throws IOException {
 			
 		//---------------------------------
-		String queryString = 
-				  "| source random records=1\r\n" + 
-				  "| keep INDEX, TIME, FIRSTNAME"
+		String queryString = """
+				  | source random records=1
+				  | keep INDEX, TIME, FIRSTNAME
+				  """
 				;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
@@ -742,12 +831,12 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testMetadata() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				  "| globals multidisplay=4 myCustomProperty=MyCustomValue\r\n"
-				+ "| metadata name='Default Table' firstQueryProp='hello' | source random type=default records=5 | display as=table \r\n"
-				+ ";\r\n"
-				+ "| metadata name='Bigger Number Table' secondQueryProp='world' | source random type=numbers records=5 | display as=biggertable "
+		String queryString = """
+				  | globals multidisplay=4 myCustomProperty=MyCustomValue
+				| metadata name='Default Table' firstQueryProp='hello' | source random type=default records=5 | display as=table
 				;
+				| metadata name='Bigger Number Table' secondQueryProp='world' | source random type=numbers records=5 | display as=table
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -788,7 +877,19 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testMimic() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic.txt");
+		String queryString = """
+| globals multidisplay=3 # display 3 results in one row
+| metadata name="mimicThis"
+| source random records = 1
+; 
+
+| source random records = 2
+; 
+
+| source random records = 4
+| mimic name="mimicThis" # copies and executes the first query named 'mimicThis'
+| source random records = 8
+				"""; 
 				
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -810,7 +911,21 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testMimic_CallingMimic() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic_CallingMimic.txt");
+		String queryString = """
+| record
+	[NAME, VALUE]
+	["Raurova", 42]
+; 
+| mimic 
+| record
+	[NAME, VALUE]
+	["Rakesh", 99]
+; 
+| mimic 
+# test removing all mimic commands, Raurova will not be in last result:
+#  NAME    	VALUE
+#  Rakesh	99				
+				"""; 
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -839,7 +954,27 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testMimic_DataBeforeMimic() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic_DataBeforeMimic.txt");
+		String queryString = """
+| metadata
+	name="format"  
+	template=true # mark this query as a template
+| formatfield
+	VALUE = ['threshold', 44, 55, 66, 77, 88, "bg"]
+| sort NAME
+; 
+
+#############################################
+| record
+	[NAME, VALUE]
+	["Raurova", 44]
+	["Rakesh", 77]
+| mimic name="format" # insert formater
+; 
+#  test if data before mimic is still going through pipeline when no record manipulation command is specified
+#  NAME    	VALUE
+#  Rakesh	77
+#  Raurova  44				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -874,7 +1009,24 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testMimic_MultipleCallsAndTemplate() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic_MultipleCallsAndTemplate.txt");
+		String queryString = """
+| meta name="One" template=true
+| record
+	[NAME, VALUE]
+	["Raurova", 44]
+; 
+| meta name="Two"  template=true
+| record
+	[NAME, VALUE]
+	["Rakesh", 8008]
+; 
+| mimic name="Two"
+| mimic name="One"
+#  test multiple mimics and template mechanism:
+#  NAME    	VALUE
+#  Rakesh	8008
+#  Raurova  44				
+				 """;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -910,7 +1062,30 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testMimic_RemoveLastCommand() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic_RemoveLastCommand.txt");
+		String queryString = """
+| metadata 
+	name="TEST_QUERY"
+	firstname = "Hana"
+	value = 42
+| record
+	[NAME, VALUE]
+	[meta(firstname), meta(value)]
+	["Rakesh", 88]
+
+| filter NAME == "Hana"
+; 
+
+
+| source random records = 10
+; 
+
+
+| mimic name="TEST_QUERY" remove=["filter"]
+# test removing last command in query(keeps Rakesh), & keep metadata(keeps Hana), result:
+#  NAME    	VALUE
+#  Hana		42
+#  Rakesh	88
+				"""; 
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -946,7 +1121,25 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testMimic_RemoveFirstCommand() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic_RemoveFirstCommand.txt");
+		String queryString = """
+| source random records = 10
+| metadata 
+	name="TEST_QUERY"
+	firstname = "Hana"
+	value = 42
+| record
+	[NAME, VALUE]
+	[meta(firstname), meta(value)]
+	["Rakesh", 88]
+
+| filter NAME == "Hana"
+; 
+
+| mimic name="TEST_QUERY" remove=["source"]
+# check remove first command in query, first and only record will be:
+# NAME 	VALUE
+# Hana	42				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -976,8 +1169,30 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	@Test
 	public void testMimic_RemoveMultipleCommands() throws IOException {
 		
-		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testMimic_RemoveMultipleCommands.txt");
+
+		String queryString = """
+| source random records = 2
+| metadata 
+	name="TEST_QUERY"
+	firstname = "Hana"
+	value = 42
+| source random records = 4
+| record
+	[NAME, VALUE]
+	[meta(firstname), meta(value)]
+	["Rakesh", 88]
+| filter NAME == "Rakesh"
+| source random records = 8
+| filter NAME == "Hana"
+| source random records = 16
+; 
+
+| mimic remove=["source", "filter"]
+# test removing all source and filter commands, result:
+#  NAME    	VALUE
+#  Hana		42
+#  Rakesh	88				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1013,11 +1228,11 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testNullTo() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				  "| source random records=10 type=various\r\n" + 
-				  "| set UUID=null \r\n" + 
-				  "| nullto value=\"n/a\" fields=[ALWAYS_NULL]"
-				;
+		String queryString = """
+| source random records=10 type=various
+| set UUID=null
+| nullto value="n/a" fields=[ALWAYS_NULL]
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1044,7 +1259,23 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testParamdefaults() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testCommandParamdefaults.txt");
+		String queryString = """
+| paramdefaults 
+	text="default" 
+	hello="hello world"
+	nullValue=null
+	emptyString=' ' 
+| source empty
+| set
+	TEXT_VALUE = param('text') # returns 'default'
+	HELLO_VALUE = param('hello') # returns 'hello world'
+	UNDEF = param('notAParam') # returns null
+	TAKE_THIS= param('againNoParam', 'takeThis') # returns 'takeThis'
+	NULL=param('nullValue') # returns null
+	NULL_SUBSTITUTED=param('nullValue', 'insteadOfNull') # returns 'insteadOfNull'
+	EMPTY=param('emptyString') # returns ' '
+	EMPTY_SUBSTITUTED=param('emptyString', 'insteadOfEmpty') # returns 'insteadOfEmpty'				
+				 """; 
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1075,7 +1306,14 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testRecord() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testRecord.txt");
+		String queryString = """
+| record
+	[FIRSTNAME, VALUE] # plus AddedField-2 and AddedField-3
+	["Aurora", 11]
+	["Alejandra", [1,2,3] ]
+	["Roberto", {hello: "world"} ]
+	["Hera", 8008, null, true]
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1133,7 +1371,15 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testRecord_NamesFalse() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testRecord_NamesFalse.txt");
+		String queryString = """
+| source empty
+| set 
+	FIRSTNAME = "Hejdi"
+	VALUE = 8.8008
+| record names=false
+	["Laura", 42]
+	["Victora", 99]
+							""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1177,10 +1423,10 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testRemove() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				  "| source random records=1\r\n" + 
-				  "| remove INDEX, TIME, FIRSTNAME"
-				;
+		String queryString = """
+| source random records=1
+| remove INDEX, TIME, FIRSTNAME
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1209,10 +1455,10 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testRename() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				  "| source random records=1\r\n" + 
-				  "| rename INDEX=ROW"
-				;
+		String queryString = """
+| source random records=1
+| rename INDEX=ROW
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1240,16 +1486,16 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testResultCompare() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				  "| source random records=1000 	\r\n" + 
-				  "| filter FIRSTNAME == \"Aurora\"		\r\n" + 
-				  "| keep FIRSTNAME, VALUE		\r\n" + 
-				  "| stats	by=FIRSTNAME	COUNT=count(VALUE)		VALUE=avg(VALUE)\r\n" + 
-				  "; \r\n" + 
-				  "| mimic\r\n" + 
-				  "; \r\n" + 
-				  "| resultcompare by=FIRSTNAME"
-				;
+		String queryString = """
+| source random records=1000 
+| filter FIRSTNAME == "Aurora"
+| keep FIRSTNAME, VALUE
+| stats	by=FIRSTNAME	COUNT=count(VALUE)		VALUE=avg(VALUE)
+; 
+| mimic
+; 
+| resultcompare by=FIRSTNAME
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1283,19 +1529,19 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testResultConcat() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				"| metadata name = \"Result One\"\r\n" + 
-				"| source random records=10\r\n" + 
-				";\r\n" + 
-				"| metadata name = \"Result Two\"\r\n" + 
-				"| source random records=20\r\n" + 
-				";\r\n" + 
-				"| metadata name = \"Result Three\"\r\n" + 
-				"| source random records=40\r\n" + 
-				";\r\n" + 
-				"| metadata name = \"Concatenated 1&3\"\r\n" + 
-				"| resultconcat \"Result One\", \"Result Three\""
-						;
+		String queryString = """
+| metadata name = "Result One" 
+| source random records=10 
+; 
+| metadata name = "Result Two" 
+| source random records=20 
+; 
+| metadata name = "Result Three" 
+| source random records=40 
+; 
+| metadata name = "Concatenated 1&3" 
+| resultconcat "Result One", "Result Three"				
+						""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1324,17 +1570,17 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testResultCopy() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				"| globals multidisplay=2\r\n" + 
-				"| metadata name = \"Original\" \r\n" + 
-				"| source random records=4\r\n" + 
-				"| keep FIRSTNAME, VALUE\r\n" + 
-				"| display menu=false \r\n" + 
-				";\r\n" + 
-				"| metadata name = \"Copy\"\r\n" + 
-				"| resultcopy  #copy data of all previous queries\r\n" + 
-				"| display as=panels menu=false"
-						;
+		String queryString = """
+| globals multidisplay=2 
+| metadata name = "Original"  
+| source random records=4 
+| keep FIRSTNAME, VALUE 
+| display menu=false  
+; 
+| metadata name = "Copy" 
+| resultcopy  #copy data of all previous queries 
+| display as=panels menu=false
+						""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1378,7 +1624,21 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testResultRemove() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testCommandResultRemove.txt");
+		String queryString = """
+| metadata name = "config" 
+| globals recordCount=7
+;
+| metadata name = "one" title=true
+| source random records=globals(recordCount)
+;
+| metadata name = "two" title=true
+| source random records=globals(recordCount)*2
+;
+| metadata name = "three" title=true
+| source random records=globals(recordCount)*3
+| resultremove "config" "two" # only one result left
+
+						""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1404,20 +1664,20 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testSet() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				  "| source random records=10\r\n" + 
-				  "| keep VALUE\r\n" + 
-				  "| set \r\n" + 
-				  "		BOOL=true\r\n" + 
-				  "		NUMBER=123\r\n" + 
-				  "		STRING=\"AAAHHH!!!\"\r\n" + 
-				  "		OBJECT={a: \"1\", b: \"2\"}\r\n" + 
-				  "		ARRAY=[1, true, \"three\"]\r\n" + 
-				  "		NULL=null\r\n" + 
-				  "		FIELDVAL=VALUE\r\n" + 
-				  "		EXPRESSION=(FIELDVAL*FIELDVAL)\r\n" + 
-				  "		FUNCTION=count()"
-				;
+		String queryString = """
+| source random records=10 
+| keep VALUE 
+| set  
+		BOOL=true 
+		NUMBER=123 
+		STRING="AAAHHH!!!" 
+		OBJECT={a: "1", b: "2"} 
+		ARRAY=[1, true, "three"] 
+		NULL=null 
+		FIELDVAL=VALUE 
+		EXPRESSION=(FIELDVAL*FIELDVAL) 
+		FUNCTION=count()
+							""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1452,12 +1712,12 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testSort() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				"| source json data ='[\r\n" + 
-				"	{val: 4444} ,{val: 22} ,{val: 333} ,{val: 1}\r\n" + 
-				"]'\r\n" + 
-				"| sort val"
-				;
+		String queryString = """
+| source json data ='[
+	{val: 4444} ,{val: 22} ,{val: 333} ,{val: 1}
+]' 
+| sort val
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1515,7 +1775,28 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testStats() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testStats.txt");
+		String queryString = """
+| source json data='[
+	  {ITEM: "Pineapple", CLASS: "A", VALUE:"1"}
+	, {ITEM: "Pineapple", CLASS: "A", VALUE:"22"}
+	, {ITEM: "Pineapple", CLASS: "A", VALUE:"333"}
+	, {ITEM: "Pineapple", CLASS: "B", VALUE:"4"}
+	, {ITEM: "Strawrrrberry", CLASS: "C", VALUE:"333"}
+	, {ITEM: "Strawrrrberry", CLASS: "D", VALUE:"100"}
+	, {ITEM: "Strawrrrberry", CLASS: "D", VALUE:"100"}
+	, {ITEM: "Strawrrrberry", CLASS: "D", VALUE:"100"}
+]'
+| stats by=[ITEM, CLASS] 
+	count() 
+	min(VALUE) 
+	AVG=avg(VALUE) 
+	MAX=max(VALUE)
+	SUM=sum(VALUE)
+	MEDIAN=median(VALUE)
+	"90th"=perc(VALUE,90)
+| sort ITEM, CLASS
+			
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1557,7 +1838,44 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void testUnbox() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_COMMANDS, "query_testUnbox.txt");
+		String queryString = """
+| source json data=`[
+{product="Table", 
+	properties: { legs:{ count: 4, length: 80}, lengthUnit: "cm" }, 
+	costs: {
+		dollaresPerCM: 0.2, 
+		sellerFees: [
+			{seller: "Super Market", feeUSD: 30},
+			{seller: "Jane's Furniture", feeUSD: 50},
+			{seller: "Mega Store", feeUSD: 25} ]
+}},
+{product="Chair", 
+	properties: { legs:{ count: 4, length: 50}, lengthUnit: "cm" }, 
+	costs: {
+		dollaresPerCM: 0.1, 
+		sellerFees: [
+			{seller: "Super Market", feeUSD: 25},
+			{seller: "Jane's Furniture", feeUSD: 37},
+			{seller: "Mega Store", feeUSD: 55} ]
+}}
+]`
+| unbox 
+	replace=true # remove existing fields
+	product                # keep product field
+	properties.legs.count  # unboxed to count 
+	properties.legs.length # unboxed to length
+	costs.dollaresPerCM    # unboxed to dollaresPerCM
+	costs.sellerFees       # unbox array of objects
+| unbox
+	sellerFees # unbox the previously unboxed objects
+| remove sellerFees
+| set totalCostUSD = (count * length * dollaresPerCM) + feeUSD
+| formatfield totalCostUSD=[
+	['threshold', 0, 60, 70, 80, 90, "bg"]
+	, ['align', "right"]
+	, ['postfix', " USD"]
+]				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1597,9 +1915,12 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void test_Tail() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source random records=1000 | tail 123"
-				+ ";| source random records=1000 | tail 321"
-				;
+		String queryString = """
+| source random records=1000 | tail 123
+;
+| source random records=1000 | tail 321
+				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1629,9 +1950,12 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	public void test_Top() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source random records=1000 | top 123"
-				+ ";| source random records=1000 | top 321"
-				;
+		String queryString = """
+| source random records=1000 | top 123
+;
+| source random records=1000 | top 321
+
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);

@@ -1,6 +1,0 @@
-| record
-	[FIRSTNAME, VALUE] # plus AddedField-2 and AddedField-3
-	["Aurora", 11]
-	["Alejandra", [1,2,3] ]
-	["Roberto", {hello: "world"} ]
-	["Hera", 8008, null, true]

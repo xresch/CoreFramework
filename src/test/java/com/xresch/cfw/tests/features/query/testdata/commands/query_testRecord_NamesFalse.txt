@@ -1,7 +1,0 @@
-| source empty
-| set 
-	FIRSTNAME = "Hejdi"
-	VALUE = 8.8008
-| record names=false
-	["Laura", 42]
-	["Victora", 99]
