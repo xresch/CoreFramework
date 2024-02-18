@@ -52,15 +52,16 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testAbs() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source empty records=1\r\n" + 
-				"| set\r\n" + 
-				"	NEGATIV=-33\r\n" + 
-				"	ABSOLUTE=abs(NEGATIV) \r\n" + 
-				"	ZERO=abs() \r\n" + 
-				"	ZERO_AGAIN=abs(null)\r\n" + 
-				"	STRING_ZERO=abs('returns0')\r\n" + 
-				"	BOOL_ZERO=abs(true)"
-				;
+		String queryString = """
+| source empty records=1 
+| set 
+	NEGATIV=-33 
+	ABSOLUTE=abs(NEGATIV)  
+	ZERO=abs()  
+	ZERO_AGAIN=abs(null) 
+	STRING_ZERO=abs('returns0') 
+	BOOL_ZERO=abs(true)				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -184,11 +185,12 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCeil() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source empty records=1\r\n" + 
-				"| set\r\n" + 
-				"	POSITIVE=ceil(124.34567)\r\n" + 
-				"	NEGATIVE=ceil(-42.34567)\r\n"
-				;
+		String queryString ="""
+| source empty records=1 
+| set 
+	POSITIVE=ceil(124.34567) 
+	NEGATIVE=ceil(-42.34567)
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -212,16 +214,18 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testClone() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source empty records=1\r\n" + 
-				"| set ARRAY=[55,66] OBJECT={x: 77, y:\"eightyeight\"}\r\n" + 
-				"| set\r\n" + 
-				"	ARRAY_CLONE=clone(ARRAY)\r\n" + 
-				"	OBJECT_CLONE=clone(OBJECT)\r\n" + 
-				"	STRING_CLONE=clone(\"uhyeahclonemerighttherebaby\")\r\n" + 
-				"	NUMBER_CLONE=clone(8008)\r\n" + 
-				"	BOOL_CLONE=clone(true)\r\n" + 
-				"	NULL_CLONE=clone(null)\r\n"
-				;
+		String queryString = """
+| source empty records=1 
+| set ARRAY=[55,66] OBJECT={x: 77, y:"eightyeight"} 
+| set 
+	ARRAY_CLONE=clone(ARRAY) 
+	OBJECT_CLONE=clone(OBJECT) 
+	STRING_CLONE=clone("uhyeahclonemerighttherebaby") 
+	NUMBER_CLONE=clone(8008) 
+	BOOL_CLONE=clone(true) 
+	NULL_CLONE=clone(null)				
+				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -506,19 +510,20 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCos() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source empty records=1\r\n" + 
-				"| set\r\n" + 
-				"	RADIANS=0.872665 # radians for 50 degress\r\n" + 
-				"	DEGREES=50\r\n" + 
-				"	COS_RADIANS=round(cos(RADIANS),3) \r\n" + 
-				"	COS_DEGREES=round(cos(DEGREES,true),3) \r\n" + 
-				"	# all following return 0\r\n" + 
-				"	NOTHING_RETURNS_ZERO=cos() \r\n" + 
-				"	RETURNS_ZERO_AGAIN=cos(null)\r\n" + 
-				"	STRING_ZERO=cos('returns-0')\r\n" + 
-				"	BOOL_ZERO=cos(true)\r\n" + 
-				""
-				;
+		String queryString = """
+| source empty records=1 
+| set 
+	RADIANS=0.872665 # radians for 50 degress 
+	DEGREES=50 
+	COS_RADIANS=round(cos(RADIANS),3)  
+	COS_DEGREES=round(cos(DEGREES,true),3)  
+	# all following return 0 
+	NOTHING_RETURNS_ZERO=cos()  
+	RETURNS_ZERO_AGAIN=cos(null) 
+	STRING_ZERO=cos('returns-0') 
+	BOOL_ZERO=cos(true) 
+					
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -549,18 +554,18 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCount() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				"| source empty records=10\r\n" + 
-				"| set \r\n" + 
-				"	#return a number that increases by 1 every call\r\n" + 
-				"	INDEX=count()\r\n" + 
-				"	COUNT_ARRAY=count([null, 1, true, \"three\"])\r\n" + 
-				"	COUNT_OBJECT=count({a: null, b: 1, c: true, d: \"three\"})\r\n" + 
-				"	COUNT_STRING=count(\"test\")\r\n" + 
-				"	COUNT_NUMBER=count(5)\r\n" + 
-				"	COUNT_BOOL=count(true)\r\n" + 
-				"	COUNT_NULL=count(null)"
-				;
+		String queryString = """
+| source empty records=10 
+| set  
+	#return a number that increases by 1 every call 
+	INDEX=count() 
+	COUNT_ARRAY=count([null, 1, true, "three"]) 
+	COUNT_OBJECT=count({a: null, b: 1, c: true, d: "three"}) 
+	COUNT_STRING=count("test") 
+	COUNT_NUMBER=count(5) 
+	COUNT_BOOL=count(true) 
+	COUNT_NULL=count(null)				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -694,22 +699,23 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCountnulls() throws IOException {
 		
 		//---------------------------------
-		String queryString = 
-				"| source json data=`[\r\n" + 
-				"	 {index: 0, array: [1,2,3], object: {a: 0, b: 1, c: 3 } }\r\n" + 
-				"	,{index: 1, array: [null,null,3, null,5, null], object: {a: null, b: 22, c: null} }\r\n" + 
-				"]`\r\n" + 
-				"| set \r\n" + 
-				"	COUNT_IS_ONE=countnulls(null) # returns 1\r\n" + 
-				"	NULLS_IN_ARRAY=countnulls(array) # returns 0/4\r\n" + 
-				"	NULLS_IN_OBJECT=countnulls(object) # returns 0/2\r\n" + 
-				"	# every other value will result in count 0\r\n" + 
-				"	NUMBER=countnulls(index)\r\n" + 
-				"	BOOLEAN=countnulls(true)\r\n" + 
-				"	STRING=countnulls(\"some_string\")\r\n" + 
-				"	# no params will result in returning null\r\n" + 
-				"	UNCOUNTABLE=countnulls()"
-						;
+		String queryString = """
+| source json data=`[ 
+	 {index: 0, array: [1,2,3], object: {a: 0, b: 1, c: 3 } } 
+	,{index: 1, array: [null,null,3, null,5, null], object: {a: null, b: 22, c: null} } 
+]` 
+| set  
+	COUNT_IS_ONE=countnulls(null) # returns 1 
+	NULLS_IN_ARRAY=countnulls(array) # returns 0/4 
+	NULLS_IN_OBJECT=countnulls(object) # returns 0/2 
+	# every other value will result in count 0 
+	NUMBER=countnulls(index) 
+	BOOLEAN=countnulls(true) 
+	STRING=countnulls("some_string") 
+	# no params will result in returning null 
+	UNCOUNTABLE=countnulls()
+				
+						""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -779,12 +785,13 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		String original = "Space Lodash_ Equals= Other<>äÖü!?";
 		String encoded = CFW.HTTP.encode(original);
 		
-		String queryString = 
-				"| source empty records=1 \r\n" + 
-				"| set \r\n" + 
-				"	# encode a string\r\n" + 
-				"	ENCODED=encode('"+original+"')\r\n" + 
-				"	DECODED=decode(ENCODED)"
+		String queryString = """
+				| source empty records=1  
+				| set  
+					# encode a string 
+					ENCODED=encode('%s') 
+					DECODED=decode(ENCODED)
+				""".formatted(original)
 				;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
@@ -846,12 +853,13 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		String original = "Space Lodash_ Equals= Other<>äÖü!?";
 		String encoded = CFW.HTTP.encode(original);
 		
-		String queryString = 
-				"| source empty records=1 \r\n" + 
-				"| set \r\n" + 
-				"	# encode a string\r\n" + 
-				"	ENCODED=encode('"+original+"')\r\n" + 
-				"	DECODED=decode(ENCODED)"
+		String queryString = """
+				| source empty records=1  
+				| set  
+					# encode a string 
+					ENCODED=encode('%s') 
+					DECODED=decode(ENCODED)
+				""".formatted(original)
 				;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
@@ -930,11 +938,12 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testFloor() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source empty records=1\r\n" + 
-				"| set\r\n" + 
-				"	POSITIVE=floor(124.34567)\r\n" + 
-				"	NEGATIVE=floor(-42.34567)\r\n"
-				;
+		String queryString = """
+| source empty records=1
+| set
+	POSITIVE=floor(124.34567)
+	NEGATIVE=floor(-42.34567)
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1511,13 +1520,14 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testNow() throws IOException {
 		
 		//---------------------------------
-		String queryString =
-				  "| source empty records=1\r\n"
-				+ "| set \r\n"
-				+ "	NOW = now()\r\n"
-				+ "	NOW_OFFSET = now(null, -1, \"h\")\r\n"
-				+ "	NOW_FORMAT = now(\"YYYY-MM-dd\")"
-				;
+		String queryString = """
+| source empty records=1
+| set
+	NOW = now()
+	NOW_OFFSET = now(null, -1, "h")
+	NOW_FORMAT = now("YYYY-MM-dd")
+	
+			""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
