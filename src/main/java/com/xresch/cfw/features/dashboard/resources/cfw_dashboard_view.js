@@ -655,7 +655,8 @@ function cfw_dashboard_widget_edit(widgetGUID){
 	// -----------------------------------
 	// Initialize Forms
 	cfw_initializeForm(customForm);
-
+	cfw_initializeForm(defaultForm);
+	
 	$('#editWidgetComposite [data-toggle="tooltip"]').tooltip();
 				
 }
