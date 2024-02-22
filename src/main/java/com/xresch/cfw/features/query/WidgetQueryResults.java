@@ -522,8 +522,12 @@ public class WidgetQueryResults extends WidgetDefinition {
 					// Create Details
 					if(!Strings.isNullOrEmpty(detailFields)) {
 						String detailsString = "";
-						for (String fieldname : detailFields.split(",")) {
-							if(fieldname != null && (urlColumn == null || !fieldname.trim().equals(urlColumn.trim())) ) {
+						for (String fieldname : detailFields.trim().split(",")) {
+							if( !Strings.isNullOrEmpty(fieldname) 
+							&& ( urlColumn == null 
+							    || !fieldname.trim().equals(urlColumn.trim())
+							   ) 
+							) {
 								JsonElement detailsField = current.get(fieldname.trim());
 								if(detailsField != null && !detailsField.isJsonNull()) {
 									detailsString += fieldname+"=\""+current.get(fieldname.trim()).getAsString() + "\" ";

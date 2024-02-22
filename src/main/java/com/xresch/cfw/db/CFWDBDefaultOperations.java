@@ -270,8 +270,10 @@ public  class CFWDBDefaultOperations {
 		
 		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, object, auditLogFieldnames);
 		
+		String cacheName = String.join("-", fieldsToIgnore);
+		
 		return object
-				.queryCache(object.getClass(), "CFWDBDefaultOperations.updateWithout")
+				.queryCache(object.getClass(), "CFWDBDefaultOperations.updateWithout-"+cacheName)
 				.updateWithout(fieldsToIgnore);
 		
 	}

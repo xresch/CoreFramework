@@ -493,7 +493,8 @@ public class ServletDashboardViewMethods
 					//Use sanitized values
 					widgetFromDB.settings(settings.toJSONEncrypted());
 					if(!defaultSettingsOnly) {
-						CFW.DB.DashboardWidgets.update(widgetFromDB);
+						CFW.DB.DashboardWidgets.updateWithout(widgetFromDB
+												, DashboardWidgetFields.JSON_TASK_PARAMETERS.toString());
 					}else {
 						// needed to not override these settings
 						// needed also for security reasons (user cannot override task params when not having permissions)

@@ -191,6 +191,7 @@ Properties: added config property cfw_application_max_formsize=5000000 (Helps so
 - Dashboard: Widget - Settings: Title position now supports bottom&right additionally to top/left
 - Dashboard: Widget - Settings: New setting "Title Info" to add info as a hoverable info icon 
 - Dashboard: Widget - When title is left, give widget body a min-width
+- Dashboard: Tasks - fixed getting overridden when Widget settings are saved.
 - DB Extensions: Added option to context settings to allow updates on databases 
 - Query: Bugfix: Fixed endless loop on syntax errors
 - Query: Editor: Finally supports substitution of parameters
