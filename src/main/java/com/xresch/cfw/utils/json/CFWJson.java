@@ -490,6 +490,26 @@ public class CFWJson {
 		
 	}
 	
+	/*************************************************************************************
+	 * Makes a string from an element, without the nasty quotes
+	 *************************************************************************************/
+	public static String elementToString(JsonElement element) {
+		
+		if(element == null || element.isJsonNull()) {
+			return "null";
+		} else if(element.isJsonPrimitive()) {
+			JsonPrimitive primitive = element.getAsJsonPrimitive();
+			if(primitive.isString()) {
+				return element.getAsString(); 
+			}else if(primitive.isNumber()) {
+				return element.getAsNumber() + ""; 
+			}else if(primitive.isBoolean()) {
+				return element.getAsBoolean() + ""; 
+			}
+		}
+
+		return CFW.JSON.toJSON(element);
+	}
 	
 	/*************************************************************************************
 	 * Makes a CSV string from a JsonArray containing JsonObjects.
@@ -537,15 +557,8 @@ public class CFWJson {
 						
 						JsonElement currentValue = object.get(name);
 						
-						String stringValue = "";
-						if(currentValue.isJsonPrimitive()) 
-							{ stringValue = currentValue.getAsString(); }
-						else if(currentValue.isJsonArray()
-								|| currentValue.isJsonObject()) {
-							stringValue = CFW.JSON.toJSON(currentValue);
-						}
-							
-							
+						String stringValue = elementToString(currentValue);
+						
 						csv.append("\"")
 						   .append(CFW.JSON.escapeString(stringValue))
 						   .append("\"")
@@ -561,5 +574,7 @@ public class CFWJson {
 		return csv.toString();
 		
 	}
+	
+	
 
 }

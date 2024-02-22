@@ -3,6 +3,7 @@ package com.xresch.cfw.features.query.parse;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.logging.Logger;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
@@ -11,9 +12,11 @@ import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.features.query.CFWQuery;
 import com.xresch.cfw.features.query.CFWQueryCommand;
 import com.xresch.cfw.features.query.CFWQueryContext;
+import com.xresch.cfw.features.query.CFWQueryExecutor;
 import com.xresch.cfw.features.query.EnhancedJsonObject;
 import com.xresch.cfw.features.query.commands.CFWQueryCommandSource;
 import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
+import com.xresch.cfw.logging.CFWLog;
 
 /**************************************************************************************************************
  * QUERY SYNTAX DOCUMENTATION
@@ -75,6 +78,8 @@ import com.xresch.cfw.features.query.parse.CFWQueryToken.CFWQueryTokenType;
 
 
 public class CFWQueryParser {
+	
+	private static Logger logger = CFWLog.getLogger(CFWQueryParser.class.getName());
 	
 	// contains the original query string
 	private String query = null;
@@ -308,6 +313,8 @@ public class CFWQueryParser {
 	 ***********************************************************************************************/
 	public ArrayList<CFWQuery> parse() throws ParseException {
 
+		new CFWLog(logger).finer("Parsing Query: "+this.query);
+		
 		ArrayList<CFWQuery> queryList = new ArrayList<>();
 		//-----------------------------------
 		// Skip preceding semicolons

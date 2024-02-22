@@ -494,8 +494,8 @@ public class WidgetQueryResults extends WidgetDefinition {
 					
 					for (String fieldname : labelFields.split(" *, *")) {
 						JsonElement labelField = current.get(fieldname.trim());
-						if(labelField != null && !labelField.isJsonNull()) {
-							labelString += current.get(fieldname.trim()).getAsString() + " ";
+						if( labelField != null && !labelField.isJsonNull()) {
+							labelString += CFW.JSON.elementToString(labelField);
 						}else {
 							labelString += " ";
 						}
@@ -521,8 +521,9 @@ public class WidgetQueryResults extends WidgetDefinition {
 					//-----------------------------
 					// Create Details
 					if(!Strings.isNullOrEmpty(detailFields)) {
-						String detailsString = "";
+						//String detailsString = "";
 						for (String fieldname : detailFields.trim().split(",")) {
+							
 							if( !Strings.isNullOrEmpty(fieldname) 
 							&& ( urlColumn == null 
 							    || !fieldname.trim().equals(urlColumn.trim())
@@ -530,9 +531,10 @@ public class WidgetQueryResults extends WidgetDefinition {
 							) {
 								JsonElement detailsField = current.get(fieldname.trim());
 								if(detailsField != null && !detailsField.isJsonNull()) {
-									detailsString += fieldname+"=\""+current.get(fieldname.trim()).getAsString() + "\" ";
+									String detailsValue = CFW.JSON.elementToString(detailsField);
+									//detailsString += fieldname+"=\""+ detailsValue + "\" ";
 									metricTableHTML += "<td>"
-											+CFW.Security.escapeHTMLEntities(detailsField.getAsString())
+											+CFW.Security.escapeHTMLEntities(detailsValue)
 									+"</td>";
 								}else {
 									metricTableHTML += "<td>&nbsp;</td>";
