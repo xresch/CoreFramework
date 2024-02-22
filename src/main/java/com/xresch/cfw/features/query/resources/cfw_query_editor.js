@@ -455,7 +455,7 @@ class CFWQueryEditor{
 			}else{
 				if(!CFW.utils.isNullOrEmpty(urlParams.earliest)
 				&& !CFW.utils.isNullOrEmpty(urlParams.latest) ){
-					cfw_initializeTimeframePicker(this.settings.timeframePickerID, {earliest: CFW_QUERY_URLPARAMS.earliest, latest: CFW_QUERY_URLPARAMS.latest}, callbackFunction);
+					cfw_initializeTimeframePicker(this.settings.timeframePickerID, {earliest: urlParams.earliest, latest: urlParams.latest}, callbackFunction);
 				}else{
 					cfw_initializeTimeframePicker(this.settings.timeframePickerID, {offset: '1-h'}, callbackFunction);
 				}
@@ -681,13 +681,13 @@ class CFWQueryEditor{
 	 ******************************************************************************/
 	loadQueryFromURLAndExecute(){
 		
-		CFW_QUERY_URLPARAMS = CFW.http.getURLParamsDecoded();
+		urlParams = CFW.http.getURLParamsDecoded();
 		
 		//-----------------------------------
 		// Load Query from URL
-		if( !CFW.utils.isNullOrEmpty(CFW_QUERY_URLPARAMS.query) ){
+		if( !CFW.utils.isNullOrEmpty(urlParams.query) ){
 	
-			this.textarea.val(CFW_QUERY_URLPARAMS.query);
+			this.textarea.val(urlParams.query);
 	
 			this.resizeToFitQuery();
 			this.refreshHighlighting();
@@ -788,8 +788,6 @@ class CFWQueryEditor{
 					, "latest": timeframe.latest
 				}, doPushHistoryState);
 		}
-				
-		//CFW_QUERY_URLPARAMS = CFW.http.getURLParamsDecoded();
 		
 		//-----------------------------------			
 		// hide existing messages to not confuse user

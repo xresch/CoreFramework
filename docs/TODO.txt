@@ -195,6 +195,7 @@ DONE
 - Dashboard: Tasks - fixed getting overridden when Widget settings are saved.
 - DB Extensions: Added option to context settings to allow updates on databases 
 - Query: Bugfix: Fixed endless loop on syntax errors
+- Query: Bugfix: Editor on Dashboard now loads properly with custom timeframe being selected
 - Query: Editor: Finally supports substitution of parameters
 - Query Command: metadata - Added boolean option 'title' to toggle if name is used as title on UI
 - Query Command: formatrecord - Added autocomplete options 
