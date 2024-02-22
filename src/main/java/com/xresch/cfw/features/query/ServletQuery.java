@@ -111,6 +111,9 @@ public class ServletQuery extends HttpServlet
 				switch(item.toLowerCase()) {
 					case "manualpage": 		getManualPage(request, jsonResponse);
 	  										break;
+	  				
+					case "queryhistorylist": jsonResponse.getContent().append(CFWDBQueryHistory.getHistoryForUserAsJSON());
+											break;						
 	  										
 					default: 				CFW.Messages.itemNotSupported(item);
 											break;
@@ -119,15 +122,6 @@ public class ServletQuery extends HttpServlet
 				
 			case "fetchpartial": 			
 				switch(item.toLowerCase()) {
-					case "queryhistorylist": String pagesize = request.getParameter("pagesize");
-											String pagenumber = request.getParameter("pagenumber");
-											String filterquery = request.getParameter("filterquery");
-											String sortby = request.getParameter("sortby");
-											String isAscendingString = request.getParameter("isascending");
-											boolean isAscending = (isAscendingString == null || isAscendingString.equals("true")) ? true : false;
-											
-											jsonResponse.getContent().append(CFWDBQueryHistory.getPartialQueryHistoryListAsJSON(pagesize, pagenumber, filterquery, sortby, isAscending));
-	  										break;
 	  										
 					default: 				CFW.Messages.itemNotSupported(item);
 											break;

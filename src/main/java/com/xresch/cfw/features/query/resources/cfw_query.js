@@ -134,7 +134,7 @@ function cfw_query_initializeEditor(){
  * 
  * @param data as returned by CFW.http.getJSON()
  ******************************************************************/
-function cfw_query_printHistoryView(){
+function cfw_query_printHistoryView(data){
 	
 	var parent = $("#tab-content");
 	parent.html('');
@@ -169,7 +169,7 @@ function cfw_query_printHistoryView(){
 	//-----------------------------------
 	// Render Data
 	var rendererSettings = {
-			data: null,
+			data: data.payload,
 		 	idfield: 'PK_ID',
 		 	bgstylefield: null,
 		 	textstylefield: null,
@@ -203,14 +203,15 @@ function cfw_query_printHistoryView(){
 			rendererSettings: {
 				dataviewer: {
 					storeid: 'queryhistorylist',
+					postprocess: function(dataviewerDiv) {
+						dataviewerDiv.find('pre code').each(function(index, element){
+							
+							hljs.highlightElement(element);
+						});
+					},
 					datainterface: {
-						url: CFW_QUERY_URL,
-						item: 'queryhistorylist',
-						callback: function() {
-								parent.find('pre code').each(function(index, element){
-								hljs.highlightElement(element);
-							});
-						}
+						//url: CFW_QUERY_URL,
+						//item: 'queryhistorylist',
 					},
 					renderers: [
 						{	label: 'Table',
@@ -341,7 +342,7 @@ function cfw_query_draw(options){
 			case "editor":		// do da nothing
 								break;	
 								
-			case "history":		cfw_query_printHistoryView();
+			case "history":		CFW.http.getJSON(CFW_QUERY_URL, {action: "fetch", item: "queryhistorylist"}, cfw_query_printHistoryView);
 								break;	
 								
 			default:			CFW.ui.addToastDanger('This tab is unknown: '+options.tab);

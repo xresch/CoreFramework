@@ -164,8 +164,9 @@ DONE
 - BREAKING CODE CHANGE: CFWConfig renamed and requires category parameter in several mathods
 - BREAKING CODE CHANGE: Query Function param() - second param is now a default value.
 - BREAKING CHANGE: Query Command display - default value of parameter has changed to menu=false. Queries not defining this parameter will have their menu vanish 
-Properties: added config property cfw_application_max_formsize=5000000 (Helps solving issues with big imports)
-- New Feature: EAV Tables with Statistics, plus query source 'eavstats'
+- NEW FEARTURE: EAV Tables with Statistics, plus query source 'eavstats'
+- NEW FEARTURE: Manually executed queries are now saved in a history.
+- Properties: added config property cfw_application_max_formsize=5000000 (Helps solving issues with big imports)
 - Notifications: Fixed severe log messages showing up
 - Modals: Increased width of modals to have more space to work with
 - Charts: Can now be double clicked to get more details

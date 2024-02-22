@@ -13,7 +13,7 @@ public class TaskQueryHistoryLimitEntries extends CFWScheduledTask {
 
 	public void execute() {
 		
-		int historyLimit = (int)(1000 * 60 * CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_CATEGORY, FeatureQuery.CONFIG_QUERY_HISTORY_LIMIT));
+		int historyLimit = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_CATEGORY, FeatureQuery.CONFIG_QUERY_HISTORY_LIMIT);
 		CFWDBQueryHistory.removeOldestEntries(historyLimit);
 	}
 	

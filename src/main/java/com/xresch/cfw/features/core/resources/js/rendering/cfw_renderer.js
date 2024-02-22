@@ -2038,6 +2038,8 @@ function cfw_renderer_dataviewer(renderDef) {
 			sortable: true,
 			// array of the fields available for sorting, if null or empty array, renderDefinition.visiblefields will be used
 			sortfields: null,
+			//a function to call after a page has been rendered
+			postprocess: null,
 			// the interface to fetch the data from
 			datainterface: {
 				//The url to fetch the data from. If null the data from rendererSettings.data will be used.
@@ -2064,8 +2066,6 @@ function cfw_renderer_dataviewer(renderDef) {
 				totalrowsfield: 'TOTAL_RECORDS',
 				//a function to pre-process the data: function(data), data will be an array of records
 				preprocess: null,
-				//a function to call after a page has been rendered
-				callback: null
 			},
 	};
 	
@@ -2344,12 +2344,16 @@ function cfw_renderer_dataviewer_fireChange(dataviewerIDOrJQuery, pageToRender) 
 				params.dataToRender = dataToRender;
 				cfw_renderer_dataviewer_renderPage(params);
 				
-				if(settings.datainterface.callback != null){
-					settings.datainterface.callback();
-				}
+				
 			}
 		}
 	);
+	}
+	
+	//----------------------------------
+	// Callback
+	if(settings.postprocess != null){
+		settings.postprocess($(dataviewerIDOrJQuery));
 	}
 			
 }

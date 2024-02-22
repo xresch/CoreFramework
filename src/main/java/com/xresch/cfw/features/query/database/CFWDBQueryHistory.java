@@ -3,10 +3,12 @@ package com.xresch.cfw.features.query.database;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
 import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.db.PrecheckHandler;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.features.query.database.CFWQueryHistory.CFWQueryHistoryFields;
 import com.xresch.cfw.logging.CFWLog;
 
@@ -87,38 +89,19 @@ public class CFWDBQueryHistory {
 	/********************************************************
 	 * 
 	 ********************************************************/
-	public static String getQueryHistoryListAsJSON() {
+	public static String getHistoryForUserAsJSON() {
+		
+		int historyLimit = CFW.DB.Config.getConfigAsInt(FeatureQuery.CONFIG_CATEGORY, FeatureQuery.CONFIG_QUERY_HISTORY_LIMIT);
 		
 		return new CFWSQL(new CFWQueryHistory())
 				.queryCache()
 				.select()
+				.where(CFWQueryHistoryFields.FK_ID_USER, CFW.Context.Request.getUserID())
+				.limit(historyLimit)
 				.getAsJSON();
 		
 	}
 	
-	/********************************************************
-	 * 
-	 ********************************************************/
-	public static String getPartialQueryHistoryListAsJSON(String pageSize, String pageNumber, String filterquery, String sortby, boolean sortAscending) {
-		return getPartialQueryHistoryListAsJSON(Integer.parseInt(pageSize), Integer.parseInt(pageNumber), filterquery, sortby, sortAscending);
-	}
-	
-	/********************************************************
-	 * 
-	 ********************************************************/
-	public static String getPartialQueryHistoryListAsJSON(int pageSize, int pageNumber, String filterquery, String sortby, boolean sortAscending) {	
-		
-		//-------------------------------------
-		// Filter with fulltext search
-		// Enabled by CFWObject.enableFulltextSearch()
-		// on the QueryHistory Object
-
-		//Do not cache this statement
-		return new CFWSQL(new CFWQueryHistory())
-				.fulltextSearchLucene(filterquery, sortby, sortAscending, pageSize, pageNumber)
-				.getAsJSON();
-		
-	}
 	
 	/********************************************************
 	 * 
