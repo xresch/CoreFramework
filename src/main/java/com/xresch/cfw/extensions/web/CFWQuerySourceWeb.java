@@ -120,6 +120,7 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 						CFWField.newString(FormFieldType.TEXT, PARAM_URL)
 							.setDescription("The JSON string that should be parsed. Either an array of JSON Objects or a single JSON Object.")
 							.addValidator(new NotNullOrEmptyValidator())
+							.disableSanitization()
 					)
 				
 				.addField(
@@ -158,22 +159,26 @@ public class CFWQuerySourceWeb extends CFWQuerySource {
 						CFWField.newString(FormFieldType.TEXT, PARAM_HEADERS)
 							.setDescription("(Optional)The HTTP headers for the request.")
 							.addValidator(new NotNullOrEmptyValidator())
+							.disableSanitization()
 					)
 				.addField(
 						CFWField.newString(FormFieldType.TEXTAREA, PARAM_BODY)
-						.setDescription("(Optional)The body contents of the request. Setting the header 'Content-Type' might be needed(e.g. 'application/json; charset=UTF-8').")
+								.setDescription("(Optional)The body contents of the request. Setting the header 'Content-Type' might be needed(e.g. 'application/json; charset=UTF-8').")
+								.disableSanitization()
 						)
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_USERNAME)
-						.setDescription("(Optional)The username for Basic Authentication.")
-						.addValidator(new NotNullOrEmptyValidator())
+								.setDescription("(Optional)The username for Basic Authentication.")
+								.addValidator(new NotNullOrEmptyValidator())
+								.disableSanitization()
 						)
 				
 				.addField(
 						CFWField.newString(FormFieldType.TEXT, PARAM_PASSWORD)
-						.setDescription("(Optional)The password for Basic Authentication.")
-						.addValidator(new NotNullOrEmptyValidator())
+								.setDescription("(Optional)The password for Basic Authentication.")
+								.addValidator(new NotNullOrEmptyValidator())
+								.disableSanitization()
 						)
 				
 				.addField(

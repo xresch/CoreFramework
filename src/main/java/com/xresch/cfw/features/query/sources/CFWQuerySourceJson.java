@@ -105,6 +105,7 @@ public class CFWQuerySourceJson extends CFWQuerySource {
 					CFWField.newString(FormFieldType.TEXTAREA, FIELDNAME_DATA)
 						.setDescription("The JSON string that should be parsed. Either an array of JSON Objects or a single JSON Object.")
 						.addValidator(new NotNullOrEmptyValidator())
+						.disableSanitization()
 				)
 				.addField(
 						CFWField.newString(FormFieldType.TEXTAREA, FIELDNAME_TIMEFIELD)

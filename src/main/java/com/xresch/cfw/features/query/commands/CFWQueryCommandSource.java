@@ -336,6 +336,7 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 		//------------------------------------------
 		// Map to Parameters Object
 		this.paramsForSource = source.getParameters();
+
 		if(!paramsForSource.mapJsonFields(parameters.getWrappedObject(), true, true)) {
 			
 			for(CFWField field : paramsForSource.getFields().values()) {
@@ -394,6 +395,8 @@ public class CFWQueryCommandSource extends CFWQueryCommand {
 	@Override
 	public void execute(PipelineActionContext context) throws Exception {
 
+		new CFWLog(logger).finest("source "+source.uniqueName()+" params: "+paramsForSource.toJSON());
+		
 		long earliestMillis = parent.getContext().getEarliestMillis();
 		long latestMillis = parent.getContext().getLatestMillis();
 		//------------------------------------------

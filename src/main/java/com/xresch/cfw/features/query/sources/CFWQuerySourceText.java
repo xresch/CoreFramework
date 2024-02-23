@@ -106,11 +106,13 @@ public class CFWQuerySourceText extends CFWQuerySource {
 					CFWField.newString(FormFieldType.TEXTAREA, FIELDNAME_TEXT)
 						.setDescription("The text that should be splitted into records.")
 						.addValidator(new NotNullOrEmptyValidator())
+						.disableSanitization()
 				)
 				.addField(
 						CFWField.newString(FormFieldType.TEXTAREA, FIELDNAME_SEPARATOR)
 							.setDescription("The separator used for splitting the text, uses regular expressions. (Default: newline)")
 							.setValue("\n")
+							.disableSanitization()
 					)
 				
 				.addField(
