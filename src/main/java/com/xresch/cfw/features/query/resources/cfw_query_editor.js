@@ -681,7 +681,7 @@ class CFWQueryEditor{
 	 ******************************************************************************/
 	loadQueryFromURLAndExecute(){
 		
-		urlParams = CFW.http.getURLParamsDecoded();
+		var urlParams = CFW.http.getURLParamsDecoded();
 		
 		//-----------------------------------
 		// Load Query from URL
