@@ -209,6 +209,7 @@ DONE
 	- message
 	- record
 	- resultremove
+	- undefinedto / undefto
 - Query: Added Functions:
 	- array
 	- case

@@ -1,0 +1,30 @@
+
+<p>The undefinedto command is used to add values which are not defined(missing field in the record). This is useful to handle situations where undefined would lead to problems, for example when using the filter command.
+You can specify the new value and also the fields which you want to replace null values in.
+</p>
+
+<p>Following code replaces undefined with 'n/a' in all fields:</p>
+
+<pre><code class="language-cfwquery">| record
+	[NAME		, VALUE	, VALUE_B]
+	["Aurora"	, 1		,2]
+	["Hera"		, 2		, null]
+	["Xenia"	, null] # VALUE_B is undefined
+	["Marketa"] 		# VALUE AND VALUE_B is undefined
+| undefto value="n/a"  # sets all undefined values to "null"
+| off filter (VALUE != null) # this filter would not work properly with undefined values
+</code></pre>
+
+
+<p>You can use the parameter 'fields' to limit the fields that are considered to be added to the records.
+Following will only add 'n/a' values in the field 'VALUE_B':</p>
+
+<pre><code class="language-cfwquery">| record
+	[NAME		, VALUE	, VALUE_B]
+	["Aurora"	, 1		,2]
+	["Hera"		, 2		, null]
+	["Xenia"	, null] # VALUE_B is undefined
+	["Marketa"] 		# VALUE AND VALUE_B is undefined
+| undefto value="n/a" fields=VALUE_B # sets all undefined values to "null"
+| off filter (VALUE != null)</code></pre>
+

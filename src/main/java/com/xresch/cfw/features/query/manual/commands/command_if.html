@@ -1,7 +1,11 @@
 
 <p>The if-command is used to start and if-statement and introduce flow control into your query.
-If-statements are ended with the end-command. 
-The order of the records after an if-statement cannot be predicted, even if most of the times it might look as having a specific order.</p>
+When using if-command, consider the following:</p>
+<ul>
+	<li><b>Ending with End:&nbsp;</b>All if-statements have to be ended with the end-command. </li>
+	<li><b>Order Unpredictable:&nbsp;</b>The order of the records after an if-statement cannot be predicted, even if most of the times it might look as having a specific order.</li>
+	<li><b>Unworkable Combinations:&nbsp;</b>Certain commands will not work well with the if commands, as they do not work based on records. For example the commands formatfield, display and globals.</li>
+</ul>
 
 <pre><code class="language-cfwquery">| source random records = 20
 | if (VALUE &lt; 50)
