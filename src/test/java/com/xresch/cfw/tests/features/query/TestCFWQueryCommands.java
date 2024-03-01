@@ -1979,5 +1979,90 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	}
 		
 	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testUndefTo() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| record
+	[NAME		, VALUE	, VALUE_B]
+	["Marketa"]
+	["Hera"		, 2		, "a"]
+| undefto value="n/a"
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+
+		//============================================
+		// First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(2, queryResults.getRecordCount());
+		
+		//------------------------------
+		// First Record
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals("Marketa", record.get("NAME").getAsString());
+		Assertions.assertEquals("n/a", record.get("VALUE").getAsString());
+		Assertions.assertEquals("n/a", record.get("VALUE_B").getAsString());
+		
+		//------------------------------
+		// Second Record
+		record = queryResults.getRecord(1);
+		Assertions.assertEquals("Hera", record.get("NAME").getAsString());
+		Assertions.assertEquals("2", record.get("VALUE").getAsString());
+		Assertions.assertEquals("a", record.get("VALUE_B").getAsString());
+
+	}
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testUndefTo_Fields() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| record
+	[NAME		, VALUE	, VALUE_B]
+	["Marketa"]
+	["Hera"		, null		, "a"]
+| undefto value="n/a" fields=VALUE_B
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		//  query results
+		Assertions.assertEquals(1, resultArray.size());
+
+		//============================================
+		// First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(2, queryResults.getRecordCount());
+		
+		//------------------------------
+		// First Record
+		JsonObject record = queryResults.getRecord(0);
+		
+		Assertions.assertEquals("Marketa", record.get("NAME").getAsString());
+		Assertions.assertEquals(false, record.has("VALUE"));
+		Assertions.assertEquals("n/a", record.get("VALUE_B").getAsString());
+		
+		//------------------------------
+		// Second Record
+		record = queryResults.getRecord(1);
+		Assertions.assertEquals("Hera", record.get("NAME").getAsString());
+		Assertions.assertEquals(true, record.get("VALUE").isJsonNull());
+		Assertions.assertEquals("a", record.get("VALUE_B").getAsString());
+
+	}
 	
 }
