@@ -116,11 +116,17 @@ function cfw_query_customizerCreateDefault(){
 			let booleanClass = value ? 'bg-success' : 'bg-danger';
 			return '<span class="format-base text-white text-center '+booleanClass+' m-0">'+value+'</span>';
 		}
-	
+		
 		//----------------------------------------------
 		// Nulls
-		if(value === null || value === undefined){
+		if(value === null){
 			return '<span class="format-base text-white text-center badge-primary m-0">NULL</span>';
+		}
+		
+		//----------------------------------------------
+		// Undefined
+		if(value === undefined){
+			return '<span class="format-base text-white text-center badge-primary m-0">undefined</span>';
 		}
 		
 		//----------------------------------------------
