@@ -194,6 +194,7 @@ function cfw_dashboardcommon_showVersions(id){
 								return `<button class="btn btn-warning btn-sm" alt="Switch" title="Switch"
 									onclick="
 										CFW.ui.confirmExecute('Do you want to switch to the version <strong>${version}</strong>?'
+											  +' Any widget tasks on the current dashboard will be disabled. You will have to re-enable them on the version you have switched too.'
 											, 'Switch'
 											, 'cfw_dashboardcommon_switchVersion(${id}, ${versionID});')
 									">

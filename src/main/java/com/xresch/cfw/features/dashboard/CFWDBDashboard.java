@@ -210,21 +210,20 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	public static boolean deleteByID(String id) {
 		
+		boolean success = true;
 		CFW.DB.transactionStart();
 		
-		boolean success = true;
-		// delete widgets and related jobs first to not have jobs unrelated to widgets.
-		success &= CFW.DB.DashboardWidgets.deleteWidgetsForDashboard(id); 
-		success &= CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, DashboardFields.PK_ID.toString(), id); 
+			// delete widgets and related jobs first to not have jobs unrelated to widgets.
+			success &= CFW.DB.DashboardWidgets.deleteWidgetsForDashboard(id); 
+			success &= CFWDBDefaultOperations.deleteFirstBy(prechecksDelete, auditLogFieldnames, cfwObjectClass, DashboardFields.PK_ID.toString(), id); 
 		
-		if(success) {
-			CFW.DB.transactionCommit();
-		}else {
-			CFW.DB.transactionRollback();
-		}
+		CFW.DB.transactionEnd(success);
+
 		return success;
 	}
 
+	
+	
 	public static boolean deleteByIDForCurrentUser(String id)	{ 
 		
 		if(isDashboardOfCurrentUser(id)) {
@@ -233,6 +232,21 @@ public class CFWDBDashboard {
 			CFW.Messages.noPermission();
 			return false;
 		}
+	} 
+	
+	
+	
+	private static boolean deleteJobsForDashboard(String id)	{ 
+		
+		ArrayList<DashboardWidget> widgets = CFW.DB.DashboardWidgets.getWidgetsForDashboard(id);
+		
+		
+			boolean success = true;
+			for(DashboardWidget widget : widgets) {
+				success &= CFW.DB.DashboardWidgets.deleteJobsForWidget(widget.id());
+			}
+		
+		return success;
 	} 
 	
 		
@@ -1073,6 +1087,10 @@ public class CFWDBDashboard {
 			// Update Favorites
 			success &= CFW.DB.DashboardFavorites.switchFavorites(originalID, toID);
 			
+			//----------------------------
+			// Delete Jobs
+			success &= deleteJobsForDashboard(dashboardID);
+					
 			//----------------------------
 			// Success Message
 			if(success) {

@@ -145,23 +145,34 @@ public class CFWDBDashboardWidget {
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################
-	public static boolean 	deleteByID(String id) { 
+	public static boolean deleteByID(String id) { 
 		return deleteByID(Integer.parseInt(id)); 
 	}
-	public static boolean 	deleteByID(int id) { 
+	
+	
+	public static boolean deleteByID(int id) { 
 		
 		if(CFWDBDefaultOperations.deleteFirstBy(prechecksDeleteUpdate, auditLogFieldnames, cfwObjectClass, DashboardWidgetFields.PK_ID.toString(), id) ) {
 			removeFromCache(id);
-			//--------------------------------------------
-			//Delete Job Tasks related to this widget
-			if( 0 < CFW.DB.Jobs.getCountByCustomInteger(id)) {
-				CFW.DB.Jobs.deleteFirstByCustomInteger(id);
-			}
+			return deleteJobsForWidget(id);
 			
-			return true;
 		}
 		
 		return false;
+	}
+	
+	/***************************************************************
+	 * Deletes all widgets for the selected dashboard
+	 * 
+	 * @return Returns true if successful, false otherwise.
+	 ****************************************************************/
+	public static boolean deleteJobsForWidget(int id) {
+		
+		if( 0 < CFW.DB.Jobs.getCountByCustomInteger(id)) {
+			return CFW.DB.Jobs.deleteFirstByCustomInteger(id);
+		}
+		
+		return true;
 	}
 	
 
