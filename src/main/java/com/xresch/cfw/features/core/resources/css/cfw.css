@@ -8,6 +8,7 @@
  * Toast Messages >> 	#cfw-toasts 			z-index: 2048;
  * BT Tooltip >> 		.tooltip 				z-index: 1070;
  * BT Popover >> 		.popover 				z-index: 1060;
+ * Confirm Dialog >>	.cfw-confirm-dialog		z-index: 1055;
  * BT Modals >> 		.modal 					z-index: 1050;
  * BT Modal BG >> 		.modal -backdrop		z-index: 1040;
  * Loaders >> 			#cfw-loader-body   		z-index: 1024;
@@ -611,6 +612,10 @@ pre {
     max-width: 400px;
     min-width: 300px;
     padding-top: 100px;
+}
+
+#cfw-confirm-dialog{
+	z-index: 1055;
 }
 
 #cfw-default-modal{

@@ -1568,7 +1568,7 @@ public class CFWSQL {
 		
 		try {
 			
-			this.execute(true);
+			this.execute(false);
 			if(result != null) {	
 				//----------------------------
 				// Handle Caching
@@ -1586,8 +1586,8 @@ public class CFWSQL {
 				}
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			new CFWLog(logger).severe("Error during executeCount(): "+e.getMessage(), e);
+			
 		}finally {
 			dbInterface.close(result);
 		}

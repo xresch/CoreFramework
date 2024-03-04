@@ -23,7 +23,10 @@ import com.xresch.cfw.utils.ResultSetUtils;
  **************************************************************************************************************/
 public class CFWDBDashboardFavoriteMap {
 
+	
 	private static final String TABLE_NAME = new DashboardFavoritesMap().getTableName();
+	
+	private static final Object SYNC_OBJECT = new Object();
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBDashboardFavoriteMap.class.getName());
 	
@@ -321,6 +324,41 @@ public class CFWDBDashboardFavoriteMap {
 			return addDashboardToUserFavs(dashboardID, userID, true);
 		}
 
+	}
+	
+	/***************************************************************
+	 * Switches the favorites from one dashboard to another dashboard.
+	 * This is used when switching from one dashboard version to
+	 * another.
+	 ****************************************************************/
+	public static boolean switchFavorites(int fromID, int toID) {
+		boolean wasStarted = CFW.DB.transactionIsStarted();
+		boolean success = true;
+		
+
+
+		if(!wasStarted) { CFW.DB.transactionStart(); }
+			
+			success = new CFWSQL(new DashboardFavoritesMap())
+					.delete()
+					.where(DashboardFavoritenMapFields.FK_ID_DASHBOARD, toID)
+					.executeCFWResultSet(false)
+					.isSuccess()
+					;
+			
+			success &=  new CFWSQL(null)
+				.custom("UPDATE "+DashboardFavoritesMap.TABLE_NAME +" AS T"
+						+" SET T."+DashboardFavoritenMapFields.FK_ID_DASHBOARD
+						+" = ?", toID)
+				.where(DashboardFavoritenMapFields.FK_ID_DASHBOARD, fromID)
+				.executeCFWResultSet(false)
+				.isSuccess()
+				;
+			
+		if(!wasStarted) { CFW.DB.transactionEnd(success); }
+			
+
+		return success;
 	}
 		
 }

@@ -177,6 +177,11 @@ public class ServletDashboardList extends HttpServlet
 										jsonResponse.setSuccess(CFW.DB.DashboardFavorites.toogleDashboardInUserFavs(dashboardID, ""+userID));
 										break;
 										
+					case "switchversion": String dashID = ID;
+										String versionID = request.getParameter("versionid");
+										jsonResponse.setSuccess(CFW.DB.Dashboards.switchToVersion(dashID, versionID));
+										break;
+					
 					default: 			CFW.Messages.itemNotSupported(item);
 										break;
 				}

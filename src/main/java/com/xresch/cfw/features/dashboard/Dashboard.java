@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,8 +52,8 @@ public class Dashboard extends CFWObject {
 	public enum DashboardFields{
 		PK_ID,
 		FK_ID_USER,
-		// id of the dashboard of which the record is a version 
-		VERSIONOF,
+		// not using primary key for this, as it allows for easier switch between versions
+		VERSION_GROUP,
 		// zero is current, else it counts up 1 for every version, later version are higher 
 		VERSION,
 		NAME,
@@ -92,10 +93,8 @@ public class Dashboard extends CFWObject {
 			.setValue(null);
 	
 	
-	private CFWField<Integer> versionof = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.VERSIONOF)
-			.setForeignKeyCascade(this, Dashboard.class, DashboardFields.PK_ID)
-			.setDescription("The id of the dashboard which is the current version of this dashboard.")
-			.apiFieldType(FormFieldType.NUMBER)
+	private CFWField<String> versionGroup = CFWField.newString(FormFieldType.HIDDEN, DashboardFields.VERSION_GROUP)
+			.setDescription("Identifier used for the grouping of the versions.")
 			.setValue(null);
 	
 	private CFWField<Integer> version = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.VERSION)
@@ -225,7 +224,7 @@ public class Dashboard extends CFWObject {
 		this.addFields(
 				  id
 				, foreignKeyOwner
-				, versionof
+				, versionGroup
 				, version
 				, name
 				, description
@@ -325,7 +324,7 @@ public class Dashboard extends CFWObject {
 				new String[] {
 						DashboardFields.PK_ID.toString(), 
 						DashboardFields.FK_ID_USER.toString(),
-						DashboardFields.VERSIONOF.toString(),
+						DashboardFields.VERSION_GROUP.toString(),
 						DashboardFields.VERSION.toString(),
 						DashboardFields.NAME.toString(),
 						DashboardFields.DESCRIPTION.toString(),
@@ -604,12 +603,12 @@ public class Dashboard extends CFWObject {
 		return this;
 	}
 	
-	public Integer versionof() {
-		return versionof.getValue();
+	public String versionGroup() {
+		return versionGroup.getValue();
 	}
 	
-	public Dashboard versionof(Integer value) {
-		this.versionof.setValue(value);
+	public Dashboard versionGroup(String value) {
+		this.versionGroup.setValue(value);
 		return this;
 	}
 	public Integer version() {

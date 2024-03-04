@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import com.google.common.base.Strings;
@@ -33,7 +34,6 @@ import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
 /**************************************************************************************************************
@@ -108,6 +108,14 @@ public class CFWDBDashboard {
 	public static Integer createDuplicate(String dashboardID, boolean forVersioning) { 
 
 		Dashboard duplicate = CFW.DB.Dashboards.selectByID(dashboardID);
+		
+		//---------------------------------
+		// Make sure it has a version group 
+		if(Strings.isNullOrEmpty(duplicate.versionGroup()) ) {
+			duplicate.versionGroup(UUID.randomUUID().toString());
+			duplicate.update(DashboardFields.VERSION_GROUP);
+		}
+		
 		int originalID = duplicate.id();
 		
 		duplicate.id(null);
@@ -115,13 +123,14 @@ public class CFWDBDashboard {
 		duplicate.foreignKeyOwner(CFW.Context.Request.getUser().id());
 		
 		if(forVersioning) {
-			duplicate.versionof(originalID);
 			
 			int maxVersion = getMaxVersionForDashboard(originalID);
 			duplicate.version(maxVersion+1);
 			
 		}else {
 			duplicate.name(duplicate.name()+"(Copy)");
+			duplicate.version(0);
+			duplicate.versionGroup(UUID.randomUUID().toString());
 			duplicate.isShared(false);
 			duplicate.sharedWithUsers(null);
 			duplicate.editors(null);
@@ -174,25 +183,10 @@ public class CFWDBDashboard {
 	}
 
 	
-	private static int  getMaxVersionForDashboard(int id) {
-		
-		return new CFWSQL(new Dashboard())
-			.custom("SELECT MAX(VERSION) AS MAXVERSION"
-					+" FROM "+Dashboard.TABLE_NAME
-					+" WHERE PK_ID = ? OR VERSIONOF = ?"
-					, id
-					, id
-					)
-			.getFirstAsInteger();
-	}
-	
-	
-	
-	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean update(Dashboard item) 		{ 
+	public static boolean update(Dashboard item) { 
 		updateTags(item); 
 		item.lastUpdated(new Timestamp(System.currentTimeMillis()));
 		return CFWDBDefaultOperations.updateWithout(prechecksCreateUpdate, auditLogFieldnames, item); 
@@ -453,11 +447,13 @@ public class CFWDBDashboard {
 	 ****************************************************************/
 	public static String getDashboardVersionsListAsJSON(String dashboardID) {
 		
-		return new CFWSQL(new Dashboard())
+		Dashboard dashboard = selectByID(dashboardID);
+		
+		return new CFWSQL(dashboard)
 				.queryCache()
 				.select()
 				.where(DashboardFields.PK_ID, dashboardID)
-				.or(DashboardFields.VERSIONOF, dashboardID)
+				.or(DashboardFields.VERSION_GROUP, dashboard.versionGroup())
 				.orderbyDesc(DashboardFields.VERSION)
 				.getAsJSON();
 	}
@@ -1043,6 +1039,69 @@ public class CFWDBDashboard {
 		}
 		
 		return false;
+	}
+	
+	/********************************************************************************************
+	 * Switch between dashboard versions
+	 * 
+	 ********************************************************************************************/
+	public static boolean switchToVersion(String dashboardID, String versionID) {
+		
+		boolean success = true;
+		CFW.DB.transactionStart();
+		
+			//----------------------------
+			// Fetch Original Stuff
+			Dashboard current = selectByID(dashboardID);
+			int originalID = current.id();
+			int newVersion = 1 + getMaxVersionForDashboard(originalID);
+			
+			//----------------------------
+			// Fetch Version Stuff
+			Dashboard toVersion = selectByID(versionID);
+			int toID = toVersion.id();
+			
+			//----------------------------
+			// Switch current
+			current.version(newVersion);
+			success &= update(current);
+			
+			toVersion.version(0);
+			success &= update(toVersion);
+			
+			//----------------------------
+			// Update Favorites
+			success &= CFW.DB.DashboardFavorites.switchFavorites(originalID, toID);
+			
+			//----------------------------
+			// Success Message
+			if(success) {
+				CFW.Messages.addSuccessMessage("Version successfully switched.");
+			}else {
+				CFW.Messages.addErrorMessage("Error occured while switching versions.");
+			}
+			
+		CFW.DB.transactionEnd(success);
+		
+		return success;
+	}
+
+	/********************************************************************************************
+	 * Returns the maximum version for the dashboard
+	 * 
+	 ********************************************************************************************/
+	public static int  getMaxVersionForDashboard(int id) {
+		
+		Dashboard dashboard = selectByID(id);
+		
+		return new CFWSQL(new Dashboard())
+			.custom("SELECT MAX(VERSION) AS MAXVERSION"
+					+" FROM "+Dashboard.TABLE_NAME
+					+" WHERE PK_ID = ? OR VERSION_GROUP = ?"
+					, id
+					, dashboard.versionGroup()
+					)
+			.getFirstAsInteger();
 	}
 	
 	

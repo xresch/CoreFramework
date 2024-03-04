@@ -112,6 +112,26 @@ function cfw_dashboardcommon_createVersion(id){
 			}
 	});
 }
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboardcommon_switchVersion(id, versionid){
+	
+		var params = {
+			action: "update"
+			, item: "switchversion"
+			, id: id
+			, versionid: versionid
+		};
+		
+	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, params, 
+		function(data) {
+			if(data.success){
+				cfw_dashboardcommon_showVersions(id);
+			}
+	});
+}
 	
 /*******************************************************************************
  * 
@@ -161,6 +181,27 @@ function cfw_dashboardcommon_showVersions(id){
 							+ '</a>';
 						}
 					);
+					
+					//-------------------------
+					// Switch Button
+					actionButtons.push(
+						function (record, recordID){ 
+							if(record.VERSION == 0){
+								return '&nbsp;';
+							}else{
+								var version = record.VERSION;
+								var versionID = record.PK_ID;
+								return `<button class="btn btn-warning btn-sm" alt="Switch" title="Switch"
+									onclick="
+										CFW.ui.confirmExecute('Do you want to switch to the version <strong>${version}</strong>?'
+											, 'Switch'
+											, 'cfw_dashboardcommon_switchVersion(${id}, ${versionID});')
+									">
+										<i class="fa fa-exchange-alt"></i>
+									</button>`;
+							}
+						}
+					);
 
 					//---------------------------
 					// Render Settings
@@ -169,6 +210,16 @@ function cfw_dashboardcommon_showVersions(id){
 						titlefields: ["VERSION", "NAME"],
 						visiblefields: ["VERSION", "NAME", "DESCRIPTION"],
 						actions: actionButtons,
+						customizers: {
+							VERSION: function(record, value) { 
+								
+								if(value == 0){
+									return "current";
+								}
+								
+								return value;
+					 		}
+					 	},
 						rendererSettings:{
 
 						}

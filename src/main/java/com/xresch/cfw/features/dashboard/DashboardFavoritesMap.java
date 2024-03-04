@@ -22,7 +22,7 @@ public class DashboardFavoritesMap extends CFWObject {
 	
 	public static final String TABLE_NAME = "CFW_DASHBOARD_FAVORITE_MAP";
 	
-	enum DashboardFavoritenMapFields{
+	public enum DashboardFavoritenMapFields{
 		PK_ID, 
 		FK_ID_DASHBOARD,
 		FK_ID_USER,
