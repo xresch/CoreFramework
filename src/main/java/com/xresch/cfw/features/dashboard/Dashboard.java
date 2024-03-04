@@ -51,6 +51,8 @@ public class Dashboard extends CFWObject {
 	public enum DashboardFields{
 		PK_ID,
 		FK_ID_USER,
+		// zero is current, else it counts up 1 vor every version, later version are higher 
+		VERSION,
 		NAME,
 		DESCRIPTION,
 		TAGS,
@@ -67,6 +69,7 @@ public class Dashboard extends CFWObject {
 		
 		ALLOW_EDIT_SETTINGS,
 		TIME_CREATED,
+		LAST_UPDATED,
 		IS_PUBLIC,
 		START_FULLSCREEN,
 		IS_DELETABLE,
@@ -75,7 +78,7 @@ public class Dashboard extends CFWObject {
 
 	private static Logger logger = CFWLog.getLogger(Dashboard.class.getName());
 	
-	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.PK_ID.toString())
+	private CFWField<Integer> id = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.PK_ID)
 			.setPrimaryKeyAutoIncrement(this)
 			.setDescription("The id of the dashboard.")
 			.apiFieldType(FormFieldType.NUMBER)
@@ -87,7 +90,14 @@ public class Dashboard extends CFWObject {
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 	
-	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, DashboardFields.NAME.toString())
+	private CFWField<Integer> version = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.VERSION)
+			.setColumnDefinition("INT DEFAULT 0")
+			.setDescription("The version of the dashboard.")
+			.apiFieldType(FormFieldType.NUMBER)
+			.setValue(0)
+			;
+	
+	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, DashboardFields.NAME)
 			.setColumnDefinition("VARCHAR(255)")
 			.setDescription("The name of the dashboard.")
 			.addValidator(new LengthValidator(1, 255))
@@ -152,6 +162,10 @@ public class Dashboard extends CFWObject {
 			.setDescription("The date and time the dashboard was created.")
 			.setValue(new Timestamp(new Date().getTime()));
 	
+	private CFWField<Timestamp> lastUpdated = CFWField.newTimestamp(FormFieldType.NONE, DashboardFields.LAST_UPDATED)
+			.setDescription("The date and time the dashboard was created.")
+			.setValue(new Timestamp(new Date().getTime()));
+	
 	private CFWField<Boolean> isPublic = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.IS_PUBLIC)
 			.apiFieldType(FormFieldType.TEXT)
 			.setColumnDefinition("BOOLEAN DEFAULT FALSE")
@@ -202,6 +216,7 @@ public class Dashboard extends CFWObject {
 		this.setTableName(TABLE_NAME);
 		this.addFields(id
 				, foreignKeyOwner
+				, version
 				, name
 				, description
 				, tags
@@ -212,6 +227,7 @@ public class Dashboard extends CFWObject {
 				, editorGroups
 				, alloweEditSettings
 				, timeCreated
+				, lastUpdated
 				, isPublic
 				, startFullscreen
 				, isDeletable
@@ -290,6 +306,7 @@ public class Dashboard extends CFWObject {
 		String[] inputFields = 
 				new String[] {
 						DashboardFields.PK_ID.toString(), 
+						DashboardFields.VERSION.toString(), 
 //						DashboardFields.CATEGORY.toString(),
 						DashboardFields.NAME.toString(),
 				};
@@ -298,6 +315,7 @@ public class Dashboard extends CFWObject {
 				new String[] {
 						DashboardFields.PK_ID.toString(), 
 						DashboardFields.FK_ID_USER.toString(),
+						DashboardFields.VERSION.toString(),
 						DashboardFields.NAME.toString(),
 						DashboardFields.DESCRIPTION.toString(),
 						DashboardFields.TAGS.toString(),
@@ -308,6 +326,7 @@ public class Dashboard extends CFWObject {
 						DashboardFields.JSON_EDITOR_GROUPS.toString(),
 						DashboardFields.ALLOW_EDIT_SETTINGS.toString(),
 						DashboardFields.TIME_CREATED.toString(),
+						DashboardFields.LAST_UPDATED.toString(),
 						DashboardFields.IS_PUBLIC.toString(),
 						DashboardFields.START_FULLSCREEN.toString(),
 						DashboardFields.IS_DELETABLE.toString(),
@@ -664,6 +683,15 @@ public class Dashboard extends CFWObject {
 	
 	public Dashboard timeCreated(Timestamp creationDate) {
 		this.timeCreated.setValue(creationDate);
+		return this;
+	}
+	
+	public Timestamp lastUpdated() {
+		return lastUpdated.getValue();
+	}
+	
+	public Dashboard lastUpdated(Timestamp value) {
+		this.lastUpdated.setValue(value);
 		return this;
 	}
 	

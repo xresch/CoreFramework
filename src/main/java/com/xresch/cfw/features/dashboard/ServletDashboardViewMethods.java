@@ -367,7 +367,6 @@ public class ServletDashboardViewMethods
 	
 				//----------------------------
 				// Prepare Data
-
 				if(!withData) {
 					newWidget.type(type);
 					if(definition != null) {
@@ -415,7 +414,7 @@ public class ServletDashboardViewMethods
 
 				
 				int id = CFW.DB.DashboardWidgets.createGetPrimaryKey(duplicateThis);
-				duplicateThis.id(id);
+				duplicateThis.id(id); // needed because of caching
 				
 				response.getContent().append(CFW.JSON.toJSON(duplicateThis));
 			}else {
@@ -504,6 +503,7 @@ public class ServletDashboardViewMethods
 										, DashboardWidgetFields.JSON_TASK_PARAMETERS.toString()
 									);
 					}
+					
 				}
 			}else {
 				CFW.Messages.noPermissionToEdit();
@@ -530,6 +530,8 @@ public class ServletDashboardViewMethods
 			if(definition.hasPermission(currentUser) || CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 				
 				boolean success = CFW.DB.DashboardWidgets.deleteByID(widgetID);
+				CFW.DB.Dashboards.updateLastUpdated(dashboardID);
+				
 				json.setSuccess(success);
 			}else {
 				CFW.Messages.noPermissionToEdit();
@@ -1073,9 +1075,15 @@ public class ServletDashboardViewMethods
 				}
 				
 				//-----------------------------
+				// Set Last Updated
+				CFW.DB.Dashboards.updateLastUpdated(dashboardID);
+				
+				//-----------------------------
 				// Read Current State and send
 				// to Browser
 				fetchWidgetsAndParams(json, dashboardID, isPublicServlet);
+				
+				
 				
 			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				new CFWLog(logger).severe("Exception while executing undo/redo:"+e, e);

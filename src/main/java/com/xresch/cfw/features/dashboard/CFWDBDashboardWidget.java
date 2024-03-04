@@ -95,16 +95,35 @@ public class CFWDBDashboardWidget {
 	public static boolean 	create(DashboardWidget item) 		{ 
 		return CFWDBDefaultOperations.create(prechecksCreate, auditLogFieldnames, item);
 	}
-	public static int 		createGetPrimaryKey(DashboardWidget item) 	{ 
-		return CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, auditLogFieldnames, item);
+	public static int createGetPrimaryKey(DashboardWidget item) 	{ 
+		
+		Integer primaryKey = null;
+		
+		CFW.DB.transactionStart();
+			
+			primaryKey = CFWDBDefaultOperations.createGetPrimaryKey(prechecksCreate, auditLogFieldnames, item);
+			boolean success =  (primaryKey != null); 
+			success &= CFW.DB.Dashboards.updateLastUpdated(item.foreignKeyDashboard());
+			
+		CFW.DB.transactionEnd(success);
+		
+		return primaryKey;
 	}
 	
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(DashboardWidget item) 		{ 
+	public static boolean update(DashboardWidget item) 		{ 
 		removeFromCache(item.id());
-		return CFWDBDefaultOperations.update(prechecksDeleteUpdate, auditLogFieldnames, item); 
+		
+		CFW.DB.transactionStart();
+		
+			boolean success =  CFWDBDefaultOperations.update(prechecksDeleteUpdate, auditLogFieldnames, item); 
+			success &= CFW.DB.Dashboards.updateLastUpdated(item.foreignKeyDashboard());
+			
+		CFW.DB.transactionEnd(success);
+		
+		return success;
 	}
 	
 	//####################################################################################################
@@ -112,7 +131,15 @@ public class CFWDBDashboardWidget {
 	//####################################################################################################
 	public static boolean updateWithout(DashboardWidget item, String... fieldnames) 		{ 
 		removeFromCache(item.id());
-		return CFWDBDefaultOperations.updateWithout(prechecksDeleteUpdate, auditLogFieldnames, item, fieldnames); 
+		
+		CFW.DB.transactionStart();
+		
+			boolean success =  CFWDBDefaultOperations.updateWithout(prechecksDeleteUpdate, auditLogFieldnames, item, fieldnames); 
+			success &= CFW.DB.Dashboards.updateLastUpdated(item.foreignKeyDashboard());
+			
+		CFW.DB.transactionEnd(success);
+		
+		return success; 
 	}
 	
 	//####################################################################################################

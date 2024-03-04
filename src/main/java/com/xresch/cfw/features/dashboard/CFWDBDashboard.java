@@ -109,12 +109,29 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(Dashboard item) 		{ updateTags(item); return CFWDBDefaultOperations.updateWithout(prechecksCreateUpdate, auditLogFieldnames, item); }
+	public static boolean update(Dashboard item) 		{ 
+		updateTags(item); 
+		item.lastUpdated(new Timestamp(System.currentTimeMillis()));
+		return CFWDBDefaultOperations.updateWithout(prechecksCreateUpdate, auditLogFieldnames, item); 
+	}
+	
+	public static boolean updateLastUpdated(String dashboardID){ 
+		return updateLastUpdated(Integer.parseInt(dashboardID));
+	}
+	
+	public static boolean updateLastUpdated(int dashboardID){ 
+		Dashboard toUpdate = new Dashboard().id(dashboardID).lastUpdated(new Timestamp(System.currentTimeMillis()));
+		
+		return new CFWSQL(toUpdate)
+			.update(DashboardFields.LAST_UPDATED)
+			;
+		
+	}
 	
 	//####################################################################################################
 	// DELETE
 	//####################################################################################################
-	public static boolean 	deleteByID(String id) {
+	public static boolean deleteByID(String id) {
 		
 		CFW.DB.transactionStart();
 		
@@ -157,22 +174,6 @@ public class CFWDBDashboard {
 		return CFWDBDefaultOperations.selectFirstBy(cfwObjectClass, DashboardFields.NAME.toString(), name);
 	}
 	
-	/***************************************************************
-	 * Select a dashboard by it's ID and return it as JSON string.
-	 * @param id of the dashboard
-	 * @return Returns a dashboard or null if not found or in case of exception.
-	 ****************************************************************/
-	public static String getDashboardAsJSON(String id) {
-		
-		return new CFWSQL(new Dashboard())
-				.queryCache()
-				.select()
-				.where(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
-				.or(DashboardFields.IS_SHARED.toString(), true)
-				.where(DashboardFields.PK_ID.toString(), Integer.parseInt(id))
-				.getAsJSON();
-		
-	}
 	
 	/***************************************************************
 	 * Return a list of all user dashboards
@@ -185,6 +186,7 @@ public class CFWDBDashboard {
 				.queryCache(CFWDBDashboard.class, "getUserDashboardList")
 				.select()
 				.where(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+				.and(DashboardFields.VERSION, 0)
 				.orderby(DashboardFields.NAME.toString())
 				.getResultSet();
 		
@@ -203,6 +205,7 @@ public class CFWDBDashboard {
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
 				.where(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+				.and(DashboardFields.VERSION, 0)
 				.orderby(DashboardFields.NAME.toString())
 				.getAsJSON();
 	}
@@ -252,6 +255,7 @@ public class CFWDBDashboard {
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
+				.where(DashboardFields.VERSION, 0)
 				.orderby(DashboardFields.NAME.toString())
 				.getAsJSON();
 		}else {
@@ -294,6 +298,7 @@ public class CFWDBDashboard {
 				  , DashboardFields.ALLOW_EDIT_SETTINGS
 				  )
 			.where(DashboardFields.IS_SHARED, true)
+			.and(DashboardFields.VERSION, 0)
 			.and().custom("(");
 		
 		Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
@@ -319,7 +324,8 @@ public class CFWDBDashboard {
 					, DashboardFields.IS_PUBLIC
 					, DashboardFields.ALLOW_EDIT_SETTINGS
 					)
-			.where().custom("(");
+			.where(DashboardFields.VERSION, 0)
+			.and().custom("(");
 		
 		for(int i = 0 ; i < roleArray.length; i++ ) {
 			int roleID = roleArray[i];
@@ -480,7 +486,6 @@ public class CFWDBDashboard {
 				}else {
 					dashboard.foreignKeyOwner(CFW.Context.Request.getUser().id());
 				}
-				
 				
 				//-----------------------------
 				// Resolve Shared Users
