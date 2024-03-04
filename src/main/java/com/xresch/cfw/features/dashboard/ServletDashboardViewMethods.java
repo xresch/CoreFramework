@@ -659,16 +659,18 @@ public class ServletDashboardViewMethods
 		
 		String dashboardID = request.getParameter("dashboardid");
 		
-		if(CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
-			
-			String widgetID = request.getParameter("widgetid");
-			JsonObject payload = new JsonObject();
+		if(!CFW.DB.Dashboards.checkCanEdit(dashboardID)) {
+			CFW.Messages.noPermission();
+		}else {
 			
 			//----------------------------
 			// Get Values
+			String widgetID = request.getParameter("widgetid");
+			JsonObject payload = new JsonObject();
 			DashboardWidget widget = CFW.DB.DashboardWidgets.selectByID(widgetID);
 			WidgetDefinition definition = CFW.Registry.Widgets.getDefinition(widget.type());
 			User currentUser = CFW.Context.Request.getUser();		
+			
 			if( 
 				(
 					currentUser.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_TASKS)
@@ -739,6 +741,14 @@ public class ServletDashboardViewMethods
 					public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
 						
 						//-------------------------------------
+						// Validate is current version
+						Dashboard board = CFW.DB.Dashboards.selectByID(dashboardID);
+						if(board.version() != 0) {
+							CFW.Messages.addWarningMessage("Sorry, tasks can only be configured for the current version of a dashboard.");
+							return;
+						}
+						
+						//-------------------------------------
 						// Validate and save Task Params to Widget
 						if(formObject.mapRequestParameters(request)) {
 							widget.taskParameters(taskParams.toJSON());
@@ -781,8 +791,7 @@ public class ServletDashboardViewMethods
 							
 							//--------------------------------------
 							// Update Dashboard and Widget Name
-							Dashboard board = CFW.DB.Dashboards.selectByID(dashboardID);
-							
+
 							LinkedHashMap<String, String> taskExecutorParams = jobToSave.propertiesAsMap();
 							if(board != null) {
 								taskExecutorParams.put(CFWJobTaskWidgetTaskExecutor.PARAM_DASHBOARD_NAME, board.name());
@@ -828,9 +837,6 @@ public class ServletDashboardViewMethods
 			}
 			
 			json.getContent().append(payload.toString());
-			
-		}else{
-			CFW.Messages.noPermission();
 		}
 
 	}

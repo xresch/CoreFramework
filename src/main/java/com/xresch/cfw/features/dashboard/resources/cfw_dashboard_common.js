@@ -118,6 +118,11 @@ function cfw_dashboardcommon_createVersion(id){
  ******************************************************************************/
 function cfw_dashboardcommon_switchVersion(id, versionid){
 	
+	if(id == versionid){
+		CFW.ui.addToastWarning('Whoops! The IDs are the same, refresh the table then try to switch again.');
+		return;
+	}
+	
 		var params = {
 			action: "update"
 			, item: "switchversion"
@@ -169,6 +174,15 @@ function cfw_dashboardcommon_showVersions(id){
 					let payload = data.payload;
 
 					//======================================
+					// Find current ID
+					var currentVersionID; //needed to find out manually, else when switching twice you can end up with multiple current versions
+					for(i in payload){
+						if(payload[i].VERSION == 0){
+							currentVersionID = payload[i].PK_ID;
+						}
+					}
+					
+					//======================================
 					// Prepare actions
 					var actionButtons = [ ];
 					
@@ -196,7 +210,7 @@ function cfw_dashboardcommon_showVersions(id){
 										CFW.ui.confirmExecute('Do you want to switch to the version <strong>${version}</strong>?'
 											  +' Any widget tasks on the current dashboard will be disabled. You will have to re-enable them on the version you have switched too.'
 											, 'Switch'
-											, 'cfw_dashboardcommon_switchVersion(${id}, ${versionID});')
+											, 'cfw_dashboardcommon_switchVersion(${currentVersionID}, ${versionID});')
 									">
 										<i class="fa fa-exchange-alt"></i>
 									</button>`;
