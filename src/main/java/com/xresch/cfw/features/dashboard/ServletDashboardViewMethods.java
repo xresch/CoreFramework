@@ -139,20 +139,31 @@ public class ServletDashboardViewMethods
 				
 				content.append(htmlTemplate);
 				
+				
 				//--------------------------------------
 				// Add widget CSS and JS files based on
 				// user permissions
 				CFW.Registry.Widgets.addFilesToResponse(html);
 
+				//--------------------------------------
+				// Check exists
 				Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
 				if(dashboard == null) {
 					CFW.Messages.addWarningMessage("The dashboard with the id '"+dashboardID+"' does not exist.");
 					content.setLength(0);
 					return;
 				}
+				
+				//--------------------------------------
+				// Add Version Warning
+				if(dashboard.version() != 0) {
+					CFW.Messages.addWarningMessage("Your are currently viewing version "+dashboard.version()+" of this dashboard, not the current version.");
+				}
+				
+				//--------------------------------------
+				// Add Page Data
 				html.setPageTitle(dashboard.name());
 				html.addJavascriptData("dashboardName",  dashboard.name());
-				
 				
 				if(currentUser != null) {
 					html.addJavascriptData("dashboardIsFaved",  CFW.DB.DashboardFavorites.checkIsDashboardFavedByUser(dashboard, currentUser));
