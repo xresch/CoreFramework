@@ -98,6 +98,93 @@ function cfw_dashboardcommon_showStatistics(id){
 		);
 	$.ajaxSetup({async: true});
 }
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboardcommon_createVersion(id){
+	
+		var params = {action: "duplicate", item: "createversion", id: id};
+	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, params, 
+		function(data) {
+			if(data.success){
+				cfw_dashboardcommon_showVersions(id);
+			}
+	});
+}
+	
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_dashboardcommon_showVersions(id){
+	var versionsTab = $('#dashboardVersionsContent');
+	versionsTab.html('');
+	
+	//-----------------------------
+	// Create HTML Structure 
+
+	versionsTab.append(
+		  '<p>This is a list of all manually or automatically created version of this dashboard.</p>'
+		  +'<button class="btn btn-sm btn-success" onclick="cfw_dashboardcommon_createVersion('+id+')">New Version</button>'
+	);
+
+			
+	var versionsDiv =$('<div id="versionsDiv">');
+	versionsTab.append(versionsDiv);
+	
+	//-----------------------------
+	// Fetch Data
+	
+	var requestParams = {
+		action: 'fetch'
+		, item: 'dashboardversions'
+		, id: id
+	};
+	
+	$.ajaxSetup({async: false});
+		CFW.http.postJSON(CFW_DASHBOARDLIST_URL, requestParams, function(data){
+				
+				if(data.payload != null){
+					
+					let payload = data.payload;
+
+					//======================================
+					// Prepare actions
+					var actionButtons = [ ];
+					
+					//-------------------------
+					// View Button
+					actionButtons.push(
+						function (record, id){ 
+							return '<a class="btn btn-success btn-sm" role="button" target="_blank" href="/app/dashboard/view?id='+record.PK_ID+'" alt="View" title="View" >'
+							+ '<i class="fa fa-eye"></i>'
+							+ '</a>';
+						}
+					);
+
+					//---------------------------
+					// Render Settings
+					var dataToRender = {
+						data: payload,
+						titlefields: ["VERSION", "NAME"],
+						visiblefields: ["VERSION", "NAME", "DESCRIPTION"],
+						actions: actionButtons,
+						rendererSettings:{
+
+						}
+					};
+													
+					//--------------------------
+					// Render Widget
+					var renderResult = CFW.render.getRenderer('dataviewer').render(dataToRender);	
+					versionsDiv.append(renderResult);
+								
+				}
+			}
+		);
+	$.ajaxSetup({async: true});
+}
+	
 	
 /*******************************************************************************
  * 
@@ -117,12 +204,14 @@ function cfw_dashboardcommon_editDashboard(id, callbackJSOrFunc){
 	list.append(
 		'<li class="nav-item"><a class="nav-link active" id="dashboardSettingsTab" data-toggle="pill" href="#dashboardSettingsContent" role="tab" ><i class="fas fa-tools mr-2"></i>Settings</a></li>'
 	  + '<li class="nav-item"><a class="nav-link" id="dashboardStatisticsTab" data-toggle="pill" href="#dashboardStatisticsContent" role="tab" onclick="cfw_dashboardcommon_showStatistics('+id+')" ><i class="fas fa-chart-bar"></i>&nbsp;Statistics</a></li>'
+	  + '<li class="nav-item"><a class="nav-link" id="dashboardVersionsTab" data-toggle="pill" href="#dashboardVersionsContent" role="tab" onclick="cfw_dashboardcommon_showVersions('+id+')" ><i class="fas fa-code-branch"></i>&nbsp;Versions</a></li>'
 	);
 	
 	compositeDiv.append(list);
 	compositeDiv.append('<div id="settingsTabContent" class="tab-content">'
 			  +'<div class="tab-pane fade show active" id="dashboardSettingsContent" role="tabpanel" aria-labelledby="dashboardSettingsTab"></div>'
 			  +'<div class="tab-pane fade" id="dashboardStatisticsContent" role="tabpanel" aria-labelledby="dashboardStatisticsTab"></div>'
+			  +'<div class="tab-pane fade" id="dashboardVersionsContent" role="tabpanel" aria-labelledby="dashboardVersionsTab"></div>'
 		+'</div>' );	
 
 	//-----------------------------------

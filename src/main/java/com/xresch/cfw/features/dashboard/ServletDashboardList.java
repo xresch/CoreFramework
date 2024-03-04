@@ -139,6 +139,9 @@ public class ServletDashboardList extends HttpServlet
 					case "admindashboards": 	jsonResponse.getContent().append(CFW.DB.Dashboards.getAdminDashboardListAsJSON());
 												break;	
 												
+					case "dashboardversions": 	jsonResponse.getContent().append(CFW.DB.Dashboards.getDashboardVersionsListAsJSON(ID));
+												break;	
+												
 					case "dashboardstats": 		String timeframeString = request.getParameter("timeframe");
 												CFWTimeframe time = new CFWTimeframe(timeframeString);
 												jsonResponse.setPayload(CFW.DB.Dashboards.getEAVStats(ID, time.getEarliest(), time.getLatest()));
@@ -155,11 +158,14 @@ public class ServletDashboardList extends HttpServlet
 			case "duplicate": 			
 				switch(item.toLowerCase()) {
 
-					case "dashboard": 	duplicateDashboard(jsonResponse, ID);
-										break;  
+					case "dashboard": 		duplicateDashboard(jsonResponse, ID, false);
+											break;  
 										
-					default: 			CFW.Messages.itemNotSupported(item);
-										break;
+					case "createversion": 	duplicateDashboard(jsonResponse, ID, true);
+											break;  
+					
+					default: 				CFW.Messages.itemNotSupported(item);
+											break;
 				}
 				break;	
 				
@@ -233,7 +239,7 @@ public class ServletDashboardList extends HttpServlet
 	/******************************************************************
 	 *
 	 ******************************************************************/
-	private void duplicateDashboard(JSONResponse jsonResponse, String dashboardID) {
+	private void duplicateDashboard(JSONResponse jsonResponse, String dashboardID, boolean newVersion) {
 		// TODO Auto-generated method stub
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)
 		|| (
@@ -241,57 +247,11 @@ public class ServletDashboardList extends HttpServlet
 			&& CFW.DB.Dashboards.checkCanEdit(dashboardID) 
 			) 
 		) {
-			Dashboard duplicate = CFW.DB.Dashboards.selectByID(dashboardID);
 			
-			duplicate.id(null);
-			duplicate.timeCreated( new Timestamp(new Date().getTime()) );
-			duplicate.foreignKeyOwner(CFW.Context.Request.getUser().id());
-			duplicate.name(duplicate.name()+"(Copy)");
-			duplicate.isShared(false);
-			duplicate.sharedWithUsers(null);
-			duplicate.editors(null);
-			
-			Integer newID = duplicate.insertGetPrimaryKey();
+			Integer newID = CFW.DB.Dashboards.createDuplicate(dashboardID, newVersion);
 			
 			if(newID != null) {
-				
-				//-----------------------------------------
-				// Duplicate Widgets
-				//-----------------------------------------
-				ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
-				
-				boolean success = true;
-				for(DashboardWidget widgetToCopy : widgetList) {
-					widgetToCopy.id(null);
-					widgetToCopy.foreignKeyDashboard(newID);
-					
-					if(!widgetToCopy.insert()) {
-						success = false;
-						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while duplicating widget.");
-					}
-				}
-				
-				//-----------------------------------------
-				// Duplicate Parameters
-				//-----------------------------------------
-				ArrayList<CFWParameter> parameterList = CFW.DB.Parameters.getParametersForDashboard(dashboardID);
-				
-				for(CFWParameter paramToCopy : parameterList) {
-					
-					paramToCopy.id(null);
-					paramToCopy.foreignKeyDashboard(newID);
-					
-					if(!paramToCopy.insert()) {
-						success = false;
-						CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while duplicating parameter.");
-					}
-				}
-				
-				if(success) {
-					CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Dashboard duplicated successfully.");
-				}
-				jsonResponse.setSuccess(success);
-				
+				jsonResponse.setSuccess(true);
 			}else {
 				jsonResponse.setSuccess(false);
 			}

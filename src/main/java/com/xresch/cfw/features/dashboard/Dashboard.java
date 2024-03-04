@@ -51,13 +51,14 @@ public class Dashboard extends CFWObject {
 	public enum DashboardFields{
 		PK_ID,
 		FK_ID_USER,
-		// zero is current, else it counts up 1 vor every version, later version are higher 
+		// id of the dashboard of which the record is a version 
+		VERSIONOF,
+		// zero is current, else it counts up 1 for every version, later version are higher 
 		VERSION,
 		NAME,
 		DESCRIPTION,
 		TAGS,
 		IS_SHARED,
-		
 		// About these fields:
 		// First they have been only stored in this objects table CFW_DASHBOARD as JSON.
 		// Now the primary data is stored in the respective tables >> CFW_DASHBOARD_*_MAP.
@@ -87,6 +88,13 @@ public class Dashboard extends CFWObject {
 	private CFWField<Integer> foreignKeyOwner = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.FK_ID_USER)
 			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
 			.setDescription("The user id of the owner of the dashboard.")
+			.apiFieldType(FormFieldType.NUMBER)
+			.setValue(null);
+	
+	
+	private CFWField<Integer> versionof = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.VERSIONOF)
+			.setForeignKeyCascade(this, Dashboard.class, DashboardFields.PK_ID)
+			.setDescription("The id of the dashboard which is the current version of this dashboard.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
 	
@@ -214,8 +222,10 @@ public class Dashboard extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id
+		this.addFields(
+				  id
 				, foreignKeyOwner
+				, versionof
 				, version
 				, name
 				, description
@@ -306,7 +316,7 @@ public class Dashboard extends CFWObject {
 		String[] inputFields = 
 				new String[] {
 						DashboardFields.PK_ID.toString(), 
-						DashboardFields.VERSION.toString(), 
+						DashboardFields.VERSION.toString(),
 //						DashboardFields.CATEGORY.toString(),
 						DashboardFields.NAME.toString(),
 				};
@@ -315,6 +325,7 @@ public class Dashboard extends CFWObject {
 				new String[] {
 						DashboardFields.PK_ID.toString(), 
 						DashboardFields.FK_ID_USER.toString(),
+						DashboardFields.VERSIONOF.toString(),
 						DashboardFields.VERSION.toString(),
 						DashboardFields.NAME.toString(),
 						DashboardFields.DESCRIPTION.toString(),
@@ -590,6 +601,23 @@ public class Dashboard extends CFWObject {
 	
 	public Dashboard foreignKeyOwner(Integer foreignKeyUser) {
 		this.foreignKeyOwner.setValue(foreignKeyUser);
+		return this;
+	}
+	
+	public Integer versionof() {
+		return versionof.getValue();
+	}
+	
+	public Dashboard versionof(Integer value) {
+		this.versionof.setValue(value);
+		return this;
+	}
+	public Integer version() {
+		return version.getValue();
+	}
+	
+	public Dashboard version(Integer value) {
+		this.version.setValue(value);
 		return this;
 	}
 		

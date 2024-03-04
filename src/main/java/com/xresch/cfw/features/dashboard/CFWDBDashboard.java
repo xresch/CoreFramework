@@ -17,12 +17,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
-import com.xresch.cfw._main.CFW.Context;
-import com.xresch.cfw._main.CFW.Context.Request;
-import com.xresch.cfw._main.CFW.DB;
-import com.xresch.cfw._main.CFW.DB.EAVStats;
-import com.xresch.cfw.datahandling.CFWField;
-import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.db.CFWDBDefaultOperations;
@@ -39,8 +33,8 @@ import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
 import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
-import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 /**************************************************************************************************************
  * 
@@ -83,7 +77,6 @@ public class CFWDBDashboard {
 		}
 	};
 	
-	
 	private static PrecheckHandler prechecksDelete =  new PrecheckHandler() {
 		public boolean doCheck(CFWObject object) {
 			Dashboard dashboard = (Dashboard)object;
@@ -101,10 +94,100 @@ public class CFWDBDashboard {
 	//####################################################################################################
 	// CREATE
 	//####################################################################################################
-	public static Integer 	createGetPrimaryKey(Dashboard item) { 
+	public static Integer createGetPrimaryKey(Dashboard item) { 
 		updateTags(item); 
 		return CFWDBDefaultOperations.createGetPrimaryKeyWithout(prechecksCreateUpdate, auditLogFieldnames, item);
 	}
+	
+	/**********************************************************************************
+	 * 
+	 * @param dashboardID¨the id of the dashboard that should be duplicated.
+	 * @param forVersioning true if this duplicate should be for versioning
+	 * @return
+	 **********************************************************************************/
+	public static Integer createDuplicate(String dashboardID, boolean forVersioning) { 
+
+		Dashboard duplicate = CFW.DB.Dashboards.selectByID(dashboardID);
+		int originalID = duplicate.id();
+		
+		duplicate.id(null);
+		duplicate.timeCreated( new Timestamp(new Date().getTime()) );
+		duplicate.foreignKeyOwner(CFW.Context.Request.getUser().id());
+		
+		if(forVersioning) {
+			duplicate.versionof(originalID);
+			
+			int maxVersion = getMaxVersionForDashboard(originalID);
+			duplicate.version(maxVersion+1);
+			
+		}else {
+			duplicate.name(duplicate.name()+"(Copy)");
+			duplicate.isShared(false);
+			duplicate.sharedWithUsers(null);
+			duplicate.editors(null);
+		}
+		
+		Integer newID = duplicate.insertGetPrimaryKey();
+		
+		if(newID != null) {
+			
+			//-----------------------------------------
+			// Duplicate Widgets
+			//-----------------------------------------
+			ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
+			
+			boolean success = true;
+			for(DashboardWidget widgetToCopy : widgetList) {
+				widgetToCopy.id(null);
+				widgetToCopy.foreignKeyDashboard(newID);
+				
+				if(!widgetToCopy.insert()) {
+					success = false;
+					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while duplicating widget.");
+				}
+			}
+			
+			//-----------------------------------------
+			// Duplicate Parameters
+			//-----------------------------------------
+			ArrayList<CFWParameter> parameterList = CFW.DB.Parameters.getParametersForDashboard(dashboardID);
+			
+			for(CFWParameter paramToCopy : parameterList) {
+				
+				paramToCopy.id(null);
+				paramToCopy.foreignKeyDashboard(newID);
+				
+				if(!paramToCopy.insert()) {
+					success = false;
+					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while duplicating parameter.");
+				}
+			}
+			
+			if(success) {
+				CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Dashboard duplicated successfully.");
+			}
+
+		}
+			
+		return newID;
+
+	}
+
+	
+	private static int  getMaxVersionForDashboard(int id) {
+		
+		return new CFWSQL(new Dashboard())
+			.custom("SELECT MAX(VERSION) AS MAXVERSION"
+					+" FROM "+Dashboard.TABLE_NAME
+					+" WHERE PK_ID = ? OR VERSIONOF = ?"
+					, id
+					, id
+					)
+			.getFirstAsInteger();
+	}
+	
+	
+	
 	
 	//####################################################################################################
 	// UPDATE
@@ -363,6 +446,21 @@ public class CFWDBDashboard {
 	}
 	
 	
+	/***************************************************************
+	 * Return a list of all version of a dashboard as json string.
+	 * 
+	 * @return Returns a result set with all users or null.
+	 ****************************************************************/
+	public static String getDashboardVersionsListAsJSON(String dashboardID) {
+		
+		return new CFWSQL(new Dashboard())
+				.queryCache()
+				.select()
+				.where(DashboardFields.PK_ID, dashboardID)
+				.or(DashboardFields.VERSIONOF, dashboardID)
+				.orderbyDesc(DashboardFields.VERSION)
+				.getAsJSON();
+	}
 	
 	
 	/***************************************************************
