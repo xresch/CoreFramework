@@ -222,8 +222,8 @@ function cfw_dashboardcommon_showVersions(id){
 					// Render Settings
 					var dataToRender = {
 						data: payload,
-						titlefields: ["VERSION", "NAME"],
-						visiblefields: ["VERSION", "NAME", "DESCRIPTION"],
+						titlefields: ["VERSION",  "NAME"],
+						visiblefields: ["VERSION","NAME", "DESCRIPTION", "TIME_CREATED", "LAST_UPDATED"],
 						actions: actionButtons,
 						customizers: {
 							VERSION: function(record, value) { 
@@ -233,6 +233,12 @@ function cfw_dashboardcommon_showVersions(id){
 								}
 								
 								return value;
+					 		}
+					 		, TIME_CREATED: function(record, value) { 
+								return cfw_format_epochToTimestamp(value);
+					 		}
+					 		, LAST_UPDATED: function(record, value) { 
+								return cfw_format_epochToTimestamp(value);
 					 		}
 					 	},
 						rendererSettings:{

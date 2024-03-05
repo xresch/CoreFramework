@@ -50,32 +50,33 @@ public class Dashboard extends CFWObject {
 		};
 	
 	public enum DashboardFields{
-		PK_ID,
-		FK_ID_USER,
-		// not using primary key for this, as it allows for easier switch between versions
-		VERSION_GROUP,
-		// zero is current, else it counts up 1 for every version, later version are higher 
-		VERSION,
-		NAME,
-		DESCRIPTION,
-		TAGS,
-		IS_SHARED,
+		PK_ID
+		, FK_ID_USER
+		, NAME
+		, DESCRIPTION
+		, TAGS
+		, IS_SHARED
 		// About these fields:
 		// First they have been only stored in this objects table CFW_DASHBOARD as JSON.
 		// Now the primary data is stored in the respective tables >> CFW_DASHBOARD_*_MAP.
 		// Data in CFW_DASHBOARD is secondary but still updated, as it is used for access management.
-		JSON_SHARE_WITH_USERS,
-		JSON_SHARE_WITH_GROUPS,
-		JSON_EDITORS,
-		JSON_EDITOR_GROUPS,
+		, JSON_SHARE_WITH_USERS
+		, JSON_SHARE_WITH_GROUPS
+		, JSON_EDITORS
+		, JSON_EDITOR_GROUPS
 		
-		ALLOW_EDIT_SETTINGS,
-		TIME_CREATED,
-		LAST_UPDATED,
-		IS_PUBLIC,
-		START_FULLSCREEN,
-		IS_DELETABLE,
-		IS_RENAMABLE, 
+		, ALLOW_EDIT_SETTINGS
+		, TIME_CREATED
+		, LAST_UPDATED
+		, IS_PUBLIC
+		, START_FULLSCREEN
+		, IS_DELETABLE
+		, IS_RENAMABLE 
+		
+		// not using primary key for this, as it allows for easier switch between versions
+		, VERSION_GROUP
+		// zero is current, else it counts up 1 for every version, later version are higher 
+		, VERSION
 	}
 
 	private static Logger logger = CFWLog.getLogger(Dashboard.class.getName());
@@ -91,18 +92,6 @@ public class Dashboard extends CFWObject {
 			.setDescription("The user id of the owner of the dashboard.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(null);
-	
-	
-	private CFWField<String> versionGroup = CFWField.newString(FormFieldType.HIDDEN, DashboardFields.VERSION_GROUP)
-			.setDescription("Identifier used for the grouping of the versions.")
-			.setValue(null);
-	
-	private CFWField<Integer> version = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.VERSION)
-			.setColumnDefinition("INT DEFAULT 0")
-			.setDescription("The version of the dashboard.")
-			.apiFieldType(FormFieldType.NUMBER)
-			.setValue(0)
-			;
 	
 	private CFWField<String> name = CFWField.newString(FormFieldType.TEXT, DashboardFields.NAME)
 			.setColumnDefinition("VARCHAR(255)")
@@ -210,6 +199,18 @@ public class Dashboard extends CFWObject {
 				}
 			});
 	
+	private CFWField<String> versionGroup = CFWField.newString(FormFieldType.HIDDEN, DashboardFields.VERSION_GROUP)
+			.setDescription("Identifier used for the grouping of the versions.")
+			.setValue(null);
+	
+	private CFWField<Integer> version = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.VERSION)
+			.setColumnDefinition("INT DEFAULT 0")
+			.setDescription("The version of the dashboard.")
+			.apiFieldType(FormFieldType.NUMBER)
+			.setValue(0)
+			;
+	
+	
 	public Dashboard() {
 		initializeFields();
 	}
@@ -224,8 +225,6 @@ public class Dashboard extends CFWObject {
 		this.addFields(
 				  id
 				, foreignKeyOwner
-				, versionGroup
-				, version
 				, name
 				, description
 				, tags
@@ -241,6 +240,8 @@ public class Dashboard extends CFWObject {
 				, startFullscreen
 				, isDeletable
 				, isRenamable
+				, versionGroup
+				, version
 			);
 	}
 	
@@ -341,6 +342,8 @@ public class Dashboard extends CFWObject {
 						DashboardFields.START_FULLSCREEN.toString(),
 						DashboardFields.IS_DELETABLE.toString(),
 						DashboardFields.IS_RENAMABLE.toString(),		
+						DashboardFields.VERSION.toString(),		
+						DashboardFields.VERSION_GROUP.toString(),			
 				};
 
 		//----------------------------------
@@ -602,23 +605,6 @@ public class Dashboard extends CFWObject {
 		this.foreignKeyOwner.setValue(foreignKeyUser);
 		return this;
 	}
-	
-	public String versionGroup() {
-		return versionGroup.getValue();
-	}
-	
-	public Dashboard versionGroup(String value) {
-		this.versionGroup.setValue(value);
-		return this;
-	}
-	public Integer version() {
-		return version.getValue();
-	}
-	
-	public Dashboard version(Integer value) {
-		this.version.setValue(value);
-		return this;
-	}
 		
 	public String name() {
 		return name.getValue();
@@ -756,5 +742,22 @@ public class Dashboard extends CFWObject {
 		this.isRenamable.setValue(isRenamable);
 		return this;
 	}	
+	
+	public String versionGroup() {
+		return versionGroup.getValue();
+	}
+	
+	public Dashboard versionGroup(String value) {
+		this.versionGroup.setValue(value);
+		return this;
+	}
+	public Integer version() {
+		return version.getValue();
+	}
+	
+	public Dashboard version(Integer value) {
+		this.version.setValue(value);
+		return this;
+	}
 	
 }
