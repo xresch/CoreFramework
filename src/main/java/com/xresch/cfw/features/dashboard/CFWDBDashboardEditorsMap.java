@@ -174,10 +174,10 @@ public class CFWDBDashboardEditorsMap {
 	 ********************************************************************************************/
 	public static boolean updateUserDashboardAssignments(Dashboard dashboard, LinkedHashMap<String,String> usersKeyLabel) {
 				
-		//----------------------------------------
-		// Clean all and Add all New
+		boolean isSuccess = true;	
 		
-		CFW.DB.transactionStart();
+		boolean wasStarted =CFW.DB.transactionIsStarted();
+		if(!wasStarted) { CFW.DB.transactionStart(); }
 		
 			// only returns true if anything was updated. Therefore cannot include in check.
 			boolean hasCleared = new CFWSQL(new DashboardEditorsMap())
@@ -189,12 +189,13 @@ public class CFWDBDashboardEditorsMap {
 				new CFWLog(logger).audit(CFWAuditLogAction.CLEAR, DashboardEditorsMap.class, "Update Shared User Assignments: "+dashboard.name());
 			}
 			
-			boolean isSuccess = true;
-			for(String userID : usersKeyLabel.keySet()) {
-				isSuccess &= assignUserToDashboard(Integer.parseInt(userID), dashboard.id());
+			if(usersKeyLabel != null) {
+				for(String userID : usersKeyLabel.keySet()) {
+					isSuccess &= assignUserToDashboard(Integer.parseInt(userID), dashboard.id());
+				}
 			}
 		
-		CFW.DB.transactionEnd(isSuccess);
+		if(!wasStarted) { CFW.DB.transactionEnd(isSuccess); }
 
 		return isSuccess;
 	}

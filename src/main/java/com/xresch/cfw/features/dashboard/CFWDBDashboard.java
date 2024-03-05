@@ -108,6 +108,7 @@ public class CFWDBDashboard {
 	public static Integer createDuplicate(String dashboardID, boolean forVersioning) { 
 
 		Dashboard duplicate = CFW.DB.Dashboards.selectByID(dashboardID);
+		duplicate.updateSelectorFields();
 		
 		//---------------------------------
 		// Make sure it has a version group 
@@ -132,52 +133,66 @@ public class CFWDBDashboard {
 			duplicate.version(0);
 			duplicate.versionGroup(UUID.randomUUID().toString());
 			duplicate.isShared(false);
-			duplicate.sharedWithUsers(null);
-			duplicate.editors(null);
 		}
+		
+		CFW.DB.transactionStart();
 		
 		Integer newID = duplicate.insertGetPrimaryKey();
 		
 		if(newID != null) {
 			
-			//-----------------------------------------
-			// Duplicate Widgets
-			//-----------------------------------------
-			ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
-			
-			boolean success = true;
-			for(DashboardWidget widgetToCopy : widgetList) {
-				widgetToCopy.id(null);
-				widgetToCopy.foreignKeyDashboard(newID);
-				
-				if(!widgetToCopy.insert()) {
-					success = false;
-					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while duplicating widget.");
+				duplicate.id(newID);
+				//-----------------------------------------
+				// Save Selector Fields
+				//-----------------------------------------
+				boolean success = true;
+				success &= duplicate.saveSelectorFields();
+				if(!success) {
+					CFW.DB.transactionRollback();
+					new CFWLog(logger).severe("Error while saving selector fields for duplicate.");
+					return null;
 				}
-			}
-			
-			//-----------------------------------------
-			// Duplicate Parameters
-			//-----------------------------------------
-			ArrayList<CFWParameter> parameterList = CFW.DB.Parameters.getParametersForDashboard(dashboardID);
-			
-			for(CFWParameter paramToCopy : parameterList) {
+				//-----------------------------------------
+				// Duplicate Widgets
+				//-----------------------------------------
+				ArrayList<DashboardWidget> widgetList = CFW.DB.DashboardWidgets.getWidgetsForDashboard(dashboardID);
 				
-				paramToCopy.id(null);
-				paramToCopy.foreignKeyDashboard(newID);
-				
-				if(!paramToCopy.insert()) {
-					success = false;
-					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error while duplicating parameter.");
+				for(DashboardWidget widgetToCopy : widgetList) {
+					widgetToCopy.id(null);
+					widgetToCopy.foreignKeyDashboard(newID);
+					
+					if(!widgetToCopy.insert()) {
+						CFW.DB.transactionRollback();
+						new CFWLog(logger).severe("Error while duplicating widget.");
+						return null;
+					}
 				}
-			}
-			
-			if(success) {
-				CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Dashboard duplicated successfully.");
-			}
+				
+				//-----------------------------------------
+				// Duplicate Parameters
+				//-----------------------------------------
+				ArrayList<CFWParameter> parameterList = CFW.DB.Parameters.getParametersForDashboard(dashboardID);
+				
+				for(CFWParameter paramToCopy : parameterList) {
+					
+					paramToCopy.id(null);
+					paramToCopy.foreignKeyDashboard(newID);
+					
+					if(!paramToCopy.insert()) {
+						CFW.DB.transactionRollback();
+						new CFWLog(logger).severe("Error while duplicating dashboard parameter.");
+						return null;
+					}
 
+				}
+				
+			CFW.DB.transactionCommit();
+			
+			CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Dashboard duplicated successfully.");
 		}
 			
+		
+		
 		return newID;
 
 	}

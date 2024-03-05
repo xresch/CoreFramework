@@ -557,29 +557,26 @@ public class Dashboard extends CFWObject {
 			
 			LinkedHashMap<String,String> selectedValues = selector.getValue();
 			
-			boolean isSuccess = true;
-			
 			switch(fieldname) {
 				case FIELDNAME_SHARE_WITH_USERS:
-					CFW.DB.DashboardSharedUsers.updateUserDashboardAssignments(this, selectedValues);
+					success &= CFW.DB.DashboardSharedUsers.updateUserDashboardAssignments(this, selectedValues);
 					break;
 					
 				case FIELDNAME_SHARE_WITH_GROUPS:
-					CFW.DB.DashboardSharedGroups.updateGroupDashboardAssignments(this, selectedValues);
+					success &= CFW.DB.DashboardSharedGroups.updateGroupDashboardAssignments(this, selectedValues);
 					break;
 					
 				case FIELDNAME_EDITORS:
-					CFW.DB.DashboardEditors.updateUserDashboardAssignments(this, selectedValues);
+					success &= CFW.DB.DashboardEditors.updateUserDashboardAssignments(this, selectedValues);
 					break;
 					
 				case FIELDNAME_EDITOR_GROUPS:
-					CFW.DB.DashboardEditorGroups.updateGroupDashboardAssignments(this, selectedValues);
+					success &= CFW.DB.DashboardEditorGroups.updateGroupDashboardAssignments(this, selectedValues);
 					break;
 				
 				default: new CFWLog(logger).severe("Development Error: unsupported value.");
 			}
-			if( !isSuccess ){
-				success = false;
+			if( !success ){
 				CFW.Messages.addErrorMessage("Error while saving user assignments for field: "+fieldname);
 			}
 		}

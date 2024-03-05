@@ -172,12 +172,15 @@ public class CFWDBDashboardEditorGroupsMap {
 	 * 
 	 ********************************************************************************************/
 	public static boolean updateGroupDashboardAssignments(Dashboard dashboard, LinkedHashMap<String,String> rolesKeyLabel) {
-				
-		//----------------------------------------
-		// Clean all and Add all New
+			
+		boolean isSuccess = true;	
 		
-		CFW.DB.transactionStart();
-		
+		boolean wasStarted =CFW.DB.transactionIsStarted();
+		if(!wasStarted) { CFW.DB.transactionStart(); }
+			
+			//----------------------------------------
+			// Clean all and Add all New
+			
 			// only returns true if anything was updated. Therefore cannot include in check.
 			boolean hasCleared = new CFWSQL(new DashboardEditorGroupsMap())
 						.delete()
@@ -188,12 +191,14 @@ public class CFWDBDashboardEditorGroupsMap {
 				new CFWLog(logger).audit(CFWAuditLogAction.CLEAR, DashboardEditorGroupsMap.class, "Update Editor Group Assignments: "+dashboard.name());
 			}
 			
-			boolean isSuccess = true;
-			for(String roleID : rolesKeyLabel.keySet()) {
-				isSuccess &= assignGroupToDashboard(Integer.parseInt(roleID), dashboard.id());
+			if(rolesKeyLabel != null) {
+				for(String roleID : rolesKeyLabel.keySet()) {
+					isSuccess &= assignGroupToDashboard(Integer.parseInt(roleID), dashboard.id());
+				}
 			}
+			
+		if(!wasStarted) { CFW.DB.transactionEnd(isSuccess); }
 		
-		CFW.DB.transactionEnd(isSuccess);
 
 		return isSuccess;
 	}
