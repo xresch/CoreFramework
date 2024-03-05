@@ -137,6 +137,22 @@ function cfw_dashboardcommon_switchVersion(id, versionid){
 			}
 	});
 }
+
+/******************************************************************
+ * Delete
+ ******************************************************************/
+function cfw_dashboardcommon_deleteVersion(originalID, id){
+	
+	var params = {action: "delete", item: "dashboard", id: id};
+	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, params, 
+		function(data) {
+			if(data.success){
+				cfw_dashboardcommon_showVersions(originalID);
+			}else{
+				CFW.ui.showModalSmall("Error!", '<span>The selected version could <b style="color: red">NOT</b> be deleted.</span>');
+			}
+	});
+}
 	
 /*******************************************************************************
  * 
@@ -202,21 +218,45 @@ function cfw_dashboardcommon_showVersions(id){
 						function (record, recordID){ 
 							if(record.VERSION == 0){
 								return '&nbsp;';
-							}else{
-								var version = record.VERSION;
-								var versionID = record.PK_ID;
-								return `<button class="btn btn-warning btn-sm" alt="Switch" title="Switch"
-									onclick="
-										CFW.ui.confirmExecute('Do you want to switch to the version <strong>${version}</strong>?'
-											  +' Any widget tasks on the current dashboard will be disabled. You will have to re-enable them on the version you have switched too.'
-											, 'Switch'
-											, 'cfw_dashboardcommon_switchVersion(${currentVersionID}, ${versionID});')
-									">
-										<i class="fa fa-exchange-alt"></i>
-									</button>`;
 							}
+							
+							var version = record.VERSION;
+							var versionID = record.PK_ID;
+							return `<button class="btn btn-warning btn-sm" alt="Switch" title="Switch"
+								onclick="
+									CFW.ui.confirmExecute('Do you want to switch to the version <strong>${version}</strong>?'
+										  +' Any widget tasks on the current dashboard will be disabled. You will have to re-enable them on the version you have switched too.'
+										, 'Switch'
+										, 'cfw_dashboardcommon_switchVersion(${currentVersionID}, ${versionID});')
+								">
+									<i class="fa fa-exchange-alt"></i>
+								</button>`;
+							
 						}
 					);
+					
+					//-------------------------
+					// Delete Button
+					actionButtons.push(
+						function (record, id){
+							
+							if(record.VERSION == 0){
+								return '&nbsp;';
+							}
+							
+							var versionID = record.PK_ID;
+							var name = record.NAME.replace(/\"/g,'&quot;');
+							return `<button class="btn btn-danger btn-sm" alt="Switch" title="Delete"
+								onclick="
+									CFW.ui.confirmExecute('Do you want to delete the version <strong>${versionID}</strong> with name <strong>${name}</strong>?'
+										, 'Delete'
+										, 'cfw_dashboardcommon_deleteVersion(${currentVersionID}, ${versionID});')
+								">
+									<i class="fa fa-trash"></i>
+								</button>`;
+								
+						});
+
 
 					//---------------------------
 					// Render Settings
