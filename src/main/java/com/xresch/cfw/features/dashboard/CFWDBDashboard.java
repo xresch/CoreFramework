@@ -33,6 +33,7 @@ import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.usermgmt.Permission;
 import com.xresch.cfw.features.usermgmt.Role;
 import com.xresch.cfw.features.usermgmt.User;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 
@@ -212,12 +213,36 @@ public class CFWDBDashboard {
 	}
 	
 	public static boolean updateLastUpdated(int dashboardID){ 
-		Dashboard toUpdate = new Dashboard().id(dashboardID).lastUpdated(new Timestamp(System.currentTimeMillis()));
+		Dashboard toUpdate = new Dashboard().id(dashboardID)
+				.lastUpdated(new Timestamp(System.currentTimeMillis()));
 		
 		return new CFWSQL(toUpdate)
 			.update(DashboardFields.LAST_UPDATED)
 			;
 		
+	}
+	
+	public static boolean updateIsArchived(String dashboardID, boolean isArchived){ 
+		return updateIsArchived(Integer.parseInt(dashboardID), isArchived);
+	}
+	
+	public static boolean updateIsArchived(int dashboardID, boolean isArchived){ 
+		Dashboard toUpdate = selectByID(dashboardID);
+		
+		toUpdate.isArchived(isArchived);
+		
+		String auditMessage = ( 
+							(isArchived) ? 
+							"Moving dashboard to archive:"
+							: "Extracting dashboard from archive:"
+							)
+							+" ID="+dashboardID+", NAME="+toUpdate.name()
+							;
+		new CFWLog(logger).audit(CFWAuditLogAction.MOVE, Dashboard.class, auditMessage);
+		
+		return new CFWSQL(toUpdate)
+			.update(DashboardFields.IS_ARCHIVED)
+			;
 	}
 	
 	//####################################################################################################
@@ -263,7 +288,7 @@ public class CFWDBDashboard {
 		
 		return success;
 	} 
-	
+		
 		
 	//####################################################################################################
 	// SELECT
@@ -312,6 +337,25 @@ public class CFWDBDashboard {
 				.select()
 				.where(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
 				.and(DashboardFields.VERSION, 0)
+				.and(DashboardFields.IS_ARCHIVED, false)
+				.orderby(DashboardFields.NAME.toString())
+				.getAsJSON();
+	}
+	
+	/***************************************************************
+	 * Return a list of all user dashboards as json string.
+	 * 
+	 * @return Returns a result set with all users or null.
+	 ****************************************************************/
+	public static String getUserArchivedListAsJSON() {
+		
+		return new CFWSQL(new Dashboard())
+				.queryCache()
+				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
+				.select()
+				.where(DashboardFields.FK_ID_USER.toString(), CFW.Context.Request.getUser().id())
+				.and(DashboardFields.VERSION, 0)
+				.and(DashboardFields.IS_ARCHIVED, true)
 				.orderby(DashboardFields.NAME.toString())
 				.getAsJSON();
 	}
@@ -362,6 +406,7 @@ public class CFWDBDashboard {
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
 				.where(DashboardFields.VERSION, 0)
+				.and(DashboardFields.IS_ARCHIVED, 0)
 				.orderby(DashboardFields.NAME.toString())
 				.getAsJSON();
 		}else {
@@ -405,6 +450,7 @@ public class CFWDBDashboard {
 				  )
 			.where(DashboardFields.IS_SHARED, true)
 			.and(DashboardFields.VERSION, 0)
+			.and(DashboardFields.IS_ARCHIVED, false)
 			.and().custom("(");
 		
 		Integer[] roleArray = CFW.Context.Request.getUserRoles().keySet().toArray(new Integer[] {});
@@ -431,6 +477,7 @@ public class CFWDBDashboard {
 					, DashboardFields.ALLOW_EDIT_SETTINGS
 					)
 			.where(DashboardFields.VERSION, 0)
+			.and(DashboardFields.IS_ARCHIVED, false)
 			.and().custom("(");
 		
 		for(int i = 0 ; i < roleArray.length; i++ ) {

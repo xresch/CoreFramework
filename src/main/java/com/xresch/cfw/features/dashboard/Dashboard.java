@@ -72,7 +72,7 @@ public class Dashboard extends CFWObject {
 		, START_FULLSCREEN
 		, IS_DELETABLE
 		, IS_RENAMABLE 
-		
+		, IS_ARCHIVED
 		// not using primary key for this, as it allows for easier switch between versions
 		, VERSION_GROUP
 		// zero is current, else it counts up 1 for every version, later version are higher 
@@ -199,13 +199,19 @@ public class Dashboard extends CFWObject {
 				}
 			});
 	
+	private CFWField<Boolean> isArchived = CFWField.newBoolean(FormFieldType.NONE, DashboardFields.IS_ARCHIVED)
+			.setColumnDefinition("BOOLEAN DEFAULT FALSE")
+			.setDescription("Flag to define if the dashboard is archived.")
+			.setValue(false)
+			;
+	
 	private CFWField<String> versionGroup = CFWField.newString(FormFieldType.HIDDEN, DashboardFields.VERSION_GROUP)
 			.setDescription("Identifier used for the grouping of the versions.")
 			.setValue(null);
 	
 	private CFWField<Integer> version = CFWField.newInteger(FormFieldType.HIDDEN, DashboardFields.VERSION)
 			.setColumnDefinition("INT DEFAULT 0")
-			.setDescription("The version of the dashboard.")
+			.setDescription("The version of the dashboard, 0 is the current version.")
 			.apiFieldType(FormFieldType.NUMBER)
 			.setValue(0)
 			;
@@ -240,6 +246,7 @@ public class Dashboard extends CFWObject {
 				, startFullscreen
 				, isDeletable
 				, isRenamable
+				, isArchived
 				, versionGroup
 				, version
 			);
@@ -319,6 +326,7 @@ public class Dashboard extends CFWObject {
 						DashboardFields.VERSION.toString(),
 //						DashboardFields.CATEGORY.toString(),
 						DashboardFields.NAME.toString(),
+						DashboardFields.IS_ARCHIVED.toString(),
 				};
 		
 		String[] outputFields = 
@@ -342,6 +350,7 @@ public class Dashboard extends CFWObject {
 						DashboardFields.START_FULLSCREEN.toString(),
 						DashboardFields.IS_DELETABLE.toString(),
 						DashboardFields.IS_RENAMABLE.toString(),		
+						DashboardFields.IS_ARCHIVED.toString(),		
 						DashboardFields.VERSION.toString(),		
 						DashboardFields.VERSION_GROUP.toString(),			
 				};
@@ -737,6 +746,15 @@ public class Dashboard extends CFWObject {
 	
 	public Dashboard isRenamable(boolean isRenamable) {
 		this.isRenamable.setValue(isRenamable);
+		return this;
+	}	
+	
+	public boolean isArchived() {
+		return isArchived.getValue();
+	}
+	
+	public Dashboard isArchived(boolean isRenamable) {
+		this.isArchived.setValue(isRenamable);
 		return this;
 	}	
 	

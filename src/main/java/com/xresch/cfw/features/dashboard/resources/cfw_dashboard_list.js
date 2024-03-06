@@ -372,6 +372,12 @@ function cfw_dashboardlist_createTabs(){
 		list.append('<li class="nav-item"><a class="nav-link" id="tab-faveddashboards" data-toggle="pill" href="#" role="tab" onclick="cfw_dashboardlist_draw({tab: \'faveddashboards\'})"><i class="fas fa-star mr-2"></i>Favorites</a></li>');
 		
 		//--------------------------------
+		// Archived Dashboard Tab	
+		if( CFW.hasPermission('Dashboard Creator') ){
+			list.append('<li class="nav-item"><a class="nav-link" id="tab-myarchived" data-toggle="pill" href="#" role="tab" onclick="cfw_dashboardlist_draw({tab: \'myarchived\'})"><i class="fas fa-folder-open mr-2"></i>Archive</a></li>');
+		}
+		
+		//--------------------------------
 		// Admin Dashboard Tab	
 		if(CFW.hasPermission('Dashboard Admin')){
 					list.append(
@@ -509,6 +515,22 @@ function cfw_dashboardlist_delete(id){
 /******************************************************************
  * Delete
  ******************************************************************/
+function cfw_dashboardlist_archive(id, isarchived){
+	
+	var params = {action: "update", item: "isarchived", id: id, isarchived: isarchived};
+	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, params, 
+		function(data) {
+			if(data.success){
+				cfw_dashboardlist_draw(CFW_DASHBOARDLIST_LAST_OPTIONS);
+			}else{
+				CFW.ui.showModalSmall("Error!", '<span>The selected dashboard could <b style="color: red">NOT</b> be deleted.</span>');
+			}
+	});
+}
+
+/******************************************************************
+ * Delete
+ ******************************************************************/
 function cfw_dashboardlist_duplicate(id){
 	
 	var params = {action: "duplicate", item: "dashboard", id: id};
@@ -525,6 +547,13 @@ function cfw_dashboardlist_duplicate(id){
  ******************************************************************/
 function cfw_dashboardlist_printMyDashboards(data){
 	cfw_dashboardlist_printDashboards(data, 'mydashboards');
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_dashboardlist_printMyArchived(data){
+	cfw_dashboardlist_printDashboards(data, 'myarchived');
 }
 
 /******************************************************************
@@ -564,6 +593,9 @@ function cfw_dashboardlist_printDashboards(data, type){
 
 	switch(type){
 		case "mydashboards":		parent.append('<p>This tab shows all dashboards where you are the owner.</p>')
+									break;	
+									
+		case "myarchived":			parent.append('<p>This tab shows all archived dashboards where you are the owner.</p>')
 									break;	
 									
 		case "shareddashboards":	parent.append('<p>This list contains all the dashboard that are shared by others and by you.</p>')
@@ -608,7 +640,7 @@ function cfw_dashboardlist_printDashboards(data, type){
 		//-----------------------------------
 		// Prepare Columns
 		var showFields = [];
-		if(type == 'mydashboards'){
+		if(type == 'mydashboards' || type == 'myarchived'){
 			showFields = ['IS_FAVED', 'NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
 		}else if ( type == 'shareddashboards'
 				|| type == 'faveddashboards'){
@@ -686,8 +718,13 @@ function cfw_dashboardlist_printDashboards(data, type){
 		
 		//-------------------------
 		// Duplicate Button
-		if(CFW.hasPermission('Dashboard Creator')
-		|| CFW.hasPermission('Dashboard Admin')){
+		if( type != 'myarchived'
+			&& (
+			   CFW.hasPermission('Dashboard Creator')
+			|| CFW.hasPermission('Dashboard Admin')
+			)
+		){
+			
 
 			actionButtons.push(
 				function (record, id){
@@ -732,15 +769,44 @@ function cfw_dashboardlist_printDashboards(data, type){
 		}
 
 		//-------------------------
+		// Archive / Restore Button
+		
+		actionButtons.push(
+			function (record, id){
+				var htmlString = '';
+				if(JSDATA.userid == record.FK_ID_USER 
+				|| type == 'admindashboards'
+				){
+					let isArchived = record.IS_ARCHIVED;
+					let confirmMessage = "Do you want to archive the dashboard";
+					let icon = "fa-folder-open";
+					let color =  "btn-danger";
+					
+					if(isArchived){
+						confirmMessage = "Do you want to restore the dashboard";
+						icon = "fa-trash-restore" ;
+						color = "btn-success";
+					}
+					
+					htmlString += '<button class="btn '+color+' btn-sm" alt="Archive" title="Archive" '
+						+'onclick="CFW.ui.confirmExecute(\''+confirmMessage+' <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Do it!\', \'cfw_dashboardlist_archive('+id+', '+!isArchived+');\')">'
+						+ '<i class="fa '+icon+'"></i>'
+						+ '</button>';
+				}else{
+					htmlString += '&nbsp;';
+				}
+				return htmlString;
+			});
+	
+
+		//-------------------------
 		// Delete Button
-		if(type == 'mydashboards'
-		|| type == 'admindashboards'
-		|| type == 'faveddashboards'){
+		if(type == 'myarchived'){
 			actionButtons.push(
 				function (record, id){
 					var htmlString = '';
 					if(JSDATA.userid == record.FK_ID_USER 
-					|| type == 'admindashboards'){
+					|| type == 'myarchived'){
 						htmlString += '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
 							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the dashboard <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Delete\', \'cfw_dashboardlist_delete('+id+');\')">'
 							+ '<i class="fa fa-trash"></i>'
@@ -1002,6 +1068,8 @@ function cfw_dashboardlist_draw(options){
 		
 		switch(options.tab){
 			case "mydashboards":		CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "mydashboards"}, cfw_dashboardlist_printMyDashboards);
+										break;	
+			case "myarchived":			CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "myarchived"}, cfw_dashboardlist_printMyArchived);
 										break;	
 			case "faveddashboards":		CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "faveddashboards"}, cfw_dashboardlist_printFavedDashboards);
 										break;	

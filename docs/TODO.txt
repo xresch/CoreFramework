@@ -167,6 +167,7 @@ DONE
 - NEW FEARTURE: EAV Tables with Statistics, plus query source 'eavstats'
 - NEW FEARTURE: Manually executed queries are now saved in a history.
 - NEW FEARTURE: Dashboards now can have multiple versions for backup purposes.
+- NEW FEARTURE: Dashboards now have an archiving mechanism
 - Properties: added config property cfw_application_max_formsize=5000000 (Helps solving issues with big imports)
 - Notifications: Fixed severe log messages showing up
 - Modals: Increased width of modals to have more space to work with
@@ -185,6 +186,7 @@ DONE
 - Dashboard: Dashboard Settings can now be edited when viewing the dashboard
 - Dashboard: Display warning when dashboard does not exist.
 - Dashboard: Security - Do not allow duplication of shared dashboards if user cannot edit the dashboard.
+- Dashboard: When duplicating, duplicate all users & groups
 - Dashboard: Parameters - Made it possible to have only param without a button. Click on Button updates all params
 - Dashboard: Widget - Added new widget Advanced >> Default Refresh
 - Dashboard: Widget Checklist - Show URLs as links, Add/Edit/Remove functionality

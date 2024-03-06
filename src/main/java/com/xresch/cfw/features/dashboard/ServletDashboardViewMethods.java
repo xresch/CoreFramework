@@ -155,9 +155,13 @@ public class ServletDashboardViewMethods
 				}
 				
 				//--------------------------------------
-				// Add Version Warning
+				// Add Version/Archive Warning
 				if(dashboard.version() != 0) {
 					CFW.Messages.addWarningMessage("Your are currently viewing version "+dashboard.version()+" of this dashboard, not the current version.");
+				}
+				
+				if(dashboard.isArchived()) {
+					CFW.Messages.addWarningMessage("This dashboard is in the archive and might get deleted in the future.");
 				}
 				
 				//--------------------------------------

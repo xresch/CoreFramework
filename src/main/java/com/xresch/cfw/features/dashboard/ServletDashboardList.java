@@ -130,6 +130,9 @@ public class ServletDashboardList extends HttpServlet
 					case "mydashboards": 		jsonResponse.getContent().append(CFW.DB.Dashboards.getUserDashboardListAsJSON());
 	  											break;
 	  											
+					case "myarchived":	 		jsonResponse.getContent().append(CFW.DB.Dashboards.getUserArchivedListAsJSON());
+					break;
+	  											
 					case "faveddashboards": 	jsonResponse.getContent().append(CFW.DB.Dashboards.getFavedDashboardListAsJSON());
 												break;
 	  											
@@ -181,6 +184,9 @@ public class ServletDashboardList extends HttpServlet
 										String versionID = request.getParameter("versionid");
 										jsonResponse.setSuccess(CFW.DB.Dashboards.switchToVersion(dashID, versionID));
 										break;
+					case "isarchived":	String isArchived = request.getParameter("isarchived");
+										jsonResponse.setSuccess(archiveDashboard(ID,isArchived));
+					break;
 					
 					default: 			CFW.Messages.itemNotSupported(item);
 										break;
@@ -226,6 +232,19 @@ public class ServletDashboardList extends HttpServlet
 								break;
 								
 		}
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private boolean archiveDashboard(String ID, String isArchived) {
+		// TODO Auto-generated method stub
+		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)
+		|| CFW.DB.Dashboards.isDashboardOfCurrentUser(ID)) {
+			return CFW.DB.Dashboards.updateIsArchived(ID, Boolean.parseBoolean(isArchived) );
+		}
+		
+		return false;
 	}
 	
 	/******************************************************************
