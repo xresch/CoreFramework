@@ -716,8 +716,8 @@ function cfw_dashboardlist_printDashboards(data, type){
 		
 		//-------------------------
 		// Change Owner Button
-		if(CFW.hasPermission('Dashboard Creator') 
-		&& type == 'admindashboards'){
+		if(type == 'mydashboards'
+		|| type == 'admindashboards'){
 
 					actionButtons.push(
 						function (record, id){

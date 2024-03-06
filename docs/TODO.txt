@@ -166,7 +166,7 @@ DONE
 - BREAKING CHANGE: Query Command display - default value of parameter has changed to menu=false. Queries not defining this parameter will have their menu vanish 
 - NEW FEARTURE: EAV Tables with Statistics, plus query source 'eavstats'
 - NEW FEARTURE: Manually executed queries are now saved in a history.
-- NEW FEARTURE: Dashboards now can have multiple versions for backup purposes.
+- NEW FEARTURE: Dashboards now have a versioning feature for backup and testing purposes.
 - NEW FEARTURE: Dashboards now have an archiving mechanism
 - Properties: added config property cfw_application_max_formsize=5000000 (Helps solving issues with big imports)
 - Notifications: Fixed severe log messages showing up
@@ -182,6 +182,7 @@ DONE
 - Value Label List: have now arrows for sorting
 - User Management: Fixed bug in reloading user rights when changing roles & permissions
 - Schedule: Consider user timezone when saving schedules for jobs
+- Dashboard: A dashboard owner can now change the owner of a dashboard.
 - Dashboard: Usage Statistics added, can be found in Settings 
 - Dashboard: Dashboard Settings can now be edited when viewing the dashboard
 - Dashboard: Display warning when dashboard does not exist.

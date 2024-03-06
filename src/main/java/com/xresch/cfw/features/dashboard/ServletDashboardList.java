@@ -386,7 +386,8 @@ public class ServletDashboardList extends HttpServlet
 	 ******************************************************************/
 	private void createChangeDashboardOwnerForm(JSONResponse json, String ID) {
 		
-		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
+		if( CFW.DB.Dashboards.isDashboardOfCurrentUser(ID)
+		||	CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
 			Dashboard dashboard = CFW.DB.Dashboards.selectByID(Integer.parseInt(ID));
 			
 			final String NEW_OWNER = "JSON_NEW_OWNER";
