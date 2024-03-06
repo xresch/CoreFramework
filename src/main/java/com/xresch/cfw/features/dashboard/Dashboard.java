@@ -159,7 +159,7 @@ public class Dashboard extends CFWObject {
 			.setValue(new Timestamp(new Date().getTime()));
 	
 	private CFWField<Timestamp> lastUpdated = CFWField.newTimestamp(FormFieldType.NONE, DashboardFields.LAST_UPDATED)
-			.setDescription("The date and time the dashboard was created.")
+			.setDescription("The date and time the dashboard was last updated. Will be null if automatic version was created.")
 			.setValue(new Timestamp(new Date().getTime()));
 	
 	private CFWField<Boolean> isPublic = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardFields.IS_PUBLIC)

@@ -122,7 +122,9 @@ public class CFWDBDashboard {
 		
 		duplicate.id(null);
 		duplicate.timeCreated( new Timestamp(new Date().getTime()) );
-		duplicate.foreignKeyOwner(CFW.Context.Request.getUser().id());
+		
+		// need to check if null for automatic versioning
+		Integer id =  CFW.Context.Request.getUserID();
 		
 		if(forVersioning) {
 			
@@ -130,6 +132,7 @@ public class CFWDBDashboard {
 			duplicate.version(maxVersion+1);
 			
 		}else {
+			duplicate.foreignKeyOwner(id);
 			duplicate.name(duplicate.name()+"(Copy)");
 			duplicate.version(0);
 			duplicate.versionGroup(UUID.randomUUID().toString());
@@ -888,6 +891,28 @@ public class CFWDBDashboard {
 		return true;
 	}
 	
+	
+	/***************************************************************
+	 * Create Versions for dashboards
+	 * 
+	 * @return true if successful
+	 ****************************************************************/
+	protected static void createAutomaticVersions(long beforeThisMillis) {
+		
+		ArrayList<Dashboard> boardList = new CFWSQL(new Dashboard())
+				.queryCache()
+				.select()
+				.where(DashboardFields.VERSION, 0)
+				.and(DashboardFields.IS_ARCHIVED, false)
+				.and().not().isNull(DashboardFields.LAST_UPDATED)
+				.and().custom(DashboardFields.LAST_UPDATED +" <= ? ", new Timestamp(beforeThisMillis) )
+				.getAsObjectListConvert(Dashboard.class);
+		
+		for(Dashboard board : boardList) {
+			createDuplicate(""+board.id(), true);
+			board.lastUpdated(null).update();
+		}
+	}
 	/***************************************************************
 	 * 
 	 ***************************************************************/

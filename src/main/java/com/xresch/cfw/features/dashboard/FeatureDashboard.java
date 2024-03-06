@@ -3,12 +3,14 @@ package com.xresch.cfw.features.dashboard;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.concurrent.ScheduledFuture;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw._main.CFWApplicationExecutor;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.features.config.ConfigChangeListener;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.dashboard.widgets.ManualPageWidget;
 import com.xresch.cfw.features.dashboard.widgets.WidgetDataCache;
@@ -46,6 +48,7 @@ import com.xresch.cfw.response.bootstrap.DynamicItemCreator;
 import com.xresch.cfw.response.bootstrap.HierarchicalHTMLItem;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
+import com.xresch.cfw.utils.CFWTime.CFWTimeUnit;
 
 /**************************************************************************************************************
  * 
@@ -67,6 +70,8 @@ public class FeatureDashboard extends CFWAppFeature {
 	
 	public static final String CONFIG_CATEGORY = "Dashboard";
 	public static final String CONFIG_DEFAULT_IS_SHARED = "Default Is Shared";
+	public static final String CONFIG_AUTO_VERSIONS = "Auto Versions";
+	public static final String CONFIG_AUTO_VERSIONS_AGE = "Auto Versions Age";
 	
 	public static final String PACKAGE_RESOURCES = "com.xresch.cfw.features.dashboard.resources";
 	public static final String PACKAGE_MANUAL = "com.xresch.cfw.features.dashboard.manual";
@@ -84,6 +89,8 @@ public class FeatureDashboard extends CFWAppFeature {
 	public static final String MANUAL_NAME_DASHBOARD = "Dashboard";
 	public static final String MANUAL_NAME_WIDGETS = "Widgets";
 	public static final String MANUAL_PATH_WIDGETS = MANUAL_NAME_DASHBOARD+"|"+MANUAL_NAME_WIDGETS;
+	
+	private static ScheduledFuture<?> taskCreateVersions;
 	
 	public static final ManualPage MANUAL_PAGE_ROOT = CFW.Registry.Manual.addManualPage(null, 
 					new ManualPage(MANUAL_NAME_DASHBOARD)
@@ -317,6 +324,25 @@ public class FeatureDashboard extends CFWAppFeature {
 				.value("false")
 		);
 		
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration(CONFIG_CATEGORY, CONFIG_AUTO_VERSIONS)
+				.description("Enable or disable the automatic creation of dashboard versions.")
+				.type(FormFieldType.BOOLEAN)
+				.value("true")
+				);
+		//-----------------------------------------
+		// 
+		//-----------------------------------------
+		CFW.DB.Config.oneTimeCreate(
+			new Configuration(CONFIG_CATEGORY, CONFIG_AUTO_VERSIONS_AGE)
+				.description("The age of a dashboard change in hours that will cause a dashboard to get a new version.")
+				.type(FormFieldType.NUMBER)
+				.value("24")
+				);
+		
 		//============================================================
 		// EAV Entities
 		//============================================================
@@ -343,7 +369,17 @@ public class FeatureDashboard extends CFWAppFeature {
 				, FeatureDashboard.EAV_STATS_WIDGET_LOADS_UNCACHED
 				, "Number of total widget data loads which have not been loaded from the cache."
 				);
-		 
+		
+		//-------------------------------
+		// Create Change Listener
+		ConfigChangeListener listener = new ConfigChangeListener(CONFIG_AUTO_VERSIONS_AGE) {
+			
+			@Override
+			public void onChange() {
+				startTasks();
+			}
+		};
+		CFW.DB.Config.addChangeListener(listener);
 	}
 
 	@Override
@@ -363,7 +399,19 @@ public class FeatureDashboard extends CFWAppFeature {
 
 	@Override
 	public void startTasks() {
-		// TODO Auto-generated method stub
+
+		//----------------------------------------
+		// Task: Create
+		if(taskCreateVersions != null) {
+			taskCreateVersions.cancel(false);
+		}
+		boolean doAutoVersions = CFW.DB.Config.getConfigAsBoolean(FeatureDashboard.CONFIG_CATEGORY, FeatureDashboard.CONFIG_AUTO_VERSIONS);
+		
+		if(doAutoVersions) {
+			int millis = (int) CFWTimeUnit.m.toMillis(67); // take uneven minutes 
+			// millis = 5000;
+			taskCreateVersions = CFW.Schedule.runPeriodicallyMillis(millis, millis, new TaskDashboardCreateVersions());
+		}
 	}
 
 	@Override
