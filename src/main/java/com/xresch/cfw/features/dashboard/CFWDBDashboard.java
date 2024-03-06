@@ -400,13 +400,13 @@ public class CFWDBDashboard {
 	public static String getAdminDashboardListAsJSON() {
 		
 		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
-			return new Dashboard()
-				.queryCache(CFWDBDashboard.class, "getAdminDashboardListAsJSON")
+			return new CFWSQL(new Dashboard())
+				.queryCache()
 				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
 				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
 				.select()
 				.where(DashboardFields.VERSION, 0)
-				.and(DashboardFields.IS_ARCHIVED, 0)
+				.and(DashboardFields.IS_ARCHIVED, false)
 				.orderby(DashboardFields.NAME.toString())
 				.getAsJSON();
 		}else {
@@ -414,6 +414,30 @@ public class CFWDBDashboard {
 			return "[]";
 		}
 	}
+	
+	/***************************************************************
+	 * Return a list of all archived dashboards as json string.
+	 * 
+	 * @return Returns a result set with all users or null.
+	 ****************************************************************/
+	public static String getAdminArchivedListAsJSON() {
+		
+		if(CFW.Context.Request.hasPermission(FeatureDashboard.PERMISSION_DASHBOARD_ADMIN)) {
+			return new CFWSQL(new Dashboard())
+				.queryCache()
+				.columnSubquery("OWNER", SQL_SUBQUERY_OWNER)
+				.columnSubquery("IS_FAVED", SQL_SUBQUERY_ISFAVED, CFW.Context.Request.getUserID())
+				.select()
+				.where(DashboardFields.VERSION, 0)
+				.and(DashboardFields.IS_ARCHIVED, true)
+				.orderby(DashboardFields.NAME.toString())
+				.getAsJSON();
+		}else {
+			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			return "[]";
+		}
+	}
+	
 	
 	/***************************************************************
 	 * Return a list of all user dashboards as json string.

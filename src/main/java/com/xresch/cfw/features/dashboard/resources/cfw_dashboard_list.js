@@ -380,8 +380,10 @@ function cfw_dashboardlist_createTabs(){
 		//--------------------------------
 		// Admin Dashboard Tab	
 		if(CFW.hasPermission('Dashboard Admin')){
-					list.append(
-						'<li class="nav-item"><a class="nav-link" id="tab-admindashboards" data-toggle="pill" href="#" role="tab" onclick="cfw_dashboardlist_draw({tab: \'admindashboards\'})"><i class="fas fa-tools mr-2"></i>Admin</a></li>');
+			list.append(
+				'<li class="nav-item"><a class="nav-link" id="tab-adminarchived" data-toggle="pill" href="#" role="tab" onclick="cfw_dashboardlist_draw({tab: \'adminarchived\'})"><i class="fas fa-folder-open mr-2"></i>Admin Archive</a></li>'
+				+'<li class="nav-item"><a class="nav-link" id="tab-admindashboards" data-toggle="pill" href="#" role="tab" onclick="cfw_dashboardlist_draw({tab: \'admindashboards\'})"><i class="fas fa-tools mr-2"></i>Admin</a></li>'
+				);
 		}
 		
 		var parent = $("#cfw-container");
@@ -549,12 +551,6 @@ function cfw_dashboardlist_printMyDashboards(data){
 	cfw_dashboardlist_printDashboards(data, 'mydashboards');
 }
 
-/******************************************************************
- * 
- ******************************************************************/
-function cfw_dashboardlist_printMyArchived(data){
-	cfw_dashboardlist_printDashboards(data, 'myarchived');
-}
 
 /******************************************************************
  * 
@@ -568,6 +564,20 @@ function cfw_dashboardlist_printFavedDashboards(data){
  ******************************************************************/
 function cfw_dashboardlist_printSharedDashboards(data){
 	cfw_dashboardlist_printDashboards(data, 'shareddashboards');
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_dashboardlist_printMyArchived(data){
+	cfw_dashboardlist_printDashboards(data, 'myarchived');
+}
+
+/******************************************************************
+ * 
+ ******************************************************************/
+function cfw_dashboardlist_printAdminArchived(data){
+	cfw_dashboardlist_printDashboards(data, 'adminarchived');
 }
 
 /******************************************************************
@@ -604,6 +614,8 @@ function cfw_dashboardlist_printDashboards(data, type){
 		case "faveddashboards":		parent.append('<p>Here you can find all the dashboards you have faved. If you unfave a dashboard here it will vanish from the list the next time the tab or page gets refreshed.</p>')
 									break;	
 									
+		case "adminarchived":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin archive. The list contains all archived dashboards of all users.</b></p>')
+									break;	
 		case "admindashboards":		parent.append('<p class="bg-cfw-orange p-1 text-white"><b><i class="fas fa-exclamation-triangle pl-1 pr-2"></i>This is the admin area. The list contains all dashboards of all users.</b></p>')
 									break;	
 														
@@ -640,12 +652,14 @@ function cfw_dashboardlist_printDashboards(data, type){
 		//-----------------------------------
 		// Prepare Columns
 		var showFields = [];
-		if(type == 'mydashboards' || type == 'myarchived'){
+		if(type == 'mydashboards' 
+		|| type == 'myarchived'){
 			showFields = ['IS_FAVED', 'NAME', 'DESCRIPTION', 'TAGS', 'IS_SHARED', 'TIME_CREATED'];
 		}else if ( type == 'shareddashboards'
 				|| type == 'faveddashboards'){
 			showFields = ['IS_FAVED', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS'];
-		}else if (type == 'admindashboards'){
+		}else if (type == 'admindashboards'
+				||type == 'adminarchived' ){
 			showFields = ['IS_FAVED', 'PK_ID', 'OWNER', 'NAME', 'DESCRIPTION', 'TAGS','IS_SHARED', 'TIME_CREATED'];
 		}
 		
@@ -718,14 +732,12 @@ function cfw_dashboardlist_printDashboards(data, type){
 		
 		//-------------------------
 		// Duplicate Button
-		if( type != 'myarchived'
+		if( (type != 'myarchived' && type != 'adminarchived' )
 			&& (
 			   CFW.hasPermission('Dashboard Creator')
 			|| CFW.hasPermission('Dashboard Admin')
 			)
 		){
-			
-
 			actionButtons.push(
 				function (record, id){
 					
@@ -770,11 +782,11 @@ function cfw_dashboardlist_printDashboards(data, type){
 
 		//-------------------------
 		// Archive / Restore Button
-		
 		actionButtons.push(
 			function (record, id){
 				var htmlString = '';
 				if(JSDATA.userid == record.FK_ID_USER 
+				|| type == 'adminarchived'
 				|| type == 'admindashboards'
 				){
 					let isArchived = record.IS_ARCHIVED;
@@ -801,20 +813,15 @@ function cfw_dashboardlist_printDashboards(data, type){
 
 		//-------------------------
 		// Delete Button
-		if(type == 'myarchived'){
+		if(type == 'myarchived'
+		|| type == 'adminarchived'){
 			actionButtons.push(
 				function (record, id){
-					var htmlString = '';
-					if(JSDATA.userid == record.FK_ID_USER 
-					|| type == 'myarchived'){
-						htmlString += '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
+					return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
 							+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the dashboard <strong>\\\''+record.NAME.replace(/\"/g,'&quot;')+'\\\'</strong>?\', \'Delete\', \'cfw_dashboardlist_delete('+id+');\')">'
 							+ '<i class="fa fa-trash"></i>'
 							+ '</button>';
-					}else{
-						htmlString += '&nbsp;';
-					}
-					return htmlString;
+
 				});
 		}
 
@@ -1069,12 +1076,14 @@ function cfw_dashboardlist_draw(options){
 		switch(options.tab){
 			case "mydashboards":		CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "mydashboards"}, cfw_dashboardlist_printMyDashboards);
 										break;	
-			case "myarchived":			CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "myarchived"}, cfw_dashboardlist_printMyArchived);
-										break;	
 			case "faveddashboards":		CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "faveddashboards"}, cfw_dashboardlist_printFavedDashboards);
 										break;	
 			case "shareddashboards":	CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "shareddashboards"}, cfw_dashboardlist_printSharedDashboards);
 										break;
+			case "myarchived":			CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "myarchived"}, cfw_dashboardlist_printMyArchived);
+										break;	
+			case "adminarchived":		CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "adminarchived"}, cfw_dashboardlist_printAdminArchived);
+										break;	
 			case "admindashboards":		CFW.http.getJSON(CFW_DASHBOARDLIST_URL, {action: "fetch", item: "admindashboards"}, cfw_dashboardlist_printAdminDashboards);
 										break;						
 			default:				CFW.ui.addToastDanger('This tab is unknown: '+options.tab);

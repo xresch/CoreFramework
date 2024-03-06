@@ -131,7 +131,7 @@ public class ServletDashboardList extends HttpServlet
 	  											break;
 	  											
 					case "myarchived":	 		jsonResponse.getContent().append(CFW.DB.Dashboards.getUserArchivedListAsJSON());
-					break;
+												break;
 	  											
 					case "faveddashboards": 	jsonResponse.getContent().append(CFW.DB.Dashboards.getFavedDashboardListAsJSON());
 												break;
@@ -140,6 +140,9 @@ public class ServletDashboardList extends HttpServlet
 												break;	
 												
 					case "admindashboards": 	jsonResponse.getContent().append(CFW.DB.Dashboards.getAdminDashboardListAsJSON());
+												break;	
+												
+					case "adminarchived": 		jsonResponse.getContent().append(CFW.DB.Dashboards.getAdminArchivedListAsJSON());
 												break;	
 												
 					case "dashboardversions": 	jsonResponse.getContent().append(CFW.DB.Dashboards.getDashboardVersionsListAsJSON(ID));
