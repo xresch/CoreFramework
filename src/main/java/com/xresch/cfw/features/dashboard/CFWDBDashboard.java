@@ -891,6 +891,22 @@ public class CFWDBDashboard {
 		return true;
 	}
 	
+	/***************************************************************
+	 * Returns the id of the current version of the versioned 
+	 * dashboard. 
+	 * 
+	 * @return true if successful
+	 ****************************************************************/
+	protected static Integer getCurrentVersionForDashboard(Dashboard versionBoard) {
+		
+		return new CFWSQL(new Dashboard())
+				.queryCache()
+				.select(DashboardFields.PK_ID)
+				.where(DashboardFields.VERSION, 0)
+				.and(DashboardFields.VERSION_GROUP, versionBoard.versionGroup())
+				.getFirstAsInteger();
+		
+	}
 	
 	/***************************************************************
 	 * Create Versions for dashboards
@@ -913,6 +929,8 @@ public class CFWDBDashboard {
 			board.lastUpdated(null).update();
 		}
 	}
+	
+	
 	/***************************************************************
 	 * 
 	 ***************************************************************/

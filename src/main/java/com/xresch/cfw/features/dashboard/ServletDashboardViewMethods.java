@@ -157,7 +157,12 @@ public class ServletDashboardViewMethods
 				//--------------------------------------
 				// Add Version/Archive Warning
 				if(dashboard.version() != 0) {
-					CFW.Messages.addWarningMessage("Your are currently viewing version "+dashboard.version()+" of this dashboard, not the current version.");
+					
+					Integer currentID = CFW.DB.Dashboards.getCurrentVersionForDashboard(dashboard);
+					String url = FeatureDashboard.createURLForDashboard(currentID);
+					CFW.Messages.addWarningMessage("Your are currently viewing version <b>"+dashboard.version()+"</b> of this dashboard, "
+								+"not the <a href=\""+url+"\">current</a> version.");
+					
 				}
 				
 				if(dashboard.isArchived()) {
