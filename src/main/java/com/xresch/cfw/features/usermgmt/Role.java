@@ -3,7 +3,10 @@ package com.xresch.cfw.features.usermgmt;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
 
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
@@ -14,6 +17,10 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionCreate;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
+import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.dashboard.Dashboard.DashboardFields;
+import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.validation.LengthValidator;
 
@@ -26,6 +33,9 @@ public class Role extends CFWObject {
 	
 	public static final String TABLE_NAME = "CFW_ROLE";
 	
+//	public static final String FIELDNAME_EDITORS = "JSON_EDITORS";
+//	public static final String FIELDNAME_ROLEMEMBERS = "JSON_ROLEMEMBERS";
+//	
 	public enum RoleFields{
 		PK_ID,
 		CATEGORY,
@@ -34,6 +44,9 @@ public class Role extends CFWObject {
 		IS_DELETABLE,
 		IS_RENAMABLE,
 		IS_GROUP,
+		FK_ID_GROUPOWNER,
+		JSON_EDITORS,
+		JSON_ROLEMEMBERS,
 	}
 
 	private static Logger logger = CFWLog.getLogger(Role.class.getName());
@@ -102,6 +115,17 @@ public class Role extends CFWObject {
 			.apiFieldType(FormFieldType.BOOLEAN)
 			.setValue(false);
 	
+	private CFWField<Integer> foreignKeyGroupOwner = CFWField.newInteger(FormFieldType.HIDDEN, RoleFields.FK_ID_GROUPOWNER)
+			.setForeignKeyCascade(this, User.class, UserFields.PK_ID)
+			.setDescription("The user id of the owner of the group.")
+			.apiFieldType(FormFieldType.NUMBER)
+			.setValue(null);
+	
+	
+	private CFWField<LinkedHashMap<String,String>> editors = this.createSelectorFieldEditors(null);
+	
+	private CFWField<LinkedHashMap<String,String>> members = this.createSelectorFieldMembers(null);
+	
 	public Role() {
 		initializeFields();
 	}
@@ -119,7 +143,7 @@ public class Role extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, category, name, description, isDeletable, isRenamable, isGroup);
+		this.addFields(id, category, name, description, isDeletable, isRenamable, isGroup, foreignKeyGroupOwner, editors, members);
 	}
 	
 	/**************************************************************************************
@@ -243,6 +267,7 @@ public class Role extends CFWObject {
 						RoleFields.IS_DELETABLE.toString(),
 						RoleFields.IS_RENAMABLE.toString(),		
 						RoleFields.IS_GROUP.toString(),		
+						RoleFields.FK_ID_GROUPOWNER.toString(),		
 				};
 
 		//----------------------------------
@@ -294,7 +319,142 @@ public class Role extends CFWObject {
 		
 		return apis;
 	}
+	/******************************************************************
+	 *
+	 *@param type either "shareuser" or "admin"
+	 ******************************************************************/
+	public void updateSelectorFields() {
+		updateSelectorFields(this.id());
+	}
+	
+	/******************************************************************
+	 *
+	 *@param type either "shareuser" or "admin"
+	 ******************************************************************/
+	private void updateSelectorFields(Integer roleID) {
+		
+		//--------------------------------------
+		// Editors 
+		CFWField<LinkedHashMap<String, String>> editorsSelector = this.createSelectorFieldEditors(roleID);
+		this.removeField(RoleFields.JSON_EDITORS);
+		editors = editorsSelector;
+		this.addFieldAfter(editorsSelector, RoleFields.FK_ID_GROUPOWNER);
+		
+		//--------------------------------------
+		// Members 
+		CFWField<LinkedHashMap<String, String>> membersSelector = this.createSelectorFieldMembers(roleID);
+		this.removeField(RoleFields.JSON_ROLEMEMBERS);
+		members = membersSelector;
+		this.addFieldAfter(membersSelector, RoleFields.JSON_EDITORS);
+		
+	}
+	
+	
+	/******************************************************************
+	 *
+	 *@param fieldname is either of the FIELDNAME_* constants
+	 ******************************************************************/
+	private CFWField<LinkedHashMap<String,String>> createSelectorFieldEditors(Integer boardID) {
+			
+		//--------------------------------------
+		// Initialize Variables
+		LinkedHashMap<String,String> selectedValue = new LinkedHashMap<>();
+		 if(boardID != null ) {
+				selectedValue = CFW.DB.RoleEditors
+								.selectUsersForRoleAsKeyLabel(boardID);
+		}
+		 
+		//--------------------------------------
+		// Create Field
+		return CFWField.newTagsSelector(RoleFields.JSON_EDITORS)
+				.setLabel("Editors")
+				.setDescription("Allow the specified users to edit the group.")
+				.addAttribute("maxTags", "256")
+				.setValue(selectedValue)
+				.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
+					public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+						return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+					}
+				});
 
+	}
+	
+	/******************************************************************
+	 *
+	 *@param fieldname is either of the FIELDNAME_* constants
+	 ******************************************************************/
+	private CFWField<LinkedHashMap<String,String>> createSelectorFieldMembers(Integer roleID) {
+			
+		//--------------------------------------
+		// Initialize Variables
+		LinkedHashMap<String,String> selectedValue = new LinkedHashMap<>();
+		 if(roleID != null ) {
+				selectedValue = CFW.DB.UserRoleMap
+								.selectUsersForRoleAsKeyLabel(roleID);
+		}
+		 
+		//--------------------------------------
+		// Create Field
+		return CFWField.newTagsSelector(RoleFields.JSON_ROLEMEMBERS)
+			.setLabel("Group Members")
+			.setDescription("The members of the group.")
+			.addAttribute("maxTags", "2048")
+			.setValue(selectedValue)
+			.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {
+				public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+					return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+				}
+			});
+
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	public boolean saveSelectorFields() {
+		
+		boolean isSuccess = true;
+		
+			isSuccess &= saveSelectorField(RoleFields.JSON_EDITORS);
+			isSuccess &= saveSelectorField(RoleFields.JSON_ROLEMEMBERS);
+		
+		return isSuccess;
+		
+	}
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private boolean saveSelectorField(RoleFields fieldname) {
+		boolean success = true;
+				
+		//--------------------------
+		// Update Selected Users
+		if(this.getFields().containsKey(fieldname.toString())) {
+			CFWField<LinkedHashMap<String,String>> selector = this.getField(fieldname);
+			
+			LinkedHashMap<String,String> selectedValues = selector.getValue();
+			
+			switch(fieldname) {
+					
+				case JSON_EDITORS:
+					success &= CFW.DB.RoleEditors.updateUserRoleAssignments(this, selectedValues);
+					break;
+					
+				case JSON_ROLEMEMBERS:
+					success &= CFW.DB.UserRoleMap.updateUserRoleAssignments(this, selectedValues);
+					break;
+					
+				default: new CFWLog(logger).severe("Development Error: unsupported value.");
+			}
+			if( !success ){
+				CFW.Messages.addErrorMessage("Error while saving user assignments for field: "+fieldname);
+			}
+		}
+		
+		return success;
+	}
+	
+	
 	public Integer id() {
 		return id.getValue();
 	}

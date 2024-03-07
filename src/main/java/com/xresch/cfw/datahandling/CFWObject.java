@@ -302,7 +302,7 @@ public class CFWObject {
 	 ****************************************************************/
 	@SuppressWarnings("rawtypes")
 	public CFWField removeField(Object fieldname) {
-		CFWField removed = fields.remove(fieldname);
+		CFWField removed = fields.remove(fieldname.toString());
 
 		if(removed != null) {
 			removed.setRelatedCFWObject(null);
@@ -318,7 +318,7 @@ public class CFWObject {
 	@SuppressWarnings("rawtypes")
 	public void removeFields(Object ...fieldnames) {
 		for(Object name : fieldnames) {
-			this.removeField(name);
+			this.removeField(name.toString());
 		}
 	}
 	
@@ -328,8 +328,8 @@ public class CFWObject {
 	 * 
 	 ****************************************************************/
 	@SuppressWarnings("rawtypes")
-	public CFWField getField(String name) {
-		return fields.get(name);
+	public CFWField getField(Object fieldname) {
+		return fields.get(fieldname.toString());
 	}
 	
 	/****************************************************************

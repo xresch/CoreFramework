@@ -15,6 +15,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -225,6 +226,9 @@ public class ServletUserManagementAPI extends HttpServlet {
 		
 		if(role != null) {
 			
+			role.updateSelectorFields();
+			role.removeField(RoleFields.JSON_EDITORS); // no editors for roles
+			
 			CFWForm editRoleForm = role.toForm("cfwEditRoleForm"+ID, "Update Role");
 			
 			editRoleForm.setFormHandler(new CFWFormHandler() {
@@ -234,6 +238,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 					
 					if(origin.mapRequestParameters(request)
 					&& CFW.DB.Roles.update((Role)origin)) {
+						role.saveSelectorFields();
 						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");	
 					}
 					
@@ -250,6 +255,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 	private void createEditGroupForm(JSONResponse json, String ID) {
 		
 		Role role = CFW.DB.Roles.selectByID(Integer.parseInt(ID));
+		role.updateSelectorFields();
 		
 		if(role != null) {
 			
@@ -262,6 +268,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 					
 					if(origin.mapRequestParameters(request)
 					&& CFW.DB.Roles.update((Role)origin)) {
+						role.saveSelectorFields();
 						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");	
 					}
 					

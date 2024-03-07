@@ -14,6 +14,7 @@ import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.response.HTMLResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
@@ -97,7 +98,10 @@ public class ServletUserManagement extends HttpServlet
 		
 		//--------------------------------------
 		// Create Role Form
-		CFWForm createRoleForm = new Role().toForm("cfwCreateRoleForm", "Create Role");
+		Role role = new Role();
+		role.removeField(RoleFields.JSON_EDITORS); // no editors for roles
+
+		CFWForm createRoleForm = role.toForm("cfwCreateRoleForm", "Create Role");
 		
 		createRoleForm.setFormHandler(new CFWFormHandler() {
 			
@@ -112,6 +116,7 @@ public class ServletUserManagement extends HttpServlet
 					role.category(FeatureUserManagement.CATEGORY_USER);
 					
 					if( CFW.DB.Roles.create(role) ) {
+						role.saveSelectorFields();
 						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Role created successfully!");
 					}
 				}

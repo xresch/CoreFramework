@@ -98,8 +98,11 @@ public class CFWDBRole {
 	//####################################################################################################
 	// UPDATE
 	//####################################################################################################
-	public static boolean 	update(Role... items) 	{ return CFWDBDefaultOperations.update(prechecksUpdate, auditLogFieldnames, items); }
-	public static boolean 	update(Role item) 		{ return CFWDBDefaultOperations.update(prechecksUpdate, auditLogFieldnames, item); }
+	public static boolean 	update(Role item) 		{ 
+		//Do not use CFWDBDefaultOperations as this cannot be cached
+		new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, item, auditLogFieldnames);
+		return item.update();
+	}
 		
 	//####################################################################################################
 	// DELETE

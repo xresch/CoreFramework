@@ -70,6 +70,7 @@ import com.xresch.cfw.features.spaces.Space;
 import com.xresch.cfw.features.spaces.SpaceGroup;
 import com.xresch.cfw.features.usermgmt.CFWDBPermission;
 import com.xresch.cfw.features.usermgmt.CFWDBRole;
+import com.xresch.cfw.features.usermgmt.CFWDBRoleEditorsMap;
 import com.xresch.cfw.features.usermgmt.CFWDBRolePermissionMap;
 import com.xresch.cfw.features.usermgmt.CFWDBUser;
 import com.xresch.cfw.features.usermgmt.CFWDBUserRoleMap;
@@ -141,6 +142,7 @@ public class CFW {
 		public static class Parameters extends CFWDBParameter{};
 		public static class Permissions extends CFWDBPermission{};
 		public static class Roles extends CFWDBRole{};
+		public static class RoleEditors extends CFWDBRoleEditorsMap{};
 		public static class RolePermissionMap extends CFWDBRolePermissionMap{};
 		public static class Users extends CFWDBUser{};
 		public static class UserRoleMap extends CFWDBUserRoleMap{};

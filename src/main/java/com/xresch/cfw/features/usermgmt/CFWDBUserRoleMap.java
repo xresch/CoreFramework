@@ -2,7 +2,9 @@ package com.xresch.cfw.features.usermgmt;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +21,6 @@ import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.features.usermgmt.UserRoleMap.UserRoleMapFields;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.logging.CFWLog;
-import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
  * 
@@ -197,6 +198,42 @@ public class CFWDBUserRoleMap {
 				userID,
 				roleID
 				);
+	}
+	
+	/********************************************************************************************
+	 * Adds the user to the specified role.
+	 * @param user
+	 * @param role
+	 * @return return true if role was added, false otherwise
+	 * 
+	 ********************************************************************************************/
+	public static boolean updateUserRoleAssignments(Role role, LinkedHashMap<String,String> usersKeyLabel) {
+				
+		boolean isSuccess = true;	
+		
+		boolean wasStarted =CFW.DB.transactionIsStarted();
+		if(!wasStarted) { CFW.DB.transactionStart(); }
+		
+			// only returns true if anything was updated. Therefore cannot include in check.
+			boolean hasCleared = new CFWSQL(new UserRoleMap())
+						.delete()
+						.where(UserRoleMapFields.FK_ID_ROLE, role.id())
+						.and(UserRoleMapFields.IS_DELETABLE, true)
+						.executeDelete();
+			
+			if(hasCleared) {
+				new CFWLog(logger).audit(CFWAuditLogAction.CLEAR, UserRoleMap.class, "Update members of group: "+role.name());
+			}
+			
+			if(usersKeyLabel != null) {
+				for(String userID : usersKeyLabel.keySet()) {
+					isSuccess &= addRoleToUser(Integer.parseInt(userID), role.id(), true);
+				}
+			}
+		
+		if(!wasStarted) { CFW.DB.transactionEnd(isSuccess); }
+
+		return isSuccess;
 	}
 	
 	/****************************************************************
@@ -417,6 +454,39 @@ public class CFWDBUserRoleMap {
 			.offset(pageSize*(pageNumber-1))
 			.getAsJSON();
 		
+	}
+	
+//	/***************************************************************
+//	 * Retrieve the roles for a user as key/labels.
+//	 * Useful for autocomplete.
+//	 * @param role
+//	 * @return ResultSet
+//	 ****************************************************************/
+	public static LinkedHashMap<String, String> selectUsersForRoleAsKeyLabel(Integer roleID) {
+		
+		if(roleID == null) {
+			return new LinkedHashMap<String, String>();
+		}
+		
+		String query = 
+				"SELECT U.PK_ID, U.USERNAME, U.FIRSTNAME, U.LASTNAME "  
+				+ " FROM "+User.TABLE_NAME+" U " 
+				+ " LEFT JOIN "+UserRoleMap.TABLE_NAME+" M ON M.FK_ID_USER = U.PK_ID "
+				+ " WHERE M.FK_ID_ROLE = ? " 
+				+ " ORDER BY LOWER(U.USERNAME) "
+				;
+		
+		ArrayList<User> userList =  new CFWSQL(new User())
+				.queryCache()
+				.custom(query, roleID)
+				.getAsObjectListConvert(User.class);
+		
+		LinkedHashMap<String, String> result = new LinkedHashMap<>();
+		for(User user : userList) {						
+			result.put(user.id()+"", user.createUserLabel());
+		}
+		
+		return result;
 	}
 
 	/***************************************************************
