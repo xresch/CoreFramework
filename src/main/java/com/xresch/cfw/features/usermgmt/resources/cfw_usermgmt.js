@@ -462,7 +462,7 @@ function cfw_usermgmt_printUserList(data){
 	
 	var cfwTable = new CFWTable();
 	
-	var STOREID_USERLIST = 'userlist';
+
 
 	//--------------------------------
 	// Button
@@ -545,9 +545,6 @@ function cfw_usermgmt_printUserList(data){
 
 		//-----------------------------------
 		// Render Data
-		
-		var dataviewerDefaults = CFW.render.createDataviewerDefaults();
-		
 		var rendererSettings = {
 				data: data.payload,
 			 	idfield: 'PK_ID',
@@ -576,65 +573,8 @@ function cfw_usermgmt_printUserList(data){
 				
 				rendererSettings: {
 					dataviewer: {
-						storeid: STOREID_USERLIST,
-						renderers: [
-							{	label: 'Table',
-								name: 'table',
-								renderdef: {
-									rendererSettings: {
-										table: {filterable: false, narrow: true},
-									},
-								}
-							},
-							{	label: 'Bigger Table',
-								name: 'table',
-								renderdef: {
-									rendererSettings: {
-										table: {filterable: false},
-									},
-								}
-							},
-							{	label: 'Panels',
-								name: 'panels',
-								renderdef: {}
-							},
-							{	label: 'Smaller Panels',
-								name: 'panels',
-								renderdef: {
-									rendererSettings: {
-										panels: {narrow: true},
-									},
-								}
-							},
-							{	label: 'Cards',
-								name: 'cards',
-								renderdef: {}
-							},
-							{	label: 'Tiles',
-								name: 'tiles',
-								renderdef: {
-									visiblefields: ['PK_ID', 'EMAIL', 'STATUS', "LAST_LOGIN"],
-									rendererSettings: {
-										tiles: {
-											popover: false,
-											border: '2px solid black'
-										},
-									},
-								}
-							},
-							{	label: 'CSV',
-								name: 'csv',
-								renderdef: {}
-							},
-							{	label: 'XML',
-								name: 'xml',
-								renderdef: {}
-							},
-							{	label: 'JSON',
-								name: 'json',
-								renderdef: {}
-							}
-						]
+						storeid: 'userlist',
+						renderers: CFW.render.createDataviewerDefaults()
 					},
 					table: { filterable: false },
 				},
@@ -673,47 +613,70 @@ function cfw_usermgmt_printRoleList(data){
 	
 	//--------------------------------
 	// Table
-	
 	var cfwTable = new CFWTable();
 	cfwTable.addHeaders(['ID', "Name", "Description"]);
 	
 	if(data.payload != undefined){
 		
-		var resultCount = data.payload.length;
-		if(resultCount == 0){
-			CFW.ui.addAlert("info", "Hmm... seems there aren't any roles in the list.");
-		}
+		//======================================
+		// Prepare actions
+		var actionButtons = [];
+		
+		//-------------------------
+		// Edit Button
+		actionButtons.push(
+			function (record, id){ 
+				return '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
+					+'onclick="cfw_usermgmt_editRole('+record.PK_ID+');">'
+					+ '<i class="fa fa-pen"></i>'
+					+ '</button>';
+			});
 
-		var htmlString = "";
-		for(var i = 0; i < resultCount; i++){
-			var current = data.payload[i];
-			htmlString += '<tr>';
-			htmlString += '<td>'+current.PK_ID+'</td>';
-			htmlString += '<td>'+current.NAME+'</td>';
-			htmlString += '<td>'+CFW.utils.nullTo(current.DESCRIPTION, '')+'</td>';
-			
-			//Edit Button
-			htmlString += '<td><button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
-				+'onclick="cfw_usermgmt_editRole('+current.PK_ID+');">'
-				+ '<i class="fa fa-pen"></i>'
-				+ '</button></td>';
-			
-			//Delete Button
-			if(current.IS_DELETABLE){
-				htmlString += '<td><button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the role <b>&quot;'+current.NAME+'&quot;</b> ?\', \'Delete\', \'cfw_usermgmt_delete(\\\'roles\\\','+current.PK_ID+');\')">'
+		//-------------------------
+		// Delete Button
+		actionButtons.push(
+			function (record, id){
+				
+			if(record.IS_DELETABLE){
+				return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
+					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the role <b>&quot;'+record.NAME+'&quot;</b> ?\', \'Delete\', \'cfw_usermgmt_delete(\\\'roles\\\','+record.PK_ID+');\')">'
 					+ '<i class="fa fa-trash"></i>'
-					+ '</button></td>';
-			}else{
-				htmlString += '<td>&nbsp;</td>';
+					+ '</button>';
 			}
 			
-			htmlString += '</tr>';
-		}
+			return '&nbsp;';
+
+		});
 		
-		cfwTable.addRows(htmlString);
+		//-----------------------------------
+		// Render Data
+		var rendererSettings = {
+				data: data.payload,
+			 	idfield: 'PK_ID',
+			 	bgstylefield: null,
+			 	textstylefield: null,
+			 	titlefields: ['NAME',],
+			 	titleformat: '{0}',
+			 	visiblefields: ['PK_ID', 'NAME', 'DESCRIPTION'],
+			 	labels: {
+			 		PK_ID: "ID",
+			 	},
+			 	customizers: {},
+				actions: actionButtons,
+				
+				rendererSettings: {
+					dataviewer: {
+						storeid: 'rolelist',
+						renderers: CFW.render.createDataviewerDefaults()
+					},
+					table: { filterable: false },
+				},
+			};
 		
-		cfwTable.appendTo(parent);
+		var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
+		
+		parent.append(renderResult);
+
 	}else{
 		CFW.ui.addAlert('error', 'Something went wrong and no users can be displayed.');
 	}
@@ -749,7 +712,69 @@ function cfw_usermgmt_printGroupList(data){
 	
 	if(data.payload != undefined){
 		
-		var resultCount = data.payload.length;
+		if(data.payload.length == 0){
+			CFW.ui.addAlert("info", "Hmm... seems there aren't any groups in the list.");
+		}
+		//======================================
+		// Prepare actions
+		var actionButtons = [];
+		
+		//-------------------------
+		// Edit Button
+		actionButtons.push(
+			function (record, id){ 
+				return '<button class="btn btn-primary btn-sm" alt="Edit" title="Edit" '
+					+'onclick="cfw_usermgmt_editGroup('+record.PK_ID+');">'
+					+ '<i class="fa fa-pen"></i>'
+					+ '</button>';
+			});
+
+		//-------------------------
+		// Delete Button
+		actionButtons.push(
+			function (record, id){
+				
+			if(record.IS_DELETABLE){
+				return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
+					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the role <b>&quot;'+record.NAME+'&quot;</b> ?\', \'Delete\', \'cfw_usermgmt_delete(\\\'groups\\\','+record.PK_ID+');\')">'
+					+ '<i class="fa fa-trash"></i>'
+					+ '</button>';
+			}
+			
+			return '&nbsp;';
+
+		});
+		
+		//-----------------------------------
+		// Render Data
+		var rendererSettings = {
+				data: data.payload,
+			 	idfield: 'PK_ID',
+			 	bgstylefield: null,
+			 	textstylefield: null,
+			 	titlefields: ['NAME',],
+			 	titleformat: '{0}',
+			 	visiblefields: ['PK_ID', 'NAME', 'DESCRIPTION'],
+			 	labels: {
+			 		PK_ID: "ID",
+			 	},
+			 	customizers: {},
+				actions: actionButtons,
+				
+				rendererSettings: {
+					dataviewer: {
+						storeid: 'grouplist',
+						renderers: CFW.render.createDataviewerDefaults()
+					},
+					table: { filterable: false },
+				},
+			};
+		
+		var renderResult = CFW.render.getRenderer('dataviewer').render(rendererSettings);	
+		
+		parent.append(renderResult);
+		
+		/*var resultCount = data.payload.length;
 		if(resultCount == 0){
 			CFW.ui.addAlert("info", "Hmm... seems there aren't any groups in the list.");
 		}
@@ -783,7 +808,7 @@ function cfw_usermgmt_printGroupList(data){
 		
 		cfwTable.addRows(htmlString);
 		
-		cfwTable.appendTo(parent);
+		cfwTable.appendTo(parent);*/
 	}else{
 		CFW.ui.addAlert('error', 'Something went wrong and no users can be displayed.');
 	}
