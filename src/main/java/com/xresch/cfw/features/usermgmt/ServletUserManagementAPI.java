@@ -20,15 +20,11 @@ import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
 import com.xresch.cfw.features.core.AutocompleteResult;
 import com.xresch.cfw.features.core.CFWAutocompleteHandler;
-import com.xresch.cfw.features.core.FeatureCore;
-import com.xresch.cfw.features.role.Role;
-import com.xresch.cfw.features.role.FeatureRole;
-import com.xresch.cfw.features.role.Role.RoleFields;
 import com.xresch.cfw.features.notifications.Notification;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
-import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.validation.LengthValidator;
@@ -203,6 +199,107 @@ public class ServletUserManagementAPI extends HttpServlet {
 		}
 	}
 	
+
+	/******************************************************************
+	 * Create User Form
+	 ******************************************************************/
+	protected static void makeCreateUserForm() {
+		
+		CreateUserForm createUserForm = new ServletUserManagementAPI().new CreateUserForm("cfwCreateUserForm", "Create User");
+		
+		createUserForm.setFormHandler(new CFWFormHandler() {
+			
+			@Override
+			public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+				
+				if(form.mapRequestParameters(request)) {
+					CreateUserForm casted = (CreateUserForm)form;
+					User newUser = new User(casted.getUsername())
+							.status(casted.getStatus())
+							.isForeign(casted.getIsForeign())
+							.setNewPassword(casted.getPassword(), casted.getRepeatedPassword());
+					
+					if(newUser != null && CFW.DB.Users.create(newUser)) {
+							
+						User userFromDB = CFW.DB.Users.selectByUsernameOrMail(newUser.username());
+						if (CFW.DB.UserRoleMap.addRoleToUser(userFromDB, CFW.DB.Roles.CFW_ROLE_USER, true)) {
+							CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "User created successfully!");
+							return;
+						}
+						
+					}
+				}
+
+			}
+		});
+
+	}
+	
+	/******************************************************************
+	 * Create Role Form
+	 ******************************************************************/
+	protected static void makeCreateRoleForm() {
+		
+		Role role = new Role();
+		role.removeField(RoleFields.JSON_EDITORS); // no editors for roles
+
+		CFWForm createRoleForm = role.toForm("cfwCreateRoleForm", "Create Role");
+		
+		createRoleForm.setFormHandler(new CFWFormHandler() {
+			
+			@Override
+			public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+								
+				if(origin != null) {
+					
+					origin.mapRequestParameters(request);
+					Role role = (Role)origin;
+					role.id(null);
+					role.category(FeatureUserManagement.CATEGORY_USER);
+					
+					if( CFW.DB.Roles.create(role) ) {
+						role.saveSelectorFields();
+						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Role created successfully!");
+					}
+				}
+				
+			}
+		});
+
+	}
+	
+	/******************************************************************
+	 * Create Group Form
+	 ******************************************************************/
+	protected static void makeCreateGroupForm() {
+		
+		CFWForm createGroupForm = new Role().toForm("cfwCreateGroupForm", "Create Group");
+		
+		createGroupForm.setFormHandler(new CFWFormHandler() {
+			
+			@Override
+			public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+								
+				if(origin != null) {
+					
+					origin.mapRequestParameters(request);
+					Role role = (Role)origin;
+					role.id(null);
+					role.category(FeatureUserManagement.CATEGORY_USER)
+						.isGroup(true);
+					
+					if( CFW.DB.Roles.create(role) ) {
+						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Group created successfully!");
+					}
+				}
+				
+			}
+		});
+		
+	}
+	
+	
+
 	/******************************************************************
 	 *
 	 ******************************************************************/
@@ -470,4 +567,47 @@ public class ServletUserManagementAPI extends HttpServlet {
 		public String getPassword() { return password.getValue(); }
 		public String getRepeatedPassword() { return repeatedPassword.getValue(); }
 	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	class CreateUserForm extends CFWForm{
+				
+		protected CFWField<String> username = CFWField.newString(FormFieldType.TEXT, "Username")
+				.addValidator(new LengthValidator(1, 255));
+		
+		protected CFWField<String> password = CFWField.newString(FormFieldType.PASSWORD, "Password")
+				.disableSanitization()
+				.addValidator(new LengthValidator(1, 255))
+				.addValidator(new PasswordValidator());
+		
+		protected CFWField<String> repeatedPassword = CFWField.newString(FormFieldType.PASSWORD, "Repeat Password")
+				.disableSanitization()
+				.addValidator(new NotNullOrEmptyValidator());
+		
+		private CFWField<String> status = CFWField.newString(FormFieldType.SELECT, "Status")
+				.setOptions(new String[] {"Active", "Inactive"})
+				.setDescription("Active users can login, inactive users are prohibited to login.")
+				.addValidator(new LengthValidator(-1, 15));
+		
+		private CFWField<Boolean> isForeign = CFWField.newBoolean(FormFieldType.BOOLEAN, UserFields.IS_FOREIGN.toString())
+											 .setValue(false);
+		
+		public CreateUserForm(String formID, String submitLabel) {
+			super(formID, submitLabel);
+			this.addField(username);
+			this.addField(password);
+			this.addField(repeatedPassword);
+			this.addField(status);
+			this.addField(isForeign);
+		}
+		
+		public String getUsername() { return username.getValue(); }
+		public String getPassword() { return password.getValue(); }
+		public String getRepeatedPassword() { return repeatedPassword.getValue(); }
+		public String getStatus() { return status.getValue(); }
+		public boolean getIsForeign() { return isForeign.getValue(); }
+
+	}
+	
 }
