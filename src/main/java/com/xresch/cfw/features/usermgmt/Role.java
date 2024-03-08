@@ -396,8 +396,8 @@ public class Role extends CFWObject {
 		//--------------------------------------
 		// Create Field
 		return CFWField.newTagsSelector(RoleFields.JSON_ROLEMEMBERS)
-			.setLabel("Group Members")
-			.setDescription("The members of the group.")
+			.setLabel("Members")
+			.setDescription("The members of this role or group.")
 			.addAttribute("maxTags", "2048")
 			.setValue(selectedValue)
 			.setAutocompleteHandler(new CFWAutocompleteHandler(10,2) {

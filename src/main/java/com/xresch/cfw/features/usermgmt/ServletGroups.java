@@ -27,7 +27,7 @@ import com.xresch.cfw.validation.PasswordValidator;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public class ServletUserManagement extends HttpServlet
+public class ServletGroups extends HttpServlet
 {
 
 	private static final long serialVersionUID = 1L;
@@ -40,28 +40,22 @@ public class ServletUserManagement extends HttpServlet
     protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
 		
-		HTMLResponse html = new HTMLResponse("User Management");
+		HTMLResponse html = new HTMLResponse("Groups");
 		
-		StringBuilder content = html.getContent();
-		
-		if(CFW.Context.Request.hasPermission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT)) {
+		if(CFW.Context.Request.hasPermission(FeatureUserManagement.PERMISSION_GROUPS_USER)) {
 			
-			ServletUserManagementAPI.makeCreateGroupForm(false);
-			ServletUserManagementAPI.makeCreateRoleForm();
-			ServletUserManagementAPI.makeCreateUserForm();
+			ServletUserManagementAPI.makeCreateGroupForm(true);
 			
 			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureUserManagement.PACKAGE_RESOURCE, "cfw_usermgmt_common.js");
-			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureUserManagement.PACKAGE_RESOURCE, "cfw_usermgmt_admin.js");
-			
-			content.append(CFW.Files.readPackageResource(FeatureUserManagement.PACKAGE_RESOURCE, "cfw_usermgmt_admin.html"));
-			
-			html.addJavascriptCode("cfw_usermgmt_initialDraw({tab: 'users'});");
+			html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureUserManagement.PACKAGE_RESOURCE, "cfw_usermgmt_groups.js");
+						
+			html.addJavascriptCode("cfw_usermgmt_groups_initialDraw({tab: 'groups'});");
 			
 	        response.setContentType("text/html");
 	        response.setStatus(HttpServletResponse.SC_OK);
 			
 		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
+			CFW.Messages.accessDenied();
 		}
         
     }

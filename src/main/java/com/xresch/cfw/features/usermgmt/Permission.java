@@ -116,30 +116,6 @@ public class Permission extends CFWObject{
 		
 	}
 
-	/**************************************************************************************
-	 * Roles have to exists
-	 **************************************************************************************/
-	@Override
-	public void initDBSecond() {
-		
-		Role adminRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_ADMIN);
-		
-		//-----------------------------------------
-		// User Management
-		//-----------------------------------------
-		if(!CFW.DB.Permissions.checkExistsByName(FeatureUserManagement.PERMISSION_USER_MANAGEMENT)) {
-			CFW.DB.Permissions.create(new Permission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT, FeatureUserManagement.CATEGORY_USER)
-				.description("Gives the user the ability to view, create, update and delete users.")
-			);
-			
-			Permission userManagement = CFW.DB.Permissions.selectByName(FeatureUserManagement.PERMISSION_USER_MANAGEMENT);
-			CFW.DB.RolePermissionMap.addPermissionToRole(userManagement, adminRole, true);
-			if(userManagement == null) {
-				new CFWLog(logger)
-				.severe("User permission '"+FeatureUserManagement.PERMISSION_USER_MANAGEMENT+"' was not found in the database.");
-			}
-		}
-	}
 
 	/**************************************************************************************
 	 * 

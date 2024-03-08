@@ -213,7 +213,7 @@ public class CFWDBRole {
 
 		return new CFWSQL(new Role())
 				.queryCache()
-				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, 
+				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE, 
 						"sql_users_for_role.sql", 
 						Integer.parseInt(roleID))
 				.getAsObjectListConvert(User.class);
@@ -228,7 +228,7 @@ public class CFWDBRole {
 
 		return new CFWSQL(new Role())
 				.queryCache()
-				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, 
+				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE, 
 						"sql_getAdminsAndSuperusers.sql", 
 						CFW_ROLE_ADMIN,
 						CFW_ROLE_SUPERUSER)
@@ -245,7 +245,7 @@ public class CFWDBRole {
 
 		String JSON = new Role()
 				.queryCache(CFWDBRole.class, "getUsersForRoleAsJSON")
-				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, 
+				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE, 
 						"sql_users_for_role.sql", 
 						Integer.parseInt(roleID))
 				.getAsJSON();
@@ -283,6 +283,26 @@ public class CFWDBRole {
 				.where(RoleFields.CATEGORY.toString(), FeatureUserManagement.CATEGORY_USER)
 				.and(RoleFields.IS_GROUP, true)
 				.orderby(RoleFields.NAME.toString())
+				.getAsJSON();
+	}
+	
+	/***************************************************************
+	 * Return a list of groups that the user can edit.
+	 * 
+	 * @return Returns a result set with all users or null.
+	 ****************************************************************/
+	public static String getGroupsThatUserCanEditAsJSON(Integer id) {
+		
+		if(id == null) {
+			return "[]";
+		}
+		
+		return new CFWSQL(new Role())
+				.queryCache()
+				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE
+						, "sql_getGroupsThatUserCanEditAsJSON.sql"
+						, id
+						, id)
 				.getAsJSON();
 	}
 	

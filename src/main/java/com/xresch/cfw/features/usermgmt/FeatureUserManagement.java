@@ -9,6 +9,7 @@ import com.xresch.cfw.caching.FileDefinition.HandlingType;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.features.config.Configuration;
 import com.xresch.cfw.features.config.FeatureConfig;
+import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.MenuItem;
 import com.xresch.cfw.spi.CFWAppFeature;
 
@@ -20,8 +21,11 @@ import com.xresch.cfw.spi.CFWAppFeature;
 public class FeatureUserManagement extends CFWAppFeature {
 
 	
+	public static final String URI_GROUPS = "/app/groups";
+	public static final String URI_USERMANAGEMENT = "/app/usermanagement";
+	
 	public static final String PERMISSION_CPU_SAMPLING = "CPU Sampling";
-	public static final String RESOURCE_PACKAGE = "com.xresch.cfw.features.usermgmt.resources";
+	public static final String PACKAGE_RESOURCE = "com.xresch.cfw.features.usermgmt.resources";
 	
 	public static final String CONFIG_CATEGORY_PW_POLICY = "Password Policy";
 	
@@ -36,17 +40,23 @@ public class FeatureUserManagement extends CFWAppFeature {
 	public static final String CATEGORY_USER = "user";
 	
 	public static final String PERMISSION_USER_MANAGEMENT = "User Management";
+	public static final String PERMISSION_GROUPS_USER = "Groups: User";
 	
 	@Override
 	public void register() {
 		//----------------------------------
 		// Register Package
-		CFW.Files.addAllowedPackage(RESOURCE_PACKAGE);
+		CFW.Files.addAllowedPackage(PACKAGE_RESOURCE);
 		
 		//----------------------------------
 		// Register Languages
-		CFW.Localization.registerLocaleFile(Locale.ENGLISH, "/app/usermanagement", new FileDefinition(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "lang_en.properties"));
-		CFW.Localization.registerLocaleFile(Locale.GERMAN, "/app/usermanagement", new FileDefinition(HandlingType.JAR_RESOURCE, RESOURCE_PACKAGE, "lang_de.properties"));
+		FileDefinition english = new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCE, "lang_en.properties");
+		CFW.Localization.registerLocaleFile(Locale.ENGLISH, URI_USERMANAGEMENT, english);
+		CFW.Localization.registerLocaleFile(Locale.ENGLISH, URI_GROUPS, english);
+		
+		FileDefinition germanica = new FileDefinition(HandlingType.JAR_RESOURCE, PACKAGE_RESOURCE, "lang_de.properties");
+		CFW.Localization.registerLocaleFile(Locale.GERMAN, URI_USERMANAGEMENT, germanica);
+		CFW.Localization.registerLocaleFile(Locale.GERMAN, URI_GROUPS, germanica);
 		
 		//----------------------------------
 		// Register Objects
@@ -63,13 +73,23 @@ public class FeatureUserManagement extends CFWAppFeature {
 		CFW.Registry.Audit.addUserAudit(new UserAuditExecutorGroups());
 		
     	//----------------------------------
-    	// Register Regular Menu
+    	// Register Admin Menu
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("Manage Users", "{!cfw_core_manage_users!}") 
 					.faicon("fas fa-users")
 					.addPermission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT)
-					.href("/app/usermanagement")
+					.href(URI_USERMANAGEMENT)
 					.addAttribute("id", "cfwMenuAdmin-UserMgmt")
+				, null);
+		
+		//----------------------------------
+		// Register Tools Menu
+		CFW.Registry.Components.addToolsMenuItem(
+				(MenuItem)new MenuItem("Groups", "{!cfw_core_groups!}") 
+				.faicon("fas fa-users")
+				.addPermission(FeatureUserManagement.PERMISSION_GROUPS_USER)
+				.href(URI_GROUPS)
+				.addAttribute("id", "cfwMenuTools-Groups")
 				, null);
 		
 	}
@@ -150,12 +170,40 @@ public class FeatureUserManagement extends CFWAppFeature {
 				.value("false")
 				);
 		
+
+		//-----------------------------------------
+		// Permission: User Management
+		//-----------------------------------------
+		Role adminRole = CFW.DB.Roles.selectFirstByName(CFW.DB.Roles.CFW_ROLE_ADMIN);
+
+		
+		if(!CFW.DB.Permissions.checkExistsByName(FeatureUserManagement.PERMISSION_USER_MANAGEMENT)) {
+			CFW.DB.Permissions.create(new Permission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT, FeatureUserManagement.CATEGORY_USER)
+				.description("Gives the user the ability to view, create, update and delete users.")
+			);
+			
+			Permission userManagement = CFW.DB.Permissions.selectByName(FeatureUserManagement.PERMISSION_USER_MANAGEMENT);
+			CFW.DB.RolePermissionMap.addPermissionToRole(userManagement, adminRole, true);
+
+		}
+		
+		//-----------------------------------------
+		// Permission: Groups
+		//-----------------------------------------
+		CFW.DB.Permissions.oneTimeCreate(
+				new Permission(PERMISSION_GROUPS_USER, FeatureUserManagement.CATEGORY_USER)
+				.description("Gives the user the possibility to create and manage his own groups."),
+				true,
+				true
+				);
+		
 	}
 
 	@Override
 	public void addFeature(CFWApplicationExecutor app) {	
 		
 		app.addAppServlet(ServletUserManagement.class,  "/usermanagement");
+		app.addAppServlet(ServletGroups.class,  "/groups");
 		app.addAppServlet(ServletPermissions.class,  "/usermanagement/permissions");
 		app.addAppServlet(ServletUserManagementAPI.class, "/usermanagement/data"); 
 		

@@ -57,16 +57,25 @@ public class ServletUserManagementAPI extends HttpServlet {
 		String IDs = request.getParameter("ids");
 		
 		String userID, roleID, permissionID;
+		
 		//-------------------------------------------
 		// Fetch Data
 		//-------------------------------------------
 		JSONResponse jsonResponse = new JSONResponse();
 		StringBuilder content = jsonResponse.getContent();
 
-		if(CFW.Context.Request.hasPermission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT)) {
+		
+		//-------------------------------------------
+		// Fetch Data
+		//-------------------------------------------
+		boolean isManager = CFW.Context.Request.hasPermission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT);
+		boolean isGrouper = CFW.Context.Request.hasPermission(FeatureUserManagement.PERMISSION_GROUPS_USER);
+		if(!isManager && !isGrouper ) {
+			CFW.Messages.accessDenied();
+		}else {
 			
 			if (action == null) {
-				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter 'data' was not specified.");
+				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter 'action' was not specified.");
 				//content.append("{\"error\": \"Type was not specified.\"}");
 			}else {
 	
@@ -74,30 +83,43 @@ public class ServletUserManagementAPI extends HttpServlet {
 					
 					case "fetch": 			
 						switch(item.toLowerCase()) {
-							case "users": 			content.append(CFW.DB.Users.getUserListAsJSON());
+							case "users": 			if(!isManager) { CFW.Messages.noPermission(); return; }
+													content.append(CFW.DB.Users.getUserListAsJSON());
 										  			break;
 										  		
-							case "user": 			content.append(CFW.DB.Users.getUserAsJSON(ID));
-					  								break;			
+							case "user": 			if(!isManager) { CFW.Messages.noPermission(); return; }
+													content.append(CFW.DB.Users.getUserAsJSON(ID));
+					  								break;	
+					  								
 							case "usersforrole": 	content.append(CFW.DB.Roles.getUsersForRoleAsJSON(ID));
 													break;						
 					  													
-							case "roles": 			content.append(CFW.DB.Roles.getUserRoleListAsJSON());
+							case "roles": 			if(!isManager) { CFW.Messages.noPermission(); return; }
+													content.append(CFW.DB.Roles.getUserRoleListAsJSON());
 							  			   			break;
 
-							case "role": 			content.append(CFW.DB.Roles.getUserRolesAsJSON(ID));
+							case "role": 			if(!isManager) { CFW.Messages.noPermission(); return; }
+													content.append(CFW.DB.Roles.getUserRolesAsJSON(ID));
 													break;	
 																				
-							case "groups": 			content.append(CFW.DB.Roles.getGroupListAsJSON());
+							case "groups": 			if(!isManager) { CFW.Messages.noPermission(); return; }
+													content.append(CFW.DB.Roles.getGroupListAsJSON());
 													break;	
 													
-							case "permissions":		content.append(CFW.DB.Permissions.getUserPermissionListAsJSON());
+							case "mygroups": 		Integer id = CFW.Context.Request.getUserID();
+													content.append(CFW.DB.Roles.getGroupsThatUserCanEditAsJSON(id));
+													break;	
+													
+							case "permissions":		if(!isManager) { CFW.Messages.noPermission(); return; }
+													content.append(CFW.DB.Permissions.getUserPermissionListAsJSON());
 		  			   								break;  
 		  			   		
-							case "useraudit":		content.append(CFWRegistryAudit.auditUser(ID));
+							case "useraudit":		if(!isManager) { CFW.Messages.noPermission(); return; }
+													content.append(CFWRegistryAudit.auditUser(ID));
  													break;  
  													
-							case "fullaudit":		content.append(CFWRegistryAudit.auditAllUsers());
+							case "fullaudit":		if(!isManager) { CFW.Messages.noPermission(); return; }
+													content.append(CFWRegistryAudit.auditAllUsers());
 													break;  	
 													
 							default: 				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
@@ -116,28 +138,35 @@ public class ServletUserManagementAPI extends HttpServlet {
 						boolean isAscending = (isAscendingString == null || isAscendingString.equals("true")) ? true : false;
 						
 						switch(item.toLowerCase()) {
-							case "userrolemap": 	content.append(CFW.DB.UserRoleMap.getUserRoleMapForUserAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
+							case "userrolemap": 	
+								if(!isManager) { CFW.Messages.noPermission(); return; }
+								content.append(CFW.DB.UserRoleMap.getUserRoleMapForUserAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
 							break;	
 							
-							case "usergroupmap": 	content.append(CFW.DB.UserRoleMap.getUserGroupMapForUserAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
+							case "usergroupmap": 	
+								content.append(CFW.DB.UserRoleMap.getUserGroupMapForUserAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
 							break;	
 							
-							case "rolepermissionmap": 	content.append(CFW.DB.RolePermissionMap.getPermissionMapForRoleAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
+							case "rolepermissionmap": 	
+								content.append(CFW.DB.RolePermissionMap.getPermissionMapForRoleAsJSON(userOrRoleID, pagesize, pagenumber, filterquery, sortby, isAscending));
 							break;	
 						}
 						break;
 					case "delete": 			
 						switch(item.toLowerCase()) {
-							case "users": 		jsonResponse.setSuccess(CFW.DB.Users.deleteMultipleByID(IDs));
+							case "users": 		if(!isManager) { CFW.Messages.noPermission(); return; }
+												jsonResponse.setSuccess(CFW.DB.Users.deleteMultipleByID(IDs));
 										  		break;
 										  
-							case "roles": 		jsonResponse.setSuccess(CFW.DB.Roles.deleteMultipleByID(IDs));
+							case "roles": 		if(!isManager) { CFW.Messages.noPermission(); return; }
+												jsonResponse.setSuccess(CFW.DB.Roles.deleteMultipleByID(IDs));
 												break;  
 												
 							case "groups": 		jsonResponse.setSuccess(CFW.DB.Roles.deleteMultipleByID(IDs));
 												break;  
 												
-							case "permissions": jsonResponse.setSuccess(CFW.DB.Permissions.deleteMultipleByID(IDs));
+							case "permissions": if(!isManager) { CFW.Messages.noPermission(); return; }
+												jsonResponse.setSuccess(CFW.DB.Permissions.deleteMultipleByID(IDs));
 		  			   							break;  
 		  			   							
 							default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
@@ -147,7 +176,9 @@ public class ServletUserManagementAPI extends HttpServlet {
 					
 					case "update": 			
 						switch(item.toLowerCase()) {
-							case "userrolemap": 
+							case "userrolemap":  		if(!isManager) { CFW.Messages.noPermission(); return; }
+								  						//fallthrough next case
+								  
 							case "usergroupmap": 
 														userID = request.getParameter("itemid");
 														roleID = request.getParameter("listitemid");
@@ -155,7 +186,8 @@ public class ServletUserManagementAPI extends HttpServlet {
 														SessionTracker.updateUserRights(Integer.parseInt(userID));
 														break;
 														
-							case "rolepermissionmap": 	roleID = request.getParameter("itemid");
+							case "rolepermissionmap": 	if(!isManager) { CFW.Messages.noPermission(); return; }
+														roleID = request.getParameter("itemid");
 														permissionID = request.getParameter("listitemid");
 														jsonResponse.setSuccess(CFW.DB.RolePermissionMap.tooglePermissionInRole(permissionID, roleID));
 														break;
@@ -167,10 +199,12 @@ public class ServletUserManagementAPI extends HttpServlet {
 					
 					case "getform": 			
 						switch(item.toLowerCase()) {
-							case "edituser": 	createEditUserForm(jsonResponse, ID);
+							case "edituser": 	if(!isManager) { CFW.Messages.noPermission(); return; }
+												createEditUserForm(jsonResponse, ID);
 												break;
 							
-							case "editrole": 	createEditRoleForm(jsonResponse, ID);
+							case "editrole": 	if(!isManager) { CFW.Messages.noPermission(); return; }
+												createEditRoleForm(jsonResponse, ID);
 												break;
 							
 							case "editgroup": 	createEditGroupForm(jsonResponse, ID);
@@ -179,7 +213,8 @@ public class ServletUserManagementAPI extends HttpServlet {
 							case "changeowner": createChangeGroupOwnerForm(jsonResponse, ID);
 												break;
 							
-							case "resetpw": 	createResetPasswordForm(jsonResponse, ID);
+							case "resetpw": 	if(!isManager) { CFW.Messages.noPermission(); return; }
+												createResetPasswordForm(jsonResponse, ID);
 							break;
 							
 							default: 			CFW.Context.Request.addAlertMessage(MessageType.ERROR, "The value of item '"+item+"' is not supported.");
@@ -194,8 +229,6 @@ public class ServletUserManagementAPI extends HttpServlet {
 							
 			}
 		
-		}else {
-			CFW.Context.Request.addAlertMessage(MessageType.ERROR, CFW.L("cfw_core_error_accessdenied", "Access Denied!"));
 		}
 	}
 	
@@ -271,9 +304,11 @@ public class ServletUserManagementAPI extends HttpServlet {
 	/******************************************************************
 	 * Create Group Form
 	 ******************************************************************/
-	protected static void makeCreateGroupForm() {
+	protected static void makeCreateGroupForm(boolean withOwner) {
 		
-		CFWForm createGroupForm = new Role().toForm("cfwCreateGroupForm", "Create Group");
+		String formID = (!withOwner) ? "cfwCreateGroupForm" : "cfwCreateGroupWithOwnerForm";
+
+		CFWForm createGroupForm = new Role().toForm(formID, "Create Group");
 		
 		createGroupForm.setFormHandler(new CFWFormHandler() {
 			
@@ -286,9 +321,11 @@ public class ServletUserManagementAPI extends HttpServlet {
 					Role role = (Role)origin;
 					role.id(null);
 					role.category(FeatureUserManagement.CATEGORY_USER)
-						.isGroup(true);
+						.isGroup(true)
+						.foreignKeyGroupOwner(CFW.Context.Request.getUserID());
 					
 					if( CFW.DB.Roles.create(role) ) {
+						role.saveSelectorFields();
 						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Group created successfully!");
 					}
 				}
@@ -322,7 +359,6 @@ public class ServletUserManagementAPI extends HttpServlet {
 						CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
 							
 					}
-					
 				}
 			});
 			
@@ -457,7 +493,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 											new Notification()
 													.foreignKeyUser(Integer.parseInt(newOwner))
 													.messageType(MessageType.INFO)
-													.title("You are now oner of the group: '"+role.name()+"'")
+													.title("You are now the owner of the group: '"+role.name()+"'")
 													.message("The user '"+currentUser.createUserLabel()+"' has made you the owner of the group.");
 
 									CFW.DB.Notifications.create(newOwnerNotification);

@@ -392,7 +392,7 @@ public class CFWDBRolePermissionMap {
 		
 		return new CFWSQL(new Permission())
 				.queryCache()
-				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, "sql_permissionOverviewAllUsers.sql")
+				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE, "sql_permissionOverviewAllUsers.sql")
 				.getResultSet();
 		
 	}
@@ -404,7 +404,7 @@ public class CFWDBRolePermissionMap {
 		
 		return new CFWSQL(new Permission())
 				.queryCache()
-				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, "sql_permissionOverviewForUser.sql", user.id())
+				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE, "sql_permissionOverviewForUser.sql", user.id())
 				.getAsJSONArray();
 		
 	}

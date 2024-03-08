@@ -496,7 +496,7 @@ public class CFWDBUserRoleMap {
 		
 		return new CFWSQL(new Permission())
 				.queryCache()
-				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, "sql_getGroupsForUser.sql", user.id())
+				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE, "sql_getGroupsForUser.sql", user.id())
 				.getAsJSONArray();
 		
 	}

@@ -237,7 +237,7 @@ public class CFWDBDashboardFavoriteMap {
 		
 		return new CFWSQL(new Dashboard())
 				.queryCache()
-				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, "sql_dashboardOverviewAllUsers.sql")
+				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE, "sql_dashboardOverviewAllUsers.sql")
 				.getResultSet();
 		
 	}
@@ -249,7 +249,7 @@ public class CFWDBDashboardFavoriteMap {
 		
 		return new CFWSQL(new Dashboard())
 				.queryCache()
-				.loadSQLResource(FeatureUserManagement.RESOURCE_PACKAGE, "sql_dashboardOverviewForUser.sql", user.id())
+				.loadSQLResource(FeatureUserManagement.PACKAGE_RESOURCE, "sql_dashboardOverviewForUser.sql", user.id())
 				.getAsJSONArray();
 		
 	}
