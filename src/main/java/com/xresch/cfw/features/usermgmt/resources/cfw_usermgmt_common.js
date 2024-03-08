@@ -88,20 +88,24 @@ function cfw_usermgmt_createToggleTable(parent, mapName, itemID){
  ******************************************************************/
 function cfw_usermgmt_delete(item, ids){
 	
-	var url = "./usermanagement/data";
+	CFW.ui.confirmExecute("As this cannot be reverted: Are you <b>REALLY REALLY</b> sure you want to delete this group?"
+		, "Yes, I know what I am doing", function(){
 	
-	var params = {action: "delete", item: item, ids: ids};
-	CFW.http.getJSON(url, params, 
-		function(data) {
-			if(data.success){
-				//CFW.ui.showModalSmall('Success!', '<span>The selected '+item+' were deleted.</span>');
-				//clear cache and reload data
-				CFW.cache.data[item] = null;
-				cfw_usermgmt_common_redrawCallback({tab: item});
-			}else{
-				CFW.ui.showModalSmall("Error!", '<span>The selected '+item+' could <b style="color: red">NOT</b> be deleted.</span>');
-			}
-	});
+		var params = {action: "delete", item: item, ids: ids};
+		CFW.http.getJSON(CFW_USERMGMT_URL, params, 
+			function(data) {
+				if(data.success){
+					//CFW.ui.showModalSmall('Success!', '<span>The selected '+item+' were deleted.</span>');
+					//clear cache and reload data
+					CFW.cache.data[item] = null;
+					cfw_usermgmt_common_redrawCallback({tab: item});
+				}else{
+					CFW.ui.showModalSmall("Error!", '<span>The selected '+item+' could <b style="color: red">NOT</b> be deleted.</span>');
+				}
+		});
+	}
+	);
+		
 }
 
 /******************************************************************
@@ -275,7 +279,7 @@ function cfw_usermgmt_printGroupList(data){
 				|| CFW_USERMGMT_SCOPE == CFW_USERMGMT_SCOPE_USERMGMT )
 			){
 				return '<button class="btn btn-danger btn-sm" alt="Delete" title="Delete" '
-					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the role <b>&quot;'+record.NAME+'&quot;</b> ?\', \'Delete\', \'cfw_usermgmt_delete(\\\'groups\\\','+record.PK_ID+');\')">'
+					+'onclick="CFW.ui.confirmExecute(\'Do you want to delete the group <b>&quot;'+record.NAME+'&quot;</b> ?\', \'Delete\', \'cfw_usermgmt_delete(\\\'groups\\\','+record.PK_ID+');\')">'
 					+ '<i class="fa fa-trash"></i>'
 					+ '</button>';
 			}

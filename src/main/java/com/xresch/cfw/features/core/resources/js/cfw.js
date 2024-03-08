@@ -3918,17 +3918,17 @@ function cfw_ui_confirmExecute_Execute(sourceElement, action){
 	var jsCode = $source.data('jsCode');
 	
 	var modal = $('#'+modalID);
-	
-	if(action == 'confirm'){
-		CFW.utils.executeCodeOrFunction(jsCode);
-	}
-	
+		
 	//remove modal
 	modal.modal('hide');
 	modal.remove();
 	$('.modal-backdrop').remove();
 	$('body').removeClass('modal-open');
 	modal.remove();
+	
+	if(action == 'confirm'){
+		CFW.utils.executeCodeOrFunction(jsCode);
+	}
 }
 /******************************************************************
  * Creates a hidden workspace in the DOM tree.
