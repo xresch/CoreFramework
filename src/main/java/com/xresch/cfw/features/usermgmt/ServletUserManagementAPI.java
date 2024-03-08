@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.usermgmt;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -9,14 +10,25 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.base.Strings;
 import com.xresch.cfw._main.CFW;
+import com.xresch.cfw._main.CFWMessages;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWForm;
 import com.xresch.cfw.datahandling.CFWFormHandler;
 import com.xresch.cfw.datahandling.CFWObject;
+import com.xresch.cfw.features.core.AutocompleteResult;
+import com.xresch.cfw.features.core.CFWAutocompleteHandler;
+import com.xresch.cfw.features.core.FeatureCore;
+import com.xresch.cfw.features.role.Role;
+import com.xresch.cfw.features.role.FeatureRole;
+import com.xresch.cfw.features.role.Role.RoleFields;
+import com.xresch.cfw.features.notifications.Notification;
 import com.xresch.cfw.features.usermgmt.Role.RoleFields;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
+import com.xresch.cfw.logging.CFWLog;
+import com.xresch.cfw.logging.CFWAuditLog.CFWAuditLogAction;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.bootstrap.AlertMessage.MessageType;
 import com.xresch.cfw.validation.LengthValidator;
@@ -55,7 +67,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 		JSONResponse jsonResponse = new JSONResponse();
 		StringBuilder content = jsonResponse.getContent();
 
-		if(CFW.Context.Request.hasPermission(Permission.CFW_USER_MANAGEMENT)) {
+		if(CFW.Context.Request.hasPermission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT)) {
 			
 			if (action == null) {
 				CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Parameter 'data' was not specified.");
@@ -73,9 +85,7 @@ public class ServletUserManagementAPI extends HttpServlet {
 					  								break;			
 							case "usersforrole": 	content.append(CFW.DB.Roles.getUsersForRoleAsJSON(ID));
 													break;						
-					  								
-							
-													
+					  													
 							case "roles": 			content.append(CFW.DB.Roles.getUserRoleListAsJSON());
 							  			   			break;
 
@@ -169,6 +179,9 @@ public class ServletUserManagementAPI extends HttpServlet {
 							
 							case "editgroup": 	createEditGroupForm(jsonResponse, ID);
 												break;
+												
+							case "changeowner": createChangeGroupOwnerForm(jsonResponse, ID);
+												break;
 							
 							case "resetpw": 	createResetPasswordForm(jsonResponse, ID);
 							break;
@@ -190,6 +203,9 @@ public class ServletUserManagementAPI extends HttpServlet {
 		}
 	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	private void createEditUserForm(JSONResponse json, String ID) {
 		
 		User user = CFW.DB.Users.selectByID(Integer.parseInt(ID));
@@ -220,6 +236,9 @@ public class ServletUserManagementAPI extends HttpServlet {
 		
 	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	private void createEditRoleForm(JSONResponse json, String ID) {
 		
 		Role role = CFW.DB.Roles.selectByID(Integer.parseInt(ID));
@@ -252,6 +271,9 @@ public class ServletUserManagementAPI extends HttpServlet {
 		
 	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	private void createEditGroupForm(JSONResponse json, String ID) {
 		
 		Role role = CFW.DB.Roles.selectByID(Integer.parseInt(ID));
@@ -282,6 +304,95 @@ public class ServletUserManagementAPI extends HttpServlet {
 		
 	}
 	
+	/******************************************************************
+	 *
+	 ******************************************************************/
+	private void createChangeGroupOwnerForm(JSONResponse json, String ID) {
+		
+		if( CFW.DB.Roles.isGroupOfCurrentUser(ID)
+		||	CFW.Context.Request.hasPermission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT)) {
+			
+			Role role = CFW.DB.Roles.selectByID(Integer.parseInt(ID));
+			
+			final String NEW_OWNER = "JSON_NEW_OWNER";
+			if(role != null) {
+				
+				CFWForm changeOwnerForm = new CFWForm("cfwChangeGroupOwnerForm"+ID, "Update Role");
+				
+				changeOwnerForm.addField(
+					CFWField.newTagsSelector(NEW_OWNER)
+						.setLabel("New Owner")
+						.addAttribute("maxTags", "1")
+						.setDescription("Select the new owner of the group.")
+						.addValidator(new NotNullOrEmptyValidator())
+						.setAutocompleteHandler(new CFWAutocompleteHandler(10) {
+							public AutocompleteResult getAutocompleteData(HttpServletRequest request, String searchValue, int cursorPosition) {
+								return CFW.DB.Users.autocompleteUser(searchValue, this.getMaxResults());					
+							}
+						})
+				);
+				
+				changeOwnerForm.setFormHandler(new CFWFormHandler() {
+					
+					@Override
+					public void handleForm(HttpServletRequest request, HttpServletResponse response, CFWForm form, CFWObject origin) {
+						
+						String newOwnerJson = request.getParameter(NEW_OWNER);
+						if(form.mapRequestParameters(request)) {
+							LinkedHashMap<String,String> mappedValue = CFW.JSON.fromJsonLinkedHashMap(newOwnerJson);
+							String newOwner = mappedValue.keySet().iterator().next();
+	
+							if(!Strings.isNullOrEmpty(newOwner)) {
+								
+								new CFWLog(logger).audit(CFWAuditLogAction.UPDATE, Role.class, "Change owner ID of role from "+role.foreignKeyGroupOwner()+" to "+newOwner);
+								
+								Integer oldOwner = role.foreignKeyGroupOwner();
+								role.foreignKeyGroupOwner(Integer.parseInt(newOwner));
+								
+								if(role.update(RoleFields.FK_ID_GROUPOWNER)) {
+									CFW.Context.Request.addAlertMessage(MessageType.SUCCESS, "Updated!");
+									
+									User currentUser = CFW.Context.Request.getUser();
+									
+									//----------------------------------
+									// Send Notification to New Owner
+									Notification newOwnerNotification = 
+											new Notification()
+													.foreignKeyUser(Integer.parseInt(newOwner))
+													.messageType(MessageType.INFO)
+													.title("You are now oner of the group: '"+role.name()+"'")
+													.message("The user '"+currentUser.createUserLabel()+"' has made you the owner of the group.");
+
+									CFW.DB.Notifications.create(newOwnerNotification);
+									
+									//----------------------------------
+									// Send Notification to Old Owner
+									User user = CFW.DB.Users.selectByID(newOwner);
+									Notification oldOwnerNotification = 
+											new Notification()
+													.foreignKeyUser(oldOwner)
+													.messageType(MessageType.INFO)
+													.title("Owner of group '"+role.name()+"' is now "+user.createUserLabel())
+													.message("The user '"+currentUser.createUserLabel()+"' has changed the owner of the group from you to the user '"+user.createUserLabel()+"'. ");
+
+									CFW.DB.Notifications.create(oldOwnerNotification);
+								}
+							}
+						}
+					}
+				});
+				
+				changeOwnerForm.appendToPayload(json);
+				json.setSuccess(true);	
+			}
+		}else {
+			CFWMessages.noPermission();
+		}
+	}
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	private void createResetPasswordForm(JSONResponse json, String ID) {
 		
 		User user = CFW.DB.Users.selectByID(Integer.parseInt(ID));
@@ -297,6 +408,10 @@ public class ServletUserManagementAPI extends HttpServlet {
 		}
 	}
 	
+	
+	/******************************************************************
+	 *
+	 ******************************************************************/
 	class ResetPasswordForm extends CFWForm{
 		
 		protected CFWField<Integer> userid = CFWField.newInteger(FormFieldType.HIDDEN, "UserID")

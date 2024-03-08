@@ -518,4 +518,13 @@ public class Role extends CFWObject {
 		return this;
 	}	
 	
+	public Integer foreignKeyGroupOwner() {
+		return foreignKeyGroupOwner.getValue();
+	}
+	
+	public Role foreignKeyGroupOwner(Integer id) {
+		this.foreignKeyGroupOwner.setValue(id);
+		return this;
+	}
+	
 }

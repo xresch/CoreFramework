@@ -35,6 +35,8 @@ public class FeatureUserManagement extends CFWAppFeature {
 	
 	public static final String CATEGORY_USER = "user";
 	
+	public static final String PERMISSION_USER_MANAGEMENT = "User Management";
+	
 	@Override
 	public void register() {
 		//----------------------------------
@@ -65,7 +67,7 @@ public class FeatureUserManagement extends CFWAppFeature {
 		CFW.Registry.Components.addAdminCFWMenuItem(
 				(MenuItem)new MenuItem("Manage Users", "{!cfw_core_manage_users!}") 
 					.faicon("fas fa-users")
-					.addPermission(Permission.CFW_USER_MANAGEMENT)
+					.addPermission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT)
 					.href("/app/usermanagement")
 					.addAttribute("id", "cfwMenuAdmin-UserMgmt")
 				, null);

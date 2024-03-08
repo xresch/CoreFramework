@@ -24,9 +24,7 @@ import com.xresch.cfw.validation.LengthValidator;
 public class Permission extends CFWObject{
 	
 	public static final String TABLE_NAME = "CFW_PERMISSION";
-	public static final String CFW_USER_MANAGEMENT = "User Management";
 	
-
 	public enum PermissionFields{
 		PK_ID, 
 		CATEGORY,
@@ -129,16 +127,16 @@ public class Permission extends CFWObject{
 		//-----------------------------------------
 		// User Management
 		//-----------------------------------------
-		if(!CFW.DB.Permissions.checkExistsByName(Permission.CFW_USER_MANAGEMENT)) {
-			CFW.DB.Permissions.create(new Permission(Permission.CFW_USER_MANAGEMENT, FeatureUserManagement.CATEGORY_USER)
+		if(!CFW.DB.Permissions.checkExistsByName(FeatureUserManagement.PERMISSION_USER_MANAGEMENT)) {
+			CFW.DB.Permissions.create(new Permission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT, FeatureUserManagement.CATEGORY_USER)
 				.description("Gives the user the ability to view, create, update and delete users.")
 			);
 			
-			Permission userManagement = CFW.DB.Permissions.selectByName(Permission.CFW_USER_MANAGEMENT);
+			Permission userManagement = CFW.DB.Permissions.selectByName(FeatureUserManagement.PERMISSION_USER_MANAGEMENT);
 			CFW.DB.RolePermissionMap.addPermissionToRole(userManagement, adminRole, true);
 			if(userManagement == null) {
 				new CFWLog(logger)
-				.severe("User permission '"+Permission.CFW_USER_MANAGEMENT+"' was not found in the database.");
+				.severe("User permission '"+FeatureUserManagement.PERMISSION_USER_MANAGEMENT+"' was not found in the database.");
 			}
 		}
 	}

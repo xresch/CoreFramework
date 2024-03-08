@@ -5,7 +5,7 @@
  * @license MIT-License
  **************************************************************************************************************/
 
-var CFW_USRMGMT_URL = "./usermanagement/data";
+var CFW_USERMGMT_URL = "./usermanagement/data";
 
 /******************************************************************
  * Reset the view.
@@ -138,7 +138,7 @@ function cfw_usermgmt_createToggleTable(parent, mapName, itemID){
 								, itemid: itemID
 								, listitemid: record.PK_ID
 								};
-					var cfwToggleButton = CFW.ui.createToggleButton(CFW_USRMGMT_URL, params, (record.ITEM_ID == itemID));
+					var cfwToggleButton = CFW.ui.createToggleButton(CFW_USERMGMT_URL, params, (record.ITEM_ID == itemID));
 					
 					if(record.IS_DELETABLE != null && !record.IS_DELETABLE){
 						cfwToggleButton.setLocked();
@@ -154,7 +154,7 @@ function cfw_usermgmt_createToggleTable(parent, mapName, itemID){
 					sortfields: ['NAME', 'DESCRIPTION'],
 					storeid: 'usermgmtToggleTable'+mapName+itemID,
 					datainterface: {
-						url: CFW_USRMGMT_URL,
+						url: CFW_USERMGMT_URL,
 						item: mapName,
 						customparams: {
 							id: itemID
@@ -229,7 +229,7 @@ function cfw_usermgmt_editUser(userID){
 	//-----------------------------------
 	// Load Form
 	//-----------------------------------
-	CFW.http.createForm(CFW_USRMGMT_URL, {action: "getform", item: "edituser", id: userID}, detailsDiv);
+	CFW.http.createForm(CFW_USERMGMT_URL, {action: "getform", item: "edituser", id: userID}, detailsDiv);
 	
 }
 
@@ -250,7 +250,7 @@ function cfw_usermgmt_auditUser(userID){
 	//-----------------------------------
 	// Load Form
 	//-----------------------------------
-	CFW.http.getJSON(CFW_USRMGMT_URL, {action: "fetch", item: "useraudit", id: userID}, function(data){
+	CFW.http.getJSON(CFW_USERMGMT_URL, {action: "fetch", item: "useraudit", id: userID}, function(data){
 		if(data.payload != null){
 			cfw_usermgmt_formatAuditResults(auditDiv, data.payload);
 		}
@@ -277,7 +277,7 @@ function cfw_usermgmt_resetPassword(userID){
 	//-----------------------------------
 	// Load Form
 	//-----------------------------------
-	CFW.http.createForm(CFW_USRMGMT_URL, {action: "getform", item: "resetpw", id: userID}, detailsDiv);
+	CFW.http.createForm(CFW_USERMGMT_URL, {action: "getform", item: "resetpw", id: userID}, detailsDiv);
 	
 }
 
@@ -328,8 +328,8 @@ function cfw_usermgmt_editRole(roleID){
 	//-----------------------------------
 	// Load Form
 	//-----------------------------------
-	CFW.http.createForm(CFW_USRMGMT_URL, {action: "getform", item: "editrole", id: roleID}, detailsDiv);
-	CFW.http.getJSON(CFW_USRMGMT_URL, {action: "fetch", item: "usersforrole", id: roleID}, function(data){
+	CFW.http.createForm(CFW_USERMGMT_URL, {action: "getform", item: "editrole", id: roleID}, detailsDiv);
+	CFW.http.getJSON(CFW_USERMGMT_URL, {action: "fetch", item: "usersforrole", id: roleID}, function(data){
 		if(data.payload != null){
 			var renderSettings = {
 					data: data.payload,
@@ -337,7 +337,7 @@ function cfw_usermgmt_editRole(roleID){
 					actions: [
 						function(record, value){//Toggle Button
 							var params = {action: "update", item: "userrolemap", itemid: record.USER_ID, listitemid: roleID};
-							var cfwToggleButton = CFW.ui.createToggleButton(CFW_USRMGMT_URL, params, true);
+							var cfwToggleButton = CFW.ui.createToggleButton(CFW_USERMGMT_URL, params, true);
 							
 							if(record.IS_REMOVABLE != null && !record.IS_REMOVABLE){
 								cfwToggleButton.setLocked();
@@ -424,8 +424,8 @@ function cfw_usermgmt_editGroup(roleID){
 	//-----------------------------------
 	// Load Form
 	//-----------------------------------
-	CFW.http.createForm(CFW_USRMGMT_URL, {action: "getform", item: "editgroup", id: roleID}, detailsDiv);
-	CFW.http.getJSON(CFW_USRMGMT_URL, {action: "fetch", item: "usersforrole", id: roleID}, function(data){
+	CFW.http.createForm(CFW_USERMGMT_URL, {action: "getform", item: "editgroup", id: roleID}, detailsDiv);
+	CFW.http.getJSON(CFW_USERMGMT_URL, {action: "fetch", item: "usersforrole", id: roleID}, function(data){
 		if(data.payload != null){
 			var renderSettings = {
 					data: data.payload,
@@ -433,7 +433,7 @@ function cfw_usermgmt_editGroup(roleID){
 					actions: [
 						function(record, value){//Toggle Button
 							var params = {action: "update", item: "userrolemap", itemid: record.USER_ID, listitemid: roleID};
-							var cfwToggleButton = CFW.ui.createToggleButton(CFW_USRMGMT_URL, params, true);
+							var cfwToggleButton = CFW.ui.createToggleButton(CFW_USERMGMT_URL, params, true);
 							
 							if(record.IS_REMOVABLE != null && !record.IS_REMOVABLE){
 								cfwToggleButton.setLocked();
@@ -449,6 +449,30 @@ function cfw_usermgmt_editGroup(roleID){
 			usersInGroupDiv.append(table);
 		}
 	});
+}
+
+/******************************************************************
+ * Edit Dashboard
+ ******************************************************************/
+function cfw_usermgmt_changeGroupOwner(id){
+	
+	//-----------------------------------
+	// Role Details
+	//-----------------------------------
+	var formDiv = $('<div id="cfw-group-details">');
+
+	
+	CFW.ui.showModalMedium(
+			"Edit Owner", 
+			formDiv, 
+			"CFW.cache.clearCache(); cfw_usermgmt_draw({tab: 'groups'})"
+	);
+	
+	//-----------------------------------
+	// Load Form
+	//-----------------------------------
+	CFW.http.createForm(CFW_USERMGMT_URL, {action: "getform", item: "changeowner", id: id}, formDiv);
+	
 }
 
 /******************************************************************
@@ -728,7 +752,21 @@ function cfw_usermgmt_printGroupList(data){
 					+ '<i class="fa fa-pen"></i>'
 					+ '</button>';
 			});
-
+			
+		//-------------------------
+		// Change Onwner Button
+		actionButtons.push(
+			function (record, id){
+				if(JSDATA.userid == record.FK_ID_USER 
+				|| CFW.hasPermission('User Management') ){
+					return '<button class="btn btn-primary btn-sm" alt="Change Owner" title="Change Owner" '
+						+'onclick="cfw_usermgmt_changeGroupOwner('+id+');">'
+						+ '<i class="fas fa-user-edit"></i>'
+						+ '</button>';
+				}
+				
+				return "&nbsp;";
+			});
 		//-------------------------
 		// Delete Button
 		actionButtons.push(
@@ -754,7 +792,7 @@ function cfw_usermgmt_printGroupList(data){
 			 	textstylefield: null,
 			 	titlefields: ['NAME',],
 			 	titleformat: '{0}',
-			 	visiblefields: ['PK_ID', 'NAME', 'DESCRIPTION'],
+			 	visiblefields: ['PK_ID', 'ONWNER', 'NAME', 'DESCRIPTION'],
 			 	labels: {
 			 		PK_ID: "ID",
 			 	},
@@ -863,7 +901,7 @@ function cfw_usermgmt_executeFullAudit(){
 	
 	CFW.ui.confirmExecute('Depending on number of users and audits, this might impact your application performance. Wanna do it anyway?', 'Full speed ahead!', 
 		function(){
-			CFW.http.getJSON(CFW_USRMGMT_URL, {action: "fetch", item: "fullaudit"}, function(data){
+			CFW.http.getJSON(CFW_USERMGMT_URL, {action: "fetch", item: "fullaudit"}, function(data){
 				if(data.payload != null){
 					var parent = $("#tab-content");
 					

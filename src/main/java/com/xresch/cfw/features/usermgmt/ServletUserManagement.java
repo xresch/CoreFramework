@@ -44,7 +44,7 @@ public class ServletUserManagement extends HttpServlet
 		
 		StringBuilder content = html.getContent();
 		
-		if(CFW.Context.Request.hasPermission(Permission.CFW_USER_MANAGEMENT)) {
+		if(CFW.Context.Request.hasPermission(FeatureUserManagement.PERMISSION_USER_MANAGEMENT)) {
 			
 			createForms();
 			

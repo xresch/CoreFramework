@@ -28,6 +28,8 @@ public class CFWDBRole {
 	public static final String CFW_ROLE_ADMIN = "Administrator";
 	public static final String CFW_ROLE_USER = "User";
 	
+	private static final String SQL_SUBQUERY_GROUPOWNER = "SELECT USERNAME FROM CFW_USER U WHERE U.PK_ID = T.FK_ID_GROUPOWNER";
+	
 	private static Class<Role> cfwObjectClass = Role.class;
 	
 	private static final Logger logger = CFWLog.getLogger(CFWDBRole.class.getName());
@@ -276,11 +278,34 @@ public class CFWDBRole {
 	public static String getGroupListAsJSON() {
 		return new CFWSQL(new Role())
 				.queryCache()
+				.columnSubquery("OWNER", SQL_SUBQUERY_GROUPOWNER)
 				.select()
 				.where(RoleFields.CATEGORY.toString(), FeatureUserManagement.CATEGORY_USER)
 				.and(RoleFields.IS_GROUP, true)
 				.orderby(RoleFields.NAME.toString())
 				.getAsJSON();
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public static boolean isGroupOfCurrentUser(String groupID) {
+		return isGroupOfCurrentUser(Integer.parseInt(groupID));
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	public static boolean isGroupOfCurrentUser(int groupID) {
+		
+		int count = new CFWSQL(new Role())
+			.selectCount()
+			.where(RoleFields.PK_ID, groupID)
+			.and(RoleFields.PK_ID.IS_GROUP, true)
+			.and(RoleFields.FK_ID_GROUPOWNER, CFW.Context.Request.getUser().id())
+			.executeCount();
+		
+		return count > 0;
 	}
 	
 	
