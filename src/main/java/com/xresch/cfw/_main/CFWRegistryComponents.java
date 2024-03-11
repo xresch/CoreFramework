@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import com.xresch.cfw.caching.FileAssembly;
 import com.xresch.cfw.caching.FileDefinition;
 import com.xresch.cfw.features.config.FeatureConfig;
-import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.usermgmt.CFWSessionData;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.bootstrap.BTFooter;

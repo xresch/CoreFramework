@@ -321,8 +321,11 @@ public class ServletUserManagementAPI extends HttpServlet {
 					Role role = (Role)origin;
 					role.id(null);
 					role.category(FeatureUserManagement.CATEGORY_USER)
-						.isGroup(true)
-						.foreignKeyGroupOwner(CFW.Context.Request.getUserID());
+						.isGroup(true);
+					
+					if(withOwner) {
+						role.foreignKeyGroupOwner(CFW.Context.Request.getUserID());
+					}
 					
 					if( CFW.DB.Roles.create(role) ) {
 						role.saveSelectorFields();

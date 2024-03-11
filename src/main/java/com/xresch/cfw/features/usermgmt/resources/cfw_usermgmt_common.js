@@ -129,7 +129,7 @@ function cfw_usermgmt_createGroup(){
 	
 	var createGroupForm = $('<div id="cfw-usermgmt-createGroup">');	
 
-
+	var formID = "cfwCreateGroupForm";
 	if(CFW_USERMGMT_SCOPE == CFW_USERMGMT_SCOPE_GROUPS){
 		formID = "cfwCreateGroupWithOwnerForm";
 	}
