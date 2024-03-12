@@ -1,6 +1,0 @@
-| source empty 
-| set NAME = "Aurorania"
-| set
-	FIELDVALUE = "NAME" # Aurorania
-	LITERAL = literal("NAME")  # NAME
-	THE_NAME_AGAIN = "NAME" # Aurorania

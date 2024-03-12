@@ -1,8 +1,0 @@
-| source empty records=1
-| set FLOATYFLOAT = 42.4
-| set
-	ZERO=round() 
-	INT_DOWN=round(FLOATYFLOAT) 
-	INT_UP=round(42.5) 
-	PRECISION_TWO=round(55.555,2) 
-	PRECISION_THREE=round(44.44444444,3) 

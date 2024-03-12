@@ -1,8 +1,0 @@
-| source empty records=1
-| set
-	A = "22"
-	B = "33"
-	C = "44"
-| set 
-	ALL_FIELDS = fields() #["A", "B", "C", "ALL_FIELDS", "FILTERED_FIELDS"] - contains all as command detects fieldnames before executing 
-	FILTERED_FIELDS = fields([FILTERED_FIELDS, ALL_FIELDS, B]) #["A", "C"]

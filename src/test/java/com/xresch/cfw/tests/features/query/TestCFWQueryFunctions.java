@@ -90,7 +90,32 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testAvg() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionAvg.txt");
+		String queryString = """
+| source json data=`
+[
+	 {index: 77
+	 , array: [1,2,3,4, null, true, "string"]
+	 , object: {a: 1, b: 2, c: 3, d: 4, e: null, f: true, string: "ignored"} }
+
+]
+`
+| set 
+	# return average of numbers
+	AVG_ARRAY=avg(array)
+	# treat nulls as zero in the statistics, ignore other types
+	AVG_ARRAY_NULLS=avg(array,true)
+	# returns the average of all numbers of all fields
+	AVG_OBJECT=avg(object)
+	# treat nulls as zero in the statistics
+	AVG_OBJECT_NULLS=avg(object,true)
+	# if input is a single number, returns that number
+	AVG_NUMBER=avg(index)
+	# following will return null
+	AVG_ZERO=avg()
+	AVG_NULL=avg(null)
+	UNSUPPORTED_A=avg(true)
+	UNSUPPORTED_B=avg("some_string")
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -122,7 +147,22 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testAvg_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionAvg_Aggr.txt");
+		String queryString = """
+| source json data=`
+[
+	  {count: 1, value: 1, float: 1.33333333}
+	 ,{count: 2, value: 2, float: 7.12345678}
+	 ,{count: 3, value: 3, float: 99.123456}
+	 ,{count: 4, value: null, float: 22}
+
+]
+`
+| stats 
+	AVG=avg(count)
+	AVG_NONULL=avg(value)
+	AVG_NULLS=avg(value,true)
+	AVG_FLOAT=avg(float,true,5)
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -149,7 +189,45 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCase() throws IOException { // well this test case is testing case, therefore the name testCase()
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionCase.txt");
+		String queryString = """
+| source empty 
+| set
+
+	SIMPLE_A = case( true,  "One beer for Franky!") # returns "One beer for Franky!"
+	SIMPLE_B = case( true,  1, true, 2 ) # returns 1
+	SIMPLE_C = case( false, 1, true, 2 ) # returns 2
+	
+	SLIGHTLY_COMPLEX = case( 
+			( 2 > 1 AND 3 < 1), "no"
+			( 2 > 1 OR 3 < 1), "YES!"
+			) # returns "YES!"
+
+	NULL = case() # returns null
+	
+	MISSING_A = case( (1 == 1) ) # returns null
+	
+	MISSING_B = case( 
+			(1 == 2), true
+			, (1 == 2) 
+		) # returns null as value for 2nd condition is undefined
+		
+	NOT_BOOLEAN = case(
+					"Panna Cotta", 1
+					, true		 , 2
+				) # returns 2 as first argument is not a condition but an Italian dessert(tasty, but not true) 
+	
+	BOOLEAN_NUMBER_A = case(
+					  0   , 1
+					, true, 42
+				) # returns 42 as first condition is 0 (interpreted as boolean false)
+	
+	BOOLEAN_NUMBER_B = case(
+					  8.8  , 88
+					, true , 42
+				) # returns 88 as first condition is non-zero (interpreted as boolean true)
+							
+	VALUE_IS_CONDITION=case(true, (99 >= 50)) # returns true
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -260,7 +338,29 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testContains_Strings() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionContains_Strings.txt");
+		String queryString = """
+| source empty records=1
+| set FIRSTNAME="Aurora"
+| set
+	# Strings with Strings
+	'S1' = contains(FIRSTNAME, "er") #false
+	'S2' = contains("Her name is Aurora.", FIRSTNAME) # true
+	
+	# Strings with Booleans
+	'B1' = contains("this is true", true) # true
+	'B2' = contains("this is TRUE too", true) # true, as booleans are compared case insensitive
+	'B3' = contains("this is not false, so it must be true", false) # true, as it contains false
+	'B4' = contains("this is false", true) # false, "true" is not found
+	
+	# Strings with Numbers
+	'N1' = contains("tiramisu counter: 42", 42) # true, string contains "42"	
+	'N2' = contains("abc_123456_xyz", 5) # true, string contains "5"	
+	'N3' = contains("we need 5.4 tiramisu", 5.4) # true
+	'N4' = contains("Nightmare: -99999.9 Tiramisu", -99999.9) # true
+	'N5' = contains("Nightmare: -99999.9 Tiramisu", -999) # true as well
+	'N6' = contains("Nightmare: -99999.9 Tiramisu", 0.99) # false, "0.99" not found
+	'N7' = contains("Reality: 1 Tiramisu", 12) # "12" is not found
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -300,7 +400,31 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testContains_Numbers() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionContains_Numbers.txt");
+		String queryString = """
+| source empty records=1
+| set NUMBER = 42
+| set
+	# Numbers with Numbers(are evaluated as strings)
+	'N1' = contains(NUMBER, 42) # true
+	'N2' = contains(123456, 34) # true, as compared as strings
+	'N3' = contains(-789, -7) # true
+	'N4' = contains(999.99, 9.9) # true
+	'N5' = contains(8000.88, 1.8) # false
+	
+	# Numbers with Strings(are evaluated as strings)
+	'S1' = contains(42, "42") # true
+	'S2' = contains(123456, "34") # true, as compared as strings
+	'S3' = contains(-789, "-7") # true
+	'S4' = contains(999.99, "9.9") # true
+	'S5' = contains(8000.88, "0.8") # false
+	'S6' = contains(8000.88, "bla") # false
+	
+	# Numbers with Booleans(always false)
+	'B1' = contains(42, true) # false
+	'B2' = contains(1010101, false) # false
+	'B3' = contains(0, false) # false
+	'B4' = contains(1, true) # false				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -342,7 +466,29 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testContains_Booleans() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionContains_Booleans.txt");
+		String queryString = """
+| source empty records=1
+| set BOOLEAN = true
+| set
+	# Booleans with Booleans
+	'B1' = contains(BOOLEAN, true) # true
+	'B2' = contains(false, false) # true
+	'B3' = contains(true, false) # false
+	'B4' = contains(false , true) # false
+
+	# Booleans with Strings
+	'S1' = contains(true, "true") # true
+	'S2' = contains(true, "TruE") # true
+	'S3' = contains(false , "false") # also true
+	'S4' = contains(false , "als") # true
+	'S5' = contains(true , "maybe") # false
+	
+	# Booleans with Numbers(always false)
+	'N1' = contains(true, 1) # false
+	'N2' = contains(false, 0) # false
+	'N3' = contains(true, 42) # false
+	'N4' = contains(true, "0") # false				
+		""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -382,7 +528,41 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testContains_Arrays() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionContains_Arrays.txt");
+		String queryString = """
+| source empty records=1
+| set
+	# Arrays with Strings
+	'S1' = contains(["a", "b", "c"], "a") # true
+	'S2' = contains([true, "test", 123], "test") # true
+	'S3' = contains(["a", "b", "c"], "A") # false, case sensitive
+	'S4' = contains([false, "Hello World", 88], "Hello") # false, partial string
+	'SX' = '||' # separator for table
+	
+	# Arrays with Booleans
+	'B1' = contains([true, false], false) # true, array contains false
+	'B2' = contains([1, true, "3"], true) # true, array contains true
+	'B3' = contains([true, "false", 123], false) # true, string 'false' is considered boolean
+	'B4' = contains([false, "TRUE", 123], true) # true, case insensitive
+	'B5' = contains([true, true, true], false) # false, array dies not contain false
+	'B6' = contains([], true) # false, array is empty
+	'BX' = '||' # separator for table
+	
+	# Arrays with Numbers
+	'N1' = contains([1, 2, 3], 2) # true
+	'N2' = contains([4, 5, 6], "5") # true, ignores types
+	'N3' = contains(["7", "8", "9"], 8) # true
+	'N4' = contains([-2.2, -1.1, 0.01], -1.1) # true
+	'N5' = contains([1 ,2 ,3], 0) # false
+	'N6' = contains([-99.9, -88.8, 7.7], -9.9) # false
+	'N7' = contains([], 0.99) # false
+	'NX' = '||' # separator for table
+	
+	# Arrays with Null values
+	'Z1' = contains([1, null, 3], null) # true
+	'Z2' = contains([9, "null", 99], null) # true, ignores types
+	'Z3' = contains(["a", null, "c"], "null") # true
+	'Z4' = contains([], null) # false
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -430,7 +610,35 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testContains_Objects() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionContains_Objects.txt");
+		String queryString = """
+| source empty records=1
+| set
+	# Objects with Strings
+	'S1' = contains({"x": 1, "y": 2}, "x") # true, object contains field "x"
+	'S2' = contains({"abc_xyz": 123}, "abc_") # false, only matches on full member names
+	'S3' = contains({"1": "test", "2": "b"}, "test") # false, only checks member names, not values
+	'SX' = '||' # separator for table
+	
+	# Objects with Booleans
+	'B1' = contains({"true":  4242}, true) # true, object contains field "true"
+	'B2' = contains({"false": 2424}, false) # true
+	'B3' = contains({"TRUE":  4444}, true) # true, case insensitive
+	'B4' = contains({"eurt":  2222}, true) # false
+	'BX' = '||' # separator for table
+	
+	# Objects with Numbers
+	'N1' = contains({"1":   'a'}, 1) # true
+	'N2' = contains({"2":   'a'}, "2") # true
+	'N3' = contains({"3.3": 'a'}, 3.3) # true
+	'N4' = contains({"-4.4": 'a'}, -4.4) # true
+	'N5' = contains({"-5.55":'a'}, -5.5) # false
+	'N6' = contains({}, -0.99) # false
+	'NX' = '||' # separator for table
+	
+	# Objects with Null values
+	'Z1' = contains({"null":   'a'}, null) # true
+	'Z2' = contains({"Null":   'a'}, null) # false, case sensitive
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -472,7 +680,28 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testContains_Nulls() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionContains_Nulls.txt");
+		String queryString = """
+| source empty records=1
+| set
+	NULL_FIELD=null
+| set
+	# following returns null, as one or both of the required arguments are null
+	'A1' = contains()
+	'A2' = contains(NULL_FIELD)
+	
+	# following are true if value is either null or "null"(string)
+	'B1' = contains(NULL_FIELD, null)
+	'B2' = contains(NULL_FIELD, "null")
+	
+	# nulls compared
+	'C1' = contains(null, null) # true
+	'C2' = contains("contains null", null) # true
+	'C3' = contains(null, "ll") # true, "null" contains "ll"
+	'C4' = contains("NULL and Null are false", null) # false, only "null" is considered real null
+	'C5' = contains("ll", null) # false, "ll" does not contain "null"
+	'C6' = contains(null, true) # false on any boolean
+	'C7' = contains(null, 0) # false on any number				
+		""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -599,7 +828,21 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCount_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionCount_Aggr.txt");
+		String queryString = """
+source json data=`
+[
+	  {count: 1, value: 1, float: 1.33333333}
+	 ,{count: 2, value: 2, float: 7.12345678}
+	 ,{count: 3, value: 3, float: 99.123456}
+	 ,{count: 4, value: null, float: 22}
+
+]
+`
+| stats 
+	ALL=count() # returns 4
+	COUNT_NONULL=count(value) # returns 3
+	COUNT_NULLS=count(value,true) # returns 4
+	COUNT_FLOAT=count(float) # returns 4""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -626,7 +869,20 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCountif() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionCountIf.txt");
+		String queryString = """
+| source json data=`
+[
+	  {count: 1, value: 1, float: 1.33333333}
+	 ,{count: 2, value: 2, float: 7.12345678}
+	 ,{count: 3, value: 3, float: 99.123456}
+	 ,{count: 4, value: null, float: 22}
+
+]
+`
+| set
+	ALL=countif() # returns 1,2,3,4
+	COUNT_BIG=countif(count > 2) # returns 0,0,1.2
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -670,7 +926,23 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCountIf_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionCountIf_Aggr.txt");
+		String queryString = """
+| source json data=`
+[
+	  {count: 1, value: 1, float: 1.33333333}
+	 ,{count: 2, value: 2, float: 7.12345678}
+	 ,{count: 3, value: 3, float: 99.123456}
+	 ,{count: 4, value: null, float: 22}
+
+]
+`
+| stats 
+	ALL=countif() # returns 4
+	COUNT_TRUE=countif(true) # returns 4
+	COUNT_BIG=countif( count > 2 ) # returns 2
+	COUNT_NULLS=countif( value == null ) # returns 1
+	COUNT_FLOAT=countif(float > 5 AND float < 90) # returns 2
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -755,7 +1027,21 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testCountnulls_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionCountnulls_Aggr.txt");
+		String queryString = """
+| source json data=`
+[
+	  {count: 1, value: 1, float: 1.33333333}
+	 ,{count: 2, value: 2, float: null}
+	 ,{count: 3, value: 3, float: null}
+	 ,{count: 4, value: null, float: 22}
+
+]
+`
+| stats 
+	ALL=countnulls() # returns 4
+	COUNT_NULLS=countnulls(value) # returns 1
+	COUNT_NULLS_FLOAT=countnulls(float) # returns 2
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -817,7 +1103,22 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		
 		//---------------------------------
 		// Initialize
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionEarliest.txt");
+		String queryString = """
+| source empty records=1
+| globals format="yyyy-MM-dd'T'HH:mm:ss" # use globals or metadata to store formats and reuse them
+| execute earliestSet(1693223296188)
+| set
+	epoch=earliest() # 1693223296188
+	epochNull=earliest(null) # 1693223296188
+	formatted=earliest(globals(format)) # 2023-08-28T11:48:16
+	yearDayMonth=earliest("yyyy-MM-dd") #2023-08-28
+	utcTime=earliest("HH:mm:ss", false)   # 11:48:16
+	clientTime=earliest("HH:mm:ss", true) # 12:48:16
+	Milliseconds=earliest("SSS")		 # 	188
+	DayName=earliest("E / EEEE")         # Mon / Monday
+	MonthName=earliest("MMM / MMMM")     # 	Aug / August
+	Timezones=earliest("z / Z / ZZZZ", true)   # +01:00 / +0100 / GMT+01:00
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, -60);
@@ -884,7 +1185,16 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testExtract() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionExtract.txt");
+		String queryString = """
+| source empty records=1
+| set
+	ID = '282c65a0-8b7b-437c-904' 
+	URL = 'http://www.double-u-double-u-double-u.com/wewewe?id='+ID
+| set
+	MIDDLE=extract(ID, ".*?-(.*?-.*?)-.*") # returns 8b7b-437c
+	HOST=extract(URL, ".*?www.(.*?).com.*") # returns double-u-double-u-double-u
+	ID_FROM_URL=extract(URL, ".*?www.(.*?).com/.*?id=(.*)", 1) # returns 282c65a0-8b7b-437c-904
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -910,7 +1220,16 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testFields() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionFields.txt");
+		String queryString = """
+| source empty records=1
+| set
+	A = "22"
+	B = "33"
+	C = "44"
+| set 
+	ALL_FIELDS = fields() #["A", "B", "C", "ALL_FIELDS", "FILTERED_FIELDS"] - contains all as command detects fieldnames before executing 
+	FILTERED_FIELDS = fields([FILTERED_FIELDS, ALL_FIELDS, B]) #["A", "C"]
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -968,7 +1287,20 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testGlobals() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionGlobals.txt");
+		String queryString = """
+| globals 
+	id=22
+	name="Jane" 
+| source empty records=1
+| set
+	ID   = globals(id)
+	NAME = globals(name)
+;
+| source empty records=1
+| set
+	ID   = globals(id)
+	NAME = globals(name)
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1002,7 +1334,22 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIf() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIf.txt");
+		String queryString = """
+| source empty records=1
+| set 
+	LIKES_TIRAMISU = true
+| set 
+	SERVE = if(LIKES_TIRAMISU,"Tiramisu", "Ice Cream") # returns Tiramisu
+	EMPTY_STRING = if(false,"Yes") # returns ""
+	FALSE =if((1 == 2), true, false) # returns false
+	NULL=if()  # returns null
+	NULL_B=if(null)  # returns null if only one argument
+	STRING_ONE=if("not a boolean") # returns null if only one argument
+	STRING_TWO=if("not a boolean", 1, 2) # returns 2 as first param not boolean true
+	ZERO_IS_FALSE=if(0, true, false) # returns false
+	ONE_IS_TRUE=if(1, true, false) # returns true
+	OTHERNUM_IS_TRUE=if(2, true, false) # returns true
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1036,7 +1383,24 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIndexOf_Strings() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIndexOf_Strings.txt");
+		String queryString = """
+| source empty
+| set
+	FUN_FACT ='The unicorn is the national animal of Scotland.'
+| set
+	############## SEARCH IN STRINGS  ###############
+	'S0'  = indexof('not found', "hiding in the hiding hole") ## returns -1
+	'S1'  = indexof(FUN_FACT , "e") # returns 2
+	'S2'  = indexof(FUN_FACT , "e", 2) # returns 2
+	'S3'  = indexof(FUN_FACT , "e", 3) # returns 17
+	'S4'  = indexof('1234567890.6536', 45) ## returns 3
+	'S5'  = indexof('34567890.6536', 90.65) ## returns 6
+	'S6'  = indexof("test special... $?!% ...characters", "$?!% .") # returns 16
+	'S7'  = indexof('object... {"x":1,"y":2}', {x:1, y:2}) ## returns 10
+	'S8'  = indexof('array... [null,1,true,"three"]', [null, 1, true, "three"]) ## returns 9
+	'S9'  = indexof('Null... null ', null) ## returns 8
+	'S10'  = indexof(null, 'll') ## returns -1
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1072,7 +1436,19 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIndexOf_Numbers() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIndexOf_Numbers.txt");
+		String queryString = """
+| source empty
+| set
+	############## SEARCH IN NUMBERS ###############
+	# numbers will be converted to strings
+	'N0'  = indexof(12345, 7) ## returns -1
+	'N1'  = indexof(123456789, 45) # returns 3
+	'N2'  = indexof(987.6543 , 7.0) # returns 2
+	'N3'  = indexof(78787878.78 , 78, 3) # returns 4
+	'N4'  = indexof(5605605605.6056, ".") ## returns 10
+	'N5'  = indexof(123012301.230, ".2") ## returns 9
+	'N6'  = indexof(0, null) # returns -1
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1104,7 +1480,19 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIndexOf_Booleans() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIndexOf_Booleans.txt");
+		String queryString = """
+| source empty
+| set
+	############## SEARCH IN NUMBERS ###############
+	# booleans will be converted to strings
+	'B0'  = indexof(true, false) ## returns -1
+	'B1'  = indexof(true, true) # returns 0
+	'B2'  = indexof(true, 'true') # returns 0
+	'B3'  = indexof(false, 'false') # returns 0
+	'B4'  = indexof(false, "lse") ## returns 2
+	'B5'  = indexof(false, "not found") ## returns -1
+	'B6'  = indexof(true, null) # returns -1
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1134,7 +1522,19 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIndexOf_Arrays() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIndexOf_Arrays.txt");
+		String queryString = """
+| source empty
+| set
+	############## SEARCH IN ARRAYS ###############
+	# the search is type-sensitive when searching in arrays (for performance reasons)
+	'A0'  = indexof([1,2,3], 9) ## returns -1
+	'A1'  = indexof([5,6,7], 6) # returns 1
+	'A2'  = indexof([null, 1, true, "three"], true) # returns 2
+	'A3'  = indexof([null, 1, true, "three"], 'true') # returns -1
+	'A4'  = indexof([null, 1, true, "three"], null) # returns 0
+	'A5'  = indexof([null, 1, true, "three"], 'null') # returns -1
+	'A6'  = indexof([null, 1, true, "three"], 'three') # returns 3
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1165,7 +1565,20 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIndexOf_Objects() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIndexOf_Objects.txt");
+		String queryString = """
+| source empty
+| set
+	############## SEARCH IN OBJECTS ###############
+	# the search is type-sensitive when searching in object(for performance reasons)
+	# return value is either the name of the fields containing the value, or null if not found
+	'JX'  = "|J|" ## visual separator
+	'J0'  = indexof({x: 1, y:2, z:3}, 9) ## returns null
+	'J1'  = indexof({x: 5, y:6, z:7}, 6) # returns 'y'
+	'J2'  = indexof({'zero':'a', 'one':'b', 'two':'c', 'three':'d'}, 'c') # returns 'two'
+	'J3'  = indexof({'zero':'a', 'one':'b', 'two':'c', 'three':'d'}, 'x') # returns null
+	'J4'  = indexof({'zero': null, 'one':'b', 'two':'c'}, null) # returns 'zero'
+	'J5'  = indexof({'zero': null, 'one':'b', 'two':'c'}, 'null') # returns null
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1195,7 +1608,17 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testIsNullOrEmpty() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionIsNullOrEmpty.txt");
+		String queryString = """
+| source empty records=1
+| set
+	EMPTY= isNullOrEmpty() 						 # returns null
+	ISNULL = isNullOrEmpty(null) 				 # returns true
+	ISEMPTY_A = isNullOrEmpty("") 				 # returns true
+	ISEMPTY_B = isNullOrEmpty(trim("  	")) 	 # returns true
+	NOTEMPTY = isNullOrEmpty(" ") 				 # returns false
+	BOOLEAN = isNullOrEmpty(true) 				 # returns false
+	NUMBER= isNullOrEmpty(123) 					 # returns false
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1228,7 +1651,22 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		
 		//---------------------------------
 		// Initialize
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionLatest.txt");
+		String queryString = """
+| source empty records=1
+| globals format="yyyy-MM-dd'T'HH:mm:ss" # use globals or metadata to store formats and reuse them
+| execute latestSet(1651212296155)
+| set
+	epoch=latest() # 1651212296155
+	epochNull=latest(null) # 1651212296155
+	formatted=latest(globals(format)) # 2022-04-29T06:04:56
+	yearDayMonth=latest("yyyy-MM-dd") # 2022-04-29
+	utcTime=latest("HH:mm:ss", false)   # 06:04:56
+	clientTime=latest("HH:mm:ss", true) # 07:04:56
+	Milliseconds=latest("SSS")		   # 155
+	DayName=latest("E / EEEE")         # Fri / Friday
+	MonthName=latest("MMM / MMMM")     # Apr / April
+	Timezones=latest("z / Z / ZZZZ", true)   # +01:00 / +0100 / GMT+01:00
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, -120);
@@ -1262,7 +1700,20 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		
 		//---------------------------------
 		// Initialize
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionLength.txt");
+		String queryString = """
+| source empty records=1
+| set 
+	LENGTH_NOPARAM=length() # returns 0
+	LENGTH_NULL=length(null) # returns null
+	LENGTH_ARRAY=length([1, true, "three"]) # returns array size = 3
+	LENGTH_OBJECT=length({one: 1, two: true, three: "three", four: 4}) # returns object member count = 4
+	# all following return length of the string represenation of the value
+	LENGTH_STRING=length("string") # returns 6
+	LENGTH_BOOL=length(false) # returns 5
+	LENGTH_INT=length(1234) # returns 4
+	LENGTH_NEGATIVE=length(-1234) # returns 5
+	LENGTH_FLOAT=length(1234.56) # returns 7
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, -0);
@@ -1295,7 +1746,14 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		
 		//---------------------------------
 		// Initialize
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionLiteral.txt");
+		String queryString = """
+| source empty 
+| set NAME = "Aurorania"
+| set
+	FIELDVALUE = "NAME" # Aurorania
+	LITERAL = literal("NAME")  # NAME
+	THE_NAME_AGAIN = "NAME" # Aurorania				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, -0);
@@ -1322,7 +1780,25 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMax() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMax.txt");
+		String queryString = """
+| source json data=`
+[
+	 {index: 77
+	 , array: [1,2,3,4, null, true, "string"]
+	 , object: {a: 1, b: 2, c: 33, d: 4, e: null, f: true, string: "ignored"} }
+
+]
+`
+| set 
+	MAX_ARRAY=max(array) # returns 4
+	MAX_OBJECT=max(object) # returns 33
+	MAX_NUMBER=max(index) # returns same number = 77
+	# all other return null
+	MAX_ZERO=max()
+	MAX_NULL=max(null)
+	UNSUPPORTED_A=max(true)
+	UNSUPPORTED_B=max("some_string")
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1352,7 +1828,21 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMax_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMax_Aggr.txt");
+		String queryString = """
+| source json data=`
+[
+	  {count: 1, value: 6, float: 1.33333333}
+	 ,{count: 2, value: 5, float: 7.12345678}
+	 ,{count: 3, value: 4, float: 99.123456}
+	 ,{count: 4, value: null, float: 22}
+
+]
+`
+| stats 
+	MAX=max(count)
+	MAX_VALUE=max(value)
+	MAX_FLOAT=max(float,true,5)
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1377,7 +1867,26 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMedian() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMedian.txt");
+		String queryString = """
+| source json data=`
+[
+	 {index: 77
+	 , array: [1,2,3,4, null, true, "string"]
+	 , object: {a: 1, b: 2, c: 5, d: 4, e: null, f: true, string: "ignored"} }
+
+]
+`
+| set 
+	MEDIAN_ARRAY=median(array) # return 2.5
+	MEDIAN_ARRAY_NULLS=median(array,true) # return 2
+	MEDIAN_OBJECT=median(object) # return 3
+	MEDIAN_OBJECT_NULLS=median(object,true) # return 2
+	MEDIAN_NUMBER=median(index) # return 77
+	MEDIAN_ZERO=median()
+	MEDIAN_NULL=median(null)
+	UNSUPPORTED_A=median(true)
+	UNSUPPORTED_B=median("some_string")
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1409,7 +1918,24 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMedian_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMedian_Aggr.txt");
+		String queryString = """
+| source json data=`
+[
+	  {count: 1, value: 9, float: 1.23}
+	 ,{count: 2, value: 8, float: 2.34}
+	 ,{count: 3, value: 7, float: 3.44}
+	 ,{count: 4, value: 6, float: 4.55}
+	 ,{count: 5, value: null, float: 6.77}
+	 ,{count: null, value: null, float: 7.88}
+
+]
+`
+| stats 
+	MEDIAN=median(count)
+	MEDIAN_NONULL=median(value)
+	MEDIAN_NULLS=median(value,true)
+	MEDIAN_FLOAT=median(float,true,5)
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1435,7 +1961,24 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMeta() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMeta.txt");
+		String queryString = """
+| metadata
+	mySwitch=true
+	herName='Jane'
+	hisNumber=42
+	yourNull=null
+	theDogsArray=['throw', 'the', 'ball', 'woof!']
+	theCatsObject={'I': 'am', 'your': 'god', 'pet': 'and worship me already so that this example stops getting utterly long!'}
+| source empty records=1
+| set
+	LIGHTS_ON=meta(mySwitch) 
+	LOVELY_PERSON=meta(herName)
+	THE_WINNER_IS=meta(hisNumber)
+	MOTHING_HERE=meta(yourNull)
+	REQUIRED_ACTION=meta(theDogsArray)
+	REQUEST_FOR_OBEDIENCE=meta(theCatsObject)
+	OBEDIENCE_SCORE=meta(hisNumber) + 45 
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1465,7 +2008,25 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMin() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMin.txt");
+		String queryString = """
+| source json data=`
+[
+	 {index: 77
+	 , array: [2,3,4,1, null, true, "string"]
+	 , object: {a: 4, b: 2, c: 33, d: 0, e: null, f: true, string: "ignored"} }
+
+]
+`
+| set 
+	MIN_ARRAY=min(array) # returns 1
+	MIN_OBJECT=min(object) # returns 0
+	MIN_NUMBER=min(index) # returns same number = 77
+	# all other return null
+	MIN_ZERO=min()
+	MIN_NULL=min(null)
+	UNSUPPORTED_A=min(true)
+	UNSUPPORTED_B=min("some_string")
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1495,7 +2056,21 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testMin_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionMin_Aggr.txt");
+		String queryString = """
+| source json data=`
+[
+	  {count: 1, value: 6, float: 1.33333333}
+	 ,{count: 2, value: 5, float: 7.12345678}
+	 ,{count: 3, value: 4, float: 99.123456}
+	 ,{count: 4, value: null, float: 22}
+
+]
+`
+| stats 
+	MIN=min(count)
+	MIN_VALUE=min(value)
+	MIN_FLOAT=min(float,true,5)
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1564,17 +2139,18 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		//---------------------------------
 		String dangerZone = "!!! Danger Zone(Bio Hazard) - do not enter!!!";
 		String theQueriesID = "This query identifies as a killer virus. It's pronouns are Ah/choo!!!";
-		String queryString =
-				"| source empty records=1\r\n"
-				+ "| set \r\n"
-				+ "	EMPTY = null\r\n"
-				+ "	THE_QUERIES_ID = \""+theQueriesID+"\"\r\n"
-				+ "	NULL_AGAIN = null\r\n"
-				+ "	NULL_STRING = 'null'\r\n"
-				+ "	STAYS_NULL = null	\r\n"
-				+ "| nullto \r\n"
-				+ "	   fields=[EMPTY, THE_QUERIES_ID , NULL_AGAIN, NULL_STRING ] # exclude STAYS_NULL \r\n"
-				+ "	   value=\""+dangerZone+"\""
+		String queryString = """
+| source empty records=1
+| set 
+EMPTY = null
+THE_QUERIES_ID = "%s"
+NULL_AGAIN = null
+NULL_STRING = 'null'
+STAYS_NULL = null	
+| nullto 
+   fields=[EMPTY, THE_QUERIES_ID , NULL_AGAIN, NULL_STRING ] # exclude STAYS_NULL 
+   value="%s"
+				""".formatted(theQueriesID, dangerZone)
 			;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
@@ -1602,7 +2178,23 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testParam() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionParam.txt");
+		String queryString = """
+| paramdefaults 
+	text="default" 
+	hello="hello world"
+	nullValue=null
+	emptyString=' ' 
+| source empty
+| set
+	TEXT_VALUE = param('text') # returns 'default'
+	HELLO_VALUE = param('hello') # returns 'hello world'
+	UNDEF = param('notAParam') # returns null
+	TAKE_THIS= param('againNoParam', 'takeThis') # returns 'takeThis'
+	NULL=param('nullValue') # returns null
+	NULL_SUBSTITUTED=param('nullValue', 'insteadOfNull') # returns 'insteadOfNull'
+	EMPTY=param('emptyString') # returns ' '
+	EMPTY_SUBSTITUTED=param('emptyString', 'insteadOfEmpty') # returns 'insteadOfEmpty'
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1633,7 +2225,32 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testPerc() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionPerc.txt");
+		String queryString = """
+| source json data=`
+[
+	 {index: 0, array: [1,2,3,4,5,6,7,8,9,10]
+	 		  , object: {a:11, b:22, c:33, d:44, e:55, f:66, g:77, h:88, i:99, j:111 } 
+	 }
+	,{index: 1, array: [10,9,8,7,6,5,4,3,2,1,null,null,null,null,null,null,null,null,null,null,null,null,null]
+			  , object: {a:11, b:22, c:33, d:44, e:55, f:66, g:77, h:88, i:99, j:111, k:null, l:null,m:null,n:null,o:null,p:null,q:null,r:null,s:null,t:null,u:null } 
+	 }
+	,{index: 3, array: [1,2,3,4,5,6,7,8,9,10, "StringsAndBooleans_ignored"]
+			  , object: {a: 11, b: 22, c: 33, string: "ignored"} }
+]
+`
+| set 
+	'50Perc'=perc(array)	# returns 5 / 5 / 5
+	'90Perc'=perc(array, 90) # returns 9 / 9 / 9
+	'90PercNulls'=perc(array, 90, true) # returns 9 / 8 / 9
+	'70PercObject'=perc(object, 70) # returns 77 / 77 / 33
+	'70PercObjectNulls'=perc(object, 70,true) # Returns 77 / 44 / 33
+	PERC_NUMBER=perc(index, 90) # returns 0 / 1 / 3
+	# all below return null
+	PERC_NONE=perc()
+	PERC_NULL=perc(null)
+	UNSUPPORTED_A=perc(true)
+	UNSUPPORTED_B=perc("some_string")
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1688,7 +2305,28 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testPerc_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionPerc_Aggr.txt");
+		String queryString = """
+| source json data=`
+[
+	  {count: 1, value: 1, float: 1.33333333}
+	 ,{count: 2, value: 2, float: 2.12345678}
+	 ,{count: 3, value: 3, float: 3.123456}
+	 ,{count: 4, value: 4, float: 4.65365}
+	 ,{count: 5, value: 5, float: 5.76476}
+	 ,{count: 6, value: null, float: 6.7647}
+	 ,{count: 7, value: null, float: 7.989896}
+	 ,{count: 8, value: null, float: 8.5653}
+	 ,{count: 9, value: null, float: 9.6525}
+	 ,{count: 10, value: null, float: 10.65635}
+
+]
+`
+| stats 
+	PERC=perc(count, 80) # returns 8
+	PERC_NONULL=perc(value, 80) # returns 4
+	PERC_NULLS=perc(value, 80, true) # returns 3
+	PERC_FLOAT=perc(float, 80) # returns 8.5653
+			""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1715,15 +2353,16 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testRandom() throws IOException {
 		
 		//---------------------------------
-		String queryString =
-				"| source empty records= 100\r\n"
-				+ "| set\r\n"
-				+ "  PERCENT = random()\r\n"
-				+ "  ZERO_ONE = random(0,1)\r\n"
-				+ "  ONE = random(1,1)\r\n"
-				+ "  HUNDRED = random(100) #second param is default 100 \r\n"
-				+ "  MINUS = random(-10, 10)\r\n"
-				+ "  HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)"
+		String queryString ="""
+| source empty records= 100
+| set
+PERCENT = random()
+ZERO_ONE = random(0,1)
+ONE = random(1,1)
+HUNDRED = random(100) #second param is default 100 
+MINUS = random(-10, 10)
+HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
+				"""
 				;
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
@@ -1755,16 +2394,16 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testRandomFloat() throws IOException {
 		
 		//---------------------------------
-		String queryString =
-				"| source empty records= 100\r\n"
-				+ "| set\r\n"
-				+ "  PERCENT= randomFloat() # zero to 1\r\n"
-				+ "  ZERO_FIFTY = randomFloat(0,50)\r\n"
-				+ "  ONE = randomFloat(1) #second param is default 1\r\n"
-				+ "  NINTY_NINE= randomFloat(99, 99) \r\n"
-				+ "  MINUS = randomFloat(-10, 10)\r\n"
-				+ "  HALF_TO_FULL_MILLION = randomFloat((10^6)/2, 10^6)"
-				;
+		String queryString ="""
+| source empty records= 100
+| set
+  PERCENT= randomFloat() # zero to 1
+  ZERO_FIFTY = randomFloat(0,50)
+  ONE = randomFloat(1) #second param is default 1
+  NINTY_NINE= randomFloat(99, 99) 
+  MINUS = randomFloat(-10, 10)
+  HALF_TO_FULL_MILLION = randomFloat((10^6)/2, 10^6)
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1778,12 +2417,12 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 		
 		for(int i = 0; i < queryResults.getRecordCount(); i++) {
 			JsonObject record = queryResults.getRecord(0);
-			CFWTestUtils.assertIsBetween(0, 1, record.get("PERCENT").getAsInt() );
-			CFWTestUtils.assertIsBetween(0, 55, record.get("ZERO_FIFTY").getAsInt() );
-			Assertions.assertEquals(1, record.get("ONE").getAsInt() );
-			Assertions.assertEquals(99, record.get("NINTY_NINE").getAsInt() );
-			CFWTestUtils.assertIsBetween(-10, 10, record.get("MINUS").getAsInt() );
-			CFWTestUtils.assertIsBetween(500000, 1000000, record.get("HALF_TO_FULL_MILLION").getAsInt() );
+			CFWTestUtils.assertIsBetween(0, 1, record.get("PERCENT").getAsFloat() );
+			CFWTestUtils.assertIsBetween(0, 55, record.get("ZERO_FIFTY").getAsFloat() );
+			Assertions.assertEquals(1, record.get("ONE").getAsFloat() );
+			Assertions.assertEquals(99, record.get("NINTY_NINE").getAsFloat() );
+			CFWTestUtils.assertIsBetween(-10, 10, record.get("MINUS").getAsFloat() );
+			CFWTestUtils.assertIsBetween(500000, 1000000, record.get("HALF_TO_FULL_MILLION").getAsFloat() );
 		}
 		
 	}
@@ -1795,15 +2434,15 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testRandomFrom() throws IOException {
 		
 		//---------------------------------
-		String queryString =
-				  "| source empty records= 100\r\n"
-				+ "| set\r\n"
-				+ "  NULL = randomFrom() # null\r\n"
-				+ "  A_OR_B= randomFrom([\"A\", \"B\"])\r\n"
-				+ "  ONE = randomFrom(1) # return same value\r\n"
-				+ "  A_OR_B_OR_ONE = randomFrom([A_OR_B, ONE]) "
-				+ "  X_OR_Y = randomFrom({X: 22, Y: 33}) "
-				;
+		String queryString = """
+| source empty records= 100
+| set
+  NULL = randomFrom() # null
+  A_OR_B= randomFrom([\"A\", \"B\"])
+  ONE = randomFrom(1) # return same value
+  A_OR_B_OR_ONE = randomFrom([A_OR_B, ONE])
+  X_OR_Y = randomFrom({X: 22, Y: 33})				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1833,7 +2472,19 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testReplace() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionReplace.txt");
+		String queryString = """
+| source empty records = 1
+| set VALUE="Alejandra 1234 #!<>?=() 1234"
+| set
+	NULL = replace() # returns null
+	SAME = replace(VALUE) # returns Alejandra 1234 #!<>?=() 1234
+	REMOVE = replace(VALUE, " 1234") # returns Alejandra #!<>?=()
+	REPLACE = replace(VALUE, "a 1234 #", "o Sanchez ") # returns Alejandro Sanchez !<>?=() 1234
+	REPLACE_MULTI = replace(VALUE, "1234", "42") # returns Alejandra 42 #!<>?=() 42
+	# booleans and number inputs will be treated as string
+	BOOL = replace(true, "true", "maybe") # returns maybe
+	NUMBER = replace(181818, "8", "-eight-") # returns 1-eight-1-eight-1-eight-
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1862,7 +2513,16 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testRound() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionRound.txt");
+		String queryString = """
+| source empty records=1
+| set FLOATYFLOAT = 42.4
+| set
+	ZERO=round() 
+	INT_DOWN=round(FLOATYFLOAT) 
+	INT_UP=round(42.5) 
+	PRECISION_TWO=round(55.555,2) 
+	PRECISION_THREE=round(44.44444444,3) 
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1891,19 +2551,19 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testSin() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source empty records=1\r\n" + 
-				"| set\r\n" + 
-				"	RADIANS=0.872665 # radians for 50 degress\r\n" + 
-				"	DEGREES=50\r\n" + 
-				"	SIN_RADIANS=round(sin(RADIANS),3) \r\n" + 
-				"	SIN_DEGREES=round(sin(DEGREES,true),3) \r\n" + 
-				"	# all following return 0\r\n" + 
-				"	NOTHING_RETURNS_ZERO=sin() \r\n" + 
-				"	RETURNS_ZERO_AGAIN=sin(null)\r\n" + 
-				"	STRING_ZERO=sin('returns-0')\r\n" + 
-				"	BOOL_ZERO=sin(true)\r\n" + 
-				""
-				;
+		String queryString = """
+| source empty records=1 
+| set 
+	RADIANS=0.872665 # radians for 50 degress 
+	DEGREES=50 
+	SIN_RADIANS=round(sin(RADIANS),3)  
+	SIN_DEGREES=round(sin(DEGREES,true),3)  
+	# all following return 0 
+	NOTHING_RETURNS_ZERO=sin()  
+	RETURNS_ZERO_AGAIN=sin(null) 
+	STRING_ZERO=sin('returns-0') 
+	BOOL_ZERO=sin(true) 
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1934,7 +2594,14 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testSumIf() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionSumIf.txt");
+		String queryString = """
+| source random records=10
+| set
+	# all return null as not supported
+	NULL_A = sumif(VALUE, (VALUE > 50) ) 
+	NULL_B = sumif(VALUE) 
+	NULL_C = sumif()
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1960,7 +2627,23 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testSumIf_Aggr() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionSumIf_Aggr.txt");
+		String queryString = """
+| source json data=`
+[
+	  {count: 1, value: 1, float: 1.33333333}
+	 ,{count: 2, value: 2, float: 7.12345678}
+	 ,{count: 3, value: 3, float: 99.123456}
+	 ,{count: 4, value: null, float: 22}
+
+]
+`
+| stats 
+	SUM_ZERO=sumif() # returns 0
+	SUM_ALL=sumif(count) # returns 10
+	SUM_NONULL=sumif(value) # returns 6
+	SUM_BIGFLOAT=sumif(float, float > 10 ) # returns 	121.123456
+	SUM_FLOAT=sumif(float, (float > 5 AND float < 90) ) # returns 29.12345678
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -1990,19 +2673,19 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testTan() throws IOException {
 		
 		//---------------------------------
-		String queryString = "| source empty records=1\r\n" + 
-				"| set\r\n" + 
-				"	RADIANS=0.872665 # radians for 50 degress\r\n" + 
-				"	DEGREES=50\r\n" + 
-				"	TAN_RADIANS=round(tan(RADIANS),3) \r\n" + 
-				"	TAN_DEGREES=round(tan(DEGREES,true),3) \r\n" + 
-				"	# all following return 0\r\n" + 
-				"	NOTHING_RETURNS_ZERO=tan() \r\n" + 
-				"	RETURNS_ZERO_AGAIN=tan(null)\r\n" + 
-				"	STRING_ZERO=tan('returns-0')\r\n" + 
-				"	BOOL_ZERO=tan(true)\r\n" + 
-				""
-				;
+		String queryString = """
+| source empty records=1 
+| set 
+	RADIANS=0.872665 # radians for 50 degress 
+	DEGREES=50 
+	TAN_RADIANS=round(tan(RADIANS),3)  
+	TAN_DEGREES=round(tan(DEGREES,true),3)  
+	# all following return 0 
+	NOTHING_RETURNS_ZERO=tan()  
+	RETURNS_ZERO_AGAIN=tan(null) 
+	STRING_ZERO=tan('returns-0') 
+	BOOL_ZERO=tan(true) 				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, 0);
@@ -2033,7 +2716,27 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testTimeformat() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionTimeformat.txt");
+		String queryString = """
+| source empty records=1
+| globals 
+	epochMillis=1693829701889 # 2023-09-04T12:15:01
+	format="yyyy-MM-dd'T'HH:mm:ss" # use globals or metadata to store formats and reuse them
+	
+| set
+	formatted=timeformat(globals(format), globals(epochMillis)) # returns 2023-09-04T12:15:01
+	yearDayMonth=timeformat("yyyy-MM-dd", globals(epochMillis)) # returns 2023-09-04
+	utcTime=timeformat("HH:mm:ss", globals(epochMillis))   # returns 12:15:01
+	clientTime=timeformat("HH:mm:ss", globals(epochMillis), true) # returns 14:15:01
+	millis=timeformat("SSS", globals(epochMillis))		 # returns 889
+	DayName=timeformat("E / EEEE", globals(epochMillis))         # # returns "Mon / Monday"
+	MonthName=timeformat("MMM / MMMM", globals(epochMillis))     # # returns "Sep / September"
+	Timezones=timeformat("z / Z / ZZZZ", globals(epochMillis), true)   # returns "+02:00 / +0200 / GMT+02:00"
+	# all following return null
+	epochNoParams=timeformat() 
+	epochFormatOnly=timeformat("yyyy-MM-dd")
+	epochFormatNull=timeformat(null, globals(epochMillis)) 
+	epochTimeNull=timeformat("yyyy-MM-dd", null) 				
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, -120);
@@ -2110,7 +2813,25 @@ public class TestCFWQueryFunctions extends DBTestMaster{
 	public void testTimeround() throws IOException {
 		
 		//---------------------------------
-		String queryString = CFW.Files.readPackageResource(PACKAGE_FUNCTIONS, "query_testFunctionTimeround.txt");
+		String queryString = """
+| global
+	format = "yyyy-MM-dd HH:mm:ss"
+| source empty
+| set
+	TIME = timeparse(globals(format), "2022-07-26 21:17:03") 
+	ONE_MIN = timeround(TIME) # returns 2022-07-26 22:17:00
+	FIVE_MIN = timeround(TIME, 5, 'm') # returns 2022-07-26 22:15:00
+	TWO_HOURS = timeround(TIME, 2, 'h') # returns 2022-07-26 22:00:00
+	SEVEN_DAYS = timeround(TIME, 7, 'd') # returns 2022-07-29 00:00:00
+	ZE_MONTH = timeround(TIME, 1, 'M') # returns 2022-06-30 00:00:00
+| set # format on server-side to have no issues with timezone differences
+	TIME = timeformat(globals(format), TIME)
+	ONE_MIN = timeformat(globals(format), ONE_MIN)
+	FIVE_MIN = timeformat(globals(format), FIVE_MIN)
+	TWO_HOURS = timeformat(globals(format), TWO_HOURS)
+	SEVEN_DAYS = timeformat(globals(format), SEVEN_DAYS)
+	ZE_MONTH = timeformat(globals(format), ZE_MONTH)
+				""";
 		
 		CFWQueryResultList resultArray = new CFWQueryExecutor()
 				.parseAndExecuteAll(queryString, earliest, latest, -120);
