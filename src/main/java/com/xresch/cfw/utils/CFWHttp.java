@@ -1011,13 +1011,17 @@ public class CFWHttp {
 		/******************************************************************************************************
 		 * Get the body content of the response as a JsonArray.
 		 * @param url used for the request.
-		 * @return JsonArray or null
+		 * @return JsonArray never null, empty array on error
 		 ******************************************************************************************************/
 		public JsonArray getResponseBodyAsJsonArray(){
 			
-			JsonElement jsonElement = CFW.JSON.fromJson(body);
+			JsonArray jsonArray = new JsonArray();
 			
-			JsonArray jsonArray = null;
+			JsonElement jsonElement = CFW.JSON.fromJson(body);
+			if(jsonElement == null || jsonElement.isJsonNull()) {
+				return jsonArray;
+			}
+			
 			if(jsonElement.isJsonArray()) {
 				jsonArray = jsonElement.getAsJsonArray();
 			}else if(jsonElement.isJsonObject()) {
@@ -1025,7 +1029,7 @@ public class CFWHttp {
 				if(object.get("error") != null) {
 					new CFWLog(responseLogger).severe("Error occured while reading http response: "+object.get("error").toString());
 					CFW.Context.Request.addAlertMessage(MessageType.ERROR, "Error: ");
-					return null;
+					return jsonArray;
 				}else {
 					new CFWLog(responseLogger).severe("Error occured while reading http response.");
 				}
