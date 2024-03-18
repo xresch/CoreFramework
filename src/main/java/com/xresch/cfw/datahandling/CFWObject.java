@@ -327,7 +327,8 @@ public class CFWObject {
 	 * 
 	 ****************************************************************/
 	@SuppressWarnings("rawtypes")
-	public CFWField getField(String  fieldname) {
+	public CFWField getField(String fieldname) {
+		// this method is here because for some unknown reason the below one was sometimes not recognized.
 		return fields.get(fieldname);
 	}
 	
