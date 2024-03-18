@@ -322,6 +322,14 @@ public class CFWObject {
 		}
 	}
 	
+	/****************************************************************
+	 * @return the field or null if not found.
+	 * 
+	 ****************************************************************/
+	@SuppressWarnings("rawtypes")
+	public CFWField getField(String  fieldname) {
+		return fields.get(fieldname);
+	}
 	
 	/****************************************************************
 	 * @return the field or null if not found.

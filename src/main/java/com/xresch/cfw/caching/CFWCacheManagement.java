@@ -51,6 +51,17 @@ public class CFWCacheManagement {
 	/************************************************************************
 	 * 
 	 ************************************************************************/
+	@SuppressWarnings("unchecked")
+	public static <K1 extends Object, V1 extends Object> Cache<K1, V1> removeCache(
+			String cacheName) {
+		
+		return cacheMap.remove(cacheName);
+
+	}
+	
+	/************************************************************************
+	 * 
+	 ************************************************************************/
 	public static JsonArray getCacheStatisticsAsJSON() {
 		
 		JsonArray array = new JsonArray();
