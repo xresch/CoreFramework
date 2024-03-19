@@ -9,7 +9,9 @@ import java.util.logging.Logger;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
 import com.google.common.cache.CacheStats;
+import com.google.common.cache.LoadingCache;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.xresch.cfw._main.CFW;
@@ -31,6 +33,30 @@ public class CFWCacheManagement {
 	@SuppressWarnings("unchecked")
 	public static <K1 extends Object, V1 extends Object> Cache<K1, V1> addCache(
 			String cacheName,  CacheBuilder cacheBuilder) {
+
+		if(cacheMap.containsKey(cacheName)) {
+			new CFWLog(logger)
+				.severe("Failed to add cache. The cache name '"+cacheName+"' is already used.", new IllegalArgumentException());
+			return null;
+		}
+		
+		Cache<K1, V1> cache = 
+				cacheBuilder
+					.recordStats()
+					.build();
+		
+		cacheMap.put(cacheName, cache);
+		cacheMetricsCollector.addCache(cacheName, cache);
+		
+		return cache;
+	}
+	
+	/************************************************************************
+	 * 
+	 ************************************************************************/
+	@SuppressWarnings("unchecked")
+	public static <K1 extends Object, V1 extends Object> LoadingCache<K1, V1> addLoadingCache(
+			String cacheName,  CacheBuilder cacheBuilder, CacheLoader<K1, V1> loader ) {
 		
 		if(cacheMap.containsKey(cacheName)) {
 			new CFWLog(logger)
@@ -38,9 +64,16 @@ public class CFWCacheManagement {
 			return null;
 		}
 		
-		Cache<K1, V1> cache = cacheBuilder
-				.recordStats()
-				.build();
+		if(loader == null) {
+			new CFWLog(logger)
+				.severe("Cache Loader cannot be null.", new IllegalArgumentException());
+			return null;
+		}
+		
+		LoadingCache<K1, V1> cache = 
+				cacheBuilder
+					.recordStats()
+					.build(loader);
 		
 		cacheMap.put(cacheName, cache);
 		cacheMetricsCollector.addCache(cacheName, cache);
