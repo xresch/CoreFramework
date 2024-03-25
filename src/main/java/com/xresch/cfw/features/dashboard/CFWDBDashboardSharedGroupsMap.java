@@ -139,7 +139,7 @@ public class CFWDBDashboardSharedGroupsMap {
 	 * Adds the role to the specified dashboard.
 	 * @param roleID
 	 * @param dashboardID
-	 * @return return true if role was added, false otherwise
+	 * @return return true if role was added or if role/dashboard did not exist, false if failed
 	 * 
 	 ********************************************************************************************/
 	public static boolean assignGroupToDashboard(int roleID, int dashboardID) {
@@ -158,7 +158,10 @@ public class CFWDBDashboardSharedGroupsMap {
 		}
 		
 		Dashboard dashboard = CFW.DB.Dashboards.selectByID(dashboardID);
+		if(dashboard == null) { return true; }
+		
 		Role role = CFW.DB.Roles.selectByID(roleID);
+		if(role == null) { return true; }
 		
 		return assignGroupToDashboard(role, dashboard);
 	}
