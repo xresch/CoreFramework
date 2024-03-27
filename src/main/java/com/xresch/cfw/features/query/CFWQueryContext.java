@@ -1,6 +1,7 @@
 package com.xresch.cfw.features.query;
 
 import java.util.LinkedHashSet;
+import java.util.Properties;
 
 import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
@@ -19,7 +20,7 @@ public class CFWQueryContext{
 	// used for history, fully query string, all queries
 	private String fullQueryString = "";
 	
-	// used for mimicry command, part of a full query separated with ;
+	// used for mimic command, part of a full query separated with ;
 	private String originalQueryString = "";
 	
 	private long earliest = 0;
@@ -28,11 +29,19 @@ public class CFWQueryContext{
 	private boolean checkPermissions = true;
 	private CFWQueryResultList resultArray;
 	
+	// set with query command 'metadata', get with the query function 'metadata()'
 	private JsonObject metadata = new JsonObject();
+	// set with query command 'paramdefaults', get with the query function 'param()'
 	private JsonObject parameters = new JsonObject();
+	// set with query command 'globals', get with the query function 'globals()'
 	private JsonObject globals = new JsonObject();
+	// set with the query command 'display'
 	private JsonObject displaySettings = new JsonObject();
+	// set with the query command 'formatfield'
 	private JsonObject fieldFormats = new JsonObject();
+	
+	// used internally by query sources, commands and functions
+	private Properties metaObjects = new Properties();
 	
 	protected CFWQueryFieldnameManager contextFieldnameManager = new CFWQueryFieldnameManager();
 	
@@ -209,6 +218,20 @@ public class CFWQueryContext{
 		}
 		
 		return null;
+	}
+	
+	/***********************************************************************************************
+	 * Returns the object containing the metadata of the query.
+	 ***********************************************************************************************/
+	public Object getMetaObject(Object key) {
+		return metaObjects.get(key);
+	}
+	
+	/***********************************************************************************************
+	 * Returns the object containing the metadata of the query.
+	 ***********************************************************************************************/
+	public void addMetaObject(Object key, Object value) {
+		metaObjects.put(key, value);
 	}
 	
 	/***********************************************************************************************
