@@ -314,6 +314,7 @@ function cfw_apioverview_printOverview(data){
 						cardstyle: null,
 						textstyle: null,
 						textstyleheader: 'white',
+						narrow: true,
 						title: name,
 						body: $('<div>'),
 				};
@@ -394,6 +395,7 @@ function cfw_apioverview_printOverview(data){
 							cardstyle: null,
 							textstyle: null,
 							textstyleheader: null,
+							narrow: true,
 							title: action,
 							body: content,
 					};
