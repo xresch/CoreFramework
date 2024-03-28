@@ -3273,10 +3273,10 @@ function cfw_format_formToArray(formOrID, numbersAsStrings){
  * @param convert a json object to html
  * @return html string
  *************************************************************************************/
-function cfw_format_objectToHTMLList(object, style, paddingLeft){
+function cfw_format_objectToHTMLList(object, style, paddingLeft, doLabelize){
 	
 	if(style == null){	style = "bullets";	}
-	if(paddingLeft == null){	paddingLeft = "0px"; }
+	if(paddingLeft == null){	paddingLeft = "20px"; }
 	
 	
 	var htmlString = '<ul style="padding-left: '+paddingLeft+';">';
@@ -3291,7 +3291,7 @@ function cfw_format_objectToHTMLList(object, style, paddingLeft){
 			var currentItem = object[i];
 			if(typeof currentItem == "object"){
 				htmlString += '<li><b>Object:&nbsp;</b>'
-					+ cfw_format_objectToHTMLList(currentItem)
+					+ cfw_format_objectToHTMLList(currentItem, style, paddingLeft, doLabelize)
 				+'</li>';
 			}else{
 				htmlString += '<li>'+currentItem+'</li>';
@@ -3302,13 +3302,13 @@ function cfw_format_objectToHTMLList(object, style, paddingLeft){
 		
 		for(var key in object){
 			var currentValue = object[key];
+			var key = (!doLabelize) ? key : CFW.format.fieldNameToLabel(key);
 			if(typeof currentValue == "object"){
-				htmlString += '<li><strong>'+CFW.format.fieldNameToLabel(key)+':&nbsp;</strong>'
-					+ cfw_format_objectToHTMLList(currentValue)
+				htmlString += '<li><strong>'+key+':&nbsp;</strong>'
+					+ cfw_format_objectToHTMLList(currentValue, style, paddingLeft, doLabelize)
 				+'</li>';
-				
 			}else{
-				htmlString += '<li><strong>'+CFW.format.fieldNameToLabel(key)+':&nbsp;</strong>'
+				htmlString += '<li><strong>'+key+':&nbsp;</strong>'
 					+ currentValue
 				+'</li>';
 			}

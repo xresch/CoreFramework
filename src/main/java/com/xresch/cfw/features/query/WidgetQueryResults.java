@@ -426,7 +426,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 		//----------------------------------------
 		// Check Condition
 		boolean conditionMatched = false;
-		JsonArray instantExceedingThreshold = new JsonArray();
+		JsonArray recordsExceedingThreshold = new JsonArray();
 		
 		for(JsonElement element : resultArray) {
 			
@@ -437,7 +437,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 			if(condition != null 
 			&& CFW.Conditions.compareIsEqualsOrMoreDangerous(alertThreshholdCondition, condition)) {
 				conditionMatched = true;
-				instantExceedingThreshold.add(current);
+				recordsExceedingThreshold.add(current);
 			}
 		}
 				
@@ -485,7 +485,7 @@ public class WidgetQueryResults extends WidgetDefinition {
 				String metricListText = "";
 				String metricTableHTML = "<table class=\"table table-sm table-striped\" border=1 cellspacing=0 cellpadding=5 >"+tableHeader;
 				
-				Iterator<JsonElement> iter = instantExceedingThreshold.iterator();
+				Iterator<JsonElement> iter = recordsExceedingThreshold.iterator();
 				while(iter.hasNext()) {
 					JsonObject current = iter.next().getAsJsonObject();
 					//-----------------------------
@@ -561,8 +561,9 @@ public class WidgetQueryResults extends WidgetDefinition {
 
 				CFW.Messages.addErrorMessage(messagePlaintext);
 				
-				alertObject.addTextData("data", "csv", CFW.JSON.formatJsonArrayToCSV(instantExceedingThreshold, ";") );
-				alertObject.addTextData("data", "json", CFW.JSON.toJSONPretty(instantExceedingThreshold) );
+				
+				alertObject.addTextData("data", "csv", CFW.JSON.toCSV(recordsExceedingThreshold, ";") );
+				alertObject.addTextData("data", "json", CFW.JSON.toJSONPretty(recordsExceedingThreshold) );
 				alertObject.doSendAlert(context, MessageType.ERROR, "Alert - Query record(s) reached threshold", messagePlaintext, messageHTML);
 				
 			}

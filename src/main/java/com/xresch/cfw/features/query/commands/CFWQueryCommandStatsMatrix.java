@@ -57,6 +57,8 @@ public class CFWQueryCommandStatsMatrix extends CFWQueryCommand {
 		JsonArray listFormatterParams = new JsonArray();
 		listFormatterParams.add("list");
 		listFormatterParams.add("none");
+		listFormatterParams.add("0px");
+		listFormatterParams.add(true);
 		listFormatter = QueryPartValue.newJson(listFormatterParams);
 	}
 

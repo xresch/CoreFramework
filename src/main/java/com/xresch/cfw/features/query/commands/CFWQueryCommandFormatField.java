@@ -235,11 +235,12 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 						"Used to format an object as a list.",
 						new Object[][] {
 							new Object[] {"type", "bullets", "Type of the bullet points either: bullets|numbers|none."}
-							,new Object[] {"paddingLeft", "0px", "The indendation of the list."}
+							,new Object[] {"paddingLeft", "10px", "The indendation of the list."}
+							,new Object[] {"doLabelize", false, "Define if the keys should be made into labels."}
 						}
 						).example(
 								"#Displays the list without bullets."
-										+"\r\n| source random | formatfield OBJECTS=[list,\"none\",]"
+										+"\r\n| source random | formatfield OBJECTS=[list,\"none\"]"
 								)
 				);
 		

@@ -169,7 +169,7 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
 				case 'duration': 			cfw_query_formatDuration(resultSpan, value, current[1]); break;
 				case 'ea'+'stere'+'ggs': 	cfw_query_formatEa_sterE_ggs(resultSpan, value); break;
 				case 'link': 				cfw_query_formatLink(resultSpan, value, current[1], current[2], current[3], current[4]); break;
-				case 'list': 				cfw_query_formatList(resultSpan, value, current[1], current[2]); break;
+				case 'list': 				cfw_query_formatList(resultSpan, value, current[1], current[2], current[3]); break;
 				case 'lowercase': 			cfw_query_formatLowercase(resultSpan); break;
 				case 'none': 				cfw_query_formatNone(resultSpan, value); break;
 				case 'percent': 			cfw_query_formatPercent(resultSpan, value, current[1], current[2], current[3], current[4]); break;
@@ -509,11 +509,11 @@ function cfw_query_formatLink(span, value, linkText, displayAs, icon, target){
 /*******************************************************************************
  * 
  ******************************************************************************/
-function cfw_query_formatList(span, value, bulletType, paddingLeft){
+function cfw_query_formatList(span, value, bulletType, paddingLeft, doLabelize){
 	
 	span.html('');
 	if(typeof value == "object"){
-		span.append(CFW.format.objectToHTMLList(value, bulletType, paddingLeft));
+		span.append(CFW.format.objectToHTMLList(value, bulletType, paddingLeft, doLabelize));
 	}else{
 		span.append(value);
 	}
