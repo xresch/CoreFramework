@@ -23,7 +23,7 @@ import com.xresch.cfw.db.CFWSQL;
 import com.xresch.cfw.features.api.APIDefinition;
 import com.xresch.cfw.features.api.APIDefinitionFetch;
 import com.xresch.cfw.features.api.APIDefinitionSQL;
-import com.xresch.cfw.features.api.APISQLExecutor;
+import com.xresch.cfw.features.api.APIExecutorSQL;
 import com.xresch.cfw.features.usermgmt.User.UserFields;
 import com.xresch.cfw.features.usermgmt.UserRoleMap.UserRoleMapFields;
 import com.xresch.cfw.logging.CFWLog;
@@ -358,7 +358,7 @@ public class User extends CFWObject {
 				);
 		getUserPermissionsOverview.setDescription("Returns the permission for the specified userID.");
 		
-		APISQLExecutor overviewExecutor = new APISQLExecutor() {
+		APIExecutorSQL overviewExecutor = new APIExecutorSQL() {
 			@Override
 			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
 							
@@ -384,7 +384,7 @@ public class User extends CFWObject {
 		getUserPermissionsAPI.setDescription("Returns the permission for the specified userID."
 				+ " The standard return format is JSON if the parameter APIFORMAT is not specified.");
 		
-		APISQLExecutor executor = new APISQLExecutor() {
+		APIExecutorSQL executor = new APIExecutorSQL() {
 			@Override
 			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
 				
@@ -419,7 +419,7 @@ public class User extends CFWObject {
 				+ " If IS_FOREIGN is set to true, given password is ignored and replaced with a random, unretrievable password(as PW check is done on foreign system)."
 				+ " The password has to match the systems password rules.");
 		
-		APISQLExecutor createUserExecutor = new APISQLExecutor() {
+		APIExecutorSQL createUserExecutor = new APIExecutorSQL() {
 			@Override
 			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
 				APICreateUserObject createUserObject = (APICreateUserObject)object;	
@@ -466,7 +466,7 @@ public class User extends CFWObject {
 		
 		apiAddRole.setDescription("Adds a role to a user. If successful, returns the created mapping in the database.");
 		
-		APISQLExecutor addRoleExecutor = new APISQLExecutor() {
+		APIExecutorSQL addRoleExecutor = new APIExecutorSQL() {
 			@Override
 			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
 				UserRoleMap map = (UserRoleMap)object;	
@@ -514,7 +514,7 @@ public class User extends CFWObject {
 		definition.setDescription("Sets the status of the specified user. Provide either PK_ID, USERNAME or EMAIL to select the user. "
 				+ "If multiple are provided, the priority will be in the order as given in the last sentence.");
 		
-		APISQLExecutor addRoleExecutor = new APISQLExecutor() {
+		APIExecutorSQL addRoleExecutor = new APIExecutorSQL() {
 			@Override
 			public ResultSet execute(APIDefinitionSQL definition, CFWObject object) {
 				User inputData = (User)object;	

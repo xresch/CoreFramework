@@ -32,7 +32,7 @@ public class APIDefinitionSQL extends APIDefinition{
 	
 	private static final String APIFORMAT = "APIFORMAT";
 	
-	private APISQLExecutor executor;
+	private APIExecutorSQL executor;
 	private boolean isSuccess = true;
 	private int httpStatusCode = HttpURLConnection.HTTP_OK;
 		
@@ -97,14 +97,14 @@ public class APIDefinitionSQL extends APIDefinition{
 					if(format == null || format.equals("")) {
 						format = "JSON";
 					}
-					if(format.toUpperCase().equals(ReturnFormat.JSON.toString())) {
+					if(format.toUpperCase().equals(APIReturnFormat.JSON.toString())) {
 						json.getContent().append(ResultSetUtils.toJSON(result));
 						
-					}else if(format.toUpperCase().equals(ReturnFormat.CSV.toString())){		
+					}else if(format.toUpperCase().equals(APIReturnFormat.CSV.toString())){		
 						PlaintextResponse plaintext = new PlaintextResponse();
 						plaintext.getContent().append(ResultSetUtils.toCSV(result, ";"));
 						
-					}else if(format.toUpperCase().equals(ReturnFormat.XML.toString())){		
+					}else if(format.toUpperCase().equals(APIReturnFormat.XML.toString())){		
 						PlaintextResponse plaintext = new PlaintextResponse();
 						plaintext.getContent().append(ResultSetUtils.toXML(result));
 					}
@@ -121,7 +121,7 @@ public class APIDefinitionSQL extends APIDefinition{
 
 
 
-	public void setSQLExecutor(APISQLExecutor executor) {
+	public void setSQLExecutor(APIExecutorSQL executor) {
 		this.executor = executor;
 	}
 	
@@ -143,7 +143,7 @@ public class APIDefinitionSQL extends APIDefinition{
 		
 		CFWField<String> apiFormat = CFWField.newString(FormFieldType.SELECT, APIFORMAT)
 				.setDescription("The return format of the api call.")
-				.setOptions(ReturnFormat.values());
+				.setOptions(APIReturnFormat.values());
 		
 		objectInstance.addField(apiFormat);
 		this.addInputFields(apiFormat);

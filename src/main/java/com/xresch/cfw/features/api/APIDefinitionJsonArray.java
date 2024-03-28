@@ -1,5 +1,6 @@
 package com.xresch.cfw.features.api;
 
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.logging.Logger;
@@ -7,37 +8,43 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.JsonArray;
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWObject;
-import com.xresch.cfw.db.CFWSQL;
+import com.xresch.cfw.db.CFWDB;
 import com.xresch.cfw.logging.CFWLog;
 import com.xresch.cfw.response.JSONResponse;
 import com.xresch.cfw.response.PlaintextResponse;
-import com.xresch.cfw.utils.CFWUtilsArray;
+import com.xresch.cfw.utils.ResultSetUtils;
 
 /**************************************************************************************************************
  * 
- * @author Reto Scheiwiller, (c) Copyright 2019 
+ * @author Reto Scheiwiller, (c) Copyright 2024
  * @license MIT-License
  **************************************************************************************************************/
-public class APIDefinitionFetch extends APIDefinition{
+public class APIDefinitionJsonArray extends APIDefinition{
 	
-	private static final Logger logger = CFWLog.getLogger(APIDefinitionFetch.class.getName());
+	private static final Logger logger = CFWLog.getLogger(APIDefinitionJsonArray.class.getName());
 	
-	protected static final String APIFORMAT = "APIFORMAT";
+	private static final String APIFORMAT = "APIFORMAT";
 	
-	public APIDefinitionFetch(Class<? extends CFWObject> clazz,
+	private APIExecutorJsonArray executor;
+	private boolean isSuccess = true;
+	private int httpStatusCode = HttpURLConnection.HTTP_OK;
+		
+	
+	/*****************************************************************************
+	 * 
+	 *****************************************************************************/
+	public APIDefinitionJsonArray(Class<? extends CFWObject> clazz,
 							  String apiName, 
 						      String actionName, 
-						      String[] inputFieldnames,
-						      String[] outputFieldnames) {
+						      String[] inputFieldnames) {
 
-		super(clazz, apiName, actionName, inputFieldnames, outputFieldnames);
-
-		this.setDescription("Standard API to fetch "+clazz.getSimpleName()+" data. The provided parameters will be used to create a select statement with a WHERE ... AND clause."
-				+ " To retrieve everything leaf all the parameters empty."
-				+ " The standard return format is JSON if the parameter APIFORMAT is not specified.");
+		super(clazz, apiName, actionName, inputFieldnames, null);
+		APIDefinitionJsonArray jsonAPIDef = this;
 		
 		this.setRequestHandler(new APIRequestHandler() {
 			
@@ -64,8 +71,7 @@ public class APIDefinitionFetch extends APIDefinition{
 				
 				ArrayList<CFWField> affectedFields = new ArrayList<CFWField>();
 				ArrayList<String> fieldnames = new ArrayList<String>();
-				boolean success = true;
-				
+
 				// iterate parameters
 				while(params.hasMoreElements()) {
 					String current = params.nextElement();
@@ -75,7 +81,7 @@ public class APIDefinitionFetch extends APIDefinition{
 
 					if(field != null 
 					&& currentValue != null 
-					&& !currentValue.isEmpty()) {
+					&& !currentValue.isEmpty() ) {
 						field.setValueValidated(request.getParameter(current));
 						affectedFields.add(field);
 						fieldnames.add(field.getName());
@@ -84,44 +90,61 @@ public class APIDefinitionFetch extends APIDefinition{
 				}
 				
 				//----------------------------------
-				// Create Response
-				if(success) {
-					
-					CFWSQL statement = object.select(definition.getOutputFieldnames());
-					
-					for(int i = 0; i < affectedFields.size(); i++) {
-						CFWField<?> currentField = affectedFields.get(i);
-						if(i == 0) {
-							statement.where(currentField.getName(), currentField.getValue(), false);
-						}else {
-							statement.and(currentField.getName(), currentField.getValue(), false);
-						}
-					}
-					
-					String format = request.getParameter(APIFORMAT);
-					if(format == null || format.equals("")) {
-						format = "JSON";
-					}
-					if(format.toUpperCase().equals(APIReturnFormat.JSON.toString())) {
-						json.getContent().append(statement.getAsJSON());
-					}else if(format.toUpperCase().equals(APIReturnFormat.CSV.toString())){		
-						PlaintextResponse plaintext = new PlaintextResponse();
-						
-						plaintext.getContent().append(statement.getAsCSV());
-					}else if(format.toUpperCase().equals(APIReturnFormat.XML.toString())){		
-						PlaintextResponse plaintext = new PlaintextResponse();
-						
-						plaintext.getContent().append(statement.getAsXML());
-					}
-					
-				}else {
-					response.setStatus(400);
+				// Get Format
+				JsonArray result = executor.execute(jsonAPIDef, object);
+				
+				String format = request.getParameter(APIFORMAT);
+				if(format == null || format.equals("")) {
+					format = "JSON";
 				}
 				
-				json.setSuccess(success);
+				APIReturnFormat formatEnum = APIReturnFormat.valueOf(format.toUpperCase());
+				
+				//----------------------------------
+				// Create Response
+				switch(formatEnum) {
+				
+					case JSON:	json.getContent().append(CFW.JSON.toJSON(result));		
+								break;
+					
+								
+					case CSV: 	PlaintextResponse plaintextCSV = new PlaintextResponse();
+								plaintextCSV.getContent().append(CFW.JSON.toCSV(result, ";"));
+								break;
+								
+	
+					case XML:	PlaintextResponse plaintextXML = new PlaintextResponse();
+								plaintextXML.getContent().append(CFW.JSON.toXML(result));
+								break;
+								
+								
+					default:	CFW.Messages.addErrorMessage("Unkown format: "+formatEnum);
+								isSuccess = false;
+								break;
+				
+				}
 
+				json.setSuccess(isSuccess);
+				response.setStatus(httpStatusCode);
 			}
 		});		
+	}
+
+
+	/*****************************************************************************
+	 * 
+	 *****************************************************************************/
+	public void setExecutor(APIExecutorJsonArray executor) {
+		this.executor = executor;
+	}
+	
+	/*****************************************************************
+	 * Set the status of the response.
+	 * 
+	 *****************************************************************/
+	public void setStatus(boolean success, int httpStatusCode) {
+		this.isSuccess = success;
+		this.httpStatusCode = httpStatusCode;
 	}
 	
 	/*****************************************************************
@@ -129,19 +152,16 @@ public class APIDefinitionFetch extends APIDefinition{
 	 *****************************************************************/
 	@Override
 	public CFWObject createObjectInstance() {
-		CFWObject instance = super.createObjectInstance();
+		CFWObject objectInstance = super.createObjectInstance();
 		
 		CFWField<String> apiFormat = CFWField.newString(FormFieldType.SELECT, APIFORMAT)
 				.setDescription("The return format of the api call.")
 				.setOptions(APIReturnFormat.values());
 		
-		instance.addField(apiFormat);
+		objectInstance.addField(apiFormat);
 		this.addInputFields(apiFormat);
 		
-		return instance;
+		return objectInstance;
 	}
-	
-	
-	
 
 }

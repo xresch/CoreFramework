@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
@@ -54,7 +55,7 @@ public class CFWJson {
 	private static Gson gsonInstancePretty;
 	
 	private static Gson gsonInstanceEncrypted;
-	private static Gson prettyTabWriter;
+	//private static Gson prettyTabWriter;
 	
 	static{
 		//Type cfwobjectListType = new TypeToken<LinkedHashMap<CFWObject>>() {}.getType();
@@ -194,6 +195,131 @@ public class CFWJson {
 	 *************************************************************************************/
 	public static JsonElement toJSONElementEncrypted(CFWObject object) {
 		return gsonInstanceEncrypted.toJsonTree(object);
+	}
+	
+	/*************************************************************************************
+	 * Makes a string from an element, without the nasty quotes
+	 *************************************************************************************/
+	public static String toString(JsonElement element) {
+		
+		if(element == null || element.isJsonNull()) {
+			return "null";
+		} else if(element.isJsonPrimitive()) {
+			JsonPrimitive primitive = element.getAsJsonPrimitive();
+			if(primitive.isString()) {
+				return element.getAsString(); 
+			}else if(primitive.isNumber()) {
+				return element.getAsNumber() + ""; 
+			}else if(primitive.isBoolean()) {
+				return element.getAsBoolean() + ""; 
+			}
+		}
+	
+		return CFW.JSON.toJSON(element);
+	}
+
+	/*************************************************************************************
+	 * Takes an array with JsonObjects and converts it to CSV.
+	 * If there is anything else in the array that is not a JsonObject it will be ignored.
+	 *************************************************************************************/
+	public static String toCSV(JsonArray array, String delimiter) {
+		
+		//-----------------------------------
+		// Verify Input
+		if(array == null || array.isEmpty()) { return ""; }
+		
+		StringBuilder csv = new StringBuilder();
+		
+		//-----------------------------------
+		// Get All fieldnames
+		LinkedHashSet<String> fieldnames = new LinkedHashSet<>();
+		for(JsonElement element : array) {
+			
+			if(element.isJsonObject()) {
+				JsonObject object = element.getAsJsonObject();
+				fieldnames.addAll( object.keySet() );
+			}
+		}
+		
+		//-----------------------------------
+		// Create Headers
+		for(String fieldname : fieldnames) {
+			csv.append("\"")
+			   .append( CFW.JSON.escapeString(fieldname) )
+			   .append("\"")
+			   .append(delimiter);
+		}
+		
+		csv.deleteCharAt(csv.length()-1); //remove last delimiter
+		csv.append("\r\n");
+		
+		//-----------------------------------
+		// Create Records
+		for(JsonElement element : array) {
+			
+			if(element.isJsonObject()) {
+				JsonObject object = element.getAsJsonObject();
+				
+				for(String fieldname : fieldnames) {
+					String value = "";
+					
+					if(object.has(fieldname)) {
+						value = CFW.JSON.toString( object.get(fieldname) );
+					}
+					
+					csv.append("\"")
+					   .append( CFW.JSON.escapeString(value) )
+					   .append("\"")
+					   .append(delimiter);
+				}
+				csv.deleteCharAt(csv.length()-1); //remove last delimiter
+				csv.append("\r\n");
+			}
+		}
+		
+		
+		return csv.toString();
+		
+	}
+	
+	/*************************************************************************************
+	 * Takes an array with JsonObjects and converts it to XML.
+	 * If there is anything else in the array that is not a JsonObject it will be ignored.
+	 *************************************************************************************/
+	public static String toXML(JsonArray array) {
+		
+		//-----------------------------------
+		// Verify Input
+		if(array == null || array.isEmpty()) { return "<dara></data>"; }
+		
+		StringBuilder xml = new StringBuilder();
+		
+		xml.append("<data>\n");
+		
+		
+		//-----------------------------------
+		// Create Records
+		for(JsonElement element : array) {
+			
+			if(element.isJsonObject()) {
+				JsonObject object = element.getAsJsonObject();
+				xml.append("\t<record>\n");
+					for(Entry<String, JsonElement> entry : object.entrySet()) {
+						
+						String fieldname = entry.getKey();
+						String value = CFW.JSON.toString( entry.getValue() );
+						xml.append("\t\t<").append(fieldname).append(">")
+							.append(value)
+							.append("</").append(fieldname).append(">\n")
+							;
+	
+					}
+				xml.append("\t</record>\n");
+			}
+		}
+		
+		return xml.toString();
+		
 	}
 	
 	/*************************************************************************************
@@ -491,42 +617,17 @@ public class CFWJson {
 	}
 	
 	/*************************************************************************************
-	 * Makes a string from an element, without the nasty quotes
-	 *************************************************************************************/
-	public static String elementToString(JsonElement element) {
-		
-		if(element == null || element.isJsonNull()) {
-			return "null";
-		} else if(element.isJsonPrimitive()) {
-			JsonPrimitive primitive = element.getAsJsonPrimitive();
-			if(primitive.isString()) {
-				return element.getAsString(); 
-			}else if(primitive.isNumber()) {
-				return element.getAsNumber() + ""; 
-			}else if(primitive.isBoolean()) {
-				return element.getAsBoolean() + ""; 
-			}
-		}
-
-		return CFW.JSON.toJSON(element);
-	}
-	
-	/*************************************************************************************
 	 * Makes a CSV string from a JsonArray containing JsonObjects.
 	 * 
 	 * Takes the fieldnames of the first object as headers and to select values from
 	 * every consecutive object.
 	 * 
-	 * @param thisToTable the object to covnert
-	 * @param narrow add the Bootstrap table-sm class to the table if true
-	 * 
+	 * @deprecated use toCSV() instead
 	 * @return empty string if array is empty
 	 *************************************************************************************/
 	public static String formatJsonArrayToCSV(JsonArray convertThis, String delimiter) {
 		
-		String narrowClass = "";
 		if(convertThis == null || convertThis.isEmpty() ) { return ""; }
-		
 		
 		//------------------------------------------
 		// Create Header 
@@ -557,7 +658,7 @@ public class CFWJson {
 						
 						JsonElement currentValue = object.get(name);
 						
-						String stringValue = elementToString(currentValue);
+						String stringValue = CFW.JSON.toString(currentValue);
 						
 						csv.append("\"")
 						   .append(CFW.JSON.escapeString(stringValue))

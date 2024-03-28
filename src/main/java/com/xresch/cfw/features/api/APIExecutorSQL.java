@@ -9,7 +9,7 @@ import com.xresch.cfw.datahandling.CFWObject;
  * @author Reto Scheiwiller, (c) Copyright 2019 
  * @license MIT-License
  **************************************************************************************************************/
-public abstract class APISQLExecutor {
+public abstract class APIExecutorSQL {
 	/***********************************************************
 	 * Execute an SQL statement
 	 * @param definition the instance of APIDefinitionSQL that

@@ -664,7 +664,7 @@ public class ResultSetUtils {
 	 * 
 	 ********************************************************************************************/
 	public static String toXML(ResultSet resultSet) {
-		StringBuilder json = new StringBuilder();
+		StringBuilder xml = new StringBuilder();
 		
 		try {
 			
@@ -684,20 +684,20 @@ public class ResultSetUtils {
 			ResultSetMetaData metadata = resultSet.getMetaData();
 			int columnCount = metadata.getColumnCount();
 	
-			json.append("<data>\n");
+			xml.append("<data>\n");
 			while(resultSet.next()) {
-				json.append("\t<record>\n");
+				xml.append("\t<record>\n");
 				for(int i = 1 ; i <= columnCount; i++) {
 					String column = metadata.getColumnLabel(i);
-					json.append("\t\t<").append(column).append(">");
+					xml.append("\t\t<").append(column).append(">");
 					
 					String value = resultSet.getString(i);
-					json.append(value);
-					json.append("</").append(column).append(">\n");
+					xml.append(value);
+					xml.append("</").append(column).append(">\n");
 				}
-				json.append("\t</record>\n");
+				xml.append("\t</record>\n");
 			}
-			json.append("</data>");
+			xml.append("</data>");
 			
 		} catch (SQLException e) {
 				new CFWLog(logger)
@@ -706,7 +706,7 @@ public class ResultSetUtils {
 				return "<data></data>";
 		}
 	
-		return json.toString();
+		return xml.toString();
 	}
 	
 	

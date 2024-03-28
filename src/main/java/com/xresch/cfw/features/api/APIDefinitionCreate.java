@@ -124,13 +124,13 @@ public class APIDefinitionCreate extends APIDefinition{
 					if(format == null || format.equals("")) {
 						format = "JSON";
 					}
-					if(format.toUpperCase().equals(ReturnFormat.JSON.toString())) {
+					if(format.toUpperCase().equals(APIReturnFormat.JSON.toString())) {
 						json.getContent().append(statement.getAsJSON());
-					}else if(format.toUpperCase().equals(ReturnFormat.CSV.toString())){		
+					}else if(format.toUpperCase().equals(APIReturnFormat.CSV.toString())){		
 						PlaintextResponse plaintext = new PlaintextResponse();
 						
 						plaintext.getContent().append(statement.getAsCSV());
-					}else if(format.toUpperCase().equals(ReturnFormat.XML.toString())){		
+					}else if(format.toUpperCase().equals(APIReturnFormat.XML.toString())){		
 						PlaintextResponse plaintext = new PlaintextResponse();
 						
 						plaintext.getContent().append(statement.getAsXML());
@@ -155,7 +155,7 @@ public class APIDefinitionCreate extends APIDefinition{
 		
 		CFWField<String> apiFormat = CFWField.newString(FormFieldType.SELECT, APIFORMAT)
 				.setDescription("The return format of the api call.")
-				.setOptions(ReturnFormat.values());
+				.setOptions(APIReturnFormat.values());
 		
 		instance.addField(apiFormat);
 		this.addInputFields(apiFormat);

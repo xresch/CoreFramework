@@ -88,12 +88,26 @@ public class CFWTimeframe {
 	 * 
 	 ***************************************************************************************/
 	private void setToDefaults() {
+		
 		timeframeData = new JsonObject();
-		timeframeData.addProperty(MEMBER_OFFSET, "30-m");
+		setOffset(30, CFWTimeUnit.m);
 		timeframeData.add(MEMBER_EARLIEST, JsonNull.INSTANCE);
 		timeframeData.add(MEMBER_LATEST, JsonNull.INSTANCE);
 		timeframeData.addProperty(MEMBER_CLIENT_TIMEZONE_OFFSET, 0);
 				
+	}
+	
+	/***************************************************************************************
+	 * This will reset earliest and latest time set previously.
+	 ***************************************************************************************/
+	public CFWTimeframe setOffset(int amount, CFWTimeUnit unit) {
+		
+		String offset = amount + "-" + unit.toString();
+		timeframeData.addProperty(MEMBER_OFFSET, offset);
+		timeframeData.add(MEMBER_EARLIEST, JsonNull.INSTANCE);
+		timeframeData.add(MEMBER_LATEST, JsonNull.INSTANCE);	
+		
+		return this;
 	}
 	
 	/***************************************************************************************
