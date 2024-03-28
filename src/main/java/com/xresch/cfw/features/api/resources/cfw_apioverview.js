@@ -33,16 +33,18 @@ function cfw_apioverview_formResult(data, status, xhr){
 		//var paramName = paramNameArray[index];
 		//var paramValue = form.find("#"+paramName).val();
 		var paramValue = filteredParams[paramName];
-		if(!CFW.utils.isNullOrEmpty(paramValue)){
-			rawQueryPart += "&"+paramName+"="+paramValue;
-			encodedQueryPart += "&"+paramName+"="+encodeURIComponent(paramValue);
-			var preparedParam;
-			if(typeof paramValue == "object" ){ 
-				preparedParam = JSON.stringify(paramValue).replaceAll('"', '\\"'); 
+		var preparedParam;
+		if(typeof paramValue == "object" ){ 
+				preparedParam = JSON.stringify(paramValue); 
 			} else{
-				preparedParam = (""+paramValue).replaceAll('"', '\\"'); 
+				preparedParam = (""+paramValue); 
 			} 
-			curlDataURLEncode += ' \\\r\n --data-urlencode "'+paramName+'='+preparedParam+'" ';
+		
+		if(!CFW.utils.isNullOrEmpty(paramValue)){
+			rawQueryPart += "&"+paramName+"="+preparedParam;
+			encodedQueryPart += "&"+paramName+"="+encodeURIComponent(preparedParam);
+			
+			curlDataURLEncode += ' \\\r\n --data-urlencode "'+paramName+'='+preparedParam.replaceAll('"', '\\"')+'" ';
 		}
 	}
 	
