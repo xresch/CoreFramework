@@ -731,6 +731,43 @@ function cfw_dashboard_widget_copyToClipboard(widgetGUID) {
 /*******************************************************************************
  * 
  ******************************************************************************/
+function cfw_dashboard_widget_copyToClipboardAsReplica(widgetGUID) {
+	var widgetInstance = $('#'+widgetGUID);
+	var widgetObject = widgetInstance.data("widgetObject");
+		
+
+	CFW.http.getJSON(CFW_DASHBOARDVIEW_URL, {action: "fetch", item: "widgetcopy", widgetid: widgetObject.PK_ID}, function(data){
+		
+		if(data.success){
+			
+			//-----------------------------
+			// Prepare Replica JSON_SETTINGS
+			var widgetInfo = {};
+			widgetInfo[widgetObject.PK_ID] = widgetObject.TITLE;
+			var dashboardInfo = {};
+			var dashboardID = CFW_DASHBOARD_URLPARAMS.id;
+			dashboardInfo[dashboardID] = JSDATA.dashboardName;
+			
+			//-----------------------------
+			// Override Settings
+			let widgetSettingsReplica = JSON.parse(data.payload);
+			widgetSettingsReplica.TYPE = "cfw_replica";
+			widgetSettingsReplica.JSON_SETTINGS = {   
+		        "JSON_DASHBOARD": dashboardInfo,
+		        "JSON_WIDGET": widgetInfo,
+		    };
+		   
+		    //-----------------------------
+			// Copy to Clipboard
+			CFW.utils.clipboardWrite( JSON.stringify(widgetSettingsReplica) );
+		}
+	
+	});
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
 function cfw_dashboard_widget_handlePaste() {
 	
 	if(CFW_DASHBOARD_EDIT_MODE){
@@ -1230,6 +1267,7 @@ function cfw_dashboard_widget_createHTMLElement(widgetObject){
 		+'			<a class="dropdown-item" onclick="cfw_dashboard_widget_edit(\''+merged.guid+'\')"><i class="fas fa-pen"></i>&nbsp;'+CFWL('cfw_core_edit', 'Edit')+'</a>'
 		+'			<a class="dropdown-item" onclick="cfw_dashboard_widget_duplicate(\''+merged.guid+'\')"><i class="fas fa-clone"></i>&nbsp;'+CFWL('cfw_core_duplicate', 'Duplicate')+'</a>'
 		+'			<a class="dropdown-item" onclick="cfw_dashboard_widget_copyToClipboard(\''+merged.guid+'\')"><i class="fas fa-copy"></i>&nbsp;'+CFWL('cfw_core_copy', 'Copy')+'</a>'
+		+'			<a class="dropdown-item" onclick="cfw_dashboard_widget_copyToClipboardAsReplica(\''+merged.guid+'\')"><i class="fas fa-copy"></i>&nbsp;'+CFWL('cfw_core_copy', 'Copy')+' Replica</a>'
 		// ' <div class="dropdown-divider"></div>'
 		+'			<a class="dropdown-item" onclick="cfw_dashboard_widget_removeConfirmed(\''+merged.guid+'\')"><i class="fas fa-trash"></i>&nbsp;'+CFWL('cfw_core_remove', 'Remove')+'</a>'
 		+'		</div>'
@@ -1356,10 +1394,18 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 			// Add Placeholder
 			// must use original, else there will be issues for manual load(parameters already substituted isntead of substituting newly)
 			cfw_dashboard_widget_createLoadingPlaceholder(originalWidgetObject, doAutoposition);
-
+			var placeholderWidget = $('#'+originalWidgetObject.guid);
+			
+			// ---------------------------------------
+			// Replica Position
+			// Use the autopositioning from the placeholder
+			// Else positioning will not work when using "Widget Menu >> Copy Replica"
+			widgetCloneParameterized.X = placeholderWidget.attr("gs-x");
+			widgetCloneParameterized.Y = placeholderWidget.attr("gs-y");
+			
 			// ---------------------------------------
 			// Handle Parameter Widget Load & Manual Load
-			var placeholderWidget = $('#'+originalWidgetObject.guid);
+			
 			
 			if(!manualLoad && widgetCloneParameterized.PARAM_WIDGET_LOAD == true){
 				placeholderWidget.find('.cfw-dashboard-widget-body')
