@@ -59,8 +59,8 @@ public class ManualPage {
 	 ***********************************************************************************/
 	public ManualPage addChild(ManualPage childItem) {
 		
-		childPages.put(((ManualPage)childItem).getLabel().trim(), (ManualPage)childItem);
-		this.addPermissions(((ManualPage)childItem).getPermissions());
+		childPages.put(childItem.getLabel().trim(), childItem);
+		this.addPermissions(childItem.getPermissions());
 		
 		childItem.setParent(this);
 

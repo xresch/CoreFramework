@@ -41,10 +41,11 @@ public class ServletManual extends HttpServlet
 				StringBuilder content = html.getContent();
 	
 				//html.addJSFileBottomSingle(new FileDefinition(HandlingType.JAR_RESOURCE, FeatureCore.RESOURCE_PACKAGE+".js", "cfw_usermgmt.js"));
-				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureManual.RESOURCE_PACKAGE, "cfw_manual.js");
-				html.addCSSFile(HandlingType.JAR_RESOURCE, FeatureManual.RESOURCE_PACKAGE, "cfw_manual.css");
+				html.addCSSFile(HandlingType.JAR_RESOURCE, FeatureManual.PACKAGE_RESOURCES, "cfw_manual.css");
+				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureManual.PACKAGE_RESOURCES, "cfw_manual_common.js");
+				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureManual.PACKAGE_RESOURCES, "cfw_manual.js");
 				
-				content.append(CFW.Files.readPackageResource(FeatureManual.RESOURCE_PACKAGE, "cfw_manual.html"));
+				content.append(CFW.Files.readPackageResource(FeatureManual.PACKAGE_RESOURCES, "cfw_manual.html"));
 				
 				html.addJavascriptCode("cfw_manual_draw();");
 				

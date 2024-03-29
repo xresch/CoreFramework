@@ -38,6 +38,7 @@ import com.xresch.cfw.features.jobs.CFWDBJob;
 import com.xresch.cfw.features.jobs.CFWJob;
 import com.xresch.cfw.features.jobs.CFWJob.CFWJobFields;
 import com.xresch.cfw.features.jobs.CFWJobTask;
+import com.xresch.cfw.features.manual.FeatureManual;
 import com.xresch.cfw.features.parameter.CFWParameter;
 import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.query.CFWQuery;
@@ -122,6 +123,7 @@ public class ServletDashboardViewMethods
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureParameter.PACKAGE_RESOURCES, "cfw_parameter.js");
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_dashboard_common.js");
 				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureDashboard.PACKAGE_RESOURCES, "cfw_dashboard_view.js");
+				html.addJSFileBottom(HandlingType.JAR_RESOURCE, FeatureManual.PACKAGE_RESOURCES, "cfw_manual_common.js"); // needed to make links work
 				
 				//---------------------------
 				// Add HTML

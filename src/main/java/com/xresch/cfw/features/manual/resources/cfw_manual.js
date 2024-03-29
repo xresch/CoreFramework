@@ -14,7 +14,6 @@ var CFW_MANUAL_COUNTER_PRINT_GUID = 0;
 var CFW_MANUAL_COUNTER_PRINT_IN_PROGRESS = 0;
 var CFW_MANUAL_GUID_PAGE_MAP = {};
 
-var CFW_MANUAL_HOST_URL = CFW.http.getHostURL();
 
 var CFW_MANUAL_PRINTVIEW_PAGEPATH_ANCHOR_MAP = {};
 
@@ -344,13 +343,7 @@ function cfw_manual_printMenu(data){
 	}
 }
 
-/******************************************************************
- * 
- ******************************************************************/
-function cfw_manual_loadPage(pagePath, callback){
-	cfw_manual_printContent($('a[data-path="'+pagePath+'"]').get(0), callback);
-	
-}
+
 /******************************************************************
  * 
  ******************************************************************/
