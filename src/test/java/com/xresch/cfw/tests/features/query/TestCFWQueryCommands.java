@@ -693,6 +693,52 @@ public class TestCFWQueryCommands extends DBTestMaster{
 	 * 
 	 ****************************************************************/
 	@Test
+	public void testFormatLink() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+				| record
+					[NAME, URL, ID]
+					["Aurora", "http://example.aurora.com", 42]
+				| formatlink
+					newtab=false
+					NAME = URL
+					ID = "http://www.acmeprofile.com/profile?id="+42
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, 0);
+		
+		// 1 query results
+		Assertions.assertEquals(1, resultArray.size());
+
+		//-----------------------------------
+		// Assert Result
+		CFWQueryResult result = resultArray.get(0);
+		Assertions.assertEquals(1, result.getRecordCount());
+		
+		//-----------------------------------
+		// Assert fieldformats
+		JsonObject displaySettings = result.getDisplaySettings();
+		JsonObject fieldFormats = displaySettings.get("fieldFormats").getAsJsonObject();
+		
+		Assertions.assertEquals(1, fieldFormats.get("NAME").getAsJsonArray().size());
+		Assertions.assertEquals(1, fieldFormats.get("ID").getAsJsonArray().size());
+		
+		//-----------------------------------
+		// Assert record
+		JsonObject object = result.getRecord(0);
+		
+		Assertions.assertEquals(""" 
+				{"format":"link","label":"Aurora","url":"http://example.aurora.com","newtab":false}""", object.get("NAME").toString() );
+		Assertions.assertEquals("""
+				{"format":"link","label":"42","url":"http://www.acmeprofile.com/profile?id=42","newtab":false}""", object.get("ID").toString() );
+		
+	}
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
 	public void testFormatrecord() throws IOException {
 		
 		//---------------------------------

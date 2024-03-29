@@ -211,6 +211,7 @@ DONE
 	- aggregate
 	- else
 	- end
+	- formatlink
 	- if
 	- message
 	- record

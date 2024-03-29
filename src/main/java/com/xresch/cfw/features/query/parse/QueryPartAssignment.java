@@ -56,7 +56,7 @@ public class QueryPartAssignment extends QueryPart {
 	 ******************************************************************************************************/
 	@Override
 	public QueryPartValue determineValue(EnhancedJsonObject object) {
-		return rightside.determineValue(null);
+		return rightside.determineValue(object);
 	}
 	
 	/******************************************************************************************************

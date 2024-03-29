@@ -177,6 +177,7 @@ function cfw_query_customizerCreateCustom(formatterArray, span){
 				case 'postfix': 			cfw_query_formatPostfix(resultSpan, value, current[1]); break;
 				case 'separators':			cfw_query_formatSeparators(resultSpan, value, current[1], current[2]); break;
 				case 'shownulls':			cfw_query_formatShowNulls(resultSpan, value, current[1]); break;
+				case 'special':				cfw_query_formatSpecial(resultSpan, value); break;
 				case 'thousands': 			cfw_query_formatThousands(resultSpan, value, current[1], current[2], current[3]); break;
 				case 'threshold': 			cfw_query_formatThreshold(resultSpan, value, current[1], current[2], current[3], current[4], current[5], current[6]); break;
 				case 'timestamp': 			cfw_query_formatTimestamp(resultSpan, value, current[1]); break;
@@ -661,6 +662,39 @@ function cfw_query_formatShowNulls(span, value, isVisible){
 		}
 	}
 	
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatSpecial(span, value){
+	
+	if( typeof value == "string"){
+		value = JSON.parse(value);
+	}
+	
+	if( typeof value == "object"){
+		
+		switch(value.format){
+			case "link":	cfw_query_formatSpecial_Link(span, value);   break;
+			default:		break;
+		}
+	}
+
+	
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatSpecial_Link(span, object){
+	
+	var target = ' target="_blank" ';
+	if(!object.newtab){
+		target = " ";
+	}
+	
+	span.html('<a href="'+object.url+'" '+target+'>'+object.label+'</a>');
 }
 
 /*******************************************************************************

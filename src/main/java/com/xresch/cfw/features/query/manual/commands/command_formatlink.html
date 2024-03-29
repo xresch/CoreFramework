@@ -1,0 +1,17 @@
+
+<p>Makes the specified fields into links.</p>
+
+<p>Following code will rename three fields. </p>
+<pre><code class="language-cfwquery">| source random 
+| formatlink
+	newtab = true # define if a new tab should be opened
+	FIRSTNAME = URL  # make field "FIRSTNAME" a linkm take URL from field "URL"
+	LOCATION = "http://www.example.url/location?name="+encode(LOCATION) # make custom URL
+| remove URL 
+| formatfield # can be combined to a certain degree with formatfield
+	FIRSTNAME = ['css', "font-weight", "bold"]
+	LOCATION= [align, "center"]</code></pre>
+
+
+
+

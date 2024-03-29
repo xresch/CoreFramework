@@ -2,6 +2,7 @@ package com.xresch.cfw.features.query.commands;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.TreeMap;
 
 import com.google.gson.JsonArray;
@@ -52,6 +53,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 		, PREFIX
 		, SEPARATORS
 		, SHOWNULLS
+		, SPECIAL
 		, THOUSANDS
 		, THRESHOLD
 		, TIMESTAMP
@@ -361,7 +363,21 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 				+"\r\n| source random | formatfield LIKES_TIRAMISU=['shownulls', false]"
 			)
 		);
-			
+		
+		//------------------------------------------------
+		// Special
+		//------------------------------------------------
+		formatterDefinitionArray.put(FieldFormatterName.SPECIAL.toString(),
+			instance.new FormatterDefinition(
+				FieldFormatterName.SPECIAL.toString(), 
+				"Used for special formats based on objects.",
+				new Object[][] {
+				}
+			).example(
+				 "#no examples available yet, as only used internally"
+				
+			)
+		);
 		
 		//------------------------------------------------
 		// Thousands
@@ -592,7 +608,7 @@ public class CFWQueryCommandFormatField extends CFWQueryCommand {
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
-	public static void addFormatterByName(CFWQueryContext context, ArrayList<String> fieldnames, String formatterName) throws ParseException {
+	public static void addFormatterByName(CFWQueryContext context, Collection<String> fieldnames, String formatterName) throws ParseException {
 		//--------------------------------------
 		// Add Formatter By Name
 		formatterName = formatterName.trim();
