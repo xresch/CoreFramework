@@ -160,6 +160,11 @@ DONE
 ====
 
 ------- current -------
+
+
+
+
+------- v.9.0.0 -------
 - BREAKING CHANGE: Dropping support for Java 8, new minimum version is Java 17 
 - BREAKING CODE CHANGE: CFWConfig renamed and requires category parameter in several mathods
 - BREAKING CODE CHANGE: Query Function param() - second param is now a default value.
