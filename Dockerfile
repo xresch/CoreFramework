@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 openjdk:8
+FROM --platform=linux/amd64 openjdk:17
 
 ENV BASEDIR=/usr/src/cfw-server/
 ENV DATAMOUNT=/data
