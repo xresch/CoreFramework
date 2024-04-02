@@ -160,8 +160,7 @@ DONE
 ====
 
 ------- current -------
-
-
+- Dashboard: Fixed versions showing up in shared list
 
 
 ------- v.9.0.0 -------
