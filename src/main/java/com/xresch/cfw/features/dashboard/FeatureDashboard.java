@@ -554,7 +554,12 @@ public class FeatureDashboard extends CFWAppFeature {
 			return null;
 		}
 		
-		return CFW.Properties.APPLICATION_URL + URI_DASHBOARD_VIEW + "?id="+dashboardID;
+		String appURL = CFW.Properties.APPLICATION_URL;
+		if(appURL.endsWith("/")) {
+			appURL.substring(0, appURL.length()-1);
+		}
+		
+		return appURL + URI_DASHBOARD_VIEW + "?id="+dashboardID;
 	}
 	
 }
