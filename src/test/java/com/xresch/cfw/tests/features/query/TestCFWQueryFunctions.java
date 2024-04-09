@@ -2853,4 +2853,54 @@ HALF_TO_FULL_MILLION = random((10^6)/2, 10^6)
 	
 	}
 	
+	
+	/****************************************************************
+	 * 
+	 ****************************************************************/
+	@Test
+	public void testTimetruncate() throws IOException {
+		
+		//---------------------------------
+		String queryString = """
+| source empty records=1
+| metadata name="Test"
+| set
+	TIME = 1682016652888  # millis for 2023-04-20 18:50:52.888 UTC
+	SEC = timetruncate(TIME, "s") # millis for 2023-04-20 18:50:52.000 UTC
+	MIN = timetruncate(TIME, "m") # millis for 2023-04-20 18:50:00.000 UTC
+	HOUR= timetruncate(TIME, "h") # millis for 2023-04-20 18:00:00.000 UTC
+	DAY = timetruncate(TIME, "d") # millis for 2023-04-20 00:00:00.000 UTC
+	MONTH = timetruncate(TIME, "M") # millis for 2023-03-31 00:00:00 UTC
+	YEAR = timetruncate(TIME, "y") # millis for 2023-03-31 00:00:00 UTC
+| set #using timeformat with clienttimezone = false to show UTC
+	TIME = timeformat("yyyy-MM-dd HH:mm:ss.SSS", TIME, false)
+	SEC = timeformat("yyyy-MM-dd HH:mm:ss.SSS", SEC, false)
+	MIN = timeformat("yyyy-MM-dd HH:mm:ss", MIN, false)
+	HOUR= timeformat("yyyy-MM-dd HH:mm", HOUR, false)
+	DAY = timeformat("yyyy-MM-dd HH:mm", DAY, false)
+	MONTH = timeformat("yyyy-MM-dd HH:mm", MONTH, false)
+	YEAR = timeformat("yyyy-MM-dd HH:mm", YEAR, false)
+				""";
+		
+		CFWQueryResultList resultArray = new CFWQueryExecutor()
+				.parseAndExecuteAll(queryString, earliest, latest, -120);
+		
+		Assertions.assertEquals(1, resultArray.size());
+		
+		//------------------------------
+		// Check First Query Result
+		CFWQueryResult queryResults = resultArray.get(0);
+		Assertions.assertEquals(1, queryResults.getRecordCount());
+		
+		JsonObject record = queryResults.getRecord(0);
+		Assertions.assertEquals("2023-04-20 18:50:52.888", record.get("TIME").getAsString());
+		Assertions.assertEquals("2023-04-20 18:50:52.000", record.get("SEC").getAsString());
+		Assertions.assertEquals("2023-04-20 18:50:00", record.get("MIN").getAsString());
+		Assertions.assertEquals("2023-04-20 18:00", record.get("HOUR").getAsString());
+		Assertions.assertEquals("2023-04-20 00:00", record.get("DAY").getAsString());
+		Assertions.assertEquals("2023-03-31 00:00", record.get("MONTH").getAsString());
+		Assertions.assertEquals("2022-12-31 00:00", record.get("YEAR").getAsString());
+		
+	}
+	
 }
