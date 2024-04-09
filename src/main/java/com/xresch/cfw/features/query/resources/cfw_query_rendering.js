@@ -694,7 +694,12 @@ function cfw_query_formatSpecial_Link(span, object){
 		target = " ";
 	}
 	
-	span.html('<a href="'+object.url+'" '+target+'>'+object.label+'</a>');
+	var style = ' ';
+	if( !CFW.utils.isNullOrEmpty(object.style) ){
+		style = ' style="'+object.style+'" ';;
+	}
+	
+	span.html('<a href="'+object.url+'" '+ target + style +'>'+object.label+'</a>');
 }
 
 /*******************************************************************************

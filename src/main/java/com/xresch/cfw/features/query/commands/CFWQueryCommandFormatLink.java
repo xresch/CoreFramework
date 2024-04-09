@@ -34,6 +34,7 @@ public class CFWQueryCommandFormatLink extends CFWQueryCommand {
 	
 	private ArrayList<QueryPartAssignment> assignmentParts = new ArrayList<>();
 	private QueryPartAssignment newtabPart = null; 
+	private QueryPartAssignment stylePart = null; 
 	
 	/***********************************************************************************************
 	 * 
@@ -63,7 +64,7 @@ public class CFWQueryCommandFormatLink extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" <fieldname>=<url> [, <fieldname>=<url> ...] newtab=<newtab>";
+		return COMMAND_NAME+" <fieldname>=<url> [, <fieldname>=<url> ...] newtab=<newtab> style=<style>";
 	}
 	
 	/***********************************************************************************************
@@ -74,6 +75,7 @@ public class CFWQueryCommandFormatLink extends CFWQueryCommand {
 		return "<p><b>fieldname:&nbsp;</b>The  name of the field that should me made into a link.</p>"
 			  +"<p><b>url:&nbsp;</b>The URL that should be opened by the link.</p>"
 			  +"<p><b>newtab:&nbsp;</b>Define if the URL should be opened in a new tab (Default:true).</p>"
+			  +"<p><b>style:&nbsp;</b>Defines the CSS style for the link (Default:null).</p>"
 				;
 	}
 
@@ -101,10 +103,14 @@ public class CFWQueryCommandFormatLink extends CFWQueryCommand {
 			
 			if(currentPart instanceof QueryPartAssignment) {
 				QueryPartAssignment zePart = (QueryPartAssignment)currentPart;
-				if(!zePart.getLeftSideAsString(null).equals("newtab")) {
-					this.assignmentParts.add((QueryPartAssignment)currentPart);
-				}else {
+				String partName = zePart.getLeftSideAsString(null);
+				
+				if(partName.toLowerCase().equals("newtab")) {
 					newtabPart = zePart;
+				}else if(partName.toLowerCase().equals("style")) {
+					stylePart = zePart;
+				}else {
+					this.assignmentParts.add((QueryPartAssignment)currentPart);
 					continue;
 				}
 
@@ -190,10 +196,14 @@ public class CFWQueryCommandFormatLink extends CFWQueryCommand {
 					boolean newtab = true;
 					if(newtabPart != null) { newtab = newtabPart.determineValue(record).getAsBoolean(); }
 					
+					String style = null;
+					if(stylePart != null) { style = stylePart.determineValue(record).getAsString(); }
+					
 					specialObject.addProperty("format", "link");
 					specialObject.addProperty("label", label);
 					specialObject.addProperty("url", url);
 					specialObject.addProperty("newtab", newtab);
+					specialObject.addProperty("style", style);
 					
 					//-------------------------------------
 					// Replace Value 

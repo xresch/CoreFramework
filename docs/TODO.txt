@@ -161,7 +161,9 @@ DONE
 
 ------- current -------
 - Dashboard: Fixed versions showing up in shared list
-
+- Query: Command formatlink - supports a "style" parameter to style the link with CSS
+- Query: Added Functions:
+    - timetruncate 
 
 ------- v.9.0.0 -------
 - BREAKING CHANGE: Dropping support for Java 8, new minimum version is Java 17 

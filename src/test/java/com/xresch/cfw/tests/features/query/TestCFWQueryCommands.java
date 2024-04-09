@@ -702,6 +702,7 @@ public class TestCFWQueryCommands extends DBTestMaster{
 					["Aurora", "http://example.aurora.com", 42]
 				| formatlink
 					newtab=false
+					style="color: white;"
 					NAME = URL
 					ID = "http://www.acmeprofile.com/profile?id="+42
 				""";
@@ -730,9 +731,9 @@ public class TestCFWQueryCommands extends DBTestMaster{
 		JsonObject object = result.getRecord(0);
 		
 		Assertions.assertEquals(""" 
-				{"format":"link","label":"Aurora","url":"http://example.aurora.com","newtab":false}""", object.get("NAME").toString() );
+				{"format":"link","label":"Aurora","url":"http://example.aurora.com","newtab":false,"style":"color: white;"}""", object.get("NAME").toString() );
 		Assertions.assertEquals("""
-				{"format":"link","label":"42","url":"http://www.acmeprofile.com/profile?id=42","newtab":false}""", object.get("ID").toString() );
+				{"format":"link","label":"42","url":"http://www.acmeprofile.com/profile?id=42","newtab":false,"style":"color: white;"}""", object.get("ID").toString() );
 		
 	}
 	/****************************************************************

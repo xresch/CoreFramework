@@ -5,7 +5,8 @@
 <pre><code class="language-cfwquery">| source random 
 | formatlink
 	newtab = true # define if a new tab should be opened
-	FIRSTNAME = URL  # make field "FIRSTNAME" a linkm take URL from field "URL"
+	style = if(LIKES_TIRAMISU, "color: limegreen;", "color: red") # color the link based on tiramisu preference
+	FIRSTNAME = URL  # make field "FIRSTNAME" a link take URL from field "URL"
 	LOCATION = "http://www.example.url/location?name="+encode(LOCATION) # make custom URL
 | remove URL 
 | formatfield # can be combined to a certain degree with formatfield
