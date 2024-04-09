@@ -12,7 +12,7 @@
 				var adjustedText = widgetObject.JSON_SETTINGS.content;
 				
 				if(widgetObject.JSON_SETTINGS.content != null){
-					adjustedText = adjustedText.replace(/\r\n|\r|\n/,'<br>');
+					adjustedText = (""+adjustedText).replace(/\r\n|\r|\n/,'<br>');
 					callback(widgetObject, adjustedText);
 				}else{
 					callback(widgetObject, '');
