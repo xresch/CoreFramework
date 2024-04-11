@@ -151,9 +151,9 @@ public class CFWQueryExecutor {
 
 		//----------------------
 		// Apply Parameters
-		String finalQuery = CFWParameter.substituteInString(queryString, parametersObject);
+		String finalQuery = CFWParameter.substituteInString(queryString, parametersObject, false);
 		baseQueryContext.setParameters(parametersObject);
-		
+				
 		return this.parseAndExecuteAll(baseQueryContext, finalQuery, null, null);
 	}
 	

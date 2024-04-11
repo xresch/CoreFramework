@@ -417,7 +417,7 @@ public class CFWParameter extends CFWObject {
 		if( Strings.isNullOrEmpty(jsonParams) ) {
 			return zeString;
 		}
-		return substituteInString(zeString, CFW.JSON.fromJson(jsonParams).getAsJsonObject());
+		return substituteInString(zeString, CFW.JSON.fromJson(jsonParams).getAsJsonObject(), false);
 	}
 	
 	/*******************************************************************************
@@ -428,9 +428,10 @@ public class CFWParameter extends CFWObject {
 	 *
 	 * @param zeString the string to apply the parameters too
 	 * @param jsonParams the parameters to be applied, like { paramName1: value1, etc...}
+	 * @param doEscape toggle if some characters like tabs and newline should be escaped
 	 * @returns string with replaced parameters
 	 ******************************************************************************/
-	public static String substituteInString(String zeString, JsonObject parameters) {
+	public static String substituteInString(String zeString, JsonObject parameters, boolean doEscape) {
 		
 		//###############################################################################
 		//############################ IMPORTANT ########################################
@@ -472,18 +473,20 @@ public class CFWParameter extends CFWObject {
 					valueString = CFW.JSON.toJSON(valueElement);
 				}
 				
-				
+
 				//--------------------------------------
 				// Do Substitute
-				String escaped = CFW.JSON.escapeString(valueString);
+				String escaped = valueString;
+				
+				if(doEscape) {
+					escaped = CFW.JSON.escapeString(valueString);
+				}
 				
 				if(escaped == null) {
 					escaped = "";
 				}
 
-				
 				zeString = zeString.replaceAll("\\$"+paramName+"\\$", escaped);
-				
 				
 			}
 		}
