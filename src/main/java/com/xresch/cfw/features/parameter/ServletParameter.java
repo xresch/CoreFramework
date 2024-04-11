@@ -193,6 +193,7 @@ public class ServletParameter extends HttpServlet
 							paramObject.addProperty("widgetType", definition.getWidgetType());
 							paramObject.addProperty("widgetSetting", field.getName());
 							paramObject.addProperty("label", field.getLabel());
+							paramObject.addProperty("desciption", field.getDescription());
 							
 							widgetParametersArray.add(paramObject);
 						}
@@ -212,6 +213,7 @@ public class ServletParameter extends HttpServlet
 				paramObject.add("widgetType", null);
 				paramObject.add("widgetSetting", null);
 				paramObject.addProperty("label", def.getParamUniqueName());
+				paramObject.addProperty("description", def.descriptionShort());
 				
 				parameterDefArray.add(paramObject);
 			}

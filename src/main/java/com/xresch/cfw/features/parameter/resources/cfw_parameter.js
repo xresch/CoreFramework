@@ -476,7 +476,7 @@ function cfw_parameter_showAddParametersModal(){
 			 	textstylefield: null,
 			 	titlefields: ['label'],
 			 	titleformat: '{0}',
-			 	visiblefields: ['widgetType', 'label'],
+			 	visiblefields: ['widgetType', 'label', 'description'],
 			 	labels: {
 			 		widgetType: "Widget",
 			 		label: "Setting",
