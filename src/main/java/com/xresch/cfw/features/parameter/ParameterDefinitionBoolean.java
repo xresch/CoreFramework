@@ -4,8 +4,10 @@ import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.features.query.FeatureQuery;
 import com.xresch.cfw.datahandling.CFWTimeframe;
 
 public class ParameterDefinitionBoolean extends ParameterDefinition {
@@ -18,6 +20,22 @@ public class ParameterDefinitionBoolean extends ParameterDefinition {
 	@Override
 	public String getParamUniqueName() { return LABEL; }
 
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public String descriptionShort() {
+		return "Parameter that allows to select a boolean value.";
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return CFW.Files.readPackageResource(FeatureParameter.PACKAGE_MANUAL, "parameter_"+LABEL.toLowerCase()+".html");
+	}
+	
 	/***************************************************************
 	 * 
 	 ***************************************************************/
@@ -59,6 +77,5 @@ public class ParameterDefinitionBoolean extends ParameterDefinition {
 	public boolean isAvailable(HashSet<String> widgetTypesArray) {
 		return true;
 	}
-
 
 }

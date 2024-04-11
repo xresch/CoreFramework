@@ -4,6 +4,7 @@ import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
 import com.xresch.cfw.datahandling.CFWTimeframe;
@@ -17,7 +18,23 @@ public class ParameterDefinitionNumber extends ParameterDefinition {
 	 ***************************************************************/
 	@Override
 	public String getParamUniqueName() { return LABEL; }
-
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public String descriptionShort() {
+		return "Parameter that allows to select a number.";
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return CFW.Files.readPackageResource(FeatureParameter.PACKAGE_MANUAL, "parameter_"+LABEL.toLowerCase()+".html");
+	}
+	
 	/***************************************************************
 	 * 
 	 ***************************************************************/

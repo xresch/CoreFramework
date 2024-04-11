@@ -25,6 +25,19 @@ public abstract class ParameterDefinition {
 	 *     
 	 ************************************************************/
 	public abstract boolean isDynamic();
+	
+	/***********************************************************************************************
+	 * Return a short description that can be shown in content assist and will be used as intro text
+	 * in the manual. Do not use newlines in this description.
+	 ***********************************************************************************************/
+	public abstract String descriptionShort();
+	
+	/***********************************************************************************************
+	 * Return the description for the manual page.
+	 * This description will be shown on the manual under the header " <h2>Usage</h2>".
+	 * If you add headers to your description it is recommended to use <h3> or lower headers.
+	 ***********************************************************************************************/
+	public abstract String descriptionHTML();
 
 	/************************************************************
 	 * Creates the field for the Parameter Settings table.

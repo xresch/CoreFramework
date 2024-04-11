@@ -161,6 +161,7 @@ DONE
 
 ------- current -------
 - Dashboard: Fixed versions showing up in shared list
+- Parameter: Added basic documentation to the parameter definitions 
 - Query: Command formatlink - supports a "style" parameter to style the link with CSS
 - Query: Fixed issues with newline in parameter substitution
 

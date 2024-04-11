@@ -21,6 +21,24 @@ public class ParameterDefinitionSelect extends ParameterDefinition {
 	@Override
 	public String getParamUniqueName() { return LABEL; }
 
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public String descriptionShort() {
+		return "Allows you to define a list of values that can be selected by a user.";
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return CFW.Files.readPackageResource(FeatureParameter.PACKAGE_MANUAL, "parameter_"+LABEL.toLowerCase()+".html");
+	}
+	
+	
 	/***************************************************************
 	 * 
 	 ***************************************************************/

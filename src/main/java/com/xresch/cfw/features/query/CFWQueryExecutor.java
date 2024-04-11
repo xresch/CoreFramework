@@ -155,6 +155,7 @@ public class CFWQueryExecutor {
 		baseQueryContext.setParameters(parametersObject);
 				
 		return this.parseAndExecuteAll(baseQueryContext, finalQuery, null, null);
+		
 	}
 	
 	/****************************************************************************************

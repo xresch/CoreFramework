@@ -11,6 +11,7 @@ import com.google.gson.JsonPrimitive;
 import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWField.FormFieldType;
+import com.xresch.cfw.features.parameter.FeatureParameter;
 import com.xresch.cfw.features.parameter.ParameterDefinition;
 import com.xresch.cfw.features.parameter.CFWParameter.DashboardParameterFields;
 import com.xresch.cfw.datahandling.CFWTimeframe;
@@ -30,6 +31,21 @@ public class DashboardParameterQueryResult extends ParameterDefinition {
 	@Override
 	public String getParamUniqueName() { return UNIQUE_NAME; }
 
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public String descriptionShort() {
+		return "Parameter that uses values from a query result to create a select field.";
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return CFW.Files.readPackageResource(FeatureQuery.PACKAGE_MANUAL, "parameter_"+UNIQUE_NAME.toLowerCase().replace(" ", "_")+".html");
+	}
 	/***************************************************************
 	 * 
 	 ***************************************************************/

@@ -4,8 +4,10 @@ import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.xresch.cfw._main.CFW;
 import com.xresch.cfw.datahandling.CFWField;
 import com.xresch.cfw.datahandling.CFWTimeframe;
+import com.xresch.cfw.extensions.databases.mssql.FeatureDBExtensionsMSSQL;
 import com.xresch.cfw.features.parameter.ParameterDefinition;
 
 public class ParameterDefinitionGenericJDBCEnvironment extends ParameterDefinition {
@@ -18,6 +20,22 @@ public class ParameterDefinitionGenericJDBCEnvironment extends ParameterDefiniti
 	@Override
 	public String getParamUniqueName() { return LABEL; }
 
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public String descriptionShort() {
+		return "Parameter that allows a user to select a Generic JDBC environment he has access too.";
+	}
+	
+	/***************************************************************
+	 * 
+	 ***************************************************************/
+	@Override
+	public String descriptionHTML() {
+		return CFW.Files.readPackageResource(FeatureDBExtensionsGenericJDBC.PACKAGE_RESOURCE, "parameter_"+LABEL.toLowerCase().replace(" ", "_")+".html");
+	}
+	
 	/***************************************************************
 	 * 
 	 ***************************************************************/
