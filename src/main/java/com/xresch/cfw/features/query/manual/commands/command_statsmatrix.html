@@ -42,3 +42,26 @@ Following creates a matrix based on alphabet and value ranges:
 		 MIN=min(VALUE)
 		 AVG=avg(VALUE)
 		 SUM=sum(VALUE)</code></pre>	
+
+<h2>Combining with displayfields</h2>
+<p>For a more visual display of data you can aggregate the records using records()-function for aggregation and displayfields
+</p>
+<pre><code class="language-cfwquery">| meta BY = [ITEM]
+| source random records=100 type=series
+| formatrecord
+	[(COUNT == null), "cfw-gray"] 
+	[(COUNT &lt; 20), "cfw-red"] 
+	[(COUNT &lt; 40), "cfw-orange"]  
+	[(COUNT &lt; 60), "cfw-yellow"] 
+	[(COUNT &lt; 80), "cfw-limegreen"] 
+	[true, "cfw-green"] 
+| statsmatrix 
+	column=CLASS
+	row=meta(BY)
+	records=records() # makes an array of the whole records
+| displayfields
+	fields=fields(meta(BY)) # All fields except BY fields
+	as=tileandbar
+	visiblefields=[FIRSTNAME,LASTNAME]
+	height="100px"
+	#width="100px"</code></pre>	

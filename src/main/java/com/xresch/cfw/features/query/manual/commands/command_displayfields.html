@@ -1,0 +1,29 @@
+
+<p>This command lets you define how values of fields should be rendered. This is useful when the field contains an array of objects.
+It works very similar to the display-command, except that it is not applied to the main result but to the fields.
+This command is often combined with aggregation commands (stats, statsmatrix, aggregate ...) that are using the aggregation function records().
+</p>
+
+
+<p>Following example makes a statsmatrix of ITEMS and CLASSES, makes an array of records and shows them in traffic lights style.
+Too hard to explain, just copy and paste below code and look for yourself.
+</p>
+<pre><code class="language-cfwquery">| meta BY = [ITEM]
+| source random records=100 type=series
+| formatrecord
+	[(COUNT == null), "cfw-gray"] 
+	[(COUNT &lt; 20), "cfw-red"] 
+	[(COUNT &lt; 40), "cfw-orange"]  
+	[(COUNT &lt; 60), "cfw-yellow"] 
+	[(COUNT &lt; 80), "cfw-limegreen"] 
+	[true, "cfw-green"] 
+| statsmatrix 
+	column=CLASS
+	row=meta(BY)
+	records=records() # makes an array of the whole records
+| displayfields
+	fields=fields(meta(BY)) # All fields except BY fields
+	as=tileandbar
+	visiblefields=[FIRSTNAME,LASTNAME]
+	height="100px"
+	#width="100px"</code></pre>	

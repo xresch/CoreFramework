@@ -101,12 +101,14 @@ Potential TODOs
 - Query: Test cases
 	- command messages
 	- command if, else, end
+	- command formatdisplay
 	- metadata template
 	- function array
 	- function distinct
 	- function fields
 	- function interval
 	- function intervalunit
+	- function records
 	
 - Charts Renderer: Add description to manual page "working with render".
 
@@ -165,7 +167,11 @@ DONE
 - Query: Command formatlink - supports a "style" parameter to style the link with CSS
 - Query: Fixed issues with newline in parameter substitution
 
+- Query: Added Commands:
+	- displayfields (plus alias formatdisplay)
+
 - Query: Added Functions:
+	- records
     - timetruncate 
 
 ------- v.9.0.0 -------

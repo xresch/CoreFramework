@@ -25,6 +25,53 @@ import com.xresch.cfw.pipeline.PipelineActionContext;
  ************************************************************************************************************/
 public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	
+	
+	public static final String DESCIRPTION_SYNTAX = " as=<asOption> [menu=<menu>] [pagination=<pagination>]  [visiblefields=<visiblefields>] [titlefields=<titlefields>]"
+			+"\n[titleformat=<titleformat>]  [zoom=<zoomNumber>]";
+	
+	public static final String DESCRIPTION_SYNTAX_DETAILS = "<ul>"
+			+"<li><b>asOption:&nbsp;</b>Defines how the data should be displayed. One of the following options:"
+				+"<ul>"
+					+"<li>table</li>"
+					+"<li>panels</li>"
+					+"<li>cards</li>"
+					+"<li>tiles</li>"
+					+"<li>tileandbar</li>"
+					+"<li>statustiles</li>"
+					+"<li>statuslist</li>"
+					+"<li>statusbar</li>"
+					+"<li>statusbarreverse</li>"
+					
+					+"<li>statusmap</li>"
+					
+					+"<li>title</li>"
+					+"<li>csv</li>"
+					+"<li>json</li>"
+					+"<li>xml</li>"
+				+"</ul>"
+			+"</li>"
+			+"<li><b>menu:&nbsp;</b>(Optional) Defines how the menu should be displayed. One of the following options:"
+				+"<ul>"
+					+"<li>default (or true)</li>"
+					+"<li>button</li>"
+					+"<li>none (or false)</li>"
+				+"</ul>"
+			+"</li>"
+			+"<li><b>pagination:&nbsp;</b>(Optional) Defines how the pagination should be displayed. One of the following options:"
+				+"<ul>"
+				+"<li>both (or true)</li>"
+				+"<li>top</li>"
+				+"<li>bottom</li>"
+				+"<li>none (or false)</li>"
+				+"</ul>"
+			+"</li>"
+			+"<li><b>titlefields:&nbsp;</b>(Optional) Array of the fieldnames used for title.</li>"	
+			+"<li><b>titleformat:&nbsp;</b>(Optional) Format of the title. Use '{0}', '{1}'... as placeholders for field values.</li>"	
+			+"<li><b>visiblefields:&nbsp;</b>(Optional) Array of the fieldnames that should be visible.</li>"	
+			+"<li><b>zoomNumber:&nbsp;</b>(Optional) Integer value, zoom in percent to resize the displayed data.</li>"	
+			+"<li><b>settings:&nbsp;</b>(Optional) Json Object containing more options for the selected display type.</li>";
+
+
 	public static final String COMMAND_NAME = "display";
 
 	private static final Logger logger = CFWLog.getLogger(CFWQueryCommandDisplay.class.getName());
@@ -60,54 +107,16 @@ public class CFWQueryCommandDisplay extends CFWQueryCommand {
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntax() {
-		return COMMAND_NAME+" as=<asOption> [menu=<menu>] [pagination=<pagination>]  [visiblefields=<arrayOfFieldnames>] [titlefields=<arrayOfFieldnames>]"
-				+"\n[titleformat=<titleformat>]  [zoom=<zoomNumber>]";
+		return COMMAND_NAME+DESCIRPTION_SYNTAX;
 	}
+	
 	
 	/***********************************************************************************************
 	 * 
 	 ***********************************************************************************************/
 	@Override
 	public String descriptionSyntaxDetailsHTML() {
-		return  "<ul>"
-				+"<li><b>asOption:&nbsp;</b>Defines how the data should be displayed. One of the following options:"
-					+"<ul>"
-						+"<li>table</li>"
-						+"<li>panels</li>"
-						+"<li>cards</li>"
-						+"<li>tiles</li>"
-						+"<li>statustiles</li>"
-						+"<li>statuslist</li>"
-						+"<li>statusbar</li>"
-						+"<li>statusbarreverse</li>"
-						
-						+"<li>statusmap</li>"
-						
-						+"<li>title</li>"
-						+"<li>csv</li>"
-						+"<li>json</li>"
-						+"<li>xml</li>"
-					+"</ul>"
-				+"</li>"
-				+"<li><b>menu:&nbsp;</b>(Optional) Defines how the menu should be displayed. One of the following options:"
-					+"<ul>"
-						+"<li>default (or true)</li>"
-						+"<li>button</li>"
-						+"<li>none (or false)</li>"
-					+"</ul>"
-				+"</li>"
-				+"<li><b>pagination:&nbsp;</b>(Optional) Defines how the pagination should be displayed. One of the following options:"
-					+"<ul>"
-					+"<li>both (or true)</li>"
-					+"<li>top</li>"
-					+"<li>bottom</li>"
-					+"<li>none (or false)</li>"
-					+"</ul>"
-				+"</li>"
-				+"<li><b>arrayOfFieldnames:&nbsp;</b>(Optional) Array of the fieldnames.</li>"	
-				+"<li><b>titleformat:&nbsp;</b>(Optional) Format of the title. Use '{0}', '{1}'... as placeholders for field values.</li>"	
-				+"<li><b>zoomNumber:&nbsp;</b>(Optional) Integer value, zoom in percent to resize the displayed data.</li>"	
-				+"<li><b>settings:&nbsp;</b>(Optional) Json Object containing more options for the selected display type.</li>"	
+		return  DESCRIPTION_SYNTAX_DETAILS	
 				;
 		
 	}

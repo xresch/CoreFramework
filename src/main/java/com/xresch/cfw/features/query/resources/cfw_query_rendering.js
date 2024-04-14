@@ -676,8 +676,9 @@ function cfw_query_formatSpecial(span, value){
 	if( typeof value == "object"){
 		
 		switch(value.format){
-			case "link":	cfw_query_formatSpecial_Link(span, value);   break;
-			default:		break;
+			case "link":		cfw_query_formatSpecial_Link(span, value);   break;
+			case "display":		cfw_query_formatSpecial_Display(span, value);   break;
+			default:			break;
 		}
 	}
 
@@ -700,6 +701,40 @@ function cfw_query_formatSpecial_Link(span, object){
 	}
 	
 	span.html('<a href="'+object.url+'" '+ target + style +'>'+object.label+'</a>');
+}
+
+/*******************************************************************************
+ * 
+ ******************************************************************************/
+function cfw_query_formatSpecial_Display(span, object){
+	console.log("cfw_query_formatSpecial_Display")
+	
+	let records = object.queryResults.records;
+	let height =  object.height;
+	let width =  object.width;
+	span.css("height", height);
+	span.css("width", width);
+	
+	//---------------------------------
+	// Data is null
+	if(records == null){
+		cfw_query_formatShowNulls(span, records);
+	}
+
+	//---------------------------------
+	// Data is Object or Array
+	if( Array.isArray(records) ){
+
+		
+		cfw_query_renderQueryResult(span, object.queryResults);
+		//span.text("test");
+		return;
+
+	}
+	
+	//---------------------------------
+	// Any other data type
+	span.text(JSON.stringify(records));
 }
 
 /*******************************************************************************
@@ -833,7 +868,7 @@ function cfw_query_renderAllQueryResults(resultTarget, queryResultsPayload){
  ******************************************************************************/
 function cfw_query_renderQueryResult(resultTarget, queryResult){
 	
-	targetDiv = $(resultTarget);
+	let targetDiv = $(resultTarget);
 	targetDiv.html(""); 
 	
 	var options = {};
@@ -1038,7 +1073,7 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
 	// Merge custom settings into default settings for selected renderer
 	var customSettings = queryResult.displaySettings.settings;
 	if(customSettings != null){
-		var currentSettings = renderDefinition.rendererSettings[rendererName]
+		var currentSettings = renderDefinition.rendererSettings[rendererName];
 		Object.assign(currentSettings, customSettings);
 	}
 
