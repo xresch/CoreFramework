@@ -163,6 +163,7 @@ DONE
 
 ------- current -------
 - Dashboard: Fixed versions showing up in shared list
+- Dashboard: Widget Default Settings: New option "Pause" allows the widget to be paused in case of issues.
 - Parameter: Added basic documentation to the parameter definitions 
 - Query: Command formatlink - supports a "style" parameter to style the link with CSS
 - Query: Fixed issues with newline in parameter substitution
@@ -173,6 +174,7 @@ DONE
 - Query: Added Functions:
 	- records
     - timetruncate 
+
 
 ------- v.9.0.0 -------
 - BREAKING CHANGE: Dropping support for Java 8, new minimum version is Java 17 

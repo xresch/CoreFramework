@@ -26,6 +26,13 @@
 							
 						}
 						
+						if(replicatedWidgetObject.PAUSE == true){
+							return callback(widgetObject, 
+								'<span class="cfw-centered" title="Original Widget is Paused"><i class="fas fa-lg fa-pause-circle"></i></span>'
+							);
+							
+						}
+						
 						//prevent saving of widget
 						replicatedWidgetObject.FK_ID_DASHBOARD	= null;
 						
