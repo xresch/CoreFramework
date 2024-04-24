@@ -57,6 +57,7 @@ public class DashboardWidget extends CFWObject {
 		BGCOLOR,
 		FGCOLOR,
 		INVISIBLE,
+		PAUSE,
 		MANUAL_LOAD,
 		PARAM_WIDGET_LOAD,
 		JSON_SETTINGS,
@@ -197,6 +198,11 @@ public class DashboardWidget extends CFWObject {
 			.setValue(false)
 			;
 	
+	private CFWField<Boolean> pause = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardWidgetFields.PAUSE)
+			.setDescription("Does Pause the widget, no data will be loaded. Useful in case of problems.")
+			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
+			.setValue(false)
+			;
 	private CFWField<Boolean> manualLoad = CFWField.newBoolean(FormFieldType.BOOLEAN, DashboardWidgetFields.MANUAL_LOAD)
 			.setDescription("Makes the widget loading on a button press. Shows a button instead of the widget content. Will also load on button press of parameter widgets.")
 			.addFlag(CFWFieldFlag.KEEP) /* Keep for Default Settings Tab*/
@@ -239,7 +245,31 @@ public class DashboardWidget extends CFWObject {
 	
 	private void initializeFields() {
 		this.setTableName(TABLE_NAME);
-		this.addFields(id, foreignKeyDashboard, type, x, y, width, height, title, titlelink, titleInfo, titleFontsize, titleposition, titlealign, contentFontsize, footer, bgcolor, fgcolor, invisible, manualLoad, paramWidgetLoad, settings, taskParameters);
+		this.addFields(
+				id
+				, foreignKeyDashboard
+				, type
+				, x
+				, y
+				, width
+				, height
+				, title
+				, titlelink
+				, titleInfo
+				, titleFontsize
+				, titleposition
+				, titlealign
+				, contentFontsize
+				, footer
+				, bgcolor
+				, fgcolor
+				, invisible
+				, pause
+				, manualLoad
+				, paramWidgetLoad
+				, settings
+				, taskParameters
+			);
 	}
 
 	/**************************************************************************************
@@ -295,6 +325,9 @@ public class DashboardWidget extends CFWObject {
 						DashboardWidgetFields.BGCOLOR.toString(),
 						DashboardWidgetFields.FGCOLOR.toString(),
 						DashboardWidgetFields.INVISIBLE.toString(),
+						DashboardWidgetFields.PAUSE.toString(),
+						DashboardWidgetFields.MANUAL_LOAD.toString(),
+						DashboardWidgetFields.PARAM_WIDGET_LOAD.toString(),
 						DashboardWidgetFields.JSON_SETTINGS.toString(),	 	
 						DashboardWidgetFields.JSON_TASK_PARAMETERS.toString(),	 	
 				};

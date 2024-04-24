@@ -1404,8 +1404,12 @@ function cfw_dashboard_widget_createInstance(originalWidgetObject, doAutopositio
 			widgetCloneParameterized.Y = placeholderWidget.attr("gs-y");
 			
 			// ---------------------------------------
-			// Handle Parameter Widget Load & Manual Load
-			
+			// Handle Parameter Widget Pause, Load & Manual Load
+			if(widgetCloneParameterized.PAUSE == true){
+				placeholderWidget.find('.cfw-dashboard-widget-body')
+					.html('<span class=" cfw-centered" title="Widget Paused"><i class="fas fa-lg fa-pause-circle" ></i></span>');
+				return;
+			}
 			
 			if(!manualLoad && widgetCloneParameterized.PARAM_WIDGET_LOAD == true){
 				placeholderWidget.find('.cfw-dashboard-widget-body')
