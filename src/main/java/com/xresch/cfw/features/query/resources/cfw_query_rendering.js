@@ -1094,7 +1094,10 @@ function cfw_query_renderQueryResult(resultTarget, queryResult){
  *        multiple query results.
  ******************************************************************************/
 function cfw_query_renderAsChart(resultTarget, queryResult, options){
-
+	
+	let targetDiv = $(resultTarget);
+	targetDiv.html(""); 
+	
 	// settings contains params of chart-command
 	var settings = queryResult.displaySettings;
 
